@@ -1,0 +1,1 @@
+let urlAlphabet="useandom-26T198340PX75pxJACKVERYMINDBUSHWOLF_GQZbfghjklqvwyzrict",customAlphabet=(t,e=21)=>(a=e)=>{let l="",o=0|a;for(;o-- >0;)l+=t[Math.random()*t.length|0];return l},nanoid=(t=21)=>{let e="",a=0|t;for(;a-- >0;)e+=urlAlphabet[64*Math.random()|0];return e};module.exports={nanoid:nanoid,customAlphabet:customAlphabet};
