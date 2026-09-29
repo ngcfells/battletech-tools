@@ -34,7 +34,6 @@ export interface IFullBackup {
     currentCBTForce: ICBTForceExport | null;
 
     currentVBattleMech: string | null;
-
 }
 
 export async function getFullBackup(
