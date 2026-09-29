@@ -1,93 +1,43 @@
-# ---------------------------------------------------------------------------
-# Dependencies
-# ---------------------------------------------------------------------------
-node_modules/
-npm-debug.log*
-yarn-error.log*
+node_modules*
+node_modules
+robots.txt
+node_modules/*
+npm-debug.log
+.htaccess
 .eslintcache
 
-
-# ---------------------------------------------------------------------------
-# Build output
-# ---------------------------------------------------------------------------
-build/
-dist/
-dist-ssr/
-coverage/
-*.tsbuildinfo
-
-# Test output (Vitest coverage above; Playwright below)
-/playwright-report/
-/test-results/
-/blob-report/
-/playwright/.cache/
-
-# node_modules/.vite is already covered; this catches caches outside it.
-.vite/
-
-# Nested project copy that the build/deploy tooling keeps recreating.
-/battletech-tools/
-
-# ---------------------------------------------------------------------------
-# Local scratch directories (root-anchored so they cannot swallow source files
-# such as .github/workflows or src/work*.ts)
-# ---------------------------------------------------------------------------
+/old
+/old/*
 /old*
+
+/boneyard
+/boneyard/*
+
+/build/*
+/build*
+/build
+
+/work/*
 /work*
-/boneyard*
-/cli-tools/
-/SSW-Master/
-/SSW-Equipment/
-tools/.live-mul-battle-armor/
+/work
 
-# ---------------------------------------------------------------------------
-# Python helper tooling byproducts
-# ---------------------------------------------------------------------------
-__pycache__/
-*.py[cod]
+/cli-tools/*
+/cli-tools
 
-# ---------------------------------------------------------------------------
-# Scratch and backup artifacts
-# ---------------------------------------------------------------------------
-*.bak
-*.tmp
-
-# ---------------------------------------------------------------------------
-# Editor / OS / miscellaneous local files
-# ---------------------------------------------------------------------------
-.vscode/
-.idea/
 .DS_Store
-Thumbs.db
 .gitlab-ci.yml
-.htaccess
-robots.txt
 
-# Local environment files; keep shareable .env.example files trackable.
-.env
-.env.*
-!.env.example
+/SSW-Master
+/SSW-Master/*
+/SSW-Equipment
+/SSW-Equipment/*
 
-# Local development workspaces are never part of the synchronized source.
-*_DEV/
+.vscode
+.vscode/*
 
-# ---------------------------------------------------------------------------
-# Ollama AI engine rules and helpers (root-anchored; the committed equivalents
-# under tools/ are intentional project tooling and must stay tracked)
-# ---------------------------------------------------------------------------
-/.clinerules
-/as_lookup_results.jsonl
-/batch_as_lookup.py
-/ollama*
-/cline_custom_modes.json
-
-# ---------------------------------------------------------------------------
-# Claude Code "Astech" agent definition and rules (local to each developer)
-# ---------------------------------------------------------------------------
-/.claude/agents/astech.md
-/.claude/rules/
-
-# GitHub Actions workflows are required; guard against the broad patterns above.
-!.github/
-!.github/workflows/
-!.github/workflows/*.yml
+# Test output
+/coverage
+/playwright-report
+/test-results
+/blob-report
+/playwright/.cache
