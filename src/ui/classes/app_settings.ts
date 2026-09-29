@@ -1,5 +1,4 @@
 import { IASMULUnit } from "../../classes/alpha-strike-unit";
-import { DEFAULT_MUL_SOURCE_SELECTION, isMULSourceSelection, MULSourceSelection } from "../../data/mul-list-items";
 import { ESaveDataMode } from "../../dataSaves";
 
 export class AppSettings {
@@ -25,7 +24,6 @@ export class AppSettings {
     alphaStrikeFactionSearchTerm: string = "";
     alphaStrikeFactionSuggestions: Array<number> = [];
     alphaStrikeSearchFactions: Array<number> = [];
-    alphaStrikeMULSources: MULSourceSelection = DEFAULT_MUL_SOURCE_SELECTION;
     hideMPIntro: boolean = false;
 
     equipmentEditorFile: string = "";
@@ -54,6 +52,10 @@ export class AppSettings {
 
             if ( typeof( io.installEquipCategory ) !== "undefined" ) {
                 this.installEquipCategory = io.installEquipCategory;
+            }
+
+            if ( typeof( io.alphasStrikeCachedSearchResults ) !== "undefined" ) {
+                this.alphasStrikeCachedSearchResults = io.alphasStrikeCachedSearchResults;
             }
 
             if ( typeof( io.alphaStrikeSearchRules ) !== "undefined" ) {
@@ -91,10 +93,6 @@ export class AppSettings {
                 this.alphaStrikeSearchFactions = io.alphaStrikeSearchFactions;
             }
 
-            if ( isMULSourceSelection( io.alphaStrikeMULSources ) ) {
-                this.alphaStrikeMULSources = io.alphaStrikeMULSources;
-            }
-
             if ( typeof( io.asValues ) !== "undefined" ) {
                 this.asValues = io.asValues;
             }
@@ -116,6 +114,7 @@ export class AppSettings {
             developerMenu: this.developerMenu,
             equipmentFilter: this.equipmentFilter,
             installEquipCategory: this.installEquipCategory,
+            alphasStrikeCachedSearchResults: this.alphasStrikeCachedSearchResults,
             alphaStrikeSearchTerm: this.alphaStrikeSearchTerm,
             alphaStrikeInPlayColumns: this.alphaStrikeInPlayColumns,
             equipmentEditorFile: this.equipmentEditorFile,
@@ -127,7 +126,6 @@ export class AppSettings {
             alphaStrikeMeasurementsInHexes: this.alphaStrikeMeasurementsInHexes,
             asValues: this.asValues,
             alphaStrikeSearchFactions: this.alphaStrikeSearchFactions,
-            alphaStrikeMULSources: this.alphaStrikeMULSources,
             hideMPIntro: this.hideMPIntro,
         
 
@@ -143,6 +141,7 @@ export interface IAppSettingsExport {
     equipmentFilter: string;
     installEquipCategory: string;
 
+    alphasStrikeCachedSearchResults: IASMULUnit[];
     alphaStrikeSearchTerm: string;
     alphaStrikeSearchRules: string;
     alphaStrikeSearchTech: string;
@@ -152,7 +151,6 @@ export interface IAppSettingsExport {
     alphaStrikeInPlayColumns: number;
     alphaStrikeMeasurementsInHexes: boolean;
     alphaStrikeSearchFactions: Array<number>;
-    alphaStrikeMULSources?: MULSourceSelection;
     hideMPIntro: boolean;
    
     equipmentEditorFile: string;
