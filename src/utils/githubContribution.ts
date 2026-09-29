@@ -13,13 +13,10 @@ export interface IGithubContributionRequest {
     upstreamOwner: string;
     upstreamRepo: string;
     filePath: string;
-    // Either the complete file, or a function that builds it from the file currently on the
-    // upstream default branch (null when the file does not exist there yet).
-    fileContents: string | ((currentUpstreamContents: string | null) => string);
+    fileContents: string;
     commitMessage: string;
     pullRequestTitle: string;
     pullRequestBody: string;
-    branchPrefix?: string;
 }
 
 export interface IGithubContributionResult {
@@ -74,11 +71,6 @@ function toBase64(content: string): string {
     return btoa(binary);
 }
 
-function fromBase64(content: string): string {
-    const binary = atob(content.replace(/\s/g, ""));
-    return new TextDecoder().decode(Uint8Array.from(binary, (char) => char.charCodeAt(0)));
-}
-
 function delay(ms: number): Promise<void> {
     return new Promise((resolve) => window.setTimeout(resolve, ms));
 }
@@ -87,7 +79,6 @@ export async function submitEquipmentCatalogContribution(
     request: IGithubContributionRequest,
 ): Promise<IGithubContributionResult> {
     const { token, upstreamOwner, upstreamRepo, filePath, fileContents, commitMessage, pullRequestTitle, pullRequestBody } = request;
-    const branchPrefix = request.branchPrefix ?? "equipment-editor";
 
     if (!token || !token.trim()) {
         throw new Error("A GitHub personal access token is required to submit a contribution.");
@@ -102,57 +93,34 @@ export async function submitEquipmentCatalogContribution(
     );
     const defaultBranch = upstreamRepoInfo.default_branch;
 
-    // The repo owner can't fork their own repo, so they branch in it directly.
-    const ownsUpstream = login.toLowerCase() === upstreamOwner.toLowerCase();
-    const headOwner = ownsUpstream ? upstreamOwner : login;
+    // Forking is idempotent - GitHub returns the existing fork if the user already has one.
+    await githubRequest(`${GITHUB_API_BASE}/repos/${upstreamOwner}/${upstreamRepo}/forks`, token, {
+        method: "POST",
+    });
 
-    if (!ownsUpstream) {
-        // Forking is idempotent - GitHub returns the existing fork if the user already has one.
-        await githubRequest(`${GITHUB_API_BASE}/repos/${upstreamOwner}/${upstreamRepo}/forks`, token, {
-            method: "POST",
-        });
-
-        // Forks are created asynchronously, so poll until the fork is queryable.
-        let forkReady = false;
-        for (let attempt = 0; attempt < 10 && !forkReady; attempt++) {
-            try {
-                await githubRequest(`${GITHUB_API_BASE}/repos/${login}/${upstreamRepo}`, token);
-                forkReady = true;
-            } catch {
-                await delay(1500);
-            }
-        }
-        if (!forkReady) {
-            throw new Error("Timed out waiting for your GitHub fork to become available. Please try again in a moment.");
-        }
-    }
-
-    let resolvedContents: string;
-    if (typeof fileContents === "function") {
-        let currentUpstreamContents: string | null = null;
+    // Forks are created asynchronously, so poll until the fork is queryable.
+    let forkReady = false;
+    for (let attempt = 0; attempt < 10 && !forkReady; attempt++) {
         try {
-            const upstreamFile = await githubRequest<{ content: string }>(
-                `${GITHUB_API_BASE}/repos/${upstreamOwner}/${upstreamRepo}/contents/${filePath}?ref=${defaultBranch}`,
-                token,
-            );
-            currentUpstreamContents = fromBase64(upstreamFile.content);
+            await githubRequest(`${GITHUB_API_BASE}/repos/${login}/${upstreamRepo}`, token);
+            forkReady = true;
         } catch {
-            currentUpstreamContents = null;
+            await delay(1500);
         }
-        resolvedContents = fileContents(currentUpstreamContents);
-    } else {
-        resolvedContents = fileContents;
+    }
+    if (!forkReady) {
+        throw new Error("Timed out waiting for your GitHub fork to become available. Please try again in a moment.");
     }
 
-    const headDefaultBranchRef = await githubRequest<{ object: { sha: string } }>(
-        `${GITHUB_API_BASE}/repos/${headOwner}/${upstreamRepo}/git/ref/heads/${defaultBranch}`,
+    const forkDefaultBranchRef = await githubRequest<{ object: { sha: string } }>(
+        `${GITHUB_API_BASE}/repos/${login}/${upstreamRepo}/git/ref/heads/${defaultBranch}`,
         token,
     );
-    const baseSha = headDefaultBranchRef.object.sha;
+    const baseSha = forkDefaultBranchRef.object.sha;
 
-    const branchName = `${branchPrefix}/${filePath.replace(/[^a-z0-9-]+/gi, "-")}-${Date.now()}`;
+    const branchName = `equipment-editor/${filePath.replace(/[^a-z0-9-]+/gi, "-")}-${Date.now()}`;
 
-    await githubRequest(`${GITHUB_API_BASE}/repos/${headOwner}/${upstreamRepo}/git/refs`, token, {
+    await githubRequest(`${GITHUB_API_BASE}/repos/${login}/${upstreamRepo}/git/refs`, token, {
         method: "POST",
         body: JSON.stringify({
             ref: `refs/heads/${branchName}`,
@@ -163,7 +131,7 @@ export async function submitEquipmentCatalogContribution(
     let existingFileSha: string | undefined;
     try {
         const existingFile = await githubRequest<{ sha: string }>(
-            `${GITHUB_API_BASE}/repos/${headOwner}/${upstreamRepo}/contents/${filePath}?ref=${branchName}`,
+            `${GITHUB_API_BASE}/repos/${login}/${upstreamRepo}/contents/${filePath}?ref=${branchName}`,
             token,
         );
         existingFileSha = existingFile.sha;
@@ -171,11 +139,11 @@ export async function submitEquipmentCatalogContribution(
         existingFileSha = undefined;
     }
 
-    await githubRequest(`${GITHUB_API_BASE}/repos/${headOwner}/${upstreamRepo}/contents/${filePath}`, token, {
+    await githubRequest(`${GITHUB_API_BASE}/repos/${login}/${upstreamRepo}/contents/${filePath}`, token, {
         method: "PUT",
         body: JSON.stringify({
             message: commitMessage,
-            content: toBase64(resolvedContents),
+            content: toBase64(fileContents),
             branch: branchName,
             sha: existingFileSha,
         }),
@@ -188,7 +156,7 @@ export async function submitEquipmentCatalogContribution(
             method: "POST",
             body: JSON.stringify({
                 title: pullRequestTitle,
-                head: `${headOwner}:${branchName}`,
+                head: `${login}:${branchName}`,
                 base: defaultBranch,
                 body: pullRequestBody,
                 maintainer_can_modify: true,
@@ -198,6 +166,3 @@ export async function submitEquipmentCatalogContribution(
 
     return { pullRequestUrl: pullRequest.html_url };
 }
-
-// The flow is not specific to equipment catalogs; this is the name new callers should use.
-export const submitGithubFileContribution = submitEquipmentCatalogContribution;
