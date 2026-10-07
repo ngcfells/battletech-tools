@@ -22,6 +22,7 @@ export const mechClanEquipmentArtillery: IEquipmentItem[] = [
         name: "Arrow IV System (Clan)",
         altNames: ["Clan Arrow IV", "Arrow IV Missile"],
         tag: "clan-arrow-iv-system",
+        techBase: "clan",
         // Old tag shared with the IS record; kept so existing Clan saves resolve
         altTags: ["arrow-iv-system"],
         sort: "artillery, arrow iv, clan",
@@ -80,6 +81,7 @@ export const mechClanEquipmentArtillery: IEquipmentItem[] = [
     {
         name: "Long Tom Cannon (Clan)",
         tag: "clan-long-tom-cannon",
+        techBase: "clan",
         altNames: ["Long Tom Artillery Cannon (Clan)", "Long Tom Artillery Cannon"],
         altTags: ["long-tom-cannon"],
         sort: "artillery, cannon, long tom",
@@ -138,6 +140,7 @@ export const mechClanEquipmentArtillery: IEquipmentItem[] = [
     {
         name: "Sniper Cannon (Clan)",
         tag: "clan-sniper-cannon",
+        techBase: "clan",
         altNames: ["Sniper Artillery Cannon (Clan)", "Sniper Artillery Cannon"],
         altTags: ["sniper-cannon"],
         sort: "artillery, cannon, sniper",
@@ -196,6 +199,7 @@ export const mechClanEquipmentArtillery: IEquipmentItem[] = [
     {
         name: "Thumper Cannon (Clan)",
         tag: "clan-thumper-cannon",
+        techBase: "clan",
         altNames: ["Thumper Artillery Cannon (Clan)", "Thumper Artillery Cannon"],
         altTags: ["thumper-cannon"],
         sort: "artillery, cannon, thumper",

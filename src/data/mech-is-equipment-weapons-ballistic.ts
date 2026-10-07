@@ -16,6 +16,7 @@ export const mechISEquipmentBallistic: IEquipmentItem[] = [
         name: "Autocannon/2",
         alternateName: "ac/2",
         tag: "autocannon-standard-a",
+        techBase: "is",
         sort: "Autocannon/a",
         category: "Ballistic Weapons",
         damage: 2,
@@ -73,6 +74,7 @@ export const mechISEquipmentBallistic: IEquipmentItem[] = [
         name: "Autocannon/5",
         alternateName: "ac/5",
         tag: "autocannon-standard-b",
+        techBase: "is",
         sort: "Autocannon/b",
         category: "Ballistic Weapons",
         damage: 5,
@@ -130,6 +132,7 @@ export const mechISEquipmentBallistic: IEquipmentItem[] = [
         name: "Autocannon/10",
         alternateName: "ac/10",
         tag: "autocannon-standard-c",
+        techBase: "is",
         sort: "Autocannon/c",
         category: "Ballistic Weapons",
         damage: 10,
@@ -187,6 +190,7 @@ export const mechISEquipmentBallistic: IEquipmentItem[] = [
         name: "Autocannon/20",
         alternateName: "ac/20",
         tag: "autocannon-standard-d",
+        techBase: "is",
         sort: "Autocannon/d",
         category: "Ballistic Weapons",
         damage: 20,
@@ -243,6 +247,7 @@ export const mechISEquipmentBallistic: IEquipmentItem[] = [
     {
         name: "Light Gauss Rifle",
         tag: "gauss-rifle-light",
+        techBase: "is",
         sort: "gauss rifle, a",
         category: "Ballistic Weapons",
         damage: 8,
@@ -297,6 +302,7 @@ export const mechISEquipmentBallistic: IEquipmentItem[] = [
     {
         name: "Gauss Rifle",
         tag: "standard-gauss-rifle",
+        techBase: "is",
         sort: "gauss rifle, b",
         category: "Ballistic Weapons",
         damage: 15,
@@ -351,6 +357,7 @@ export const mechISEquipmentBallistic: IEquipmentItem[] = [
     {
         name: "Heavy Gauss Rifle",
         tag: "gauss-rifle-heavy",
+        techBase: "is",
         allowedLocations: ["ct", "lt", "rt"],
         requiresEngine: "fusion-or-fission",
         sort: "gauss rifle, c",
@@ -413,6 +420,7 @@ export const mechISEquipmentBallistic: IEquipmentItem[] = [
     {
         name: "Improved Heavy Gauss Rifle",
         tag: "gauss-rifle-heavy-improved",
+        techBase: "is",
         allowedLocations: ["ct", "lt", "rt"],
         requiresEngine: "fusion-or-fission",
         sort: "gauss rifle, d",
@@ -468,6 +476,7 @@ export const mechISEquipmentBallistic: IEquipmentItem[] = [
     {
         name: "Silver Bullet Gauss Rifle",
         tag: "silver-bullet-gauss-rifle",
+        techBase: "is",
         altNames: ["Silver Bullet Gauss"],
         sort: "gauss rifle, e",
         category: "Ballistic Weapons",
@@ -525,6 +534,7 @@ export const mechISEquipmentBallistic: IEquipmentItem[] = [
     {
         name: "MagShot Gauss Rifle",
         tag: "gauss-rifle-magshot",
+        techBase: "is",
         sort: "gauss rifle, f",
         category: "Ballistic Weapons",
         damage: 2,
@@ -578,6 +588,7 @@ export const mechISEquipmentBallistic: IEquipmentItem[] = [
     {
         name: "LB 2-X AC",
         tag: "autocannon-lbx-2",
+        techBase: "is",
         sort: "LB a-X AC",
         category: "Ballistic Weapons",
         damagePerCluster: 1,
@@ -637,6 +648,7 @@ export const mechISEquipmentBallistic: IEquipmentItem[] = [
     {
         name: "LB 5-X AC",
         tag: "autocannon-lbx-5",
+        techBase: "is",
         sort: "LB b-X AC",
         category: "Ballistic Weapons",
         damagePerCluster: 1,
@@ -696,6 +708,7 @@ export const mechISEquipmentBallistic: IEquipmentItem[] = [
     {
         name: "LB 10-X AC",
         tag: "autocannon-lbx-10",
+        techBase: "is",
         sort: "LB c-X AC",
         category: "Ballistic Weapons",
         damagePerCluster: 1,
@@ -755,6 +768,7 @@ export const mechISEquipmentBallistic: IEquipmentItem[] = [
     {
         name: "LB 20-X AC",
         tag: "autocannon-lbx-20",
+        techBase: "is",
         sort: "LB d-X AC",
         category: "Ballistic Weapons",
         damagePerCluster: 1,
@@ -814,6 +828,7 @@ export const mechISEquipmentBallistic: IEquipmentItem[] = [
     {
         name: "Light Autocannon/2",
         tag: "autocannon-light-2",
+        techBase: "is",
         sort: "Light Autocannon/2",
         category: "Ballistic Weapons",
         damage: 2,
@@ -871,6 +886,7 @@ export const mechISEquipmentBallistic: IEquipmentItem[] = [
     {
         name: "Light Autocannon/5",
         tag: "autocannon-light-5",
+        techBase: "is",
         sort: "Light Autocannon/5",
         category: "Ballistic Weapons",
         damage: 5,
@@ -918,6 +934,7 @@ export const mechISEquipmentBallistic: IEquipmentItem[] = [
     {
         name: "Machine Gun",
         tag: "machine-gun",
+        techBase: "is",
         sort: "machine gun",
         category: "Ballistic Weapons",
         damage: 2,
@@ -973,6 +990,7 @@ export const mechISEquipmentBallistic: IEquipmentItem[] = [
     {
         name: "Heavy Machine Gun",
         tag: "machine-gun-heavy",
+        techBase: "is",
         sort: "machine gun, heavy",
         category: "Ballistic Weapons",
         damage: 3,
@@ -1016,6 +1034,7 @@ export const mechISEquipmentBallistic: IEquipmentItem[] = [
     {
         name: "Light Machine Gun",
         tag: "machine-gun-light",
+        techBase: "is",
         sort: "machine gun, light",
         category: "Ballistic Weapons",
         damage: 1,
@@ -1072,6 +1091,7 @@ export const mechISEquipmentBallistic: IEquipmentItem[] = [
     {
         name: "Hatchet",
         tag: "melee-hatchet",
+        techBase: "is",
         allowedLocations: ["la", "ra"],
         onePerLocationGroup: "hatchet",
         techRating: "b",
@@ -1128,6 +1148,7 @@ export const mechISEquipmentBallistic: IEquipmentItem[] = [
     {
         name: "Sword",
         tag: "melee-sword",
+        techBase: "is",
         allowedLocations: ["la", "ra"],
         onePerLocationGroup: "sword",
         techRating: "b",
@@ -1189,6 +1210,7 @@ export const mechISEquipmentBallistic: IEquipmentItem[] = [
         name: "Rotary AC/2",
         alternateName: "",
         tag: "rotary-ac-2",
+        techBase: "is",
         ammoTypes: ["ammo-is-rotary-ac-2-standard"],
         altNames: [],
         altTags: ["autocannon-rac-2"],
@@ -1269,6 +1291,7 @@ export const mechISEquipmentBallistic: IEquipmentItem[] = [
         name: "Rotary AC/5",
         alternateName: "",
         tag: "rotary-ac-5",
+        techBase: "is",
         ammoTypes: ["ammo-is-rotary-ac-5-standard"],
         altNames: [],
         altTags: ["autocannon-rac-5"],
@@ -1345,6 +1368,7 @@ export const mechISEquipmentBallistic: IEquipmentItem[] = [
     {
         name: "Ultra AC/2",
         tag: "autocannon-ultra-a",
+        techBase: "is",
         ammoTypes: ["ammo-is-ultra-ac-2-standard"],
         altNames: [],
         altTags: ["autocannon-uac-2"],
@@ -1405,6 +1429,7 @@ export const mechISEquipmentBallistic: IEquipmentItem[] = [
     {
         name: "Ultra AC/5",
         tag: "autocannon-ultra-b",
+        techBase: "is",
         ammoTypes: ["ammo-is-ultra-ac-5-standard"],
         altNames: [],
         altTags: ["autocannon-uac-5"],
@@ -1465,6 +1490,7 @@ export const mechISEquipmentBallistic: IEquipmentItem[] = [
     {
         name: "Ultra AC/10",
         tag: "autocannon-ultra-c",
+        techBase: "is",
         ammoTypes: ["ammo-is-ultra-ac-10-standard"],
         altNames: [],
         altTags: ["autocannon-uac-10"],
@@ -1525,6 +1551,7 @@ export const mechISEquipmentBallistic: IEquipmentItem[] = [
     {
         name: "Ultra AC/20",
         tag: "autocannon-ultra-d",
+        techBase: "is",
         ammoTypes: ["ammo-is-ultra-ac-20-standard"],
         altNames: [],
         altTags: ["autocannon-uac-20"],
@@ -1582,23 +1609,23 @@ export const mechISEquipmentBallistic: IEquipmentItem[] = [
         rangeAero: "m",
         isUltra: true
     },
-    { name: "Primitive Prototype AC/2", tag: "primitive-prototype-ac-2", sort: "primitive prototype ac/2", category: "Ballistic Weapons", damage: 2, notes: "Primitive prototype; extinction aligned to production AC/2 availability.", damageAero: 2, accuracyModifier: 0, cbills: 75000, cbillsOneShot: 0, prototype: 2290, introduced: null, extinct: 2300, reintroduced: null, battleValue: 37, heat: 1, heatAero: 1, weight: 6, range: { min: 4, short: 8, medium: 16, long: 24 }, space: { battlemech: 1, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, shotsPerTon: 34, minAmmoTons: 1, explosive: false, weaponType: ["DB"], techRating: "c", book: "IO:AE", page: 112, alphaStrike: { heat: 1, rangeShort: 0.132, rangeMedium: 0.2, rangeLong: 0.2, rangeExtreme: 0.2, tc: false, notes: ["Provisional workbook conversion"] }, catalog: "is", ammoBattleValue: 4, ammoTypes: ["ammo-is-ac-2-standard"], rangeAero: "l" },
-    { name: "Primitive Prototype AC/5", tag: "primitive-prototype-ac-5", sort: "primitive prototype ac/5", category: "Ballistic Weapons", damage: 5, notes: "Primitive prototype; extinction aligned to production AC/5 availability.", damageAero: 5, accuracyModifier: 0, cbills: 125000, cbillsOneShot: 0, prototype: 2240, introduced: null, extinct: 2250, reintroduced: null, battleValue: 70, heat: 1, heatAero: 1, weight: 8, range: { min: 3, short: 6, medium: 12, long: 18 }, space: { battlemech: 4, protomech: -1, combatVehicle: 1, supportVehicle: 4, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, shotsPerTon: 15, minAmmoTons: 1, explosive: false, weaponType: ["DB"], techRating: "c", book: "IO:AE", page: 112, alphaStrike: { heat: 1, rangeShort: 0.375, rangeMedium: 0.5, rangeLong: 0.5, rangeExtreme: 0, tc: false, notes: ["Provisional workbook conversion"] }, catalog: "is", ammoBattleValue: 7, ammoTypes: ["ammo-is-ac-5-standard"], rangeAero: "m" },
-    { name: "Primitive Prototype AC/10", tag: "primitive-prototype-ac-10", sort: "primitive prototype ac/10", category: "Ballistic Weapons", damage: 10, notes: "Primitive prototype; extinction aligned to production AC/10 availability.", damageAero: 10, accuracyModifier: 0, cbills: 200000, cbillsOneShot: 0, prototype: 2443, introduced: null, extinct: 2460, reintroduced: null, battleValue: 123, heat: 3, heatAero: 3, weight: 12, range: { min: 0, short: 5, medium: 10, long: 15 }, space: { battlemech: 7, protomech: -1, combatVehicle: 1, supportVehicle: 7, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, shotsPerTon: 8, minAmmoTons: 1, explosive: false, weaponType: ["DB"], techRating: "c", book: "IO:AE", page: 112, alphaStrike: { heat: 3, rangeShort: 1, rangeMedium: 1, rangeLong: 0, rangeExtreme: 0, tc: false, notes: ["Provisional workbook conversion"] }, catalog: "is", ammoBattleValue: 12, ammoTypes: ["ammo-is-ac-10-standard"], rangeAero: "m" },
-    { name: "Primitive Prototype AC/20", tag: "primitive-prototype-ac-20", sort: "primitive prototype ac/20", category: "Ballistic Weapons", damage: 20, notes: "Primitive prototype; extinction aligned to production AC/20 availability.", damageAero: 20, accuracyModifier: 0, cbills: 300000, cbillsOneShot: 0, prototype: 2490, introduced: null, extinct: 2500, reintroduced: null, battleValue: 178, heat: 7, heatAero: 7, weight: 14, range: { min: 0, short: 3, medium: 6, long: 9 }, space: { battlemech: 10, protomech: -1, combatVehicle: 1, supportVehicle: 10, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, shotsPerTon: 4, minAmmoTons: 1, explosive: false, weaponType: ["DB"], techRating: "c", book: "IO:AE", page: 112, alphaStrike: { heat: 7, rangeShort: 2, rangeMedium: 2, rangeLong: 0, rangeExtreme: 0, tc: false, notes: ["Provisional workbook conversion"] }, catalog: "is", ammoBattleValue: 17, ammoTypes: ["ammo-is-ac-20-standard"], rangeAero: "s" },
-    { name: "Prototype LB 10-X Autocannon", tag: "prototype-autocannon-lbx-10", ammoTypes: ["ammo-is-lb-10x-standard"], altNames: ["Prototype LB 10-X Autocannon (3030)"], altTags: ["prototype-autocannon-lbx-10-3030"], sort: "prototype lb 10-x autocannon", category: "Ballistic Weapons", damage: 10, notes: "Prototype LB 10-X (LB 10-X-P): jams for the rest of the scenario on an unmodified to-hit roll of 2, -1 on the Cluster Hits Table, ammunition in full-ton lots (IO:AE p.66). Cost is the Star League prototype (IO:AE p.211); the recovered prototypes of 3030 cost 2,000,000 (IO:AE p.213).", damageAero: 10, accuracyModifier: 0, cbills: 1600000, cbillsOneShot: 0, prototype: 2590, introduced: null, extinct: 2595, reintroduced: 3030, battleValue: 148, heat: 2, heatAero: 2, weight: 11, ammoBattleValue: 15, range: { min: 0, short: 6, medium: 12, long: 18 }, space: { battlemech: 7, protomech: -1, combatVehicle: 1, supportVehicle: 7, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, shotsPerTon: 10, minAmmoTons: 1, explosive: false, weaponType: ["DB"], techRating: "e", book: "IO:AE", page: 66, alphaStrike: { heat: 2, rangeShort: 0.63, rangeMedium: 0.63, rangeLong: 0.63, rangeExtreme: 0, tc: false, notes: ["Provisional workbook conversion"] }, catalog: "is" },
-    { name: "Prototype Gauss Rifle", tag: "prototype-gauss-rifle", ammoTypes: ["ammo-is-gauss-rifle-standard"], altNames: ["Prototype Gauss Rifle (3038)"], altTags: ["prototype-gauss-rifle-3038"], sort: "prototype gauss rifle", category: "Ballistic Weapons", damage: 15, notes: "Prototype Gauss record; extinction aligned to production Gauss Rifle availability.", damageAero: 15, accuracyModifier: 0, cbills: 1200000, cbillsOneShot: 0, prototype: 2587, introduced: null, extinct: 2590, reintroduced: 3038, battleValue: 320, heat: 1, heatAero: 1, weight: 15, ammoBattleValue: 40, range: { min: 2, short: 7, medium: 15, long: 22 }, space: { battlemech: 8, protomech: -1, combatVehicle: 1, supportVehicle: 8, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, shotsPerTon: 8, minAmmoTons: 1, explosive: true, gauss: true, weaponType: ["DB"], techRating: "e", book: "IO:AE", page: 66, alphaStrike: { heat: 1, rangeShort: 1.245, rangeMedium: 1.5, rangeLong: 1.5, rangeExtreme: 0, tc: false, notes: ["Provisional workbook conversion"] }, catalog: "is" },
-    { name: "Prototype Ultra Autocannon/5", tag: "prototype-autocannon-uac-5", ammoTypes: ["ammo-is-ultra-ac-5-standard"], sort: "prototype ultra autocannon/5", category: "Ballistic Weapons", damage: 5, notes: "Prototype Ultra AC record; extinction aligned to production UAC/5 introduction.", damageAero: 5, accuracyModifier: 0, cbills: 1000000, cbillsOneShot: 0, prototype: 3029, introduced: null, extinct: 3035, reintroduced: null, battleValue: 112, heat: 2, heatAero: 2, weight: 9, ammoBattleValue: 14, range: { min: 0, short: 6, medium: 13, long: 20 }, space: { battlemech: 6, protomech: -1, combatVehicle: 1, supportVehicle: 6, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, shotsPerTon: 20, minAmmoTons: 1, explosive: false, weaponType: ["DB"], techRating: "e", book: "IO:AE", page: 98, alphaStrike: { heat: 2, rangeShort: 0.623, rangeMedium: 0.75, rangeLong: 0.75, rangeExtreme: 0, tc: false, notes: ["Provisional workbook conversion"] }, catalog: "is" },
-    { isAmmo: false, name: "Light Rifle", altNames: [], tag: "light-rifle", ammoTypes: ["ammo-is-light-rifle-standard"], altTags: [], sort: "light rifle", category: "Ballistic Weapons", damage: 3, notes: "Universal experimental rifle; workbook conversion provisional.", damageAero: 3, accuracyModifier: 0, cbills: 37750, introduced: 1950, extinct: 2825, reintroduced: 3084, battleValue: 21, heat: 1, heatAero: 1, weight: 3, ammoBattleValue: 3, range: { min: 0, short: 4, medium: 8, long: 12 }, space: { battlemech: 1, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, shotsPerTon: 18, minAmmoTons: 1, explosive: false, weaponType: ["DB"], techRating: "e", book: "TO:AUE", page: 150, alphaStrike: { heat: 1, rangeShort: 0.3, rangeMedium: 0.3, rangeLong: 0, rangeExtreme: 0, tc: true, notes: ["Provisional workbook conversion"] }, rangeAero: "", },
-    { isAmmo: false, name: "Medium Rifle", altNames: [], tag: "medium-rifle", ammoTypes: ["ammo-is-medium-rifle-standard"], altTags: [], sort: "medium rifle", category: "Ballistic Weapons", damage: 6, notes: "Universal experimental rifle; workbook conversion provisional.", damageAero: 6, accuracyModifier: 0, cbills: 75750, introduced: 1950, extinct: 2825, reintroduced: 3084, battleValue: 51, heat: 2, heatAero: 2, weight: 5, ammoBattleValue: 6, range: { min: 1, short: 5, medium: 10, long: 15 }, space: { battlemech: 2, protomech: -1, combatVehicle: 1, supportVehicle: 2, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, shotsPerTon: 9, minAmmoTons: 1, explosive: false, weaponType: ["DB"], techRating: "e", book: "TO:AUE", page: 150, alphaStrike: { heat: 2, rangeShort: 0.552, rangeMedium: 0.6, rangeLong: 0, rangeExtreme: 0, tc: true, notes: ["Provisional workbook conversion"] }, rangeAero: "", },
-    { isAmmo: false, name: "Heavy Rifle", altNames: [], tag: "heavy-rifle", ammoTypes: ["ammo-is-heavy-rifle-standard"], altTags: [], sort: "heavy rifle", category: "Ballistic Weapons", damage: 9, notes: "Universal experimental rifle; workbook conversion provisional.", damageAero: 9, accuracyModifier: 0, cbills: 90000, introduced: 1950, extinct: 2825, reintroduced: 3084, battleValue: 91, heat: 4, heatAero: 4, weight: 8, ammoBattleValue: 11, range: { min: 2, short: 6, medium: 12, long: 18 }, space: { battlemech: 3, protomech: -1, combatVehicle: 1, supportVehicle: 3, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, shotsPerTon: 6, minAmmoTons: 1, explosive: false, weaponType: ["DB"], techRating: "e", book: "TO:AUE", page: 150, alphaStrike: { heat: 4, rangeShort: 0.747, rangeMedium: 0.9, rangeLong: 0.9, rangeExtreme: 0, tc: true, notes: ["Provisional workbook conversion"] }, rangeAero: "", },
-    { isAmmo: false, name: "Anti-Missile System", altNames: ["AMS", "IS AMS"], tag: "is-ams", altTags: ["ams", "anti-missile-system"], catalog: "is", sort: "equipment, ams, is", category: "Ballistic Weapons", alternateName: "AMS", damage: 0, notes: "Anti-Missile System: reduces incoming missile hits; its BV and ammo BV count toward the defensive rating.", damageAero: 0, accuracyModifier: 0, cbills: 100000, introduced: 2617, extinct: 2835, reintroduced: 3045, prototype: 2613, battleValue: 32, heat: 1, weight: 0.5, range: { min: 0, short: 0, medium: 0, long: 0 }, space: { battlemech: 1, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, ammoTypes: ["ammo-is-ams-standard"], shotsPerTon: 12, ammoBattleValue: 11, minAmmoTons: 1, explosive: false, weaponType: ["AMS"], techRating: "e", book: "TM", page: 204, alphaStrike: { specialAbility: ["AMS"], heat: 0, rangeShort: 0, rangeMedium: 0, rangeLong: 0, rangeExtreme: 0, tc: false, notes: [] }, heatAero: 1, battleValueDefensive: true },
-    { isAmmo: false, name: "Machine Gun Array", altNames: ["IS MG Array", "MGA", "MG Array (2 Machine Gun)", "MG Array (3 Machine Gun)", "MG Array (4 Machine Gun)"], tag: "is-machine-gun-array", altTags: [], catalog: "is", sort: "machine gun, array", category: "Ballistic Weapons", alternateName: "MGA", damage: 2, notes: "Machine gun array: links two to four machine guns of its type in the same location and fires them as one cluster weapon.", damageAero: 2, accuracyModifier: 0, cbills: 1250, introduced: 3068, extinct: null, reintroduced: null, prototype: 3066, battleValue: 0, heat: 0, weight: 0.5, range: { min: 0, short: 1, medium: 2, long: 3 }, space: { battlemech: 1, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: 1, smallCraft: 1, dropShip: 0 }, shotsPerTon: 0, minAmmoTons: 0, explosive: false, weaponType: ["DB", "AI"], techRating: "e", book: "TM", page: 228, alphaStrike: { heat: 0, rangeShort: 0, rangeMedium: 0, rangeLong: 0, rangeExtreme: 0, tc: false, notes: ["Provisional: array damage is carried by its linked machine guns"] }, heatAero: 0, linkedWeaponTags: ["machine-gun"] },
-    { isAmmo: false, name: "Light Machine Gun Array", altNames: ["IS Light MG Array", "Light MGA", "MG Array (2 Light Machine Gun)", "MG Array (3 Light Machine Gun)", "MG Array (4 Light Machine Gun)"], tag: "is-light-machine-gun-array", altTags: [], catalog: "is", sort: "machine gun, light, array", category: "Ballistic Weapons", alternateName: "Light MGA", damage: 1, notes: "Machine gun array: links two to four machine guns of its type in the same location and fires them as one cluster weapon.", damageAero: 2, accuracyModifier: 0, cbills: 1250, introduced: 3068, extinct: null, reintroduced: null, prototype: 3066, battleValue: 0, heat: 0, weight: 0.5, range: { min: 0, short: 2, medium: 4, long: 6 }, space: { battlemech: 1, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, shotsPerTon: 0, minAmmoTons: 0, explosive: false, weaponType: ["DB", "AI"], techRating: "e", book: "TM", page: 228, alphaStrike: { heat: 0, rangeShort: 0, rangeMedium: 0, rangeLong: 0, rangeExtreme: 0, tc: false, notes: ["Provisional: array damage is carried by its linked machine guns"] }, heatAero: 0, linkedWeaponTags: ["machine-gun-light"] },
-    { isAmmo: false, name: "Heavy Machine Gun Array", altNames: ["IS Heavy MG Array", "Heavy MGA", "MG Array (2 Heavy Machine Gun)", "MG Array (3 Heavy Machine Gun)", "MG Array (4 Heavy Machine Gun)"], tag: "is-heavy-machine-gun-array", altTags: [], catalog: "is", sort: "machine gun, heavy, array", category: "Ballistic Weapons", alternateName: "Heavy MGA", damage: 3, notes: "Machine gun array: links two to four machine guns of its type in the same location and fires them as one cluster weapon.", damageAero: 3, accuracyModifier: 0, cbills: 1250, introduced: 3068, extinct: null, reintroduced: null, prototype: 3066, battleValue: 0, heat: 0, weight: 0.5, range: { min: 0, short: 1, medium: 2, long: 2 }, space: { battlemech: 1, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, shotsPerTon: 0, minAmmoTons: 0, explosive: false, weaponType: ["DB", "AI"], techRating: "e", book: "TM", page: 228, alphaStrike: { heat: 0, rangeShort: 0, rangeMedium: 0, rangeLong: 0, rangeExtreme: 0, tc: false, notes: ["Provisional: array damage is carried by its linked machine guns"] }, heatAero: 0, linkedWeaponTags: ["machine-gun-heavy"] },
-    { isAmmo: false, name: "BattleMech Taser", altNames: ["'Mech Taser", "Taser (BattleMech)"], tag: "mech-taser", altTags: [], catalog: "is", sort: "taser, battlemech", category: "Ballistic Weapons", alternateName: "", damage: 1, notes: "+1 to hit. A hit does 1 point of damage and rolls on the Taser Effects Table: shutdown or electronic interference. No effect on buildings or units over 100 tons; ground targets only. Needs a fusion engine. Explodes for 6 points like a Gauss weapon on a critical hit; its ammunition explodes for 6 points a shot (TO:AUE pp.157-158).", damageAero: 0, accuracyModifier: 1, cbills: 200000, introduced: 3084, extinct: null, reintroduced: null, prototype: 3065, battleValue: 40, heat: 6, weight: 4, range: { min: 0, short: 1, medium: 2, long: 4 }, space: { battlemech: 3, protomech: -1, combatVehicle: 1, supportVehicle: 3, aerospaceFighter: -1, smallCraft: -1, dropShip: -1 }, ammoTypes: ["ammo-is-mech-taser-standard"], shotsPerTon: 5, ammoBattleValue: 5, minAmmoTons: 1, explosive: true, weaponType: ["DB"], techRating: "e", book: "TO:AUE", page: 158, alphaStrike: { heat: 6, rangeShort: 0, rangeMedium: 0, rangeLong: 0, rangeExtreme: 0, tc: false, notes: ["Unresolved: Alpha Strike conversion not yet looked up"] }, heatAero: 0, requiresEngine: "fusion" },
-    { isAmmo: false, name: "HVAC/2", altNames: ["Hyper-Velocity Autocannon/2"], tag: "is-hvac-2", altTags: ["hvac-2"], catalog: "is", sort: "Autocannon/a, hyper-velocity", category: "Ballistic Weapons", alternateName: "Hyper-Velocity AC/2", damage: 2, notes: "Hyper-Velocity Autocannon: long-range autocannon firing its own ammunition.", damageAero: 2, accuracyModifier: 0, cbills: 100000, introduced: 3079, extinct: null, reintroduced: null, prototype: 3059, battleValue: 53, heat: 1, weight: 8, range: { min: 3, short: 10, medium: 20, long: 35 }, space: { battlemech: 2, protomech: -1, combatVehicle: 1, supportVehicle: 2, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, ammoTypes: ["ammo-is-hvac-2-standard"], shotsPerTon: 30, ammoBattleValue: 7, minAmmoTons: 1, explosive: true, weaponType: ["DB", "S"], techRating: "d", book: "TO:AUE", page: 97, alphaStrike: { heat: 1, rangeShort: 0.132, rangeMedium: 0.2, rangeLong: 0.2, rangeExtreme: 0.2, tc: true, notes: ["ac", "Provisional: copied from the standard AC; HVAC range not converted"] }, heatAero: 1, explosiveBattleValueSlots: 1 },
-    { isAmmo: false, name: "HVAC/5", altNames: ["Hyper-Velocity Autocannon/5"], tag: "is-hvac-5", altTags: ["hvac-5"], catalog: "is", sort: "Autocannon/b, hyper-velocity", category: "Ballistic Weapons", alternateName: "Hyper-Velocity AC/5", damage: 5, notes: "Hyper-Velocity Autocannon: long-range autocannon firing its own ammunition.", damageAero: 5, accuracyModifier: 0, cbills: 160000, introduced: 3079, extinct: null, reintroduced: null, prototype: 3059, battleValue: 109, heat: 3, weight: 12, range: { min: 0, short: 8, medium: 16, long: 28 }, space: { battlemech: 4, protomech: -1, combatVehicle: 1, supportVehicle: 4, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, ammoTypes: ["ammo-is-hvac-5-standard"], shotsPerTon: 15, ammoBattleValue: 14, minAmmoTons: 1, explosive: true, weaponType: ["DB", "S"], techRating: "d", book: "TO:AUE", page: 97, alphaStrike: { heat: 1, rangeShort: 0.375, rangeMedium: 0.5, rangeLong: 0.5, rangeExtreme: 0, tc: true, notes: ["ac", "Provisional: copied from the standard AC; HVAC range not converted"] }, heatAero: 3, explosiveBattleValueSlots: 1 },
-    { isAmmo: false, name: "HVAC/10", altNames: ["Hyper-Velocity Autocannon/10"], tag: "is-hvac-10", altTags: ["hvac-10"], catalog: "is", sort: "Autocannon/c, hyper-velocity", category: "Ballistic Weapons", alternateName: "Hyper-Velocity AC/10", damage: 10, notes: "Hyper-Velocity Autocannon: long-range autocannon firing its own ammunition.", damageAero: 10, accuracyModifier: 0, cbills: 230000, introduced: 3079, extinct: null, reintroduced: null, prototype: 3059, battleValue: 158, heat: 7, weight: 14, range: { min: 0, short: 6, medium: 12, long: 20 }, space: { battlemech: 6, protomech: -1, combatVehicle: 1, supportVehicle: 6, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, ammoTypes: ["ammo-is-hvac-10-standard"], shotsPerTon: 8, ammoBattleValue: 20, minAmmoTons: 1, explosive: true, weaponType: ["DB", "S"], techRating: "d", book: "TO:AUE", page: 97, alphaStrike: { heat: 3, rangeShort: 1, rangeMedium: 1, rangeLong: 0, rangeExtreme: 0, tc: true, notes: ["ac", "Provisional: copied from the standard AC; HVAC range not converted"] }, heatAero: 7, explosiveBattleValueSlots: 1 },
-    { isAmmo: false, name: "RISC Advanced Point Defense System", altNames: ["RISC APDS", "APDS"], tag: "is-risc-apds", altTags: [], catalog: "is", sort: "equipment, ams, risc apds", category: "Ballistic Weapons", alternateName: "APDS", damage: 0, notes: "Advanced point defense: an AMS able to protect nearby units; BV and ammo BV count toward the defensive rating.", damageAero: 0, accuracyModifier: 0, cbills: 200000, introduced: 3137, extinct: null, reintroduced: null, prototype: 3134, battleValue: 64, heat: 2, weight: 3, range: { min: 0, short: 1, medium: 2, long: 3 }, space: { battlemech: 2, protomech: -1, combatVehicle: 1, supportVehicle: 2, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, ammoTypes: ["ammo-is-risc-apds-standard"], shotsPerTon: 12, ammoBattleValue: 22, minAmmoTons: 1, explosive: false, weaponType: ["AMS"], techRating: "e", book: "IO:AE", page: 85, alphaStrike: { specialAbility: ["AMS"], heat: 0, rangeShort: 0, rangeMedium: 0, rangeLong: 0, rangeExtreme: 0, tc: false, notes: [] }, heatAero: 2, battleValueDefensive: true },
+    { name: "Primitive Prototype AC/2", tag: "primitive-prototype-ac-2", techBase: "is", sort: "primitive prototype ac/2", category: "Ballistic Weapons", damage: 2, notes: "Primitive prototype; extinction aligned to production AC/2 availability.", damageAero: 2, accuracyModifier: 0, cbills: 75000, cbillsOneShot: 0, prototype: 2290, introduced: null, extinct: 2300, reintroduced: null, battleValue: 37, heat: 1, heatAero: 1, weight: 6, range: { min: 4, short: 8, medium: 16, long: 24 }, space: { battlemech: 1, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, shotsPerTon: 34, minAmmoTons: 1, explosive: false, weaponType: ["DB"], techRating: "c", book: "IO:AE", page: 112, alphaStrike: { heat: 1, rangeShort: 0.132, rangeMedium: 0.2, rangeLong: 0.2, rangeExtreme: 0.2, tc: false, notes: ["Provisional workbook conversion"] }, catalog: "is", ammoBattleValue: 4, ammoTypes: ["ammo-is-ac-2-standard"], rangeAero: "l" },
+    { name: "Primitive Prototype AC/5", tag: "primitive-prototype-ac-5", techBase: "is", sort: "primitive prototype ac/5", category: "Ballistic Weapons", damage: 5, notes: "Primitive prototype; extinction aligned to production AC/5 availability.", damageAero: 5, accuracyModifier: 0, cbills: 125000, cbillsOneShot: 0, prototype: 2240, introduced: null, extinct: 2250, reintroduced: null, battleValue: 70, heat: 1, heatAero: 1, weight: 8, range: { min: 3, short: 6, medium: 12, long: 18 }, space: { battlemech: 4, protomech: -1, combatVehicle: 1, supportVehicle: 4, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, shotsPerTon: 15, minAmmoTons: 1, explosive: false, weaponType: ["DB"], techRating: "c", book: "IO:AE", page: 112, alphaStrike: { heat: 1, rangeShort: 0.375, rangeMedium: 0.5, rangeLong: 0.5, rangeExtreme: 0, tc: false, notes: ["Provisional workbook conversion"] }, catalog: "is", ammoBattleValue: 7, ammoTypes: ["ammo-is-ac-5-standard"], rangeAero: "m" },
+    { name: "Primitive Prototype AC/10", tag: "primitive-prototype-ac-10", techBase: "is", sort: "primitive prototype ac/10", category: "Ballistic Weapons", damage: 10, notes: "Primitive prototype; extinction aligned to production AC/10 availability.", damageAero: 10, accuracyModifier: 0, cbills: 200000, cbillsOneShot: 0, prototype: 2443, introduced: null, extinct: 2460, reintroduced: null, battleValue: 123, heat: 3, heatAero: 3, weight: 12, range: { min: 0, short: 5, medium: 10, long: 15 }, space: { battlemech: 7, protomech: -1, combatVehicle: 1, supportVehicle: 7, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, shotsPerTon: 8, minAmmoTons: 1, explosive: false, weaponType: ["DB"], techRating: "c", book: "IO:AE", page: 112, alphaStrike: { heat: 3, rangeShort: 1, rangeMedium: 1, rangeLong: 0, rangeExtreme: 0, tc: false, notes: ["Provisional workbook conversion"] }, catalog: "is", ammoBattleValue: 12, ammoTypes: ["ammo-is-ac-10-standard"], rangeAero: "m" },
+    { name: "Primitive Prototype AC/20", tag: "primitive-prototype-ac-20", techBase: "is", sort: "primitive prototype ac/20", category: "Ballistic Weapons", damage: 20, notes: "Primitive prototype; extinction aligned to production AC/20 availability.", damageAero: 20, accuracyModifier: 0, cbills: 300000, cbillsOneShot: 0, prototype: 2490, introduced: null, extinct: 2500, reintroduced: null, battleValue: 178, heat: 7, heatAero: 7, weight: 14, range: { min: 0, short: 3, medium: 6, long: 9 }, space: { battlemech: 10, protomech: -1, combatVehicle: 1, supportVehicle: 10, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, shotsPerTon: 4, minAmmoTons: 1, explosive: false, weaponType: ["DB"], techRating: "c", book: "IO:AE", page: 112, alphaStrike: { heat: 7, rangeShort: 2, rangeMedium: 2, rangeLong: 0, rangeExtreme: 0, tc: false, notes: ["Provisional workbook conversion"] }, catalog: "is", ammoBattleValue: 17, ammoTypes: ["ammo-is-ac-20-standard"], rangeAero: "s" },
+    { name: "Prototype LB 10-X Autocannon", tag: "prototype-autocannon-lbx-10", techBase: "is", ammoTypes: ["ammo-is-lb-10x-standard"], altNames: ["Prototype LB 10-X Autocannon (3030)"], altTags: ["prototype-autocannon-lbx-10-3030"], sort: "prototype lb 10-x autocannon", category: "Ballistic Weapons", damage: 10, notes: "Prototype LB 10-X (LB 10-X-P): jams for the rest of the scenario on an unmodified to-hit roll of 2, -1 on the Cluster Hits Table, ammunition in full-ton lots (IO:AE p.66). Cost is the Star League prototype (IO:AE p.211); the recovered prototypes of 3030 cost 2,000,000 (IO:AE p.213).", damageAero: 10, accuracyModifier: 0, cbills: 1600000, cbillsOneShot: 0, prototype: 2590, introduced: null, extinct: 2595, reintroduced: 3030, battleValue: 148, heat: 2, heatAero: 2, weight: 11, ammoBattleValue: 15, range: { min: 0, short: 6, medium: 12, long: 18 }, space: { battlemech: 7, protomech: -1, combatVehicle: 1, supportVehicle: 7, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, shotsPerTon: 10, minAmmoTons: 1, explosive: false, weaponType: ["DB"], techRating: "e", book: "IO:AE", page: 66, alphaStrike: { heat: 2, rangeShort: 0.63, rangeMedium: 0.63, rangeLong: 0.63, rangeExtreme: 0, tc: false, notes: ["Provisional workbook conversion"] }, catalog: "is" },
+    { name: "Prototype Gauss Rifle", tag: "prototype-gauss-rifle", techBase: "is", ammoTypes: ["ammo-is-gauss-rifle-standard"], altNames: ["Prototype Gauss Rifle (3038)"], altTags: ["prototype-gauss-rifle-3038"], sort: "prototype gauss rifle", category: "Ballistic Weapons", damage: 15, notes: "Prototype Gauss record; extinction aligned to production Gauss Rifle availability.", damageAero: 15, accuracyModifier: 0, cbills: 1200000, cbillsOneShot: 0, prototype: 2587, introduced: null, extinct: 2590, reintroduced: 3038, battleValue: 320, heat: 1, heatAero: 1, weight: 15, ammoBattleValue: 40, range: { min: 2, short: 7, medium: 15, long: 22 }, space: { battlemech: 8, protomech: -1, combatVehicle: 1, supportVehicle: 8, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, shotsPerTon: 8, minAmmoTons: 1, explosive: true, gauss: true, weaponType: ["DB"], techRating: "e", book: "IO:AE", page: 66, alphaStrike: { heat: 1, rangeShort: 1.245, rangeMedium: 1.5, rangeLong: 1.5, rangeExtreme: 0, tc: false, notes: ["Provisional workbook conversion"] }, catalog: "is" },
+    { name: "Prototype Ultra Autocannon/5", tag: "prototype-autocannon-uac-5", techBase: "is", ammoTypes: ["ammo-is-ultra-ac-5-standard"], sort: "prototype ultra autocannon/5", category: "Ballistic Weapons", damage: 5, notes: "Prototype Ultra AC record; extinction aligned to production UAC/5 introduction.", damageAero: 5, accuracyModifier: 0, cbills: 1000000, cbillsOneShot: 0, prototype: 3029, introduced: null, extinct: 3035, reintroduced: null, battleValue: 112, heat: 2, heatAero: 2, weight: 9, ammoBattleValue: 14, range: { min: 0, short: 6, medium: 13, long: 20 }, space: { battlemech: 6, protomech: -1, combatVehicle: 1, supportVehicle: 6, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, shotsPerTon: 20, minAmmoTons: 1, explosive: false, weaponType: ["DB"], techRating: "e", book: "IO:AE", page: 98, alphaStrike: { heat: 2, rangeShort: 0.623, rangeMedium: 0.75, rangeLong: 0.75, rangeExtreme: 0, tc: false, notes: ["Provisional workbook conversion"] }, catalog: "is" },
+    { isAmmo: false, name: "Light Rifle", altNames: [], tag: "light-rifle", techBase: "is", ammoTypes: ["ammo-is-light-rifle-standard"], altTags: [], sort: "light rifle", category: "Ballistic Weapons", damage: 3, notes: "Universal experimental rifle; workbook conversion provisional.", damageAero: 3, accuracyModifier: 0, cbills: 37750, introduced: 1950, extinct: 2825, reintroduced: 3084, battleValue: 21, heat: 1, heatAero: 1, weight: 3, ammoBattleValue: 3, range: { min: 0, short: 4, medium: 8, long: 12 }, space: { battlemech: 1, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, shotsPerTon: 18, minAmmoTons: 1, explosive: false, weaponType: ["DB"], techRating: "e", book: "TO:AUE", page: 150, alphaStrike: { heat: 1, rangeShort: 0.3, rangeMedium: 0.3, rangeLong: 0, rangeExtreme: 0, tc: true, notes: ["Provisional workbook conversion"] }, rangeAero: "", },
+    { isAmmo: false, name: "Medium Rifle", altNames: [], tag: "medium-rifle", techBase: "is", ammoTypes: ["ammo-is-medium-rifle-standard"], altTags: [], sort: "medium rifle", category: "Ballistic Weapons", damage: 6, notes: "Universal experimental rifle; workbook conversion provisional.", damageAero: 6, accuracyModifier: 0, cbills: 75750, introduced: 1950, extinct: 2825, reintroduced: 3084, battleValue: 51, heat: 2, heatAero: 2, weight: 5, ammoBattleValue: 6, range: { min: 1, short: 5, medium: 10, long: 15 }, space: { battlemech: 2, protomech: -1, combatVehicle: 1, supportVehicle: 2, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, shotsPerTon: 9, minAmmoTons: 1, explosive: false, weaponType: ["DB"], techRating: "e", book: "TO:AUE", page: 150, alphaStrike: { heat: 2, rangeShort: 0.552, rangeMedium: 0.6, rangeLong: 0, rangeExtreme: 0, tc: true, notes: ["Provisional workbook conversion"] }, rangeAero: "", },
+    { isAmmo: false, name: "Heavy Rifle", altNames: [], tag: "heavy-rifle", techBase: "is", ammoTypes: ["ammo-is-heavy-rifle-standard"], altTags: [], sort: "heavy rifle", category: "Ballistic Weapons", damage: 9, notes: "Universal experimental rifle; workbook conversion provisional.", damageAero: 9, accuracyModifier: 0, cbills: 90000, introduced: 1950, extinct: 2825, reintroduced: 3084, battleValue: 91, heat: 4, heatAero: 4, weight: 8, ammoBattleValue: 11, range: { min: 2, short: 6, medium: 12, long: 18 }, space: { battlemech: 3, protomech: -1, combatVehicle: 1, supportVehicle: 3, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, shotsPerTon: 6, minAmmoTons: 1, explosive: false, weaponType: ["DB"], techRating: "e", book: "TO:AUE", page: 150, alphaStrike: { heat: 4, rangeShort: 0.747, rangeMedium: 0.9, rangeLong: 0.9, rangeExtreme: 0, tc: true, notes: ["Provisional workbook conversion"] }, rangeAero: "", },
+    { isAmmo: false, name: "Anti-Missile System", altNames: ["AMS", "IS AMS"], tag: "is-ams", techBase: "is", altTags: ["ams", "anti-missile-system"], catalog: "is", sort: "equipment, ams, is", category: "Ballistic Weapons", alternateName: "AMS", damage: 0, notes: "Anti-Missile System: reduces incoming missile hits; its BV and ammo BV count toward the defensive rating.", damageAero: 0, accuracyModifier: 0, cbills: 100000, introduced: 2617, extinct: 2835, reintroduced: 3045, prototype: 2613, battleValue: 32, heat: 1, weight: 0.5, range: { min: 0, short: 0, medium: 0, long: 0 }, space: { battlemech: 1, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, ammoTypes: ["ammo-is-ams-standard"], shotsPerTon: 12, ammoBattleValue: 11, minAmmoTons: 1, explosive: false, weaponType: ["AMS"], techRating: "e", book: "TM", page: 204, alphaStrike: { specialAbility: ["AMS"], heat: 0, rangeShort: 0, rangeMedium: 0, rangeLong: 0, rangeExtreme: 0, tc: false, notes: [] }, heatAero: 1, battleValueDefensive: true },
+    { isAmmo: false, name: "Machine Gun Array", altNames: ["IS MG Array", "MGA", "MG Array (2 Machine Gun)", "MG Array (3 Machine Gun)", "MG Array (4 Machine Gun)"], tag: "is-machine-gun-array", techBase: "is", altTags: [], catalog: "is", sort: "machine gun, array", category: "Ballistic Weapons", alternateName: "MGA", damage: 2, notes: "Machine gun array: links two to four machine guns of its type in the same location and fires them as one cluster weapon.", damageAero: 2, accuracyModifier: 0, cbills: 1250, introduced: 3068, extinct: null, reintroduced: null, prototype: 3066, battleValue: 0, heat: 0, weight: 0.5, range: { min: 0, short: 1, medium: 2, long: 3 }, space: { battlemech: 1, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: 1, smallCraft: 1, dropShip: 0 }, shotsPerTon: 0, minAmmoTons: 0, explosive: false, weaponType: ["DB", "AI"], techRating: "e", book: "TM", page: 228, alphaStrike: { heat: 0, rangeShort: 0, rangeMedium: 0, rangeLong: 0, rangeExtreme: 0, tc: false, notes: ["Provisional: array damage is carried by its linked machine guns"] }, heatAero: 0, linkedWeaponTags: ["machine-gun"] },
+    { isAmmo: false, name: "Light Machine Gun Array", altNames: ["IS Light MG Array", "Light MGA", "MG Array (2 Light Machine Gun)", "MG Array (3 Light Machine Gun)", "MG Array (4 Light Machine Gun)"], tag: "is-light-machine-gun-array", techBase: "is", altTags: [], catalog: "is", sort: "machine gun, light, array", category: "Ballistic Weapons", alternateName: "Light MGA", damage: 1, notes: "Machine gun array: links two to four machine guns of its type in the same location and fires them as one cluster weapon.", damageAero: 2, accuracyModifier: 0, cbills: 1250, introduced: 3068, extinct: null, reintroduced: null, prototype: 3066, battleValue: 0, heat: 0, weight: 0.5, range: { min: 0, short: 2, medium: 4, long: 6 }, space: { battlemech: 1, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, shotsPerTon: 0, minAmmoTons: 0, explosive: false, weaponType: ["DB", "AI"], techRating: "e", book: "TM", page: 228, alphaStrike: { heat: 0, rangeShort: 0, rangeMedium: 0, rangeLong: 0, rangeExtreme: 0, tc: false, notes: ["Provisional: array damage is carried by its linked machine guns"] }, heatAero: 0, linkedWeaponTags: ["machine-gun-light"] },
+    { isAmmo: false, name: "Heavy Machine Gun Array", altNames: ["IS Heavy MG Array", "Heavy MGA", "MG Array (2 Heavy Machine Gun)", "MG Array (3 Heavy Machine Gun)", "MG Array (4 Heavy Machine Gun)"], tag: "is-heavy-machine-gun-array", techBase: "is", altTags: [], catalog: "is", sort: "machine gun, heavy, array", category: "Ballistic Weapons", alternateName: "Heavy MGA", damage: 3, notes: "Machine gun array: links two to four machine guns of its type in the same location and fires them as one cluster weapon.", damageAero: 3, accuracyModifier: 0, cbills: 1250, introduced: 3068, extinct: null, reintroduced: null, prototype: 3066, battleValue: 0, heat: 0, weight: 0.5, range: { min: 0, short: 1, medium: 2, long: 2 }, space: { battlemech: 1, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, shotsPerTon: 0, minAmmoTons: 0, explosive: false, weaponType: ["DB", "AI"], techRating: "e", book: "TM", page: 228, alphaStrike: { heat: 0, rangeShort: 0, rangeMedium: 0, rangeLong: 0, rangeExtreme: 0, tc: false, notes: ["Provisional: array damage is carried by its linked machine guns"] }, heatAero: 0, linkedWeaponTags: ["machine-gun-heavy"] },
+    { isAmmo: false, name: "BattleMech Taser", altNames: ["'Mech Taser", "Taser (BattleMech)"], tag: "mech-taser", techBase: "is", altTags: [], catalog: "is", sort: "taser, battlemech", category: "Ballistic Weapons", alternateName: "", damage: 1, notes: "+1 to hit. A hit does 1 point of damage and rolls on the Taser Effects Table: shutdown or electronic interference. No effect on buildings or units over 100 tons; ground targets only. Needs a fusion engine. Explodes for 6 points like a Gauss weapon on a critical hit; its ammunition explodes for 6 points a shot (TO:AUE pp.157-158).", damageAero: 0, accuracyModifier: 1, cbills: 200000, introduced: 3084, extinct: null, reintroduced: null, prototype: 3065, battleValue: 40, heat: 6, weight: 4, range: { min: 0, short: 1, medium: 2, long: 4 }, space: { battlemech: 3, protomech: -1, combatVehicle: 1, supportVehicle: 3, aerospaceFighter: -1, smallCraft: -1, dropShip: -1 }, ammoTypes: ["ammo-is-mech-taser-standard"], shotsPerTon: 5, ammoBattleValue: 5, minAmmoTons: 1, explosive: true, weaponType: ["DB"], techRating: "e", book: "TO:AUE", page: 158, alphaStrike: { heat: 6, rangeShort: 0, rangeMedium: 0, rangeLong: 0, rangeExtreme: 0, tc: false, notes: ["Unresolved: Alpha Strike conversion not yet looked up"] }, heatAero: 0, requiresEngine: "fusion" },
+    { isAmmo: false, name: "HVAC/2", altNames: ["Hyper-Velocity Autocannon/2"], tag: "is-hvac-2", techBase: "is", altTags: ["hvac-2"], catalog: "is", sort: "Autocannon/a, hyper-velocity", category: "Ballistic Weapons", alternateName: "Hyper-Velocity AC/2", damage: 2, notes: "Hyper-Velocity Autocannon: long-range autocannon firing its own ammunition.", damageAero: 2, accuracyModifier: 0, cbills: 100000, introduced: 3079, extinct: null, reintroduced: null, prototype: 3059, battleValue: 53, heat: 1, weight: 8, range: { min: 3, short: 10, medium: 20, long: 35 }, space: { battlemech: 2, protomech: -1, combatVehicle: 1, supportVehicle: 2, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, ammoTypes: ["ammo-is-hvac-2-standard"], shotsPerTon: 30, ammoBattleValue: 7, minAmmoTons: 1, explosive: true, weaponType: ["DB", "S"], techRating: "d", book: "TO:AUE", page: 97, alphaStrike: { heat: 1, rangeShort: 0.132, rangeMedium: 0.2, rangeLong: 0.2, rangeExtreme: 0.2, tc: true, notes: ["ac", "Provisional: copied from the standard AC; HVAC range not converted"] }, heatAero: 1, explosiveBattleValueSlots: 1 },
+    { isAmmo: false, name: "HVAC/5", altNames: ["Hyper-Velocity Autocannon/5"], tag: "is-hvac-5", techBase: "is", altTags: ["hvac-5"], catalog: "is", sort: "Autocannon/b, hyper-velocity", category: "Ballistic Weapons", alternateName: "Hyper-Velocity AC/5", damage: 5, notes: "Hyper-Velocity Autocannon: long-range autocannon firing its own ammunition.", damageAero: 5, accuracyModifier: 0, cbills: 160000, introduced: 3079, extinct: null, reintroduced: null, prototype: 3059, battleValue: 109, heat: 3, weight: 12, range: { min: 0, short: 8, medium: 16, long: 28 }, space: { battlemech: 4, protomech: -1, combatVehicle: 1, supportVehicle: 4, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, ammoTypes: ["ammo-is-hvac-5-standard"], shotsPerTon: 15, ammoBattleValue: 14, minAmmoTons: 1, explosive: true, weaponType: ["DB", "S"], techRating: "d", book: "TO:AUE", page: 97, alphaStrike: { heat: 1, rangeShort: 0.375, rangeMedium: 0.5, rangeLong: 0.5, rangeExtreme: 0, tc: true, notes: ["ac", "Provisional: copied from the standard AC; HVAC range not converted"] }, heatAero: 3, explosiveBattleValueSlots: 1 },
+    { isAmmo: false, name: "HVAC/10", altNames: ["Hyper-Velocity Autocannon/10"], tag: "is-hvac-10", techBase: "is", altTags: ["hvac-10"], catalog: "is", sort: "Autocannon/c, hyper-velocity", category: "Ballistic Weapons", alternateName: "Hyper-Velocity AC/10", damage: 10, notes: "Hyper-Velocity Autocannon: long-range autocannon firing its own ammunition.", damageAero: 10, accuracyModifier: 0, cbills: 230000, introduced: 3079, extinct: null, reintroduced: null, prototype: 3059, battleValue: 158, heat: 7, weight: 14, range: { min: 0, short: 6, medium: 12, long: 20 }, space: { battlemech: 6, protomech: -1, combatVehicle: 1, supportVehicle: 6, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, ammoTypes: ["ammo-is-hvac-10-standard"], shotsPerTon: 8, ammoBattleValue: 20, minAmmoTons: 1, explosive: true, weaponType: ["DB", "S"], techRating: "d", book: "TO:AUE", page: 97, alphaStrike: { heat: 3, rangeShort: 1, rangeMedium: 1, rangeLong: 0, rangeExtreme: 0, tc: true, notes: ["ac", "Provisional: copied from the standard AC; HVAC range not converted"] }, heatAero: 7, explosiveBattleValueSlots: 1 },
+    { isAmmo: false, name: "RISC Advanced Point Defense System", altNames: ["RISC APDS", "APDS"], tag: "is-risc-apds", techBase: "is", altTags: [], catalog: "is", sort: "equipment, ams, risc apds", category: "Ballistic Weapons", alternateName: "APDS", damage: 0, notes: "Advanced point defense: an AMS able to protect nearby units; BV and ammo BV count toward the defensive rating.", damageAero: 0, accuracyModifier: 0, cbills: 200000, introduced: 3137, extinct: null, reintroduced: null, prototype: 3134, battleValue: 64, heat: 2, weight: 3, range: { min: 0, short: 1, medium: 2, long: 3 }, space: { battlemech: 2, protomech: -1, combatVehicle: 1, supportVehicle: 2, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, ammoTypes: ["ammo-is-risc-apds-standard"], shotsPerTon: 12, ammoBattleValue: 22, minAmmoTons: 1, explosive: false, weaponType: ["AMS"], techRating: "e", book: "IO:AE", page: 85, alphaStrike: { specialAbility: ["AMS"], heat: 0, rangeShort: 0, rangeMedium: 0, rangeLong: 0, rangeExtreme: 0, tc: false, notes: [] }, heatAero: 2, battleValueDefensive: true },
 ]

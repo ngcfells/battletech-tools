@@ -178,6 +178,12 @@ export type EngineRequirement = "fusion" | "fusion-or-fission" | "ice-or-fuel-ce
 
 export interface IEquipmentItem {
     catalog?: "is" | "clan" | "custom" | "universal";
+    /**
+     * Tech base of the record itself: Inner Sphere, Clan, or universal (identical for both). Stated on every bundled
+     * record so that catalogs can hold both tech bases in one file. `catalog` says which list an item came from at
+     * run time (including "custom"); this does not change with the list.
+     */
+    techBase?: "is" | "clan" | "universal";
     /** First rules edition that includes this item (a tag from rules-editions.ts); the default edition when absent. */
     introducedInEdition?: string;
     metadata?: IEquipmentMetadata;

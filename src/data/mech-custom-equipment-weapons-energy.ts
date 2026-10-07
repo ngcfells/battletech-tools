@@ -18,6 +18,7 @@ export const mechCustomEquipmentEnergy: IEquipmentItem[] = [
     {
        name: "COIL-L",
         tag: "coil_l",
+        techBase: "universal",
         sort: "laser, coil large",
         category: "Energy Weapons",
         damage: 35,
@@ -68,6 +69,7 @@ export const mechCustomEquipmentEnergy: IEquipmentItem[] = [
     {
         name: "COIL-M",
         tag: "coil_m",
+        techBase: "universal",
         sort: "laser, coil medium",
         category: "Energy Weapons",
         damage: 25,
@@ -118,6 +120,7 @@ export const mechCustomEquipmentEnergy: IEquipmentItem[] = [
     {
         name: "COIL-S",
         tag: "coil_s",
+        techBase: "universal",
         sort: "laser, coil small",
         category: "Energy Weapons",
         damage: 15,
@@ -166,7 +169,7 @@ export const mechCustomEquipmentEnergy: IEquipmentItem[] = [
         heatAero: 30
     },
     {
-        name: "Disruptor (MekTek)", tag: "custom-disruptor", sort: "disruptor", category: "Custom Equipment", notes: "Unverified placeholder associated with MekTek Issue 2.",
+        name: "Disruptor (MekTek)", tag: "custom-disruptor", techBase: "universal", sort: "disruptor", category: "Custom Equipment", notes: "Unverified placeholder associated with MekTek Issue 2.",
         damage: 10, damageAero: 10, accuracyModifier: 0, cbills: 0, introduced: 2316, prototype: 2306, extinct: null, reintroduced: null, battleValue: 0, heat: 8, heatAero: 8, weight: 6, // Dates of the Standard Large Laser, which shares its heat and ranges (IO p.43).
         range: { min: 0, short: 5, medium: 10, long: 15 }, space: { battlemech: 4, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 },
         shotsPerTon: 0, minAmmoTons: 0, explosive: false, weaponType: ["DE", "E"], techRating: "x", book: "MekTek", page: 0, rulesLevel: 6,
@@ -176,6 +179,7 @@ export const mechCustomEquipmentEnergy: IEquipmentItem[] = [
         isAmmo: false,
         name: "Enhanced ER Large Laser",
         tag: "enhanced_er_large_laser",
+        techBase: "universal",
         catalog: "custom",
         notes: "No canon source found: the original tool cited IO p.189, but neither Interstellar Operations (2016) nor IO: Alternate Eras lists a Clan \"Enhanced ER Large Laser\". Kept as Custom Homebrew with its old tag and statistics until a source is found.",
         sort: "laser, enhanced er large",
