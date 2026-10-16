@@ -1,0 +1,1 @@
+function e(){return`xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx`.replace(/[xy]/g,function(e){var t=Math.random()*16|0;return(e===`x`?t:t&11).toString(16)})}export{e as t};
