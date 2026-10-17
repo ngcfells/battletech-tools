@@ -69,16 +69,26 @@ li.beta-issues + li.logo{margin-left:0!important}
 li.beta-issues a.beta-issues-button{display:block;background:#c0392b!important;color:#fff!important;font-weight:700;font-size:.8rem;
 padding:.4rem .75rem;border-radius:.5rem!important;margin:0 .5rem!important;min-height:0!important;white-space:nowrap;text-decoration:none}
 li.beta-issues a.beta-issues-button:hover{background:#e74c3c!important}
+li.beta-ideas{align-self:center;list-style:none}
+li.beta-ideas + li.logo{margin-left:0!important}
+li.beta-ideas a.beta-ideas-button{display:block;background:#2471a3!important;color:#fff!important;font-weight:700;font-size:.8rem;
+padding:.4rem .75rem;border-radius:.5rem!important;margin:0 .5rem 0 0!important;min-height:0!important;white-space:nowrap;text-decoration:none}
+li.beta-ideas a.beta-ideas-button:hover{background:#2e86c1!important}
 </style>
 <script>
 (function(){
+  function button(cls,href,title,text){
+    var li=document.createElement("li");li.className=cls;
+    var a=document.createElement("a");a.className=cls+"-button";a.href=href;
+    a.target="_blank";a.rel="noopener noreferrer";a.title=title;
+    a.textContent=text;li.appendChild(a);return li;
+  }
   function add(){
     var logo=document.querySelector("header.topmenu ul.main-menu > li.logo");
     if(!logo||logo.parentNode.querySelector("li.beta-issues"))return;
-    var li=document.createElement("li");li.className="beta-issues";
-    var a=document.createElement("a");a.className="beta-issues-button";a.href="https://github.com/NGCFells/battletech-tools/issues";
-    a.target="_blank";a.rel="noopener noreferrer";a.title="We are the beta test: report a problem or idea on GitHub";
-    a.textContent="Beta: Report an Issue";li.appendChild(a);logo.parentNode.insertBefore(li,logo);
+    var ideas=button("beta-ideas","https://github.com/ngcfells/battletech-tools/discussions","We are the beta test: share an idea or suggestion on GitHub","Beta: Ideas/Suggestions");
+    var issues=button("beta-issues","https://github.com/NGCFells/battletech-tools/issues","We are the beta test: report a problem on GitHub","Beta: Report an Issue");
+    logo.parentNode.insertBefore(ideas,logo);logo.parentNode.insertBefore(issues,ideas);
   }
   new MutationObserver(add).observe(document.documentElement,{childList:true,subtree:true});
   add();
