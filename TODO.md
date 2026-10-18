@@ -155,23 +155,6 @@ designs, 44 still report errors (421 before).
   equipment, engines, gyros, cockpits, structure, armor, heat sinks, jump jets and myomer: weight, slots,
   damage, heat, ranges, BV, cost, tech rating and dates. Records whose book isn't local are listed as
   unchecked, not passed.
-- [x] Re-check the "(original single-volume TO)" page references against TO:AR and TO:AUE (2026-10-17, from
-  the library text and contents pages). The original-TO pages were right; their new homes: building
-  construction TO pp.128-131 = TO:AR pp.126-129; mobile structures TO p.259 = TO:AUE p.75; Booby Trap TO:AUE
-  p.108; Chaff Pod TO p.299 = TO:AUE p.110; Collapsible Command Module TO:AUE p.112; Drone (Remote) Systems
-  TO:AUE p.116; Artemis V TO p.283 = TO:AUE p.95; Apollo TO:AUE p.143; Mobile HPG TO:AUE p.142 (table
-  p.220); Recon Camera TO:AUE p.148; 'Mech turrets TO:AUE p.159; cruise missiles TO:AUE pp.96-97 (table
-  p.216; each missile's damage is the number in its name, the text layer runs the columns together).
-- [x] Sources found 2026-10-17 (the catalog already carried the right values; notes updated):
-  - Improved SRM 2/4/6 BV 28/52/79, ammo 4/7/10 (IO:AE p.189). MegaMek's 39 for the iSRM 4 is wrong.
-  - The Improved PPC and improved autocannons do not explode: they "perform in the same fashion" as their
-    standard versions (IO:AE p.90); the 20-point explosion there is the improved Gauss rifle's.
-  - I-OS launchers have one row for every type (IO:AE p.40, read from the page image): prototype 3056 (DC),
-    production ~3081 (DC), common 3085, Clan prototype 3058 (CNC). SRM/Streak SRM/SRT I-OS match the LRM's.
-  - Arrow IV: IS 8, Clan 9 mapsheets (TO:AR p.149, Artillery Ranges Table).
-  - Conversion weights: LAM 10%, bimodal LAM 15% (IO:AE p.108), QuadVee 10% (IO:AE p.128).
-  - Primitive engine dates: the Primitive BattleMech row, prototype 2439 (TH), production 2443 (TH), common
-    2470 (IO:AE p.44, page image), which the code already uses.
 - [ ] Items waiting on a source (fold into the tool's report as it lands):
   - LAM and Tripod values cited "via MegaMek" (chassis rules levels, IO p.50; cost multipliers; Superheavy
     costs; the Tripod prohibited-equipment list).
@@ -210,118 +193,6 @@ played first, then by dependency.
 
 ### Battle Armor
 
-- [x] Suit construction (2026-10-08): Battle Armor Creator under TechManual pp.160-173 (`battle-armor.ts`,
-  `battle-armor-construction.ts`, `battle-armor-equipment.ts`). Technology base, weight class (PA(L) to Assault),
-  humanoid or quad, Clan exoskeletons on an Inner Sphere chassis weight; Ground MP, jump jets, VTOL and UMU
-  systems, jump booster and partial wing; manipulators with modular equipment adaptors and cargo lifter capacity;
-  armor by the point with its weapon slots; both Battle Armor Equipment Tables (TM pp.346-348) mounted by
-  location against the slot and weapon limits; missile shots at a slot for every 4, one-shot and detachable
-  launchers; standard modular mounts, anti-personnel mounts carrying Standard infantry weapons, a quad's standard
-  or configurable turret, the squad support weapon; the Capabilities Table (Swarm, Leg, Mechanized). Reproduces
-  the book's Tunnel Rat, Sylph, Purifier and Fenrir.
-- [x] Squad setup, Battle Value, cost, record sheet (2026-10-08): 1-6 troopers with the Formations Table for
-  reference; Battle Value (TM pp.310-311, 316: Purifier Level I 466, Grenadier squad 326); cost (TM pp.276,
-  281, 296-298: Purifier structure 425,000); saves, backup, a record sheet with a row of armor circles for each
-  trooper.
-  Readings to confirm: (1) TM p.165 allows UMUs on a Clan exoskeleton with an Inner Sphere chassis weight and
-  p.270 forbids them; the construction step is followed and the summary says so. (2) Armor slots are taken from
-  whatever slots are free on the suit, not placed by location. (3) The Battle Value adds every direct-fire
-  weapon again for a suit that can Swarm, as p.310 prints, though only arm-mounted weapons fire in a Swarm
-  attack. (4) The bomb rack is counted with direct-fire weapons, as it is not in p.310's list of missile
-  weapons. (5) Every missile launcher is priced by the tube (TM p.297), a one-shot launcher at half. (6) HarJel
-  has no row in the battle armor price list and is left unpriced. (7) The book prices a suit; the squad is
-  priced as suits x troopers, with the squad support weapon bought once. (8) An armored glove with a basic
-  manipulator meets none of the Capabilities Table's lines, so that pair makes no Anti-'Mech attacks.
-- [x] Tactical Operations equipment (2026-10-08): the battle armor items of TO:AUE pp.224-225 at their Advanced
-  or Experimental level, with Battle Values from pp.192-197: heavy flamer, Angel ECM, mine dispenser,
-  DropChutes, small and medium VSP lasers, ER pulse lasers, LB-X autocannon, taser, tube artillery, C3 and
-  C3i, mechanical jump booster, myomer booster, detachable weapon packs.
-- [x] Introduction dates and an era (2026-10-08): chassis, manipulators, motive systems, mounts and every
-  item of equipment dated from the Universal Technology Advancement Table (IO:AE pp.45-47); the suit is built
-  in an era, which filters what is offered and reports what the era did not have. A prototype date counts.
-- [x] Alternate loadouts (2026-10-08): named loadouts refit standard modular weapon mounts, configurable turret
-  mounts and modular equipment adaptors; each is checked like the base design and has its own weight, Battle
-  Value, cost, record sheet and Alpha Strike card.
-- [x] Roster groups and play mode (2026-10-08): saved suits join a Classic BattleTech roster group as squads in
-  a chosen loadout; play mode tracks damage by trooper, resolves attacks on the squad (TW p.219, with the
-  armor types' damage rules), gives Leg and Swarm attack numbers (TW pp.220-221), jettisons detachable packs,
-  and seats a squad on one of the force's 'Mechs or vehicles as mechanized battle armor with hits on the
-  carrier rolled for the troopers there (TW pp.226-227). Roster print marks the damage.
-- [x] Alpha Strike conversion (2026-10-08): ASC pp.92-141, offered in the Alpha Strike roster's unit picker and
-  as a printable card. Checked against the 951 Master Unit List battle armor cards the importer could build:
-  Move 926, Armor 950, damage 837, special abilities 879, Point Value 788 the same.
-- [x] MegaMek `.blk` import (2026-10-08): `blk-file.ts` reads the block layout for any unit type;
-  `battle-armor-blk.ts` maps battle armor. Of the 1,188 sample files, 1,010 import with nothing left off and
-  1,139 come out legal.
-  Readings to confirm: (9) The Battle Value adds the weapon in an anti-personnel mount, as TM p.310 says; the
-  Master Unit List's values leave it out, so every imported suit with a rifle in its mount is 1 to 2% over
-  the published figure. Of the 729 compared suits without such a weapon, 603 match the published Battle Value
-  exactly; the other 126 are a few points off and were not run down. (10) Alpha Strike: battle armor in
-  reactive or reflective armor gets the special ability without ASC p.97's 0.75 armor multiplier, as all but
-  one published card does. (11) The Point Value follows the published cards, not ASC p.139 to the letter: no
-  rounding of the Offensive Value, Defense Factor steps of 0.1 and 0.25, mimetic and camo systems as a
-  movement modifier of 3 and 2. (12) ASC p.102 adds 1 or 2 damage for vibro-claws and its tables give battle
-  armor mortars Short range only; the published cards add nothing for claws and rate mortars at Medium range.
-  The book is followed, so those suits differ from their cards. (13) BOMB has no value in ASC's factor
-  tables and adds nothing to the Point Value. (14) One-shot launchers take more slots than standard ones, as
-  TM pp.346-348 print in brackets (the bracket includes the missile's slot); the published Undine comes out
-  one body slot over. (15) A squad support weapon's Alpha Strike damage is added once, not times the Troop
-  Factor. (16) With several troopers on a hit location of a carrier, each is rolled for in turn and damage left
-  over from one passes to the next roll. (17) The Clan Battle Armor Equipment Table (TM p.348) lists no
-  mortars, though IO:AE p.47 gives mortars a Clan introduction date; none are offered to Clan suits.
-- [x] Mixed-technology suits (2026-10-08): a chassis of one technology base with armor and equipment of
-  either (TO:AUE p.189), as an Advanced option in the eras from the Clan Invasion on. Each item keeps its own
-  table's figures and dates; the armor is taken from either base at that base's weight. The importer reads the
-  147 mixed sample files this way (the armor's base from the file's `armor_tech` level): 142 come out legal.
-- [x] Equipment carried by one trooper (2026-10-08): any item can be given to one trooper. Each trooper's suit
-  is checked on its own, the weight shown is the heaviest trooper's, the item is lost with its trooper in play
-  and its Alpha Strike damage is counted once. The importer treats what every trooper lists as the squad's.
-- [x] Mine dispenser Battle Value (2026-10-08): that of a 10-point minefield of the mines carried (TO:AUE
-  p.195; Minefield BV Table p.197), with the kind of mine chosen for each dispenser (TO:AUE p.137).
-- [x] The carrier's side of mechanized transport (2026-10-08): `battle-armor-transport.ts` works out the
-  occupied locations of a 'Mech or vehicle. The 'Mech's weapon dialog and the vehicle play panel block the
-  weapons there (a weapon spread over locations is blocked if any is occupied), and say who rides, the MP
-  lost by a unit that is not an Omni, the ban on VTOL, WiGE and Jumping MP for vehicles and on dumping
-  ammunition, and when more than one unit rides (TW pp.226-227).
-  After these the importer brings in 1,173 of the 1,188 sample files with nothing left off and 1,171 come out
-  legal. Of the 1,087 compared with their Master Unit List cards: Move 1,058, Armor 1,086, damage 954,
-  special abilities 980, Point Value 882 the same; Battle Value 674 of the 834 with no anti-personnel weapon.
-  Readings to confirm: (18) The books give no construction or Battle Value rule for a squad whose troopers
-  are equipped differently (the Kage's support trooper, TRO:3058U p.16). MegaMek is followed: each suit must
-  be legal on its own and the squad's Battle Value is the average of the troopers' suits times the unit size
-  modifier. The Master Unit List's Kage [ECM] is 113; this gives 107, and 113 with the ECM on every trooper.
-  (19) A name MegaMek uses for both tables (its "CLBA" machine guns, flamers, recoilless rifles, mortars) is
-  read on the chassis' technology base in a mixed suit. (20) TW p.227 bars "no vehicle" from VTOL, WiGE or
-  Jumping MP while carrying battle armor; it is applied to vehicles only, not to a carrying 'Mech's jump.
-  (21) A 'Mech that is not an Omni is told of its lost Walking MP; the MP is not taken off the 'Mech's sheet.
-- [x] Battle armor readings 1-21 ruled on by the user (2026-10-08). Confirmed as built: 1 (UMUs on a Clan
-  exoskeleton: the suits come from underwater mining rigs), 2, 4 (a bomb rack is nearer a ballistic weapon than
-  a missile), 5-8, 12, 13 (BOMB has no value of its own, so none is added), 15, 16, 18-21. Changed:
-  (3) Anti-'Mech Battle Value adds arm-mounted direct-fire weapons only, though TM p.310 prints "all
-  direct-fire weapons": only those fire in a Swarm attack (TW p.220). (9) The anti-personnel mount's weapon
-  stays in the Battle Value; the Master Unit List leaves it out and can be wrong. (10, 11) The Alpha Strike
-  Companion errata v1.2 (2018) is the newer source and prints what the cards do: no armor multiplier for
-  reactive or reflective armor, no rounding of the Offensive Value, minimal damage worth half a point,
-  Movement Factor of Move / 8, Defense Factor steps of 0.1 and 0.25, stealth +1, MAS / LMAS as a movement
-  modifier, DIR to the nearest half, Agile, C3 as 5% of the subtotal (not a 1.1 multiplier), tube artillery
-  1 damage at 6 points, vibro-claws 0.1 each, no Indirect Fire for mortars. (14) The published Undine is
-  allowed its one body slot over, as a note (`BATTLE_ARMOR_PUBLISHED_EXCEPTIONS`). (17) Mortars are offered to
-  Clan suits from 3065 (IO:AE p.47, "All") with the Inner Sphere table's figures, as TM p.348 prints none.
-  After these: 1,174 of 1,188 sample files legal; of 1,087 cards, damage 1,033, Point Value 984, Battle Value
-  705 of the 834 with no anti-personnel weapon.
-  Brawler (user ruling, 2026-10-09): battle armor does not take the Brawler reduction of ASC p.141. ASC errata
-  v1.4 and v1.6 (added to the library 2026-10-08) print the reduction with no exception for battle armor, so
-  leaving it out rests on MegaMek (units with CAR 8 or less, or MEC, are left out) and the cards: with it 453
-  cards match, without it 984. The errata does not change the "VTOL or WiGE Vehicle" +1 either; it is given to
-  battle armor with VTOL movement, as MegaMek and the cards do.
-- [x] OmniVehicles (2026-10-08): a vehicle can be built as an Omni (TM p.97): the flag and each item's
-  pod-mounted mark are saved with the design, the cost is x 1.25 (TM p.285), the equipment step has a Pod
-  column and shows the pod space, and the summary, record sheet and roster say "Omni". As a carrier of
-  mechanized battle armor an OmniVehicle needs no magnetic clamps on the squad and loses no MP; a standard
-  vehicle does. OmniFighters and OmniMechs already had this; canon LAMs may not be Omnis (TRO:3085
-  pp.286-288) and the fan-made Omni-LAM stays at the Custom Homebrew level.
-  Not built for vehicles: named alternate configurations of one chassis (OmniMechs have them; OmniFighters
-  and OmniVehicles only mark pods), and the import of the Omni flag from MegaMek or SSW vehicle files.
 - [ ] Battle armor still owed: `.blk` export (left off for now at the user's word, 2026-10-08).
 
 ### Conventional Infantry
@@ -338,63 +209,6 @@ played first, then by dependency.
 
 ### ProtoMechs
 
-- [x] ProtoMech construction model and editor (2026-10-09): `protomech.ts`, `protomech-construction.ts`,
-  `protomech-blk.ts`, the ProtoMech Creator (chassis, equipment, summary, record sheet, Alpha Strike card),
-  saves and backups, Points in the Classic roster (group table, play panel, print) and saved designs offered
-  to Alpha Strike forces. Standard ProtoMechs (TM pp.80-89) and Ultraheavy, Quad and Glider ProtoMechs (IO:AE
-  pp.93-96), built in kilograms: tube missile launchers, ammunition by the shot, heat sinks for energy
-  weapons, jump jets, extended jump jets, UMUs, myomer booster, magnetic clamps, melee systems, partial wing,
-  Fusillade launcher. Battle Value (TM pp.306-307) and cost (TM pp.279-285) reproduce the book's Delphyne-2
-  (316 BV; 741,700 + 80,000 C-bills x 1.09). Of MegaMek's 86 sample files, 85 import with nothing left off
-  and 85 are legal; 70 come to their exact tonnage. Of the 76 with Master Unit List cards: Battle Value 62,
-  Alpha Strike armor 76, move 73, damage 73, abilities 75, Point Value 73.
-- [x] ProtoMech armor, fractional mass and Electric Discharge ProtoMech Armor (IO:AE pp.58-59, 190): 75 kg a
-  point, one torso item less, 32 Battle Value as a weapon, 1,250 C-bills a point. "UltraProto Standard"
-  is the readouts' name for the standard armor of Ultraheavy ProtoMechs (The Wars of Reaving p.212; TRO:
-  Prototypes p.90); it has no rules of its own, and those units use the same armor on a larger table.
-- [x] ProtoMech-only weapons: Streak LRM by the tube (TO:AUE p.139, 400 kg a tube, Battle Values from its
-  table) and the Fusillade launcher (IO:AE p.59: 1.5 tons with its two ATM 3 rounds, Battle Value 11).
-- [x] ProtoMech readings, approved by the user as written (2026-10-09). Each is built as stated and noted in the code:
-  1. Plasma cannon: TechManual's equipment table gives it no ProtoMech column (NA), but its ProtoMech
-     Ammunition Weight Table lists it (TM p.88) and the Boggart mounts one (The Wars of Reaving p.211). Entered
-     as ProtoMech-mountable, as MegaMek has it.
-  2. Myomer booster and Battle Value: TM p.306 adds 1 to the speed factor's MP. The Master Unit List uses the
-     boosted Running MP (Siren 4: 88 against our 84; Centaur 4: 228 against 214). Built by the book.
-  3. Chemical laser ammunition: TO:AUE p.131 says 1,000 / shots a ton, rounded up to the kilogram. Rounding
-     each shot gives 34 kg; the published Svartalfa Ultra weighs 15 shots at 500 kg (TRO: Prototypes p.91), so
-     the load is rounded, as TM p.88 does for other ammunition.
-  4. Published designs outside the rules: the Svartalfa Ultra prints 7 armor on a main gun whose limit is 6
-     (IO:AE p.96); the Svartalfa 3 file is 100 kg over; the Gorgon 6 file mounts an Inner Sphere Angel ECM,
-     which a Clan-only ProtoMech cannot (it is left off on import and reported). The Svartalfa Ultra's armor
-     is now allowed as a published exception; the other two are not, having no printed sheet in the library.
-  5. IO:AE p.96 prints an arm armor limit of 4 for 3 to 5 tons; TM p.82 prints 2 and the table's own Armor
-     Factor column only adds up with 2. Entered as 2 (obvious misprint).
-  6. Master Unit List Battle Values that differ and were left: LRM 3 carriers come out 1 to 2 lower here
-     (TM and MegaMek both value the launcher at 34), magnetic clamp carriers 1 higher (IO:AE p.190 gives the
-     clamp 1), and the ProtoMech AC/2's ammunition is not counted on the Minotaur 4's card.
-  7. Alpha Strike: the cards do not apply the fewer-than-ten-shots reduction (ASC p.101, errata v1.6) to the
-     Procyon 2, Procyon 4 and Minotaur-P2, and give a Glider one Move value where ASC p.124 gives two
-     (2"/8"g). Built by the book. A Glider takes the "VTOL or WiGE Vehicle" +1 in its Defense Factor, as the
-     cards do. The myomer booster moves as MASC does (x 1.25), which the Companion does not say outright.
-  8. Catalog corrections made from the Companion's Clan table (ASC pp.109-110): LB 5-X, Ultra AC/2 and /5,
-     ER small laser, ER PPC (no Extreme value), the three ER pulse lasers, large and medium pulse lasers, the
-     three improved heavy lasers, and the plasma cannon (no damage, heat 7); the Clan active probe now gives PRB.
-- [x] ProtoMech follow-ups (2026-10-09). Machine gun arrays: offered, linking two to four machine guns of
-  one size class mounted anywhere on the ProtoMech (TM p.228), worth 0.67 of the linked guns (TM p.318, note
-  F). Special missile munitions: chosen per launcher and weighed by the missile at the munition's multiplier
-  (TO:AUE p.173), taken as the standard round's missiles a ton over the munition's; no Artemis missiles, as
-  ProtoMechs may not install Artemis (TM p.206). Flamers: the ER flamer is fusion-fed and needs heat sinks,
-  the heavy and vehicle flamers are ammunition-fed and need none (TO:AUE pp.124-125 give no other rule).
-  Published exceptions (`PROTOMECH_PUBLISHED_EXCEPTIONS`): the Svartalfa Ultra's 7 points of main gun armor
-  (TRO: Prototypes p.91), which brings it to its printed 14 tons and Battle Value of 540.
-- [x] Gorgon 6 (user ruling, 2026-10-09): tried with the Clan ECM suite, which leaves it a ton light, so its
-  Inner Sphere Angel ECM is entered as printed, on the Angel ECM Suite (Clan) record (the same 2 tons); the
-  import says so. It then weighs exactly 8 tons, with Battle Value 355 and an Alpha Strike card that match the
-  Master Unit List. All 86 sample files now import with nothing left off.
-- [x] Builders checked in the UI (2026-10-09, `e2e/unit-builders.spec.ts`): infantry, battle armor, ProtoMechs,
-  aerospace fighters and conventional fighters are each on the Classic BattleTech page and menu and turn a
-  new design into a record sheet and an Alpha Strike card; buildings into a record sheet. A roster group
-  takes the saved designs of all of them.
 - [ ] Found in that check: buildings have no Alpha Strike card, and saved buildings and saved vehicles are not
   offered to an Alpha Strike force. (ASCE says advanced buildings have their own unit card; the rules for
   it have not been read yet.)
@@ -403,19 +217,6 @@ played first, then by dependency.
 
 ### Small Craft
 
-- [x] Small Craft construction model and editor (2026-10-09). Decided: Small Craft have their own class and
-  editor, not a fighter subtype. Nearly every construction step is their own (engine by formula, bought
-  Structural Integrity, armor by the ton, crew, quarters and bays), and DropShips build on the same steps.
-  `small-craft.ts`, `small-craft-construction.ts` (with the transport bay, quarters and escape system tables
-  DropShips will use), `small-craft-hit-tables.ts`, `small-craft-blk.ts`, the Small Craft Creator (hull,
-  armor and heat sinks, weapons by arc, crew and bays, summary, record sheet, Alpha Strike card), saves and
-  backups, and Small Craft in the Classic roster (group table, play panel, print). Aerodyne and spheroid
-  craft of 100 to 200 tons (TM pp.180-197); Battle Value (TM pp.311-313); cost (TM pp.283-285); hits and
-  critical hits (TW pp.237-240); heat as a fighter (TW p.161). The book's Astrolux comes out step for step.
-  Of MegaMek's 39 sample files, 2 are 5-ton pods and are refused; of the other 37, all 37 load legal, 29
-  with nothing left off and 22 at their exact tonnage (the rest are lighter: older readouts, primitive
-  craft, or equipment not in the catalog). Of 17 with a Battle Value on their Master Unit List card, 6 match
-  exactly and 7 more are within 2 percent.
 - [ ] Small Craft readings for the user to rule on (2026-10-09). Each is built as stated and noted in the code:
   1. Free armor from the structure: the rule gives the Structural Integrity "per facing" (TM p.191); the
      Astrolux example pools the points and shares them out freely (TM p.192). Built as the example: a pool.
@@ -457,23 +258,6 @@ played first, then by dependency.
 
 ### DropShips
 
-- [x] DropShip construction (TM pp.184-196) in the Small Craft class and creator (`craftType: "dropShip"`,
-  a military flag): 200-35,000 t aerodyne or 200-100,000 t spheroid in 100-ton steps; fuel points and
-  civilian/military burn by weight; controls x 0.0075; base crew 3 or 4 + 1 per 5,000 t; military free heat
-  sinks; 7 + 1 per 50,000 t bay doors; DropShip armor tables; cost with gunnery control by armed arc, docking
-  collar, fuel with pumps and x 28 / x 36 (TM p.285). The Arcadia and Nekohono'o worked examples are tests,
-  the Nekohono'o cost included. Old saves load as Small Craft.
-- [x] DropShip Battle Value by arc (TM p.312): Front at full value, the higher adjacent arc as Left Side, the
-  other as Right Side, the three left as Rear at x 0.25; no CASE penalty. Flagged readings: (1) step 7 prints
-  Right Side x 0.5 or x 0.25 as the book has it; (2) hull ammunition goes to the arcs of the weapons it feeds by
-  their BV; (3) ties take the first arc from the nose; (4) capital ammunition is capped per launcher model.
-- [x] Capital missile launchers on DropShips only (TM p.210), Screen Launchers (TM p.237) and sub-capital
-  weapons (TO:AUE, rules level 3) from `capital-weapons.ts` / `sub-capital-weapons.ts`: weight with missiles,
-  cost, one gunner per capital missile launcher, the 10-shot minimum enforced, an AR-10 loading the three
-  standard missiles (heat of the hottest one carried, a reading), BV in its arc. Creator panel and e2e.
-- [x] MegaMek DropShip `.blk` import (`small-craft-blk.ts`): weapon bays "(B)", rear "(R)", shot counts after the
-  colon, capital and sub-capital lines, bay personnel kept out of the crew (TM p.239). The catalog learned 57
-  MegaMek internal names through `altNames`.
 - [ ] Capital and sub-capital weapons in the DropShip Alpha Strike conversion and in play (damage, criticals).
 - [ ] DropShip record sheet layout (it uses the Small Craft sheet now) and the Alpha Strike large-craft card.
 - [ ] Check imported DropShip BV against the MUL where it has one (most DropShips show BV 0 there; the
@@ -493,147 +277,13 @@ played first, then by dependency.
   - JumpShip firing arcs: SO:AA p.142's text gives JumpShips the broadsides, its p.133 table does not. Same
     book, so MegaMek decides (broadsides on WarShips only); flagged in the module.
   - The K-F boom on a station has no weight in SO:AA (p.139); only its cost multiplier is modelled.
-- [x] JumpShip, WarShip and station Battle Value (SO:AA pp.148-149): matches MegaMek on the Vincent Mk 39 (15,822),
-  Explorer (428) and Merchant (503). Older TROs print different values (TRO:3057R Vincent 20,427, TRO:3026R Explorer
-  424) under the pre-SO rules. Reading flagged: p.149 halves the adjacent arc when it and the front pass the heat
-  capacity together; MegaMek checks the front alone. Capital missiles and the Screen Launcher now mount on JumpShips,
-  WarShips and stations (SO:AA p.141: anything a DropShip may mount).
-- [x] Custom Homebrew (rules level 6) monitor: a WarShip with no K-F drive or sail; a keel of half the structure's weight,
-  double base crew, carried on one docking collar per 100,000 tons. Canon has the SLDF's monitors (XTRO: Boondoggles p.19,
-  project AMPHITRITE, 2683) but no construction rules, so these figures are ours. Still to do: play rules for collar
-  transport (Boondoggles' Newgrange was damaged carrying one) and campaign maintenance at x3.
-- [x] JumpShip, WarShip and station Alpha Strike card (ASC pp.91-117, 144, errata v1.6; `large-craft-alpha-strike.ts`):
-  Size, Thrust or 0.2k, capital armor x 0.33, Structure, Threshold, STD/CAP/SCAP/MSL damage by arc from the ASC p.114
-  table, transport and crew specials, large-craft PV. Explorer reproduces its card (PV 12); the Vincent Mk 39 matches its
-  card's armor, Threshold, Size, Thrust and Structure. Flagged: (1) ASC p.103 joins a WarShip's fore-sides to the Front,
-  the 2021 cards split them half to the broadsides; (2) p.95 rounds the Threshold up, the cards round normally (Aegis 16
-  where the rule gives 17); (3) the p.95 Agamemnon example leaves out the division by 4 arcs (rule, MegaMek, card agree on
-  it); (4) p.103 gives stations six arcs, the cards and MegaMek four; (5) Vincent PV 110 here, 107 on the card, gap not
-  found; (6) PNT is one value for the ship, MegaMek splits it by arc. Some JumpShip cards print Thrust "2" for 0.2k.
-  Still to do: MFB from repair bays, offensive special ability factors (MegaMek adds them on a forum ruling).
-- [x] JumpShip, WarShip and station play (TW pp.237-240; SO:AA pp.82-83): vessels join roster groups (up to 50) with a
-  crew and skill-adjusted BV, and play mode resolves a hit from the SO:AA p.83 table (Above/Below on the Side column of a
-  random side, as TW p.238 does for DropShips): standard-scale damage / 10, armor by facing, Damage Threshold, excess to
-  SI halved and rounded down (TW p.238; MegaMek rounds normally), critical checks at 8+ and capital missiles' own numbers,
-  weapon bay hits with the 1D6 chooser, K-F drive (integrity -1, 0 = cannot jump), grav decks, collars, doors, cargo,
-  engine / CIC / sensor / crew / thruster tracks, and zero net heat per fired arc. Print adds the vessel's record sheet
-  without damage marks (the sheet has none yet).
 - [ ] SDS (Caspar) drone control system (IO p.143; Historical: Liberation of Terra I p.159): a percentage of
   the vessel's weight on top of the controls, quarters for half the minimum crew, the SDS self-destruct, and
   WarShip drones of 800,000 tons at most. SDS WarShip drones still carry a K-F drive; the fail-safe only stops
   them jumping while the AI is active.
-- [x] Capital-scale record sheets (SO:AA pp.9-11, Step 6 p.146): data block, inventory by weapon bay with capital-scale
-  Attack Values (standard in parentheses), armor and SI as capital-scale squares with Damage Thresholds, K-F drive and
-  sail integrity, collars, crew hits, critical damage, heat per arc, Velocity Record (not stations). Same-book conflict
-  flagged: p.9 lists capital first, p.146's example standard first; p.9 and MegaMekLab followed. The fighter and Small
-  Craft sheets now follow TM pp.336-339 too: SRV/MRV/LRV/ERV per weapon, pilot hits with consciousness numbers, labelled
-  critical boxes, the Heat Scale (not conventional fighters) and the Velocity Record. The sheets print the Medium bracket
-  as "6-12", an obvious misprint for 7-12. Three experimental rifles have no aerospace range in the catalog and show "?".
-  Still to do: the Fighter Squadron sheet (SO:AA p.9) and the conventional fighter's Fighter Return Table block.
 
 ### Buildings, Gun Emplacements and Mobile Structures
 
-- [x] Advanced building construction (TO:AR pp.126-131; the original Tactical Operations pp. 128-131): the
-  Building Creator, 2026-10-07. Steps 1 to 4 for every classification but Castles Brian. See "Gun emplacement /
-  building" under Rules editions for what it covers and what is still owed.
-- [x] Buildings in play (2026-10-07): saved buildings join a Classic BattleTech roster group, with a Gunnery
-  skill for their gunners, a play panel and a record sheet that marks the damage. Each hex tracks its Armor
-  Factor and Construction Factor. An attack is scaled by the classification (TO:AR p.124, a checkbox, on by
-  default), marks armor off first and then the CF (p.128), skips the armor when made from inside (p.119), and
-  calls for a roll on the Advanced Building Critical Hits Table when it reaches the CF and is above the hex's
-  Damage Threshold, the CF at the start of the turn / 10 rounded up (p.118). The table is resolved from the
-  players' dice or the app's: weapon malfunction and destruction (a Gauss rifle explodes), gunners stunned and
-  killed, turret jam and lock (a second jam locks), ammunition explosion into the CF (a tenth with CASE) and
-  other equipment. Ammunition is counted by the shot. The panel shows what a hex absorbs for a unit inside and
-  the damage to a unit entering it (pp.117, 124-125), and halves a hex's CF when a neighbor collapses (p.121).
-  Rulings (user, 2026-10-07): (1) Battle Value stays empty for buildings for now; MegaMek's gun emplacement
-  method (`GunEmplacementBVCalculator`) is not followed yet. (2) The Damage Threshold is compared with the
-  damage after scaling. (3) The CF works as internal structure does on a 'Mech: damage past the last of the
-  armor carries on to it. (4) An ammunition or Gauss explosion goes to the CF unscaled; CASE cuts it to a
-  tenth, which the book already gives buildings (TO:AR p.118), so no custom rule was needed. (5) A critical
-  hit roll is never read above 12.
-- [x] Building modifications and fittings (2026-10-07, TO:AR pp.131-139, costs p.208): environmental sealing
-  with the Sealed Building Breach Table in play; heavy metal superstructure (a quarter of the capacity);
-  high and low ceilings; underground and underwater buildings (half size underground, sealed and no deeper
-  than the CF under water, breach rolls); tunnels; large doors; industrial elevators; liquid fuel and
-  chemical storage (0.91 tons a ton); automated weapons (no gunners, Gunnery 5); crew for field kitchens,
-  MASH theaters and communications equipment (p.130); other buildings' hexes on the generator; the structure
-  cost multipliers and fitting prices. In play: the Advanced Building Movement Table added to each hex's MP
-  cost, Piloting modifier and to-hit modifier (p.117), ceilings and superstructure in the damage to a unit
-  entering, and the generator going out with any hex.
-  Rulings (user, 2026-10-07): all four of the items that follow stand as built; adding damage up over a
-  phase is left to the table, and a generator that keeps running at part strength after losing a hex would
-  be a custom rule, for later. As first raised: (1) a subsurface building rolls for a breach when one hit
-  does 10 points to the CF; the
-  book says 10 points "in any phase", which the app does not add up. (2) Underground, a breach collapses the
-  hex; in a sealed surface or underwater building it marks every item inside lost ("all unprotected personnel
-  and equipment"). (3) The generator is spread over every hex, so losing any hex puts it out. (4) Every hex
-  counts as a Generator hex on the movement table for the same reason. (5) The book's own example (p.117)
-  gives a Medium building a heavy metal superstructure, which its construction rule (p.135) allows only from
-  Heavy up; construction follows p.135.
-- [x] Light and Medium (infantry) weapons on buildings (2026-10-07). Data pass: every record in
-  `infantry-weapons.ts` now carries the weapon's weight, clip weight, shots and bursts (TM pp.349-352) and its
-  ammunition price and energy-cell mark (TM pp.298-301); all 212 rows matched. Buildings: hangars, standard
-  buildings and walls mount them, 6 a hex for each level (TO:AR p.129); Standard weapons are Light, Support
-  weapons Medium (TM p.136); one free clip and extra whole clips; no heat sinks or amplifiers (TM pp.136-137);
-  one gunner each (TO:AR p.130); fixed, pintle or turret mounts (TO:AUE p.83); damage rounded to the nearest
-  point and ranges from the Base Range (TM p.136); prices; creator, record sheet and play panel with shots.
-  Rulings (user, 2026-10-07): (1) the Mobile Structure pintle rule stands for buildings, cost included;
-  (2) weights stay to the kilogram, as weight matters to a building only as a load on its structure.
-  (3) Melee weapons are offered only at the Custom Homebrew level, as traps and the like. (4) A weapon needs
-  the crew the infantry table gives it; only Heavy weapons can be automated (TO:AR p.131), so no Light or
-  Medium weapon goes uncrewed. (5) The 200 C-bill power cell price stands; an energy-cell weapon is wired
-  into the building's power and uses its cells only when the power is out. (6) Inferno clips cost half, as
-  SRM inferno ammunition does against standard (13,500 against 27,000 C-bills a ton). As first raised: (1) TO:AR names pintles on buildings only in passing, so the Mobile Structure rule is
-  used: 5 percent of the weapons, to the kilogram, 1,000 C-bills a ton (TO:AUE p.83, TM p.280). (2) Weights
-  are kept to the kilogram; on Medium and Large Support Vehicles small items are totalled and rounded up to
-  the half ton (TM p.137), and TO:AR says nothing for buildings. (3) The table's melee weapons are not
-  offered: TM p.136 names only Standard and Support weapons. (4) A building gives each weapon one gunner
-  (TO:AR p.130) where a Support Vehicle uses the table's Crew value (TM p.137): the Support PPC has a crew
-  of 5. (5) An energy-cell weapon with extra clips pays 200 C-bills once for its power cells (TM p.301
-  footnote); the free clip costs nothing. (6) Inferno rounds have no row in the cost table and take the
-  weapon's ammunition price. (7) The Mandrake hold-out Gauss pistol and the hold-out needler pistol have a
-  clip in the statistics table and the single-use footnote in the cost table; entered with the clip and no
-  ammunition price. (8) The two-shot SRM launcher's inferno row prints "30.0 k"; read as 30 kg.
-- [x] Castles Brian buildings (2026-10-07). The classification, with its Heavy and Hardened rows (TO:AR
-  p.113): capital-scale CF carrying 10 tons a point for each level (p.127); armor to CF x 2, the standard points
-  divided by 10 and rounded down (pp.113, 128); Heavy weapon tonnage on the undivided CF for each level (p.129);
-  sealed by default at no cost, full size underground, ceilings and large doors (pp.116, 135-136, 138);
-  open-space construction, 600 tons at most and nothing on the roof, cost x2.5 (pp.137, 208); 1,000,000
-  C-bills a point of CF with the CF x 10 in the final multiplier (p.208). In play: a unit's total damage
-  divided by 10 and rounded to the nearest point (user ruling: the p.125 example over the p.124 text's 20), the
-  single-hit threshold for 10 points to units inside, damage the building does x10, and a breach that takes
-  only the hex hit (pp.124-125, 134). Readings to confirm: (1) the armor maximum "CF x 2" is taken in
-  capital-scale points; (2) "do not divide their CF" for weapons is taken on the capital-scale figure (CF x
-  levels tons, not CF x 10 x levels); (3) built-in sealing does not apply the x1.5 cost multiplier; (4) the
-  600-ton open-space limit is taken for the whole building, not each hex; (5) an elevator lifts up to CF x 10
-  tons; (6) the underwater depth limit and the Unspecified Equipment price use the CF as printed; (7) a
-  sealed Castles Brian rolls for a breach when a hit does more than 10 standard points, which is 2 or more
-  capital-scale points; (8) the book's Command Tower has "50 capital points, or 32 tons" of armor, and 32
-  tons work out to 51 (512 / 10).
-- [x] Capital and sub-capital weapons on fortresses and Castles Brian (2026-10-07). One capital weapon that is
-  not a missile launcher in a hex and any number of launchers; 10 percent more weight for fire control and a
-  fusion or fission generator for anything but a launcher; a weapon's weight shared evenly with named neighbor
-  hexes; no turret or pintle in a hex that holds one or a share; an upward arc only; 7 gunners each, never
-  automated (TO:AR pp.129-131; TO:AUE p.83). Mass Drivers are not offered (TO:AUE p.135). Custom rule (user,
-  2026-10-07): capital weapons in the hexes next to an ammunition bunker share it, at the Custom Homebrew
-  level. Readings, all confirmed by the user 2026-10-07; adjacency (8) is enforced on the map in play:
-  (1) capital weapons do not count against the hex's Heavy weapon tonnage, only its weight capacity; (2) the
-  fusion or fission rule and the 10 percent cover sub-capital cannons and lasers as well; (3) the Screen
-  Launcher counts as a missile launcher; (4) capital lasers and PPCs need heat sinks, as other energy weapons
-  do, and add nothing to the generator's weight, which counts Heavy energy weapons; (5) fire control has no
-  price; (6) the 10-shot minimum for launchers is a DropShip rule, shown as a note and not enforced; (7)
-  ammunition sits in the weapon's own hex; (8) adjacency of shared hexes is not checked: the building has no
-  map.
-- [x] Capital and sub-capital catalogs checked line by line against TO:AUE pp.196, 220-223, TM pp.210, 237,
-  294-296, 318, 342 and IO:AE p.33 (2026-10-07). Corrected: TO:AUE ammunition is priced by the ton, not the
-  shot (table note, p.223); the AR-10 fires standard missiles only (TM p.342). Rules levels are as printed
-  and now tested for every record. Open: TO:AUE p.221 prints a year for each weapon that differs from the
-  IO:AE family dates in six places (NAC/20 2197, NAC/40 2202, Heavy N-Gauss 2449, NL55 2307, Light and Medium
-  N-PPC 2358); TechManual p.342 rates the capital missiles D and the Screen Launcher E where IO:AE has E and
-  F; TO:AUE p.223 lists sub-capital cannons and lasers as Inner Sphere only where IO:AE gives the Clans them
-  from 3091 (user ruling 2026-10-07: IO:AE). These books are one rules edition, so the newest is followed and
-  the others' values are kept on each record in `sourceVariants`.
 - [ ] Capital weapons by rules edition (user, 2026-10-07: where editions disagree, each edition's values are
   listed so the selected edition shows its own). `ICapitalWeapon` takes `introducedInEdition` and
   `editionStats`; BattleSpace (1993), AeroTech 2 (2000) and its Revised Edition (2004) are not entered yet.
@@ -664,59 +314,10 @@ played first, then by dependency.
 
 ### Support Vehicles
 
-- [x] Ground, VTOL and naval Support Vehicle construction (TM pp.116-139 with errata v8.0, 2024), as a
-  Support Vehicle mode of the Vehicle Creator: Small (to the kilogram), Medium and Large sizes; Structural,
-  engine and armor Tech Ratings and the Overall Tech Rating; the chassis modifications and their limits;
-  the seven Support Vehicle engines with minimum weights and fuel range; BAR 2-10 armor (catalog
-  `support-vehicle-armor.ts`, now used); fire control; minimum crew, gunners and officers; slots; the
-  legality checks; Battle Value (armor x BAR / 10, fire control x 0.8 / 0.9); cost; Alpha Strike (armor x
-  BAR / 10, BAR, AFC, BFC; ASC p.95); record sheet. Checked against the Simca, Swiftran, Hesiod and
-  CellCo Ranger examples. Errata v8.0 applied where the 6th printing still differs: a Support Vehicle
-  Engine Rating (Cruising MP x tonnage, at most 500).
-- [x] Support Vehicles in play (TW pp.206-207): fire control to-hit (+2 none, +1 basic), penetrating critical
-  hits when one hit beats the BAR (-1 Armored, immune with Armored and BAR 10), +2 to armor-piercing
-  critical rolls under BAR 10. Large Ground Support Vehicles use the Superheavy hit location table, which
-  matches TW p.206 row for row.
 - [ ] Readings, flagged: TM p.308's CellCo Ranger example leaves the x 2.5 off armor BV (38 x 0.7 = 26.6);
   the rule text and MegaMek keep it, so it is read as a misprint. The Dixon example divides officers by 5;
   the Minimum Crew Table (reprinted in errata v8.0) divides by 6, which is used. The same example counts a
   half ton of machine gun ammunition as BV 1; the catalog's 1 BV a ton gives 0.5.
-- [x] Transport bays on Combat and Support Vehicles (TM p.239 as revised by errata v8.0; shared with Small Craft):
-  cargo, infantry, battle armor and unit cubicles with doors; 1 slot a bay, 1 a container, 1 for all infantry
-  bays of a type; cost; Alpha Strike CT/CK, IT, AT, MT, PT, ST, VTM, VTH and MFB (as MegaMek assigns them); door
-  limits (TM p.209). The Simca's cargo bay and rear door now price to the book.
-- [x] Communications Equipment (1-ton records, one slot for the set on vehicles, +1 crew a ton on Support
-  Vehicles, at most 15; MHQ and RCN in Alpha Strike as MegaMek assigns them) and the Support Vehicle ejection
-  seat (Small Support Vehicles and VTOLs; counts as a seat), TM pp.131, 212-213; IO:AE pp.34, 39.
-- [x] Light and Medium (infantry) weapons on Small Support Vehicles with extra clips, pintle mounts (5 percent,
-  to the kilogram; not naval), gunners by Crew value or facing (TM pp.131, 136-137, 234). Their Battle Value is
-  the infantry weapon's (TM gives no other; MegaMek uses it). No Alpha Strike value: no cited conversion.
-- [x] Extended Fuel Tanks on Combat Vehicles with an ICE or fuel cell (10 percent of the engine, ammo-bin
-  explosion 40 a ton); not on Support Vehicles (TM p.244 as rewritten by errata v8.0 names IndustrialMechs and
-  Combat Vehicles only).
-- [x] Tractors and Trailers in play (TW p.205): Cruising MP lost to towed weight, naval Tractors pull 5 times
-  their weight, an unhitched engineless Trailer is immobile. Large Support Vehicles ignore the multiple-targets
-  modifier (TW p.206).
-- [x] Infantry Bay slots (reading): errata v8.0's Crew Systems Space Table says 1 slot per 30 men, its rewritten
-  Transport Bays rule (marked "This ruling has changed") 1 slot per distinct bay and one for all infantry bays of
-  a type; the Transport Bays rule is followed.
-- [x] Rail and Large Naval Support Vehicles (TO:AUE pp.16-71): rail motive type (Support Vehicles only), Small to
-  Large rail units, External Power Pickup, External and MagLev engines, rail Movement Factor; Large Naval
-  Vessels to 100,000 tons with templates, up to 9 turrets, 30 + tons / 2,000 structure, 35 + tons / 100 slots;
-  the advanced armor table (p.69), crew (p.66) and costs (p.229, no Tech Rating multiplier); Alpha Strike sizes
-  by the ASC Size Class Table (p.92; Support Vehicles had used Combat Vehicle sizes) with LG/VLG/SLG. Play: rail
-  towing table, Large Naval hit table, template to-hit, crew boxes, engine check 8+, ammunition by location,
-  turrets lost without the vessel. Checked against the Adelante and Jormungand. Readings: TO:AUE prints
-  Environmental Sealing at C and Steam at E as 2.8; the newer TechManual errata's B and 2.6 are used.
-- [x] Airship (Small, Medium and Large), Fixed-Wing and Satellite Support Vehicles as a Support Vehicle mode of
-  the Fighter Creator (`support-aircraft.ts`; TM pp.116-139; TO:AUE pp.16, 32-33, 52-71; TW pp.204-207).
-- [x] MegaMek `.blk` import for SupportTank, LargeSupportTank and SupportVTOL (`importSupportVehicleBlk`) and
-  FixedWingSupport (`importFixedWingSupportBlk`), with import panels in the Vehicle and Fighter Creators and a
-  half-ton machine gun ammunition checkbox. Fuel Points in fixed-wing files become tons at the half ton (TM
-  p.129), noted when the count changes. A local run over the 258 MegaMek samples (2026-10-14): 92 of 225 ground
-  and VTOL files and 21 of 33 fixed-wing files import as legal designs. Most of the rest come from the file,
-  not the import: 80 files save 0 tons of fuel for an engine that needs it (TM p.128), 38 have no armor in a
-  location an Armored, Amphibious, Sealed or Submersible chassis must armor, 9 fixed-wing files are overweight.
 - [ ] Support Vehicle equipment the catalog lacks, from that run: Handheld Searchlight (38 files), Vehicular
   Mine Dispenser (22), Minesweeper, Vehicle Jump Jets, Ladder, Mobile Field Base, Drone Operating System,
   infrared / high-resolution / hyperspectral imagers, Refueling Drogue, Medium VSP Laser, light and heavy
@@ -790,40 +391,11 @@ played first, then by dependency.
   OTP: Hanseatic Crusade p.30.
 - [ ] Placement rules not enforced yet: spread items (one per location, side torsos, legs), hand-actuator
   requirements, Claw replacing the hand.
-- [x] Patchwork Armor on Combat Vehicles and fighters (TO:AUE pp.188-189; IO:AE p.82): an armor type per location
-  or arc at the Advanced rules level, each weighed by the point and rounded up to the half ton, taking the table's
-  right-hand column of item slots (vehicles) or weapon slots in the arc (fighters); BV, cost and the Alpha Strike
-  armor value per location (ASC errata v1.6). Vehicle and fighter record sheets name each location's armor.
-  Combat Vehicles now also count the item slots their armor takes (TM p.105; TO:AUE p.93, which prints Hardened as
-  1; IO:AE pp.66, 82).
 - [ ] Patchwork armor still owed: Support Vehicles (with the Armored Chassis modification; wait for the Support
   Vehicle builder); Fractional Accounting's kilogram rounding per location on vehicles and fighters once #118 is
   merged in; SSW/MTF import (there is no 'Mech MTF importer, and the SSW library holds no Patchwork design to take
   the format from); armor types on the 'Mech record sheet; era checks per location on vehicles (they have no
   issues list).
-- [x] FrankenMechs (CO pp.213-214), Experimental (XTRO:Royal Fantasy p.8): a donor tonnage, structure type and
-  name per location; structure points, armor limits and weight (5/15/25/10% shares, rounded up) from the donors;
-  endo steel slots per location (Internal Structure Distribution Table, CO p.212); legs at least as heavy, +1/+2
-  Piloting Skill Roll modifier; lighter jump jets kept at reduced MP with heat per jet; no OmniMech, no mechanized
-  battle armor, standard myomer with MASC; hybrid structure BV and cost by location. Checked against the CO worked
-  example and the Schwerer Gustav (XTRO:Mercenaries p.7). Patchwork armor and FrankenMech structure slots now
-  re-roll on a critical hit. User rulings (2026-10-14): the +2 leg modifier replaces the +1; a four-legged 'Mech's
-  front legs use the table's leg row; hybrid structure is priced by weight share.
-- [x] FrankenMech donor slots: a location keeps its structure's slots from the donor's design ("retained from the
-  donor design", CO p.213), with the table as the fallback; Inner Sphere and Clan endo steel side by side on Mixed
-  Tech. Checked against the MegaMek files and XTRO weights for Anastasia and Drizella (XTRO:Royal Fantasy, 3.5 t
-  each) and the Ninjabolt's two right-leg slots. Published exception: XTRO:Boondocks prints the Ninjabolt's
-  structure as 7 t, which is each location rounded up on its own; the rule (CO p.213, SO p.190) rounds the sum:
-  6 t. MegaMek's file also gives its right leg a 90-ton donor, but the XTRO's donor is a 65-ton Tempest and it
-  prints 65-ton leg structure.
-- [x] FrankenVehicles (Custom Homebrew, the user's rule 2026-10-14): a turret from a vehicle no heavier than the
-  chassis, with its donor's structure points; +1 Driving Skill Rolls only when the loaded turret is heavier than
-  the chassis's original; +1 to hit for turret weapons fired by a gunner in the chassis, none when the commander
-  in the turret fires; a turret linkage roll (2D6, locks on 10+, my number, not the user's) whenever the turret
-  takes damage; not an OmniVehicle. Support Vehicles follow with task 6.
-- [x] FrankenProtos (Custom Homebrew, the user's rule 2026-10-14): head, arms and legs from other ProtoMechs of the
-  same chassis, with their donors' structure and armor limits; structure weight by share (head 5%, torso 55%,
-  arms 10% each, legs 20% or 40% for four); legs at least as heavy; Ultraheavy parts on an Ultraheavy only.
 - [ ] FrankenMechs still owed: MTF import of "Config:Biped FrankenMek" files (no 'Mech MTF importer; samples in
   mm-data: Sneede, Sneede II, Temax Cat Ninjabolt, Schwerer Gustav, the two Royal Fantasy Hunchbacks); the
   Centurion susceptibility of FrankenMechs (IO:AE p.80) waits for the Centurion in play; Quality Rating and
@@ -833,42 +405,6 @@ played first, then by dependency.
 - [ ] Fractional Accounting (TO:AUE p.188): the switch is in step 1 but locked
   (`BattleMech.FRACTIONAL_ACCOUNTING_AVAILABLE = false`). Building it means engine multipliers, armor by the
   point, ammunition by the shot, all rounded up to the kilogram; then turn the switch on.
-- [x] Fractional Accounting (TO:AUE pp.188-189), an Experimental option on 'Mechs, Combat Vehicles, fighters
-  (aerospace and conventional) and Small Craft: engine multipliers, armor by the point, ammunition by the shot,
-  rounded up to the kilogram. Fuel stays in half-ton lots (TM p.186). ProtoMechs are already built in kilograms.
-  Still owed: Support Vehicles.
-- [x] Battle armor weapons on 'Mechs, Combat Vehicles, fighters, Small Craft and ProtoMechs (Ghosts of Obeedah
-  pp.53-54), Short range on aerospace units, power cells on conventional fighters. Fractional Accounting comes on
-  "by default" with the first battle armor item and may be turned off (user ruling 2026-10-14: the book's own Hi-Scout
-  and Cherubs are built with half-ton rounding); battle armor ammunition stays by the kilogram either way. Non-weapon battle armor
-  equipment too (p.54): standard weight, 1 slot, no mobility, fuel, power or life support gear; stealth and C3 noted
-  as working only at 3 tons or less (p.55), with no Alpha Strike special; no Battle Value (none printed, TM p.317).
-  DropChutes, magnetic clamps and Mission Equipment are left out as a reading (the book names none of them; the user
-  agreed, 2026-10-14). The Taser, Pop-Up Mine, Bomb Rack and Tube Artillery too (not missile weapons): one-shot,
-  BA table BV, rules in their notes; Tube Artillery shells by the 15 kg shot (Ghosts of Obeedah p.54 over the TO:AUE
-  1-ton lots). No Alpha Strike specials for them off battle armor (ASC gives only BA codes). Magnetic sole
-  plates are built into every 'Mech and suit (Explorer Corps (FASA) p.86, a game rule; user ruling 2026-10-14 over
-  SO p.154's background remark): no item. Custom Homebrew Improved Magnetic Grapples (level 6): one per foot, 0.5 t,
-  1 slot, 25,000 C-bills, -1 to rolls to stay on a hull. Still owed: hull-walking play (boarding, Control Rolls,
-  Explorer Corps pp.85-86; Northwind Highlanders p.39) once space play exists. Still
-  owed: the 2D6 shock roll in play, power cells required on non-fusion Combat Vehicles, and the 3-ton test applied
-  per unit (a ProtoMech or ultralight of 3 tons or less should keep the stealth and C3 effects).
-- [x] Automata (Ghosts of Obeedah pp.51-53) in the Battle Armor Creator, Experimental: Clan chassis weight on any
-  technology base, the Core's Gunnery 4 / Anti-'Mech 5, Anti-Personnel with basic manipulators, ca. 3090, and the
-  Disruption Effects Table and self-destruct rolls in play. The book gives no cost or BV change.
-- [x] The book's published units rebuilt from their record sheets, as regression tests (2026-10-14): the five
-  Automata (BV 369, 270, 825, 109, 109), the Cherub Invictus (507) and Comminus (695), the Hi-Scout Armored Automata
-  Carrier (60.0 t) and the SwiftStar drone (30 t). Flagged, not entered: the Cherub Dominus prints BV 517 where the
-  rules give 537 (as if its Support PPCs were 12 BV, TM p.317 says 14, or it took a -15 penalty it has nothing for);
-  the Labor Automata weigh 1,560 kg built from their sheets, not the "500kg underweight" of p.51. The app has no
-  library of published designs outside the MUL, so these are tests only.
-- [x] Smart Robotic Control System, basic and Improved (IO:AE pp.134-135, 187, 215), Advanced, on Combat Vehicles and
-  fighters: the table's share of the unit's mass rounded up to the half ton (none under 10 tons, 1 ton to improve),
-  the table's Skills, 5,000 + 10,000 C-bills a ton, and final BV x 0.85 (user ruling 2026-10-14: the Ghosts of
-  Obeedah sheets leave the 0.85 out, Hi-Scout 527 and SwiftStar 529, where the rule gives 448 and 450). Still owed:
-  the SRCS on 'Mechs, IndustrialMechs, Small Craft, Support Vehicles and the large units; the shielded aerospace
-  SRCS, SDS (Caspar) and Caspar II systems; the robotic play rules (Aggression levels, the separate -4 Initiative,
-  shutdown after a jump, IO:AE pp.128-135). The Microcopter and Tankette drones wait for Support Vehicles.
 - [ ] Play panels fail axe color-contrast: white on gold fieldset legends and `btn-primary` buttons (2.09:1), and
   `small-text` paragraphs inside a fieldset render #212529 on #333 (1.22:1). Found 2026-10-14 on the battle armor
   play panel; it is the shared theme, so every play fieldset is affected.
@@ -879,16 +415,6 @@ played first, then by dependency.
 Chassis types the Mech Creator builds (checked 2026-10-02): Biped, Quad, Tripod, LAM, QuadVee (Mech Type);
 Ultralight and Superheavy (tonnage); OmniMech and Primitive (checkboxes); IndustrialMech (Industrial structure).
 
-- [x] 'Mech play rolls the Determining Critical Hits Table (TW p.124) in every location: lines rolled again when
-  empty, already hit or unable to take a hit (armor and structure slots, CASE; CASE II and CASE-P via MegaMek).
-  IndustrialMechs +2, a modified 13 as 12, 14 or more four torso hits or the head or limb blown off; Primitive
-  BattleMechs +2 (13 or more as 12), Primitive IndustrialMechs +4 (IO:AE p.114; read as replacing TW's +2, not adding
-  to it). The IndustrialMech End Phase damage check after a fall or physical attack (TW pp.68, 144): +1 a level
-  fallen above 1, as the book says (MegaMek adds every level), location from the Front/Rear column. An
-  IndustrialMech's sensors go after one hit (TW p.128). ICE and fuel cell IndustrialMechs make no walking or running
-  heat (TW p.158).
-- [x] Non-Fusion BattleMechs (TO:AUE p.120): ICE, fuel cell and fission engines on a BattleMech are Experimental and
-  offered only at that rules level; they make movement heat as BattleMechs.
 - [ ] Flagged, kept as printed: the BV Movement Heat of 0 is for "ICE-powered IndustrialMechs" only (TM p.303, still so
   in the BV errata v4.1), though fuel cell IndustrialMechs also make no movement heat in play (TW p.158). MegaMek
   gives every IndustrialMech 0.
@@ -979,11 +505,6 @@ in HeySporky/battletech-tools. All of it is merged into local `master` together 
   the custom catalogs, Alpha Strike conversions marked unresolved, play-rule items, the import
   "ask the importer" step, review of `tools/spec-c-sources-staging.jsonl`. The equipment PRs are open
   (#98-#104); these items go in follow-up PRs.
-- [x] Re-cite the LAM and QuadVee comments in `battlemech.ts` that still gave IO (2016) pages to IO:AE,
-  checking each page (2026-10-17; also the tests and the LAM Bomb Bay and Fuel Tank records). IO pp.106-196
-  sit 6 pages earlier in IO:AE. The RISC Emergency Coolant System's "+4" was cited to IO p.91 (the TSEMP
-  page); it is "+4 to unit Heat Efficiency" in the IO:AE p.190 BV table. Other IO (2016) citations remain
-  (TSEMP, Freezers and others in `ssw-canon-pending-names.ts`).
 - [ ] Alpha Strike conversions for the pods added in Batch 9c (B-Pod, M-Pod, Chaff Pod) are marked
   unresolved.
 - [ ] Vehicles have no era check on engine types, so large engine dates (Batch 16) apply to 'Mechs only.
@@ -1020,8 +541,64 @@ in HeySporky/battletech-tools. All of it is merged into local `master` together 
 - [ ] Permenant Air Mechs (PAMs): Source: https://www.battletech.com/forums/index.php/topic,44833.0.html  **Note: there is a lot of other good stuff to pull out of that thread as well... we want it all.
 - [ ] https://lostech.miraheze.org/  Lots of good custom stuff here... The detargeting computer as an example.
 - [ ] https://battletechfanon.fandom.com/wiki/Category:Weapons  More stuff to add.
+- [ ] Siege Tank (Custom Homebrew vehicle, requested 2026-10-18): a StarCraft-style tracked tank that
+  transforms like a LAM between Vehicle Mode (moves, direct fire) and Siege Mode (immobile, artillery with
+  more damage and range). Source: a design conversation the user pasted; nothing in it is canon, and some of
+  its rules claims are wrong (corrected below). User's decisions (2026-10-18): conversion equipment is 10%
+  of the vehicle's weight; tracked only; the construction math decides the minimum tonnage, no fixed thresholds; Siege
+  Mode must mount a real artillery weapon (Thumper, Sniper or Long Tom), not an Artillery Cannon, and does
+  more damage than Vehicle Mode. Deferred to Tuesday 2026-10-20 evening (weekly token limit). Core concepts:
+  - **Two modes, one unit.** A mode flag: Vehicle (normal tracked movement, e.g. 4/6 or 5/8, turret works
+    normally) and Siege (0/0 MP, turret turns freely through 360 degrees). Each mode has its own movement
+    and its own weapon profile.
+  - **Transformation, LAM timing.** Declared in the Movement Phase (going into Siege, the tank may move
+    first); no weapon fires on the turn it transforms; the new mode takes effect at the end of the turn.
+  - **Dual-mode main gun, one physical weapon with two profiles tied to the mode.** Vehicle Mode: AC/10
+    profile (10 damage, no minimum, 5/10/15; the source gives 7/14/21, which is not the AC/10's range, so
+    decide which is meant), direct fire, may fire after moving. Siege Mode: artillery profile with the full artillery
+    rules (multi-mapsheet range, indirect fire, scatter, minimum range), only while immobile. No mode
+    available = cannot fire. Weight, slots and cost are the artillery piece's (the source's suggestion).
+  - **Three variants by artillery piece.** Catalog figures (TO:AUE p.96), not the source's:
+
+    | Variant | Artillery | Damage | Range (mapsheets) | Artillery weight | Source's min. tonnage |
+    | --- | --- | --- | --- | --- | --- |
+    | Light | Thumper | 15 | 21 | 15 t | 45 t |
+    | Medium | Sniper | 20 | 18 | 20 t | 55 t |
+    | Heavy | Long Tom | 25 (the source says 30) | 30 | 30 t | 65 t |
+
+  - **Siege Mode extras the source offers, to decide:** a to-hit bonus for the stable platform (the source
+    says both +1 and -1; it means a bonus), treating the tank as a gun emplacement while sieged, and a
+    direct-fire option in Siege Mode.
+  - **Construction checks the source proposes:** at least 45 tons (55 for Sniper, 65 for Long Tom); at
+    least 4/6 MP in Vehicle Mode; armor at least 75% of the tonnage's maximum; the turret must hold the gun
+    and its ammunition. These thresholds are rules of thumb. Better: let the construction math decide
+    (Thumper 15 t + its ammunition + turret 10% fits a 45-ton hull; Long Tom 30 t does not fit much under
+    60), and give only the 45-ton floor as a rule.
+  - **Not in the source, needed to build it:** a weight for the conversion equipment. Canon precedents are
+    LAM conversion equipment 10% of the unit's weight, bimodal LAM 15% (IO:AE p.108) and QuadVee 10%
+    (IO:AE p.128); 10% is a reasonable default. Also its slots (vehicle body or turret), Battle Value
+    (each mode's offensive BV, as LAM modes are rated?), cost multiplier, how damage to the conversion
+    equipment strands the tank in one mode, and an Alpha Strike card (two cards or one with both modes).
+  - **What the source gets wrong:** BattleTech has no canon "bimodal vehicle" chassis, and Tactical
+    Operations does not make this "100% legal". Tripods have no alternate modes, and QuadVees are 'Mechs.
+    Gun emplacements give no +1 accuracy. The real canon pieces it can lean on are LAM and QuadVee
+    conversion (IO:AE pp.108, 128), Direct-Fire Artillery (TO:AR p.153: canon artillery may already fire
+    directly at units in line of sight), Artillery Cannons (TO:AUE p.97: Thumper/Sniper/Long Tom Cannons
+    of 10/15/20 t, direct-fire weapons in the catalog) and Mobile Field Artillery (TO:AUE p.122).
+  - **Where it goes:** the Combat Vehicle creator, at the Custom Homebrew level only (6): a vehicle option
+    "Siege Tank (transforming)", the three dual-mode guns in `mech-custom-equipment-weapons-*` (or a vehicle
+    custom file), never in canon lists or canon BV. Play mode needs the mode flag, the transformation turn
+    and the profile switch.
 
 ### Calculations and play
+
+- [ ] Quirks system (requested 2026-10-18) for all unit types, equipment and weapons: design quirks on vehicles, mechs, aerospace, etc, 
+  weapon quirks on individual mounted weapons, and quirks on equipment. Nothing models quirks today, not
+  even for 'Mechs (only a mention in the cockpit and Clan misc data). Read the canon quirk rules in the
+  library first (the positive, negative and weapon quirk lists and which unit types each applies to) and
+  cite them; then store quirks on the unit and on each mounted item, show them on the record sheet, apply
+  their play effects, keep them in saves, and read and write them in the MegaMek and SSW adapters (which
+  already carry quirks, see "Shared" above).
 
 - [ ] Cost, record sheet and Alpha Strike conversion should consume `roundsPerTon`/`shotsPerTon`,
   `prototype` and composite records.
@@ -1087,9 +664,7 @@ type ships. The card reader walks each unit's top card; decks deal from the libr
 
 ### Decisions before any code
 
-- [ ] **Source gaps.** The card data needs the physical cards or an official PDF; neither is local. Aces cites the
-  Alpha Strike Quick-Start Rules (AS:QSR), which aren't local either, so map each AS:QSR reference to its ASCE
-  page. Other Aces boxes beyond Scouring Sands: none local; check battletech.com before scoping them.
+- [ ] **Source gaps.** Now local (2026-10-18, library `alpha-strike/`): the Aces print-and-play cards (`Battletech-Aces-Cards-20230310.pdf`, v3, 8 pages), the Aces rules sheet, the Aces rulebook and Scouring Sands books, and the Alpha Strike Quick-Start Rules. Still missing: the other Aces boxes.
 
 ### A. Game state and unit queries (`src/classes/`)
 
@@ -1194,8 +769,7 @@ type ships. The card reader walks each unit's top card; decks deal from the libr
 
 ## 10. JBTIICRework review (2026-10-06)
 
-`C:\repo\JBTIICRework` was a Gemini AI Studio export of master at `0a1f061e` when this review was done; its
-`main` branch now holds the rulebook library instead. The export is reference only: port by hand,
+`C:\repo\JBTIICRework` is the rulebook library. The export is reference only: port by hand,
 never copy its `package.json`, lockfiles, Vite config, `.gitignore`, `tsconfig.json` or `index.html`. Its
 `errors.md` was checked item by item.
 
@@ -1216,10 +790,6 @@ Open:
     Check OCR against the page image before citing a stat block.
   - [ ] Identify the files whose names say "title unconfirmed" or "title truncated" (20 left on 2026-10-17,
     mostly fan and foreign-language magazines, plus a few FASA/FanPro scans) and rename them.
-  - [x] Tesseract language data (2026-10-17): eng, osd, spa, deu, pol, por, jpn, rus, ita and fra are in
-    `~/tessdata`, which `ocr_ollama.py` uses. `ocr_queue.py` now ranks `languages/pl` and `languages/pt`;
-    the queue holds 57 files (about 2,900 pages), started 2026-10-17 (log
-    `text/_ocr_run_2026-10-17.log`; offsets, catalog and search index rebuild after it).
 - [ ] Internal structure bug (found 2026-10-07): 25 tons had 5 leg points (6), and 55/60/65 tons had 17/19/20 center
   torso points (18/20/21), against TM p.47. Confirmed in four printings; the 2026 Core Rulebook has no
   construction rules. Upstream issue #113, fix in PR #114 (branch `fix/internal-structure-table`). Merged into
@@ -1229,300 +799,6 @@ Open:
   an earlier edition includes carries `editionStats`: one key per edition, the stats as printed, or `null` when
   unchanged from the previous edition that lists it. Work one edition at a time, whole, from page images (never
   OCR text), then stop for review.
-  - [x] Battledroids (2026-10-07): 14 weapons, 4 ammunition types, engine, gyro, cockpit, heat sink, jump jets,
-    armor, internal structure, biped, tonnages 10-100; ten 'Mechs and five other units named on the edition.
-  - [x] Second Edition (2026-10-07): the same 45 records. Changed: missile launcher heat (today's values), the
-    170 engine (6.0 tons), jump jets (0.5/1/2 tons by tonnage, one box each), structure table from 10 tons.
-    Fourteen 'Mechs and the Chameleon trainer named on the edition; no vehicle or infantry rules.
-  - [x] BattleTech Manual (2026-10-07): the 45 earlier records plus 23 new: AC/2, AC/10, AC/20 and their
-    ammunition, Long Tom, Sniper and Thumper with standard and smoke rounds, vehicle flamer and fuel, Inferno SRMs,
-    searchlight, fighter bombs, the LAM layout, the ICE (vehicles only). Changed: prices added (BTM p.86), integral
-    engine heat sinks, structure table printed correctly. No 'Mech listings; vehicles, infantry, fighters and
-    buildings named on the edition. Kept as printed and flagged: LRM 15-pack at 2 critical locations, vehicle
-    flamer at 5 tons, Thumper outranging the Sniper. Engine, gyro and cockpit boxes could not be read off the
-    record sheet thumbnail (BTM p.7), so those stay inherited.
-  - [ ] Builders for the Manual's units that had none ('Mechs, LAMs and every vehicle type already build):
-    - [x] Aerospace Fighter (2026-10-07): `aerospace-fighter.ts` and the Fighter Creator (chassis, armor, equipment,
-      summary, saves, backup). TechManual rules; reproduces the Sabutai example (TM pp.184-197). Not built: BV,
-      cost, OmniFighter pods, external stores loads, record sheet, Alpha Strike conversion, roster and play mode
-      (all done later the same day, see below).
-    - [x] Conventional Fighter (2026-10-07): a fighter type in the same class and Fighter Creator. 5-50 tons, turbine
-      or standard fusion (x1.5 weight), controls 10%, armor tonnage x 1, 160 fuel points a ton, single heat sinks
-      for energy weapons, power amplifiers, VSTOL. Reproduces the 'Mechbuster example (TM pp.184-196). Same gaps as
-      the aerospace fighter.
-    - [x] Fighters finished out (2026-10-07): Battle Value (TM pp.302-304, Thunderbird example 1,932), cost (TM
-      pp.283-285, 'Mechbuster example), OmniFighter pods, external stores (TW p.247), record sheet, Alpha Strike
-      conversion and card (Thunderbird matches its MUL card), roster, play mode with hit locations, Damage
-      Thresholds and critical hits (TW pp.237-240), roster print. VSTOL on an aerospace fighter is an optional
-      rule from the Advanced level: TM p.190 allows it in the rule text and denies it in the Sabutai example.
-      Later the same day: Artemis IV launchers count 20% more in the Battle Value (TM p.303); play mode tracks
-      heat through the Heat Phase (TW p.161) and holds weapon critical hits for the choosing player; Alpha Strike
-      PNT and FLK specials (ASC pp.121, 128; the SPR-H5 Sparrowhawk matches its MUL card); saved fighters are in
-      the Alpha Strike roster's unit picker. LRM/SRM/AC/IF specials are not given to fighters, as on MUL cards.
-      Open: heat Avoid numbers are read off the record sheet (the Heat Scale itself is not in the tool); the
-      catalog's "+ Artemis IV" launcher records carry a Battle Value that is not the plain launcher x 1.2
-      (LRM 20: 189 against 217.2), which the 'Mech and vehicle calculations still use.
-    - [x] Conventional infantry platoon (2026-10-07): Infantry Creator under TechManual pp.144-155. Motive
-      types, the Formations Table by affiliation, oversized platoons split into sub-platoons, primary and
-      secondary weapons (all 212 rows of the weapons table, pp.349-352, with Battle Values from p.319 and prices
-      from pp.298-301), range modifiers, damage by troopers remaining, special features, Anti-'Mech kits,
-      transport weight, Battle Value (TM p.309, the 168 example), cost (TM p.276, the 3,167,838 example), saves,
-      backup and a record sheet. The book's tables match the revised infantry tables v4.1 (June 2021).
-      Open, for a ruling: (1) settled 2026-10-07, see "Skill multipliers by rules edition" below. (2) TM p.151 works a platoon with 2 support
-      machine guns per squad to -2 in its own hex (heavy burst -1, crew +1) but p.153 writes -1 for the same
-      platoon, leaving the burst out; the creator follows p.151 and the Classifications Table. (3) The p.152
-      text gives the crew modifier to weapons with a crew "of more than 2"; the Crew Table (p.149) and both
-      examples give it at 2, which the creator follows. (4) Glenn's LRM example (p.152) uses 0.19 damage, the
-      table's inferno row; the standard missile is 0.48. (5) Seven weapons have no row in the cost table
-      (vibro-mace, four thrown weapons, both Pequod harpoons): their cost is left unknown. (6) With a secondary
-      weapon the book does not say how to price the platoon; each trooper is priced by their own weapon, as
-      MegaMek does.
-    - [x] Infantry finished out (2026-10-07): platoons join roster groups and play mode, tracked by sub-platoon,
-      with attacks resolved by Total Warfare pp.215-217 (the Non-Infantry Weapon Damage Against Infantry Table,
-      burst-fire and infantry damage point for point, Clear terrain and mechanized doubling) and printed with
-      losses blacked out; Alpha Strike conversion (ASC pp.92-103, Point Value as MegaMek works it out; matches
-      the MUL's Motorized, Mechanized Hover, Taurian Foot and Clan Mechanized Hover cards), printable and in the
-      Alpha Strike roster's unit picker; weapon introduction, extinction and reintroduction years from the cost
-      table (TM pp.298-301) with an era on the platoon; infantry armor (TO:AUE pp.129-130, 191: 47 rows, damage
-      divisor, encumbrance, vacuum, stealth, cost), Advanced rules.
-      Rulings (user, 2026-10-07): damage modifiers apply in the order the books list them (Clear terrain TW
-      p.216, mechanized TW p.217, armor divisor TO:AUE p.129); a platoon whose armor keeps it from Anti-'Mech
-      attacks gets no weight, cost or skill from its kits until the armor comes off, and reads the 5 column;
-      armor cost before the multipliers stands; Battle Value stays the book's (TM p.309) and is looked up by
-      rules edition (`getBattleValue(edition)`), so each edition's own method can be added as it is entered;
-      the MUL is the source of truth for published cards, and the converter is for unpublished designs.
-      Discrepancies noted: the MUL's Foot Platoon (LRM) card shows Armor 1 where 28 troopers convert to 2; MUL
-      Battle Values for infantry do not follow TM p.309 (Motorized Platoon, Rifle, Energy: 86 on the MUL, 108
-      by the book). Also: an oversized formation converts to Alpha Strike as its first sub-platoon; the Stetta
-      auto-pistol's date row is misprinted (TM p.301) and 3010 is taken as its Inner Sphere introduction.
-      Not built yet: field guns and field artillery, beast-mounted infantry, specialized infantry (combat
-      engineers, marines, paratroops and the rest) and disposable weapons, all Tactical Operations; battle armor,
-      which is a unit type of its own.
-  - [x] Skill multipliers by rules edition (2026-10-07): `skill-multipliers.ts` is keyed by edition and says
-    which unit types read the 5 column. Master Rules p.144 and Master Rules, Revised p.158 share one table
-    (skills 0-7; infantry and, in the Revised Edition, ProtoMechs use the 5 column); Total Warfare uses the
-    TechManual's p.315 table as printed from 2020 on and repeated in the 2024 Battle Value pages (Gunnery 0 /
-    Piloting 0 = 2.42), which the Core Rulebook p.222 also prints; editions before Master Rules have no Battle
-    Value system. The app had carried the 2017 "BV 2.1" revision (2.80) cut off at Piloting 5, so skill-adjusted
-    Battle Values of 'Mechs, vehicles and fighters change (Gunnery 3 / Piloting 4: 1.38 before, 1.32 now). The
-    2007 first printing's table (3.68) is noted in the file, not selectable. Nothing chooses an edition yet:
-    every unit takes an optional edition and defaults to Total Warfare until the edition selector is built.
-    BattleTech Compendium: The Rules of Warfare (1994), added to the library since, has no Battle Value
-    system (checked in its OCR text, 2026-10-17).
-    - [x] Gun emplacement / building (2026-10-07): Building Creator under Tactical Operations: Advanced Rules
-      pp.126-131. Classifications and types from the table on p.113 (gun emplacement, fortress, standard, hangar,
-      wall, fence, bridge, tent), Construction Factor, size in hexes and levels, internal weight capacity (CF x
-      levels; hangars tripled to 600 tons for every 4 levels), armor in full tons (16 points a ton Inner Sphere,
-      20 Clan, to CF x 1), Heavy weapons placed hex by hex against the per-hex limit (gun emplacement CF / 3,
-      fortress CF / 10 a level), rooftop turrets, heat sinks, power amplifiers, the Power Generators Table
-      (p.132), unspecified equipment, minimum gunners and officers (p.130), cost (p.208), saves, backup and a
-      record sheet with Armor Factor and CF circles for each hex. Reproduces the book's Kenyon, Tara and Ryana
-      examples (pp.128-131).
-      Rulings (user, 2026-10-07) on the five items that follow: (1) use the last prices published, the
-      TechManual's; (2) and (5) stand as built; (3) a building handles heat as a vehicle does, so its heat sinks
-      cover every energy weapon whatever the generator, with none free (TO:AUE p.83); (4) no amplifier for a
-      weapon that fires ammunition or for any flamer. As first raised: (1) the cost table (p.208) prices no
-      turrets, power amplifiers or heat sinks for
-      buildings; the creator charges their TechManual prices (pp.279-280). (2) TO:AR p.129 calls a weapon Heavy
-      from 0.25 tons, TO:AUE p.82 from half a ton for Mobile Structures; the building page is followed. (3) With
-      a fusion or fission generator the creator asks for no heat sinks and no amplifiers, its reading of TO:AUE
-      p.83 ("Mobile Structures without a Fission or Fusion power system must incorporate enough heat sinks").
-      (4) Flamers and chemical lasers are left out of the power amplifier weight, as on vehicles; the building
-      text says only "energy weapons". (5) A fortress's CF / 10 limit is not rounded; the book gives no rounding.
-      The roster, play mode, structural modifications and fittings were added the same day: see "Buildings in
-      play", "Building modifications and fittings" and "Buildings, still owed" under Buildings, Gun Emplacements
-      and Mobile Structures.
-      The Manual's own method (BTM pp.39-40, 83-84, 86: CF 1-150, 1-4 levels, 1-3 hexes, structure of levels x
-      hexes x CF / 10 tons, walls of CF / 3 tons, turret armor at 16 points a ton, a power plant rated by energy
-      weapon tonnage, the Gun Emplacement Damage Table and the Installation Cost Chart) was read from the page
-      images and is not built: it waits for the edition selector, like every other edition's construction rules.
-  - [x] BattleTech Compendium (2026-10-07): the Manual's 68 records plus 129 new, read from the page images
-    (weapons tables BTC pp.115-116, Advanced Equipment pp.117-122, price list p.129). New: the Clan weapons and
-    equipment table (ER and pulse lasers, ER PPC, Gauss rifle, LB-X and Ultra autocannon, Clan LRMs and SRMs,
-    Streak SRMs, Narc, Arrow IV, TAG, anti-missile system, active probe, A-Pod, ECM, MASC, targeting computer)
-    and the Inner Sphere's 2750 technology (ER large laser, ER PPC, pulse lasers, Gauss rifle, LB 10-X, Ultra
-    AC/5, Streak SRM-2, Narc, Arrow IV, TAG, anti-missile system, Beagle, CASE, C3 master and slave, Guardian,
-    MASC, hatchet); their ammunition with prices, LB-X cluster, Arrow IV homing, Swarm and Thunder LRMs, Artemis
-    missiles; Endo Steel, Ferro-Fibrous and Ferro-Aluminum armor, XL engines, double heat sinks, Triple Strength
-    Myomer; the four-legged layout (optional rules, p.56). Changed from the Manual: LRM-15 back to 3 critical
-    slots, Vehicle Flamer 0.5 tons with a critical slot, LAMs capped at 55 tons, searchlights on vehicles, smoke
-    rounds in the price list. Unchanged: engine and structure tables, cockpit, gyro, standard heat sinks, jump
-    jets, standard armor, the lasers, PPC, flamer, machine gun and the Manual's ammunition prices. No 'Mech
-    listings; vehicles, infantry, BattleArmor points, fighters, DropShips, JumpShips, OmniMechs, OmniFighters
-    and installations named on the edition.
-    Corrected as obvious misprints (errata recorded): the Inner Sphere table prints the Beagle Active Probe and
-    Artemis IV FCS rows one column to the right; entered as 1.5 tons / 2 slots (range 4) and 1 ton / 1 slot.
-    Readings to confirm: (1) the catalogs have no Artemis IV record of its own, so the system's row is added to
-    each "launcher + Artemis IV" record (launcher + 1 ton, + 1 slot, + 100,000); (2) single-shot launchers are
-    entered for LRMs and SRMs only (standard launcher + 0.5 tons, half price), with no critical slots because
-    none are printed; single-shot Streak, Narc and Artemis launchers are allowed by the text but not entered;
-    (3) "2 x normal" ammunition is entered as 60,000 (LRM) and 54,000 (SRM) a ton; (4) the Smoke Round price
-    row reads "= Conventional" and no figure is entered; (5) the Clan Active Probe and Clan ECM Suite have no
-    price row of their own (only "Beagle" and "Guardian" are priced) and are left unpriced; (6) Clan CASE has
-    no catalog record and is listed under the edition's `notModelled`; (7) the Clan Arrow IV FASCAM round is
-    entered with no shots or price, since none are printed; (8) the Thumper still outranges the Sniper (14
-    mapsheets to 12) on three tables, kept as printed; (9) "AC/20 type weapons" may split their critical slots
-    between adjacent locations (p.113), read as covering the Clan LB 20-X and Ultra AC/20. Engine, gyro and cockpit boxes on the record sheet were
-    not re-read and stay inherited. The Compendium's own construction rules for vehicles, installations and
-    fighters (pp.123-127) and its cost formulas (pp.128-131) were read and are not built: they wait for the
-    edition selector.
-  - [x] BattleTech, Third Edition (FASA 1604, 1992), complete: read from the page images of the box set's
-    rulebook (BattleMech Design pp.41-43, Fusion Engine Table and Inner Sphere Weapons Table p.44, the reference
-    card, the training scenarios pp.36-39) and its record sheets. An introductory game with the 3025 weapons
-    only: flamer, three lasers, PPC, Autocannon/2 to /20, machine gun, LRM-5 to -20, SRM-2 to -6, their
-    ammunition, single heat sinks; engine and structure tables, cockpit, gyro, jump jets, armor, the two-legged
-    layout and tonnages 10-100 unchanged. Every weapon row matches the Compendium's; the rulebook prints no
-    prices, so each weapon, ammunition and the heat sink has its own entry without one. Fourteen 'Mechs;
-    no other units; clubs listed as not modelled.
-    Readings to confirm: (1) the fourteen filled record sheets in the library's scan are footed "Copyright
-    1996", a later printing than the 1992 rulebook and blank sheet; the rulebook names the same fourteen by
-    chassis (pp.36-39), and the model codes (LCT-1V, PXH-1 and so on) are taken from those sheets; (2) the
-    sheets print a Cost for each 'Mech, not entered, as the rulebook has no prices; (3) records the edition
-    does not print (prices) are left out of its entries, not inherited from the Compendium.
-  - [x] BattleTech, Fourth Edition (FASA, 1996), complete: read from the page images of the box set's rulebook
-    (Construction pp.40-44, Weapons and Equipment Table p.45, Equipment p.46, scenarios pp.35-39). The Third
-    Edition's seventeen weapons, row for row, with three additions: the hatchet (tonnage / 5 damage, tonnage /
-    15 tons and slots), the Flamer (Vehicle) (0.5 tons, 1 slot, 20 shots) and single-shot LRM and SRM launchers
-    (launcher + 0.5 tons). Engine and structure tables, cockpit, gyro, jump jets, armor, layout and tonnages
-    unchanged; no prices; BattleMechs only.
-    Readings to confirm: (1) the box has 24 'Mech designs (p.5); the 20 the rulebook's scenarios name are
-    listed, the Assassin without a model code, and the missing four are noted on the edition. The box's
-    'Mech sheets scan has since been added to the library (see "Wanted for the library" below) and names
-    all 24; (2) the contents page puts Equipment
-    on p.47, the section is printed on p.46 and is cited so; (3) single-shot launchers have no table row, so no
-    critical slots are entered; (4) the Flamer (Vehicle) sits under Ballistic Weapons on the 'Mech table and is
-    entered on the existing vehicle flamer record.
-  - [x] BattleTech Master Rules (FASA 1707, 1998), complete: read from the page images (Construction
-    pp.109-120, Weapons and Equipment Tables pp.115-117, Equipment pp.122-135, Costs pp.136-138, Artillery
-    pp.68-71, special cases pp.75-81). 286 entries: 263 records in the edition, 95 of them new to it. New against
-    the Compendium: Inner Sphere ER medium and small lasers, Light Gauss, LB 2-X/5-X/20-X, Ultra AC/2, /10 and
-    /20, MRMs, Streak SRM 4 and 6, the sword and A-Pods; Clan heavy lasers, ER micro and micro pulse lasers,
-    heavy and light machine guns, Light TAG and the Light Active Probe; torpedo launchers; single-shot MRM,
-    Narc, Streak and torpedo launchers; fragmentation, incendiary, semi-guided, Swarm-I and Narc-capable
-    missiles and Narc explosive pods. Gone with the aerospace rules: bombs, Ferro-Aluminum armor, Land-Air
-    BattleMechs; BattleMechs now start at 20 tons. Prices are back (one list for both technology bases, p.138).
-    Readings to confirm: (1) ferro-fibrous rounding is printed two ways ("up on .5" pp.113, 119; ".5 down"
-    p.127); both are recorded, neither chosen; (2) the Clan Heavy Machine Gun prints a dash under Long range,
-    entered as a long range of 0 with a note; (3) torpedo launchers and ammunition have no table or price rows,
-    so they carry the matching LRM/SRM figures and no price (p.130); (4) single-shot launchers again have no
-    critical slots printed; Streak single-shot launchers are entered under "any type of missile weapon" (p.129);
-    (5) no records exist for Flare LRMs, Clan CASE or Clan Narc explosive pods, so those are noted on the
-    edition; (6) the internal structure entry repeats the table for 20 to 100 tons so the edition has its own.
-  - [x] BattleTech Master Rules, Revised Edition (FanPro 35000, 2001), complete. The PDF is born digital: the
-    Weapons and Equipment Tables (pp.121-123) and the cost tables (pp.149-151) were read from the page images,
-    the prose (Construction pp.115-129, Equipment pp.130-148, Artillery pp.73-77) from its typeset text. 331
-    entries: 308 records in the edition, 45 of them new to it; every Master Rules record is kept and every old
-    table row and price is reprinted unchanged (test-enforced). New: Heavy Gauss Rifle, Rotary AC/2 and /5,
-    Improved Narc Launcher and its five pods, Rocket Launchers 10/15/20, Improved C3 Computer, the Inner Sphere
-    targeting computer, ATM 3/6/9/12 with ER and HE loads, armor-piercing, flechette and precision autocannon
-    ammunition, Thunder-Augmented/-Inferno/-Vibrabomb/-Active LRMs, Arrow IV Inferno-IV and Vibrabomb-IV rounds
-    and Inner Sphere FASCAM, light engines and stealth armor. ProtoMechs and a Battle Value System are new to
-    the book and are noted on the edition, not modelled.
-    Readings to confirm: (1) the Heavy Gauss Rifle prints "25/20/10*" and the text says only that damage drops
-    with range; entered as 25 with the short/medium/long reading in the note; (2) single-shot launchers are now
-    a closed list (SRMs, MRMs, LRMs, Narc, torpedoes; p.140): Streak single-shot launchers are kept, as SRMs,
-    with a note; (3) Inner Sphere Arrow IV FASCAM is entered on the strength of p.76 ("Inner Sphere units may
-    use any of the munitions"), though pp.132 and 144 still call FASCAM a Clan round; (4) ATM ER and HE loads
-    have no price of their own (one ATM ammunition price, p.151), so they carry none; (5) rocket launchers
-    carry no ammunition, and the price list's Ammo Cost is noted as the reload price; (6) no records exist for
-    incendiary autocannon ammunition, Flare LRMs, Clan CASE or Clan Narc explosive pods; (7) ferro-fibrous
-    rounding is still printed two ways (pp.119, 128 against p.137); (8) battle armor names on the edition are
-    the Infantry Costs Table's fifteen, three more than the rules sections describe.
-  - [x] BattleTech Compendium: The Rules of Warfare (FASA, 1994), complete: read from the page images of the
-    third printing (September 1995), a scan with no text layer. 232 entries: the Weapons and Equipment Tables
-    (pp.104-106), prices (pp.123-124), Equipment (pp.112-122), Construction (pp.99-109), Artillery (pp.77-80)
-    and Aerospace Support (pp.70-75). Every weapon row and price matches the 1990 Compendium's. Ferro-Aluminum
-    armor and Land-Air BattleMechs are gone with the AeroTech rules (p.7); BattleMechs still run from 10 to
-    100 tons (p.100). Torpedo launchers (p.121) and Narc-equipped missiles (p.119) first appear here, so 22
-    records now start in this edition instead of the Master Rules (six more, the single-shot Streak and Narc
-    launchers, start in the 1990 Compendium); the cluster, mine, Arrow IV and TAG ordnance of aerospace support fighters (p.73) starts here too.
-    Eight Technical Readout BattleMechs (pp.125-132) are listed on the edition.
-    User rulings (2026-10-08): (1) Narc-equipped ammunition costs twice the standard ton, as p.119 says; (2)
-    torpedoes take the matching launcher's figures: the only difference is air against water; (3) the Clan
-    Active Probe and ECM Suite take the Inner Sphere price (200,000): no errata for this book is in the
-    library, and the list prices every shared item once for both technology bases, so the markup is nil; (4)
-    the Vehicle Flamer (7,500) and its ammunition (1,000) take MegaMek's prices, which the Master Rules later
-    print; (5) the single-shot Streak and Narc launchers are entered, with the discrepancy between "double the
-    base cost of the launcher" (p.120) and "Half normal" (p.124) noted and no price; (6) bombs stay one
-    record a kind: high-explosive, cluster, inferno, mines, Arrow IV, homing Arrow IV and TAG pod each carry
-    the edition; (7) the homing Arrow IV round uses the system's 5 shots a ton; (8) the printing is noted on
-    the edition.
-    The same single-shot passage is in the 1990 Compendium (BTC p.121), so the six single-shot Streak and Narc
-    launchers are entered there as well and start in that edition (user ruling, 2026-10-08); a single-shot
-    Narc launcher carries 1 pod.
-  - [x] The rules edition selector, BattleMechs (2026-10-08): Step 1 of the Mech Creator has a Rules Edition
-    control listing the nine earlier editions, Total Warfare (the default) and the Core Rulebook. The edition is
-    saved with the design (`rulesEdition`, absent for Total Warfare, so old saves load unchanged). Under an
-    earlier edition the creator offers only that rulebook's chassis types, tonnages, components and equipment,
-    with the weight, heat, damage, ranges, critical slots and price it prints; eras still apply, and since
-    2026-10-16 the edition's own rules levels do (below). Edition-only rules applied: Battledroids jump jets at 0.5 tons a point at any weight (BD p.24);
-    every heat sink on the critical chart in Battledroids and the Second Edition (BD p.25); the edition's own
-    Engine Table (Battledroids' 6.5-ton 170). Changing edition restats mounted equipment and removes nothing;
-    Step 1 lists what the new edition does not include.
-  - [x] Battledroids construction in full (2026-10-08). The 5-ton chassis (BD p.23: 0.5 tons of structure,
-    a 10-rated engine, so Walking MP starts at 2; Step 2 now lists Walking MP up to the engine table's limit).
-    Internal structure boxes come from the edition's own table, for every earlier edition (BD p.24).
-    Jump jets take no critical box in Battledroids (BD p.25). Printing asks for no rules level under an
-    earlier edition. Editions are flagged `noBattleValue` (all seven before the Master Rules) and `noPrices`
-    (Battledroids, Second, Third and Fourth Editions): Step 1 and the summary say so, the BV2 figure is shown
-    for comparison, and the record sheet prints "Not in this edition" for the cost. The least ammunition an
-    edition asks for is checked (`ammoTonsFor`: a ton for each launcher or ballistic weapon, BD p.25; a ton
-    for each class from the Third Edition on, read as each group of weapons sharing ammunition) and shown in
-    Steps 1 and 5.
-  - [x] Battledroids in play (2026-10-08). The tanks, jeeps and infantry squads of Expert Battledroids (BD
-    pp.22-23) are seven fixed designs (`battledroids-units.ts`, `BattledroidsUnit`): added to a roster group
-    from a list, with a play panel (movement points, shots, hits located on the Tank Hit Locations table by
-    the players' dice or the app's), a record sheet and a place in the printed roster. A 'Mech built under
-    Battledroids plays by its rules where play mode works something out (`playRules` on the edition): heat for
-    moving (walk 0, run 1, 1 a hex jumped, BD p.12), the Movement Modifiers Table ending at +3 (BD p.5), no
-    modifier for a second target. The play screen carries the Advanced and Expert tables as a reference panel
-    (`battledroids-rules.ts`). Fixed for every edition: the minimum range modifier was one short ([minimum] -
-    [range] + 1, TW p.118), and a target's Other Mods can now be negative.
-  - [x] Battledroids readings (1) to (6) below: confirmed by the user 2026-10-08. What play mode leaves to the
-    players stays with them, with the rules in the reference panel (Heat Scale, Ammunition Explosions, Line
-    Of Sight And Firing Arcs, Critical Hits).
-  - [x] Battledroids, readings: (1) a jeep "can withstand 5 points of damage" and "any
-    hit that does more than 5 damage points kills" it (BD p.22): entered as destroyed by the sixth point,
-    however the points arrive; (2) "every tank has ... 5 points of turret armor", though the Scorpion and the
-    Hunter have no turret: all three track turret armor, as printed; (3) no modifier for a second target,
-    because the weapon attack rules name none.
-  - [x] Battledroids, the rest of play (2026-10-08). The Basic game (BD pp.3-6): the ten droids' statistics,
-    the Range, Armor Penetration and Damage Effects tables, and a panel that works a shot out and rolls it
-    (`battledroids-basic-game.ts`). For a 'Mech built under Battledroids: a critical hit roll in the critical
-    hit dialog (7 or more, the line picked by the dice and marked, BD p.18), and a helper with the Heat
-    Scale's effects at its heat, physical attack damage, Piloting Skill Rolls and falls (BD pp.11-15). The
-    reference panel gained the optional woods and fire rules (BD p.21). For every edition: the Heat Scale's
-    fire modifier is now in the to-hit numbers (+1 at 8, +2 at 13, +3 at 17, +4 at 24).
-  - [x] Battledroids, more readings: (4) the Basic Game Statistics table and the
-    worked example on the same page disagree (Crusader Armor 10 against 13, Warhammer medium Damage 16
-    against 15, BD p.6): the table is entered; (5) the Armor Penetration Table starts at Armor Value 5, and a
-    Stinger or Wasp hit from behind has 4 or 3: the 5 column is used and the panel says so; (6) falling damage
-    rounds a tonnage that is not a multiple of 10 up, as a punch does (BD p.15 is silent).
-  - [x] Battledroids, left to the players by the user's choice (2026-10-08): the effects of a critical hit once marked (MP, to-hit and heat
-    changes from destroyed actuators, sensors, engine and heat sinks), ammunition explosions, the Heat Scale's
-    MP loss, shutdown and avoid rolls (shown by the helper, not applied), and line of sight.
-  - [x] Rules levels by edition, Battledroids (2026-10-16). Every creator's Step 1 is Rules Edition, then Rules
-    Level (`RulesLevelSelect`), and the level list is the edition's own: Basic, Advanced and Expert Battledroids
-    (BD pp.1, 7, 14; levels 0, 1 and 2) plus Apocryphal, Custom Homebrew and Munchkin. A stored level the
-    edition does not list shows as the next one up without being rewritten. Construction starts at Expert
-    (`constructionLevel`, "the information needed to design and build new classes of droids", BD p.14): at
-    Basic the Mech Creator offers only the printed droids, read-only; at Advanced a droid can be edited after a
-    warning that this moves the design to Expert. The printed droids (`battledroids-mechs.ts`, built by
-    `printed-droid.ts`, saved as `printedDroid`): the ten listings of BD pp.16-17, and at the Apocryphal level
-    the SPI-5R Spider (*Game News* #3, May 1985) and the 1984 TCI kit-back sheets (GOL-1H, WLV-3Nb/3Nc,
-    GRF-2N, SHD-3H, THN-8T, BTL-5R), whose four-legged Goliath brings the quad layout into Battledroids at
-    Apocryphal only (`apocryphalIn`). At Custom Homebrew, the user's conversions for four Ral Partha
-    Battledroids miniatures (FLE-15 Flea, FS9-H Firestarter, BKX-7K Battleaxe, LCT-1V Locust), corrected to
-    the book's rules. Every correction and every sheet that does not add up is in the droid's notes.
-  - [x] Battledroids follow-ups (2026-10-16). The GOL-1H's center torso items that its slots cannot hold are mounted
-    in the figurine's turret, as the sheet prints them (`turret`, Step 6 lists them apart). Replacing a design in
-    any creator (Start Over, loading a save, a file or MegaMek import, the Droid picker) first offers to save it,
-    unless it is blank or already saved as it stands. Under an earlier edition a field the rulebook leaves one
-    choice for is hidden (`EditionChoice`), as are eras under Battledroids (`noEras`) and OmniMechs before
-    TR:3050 (`noOmniMechs`); Primitive 'Mechs and Fractional Accounting are offered under Total Warfare and
-    later only, and turned off by a switch to an earlier edition. The rules edition decides: switching straight
-    back to the edition a design just left, with nothing changed since, brings back the design it had there
-    (`rulesEditionReturn`), so a Battledroids Griffin keeps its Jumping MP 6 through Total Warfare and back.
   - [ ] Fields by edition in the other creators: vehicles, fighters, small craft, infantry, battle armor,
     ProtoMechs and buildings do not hide the fields an earlier edition lacks yet (`EditionChoice` is the
     Mech Creator's).
