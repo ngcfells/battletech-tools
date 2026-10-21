@@ -724,21 +724,24 @@ export default class VehicleCreatorStep1 extends React.Component<IStep1Props, IS
                                     </div>
                                 ) : null}
 
-                                {vehicle.getAvailableChassisModifications().length > 0 && (rulesLevel >= 3 || vehicle.getChassisModifications().length > 0) ? (
+                                {vehicle.getAvailableChassisModifications(rulesLevel).length > 0 && (rulesLevel >= 3 || vehicle.getChassisModifications().length > 0) ? (
                                     <fieldset data-testid="chassis-modifications">
-                                        <legend>Chassis Modifications (Advanced, TO:AUE pp.114-115)</legend>
-                                        {vehicle.getAvailableChassisModifications().map((mod) => (
+                                        <legend>Chassis Modifications (TO:AUE pp.94-95, 114-115; the Armored Motive System is Experimental)</legend>
+                                        {[...vehicle.getAvailableChassisModifications(rulesLevel), ...vehicle.getChassisModifications().filter((mod) => !vehicle.getAvailableChassisModifications(rulesLevel).includes(mod))].map((mod) => (
                                             <label key={mod.tag} title={mod.description}>
                                                 <input
                                                     type="checkbox"
                                                     checked={vehicle.hasChassisModification(mod.tag)}
                                                     onChange={(e) => {
                                                         const on = e.currentTarget.checked;
-                                                        this.changeVehicle((current) => current.setChassisModification(mod.tag, on));
+                                                        this.changeVehicle((current) => current.setChassisModification(mod.tag, on, rulesLevel));
                                                     }}
                                                 />{" "}
                                                 {mod.name}{vehicle.getChassisModificationWeight(mod) > 0 ? ` (${vehicle.getChassisModificationWeight(mod)} t)` : ""}
                                             </label>
+                                        ))}
+                                        {vehicle.getChassisModificationIssues().map((issue) => (
+                                            <p key={issue} className="smaller-text color-red" data-testid="chassis-modification-issue">{issue}</p>
                                         ))}
                                     </fieldset>
                                 ) : null}

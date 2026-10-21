@@ -1267,10 +1267,36 @@ export default class Vehicle {
             .filter((tag) => findCombatVehicleChassisModification(tag)?.motives.includes(this._motiveType.tag));
     }
 
-    /** Chassis modifications this Combat Vehicle's motive type may take (TO:AUE p.114). */
-    public getAvailableChassisModifications(): ICombatVehicleChassisModification[] {
+    /** Whether a dated chassis modification is allowed in the vehicle's era at this rules level; undated ones always are. */
+    private _chassisModificationInEra(mod: ICombatVehicleChassisModification, rulesLevel: number): boolean {
+        if (!mod.dates) return true;
+        const techTag = this._tech.tag;
+        const sides: ITechDates[] = [];
+        if (["is", "mis", "mclan"].includes(techTag)) sides.push(mod.dates.is);
+        if (["clan", "mis", "mclan"].includes(techTag)) sides.push(mod.dates.clan);
+        return sides.some((dates) => this._datesAvailability(dates, rulesLevel).available);
+    }
+
+    /** Chassis modifications this Combat Vehicle's motive type, era and rules level allow (TO:AUE pp.94, 114). */
+    public getAvailableChassisModifications(rulesLevel: number = 2): ICombatVehicleChassisModification[] {
         if (this._support) return [];
-        return COMBAT_VEHICLE_CHASSIS_MODIFICATIONS.filter((mod) => mod.motives.includes(this._motiveType.tag));
+        return COMBAT_VEHICLE_CHASSIS_MODIFICATIONS.filter((mod) => mod.motives.includes(this._motiveType.tag) && this._chassisModificationInEra(mod, rulesLevel));
+    }
+
+    /** Mounted chassis modifications the current era no longer allows (a design set in one era, then moved to an earlier one). */
+    public getChassisModificationIssues(): string[] {
+        const issues: string[] = [];
+        for (const mod of this.getChassisModifications()) {
+            if (!mod.dates || this._chassisModificationInEra(mod, EXPERIMENTAL_RULES_LEVEL)) continue;
+            const techTag = this._tech.tag;
+            const options = [
+                ...(["is", "mis", "mclan"].includes(techTag) ? [{ side: "Inner Sphere", dates: mod.dates.is }] : []),
+                ...(["clan", "mis", "mclan"].includes(techTag) ? [{ side: "Clan", dates: mod.dates.clan }] : []),
+            ];
+            const earliest = options.reduce((best, option) => (option.dates.prototype ?? Infinity) < (best.dates.prototype ?? Infinity) ? option : best);
+            issues.push(`${mod.name}: not available before ${earliest.dates.prototype} (${earliest.side} prototype, ${mod.book} p.${mod.page})`);
+        }
+        return issues;
     }
 
     public getChassisModifications(): ICombatVehicleChassisModification[] {
@@ -1283,16 +1309,16 @@ export default class Vehicle {
     }
 
     /** Fits or removes a chassis modification; Limited and Fully Amphibious replace each other. */
-    public setChassisModification(tag: string, on: boolean): void {
+    public setChassisModification(tag: string, on: boolean, rulesLevel: number = 2): void {
         const mod = findCombatVehicleChassisModification(tag);
         if (!mod) return;
         const others = this._chassisModifications.filter((existing) => existing !== mod.tag && !(on && (mod.excludes ?? []).includes(existing)));
-        this._chassisModifications = on && this.getAvailableChassisModifications().includes(mod) ? [...others, mod.tag] : others;
+        this._chassisModifications = on && this.getAvailableChassisModifications(rulesLevel).includes(mod) ? [...others, mod.tag] : others;
         this._calc();
     }
 
     public getChassisModificationWeight(mod: ICombatVehicleChassisModification): number {
-        return getCombatVehicleChassisModificationWeight(mod, this._tonnage);
+        return getCombatVehicleChassisModificationWeight(mod, this._tonnage, ["clan", "mclan"].includes(this._tech.tag) ? "clan" : "is");
     }
 
     private _pruneFrankenVehicle(): void {
@@ -3288,6 +3314,7 @@ export default class Vehicle {
             if (this._support.fireControl === "advanced") specials.push("AFC");
             if (this._support.fireControl === "basic") specials.push("BFC");
         }
+        if (this.hasChassisModification("armored-motive")) specials.push("ARS");
         specials.push("SRCH");
         specials.push(...getVehicleBayAlphaStrikeSpecials(this._bays, this._troopSpace));
         // Communications equipment: MHQ by its tons, and RCN when it is at least a twentieth of the unit's weight
@@ -3813,8 +3840,10 @@ export default class Vehicle {
     public getMotiveDamageRollModifier(direction: VehicleAttackDirection, cause: VehicleMotiveRollCause = "attack", roughTerrain: boolean = false): number {
         // A jump landing disregards attack direction and uses its own type modifiers, +1 into rough, woods or
         // jungle (TO p. 349); a skid has no attack direction (TW p. 192).
-        if (cause === "jump") return (JUMP_LANDING_MODIFIER[this._motiveType.tag] ?? 0) + (roughTerrain ? 1 : 0);
-        const typeModifier = getVehicleMotiveTypeModifier(this._motiveType.tag);
+        // An Armored Motive System takes a further -2 on every roll (TO:AUE p.95).
+        const armored = this.hasChassisModification("armored-motive") ? -2 : 0;
+        if (cause === "jump") return (JUMP_LANDING_MODIFIER[this._motiveType.tag] ?? 0) + (roughTerrain ? 1 : 0) + armored;
+        const typeModifier = getVehicleMotiveTypeModifier(this._motiveType.tag) + armored;
         return cause === "skid" ? typeModifier : VEHICLE_MOTIVE_DIRECTION_MODIFIER[direction] + typeModifier;
     }
 

@@ -12,6 +12,7 @@
  * excluded from the software's underlying license (GNU GPLv3).
  */
 
+import { ITechDates } from "./data-interfaces";
 import { roundUpHalfTon } from "./variable-equipment";
 
 /**
@@ -19,7 +20,7 @@ import { roundUpHalfTon } from "./variable-equipment";
  * Advanced, both technology bases, introduced circa 2470. Support Vehicles have their own list
  * (support-vehicle-construction.ts).
  */
-export type CombatVehicleChassisModificationTag = "flotation-hull" | "limited-amphibious" | "fully-amphibious" | "dune-buggy" | "environmental-sealing";
+export type CombatVehicleChassisModificationTag = "flotation-hull" | "limited-amphibious" | "fully-amphibious" | "dune-buggy" | "environmental-sealing" | "armored-motive";
 
 export interface ICombatVehicleChassisModification {
     tag: CombatVehicleChassisModificationTag;
@@ -28,6 +29,10 @@ export interface ICombatVehicleChassisModification {
     motives: string[];
     /** Weight as the vehicle's tonnage divided by this, rounded up to the half ton; absent = no weight. */
     weightDivisor?: number;
+    /** Weight as the vehicle's tonnage times this fraction, rounded up to the half ton; used when there is no weightDivisor. */
+    weightFraction?: { is: number; clan: number };
+    /** Offered only when these dates allow it in the vehicle's era and rules level (Experimental allows the prototype year). */
+    dates?: { is: ITechDates; clan: ITechDates };
     /** C-bills added before the tonnage cost multiplier. */
     cost?: (tonnage: number, weight: number) => number;
     /** Multiplier on the vehicle's final cost ("1.25xTC"). */
@@ -72,6 +77,17 @@ export const COMBAT_VEHICLE_CHASSIS_MODIFICATIONS: ICombatVehicleChassisModifica
         techRating: "b", availability: "C-D-C", introduced: 2470, rulesLevel: 3, book: "TO:AUE", page: 115,
         description: "Works in toxic atmospheres, and in vacuum with a fission, fusion or fuel cell engine; destroyed when a location loses all armor or a hull breach (10+ on 2D6 whenever damaged) occurs.",
     },
+    {
+        // Prototype-only in both tech bases (TO:AUE p.217: IS 3071P, Clan 3057P); Inner Sphere E/X-X-F, Clan F/X-X-F.
+        tag: "armored-motive", name: "Armored Motive System", motives: ["tracked", "wheeled", "hover", "hydrofoil", "naval-surface", "naval-sub", "wige"],
+        weightFraction: { is: 0.15, clan: 0.10 }, cost: (_tonnage, weight) => 100000 * weight, bvTypeModifier: 0.1,
+        dates: {
+            is: { prototype: 3071, introduced: null, extinct: null, reintroduced: null },
+            clan: { prototype: 3057, introduced: null, extinct: null, reintroduced: null },
+        },
+        techRating: "e", availability: "X-X-F", introduced: 3057, rulesLevel: 4, book: "TO:AUE", page: 94,
+        description: "Applies an additional -2 to every roll on the Motive System Damage Table (a result of 2 or less is no effect); Inner Sphere 15% of the vehicle's weight, Clan 10% (rating F for Clan), rounded up to the half ton; not pod-mountable (errata v7.0).",
+    },
 ];
 
 export function findCombatVehicleChassisModification(tag: string): ICombatVehicleChassisModification | undefined {
@@ -79,6 +95,7 @@ export function findCombatVehicleChassisModification(tag: string): ICombatVehicl
 }
 
 /** Weight of a chassis modification on a vehicle of this tonnage (TO:AUE p.114). */
-export function getCombatVehicleChassisModificationWeight(mod: ICombatVehicleChassisModification, tonnage: number): number {
-    return mod.weightDivisor ? roundUpHalfTon(tonnage / mod.weightDivisor) : 0;
+export function getCombatVehicleChassisModificationWeight(mod: ICombatVehicleChassisModification, tonnage: number, techBase: "is" | "clan" = "is"): number {
+    if (mod.weightDivisor) return roundUpHalfTon(tonnage / mod.weightDivisor);
+    return mod.weightFraction ? roundUpHalfTon(tonnage * mod.weightFraction[techBase]) : 0;
 }
