@@ -25,6 +25,7 @@ import { mechUniversalAmmo } from "./mech-universal-ammo";
 import { isUniversalEquipment, mechUniversalEquipment } from "./mech-universal-equipment";
 import { APOCRYPHAL_RULES_LEVEL, CUSTOM_HOMEBREW_RULES_LEVEL, EXPERIMENTAL_RULES_LEVEL, MUNCHKIN_RULES_LEVEL } from "./rules-level-options";
 import { getBattleArmorScaleEquipment } from "./battle-armor-scale-equipment";
+import { getRecordOfferIssue } from "./rules-editions";
 
 export type EquipmentCatalog = "is" | "clan" | "custom" | "universal";
 
@@ -264,6 +265,24 @@ export function getEquipmentRulesLevel(item: IEquipmentItem): number {
 export function isEquipmentWithinRulesLevel(item: IEquipmentItem, rulesLevel: number): boolean {
     const level = getEquipmentRulesLevel(item);
     return level < APOCRYPHAL_RULES_LEVEL || level <= rulesLevel;
+}
+
+/**
+ * Why an item is not offered in `editionTag` at `rulesLevel`: "edition", "level", or null when it is offered. Custom
+ * content belongs to no edition: it is offered in every one at its own level or higher. Other records follow
+ * `getRecordOfferIssue`, with the canon level raised to the item's installed level (the Experimental floor).
+ */
+export function getEquipmentOfferIssue(item: IEquipmentItem, editionTag: string, rulesLevel: number): "edition" | "level" | null {
+    const level = getEquipmentRulesLevel(item);
+    if (level >= CUSTOM_HOMEBREW_RULES_LEVEL) {
+        return level > rulesLevel ? "level" : null;
+    }
+    return getRecordOfferIssue({ ...item, rulesLevel: level }, editionTag, rulesLevel);
+}
+
+/** Is the item offered in `editionTag` at `rulesLevel`? */
+export function isEquipmentOffered(item: IEquipmentItem, editionTag: string, rulesLevel: number): boolean {
+    return getEquipmentOfferIssue(item, editionTag, rulesLevel) === null;
 }
 
 /**

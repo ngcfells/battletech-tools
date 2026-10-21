@@ -82,6 +82,10 @@ export interface IEditionHistory {
      * the rulebook, keyed by edition tag.
      */
     apocryphalIn?: { [editionTag: string]: { source: string; notes: string } };
+    /** Every edition the record is canon in, empty when never canon. Optional in the type, required on official records by the test in Task 4. */
+    editions?: string[];
+    /** Level of rules in each edition this record is canon in. */
+    editionLevels?: { [editionTag: string]: number };
 }
 
 export interface IArmorType extends IEditionHistory {
@@ -363,6 +367,8 @@ export interface IEquipmentItem {
     weaponType?: string[];
     techRating?: string;
     unique?: boolean;
+    /** Editions that include the record only at the Apocryphal rules level and above, from a licensed source outside the rulebook, keyed by edition tag. */
+    apocryphalIn?: { [editionTag: string]: { source: string; notes: string } };
     book: string;
     /** Rulebook page; null when the page has not been verified in the book. */
     page: number | null;

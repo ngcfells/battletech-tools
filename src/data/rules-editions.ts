@@ -474,7 +474,14 @@ export function getRulesEditions(): IRulesEdition[] {
     return btRulesEditions;
 }
 
-type IEditionRecord = { introducedInEdition?: string; editionStats?: IEditionStatsTable; apocryphalIn?: IEditionHistory["apocryphalIn"] };
+type IEditionRecord = {
+    introducedInEdition?: string;
+    editionStats?: IEditionStatsTable;
+    apocryphalIn?: IEditionHistory["apocryphalIn"];
+    editions?: string[];
+    editionLevels?: { [editionTag: string]: number };
+    rulesLevel?: number;
+};
 
 const editionOrder = (tag: string) => btRulesEditions.findIndex(edition => edition.tag === tag);
 
@@ -484,25 +491,87 @@ export function getIntroducedInEdition(record: IEditionRecord): string {
 }
 
 /**
- * Do the rules of `editionTag` include this record? Before the default edition, only when the record's
- * `editionStats` lists that edition: the box sets hold less than the rulebooks around them, so nothing is
- * inherited from an earlier edition. From the default edition on, when the record's first edition is that
- * edition or an earlier one. An edition tag that is not in the list never matches. From the Apocryphal rules level up,
- * the record's `apocryphalIn` editions match too.
+ * Every edition this record is canon in, in `btRulesEditions` order; empty when it is never canon. A record's own
+ * `editions` wins. Without one, the list is derived from today's rules: nothing for a record at the Apocryphal rules
+ * level or above; otherwise the earlier editions its `editionStats` lists, then every edition from the default
+ * edition on that is not before the record's first edition.
  */
-export function isInRulesEdition(record: IEditionRecord, editionTag: string = DEFAULT_RULES_EDITION, rulesLevel?: number): boolean {
-    if (rulesLevel !== undefined && rulesLevel >= APOCRYPHAL_RULES_LEVEL && record.apocryphalIn && editionTag in record.apocryphalIn) {
-        return true;
+export function getRecordEditions(record: IEditionRecord): string[] {
+    if (record.editions !== undefined) {
+        return record.editions;
     }
+    if (record.rulesLevel !== undefined && record.rulesLevel >= APOCRYPHAL_RULES_LEVEL) {
+        return [];
+    }
+    const defaultOrder = editionOrder(DEFAULT_RULES_EDITION);
+    const introduced = editionOrder(getIntroducedInEdition(record));
+    return btRulesEditions
+        .filter((edition, index) => {
+            if (index < defaultOrder) {
+                return record.editionStats !== undefined && edition.tag in record.editionStats;
+            }
+            return introduced >= 0 && introduced <= index;
+        })
+        .map(edition => edition.tag);
+}
+
+/**
+ * The rules level at which this record is canon in `editionTag`: its own `editionLevels` entry, else 0 in an earlier
+ * edition (the box sets are not graded by level) and the record's `rulesLevel` from the default edition on.
+ */
+export function getRecordLevelInEdition(record: IEditionRecord, editionTag: string): number {
+    if (record.editionLevels !== undefined && editionTag in record.editionLevels) {
+        return record.editionLevels[editionTag];
+    }
+    return isEarlierRulesEdition(editionTag) ? 0 : (record.rulesLevel ?? 0);
+}
+
+/**
+ * Why the rules of `editionTag` at `rulesLevel` do not offer this record: "edition" when the edition does not
+ * include it, "level" when it does but at a higher rules level, null when it is offered. A record dropped from the
+ * rules is apocryphal in the later editions, and a never-canon record with no source is apocryphal from the default
+ * edition on; both appear from the Apocryphal rules level up.
+ */
+export function getRecordOfferIssue(record: IEditionRecord, editionTag: string, rulesLevel: number): "edition" | "level" | null {
     const selected = editionOrder(editionTag);
     if (selected < 0) {
-        return false;
+        return "edition";
     }
-    if (selected < editionOrder(DEFAULT_RULES_EDITION)) {
-        return record.editionStats !== undefined && editionTag in record.editionStats;
+    const editions = getRecordEditions(record);
+    if (editions.includes(editionTag)) {
+        return getRecordLevelInEdition(record, editionTag) <= rulesLevel ? null : "level";
     }
-    const introduced = editionOrder(getIntroducedInEdition(record));
-    return introduced >= 0 && introduced <= selected;
+    if (rulesLevel < APOCRYPHAL_RULES_LEVEL) {
+        return "edition";
+    }
+    if (record.apocryphalIn && editionTag in record.apocryphalIn) {
+        return null;
+    }
+    if (editions.length === 0) {
+        if (record.apocryphalIn) {
+            return "edition";
+        }
+        return selected >= editionOrder(DEFAULT_RULES_EDITION) ? null : "edition";
+    }
+    return selected > editionOrder(editions[editions.length - 1]) ? null : "edition";
+}
+
+/** Does the rules of `editionTag` at `rulesLevel` offer this record? */
+export function isOfferedInEdition(record: IEditionRecord, editionTag: string, rulesLevel: number): boolean {
+    return getRecordOfferIssue(record, editionTag, rulesLevel) === null;
+}
+
+/**
+ * Do the rules of `editionTag` include this record? Without a `rulesLevel`, when the edition is one of its editions,
+ * read without regard to its rules level. With one, unless the record is missing from the edition itself; a record held back only by its level
+ * still counts as included, as do the apocryphal appearances from the Apocryphal rules level up.
+ */
+export function isInRulesEdition(record: IEditionRecord, editionTag: string = DEFAULT_RULES_EDITION, rulesLevel?: number): boolean {
+    if (rulesLevel === undefined) {
+        // The question here is the record's first edition, not its level: an Apocryphal-level record still counts.
+        return getRecordEditions({ ...record, rulesLevel: undefined }).includes(editionTag);
+    }
+    return getRecordOfferIssue(record, editionTag, rulesLevel) !== "edition";
 }
 
 /**
