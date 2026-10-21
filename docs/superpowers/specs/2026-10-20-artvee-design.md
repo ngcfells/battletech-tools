@@ -228,22 +228,29 @@ The initial examples **ship with the app** as custom units (user, 2026-10-20), w
 examples. For each variant, Light (Thumper), Medium (Sniper) and Heavy (Long Tom), there are three patterns (my
 call on the set):
 
-- **SLDF / Star League pattern** (IS tech, 2700): no Armored Motive, heavier armor.
-- **Clan pattern** (Clan tech, 3057+, Hell's Horses): Clan Armored Motive, Clan XL or XXL.
-- **Inner Sphere "MAP" pattern** (IS tech, 3071+): IS Armored Motive.
+- **SLDF / Star League pattern** (IS tech, `star-league` era): heavier armor.
+- **Clan pattern** (Clan tech, `clan-inv` era): Clan XL, Clan weapons.
+- **Inner Sphere "MAP" pattern** (IS tech, `jihad` era): lean.
 
-Secondary weapons come from the user's list: machine guns, AP Gauss, small/medium pulse lasers, mortars, grenade
-launchers, flamers, searchlights and the smoke devices, each only where its own tech base and dates allow. Each
-design must pass the construction rules above.
+User ruling 2026-10-21: the samples use **production technology only**. Armored Motive (prototype only in TO:AUE)
+and XXL engines are therefore left off, and the samples show the "Armored Motive recommended" warning where the era
+offers it. Clan standard AC ammunition is extinct from 2850, so the Clan combo guns feed their Vehicle Mode from custom
+"ArtVee AC/N Breech Ammo (Clan)" (canon IS standard AC ammo stats, ArtVee dates).
 
-Shipping means:
+Secondary weapons come from the user's list: machine guns, small/medium pulse lasers, mortars, grenade launchers,
+flamers, searchlights and the smoke devices, each only where its own tech base and dates allow. Each design passes
+the construction rules above.
 
-- Adding them to the custom unit list (`src/data/mul/custom/custom-units.json` via `custom-mul.ts`, IDs from
-  900000).
-- Extending `CUSTOM_RULES_LEVELS` there, which stops at Experimental, with Custom Homebrew.
-- Hiding them below rules level 6.
+Names (user-requested, chosen 2026-10-21; none is used by a unit in the app's MUL data):
 
-Names are placeholders until the user names them, and the units don't ship before that.
+| Gun | SLDF | Clan | MAP |
+| --- | --- | --- | --- |
+| Thumper | Falconet FLC-1 | Pangolin PNG-C | Springald SPR-1M |
+| Sniper | Saker SKR-1 | Archerfish ARF-C | Perrier PER-1M |
+| Long Tom | Culverin CLV-1 | Glyptodon GLY-C | Tormentum TRM-1M |
+
+They ship as `src/data/artvee-samples.ts` (`getArtVeeSamples(rulesLevel)`), offered by a "Sample ArtVees" picker in
+the Combat Vehicle creator at rules level 6 and above, rather than in the custom MUL list.
 
 ## Left to the builder
 

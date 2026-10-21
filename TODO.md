@@ -541,6 +541,15 @@ in HeySporky/battletech-tools. All of it is merged into local `master` together 
 - [ ] Permenant Air Mechs (PAMs): Source: https://www.battletech.com/forums/index.php/topic,44833.0.html  **Note: there is a lot of other good stuff to pull out of that thread as well... we want it all.
 - [ ] https://lostech.miraheze.org/  Lots of good custom stuff here... The detargeting computer as an example.
 - [ ] https://battletechfanon.fandom.com/wiki/Category:Weapons  More stuff to add.
+- [x] **ArtVee (Artillery Vehicle; "MAP" to some powers), the Siege Tank below, designed 2026-10-20.** The
+  design supersedes the notes below: `docs/superpowers/specs/2026-10-20-artvee-design.md`. Built 2026-10-21 on
+  `feature/artvee`: creator option, combo guns, blended BV, play modes, record sheet and AS card, Armored Motive
+  (canon), Smoker and Buckler (*Future Wars* #32), and nine production-tech sample ArtVees in the creator.
+  - [ ] Later: Superheavy ArtVees (allowed, pinned until the user has looked at superheavy vehicles).
+  - [ ] Later: Armored Motive System in the Support Vehicle creator (separate multiplier-based chassis mods).
+  - [ ] Later: canon artillery records carry the IS BV only; Clan units need the Clan BV (TO:AUE p.197: Long Tom
+    560, Sniper 96, Thumper 48) — needs a per-tech-base BV field.
+  - [ ] Later: write the ArtVee TRO for the community from `docs/lore/artvee-tro-skeleton.md`.
 - [ ] Siege Tank (Custom Homebrew vehicle, requested 2026-10-18): a StarCraft-style tracked tank that
   transforms like a LAM between Vehicle Mode (moves, direct fire) and Siege Mode (immobile, artillery with
   more damage and range). Source: a design conversation the user pasted; nothing in it is canon, and some of
