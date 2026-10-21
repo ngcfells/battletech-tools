@@ -1392,6 +1392,13 @@ export default class Vehicle {
         return null;
     }
 
+    /** Withdraws a transformation declared this turn (an app convenience for a misclick). True when one was pending. */
+    public cancelArtVeeTransformation(): boolean {
+        if (!this._inPlay.artVeeTransformingTo) return false;
+        this._inPlay.artVeeTransformingTo = "";
+        return true;
+    }
+
     /** Why a weapon can't fire in the ArtVee's current Mode, or null. Only the combo gun is Mode-limited. */
     public getArtVeeWeaponBlock(weapon: IEquipmentItem): string | null {
         if (!this._artVee || !weapon.comboArtilleryTag) return null;

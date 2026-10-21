@@ -42,7 +42,6 @@ const clanBreechAmmo = (ac: "5" | "10" | "20"): IEquipmentItem => {
     };
 };
 
-
 export const ammoCustom: IEquipmentItem[] = [
     {
         isAmmo: true,

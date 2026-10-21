@@ -231,6 +231,14 @@ export default class VehiclePlayPanel extends React.Component<IVehiclePlayPanelP
                         title={reason ?? undefined}
                         onClick={() => { vehicle.startArtVeeTransformation(); this._changed(); }}
                     >Transform to {target} Mode</button>
+                    {inPlay.artVeeTransformingTo ? (
+                        <button
+                            type="button"
+                            className="btn btn-sm btn-secondary ms-1"
+                            data-testid="vehicle-artvee-cancel"
+                            onClick={() => { vehicle.cancelArtVeeTransformation(); this._changed(); }}
+                        >Cancel transformation</button>
+                    ) : null}
                     {reason ? <span className="smaller-text"> ({reason})</span> : null}
                 </div>
                 <label className="d-block">

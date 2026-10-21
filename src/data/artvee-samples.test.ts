@@ -27,6 +27,11 @@ function getNonProductionItems(vehicle: Vehicle): string[] {
 }
 
 describe("sample ArtVees", () => {
+    it("counts the Clan Long Tom combo gun at 560 in the Glyptodon's BV (ArtVee final review 2026-10-21)", () => {
+        const sample = ARTVEE_SAMPLES.find((entry) => entry.id === "glyptodon")!;
+        expect(load(sample.save).getBattleValueLog()).toContain("ArtVee Long Tom Combo Gun (Clan) (turret) = 560.00");
+    });
+
     it("are the nine named designs", () => {
         expect(ARTVEE_SAMPLES.map((sample) => sample.name)).toEqual([
             "Falconet ArtVee FLC-1", "Pangolin ArtVee PNG-C", "Springald ArtVee SPR-1M",

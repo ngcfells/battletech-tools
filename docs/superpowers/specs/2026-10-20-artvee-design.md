@@ -174,6 +174,7 @@ design in 3071.
   moving). User ruling 2026-10-21: the transformation is the unit's only action that turn. It can't move and no
   weapon fires (the stationary 0 target and attacker movement modifiers apply; it is stationary, not immobile). The new
   Mode takes effect at the end of the turn, and the next turn moves and fires normally in it.
+  A declared transformation can be cancelled before the unit acts that turn (an app convenience for a misclick).
 - **Siege Mode:** 0/0 MP, the turret turns freely through 360°, and the combo gun fires its artillery profile with
   the full artillery rules. Siege Mode is not "immobile" for the −4 immobile-target modifier (my call); its target
   movement modifier is that of a unit that did not move.
@@ -202,8 +203,14 @@ numbers on the page images) has two devices. They are general custom equipment, 
   hex (smoke per the Compendium rules). The unit must stay stationary the turn it activates it, and the smoke takes
   effect right after the Movement Phase. It cannot be mounted on VTOLs.
 
-The heat figures matter only for 'Mechs (Combat Vehicles track no heat for these). Builder's call: how vehicle
-slots map from the 'Mech critical figure.
+The heat figures matter only for 'Mechs (Combat Vehicles track no heat for these).
+
+Cost, BV, dates and tech rating follow the 2026-10-21 analog ruling, taken from the nearest canon devices. None of the
+three is ever extinct, because the user ruled the tech was always around and never lost.
+
+- **Smoker** = Vehicle Flamer values: 7,500 C-bills, BV 5 (defensive), 1950, tech B, 1 'Mech slot.
+- **Smoker fuel** = Vehicle Flamer / Fluid Gun obscurant ammunition: 1,000 a ton, BV 1, 1950, tech B.
+- **Buckler Smoke Dispenser** = Vehicular Grenade Launcher: 10,000 C-bills, BV 15 (defensive), 2100, tech C.
 
 ## Where the data goes
 

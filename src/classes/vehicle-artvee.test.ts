@@ -297,6 +297,20 @@ describe("ArtVee construction", () => {
             expect(plain().startArtVeeTransformation()).toBe("it is not an ArtVee");
         });
 
+        it("cancels a transformation declared this turn (ArtVee final review 2026-10-21)", () => {
+            const vehicle = thumperArtVee();
+            expect(vehicle.cancelArtVeeTransformation()).toBe(false);
+            vehicle.startArtVeeTransformation();
+            expect(vehicle.getEffectiveCruiseMP()).toBe(0);
+            expect(vehicle.cancelArtVeeTransformation()).toBe(true);
+            expect(vehicle.getInPlay().artVeeTransformingTo).toBe("");
+            expect(vehicle.getArtVeeMode()).toBe("vehicle");
+            expect(vehicle.getEffectiveCruiseMP()).toBe(4);
+            expect(vehicle.getCannotFireReason()).toBeNull();
+            vehicle.turnReset();
+            expect(vehicle.getArtVeeMode()).toBe("vehicle");
+        });
+
         it("in Siege Mode has 0 MP but is not immobile", () => {
             const vehicle = thumperArtVee();
             expect(vehicle.getEffectiveCruiseMP()).toBe(4);
