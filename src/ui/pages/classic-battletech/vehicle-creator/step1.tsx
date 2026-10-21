@@ -405,6 +405,7 @@ export default class VehicleCreatorStep1 extends React.Component<IStep1Props, IS
         if (!vehicle) return <></>;
 
         const rulesLevel = this.props.appGlobals.appSettings.mechRulesFilter;
+        const chassisOptions = vehicle.getChassisModificationOptions(rulesLevel);
         const { min, max } = getVehicleTonnageBounds(vehicle.getMotiveType().tag, rulesLevel);
         const tonnageOptions: number[] = [];
         for (let tons = min; tons <= max; tons++) {
@@ -724,10 +725,10 @@ export default class VehicleCreatorStep1 extends React.Component<IStep1Props, IS
                                     </div>
                                 ) : null}
 
-                                {vehicle.getAvailableChassisModifications(rulesLevel).length > 0 && (rulesLevel >= 3 || vehicle.getChassisModifications().length > 0) ? (
+                                {chassisOptions.length > 0 && (rulesLevel >= 3 || vehicle.getChassisModifications().length > 0) ? (
                                     <fieldset data-testid="chassis-modifications">
                                         <legend>Chassis Modifications (TO:AUE pp.94-95, 114-115; the Armored Motive System is Experimental)</legend>
-                                        {[...vehicle.getAvailableChassisModifications(rulesLevel), ...vehicle.getChassisModifications().filter((mod) => !vehicle.getAvailableChassisModifications(rulesLevel).includes(mod))].map((mod) => (
+                                        {chassisOptions.map((mod) => (
                                             <label key={mod.tag} title={mod.description}>
                                                 <input
                                                     type="checkbox"

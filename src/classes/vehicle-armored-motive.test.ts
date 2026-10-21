@@ -65,4 +65,14 @@ describe("Armored Motive System (TO:AUE pp.94-95, errata v7.0)", () => {
         support.setSupportVehicle(true);
         expect(support.getAvailableChassisModifications(4)).toEqual([]);
     });
+
+    it("keeps a mounted modification listed and reported when the era no longer offers it (submarine)", () => {
+        const sub = armored({ motive: "naval-sub", tonnage: 100 });
+        sub.setEra("civil-war");
+        expect(sub.getAvailableChassisModifications(4)).toEqual([]);
+        expect(sub.getChassisModificationOptions(4).map((m) => m.tag)).toEqual(["armored-motive"]);
+        expect(sub.getChassisModificationIssues()).toHaveLength(1);
+        sub.setChassisModification("armored-motive", false, 4);
+        expect(sub.getChassisModificationOptions(4)).toEqual([]);
+    });
 });

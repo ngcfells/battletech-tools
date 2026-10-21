@@ -1283,6 +1283,12 @@ export default class Vehicle {
         return COMBAT_VEHICLE_CHASSIS_MODIFICATIONS.filter((mod) => mod.motives.includes(this._motiveType.tag) && this._chassisModificationInEra(mod, rulesLevel));
     }
 
+    /** What the chassis modification list shows: those offered plus any mounted one the era or rules level no longer offers (so it can be unticked). */
+    public getChassisModificationOptions(rulesLevel: number = 2): ICombatVehicleChassisModification[] {
+        const offered = this.getAvailableChassisModifications(rulesLevel);
+        return [...offered, ...this.getChassisModifications().filter((mod) => !offered.includes(mod))];
+    }
+
     /** Mounted chassis modifications the current era no longer allows (a design set in one era, then moved to an earlier one). */
     public getChassisModificationIssues(): string[] {
         const issues: string[] = [];
