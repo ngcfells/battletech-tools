@@ -1,4 +1,6 @@
 import { generateUUID } from "../utils/generateUUID";
+import { IAssignedQuirk, QuirkUnitType } from "../data/quirk-interfaces";
+import { QuirkList } from "./quirk-list";
 import { DEFAULT_RULES_EDITION, getSelectableRulesEditionTag } from "../data/rules-editions";
 import { aerospaceArmorTypes, getAerospaceArmorPointsPerTon } from "../data/aerospace-armor-types";
 import { mechEngineOptions } from "../data/mech-engine-options";
@@ -210,6 +212,7 @@ export interface IAerospaceFighterExport {
     /** The rules edition it is built under (rules-editions.ts); absent means Total Warfare. */
     rulesEdition?: string;
     uuid: string;
+    quirks?: IAssignedQuirk[];
     lastUpdated: Date;
     name: string;
     model: string;
@@ -301,6 +304,9 @@ export default class AerospaceFighter {
     public static readonly PATCHWORK_ARMOR_TAG = "patchwork";
 
     private _uuid: string = generateUUID();
+
+    /** The design quirks assigned to this unit (quirk tables, Campaign Operations pp.228 and 232). */
+    public quirks: QuirkList = new QuirkList();
     public lastUpdated: Date = new Date();
 
     private _name: string = "";
@@ -353,6 +359,9 @@ export default class AerospaceFighter {
 
     public getUUID(): string { return this._uuid; }
     public newUUID(): void { this._uuid = generateUUID(); }
+
+    /** Which column of the quirk tables this unit is graded by. */
+    public getQuirkUnitType(): QuirkUnitType { return "fighter-small-craft"; }
 
     public getName(): string { return this._name; }
     /** The rules edition the design is built under. Only the editions with rules for this unit type are offered. */
@@ -2630,6 +2639,7 @@ export default class AerospaceFighter {
                 },
             }),
             uuid: this._uuid,
+            quirks: this.quirks.export(),
             lastUpdated: this.lastUpdated,
             name: this._name,
             ...(this._rulesEdition !== DEFAULT_RULES_EDITION ? { rulesEdition: this._rulesEdition } : {}),
@@ -2753,6 +2763,7 @@ export default class AerospaceFighter {
             }
             const saved = parsed as Partial<Record<keyof IAerospaceFighterExport, unknown>>;
             this._uuid = savedString(saved.uuid).slice(0, 100) || generateUUID();
+            this.quirks.import(saved.quirks);
             const updated = typeof saved.lastUpdated === "string" || typeof saved.lastUpdated === "number" ? new Date(saved.lastUpdated) : new Date();
             this.lastUpdated = Number.isNaN(updated.getTime()) ? new Date() : updated;
             for (const key of ["name", "model"] as const) {

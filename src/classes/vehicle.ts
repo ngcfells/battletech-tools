@@ -1,4 +1,6 @@
 import { generateUUID } from "../utils/generateUUID";
+import { IAssignedQuirk, QuirkUnitType } from "../data/quirk-interfaces";
+import { QuirkList } from "./quirk-list";
 import { DEFAULT_RULES_EDITION, getSelectableRulesEditionTag } from "../data/rules-editions";
 import { getSkillMultiplier } from "../data/skill-multipliers";
 import { getComboArtillery } from "../data/artillery-custom";
@@ -462,6 +464,7 @@ export interface IVehicleExport {
     /** The rules edition it is built under (rules-editions.ts); absent means Total Warfare. */
     rulesEdition?: string;
     uuid: string;
+    quirks?: IAssignedQuirk[];
     lastUpdated: Date;
     name: string;
     model: string;
@@ -576,6 +579,9 @@ export const VEHICLE_JUMP_JET_INTRODUCED = 3083;
 
 export default class Vehicle {
     private _uuid: string = generateUUID();
+
+    /** The design quirks assigned to this unit (quirk tables, Campaign Operations pp.228 and 232). */
+    public quirks: QuirkList = new QuirkList();
     public lastUpdated: Date = new Date();
 
     private _name: string = "";
@@ -649,6 +655,9 @@ export default class Vehicle {
     public getUUID(): string {
         return this._uuid;
     }
+
+    /** Which column of the quirk tables this unit is graded by. */
+    public getQuirkUnitType(): QuirkUnitType { return "vehicle"; }
 
     public getName(): string {
         return this._name;
@@ -4752,6 +4761,7 @@ export default class Vehicle {
         return {
             uuid: this._uuid,
             lastUpdated: this.lastUpdated,
+            quirks: this.quirks.export(),
             name: this._name,
             ...(this._rulesEdition !== DEFAULT_RULES_EDITION ? { rulesEdition: this._rulesEdition } : {}),
             model: this._model,
@@ -4875,6 +4885,7 @@ export default class Vehicle {
                 return savedString(value);
             };
             this._uuid = savedString(importObject.uuid) || generateUUID();
+            this.quirks.import(importObject.quirks);
             const updated = typeof importObject.lastUpdated === "string" || typeof importObject.lastUpdated === "number"
                 ? new Date(importObject.lastUpdated) : new Date();
             this.lastUpdated = Number.isNaN(updated.getTime()) ? new Date() : updated;

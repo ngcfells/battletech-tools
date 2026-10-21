@@ -524,7 +524,7 @@ describe("MegaMek battle armor file import", () => {
         expect([suit.getTechBase(), suit.getWeightClass().tag, suit.getSquadSize()]).toEqual(["clan", "medium", 5]);
         expect(suit.getMovementText()).toBe("Ground 1 / Jump 3");
         expect([suit.getArmor().tag, suit.getArmorPoints()]).toEqual(["ba-standard", 10]);
-        expect(suit.getItems()).toEqual([{ tag: "clan-small-laser", location: "ra" }, { tag: "clan-srm-2", location: "body", shots: 2 }]);
+        expect(suit.getItems()).toMatchObject([{ tag: "clan-small-laser", location: "ra" }, { tag: "clan-srm-2", location: "body", shots: 2 }]);
         expect(suit.getAPMounts()).toEqual([{ location: "la", weapon: "inf-auto-rifle" }]);
         expect(suit.getManipulator("la").tag).toBe("battle-claw");
         expect(suit.getEra().yearStart).toBeLessThanOrEqual(2868);

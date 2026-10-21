@@ -1,4 +1,6 @@
 import { AlphaStrikeStructureColumn, getAlphaStrikeMechStructure } from "../data/alpha-strike-mech-structure";
+import { IAssignedQuirk, QuirkUnitType } from "../data/quirk-interfaces";
+import { QuirkList } from "./quirk-list";
 import { getEditionSkillMultipliers, getSkillMultiplier } from "../data/skill-multipliers";
 import { battlemechLocations } from "../data/battlemech-locations";
 import { IArmorType, ICockpitType, ICriticalLocations, IEngineOption, IEngineType, IEquipmentItem, IGyro, IHeatSync, IInternalStructure, IInternalStructurePerTon, IJumpJet, IMyomerType, IResolvedInternalStructure, ISplitLocation, ITechDates } from "../data/data-interfaces";
@@ -248,6 +250,7 @@ export interface IBattleMechExport {
     tech_label: string;  // for easy listing
     tonnage: number;
     uuid: string;
+    quirks?: IAssignedQuirk[];
     walkSpeed: number;
 }
 
@@ -354,6 +357,9 @@ export class BattleMech {
     private _nickname = "";
     private _lastUpdated: Date = new Date();
     private _uuid: string = generateUUID();
+
+    /** The design quirks assigned to this unit (quirk tables, Campaign Operations pp.228 and 232). */
+    public quirks: QuirkList = new QuirkList();
 
     private _mechType = mechTypeOptions[0];
     private _quadVeeMotive: "tracked" | "wheeled" = "tracked";
@@ -607,6 +613,9 @@ export class BattleMech {
     public newUUID() {
         this._uuid = generateUUID();
     }
+
+    /** Which column of the quirk tables this unit is graded by. */
+    public getQuirkUnitType(): QuirkUnitType { return "mech"; }
 
     public setTargets(
         a: ITargetToHit,
@@ -7383,6 +7392,7 @@ export class BattleMech {
             strictEra: this._strictEra,
             uuid: this._uuid,
             walkSpeed: this._walkSpeed,
+            quirks: this.quirks.export(),
         };
 
         if( !noInPlayVariables ) {
@@ -7608,6 +7618,8 @@ export class BattleMech {
     private _importRecord(
         importObject: IBattleMechExport,
     ) {
+
+        this.quirks.import(importObject?.quirks);
 
         this.selectedMech = false;
         if( importObject && importObject.selectedMech ) {

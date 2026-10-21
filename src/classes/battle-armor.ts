@@ -1,4 +1,6 @@
 import { generateUUID } from "../utils/generateUUID";
+import { IAssignedQuirk, QuirkUnitType } from "../data/quirk-interfaces";
+import { QuirkList } from "./quirk-list";
 import { DEFAULT_RULES_EDITION, getSelectableRulesEditionTag } from "../data/rules-editions";
 import { battleArmorArmorTypes, battleArmorMaximumArmor } from "../data/battle-armor-armor-types";
 import {
@@ -99,6 +101,8 @@ export const BATTLE_ARMOR_PUBLISHED_EXCEPTIONS: { name: RegExp; issue: string; n
 export interface IBattleArmorMountedItem {
     tag: string;
     location: BattleArmorLocation;
+    /** Identifies the mount for what is attached to it, such as a weapon quirk; kept across saves. */
+    uuid?: string;
     /** A missile launcher built as a one-shot launcher. */
     oneShot?: boolean;
     /** Missile shots carried with the launcher. */
@@ -200,6 +204,7 @@ export interface IBattleArmorExport {
     /** The rules edition it is built under (rules-editions.ts); absent means Total Warfare. */
     rulesEdition?: string;
     uuid: string;
+    quirks?: IAssignedQuirk[];
     lastUpdated: string;
     name: string;
     techBase: BattleArmorTechBase;
@@ -279,6 +284,9 @@ export const normalizeBattleArmorExport = (raw: unknown): { suit: IBattleArmorEx
 
 export default class BattleArmor {
     private _uuid: string = generateUUID();
+
+    /** The design quirks assigned to this unit (quirk tables, Campaign Operations pp.228 and 232). */
+    public quirks: QuirkList = new QuirkList();
     public lastUpdated: Date = new Date();
 
     private _name: string = "";
@@ -318,6 +326,9 @@ export default class BattleArmor {
 
     public getUUID(): string { return this._uuid; }
     public newUUID(): void { this._uuid = generateUUID(); }
+
+    /** Which column of the quirk tables this unit is graded by. */
+    public getQuirkUnitType(): QuirkUnitType { return "battle-armor"; }
     public getName(): string { return this._name; }
     /** The rules edition the design is built under. Only the editions with rules for this unit type are offered. */
     public getRulesEdition(): string { return this._rulesEdition; }
@@ -905,7 +916,7 @@ export default class BattleArmor {
         const equipment = findBattleArmorEquipment(tag);
         if (!equipment || !this._offers(equipment.techBase) || this._baseItems.length >= MAX_BATTLE_ARMOR_ITEMS) return false;
         if (!this.getLocations().includes(location)) return false;
-        const entry: IBattleArmorMountedItem = { tag, location: equipment.bodyOnly ? "body" : location };
+        const entry: IBattleArmorMountedItem = { tag, location: equipment.bodyOnly ? "body" : location, uuid: generateUUID() };
         if (equipment.kind === "missile" && equipment.oneShot !== "always") entry.shots = 1;
         this._baseItems.push(entry);
         return true;
@@ -1928,6 +1939,7 @@ export default class BattleArmor {
         return {
             ...(inPlay ? { inPlay } : {}),
             uuid: this._uuid,
+            quirks: this.quirks.export(),
             lastUpdated: this.lastUpdated.toISOString(),
             name: this._name,
             ...(this._rulesEdition !== DEFAULT_RULES_EDITION ? { rulesEdition: this._rulesEdition } : {}),
@@ -1975,6 +1987,7 @@ export default class BattleArmor {
 
         const uuid = savedString(raw.uuid);
         if (/^[0-9a-zA-Z-]{8,64}$/.test(uuid)) this._uuid = uuid;
+        this.quirks.import(raw.quirks);
         const updated = new Date(savedString(raw.lastUpdated));
         if (!Number.isNaN(updated.getTime())) this.lastUpdated = updated;
         this.setName(savedString(raw.name));
@@ -2046,6 +2059,10 @@ export default class BattleArmor {
                 trooper: typeof saved.trooper === "number" ? saved.trooper : undefined,
                 mine: typeof saved.mine === "string" ? saved.mine : undefined,
             });
+            const savedUuid = savedString(saved.uuid);
+            if (/^[0-9a-zA-Z-]{8,64}$/.test(savedUuid) && !this._baseItems.some((entry) => entry.uuid === savedUuid)) {
+                this._baseItems[this._baseItems.length - 1].uuid = savedUuid;
+            }
         }
 
         this._apMounts = [];

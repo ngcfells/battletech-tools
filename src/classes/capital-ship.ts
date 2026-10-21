@@ -1,4 +1,6 @@
 import { generateUUID } from "../utils/generateUUID";
+import { IAssignedQuirk, QuirkUnitType } from "../data/quirk-interfaces";
+import { QuirkList } from "./quirk-list";
 import { DEFAULT_RULES_EDITION, getSelectableRulesEditionTag } from "../data/rules-editions";
 import { aerospaceArmorTypes, getAerospaceArmorPointsPerTon } from "../data/aerospace-armor-types";
 import { mechHeatSinkTypes } from "../data/mech-heat-sink-types";
@@ -156,6 +158,7 @@ export interface ICapitalShipExport {
     rulesEdition?: string;
     version: number;
     uuid: string;
+    quirks?: IAssignedQuirk[];
     lastUpdated: Date;
     name: string;
     model: string;
@@ -235,6 +238,9 @@ export interface ICapitalShipWeaponBay {
 
 export default class CapitalShip {
     private _uuid: string = generateUUID();
+
+    /** The design quirks assigned to this unit (quirk tables, Campaign Operations pp.228 and 232). */
+    public quirks: QuirkList = new QuirkList();
     public lastUpdated: Date = new Date();
 
     private _name: string = "";
@@ -287,6 +293,9 @@ export default class CapitalShip {
 
     public getUUID(): string { return this._uuid; }
     public newUUID(): void { this._uuid = generateUUID(); }
+
+    /** Which column of the quirk tables this unit is graded by. */
+    public getQuirkUnitType(): QuirkUnitType { return "large-craft"; }
 
     public getName(): string { return this._name; }
     public setName(name: string): string {
@@ -1678,6 +1687,7 @@ export default class CapitalShip {
             }),
             version: 1,
             uuid: this._uuid,
+            quirks: this.quirks.export(),
             lastUpdated: this.lastUpdated,
             name: this._name,
             ...(this._rulesEdition !== DEFAULT_RULES_EDITION ? { rulesEdition: this._rulesEdition } : {}),
@@ -1734,6 +1744,7 @@ export default class CapitalShip {
         }
         const saved = parsed as Partial<Record<keyof ICapitalShipExport, unknown>>;
         this._uuid = savedString(saved.uuid).slice(0, 100) || generateUUID();
+        this.quirks.import(saved.quirks);
         const updated = typeof saved.lastUpdated === "string" || typeof saved.lastUpdated === "number" ? new Date(saved.lastUpdated) : new Date();
         this.lastUpdated = Number.isNaN(updated.getTime()) ? new Date() : updated;
         this.setName(savedString(saved.name));

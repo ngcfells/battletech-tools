@@ -191,7 +191,7 @@ describe("Equipment carried by one trooper of a squad", () => {
         const squadDamage = suit.getAlphaStrikeStats().calcLog.join("\n");
         suit.updateItem(0, { trooper: 2 });
         const loaded = new BattleArmor(suit.exportJSON());
-        expect(loaded.getItems()).toEqual([{ tag: "is-small-laser", location: "ra", trooper: 2 }]);
+        expect(loaded.getItems()).toMatchObject([{ tag: "is-small-laser", location: "ra", trooper: 2 }]);
         expect(loaded.getAlphaStrikeStats().calcLog.join("\n")).not.toBe(squadDamage);
         expect(loaded.getAlphaStrikeStats().calcLog.join("\n")).toContain("weapons the squad has only one of");
         expect(loaded.isItemLost(loaded.getItems()[0])).toBe(false);
@@ -207,7 +207,7 @@ describe("Equipment carried by one trooper of a squad", () => {
             + `<chassis>\nbiped\n</chassis>\n<jumpingMP>\n3\n</jumpingMP>\n<armor>\n5\n</armor>\n<Trooper Count>\n4\n</Trooper Count>\n<weightclass>\n1\n</weightclass>\n`;
         const { suit, issues } = importBattleArmorBlk(text);
         expect(issues).toEqual([]);
-        expect(suit?.getItems()).toEqual([{ tag: "is-mine-dispenser", location: "body" }, { tag: "is-ecm-suite", location: "body", trooper: 1 }]);
+        expect(suit?.getItems()).toMatchObject([{ tag: "is-mine-dispenser", location: "body" }, { tag: "is-ecm-suite", location: "body", trooper: 1 }]);
     });
 });
 
