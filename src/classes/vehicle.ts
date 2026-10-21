@@ -2608,9 +2608,14 @@ export default class Vehicle {
             }
         }
         returnItems.sort((a, b) => (a.sort > b.sort ? 1 : a.sort < b.sort ? -1 : 0));
+        // A custom record states its tech base: IS records go to IS and mixed vehicles, Clan records to Clan and
+        // mixed vehicles. Universal records, and records that state none, go to everyone.
+        const byTechBase = returnItems.filter((item) => item.catalog !== "custom"
+            || (item.techBase !== "is" && item.techBase !== "clan")
+            || (item.techBase === "is" ? includeIS : includeClan));
         // Apocryphal, Custom Homebrew and Munchkin items are only offered at their own level or above.
         const offeredLevel = includeCustom ? Math.max(rulesLevel, CUSTOM_HOMEBREW_RULES_LEVEL) : rulesLevel;
-        return returnItems.filter((item) => isEquipmentWithinRulesLevel(item, offeredLevel));
+        return byTechBase.filter((item) => isEquipmentWithinRulesLevel(item, offeredLevel));
     }
 
     public getAvailableEquipmentByCatalog(catalog: "all" | "is" | "clan" | "custom", includeCustom: boolean = false, rulesLevel: number = 2): IEquipmentItem[] {
