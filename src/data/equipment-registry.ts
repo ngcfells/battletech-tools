@@ -1,12 +1,11 @@
 import { IEquipmentItem, ITechDates } from "./data-interfaces";
 import { matchesTag } from "./tag-match";
 import { isAlphaStrikeAbilityCode } from "./alpha-strike-special-abilities";
-import { mechISEquipmentBallistic } from "./mech-is-equipment-weapons-ballistic";
+import { equipmentBallistic } from "./equipment-ballistic";
 import { equipmentEnergy } from "./equipment-energy";
 import { mechISEquipmentMisc } from "./mech-is-equipment-weapons-misc";
 import { mechISEquipmentMissiles } from "./mech-is-equipment-weapons-missiles";
 import { mechISEquipmentArtillery } from "./mech-is-equipment-weapons-artillery";
-import { mechClanEquipmentBallistic } from "./mech-clan-equipment-weapons-ballistic";
 import { mechClanEquipmentMisc } from "./mech-clan-equipment-weapons-misc";
 import { mechClanEquipmentMissile } from "./mech-clan-equipment-weapons-missile";
 import { mechClanEquipmentArtillery } from "./mech-clan-equipment-weapons-artillery";
@@ -52,13 +51,12 @@ export interface IEquipmentCatalogSummary {
 }
 
 const equipmentCatalogDefinitions: IEquipmentCatalogDefinition[] = [
-    { id: "mech-is-equipment-weapons-ballistic", exportName: "mechISEquipmentBallistic", category: "ballistic", equipment: mechISEquipmentBallistic },
+    { id: "equipment-ballistic", exportName: "equipmentBallistic", category: "ballistic", equipment: equipmentBallistic },
     { id: "equipment-energy", exportName: "equipmentEnergy", category: "energy", equipment: equipmentEnergy },
     { id: "mech-is-equipment-weapons-missiles", exportName: "mechISEquipmentMissiles", category: "missile", equipment: mechISEquipmentMissiles },
     { id: "mech-is-equipment-weapons-misc", exportName: "mechISEquipmentMisc", category: "misc", equipment: mechISEquipmentMisc },
     { id: "mech-is-equipment-weapons-artillery", exportName: "mechISEquipmentArtillery", category: "artillery", equipment: mechISEquipmentArtillery },
     { id: "mech-is-ammo", exportName: "mechISAmmo", category: "ammunition", equipment: mechISAmmo },
-    { id: "mech-clan-equipment-weapons-ballistic", exportName: "mechClanEquipmentBallistic", category: "ballistic", equipment: mechClanEquipmentBallistic },
     { id: "mech-clan-equipment-weapons-missile", exportName: "mechClanEquipmentMissile", category: "missile", equipment: mechClanEquipmentMissile },
     { id: "mech-clan-equipment-weapons-misc", exportName: "mechClanEquipmentMisc", category: "misc", equipment: mechClanEquipmentMisc },
     { id: "mech-clan-equipment-weapons-artillery", exportName: "mechClanEquipmentArtillery", category: "artillery", equipment: mechClanEquipmentArtillery },

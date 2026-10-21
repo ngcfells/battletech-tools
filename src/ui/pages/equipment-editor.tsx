@@ -31,10 +31,10 @@ export default class EquipmentEditor extends React.Component<IEquipmentEditorPro
         let currentListData: IEquipmentItem[] = [];
 
         if( !currentList || !currentList.trim() ) {
-            currentList = "mech-is-equipment-weapons-ballistic"
+            currentList = "equipment-ballistic"
         }
         currentListData = getEquipmentCatalogById(currentList)
-            ?? getEquipmentCatalogById("mech-is-equipment-weapons-ballistic")
+            ?? getEquipmentCatalogById("equipment-ballistic")
             ?? [];
 
         currentListData = this._normalizeListData(currentListData);

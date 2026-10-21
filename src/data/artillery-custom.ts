@@ -1,6 +1,8 @@
 import { IEquipmentItem } from "./data-interfaces";
-import { mechISEquipmentBallistic } from "./mech-is-equipment-weapons-ballistic";
+import { equipmentBallistic } from "./equipment-ballistic";
 import { mechUniversalEquipment } from "./mech-universal-equipment";
+
+const isBallisticList = equipmentBallistic.filter((item) => item.techBase === "is");
 
 /*
  * ArtVee design 2026-10-20 (Custom Homebrew): the combo guns, an artillery tube with a drop-in autocannon breech.
@@ -36,7 +38,7 @@ const comboRows: IComboGunRow[] = [
 ];
 
 function comboGun(row: IComboGunRow, techBase: "is" | "clan"): IEquipmentItem {
-    const ac = mechISEquipmentBallistic.find((item) => item.tag === row.acTag);
+    const ac = isBallisticList.find((item) => item.tag === row.acTag);
     if (!ac || ac.battleValue === undefined) throw new Error(`Combo gun: AC record ${row.acTag} not found`);
     const piece = mechUniversalEquipment.find((item) => item.tag === row.pieceTag);
     if (!piece || piece.battleValue === undefined) throw new Error(`Combo gun: artillery record ${row.pieceTag} not found`);

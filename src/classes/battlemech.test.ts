@@ -22,14 +22,16 @@ import { mechISEquipmentMissiles } from "../data/mech-is-equipment-weapons-missi
 import { mechClanEquipmentMissile } from "../data/mech-clan-equipment-weapons-missile";
 import { mechISEquipmentArtillery } from "../data/mech-is-equipment-weapons-artillery";
 import { mechClanEquipmentArtillery } from "../data/mech-clan-equipment-weapons-artillery";
-import { mechISEquipmentBallistic } from "../data/mech-is-equipment-weapons-ballistic";
-import { mechClanEquipmentBallistic } from "../data/mech-clan-equipment-weapons-ballistic";
+import { equipmentBallistic } from "../data/equipment-ballistic";
 import { equipmentEnergy } from "../data/equipment-energy";
 import { mechISEquipmentMisc } from "../data/mech-is-equipment-weapons-misc";
 import { mechClanEquipmentMisc } from "../data/mech-clan-equipment-weapons-misc";
 import { mechUniversalEquipment } from "../data/mech-universal-equipment";
 import { getAvailableTonnagesForMechType, getTonnageBoundsForMechType } from "../data/mech-tonnages";
 import { mechCustomEquipmentMisc } from "../data/mech-custom-equipment-weapons-misc";
+
+const isBallisticList = equipmentBallistic.filter((item) => item.techBase === "is");
+const clanBallisticList = equipmentBallistic.filter((item) => item.techBase === "clan");
 
 const isEnergyList = equipmentEnergy.filter((item) => item.techBase === "is");
 const clanEnergyList = equipmentEnergy.filter((item) => item.techBase === "clan");
@@ -3033,13 +3035,13 @@ describe("Batch 10b ballistic weapon catalogs", () => {
             "is-risc-apds": [3134, 3137, null, null, "IO:AE", 85],
         };
         for (const [tag, want] of Object.entries(expected)) {
-            const item = mechISEquipmentBallistic.find(record => record.tag === tag);
+            const item = isBallisticList.find(record => record.tag === tag);
             expect([item?.prototype, item?.introduced, item?.extinct, item?.reintroduced, item?.book, item?.page], tag).toEqual(want);
         }
     });
 
     it("uses null, not 0, for unknown dates in the isBallistic records", () => {
-        for (const item of mechISEquipmentBallistic) {
+        for (const item of isBallisticList) {
             expect(item.introduced, item.tag).not.toBe(0);
             expect(item.extinct, item.tag).not.toBe(0);
             expect(item.reintroduced, item.tag).not.toBe(0);
@@ -3093,13 +3095,13 @@ describe("Batch 10b ballistic weapon catalogs", () => {
             "clan-prototype-ultra-ac-20": [2820, null, 2825, null, "IO:AE", 92],
         };
         for (const [tag, want] of Object.entries(expected)) {
-            const item = mechClanEquipmentBallistic.find(record => record.tag === tag);
+            const item = clanBallisticList.find(record => record.tag === tag);
             expect([item?.prototype, item?.introduced, item?.extinct, item?.reintroduced, item?.book, item?.page], tag).toEqual(want);
         }
     });
 
     it("uses null, not 0, for unknown dates in the clanBallistic records", () => {
-        for (const item of mechClanEquipmentBallistic) {
+        for (const item of clanBallisticList) {
             expect(item.introduced, item.tag).not.toBe(0);
             expect(item.extinct, item.tag).not.toBe(0);
             expect(item.reintroduced, item.tag).not.toBe(0);
@@ -3671,13 +3673,13 @@ describe("Batch 13 records without a canon source", () => {
 describe("Batch 14 prototype weapon statistics", () => {
     it("match the IO:AE construction, game data and Battle Value tables (pp.189, 210-213)", () => {
         const expected: [{ tag: string }[], string, Record<string, unknown>][] = [
-            [mechISEquipmentBallistic, "primitive-prototype-ac-2", { weight: 6, space: { battlemech: 1, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, cbills: 75000, battleValue: 37, range: { min: 4, short: 8, medium: 16, long: 24 }, shotsPerTon: 34, ammoBattleValue: 4, ammoTypes: ["ammo-is-ac-2-standard"], techRating: "c", rangeAero: "l" }],
-            [mechISEquipmentBallistic, "primitive-prototype-ac-5", { weight: 8, space: { battlemech: 4, protomech: -1, combatVehicle: 1, supportVehicle: 4, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, cbills: 125000, battleValue: 70, range: { min: 3, short: 6, medium: 12, long: 18 }, shotsPerTon: 15, ammoBattleValue: 7, ammoTypes: ["ammo-is-ac-5-standard"], techRating: "c", rangeAero: "m" }],
-            [mechISEquipmentBallistic, "primitive-prototype-ac-10", { weight: 12, space: { battlemech: 7, protomech: -1, combatVehicle: 1, supportVehicle: 7, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, cbills: 200000, battleValue: 123, range: { min: 0, short: 5, medium: 10, long: 15 }, shotsPerTon: 8, ammoBattleValue: 12, ammoTypes: ["ammo-is-ac-10-standard"], techRating: "c", rangeAero: "m" }],
-            [mechISEquipmentBallistic, "primitive-prototype-ac-20", { weight: 14, space: { battlemech: 10, protomech: -1, combatVehicle: 1, supportVehicle: 10, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, cbills: 300000, battleValue: 178, range: { min: 0, short: 3, medium: 6, long: 9 }, shotsPerTon: 4, ammoBattleValue: 17, ammoTypes: ["ammo-is-ac-20-standard"], techRating: "c", rangeAero: "s" }],
-            [mechISEquipmentBallistic, "prototype-autocannon-lbx-10", { weight: 11, space: { battlemech: 7, protomech: -1, combatVehicle: 1, supportVehicle: 7, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, cbills: 1600000, battleValue: 148, ammoBattleValue: 15 }],
-            [mechISEquipmentBallistic, "prototype-gauss-rifle", { weight: 15, space: { battlemech: 8, protomech: -1, combatVehicle: 1, supportVehicle: 8, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, cbills: 1200000, battleValue: 320, ammoBattleValue: 40 }],
-            [mechISEquipmentBallistic, "prototype-autocannon-uac-5", { weight: 9, space: { battlemech: 6, protomech: -1, combatVehicle: 1, supportVehicle: 6, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, cbills: 1000000, battleValue: 112, ammoBattleValue: 14 }],
+            [isBallisticList, "primitive-prototype-ac-2", { weight: 6, space: { battlemech: 1, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, cbills: 75000, battleValue: 37, range: { min: 4, short: 8, medium: 16, long: 24 }, shotsPerTon: 34, ammoBattleValue: 4, ammoTypes: ["ammo-is-ac-2-standard"], techRating: "c", rangeAero: "l" }],
+            [isBallisticList, "primitive-prototype-ac-5", { weight: 8, space: { battlemech: 4, protomech: -1, combatVehicle: 1, supportVehicle: 4, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, cbills: 125000, battleValue: 70, range: { min: 3, short: 6, medium: 12, long: 18 }, shotsPerTon: 15, ammoBattleValue: 7, ammoTypes: ["ammo-is-ac-5-standard"], techRating: "c", rangeAero: "m" }],
+            [isBallisticList, "primitive-prototype-ac-10", { weight: 12, space: { battlemech: 7, protomech: -1, combatVehicle: 1, supportVehicle: 7, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, cbills: 200000, battleValue: 123, range: { min: 0, short: 5, medium: 10, long: 15 }, shotsPerTon: 8, ammoBattleValue: 12, ammoTypes: ["ammo-is-ac-10-standard"], techRating: "c", rangeAero: "m" }],
+            [isBallisticList, "primitive-prototype-ac-20", { weight: 14, space: { battlemech: 10, protomech: -1, combatVehicle: 1, supportVehicle: 10, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, cbills: 300000, battleValue: 178, range: { min: 0, short: 3, medium: 6, long: 9 }, shotsPerTon: 4, ammoBattleValue: 17, ammoTypes: ["ammo-is-ac-20-standard"], techRating: "c", rangeAero: "s" }],
+            [isBallisticList, "prototype-autocannon-lbx-10", { weight: 11, space: { battlemech: 7, protomech: -1, combatVehicle: 1, supportVehicle: 7, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, cbills: 1600000, battleValue: 148, ammoBattleValue: 15 }],
+            [isBallisticList, "prototype-gauss-rifle", { weight: 15, space: { battlemech: 8, protomech: -1, combatVehicle: 1, supportVehicle: 8, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, cbills: 1200000, battleValue: 320, ammoBattleValue: 40 }],
+            [isBallisticList, "prototype-autocannon-uac-5", { weight: 9, space: { battlemech: 6, protomech: -1, combatVehicle: 1, supportVehicle: 6, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, cbills: 1000000, battleValue: 112, ammoBattleValue: 14 }],
             [isEnergyList, "primitive-prototype-small-laser", { weight: 0.5, cbills: 11250, battleValue: 9, heat: 2, range: { min: 0, short: 1, medium: 2, long: 3 }, techRating: "c", rangeAero: "s" }],
             [isEnergyList, "primitive-prototype-medium-laser", { weight: 1, cbills: 40000, battleValue: 46, heat: 5, range: { min: 0, short: 3, medium: 6, long: 9 }, techRating: "c", rangeAero: "s" }],
             [isEnergyList, "primitive-prototype-large-laser", { weight: 5, cbills: 100000, battleValue: 123, heat: 12, range: { min: 0, short: 5, medium: 10, long: 15 }, techRating: "c", rangeAero: "m" }],
@@ -3694,12 +3696,12 @@ describe("Batch 14 prototype weapon statistics", () => {
             [mechClanEquipmentMissile, "clan-improved-srm-6", { cbills: 120000, battleValue: 79, ammoBattleValue: 10 }],
             [mechClanEquipmentMissile, "clan-prototype-streak-srm-4", { cbills: 90000, battleValue: 59, ammoBattleValue: 7 }],
             [mechClanEquipmentMissile, "clan-prototype-streak-srm-6", { cbills: 120000, battleValue: 89, ammoBattleValue: 11 }],
-            [mechClanEquipmentBallistic, "clan-prototype-lb-2-x-ac", { battleValue: 42, ammoBattleValue: 5 }],
-            [mechClanEquipmentBallistic, "clan-prototype-lb-5-x-ac", { battleValue: 83, ammoBattleValue: 10 }],
-            [mechClanEquipmentBallistic, "clan-prototype-lb-20-x-ac", { battleValue: 237, ammoBattleValue: 30 }],
-            [mechClanEquipmentBallistic, "clan-prototype-ultra-ac-2", { battleValue: 56, ammoBattleValue: 7 }],
-            [mechClanEquipmentBallistic, "clan-prototype-ultra-ac-10", { battleValue: 210, ammoBattleValue: 26 }],
-            [mechClanEquipmentBallistic, "clan-prototype-ultra-ac-20", { battleValue: 281, ammoBattleValue: 35 }],
+            [clanBallisticList, "clan-prototype-lb-2-x-ac", { battleValue: 42, ammoBattleValue: 5 }],
+            [clanBallisticList, "clan-prototype-lb-5-x-ac", { battleValue: 83, ammoBattleValue: 10 }],
+            [clanBallisticList, "clan-prototype-lb-20-x-ac", { battleValue: 237, ammoBattleValue: 30 }],
+            [clanBallisticList, "clan-prototype-ultra-ac-2", { battleValue: 56, ammoBattleValue: 7 }],
+            [clanBallisticList, "clan-prototype-ultra-ac-10", { battleValue: 210, ammoBattleValue: 26 }],
+            [clanBallisticList, "clan-prototype-ultra-ac-20", { battleValue: 281, ammoBattleValue: 35 }],
             [clanEnergyList, "enhanced_er_ppc", { name: "Enhanced PPC", altNames: ["Enhanced ER PPC"], weight: 7, cbills: 300000, battleValue: 329 }],
             [mechClanEquipmentMisc, "clan-nova-cews", { cbills: 1110000 }],
         ];
@@ -4003,7 +4005,7 @@ describe("Batch 17 explosive weapons in Battle Value (TO:AUE pp.194-195)", () =>
 
     it("takes a single point off for an HVAC, whatever its size (footnote Q)", () => {
         for (const tag of ["is-hvac-2", "is-hvac-5", "is-hvac-10"]) {
-            expect(mechISEquipmentBallistic.find(item => item.tag === tag), tag).toMatchObject({ explosive: true, explosiveBattleValueSlots: 1 });
+            expect(isBallisticList.find(item => item.tag === tag), tag).toMatchObject({ explosive: true, explosiveBattleValueSlots: 1 });
         }
         expect(penalties(mount("is-hvac-10"), "HVAC/10")).toBe(1);
         expect(penalties(mount("is-hvac-2"), "HVAC/2")).toBe(1);
@@ -4033,10 +4035,10 @@ describe("Batch 17 Battle Value follows critical slot moves", () => {
 describe("Batch 18 TechManual table audit", () => {
     it("matches the TechManual tech ratings (pp.341-343), costs (pp.290-294) and the Nail/Rivet Gun rows (pp.317, 344)", () => {
         const expected: [{ tag: string }[], string, Record<string, unknown>][] = [
-            [mechISEquipmentBallistic, "autocannon-light-2", { techRating: "d" }],
-            [mechISEquipmentBallistic, "autocannon-light-5", { techRating: "d" }],
-            [mechISEquipmentBallistic, "rotary-ac-2", { techRating: "e" }],
-            [mechISEquipmentBallistic, "rotary-ac-5", { techRating: "e" }],
+            [isBallisticList, "autocannon-light-2", { techRating: "d" }],
+            [isBallisticList, "autocannon-light-5", { techRating: "d" }],
+            [isBallisticList, "rotary-ac-2", { techRating: "e" }],
+            [isBallisticList, "rotary-ac-5", { techRating: "e" }],
             [isEnergyList, "standard-flamer", { techRating: "c" }],
             [isEnergyList, "er-large-laser", { techRating: "e" }],
             [mechISEquipmentMissiles, "mrm-10", { techRating: "c" }],
@@ -4049,16 +4051,16 @@ describe("Batch 18 TechManual table audit", () => {
             [mechISEquipmentMissiles, "streak-srm-2", { techRating: "e" }],
             [mechISEquipmentMissiles, "streak-srm-4", { techRating: "e" }],
             [mechISEquipmentMissiles, "streak-srm-6", { techRating: "e" }],
-            [mechClanEquipmentBallistic, "clan-autocannon-lbx-2", { techRating: "f" }],
-            [mechClanEquipmentBallistic, "clan-autocannon-lbx-5", { techRating: "f" }],
-            [mechClanEquipmentBallistic, "clan-autocannon-lbx-10", { techRating: "f" }],
-            [mechClanEquipmentBallistic, "clan-autocannon-lbx-20", { techRating: "f" }],
-            [mechClanEquipmentBallistic, "clan-autocannon-uac-2", { techRating: "f" }],
-            [mechClanEquipmentBallistic, "clan-autocannon-uac-5", { techRating: "f" }],
-            [mechClanEquipmentBallistic, "clan-autocannon-uac-10", { techRating: "f" }],
-            [mechClanEquipmentBallistic, "clan-autocannon-uac-20", { techRating: "f" }],
-            [mechClanEquipmentBallistic, "clan-light-machine-gun", { techRating: "f" }],
-            [mechClanEquipmentBallistic, "ap-gauss-rifle", { cbills: 10000 }],
+            [clanBallisticList, "clan-autocannon-lbx-2", { techRating: "f" }],
+            [clanBallisticList, "clan-autocannon-lbx-5", { techRating: "f" }],
+            [clanBallisticList, "clan-autocannon-lbx-10", { techRating: "f" }],
+            [clanBallisticList, "clan-autocannon-lbx-20", { techRating: "f" }],
+            [clanBallisticList, "clan-autocannon-uac-2", { techRating: "f" }],
+            [clanBallisticList, "clan-autocannon-uac-5", { techRating: "f" }],
+            [clanBallisticList, "clan-autocannon-uac-10", { techRating: "f" }],
+            [clanBallisticList, "clan-autocannon-uac-20", { techRating: "f" }],
+            [clanBallisticList, "clan-light-machine-gun", { techRating: "f" }],
+            [clanBallisticList, "ap-gauss-rifle", { cbills: 10000 }],
             // TM p.317: Nail/Rivet Gun ammunition has no Battle Value.
             [mechUniversalAmmo, "ammo-nail-rivet-gun-standard", { battleValue: 0, cbills: 300 }],
             [clanEnergyList, "er-small-laser-clan", { techRating: "f" }],
@@ -4096,11 +4098,11 @@ describe("Batch 19 TO:AUE table audit", () => {
             [mechISEquipmentMissiles, "thunderbolt-20", { space: { battlemech: 5, protomech: -1, combatVehicle: 1, supportVehicle: 5, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, range: { min: 5, short: 6, medium: 12, long: 18 } }],
             [mechISEquipmentMissiles, "thunderbolt-20-os", { space: { battlemech: 5, protomech: -1, combatVehicle: 1, supportVehicle: 5, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, range: { min: 5, short: 6, medium: 12, long: 18 } }],
             [mechISEquipmentMissiles, "thunderbolt-20-ios", { space: { battlemech: 5, protomech: -1, combatVehicle: 1, supportVehicle: 5, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, range: { min: 5, short: 6, medium: 12, long: 18 } }],
-            [mechClanEquipmentBallistic, "protomech-autocannon-2", { space: { battlemech: 2, protomech: 1, combatVehicle: 1, supportVehicle: 2, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
-            [mechClanEquipmentBallistic, "protomech-autocannon-4", { space: { battlemech: 3, protomech: 1, combatVehicle: 1, supportVehicle: 3, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
-            [mechClanEquipmentBallistic, "protomech-autocannon-8", { space: { battlemech: 4, protomech: 1, combatVehicle: 1, supportVehicle: 4, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
-            [mechClanEquipmentBallistic, "clan-autocannon-rac-2", { techRating: "f" }],
-            [mechClanEquipmentBallistic, "clan-autocannon-rac-5", { techRating: "f" }],
+            [clanBallisticList, "protomech-autocannon-2", { space: { battlemech: 2, protomech: 1, combatVehicle: 1, supportVehicle: 2, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
+            [clanBallisticList, "protomech-autocannon-4", { space: { battlemech: 3, protomech: 1, combatVehicle: 1, supportVehicle: 3, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
+            [clanBallisticList, "protomech-autocannon-8", { space: { battlemech: 4, protomech: 1, combatVehicle: 1, supportVehicle: 4, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
+            [clanBallisticList, "clan-autocannon-rac-2", { techRating: "f" }],
+            [clanBallisticList, "clan-autocannon-rac-5", { techRating: "f" }],
             [mechClanEquipmentMissile, "streak-lrm-5", { techRating: "f" }],
             [mechClanEquipmentMissile, "streak-lrm-10", { techRating: "f" }],
             [mechClanEquipmentMissile, "streak-lrm-15", { techRating: "f" }],
@@ -4936,9 +4938,9 @@ describe("Batch 28 Industrial Equipment Table (TM pp.344-345, errata v8.0)", () 
 describe("Batch 28 unit slot columns of the Weapons and Equipment Tables (TM pp.341-343)", () => {
     it("gives weapons and equipment their ProtoMech, vehicle and aerospace slot counts", () => {
         const expected: [{ tag: string }[], string, Record<string, unknown>][] = [
-            [mechISEquipmentBallistic, "autocannon-light-5", { space: { battlemech: 2, protomech: -1, combatVehicle: 1, supportVehicle: 2, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
-            [mechISEquipmentBallistic, "machine-gun-heavy", { space: { battlemech: 1, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
-            [mechISEquipmentBallistic, "is-machine-gun-array", { space: { battlemech: 1, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: 1, smallCraft: 1, dropShip: 0 } }],
+            [isBallisticList, "autocannon-light-5", { space: { battlemech: 2, protomech: -1, combatVehicle: 1, supportVehicle: 2, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
+            [isBallisticList, "machine-gun-heavy", { space: { battlemech: 1, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
+            [isBallisticList, "is-machine-gun-array", { space: { battlemech: 1, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: 1, smallCraft: 1, dropShip: 0 } }],
             [mechISEquipmentMissiles, "mrm-10", { space: { battlemech: 2, protomech: -1, combatVehicle: 1, supportVehicle: 2, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
             [mechISEquipmentMissiles, "mrm-20", { space: { battlemech: 3, protomech: -1, combatVehicle: 1, supportVehicle: 3, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
             [mechISEquipmentMissiles, "mrm-30", { space: { battlemech: 5, protomech: -1, combatVehicle: 1, supportVehicle: 5, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
@@ -4960,11 +4962,11 @@ describe("Batch 28 unit slot columns of the Weapons and Equipment Tables (TM pp.
             [mechISEquipmentMisc, "c3-computer-master", { space: { battlemech: 5, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: -1, smallCraft: -1, dropShip: -1 } }],
             [mechISEquipmentMisc, "c3-computer-slave", { space: { battlemech: 1, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: -1, smallCraft: -1, dropShip: -1 } }],
             [mechISEquipmentMisc, "c3i-computer", { space: { battlemech: 2, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: -1, smallCraft: -1, dropShip: -1 } }],
-            [mechClanEquipmentBallistic, "clan-autocannon-lbx-5", { space: { battlemech: 4, protomech: 1, combatVehicle: 1, supportVehicle: 4, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
-            [mechClanEquipmentBallistic, "clan-machine-gun-array", { space: { battlemech: 1, protomech: 1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: 1, smallCraft: 1, dropShip: 0 } }],
-            [mechClanEquipmentBallistic, "hyper-assault-gauss-20", { space: { battlemech: 6, protomech: 1, combatVehicle: 1, supportVehicle: 6, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
-            [mechClanEquipmentBallistic, "hyper-assault-gauss-30", { space: { battlemech: 8, protomech: -1, combatVehicle: 1, supportVehicle: 8, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
-            [mechClanEquipmentBallistic, "hyper-assault-gauss-40", { space: { battlemech: 10, protomech: -1, combatVehicle: 1, supportVehicle: 10, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
+            [clanBallisticList, "clan-autocannon-lbx-5", { space: { battlemech: 4, protomech: 1, combatVehicle: 1, supportVehicle: 4, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
+            [clanBallisticList, "clan-machine-gun-array", { space: { battlemech: 1, protomech: 1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: 1, smallCraft: 1, dropShip: 0 } }],
+            [clanBallisticList, "hyper-assault-gauss-20", { space: { battlemech: 6, protomech: 1, combatVehicle: 1, supportVehicle: 6, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
+            [clanBallisticList, "hyper-assault-gauss-30", { space: { battlemech: 8, protomech: -1, combatVehicle: 1, supportVehicle: 8, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
+            [clanBallisticList, "hyper-assault-gauss-40", { space: { battlemech: 10, protomech: -1, combatVehicle: 1, supportVehicle: 10, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
             [mechUniversalEquipment, "vehicle-flamer", { space: { battlemech: 1, protomech: 1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
             [clanEnergyList, "medium-heavy-laser", { space: { battlemech: 2, protomech: 1, combatVehicle: 1, supportVehicle: 2, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
             [clanEnergyList, "large-heavy-laser", { space: { battlemech: 3, protomech: 1, combatVehicle: 1, supportVehicle: 3, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
@@ -5011,7 +5013,7 @@ describe("Batch 29 unit slot columns of the TO:AUE construction tables (pp.217-2
             [mechUniversalEquipment, "thumper-artillery", { space: { battlemech: 15, protomech: -1, combatVehicle: 1, supportVehicle: 7, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
             [mechUniversalEquipment, "long-tom-artillery", { space: { battlemech: 30, protomech: -1, combatVehicle: 1, supportVehicle: 15, aerospaceFighter: -1, smallCraft: 1, dropShip: 1 } }],
             [mechUniversalEquipment, "fluid-gun", { space: { battlemech: 2, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
-            [mechClanEquipmentBallistic, "clan-autocannon-rac-5", { space: { battlemech: 8, protomech: -1, combatVehicle: 1, supportVehicle: 8, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
+            [clanBallisticList, "clan-autocannon-rac-5", { space: { battlemech: 8, protomech: -1, combatVehicle: 1, supportVehicle: 8, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
             [isEnergyList, "heavy-flamer", { space: { battlemech: 1, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: -1, smallCraft: -1, dropShip: -1 } }],
             [isEnergyList, "is-laser-ams", { space: { battlemech: 2, protomech: -1, combatVehicle: 1, supportVehicle: 2, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
             [clanEnergyList, "clan-heavy-flamer", { space: { battlemech: 1, protomech: 1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: -1, smallCraft: -1, dropShip: -1 } }],
@@ -5034,9 +5036,9 @@ describe("Batch 29 unit slot columns of the TO:AUE construction tables (pp.217-2
             [mechClanEquipmentMissile, "streak-lrm-10", { space: { battlemech: 2, protomech: 1, combatVehicle: 1, supportVehicle: 2, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
             [mechClanEquipmentMissile, "streak-lrm-15", { space: { battlemech: 3, protomech: 1, combatVehicle: 1, supportVehicle: 3, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
             [mechClanEquipmentMissile, "streak-lrm-20", { space: { battlemech: 5, protomech: 1, combatVehicle: 1, supportVehicle: 5, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
-            [mechISEquipmentBallistic, "light-rifle", { space: { battlemech: 1, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
-            [mechISEquipmentBallistic, "medium-rifle", { space: { battlemech: 2, protomech: -1, combatVehicle: 1, supportVehicle: 2, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
-            [mechISEquipmentBallistic, "heavy-rifle", { space: { battlemech: 3, protomech: -1, combatVehicle: 1, supportVehicle: 3, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
+            [isBallisticList, "light-rifle", { space: { battlemech: 1, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
+            [isBallisticList, "medium-rifle", { space: { battlemech: 2, protomech: -1, combatVehicle: 1, supportVehicle: 2, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
+            [isBallisticList, "heavy-rifle", { space: { battlemech: 3, protomech: -1, combatVehicle: 1, supportVehicle: 3, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
         ];
         for (const [catalog, tag, fields] of expected) {
             const item = catalog.find(entry => entry.tag === tag);
@@ -5263,8 +5265,8 @@ describe("Batch 31 Vehicular Grenade Launcher and Recon Camera (TO:AUE pp.127, 1
 describe("Batch 32 physical weapon to-hit modifiers (TW p.146, TO:AUE p.216)", () => {
     it("stores each physical weapon's to-hit modifier and the Pile Driver's damage of 9", () => {
         const expected: [{ tag: string }[], string, Record<string, unknown>][] = [
-            [mechISEquipmentBallistic, "melee-hatchet", { accuracyModifier: -1 }],
-            [mechISEquipmentBallistic, "melee-sword", { accuracyModifier: -2 }],
+            [isBallisticList, "melee-hatchet", { accuracyModifier: -1 }],
+            [isBallisticList, "melee-sword", { accuracyModifier: -2 }],
             [mechISEquipmentMisc, "melee-retractable-blade", { accuracyModifier: -2 }],
             [mechISEquipmentMisc, "melee-mace", { accuracyModifier: 1 }],
             [mechISEquipmentMisc, "melee-claw", { accuracyModifier: 1 }],
@@ -5409,7 +5411,7 @@ describe("Batch 35 TSEMP weapons and RISC Viral Jammers (IO:AE pp.84, 88, 190, 2
 
 describe("Batch 36 BattleMech Taser (TO:AUE pp.157-158)", () => {
     it("lists the weapon with the table values (pp.195, 222, 223)", () => {
-        expect(mechISEquipmentBallistic.find(item => item.tag === "mech-taser")).toMatchObject({
+        expect(isBallisticList.find(item => item.tag === "mech-taser")).toMatchObject({
             name: "BattleMech Taser", cbills: 200000, weight: 4, heat: 6, damage: 1, accuracyModifier: 1,
             range: { min: 0, short: 1, medium: 2, long: 4 },
             space: { battlemech: 3, protomech: -1, combatVehicle: 1, supportVehicle: 3, aerospaceFighter: -1, smallCraft: -1, dropShip: -1 },
@@ -6344,7 +6346,7 @@ describe("Batch 55 placement limits (TM pp.207, 210, 219, 220, 237, 241-249; TO:
 
     it("keeps Heavy Gauss rifles in the torso and on fusion or fission engines", () => {
         for (const tag of ["gauss-rifle-heavy", "gauss-rifle-heavy-improved"]) {
-            expect(mechISEquipmentBallistic.find(item => item.tag === tag), tag).toMatchObject({ allowedLocations: ["ct", "lt", "rt"], requiresEngine: "fusion-or-fission" });
+            expect(isBallisticList.find(item => item.tag === tag), tag).toMatchObject({ allowedLocations: ["ct", "lt", "rt"], requiresEngine: "fusion-or-fission" });
             expect(offered(build(), tag), tag).toBe(true);
             expect(offered(build(undefined, "fission"), tag), tag).toBe(true);
             expect(offered(build(undefined, "ice"), tag), tag).toBe(false);
@@ -6360,7 +6362,7 @@ describe("Batch 55 placement limits (TM pp.207, 210, 219, 220, 237, 241-249; TO:
         expect(place(mech, second, "la", "leftArm")).toBe(false);
         expect(place(mech, second, "ra", "rightArm")).toBe(true);
         const sword = add(build(), "melee-sword");
-        expect(mechISEquipmentBallistic.find(item => item.tag === "melee-sword")).toMatchObject({ allowedLocations: ["la", "ra"], onePerLocationGroup: "sword" });
+        expect(isBallisticList.find(item => item.tag === "melee-sword")).toMatchObject({ allowedLocations: ["la", "ra"], onePerLocationGroup: "sword" });
         expect(sword).toBeTruthy();
         const other = build();
         const blade = add(other, "melee-retractable-blade");

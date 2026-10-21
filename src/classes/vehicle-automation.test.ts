@@ -2,8 +2,10 @@ import { describe, expect, it } from "vitest";
 import Vehicle from "./vehicle";
 import Pilot from "./pilot";
 import { getWeaponExplosionDamage } from "../data/weapon-explosions";
-import { mechISEquipmentBallistic } from "../data/mech-is-equipment-weapons-ballistic";
-import { mechClanEquipmentBallistic } from "../data/mech-clan-equipment-weapons-ballistic";
+import { equipmentBallistic } from "../data/equipment-ballistic";
+
+const isBallisticList = equipmentBallistic.filter((item) => item.techBase === "is");
+const clanBallisticList = equipmentBallistic.filter((item) => item.techBase === "clan");
 
 // Combat Vehicle rules automated in play mode and construction: Total Warfare (corrected 2010 PDF) and
 // Tactical Operations (2008).
@@ -49,7 +51,7 @@ describe("Explosive weapons (TW pp. 135-136, 195; TO pp. 314-315)", () => {
     });
 
     it("marks every Gauss weapon with a sourced explosion as explosive in the catalog (TW pp. 135-136)", () => {
-        const catalog = [...mechISEquipmentBallistic, ...mechClanEquipmentBallistic];
+        const catalog = [...isBallisticList, ...clanBallisticList];
         for (const tag of ["hyper-assault-gauss-20", "hyper-assault-gauss-30", "hyper-assault-gauss-40", "ap-gauss-rifle", "prototype-gauss-rifle", "clan-improved-gauss-rifle"]) {
             const item = catalog.find((entry) => entry.tag === tag);
             expect(item?.explosive, tag).toBe(true);
