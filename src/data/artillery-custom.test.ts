@@ -19,9 +19,9 @@ const gun = (tag: string): IEquipmentItem => {
 };
 
 const rows = [
-    { name: "thumper", piece: "thumper-artillery", damage: 5, heat: 1, range: { min: 3, short: 7, medium: 14, long: 21 }, weight: 15, cbills: 187500, bv: 93, ac: "5", shots: 20 },
-    { name: "sniper", piece: "sniper-artillery", damage: 10, heat: 3, range: { min: 0, short: 6, medium: 12, long: 18 }, weight: 20, cbills: 300000, bv: 164, ac: "10", shots: 10 },
-    { name: "long-tom", piece: "long-tom-artillery", damage: 20, heat: 7, range: { min: 0, short: 4, medium: 8, long: 12 }, weight: 30, cbills: 450000, bv: 368, ac: "20", shots: 5 },
+    { name: "thumper", piece: "thumper-artillery", damage: 5, heat: 1, range: { min: 3, short: 7, medium: 14, long: 21 }, weight: 15, cbills: 187500, bv: 93, clanBv: 93, ac: "5", shots: 20 },
+    { name: "sniper", piece: "sniper-artillery", damage: 10, heat: 3, range: { min: 0, short: 6, medium: 12, long: 18 }, weight: 20, cbills: 300000, bv: 164, clanBv: 164, ac: "10", shots: 10 },
+    { name: "long-tom", piece: "long-tom-artillery", damage: 20, heat: 7, range: { min: 0, short: 4, medium: 8, long: 12 }, weight: 30, cbills: 450000, bv: 368, clanBv: 560, ac: "20", shots: 5 },
 ];
 
 describe("ArtVee combo guns", () => {
@@ -51,10 +51,11 @@ describe("ArtVee combo guns", () => {
         }
     });
 
-    it("counts once at the higher profile's BV", () => {
+    // Higher of AC BV x 1.33 and the tube BV for the tech base: TO:AUE p.195 (IS Long Tom 368), p.197 (Clan Long Tom 560).
+    it("counts once at the higher profile's BV, the tube BV by tech base", () => {
         for (const row of rows) {
             expect(gun(`custom-artvee-${row.name}-combo`).battleValue).toBe(row.bv);
-            expect(gun(`custom-clan-artvee-${row.name}-combo`).battleValue).toBe(row.bv);
+            expect(gun(`custom-clan-artvee-${row.name}-combo`).battleValue).toBe(row.clanBv);
         }
     });
 

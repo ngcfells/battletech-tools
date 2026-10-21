@@ -7,8 +7,9 @@ import { mechUniversalEquipment } from "./mech-universal-equipment";
  * In Vehicle Mode the gun fires as the autocannon (the top-level stats here, range +1/+2/+3 over the AC); in Siege
  * Mode it fires as the canon artillery piece named by `comboArtilleryTag`. Each bin feeds from either family.
  *
- * Battle value: the AC's BV x 1.33, the gun counted once at the higher profile. Ammo BV is not set here, so each
- * bin counts its own ammunition's BV.
+ * Battle value: the gun counts once, at the higher of its two profiles: the AC's BV x 1.33 (Vehicle Mode) or the
+ * artillery piece's BV for its tech base (Siege Mode; TO:AUE p.195 Inner Sphere, p.197 Clan). Ammo BV is not set
+ * here, so each bin counts its own ammunition's BV.
  */
 
 interface IComboGunRow {
@@ -24,19 +25,19 @@ interface IComboGunRow {
     range: { min: number; short: number; medium: number; long: number };
     weight: number;
     cbills: number;
-    battleValue: number;
+    tubeBattleValue: { is: number; clan: number };
     shotsPerTon: number;
 }
 
 const comboRows: IComboGunRow[] = [
-    { name: "thumper", label: "Thumper", pieceTag: "thumper-artillery", acTag: "autocannon-standard-b", acAmmo: "ac-5", artilleryAmmo: "ammo-thumper-standard", asCode: "ARTTH-1", damage: 5, heat: 1, range: { min: 3, short: 7, medium: 14, long: 21 }, weight: 15, cbills: 187500, battleValue: 93, shotsPerTon: 20 },
-    { name: "sniper", label: "Sniper", pieceTag: "sniper-artillery", acTag: "autocannon-standard-c", acAmmo: "ac-10", artilleryAmmo: "ammo-sniper-standard", asCode: "ARTSN-1", damage: 10, heat: 3, range: { min: 0, short: 6, medium: 12, long: 18 }, weight: 20, cbills: 300000, battleValue: 164, shotsPerTon: 10 },
-    { name: "long-tom", label: "Long Tom", pieceTag: "long-tom-artillery", acTag: "autocannon-standard-d", acAmmo: "ac-20", artilleryAmmo: "ammo-long-tom-standard", asCode: "ARTLT-1", damage: 20, heat: 7, range: { min: 0, short: 4, medium: 8, long: 12 }, weight: 30, cbills: 450000, battleValue: 368, shotsPerTon: 5 },
+    { name: "thumper", label: "Thumper", pieceTag: "thumper-artillery", acTag: "autocannon-standard-b", acAmmo: "ac-5", artilleryAmmo: "ammo-thumper-standard", asCode: "ARTTH-1", damage: 5, heat: 1, range: { min: 3, short: 7, medium: 14, long: 21 }, weight: 15, cbills: 187500, tubeBattleValue: { is: 43, clan: 48 }, shotsPerTon: 20 },
+    { name: "sniper", label: "Sniper", pieceTag: "sniper-artillery", acTag: "autocannon-standard-c", acAmmo: "ac-10", artilleryAmmo: "ammo-sniper-standard", asCode: "ARTSN-1", damage: 10, heat: 3, range: { min: 0, short: 6, medium: 12, long: 18 }, weight: 20, cbills: 300000, tubeBattleValue: { is: 85, clan: 96 }, shotsPerTon: 10 },
+    { name: "long-tom", label: "Long Tom", pieceTag: "long-tom-artillery", acTag: "autocannon-standard-d", acAmmo: "ac-20", artilleryAmmo: "ammo-long-tom-standard", asCode: "ARTLT-1", damage: 20, heat: 7, range: { min: 0, short: 4, medium: 8, long: 12 }, weight: 30, cbills: 450000, tubeBattleValue: { is: 368, clan: 560 }, shotsPerTon: 5 },
 ];
 
 function comboGun(row: IComboGunRow, techBase: "is" | "clan"): IEquipmentItem {
     const ac = mechISEquipmentBallistic.find((item) => item.tag === row.acTag);
-    if (!ac) throw new Error(`Combo gun: AC record ${row.acTag} not found`);
+    if (!ac || ac.battleValue === undefined) throw new Error(`Combo gun: AC record ${row.acTag} not found`);
     const clan = techBase === "clan";
     const acAmmoTag = `ammo-${techBase}-${row.acAmmo}-standard`;
     return {
@@ -58,7 +59,7 @@ function comboGun(row: IComboGunRow, techBase: "is" | "clan"): IEquipmentItem {
         introduced: 2700,
         extinct: clan ? null : 2865,
         reintroduced: clan ? null : 3071,
-        battleValue: row.battleValue,
+        battleValue: Math.max(Math.round(ac.battleValue * 1.33), row.tubeBattleValue[techBase]),
         heat: row.heat,
         heatAero: row.heat,
         weight: row.weight,

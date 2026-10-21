@@ -54,8 +54,9 @@ against infantry and fast raiders.
    | Long Tom | 20 | 25 | 30 mapsheets | 5 | 30 t | 450,000 / 10,000 | 368 / 46 |
 
    The second BV list (Long Tom 560 / ammo 46, Sniper 96 / 11, Thumper 48 / 5, lines 19300-19302) is the Clan
-   Weapons and Equipment BV Table [Addendum] (cont.), TO:AUE p.197, so those are the Clan versions' BVs. It is not
-   entered anywhere.
+   Weapons and Equipment BV Table [Addendum] (cont.), TO:AUE p.197, so those are the Clan versions' BVs (checked on
+   the page image 2026-10-21; the IS rows are p.195; errata v7.0 changes neither). The Clan combo guns use them; the
+   app's canon artillery records still carry one (IS) BV.
 
    Game rules: Indirect Artillery (TO:AR p.147), Direct-Fire Artillery (TO:AR p.153), Counter-Battery Fire (TO:AR
    p.154). Check whether standard artillery ammunition already exists in the ammo catalogs (Copperhead and FASCAM
@@ -96,7 +97,8 @@ deployed.
   matching AC's ammo feeds the Vehicle Mode profile. Builder's call: whether AC special munitions are allowed.
 - **Weapon BV:** Vehicle Mode profile BV = the AC's canon BV × 1.33 (the ER-to-standard laser ratio), rounded:
   AC/5 70 → **93**, AC/10 123 → **164**, AC/20 178 → **237**. The gun counts **once** in the blended BV, at the
-  higher of its two profiles: Thumper combo 93, Sniper combo 164, Long Tom combo 368. Ammo BV is each bin's canon
+  higher of its two profiles, the tube BV taken for the gun's tech base: Thumper combo 93 (IS and Clan), Sniper
+  combo 164 (IS and Clan), Long Tom combo 368 (IS) and 560 (Clan). Ammo BV is each bin's canon
   value.
 - **Tech:** IS and Clan, with the ArtVee dates below.
 
