@@ -855,11 +855,3 @@ Open:
 - [ ] 3.4 Measure before batching the 44 MUL chunk loads; 3.5 replace hot-path `JSON.parse(JSON.stringify())`
   clones; 3.6 split `src/utils.ts`; 3.7 `appGlobals` re-renders; 3.8 trim the Bootstrap CSS; 3.9 replace
   `process.env.PUBLIC_URL`.
-
-Not doing:
-- 1.2 Firebase data loss: not reachable. The storage selector in Settings is commented out and
-  `storageLocation` is never read from saved settings.
-- 2.1, 2.3, 2.6: caused by, or specific to, the AI Studio export.
-- 3.10 Removing `jdgAnalytics.ts`: Jeff's attribution stays.
-- JBTIICRework's `src/classes/battlemech/` and `src/classes/vehicle/` folders: copies nothing calls, with types
-  that have already drifted (6 type errors). Do the extraction in section 4 instead.
