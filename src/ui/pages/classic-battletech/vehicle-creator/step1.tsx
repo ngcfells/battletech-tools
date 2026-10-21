@@ -17,6 +17,9 @@ import { vehicleMotiveTypes } from '../../../../data/vehicle-motive-types';
 import { getVehicleTonnageBounds } from '../../../../data/vehicle-motive-types';
 import { SRCS_RULES_LEVEL } from '../../../../data/robotic-control-systems';
 import { getArtVeeIssues, getArtVeeVariant, getArtVeeWarnings } from '../../../../classes/vehicle-artvee';
+import { getArtVeeSamples } from '../../../../data/artvee-samples';
+import { confirmReplaceDesign, designWouldBeLost } from '../../../components/confirm-replace-design';
+import { generateUUID } from '../../../../utils/generateUUID';
 import { FaArrowCircleRight } from "react-icons/fa";
 import { availabilityOptionLabel, isOptionShown } from '../../../components/availability-options';
 import { SUPPORT_VEHICLE_CHASSIS_MODIFICATIONS, SUPPORT_VEHICLE_FIRE_CONTROL, SUPPORT_VEHICLE_TECH_RATINGS } from '../../../../data/support-vehicle-construction';
@@ -207,6 +210,22 @@ export default class VehicleCreatorStep1 extends React.Component<IStep1Props, IS
             change(vehicle);
             this.props.appGlobals.saveCurrentVehicle(vehicle);
         }
+    }
+
+    // Loads a sample ArtVee in place of the current design, offering to save the current one first.
+    loadArtVeeSample = (e: React.FormEvent<HTMLSelectElement>): void => {
+        const sample = getArtVeeSamples(this.props.appGlobals.appSettings.mechRulesFilter).find((entry) => entry.id === e.currentTarget.value);
+        if (!sample) return;
+        confirmReplaceDesign(this.props.appGlobals, {
+            what: "vehicle",
+            lost: designWouldBeLost(this.props.appGlobals.currentVehicle, () => new Vehicle(), this.props.appGlobals.vehicleSaves || []),
+            save: () => {
+                if (this.props.appGlobals.currentVehicle) {
+                    this.props.appGlobals.saveVehicleSaves([...(this.props.appGlobals.vehicleSaves || []), this.props.appGlobals.currentVehicle.export(true)]);
+                }
+            },
+            replace: () => this.props.appGlobals.saveCurrentVehicle(new Vehicle(JSON.stringify({ ...sample.save, uuid: generateUUID() }))),
+        });
     }
 
     updateUnitType = (e: React.FormEvent<HTMLSelectElement>): void => {
@@ -448,6 +467,18 @@ export default class VehicleCreatorStep1 extends React.Component<IStep1Props, IS
                                     value={vehicle.getName()}
                                     onChange={this.updateName}
                                 />
+
+                                {getArtVeeSamples(rulesLevel).length > 0 ? (
+                                    <label>
+                                        Sample ArtVees (Custom Homebrew):
+                                        <select value="" onChange={this.loadArtVeeSample} data-testid="artvee-samples">
+                                            <option value="">Start from a sample ArtVee (optional)</option>
+                                            {getArtVeeSamples(rulesLevel).map((sample) => (
+                                                <option key={sample.id} value={sample.id}>{sample.name} ({sample.save.tonnage} tons)</option>
+                                            ))}
+                                        </select>
+                                    </label>
+                                ) : null}
 
                                 <label>
                                     Unit Type:

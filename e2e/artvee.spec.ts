@@ -68,3 +68,18 @@ test("Vehicle Creator: the record sheet shows both ArtVee modes", async ({ page 
 
     expect(errors).toEqual([]);
 });
+
+test("Vehicle Creator: a sample ArtVee loads at Custom Homebrew and is hidden below it", async ({ page }) => {
+    const errors = watchErrors(page);
+
+    await page.goto("classic-battletech/vehicle-creator/step1");
+    await page.getByLabel("Rules Level").selectOption("6");
+    await page.getByTestId("artvee-samples").selectOption({ label: "Falconet ArtVee FLC-1 (55 tons)" });
+    await expect(page.getByTestId("artvee")).toContainText("Thumper");
+    await expect(page.getByLabel("Vehicle Model Name")).toHaveValue("Falconet ArtVee");
+
+    await page.getByLabel("Rules Level").selectOption("4");
+    await expect(page.getByTestId("artvee-samples")).toHaveCount(0);
+
+    expect(errors).toEqual([]);
+});
