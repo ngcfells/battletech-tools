@@ -13,11 +13,11 @@ export const ammoCustom: IEquipmentItem[] = [
         altTags: ["ammo-custom-smoker"],
         sort: "ammo, smoker fuel",
         category: "Ammunition",
-        cbills: 0,
-        introduced: 0,
+        cbills: 1000,
+        introduced: 1950,
         extinct: null,
         reintroduced: null,
-        battleValue: 0,
+        battleValue: 1,
         heat: 0,
         heatAero: 0,
         weight: 1,
@@ -25,13 +25,14 @@ export const ammoCustom: IEquipmentItem[] = [
         space: { battlemech: 1, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: -1, smallCraft: -1, dropShip: -1 },
         roundsPerTon: 50,
         explosive: false,
-        techRating: "x",
+        techRating: "b",
         book: "Future Wars #32",
         page: 9,
         alphaStrike: { specialAbility: [], heat: 0, rangeShort: 0, rangeMedium: 0, rangeLong: 0, rangeExtreme: 0, tc: false, notes: ["Custom equipment: no Alpha Strike effect"] },
         catalog: "custom",
         rulesLevel: 6,
         notes: "Each ton of fuel provides 50 hexes of level 2 smoke for the Smoker. A hit to the fuel results in a small fire, doing 5 points of damage and generating 10 points of heat (Future Wars #32, printed p.9). "
-            + "not yet verified: cost is not printed in Future Wars #32; not yet verified: Battle Value is not printed in Future Wars #32; not yet verified: dates are not printed in Future Wars #32."
+            + "Not printed in Future Wars #32: cost, Battle Value, dates and tech rating are those of Vehicle Flamer ammo (TM p.218) and Fluid Gun obscurant ammo (TO:AUE p.174), "
+            + "both 1,000 C-bills a ton and BV 1: introduced 1950 with the Smoker, never extinct, tech B (user ruling 2026-10-21)."
     }
 ];
