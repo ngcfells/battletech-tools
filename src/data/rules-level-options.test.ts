@@ -4,7 +4,7 @@ import { getRulesLevelFromMULRules } from "../classes/alpha-strike-unit";
 import type { IEquipmentItem } from "./data-interfaces";
 import {
     APOCRYPHAL_RULES_LEVEL, CUSTOM_HOMEBREW_RULES_LEVEL, EXPERIMENTAL_RULES_LEVEL, MUNCHKIN_RULES_LEVEL,
-    getEquipmentListByTech, getEquipmentRulesLevel, isEquipmentWithinRulesLevel,
+    getEquipmentListByTech, getEquipmentRulesLevel, isEquipmentOffered,
 } from "./equipment-registry";
 import { getTonnageBoundsForMechType } from "./mech-tonnages";
 import { getRulesLevelOptions } from "./rules-level-options";
@@ -37,14 +37,15 @@ describe("Rules levels", () => {
         expect(custom.filter(record => record.rulesLevel === APOCRYPHAL_RULES_LEVEL).map(record => record.tag)).toEqual([]);
     });
 
-    it("hide Apocryphal, Custom and Munchkin items below their own level; canon items are never hidden by level", () => {
+    it("hide every item below its own level, Experimental ones included", () => {
         const apocryphal = item({ catalog: "is", rulesLevel: APOCRYPHAL_RULES_LEVEL });
         const custom = item({ catalog: "custom" });
         const munchkin = item({ catalog: "custom", rulesLevel: MUNCHKIN_RULES_LEVEL });
         const experimental = item({ catalog: "is", rulesLevel: EXPERIMENTAL_RULES_LEVEL });
 
-        const visibleAt = (level: number) => [experimental, apocryphal, custom, munchkin].map(record => isEquipmentWithinRulesLevel(record, level));
-        expect(visibleAt(2)).toEqual([true, false, false, false]);
+        const visibleAt = (level: number) => [experimental, apocryphal, custom, munchkin].map(record => isEquipmentOffered(record, "total-warfare", level));
+        expect(visibleAt(2)).toEqual([false, false, false, false]);
+        expect(visibleAt(EXPERIMENTAL_RULES_LEVEL)).toEqual([true, false, false, false]);
         expect(visibleAt(APOCRYPHAL_RULES_LEVEL)).toEqual([true, true, false, false]);
         expect(visibleAt(CUSTOM_HOMEBREW_RULES_LEVEL)).toEqual([true, true, true, false]);
         expect(visibleAt(MUNCHKIN_RULES_LEVEL)).toEqual([true, true, true, true]);

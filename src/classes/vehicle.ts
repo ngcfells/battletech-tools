@@ -40,7 +40,7 @@ import {
     MAX_VEHICLE_BAY_COUNT, MAX_VEHICLE_BAYS, MAX_VEHICLE_CARGO_TONS, normalizeVehicleBays, VEHICLE_BAY_TYPES,
 } from "../data/vehicle-transport-bays";
 import { ARTVEE_CONVERSION_EQUIPMENT } from "../data/combat-vehicle-chassis-modifications-custom";
-import { CUSTOM_HOMEBREW_RULES_LEVEL, EXPERIMENTAL_RULES_LEVEL, equipmentMatchesIdentifier, getAmmoBattleValuePerTon, getBattleArmorScaleListByTech, getCompatibleAmmo, getEffectiveIntroduction, getEquipmentListByTech, getEquipmentRulesLevel, getStarLeagueCarryOverDates, getWeaponShotsPerTon, isEquipmentWithinRulesLevel } from "../data/equipment-registry";
+import { CUSTOM_HOMEBREW_RULES_LEVEL, EXPERIMENTAL_RULES_LEVEL, equipmentMatchesIdentifier, getAmmoBattleValuePerTon, getBattleArmorScaleListByTech, getCompatibleAmmo, getEffectiveIntroduction, getEquipmentListByTech, getEquipmentRulesLevel, getStarLeagueCarryOverDates, getWeaponShotsPerTon, isEquipmentOffered } from "../data/equipment-registry";
 import { isTargetingComputerWeapon, roundUpHalfTon, sizeVariableEquipment } from "../data/variable-equipment";
 import { getFractionalArmorTonsPerPoint, getFractionalEngineWeight, roundUpToKilogram } from "../data/fractional-accounting";
 import { getBattleArmorScaleExplosionDamage } from "../data/battle-armor-scale-equipment";
@@ -2783,7 +2783,7 @@ export default class Vehicle {
             || (item.techBase === "is" ? includeIS : includeClan));
         // Apocryphal, Custom Homebrew and Munchkin items are only offered at their own level or above.
         const offeredLevel = includeCustom ? Math.max(rulesLevel, CUSTOM_HOMEBREW_RULES_LEVEL) : rulesLevel;
-        return byTechBase.filter((item) => isEquipmentWithinRulesLevel(item, offeredLevel));
+        return byTechBase.filter((item) => isEquipmentOffered(item, this._rulesEdition, offeredLevel));
     }
 
     public getAvailableEquipmentByCatalog(catalog: "all" | "is" | "clan" | "custom", includeCustom: boolean = false, rulesLevel: number = 2): IEquipmentItem[] {

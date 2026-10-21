@@ -9,8 +9,13 @@ import {
     isInRulesEdition,
     isOfferedInEdition
 } from "./rules-editions";
-import { getEquipmentCatalogDefinitions, getEquipmentOfferIssue, getEquipmentRulesLevel, isEquipmentOffered, isEquipmentWithinRulesLevel } from "./equipment-registry";
+import { getEquipmentCatalogDefinitions, getEquipmentOfferIssue, getEquipmentRulesLevel, isEquipmentOffered } from "./equipment-registry";
 import { APOCRYPHAL_RULES_LEVEL, CUSTOM_HOMEBREW_RULES_LEVEL } from "./rules-level-options";
+
+const isEquipmentWithinRulesLevel = (item: IEquipmentItem, rulesLevel: number): boolean => {
+    const level = getEquipmentRulesLevel(item);
+    return level < APOCRYPHAL_RULES_LEVEL || level <= rulesLevel;
+};
 
 const stats = { book: "BD", page: 1 } as unknown as IEditionStats;
 const asItem = (fields: object) => fields as unknown as IEquipmentItem;

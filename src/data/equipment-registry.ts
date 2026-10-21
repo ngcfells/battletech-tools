@@ -258,16 +258,6 @@ export function getEquipmentRulesLevel(item: IEquipmentItem): number {
 }
 
 /**
- * May an item be offered at this rules level? Only the non-canon levels hide anything: an Apocryphal, Custom
- * Homebrew or Munchkin item needs its own level or higher. Canon items are listed at every level and the
- * builders warn when a design goes above the selected one.
- */
-export function isEquipmentWithinRulesLevel(item: IEquipmentItem, rulesLevel: number): boolean {
-    const level = getEquipmentRulesLevel(item);
-    return level < APOCRYPHAL_RULES_LEVEL || level <= rulesLevel;
-}
-
-/**
  * Why an item is not offered in `editionTag` at `rulesLevel`: "edition", "level", or null when it is offered. Custom
  * content belongs to no edition: it is offered in every one at its own level or higher. Other records follow
  * `getRecordOfferIssue`, with the canon level raised to the item's installed level (the Experimental floor).

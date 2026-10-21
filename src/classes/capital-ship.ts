@@ -8,7 +8,7 @@ import SmallCraft from "./small-craft";
 import Pilot, { IPilot } from "./pilot";
 import { getSkillMultiplier } from "../data/skill-multipliers";
 import { CAPITAL_MISSILE_CRITICAL_CHANCE, CAPITAL_SHIP_CRITICAL_NAMES, CapitalShipAttackDirection, ICapitalShipHit, getCapitalShipHitLocation } from "../data/capital-ship-hit-tables";
-import { CUSTOM_HOMEBREW_RULES_LEVEL, getArtemisLauncherBattleValue, getAmmoBattleValuePerTon, getCompatibleAmmo, getEquipmentRulesLevel, getEffectiveIntroduction, getEquipmentListByTech, getWeaponShotsPerTon, isEquipmentWithinRulesLevel } from "../data/equipment-registry";
+import { CUSTOM_HOMEBREW_RULES_LEVEL, getArtemisLauncherBattleValue, getAmmoBattleValuePerTon, getCompatibleAmmo, getEquipmentRulesLevel, getEffectiveIntroduction, getEquipmentListByTech, getWeaponShotsPerTon, isEquipmentOffered } from "../data/equipment-registry";
 import { findByTag } from "../data/tag-match";
 import { sizeDroneSystems } from "../data/variable-equipment";
 import { getEquipmentSubtype } from "../data/equipment-subtypes";
@@ -570,7 +570,7 @@ export default class CapitalShip {
         }
         items.sort((a, b) => (a.sort > b.sort ? 1 : a.sort < b.sort ? -1 : 0));
         const offeredLevel = includeCustom ? Math.max(rulesLevel, CUSTOM_HOMEBREW_RULES_LEVEL) : rulesLevel;
-        return items.filter((item) => isEquipmentWithinRulesLevel(item, offeredLevel));
+        return items.filter((item) => isEquipmentOffered(item, this._rulesEdition, offeredLevel));
     }
     private _catalog(): IEquipmentItem[] {
         const techTag = this._tech.tag;

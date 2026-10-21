@@ -9,8 +9,8 @@ import { ComponentRecord, getComponentRecords, getComponentTiers, isCustomCompon
 import type { CustomComponentKind, ISSWUnresolvedItem } from "../data/custom-content-types";
 import { getCockpitType } from "../data/mech-cockpit-types";
 import { btMechTonnages } from "../data/mech-tonnages";
-import { DEFAULT_RULES_EDITION, editionEngineHoldsHeatSinks, getEditionJumpJetWeight, getEditionPlayRules, getEditionStats, getEditionStructure, getEquipmentForEdition, getRulesEdition, isEarlierRulesEdition, isInRulesEdition } from "../data/rules-editions";
-import { APOCRYPHAL_RULES_LEVEL, CUSTOM_HOMEBREW_RULES_LEVEL, EXPERIMENTAL_RULES_LEVEL, equipmentMatchesIdentifier, getWeaponAmmoFamilies, getEquipmentRulesLevel, ARTEMIS_FIRE_CONTROL, isArtemisCapableLauncher, isEquipmentWithinRulesLevel, isOmniFixedOnly, getAlphaStrikeEquipmentDisplayAbilityCodes, getAmmoBattleValuePerTon, getAmmoFamily, getAmmoRoundsPerTon, getCompatibleAmmo, getEffectiveIntroduction, getEquipmentListByTech, getEquipmentListForChassis, getStarLeagueCarryOverDates, getWeaponShotsPerTon, getBattleArmorScaleListByTech, getEquipmentCatalogDefinitions } from "../data/equipment-registry";
+import { DEFAULT_RULES_EDITION, editionEngineHoldsHeatSinks, getEditionJumpJetWeight, getEditionPlayRules, getEditionStats, getEditionStructure, getEquipmentForEdition, getRulesEdition, isEarlierRulesEdition, isInRulesEdition, isOfferedInEdition, getRecordOfferIssue } from "../data/rules-editions";
+import { APOCRYPHAL_RULES_LEVEL, CUSTOM_HOMEBREW_RULES_LEVEL, EXPERIMENTAL_RULES_LEVEL, equipmentMatchesIdentifier, getWeaponAmmoFamilies, getEquipmentRulesLevel, ARTEMIS_FIRE_CONTROL, isArtemisCapableLauncher, isEquipmentOffered, isOmniFixedOnly, getAlphaStrikeEquipmentDisplayAbilityCodes, getAmmoBattleValuePerTon, getAmmoFamily, getAmmoRoundsPerTon, getCompatibleAmmo, getEffectiveIntroduction, getEquipmentListByTech, getEquipmentListForChassis, getStarLeagueCarryOverDates, getWeaponShotsPerTon, getBattleArmorScaleListByTech, getEquipmentCatalogDefinitions } from "../data/equipment-registry";
 import { getFractionalArmorTonsPerPoint, getFractionalEngineWeight, roundUpToKilogram } from "../data/fractional-accounting";
 import { isUniversalEquipment } from "../data/mech-universal-equipment";
 import { mechEngineOptions } from "../data/mech-engine-options";
@@ -1952,7 +1952,7 @@ export class BattleMech {
             const availability = this._techDatesAvailability(cockpit, rulesLevel);
             cockpit.availableAsPrototype = availability.asPrototype;
             // The cockpit a chassis must mount is never withheld.
-            cockpit.available = mandatory || (availability.available && this.isInRulesEdition(cockpit));
+            cockpit.available = mandatory || (availability.available && this.isOfferedInEdition(cockpit, rulesLevel));
             return cockpit;
         });
     }
@@ -4518,7 +4518,7 @@ export class BattleMech {
             const availability = this._techDatesAvailability(myomer, rulesLevel);
             myomer.availableAsPrototype = availability.asPrototype;
             // Superheavy musculature is incompatible with Triple-Strength Myomer (IO:AE p.156).
-            myomer.available = availability.available && (myomer.tag === "standard" || this.isInRulesEdition(myomer)) && !(myomer.techBase && pureTech && myomer.techBase !== pureTech)
+            myomer.available = availability.available && (myomer.tag === "standard" || this.isOfferedInEdition(myomer, rulesLevel)) && !(myomer.techBase && pureTech && myomer.techBase !== pureTech)
                 && !(this.isSuperheavy() && BattleMech._isTripleStrengthMyomer(myomer))
                 && this._isChassisLegalMyomer(myomer);
             return myomer;
@@ -4530,7 +4530,7 @@ export class BattleMech {
             const availability = this._techDatesAvailability(jumpJet, rulesLevel);
             jumpJet.availableAsPrototype = availability.asPrototype;
             // Superheavy 'Mechs mount no jump jets, improved jump jets or UMUs (IO:AE p.156).
-            jumpJet.available = availability.available && this.isInRulesEdition(jumpJet) && !this.isSuperheavy()
+            jumpJet.available = availability.available && this.isOfferedInEdition(jumpJet, rulesLevel) && !this.isSuperheavy()
                 && !(jumpJet.innerSphereOnly && this.getTech().tag === "clan")
                 // IndustrialMechs "may use only standard jump jets" (TM p.69).
                 && this._hasFusionOrFissionEngine() && (!this.isIndustrialMech() || jumpJet.tag === "standard");
@@ -5662,6 +5662,13 @@ export class BattleMech {
     }
 
     /**
+     * Is the record offered in the design's rules edition at this rules level?
+     */
+    public isOfferedInEdition(record: Parameters<typeof isOfferedInEdition>[0], rulesLevel: number): boolean {
+        return isOfferedInEdition(record, this._rulesEdition, rulesLevel);
+    }
+
+    /**
      * Build the design under another rules edition. Mounted equipment takes the new edition's weight, heat,
      * damage, ranges, critical slots and price wherever it still held the old edition's; nothing is removed.
      * getRulesEditionIssues() lists what the new edition does not include. An unknown tag is ignored.
@@ -5799,18 +5806,14 @@ export class BattleMech {
     }
 
     /**
-     * What the design uses that its rules edition does not include, one line each. Always empty for Total Warfare
-     * and later editions, where the rules level and era filters decide legality. The rules level, when given, admits
-     * what the edition allows only at the Apocryphal level.
+     * What the design uses that its rules edition does not include, one line each, naming the edition. Level
+     * issues are reported by the rules-level warnings, not here.
      */
     public getRulesEditionIssues(rulesLevel?: number): string[] {
-        if (!this.usesEarlierRulesEdition()) {
-            return [];
-        }
         const issues: string[] = [];
         const check = (kind: string, record: { name?: string; introducedInEdition?: string; editionStats?: IEquipmentItem["editionStats"] } | undefined, name?: string): void => {
-            if (record && !this.isInRulesEdition(record, rulesLevel)) {
-                issues.push(`${kind}: ${name ?? record.name}`);
+            if (record && getRecordOfferIssue(record, this._rulesEdition, rulesLevel ?? 0) === "edition") {
+                issues.push(`${kind}: ${name ?? record.name} (not in ${getRulesEdition(this._rulesEdition).name})`);
             }
         };
         if (!this.getAvailableTechOptions().some((option) => option.tag === this._tech.tag)) {
@@ -6522,7 +6525,7 @@ export class BattleMech {
     public getAvailableBombs(rulesLevel: number = 2): IEquipmentItem[] {
         if (!this.isLAM()) return [];
         return getEquipmentListForChassis(this.getTech().tag)
-            .filter(item => !!item.bombBaySlots && this.isInRulesEdition(item)
+            .filter(item => !!item.bombBaySlots && this.isOfferedInEdition(item, rulesLevel)
                 && getEquipmentRulesLevel(item) <= rulesLevel
                 && this._itemIsAvailable(item.introduced, item.extinct, item.reintroduced))
             .sort((a, b) => a.sort.localeCompare(b.sort));
@@ -9276,7 +9279,7 @@ export class BattleMech {
                 // engines stop at an adjusted 400.
                 const buildableAtRating = !weights || (weights as Record<string, number | undefined>)[engine.tag] !== undefined;
                 engine.availableAsPrototype = availability.asPrototype;
-                engine.available = availability.available && buildableAtRating && this.isInRulesEdition(engine)
+                engine.available = availability.available && buildableAtRating && this.isOfferedInEdition(engine, rulesLevel)
                     && this._isSuperheavyLegalEngine(engine.tag)
                     && this._isChassisLegalEngine(engine.tag)
                     && (!this._isNonFusionBattleMechEngine(engine.tag) || rulesLevel >= EXPERIMENTAL_RULES_LEVEL)
@@ -9421,7 +9424,7 @@ export class BattleMech {
         for(let gyro of mechGyroTypes ) {
             const availability = this._datesAvailability(gyro, rulesLevel);
             gyro.availableAsPrototype = availability.asPrototype;
-            gyro.available = availability.available && this.isInRulesEdition(gyro) && !(gyro.innerSphereOnly && this.getTech().tag === "clan")
+            gyro.available = availability.available && this.isOfferedInEdition(gyro, rulesLevel) && !(gyro.innerSphereOnly && this.getTech().tag === "clan")
                 && (!this.isLAM() || BattleMech.LAM_GYRO_TAGS.includes(gyro.tag))
                 // IndustrialMechs and Primitive 'Mechs take the standard gyro only (TM p.69; IO:AE p.116).
                 && (!this._hasBasicChassis() || gyro.tag === "standard");
@@ -9436,7 +9439,7 @@ export class BattleMech {
         return mechInternalStructureTypes.map(structure => {
             const availability = this._techDatesAvailability(structure, rulesLevel);
             structure.availableAsPrototype = availability.asPrototype;
-            structure.available = availability.available && this.isInRulesEdition(structure) && !(structure.innerSphereOnly && this.getTech().tag === "clan")
+            structure.available = availability.available && this.isOfferedInEdition(structure, rulesLevel) && !(structure.innerSphereOnly && this.getTech().tag === "clan")
                 && (!this.isLAM() || this._isLAMLegalComponent("structure", structure.tag))
                 && (!this.isSuperheavy() || BattleMech.SUPERHEAVY_STRUCTURE_TAGS.includes(structure.tag))
                 // "standard internal structure (or standard IndustrialMech structure, for IndustrialMechs)" (IO:AE p.116).
@@ -9451,7 +9454,7 @@ export class BattleMech {
             const techTag = this.getTech().tag;
             const pureTech = techTag === "is" || techTag === "clan" ? techTag : null;
             heatSink.availableAsPrototype = availability.asPrototype;
-            heatSink.available = availability.available && this.isInRulesEdition(heatSink) && !(heatSink.techBase && pureTech && heatSink.techBase !== pureTech)
+            heatSink.available = availability.available && this.isOfferedInEdition(heatSink, rulesLevel) && !(heatSink.techBase && pureTech && heatSink.techBase !== pureTech)
                 // IndustrialMechs and Primitive 'Mechs use single heat sinks only (TM p.71; IO:AE p.117).
                 && (!this._hasBasicChassis() || heatSink.tag === "single");
             return heatSink;
@@ -10034,7 +10037,7 @@ export class BattleMech {
             // need the Experimental rules level as well as a mixed tech base (IO:AE p.82).
             const mandatory = this._primitive && armor.tag === this._getPrimitiveArmorTag();
             const experimentalOnly = this.isIndustrialMech() && BattleMech.DARK_AGE_ARMOR_TAGS.includes(armor.tag);
-            armor.available = mandatory || (hasCompatibleMultiplier && availability.available && this.isInRulesEdition(armor)
+            armor.available = mandatory || (hasCompatibleMultiplier && availability.available && this.isOfferedInEdition(armor, rulesLevel)
                 && this._isArmorLegalForChassis(armor)
                 && (!experimentalOnly || rulesLevel >= EXPERIMENTAL_RULES_LEVEL)
                 // Patchwork Armor is an "advanced construction option" (TO:AUE p.189).
@@ -10372,8 +10375,8 @@ export class BattleMech {
             if (addedTags.has(item.tag) || item.space.battlemech < 0 || item.bombBaySlots) {
                 return;
             }
-            // Apocryphal, Custom Homebrew and Munchkin items are only offered at their own level or above.
-            if (!isEquipmentWithinRulesLevel(item, offeredLevel)) {
+            // Only what the selected rules edition offers at the selected rules level (custom content at its own level).
+            if (!isEquipmentOffered(item, this._rulesEdition, offeredLevel)) {
                 return;
             }
             item.catalog = isUniversalEquipment(item) ? "universal" : item.catalog ?? catalog;
@@ -10395,8 +10398,8 @@ export class BattleMech {
         };
 
         for (const record of getEquipmentListForChassis(techTag, includeCustom)) {
-            // Only what the selected rules edition includes, with the stats that edition prints.
-            if (!this.isInRulesEdition(record)) {
+            // Only what the selected rules edition offers at the selected rules level (custom content at its own level).
+            if (!isEquipmentOffered(record, this._rulesEdition, offeredLevel)) {
                 continue;
             }
             const item = getEquipmentForEdition(record, this._rulesEdition);

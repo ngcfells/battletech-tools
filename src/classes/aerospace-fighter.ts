@@ -6,7 +6,7 @@ import { mechEngineTypes } from "../data/mech-engine-types";
 import { mechHeatSinkTypes } from "../data/mech-heat-sink-types";
 import { btTechOptions } from "../data/tech-options";
 import { btEraOptions, findEraByTag, getClosestEraForTech, getErasForTech } from "../data/era-options";
-import { CUSTOM_HOMEBREW_RULES_LEVEL, getArtemisLauncherBattleValue, EXPERIMENTAL_RULES_LEVEL, getAmmoBattleValuePerTon, getBattleArmorScaleListByTech, getCompatibleAmmo, getEffectiveIntroduction, getEquipmentListByTech, getEquipmentRulesLevel, getWeaponShotsPerTon, isEquipmentWithinRulesLevel } from "../data/equipment-registry";
+import { CUSTOM_HOMEBREW_RULES_LEVEL, getArtemisLauncherBattleValue, EXPERIMENTAL_RULES_LEVEL, getAmmoBattleValuePerTon, getBattleArmorScaleListByTech, getCompatibleAmmo, getEffectiveIntroduction, getEquipmentListByTech, getEquipmentRulesLevel, getEquipmentOfferIssue, getWeaponShotsPerTon, isEquipmentOffered } from "../data/equipment-registry";
 import { getFractionalAerospaceArmorTonsPerPoint, getFractionalEngineWeight, roundUpToKilogram } from "../data/fractional-accounting";
 import { AlphaStrikeUnit, IASMULUnit } from "./alpha-strike-unit";
 import Pilot, { IPilot } from "./pilot";
@@ -1293,7 +1293,7 @@ export default class AerospaceFighter {
         const stores: IEquipmentItem[] = [];
         for (const item of getEquipmentListByTech(this._tech.tag, false)) {
             if (!item.isAmmo || !(item.bombBaySlots && item.bombBaySlots > 0) || seen.has(item.tag)) continue;
-            if (!isEquipmentWithinRulesLevel(item, rulesLevel)) continue;
+            if (!isEquipmentOffered(item, this._rulesEdition, rulesLevel)) continue;
             seen.add(item.tag);
             stores.push({ ...item, available: this._datesAvailability(item, rulesLevel).available });
         }
@@ -1405,7 +1405,7 @@ export default class AerospaceFighter {
         }
         items.sort((a, b) => (a.sort > b.sort ? 1 : a.sort < b.sort ? -1 : 0));
         const offeredLevel = includeCustom ? Math.max(rulesLevel, CUSTOM_HOMEBREW_RULES_LEVEL) : rulesLevel;
-        return items.filter((item) => isEquipmentWithinRulesLevel(item, offeredLevel));
+        return items.filter((item) => isEquipmentOffered(item, this._rulesEdition, offeredLevel));
     }
 
     private _catalog(): IEquipmentItem[] {
@@ -1557,7 +1557,9 @@ export default class AerospaceFighter {
         }
         for (const store of this.getExternalStores()) {
             const record = this._storeRecord(store.tag);
-            if (record && !isEquipmentWithinRulesLevel(record, rulesLevel)) issues.push(`${record.name} is above the selected rules level.`);
+            const issue = record ? getEquipmentOfferIssue(record, this._rulesEdition, rulesLevel) : null;
+            if (record && issue === "edition") issues.push(`${record.name} is not in the selected rules edition.`);
+            else if (record && issue === "level") issues.push(`${record.name} is above the selected rules level.`);
         }
         return issues;
     }

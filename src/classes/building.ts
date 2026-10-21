@@ -8,7 +8,7 @@ import {
 import { mechHeatSinkTypes } from "../data/mech-heat-sink-types";
 import { btTechOptions } from "../data/tech-options";
 import { btEraOptions, findEraByTag, getClosestEraForTech, getErasForTech } from "../data/era-options";
-import { CUSTOM_HOMEBREW_RULES_LEVEL, equipmentMatchesIdentifier, getCompatibleAmmo, getEffectiveIntroduction, getEquipmentListByTech, getEquipmentRulesLevel, getWeaponShotsPerTon, isEquipmentWithinRulesLevel } from "../data/equipment-registry";
+import { CUSTOM_HOMEBREW_RULES_LEVEL, equipmentMatchesIdentifier, getCompatibleAmmo, getEffectiveIntroduction, getEquipmentListByTech, getEquipmentRulesLevel, getEquipmentOfferIssue, getWeaponShotsPerTon, isEquipmentOffered } from "../data/equipment-registry";
 import { findByTag, matchesTag } from "../data/tag-match";
 import { getWeaponExplosionDamage } from "../data/weapon-explosions";
 import { IInfantryWeapon, INFANTRY_POWER_CELL_COST, findInfantryWeapon, getInfantryClipCost, infantryWeapons, isInfantryWeaponAvailable } from "../data/infantry-weapons";
@@ -694,7 +694,7 @@ export default class Building {
         }
         items.sort((a, b) => (a.sort > b.sort ? 1 : a.sort < b.sort ? -1 : 0));
         const offeredLevel = includeCustom ? Math.max(rulesLevel, CUSTOM_HOMEBREW_RULES_LEVEL) : rulesLevel;
-        return items.filter((item) => isEquipmentWithinRulesLevel(item, offeredLevel));
+        return items.filter((item) => isEquipmentOffered(item, this._rulesEdition, offeredLevel));
     }
 
     private _catalog(): IEquipmentItem[] {
@@ -1347,7 +1347,11 @@ export default class Building {
         for (const mount of this._equipment) {
             if (!this.isEquipmentAllowed(mount.item)) issues.push(`${mount.item.name} cannot be mounted on a ${this._classification.name.toLowerCase()}.`);
             else if (!this._datesAvailability(mount.item, rulesLevel).available) issues.push(`${mount.item.name} is not available in the selected era.`);
-            else if (!isEquipmentWithinRulesLevel(mount.item, Math.max(rulesLevel, BUILDING_RULES_LEVEL))) issues.push(`${mount.item.name} is above the selected rules level.`);
+            else {
+                const issue = getEquipmentOfferIssue(mount.item, this._rulesEdition, Math.max(rulesLevel, BUILDING_RULES_LEVEL));
+                if (issue === "edition") issues.push(`${mount.item.name} is not in the selected rules edition.`);
+                else if (issue === "level") issues.push(`${mount.item.name} is above the selected rules level.`);
+            }
         }
         if (this._heatSinkType.tag !== "single" && this._heatSinks > 0 && !this._datesAvailability(this._heatSinkType, rulesLevel).available) {
             issues.push(`${this._heatSinkType.name} heat sinks are not available in the selected era.`);

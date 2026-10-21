@@ -325,9 +325,7 @@ export default class MechCreatorStep1 extends React.Component<IHomeProps, IHomeS
                                 onChange={this.updateType}
                               >
                               {mechTypeOptions
-                                .filter( (option) => (this.props.appGlobals.currentBattleMech?.usesEarlierRulesEdition()
-                                    ? this.props.appGlobals.currentBattleMech.isInRulesEdition(option, shownLevel)
-                                    : option.rulesLevel <= this.props.appGlobals.appSettings.mechRulesFilter)
+                                .filter( (option) => !!this.props.appGlobals.currentBattleMech?.isOfferedInEdition(option, shownLevel)
                                   || option.tag === this.props.appGlobals.currentBattleMech?.getType().tag )
                                 .map( (option) => {
                                 return (

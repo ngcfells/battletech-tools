@@ -143,13 +143,13 @@ describe("Rules edition selector", () => {
         add(mech, "er-large-laser");
         add(mech, "medium-laser");
         mech.setRulesEdition("battledroids");
-        expect(mech.getRulesEditionIssues()).toEqual(["Equipment: ER Large Laser"]);
+        expect(mech.getRulesEditionIssues()).toEqual([`Equipment: ER Large Laser (not in ${getRulesEdition("battledroids").name})`]);
         mech.setRulesEdition("battletech-compendium");
         expect(mech.getRulesEditionIssues()).toEqual([]);
         const light = build("battledroids", 10, 4);
         expect(light.getRulesEditionIssues()).toEqual([]);
         light.setRulesEdition("master-rules");
-        expect(light.getRulesEditionIssues()).toEqual(["Tonnage: 10 tons"]);
+        expect(light.getRulesEditionIssues()).toEqual([`Tonnage: 10 tons (not in ${getRulesEdition("master-rules").name})`]);
     });
 
     // BD pp.23-24: 5 tons is the lightest battledroid. Internal structure 0.5 tons, a 10-rated engine 0.5,
@@ -175,7 +175,7 @@ describe("Rules edition selector", () => {
         restored.setRulesEdition("total-warfare");
         expect(restored.getInternalStructure().centerTorso).toBe(3);
         restored.setRulesEdition("master-rules");
-        expect(restored.getRulesEditionIssues()).toContain("Tonnage: 5 tons");
+        expect(restored.getRulesEditionIssues()).toContain(`Tonnage: 5 tons (not in ${getRulesEdition("master-rules").name})`);
     });
 
     // Internal Structure Table, BD p.24: the boxes come from the edition's own table.
@@ -384,12 +384,12 @@ describe("A four-legged droid under Battledroids", () => {
     };
 
     it("lists the four-legged layout as not in the edition below Apocryphal", () => {
-        expect(goliath().getRulesEditionIssues(2)).toContain("Chassis type: Quad");
-        expect(goliath().getRulesEditionIssues()).toContain("Chassis type: Quad");
+        expect(goliath().getRulesEditionIssues(2)).toContain(`Chassis type: Quad (not in ${getRulesEdition("battledroids").name})`);
+        expect(goliath().getRulesEditionIssues()).toContain(`Chassis type: Quad (not in ${getRulesEdition("battledroids").name})`);
     });
 
     it("allows it at Apocryphal", () => {
-        expect(goliath().getRulesEditionIssues(5)).not.toContain("Chassis type: Quad");
+        expect(goliath().getRulesEditionIssues(5)).not.toContain(`Chassis type: Quad (not in ${getRulesEdition("battledroids").name})`);
         expect(goliath().isInRulesEdition(mechTypeOptions.find(option => option.tag === "quad")!, 5)).toBe(true);
     });
 });
