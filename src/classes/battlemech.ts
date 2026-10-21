@@ -620,7 +620,16 @@ export class BattleMech {
 
     /** What the quirk picker can attach quirks to on this unit. */
     public getQuirkTargets(): IQuirkTargets {
-        return getQuirkTargets(battlemechLocations.filter((location) => !location.rear).map((location) => ({ tag: location.tag, label: location.name })), this._equipmentList.filter((item) => item && !item.isAmmo).map((item) => ({ ...item, label: (item.location ? `${item.name} (${item.location!.toUpperCase()})` : item.name) })));
+        const hasArms = !this.isQuad() && !this.isQuadVee();
+        const locations = battlemechLocations.filter((location) => !location.rear).map((location) => {
+            const isArm = hasArms && (location.tag === "ra" || location.tag === "la");
+            return {
+                tag: location.tag, label: location.name,
+                ...(isArm ? { arm: true, lowerArm: this.hasLowerArmActuator(location.tag), hand: this.hasHandActuator(location.tag) } : {}),
+                ...(["ct", "lt", "rt"].includes(location.tag) ? { torso: true } : {}),
+            };
+        });
+        return getQuirkTargets(locations, this._equipmentList.filter((item) => item && !item.isAmmo).map((item) => ({ ...item, label: (item.location ? `${item.name} (${item.location!.toUpperCase()})` : item.name) })));
     }
 
     /** One line for each quirk this unit could not be given now: rules edition, rules level or unit type. */

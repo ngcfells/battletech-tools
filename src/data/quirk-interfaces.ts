@@ -35,6 +35,20 @@ export interface IQuirkCost {
     fromParameter?: true;
 }
 
+/** The locations a quirk may go on: Barrel Fist and Battlefists by the arm's actuators (CO p.225). */
+export type QuirkLocationRule = "arm-without-hand" | "arm-with-hand" | "torso";
+
+/** A location a builder offers quirks, with what location rules read. */
+export interface IQuirkLocation {
+    tag: string;
+    label: string;
+    /** An arm, not a quad's front leg. */
+    arm?: boolean;
+    torso?: boolean;
+    lowerArm?: boolean;
+    hand?: boolean;
+}
+
 export interface IQuirk {
     tag: string;
     name: string;
@@ -48,6 +62,10 @@ export interface IQuirk {
     /** What the quirk may be attached to, in the order the builder offers them. */
     attaches: QuirkAttach[];
     parameter?: { kind: "range-band" | "value" | "locations"; options?: string[] };
+    /** The locations it may go on; on the whole unit it needs at least one of them. */
+    locationRule?: QuirkLocationRule;
+    /** Assigned at most once per unit, whatever it is attached to (Battlefists is paid once, CO p.225). */
+    once?: true;
     /** Tags of quirks a unit may not carry with this one. */
     excludes?: string[];
     /** One or two sentences in our own words; never the rulebook's text. */
@@ -73,7 +91,7 @@ export interface IAssignedQuirk {
 
 /** What a unit offers quirks to attach to, and the damage its quirk costs are priced from. */
 export interface IQuirkTargets {
-    locations: { tag: string; label: string }[];
+    locations: IQuirkLocation[];
     weapons: { uuid: string; label: string; maxDamage: number }[];
     /** The maximum damage of all the unit's non-physical weapons together, for unit-wide damage costs. */
     unitMaxDamage: number;

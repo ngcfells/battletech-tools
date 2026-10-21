@@ -1,8 +1,8 @@
 import * as React from 'react';
 import type { JSX } from "react";
 import { QuirkList } from '../../classes/quirk-list';
-import { IAssignedQuirk, IQuirk, QuirkAttach, QuirkUnitType } from '../../data/quirk-interfaces';
-import { getAssignedAttach, getOfferedQuirks, getQuirk, getQuirkOfferIssue, getQuirkPoints } from '../../data/quirk-registry';
+import { IAssignedQuirk, IQuirk, IQuirkLocation, QuirkAttach, QuirkUnitType } from '../../data/quirk-interfaces';
+import { getAssignedAttach, getOfferedQuirks, getQuirk, getQuirkOfferIssue, getQuirkPoints, isQuirkLocationAllowed, QUIRK_LOCATION_RULE_TEXT } from '../../data/quirk-registry';
 import { getRulesEdition } from '../../data/rules-editions';
 import { CUSTOM_HOMEBREW_RULES_LEVEL } from '../../data/rules-level-options';
 import { buildCustomQuirkDraft, customQuirkTag, getLocalCustomContentDrafts, saveLocalCustomContentDrafts } from '../../data/custom-content-local';
@@ -49,6 +49,23 @@ export default class QuirkPicker extends React.Component<IQuirkPickerProps, IQui
         return this.state.tag ? getQuirk(this.state.tag) : undefined;
     }
 
+    /** The locations this quirk may go on. */
+    private _allowedLocations(quirk: IQuirk): IQuirkLocation[] {
+        return this.props.locations.filter((location) => isQuirkLocationAllowed(quirk, location));
+    }
+
+    /** What the quirk's location rule asks for when this assignment breaks it; null when it does not. */
+    private _locationRuleBroken(quirk: IQuirk, assigned: IAssignedQuirk): string | null {
+        if (!quirk.locationRule) {
+            return null;
+        }
+        const attach = getAssignedAttach(assigned);
+        const location = this.props.locations.find((entry) => entry.tag === assigned.location);
+        const broken = attach === "location" ? !location || !isQuirkLocationAllowed(quirk, location)
+            : attach === "unit" ? this._allowedLocations(quirk).length === 0 : false;
+        return broken ? `needs ${QUIRK_LOCATION_RULE_TEXT[quirk.locationRule]}` : null;
+    }
+
     private _selectQuirk = (event: React.ChangeEvent<HTMLSelectElement>): void => {
         const quirk = getQuirk(event.target.value);
         this.setState({ tag: event.target.value, attach: quirk?.attaches[0] ?? "unit", target: "", parameter: "", message: "" });
@@ -72,6 +89,11 @@ export default class QuirkPicker extends React.Component<IQuirkPickerProps, IQui
                 return;
             }
             assigned.location = this.state.target;
+        }
+        const ruleBroken = this._locationRuleBroken(quirk, assigned);
+        if (ruleBroken) {
+            this.setState({ message: `${quirk.name}: ${ruleBroken}` });
+            return;
         }
         const parameter = this._parameterValue(quirk);
         if (parameter !== undefined) {
@@ -131,6 +153,8 @@ export default class QuirkPicker extends React.Component<IQuirkPickerProps, IQui
         } else if (attach === "location") {
             notes.push(this.props.locations.find((entry) => entry.tag === assigned.location)?.label ?? assigned.location ?? "");
         }
+        const ruleBroken = this._locationRuleBroken(quirk, assigned);
+        if (ruleBroken) notes.push(ruleBroken);
         if (assigned.parameter !== undefined) notes.push(String(assigned.parameter));
         if (assigned.fromYear !== undefined || assigned.toYear !== undefined) notes.push(`${assigned.fromYear ?? ""}-${assigned.toYear ?? ""}`);
         const issue = getQuirkOfferIssue(quirk, this.props.unitType, this.props.editionTag, this.props.rulesLevel);
@@ -214,7 +238,7 @@ export default class QuirkPicker extends React.Component<IQuirkPickerProps, IQui
                         <label>{" "}Location{" "}
                             <select aria-label="Location" value={this.state.target} onChange={(event) => this.setState({ target: event.target.value })}>
                                 <option value="">Choose</option>
-                                {this.props.locations.map((location) => <option key={location.tag} value={location.tag}>{location.label}</option>)}
+                                {this._allowedLocations(selected).map((location) => <option key={location.tag} value={location.tag}>{location.label}</option>)}
                             </select>
                         </label>
                     ) : null}
@@ -260,7 +284,7 @@ interface IQuirkPickerProps {
     unitType: QuirkUnitType;
     editionTag: string;
     rulesLevel: number;
-    locations: { tag: string; label: string }[];
+    locations: IQuirkLocation[];
     weapons: { uuid: string; label: string; maxDamage: number }[];
     unitMaxDamage: number;
     onChange: () => void;

@@ -100,6 +100,77 @@ describe("QuirkPicker", () => {
     });
 });
 
+describe("quirk locations", () => {
+    // Right arm has a hand; left arm has a lower arm actuator and no hand.
+    const arms = [
+        { tag: "ra", label: "Right Arm", arm: true, lowerArm: true, hand: true },
+        { tag: "la", label: "Left Arm", arm: true, lowerArm: true, hand: false },
+        { tag: "rt", label: "Right Torso", torso: true },
+        { tag: "hd", label: "Head" },
+    ];
+    const armPicker = (quirks: QuirkList, onChange = vi.fn()) => render(
+        <QuirkPicker quirks={quirks} unitType="mech" editionTag="total-warfare" rulesLevel={3} locations={arms} weapons={[]} unitMaxDamage={0} onChange={onChange} />,
+    );
+    const locationOptions = () => Array.from((screen.getByLabelText("Location") as HTMLSelectElement).options).map((option) => option.value).filter(Boolean);
+
+    it("offers Barrel Fist only on an arm with a lower arm actuator and no hand (CO p.225)", () => {
+        armPicker(new QuirkList());
+        fireEvent.change(quirkSelect(), { target: { value: "quirk-barrel-fist" } });
+        expect(locationOptions()).toEqual(["la"]);
+    });
+
+    it("offers Battlefists only on an arm with a hand, and only once (CO p.225)", () => {
+        const quirks = new QuirkList();
+        armPicker(quirks);
+        fireEvent.change(quirkSelect(), { target: { value: "quirk-battlefists" } });
+        fireEvent.change(screen.getByLabelText("Attach to"), { target: { value: "location" } });
+        expect(locationOptions()).toEqual(["ra"]);
+        expect(quirks.add({ tag: "quirk-battlefists" })).toBeNull();
+        expect(quirks.add({ tag: "quirk-battlefists", location: "ra" })).toBe("only once per unit");
+    });
+
+    it("offers Directional Torso Mount only on a torso", () => {
+        armPicker(new QuirkList());
+        fireEvent.change(quirkSelect(), { target: { value: "quirk-directional-torso-mount" } });
+        expect(locationOptions()).toEqual(["rt"]);
+    });
+
+    it("leaves Fast Reload free to go on any location", () => {
+        armPicker(new QuirkList());
+        fireEvent.change(quirkSelect(), { target: { value: "quirk-fast-reload" } });
+        fireEvent.change(screen.getByLabelText("Attach to"), { target: { value: "location" } });
+        expect(locationOptions()).toEqual(["ra", "la", "rt", "hd"]);
+    });
+
+    it("refuses Battlefists on the whole unit when no arm has a hand", () => {
+        const quirks = new QuirkList();
+        const onChange = vi.fn();
+        render(<QuirkPicker quirks={quirks} unitType="mech" editionTag="total-warfare" rulesLevel={3} locations={arms.filter((arm) => !arm.hand)} weapons={[]} unitMaxDamage={0} onChange={onChange} />);
+        fireEvent.change(quirkSelect(), { target: { value: "quirk-battlefists" } });
+        fireEvent.click(screen.getByRole("button", { name: "Add quirk" }));
+        expect(screen.getByRole("alert").textContent).toMatch(/hand actuator/);
+        expect(quirks.getAll()).toEqual([]);
+        expect(onChange).not.toHaveBeenCalled();
+    });
+
+    it("notes a Barrel Fist on an arm that has since gained a hand", () => {
+        const quirks = new QuirkList();
+        quirks.add({ tag: "quirk-barrel-fist", location: "ra" });
+        armPicker(quirks);
+        expect(screen.getByText(/needs an arm with a lower arm actuator and no hand actuator/)).toBeTruthy();
+    });
+
+    it("marks a 'Mech's arms and their actuators, and a quad has no arms", () => {
+        const mech = new BattleMech();
+        const ra = mech.getQuirkTargets().locations.find((location) => location.tag === "ra");
+        expect(ra).toMatchObject({ arm: true, lowerArm: true, hand: true });
+        expect(mech.getQuirkTargets().locations.find((location) => location.tag === "ct")).toMatchObject({ torso: true });
+        mech.setMechType("quad");
+        expect(mech.isQuad()).toBe(true);
+        expect(mech.getQuirkTargets().locations.find((location) => location.tag === "ra")?.arm).toBeFalsy();
+    });
+});
+
 describe("custom quirks", () => {
     it("only offers the custom quirk form from the custom rules level up", () => {
         picker(new QuirkList(), "total-warfare");

@@ -1,4 +1,4 @@
-import { IAssignedQuirk, IQuirk, IQuirkTargets, QuirkAttach, QuirkUnitType } from "./quirk-interfaces";
+import { IAssignedQuirk, IQuirk, IQuirkLocation, IQuirkTargets, QuirkAttach, QuirkLocationRule, QuirkUnitType } from "./quirk-interfaces";
 import { quirks } from "./quirks";
 import { customQuirks } from "./quirks-custom";
 import { IDamagePerRange } from "./data-interfaces";
@@ -43,6 +43,23 @@ export function getQuirkOfferIssue(
         return level > rulesLevel ? "level" : null;
     }
     return getRecordOfferIssue({ ...quirk, rulesLevel: level }, editionTag, rulesLevel);
+}
+
+/** What a location rule asks for, for the builder's notes and refusals. */
+export const QUIRK_LOCATION_RULE_TEXT: Record<QuirkLocationRule, string> = {
+    "arm-without-hand": "an arm with a lower arm actuator and no hand actuator",
+    "arm-with-hand": "an arm with a hand actuator",
+    torso: "a torso location",
+};
+
+/** Whether the quirk may go on this location; true for a quirk without a location rule. */
+export function isQuirkLocationAllowed(quirk: IQuirk, location: IQuirkLocation): boolean {
+    switch (quirk.locationRule) {
+        case "arm-without-hand": return !!location.arm && !!location.lowerArm && !location.hand;
+        case "arm-with-hand": return !!location.arm && !!location.hand;
+        case "torso": return !!location.torso;
+        default: return true;
+    }
 }
 
 /** What an assigned quirk is attached to. */
@@ -147,7 +164,7 @@ export function getWeaponMaxDamage(item: { damage?: number | IDamagePerRange | s
 
 /** What a builder can attach quirks to, and the damage figures quirk costs are priced from. */
 export function getQuirkTargets(
-    locations: { tag: string; label: string }[],
+    locations: IQuirkLocation[],
     items: { uuid?: string; label: string; category?: string; damage?: number | IDamagePerRange | string; damageClusters?: number; damagePerCluster?: number }[],
 ): IQuirkTargets {
     const weapons = items.filter((item) => item.uuid).map((item) => ({ uuid: item.uuid as string, label: item.label, maxDamage: getWeaponMaxDamage(item), physical: item.category === "Melee" }));

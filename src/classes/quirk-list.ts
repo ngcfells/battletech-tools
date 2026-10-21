@@ -18,7 +18,7 @@ export class QuirkList {
         return this._quirks.map(copy);
     }
 
-    /** Adds the quirk; null on success, otherwise why not: "unknown quirk", "duplicate" or "excluded by <name>". */
+    /** Adds the quirk; null on success, otherwise why not: "unknown quirk", "duplicate", "only once per unit" or "excluded by <name>". */
     public add(quirk: IAssignedQuirk): string | null {
         const record = getQuirk(quirk.tag);
         if (!record) {
@@ -26,6 +26,9 @@ export class QuirkList {
         }
         if (this._quirks.some((other) => sameAssignment(other, quirk))) {
             return "duplicate";
+        }
+        if (record.once && this._quirks.some((other) => getQuirk(other.tag)?.tag === record.tag)) {
+            return "only once per unit";
         }
         for (const other of this._quirks) {
             const otherRecord = getQuirk(other.tag);
