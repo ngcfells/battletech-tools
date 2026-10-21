@@ -16,7 +16,7 @@ import { IEquipmentItem } from "./data-interfaces";
 
 export const mechCustomEquipmentBallistic: IEquipmentItem[] = [
     {
-        name: "AC/15 (Solaris7)", tag: "custom-ac-15", sort: "ac, 15", category: "Custom Equipment", notes: "Unverified placeholder based on the Kronos Battle Systems 'Class 15 autocannons' homebrew rules (Solaris7 forum thread, archived).",
+        name: "AC/15 (Solaris7)", tag: "custom-ac-15", techBase: "universal", sort: "ac, 15", category: "Custom Equipment", notes: "Unverified placeholder based on the Kronos Battle Systems 'Class 15 autocannons' homebrew rules (Solaris7 forum thread, archived).",
         damage: 15, damageAero: 15, accuracyModifier: 0, cbills: 0, introduced: 2500, prototype: 2488, extinct: null, reintroduced: null, battleValue: 0, heat: 5, heatAero: 5, weight: 13, // Dates of the heavier-bore Standard AC/20 (IO p.38).
         range: { min: 3, short: 5, medium: 10, long: 15 }, space: { battlemech: 9, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 },
         shotsPerTon: 7, minAmmoTons: 1, explosive: false, weaponType: ["DB", "S"], techRating: "f", book: "https://drive.google.com/drive/folders/0B5bLPOivte0vdjZ0YVQySDZ2SGc?resourcekey=0-oabxb-hZhk9iZVmeTa9zPQ", page: 0, rulesLevel: 6,
@@ -27,6 +27,7 @@ export const mechCustomEquipmentBallistic: IEquipmentItem[] = [
         name: "Heavy Rotary Rifle Cannon",
         altNames: ["Heavy RRC", "HRRC"],
         tag: "heavy-rotary-rifle-cannon",
+        techBase: "universal",
         altTags: ["weapon-hrrc"],
         sort: "rotary rifle cannon, heavy",
         category: "Ballistic Weapons",
@@ -60,6 +61,7 @@ export const mechCustomEquipmentBallistic: IEquipmentItem[] = [
         name: "LB 15-X Autocannon",
         altNames: ["LB 15-X AC", "LBX 15"],
         tag: "custom-lb-15x-ac",
+        techBase: "universal",
         sort: "ac, 15 lbx",
         category: "Custom Equipment",
         notes: "Custom weapon based on the Kronos Battle Systems 'Class 15 autocannons' homebrew rules. Can switch between solid slugs and cluster ammunition.",
@@ -92,6 +94,7 @@ export const mechCustomEquipmentBallistic: IEquipmentItem[] = [
         name: "Light Rotary Rifle Cannon",
         altNames: ["Light RRC", "LRRC"],
         tag: "light-rotary-rifle-cannon",
+        techBase: "universal",
         altTags: ["weapon-lrrc"],
         sort: "rotary rifle cannon, light",
         category: "Ballistic Weapons",
@@ -125,6 +128,7 @@ export const mechCustomEquipmentBallistic: IEquipmentItem[] = [
         name: "Medium Rotary Rifle Cannon",
         altNames: ["Medium RRC", "MRRC"],
         tag: "medium-rotary-rifle-cannon",
+        techBase: "universal",
         altTags: ["weapon-mrrc"],
         sort: "rotary rifle cannon, medium",
         category: "Ballistic Weapons",
@@ -158,6 +162,7 @@ export const mechCustomEquipmentBallistic: IEquipmentItem[] = [
         name: "Ultra AC/15",
         altNames: ["Ultra Autocannon/15", "UAC/15"],
         tag: "custom-ultra-ac-15",
+        techBase: "universal",
         sort: "ac, 15 ultra",
         category: "Custom Equipment",
         notes: "Custom weapon based on the Kronos Battle Systems 'Class 15 autocannons' homebrew rules. Capable of firing double rate with a risk of jamming.",

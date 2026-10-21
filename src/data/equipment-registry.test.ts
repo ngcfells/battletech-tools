@@ -257,7 +257,7 @@ describe("equipment catalog provenance", () => {
 
     it("keeps every ammunition record in the canonical ammo format", () => {
         const catalogs = { is: mechISAmmo, clan: mechClanAmmo, universal: mechUniversalAmmo, custom: mechCustomAmmo };
-        const expectedKeys = ["isAmmo", "isSpecialAmmo", "name", "altNames", "tag", "altTags", "sort", "category", "cbills",
+        const expectedKeys = ["isAmmo", "isSpecialAmmo", "name", "altNames", "tag", "techBase", "altTags", "sort", "category", "cbills",
             "introduced", "extinct", "reintroduced", "battleValue", "heat", "heatAero", "weight", "range", "space",
             "roundsPerTon", "explosive", "techRating", "book", "page", "alphaStrike"];
 

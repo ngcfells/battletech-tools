@@ -16,7 +16,7 @@ import { IEquipmentItem } from "./data-interfaces";
 
 export const mechCustomEquipmentMisc: IEquipmentItem[] = [
     {
-        name: "Null-Signature System (Fan Design)", tag: "custom-null-signature-system", sort: "null-signature, system", category: "Custom Equipment", notes: "Unverified placeholder for a fan-designed stealth and sensor-disruption system.",
+        name: "Null-Signature System (Fan Design)", tag: "custom-null-signature-system", techBase: "universal", sort: "null-signature, system", category: "Custom Equipment", notes: "Unverified placeholder for a fan-designed stealth and sensor-disruption system.",
         damage: 0, damageAero: 0, accuracyModifier: 0, cbills: 0, introduced: 2630, prototype: 2615, extinct: 2790, reintroduced: 3110, battleValue: 0, heat: 0, heatAero: 0, weight: 2, // Dates of the canon Null-Signature System (IO p.45).
         range: { min: 0, short: 0, medium: 0, long: 0 }, space: { battlemech: 2, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 },
         shotsPerTon: 0, minAmmoTons: 0, explosive: false, weaponType: [], techRating: "x", book: "Fan Design", page: 0, rulesLevel: 6,
@@ -32,7 +32,7 @@ export const mechCustomEquipmentMisc: IEquipmentItem[] = [
         // Weight and cost are scaled from the ProtoMech Magnetic Clamp System (1,000 kg for a 10-ton ProtoMech,
         // 25,000 C-bills, IO:AE p.60) and the battle armor magnetic clamps (TM p.259). Dates are those of the Taurian
         // space operations adaptation, which put stronger electromagnets in a suit's soles for hull work (TM p.269).
-        name: "Improved Magnetic Grapples (Custom)", tag: "custom-mech-improved-magnetic-grapples", sort: "equipment, magnetic grapples, improved", category: "Custom Equipment",
+        name: "Improved Magnetic Grapples (Custom)", tag: "custom-mech-improved-magnetic-grapples", techBase: "universal", sort: "equipment, magnetic grapples, improved", category: "Custom Equipment",
         notes: "One in each foot (each leg location), 1 slot each; works only with a working grapple in every foot. Every 'Mech already walks "
             + "on a hull on the magnetic plates in its soles (Explorer Corps p.86); with these, each roll to stay attached to a hull, station or "
             + "other metal surface in zero or low gravity (the Control Roll of Explorer Corps p.86, or the Piloting Skill Roll after damage of "
