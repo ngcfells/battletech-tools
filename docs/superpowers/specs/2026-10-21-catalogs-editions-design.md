@@ -83,8 +83,10 @@ editions: string[];
   record's `introducedInEdition` on. Corrections, such as an item a later edition dropped, come afterwards in their
   own reviewed commits, each citing its page.
 - **Never-canon records** get `editions: []`. These are official records whose `rulesLevel` is 5 or more (today only
-  the licensed record in `mech-is-equipment-weapons-energy.ts` line 111) and component records that are only in
-  `apocryphalIn` (the four-legged GOL-1H in `mech-type-options.ts`). Custom and Munchkin records have no `editions`.
+  the licensed Light Blazer, `light-blazer`, now in `equipment-energy.ts`) and component records that are only in
+  `apocryphalIn`. Custom and Munchkin records have no `editions`. (Corrected 2026-10-21: the four-legged layout in
+  `mech-type-options.ts`, once given here as never canon, is canon from the BattleTech Compendium on, per its
+  `editionStats`, and apocryphal only in Battledroids, through the GOL-1H kit sheet.)
 - **Consistency test.** Every `editionStats` key is in `editions`. Every earlier edition in `editions` has an
   `editionStats` key, because an earlier edition's stats come from that table. `introducedInEdition` stays as a
   checked field, so the migration only adds data. A test makes it equal to the first entry of `editions` in edition

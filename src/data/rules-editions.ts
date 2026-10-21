@@ -23,11 +23,12 @@ export const ALL_RULES_EDITION_UNIT_TYPES: RulesEditionUnitType[] = ["mech", "ve
  * The Mech Creator's Rules Edition control is the first user: BattleMech.setRulesEdition() filters its lists and
  * reads its stats through the helpers at the end of this file.
  *
- * Each record an earlier edition includes carries an `editionStats` table with one key per such edition: the
- * stats that edition prints, or `null` when they match the previous edition that lists the record. The record's
- * `introducedInEdition` is the first of those keys. A record with no table belongs to the edition the catalogs
- * cite (Total Warfare). An edition is entered whole, from its rulebook's page images, before the next is begun;
- * `complete` says which are done. Never tag from memory or from OCR text.
+ * Each official record lists the editions it is canon in, in `editions` (empty when it never was): that list is
+ * what an edition contains. `editionStats` holds only stats, with one key per earlier edition in the list: what that
+ * edition prints, or `null` when it matches the previous edition that lists the record. `introducedInEdition` is the
+ * list's first entry; catalog-editions.test.ts keeps the three in step. Custom and Munchkin records have no list,
+ * and getRecordEditions() works one out. An edition is entered whole, from its rulebook's page images, before the
+ * next is begun; `complete` says which are done. Never tag from memory or from OCR text.
  *
  * Stats are entered as printed, with one exception (user ruling, 2026-10-07): an obvious misprint is corrected,
  * and the entry's `errata` says what the book prints and why it was changed. Anything less than obvious stays
@@ -38,8 +39,8 @@ export const ALL_RULES_EDITION_UNIT_TYPES: RulesEditionUnitType[] = ["mech", "ve
  * dates on the books' own credits pages. The Third Edition (1992) and Fourth Edition (1996) box sets were the
  * introductory game sold beside the reference rulebook of the day (Master Rules, introduction: "The introductory
  * game in the BattleTech line is the BattleTech, Fourth Edition boxed set"), so each holds less than the
- * rulebook before it in this list. That is why an edition's contents come from the `editionStats` keys and
- * never from its place in the list.
+ * rulebook before it in this list. That is why an edition's contents come from each record's `editions` and
+ * never from the edition's place in this list.
  */
 /** The game rules play mode applies, where an earlier edition's differ from Total Warfare's. */
 export interface IEditionPlayRules {

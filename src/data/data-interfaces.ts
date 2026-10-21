@@ -67,8 +67,8 @@ export interface IEditionStats {
 }
 
 /**
- * A record's history through the rules editions before the one the catalogs cite. One key per edition that
- * includes the record (tags from rules-editions.ts): the stats that edition prints, or `null` when they are the
+ * A record's stats in the rules editions before the one the catalogs cite. One key per earlier edition in the
+ * record's `editions` (tags from rules-editions.ts): the stats that edition prints, or `null` when they are the
  * same as in the previous edition that lists the record. A record's first edition is never `null`.
  */
 export type IEditionStatsTable = { [editionTag: string]: IEditionStats | null };
@@ -82,7 +82,10 @@ export interface IEditionHistory {
      * the rulebook, keyed by edition tag.
      */
     apocryphalIn?: { [editionTag: string]: { source: string; notes: string } };
-    /** Every edition the record is canon in, empty when never canon. Optional in the type; catalog-editions.test.ts requires it on official records. */
+    /**
+     * Every edition the record is canon in, empty when never canon: the source of each edition's contents. Optional in
+     * the type; catalog-editions.test.ts requires it on official records.
+     */
     editions?: string[];
     /** Level of rules in each edition this record is canon in. */
     editionLevels?: { [editionTag: string]: number };
