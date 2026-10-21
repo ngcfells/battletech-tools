@@ -275,7 +275,8 @@ describe("equipment catalog provenance", () => {
         for (const [catalog, items] of Object.entries(catalogs)) {
             for (const item of items) {
                 const label = `${catalog} ${item.tag}`;
-                expect(Object.keys(item).slice(0, expectedKeys.length), label).toEqual(expectedKeys);
+                // `editions` follows the tag on official records only; catalog-editions.test.ts checks it.
+                expect(Object.keys(item).filter(key => key !== "editions").slice(0, expectedKeys.length), label).toEqual(expectedKeys);
                 expect(item.ammoPerTon, label).toBeUndefined();
                 expect(item.altTags!.every(tag => tag.trim().length > 0), label).toBe(true);
                 expect(item.alphaStrike.specialAbility, label).toEqual(expect.any(Array));

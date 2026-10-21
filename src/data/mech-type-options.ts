@@ -18,6 +18,7 @@ export const mechTypeOptions: IMechType[] = [
 	{
 		id: 1,
 		tag: "biped",
+		editions: ["battledroids", "battletech-2nd-edition", "battletech-manual", "battletech-compendium", "battletech-3rd-edition", "compendium-rules-of-warfare", "battletech-4th-edition", "master-rules", "master-rules-revised", "total-warfare", "battlemech-manual", "core-rulebook"],
 		name: "Biped",
 		rulesLevel: 0,
 		book: "TM",
@@ -28,6 +29,7 @@ export const mechTypeOptions: IMechType[] = [
 	{
 		id: 2,
 		tag: "quad",
+		editions: ["battletech-compendium", "compendium-rules-of-warfare", "master-rules", "master-rules-revised", "total-warfare", "battlemech-manual", "core-rulebook"],
 		introducedInEdition: "battletech-compendium", editionStats: { "battletech-compendium": { book: "BTC", page: 56, name: "Four-Legged BattleMech", notes: "Optional rules for the Goliath and Scorpion; without them a four-legged BattleMech plays as a biped. The arms become a second pair of legs, with 12 fewer critical slots. Lateral shift for 1 extra MP; -2 on Piloting Skill rolls to avoid falls while all four legs remain; no punching, pushing or club attacks (BTC p.56). The construction rules do not mention it (BTC pp.111-113)." }, "compendium-rules-of-warfare": { book: "BTC:RoW", page: 87, name: "Four-Legged BattleMech", notes: "Optional rules for the Goliath, Scorpion and other four-legged 'Mechs; without them they use the bipedal rules. Construction is now covered: the arms are replaced by a second set of legs with the internal structure of legs, which can carry leg armor, and the quad Critical Hit Table has 12 fewer critical slots. Lateral shift for 1 extra MP; -2 on Piloting Skill Rolls to avoid falls while all four legs remain; hits on an arm go to the forward leg on that side; no punching, pushing or clubbing (BTC:RoW p.87)." }, "master-rules": { book: "BMR", page: 75, name: "Four-Legged BattleMech", notes: "Optional rules; without them a four-legged 'Mech uses the bipedal rules. Construction is now covered: the arms are replaced by a second set of legs with the internal structure of legs, which can carry leg armor, and each has the 2 open critical slots of a leg (BMR pp.75, 109). Lateral shifts and improved Piloting Skill target numbers (BMR p.75)." }, "master-rules-revised": { book: "BMR(R)", page: 82, name: "Four-Legged BattleMech", notes: "Optional rules; without them a four-legged 'Mech uses the bipedal rules. The arms are replaced by a second set of legs with the internal structure of legs, which can carry leg armor, and each has the 2 open critical slots of a leg (BMR(R) pp.82, 115). Lateral shifts and improved Piloting Skill target numbers (BMR(R) p.82)." } },
 		name:  "Quad",
 		rulesLevel: 0,
@@ -38,6 +40,7 @@ export const mechTypeOptions: IMechType[] = [
 	{
 		id: 3,
 		tag: "tripod",
+		editions: ["total-warfare", "battlemech-manual", "core-rulebook"],
 		name:  "Tripod",
 		rulesLevel: 3,
 		book: "IO",
@@ -47,6 +50,7 @@ export const mechTypeOptions: IMechType[] = [
 	{
 		id: 4,
 		tag: "lam",
+		editions: ["battletech-manual", "battletech-compendium", "total-warfare", "battlemech-manual", "core-rulebook"],
 		introducedInEdition: "battletech-manual",
 		editionStats: {
 			"battletech-manual": { book: "BTM", page: 74, name: "Land-Air 'Mech", notes: "Built as a 'Mech with 10 percent of its tonnage given to conversion equipment (BTM p.78). 'Mech, Air'Mech and Fighter modes; the standard configurations are variations of the Wasp, Stinger and Phoenix Hawk (BTM p.74). Conversion costs (weapons cost + structure cost) x .75 (BTM p.84)." },
@@ -61,6 +65,7 @@ export const mechTypeOptions: IMechType[] = [
 	{
 		id: 5,
 		tag: "quadvee",
+		editions: ["total-warfare", "battlemech-manual", "core-rulebook"],
 		name:  "QuadVee",
 		rulesLevel: 3,
 		book: "IO",

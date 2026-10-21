@@ -19,6 +19,7 @@ export const mechCockpitTypes: ICockpitType[] = [
 	{
 		name: "Cockpit",
 		tag: "standard",
+		editions: ["battledroids", "battletech-2nd-edition", "battletech-manual", "battletech-compendium", "battletech-3rd-edition", "compendium-rules-of-warfare", "battletech-4th-edition", "master-rules", "master-rules-revised", "total-warfare", "battlemech-manual", "core-rulebook"],
 		weight: 3,
 		cost: 200000,
 		constructionStatus: "implemented",
@@ -48,6 +49,7 @@ export const mechCockpitTypes: ICockpitType[] = [
 	{
 		name: "Small Cockpit",
 		tag: "small",
+		editions: ["total-warfare", "battlemech-manual", "core-rulebook"],
 		weight: 2,
 		cost: 175000,
 		bvMultiplier: 0.95,
@@ -64,6 +66,7 @@ export const mechCockpitTypes: ICockpitType[] = [
 	{
 		name: "IndustrialMech Cockpit",
 		tag: "industrial",
+		editions: ["total-warfare", "battlemech-manual", "core-rulebook"],
 		weight: 3,
 		cost: 100000,
 		constructionStatus: "implemented",
@@ -78,6 +81,7 @@ export const mechCockpitTypes: ICockpitType[] = [
 	{
 		name: "IndustrialMech Cockpit (Advanced Fire Control)",
 		tag: "industrial-advanced-fire-control",
+		editions: ["total-warfare", "battlemech-manual", "core-rulebook"],
 		weight: 3,
 		cost: 200000,
 		constructionStatus: "implemented",
@@ -92,6 +96,7 @@ export const mechCockpitTypes: ICockpitType[] = [
 	{
 		name: "Primitive BattleMech Cockpit",
 		tag: "primitive",
+		editions: ["total-warfare", "battlemech-manual", "core-rulebook"],
 		weight: 5,
 		cost: 200000,
 		constructionStatus: "implemented",
@@ -106,6 +111,7 @@ export const mechCockpitTypes: ICockpitType[] = [
 	{
 		name: "Primitive IndustrialMech Cockpit",
 		tag: "primitive-industrial",
+		editions: ["total-warfare", "battlemech-manual", "core-rulebook"],
 		weight: 5,
 		cost: 100000,
 		constructionStatus: "implemented",
@@ -120,6 +126,7 @@ export const mechCockpitTypes: ICockpitType[] = [
 	{
 		name: "Primitive IndustrialMech Cockpit (Advanced Fire Control)",
 		tag: "primitive-industrial-advanced-fire-control",
+		editions: ["total-warfare", "battlemech-manual", "core-rulebook"],
 		weight: 5,
 		cost: 200000,
 		constructionStatus: "implemented",
@@ -134,6 +141,7 @@ export const mechCockpitTypes: ICockpitType[] = [
 	{
 		name: "Torso-Mounted Cockpit",
 		tag: "torso-mounted",
+		editions: ["total-warfare", "battlemech-manual", "core-rulebook"],
 		weight: 4,
 		cost: 750000,
 		bvMultiplier: 0.95,
@@ -150,6 +158,7 @@ export const mechCockpitTypes: ICockpitType[] = [
 	{
 		name: "Cockpit Command Console",
 		tag: "command-console",
+		editions: ["total-warfare", "battlemech-manual", "core-rulebook"],
 		weight: 3,
 		cost: 500000,
 		addOn: true,
@@ -166,6 +175,7 @@ export const mechCockpitTypes: ICockpitType[] = [
 	{
 		name: "BattleMech Interface Cockpit (Machina Domini)",
 		tag: "interface",
+		editions: ["total-warfare", "battlemech-manual", "core-rulebook"],
 		weight: 4,
 		cost: 1500000,
 		constructionStatus: "deferred",
@@ -181,6 +191,7 @@ export const mechCockpitTypes: ICockpitType[] = [
 	{
 		name: "Direct Neural Interface Cockpit Modification",
 		tag: "direct-neural-interface",
+		editions: ["total-warfare", "battlemech-manual", "core-rulebook"],
 		weight: 0,
 		cost: 250000,
 		techBase: "is",
@@ -197,6 +208,7 @@ export const mechCockpitTypes: ICockpitType[] = [
 	{
 		name: "Damage Interrupt Circuit",
 		tag: "damage-interrupt-circuit",
+		editions: ["total-warfare", "battlemech-manual", "core-rulebook"],
 		weight: 0,
 		cost: 150,
 		techBase: "is",
@@ -213,6 +225,7 @@ export const mechCockpitTypes: ICockpitType[] = [
 	{
 		name: "SLDF Advanced Neurohelmet",
 		tag: "sldf-advanced-neurohelmet",
+		editions: ["total-warfare", "battlemech-manual", "core-rulebook"],
 		weight: 0,
 		cost: 5000,
 		techBase: "is",
@@ -229,6 +242,7 @@ export const mechCockpitTypes: ICockpitType[] = [
 	{
 		name: "Enhanced Imaging (EI) Interface",
 		tag: "enhanced-imaging-interface",
+		editions: ["total-warfare", "battlemech-manual", "core-rulebook"],
 		weight: 0,
 		cost: 1500000,
 		techBase: "clan",
@@ -244,6 +258,7 @@ export const mechCockpitTypes: ICockpitType[] = [
 	{
 		name: "Virtual Reality Piloting Pod",
 		tag: "virtual-reality-piloting-pod",
+		editions: ["total-warfare", "battlemech-manual", "core-rulebook"],
 		weight: 3,
 		cost: 1250000,
 		techBase: "is",
@@ -259,6 +274,7 @@ export const mechCockpitTypes: ICockpitType[] = [
 	{
 		name: "QuadVee Cockpit",
 		tag: "quadvee",
+		editions: ["total-warfare", "battlemech-manual", "core-rulebook"],
 		weight: 4,
 		cost: 375000,
 		techBase: "clan",
@@ -274,6 +290,7 @@ export const mechCockpitTypes: ICockpitType[] = [
 	{
 		name: "Tripod 'Mech Cockpit",
 		tag: "tripod",
+		editions: ["total-warfare", "battlemech-manual", "core-rulebook"],
 		weight: 4,
 		cost: 400000,
 		techBase: "is",
@@ -289,6 +306,7 @@ export const mechCockpitTypes: ICockpitType[] = [
 	{
 		name: "Superheavy BattleMech Cockpit",
 		tag: "superheavy",
+		editions: ["total-warfare", "battlemech-manual", "core-rulebook"],
 		weight: 4,
 		cost: 300000,
 		techBase: "is",
@@ -304,6 +322,7 @@ export const mechCockpitTypes: ICockpitType[] = [
 	{
 		name: "Superheavy IndustrialMech Cockpit",
 		tag: "superheavy-industrial",
+		editions: ["total-warfare", "battlemech-manual", "core-rulebook"],
 		weight: 4,
 		cost: 200000,
 		techBase: "is",
@@ -319,6 +338,7 @@ export const mechCockpitTypes: ICockpitType[] = [
 	{
 		name: "Superheavy Tripod 'Mech Cockpit",
 		tag: "superheavy-tripod",
+		editions: ["total-warfare", "battlemech-manual", "core-rulebook"],
 		weight: 5,
 		cost: 500000,
 		techBase: "is",

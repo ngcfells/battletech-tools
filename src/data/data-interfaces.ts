@@ -82,7 +82,7 @@ export interface IEditionHistory {
      * the rulebook, keyed by edition tag.
      */
     apocryphalIn?: { [editionTag: string]: { source: string; notes: string } };
-    /** Every edition the record is canon in, empty when never canon. Optional in the type, required on official records by the test in Task 4. */
+    /** Every edition the record is canon in, empty when never canon. Optional in the type; catalog-editions.test.ts requires it on official records. */
     editions?: string[];
     /** Level of rules in each edition this record is canon in. */
     editionLevels?: { [editionTag: string]: number };
@@ -261,6 +261,10 @@ export interface IEquipmentItem {
     introducedInEdition?: string;
     /** Stats in each earlier rules edition that includes this record; see IEditionStatsTable. */
     editionStats?: IEditionStatsTable;
+    /** Every edition the item is canon in, empty when never canon (see IEditionHistory). */
+    editions?: string[];
+    /** Level of rules in each edition this item is canon in. */
+    editionLevels?: { [editionTag: string]: number };
     metadata?: IEquipmentMetadata;
     split_location?: ISplitLocation[];
     isRotary?: boolean;

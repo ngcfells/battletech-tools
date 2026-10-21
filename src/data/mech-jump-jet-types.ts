@@ -19,6 +19,7 @@ export const mechJumpJetTypes: IJumpJet[] = [
 	{
 		name: "Standard Jump Jets",
 		tag: "standard",
+		editions: ["battledroids", "battletech-2nd-edition", "battletech-manual", "battletech-compendium", "battletech-3rd-edition", "compendium-rules-of-warfare", "battletech-4th-edition", "master-rules", "master-rules-revised", "total-warfare", "battlemech-manual", "core-rulebook"],
 		altNames: ["Standard Jump Jet"],
 		weight_multiplier: {
 			light: 0.5,
@@ -58,6 +59,7 @@ export const mechJumpJetTypes: IJumpJet[] = [
 	{
 		name:  "Improved Jump Jets",
 		tag: "improved",
+		editions: ["total-warfare", "battlemech-manual", "core-rulebook"],
 		altNames: ["Improved Jump Jet"],
 		weight_multiplier: {
 			light: 1,
@@ -78,6 +80,7 @@ export const mechJumpJetTypes: IJumpJet[] = [
 	{
 		name:  "UMU (Underwater Maneuvering Units)",
 		tag: "umu",
+		editions: ["total-warfare", "battlemech-manual", "core-rulebook"],
 		altNames: ["Mech UMU"],
 		weight_multiplier: {
 			light: 0.5,
@@ -102,6 +105,7 @@ export const mechJumpJetTypes: IJumpJet[] = [
 	{
 		name: "Prototype Improved Jump Jets",
 		tag: "prototype-improved",
+		editions: ["total-warfare", "battlemech-manual", "core-rulebook"],
 		weight_multiplier: {
 			light: 0.5,
 			medium: 1,

@@ -134,6 +134,7 @@ export const mechInternalStructureTypes: IInternalStructure[] = [
   {
     name: "Standard",
     tag: "standard",
+    editions: ["battledroids", "battletech-2nd-edition", "battletech-manual", "battletech-compendium", "battletech-3rd-edition", "compendium-rules-of-warfare", "battletech-4th-edition", "master-rules", "master-rules-revised", "total-warfare", "battlemech-manual", "core-rulebook"],
     altNames: ["Standard Structure"],
     introducedInEdition: "battledroids",
     editionStats: {
@@ -244,6 +245,7 @@ export const mechInternalStructureTypes: IInternalStructure[] = [
   {
     name: "Endo-Steel",
     tag: "endo-steel",
+    editions: ["battletech-compendium", "compendium-rules-of-warfare", "master-rules", "master-rules-revised", "total-warfare", "battlemech-manual", "core-rulebook"],
     introducedInEdition: "battletech-compendium", editionStats: { "battletech-compendium": { book: "BTC", page: 119, name: "Endo Steel Internal Structure", notes: "Half the usual internal structure weight, rounding up. Takes 14 critical slots (Inner Sphere) or 7 (Clan), placed anywhere; hits on them are re-rolled (BTC pp.112, 119). Skeleton cost: tonnage x 1,600 C-bills (BTC p.128)." }, "compendium-rules-of-warfare": { book: "BTC:RoW", page: 116, name: "Endo Steel Internal Structure", notes: "Half the standard internal structure weight, rounded up to the nearest half ton. Takes 14 critical slots in Inner Sphere BattleMechs and 7 in Clan 'Mechs, placed anywhere; critical hits on them are rerolled (BTC:RoW pp.101, 116). Never part of an OmniMech pod (BTC:RoW p.107). Skeleton cost: tonnage x 1,600 C-bills (BTC:RoW p.123)." }, "master-rules": { book: "BMR", page: 127, name: "Endo Steel Internal Structure", notes: "Half the standard internal structure weight, rounded up to the nearest half ton. Takes 14 critical slots in Inner Sphere BattleMechs and 7 in Clan 'Mechs, placed anywhere; critical hits on them are rerolled. Vehicles may not use it (BMR pp.110, 127). Skeleton cost: tonnage x 1,600 C-bills (BMR p.136)." }, "master-rules-revised": { book: "BMR(R)", page: 137, name: "Endo Steel Internal Structure", notes: "Half the standard internal structure weight, rounded up to the nearest half ton. Takes 14 critical slots in Inner Sphere BattleMechs and 7 in Clan 'Mechs, placed anywhere; critical hits on them are rerolled. Vehicles may not use it (BMR(R) pp.116, 137). Skeleton cost: tonnage x 1,600 C-bills (BMR(R) p.149)." } },
     book: "TM",
     page: 224,
@@ -265,6 +267,7 @@ export const mechInternalStructureTypes: IInternalStructure[] = [
   {
     name: "Endo-Composite",
     tag: "endo-composite",
+    editions: ["total-warfare", "battlemech-manual", "core-rulebook"],
     book: "TO:AUE",
     page: 154,
     prototype: 3067,
@@ -285,6 +288,7 @@ export const mechInternalStructureTypes: IInternalStructure[] = [
   {
     name: "Reinforced",
     tag: "reinforced",
+    editions: ["total-warfare", "battlemech-manual", "core-rulebook"],
     altNames: ["Reinforced Structure"],
     book: "TO:AUE",
     page: 155,
@@ -307,6 +311,7 @@ export const mechInternalStructureTypes: IInternalStructure[] = [
   {
     name: "Composite",
     tag: "composite",
+    editions: ["total-warfare", "battlemech-manual", "core-rulebook"],
     altNames: ["Composite Structure"],
     book: "TO:AUE",
     page: 154,
@@ -329,6 +334,7 @@ export const mechInternalStructureTypes: IInternalStructure[] = [
   {
     name: "Industrial",
     tag: "industrial",
+    editions: ["total-warfare", "battlemech-manual", "core-rulebook"],
     altNames: ["Industrial Structure"],
     book: "TM",
     page: 224,

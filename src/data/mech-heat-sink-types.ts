@@ -22,6 +22,7 @@ export const mechHeatSinkTypes: IHeatSync[] = [
 	{
 		name:  "Single",
 		tag: "single",
+		editions: ["battledroids", "battletech-2nd-edition", "battletech-manual", "battletech-compendium", "battletech-3rd-edition", "compendium-rules-of-warfare", "battletech-4th-edition", "master-rules", "master-rules-revised", "total-warfare", "battlemech-manual", "core-rulebook"],
 		altNames: ["Single Heat Sink"],
 		dissipation: 1,
 		crits: {
@@ -58,6 +59,7 @@ export const mechHeatSinkTypes: IHeatSync[] = [
 	{
 		name: "Double",
 		tag: "double",
+		editions: ["battletech-compendium", "compendium-rules-of-warfare", "master-rules", "master-rules-revised", "total-warfare", "battlemech-manual", "core-rulebook"],
 		introducedInEdition: "battletech-compendium", editionStats: { "battletech-compendium": { book: "BTC", page: 119, name: "Double Heat Sink", weight: 1, notes: "Sheds 2 heat points a turn for the weight of a standard sink. 3 critical slots (Inner Sphere), which keeps it out of a BattleMech's legs, or 2 (Clan). No mixing with standard sinks: the 10 that come with the engine are double as well. Not for vehicles; AeroSpace fighters may use them (BTC pp.112, 119). 6,000 C-bills each, the engine's 10 included (BTC p.128)." }, "compendium-rules-of-warfare": { book: "BTC:RoW", page: 106, name: "Double Heat Sink", heat: -2, weight: 1, criticals: 3, notes: "Dissipates 2 points of heat a turn for the weight of a standard sink. 3 critical slots for the Inner Sphere model (BTC:RoW p.106) and 2 for the Clan one (BTC:RoW p.104); no mixing with standard sinks: the 10 that come with the BattleMech are double as well (BTC:RoW p.101). Vehicles cannot carry them (BTC:RoW pp.109, 117). 6,000 C-bills each, including the 10 that come with the engine (BTC:RoW p.123)." }, "master-rules": { book: "BMR", page: 116, name: "Double Heat Sink", heat: -2, weight: 1, criticals: 3, notes: "Dissipates 2 points of heat a turn for the weight of a standard sink. 3 critical slots for the Inner Sphere model (BMR p.116) and 2 for the Clan one (BMR p.117); no mixing with standard sinks. Vehicles cannot carry them (BMR p.128). 6,000 C-bills each, including the 10 that come with the engine (BMR p.136)." }, "master-rules-revised": { book: "BMR(R)", page: 122, name: "Double Heat Sink", heat: -2, weight: 1, criticals: 3, notes: "Dissipates 2 points of heat a turn for the weight of a standard sink. 3 critical slots for the Inner Sphere model (BMR(R) p.122) and 2 for the Clan one (BMR(R) p.123); no mixing with standard sinks. Vehicles cannot carry them (BMR(R) p.138). 6,000 C-bills each, including the 10 that come with the engine (BMR(R) p.149)." } },
 		altNames: ["Double Heat Sink"],
 		dissipation: 2,
@@ -78,6 +80,7 @@ export const mechHeatSinkTypes: IHeatSync[] = [
 	{
 		name: "Laser",
 		tag: "laser",
+		editions: ["total-warfare", "battlemech-manual", "core-rulebook"],
 		altNames: ["Laser Heat Sink"],
 		dissipation: 2,
 		crits: {
@@ -98,6 +101,7 @@ export const mechHeatSinkTypes: IHeatSync[] = [
 	{
 		name: "Double (Prototype)",
 		tag: "double-prototype",
+		editions: ["total-warfare", "battlemech-manual", "core-rulebook"],
 		dissipation: 2,
 		crits: {
 			clan: 0,
@@ -117,6 +121,7 @@ export const mechHeatSinkTypes: IHeatSync[] = [
 	{
 		name: "Double (Freezers)",
 		tag: "double-freezers",
+		editions: ["total-warfare", "battlemech-manual", "core-rulebook"],
 		dissipation: 2,
 		crits: {
 			clan: 0,
@@ -136,6 +141,7 @@ export const mechHeatSinkTypes: IHeatSync[] = [
 	{
 		name: "Compact",
 		tag: "compact",
+		editions: ["total-warfare", "battlemech-manual", "core-rulebook"],
 		altNames: ["Compact Heat Sink"],
 		dissipation: 1,
 		crits: {
