@@ -39,7 +39,8 @@ function comboGun(row: IComboGunRow, techBase: "is" | "clan"): IEquipmentItem {
     const ac = mechISEquipmentBallistic.find((item) => item.tag === row.acTag);
     if (!ac || ac.battleValue === undefined) throw new Error(`Combo gun: AC record ${row.acTag} not found`);
     const clan = techBase === "clan";
-    const acAmmoTag = `ammo-${techBase}-${row.acAmmo}-standard`;
+    // Clan standard AC ammunition is extinct from 2850, so the Clan gun feeds from its own breech rounds.
+    const acAmmoTag = clan ? `ammo-custom-clan-artvee-ac-${row.acAmmo.replace("ac-", "")}` : `ammo-is-${row.acAmmo}-standard`;
     return {
         isAmmo: false,
         name: `ArtVee ${row.label} Combo Gun${clan ? " (Clan)" : ""}`,

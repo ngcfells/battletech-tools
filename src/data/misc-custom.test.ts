@@ -43,7 +43,7 @@ describe("Future Wars #32 smoke devices (Custom Homebrew)", () => {
     });
 
     it("both are rules level 6, universal, Future Wars #32 custom records", () => {
-        for (const item of [...miscCustom, ...ammoCustom]) {
+        for (const item of [...miscCustom, ...ammoCustom.filter((entry) => entry.tag === "ammo-custom-smoker-fuel")]) {
             expect(item.techBase).toBe("universal");
             expect(item.catalog).toBe("custom");
             expect(item.rulesLevel).toBe(6);

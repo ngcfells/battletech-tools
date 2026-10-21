@@ -4,9 +4,10 @@ import { getCompatibleAmmo, getEquipmentCatalogDefinitions, getEquipmentRulesLev
 import { mechUniversalAmmo } from "./mech-universal-ammo";
 import { mechISAmmo } from "./mech-is-ammo";
 import { mechClanAmmo } from "./mech-clan-ammo";
+import { ammoCustom } from "./ammo-custom";
 import { IEquipmentItem } from "./data-interfaces";
 
-const allAmmo = [...mechUniversalAmmo, ...mechISAmmo, ...mechClanAmmo];
+const allAmmo = [...mechUniversalAmmo, ...mechISAmmo, ...mechClanAmmo, ...ammoCustom];
 const ammo = (tag: string): IEquipmentItem => {
     const found = allAmmo.find((item) => item.tag === tag);
     if (!found) throw new Error(`no ammo ${tag}`);
@@ -68,10 +69,24 @@ describe("ArtVee combo guns", () => {
             expect(getCompatibleAmmo(isGun, artilleryAmmo)).toBe(true);
             expect(getCompatibleAmmo(isGun, ammo(`ammo-is-ac-${row.ac}-standard`))).toBe(true);
             expect(getCompatibleAmmo(isGun, ammo(`ammo-is-ac-${other.ac}-standard`))).toBe(false);
-            expect(getCompatibleAmmo(clanGun, ammo(`ammo-clan-ac-${row.ac}-standard`))).toBe(true);
+            expect(getCompatibleAmmo(clanGun, ammo(`ammo-custom-clan-artvee-ac-${row.ac}`))).toBe(true);
             expect(getWeaponShotsPerTon(isGun, artilleryAmmo)).toBe(row.shots);
             expect(getWeaponShotsPerTon(isGun, ammo(`ammo-is-ac-${row.ac}-standard`))).toBe(row.shots);
-            expect(getWeaponShotsPerTon(clanGun, ammo(`ammo-clan-ac-${row.ac}-standard`))).toBe(row.shots);
+            expect(getWeaponShotsPerTon(clanGun, ammo(`ammo-custom-clan-artvee-ac-${row.ac}`))).toBe(row.shots);
+        }
+    });
+
+    it("the Clan combos do not feed from Clan standard AC ammunition (extinct 2850) but from breech rounds with the canon IS AC stats", () => {
+        for (const row of rows) {
+            const clanGun = gun(`custom-clan-artvee-${row.name}-combo`);
+            const breech = ammo(`ammo-custom-clan-artvee-ac-${row.ac}`);
+            const canon = ammo(`ammo-is-ac-${row.ac}-standard`);
+            expect(getCompatibleAmmo(clanGun, ammo(`ammo-clan-ac-${row.ac}-standard`))).toBe(false);
+            expect(breech).toMatchObject({ techBase: "clan", catalog: "custom", rulesLevel: 6, book: "Custom", page: 0, prototype: 2690, introduced: 2700, extinct: null, reintroduced: null });
+            for (const key of ["weight", "roundsPerTon", "cbills", "battleValue", "explosive", "techRating"] as const) {
+                expect(breech[key], key).toEqual(canon[key]);
+            }
+            expect(breech.notes).toContain("ArtVee ruling 2026-10-21");
         }
     });
 

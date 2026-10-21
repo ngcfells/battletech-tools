@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import Vehicle from "../classes/vehicle";
 import { getArtVeeIssues, getArtVeeWarnings } from "../classes/vehicle-artvee";
 import { ARTVEE_SAMPLES, getArtVeeSamples } from "./artvee-samples";
+import { getCompatibleAmmo } from "./equipment-registry";
 
 const load = (save: unknown): Vehicle => new Vehicle(JSON.stringify(save));
 
@@ -60,6 +61,16 @@ describe("sample ArtVees", () => {
             expect(vehicle.getRemainingTonnage()).toBe(0);
             expect(vehicle.getUsedItemSlots()).toBeLessThanOrEqual(vehicle.getTotalItemSlots());
             expect(vehicle.getTotalArmorPoints()).toBeGreaterThanOrEqual(vehicle.getMaxArmorPoints() / 2);
+        });
+
+        it("carries at least 1 ton of AC-profile ammunition its combo gun accepts, and 1 ton of its artillery ammunition", () => {
+            const equipment = vehicle.getEquipmentList();
+            const gun = equipment.find((item) => item.comboArtilleryTag)!;
+            const acAmmo = equipment.filter((item) => item.isAmmo && gun.ammoTypes?.[1] === item.tag);
+            const artilleryAmmo = equipment.filter((item) => item.isAmmo && gun.ammoTypes?.[0] === item.tag);
+            expect(acAmmo.reduce((tons, item) => tons + item.weight, 0)).toBeGreaterThanOrEqual(1);
+            expect(artilleryAmmo.reduce((tons, item) => tons + item.weight, 0)).toBeGreaterThanOrEqual(1);
+            for (const item of [...acAmmo, ...artilleryAmmo]) expect(getCompatibleAmmo(gun, item)).toBe(true);
         });
 
         it("uses production technology only", () => {

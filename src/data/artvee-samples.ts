@@ -4,8 +4,8 @@ import type { IVehicleExport } from "../classes/vehicle";
  * Sample ArtVees (Custom Homebrew): nine full vehicle designs, three combo guns in three patterns, loadable from the
  * Vehicle Creator's step 1 at the Custom Homebrew level. Every item is production technology in the sample's era
  * (the Armored Motive System is prototype only in these eras, so the Clan and MAP samples carry the creator's
- * "Armored Motive System recommended" advice). Clan samples carry no AC ammunition bin: Clan standard AC ammunition
- * is extinct from 2850 in the catalog, so it is not production in the Clan Invasion era.
+ * "Armored Motive System recommended" advice). Clan standard AC ammunition is extinct from 2850, so the Clan samples
+ * carry the custom Clan ArtVee breech ammunition (ammo-custom.ts) as their AC-profile bin.
  *
  * Flavour (spec lore): the Star League samples are 2700s builds, the Clan samples are the line the Clans kept after
  * the Exodus, and the MAP samples are the Inner Sphere rediscovery of 3071.
@@ -117,7 +117,7 @@ const SAMPLE_DATA: { id: string; name: string; save: ArtVeeSaveData }[] = [
         id: "pangolin",
         name: "Pangolin ArtVee PNG-C",
         save: {
-            "uuid": "789172a6-215a-47b3-8d24-e3c80f2ea34b",
+            "uuid": "0d08b714-f7bb-4ecb-202b-4a7ace7a259b",
             "lastUpdated": "2026-10-21T00:00:00.000Z",
             "name": "Pangolin ArtVee",
             "model": "PNG-C",
@@ -135,11 +135,11 @@ const SAMPLE_DATA: { id: string; name: string; save: ArtVeeSaveData }[] = [
             "cruiseMP": 4,
             "armorType": "ferro-fibrous",
             "armorAllocation": {
-                "front": 27,
-                "left": 27,
-                "right": 27,
-                "rear": 27,
-                "turret": 26,
+                "front": 23,
+                "left": 23,
+                "right": 23,
+                "rear": 23,
+                "turret": 23,
                 "rotor": 0,
                 "frontLeft": 0,
                 "frontRight": 0,
@@ -155,41 +155,46 @@ const SAMPLE_DATA: { id: string; name: string; save: ArtVeeSaveData }[] = [
                     "tag": "custom-clan-artvee-thumper-combo",
                     "location": "turret",
                     "rear": false,
-                    "uuid": "29c6c28c-d01c-4d2d-ba4a-e40a9c5ee178"
+                    "uuid": "f328127f-5af7-478a-83a0-899ab8a2f9d9"
                 },
                 {
                     "tag": "ammo-thumper-standard",
                     "rear": false,
-                    "uuid": "049610b0-fdce-4f64-2740-ef51c55a82f2"
+                    "uuid": "5eef361d-8ded-42dd-952d-24895862bc58"
+                },
+                {
+                    "tag": "ammo-custom-clan-artvee-ac-5",
+                    "rear": false,
+                    "uuid": "fb18997d-473f-4e30-b3a9-c519e28b0358"
                 },
                 {
                     "tag": "clan-machine-gun",
                     "location": "front",
                     "rear": false,
-                    "uuid": "c9c36ca6-3516-4da4-a65e-a6f427f70cee"
+                    "uuid": "5e64cdbb-68aa-4109-a8a3-57c97de4d476"
                 },
                 {
                     "tag": "clan-machine-gun",
                     "location": "front",
                     "rear": false,
-                    "uuid": "ad050e54-2566-4321-34e2-a9a3efc5a810"
+                    "uuid": "2b327fd4-136f-4b02-2323-9ae93ea4e564"
                 },
                 {
                     "tag": "clan-small-pulse-laser",
                     "location": "turret",
                     "rear": false,
-                    "uuid": "27b64635-de54-4a77-0bfa-5073c1893bd0"
+                    "uuid": "92fba7ac-7445-4337-14d5-5289c0df2346"
                 },
                 {
                     "tag": "clan-flamer",
                     "location": "rear",
                     "rear": false,
-                    "uuid": "4ae6a2d5-e5a3-4f80-2228-8ec781e53456"
+                    "uuid": "e50275dd-5535-415e-0f2a-2d73df7ef14b"
                 },
                 {
                     "tag": "ammo-machine-gun-standard",
                     "rear": false,
-                    "uuid": "6b1f6f11-f66d-4d2e-9ef3-66c88541276b"
+                    "uuid": "a3349b9b-1e4e-4365-9ab1-97ce3e06582f"
                 }
             ],
             "pilot": {
@@ -391,7 +396,7 @@ const SAMPLE_DATA: { id: string; name: string; save: ArtVeeSaveData }[] = [
         id: "archerfish",
         name: "Archerfish ArtVee ARF-C",
         save: {
-            "uuid": "ddc1159b-c776-43d4-aadb-0420242906ba",
+            "uuid": "bfe70b67-a0c3-4de1-0e9b-7d22cba90f51",
             "lastUpdated": "2026-10-21T00:00:00.000Z",
             "name": "Archerfish ArtVee",
             "model": "ARF-C",
@@ -409,11 +414,11 @@ const SAMPLE_DATA: { id: string; name: string; save: ArtVeeSaveData }[] = [
             "cruiseMP": 4,
             "armorType": "ferro-fibrous",
             "armorAllocation": {
-                "front": 33,
-                "left": 33,
-                "right": 33,
-                "rear": 32,
-                "turret": 32,
+                "front": 29,
+                "left": 29,
+                "right": 29,
+                "rear": 29,
+                "turret": 28,
                 "rotor": 0,
                 "frontLeft": 0,
                 "frontRight": 0,
@@ -429,52 +434,57 @@ const SAMPLE_DATA: { id: string; name: string; save: ArtVeeSaveData }[] = [
                     "tag": "custom-clan-artvee-sniper-combo",
                     "location": "turret",
                     "rear": false,
-                    "uuid": "c2547bcd-86a2-4c9a-222f-45b14f298c38"
+                    "uuid": "a25d150c-b67d-4f65-1b29-d70e563bd5f3"
                 },
                 {
                     "tag": "ammo-sniper-standard",
                     "rear": false,
-                    "uuid": "1516412d-402d-4559-2976-7e40bac35d90"
+                    "uuid": "c6042f2a-2970-4359-816d-6acb3bad0785"
+                },
+                {
+                    "tag": "ammo-custom-clan-artvee-ac-10",
+                    "rear": false,
+                    "uuid": "f65d858e-ddc3-4c24-1153-dbe6c228d363"
                 },
                 {
                     "tag": "clan-machine-gun",
                     "location": "front",
                     "rear": false,
-                    "uuid": "973960cf-7573-42d6-1352-4c21ddc57cde"
+                    "uuid": "67306fd2-ea5d-40ab-2f5c-04c33917247b"
                 },
                 {
                     "tag": "clan-machine-gun",
                     "location": "front",
                     "rear": false,
-                    "uuid": "ac23e889-23fa-4330-050e-417593812971"
+                    "uuid": "05b19a2c-eb0e-47ee-999a-db6170714da0"
                 },
                 {
                     "tag": "clan_medium-pulse-laser",
                     "location": "turret",
                     "rear": false,
-                    "uuid": "96165399-7393-46c7-0f63-7c61ec308722"
+                    "uuid": "05c81172-0fa6-44c5-39ab-27267b31f629"
                 },
                 {
                     "tag": "clan-mech-mortar-1",
                     "location": "front",
                     "rear": false,
-                    "uuid": "68174dff-a051-43a0-1f17-7f63daf25250"
+                    "uuid": "22167155-9d16-4620-0598-14bb19d232e9"
                 },
                 {
                     "tag": "clan-flamer",
                     "location": "rear",
                     "rear": false,
-                    "uuid": "83ef8dd0-b6cc-4471-3623-0470c5b3f685"
+                    "uuid": "71615fea-a033-4d06-1e1a-2ba3fddc80a8"
                 },
                 {
                     "tag": "ammo-machine-gun-standard",
                     "rear": false,
-                    "uuid": "6e93dbbc-bbd9-41db-0f22-b5d46d488371"
+                    "uuid": "8eea61f0-d16b-4630-aa68-55bd71236290"
                 },
                 {
                     "tag": "ammo-clan-mech-mortar-standard",
                     "rear": false,
-                    "uuid": "30c6888d-fb02-443e-0848-5f332c6c236d"
+                    "uuid": "0a026cf2-a467-4481-3d45-9d6f781d6fef"
                 }
             ],
             "pilot": {
@@ -704,7 +714,7 @@ const SAMPLE_DATA: { id: string; name: string; save: ArtVeeSaveData }[] = [
         id: "glyptodon",
         name: "Glyptodon ArtVee GLY-C",
         save: {
-            "uuid": "6d207334-ab00-4ece-1cf1-24e65d2e42ca",
+            "uuid": "69bda77a-6c6d-4c3f-0093-38dfefde121f",
             "lastUpdated": "2026-10-21T00:00:00.000Z",
             "name": "Glyptodon ArtVee",
             "model": "GLY-C",
@@ -722,11 +732,11 @@ const SAMPLE_DATA: { id: string; name: string; save: ArtVeeSaveData }[] = [
             "cruiseMP": 3,
             "armorType": "ferro-fibrous",
             "armorAllocation": {
-                "front": 39,
-                "left": 39,
-                "right": 38,
-                "rear": 38,
-                "turret": 38,
+                "front": 35,
+                "left": 35,
+                "right": 34,
+                "rear": 34,
+                "turret": 34,
                 "rotor": 0,
                 "frontLeft": 0,
                 "frontRight": 0,
@@ -742,41 +752,46 @@ const SAMPLE_DATA: { id: string; name: string; save: ArtVeeSaveData }[] = [
                     "tag": "custom-clan-artvee-long-tom-combo",
                     "location": "turret",
                     "rear": false,
-                    "uuid": "ac45c095-6fee-4bdd-085b-e1597d147542"
+                    "uuid": "a51db94d-8637-4475-2e23-e28901c7cd2d"
                 },
                 {
                     "tag": "ammo-long-tom-standard",
                     "rear": false,
-                    "uuid": "7c1513d6-fa8d-461e-1ca0-a52d857ffecb"
+                    "uuid": "1adcc629-21f9-4722-b08e-4183374849a6"
+                },
+                {
+                    "tag": "ammo-custom-clan-artvee-ac-20",
+                    "rear": false,
+                    "uuid": "110dd527-bfb8-42bb-8db2-a03cb4a88330"
                 },
                 {
                     "tag": "clan-machine-gun",
                     "location": "front",
                     "rear": false,
-                    "uuid": "34185097-12b6-4282-390a-b7a1b71bebd6"
+                    "uuid": "f961f173-a04b-4cab-3744-39794dc5067a"
                 },
                 {
                     "tag": "clan-machine-gun",
                     "location": "front",
                     "rear": false,
-                    "uuid": "5a5114e4-89e3-4c22-21d6-0fdf3ad42705"
+                    "uuid": "036a3ee2-5db1-45df-ba63-d8455d144566"
                 },
                 {
                     "tag": "clan_medium-pulse-laser",
                     "location": "turret",
                     "rear": false,
-                    "uuid": "ddc4feda-532b-4f09-bf91-0ac1a33aca2a"
+                    "uuid": "e8d7d4c0-8ca2-48b0-bfaa-7de5079d2627"
                 },
                 {
                     "tag": "clan-flamer",
                     "location": "rear",
                     "rear": false,
-                    "uuid": "109df3e3-4d99-45d7-815b-4d5e3df2b060"
+                    "uuid": "b4f474b3-cb59-4204-af0c-887de2d2d71b"
                 },
                 {
                     "tag": "ammo-machine-gun-standard",
                     "rear": false,
-                    "uuid": "177e009c-6b59-4616-3792-e1ef35092a75"
+                    "uuid": "7f7f3fb1-7344-4018-23d4-13212ac3db7c"
                 }
             ],
             "pilot": {
