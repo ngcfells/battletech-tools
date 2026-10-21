@@ -10,11 +10,13 @@ import { mechHeatSinkTypes } from "./mech-heat-sink-types";
 import { mechInternalStructureTypes } from "./mech-internal-structure-types";
 import { mechISEquipmentArtillery } from "./mech-is-equipment-weapons-artillery";
 import { equipmentEnergy } from "./equipment-energy";
-import { mechClanEquipmentMisc } from "./mech-clan-equipment-weapons-misc";
 import { mechISAmmo } from "./mech-is-ammo";
-import { mechISEquipmentMisc } from "./mech-is-equipment-weapons-misc";
+import { equipmentMisc } from "./equipment-misc";
 import { mechUniversalAmmo } from "./mech-universal-ammo";
 import { mechUniversalEquipment } from "./mech-universal-equipment";
+
+const isMiscList = equipmentMisc.filter((item) => item.techBase === "is");
+const clanMiscList = equipmentMisc.filter((item) => item.techBase === "clan");
 
 const isEnergyList = equipmentEnergy.filter((item) => item.techBase === "is");
 
@@ -33,9 +35,9 @@ describe("records whose IS and Clan dates differ are not universal", () => {
     // TO:AUE p.134 gives "Reintroduced: N/A"; the 3073 the record once carried had no source.
     it("splits the Laser Insulator: the IS lost it in 2820, the Clans never did (TO:AUE p.134; IO:AE p.38)", () => {
         expect(hasTag(mechUniversalEquipment, "laser-insulator")).toBe(false);
-        expect(mechISEquipmentMisc.find((item) => item.tag === "laser-insulator"))
+        expect(isMiscList.find((item) => item.tag === "laser-insulator"))
             .toMatchObject({ extinct: 2820, reintroduced: null });
-        const clan = mechClanEquipmentMisc.find((item) => item.tag === "clan-laser-insulator")!;
+        const clan = clanMiscList.find((item) => item.tag === "clan-laser-insulator")!;
         expect(clan.altTags).toContain("laser-insulator");
         expect(clan.extinct).toBeNull();
     });

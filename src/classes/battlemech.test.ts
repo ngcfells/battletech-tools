@@ -23,11 +23,13 @@ import { mechISEquipmentArtillery } from "../data/mech-is-equipment-weapons-arti
 import { mechClanEquipmentArtillery } from "../data/mech-clan-equipment-weapons-artillery";
 import { equipmentBallistic } from "../data/equipment-ballistic";
 import { equipmentEnergy } from "../data/equipment-energy";
-import { mechISEquipmentMisc } from "../data/mech-is-equipment-weapons-misc";
-import { mechClanEquipmentMisc } from "../data/mech-clan-equipment-weapons-misc";
+import { equipmentMisc } from "../data/equipment-misc";
 import { mechUniversalEquipment } from "../data/mech-universal-equipment";
 import { getAvailableTonnagesForMechType, getTonnageBoundsForMechType } from "../data/mech-tonnages";
 import { mechCustomEquipmentMisc } from "../data/mech-custom-equipment-weapons-misc";
+
+const isMiscList = equipmentMisc.filter((item) => item.techBase === "is");
+const clanMiscList = equipmentMisc.filter((item) => item.techBase === "clan");
 
 const isMissileList = equipmentMissile.filter((item) => item.techBase === "is");
 const clanMissileList = equipmentMissile.filter((item) => item.techBase === "clan");
@@ -2293,8 +2295,8 @@ describe("SSW unresolved items", () => {
 
 describe("Batch 3 myomer catalog", () => {
     const myomer = (tag: string) => mechMyomerTypes.find(item => item.tag === tag);
-    const isMisc = (tag: string) => mechISEquipmentMisc.find(item => item.tag === tag);
-    const clanMisc = (tag: string) => mechClanEquipmentMisc.find(item => item.tag === tag);
+    const isMisc = (tag: string) => isMiscList.find(item => item.tag === tag);
+    const clanMisc = (tag: string) => clanMiscList.find(item => item.tag === tag);
 
     it("dates standard myomer per IO:AE p.42 and cites TM p.277", () => {
         const standard = myomer("standard");
@@ -2756,13 +2758,13 @@ describe("Batch 9a misc equipment catalogs", () => {
             "remote-sensor-dispenser-prototype": [2586, null, 2590, null, "IO:AE", 67],
         };
         for (const [tag, want] of Object.entries(expected)) {
-            const item = mechISEquipmentMisc.find(record => record.tag === tag);
+            const item = isMiscList.find(record => record.tag === tag);
             expect([item?.prototype, item?.introduced, item?.extinct, item?.reintroduced, item?.book, item?.page], tag).toEqual(want);
         }
     });
 
     it("uses null, not 0, for unknown dates in the is records", () => {
-        for (const item of mechISEquipmentMisc) {
+        for (const item of isMiscList) {
             expect(item.introduced, item.tag).not.toBe(0);
             expect(item.extinct, item.tag).not.toBe(0);
             expect(item.reintroduced, item.tag).not.toBe(0);
@@ -2795,13 +2797,13 @@ describe("Batch 9a misc equipment catalogs", () => {
             "clan-protomech-myomer-booster": [3066, 3068, null, null, "TM", 232],
         };
         for (const [tag, want] of Object.entries(expected)) {
-            const item = mechClanEquipmentMisc.find(record => record.tag === tag);
+            const item = clanMiscList.find(record => record.tag === tag);
             expect([item?.prototype, item?.introduced, item?.extinct, item?.reintroduced, item?.book, item?.page], tag).toEqual(want);
         }
     });
 
     it("uses null, not 0, for unknown dates in the clan records", () => {
-        for (const item of mechClanEquipmentMisc) {
+        for (const item of clanMiscList) {
             expect(item.introduced, item.tag).not.toBe(0);
             expect(item.extinct, item.tag).not.toBe(0);
             expect(item.reintroduced, item.tag).not.toBe(0);
@@ -2810,7 +2812,7 @@ describe("Batch 9a misc equipment catalogs", () => {
     });
 
     it("prices Modular Armor at 10,000 C-bills per ton (TO:AUE p.217)", () => {
-        expect(mechISEquipmentMisc.find(item => item.tag === "modular-armor")?.cbills).toBe(10000);
+        expect(isMiscList.find(item => item.tag === "modular-armor")?.cbills).toBe(10000);
     });
 });
 
@@ -3458,7 +3460,7 @@ describe("Batch 9c pods added from TechManual and TO:AUE", () => {
     });
 
     it("lists the M-Pod as Inner Sphere equipment (TO:AUE pp.143, 195, 221)", () => {
-        const pod = mechISEquipmentMisc.find(item => item.tag === "m-pod");
+        const pod = isMiscList.find(item => item.tag === "m-pod");
         expect(pod).toMatchObject({ name: "M-Pod", weight: 1, cbills: 6000, battleValue: 5, battleValueDefensive: true, explosive: true, accuracyModifier: -1, book: "TO:AUE", page: 143 });
         expect(pod?.range).toEqual({ min: 0, short: 1, medium: 2, long: 3 });
         expect(pod?.space).toMatchObject({ battlemech: 1, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: -1 });
@@ -3467,7 +3469,7 @@ describe("Batch 9c pods added from TechManual and TO:AUE", () => {
     });
 
     it("lists the Chaff Pod as Inner Sphere equipment (TO:AUE pp.111, 195, 219)", () => {
-        const pod = mechISEquipmentMisc.find(item => item.tag === "chaff-pod");
+        const pod = isMiscList.find(item => item.tag === "chaff-pod");
         expect(pod).toMatchObject({ name: "Chaff Pod", weight: 1, cbills: 2000, battleValue: 19, battleValueDefensive: true, explosive: true, book: "TO:AUE", page: 111 });
         expect(pod?.space).toMatchObject({ battlemech: 1, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 });
         // IO:AE p.39: 3069 prototype, 3079 production.
@@ -3705,7 +3707,7 @@ describe("Batch 14 prototype weapon statistics", () => {
             [clanBallisticList, "clan-prototype-ultra-ac-10", { battleValue: 210, ammoBattleValue: 26 }],
             [clanBallisticList, "clan-prototype-ultra-ac-20", { battleValue: 281, ammoBattleValue: 35 }],
             [clanEnergyList, "enhanced_er_ppc", { name: "Enhanced PPC", altNames: ["Enhanced ER PPC"], weight: 7, cbills: 300000, battleValue: 329 }],
-            [mechClanEquipmentMisc, "clan-nova-cews", { cbills: 1110000 }],
+            [clanMiscList, "clan-nova-cews", { cbills: 1110000 }],
         ];
         for (const [catalog, tag, fields] of expected) {
             const item = catalog.find(entry => entry.tag === tag);
@@ -3768,8 +3770,8 @@ describe("Batch 15 tech-base splits", () => {
     });
 
     it("splits the Laser Insulator: lost in the Inner Sphere in 2820, never in Clan space (IO:AE p.38)", () => {
-        const is = mechISEquipmentMisc.find(item => item.tag === "laser-insulator");
-        const clan = mechClanEquipmentMisc.find(item => item.tag === "clan-laser-insulator");
+        const is = isMiscList.find(item => item.tag === "laser-insulator");
+        const clan = clanMiscList.find(item => item.tag === "clan-laser-insulator");
         expect(is).toMatchObject({ catalog: "is", prototype: 2575, introduced: null, extinct: 2820, reintroduced: null, book: "TO:AUE", page: 134 });
         expect(clan).toMatchObject({ catalog: "clan", prototype: 2575, introduced: null, extinct: null, reintroduced: null, book: "TO:AUE", page: 134 });
         expect([clan?.weight, clan?.space, clan?.cbills, clan?.battleValue]).toEqual([is?.weight, is?.space, is?.cbills, is?.battleValue]);
@@ -3777,8 +3779,8 @@ describe("Batch 15 tech-base splits", () => {
     });
 
     it("gives the Clans their own Modular Armor record: prototype 3074 (IO:AE p.29)", () => {
-        const is = mechISEquipmentMisc.find(item => item.tag === "modular-armor");
-        const clan = mechClanEquipmentMisc.find(item => item.tag === "clan-modular-armor");
+        const is = isMiscList.find(item => item.tag === "modular-armor");
+        const clan = clanMiscList.find(item => item.tag === "clan-modular-armor");
         expect(is).toMatchObject({ prototype: 3072, introduced: 3096, isModularArmor: true });
         expect(clan).toMatchObject({ catalog: "clan", prototype: 3074, introduced: 3096, extinct: null, book: "TO:AUE", page: 93, isModularArmor: true });
         expect([clan?.weight, clan?.space, clan?.cbills, clan?.additionalArmor]).toEqual([is?.weight, is?.space, is?.cbills, is?.additionalArmor]);
@@ -4109,7 +4111,7 @@ describe("Batch 19 TO:AUE table audit", () => {
             [clanMissileList, "streak-lrm-10", { techRating: "f" }],
             [clanMissileList, "streak-lrm-15", { techRating: "f" }],
             [clanMissileList, "streak-lrm-20", { techRating: "f" }],
-            [mechClanEquipmentMisc, "clan-watchdog-cews", { cbills: 600000 }],
+            [clanMiscList, "clan-watchdog-cews", { cbills: 600000 }],
         ];
         for (const [catalog, tag, fields] of expected) {
             const item = catalog.find(entry => entry.tag === tag);
@@ -4957,13 +4959,13 @@ describe("Batch 28 unit slot columns of the Weapons and Equipment Tables (TM pp.
             [isMissileList, "mml-5-artemis-iv", { space: { battlemech: 4, protomech: -1, combatVehicle: 1, supportVehicle: 4, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
             [isMissileList, "mml-7-artemis-iv", { space: { battlemech: 5, protomech: -1, combatVehicle: 1, supportVehicle: 5, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
             [isMissileList, "mml-9-artemis-iv", { space: { battlemech: 6, protomech: -1, combatVehicle: 1, supportVehicle: 6, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
-            [mechISEquipmentMisc, "beagle-active-probe", { space: { battlemech: 2, protomech: -1, combatVehicle: 1, supportVehicle: 2, aerospaceFighter: 1, smallCraft: 1, dropShip: -1 } }],
-            [mechISEquipmentMisc, "ecm-suite", { space: { battlemech: 2, protomech: -1, combatVehicle: 1, supportVehicle: 2, aerospaceFighter: 1, smallCraft: 1, dropShip: -1 } }],
-            [mechISEquipmentMisc, "masc", { space: { battlemech: 1, protomech: -1, combatVehicle: -1, supportVehicle: -1, aerospaceFighter: -1, smallCraft: -1, dropShip: -1 } }],
-            [mechISEquipmentMisc, "targeting-computer", { space: { battlemech: 1, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: 0, smallCraft: -1, dropShip: -1 } }],
-            [mechISEquipmentMisc, "c3-computer-master", { space: { battlemech: 5, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: -1, smallCraft: -1, dropShip: -1 } }],
-            [mechISEquipmentMisc, "c3-computer-slave", { space: { battlemech: 1, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: -1, smallCraft: -1, dropShip: -1 } }],
-            [mechISEquipmentMisc, "c3i-computer", { space: { battlemech: 2, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: -1, smallCraft: -1, dropShip: -1 } }],
+            [isMiscList, "beagle-active-probe", { space: { battlemech: 2, protomech: -1, combatVehicle: 1, supportVehicle: 2, aerospaceFighter: 1, smallCraft: 1, dropShip: -1 } }],
+            [isMiscList, "ecm-suite", { space: { battlemech: 2, protomech: -1, combatVehicle: 1, supportVehicle: 2, aerospaceFighter: 1, smallCraft: 1, dropShip: -1 } }],
+            [isMiscList, "masc", { space: { battlemech: 1, protomech: -1, combatVehicle: -1, supportVehicle: -1, aerospaceFighter: -1, smallCraft: -1, dropShip: -1 } }],
+            [isMiscList, "targeting-computer", { space: { battlemech: 1, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: 0, smallCraft: -1, dropShip: -1 } }],
+            [isMiscList, "c3-computer-master", { space: { battlemech: 5, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: -1, smallCraft: -1, dropShip: -1 } }],
+            [isMiscList, "c3-computer-slave", { space: { battlemech: 1, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: -1, smallCraft: -1, dropShip: -1 } }],
+            [isMiscList, "c3i-computer", { space: { battlemech: 2, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: -1, smallCraft: -1, dropShip: -1 } }],
             [clanBallisticList, "clan-autocannon-lbx-5", { space: { battlemech: 4, protomech: 1, combatVehicle: 1, supportVehicle: 4, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
             [clanBallisticList, "clan-machine-gun-array", { space: { battlemech: 1, protomech: 1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: 1, smallCraft: 1, dropShip: 0 } }],
             [clanBallisticList, "hyper-assault-gauss-20", { space: { battlemech: 6, protomech: 1, combatVehicle: 1, supportVehicle: 6, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
@@ -4984,11 +4986,11 @@ describe("Batch 28 unit slot columns of the Weapons and Equipment Tables (TM pp.
             [clanMissileList, "clan-lrm-20", { space: { battlemech: 4, protomech: 1, combatVehicle: 1, supportVehicle: 4, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
             [clanMissileList, "clan-srm-6", { space: { battlemech: 1, protomech: 1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
             [clanMissileList, "clan-streak-srm-6", { space: { battlemech: 2, protomech: 1, combatVehicle: 1, supportVehicle: 2, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
-            [mechClanEquipmentMisc, "clan-active-probe", { space: { battlemech: 1, protomech: 1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: 1, smallCraft: 1, dropShip: -1 } }],
-            [mechClanEquipmentMisc, "clan-light-active-probe", { space: { battlemech: 1, protomech: 1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: 1, smallCraft: 1, dropShip: 0 } }],
-            [mechClanEquipmentMisc, "clan-ecm-system", { space: { battlemech: 1, protomech: 1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: 1, smallCraft: 1, dropShip: -1 } }],
-            [mechClanEquipmentMisc, "clan-masc", { space: { battlemech: 1, protomech: -1, combatVehicle: -1, supportVehicle: -1, aerospaceFighter: -1, smallCraft: -1, dropShip: -1 } }],
-            [mechClanEquipmentMisc, "clan-targeting-computer", { space: { battlemech: 1, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: 0, smallCraft: -1, dropShip: -1 } }],
+            [clanMiscList, "clan-active-probe", { space: { battlemech: 1, protomech: 1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: 1, smallCraft: 1, dropShip: -1 } }],
+            [clanMiscList, "clan-light-active-probe", { space: { battlemech: 1, protomech: 1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: 1, smallCraft: 1, dropShip: 0 } }],
+            [clanMiscList, "clan-ecm-system", { space: { battlemech: 1, protomech: 1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: 1, smallCraft: 1, dropShip: -1 } }],
+            [clanMiscList, "clan-masc", { space: { battlemech: 1, protomech: -1, combatVehicle: -1, supportVehicle: -1, aerospaceFighter: -1, smallCraft: -1, dropShip: -1 } }],
+            [clanMiscList, "clan-targeting-computer", { space: { battlemech: 1, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: 0, smallCraft: -1, dropShip: -1 } }],
         ];
         for (const [catalog, tag, fields] of expected) {
             const item = catalog.find(entry => entry.tag === tag);
@@ -5001,17 +5003,17 @@ describe("Batch 28 unit slot columns of the Weapons and Equipment Tables (TM pp.
 describe("Batch 29 unit slot columns of the TO:AUE construction tables (pp.217-223)", () => {
     it("gives advanced weapons and equipment their ProtoMech, vehicle and aerospace slot counts", () => {
         const expected: [{ tag: string }[], string, Record<string, unknown>][] = [
-            [mechISEquipmentMisc, "bloodhound-active-probe", { space: { battlemech: 3, protomech: -1, combatVehicle: 1, supportVehicle: 3, aerospaceFighter: 1, smallCraft: 1, dropShip: 0 } }],
-            [mechISEquipmentMisc, "angel-ecm", { space: { battlemech: 2, protomech: -1, combatVehicle: 1, supportVehicle: 2, aerospaceFighter: 1, smallCraft: 1, dropShip: 0 } }],
-            [mechISEquipmentMisc, "modular-armor", { space: { battlemech: 1, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: 2, smallCraft: -1, dropShip: -1 } }],
-            [mechISEquipmentMisc, "c3-boosted-master", { space: { battlemech: 6, protomech: -1, combatVehicle: 1, supportVehicle: 6, aerospaceFighter: -1, smallCraft: -1, dropShip: -1 } }],
-            [mechISEquipmentMisc, "case-ii", { space: { battlemech: 1, protomech: -1, combatVehicle: -1, supportVehicle: -1, aerospaceFighter: 0, smallCraft: -1, dropShip: -1 } }],
-            [mechISEquipmentMisc, "null-signature-system", { space: { battlemech: 7, protomech: -1, combatVehicle: -1, supportVehicle: -1, aerospaceFighter: -1, smallCraft: -1, dropShip: -1 } }],
-            [mechISEquipmentMisc, "void-signature-system", { space: { battlemech: 7, protomech: -1, combatVehicle: -1, supportVehicle: -1, aerospaceFighter: -1, smallCraft: -1, dropShip: -1 } }],
-            [mechClanEquipmentMisc, "clan-watchdog-cews", { space: { battlemech: 2, protomech: 1, combatVehicle: 1, supportVehicle: 2, aerospaceFighter: 1, smallCraft: 1, dropShip: 0 } }],
-            [mechClanEquipmentMisc, "clan-angel-ecm", { space: { battlemech: 2, protomech: 1, combatVehicle: 1, supportVehicle: 2, aerospaceFighter: 1, smallCraft: 1, dropShip: 0 } }],
-            [mechClanEquipmentMisc, "clan-modular-armor", { space: { battlemech: 1, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: 2, smallCraft: -1, dropShip: -1 } }],
-            [mechClanEquipmentMisc, "clan-case-ii", { space: { battlemech: 1, protomech: -1, combatVehicle: -1, supportVehicle: -1, aerospaceFighter: 0, smallCraft: -1, dropShip: -1 } }],
+            [isMiscList, "bloodhound-active-probe", { space: { battlemech: 3, protomech: -1, combatVehicle: 1, supportVehicle: 3, aerospaceFighter: 1, smallCraft: 1, dropShip: 0 } }],
+            [isMiscList, "angel-ecm", { space: { battlemech: 2, protomech: -1, combatVehicle: 1, supportVehicle: 2, aerospaceFighter: 1, smallCraft: 1, dropShip: 0 } }],
+            [isMiscList, "modular-armor", { space: { battlemech: 1, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: 2, smallCraft: -1, dropShip: -1 } }],
+            [isMiscList, "c3-boosted-master", { space: { battlemech: 6, protomech: -1, combatVehicle: 1, supportVehicle: 6, aerospaceFighter: -1, smallCraft: -1, dropShip: -1 } }],
+            [isMiscList, "case-ii", { space: { battlemech: 1, protomech: -1, combatVehicle: -1, supportVehicle: -1, aerospaceFighter: 0, smallCraft: -1, dropShip: -1 } }],
+            [isMiscList, "null-signature-system", { space: { battlemech: 7, protomech: -1, combatVehicle: -1, supportVehicle: -1, aerospaceFighter: -1, smallCraft: -1, dropShip: -1 } }],
+            [isMiscList, "void-signature-system", { space: { battlemech: 7, protomech: -1, combatVehicle: -1, supportVehicle: -1, aerospaceFighter: -1, smallCraft: -1, dropShip: -1 } }],
+            [clanMiscList, "clan-watchdog-cews", { space: { battlemech: 2, protomech: 1, combatVehicle: 1, supportVehicle: 2, aerospaceFighter: 1, smallCraft: 1, dropShip: 0 } }],
+            [clanMiscList, "clan-angel-ecm", { space: { battlemech: 2, protomech: 1, combatVehicle: 1, supportVehicle: 2, aerospaceFighter: 1, smallCraft: 1, dropShip: 0 } }],
+            [clanMiscList, "clan-modular-armor", { space: { battlemech: 1, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: 2, smallCraft: -1, dropShip: -1 } }],
+            [clanMiscList, "clan-case-ii", { space: { battlemech: 1, protomech: -1, combatVehicle: -1, supportVehicle: -1, aerospaceFighter: 0, smallCraft: -1, dropShip: -1 } }],
             [mechUniversalEquipment, "thumper-artillery", { space: { battlemech: 15, protomech: -1, combatVehicle: 1, supportVehicle: 7, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
             [mechUniversalEquipment, "long-tom-artillery", { space: { battlemech: 30, protomech: -1, combatVehicle: 1, supportVehicle: 15, aerospaceFighter: -1, smallCraft: 1, dropShip: 1 } }],
             [mechUniversalEquipment, "fluid-gun", { space: { battlemech: 2, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
@@ -5269,18 +5271,18 @@ describe("Batch 32 physical weapon to-hit modifiers (TW p.146, TO:AUE p.216)", (
         const expected: [{ tag: string }[], string, Record<string, unknown>][] = [
             [isBallisticList, "melee-hatchet", { accuracyModifier: -1 }],
             [isBallisticList, "melee-sword", { accuracyModifier: -2 }],
-            [mechISEquipmentMisc, "melee-retractable-blade", { accuracyModifier: -2 }],
-            [mechISEquipmentMisc, "melee-mace", { accuracyModifier: 1 }],
-            [mechISEquipmentMisc, "melee-claw", { accuracyModifier: 1 }],
-            [mechISEquipmentMisc, "melee-lance", { accuracyModifier: 1 }],
-            [mechISEquipmentMisc, "melee-vibroblade-small", { accuracyModifier: -2 }],
-            [mechISEquipmentMisc, "melee-vibroblade-medium", { accuracyModifier: -2 }],
-            [mechISEquipmentMisc, "melee-vibroblade-large", { accuracyModifier: -2 }],
-            [mechISEquipmentMisc, "melee-chain-whip", { accuracyModifier: -2 }],
-            [mechISEquipmentMisc, "shield-small", { accuracyModifier: -2 }],
-            [mechISEquipmentMisc, "shield-medium", { accuracyModifier: -3 }],
-            [mechISEquipmentMisc, "shield-large", { accuracyModifier: -4 }],
-            [mechClanEquipmentMisc, "clan-melee-claw", { accuracyModifier: 1 }],
+            [isMiscList, "melee-retractable-blade", { accuracyModifier: -2 }],
+            [isMiscList, "melee-mace", { accuracyModifier: 1 }],
+            [isMiscList, "melee-claw", { accuracyModifier: 1 }],
+            [isMiscList, "melee-lance", { accuracyModifier: 1 }],
+            [isMiscList, "melee-vibroblade-small", { accuracyModifier: -2 }],
+            [isMiscList, "melee-vibroblade-medium", { accuracyModifier: -2 }],
+            [isMiscList, "melee-vibroblade-large", { accuracyModifier: -2 }],
+            [isMiscList, "melee-chain-whip", { accuracyModifier: -2 }],
+            [isMiscList, "shield-small", { accuracyModifier: -2 }],
+            [isMiscList, "shield-medium", { accuracyModifier: -3 }],
+            [isMiscList, "shield-large", { accuracyModifier: -4 }],
+            [clanMiscList, "clan-melee-claw", { accuracyModifier: 1 }],
             [mechUniversalEquipment, "backhoe", { accuracyModifier: 1 }],
             [mechUniversalEquipment, "combine", { accuracyModifier: -2 }],
             [mechUniversalEquipment, "pile-driver", { accuracyModifier: 2, damage: 9 }],
@@ -5386,7 +5388,7 @@ describe("Batch 35 TSEMP weapons and RISC Viral Jammers (IO:AE pp.84, 88, 190, 2
             "risc-viral-jammer-homing": ["RISC Viral Jammer (Homing Beacon)", 3137],
         };
         for (const [tag, [name, prototype]] of Object.entries(expected)) {
-            expect(mechISEquipmentMisc.find(item => item.tag === tag), tag).toMatchObject({
+            expect(isMiscList.find(item => item.tag === tag), tag).toMatchObject({
                 name, prototype, introduced: null, extinct: 3142, reintroduced: null, cbills: 990000, weight: 2.5, heat: 12,
                 battleValue: 284, battleValueDefensive: true, maxPerUnit: 1, techRating: "f", book: "IO:AE", page: 88,
                 space: { battlemech: 1, protomech: 1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: -1, smallCraft: -1, dropShip: -1 },
@@ -5509,11 +5511,11 @@ describe("Batch 38 Coolant Pod (TO:AUE pp.116, 193)", () => {
     const space = { battlemech: 1, protomech: -1, combatVehicle: -1, supportVehicle: -1, aerospaceFighter: 1, smallCraft: -1, dropShip: -1 };
 
     it("lists an Inner Sphere and a Clan record with the table values and IO:AE dates", () => {
-        expect(mechISEquipmentMisc.find(item => item.tag === "coolant-pod")).toMatchObject({
+        expect(isMiscList.find(item => item.tag === "coolant-pod")).toMatchObject({
             name: "Coolant Pod", cbills: 50000, weight: 1, space, battleValue: 0, explosive: true,
             prototype: 3049, introduced: 3079, extinct: null, reintroduced: null, techRating: "d", book: "TO:AUE", page: 116,
         });
-        const clan = mechClanEquipmentMisc.find(item => item.tag === "clan-coolant-pod");
+        const clan = clanMiscList.find(item => item.tag === "clan-coolant-pod");
         expect(clan).toMatchObject({
             name: "Coolant Pod (Clan)", cbills: 50000, weight: 1, space, battleValue: 0, explosive: true,
             introduced: 3079, extinct: null, reintroduced: null, techRating: "d", book: "TO:AUE", page: 116,
@@ -5573,7 +5575,7 @@ describe("Batch 39 RISC Heat Sink Override Kit (IO:AE pp.86, 190, 215)", () => {
     const addKit = (mech: BattleMech) => mech.addEquipmentFromTag("risc-heat-sink-override-kit", "is", "", false, undefined, "", false, [], undefined, undefined);
 
     it("lists the kit: 500 C-bills, no weight, no slots, 'Mechs only", () => {
-        expect(mechISEquipmentMisc.find(item => item.tag === "risc-heat-sink-override-kit")).toMatchObject({
+        expect(isMiscList.find(item => item.tag === "risc-heat-sink-override-kit")).toMatchObject({
             name: "RISC Heat Sink Override Kit", cbills: 500, weight: 0, battleValue: 0, battleValueFinalMultiplier: 1.01,
             space: { battlemech: 0, protomech: -1, combatVehicle: -1, supportVehicle: -1, aerospaceFighter: -1, smallCraft: -1, dropShip: -1 },
             prototype: 3134, introduced: null, extinct: 3139, reintroduced: null, techRating: "d", book: "IO:AE", page: 86,
@@ -5765,11 +5767,11 @@ describe("Batch 43 HarJel II and III repair systems (IO:AE pp.82-83, 185, 215)",
     const subtotal = (mech: BattleMech) => Number(/Defensive Subtotal[^:]*: (-?[\d.]+) =/.exec(mech.getBVCalcHTML())?.[1]);
 
     it("lists both Clan records with the table values and IO:AE dates", () => {
-        expect(mechClanEquipmentMisc.find(item => item.tag === "clan-harjel-ii")).toMatchObject({
+        expect(clanMiscList.find(item => item.tag === "clan-harjel-ii")).toMatchObject({
             name: "HarJel II Self-Repair System", cbills: 240000, weight: 2, space, battleValue: 0, armorRepairBVMultiplier: 1.1,
             prototype: 3120, introduced: 3136, extinct: null, reintroduced: null, techRating: "f", book: "IO:AE", page: 82,
         });
-        expect(mechClanEquipmentMisc.find(item => item.tag === "clan-harjel-iii")).toMatchObject({
+        expect(clanMiscList.find(item => item.tag === "clan-harjel-iii")).toMatchObject({
             name: "HarJel III Self-Repair System", cbills: 360000, weight: 3, space: { ...space, battlemech: 2 }, battleValue: 0, armorRepairBVMultiplier: 1.2,
             prototype: 3137, introduced: 3139, extinct: null, reintroduced: null, techRating: "f", book: "IO:AE", page: 82,
         });
@@ -5844,8 +5846,8 @@ describe("Batch 43 HarJel II and III repair systems (IO:AE pp.82-83, 185, 215)",
     });
 
     it("is always fixed equipment on an OmniMech", () => {
-        expect(isOmniFixedOnly(mechClanEquipmentMisc.find(item => item.tag === "clan-harjel-ii")!)).toBe(true);
-        expect(isOmniFixedOnly(mechClanEquipmentMisc.find(item => item.tag === "clan-harjel-iii")!)).toBe(true);
+        expect(isOmniFixedOnly(clanMiscList.find(item => item.tag === "clan-harjel-ii")!)).toBe(true);
+        expect(isOmniFixedOnly(clanMiscList.find(item => item.tag === "clan-harjel-iii")!)).toBe(true);
     });
 });
 
@@ -6098,8 +6100,8 @@ describe("Batch 47 Collapsible Command Module, Full-Head Ejection System, Indust
             cbills: 1725000, weight: 0, battleValue: 0, space: { battlemech: 0, ...mechOnly }, maxPerUnit: 1, maxPerUnitGroup: "full-head-ejection-system",
             extinct: null, reintroduced: null, techRating: "d", book: "TO:AUE", page: 122,
         };
-        expect(mechISEquipmentMisc.find(item => item.tag === "full-head-ejection-system")).toMatchObject({ name: "Full-Head Ejection System", prototype: 3020, introduced: 3023, ...common });
-        const clan = mechClanEquipmentMisc.find(item => item.tag === "clan-full-head-ejection-system");
+        expect(isMiscList.find(item => item.tag === "full-head-ejection-system")).toMatchObject({ name: "Full-Head Ejection System", prototype: 3020, introduced: 3023, ...common });
+        const clan = clanMiscList.find(item => item.tag === "clan-full-head-ejection-system");
         expect(clan).toMatchObject({ name: "Full-Head Ejection System (Clan)", introduced: 3052, ...common });
         expect(clan?.prototype).toBeUndefined();
     });

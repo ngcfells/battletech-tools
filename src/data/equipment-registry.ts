@@ -3,10 +3,9 @@ import { matchesTag } from "./tag-match";
 import { isAlphaStrikeAbilityCode } from "./alpha-strike-special-abilities";
 import { equipmentBallistic } from "./equipment-ballistic";
 import { equipmentEnergy } from "./equipment-energy";
-import { mechISEquipmentMisc } from "./mech-is-equipment-weapons-misc";
+import { equipmentMisc } from "./equipment-misc";
 import { equipmentMissile } from "./equipment-missile";
 import { mechISEquipmentArtillery } from "./mech-is-equipment-weapons-artillery";
-import { mechClanEquipmentMisc } from "./mech-clan-equipment-weapons-misc";
 import { mechClanEquipmentArtillery } from "./mech-clan-equipment-weapons-artillery";
 import { mechCustomEquipmentBallistic } from "./mech-custom-equipment-weapons-ballistic";
 import { mechCustomEquipmentEnergy } from "./mech-custom-equipment-weapons-energy";
@@ -53,10 +52,9 @@ const equipmentCatalogDefinitions: IEquipmentCatalogDefinition[] = [
     { id: "equipment-ballistic", exportName: "equipmentBallistic", category: "ballistic", equipment: equipmentBallistic },
     { id: "equipment-energy", exportName: "equipmentEnergy", category: "energy", equipment: equipmentEnergy },
     { id: "equipment-missile", exportName: "equipmentMissile", category: "missile", equipment: equipmentMissile },
-    { id: "mech-is-equipment-weapons-misc", exportName: "mechISEquipmentMisc", category: "misc", equipment: mechISEquipmentMisc },
+    { id: "equipment-misc", exportName: "equipmentMisc", category: "misc", equipment: equipmentMisc },
     { id: "mech-is-equipment-weapons-artillery", exportName: "mechISEquipmentArtillery", category: "artillery", equipment: mechISEquipmentArtillery },
     { id: "mech-is-ammo", exportName: "mechISAmmo", category: "ammunition", equipment: mechISAmmo },
-    { id: "mech-clan-equipment-weapons-misc", exportName: "mechClanEquipmentMisc", category: "misc", equipment: mechClanEquipmentMisc },
     { id: "mech-clan-equipment-weapons-artillery", exportName: "mechClanEquipmentArtillery", category: "artillery", equipment: mechClanEquipmentArtillery },
     { id: "mech-clan-ammo", exportName: "mechClanAmmo", category: "ammunition", equipment: mechClanAmmo },
     { id: "mech-custom-equipment-weapons-ballistic", exportName: "mechCustomEquipmentBallistic", custom: true, category: "ballistic", equipment: mechCustomEquipmentBallistic },
