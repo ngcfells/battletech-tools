@@ -305,6 +305,8 @@ export interface IEquipmentItem {
      * own stats are the Vehicle Mode (autocannon) profile.
      */
     comboArtilleryTag?: string;
+    /** Vehicle motive tags (vehicle-motive-types.ts) this equipment cannot be mounted on, e.g. ["vtol"]. */
+    excludedMotives?: string[];
     ammoProfile?: IAmmoProfile;
     accuracyModifier?: number | IAccuracyModifier;
     accuracyModifiier?: number;
