@@ -4,7 +4,7 @@ import type { IEquipmentItem } from "../data/data-interfaces";
 import { mechCustomEquipmentEnergy } from "../data/mech-custom-equipment-weapons-energy";
 import { ARTVEE_CONVERSION_EQUIPMENT } from "../data/combat-vehicle-chassis-modifications-custom";
 import Vehicle from "./vehicle";
-import { getArtVeeComboGuns, getArtVeeIssues, getArtVeeVariant, getArtVeeWarnings } from "./vehicle-artvee";
+import { getArtVeeComboGuns, getArtVeeIssues, getArtVeeNotes, getArtVeeVariant, getArtVeeWarnings } from "./vehicle-artvee";
 
 describe("custom records by tech base", () => {
     const template = mechCustomEquipmentEnergy[0];
@@ -350,5 +350,48 @@ describe("ArtVee construction", () => {
             expect(legacy.getInPlay().artVeeConversionDestroyed).toBe(false);
             expect(JSON.parse(JSON.stringify(vehicle.export(true))).inPlay).toBeUndefined();
         });
+    });
+});
+
+describe("ArtVee record sheet notes", () => {
+    const build = (): Vehicle => {
+        const vehicle = new Vehicle();
+        vehicle.setTech("is");
+        vehicle.setEra("jihad");
+        vehicle.setMotiveType("tracked");
+        vehicle.setTonnage(60);
+        vehicle.setEngineType("xl");
+        vehicle.setCruiseMP(4);
+        vehicle.setHasTurret(true);
+        vehicle.addEquipmentFromTag("custom-artvee-thumper-combo", "turret");
+        vehicle.addEquipmentFromTag("ammo-thumper-standard", "body");
+        vehicle.addEquipmentFromTag("ammo-is-ac-5-standard", "body");
+        vehicle.setArtVee(true);
+        return vehicle;
+    };
+
+    it("notes both modes for the record sheet", () => {
+        const vehicle = build();
+        expect(getArtVeeNotes(vehicle).slice(0, 3)).toEqual([
+            `ArtVee (MAP): Vehicle Mode ${vehicle.getCruiseMP()}/${vehicle.getFlankMP()}, Siege Mode 0/0`,
+            "Thumper / AC/5 combo: Vehicle Mode AC/5 (5 damage, 1 heat, 3/7/14/21); Siege Mode Thumper artillery (6 heat, 15 damage, 21 mapsheets)",
+            "Transforms in the Movement Phase; the combo gun cannot fire that turn",
+        ]);
+        expect(getArtVeeNotes(vehicle)[0]).toBe("ArtVee (MAP): Vehicle Mode 4/6, Siege Mode 0/0");
+    });
+
+    it("puts the artillery special on the card, marked Siege Mode only, and ARS with Armored Motive", () => {
+        const vehicle = build();
+        expect(vehicle.getAlphaStrikeStats().specialAbilities).toContain("ARTTH-1");
+        expect(vehicle.getAlphaStrikeStats().specialAbilities).not.toContain("ARS");
+        expect(getArtVeeNotes(vehicle)).toContain('Alpha Strike: ARTTH-1 in Siege Mode only; Siege Mode Move 0"');
+        vehicle.setChassisModification("armored-motive", true, 6);
+        expect(vehicle.getAlphaStrikeStats().specialAbilities).toContain("ARS");
+    });
+
+    it("has no notes for an ordinary vehicle", () => {
+        const vehicle = build();
+        vehicle.setArtVee(false);
+        expect(getArtVeeNotes(vehicle)).toEqual([]);
     });
 });

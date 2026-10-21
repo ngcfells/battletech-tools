@@ -44,3 +44,27 @@ test("Vehicle Creator: the ArtVee toggle unlocks the combo guns at Custom Homebr
 
     expect(errors).toEqual([]);
 });
+
+test("Vehicle Creator: the record sheet shows both ArtVee modes", async ({ page }) => {
+    const errors = watchErrors(page);
+
+    await page.goto("classic-battletech/vehicle-creator/step1");
+    await page.getByLabel("Rules Level").selectOption("6");
+    await page.getByLabel("Motive Type").selectOption("tracked");
+    await page.getByLabel("Vehicle Era").selectOption({ label: "Star League (2571-2780)" });
+    await page.getByTestId("artvee-option").click();
+
+    await page.goto("classic-battletech/vehicle-creator/equipment-selection");
+    await page.getByPlaceholder("Filter Equipment").fill("ArtVee Thumper Combo Gun");
+    await page.getByRole("row").filter({ has: page.getByRole("cell", { name: "ArtVee Thumper Combo Gun", exact: true }) })
+        .getByRole("button", { name: "Add" }).first().click();
+
+    await page.goto("classic-battletech/vehicle-creator/record-sheet");
+    const notes = page.getByTestId("artvee-note");
+    await expect(notes.first()).toContainText("ArtVee (MAP): Vehicle Mode");
+    await expect(notes.filter({ hasText: "Siege Mode Thumper artillery (6 heat, 15 damage, 21 mapsheets)" })).toHaveCount(1);
+    await expect(page.getByText(/ArtVee \(MAP\)/).first()).toBeVisible();
+    await expect(page.getByText(/, Siege 0\/0/).first()).toBeVisible();
+
+    expect(errors).toEqual([]);
+});

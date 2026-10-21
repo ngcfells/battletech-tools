@@ -1,3 +1,4 @@
+import { getComboArtillery } from "../data/artillery-custom";
 import type { IEquipmentItem } from "../data/data-interfaces";
 import type Vehicle from "./vehicle";
 
@@ -57,4 +58,25 @@ export function getArtVeeWarnings(vehicle: Vehicle, rulesLevel: number): string[
     const motiveOffered = vehicle.getAvailableChassisModifications(rulesLevel).some((mod) => mod.tag === "armored-motive");
     if (motiveOffered && !vehicle.hasChassisModification("armored-motive")) warnings.push("Armored Motive System recommended");
     return warnings;
+}
+
+/** Record sheet and card notes: both modes of an ArtVee, with the Siege numbers from the canon artillery piece. */
+export function getArtVeeNotes(vehicle: Vehicle): string[] {
+    if (!vehicle.isArtVee()) return [];
+    const notes = [`ArtVee (MAP): Vehicle Mode ${vehicle.getCruiseMP()}/${vehicle.getFlankMP()}, Siege Mode 0/0`];
+    const alphaStrike: string[] = [];
+    for (const gun of getArtVeeComboGuns(vehicle)) {
+        const piece = getComboArtillery(gun);
+        const pieceName = piece ? piece.name.replace(/ Artillery Piece$/, "") : "artillery";
+        const range = gun.range;
+        const vehicleMode = `Vehicle Mode AC/${gun.damage} (${gun.damage} damage, ${gun.heat} heat, ${range.min}/${range.short}/${range.medium}/${range.long})`;
+        const siegeMode = piece
+            ? `Siege Mode ${pieceName} artillery (${piece.heat} heat, ${piece.damage} damage, ${piece.range.maxMapSheets} mapsheets)`
+            : "Siege Mode artillery";
+        notes.push(`${pieceName} / AC/${gun.damage} combo: ${vehicleMode}; ${siegeMode}`);
+        const code = gun.alphaStrike?.specialAbility?.find((special) => special.startsWith("ART"));
+        if (code) alphaStrike.push(`Alpha Strike: ${code} in Siege Mode only; Siege Mode Move 0"`);
+    }
+    notes.push("Transforms in the Movement Phase; the combo gun cannot fire that turn", ...alphaStrike);
+    return notes;
 }

@@ -1,5 +1,6 @@
 import React, { type JSX } from 'react';
 import Vehicle, { formatVehicleASDamage } from '../../classes/vehicle';
+import { getArtVeeNotes } from '../../classes/vehicle-artvee';
 import VehicleDiagramSVG from './svg/vehicle-diagram-svg';
 import { SUPPORT_VEHICLE_CHASSIS_MODIFICATIONS, SUPPORT_VEHICLE_FIRE_CONTROL } from '../../data/support-vehicle-construction';
 
@@ -17,8 +18,8 @@ export default class VehicleRecordSheet extends React.Component<IVehicleRecordSh
             <div className="print-page">
                 <h2>{`${vehicle.getModel()} ${vehicle.getName()}`.trim() || (support ? "Support Vehicle" : "Combat Vehicle")}</h2>
                 <p>
-                    <strong>{vehicle.isOmni() ? "Omni " : ""}{vehicle.getMotiveType().name}{support ? " Support Vehicle" : ""}</strong> - {vehicle.getTonnage()} tons &nbsp;|&nbsp;
-                    Cruise {vehicle.getCruiseMP()} / Flank {vehicle.getFlankMP()}{vehicle.getJumpMP() > 0 ? ` / Jump ${vehicle.getJumpMP()}` : ""} &nbsp;|&nbsp;
+                    <strong>{vehicle.isOmni() ? "Omni " : ""}{vehicle.getMotiveType().name}{support ? " Support Vehicle" : ""}{vehicle.isArtVee() ? " ArtVee (MAP)" : ""}</strong> - {vehicle.getTonnage()} tons &nbsp;|&nbsp;
+                    Cruise {vehicle.getCruiseMP()} / Flank {vehicle.getFlankMP()}{vehicle.getJumpMP() > 0 ? ` / Jump ${vehicle.getJumpMP()}` : ""}{vehicle.isArtVee() ? ", Siege 0/0" : ""} &nbsp;|&nbsp;
                     Crew {vehicle.getCrew()} &nbsp;|&nbsp; Heat Sinks {vehicle.getTotalHeatSinks()} &nbsp;|&nbsp;
                     Armor: {support ? `BAR ${support.bar} (Tech ${support.armorTechRating.toUpperCase()})` : vehicle.getArmorDescription()} &nbsp;|&nbsp;
                     BV {vehicle.getBattleValue()} &nbsp;|&nbsp; {vehicle.getCBillCost().toLocaleString()} C-Bills &nbsp;|&nbsp;
@@ -37,6 +38,7 @@ export default class VehicleRecordSheet extends React.Component<IVehicleRecordSh
                     </p>
                 ) : null}
                 {vehicle.getFrankenVehicleNotes().map((note) => <p key={note} className="smaller-text">{note}</p>)}
+                {getArtVeeNotes(vehicle).map((note) => <p key={note} className="smaller-text" data-testid="artvee-note">{note}</p>)}
 
                 <VehicleDiagramSVG
                     motive={vehicle.getMotiveType()}
@@ -78,7 +80,7 @@ export default class VehicleRecordSheet extends React.Component<IVehicleRecordSh
                 <table className="table">
                     <tbody>
                         <tr><td>Size / TMM</td><td>{as.size} / {as.tmm}</td></tr>
-                        <tr><td>Movement</td><td>{as.movement}"{as.movementType}{as.jumpMovement ? ` / ${as.jumpMovement}"j` : ""}</td></tr>
+                        <tr><td>Movement</td><td>{as.movement}"{as.movementType}{as.jumpMovement ? ` / ${as.jumpMovement}"j` : ""}{vehicle.isArtVee() ? ` (Siege Mode 0")` : ""}</td></tr>
                         <tr><td>Damage (S/M/L)</td><td>{formatVehicleASDamage(as.damageValues.short)}/{formatVehicleASDamage(as.damageValues.medium)}/{formatVehicleASDamage(as.damageValues.long)}</td></tr>
                         {(as.arcs ?? []).map((arc) => (
                             <tr key={arc.name}><td>{arc.name} arc (S/M/L/E)</td><td>{[arc.damage.short, arc.damage.medium, arc.damage.long, arc.damage.extreme].map(formatVehicleASDamage).join("/")}</td></tr>
