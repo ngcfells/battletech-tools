@@ -2,6 +2,7 @@ import React, { type JSX } from 'react';
 import SmallCraft, { SMALL_CRAFT_CRITICAL_TRACKS } from '../../classes/small-craft';
 import { SMALL_CRAFT_ARCS, findTransportBayType, quartersTypes } from '../../data/small-craft-construction';
 import FighterDiagramSVG from './svg/fighter-diagram-svg';
+import { QuirkSheetBlock, getUnitQuirkSheetLines, weaponQuirkSuffix } from './quirk-sheet-block';
 import SmallCraftAlphaStrikeCard from './small-craft-as-card';
 import { AerospaceHeatBlock, AerospaceInventoryTable, AerospaceVelocityRecord, aerospaceInventoryRows } from './aerospace-sheet-blocks';
 
@@ -23,6 +24,7 @@ export default class SmallCraftRecordSheet extends React.Component<ISmallCraftRe
 
     render = (): JSX.Element => {
         const craft = this.props.craft;
+        const quirkLines = getUnitQuirkSheetLines(craft.quirks, craft.getEquipmentList().map((item) => ({ uuid: item.uuid, label: item.name })), craft.getQuirkTargets().locations);
         const play = this.props.showDamage ? craft.getInPlay() : null;
         const pilot = craft.getPilot();
         const armor = craft.getArmorAllocation();
@@ -63,7 +65,7 @@ export default class SmallCraftRecordSheet extends React.Component<ISmallCraftRe
                     rows={aerospaceInventoryRows(
                         craft.getEquipmentList(),
                         (tag) => locations.find((location) => location.tag === tag)?.name ?? tag,
-                        (item) => (play && craft.isWeaponDestroyed(item.uuid ?? "") ? " (destroyed)" : ""),
+                        (item) => (play && craft.isWeaponDestroyed(item.uuid ?? "") ? " (destroyed)" : "") + weaponQuirkSuffix(quirkLines, item.uuid),
                     )}
                 />
                 {ammo.length ? <p><strong>Ammo</strong>: {ammo.join(", ")}</p> : null}
@@ -87,6 +89,8 @@ export default class SmallCraftRecordSheet extends React.Component<ISmallCraftRe
                         })}
                     </ul>
                 ) : <p>No transport bays.</p>}
+
+                <QuirkSheetBlock lines={quirkLines} />
 
                 <h3>Critical Damage</h3>
                 <p>

@@ -2,6 +2,7 @@ import React, { type JSX } from 'react';
 import BattleArmor, { BATTLE_ARMOR_LOCATION_NAMES } from '../../classes/battle-armor';
 import { findBattleArmorEquipment, findBattleArmorMineType } from '../../data/battle-armor-equipment';
 import { findInfantryWeapon } from '../../data/infantry-weapons';
+import { QuirkSheetBlock, getUnitQuirkSheetLines, weaponQuirkSuffix } from './quirk-sheet-block';
 
 // A battle armor record sheet (TechManual pp.172-173): the unit data, the weapons inventory with a line to count
 // missile shots, the Swarm / Leg / Mechanized boxes, and a row for each trooper: the gray trooper circle and a
@@ -9,6 +10,7 @@ import { findInfantryWeapon } from '../../data/infantry-weapons';
 export default class BattleArmorRecordSheet extends React.Component<IBattleArmorRecordSheetProps> {
     render = (): JSX.Element => {
         const suit = this.props.suit;
+        const quirkLines = getUnitQuirkSheetLines(suit.quirks, suit.getItems().map((entry) => ({ uuid: entry.uuid, label: findBattleArmorEquipment(entry.tag)?.name ?? entry.tag })), suit.getQuirkTargets().locations);
         const capabilities = suit.getCapabilities();
         const cell: React.CSSProperties = { border: "1px solid #000", padding: "0.15em 0.4em", textAlign: "left" };
         const circle = (filled: boolean): React.CSSProperties => ({
@@ -54,7 +56,7 @@ export default class BattleArmorRecordSheet extends React.Component<IBattleArmor
                                     <td style={cell}>
                                         {suit.isMixedTech() ? (equipment.techBase === "clan" ? "Clan " : "IS ") : ""}{equipment.name}
                                         {entry.squadSupport ? " (squad support weapon)" : ""}{entry.modular ? " (modular)" : ""}{entry.detachable ? " (detachable)" : ""}
-                                        {entry.trooper ? ` (trooper ${entry.trooper} only)` : ""}{equipment.mineDispenser ? ` (${findBattleArmorMineType(entry.mine).name} mines)` : ""}
+                                        {entry.trooper ? ` (trooper ${entry.trooper} only)` : ""}{equipment.mineDispenser ? ` (${findBattleArmorMineType(entry.mine).name} mines)` : ""}{weaponQuirkSuffix(quirkLines, entry.uuid)}
                                     </td>
                                     <td style={cell}>{BATTLE_ARMOR_LOCATION_NAMES[entry.location]}</td>
                                     <td style={cell}>{equipment.damage}</td>
@@ -82,6 +84,8 @@ export default class BattleArmorRecordSheet extends React.Component<IBattleArmor
                     {box(capabilities.swarm, "Swarm")}{box(capabilities.leg, "Leg")}{box(capabilities.mechanized, "Mechanized")}
                     {suit.isQuad() ? null : <>&nbsp; <strong>Manipulators</strong>: {suit.getManipulator("la").name} (left), {suit.getManipulator("ra").name} (right)</>}
                 </p>
+
+                <QuirkSheetBlock lines={quirkLines} />
 
                 <table style={{ borderCollapse: "collapse" }} data-testid="battle-armor-sheet-troopers">
                     <tbody>

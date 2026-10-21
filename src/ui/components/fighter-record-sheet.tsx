@@ -3,6 +3,7 @@ import AerospaceFighter, { FIGHTER_LOCATIONS, formatFighterASDamage } from '../.
 import { AEROSPACE_FIGHTER_CRITICAL_BLOCK } from '../../data/aerospace-record-sheet';
 import { AerospaceCriticalBlock, AerospaceHeatBlock, AerospaceInventoryTable, AerospacePilotBlock, AerospaceVelocityRecord, aerospaceInventoryRows } from './aerospace-sheet-blocks';
 import FighterDiagramSVG from './svg/fighter-diagram-svg';
+import { QuirkSheetBlock, getUnitQuirkSheetLines, weaponQuirkSuffix } from './quirk-sheet-block';
 import { SUPPORT_VEHICLE_CHASSIS_MODIFICATIONS, SUPPORT_VEHICLE_FIRE_CONTROL } from '../../data/support-vehicle-construction';
 
 // A fighter record sheet after TechManual's Aerospace and Conventional Fighter Record Sheets (TM pp.336-337): fighter
@@ -13,6 +14,7 @@ import { SUPPORT_VEHICLE_CHASSIS_MODIFICATIONS, SUPPORT_VEHICLE_FIRE_CONTROL } f
 export default class FighterRecordSheet extends React.Component<IFighterRecordSheetProps> {
     render = (): JSX.Element => {
         const fighter = this.props.fighter;
+        const quirkLines = getUnitQuirkSheetLines(fighter.quirks, fighter.getEquipmentList().map((item) => ({ uuid: item.uuid, label: item.name })), fighter.getQuirkTargets().locations);
         const as = fighter.getAlphaStrikeStats();
         const stores = fighter.getExternalStores();
         const play = this.props.showDamage ? fighter.getInPlay() : null;
@@ -70,7 +72,7 @@ export default class FighterRecordSheet extends React.Component<IFighterRecordSh
                     rows={aerospaceInventoryRows(
                         fighter.getEquipmentList(),
                         (tag) => FIGHTER_LOCATIONS.find((location) => location.tag === tag)?.name ?? tag,
-                        (item) => (fighter.isPodMounted(item.uuid ?? "") ? " (pod)" : "") + (play && fighter.isWeaponDestroyed(item.uuid ?? "") ? " (destroyed)" : ""),
+                        (item) => (fighter.isPodMounted(item.uuid ?? "") ? " (pod)" : "") + (play && fighter.isWeaponDestroyed(item.uuid ?? "") ? " (destroyed)" : "") + weaponQuirkSuffix(quirkLines, item.uuid),
                     )}
                 />
                 {ammo.length ? <p><strong>Ammo</strong>: {ammo.join(", ")}</p> : null}
@@ -82,6 +84,8 @@ export default class FighterRecordSheet extends React.Component<IFighterRecordSh
 
                 <AerospacePilotBlock name={this.props.showPilot ? pilot.name : undefined} gunnery={this.props.showPilot ? pilot.gunnery : undefined}
                     piloting={this.props.showPilot ? pilot.piloting : undefined} hits={play?.pilotHits ?? 0} />
+
+                <QuirkSheetBlock lines={quirkLines} />
 
                 <h3>Critical Damage</h3>
                 <AerospaceCriticalBlock testId="fighter-sheet-criticals" tracks={AEROSPACE_FIGHTER_CRITICAL_BLOCK.map((track) => ({ ...track, filled: criticalHits(track.name) }))} />

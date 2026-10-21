@@ -2,6 +2,7 @@ import React, { type JSX } from 'react';
 import Vehicle, { formatVehicleASDamage } from '../../classes/vehicle';
 import { getArtVeeNotes } from '../../classes/vehicle-artvee';
 import VehicleDiagramSVG from './svg/vehicle-diagram-svg';
+import { QuirkSheetBlock, getUnitQuirkSheetLines, weaponQuirkSuffix } from './quirk-sheet-block';
 import { SUPPORT_VEHICLE_CHASSIS_MODIFICATIONS, SUPPORT_VEHICLE_FIRE_CONTROL } from '../../data/support-vehicle-construction';
 
 // A Combat or Support Vehicle record sheet: summary line, armor diagram, equipment by location and the
@@ -9,6 +10,7 @@ import { SUPPORT_VEHICLE_CHASSIS_MODIFICATIONS, SUPPORT_VEHICLE_FIRE_CONTROL } f
 export default class VehicleRecordSheet extends React.Component<IVehicleRecordSheetProps> {
     render = (): JSX.Element => {
         const vehicle = this.props.vehicle;
+        const quirkLines = getUnitQuirkSheetLines(vehicle.quirks, vehicle.getEquipmentList().map((item) => ({ uuid: item.uuid, label: item.name })), vehicle.getQuirkTargets().locations);
         const as = vehicle.getAlphaStrikeStats();
         const equipmentByLocation = (location: string) => vehicle.getEquipmentList().filter((item) => (item.location || "") === location);
         const pilot = vehicle.getPilot();
@@ -58,12 +60,12 @@ export default class VehicleRecordSheet extends React.Component<IVehicleRecordSh
                         {vehicle.getLocations().filter((loc) => loc.tag !== "rotor").map((loc) => (
                             <tr key={loc.tag}>
                                 <td>{loc.name}{vehicle.hasSponsonTurrets() && /left|right/i.test(loc.tag) ? " (sponson)" : ""}</td>
-                                <td>{equipmentByLocation(loc.tag).map((item) => `${item.name}${item.pintle ? " (pintle)" : ""}`).join(", ") || "-"}</td>
+                                <td>{equipmentByLocation(loc.tag).map((item) => `${item.name}${item.pintle ? " (pintle)" : ""}${weaponQuirkSuffix(quirkLines, item.uuid)}`).join(", ") || "-"}</td>
                             </tr>
                         ))}
                         <tr>
                             <td>Unallocated</td>
-                            <td>{equipmentByLocation("").map((item) => item.name).join(", ") || "-"}</td>
+                            <td>{equipmentByLocation("").map((item) => item.name + weaponQuirkSuffix(quirkLines, item.uuid)).join(", ") || "-"}</td>
                         </tr>
                     </tbody>
                 </table>
@@ -75,6 +77,8 @@ export default class VehicleRecordSheet extends React.Component<IVehicleRecordSh
                         ].join(", ")}
                     </p>
                 ) : null}
+
+                <QuirkSheetBlock lines={quirkLines} />
 
                 <h3>Alpha Strike</h3>
                 <table className="table">

@@ -1,6 +1,7 @@
 import React, { type JSX } from 'react';
 import CapitalShip from '../../classes/capital-ship';
 import { ADVANCED_AEROSPACE_FACINGS } from '../../data/advanced-aerospace-construction';
+import { QuirkSheetBlock, getUnitQuirkSheetLines } from './quirk-sheet-block';
 import { ADVANCED_AEROSPACE_CREW_HITS, ADVANCED_AEROSPACE_CRITICAL_BLOCK } from '../../data/aerospace-record-sheet';
 import { AerospaceCriticalBlock, AerospaceInventoryTable, AerospacePilotBlock, AerospaceVelocityRecord, IAerospaceInventoryRow } from './aerospace-sheet-blocks';
 
@@ -20,6 +21,10 @@ export default class CapitalShipRecordSheet extends React.Component<ICapitalShip
 
     render = (): JSX.Element => {
         const ship = this.props.ship;
+        // Weapons print only in their bays, so the Quirks block names each quirked weapon and its arc.
+        const quirkLabel = (item: { name: string; location?: string }) => item.name + (item.location ? ` (${ship.getArcName(item.location as never)})` : "");
+        const quirkItems = ship.getEquipmentList().map((item) => ({ uuid: item.uuid, label: quirkLabel(item) }));
+        const quirkLines = getUnitQuirkSheetLines(ship.quirks, quirkItems, ship.getQuirkTargets().locations);
         const typeName = ship.getShipTypeName();
         const thresholds = ship.getDamageThresholds();
         const arcs = ship.getArcs();
@@ -61,6 +66,8 @@ export default class CapitalShipRecordSheet extends React.Component<ICapitalShip
                 <AerospaceInventoryTable rows={rows} capitalScale testId="cs-sheet-inventory" />
                 {ammo.length ? <p><strong>Ammo</strong>: {ammo.join(", ")}</p> : null}
                 {other.length ? <p><strong>Other equipment</strong>: {other.join(", ")}</p> : null}
+
+                <QuirkSheetBlock lines={quirkLines} weaponLabels={(uuid) => quirkItems.find((item) => item.uuid === uuid)?.label ?? uuid} />
 
                 <h3>Armor Diagram (capital scale)</h3>
                 {ADVANCED_AEROSPACE_FACINGS.map((facing) => (
