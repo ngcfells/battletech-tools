@@ -19,7 +19,8 @@ against infantry and fast raiders.
 - Rate them with a single blended BV, the way LAMs are rated.
 - Show both modes on the tabletop record sheet and on one Alpha Strike card.
 - Play them: mode flag, transformation turn and switching between the gun's two profiles.
-- Add the canon pieces the design depends on (artillery, Armored Motive System) at their canon levels.
+- Verify the canon artillery pieces (Thumper, Sniper, Long Tom: they already exist) and add the Armored Motive System
+  at its canon level.
 - Add the two *Future Wars* smoke devices as custom equipment.
 
 ## Non-goals and anti-goals
@@ -38,9 +39,13 @@ against infantry and fast raiders.
 
 ## Canon prerequisites (canon levels, all units)
 
-1. **Thumper, Sniper and Long Tom artillery** (TO:AUE p.96). Today the app has only Arrow IV and the three
-   Artillery *Cannons*. Figures from the TO:AUE tables (raw extract lines 22550-22552, 22639-22641, BV lines
-   19067-19069). **Check them against the page images before entering them.**
+1. **Thumper, Sniper and Long Tom artillery** (TO:AUE p.96): verify and clean up, not add. The three pieces
+   already exist in `src/data/mech-universal-equipment.ts` (`thumper-artillery`, `sniper-artillery`,
+   `long-tom-artillery`) with standard ammunition in `mech-universal-ammo.ts` (`ammo-thumper-standard`,
+   `ammo-sniper-standard`, `ammo-long-tom-standard`). The cleanup (Task 1) sets the Thumper's heat to 6 and removes
+   two stray alternate names (the Sniper carried "Flamer (Vehicle)", the Long Tom carried "ISSniper"). Figures from
+   the TO:AUE tables (raw extract lines 22550-22552, 22639-22641, BV lines 19067-19069); the heat column is checked
+   against the Heavy Weapons and Equipment Combat Data table (printed p.215, which cites p.96 for the rules).
 
    | Piece | Heat | Damage | Range | Shots/t | Weight | Cost / ammo per ton | BV / ammo BV |
    | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -48,8 +53,9 @@ against infantry and fast raiders.
    | Sniper | 10 | 20 | 18 mapsheets | 10 | 20 t | 300,000 / 6,000 | 85 / 11 |
    | Long Tom | 20 | 25 | 30 mapsheets | 5 | 30 t | 450,000 / 10,000 | 368 / 46 |
 
-   A second BV list (Long Tom 560, Sniper 96, Thumper 48, lines 19300-19302) may be the Clan or another unit
-   type's table. Find out which before entering it.
+   The second BV list (Long Tom 560 / ammo 46, Sniper 96 / 11, Thumper 48 / 5, lines 19300-19302) is the Clan
+   Weapons and Equipment BV Table [Addendum] (cont.), TO:AUE p.197, so those are the Clan versions' BVs. It is not
+   entered anywhere.
 
    Game rules: Indirect Artillery (TO:AR p.147), Direct-Fire Artillery (TO:AR p.153), Counter-Battery Fire (TO:AR
    p.154). Check whether standard artillery ammunition already exists in the ammo catalogs (Copperhead and FASCAM
@@ -206,7 +212,8 @@ commit c959dbc8, so every record carries `techBase`). New records go straight in
 - `artillery-custom.ts`: the three combo guns.
 - `misc-custom.ts` (or whatever name the rework gives that category): Smoker and Buckler Smoke Dispenser.
 - `combat-vehicle-chassis-modifications-custom.ts`: ArtVee conversion equipment.
-- Canon artillery pieces: the existing canon artillery catalog (moved later by the rework).
+- Canon artillery pieces: already in `mech-universal-equipment.ts` and `mech-universal-ammo.ts` (cleaned up in Task 1;
+  moved later by the rework).
 - Armored Motive System: `combat-vehicle-chassis-modifications.ts` (canon).
 
 Register the new files in `equipment-registry.ts`, gated by rules level 6 (`tag: "custom"`). The local Astech rules

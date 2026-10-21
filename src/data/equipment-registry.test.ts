@@ -122,6 +122,14 @@ describe("equipment catalog provenance", () => {
         expect(getEquipmentMaximumRangeInHexes(catalogs.find(item => item.tag === "arrow-iv-system")!)).toBe(8 * 17);
     });
 
+    it("the canon artillery pieces carry TO:AUE p.96 heat and only their own names", () => {
+        const piece = (tag: string) => mechUniversalEquipment.find(item => item.tag === tag)!;
+
+        expect(piece("thumper-artillery").heat).toBe(6);
+        expect(piece("sniper-artillery").altNames).not.toContain("Flamer (Vehicle)");
+        expect(piece("long-tom-artillery").altNames).not.toContain("ISSniper");
+    });
+
     it("prefers explicit Alpha Strike specials over weapon type codes", () => {
         const thumper = mechUniversalEquipment.find(item => item.tag === "thumper-artillery")!;
 
