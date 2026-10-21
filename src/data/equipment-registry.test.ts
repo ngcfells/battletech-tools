@@ -126,6 +126,9 @@ describe("equipment catalog provenance", () => {
         const piece = (tag: string) => mechUniversalEquipment.find(item => item.tag === tag)!;
 
         expect(piece("thumper-artillery").heat).toBe(6);
+        expect(piece("thumper-artillery").heatAero).toBe(6);
+        expect(piece("sniper-artillery").altNames).toContain("ISSniper");
+        expect(piece("long-tom-artillery").altNames).toContain("ISLongTom");
         expect(piece("sniper-artillery").altNames).not.toContain("Flamer (Vehicle)");
         expect(piece("long-tom-artillery").altNames).not.toContain("ISSniper");
     });

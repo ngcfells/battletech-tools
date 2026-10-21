@@ -20,12 +20,16 @@ describe("custom records by tech base", () => {
         extinct: null,
         reintroduced: null
     });
+    const universal = (tag: string): IEquipmentItem => {
+        const item: IEquipmentItem = { ...fixture(tag, "is"), techBase: "universal" };
+        return item;
+    };
     const offered = (tech: string): string[] => {
         const vehicle = new Vehicle();
         vehicle.setTech(tech);
         return vehicle.getAvailableEquipment(true, 6)
             .map((item) => item.tag)
-            .filter((tag) => tag === "artvee-test-is" || tag === "artvee-test-clan");
+            .filter((tag) => tag === "artvee-test-is" || tag === "artvee-test-clan" || tag === "artvee-test-universal");
     };
 
     afterEach(() => setLocalCustomEquipment([]));
@@ -36,6 +40,15 @@ describe("custom records by tech base", () => {
         expect(offered("clan")).toEqual(["artvee-test-clan"]);
         expect(offered("mis").sort()).toEqual(["artvee-test-clan", "artvee-test-is"]);
         expect(offered("mclan").sort()).toEqual(["artvee-test-clan", "artvee-test-is"]);
+    });
+
+    it("offers an untagged or universal custom record to IS, Clan and mixed vehicles", () => {
+        setLocalCustomEquipment([universal("artvee-test-universal")]);
+        for (const tech of ["is", "clan", "mis", "mclan"]) expect(offered(tech), tech).toEqual(["artvee-test-universal"]);
+        const untagged = { ...universal("artvee-test-universal") } as Partial<IEquipmentItem>;
+        delete untagged.techBase;
+        setLocalCustomEquipment([untagged as IEquipmentItem]);
+        for (const tech of ["is", "clan", "mis", "mclan"]) expect(offered(tech), tech).toEqual(["artvee-test-universal"]);
     });
 });
 
@@ -228,6 +241,37 @@ describe("ArtVee construction", () => {
         expect(dropped.getImportIssues()).toContain("Dropped the ArtVee conversion: the vehicle is not a tracked Combat Vehicle");
     });
 
+    it("keeps the flag out of its era, with an issue naming the dates, and across export and import", () => {
+        const vehicle = thumperArtVee();
+        expect(getArtVeeIssues(vehicle)).toEqual([]);
+        vehicle.setEra("civil-war");
+        expect(vehicle.isArtVee()).toBe(true);
+        const issues = getArtVeeIssues(vehicle);
+        expect(issues).toHaveLength(1);
+        expect(issues[0]).toMatch(/^ArtVee Conversion Equipment: not available in this era \(Inner Sphere prototype 2690, introduced 2700, extinct 2865, reintroduced 3071\)$/);
+        const loaded = new Vehicle(JSON.stringify(vehicle.export()));
+        expect(loaded.isArtVee()).toBe(true);
+        expect(loaded.getImportIssues()).toEqual([]);
+        expect(getArtVeeIssues(loaded)).toEqual(issues);
+        loaded.setEra("jihad");
+        expect(getArtVeeIssues(loaded)).toEqual([]);
+    });
+
+    it("cannot be an OmniVehicle, and an ArtVee save carrying Omni loses the pods with an issue", () => {
+        const vehicle = thumperArtVee();
+        expect(vehicle.setOmni(true)).toBe(false);
+        expect(vehicle.isOmni()).toBe(false);
+        const saved = JSON.parse(JSON.stringify(vehicle.export()));
+        saved.omni = true;
+        saved.equipment.forEach((entry: { pod?: boolean }) => { entry.pod = true; });
+        const loaded = new Vehicle(JSON.stringify(saved));
+        expect(loaded.isArtVee()).toBe(true);
+        expect(loaded.isOmni()).toBe(false);
+        expect(loaded.getImportIssues()).toContain("Dropped OmniVehicle pods: an ArtVee is not an OmniVehicle");
+        const ordinary = plain();
+        expect(ordinary.setOmni(true)).toBe(true);
+    });
+
     describe("play", () => {
         const withLaser = (): Vehicle => {
             const vehicle = thumperArtVee();
@@ -262,6 +306,11 @@ describe("ArtVee construction", () => {
             expect(vehicle.getEffectiveFlankMP()).toBe(0);
             expect(vehicle.isImmobile()).toBe(false);
             expect(vehicle.getTargetMovementModifier()).toBe(0);
+            // It is stationary whatever movement mode is picked.
+            vehicle.setMovement("cruise", 3);
+            expect(vehicle.getAttackerMovementModifier()).toBe(0);
+            vehicle.setMovement("flank", 4);
+            expect(vehicle.getAttackerMovementModifier()).toBe(0);
             // The turret still turns through 360 degrees.
             expect(vehicle.canRotateTurret("turret")).toBe(true);
             expect(vehicle.setTurretFacing("turret", 3)).toBe(true);

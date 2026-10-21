@@ -510,11 +510,13 @@ export default class VehicleCreatorStep1 extends React.Component<IStep1Props, IS
                                     <p className="smaller-text">{vehicle.getEra().description}</p>
                                 ) : null}
 
-                                <InputCheckbox
-                                    label="OmniVehicle (one base chassis; weapons and equipment may be pod-mounted; cost x 1.25, TM pp. 97, 285)"
-                                    checked={vehicle.isOmni()}
-                                    onChange={this.updateOmni}
-                                />
+                                {vehicle.isArtVee() ? null : (
+                                    <InputCheckbox
+                                        label="OmniVehicle (one base chassis; weapons and equipment may be pod-mounted; cost x 1.25, TM pp. 97, 285)"
+                                        checked={vehicle.isOmni()}
+                                        onChange={this.updateOmni}
+                                    />
+                                )}
                                 {vehicle.isLargeNavalVessel() ? (
                                     <InputNumeric
                                         label={`Turrets (Template ${vehicle.getLargeVesselTemplate()?.template}: up to ${vehicle.getMaxTurrets()}, one per hex of length; TO:AUE p.60)`}
@@ -655,12 +657,18 @@ export default class VehicleCreatorStep1 extends React.Component<IStep1Props, IS
                                             <p key={warning} className="smaller-text" data-testid="artvee-warning">{warning}</p>
                                         ))}
                                     </fieldset>
+                                ) : getArtVeeIssues(vehicle).length > 0 ? (
+                                    <div data-testid="artvee-orphan-issues">
+                                        {getArtVeeIssues(vehicle).map((issue) => (
+                                            <p key={issue} className="smaller-text color-red" data-testid="artvee-issue">{issue}</p>
+                                        ))}
+                                    </div>
                                 ) : null}
 
                                 {vehicle.getRequiredRulesLevel() > rulesLevel ? (
                                     <p className="color-red smaller-text">
                                         This design needs the {getRulesLevelOptions().find((option) => option.id === vehicle.getRequiredRulesLevel())?.name} rules
-                                        level{vehicle.isSuperheavy() && !support ? " (Superheavy vehicle)" : ""}{vehicle.hasChinTurret() ? " (chin turret)" : ""}{vehicle.getJumpMP() > 0 ? " (jump jets)" : ""}{vehicle.hasDualTurret() ? " (dual turrets)" : ""}{vehicle.hasSponsonTurrets() ? " (sponson turrets)" : ""}{vehicle.isFrankenVehicle() ? " (FrankenVehicle)" : ""}{vehicle.getRoboticControl().tag !== "none" ? " (robotic control)" : ""} and
+                                        level{vehicle.isSuperheavy() && !support ? " (Superheavy vehicle)" : ""}{vehicle.hasChinTurret() ? " (chin turret)" : ""}{vehicle.getJumpMP() > 0 ? " (jump jets)" : ""}{vehicle.hasDualTurret() ? " (dual turrets)" : ""}{vehicle.hasSponsonTurrets() ? " (sponson turrets)" : ""}{vehicle.isFrankenVehicle() ? " (FrankenVehicle)" : ""}{vehicle.isArtVee() ? " (ArtVee)" : ""}{vehicle.getRoboticControl().tag !== "none" ? " (robotic control)" : ""} and
                                         is not legal at the selected level. Printing will ask for confirmation.
                                     </p>
                                 ) : null}

@@ -23,6 +23,9 @@ describe("Future Wars #32 smoke devices (Custom Homebrew)", () => {
         expect(smoker.weight).toBe(0.5);
         expect(smoker.heat).toBe(3);
         expect(smoker.space.combatVehicle).toBe(1);
+        // Future Wars #32 prints no 'Mech slot count, so it is not offered to 'Mechs.
+        expect(smoker.space.battlemech).toBe(-1);
+        expect(smoker.notes).toMatch(/not mountable on 'Mechs until a slot count is known/);
         expect(fuel.roundsPerTon).toBe(50);
         expect(getCompatibleAmmo(smoker, fuel)).toBe(true);
         expect(getWeaponShotsPerTon(smoker, fuel)).toBe(50);

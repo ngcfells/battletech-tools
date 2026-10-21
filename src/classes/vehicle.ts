@@ -1282,7 +1282,6 @@ export default class Vehicle {
         return this.getFrankenVehicle();
     }
 
-    /** Keeps a FrankenVehicle legal after the chassis changes: no turret, no FrankenVehicle; no donor heavier than the chassis. */
     /** Drops chassis modifications the motive type can no longer take, and all of them on a Support Vehicle. */
     private _pruneChassisModifications(): void {
         this._chassisModifications = this._support ? [] : this._chassisModifications
@@ -1378,6 +1377,11 @@ export default class Vehicle {
         return null;
     }
 
+    /** True when the conversion equipment is destroyed or the crew is killed, which strands a pending transformation. */
+    public getArtVeeTransformationBlockedByDamage(): boolean {
+        return this._artVee && (!!this._inPlay.artVeeConversionDestroyed || !!this._inPlay.criticals.crewKilled);
+    }
+
     /** Declares a transformation in the Movement Phase (LAM timing). Null on success, otherwise the reason it can't. */
     public startArtVeeTransformation(): string | null {
         const block = this.getArtVeeTransformationBlock();
@@ -1410,13 +1414,30 @@ export default class Vehicle {
         if (!artVee) {
             this._artVee = false;
         } else if (!this._artVee && this.canBeArtVee(rulesLevel)) {
-            this._omni = false;
-            this._podUUIDs.clear();
-            this._hasTurret = true;
-            this._artVee = true;
+            this._makeArtVee();
         }
         this._calc();
         return this._artVee;
+    }
+
+    private _makeArtVee(): void {
+        this._omni = false;
+        this._podUUIDs.clear();
+        this._hasTurret = true;
+        this._artVee = true;
+    }
+
+    /** Why an ArtVee's conversion equipment is out of date in the vehicle's era, with the dates; null when it is in date or the vehicle is no ArtVee. */
+    public getArtVeeEraIssue(): string | null {
+        if (!this._artVee || this._sidedDatesInEra(ARTVEE_CONVERSION_EQUIPMENT.dates, CUSTOM_HOMEBREW_RULES_LEVEL)) return null;
+        const techTag = this._tech.tag;
+        const describe = (side: string, dates: ITechDates): string =>
+            `${side} prototype ${dates.prototype ?? "none"}, introduced ${dates.introduced ?? "none"}, extinct ${dates.extinct ?? "never"}, reintroduced ${dates.reintroduced ?? "never"}`;
+        const sides = [
+            ...(["is", "mis", "mclan"].includes(techTag) ? [describe("Inner Sphere", ARTVEE_CONVERSION_EQUIPMENT.dates.is)] : []),
+            ...(["clan", "mis", "mclan"].includes(techTag) ? [describe("Clan", ARTVEE_CONVERSION_EQUIPMENT.dates.clan)] : []),
+        ];
+        return `${ARTVEE_CONVERSION_EQUIPMENT.name}: not available in this era (${sides.join("; ")})`;
     }
 
     /** The conversion equipment: a tenth of the tonnage, rounded up to the half ton; 0 on an ordinary vehicle. */
@@ -2549,7 +2570,8 @@ export default class Vehicle {
 
     public setOmni(omni: boolean): boolean {
         // A FrankenVehicle is not an OmniVehicle, as a FrankenMech is not an OmniMech (CO p.213).
-        this._omni = omni === true && !this._frankenVehicle;
+        // An ArtVee is not an OmniVehicle either.
+        this._omni = omni === true && !this._frankenVehicle && !this._artVee;
         if (!this._omni) this._podUUIDs.clear();
         this._calc();
         return this._omni;
@@ -4635,6 +4657,8 @@ export default class Vehicle {
 
     /** Attacker movement modifier: stationary 0, cruise +1, flank +2, jump +3 (TW). */
     public getAttackerMovementModifier(): number {
+        // Siege Mode has 0 MP: the unit is stationary whatever mode is set.
+        if (this.getArtVeeMode() === "siege") return 0;
         switch (this._inPlay.movementMode) {
             case "cruise": return 1;
             case "flank": return 2;
@@ -4962,9 +4986,15 @@ export default class Vehicle {
                 }
             }
             // ArtVee: restored once the motive and equipment are loaded; a vehicle that cannot be one loads as ordinary.
+            // The era is not checked here: an out-of-era ArtVee keeps the flag and shows an era issue.
             this._artVee = false;
-            if (importObject.artVee === true && !this.setArtVee(true)) {
-                issue("Dropped the ArtVee conversion: the vehicle is not a tracked Combat Vehicle");
+            if (importObject.artVee === true) {
+                if (!this._isArtVeeChassis()) {
+                    issue("Dropped the ArtVee conversion: the vehicle is not a tracked Combat Vehicle");
+                } else {
+                    if (this._omni) issue("Dropped OmniVehicle pods: an ArtVee is not an OmniVehicle");
+                    this._makeArtVee();
+                }
             }
             // A saved design keeps the accounting it was saved with, battle armor items or not.
             this._hadBattleArmorEquipment = this.defaultsToFractionalAccounting();

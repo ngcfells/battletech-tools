@@ -37,6 +37,8 @@ export function getArtVeeIssues(vehicle: Vehicle): string[] {
         return guns.map((gun) => `${gun.name} is an ArtVee combo gun, but the vehicle is not an ArtVee`);
     }
     const issues: string[] = [];
+    const eraIssue = vehicle.getArtVeeEraIssue();
+    if (eraIssue) issues.push(eraIssue);
     if (!ENGINES.includes(vehicle.getEngineType().tag)) issues.push("ArtVee needs an XL or XXL engine");
     if (getArtVeeVariant(vehicle) === "long-tom") {
         if (vehicle.getCruiseMP() < 3) issues.push("ArtVee with a Long Tom combo gun needs at least 3 Cruising MP");

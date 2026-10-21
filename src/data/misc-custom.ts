@@ -4,7 +4,7 @@ import { IEquipmentItem } from "./data-interfaces";
  * Custom Homebrew equipment from the fan magazine Future Wars #32. Both devices are in the one catalog because
  * they are not canon: neither appears in any published rulebook.
  *
- * Cost, Battle Value, dates and 'Mech critical slots are not printed for either device, so they are left at the
+ * Cost, Battle Value, dates and 'Mech critical slots are not printed for either device (the Smoker is not offered to 'Mechs for want of a slot count), so they are left at the
  * neutral values used for unknown data in custom records (0 cost and BV, no dates, availability in every era) and
  * the notes say so. Vehicle slots are 1 each (a builder decision; the magazine gives the Buckler's "1 Critical").
  */
@@ -17,10 +17,10 @@ export const miscCustom: IEquipmentItem[] = [
         notes: "Smoke generator. While it runs, the 'Mech leaves a trail of smoke behind and around its movement path, reducing visibility. "
             + "Each ton of fuel (ammo-custom-smoker-fuel) provides 50 hexes of level 2 smoke. It generates three heat points every turn it is used. "
             + "A hit to the fuel results in a small fire, doing 5 points of damage and generating 10 points of heat (Future Wars #32, 'New Toys for Techs', printed p.9). "
-            + notPrinted("cost", "Battle Value", "dates", "'Mech critical slots"),
+            + notPrinted("cost", "Battle Value", "dates", "'Mech critical slots") + " It is not mountable on 'Mechs until a slot count is known.",
         damage: 0, damageAero: 0, accuracyModifier: 0, cbills: 0, introduced: 0, extinct: null, reintroduced: null,
         battleValue: 0, heat: 3, heatAero: 3, weight: 0.5,
-        range: { min: 0, short: 0, medium: 0, long: 0 }, space: { battlemech: 1, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: -1, smallCraft: -1, dropShip: -1 },
+        range: { min: 0, short: 0, medium: 0, long: 0 }, space: { battlemech: -1, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: -1, smallCraft: -1, dropShip: -1 },
         ammoTypes: ["ammo-custom-smoker-fuel"], shotsPerTon: 50, minAmmoTons: 1, explosive: false, weaponType: [], techRating: "x", book: "Future Wars #32", page: 9, rulesLevel: 6,
         alphaStrike: { heat: 0, rangeShort: 0, rangeMedium: 0, rangeLong: 0, rangeExtreme: 0, tc: false, notes: ["Custom equipment: no Alpha Strike effect"] }
     },

@@ -72,7 +72,7 @@ against infantry and fast raiders.
    - Alpha Strike: `ARS` already exists (ASCE p.76).
    - The existing `ICombatVehicleChassisModification` type takes weight as `tonnage / weightDivisor`, and 15% is not
      a divisor, so the type needs a weight-fraction field.
-3. **AS special `ART%-#`** already exists. The ArtVee uses ARTT, ARTS and ARTLT.
+3. **AS special `ART%-#`** already exists. The ArtVee uses ARTTH, ARTSN and ARTLT.
 
 ## The combo gun (custom)
 
@@ -183,7 +183,7 @@ design in 3071.
 - **Tabletop record sheet:** both mode lines (MP: "4/6 Vehicle, 0/0 Siege"), the combo gun with both profiles,
   both ammo bins, conversion equipment in its slots, "ArtVee (MAP)" in the type line.
 - **One Alpha Strike card** showing both modes. Movement shows Vehicle Mode with a Siege 0" note. S/M/L damage
-  comes from Vehicle Mode weapons, and the Siege Mode artillery shows as `ARTT-1` / `ARTS-1` / `ARTLT-1`, marked
+  comes from Vehicle Mode weapons, and the Siege Mode artillery shows as `ARTTH-1` / `ARTSN-1` / `ARTLT-1`, marked
   Siege Mode only. `ARS` is added if Armored Motive is mounted. PV comes from the computed conversion, which stays
   marked provisional (custom unit).
 

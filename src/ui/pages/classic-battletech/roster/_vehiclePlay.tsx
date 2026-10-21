@@ -222,7 +222,7 @@ export default class VehiclePlayPanel extends React.Component<IVehiclePlayPanelP
             <div className="d-block" data-testid="vehicle-artvee">
                 <strong>Mode</strong>:{" "}
                 <span className="badge" data-testid="vehicle-artvee-mode">{mode === "siege" ? "Siege Mode" : "Vehicle Mode"}</span>
-                {inPlay.artVeeTransformingTo ? <span data-testid="vehicle-artvee-transforming"> (transforming to {inPlay.artVeeTransformingTo === "siege" ? "Siege" : "Vehicle"} Mode at the end of the turn)</span> : null}
+                {inPlay.artVeeTransformingTo && !vehicle.getArtVeeTransformationBlockedByDamage() ? <span data-testid="vehicle-artvee-transforming"> (transforming to {inPlay.artVeeTransformingTo === "siege" ? "Siege" : "Vehicle"} Mode at the end of the turn)</span> : null}
                 <div>
                     <button
                         type="button"
@@ -297,8 +297,9 @@ export default class VehiclePlayPanel extends React.Component<IVehiclePlayPanelP
             { mode: "stationary", label: "Stationary", mp: 0 },
             { mode: "cruise", label: "Cruise", mp: vehicle.getEffectiveCruiseMP() },
         ];
-        if (!vehicle.isCruiseOnly()) movementModes.push({ mode: "flank", label: "Flank", mp: vehicle.getEffectiveFlankMP() });
-        if (vehicle.getEffectiveJumpMP() > 0) movementModes.push({ mode: "jump", label: "Jump", mp: vehicle.getEffectiveJumpMP() });
+        if (vehicle.getArtVeeMode() === "siege") movementModes.splice(1);
+        else if (!vehicle.isCruiseOnly()) movementModes.push({ mode: "flank", label: "Flank", mp: vehicle.getEffectiveFlankMP() });
+        if (vehicle.getEffectiveJumpMP() > 0 && vehicle.getArtVeeMode() !== "siege") movementModes.push({ mode: "jump", label: "Jump", mp: vehicle.getEffectiveJumpMP() });
         const maxHexes = movementModes.find((m) => m.mode === inPlay.movementMode)?.mp ?? 0;
         const cannotFire = vehicle.getCannotFireReason();
         const pending = this.state.pendingRoll;
