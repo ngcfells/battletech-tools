@@ -1,5 +1,7 @@
 import { IEquipmentItem } from "./data-interfaces";
-import { mechISAmmo } from "./mech-is-ammo";
+import { ammoCatalog } from "./ammo";
+
+const isAmmoList = ammoCatalog.filter((item) => item.techBase === "is");
 
 /* Custom Homebrew ammunition: fuel for the Smoker (Future Wars #32, see misc-custom.ts) and the Clan ArtVee breech rounds. */
 
@@ -9,7 +11,7 @@ import { mechISAmmo } from "./mech-is-ammo";
  * from the canon Inner Sphere standard AC ammunition record; only the identity, tech base and dates differ.
  */
 const clanBreechAmmo = (ac: "5" | "10" | "20"): IEquipmentItem => {
-    const canon = mechISAmmo.find((item) => item.tag === `ammo-is-ac-${ac}-standard`);
+    const canon = isAmmoList.find((item) => item.tag === `ammo-is-ac-${ac}-standard`);
     if (!canon) throw new Error(`Clan breech ammo: canon record ammo-is-ac-${ac}-standard not found`);
     return {
         isAmmo: true,

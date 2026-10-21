@@ -14,9 +14,7 @@ import { mechCustomAmmo } from "./mech-custom-ammo";
 import { artilleryCustom } from "./artillery-custom";
 import { miscCustom } from "./misc-custom";
 import { ammoCustom } from "./ammo-custom";
-import { mechISAmmo } from "./mech-is-ammo";
-import { mechClanAmmo } from "./mech-clan-ammo";
-import { mechUniversalAmmo } from "./mech-universal-ammo";
+import { ammoCatalog } from "./ammo";
 import { isUniversalEquipment } from "./universal-equipment";
 import { APOCRYPHAL_RULES_LEVEL, CUSTOM_HOMEBREW_RULES_LEVEL, EXPERIMENTAL_RULES_LEVEL, MUNCHKIN_RULES_LEVEL } from "./rules-level-options";
 import { getBattleArmorScaleEquipment } from "./battle-armor-scale-equipment";
@@ -53,8 +51,7 @@ const equipmentCatalogDefinitions: IEquipmentCatalogDefinition[] = [
     { id: "equipment-missile", exportName: "equipmentMissile", category: "missile", equipment: equipmentMissile },
     { id: "equipment-misc", exportName: "equipmentMisc", category: "misc", equipment: equipmentMisc },
     { id: "equipment-artillery", exportName: "equipmentArtillery", category: "artillery", equipment: equipmentArtillery },
-    { id: "mech-is-ammo", exportName: "mechISAmmo", category: "ammunition", equipment: mechISAmmo },
-    { id: "mech-clan-ammo", exportName: "mechClanAmmo", category: "ammunition", equipment: mechClanAmmo },
+    { id: "ammo", exportName: "ammoCatalog", category: "ammunition", equipment: ammoCatalog },
     { id: "mech-custom-equipment-weapons-ballistic", exportName: "mechCustomEquipmentBallistic", custom: true, category: "ballistic", equipment: mechCustomEquipmentBallistic },
     { id: "mech-custom-equipment-weapons-energy", exportName: "mechCustomEquipmentEnergy", custom: true, category: "energy", equipment: mechCustomEquipmentEnergy },
     { id: "mech-custom-equipment-weapons-missile", exportName: "mechCustomEquipmentMissile", custom: true, category: "missile", equipment: mechCustomEquipmentMissile },
@@ -63,7 +60,6 @@ const equipmentCatalogDefinitions: IEquipmentCatalogDefinition[] = [
     { id: "misc-custom", exportName: "miscCustom", custom: true, category: "misc", equipment: miscCustom },
     { id: "mech-custom-ammo", exportName: "mechCustomAmmo", custom: true, category: "ammunition", equipment: mechCustomAmmo },
     { id: "ammo-custom", exportName: "ammoCustom", custom: true, category: "ammunition", equipment: ammoCustom },
-    { id: "mech-universal-ammo", exportName: "mechUniversalAmmo", category: "ammunition", equipment: mechUniversalAmmo },
 ];
 
 function cloneEquipment(items: IEquipmentItem[]): IEquipmentItem[] {

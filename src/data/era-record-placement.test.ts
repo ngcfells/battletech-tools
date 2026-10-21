@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { getStarLeagueCarryOverDates, parseTechYear } from "./equipment-registry";
 import { getEraForYear } from "./era-options";
-import { mechClanAmmo } from "./mech-clan-ammo";
 import { mechCustomEquipmentBallistic } from "./mech-custom-equipment-weapons-ballistic";
 import { mechCustomEquipmentEnergy } from "./mech-custom-equipment-weapons-energy";
 import { mechCustomEquipmentMisc } from "./mech-custom-equipment-weapons-misc";
@@ -9,9 +8,12 @@ import { mechHeatSinkTypes } from "./mech-heat-sink-types";
 import { mechInternalStructureTypes } from "./mech-internal-structure-types";
 import { equipmentArtillery } from "./equipment-artillery";
 import { equipmentEnergy } from "./equipment-energy";
-import { mechISAmmo } from "./mech-is-ammo";
+import { ammoCatalog } from "./ammo";
 import { equipmentMisc } from "./equipment-misc";
-import { mechUniversalAmmo } from "./mech-universal-ammo";
+
+const isAmmoList = ammoCatalog.filter((item) => item.techBase === "is");
+const clanAmmoList = ammoCatalog.filter((item) => item.techBase === "clan");
+const universalAmmoList = ammoCatalog.filter((item) => item.techBase === "universal");
 
 const isArtilleryList = equipmentArtillery.filter((item) => item.techBase === "is");
 const clanArtilleryList = equipmentArtillery.filter((item) => item.techBase === "clan");
@@ -27,8 +29,8 @@ const hasTag = (list: { tag: string }[], tag: string) => list.some((item) => ite
 describe("records whose IS and Clan dates differ are not universal", () => {
     it("keeps Listen-Kill ammo Inner Sphere only (IO p.62: IS, prototype 3037, extinct 3040)", () => {
         for (const launcher of ["lrm", "srm"]) {
-            expect(hasTag(mechUniversalAmmo, `ammo-${launcher}-listen-kill`)).toBe(false);
-            const ammo = mechISAmmo.find((item) => item.tag === `ammo-is-${launcher}-listen-kill`)!;
+            expect(hasTag(universalAmmoList, `ammo-${launcher}-listen-kill`)).toBe(false);
+            const ammo = isAmmoList.find((item) => item.tag === `ammo-is-${launcher}-listen-kill`)!;
             expect(ammo.altTags).toContain(`ammo-${launcher}-listen-kill`);
             expect(ammo).toMatchObject({ introduced: null, prototype: 3037, extinct: 3040 });
         }
@@ -60,11 +62,11 @@ describe("artillery cannons split by side (TO:AUE pp.97, 217; IO:AE p.31)", () =
 
     it("keeps one universal shell record per cannon, answering to the old per-side tags", () => {
         for (const gun of ["long-tom", "sniper", "thumper"]) {
-            const shells = mechUniversalAmmo.find((item) => item.tag === `ammo-${gun}-cannon-standard`)!;
+            const shells = universalAmmoList.find((item) => item.tag === `ammo-${gun}-cannon-standard`)!;
             expect(shells).toMatchObject({ prototype: 3012, introduced: 3079 });
             expect(shells.altTags).toEqual(expect.arrayContaining([`ammo-is-${gun}-cannon-standard`, `ammo-clan-${gun}-cannon-standard`]));
-            expect(hasTag(mechISAmmo, `ammo-is-${gun}-cannon-standard`)).toBe(false);
-            expect(hasTag(mechClanAmmo, `ammo-clan-${gun}-cannon-standard`)).toBe(false);
+            expect(hasTag(isAmmoList, `ammo-is-${gun}-cannon-standard`)).toBe(false);
+            expect(hasTag(clanAmmoList, `ammo-clan-${gun}-cannon-standard`)).toBe(false);
         }
     });
 });

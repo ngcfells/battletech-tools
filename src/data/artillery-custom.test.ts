@@ -1,13 +1,15 @@
 import { describe, expect, it } from "vitest";
 import { artilleryCustom, getComboArtillery } from "./artillery-custom";
 import { getCompatibleAmmo, getEquipmentCatalogDefinitions, getEquipmentRulesLevel, getWeaponShotsPerTon } from "./equipment-registry";
-import { mechUniversalAmmo } from "./mech-universal-ammo";
-import { mechISAmmo } from "./mech-is-ammo";
-import { mechClanAmmo } from "./mech-clan-ammo";
+import { ammoCatalog } from "./ammo";
 import { ammoCustom } from "./ammo-custom";
 import { IEquipmentItem } from "./data-interfaces";
 
-const allAmmo = [...mechUniversalAmmo, ...mechISAmmo, ...mechClanAmmo, ...ammoCustom];
+const isAmmoList = ammoCatalog.filter((item) => item.techBase === "is");
+const clanAmmoList = ammoCatalog.filter((item) => item.techBase === "clan");
+const universalAmmoList = ammoCatalog.filter((item) => item.techBase === "universal");
+
+const allAmmo = [...universalAmmoList, ...isAmmoList, ...clanAmmoList, ...ammoCustom];
 const ammo = (tag: string): IEquipmentItem => {
     const found = allAmmo.find((item) => item.tag === tag);
     if (!found) throw new Error(`no ammo ${tag}`);

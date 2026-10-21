@@ -1,6 +1,6 @@
 import { IEquipmentItem } from "./data-interfaces";
 import { equipmentArtillery } from "./equipment-artillery";
-import { mechUniversalAmmo } from "./mech-universal-ammo";
+import { ammoCatalog } from "./ammo";
 
 function hasUniversalMetrics(item: IEquipmentItem, counterpart: IEquipmentItem): boolean {
     return item.name === counterpart.name
@@ -12,8 +12,7 @@ function hasUniversalMetrics(item: IEquipmentItem, counterpart: IEquipmentItem):
 
 // The universal records (techBase "universal") join both the Inner Sphere and the Clan lists.
 const universalEquipmentTags = new Set([
-    ...equipmentArtillery.filter(item => item.techBase === "universal").map(item => item.tag),
-    ...mechUniversalAmmo.map(item => item.tag),
+    ...[...equipmentArtillery, ...ammoCatalog].filter(item => item.techBase === "universal").map(item => item.tag),
 ]);
 
 export function isUniversalEquipment(item: IEquipmentItem): boolean {

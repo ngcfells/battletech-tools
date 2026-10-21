@@ -13,9 +13,7 @@ import { mechHeatSinkTypes } from "../data/mech-heat-sink-types";
 import { mechCockpitTypes } from "../data/mech-cockpit-types";
 import { mechCustomEquipmentEnergy } from "../data/mech-custom-equipment-weapons-energy";
 import { mechCustomEquipmentMissile } from "../data/mech-custom-equipment-weapons-missile";
-import { mechISAmmo } from "../data/mech-is-ammo";
-import { mechClanAmmo } from "../data/mech-clan-ammo";
-import { mechUniversalAmmo } from "../data/mech-universal-ammo";
+import { ammoCatalog } from "../data/ammo";
 import { mechJumpJetTypes } from "../data/mech-jump-jet-types";
 import { btEraOptions } from "../data/era-options";
 import { equipmentMissile } from "../data/equipment-missile";
@@ -25,6 +23,10 @@ import { equipmentEnergy } from "../data/equipment-energy";
 import { equipmentMisc } from "../data/equipment-misc";
 import { getAvailableTonnagesForMechType, getTonnageBoundsForMechType } from "../data/mech-tonnages";
 import { mechCustomEquipmentMisc } from "../data/mech-custom-equipment-weapons-misc";
+
+const isAmmoList = ammoCatalog.filter((item) => item.techBase === "is");
+const clanAmmoList = ammoCatalog.filter((item) => item.techBase === "clan");
+const universalAmmoList = ammoCatalog.filter((item) => item.techBase === "universal");
 
 const isArtilleryList = equipmentArtillery.filter((item) => item.techBase === "is");
 const clanArtilleryList = equipmentArtillery.filter((item) => item.techBase === "clan");
@@ -3546,13 +3548,13 @@ describe("Batch 12b standard ammunition follows its launcher", () => {
             "ammo-is-risc-apds-standard": [3134, 3137, null, null, "IO:AE", 85],
         };
         for (const [tag, want] of Object.entries(expected)) {
-            const item = mechISAmmo.find(record => record.tag === tag);
+            const item = isAmmoList.find(record => record.tag === tag);
             expect([item?.prototype, item?.introduced, item?.extinct, item?.reintroduced, item?.book, item?.page], tag).toEqual(want);
         }
     });
 
     it("uses null, not 0, for unknown dates in the isAmmo records", () => {
-        for (const item of mechISAmmo) {
+        for (const item of isAmmoList) {
             expect(item.introduced, item.tag).not.toBe(0);
             expect(item.extinct, item.tag).not.toBe(0);
             expect(item.reintroduced, item.tag).not.toBe(0);
@@ -3610,13 +3612,13 @@ describe("Batch 12b standard ammunition follows its launcher", () => {
             "ammo-clan-ap-gauss-rifle-standard": [3065, 3069, null, null, "TM", 219],
         };
         for (const [tag, want] of Object.entries(expected)) {
-            const item = mechClanAmmo.find(record => record.tag === tag);
+            const item = clanAmmoList.find(record => record.tag === tag);
             expect([item?.prototype, item?.introduced, item?.extinct, item?.reintroduced, item?.book, item?.page], tag).toEqual(want);
         }
     });
 
     it("uses null, not 0, for unknown dates in the clanAmmo records", () => {
-        for (const item of mechClanAmmo) {
+        for (const item of clanAmmoList) {
             expect(item.introduced, item.tag).not.toBe(0);
             expect(item.extinct, item.tag).not.toBe(0);
             expect(item.reintroduced, item.tag).not.toBe(0);
@@ -3642,13 +3644,13 @@ describe("Batch 12b standard ammunition follows its launcher", () => {
             "ammo-bomb-standard": [undefined, 1950, null, null, "TW", 246],
         };
         for (const [tag, want] of Object.entries(expected)) {
-            const item = mechUniversalAmmo.find(record => record.tag === tag);
+            const item = universalAmmoList.find(record => record.tag === tag);
             expect([item?.prototype, item?.introduced, item?.extinct, item?.reintroduced, item?.book, item?.page], tag).toEqual(want);
         }
     });
 
     it("uses null, not 0, for unknown dates in the universalAmmo records", () => {
-        for (const item of mechUniversalAmmo) {
+        for (const item of universalAmmoList) {
             expect(item.introduced, item.tag).not.toBe(0);
             expect(item.extinct, item.tag).not.toBe(0);
             expect(item.reintroduced, item.tag).not.toBe(0);
@@ -4068,7 +4070,7 @@ describe("Batch 18 TechManual table audit", () => {
             [clanBallisticList, "clan-light-machine-gun", { techRating: "f" }],
             [clanBallisticList, "ap-gauss-rifle", { cbills: 10000 }],
             // TM p.317: Nail/Rivet Gun ammunition has no Battle Value.
-            [mechUniversalAmmo, "ammo-nail-rivet-gun-standard", { battleValue: 0, cbills: 300 }],
+            [universalAmmoList, "ammo-nail-rivet-gun-standard", { battleValue: 0, cbills: 300 }],
             [clanEnergyList, "er-small-laser-clan", { techRating: "f" }],
             [clanEnergyList, "small-heavy-laser", { techRating: "f" }],
             [clanEnergyList, "plasma-cannon", { techRating: "f" }],
@@ -4259,13 +4261,13 @@ describe("Batch 12c special munitions", () => {
             "ammo-is-srm-acid": [3053, null, null, null, "TO:AUE", 179],
         };
         for (const [tag, want] of Object.entries(expected)) {
-            const item = mechISAmmo.find(record => record.tag === tag);
+            const item = isAmmoList.find(record => record.tag === tag);
             expect([item?.prototype, item?.introduced, item?.extinct, item?.reintroduced, item?.book, item?.page], tag).toEqual(want);
         }
     });
 
     it("uses null, not 0, for unknown dates in the isAmmo records", () => {
-        for (const item of mechISAmmo) {
+        for (const item of isAmmoList) {
             expect(item.introduced, item.tag).not.toBe(0);
             expect(item.extinct, item.tag).not.toBe(0);
             expect(item.reintroduced, item.tag).not.toBe(0);
@@ -4334,13 +4336,13 @@ describe("Batch 12c special munitions", () => {
             "ammo-clan-bomb-as-missile": [undefined, 3076, null, null, "TO:AUE", 170],
         };
         for (const [tag, want] of Object.entries(expected)) {
-            const item = mechClanAmmo.find(record => record.tag === tag);
+            const item = clanAmmoList.find(record => record.tag === tag);
             expect([item?.prototype, item?.introduced, item?.extinct, item?.reintroduced, item?.book, item?.page], tag).toEqual(want);
         }
     });
 
     it("uses null, not 0, for unknown dates in the clanAmmo records", () => {
-        for (const item of mechClanAmmo) {
+        for (const item of clanAmmoList) {
             expect(item.introduced, item.tag).not.toBe(0);
             expect(item.extinct, item.tag).not.toBe(0);
             expect(item.reintroduced, item.tag).not.toBe(0);
@@ -4390,13 +4392,13 @@ describe("Batch 12c special munitions", () => {
             "ammo-bomb-aaa-missile": [3069, 3072, null, null, "TO:AUE", 169],
         };
         for (const [tag, want] of Object.entries(expected)) {
-            const item = mechUniversalAmmo.find(record => record.tag === tag);
+            const item = universalAmmoList.find(record => record.tag === tag);
             expect([item?.prototype, item?.introduced, item?.extinct, item?.reintroduced, item?.book, item?.page], tag).toEqual(want);
         }
     });
 
     it("uses null, not 0, for unknown dates in the universalAmmo records", () => {
-        for (const item of mechUniversalAmmo) {
+        for (const item of universalAmmoList) {
             expect(item.introduced, item.tag).not.toBe(0);
             expect(item.extinct, item.tag).not.toBe(0);
             expect(item.reintroduced, item.tag).not.toBe(0);
@@ -5427,7 +5429,7 @@ describe("Batch 36 BattleMech Taser (TO:AUE pp.157-158)", () => {
     });
 
     it("lists its ammunition: five shots a ton, 2,000 C-bills, explosive", () => {
-        expect(mechISAmmo.find(item => item.tag === "ammo-is-mech-taser-standard")).toMatchObject({
+        expect(isAmmoList.find(item => item.tag === "ammo-is-mech-taser-standard")).toMatchObject({
             name: "BattleMech Taser - Standard Ammo (IS)", isSpecialAmmo: false, cbills: 2000, roundsPerTon: 5, battleValue: 5, explosive: true,
             prototype: 3065, introduced: 3084, extinct: null, reintroduced: null, techRating: "e", book: "TO:AUE", page: 158,
         });
@@ -6010,7 +6012,7 @@ describe("Batch 46 C3 Remote Sensor Launcher (TO:AUE pp.110, 195, 217)", () => {
             shotsPerTon: 4, ammoBattleValue: 6, ammoTypes: ["ammo-is-c3-remote-sensor-standard"],
             prototype: 3072, introduced: 3093, extinct: null, reintroduced: null, techRating: "e", book: "TO:AUE", page: 110,
         });
-        expect(mechISAmmo.find(item => item.tag === "ammo-is-c3-remote-sensor-standard")).toMatchObject({
+        expect(isAmmoList.find(item => item.tag === "ammo-is-c3-remote-sensor-standard")).toMatchObject({
             name: "C3 Remote Sensors (IS)", isAmmo: true, cbills: 100000, battleValue: 6, weight: 1, roundsPerTon: 4, explosive: true,
             prototype: 3072, introduced: 3093, techRating: "e", book: "TO:AUE", page: 110,
         });
