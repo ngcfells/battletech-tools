@@ -1,6 +1,6 @@
 import { IEquipmentItem } from "../data/data-interfaces";
 import { EquipmentCatalog, getEquipmentCatalogDefinitions, getEquipmentTier, getLocalCustomEquipment } from "../data/equipment-registry";
-import { isUniversalEquipment } from "../data/mech-universal-equipment";
+import { isUniversalEquipment } from "../data/universal-equipment";
 import { customTagFaction } from "./customTags";
 
 // Resolves an equipment name from an imported design (SSW, MegaMek, or any other tool) to a catalog record.

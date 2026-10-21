@@ -1,6 +1,8 @@
 import { IEquipmentItem } from "./data-interfaces";
 import { equipmentBallistic } from "./equipment-ballistic";
-import { mechUniversalEquipment } from "./mech-universal-equipment";
+import { equipmentArtillery } from "./equipment-artillery";
+
+const universalArtilleryList = equipmentArtillery.filter((item) => item.techBase === "universal");
 
 const isBallisticList = equipmentBallistic.filter((item) => item.techBase === "is");
 
@@ -40,7 +42,7 @@ const comboRows: IComboGunRow[] = [
 function comboGun(row: IComboGunRow, techBase: "is" | "clan"): IEquipmentItem {
     const ac = isBallisticList.find((item) => item.tag === row.acTag);
     if (!ac || ac.battleValue === undefined) throw new Error(`Combo gun: AC record ${row.acTag} not found`);
-    const piece = mechUniversalEquipment.find((item) => item.tag === row.pieceTag);
+    const piece = universalArtilleryList.find((item) => item.tag === row.pieceTag);
     if (!piece || piece.battleValue === undefined) throw new Error(`Combo gun: artillery record ${row.pieceTag} not found`);
     const clan = techBase === "clan";
     // Clan standard AC ammunition is extinct from 2850, so the Clan gun feeds from its own breech rounds.
@@ -95,5 +97,5 @@ export const artilleryCustom: IEquipmentItem[] = [
 /** The canon artillery piece a combo gun fires as in Siege Mode, or undefined for any other item. */
 export function getComboArtillery(item: IEquipmentItem): IEquipmentItem | undefined {
     if (!item.comboArtilleryTag) return undefined;
-    return mechUniversalEquipment.find((piece) => piece.tag === item.comboArtilleryTag);
+    return universalArtilleryList.find((piece) => piece.tag === item.comboArtilleryTag);
 }

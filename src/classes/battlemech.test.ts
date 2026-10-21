@@ -19,14 +19,16 @@ import { mechUniversalAmmo } from "../data/mech-universal-ammo";
 import { mechJumpJetTypes } from "../data/mech-jump-jet-types";
 import { btEraOptions } from "../data/era-options";
 import { equipmentMissile } from "../data/equipment-missile";
-import { mechISEquipmentArtillery } from "../data/mech-is-equipment-weapons-artillery";
-import { mechClanEquipmentArtillery } from "../data/mech-clan-equipment-weapons-artillery";
+import { equipmentArtillery } from "../data/equipment-artillery";
 import { equipmentBallistic } from "../data/equipment-ballistic";
 import { equipmentEnergy } from "../data/equipment-energy";
 import { equipmentMisc } from "../data/equipment-misc";
-import { mechUniversalEquipment } from "../data/mech-universal-equipment";
 import { getAvailableTonnagesForMechType, getTonnageBoundsForMechType } from "../data/mech-tonnages";
 import { mechCustomEquipmentMisc } from "../data/mech-custom-equipment-weapons-misc";
+
+const isArtilleryList = equipmentArtillery.filter((item) => item.techBase === "is");
+const clanArtilleryList = equipmentArtillery.filter((item) => item.techBase === "clan");
+const universalArtilleryList = equipmentArtillery.filter((item) => item.techBase === "universal");
 
 const isMiscList = equipmentMisc.filter((item) => item.techBase === "is");
 const clanMiscList = equipmentMisc.filter((item) => item.techBase === "clan");
@@ -2332,7 +2334,7 @@ describe("Batch 3 myomer catalog", () => {
     });
 
     it("dates supercharger production 3078 (IO:AE p.29)", () => {
-        const supercharger = mechUniversalEquipment.find(item => item.tag === "supercharger");
+        const supercharger = universalArtilleryList.find(item => item.tag === "supercharger");
         expect(supercharger?.introduced).toBe(3078);
         expect(supercharger?.extinct).not.toBe(0);
     });
@@ -2849,13 +2851,13 @@ describe("Batch 9b universal equipment catalog", () => {
             "lam-fuel-tank": [undefined, 2100, null, null, "IO:AE", 215],
         };
         for (const [tag, want] of Object.entries(expected)) {
-            const item = mechUniversalEquipment.find(record => record.tag === tag);
+            const item = universalArtilleryList.find(record => record.tag === tag);
             expect([item?.prototype, item?.introduced, item?.extinct, item?.reintroduced, item?.book, item?.page], tag).toEqual(want);
         }
     });
 
     it("uses null, not 0, for unknown dates in the universal records", () => {
-        for (const item of mechUniversalEquipment) {
+        for (const item of universalArtilleryList) {
             expect(item.introduced, item.tag).not.toBe(0);
             expect(item.extinct, item.tag).not.toBe(0);
             expect(item.reintroduced, item.tag).not.toBe(0);
@@ -3391,13 +3393,13 @@ describe("Batch 10c missile and artillery catalogs", () => {
             "prototype-arrow-iv": [2593, null, 2600, null, "IO:AE", 64],
         };
         for (const [tag, want] of Object.entries(expected)) {
-            const item = mechISEquipmentArtillery.find(record => record.tag === tag);
+            const item = isArtilleryList.find(record => record.tag === tag);
             expect([item?.prototype, item?.introduced, item?.extinct, item?.reintroduced, item?.book, item?.page], tag).toEqual(want);
         }
     });
 
     it("uses null, not 0, for unknown dates in the isArtillery records", () => {
-        for (const item of mechISEquipmentArtillery) {
+        for (const item of isArtilleryList) {
             expect(item.introduced, item.tag).not.toBe(0);
             expect(item.extinct, item.tag).not.toBe(0);
             expect(item.reintroduced, item.tag).not.toBe(0);
@@ -3411,13 +3413,13 @@ describe("Batch 10c missile and artillery catalogs", () => {
             "clan-arrow-iv-system": [undefined, 2844, null, null, "TO:AUE", 96],
         };
         for (const [tag, want] of Object.entries(expected)) {
-            const item = mechClanEquipmentArtillery.find(record => record.tag === tag);
+            const item = clanArtilleryList.find(record => record.tag === tag);
             expect([item?.prototype, item?.introduced, item?.extinct, item?.reintroduced, item?.book, item?.page], tag).toEqual(want);
         }
     });
 
     it("uses null, not 0, for unknown dates in the clanArtillery records", () => {
-        for (const item of mechClanEquipmentArtillery) {
+        for (const item of clanArtilleryList) {
             expect(item.introduced, item.tag).not.toBe(0);
             expect(item.extinct, item.tag).not.toBe(0);
             expect(item.reintroduced, item.tag).not.toBe(0);
@@ -3452,7 +3454,7 @@ describe("Batch 11 jump jet catalog", () => {
 
 describe("Batch 9c pods added from TechManual and TO:AUE", () => {
     it("lists the B-Pod as universal equipment (TM pp.205, 291, 317, 342)", () => {
-        const pod = mechUniversalEquipment.find(item => item.tag === "b-pod");
+        const pod = universalArtilleryList.find(item => item.tag === "b-pod");
         expect(pod).toMatchObject({ name: "B-Pod", weight: 1, cbills: 2500, battleValue: 2, battleValueDefensive: true, explosive: true, book: "TM", page: 205 });
         expect(pod?.space).toMatchObject({ battlemech: 1, protomech: -1, combatVehicle: 1, supportVehicle: 1 });
         // IO:AE p.34: ~3065 prototype (Wolf-in-Exile and Lyran), 3068 production for both tech bases.
@@ -3728,7 +3730,7 @@ describe("Batch 14 Star League ER PPC in Clan space", () => {
 });
 
 describe("Batch 15 tech-base splits", () => {
-    const universalTags = mechUniversalEquipment.map(item => item.tag);
+    const universalTags = universalArtilleryList.map(item => item.tag);
 
     it("splits 'Mech Mortars: Clan launchers are lighter and were never lost (TO:AUE pp.136, 221; IO:AE p.40)", () => {
         // size: [tons, slots] (TO:AUE p.221); BV and ammo BV per ton (TO:AUE p.194)
@@ -3759,8 +3761,8 @@ describe("Batch 15 tech-base splits", () => {
 
     it("splits Artillery Cannons: the Clan prototype is 3032, twenty years after the Lyran one (IO:AE p.31)", () => {
         for (const cannon of ["long-tom-cannon", "sniper-cannon", "thumper-cannon"]) {
-            const is = mechISEquipmentArtillery.find(item => item.tag === cannon);
-            const clan = mechClanEquipmentArtillery.find(item => item.tag === `clan-${cannon}`);
+            const is = isArtilleryList.find(item => item.tag === cannon);
+            const clan = clanArtilleryList.find(item => item.tag === `clan-${cannon}`);
             expect(is, cannon).toMatchObject({ catalog: "is", prototype: 3012, introduced: 3079, extinct: null, book: "TO:AUE", page: 97 });
             expect(clan, `clan-${cannon}`).toMatchObject({ catalog: "clan", prototype: 3032, introduced: 3079, extinct: null, book: "TO:AUE", page: 97 });
             expect([clan?.weight, clan?.space, clan?.battleValue, clan?.ammoBattleValue, clan?.cbills, clan?.heat, clan?.damage, clan?.range, clan?.shotsPerTon])
@@ -4074,10 +4076,10 @@ describe("Batch 18 TechManual table audit", () => {
             [clanMissileList, "clan-lrm-10", { techRating: "f" }],
             [clanMissileList, "clan-lrm-15", { techRating: "f" }],
             [clanMissileList, "clan-lrm-20", { techRating: "f" }],
-            [mechUniversalEquipment, "nail-gun", { cbills: 7000, battleValue: 1, ammoBattleValue: 0, range: { min: 0, short: 1, medium: 0, long: 0 } }],
-            [mechUniversalEquipment, "mining-drill", { cbills: 100000 }],
-            [mechUniversalEquipment, "remote-sensor-dispenser", { cbills: 30000 }],
-            [mechUniversalEquipment, "wrecking-ball", { cbills: 80000 }],
+            [universalArtilleryList, "nail-gun", { cbills: 7000, battleValue: 1, ammoBattleValue: 0, range: { min: 0, short: 1, medium: 0, long: 0 } }],
+            [universalArtilleryList, "mining-drill", { cbills: 100000 }],
+            [universalArtilleryList, "remote-sensor-dispenser", { cbills: 30000 }],
+            [universalArtilleryList, "wrecking-ball", { cbills: 80000 }],
         ];
         for (const [catalog, tag, fields] of expected) {
             const item = catalog.find(entry => entry.tag === tag);
@@ -4917,19 +4919,19 @@ describe("Batch 27 Weapon Battle Rating order (TM p.303)", () => {
 describe("Batch 28 Industrial Equipment Table (TM pp.344-345, errata v8.0)", () => {
     it("gives industrial equipment its vehicle and aerospace slot counts and tech ratings", () => {
         const expected: [{ tag: string }[], string, Record<string, unknown>][] = [
-            [mechUniversalEquipment, "backhoe", { space: { battlemech: 6, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: -1, smallCraft: -1, dropShip: -1 } }],
-            [mechUniversalEquipment, "chainsaw", { space: { battlemech: 5, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: -1, smallCraft: -1, dropShip: -1 } }],
-            [mechUniversalEquipment, "combine", { space: { battlemech: 4, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: -1, smallCraft: -1, dropShip: -1 } }],
-            [mechUniversalEquipment, "dual-saw", { space: { battlemech: 7, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: -1, smallCraft: -1, dropShip: -1 } }],
-            [mechUniversalEquipment, "pile-driver", { space: { battlemech: 8, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: -1, smallCraft: -1, dropShip: -1 } }],
-            [mechUniversalEquipment, "lift-hoist", { space: { battlemech: 3, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: -1, smallCraft: -1, dropShip: -1 } }],
-            [mechUniversalEquipment, "mining-drill", { space: { battlemech: 4, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: -1, smallCraft: -1, dropShip: -1 }, techRating: "b" }],
-            [mechUniversalEquipment, "nail-gun", { space: { battlemech: 1, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: -1, smallCraft: -1, dropShip: -1 }, techRating: "c" }],
-            [mechUniversalEquipment, "remote-sensor-dispenser", { space: { battlemech: 1, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: 1, smallCraft: 1, dropShip: 0 } }],
-            [mechUniversalEquipment, "rock-cutter", { space: { battlemech: 5, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: -1, smallCraft: -1, dropShip: -1 } }],
-            [mechUniversalEquipment, "salvage-arm", { space: { battlemech: 2, protomech: -1, combatVehicle: -1, supportVehicle: -1, aerospaceFighter: -1, smallCraft: -1, dropShip: -1 } }],
-            [mechUniversalEquipment, "searchlight", { space: { battlemech: 1, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: 0, smallCraft: 0, dropShip: 0 } }],
-            [mechUniversalEquipment, "wrecking-ball", { space: { battlemech: 5, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: -1, smallCraft: -1, dropShip: -1 } }],
+            [universalArtilleryList, "backhoe", { space: { battlemech: 6, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: -1, smallCraft: -1, dropShip: -1 } }],
+            [universalArtilleryList, "chainsaw", { space: { battlemech: 5, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: -1, smallCraft: -1, dropShip: -1 } }],
+            [universalArtilleryList, "combine", { space: { battlemech: 4, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: -1, smallCraft: -1, dropShip: -1 } }],
+            [universalArtilleryList, "dual-saw", { space: { battlemech: 7, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: -1, smallCraft: -1, dropShip: -1 } }],
+            [universalArtilleryList, "pile-driver", { space: { battlemech: 8, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: -1, smallCraft: -1, dropShip: -1 } }],
+            [universalArtilleryList, "lift-hoist", { space: { battlemech: 3, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: -1, smallCraft: -1, dropShip: -1 } }],
+            [universalArtilleryList, "mining-drill", { space: { battlemech: 4, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: -1, smallCraft: -1, dropShip: -1 }, techRating: "b" }],
+            [universalArtilleryList, "nail-gun", { space: { battlemech: 1, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: -1, smallCraft: -1, dropShip: -1 }, techRating: "c" }],
+            [universalArtilleryList, "remote-sensor-dispenser", { space: { battlemech: 1, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: 1, smallCraft: 1, dropShip: 0 } }],
+            [universalArtilleryList, "rock-cutter", { space: { battlemech: 5, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: -1, smallCraft: -1, dropShip: -1 } }],
+            [universalArtilleryList, "salvage-arm", { space: { battlemech: 2, protomech: -1, combatVehicle: -1, supportVehicle: -1, aerospaceFighter: -1, smallCraft: -1, dropShip: -1 } }],
+            [universalArtilleryList, "searchlight", { space: { battlemech: 1, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: 0, smallCraft: 0, dropShip: 0 } }],
+            [universalArtilleryList, "wrecking-ball", { space: { battlemech: 5, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: -1, smallCraft: -1, dropShip: -1 } }],
         ];
         for (const [catalog, tag, fields] of expected) {
             const item = catalog.find(entry => entry.tag === tag);
@@ -4971,7 +4973,7 @@ describe("Batch 28 unit slot columns of the Weapons and Equipment Tables (TM pp.
             [clanBallisticList, "hyper-assault-gauss-20", { space: { battlemech: 6, protomech: 1, combatVehicle: 1, supportVehicle: 6, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
             [clanBallisticList, "hyper-assault-gauss-30", { space: { battlemech: 8, protomech: -1, combatVehicle: 1, supportVehicle: 8, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
             [clanBallisticList, "hyper-assault-gauss-40", { space: { battlemech: 10, protomech: -1, combatVehicle: 1, supportVehicle: 10, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
-            [mechUniversalEquipment, "vehicle-flamer", { space: { battlemech: 1, protomech: 1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
+            [universalArtilleryList, "vehicle-flamer", { space: { battlemech: 1, protomech: 1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
             [clanEnergyList, "medium-heavy-laser", { space: { battlemech: 2, protomech: 1, combatVehicle: 1, supportVehicle: 2, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
             [clanEnergyList, "large-heavy-laser", { space: { battlemech: 3, protomech: 1, combatVehicle: 1, supportVehicle: 3, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
             // The table's ProtoMech column reads NA, but the ProtoMech Ammunition Weight Table lists the plasma cannon
@@ -5014,9 +5016,9 @@ describe("Batch 29 unit slot columns of the TO:AUE construction tables (pp.217-2
             [clanMiscList, "clan-angel-ecm", { space: { battlemech: 2, protomech: 1, combatVehicle: 1, supportVehicle: 2, aerospaceFighter: 1, smallCraft: 1, dropShip: 0 } }],
             [clanMiscList, "clan-modular-armor", { space: { battlemech: 1, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: 2, smallCraft: -1, dropShip: -1 } }],
             [clanMiscList, "clan-case-ii", { space: { battlemech: 1, protomech: -1, combatVehicle: -1, supportVehicle: -1, aerospaceFighter: 0, smallCraft: -1, dropShip: -1 } }],
-            [mechUniversalEquipment, "thumper-artillery", { space: { battlemech: 15, protomech: -1, combatVehicle: 1, supportVehicle: 7, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
-            [mechUniversalEquipment, "long-tom-artillery", { space: { battlemech: 30, protomech: -1, combatVehicle: 1, supportVehicle: 15, aerospaceFighter: -1, smallCraft: 1, dropShip: 1 } }],
-            [mechUniversalEquipment, "fluid-gun", { space: { battlemech: 2, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
+            [universalArtilleryList, "thumper-artillery", { space: { battlemech: 15, protomech: -1, combatVehicle: 1, supportVehicle: 7, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
+            [universalArtilleryList, "long-tom-artillery", { space: { battlemech: 30, protomech: -1, combatVehicle: 1, supportVehicle: 15, aerospaceFighter: -1, smallCraft: 1, dropShip: 1 } }],
+            [universalArtilleryList, "fluid-gun", { space: { battlemech: 2, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
             [clanBallisticList, "clan-autocannon-rac-5", { space: { battlemech: 8, protomech: -1, combatVehicle: 1, supportVehicle: 8, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
             [isEnergyList, "heavy-flamer", { space: { battlemech: 1, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: -1, smallCraft: -1, dropShip: -1 } }],
             [isEnergyList, "is-laser-ams", { space: { battlemech: 2, protomech: -1, combatVehicle: 1, supportVehicle: 2, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
@@ -5221,7 +5223,7 @@ describe("Batch 30 Superheavy ammunition shares critical slots (IO:AE p.157)", (
 });
 
 describe("Batch 31 Vehicular Grenade Launcher and Recon Camera (TO:AUE pp.127, 150)", () => {
-    const record = (tag: string) => mechUniversalEquipment.find(item => item.tag === tag);
+    const record = (tag: string) => universalArtilleryList.find(item => item.tag === tag);
 
     it("lists the Vehicular Grenade Launcher with its table values (pp.195, 218, 219)", () => {
         expect(record("vehicular-grenade-launcher")).toMatchObject({
@@ -5283,12 +5285,12 @@ describe("Batch 32 physical weapon to-hit modifiers (TW p.146, TO:AUE p.216)", (
             [isMiscList, "shield-medium", { accuracyModifier: -3 }],
             [isMiscList, "shield-large", { accuracyModifier: -4 }],
             [clanMiscList, "clan-melee-claw", { accuracyModifier: 1 }],
-            [mechUniversalEquipment, "backhoe", { accuracyModifier: 1 }],
-            [mechUniversalEquipment, "combine", { accuracyModifier: -2 }],
-            [mechUniversalEquipment, "pile-driver", { accuracyModifier: 2, damage: 9 }],
-            [mechUniversalEquipment, "mining-drill", { accuracyModifier: -1 }],
-            [mechUniversalEquipment, "rock-cutter", { accuracyModifier: 1 }],
-            [mechUniversalEquipment, "wrecking-ball", { accuracyModifier: 1 }],
+            [universalArtilleryList, "backhoe", { accuracyModifier: 1 }],
+            [universalArtilleryList, "combine", { accuracyModifier: -2 }],
+            [universalArtilleryList, "pile-driver", { accuracyModifier: 2, damage: 9 }],
+            [universalArtilleryList, "mining-drill", { accuracyModifier: -1 }],
+            [universalArtilleryList, "rock-cutter", { accuracyModifier: 1 }],
+            [universalArtilleryList, "wrecking-ball", { accuracyModifier: 1 }],
         ];
         for (const [catalog, tag, fields] of expected) {
             const item = catalog.find(entry => entry.tag === tag);
@@ -5324,8 +5326,8 @@ describe("Batch 34 Primitive Prototype Long Tom and torpedo launchers (IO:AE p.1
     });
 
     it("lists the Primitive Prototype Long Tom: the Long Tom with four shots a ton and the BV of p.189", () => {
-        const longTom = mechUniversalEquipment.find(item => item.tag === "long-tom-artillery")!;
-        expect(mechISEquipmentArtillery.find(item => item.tag === "primitive-prototype-long-tom")).toMatchObject({
+        const longTom = universalArtilleryList.find(item => item.tag === "long-tom-artillery")!;
+        expect(isArtilleryList.find(item => item.tag === "primitive-prototype-long-tom")).toMatchObject({
             name: "Primitive Prototype Long Tom", prototype: 2445, introduced: null, extinct: 2500, reintroduced: null,
             battleValue: 368, ammoBattleValue: 35, shotsPerTon: 4, techRating: "c", book: "IO:AE", page: 112,
             weight: longTom.weight, cbills: longTom.cbills, heat: longTom.heat, range: longTom.range, space: longTom.space,
@@ -6080,7 +6082,7 @@ describe("Batch 47 Collapsible Command Module, Full-Head Ejection System, Indust
     const offered = (mech: BattleMech, tag: string, rulesLevel = 4) => !!mech.getAvailableEquipment(false, rulesLevel).find(item => item.tag === tag)?.available;
 
     it("lists the Collapsible Command Module (TO:AUE pp.113, 219)", () => {
-        expect(mechUniversalEquipment.find(item => item.tag === "collapsible-command-module")).toMatchObject({
+        expect(universalArtilleryList.find(item => item.tag === "collapsible-command-module")).toMatchObject({
             name: "Collapsible Command Module (CCM)", cbills: 500000, weight: 16, battleValue: 0, space: { battlemech: 12, ...mechOnly },
             prototype: 2700, introduced: 2710, extinct: null, reintroduced: null, techRating: "d", book: "TO:AUE", page: 113,
         });
@@ -6125,7 +6127,7 @@ describe("Batch 47 Collapsible Command Module, Full-Head Ejection System, Indust
     });
 
     it("lists the IndustrialMech Ejection Seat (TM pp.69, 213, 292, 344)", () => {
-        expect(mechUniversalEquipment.find(item => item.tag === "industrialmech-ejection-seat")).toMatchObject({
+        expect(universalArtilleryList.find(item => item.tag === "industrialmech-ejection-seat")).toMatchObject({
             name: "Ejection Seat (IndustrialMech)", cbills: 25000, weight: 0.5, battleValue: 0, space: { battlemech: 1, ...mechOnly },
             industrialMechOnly: true, allowedLocations: ["hd"],
             prototype: 2430, introduced: 2445, extinct: null, reintroduced: null, techRating: "b", book: "TM", page: 213,

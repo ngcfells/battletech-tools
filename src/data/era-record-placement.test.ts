@@ -2,18 +2,20 @@ import { describe, expect, it } from "vitest";
 import { getStarLeagueCarryOverDates, parseTechYear } from "./equipment-registry";
 import { getEraForYear } from "./era-options";
 import { mechClanAmmo } from "./mech-clan-ammo";
-import { mechClanEquipmentArtillery } from "./mech-clan-equipment-weapons-artillery";
 import { mechCustomEquipmentBallistic } from "./mech-custom-equipment-weapons-ballistic";
 import { mechCustomEquipmentEnergy } from "./mech-custom-equipment-weapons-energy";
 import { mechCustomEquipmentMisc } from "./mech-custom-equipment-weapons-misc";
 import { mechHeatSinkTypes } from "./mech-heat-sink-types";
 import { mechInternalStructureTypes } from "./mech-internal-structure-types";
-import { mechISEquipmentArtillery } from "./mech-is-equipment-weapons-artillery";
+import { equipmentArtillery } from "./equipment-artillery";
 import { equipmentEnergy } from "./equipment-energy";
 import { mechISAmmo } from "./mech-is-ammo";
 import { equipmentMisc } from "./equipment-misc";
 import { mechUniversalAmmo } from "./mech-universal-ammo";
-import { mechUniversalEquipment } from "./mech-universal-equipment";
+
+const isArtilleryList = equipmentArtillery.filter((item) => item.techBase === "is");
+const clanArtilleryList = equipmentArtillery.filter((item) => item.techBase === "clan");
+const universalArtilleryList = equipmentArtillery.filter((item) => item.techBase === "universal");
 
 const isMiscList = equipmentMisc.filter((item) => item.techBase === "is");
 const clanMiscList = equipmentMisc.filter((item) => item.techBase === "clan");
@@ -34,7 +36,7 @@ describe("records whose IS and Clan dates differ are not universal", () => {
 
     // TO:AUE p.134 gives "Reintroduced: N/A"; the 3073 the record once carried had no source.
     it("splits the Laser Insulator: the IS lost it in 2820, the Clans never did (TO:AUE p.134; IO:AE p.38)", () => {
-        expect(hasTag(mechUniversalEquipment, "laser-insulator")).toBe(false);
+        expect(hasTag(universalArtilleryList, "laser-insulator")).toBe(false);
         expect(isMiscList.find((item) => item.tag === "laser-insulator"))
             .toMatchObject({ extinct: 2820, reintroduced: null });
         const clan = clanMiscList.find((item) => item.tag === "clan-laser-insulator")!;
@@ -47,10 +49,10 @@ describe("artillery cannons split by side (TO:AUE pp.97, 217; IO:AE p.31)", () =
     // The table gives "3012P / 3032P" and one production year, 3079, for both sides.
     it("gives the IS cannons a 3012 prototype and the Clan ones 3032, both in production from 3079", () => {
         for (const gun of ["long-tom", "sniper", "thumper"]) {
-            expect(hasTag(mechUniversalEquipment, `${gun}-cannon`)).toBe(false);
-            expect(mechISEquipmentArtillery.find((item) => item.tag === `${gun}-cannon`))
+            expect(hasTag(universalArtilleryList, `${gun}-cannon`)).toBe(false);
+            expect(isArtilleryList.find((item) => item.tag === `${gun}-cannon`))
                 .toMatchObject({ prototype: 3012, introduced: 3079 });
-            const clan = mechClanEquipmentArtillery.find((item) => item.tag === `clan-${gun}-cannon`)!;
+            const clan = clanArtilleryList.find((item) => item.tag === `clan-${gun}-cannon`)!;
             expect(clan).toMatchObject({ prototype: 3032, introduced: 3079 });
             expect(clan.altTags).toContain(`${gun}-cannon`);
         }

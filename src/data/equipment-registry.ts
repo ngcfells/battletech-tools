@@ -5,8 +5,7 @@ import { equipmentBallistic } from "./equipment-ballistic";
 import { equipmentEnergy } from "./equipment-energy";
 import { equipmentMisc } from "./equipment-misc";
 import { equipmentMissile } from "./equipment-missile";
-import { mechISEquipmentArtillery } from "./mech-is-equipment-weapons-artillery";
-import { mechClanEquipmentArtillery } from "./mech-clan-equipment-weapons-artillery";
+import { equipmentArtillery } from "./equipment-artillery";
 import { mechCustomEquipmentBallistic } from "./mech-custom-equipment-weapons-ballistic";
 import { mechCustomEquipmentEnergy } from "./mech-custom-equipment-weapons-energy";
 import { mechCustomEquipmentMisc } from "./mech-custom-equipment-weapons-misc";
@@ -18,7 +17,7 @@ import { ammoCustom } from "./ammo-custom";
 import { mechISAmmo } from "./mech-is-ammo";
 import { mechClanAmmo } from "./mech-clan-ammo";
 import { mechUniversalAmmo } from "./mech-universal-ammo";
-import { isUniversalEquipment, mechUniversalEquipment } from "./mech-universal-equipment";
+import { isUniversalEquipment } from "./universal-equipment";
 import { APOCRYPHAL_RULES_LEVEL, CUSTOM_HOMEBREW_RULES_LEVEL, EXPERIMENTAL_RULES_LEVEL, MUNCHKIN_RULES_LEVEL } from "./rules-level-options";
 import { getBattleArmorScaleEquipment } from "./battle-armor-scale-equipment";
 import { getRecordOfferIssue } from "./rules-editions";
@@ -53,9 +52,8 @@ const equipmentCatalogDefinitions: IEquipmentCatalogDefinition[] = [
     { id: "equipment-energy", exportName: "equipmentEnergy", category: "energy", equipment: equipmentEnergy },
     { id: "equipment-missile", exportName: "equipmentMissile", category: "missile", equipment: equipmentMissile },
     { id: "equipment-misc", exportName: "equipmentMisc", category: "misc", equipment: equipmentMisc },
-    { id: "mech-is-equipment-weapons-artillery", exportName: "mechISEquipmentArtillery", category: "artillery", equipment: mechISEquipmentArtillery },
+    { id: "equipment-artillery", exportName: "equipmentArtillery", category: "artillery", equipment: equipmentArtillery },
     { id: "mech-is-ammo", exportName: "mechISAmmo", category: "ammunition", equipment: mechISAmmo },
-    { id: "mech-clan-equipment-weapons-artillery", exportName: "mechClanEquipmentArtillery", category: "artillery", equipment: mechClanEquipmentArtillery },
     { id: "mech-clan-ammo", exportName: "mechClanAmmo", category: "ammunition", equipment: mechClanAmmo },
     { id: "mech-custom-equipment-weapons-ballistic", exportName: "mechCustomEquipmentBallistic", custom: true, category: "ballistic", equipment: mechCustomEquipmentBallistic },
     { id: "mech-custom-equipment-weapons-energy", exportName: "mechCustomEquipmentEnergy", custom: true, category: "energy", equipment: mechCustomEquipmentEnergy },
@@ -65,7 +63,6 @@ const equipmentCatalogDefinitions: IEquipmentCatalogDefinition[] = [
     { id: "misc-custom", exportName: "miscCustom", custom: true, category: "misc", equipment: miscCustom },
     { id: "mech-custom-ammo", exportName: "mechCustomAmmo", custom: true, category: "ammunition", equipment: mechCustomAmmo },
     { id: "ammo-custom", exportName: "ammoCustom", custom: true, category: "ammunition", equipment: ammoCustom },
-    { id: "mech-universal-equipment", exportName: "mechUniversalEquipment", category: "artillery", equipment: mechUniversalEquipment },
     { id: "mech-universal-ammo", exportName: "mechUniversalAmmo", category: "ammunition", equipment: mechUniversalAmmo },
 ];
 

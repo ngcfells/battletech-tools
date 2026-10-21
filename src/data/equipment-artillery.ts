@@ -1,26 +1,510 @@
 import { IEquipmentItem } from "./data-interfaces";
-import { mechUniversalAmmo } from "./mech-universal-ammo";
 
 /*
-* DISCLAIMER: This file processes gameplay data derived from the BattleTech universe. 
-* All lore, stats, and intellectual property belong strictly to Catalyst Game Labs, 
-* Topps, and their respective rights holders. 
-*
-* This open-source utility is a non-commercial fan project designed purely for 
-* tabletop gameplay assistance. Content processed by this file is not intended 
-* to challenge any copyright or trademark status, and this data is explicitly 
-* excluded from the software's underlying license (GNU GPLv3).
-*/
+ * DISCLAIMER: This file processes gameplay data derived from the BattleTech universe. 
+ * All official lore, trademarks, and intellectual property belong strictly to 
+ * Catalyst Game Labs, Topps, and/or their respective corporate rights holders. 
+ * Any original, fan-made content or custom homebrew data processed by this tool 
+ * remains the exclusive property of its respective community creators, which,
+ * where known, has been appropriately attributed.
+ *
+ * This open-source utility is a non-commercial fan project designed purely for 
+ * tabletop gameplay assistance. Content processed by this file is not intended 
+ * to challenge any copyright or trademark status, and this data is explicitly 
+ * excluded from the software's underlying license (GNU GPLv3).
+ *
+ * Statistics sourced from Tactical Operations: Advanced Units & Equipment (TO:AUE) via the
+ * MegaMek open-source project's weapon/ammo definitions, which mirror the published rulebooks.
+ */
 
-function hasUniversalMetrics(item: IEquipmentItem, counterpart: IEquipmentItem): boolean {
-    return item.name === counterpart.name
-        && item.weight === counterpart.weight
-        && item.space.battlemech === counterpart.space.battlemech
-        && JSON.stringify(item.damage) === JSON.stringify(counterpart.damage)
-        && JSON.stringify(item.range) === JSON.stringify(counterpart.range);
-}
-
-export const mechUniversalEquipment: IEquipmentItem[] = [
+export const equipmentArtillery: IEquipmentItem[] = [
+    {
+        name: "Arrow IV System",
+        tag: "arrow-iv-system",
+        editions: ["battletech-compendium", "compendium-rules-of-warfare", "master-rules", "master-rules-revised", "total-warfare", "battlemech-manual", "core-rulebook"],
+        techBase: "is",
+        introducedInEdition: "battletech-compendium", editionStats: { "battletech-compendium": { book: "BTC", page: 116, name: "Arrow IV System", heat: 10, damage: 20, damageAdjacent: 10, rangeMapsheets: 5, weight: 15, criticals: 15, shotsPerTon: 5, cbills: 450000, notes: "Missile artillery: range in mapsheets, 20 points to the target hex and 10 to the adjacent hexes with a standard missile. A homing missile needs a TAG-equipped spotter and hits on 4+ once the target is designated: 20 points to the target, 5 to anything else in the hex. The launcher's critical slots may be split between adjacent locations (BTC p.113). (BTC pp.117-118)." }, "compendium-rules-of-warfare": { book: "BTC:RoW", page: 105, name: "Arrow IV System", heat: 10, damage: 20, damageAdjacent: 10, rangeMapsheets: 5, weight: 15, criticals: 15, shotsPerTon: 5, cbills: 450000, notes: "Fires an area-saturation missile or a homing missile at a target designated by TAG (BTC:RoW p.113). Generally mounted in vehicles, sometimes in BattleMechs; rules in Artillery (BTC:RoW pp.77-80). Damage is to the target hex and to each adjacent hex; the maximum range is in mapsheets (BTC:RoW p.80). AC/20-type weapons, Arrow IV systems and artillery (Long Tom, Thumper, Sniper) may split their critical slots between two adjacent locations (BTC:RoW p.102)." }, "master-rules": { book: "BMR", page: 116, name: "Arrow IV System", heat: 10, damage: 20, damageAdjacent: 10, rangeMapsheets: 5, weight: 15, criticals: 15, shotsPerTon: 5, cbills: 450000, notes: "Fires a standard area-saturation missile or a homing missile at a target designated by TAG (BMR pp.71, 123-124). Generally mounted in vehicles, sometimes in BattleMechs; rules in Artillery (BMR pp.68-71). Damage is to the target hex and to each adjacent hex; the maximum range is in mapsheets (BMR p.71). AC/20-type weapons and artillery may split their critical slots between two adjacent locations (BMR p.114)." }, "master-rules-revised": { book: "BMR(R)", page: 122, name: "Arrow IV System", heat: 10, damage: 20, damageAdjacent: 10, rangeMapsheets: 5, weight: 15, criticals: 15, shotsPerTon: 5, cbills: 450000, notes: "Fires a standard area-saturation missile, a homing missile at a target designated by TAG, or FASCAM, Inferno-IV and Vibrabomb-IV rounds (BMR(R) pp.76-77, 131-132). Generally mounted in vehicles, sometimes in BattleMechs; rules in Artillery (BMR(R) pp.73-77). Damage is to the target hex and to each adjacent hex; the maximum range is in mapsheets (BMR(R) p.76). AC/20-type weapons, the Heavy Gauss rifle and artillery may split their critical slots between two adjacent locations (BMR(R) p.120)." } },
+        altNames: ["Arrow IV Missile"],
+        sort: "artillery, arrow iv",
+        category: "Artillery Weapons",
+        notes: "Missile-based artillery. Can be fired as indirect-fire area-saturation artillery at a map hex, or (with homing ammo and forward spotters carrying Target Acquisition Gear) as precision-guided indirect fire against a specific unit.",
+        damage: 20,
+        damageAero: 20,
+        accuracyModifier: 0,
+        cbills: 450000,
+        introduced: 2600,
+        extinct: 2830,
+        reintroduced: 3044,
+        prototype: 2593,
+        battleValue: 240,
+        heat: 10,
+        weight: 15,
+        range: {
+            min: 0,
+            maxMapSheets: 8, // Artillery range is in map sheets (was stored as long: 8)
+            short: 0,
+            medium: 0,
+            long: 0
+        },
+        space: {
+            battlemech: 15,
+            protomech: -1,
+            combatVehicle: 1,
+            supportVehicle: 7,
+            aerospaceFighter: 1,
+            smallCraft: 1,
+            dropShip: 1
+        },
+        shotsPerTon: 5,
+        ammoBattleValue: 30,
+        ammoTypes: ["ammo-is-arrow-iv-standard"],
+        minAmmoTons: 1,
+        explosive: false,
+        weaponType: [
+            "ART",
+            "M"
+        ],
+        techRating: "e",
+        book: "TO:AUE",
+        page: 96,
+        alphaStrike: {
+            heat: 0,
+            rangeShort: 0,
+            rangeMedium: 0,
+            rangeLong: 2,
+            rangeExtreme: 2,
+            tc: false,
+            notes: [
+                "artillery"
+            ]
+        },
+        heatAero: 10
+    },
+    { isAmmo: false, name: "Prototype Arrow IV", altNames: ["Prototype Arrow IV"], tag: "prototype-arrow-iv", editions: ["total-warfare", "battlemech-manual", "core-rulebook"], techBase: "is", altTags: [], catalog: "is", sort: "artillery, arrow iv, prototype", category: "Artillery Weapons", alternateName: "", damage: 20, notes: "IO prototype: Experimental rules only; prototype reliability rules apply.", damageAero: 20, accuracyModifier: 0, cbills: 1800000, introduced: null, extinct: 2600, reintroduced: null, battleValue: 240, heat: 10, weight: 16, range: { min: 0, short: 0, medium: 0, long: 0, maxMapSheets: 8 }, space: { battlemech: 16, protomech: -1, combatVehicle: 1, supportVehicle: 16, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, ammoTypes: ["ammo-is-arrow-iv-standard"], shotsPerTon: 5, ammoBattleValue: 30, minAmmoTons: 1, explosive: false, weaponType: ["ART", "M"], techRating: "e", book: "IO:AE", page: 64, alphaStrike: { heat: 0, rangeShort: 0, rangeMedium: 0, rangeLong: 2, rangeExtreme: 2, tc: false, notes: ["artillery", "Provisional: copied from the production weapon"] }, heatAero: 10, prototype: 2593 },
+    { isAmmo: false, name: "Cruise Missile/50", altNames: ["Cruise Missile 50", "ISCruiseMissile50"], tag: "cruise-missile-50", editions: ["total-warfare", "battlemech-manual", "core-rulebook"], techBase: "is", altTags: [], catalog: "is", sort: "artillery, cruise missile 050", category: "Artillery Weapons", alternateName: "", damage: 50, notes: "Cruise Missile Artillery (TO:AUE p.97): fires as standard artillery but never as Direct-Fire Artillery, with its own flight times (TO:AR p.149) and a wider blast (TO:AR p.152). Also available to mobile structures (1 slot). Dates from IO:AE p.31.", damageAero: 0, accuracyModifier: 0, cbills: 900000, introduced: 3095, extinct: null, reintroduced: null, battleValue: 601, heat: 50, weight: 55, range: { min: 0, short: 0, medium: 0, long: 0, maxMapSheets: 50 }, space: { battlemech: -1, protomech: -1, combatVehicle: 1, supportVehicle: 25, aerospaceFighter: -1, smallCraft: 1, dropShip: 1 }, ammoTypes: ["ammo-is-cruise-missile-50-standard"], shotsPerTon: 1 / 25, ammoBattleValue: 75 / 25, minAmmoTons: 25, explosive: false, weaponType: ["ART"], techRating: "e", rulesLevel: 4, book: "TO:AUE", page: 97, alphaStrike: { heat: 0, rangeShort: 0, rangeMedium: 0, rangeLong: 0, rangeExtreme: 0, tc: false, notes: ["artillery", "ART-CM5 (ASCE p.201)"] }, heatAero: 0, prototype: 3065 },
+    { isAmmo: false, name: "Cruise Missile/70", altNames: ["Cruise Missile 70", "ISCruiseMissile70"], tag: "cruise-missile-70", editions: ["total-warfare", "battlemech-manual", "core-rulebook"], techBase: "is", altTags: [], catalog: "is", sort: "artillery, cruise missile 070", category: "Artillery Weapons", alternateName: "", damage: 70, notes: "Cruise Missile Artillery (TO:AUE p.97): fires as standard artillery but never as Direct-Fire Artillery, with its own flight times (TO:AR p.149) and a wider blast (TO:AR p.152). Also available to mobile structures (1 slot). Dates from IO:AE p.31.", damageAero: 0, accuracyModifier: 0, cbills: 1250000, introduced: 3095, extinct: null, reintroduced: null, battleValue: 1031, heat: 70, weight: 80, range: { min: 0, short: 0, medium: 0, long: 0, maxMapSheets: 90 }, space: { battlemech: -1, protomech: -1, combatVehicle: 1, supportVehicle: 35, aerospaceFighter: -1, smallCraft: 1, dropShip: 1 }, ammoTypes: ["ammo-is-cruise-missile-70-standard"], shotsPerTon: 1 / 35, ammoBattleValue: 129 / 35, minAmmoTons: 35, explosive: false, weaponType: ["ART"], techRating: "e", rulesLevel: 4, book: "TO:AUE", page: 97, alphaStrike: { heat: 0, rangeShort: 0, rangeMedium: 0, rangeLong: 0, rangeExtreme: 0, tc: false, notes: ["artillery", "ART-CM7 (ASCE p.201)"] }, heatAero: 0, prototype: 3065 },
+    { isAmmo: false, name: "Cruise Missile/90", altNames: ["Cruise Missile 90", "ISCruiseMissile90"], tag: "cruise-missile-90", editions: ["total-warfare", "battlemech-manual", "core-rulebook"], techBase: "is", altTags: [], catalog: "is", sort: "artillery, cruise missile 090", category: "Artillery Weapons", alternateName: "", damage: 90, notes: "Cruise Missile Artillery (TO:AUE p.97): fires as standard artillery but never as Direct-Fire Artillery, with its own flight times (TO:AR p.149) and a wider blast (TO:AR p.152). Also available to mobile structures (1 slot). Dates from IO:AE p.31.", damageAero: 0, accuracyModifier: 0, cbills: 2550000, introduced: 3095, extinct: null, reintroduced: null, battleValue: 1530, heat: 90, weight: 100, range: { min: 0, short: 0, medium: 0, long: 0, maxMapSheets: 120 }, space: { battlemech: -1, protomech: -1, combatVehicle: 1, supportVehicle: 45, aerospaceFighter: -1, smallCraft: 1, dropShip: 1 }, ammoTypes: ["ammo-is-cruise-missile-90-standard"], shotsPerTon: 1 / 45, ammoBattleValue: 191 / 45, minAmmoTons: 45, explosive: false, weaponType: ["ART"], techRating: "e", rulesLevel: 4, book: "TO:AUE", page: 97, alphaStrike: { heat: 0, rangeShort: 0, rangeMedium: 0, rangeLong: 0, rangeExtreme: 0, tc: false, notes: ["artillery", "ART-CM9 (ASCE p.201)"] }, heatAero: 0, prototype: 3065 },
+    { isAmmo: false, name: "Cruise Missile/120", altNames: ["Cruise Missile 120", "ISCruiseMissile120"], tag: "cruise-missile-120", editions: ["total-warfare", "battlemech-manual", "core-rulebook"], techBase: "is", altTags: [], catalog: "is", sort: "artillery, cruise missile 120", category: "Artillery Weapons", alternateName: "", damage: 120, notes: "Cruise Missile Artillery (TO:AUE p.97): fires as standard artillery but never as Direct-Fire Artillery, with its own flight times (TO:AR p.149) and a wider blast (TO:AR p.152). Also available to mobile structures (1 slot). Dates from IO:AE p.31.", damageAero: 0, accuracyModifier: 0, cbills: 3000000, introduced: 3095, extinct: null, reintroduced: null, battleValue: 2281, heat: 120, weight: 135, range: { min: 0, short: 0, medium: 0, long: 0, maxMapSheets: 150 }, space: { battlemech: -1, protomech: -1, combatVehicle: 1, supportVehicle: 60, aerospaceFighter: -1, smallCraft: 1, dropShip: 1 }, ammoTypes: ["ammo-is-cruise-missile-120-standard"], shotsPerTon: 1 / 60, ammoBattleValue: 285 / 60, minAmmoTons: 60, explosive: false, weaponType: ["ART"], techRating: "e", rulesLevel: 4, book: "TO:AUE", page: 97, alphaStrike: { heat: 0, rangeShort: 0, rangeMedium: 0, rangeLong: 0, rangeExtreme: 0, tc: false, notes: ["artillery", "ART-CM12 (ASCE p.201)"] }, heatAero: 0, prototype: 3065 },
+    { isAmmo: false, name: "Primitive Prototype Long Tom", altNames: ["Primitive Prototype Long Tom Artillery"], tag: "primitive-prototype-long-tom", editions: ["total-warfare", "battlemech-manual", "core-rulebook"], techBase: "is", altTags: [], catalog: "is", sort: "artillery, long tom, primitive prototype", category: "Artillery Weapons", alternateName: "", damage: 25, notes: "Primitive prototype: jams on a to-hit roll of 2 and cannot be cleared in battle; carries three-quarters of the Long Tom's ammunition per ton (4 shots). Weight, cost and space are the Long Tom's (IO:AE p.112). Like the Long Tom, it has no 'Mech space except on a superheavy 'Mech.", damageAero: 25, accuracyModifier: 0, cbills: 450000, introduced: null, extinct: 2500, reintroduced: null, battleValue: 368, heat: 20, weight: 30, range: { min: 0, short: 0, medium: 0, long: 0, extreme: 0, maxMapSheets: 30 }, space: { battlemech: 30, protomech: -1, combatVehicle: 1, supportVehicle: 15, aerospaceFighter: -1, smallCraft: 1, dropShip: 1 }, ammoTypes: ["ammo-long-tom-standard"], shotsPerTon: 4, ammoBattleValue: 35, minAmmoTons: 1, explosive: false, weaponType: ["ART"], techRating: "c", book: "IO:AE", page: 112, alphaStrike: { heat: 0, rangeShort: 0, rangeMedium: 0, rangeLong: 3, rangeExtreme: 3, tc: false, notes: ["artillery", "Provisional: copied from the production weapon"] }, heatAero: 20, prototype: 2445 },
+    {
+        name: "Long Tom Cannon",
+        tag: "long-tom-cannon",
+        editions: ["total-warfare", "battlemech-manual", "core-rulebook"],
+        techBase: "is",
+        altNames: ["Long Tom Artillery Cannon"],
+        altTags: [],
+        sort: "artillery, cannon, long tom",
+        category: "Artillery Weapons",
+        notes: "Direct-fire artillery cannon; unlike tube artillery it targets a unit directly instead of a map hex.",
+        damage: 20,
+        damageAero: 20,
+        accuracyModifier: 0,
+        cbills: 650000,
+        introduced: 3079,
+        extinct: null,
+        reintroduced: null,
+        prototype: 3012,
+        battleValue: 329,
+        heat: 20,
+        weight: 20,
+        range: {
+            min: 4,
+            short: 6,
+            medium: 13,
+            long: 20,
+            extreme: 30
+        },
+        space: {
+            battlemech: 15,
+            protomech: -1,
+            combatVehicle: 1,
+            supportVehicle: 15,
+            aerospaceFighter: 1,
+            smallCraft: 1,
+            dropShip: 1
+        },
+        shotsPerTon: 5,
+        ammoBattleValue: 41,
+        minAmmoTons: 1,
+        explosive: false,
+        weaponType: [
+            "ARTC"
+        ],
+        techRating: "b",
+        book: "TO:AUE",
+        page: 97,
+        alphaStrike: {
+            heat: 20,
+            rangeShort: 1.32,
+            rangeMedium: 3,
+            rangeLong: 3,
+            rangeExtreme: 0,
+            tc: false,
+            notes: []
+        },
+        heatAero: 20,
+        catalog: "is"
+    },
+    {
+        name: "Sniper Cannon",
+        tag: "sniper-cannon",
+        editions: ["total-warfare", "battlemech-manual", "core-rulebook"],
+        techBase: "is",
+        altNames: ["Sniper Artillery Cannon"],
+        altTags: [],
+        sort: "artillery, cannon, sniper",
+        category: "Artillery Weapons",
+        notes: "Direct-fire artillery cannon; unlike tube artillery it targets a unit directly instead of a map hex.",
+        damage: 10,
+        damageAero: 10,
+        accuracyModifier: 0,
+        cbills: 475000,
+        introduced: 3079,
+        extinct: null,
+        reintroduced: null,
+        prototype: 3012,
+        battleValue: 77,
+        heat: 10,
+        weight: 15,
+        range: {
+            min: 2,
+            short: 4,
+            medium: 8,
+            long: 12,
+            extreme: 16
+        },
+        space: {
+            battlemech: 10,
+            protomech: -1,
+            combatVehicle: 1,
+            supportVehicle: 10,
+            aerospaceFighter: 1,
+            smallCraft: 1,
+            dropShip: 1
+        },
+        shotsPerTon: 10,
+        ammoBattleValue: 10,
+        minAmmoTons: 1,
+        explosive: false,
+        weaponType: [
+            "ARTC"
+        ],
+        techRating: "b",
+        book: "TO:AUE",
+        page: 97,
+        alphaStrike: {
+            heat: 10,
+            rangeShort: 0.83,
+            rangeMedium: 1,
+            rangeLong: 0,
+            rangeExtreme: 0,
+            tc: false,
+            notes: []
+        },
+        heatAero: 10,
+        catalog: "is"
+    },
+    {
+        name: "Thumper Cannon",
+        tag: "thumper-cannon",
+        editions: ["total-warfare", "battlemech-manual", "core-rulebook"],
+        techBase: "is",
+        altNames: ["Thumper Artillery Cannon"],
+        altTags: [],
+        sort: "artillery, cannon, thumper",
+        category: "Artillery Weapons",
+        notes: "Direct-fire artillery cannon; unlike tube artillery it targets a unit directly instead of a map hex.",
+        damage: 5,
+        damageAero: 5,
+        accuracyModifier: 0,
+        cbills: 200000,
+        introduced: 3079,
+        extinct: null,
+        reintroduced: null,
+        prototype: 3012,
+        battleValue: 41,
+        heat: 5,
+        weight: 10,
+        range: {
+            min: 3,
+            short: 4,
+            medium: 9,
+            long: 14,
+            extreme: 21
+        },
+        space: {
+            battlemech: 7,
+            protomech: -1,
+            combatVehicle: 1,
+            supportVehicle: 7,
+            aerospaceFighter: 1,
+            smallCraft: 1,
+            dropShip: 1
+        },
+        shotsPerTon: 20,
+        ammoBattleValue: 5,
+        minAmmoTons: 1,
+        explosive: false,
+        weaponType: [
+            "ARTC"
+        ],
+        techRating: "b",
+        book: "TO:AUE",
+        page: 97,
+        alphaStrike: {
+            heat: 5,
+            rangeShort: 0.375,
+            rangeMedium: 0.5,
+            rangeLong: 0,
+            rangeExtreme: 0,
+            tc: false,
+            notes: []
+        },
+        heatAero: 5,
+        catalog: "is"
+    },
+    {
+        name: "Arrow IV System (Clan)",
+        altNames: ["Clan Arrow IV", "Arrow IV Missile", "CLArrowIV"],
+        tag: "clan-arrow-iv-system",
+        editions: ["battletech-compendium", "compendium-rules-of-warfare", "master-rules", "master-rules-revised", "total-warfare", "battlemech-manual", "core-rulebook"],
+        techBase: "clan",
+        introducedInEdition: "battletech-compendium", editionStats: { "battletech-compendium": { book: "BTC", page: 115, name: "Arrow IV System", heat: 10, damage: 20, damageAdjacent: 10, rangeMapsheets: 6, weight: 12, criticals: 12, shotsPerTon: 5, cbills: 450000, notes: "Missile artillery: range in mapsheets, 20 points to the target hex and 10 to the adjacent hexes with a standard missile. A homing missile needs a TAG-equipped spotter and hits on 4+ once the target is designated: 20 points to the target, 5 to anything else in the hex. The launcher's critical slots may be split between adjacent locations (BTC p.113). (BTC pp.117-118). The Clan launcher can also fire a FASCAM round that lays a 30-point minefield in the target hex (BTC p.117)." }, "compendium-rules-of-warfare": { book: "BTC:RoW", page: 104, name: "Arrow IV System", heat: 10, damage: 20, damageAdjacent: 10, rangeMapsheets: 6, weight: 12, criticals: 12, shotsPerTon: 5, cbills: 450000, notes: "Fires an area-saturation missile, a homing missile at a target designated by TAG, or, in the Clan version only, a FASCAM round that lays a 30-point minefield (BTC:RoW p.113). Generally mounted in vehicles, sometimes in BattleMechs; rules in Artillery (BTC:RoW pp.77-80). Damage is to the target hex and to each adjacent hex; the maximum range is in mapsheets (BTC:RoW p.80). AC/20-type weapons, Arrow IV systems and artillery (Long Tom, Thumper, Sniper) may split their critical slots between two adjacent locations (BTC:RoW p.102)." }, "master-rules": { book: "BMR", page: 117, name: "Arrow IV System", heat: 10, damage: 20, damageAdjacent: 10, rangeMapsheets: 6, weight: 12, criticals: 12, shotsPerTon: 5, cbills: 450000, notes: "Fires a standard area-saturation missile, a homing missile at a target designated by TAG, or, in the Clan version only, a FASCAM round that lays a 30-point minefield (BMR pp.71, 123-124). Generally mounted in vehicles, sometimes in BattleMechs; rules in Artillery (BMR pp.68-71). Damage is to the target hex and to each adjacent hex; the maximum range is in mapsheets (BMR p.71). AC/20-type weapons and artillery may split their critical slots between two adjacent locations (BMR p.114)." }, "master-rules-revised": { book: "BMR(R)", page: 123, name: "Arrow IV System", heat: 10, damage: 20, damageAdjacent: 10, rangeMapsheets: 6, weight: 12, criticals: 12, shotsPerTon: 5, cbills: 450000, notes: "Fires a standard area-saturation missile, a homing missile at a target designated by TAG, or a FASCAM round that lays a 30-point minefield; of the special munitions only FASCAM and homing missiles are available to Clan units (BMR(R) pp.76-77, 131-132). Generally mounted in vehicles, sometimes in BattleMechs; rules in Artillery (BMR(R) pp.73-77). Damage is to the target hex and to each adjacent hex; the maximum range is in mapsheets (BMR(R) p.76). AC/20-type weapons, the Heavy Gauss rifle and artillery may split their critical slots between two adjacent locations (BMR(R) p.120)." } },
+        // Old tag shared with the IS record; kept so existing Clan saves resolve
+        altTags: ["arrow-iv-system"],
+        sort: "artillery, arrow iv, clan",
+        category: "Artillery Weapons",
+        notes: "Missile-based artillery. Fires as indirect area-saturation artillery across map sheets, or pairs with Target Acquisition Gear (TAG) for precision-guided homing strikes against specific hexes.",
+        damage: 20,
+        damageAero: 20,
+        accuracyModifier: 0,
+        cbills: 450000,
+        introduced: 2844,
+        extinct: null,
+        reintroduced: null,
+        battleValue: 240,
+        heat: 10,
+        weight: 12,
+        range: {
+            min: 0,
+            maxMapSheets: 9, // Artillery scales across full map sheets rather than immediate hexes
+            short: 0,
+            medium: 0,
+            long: 0,
+            extreme: 0
+        },
+        space: {
+            battlemech: 12,
+            protomech: -1,
+            combatVehicle: 1,
+            supportVehicle: 6,
+            aerospaceFighter: 1,
+            smallCraft: 1,
+            dropShip: 1
+        },
+        shotsPerTon: 5,
+        ammoBattleValue: 30,
+        ammoTypes: ["ammo-clan-arrow-iv-standard"],
+        minAmmoTons: 1,
+        explosive: false,
+        weaponType: ["ART","M"],
+        techRating: "f",
+        book: "TO:AUE",
+        page: 96,
+        alphaStrike: {
+            specialAbility: ["ARTA4", "A4H"],
+            damageAoE: 2,
+            heat: 10,
+            rangeShort: 0,
+            rangeMedium: 0,
+            rangeLong: 0,
+            rangeExtreme: 0,
+            tc: false,
+            notes: ["Bypasses brackets via the ARTA4 trait to place a 2-point AoE strike anywhere on the board."]
+        },
+        heatAero: 10,
+        rangeAero: "s" // Short-range payload designation for low-altitude striking/bombing rules
+    },
+    {
+        name: "Long Tom Cannon (Clan)",
+        tag: "clan-long-tom-cannon",
+        editions: ["total-warfare", "battlemech-manual", "core-rulebook"],
+        techBase: "clan",
+        altNames: ["Long Tom Artillery Cannon (Clan)", "Long Tom Artillery Cannon"],
+        altTags: ["long-tom-cannon"],
+        sort: "artillery, cannon, long tom",
+        category: "Artillery Weapons",
+        notes: "Direct-fire artillery cannon; unlike tube artillery it targets a unit directly instead of a map hex.",
+        damage: 20,
+        damageAero: 20,
+        accuracyModifier: 0,
+        cbills: 650000,
+        introduced: 3079,
+        extinct: null,
+        reintroduced: null,
+        prototype: 3032,
+        battleValue: 329,
+        heat: 20,
+        weight: 20,
+        range: {
+            min: 4,
+            short: 6,
+            medium: 13,
+            long: 20,
+            extreme: 30
+        },
+        space: {
+            battlemech: 15,
+            protomech: -1,
+            combatVehicle: 1,
+            supportVehicle: 15,
+            aerospaceFighter: 1,
+            smallCraft: 1,
+            dropShip: 1
+        },
+        shotsPerTon: 5,
+        ammoBattleValue: 41,
+        minAmmoTons: 1,
+        explosive: false,
+        weaponType: [
+            "ARTC"
+        ],
+        techRating: "b",
+        book: "TO:AUE",
+        page: 97,
+        alphaStrike: {
+            heat: 20,
+            rangeShort: 1.32,
+            rangeMedium: 3,
+            rangeLong: 3,
+            rangeExtreme: 0,
+            tc: false,
+            notes: []
+        },
+        heatAero: 20,
+        catalog: "clan",
+        ammoTypes: ["ammo-long-tom-cannon-standard"]
+    },
+    {
+        name: "Sniper Cannon (Clan)",
+        tag: "clan-sniper-cannon",
+        editions: ["total-warfare", "battlemech-manual", "core-rulebook"],
+        techBase: "clan",
+        altNames: ["Sniper Artillery Cannon (Clan)", "Sniper Artillery Cannon"],
+        altTags: ["sniper-cannon"],
+        sort: "artillery, cannon, sniper",
+        category: "Artillery Weapons",
+        notes: "Direct-fire artillery cannon; unlike tube artillery it targets a unit directly instead of a map hex.",
+        damage: 10,
+        damageAero: 10,
+        accuracyModifier: 0,
+        cbills: 475000,
+        introduced: 3079,
+        extinct: null,
+        reintroduced: null,
+        prototype: 3032,
+        battleValue: 77,
+        heat: 10,
+        weight: 15,
+        range: {
+            min: 2,
+            short: 4,
+            medium: 8,
+            long: 12,
+            extreme: 16
+        },
+        space: {
+            battlemech: 10,
+            protomech: -1,
+            combatVehicle: 1,
+            supportVehicle: 10,
+            aerospaceFighter: 1,
+            smallCraft: 1,
+            dropShip: 1
+        },
+        shotsPerTon: 10,
+        ammoBattleValue: 10,
+        minAmmoTons: 1,
+        explosive: false,
+        weaponType: [
+            "ARTC"
+        ],
+        techRating: "b",
+        book: "TO:AUE",
+        page: 97,
+        alphaStrike: {
+            heat: 10,
+            rangeShort: 0.83,
+            rangeMedium: 1,
+            rangeLong: 0,
+            rangeExtreme: 0,
+            tc: false,
+            notes: []
+        },
+        heatAero: 10,
+        catalog: "clan",
+        ammoTypes: ["ammo-sniper-cannon-standard"]
+    },
+    {
+        name: "Thumper Cannon (Clan)",
+        tag: "clan-thumper-cannon",
+        editions: ["total-warfare", "battlemech-manual", "core-rulebook"],
+        techBase: "clan",
+        altNames: ["Thumper Artillery Cannon (Clan)", "Thumper Artillery Cannon"],
+        altTags: ["thumper-cannon"],
+        sort: "artillery, cannon, thumper",
+        category: "Artillery Weapons",
+        notes: "Direct-fire artillery cannon; unlike tube artillery it targets a unit directly instead of a map hex.",
+        damage: 5,
+        damageAero: 5,
+        accuracyModifier: 0,
+        cbills: 200000,
+        introduced: 3079,
+        extinct: null,
+        reintroduced: null,
+        prototype: 3032,
+        battleValue: 41,
+        heat: 5,
+        weight: 10,
+        range: {
+            min: 3,
+            short: 4,
+            medium: 9,
+            long: 14,
+            extreme: 21
+        },
+        space: {
+            battlemech: 7,
+            protomech: -1,
+            combatVehicle: 1,
+            supportVehicle: 7,
+            aerospaceFighter: 1,
+            smallCraft: 1,
+            dropShip: 1
+        },
+        shotsPerTon: 20,
+        ammoBattleValue: 5,
+        minAmmoTons: 1,
+        explosive: false,
+        weaponType: [
+            "ARTC"
+        ],
+        techRating: "b",
+        book: "TO:AUE",
+        page: 97,
+        alphaStrike: {
+            heat: 5,
+            rangeShort: 0.375,
+            rangeMedium: 0.5,
+            rangeLong: 0,
+            rangeExtreme: 0,
+            tc: false,
+            notes: []
+        },
+        heatAero: 5,
+        catalog: "clan",
+        ammoTypes: ["ammo-thumper-cannon-standard"]
+    },
     { isAmmo: false, name: "Nail Gun", altNames: ["Rivet Gun", "Nail Gun/Rivet Gun (C)"], tag: "nail-gun", editions: ["total-warfare", "battlemech-manual", "core-rulebook"], techBase: "universal", ammoTypes: ["ammo-nail-rivet-gun-standard"], altTags: ["rivet-gun", "nail-rivet-gun-clan"], sort: "nail gun/rivet gun", category: "Ballistic Weapons", damage: 0, notes: "Nail or rivet gun: one-hex range only (TM p.344 prints no medium or long bracket, stored here as 0). Must be declared as one or the other when mounted (TM p.246).", damageAero: 0, accuracyModifier: 0, cbills: 7000, introduced: 2310, extinct: null, reintroduced: null, prototype: 2309, battleValue: 1, heat: 0, heatAero: 0, weight: 0.5, ammoBattleValue: 0, range: { min: 0, short: 1, medium: 0, long: 0 }, space: { battlemech: 1, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: -1, smallCraft: -1, dropShip: -1 }, shotsPerTon: 300, minAmmoTons: 1, explosive: false, weaponType: ["DB"], techRating: "c", book: "TM", page: 246, alphaStrike: { heat: 0, rangeShort: 0.05, rangeMedium: 0, rangeLong: 0, rangeExtreme: 0, tc: false, notes: ["Provisional workbook conversion"] }, rangeAero: "", },
     { isAmmo: false, name: "Thumper Artillery Piece", altNames: ["Thumper", "ISThumper"], tag: "thumper-artillery", editions: ["battletech-manual", "battletech-compendium", "compendium-rules-of-warfare", "master-rules", "master-rules-revised", "total-warfare", "battlemech-manual", "core-rulebook"], techBase: "universal", introducedInEdition: "battletech-manual", editionStats: { "battletech-manual": { book: "BTM", page: 87, name: "Thumper", heat: 6, damage: 5, damageAdjacent: 2, rangeMapsheets: 14, weight: 15, criticals: 15, shotsPerTon: 20, cbills: 187500, notes: "Off-board artillery: fires at a hex, with the damage to the adjacent hexes given separately; range is in mapsheets (BTM pp.41-43, 87). Both the Weapons Table and the Artillery Piece Table (BTM p.42) give the Thumper the longer range, 14 against the Sniper's 12; entered as printed." }, "battletech-compendium": { book: "BTC", page: 116, name: "Thumper", heat: 6, damage: 5, damageAdjacent: 2, rangeMapsheets: 14, weight: 15, criticals: 15, shotsPerTon: 20, cbills: 187500, notes: "Off-board artillery: fires at a hex, with the damage to the adjacent hexes given separately; range is in mapsheets (BTC pp.49, 116). New: a piece on the map may fire directly at a hex in its line of sight, base to-hit number 9 (BTC p.50). Its critical slots may be split between adjacent locations (BTC p.113). The Clan table prints the same row (BTC p.115). Both the weapons tables and the Artillery Pieces table (BTC p.49) still give the Thumper the longer range, 14 against the Sniper's 12; entered as printed." }, "compendium-rules-of-warfare": { book: "BTC:RoW", page: 106, name: "Thumper", heat: 6, damage: 5, damageAdjacent: 2, rangeMapsheets: 14, weight: 15, criticals: 15, shotsPerTon: 20, cbills: 187500, notes: "The same row on the Clan table (BTC:RoW p.104). Generally mounted in vehicles, sometimes in BattleMechs; rules in Artillery (BTC:RoW pp.77-80). Damage is to the target hex and to each adjacent hex; the maximum range is in mapsheets (BTC:RoW p.80). AC/20-type weapons, Arrow IV systems and artillery (Long Tom, Thumper, Sniper) may split their critical slots between two adjacent locations (BTC:RoW p.102)." }, "master-rules": { book: "BMR", page: 116, name: "Thumper", heat: 6, damage: 5, damageAdjacent: 2, rangeMapsheets: 14, weight: 15, criticals: 15, shotsPerTon: 20, cbills: 187500, notes: "The same row on the Clan table (BMR p.117). Generally mounted in vehicles, sometimes in BattleMechs; rules in Artillery (BMR pp.68-71). Damage is to the target hex and to each adjacent hex; the maximum range is in mapsheets (BMR p.71). AC/20-type weapons and artillery may split their critical slots between two adjacent locations (BMR p.114)." }, "master-rules-revised": { book: "BMR(R)", page: 122, name: "Thumper", heat: 6, damage: 5, damageAdjacent: 2, rangeMapsheets: 14, weight: 15, criticals: 15, shotsPerTon: 20, cbills: 187500, notes: "The same row on the Clan table (BMR(R) p.123). Generally mounted in vehicles, sometimes in BattleMechs; rules in Artillery (BMR(R) pp.73-77). Damage is to the target hex and to each adjacent hex; the maximum range is in mapsheets (BMR(R) p.76). AC/20-type weapons, the Heavy Gauss rifle and artillery may split their critical slots between two adjacent locations (BMR(R) p.120)." } }, altTags: [], sort: "artillery, thumper", category: "Artillery Weapons", weaponType: ["ART"], notes: "Indirect-fire tube artillery. Targets a physical map hex rather than a specific unit; damage resolves via area-burst radius templates across map sheets.", damage: 15, damageAero: 2, accuracyModifier: 0, cbills: 187500, introduced: 1950, /* Originally engineered as archaic field artillery during the Early Age of War */ extinct: null, reintroduced: null, battleValue: 43, heat: 6, weight: 15, range: { min: 0, short: 0, medium: 0, long: 0, extreme: 0, maxMapSheets: 21 }, space: { battlemech: 15, protomech: -1, combatVehicle: 1, supportVehicle: 7, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, shotsPerTon: 20, ammoBattleValue: 5, minAmmoTons: 1, explosive: false, techRating: "b", book: "TO:AUE", page: 96, alphaStrike: { specialAbility: ["ARTTH"], damageAoE: 1, heat: 0, rangeShort: 0, rangeMedium: 0, rangeLong: 0, rangeExtreme: 0, tc: false, notes: ["Bypasses brackets via the ARTTH trait to place a 1-point AoE strike anywhere on the board."] }, heatAero: 6, rangeAero: "s" /* Short-range tactical mapping for atmosphere/low-altitude strike rules */ },
     {
@@ -272,16 +756,3 @@ export const mechUniversalEquipment: IEquipmentItem[] = [
     // is MegaMek's placeholder year for that era.
     { isEquipment: true, isAmmo: false, name: "Fuel Tank (LAM)", altNames: ["LAM Fuel Tank", "Fuel Tank"], tag: "lam-fuel-tank", editions: ["total-warfare", "battlemech-manual", "core-rulebook"], techBase: "universal", altTags: [], sort: "equipment, lam fuel tank", category: "Miscellaneous Equipment", alternateName: "", damage: 0, notes: "LAM only. Each tank adds 80 fuel points (IO:AE p.214); the engine carries 1 ton of fuel with no slot (IO:AE p.108). Each slot is -15 BV like explosive ammo (IO:AE p.186).", damageAero: 0, accuracyModifier: 0, cbills: 200, introduced: 2100, extinct: null, reintroduced: null, battleValue: 0, heat: 0, heatAero: 0, weight: 1, range: { min: 0, short: 0, medium: 0, long: 0 }, space: { battlemech: 1, protomech: -1, combatVehicle: -1, supportVehicle: -1, aerospaceFighter: -1, smallCraft: -1, dropShip: -1 }, shotsPerTon: 0, minAmmoTons: 0, weaponType: [], techRating: "b", book: "IO:AE", page: 215, alphaStrike: { specialAbility: [], heat: 0, rangeShort: 0, rangeMedium: 0, rangeLong: 0, rangeExtreme: 0, tc: false, notes: ["FUEL = fuel points x 0.05, rounded (via MegaMek)"] }, chassisTypes: ["lam"], rulesLevel: 2 },
 ];
-
-const universalEquipmentTags = new Set([
-    ...mechUniversalEquipment.map(item => item.tag),
-    ...mechUniversalAmmo.map(item => item.tag),
-]);
-
-export function isUniversalEquipment(item: IEquipmentItem): boolean {
-    return item.catalog === "universal" || universalEquipmentTags.has(item.tag);
-}
-
-export function hasUniversalEquipmentMetrics(item: IEquipmentItem, counterpart: IEquipmentItem): boolean {
-    return hasUniversalMetrics(item, counterpart);
-}

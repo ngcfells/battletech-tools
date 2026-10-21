@@ -1,17 +1,19 @@
 import { describe, expect, it } from "vitest";
 import { calculateShotsPerTon, equipmentMatchesIdentifier, getAlphaStrikeEquipmentAbilityCodes, getAlphaStrikeEquipmentDisplayAbilityCodes, getAmmoBattleValuePerTon, getAmmoFamily, getCompatibleAmmo, getEquipmentCatalogDefinitions, getEquipmentCatalogSummaries, getEquipmentTier, getEquipmentListByTech, getEquipmentListForChassis, getEquipmentMaximumRangeInHexes, getWeaponShotsPerTon, getWeaponAmmoFamilies } from "./equipment-registry";
-import { mechUniversalEquipment } from "./mech-universal-equipment";
+import { equipmentArtillery } from "./equipment-artillery";
 import { mechUniversalAmmo } from "./mech-universal-ammo";
 import { mechCustomAmmo } from "./mech-custom-ammo";
 import { mechClanAmmo } from "./mech-clan-ammo";
 import { mechISAmmo } from "./mech-is-ammo";
 import { equipmentEnergy } from "./equipment-energy";
 
+const universalArtilleryList = equipmentArtillery.filter((item) => item.techBase === "universal");
+
 const clanEnergyList = equipmentEnergy.filter((item) => item.techBase === "clan");
 
 describe("equipment catalog provenance", () => {
     it("resolves equipment aliases and preserves artillery map-sheet range", () => {
-        const thumper = mechUniversalEquipment.find(item => item.tag === "thumper-artillery")!;
+        const thumper = universalArtilleryList.find(item => item.tag === "thumper-artillery")!;
 
         expect(equipmentMatchesIdentifier(thumper, "Thumper")).toBe(true);
         expect(equipmentMatchesIdentifier(thumper, "thumper-artillery")).toBe(true);
@@ -48,7 +50,7 @@ describe("equipment catalog provenance", () => {
             expect(clanMortar, `clan-mech-mortar-${size}`).toBeDefined();
             expect(getCompatibleAmmo(isMortar, is)).toBe(true);
             expect(getCompatibleAmmo(clanMortar, clan)).toBe(true);
-            expect(mechUniversalEquipment.some(item => item.tag === isMortar.tag || item.tag === clanMortar.tag)).toBe(false);
+            expect(universalArtilleryList.some(item => item.tag === isMortar.tag || item.tag === clanMortar.tag)).toBe(false);
         }
         // The Clan tag is a record of its own. It keeps the old universal tag as an alias, so Clan designs
         // saved before the split still load; an exact tag always beats an alias.
@@ -125,7 +127,7 @@ describe("equipment catalog provenance", () => {
     });
 
     it("the canon artillery pieces carry TO:AUE p.96 heat and only their own names", () => {
-        const piece = (tag: string) => mechUniversalEquipment.find(item => item.tag === tag)!;
+        const piece = (tag: string) => universalArtilleryList.find(item => item.tag === tag)!;
 
         expect(piece("thumper-artillery").heat).toBe(6);
         expect(piece("thumper-artillery").heatAero).toBe(6);
@@ -136,7 +138,7 @@ describe("equipment catalog provenance", () => {
     });
 
     it("prefers explicit Alpha Strike specials over weapon type codes", () => {
-        const thumper = mechUniversalEquipment.find(item => item.tag === "thumper-artillery")!;
+        const thumper = universalArtilleryList.find(item => item.tag === "thumper-artillery")!;
 
         expect(getAlphaStrikeEquipmentAbilityCodes(thumper)).toEqual(["ARTTH"]);
         expect(getAlphaStrikeEquipmentDisplayAbilityCodes(thumper)).toEqual(["ARTTH 1"]);
@@ -326,12 +328,12 @@ describe("equipment catalog provenance", () => {
     });
 
     it("defines filename-owned universal equipment and ammo catalogs", () => {
-        const universal = getEquipmentCatalogDefinitions().find(catalog => catalog.id === "mech-universal-equipment");
+        const artillery = getEquipmentCatalogDefinitions().find(catalog => catalog.id === "equipment-artillery");
 
-        expect(universal?.id).toBe("mech-universal-equipment");
-        expect(universal?.equipment).toEqual(mechUniversalEquipment);
-        expect(new Set(universal?.equipment.map(item => item.tag)).size).toBe(universal?.equipment.length);
-        expect(mechUniversalEquipment.every(item => item.catalog === undefined)).toBe(true);
+        expect(artillery?.equipment).toEqual(equipmentArtillery);
+        expect(universalArtilleryList.length).toBeGreaterThan(0);
+        expect(new Set(universalArtilleryList.map(item => item.tag)).size).toBe(universalArtilleryList.length);
+        expect(universalArtilleryList.every(item => item.catalog === undefined)).toBe(true);
         // The catalog keeps growing (canon ammo is still being added), so check invariants, not a snapshot count.
         expect(mechUniversalAmmo.length).toBeGreaterThan(0);
         expect(mechUniversalAmmo.every(item => item.isAmmo)).toBe(true);
@@ -376,8 +378,8 @@ describe("equipment catalog provenance", () => {
 
     it("treats only equipment with identical IS and Clan windows as universal", () => {
         // IO gives the Vehicle Flamer the same window for both; the PPC Capacitor is not shared.
-        expect(mechUniversalEquipment.some(item => item.tag === "vehicle-flamer")).toBe(true);
-        expect(mechUniversalEquipment.some(item => item.tag === "ppc-capacitor")).toBe(false);
+        expect(universalArtilleryList.some(item => item.tag === "vehicle-flamer")).toBe(true);
+        expect(universalArtilleryList.some(item => item.tag === "ppc-capacitor")).toBe(false);
         expect(getEquipmentListByTech("clan").filter(item => item.tag === "vehicle-flamer")).toHaveLength(1);
         expect(getEquipmentListByTech("is").filter(item => item.tag === "vehicle-flamer")).toHaveLength(1);
     });
@@ -483,12 +485,12 @@ describe("equipment catalog provenance", () => {
         expect(getEquipmentListByTech("is").filter(item => item.tag === "mrm-10")[0].alphaStrike.rangeShort).toBe(0.57);
         expect(getEquipmentListByTech("clan").filter(item => item.tag === "streak-lrm-20")[0].notes).toContain("workbook");
         expect(getEquipmentListByTech("is").filter(item => item.tag === "vehicle-flamer")).toHaveLength(1);
-        expect(getEquipmentCatalogDefinitions().find(catalog => catalog.id === "mech-universal-equipment")?.equipment.some(item => item.tag === "vehicle-flamer")).toBe(true);
+        expect(getEquipmentCatalogDefinitions().find(catalog => catalog.id === "equipment-artillery")?.equipment.some(item => item.tag === "vehicle-flamer")).toBe(true);
         expect(getEquipmentListByTech("is").find(item => item.tag === "rocket-launcher-20")?.weight).toBe(1.5);
         expect(getEquipmentListByTech("is").filter(item => item.tag === "rocket-launcher-20")).toHaveLength(1);
         expect(getEquipmentListByTech("clan").find(item => item.tag === "clan-srm-2-artemis-iv")?.weight).toBe(1.5);
         expect(getEquipmentListByTech("clan").find(item => item.tag === "clan-srm-6-artemis-iv")?.space.battlemech).toBe(2);
-        expect(getEquipmentCatalogDefinitions().find(catalog => catalog.id === "mech-universal-equipment")?.equipment.find(item => item.tag === "ppc-capacitor")).toBeUndefined();
+        expect(getEquipmentCatalogDefinitions().find(catalog => catalog.id === "equipment-artillery")?.equipment.find(item => item.tag === "ppc-capacitor")).toBeUndefined();
     });
 
     it("covers the requested Clan missile families without Clan MRMs", () => {
