@@ -6,7 +6,8 @@ and submit to the community. Everything under **Established** was settled during
 
 ## 1. Introduction (TRO front matter)
 
-**Established**
+### Established
+
 - Name: **ArtVee**, short for Artillery Vehicle, patterned on QuadVee. Several Inner Sphere powers call them
   **MAPs** (Mobile Artillery Platforms).
 - Concept: a tracked tank that transforms the way a LAM does, between **Vehicle Mode** (it moves and fires its gun as
@@ -19,7 +20,8 @@ moves" essay.
 
 ## 2. Technology
 
-**Established**
+### Established
+
 - **The combo gun:** one physical weapon with two fire profiles. An artillery tube (Thumper, Sniper or Long Tom) takes
   a drop-in autocannon breech and a collapsible barrel for Vehicle Mode (AC/5, AC/10 or AC/20 respectively). The
   longer barrel gives the AC profile slightly longer reach than a standard autocannon. Separate magazines feed the
@@ -29,7 +31,8 @@ moves" essay.
 - **Transformation:** a whole turn's work. While it converts, the vehicle neither moves nor fires; the crew's only
   job is the conversion.
 - **Siege Mode:** the tracks lock, the turret turns freely through 360°, and the gun fires full artillery.
-- **Powerplant:** XL fusion (the engine has to power everything while the tank is static).
+- **Powerplant:** XL fusion, or XXL where the tech allows (the engine has to power everything while the tank is
+  static). The nine production patterns below all use XL.
 - **Armored Motive System:** recommended but not part of the original design. The Clans (Hell's Horses, 3057) and
   later the Inner Sphere (3071) fitted it.
 - **Smoke:** some patterns carry the Buckler Smoke Dispenser or the Smoker (both from *Future Wars* #32) to screen the
@@ -40,12 +43,13 @@ crew's drill and timing.
 
 ## 3. History
 
-**Established (timeline)**
+### Established (timeline)
+
 | Year | Event |
 | --- | --- |
 | 2690 | SLDF prototype ArtVee, fielded alongside its LAMs |
 | 2700 | SLDF production begins |
-| 2784 onward (Exodus) | The Clans take the design with them and never lose it |
+| 2784 (the Exodus; canon date) | The SLDF takes the design with it; the Clans that follow never lose it |
 | 2865 | Extinct in the Inner Sphere (lost in the Succession Wars) |
 | 3057 | Clan Hell's Horses fit Armored Motive to their ArtVees (prototype) |
 | 3071 | Reintroduced in the Inner Sphere by the Free Worlds League / IrTech, copying the Hell's Horses design; "MAP" becomes a common Inner Sphere name |
