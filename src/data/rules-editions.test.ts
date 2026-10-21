@@ -13,7 +13,7 @@ import { mechMyomerTypes } from "./mech-myomer-types";
 import { btMechTonnages } from "./mech-tonnages";
 import { mechTypeOptions } from "./mech-type-options";
 import {
-    DEFAULT_ALPHA_STRIKE_EDITION, DEFAULT_RULES_EDITION, asRulesEditions, btRulesExpansions, editionAllowsConstruction, editionEditsPrintedUnitsAfterWarning,
+    DEFAULT_ALPHA_STRIKE_EDITION, DEFAULT_RULES_EDITION, FANPRO_FIRST_EDITION, asRulesEditions, btRulesExpansions, editionAllowsConstruction, editionEditsPrintedUnitsAfterWarning,
     getEditionStats, getIntroducedInEdition, getRulesEditions, getRulesLevelOptionsForEdition, getSelectableAlphaStrikeEditions, getSelectableRulesEditions,
     getSelectableRulesExpansions, getShownRulesLevel, isInRulesEdition,
 } from "./rules-editions";
@@ -44,6 +44,11 @@ describe("Rules editions", () => {
         expect(new Set(editions.map(edition => edition.tag)).size).toBe(editions.length);
         expect(new Set(editions.map(edition => edition.book)).size).toBe(editions.length);
         expect(editions.some(edition => edition.tag === DEFAULT_RULES_EDITION)).toBe(true);
+    });
+
+    it("FanPro boundary is a listed edition, the Master Rules, Revised Edition", () => {
+        expect(getRulesEditions().some(edition => edition.tag === FANPRO_FIRST_EDITION)).toBe(true);
+        expect(FANPRO_FIRST_EDITION).toBe("master-rules-revised");
     });
 
     // CRB p.247 lists the core rulebooks before Total Warfare: BattleTech Manual (1987), BattleTech Compendium

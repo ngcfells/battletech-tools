@@ -460,6 +460,16 @@ export const btRulesEditions: IRulesEdition[] = [
 /** The edition a record belongs to when it does not say: the one the catalogs are written against. */
 export const DEFAULT_RULES_EDITION = "total-warfare";
 
+/**
+ * The first edition published after FanPro took over the line. FASA-era licensed material (BattleTechnology and the
+ * like) is canon in the editions before it that were current at its publication, and apocryphal from this one on
+ * (user ruling, 2026-10-21). The library's copy of the Master Rules, Revised Edition names its publisher on its credits
+ * page (BMR(R) p.4): "Published by FanPro LLC", "© 2001-2005 WizKids". That copy is a 2005 printing; its record
+ * sheets (BMR(R) p.2) still read "Copyright 2001" under FASA Corporation, so the first printing's publisher is not
+ * shown in the library.
+ */
+export const FANPRO_FIRST_EDITION = "master-rules-revised";
+
 export function getRulesEditions(): IRulesEdition[] {
     return btRulesEditions;
 }
