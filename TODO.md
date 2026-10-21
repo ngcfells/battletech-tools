@@ -607,7 +607,10 @@ in HeySporky/battletech-tools. All of it is merged into local `master` together 
   library first (the positive, negative and weapon quirk lists and which unit types each applies to) and
   cite them; then store quirks on the unit and on each mounted item, show them on the record sheet, apply
   their play effects, keep them in saves, and read and write them in the MegaMek and SSW adapters (which
-  already carry quirks, see "Shared" above).
+  already carry quirks, see "Shared" above). Design: docs/superpowers/specs/2026-10-21-quirks-design.md
+  (approved 2026-10-21), which adds targeting/tracking and comms systems as line items.
+- [ ] Much later: custom targeting/tracking (T&T) quirks drawn from the lore, beyond the Lost Issues table
+  (user, 2026-10-21). They go in as custom quirk and T&T records once the quirk catalog exists.
 
 - [ ] Cost, record sheet and Alpha Strike conversion should consume `roundsPerTon`/`shotsPerTon`,
   `prototype` and composite records.
