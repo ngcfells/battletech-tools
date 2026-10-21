@@ -311,6 +311,24 @@ describe("ArtVee construction", () => {
             expect(plain().applyCriticalHit("weaponDestroyed", "front", "artvee-conversion")).not.toContain("ArtVee Conversion");
         });
 
+        it("stays in its current mode when the conversion equipment is destroyed mid-transformation", () => {
+            const vehicle = thumperArtVee();
+            vehicle.startArtVeeTransformation();
+            vehicle.applyCriticalHit("weaponDestroyed", "front", "artvee-conversion");
+            vehicle.turnReset();
+            expect(vehicle.getArtVeeMode()).toBe("vehicle");
+            expect(vehicle.getInPlay().artVeeTransformingTo).toBe("");
+        });
+
+        it("stays in its current mode when the crew is killed mid-transformation", () => {
+            const vehicle = thumperArtVee();
+            vehicle.startArtVeeTransformation();
+            vehicle.applyCriticalHit("crewKilled", "front");
+            vehicle.turnReset();
+            expect(vehicle.getArtVeeMode()).toBe("vehicle");
+            expect(vehicle.getInPlay().artVeeTransformingTo).toBe("");
+        });
+
         it("keeps the mode in the save", () => {
             const vehicle = thumperArtVee();
             vehicle.startArtVeeTransformation();

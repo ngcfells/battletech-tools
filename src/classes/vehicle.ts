@@ -4499,8 +4499,9 @@ export default class Vehicle {
     public turnReset(): void {
         this.setMovement("stationary", 0);
         // A transformation declared this turn takes effect now.
+        // Destroyed conversion equipment or a killed crew strands the unit in its current Mode, even mid-transformation.
         if (this._inPlay.artVeeTransformingTo) {
-            this._inPlay.artVeeMode = this._inPlay.artVeeTransformingTo;
+            if (!this._inPlay.artVeeConversionDestroyed && !this._inPlay.criticals.crewKilled) this._inPlay.artVeeMode = this._inPlay.artVeeTransformingTo;
             this._inPlay.artVeeTransformingTo = "";
         }
         const c = this._inPlay.criticals;
