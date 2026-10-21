@@ -16,10 +16,13 @@ import { getRulesLevelOptions } from '../../../../data/rules-level-options';
 import { vehicleMotiveTypes } from '../../../../data/vehicle-motive-types';
 import { getVehicleTonnageBounds } from '../../../../data/vehicle-motive-types';
 import { SRCS_RULES_LEVEL } from '../../../../data/robotic-control-systems';
+import { getArtVeeIssues, getArtVeeVariant, getArtVeeWarnings } from '../../../../classes/vehicle-artvee';
 import { FaArrowCircleRight } from "react-icons/fa";
 import { availabilityOptionLabel, isOptionShown } from '../../../components/availability-options';
 import { SUPPORT_VEHICLE_CHASSIS_MODIFICATIONS, SUPPORT_VEHICLE_FIRE_CONTROL, SUPPORT_VEHICLE_TECH_RATINGS } from '../../../../data/support-vehicle-construction';
 const ArrowCircleRight = FaArrowCircleRight as any;
+
+const ARTVEE_VARIANT_LABELS = { "thumper": "Thumper / AC/5 combo", "sniper": "Sniper / AC/10 combo", "long-tom": "Long Tom / AC/20 combo" };
 
 export default class VehicleCreatorStep1 extends React.Component<IStep1Props, IStep1State> {
     constructor(props: IStep1Props) {
@@ -623,6 +626,34 @@ export default class VehicleCreatorStep1 extends React.Component<IStep1Props, IS
                                             Turret: {vehicle.getStructureAllocation().turret ?? 0} structure points; {vehicle.getTurretLoadedWeight()} tons loaded.
                                             {vehicle.getFrankenVehicleDrivingModifier() > 0 ? " Heavier than the original: +1 to Driving Skill Rolls." : ""}
                                         </p>
+                                    </fieldset>
+                                ) : null}
+
+                                {vehicle.isArtVee() || vehicle.canBeArtVee(rulesLevel) ? (
+                                    <div data-testid="artvee-option">
+                                    <InputCheckbox
+                                        label='ArtVee (Custom Homebrew: transforms between Vehicle and Siege Mode; "MAP" to some powers)'
+                                        checked={vehicle.isArtVee()}
+                                        onChange={(e) => {
+                                            const on = e.currentTarget.checked;
+                                            this.changeVehicle((current) => { current.setArtVee(on, rulesLevel); });
+                                        }}
+                                    />
+                                    </div>
+                                ) : null}
+                                {vehicle.isArtVee() ? (
+                                    <fieldset className="fieldset" data-testid="artvee">
+                                        <legend>ArtVee (Custom Homebrew)</legend>
+                                        <p className="smaller-text">
+                                            Conversion equipment: {vehicle.getArtVeeConversionWeight()} tons.
+                                            {" "}Variant: {getArtVeeVariant(vehicle) ? ARTVEE_VARIANT_LABELS[getArtVeeVariant(vehicle) as keyof typeof ARTVEE_VARIANT_LABELS] : "no combo gun yet"}.
+                                        </p>
+                                        {getArtVeeIssues(vehicle).map((issue) => (
+                                            <p key={issue} className="smaller-text color-red" data-testid="artvee-issue">{issue}</p>
+                                        ))}
+                                        {getArtVeeWarnings(vehicle, rulesLevel).map((warning) => (
+                                            <p key={warning} className="smaller-text" data-testid="artvee-warning">{warning}</p>
+                                        ))}
                                     </fieldset>
                                 ) : null}
 

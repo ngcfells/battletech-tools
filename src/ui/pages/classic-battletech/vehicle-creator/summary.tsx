@@ -6,6 +6,7 @@ import TextSection from '../../../components/text-section';
 import UIPage from '../../../components/ui-page';
 import SanitizedHTML from '../../../components/sanitized-html';
 import { formatVehicleASDamage } from '../../../../classes/vehicle';
+import { getArtVeeIssues, getArtVeeWarnings } from '../../../../classes/vehicle-artvee';
 
 export default class VehicleCreatorSummary extends React.Component<ISummaryProps, ISummaryState> {
     constructor(props: ISummaryProps) {
@@ -22,6 +23,8 @@ export default class VehicleCreatorSummary extends React.Component<ISummaryProps
         const structure = vehicle.getStructureAllocation();
         const maxArmor = vehicle.getMaxArmorAllocation();
         const armor = vehicle.getArmorAllocation();
+        const artVeeIssues = getArtVeeIssues(vehicle);
+        const artVeeWarnings = vehicle.isArtVee() ? getArtVeeWarnings(vehicle, this.props.appGlobals.appSettings.mechRulesFilter) : [];
 
         return (
             <UIPage current="classic-battletech-vehicle-creator" appGlobals={this.props.appGlobals}>
@@ -41,6 +44,13 @@ export default class VehicleCreatorSummary extends React.Component<ISummaryProps
                                 <strong>Battle Value</strong>: {vehicle.getBattleValue()} &nbsp;|&nbsp;
                                 <strong>C-Bill Cost</strong>: {vehicle.getCBillCost().toLocaleString()}
                             </p>
+
+                            {artVeeIssues.map((issue) => (
+                                <p key={issue} className="color-red" data-testid="artvee-issue">{issue}</p>
+                            ))}
+                            {artVeeWarnings.map((warning) => (
+                                <p key={warning} className="smaller-text" data-testid="artvee-warning">{warning}</p>
+                            ))}
 
                             <h3>Weight Summary</h3>
                             <table className="table">
