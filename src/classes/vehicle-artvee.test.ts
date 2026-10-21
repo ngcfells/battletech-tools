@@ -341,6 +341,7 @@ describe("ArtVee construction", () => {
             expect(vehicle.getWeaponToHitModifier(weapon)).not.toBeNull();
             vehicle.startArtVeeTransformation();
             expect(vehicle.getArtVeeWeaponBlock(weapon)).toBeNull();
+            expect(vehicle.getWeaponToHitModifier(weapon)).toBeNull();
             vehicle.turnReset();
             expect(vehicle.getArtVeeWeaponBlock(weapon)).toBeNull();
             expect(vehicle.getWeaponToHitModifier(weapon)).not.toBeNull();
