@@ -227,4 +227,110 @@ describe("ArtVee construction", () => {
         expect(dropped.isArtVee()).toBe(false);
         expect(dropped.getImportIssues()).toContain("Dropped the ArtVee conversion: the vehicle is not a tracked Combat Vehicle");
     });
+
+    describe("play", () => {
+        const withLaser = (): Vehicle => {
+            const vehicle = thumperArtVee();
+            vehicle.addEquipmentFromTag("medium-laser", "front");
+            return vehicle;
+        };
+        const combo = (vehicle: Vehicle): IEquipmentItem => getArtVeeComboGuns(vehicle)[0];
+        const laser = (vehicle: Vehicle): IEquipmentItem => vehicle.getEquipmentList().find((item) => item.tag === "medium-laser")!;
+
+        it("transforms in the Movement Phase; the new mode takes effect at the end of the turn", () => {
+            const vehicle = thumperArtVee();
+            expect(vehicle.getArtVeeMode()).toBe("vehicle");
+            expect(vehicle.startArtVeeTransformation()).toBeNull();
+            expect(vehicle.getArtVeeMode()).toBe("vehicle");
+            expect(vehicle.getInPlay().artVeeTransformingTo).toBe("siege");
+            expect(vehicle.startArtVeeTransformation()).toBe("it is already transforming");
+            vehicle.turnReset();
+            expect(vehicle.getArtVeeMode()).toBe("siege");
+            expect(vehicle.getInPlay().artVeeTransformingTo).toBe("");
+            expect(vehicle.startArtVeeTransformation()).toBeNull();
+            vehicle.turnReset();
+            expect(vehicle.getArtVeeMode()).toBe("vehicle");
+            expect(plain().startArtVeeTransformation()).toBe("it is not an ArtVee");
+        });
+
+        it("in Siege Mode has 0 MP but is not immobile", () => {
+            const vehicle = thumperArtVee();
+            expect(vehicle.getEffectiveCruiseMP()).toBe(4);
+            vehicle.startArtVeeTransformation();
+            vehicle.turnReset();
+            expect(vehicle.getEffectiveCruiseMP()).toBe(0);
+            expect(vehicle.getEffectiveFlankMP()).toBe(0);
+            expect(vehicle.isImmobile()).toBe(false);
+            expect(vehicle.getTargetMovementModifier()).toBe(0);
+            // The turret still turns through 360 degrees.
+            expect(vehicle.canRotateTurret("turret")).toBe(true);
+            expect(vehicle.setTurretFacing("turret", 3)).toBe(true);
+            expect(vehicle.getTurretFacing("turret")).toBe(3);
+        });
+
+        it("fires the combo gun's AC profile only in Vehicle Mode, and nothing on a transformation turn", () => {
+            const vehicle = thumperArtVee();
+            const gun = combo(vehicle);
+            expect(vehicle.getArtVeeWeaponBlock(gun)).toBeNull();
+            expect(vehicle.getWeaponToHitModifier(gun)).not.toBeNull();
+            vehicle.startArtVeeTransformation();
+            expect(vehicle.getArtVeeWeaponBlock(gun)).toBe("Transforming: the combo gun can't fire this turn");
+            expect(vehicle.getWeaponToHitModifier(gun)).toBeNull();
+            vehicle.turnReset();
+            expect(vehicle.getArtVeeWeaponBlock(gun)).toBe("Siege Mode: fires as the Thumper Artillery Piece artillery (artillery rules)");
+            expect(vehicle.getWeaponToHitModifier(gun)).toBeNull();
+            vehicle.startArtVeeTransformation();
+            vehicle.turnReset();
+            expect(vehicle.getArtVeeWeaponBlock(gun)).toBeNull();
+            expect(vehicle.getWeaponToHitModifier(gun)).not.toBeNull();
+        });
+
+        it("lets the other weapons fire in both modes", () => {
+            const vehicle = withLaser();
+            const weapon = laser(vehicle);
+            expect(vehicle.getArtVeeWeaponBlock(weapon)).toBeNull();
+            vehicle.startArtVeeTransformation();
+            expect(vehicle.getArtVeeWeaponBlock(weapon)).toBeNull();
+            expect(vehicle.getWeaponToHitModifier(weapon)).not.toBeNull();
+            vehicle.turnReset();
+            expect(vehicle.getArtVeeWeaponBlock(weapon)).toBeNull();
+            expect(vehicle.getWeaponToHitModifier(weapon)).not.toBeNull();
+        });
+
+        it("is stranded in its mode when the conversion equipment is destroyed", () => {
+            const vehicle = thumperArtVee();
+            // Only the conversion equipment is a candidate when it is the pick.
+            const text = vehicle.applyCriticalHit("weaponDestroyed", "front", "artvee-conversion");
+            expect(text).toContain("ArtVee Conversion Equipment destroyed: stuck in its current Mode");
+            expect(vehicle.getInPlay().artVeeConversionDestroyed).toBe(true);
+            expect(vehicle.startArtVeeTransformation()).toBe("the conversion equipment is destroyed");
+            expect(vehicle.getArtVeeMode()).toBe("vehicle");
+            // Once destroyed, it is no longer a candidate.
+            vehicle.applyCriticalHit("weaponDestroyed", "front", "artvee-conversion");
+            expect(vehicle.getInPlay().artVeeConversionDestroyed).toBe(true);
+            expect(plain().applyCriticalHit("weaponDestroyed", "front", "artvee-conversion")).not.toContain("ArtVee Conversion");
+        });
+
+        it("keeps the mode in the save", () => {
+            const vehicle = thumperArtVee();
+            vehicle.startArtVeeTransformation();
+            vehicle.turnReset();
+            vehicle.startArtVeeTransformation();
+            vehicle.getInPlay().artVeeConversionDestroyed = true;
+            const loaded = new Vehicle(JSON.stringify(vehicle.export(false)));
+            expect(loaded.getArtVeeMode()).toBe("siege");
+            expect(loaded.getInPlay().artVeeTransformingTo).toBe("vehicle");
+            expect(loaded.getInPlay().artVeeConversionDestroyed).toBe(true);
+
+            const old = JSON.parse(JSON.stringify(thumperArtVee().export(false)));
+            delete old.inPlay.artVeeMode;
+            delete old.inPlay.artVeeTransformingTo;
+            delete old.inPlay.artVeeConversionDestroyed;
+            const legacy = new Vehicle(JSON.stringify(old));
+            expect(legacy.getArtVeeMode()).toBe("vehicle");
+            expect(legacy.getInPlay().artVeeTransformingTo).toBe("");
+            expect(legacy.getInPlay().artVeeConversionDestroyed).toBe(false);
+            expect(JSON.parse(JSON.stringify(vehicle.export(true))).inPlay).toBeUndefined();
+        });
+    });
 });

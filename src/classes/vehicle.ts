@@ -1,6 +1,7 @@
 import { generateUUID } from "../utils/generateUUID";
 import { DEFAULT_RULES_EDITION, getSelectableRulesEditionTag } from "../data/rules-editions";
 import { getSkillMultiplier } from "../data/skill-multipliers";
+import { getComboArtillery } from "../data/artillery-custom";
 import {
     getDamageGroupings, getDualTurretHit, getFacingAfterFallDirection, getLargeNavalVesselHitLocation, getSuperheavyVehicleHitLocation, getVehicleCriticalEffect,
     getVehicleHitLocation, getVehicleMotiveDamageLevel, isRearwardAttack,
@@ -215,6 +216,12 @@ export interface IVehicleInPlay {
     towedTons: number;
     /** This Trailer is hitched to a Tractor; unhitched, an engineless Trailer is an immobile target (TW p.205). */
     beingTowed: boolean;
+    /** An ArtVee's current Mode; a save without it starts in Vehicle Mode. */
+    artVeeMode?: ArtVeeMode;
+    /** The Mode an ArtVee is transforming into this turn; it takes effect at the end of the turn. */
+    artVeeTransformingTo?: ArtVeeMode | "";
+    /** The ArtVee Conversion Equipment has been destroyed: the unit is stuck in its current Mode. */
+    artVeeConversionDestroyed?: boolean;
     /** Legacy flags from saves made before motiveHits. */
     motiveDamage?: IVehicleMotiveDamage;
 }
@@ -250,7 +257,13 @@ const newInPlay = (): IVehicleInPlay => ({
     targetAbove: false,
     towedTons: 0,
     beingTowed: false,
+    artVeeMode: "vehicle",
+    artVeeTransformingTo: "",
+    artVeeConversionDestroyed: false,
 });
+
+export type ArtVeeMode = "vehicle" | "siege";
+const ARTVEE_CONVERSION_PICK = "artvee-conversion";
 
 /** The fourth sensor hit makes it impossible for the vehicle to fire weapons (TW p. 195). */
 export const VEHICLE_MAX_SENSOR_HITS = 4;
@@ -360,6 +373,9 @@ export const normalizeVehicleInPlay = (saved: unknown): IVehicleInPlay => {
         targetAbove: flag(saved.targetAbove, defaults.targetAbove),
         towedTons: savedNumber(saved.towedTons, 0, 0, MAX_VEHICLE_CARGO_TONS),
         beingTowed: flag(saved.beingTowed, defaults.beingTowed),
+        artVeeMode: saved.artVeeMode === "siege" ? "siege" : "vehicle",
+        artVeeTransformingTo: saved.artVeeTransformingTo === "siege" || saved.artVeeTransformingTo === "vehicle" ? saved.artVeeTransformingTo : "",
+        artVeeConversionDestroyed: flag(saved.artVeeConversionDestroyed, false),
     };
 };
 
@@ -1342,6 +1358,41 @@ export default class Vehicle {
 
     public isArtVee(): boolean {
         return this._artVee;
+    }
+
+    /** The Mode an ArtVee is in; Vehicle Mode for anything else. */
+    public getArtVeeMode(): ArtVeeMode {
+        return this._artVee && this._inPlay.artVeeMode === "siege" ? "siege" : "vehicle";
+    }
+
+    private _artVeeConversionWorking(): boolean {
+        return this._artVee && !this._inPlay.artVeeConversionDestroyed;
+    }
+
+    /** Why a transformation can't be declared now, or null. */
+    public getArtVeeTransformationBlock(): string | null {
+        if (!this._artVee) return "it is not an ArtVee";
+        if (this._inPlay.artVeeConversionDestroyed) return "the conversion equipment is destroyed";
+        if (this._inPlay.artVeeTransformingTo) return "it is already transforming";
+        if (this._inPlay.criticals.crewKilled) return "the crew is killed";
+        return null;
+    }
+
+    /** Declares a transformation in the Movement Phase (LAM timing). Null on success, otherwise the reason it can't. */
+    public startArtVeeTransformation(): string | null {
+        const block = this.getArtVeeTransformationBlock();
+        if (block) return block;
+        this._inPlay.artVeeTransformingTo = this.getArtVeeMode() === "siege" ? "vehicle" : "siege";
+        return null;
+    }
+
+    /** Why a weapon can't fire in the ArtVee's current Mode, or null. Only the combo gun is Mode-limited. */
+    public getArtVeeWeaponBlock(weapon: IEquipmentItem): string | null {
+        if (!this._artVee || !weapon.comboArtilleryTag) return null;
+        if (this._inPlay.artVeeTransformingTo) return "Transforming: the combo gun can't fire this turn";
+        if (this.getArtVeeMode() !== "siege") return null;
+        const piece = getComboArtillery(weapon)?.name ?? "artillery";
+        return `Siege Mode: fires as the ${piece} artillery (artillery rules)`;
     }
 
     /** A Custom Homebrew rule for tracked Combat Vehicles up to 100 t, in an era the conversion equipment is in date for. */
@@ -4004,7 +4055,7 @@ export default class Vehicle {
             case "driverHit": case "commanderHit": case "coPilotHit": case "pilotHit": case "crewStunned": case "crewKilled":
                 return !c.crewKilled;
             case "weaponMalfunction": return weapons.some((w) => this.getWeaponStatus(w.uuid) === "ok");
-            case "weaponDestroyed": return weapons.some((w) => this.getWeaponStatus(w.uuid) !== "destroyed");
+            case "weaponDestroyed": return this._artVeeConversionWorking() || weapons.some((w) => this.getWeaponStatus(w.uuid) !== "destroyed");
             case "stabilizer": return !c.stabilizers.includes(location);
             case "sensors": return c.sensorHits < VEHICLE_MAX_SENSOR_HITS;
             case "engineHit": return !c.engineHit;
@@ -4107,7 +4158,14 @@ export default class Vehicle {
                 return `${name}: ${weapon?.name ?? "no weapon"} (spend a Weapon Attack Phase, with no attacks, to clear it)`;
             }
             case "weaponDestroyed": {
-                const weapon = pickWeapon(this.getWeaponsInLocation(location).filter((w) => this.getWeaponStatus(w.uuid) !== "destroyed"));
+                const candidates = this.getWeaponsInLocation(location).filter((w) => this.getWeaponStatus(w.uuid) !== "destroyed");
+                // Working ArtVee conversion equipment is one more thing a Weapon Destroyed result can take out.
+                if (this._artVeeConversionWorking()) candidates.push({ uuid: ARTVEE_CONVERSION_PICK, name: "ArtVee Conversion Equipment" } as IEquipmentItem);
+                const weapon = pickWeapon(candidates);
+                if (weapon?.uuid === ARTVEE_CONVERSION_PICK) {
+                    this._inPlay.artVeeConversionDestroyed = true;
+                    return `${weapon.name} destroyed: stuck in its current Mode`;
+                }
                 if (weapon?.uuid) this.setWeaponStatus(weapon.uuid, "destroyed");
                 // A destroyed weapon that can explode is an ammunition explosion in its location (TW p. 195).
                 const explosion = weapon ? getWeaponExplosionDamage(weapon) : null;
@@ -4440,6 +4498,11 @@ export default class Vehicle {
      */
     public turnReset(): void {
         this.setMovement("stationary", 0);
+        // A transformation declared this turn takes effect now.
+        if (this._inPlay.artVeeTransformingTo) {
+            this._inPlay.artVeeMode = this._inPlay.artVeeTransformingTo;
+            this._inPlay.artVeeTransformingTo = "";
+        }
         const c = this._inPlay.criticals;
         c.crewStunned = c.crewStunnedTurns > 0;
         if (c.crewStunned) c.crewStunnedTurns -= 1;
@@ -4534,6 +4597,7 @@ export default class Vehicle {
     }
 
     public getEffectiveCruiseMP(): number {
+        if (this.getArtVeeMode() === "siege") return 0;
         return this.isImmobile() ? 0 : this._cruiseAfterTowing(this._getCruiseAfterDamage());
     }
 
@@ -4548,7 +4612,7 @@ export default class Vehicle {
     }
 
     public getEffectiveJumpMP(): number {
-        return this.isImmobile() || this.isCruiseOnly() ? 0 : this._jumpMP;
+        return this.isImmobile() || this.isCruiseOnly() || this.getArtVeeMode() === "siege" ? 0 : this._jumpMP;
     }
 
     /**
@@ -4583,6 +4647,8 @@ export default class Vehicle {
      */
     public getTargetMovementModifier(): number {
         if (this.isImmobile()) return -4;
+        // Siege Mode is not immobile, but it targets like a unit that did not move.
+        if (this.getArtVeeMode() === "siege") return 0;
         const mode = this._inPlay.movementMode;
         let modifier = mode === "stationary" ? 0 : getMovementModifier(this._inPlay.hexesMoved);
         if (mode === "jump") modifier += 1;
@@ -4609,6 +4675,7 @@ export default class Vehicle {
         const c = this._inPlay.criticals;
         if (this.getCannotFireReason()) return null;
         if (this.getWeaponStatus(weapon.uuid) !== "ok") return null;
+        if (this.getArtVeeWeaponBlock(weapon)) return null;
         const inTurret = weapon.location === "turret" || weapon.location === "turret2";
         if (inTurret && (c.turretDestroyed || c.turretBlownOff)) return null;
         if (c.engineHit && isDirectFireEnergyOrPulse(weapon)) return null;

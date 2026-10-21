@@ -212,17 +212,50 @@ export default class VehiclePlayPanel extends React.Component<IVehiclePlayPanelP
         );
     }
 
+    renderArtVee = (): React.ReactNode => {
+        const vehicle = this.props.vehicle;
+        const inPlay = vehicle.getInPlay();
+        const mode = vehicle.getArtVeeMode();
+        const target = mode === "siege" ? "Vehicle" : "Siege";
+        const reason = vehicle.getArtVeeTransformationBlock();
+        return (
+            <div className="d-block" data-testid="vehicle-artvee">
+                <strong>Mode</strong>:{" "}
+                <span className="badge" data-testid="vehicle-artvee-mode">{mode === "siege" ? "Siege Mode" : "Vehicle Mode"}</span>
+                {inPlay.artVeeTransformingTo ? <span data-testid="vehicle-artvee-transforming"> (transforming to {inPlay.artVeeTransformingTo === "siege" ? "Siege" : "Vehicle"} Mode at the end of the turn)</span> : null}
+                <div>
+                    <button
+                        type="button"
+                        className="btn btn-sm btn-secondary"
+                        disabled={reason !== null}
+                        title={reason ?? undefined}
+                        onClick={() => { vehicle.startArtVeeTransformation(); this._changed(); }}
+                    >Transform to {target} Mode</button>
+                    {reason ? <span className="smaller-text"> ({reason})</span> : null}
+                </div>
+                <label className="d-block">
+                    <input
+                        type="checkbox"
+                        checked={!!inPlay.artVeeConversionDestroyed}
+                        onChange={(e) => { inPlay.artVeeConversionDestroyed = e.currentTarget.checked; this._changed(); }}
+                    />{" "}Conversion equipment destroyed
+                </label>
+            </div>
+        );
+    }
+
     renderWeaponRow = (weapon: IEquipmentItem, gunnery: number): React.ReactNode => {
         const vehicle = this.props.vehicle;
         const modifier = vehicle.getWeaponToHitModifier(weapon);
         const status = vehicle.getWeaponStatus(weapon.uuid);
         // A weapon in a side or rear location a mechanized battle armor trooper occupies may not fire (TW p. 226).
         const blocked = !!this.props.carrierLoad && isCarrierWeaponBlocked(this.props.carrierLoad, weapon);
+        const artVeeBlock = vehicle.getArtVeeWeaponBlock(weapon);
         const target = (rangeModifier: number) => modifier === null || blocked ? "-" : `${gunnery + modifier + rangeModifier}+`;
         const range = weapon.range;
         return (
             <tr key={weapon.uuid} className={status === "ok" && modifier !== null && !blocked ? "" : "color-red"}>
-                <td>{weapon.name}{weapon.rear ? " (R)" : ""}{blocked ? <span data-testid="vehicle-weapon-blocked"> (battle armor rides this location)</span> : null}</td>
+                <td>{weapon.name}{weapon.rear ? " (R)" : ""}{blocked ? <span data-testid="vehicle-weapon-blocked"> (battle armor rides this location)</span> : null}{artVeeBlock ? <span data-testid="vehicle-weapon-artvee-block" className="d-block smaller-text">{artVeeBlock}</span> : null}</td>
                 <td className="text-center">{weapon.location ? vehicle.getLocations().find((loc) => loc.tag === weapon.location)?.name ?? weapon.location : "-"}</td>
                 <td className="text-center">{vehicle.describeFiringArc(vehicle.getWeaponFiringArc(weapon))}</td>
                 <td className="text-center">{formatDamage(weapon.damage)}</td>
@@ -490,6 +523,7 @@ export default class VehiclePlayPanel extends React.Component<IVehiclePlayPanelP
                                         />
                                     </label>
                                 ) : null}
+                                {vehicle.isArtVee() ? this.renderArtVee() : null}
                                 {vehicle.isAirborneCapable() ? (
                                     <label className="d-block">
                                         <input
