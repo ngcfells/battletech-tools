@@ -43,10 +43,15 @@ const unknownValues = (value: unknown): unknown => {
     return Object.fromEntries(Object.entries(value as Record<string, unknown>).map(([key, entry]) => [key, unknownValues(entry)]));
 };
 
-/** The target catalog's first entry (canon's first record for an empty component catalog), every value unknown. */
+// The misc and ammo custom files open with code-built Future Wars and ArtVee records; drafts keep the template they
+// had before the custom files were merged by category.
+const TEMPLATE_TAGS: Record<string, string> = { "misc-custom": "custom-null-signature-system", "ammo-custom": "ammo-ac-15-standard" };
+
+/** The target catalog's template entry (canon's first record for an empty component catalog), every value unknown. */
 export function blankTemplate(kind: CustomContentKind, targetCatalogId: string): Record<string, unknown> {
+    const catalog = getEquipmentCatalogById(targetCatalogId);
     const first = kind === "equipment" || kind === "ammunition"
-        ? getEquipmentCatalogById(targetCatalogId)?.[0]
+        ? catalog?.find((item) => item.tag === TEMPLATE_TAGS[targetCatalogId]) ?? catalog?.[0]
         : CANON_COMPONENT_TEMPLATES[kind];
     return unknownValues(JSON.parse(JSON.stringify(first ?? {}))) as Record<string, unknown>;
 }

@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { ISSWUnresolvedItem } from "../data/custom-content-types";
+import { ammoCustom } from "../data/ammo-custom";
+import { miscCustom } from "../data/misc-custom";
 import { blankTemplate, buildDrafts, estimateSlots, missingFields, targetCatalogFor } from "./sswDraftBuilder";
 
 const item = (overrides: Partial<ISSWUnresolvedItem> = {}): ISSWUnresolvedItem => ({
@@ -92,5 +94,13 @@ describe("SSW draft builder", () => {
 
     it("never drafts a canon item that only lacks a catalog record", () => {
         expect(buildDrafts([{ item: item({ name: "Coolant Pod", sswType: "equipment" }), slots: 1, design: "A", source: source("a.ssw") }], [], newId)).toEqual([]);
+    });
+});
+
+describe("draft templates after the custom files merged", () => {
+    // Final review finding: the misc and ammo templates became the Future Wars records that now open those files.
+    it("templates misc and ammunition drafts on the records they used before", () => {
+        expect(Object.keys(blankTemplate("equipment", "misc-custom"))).toEqual(Object.keys(miscCustom.find((item) => item.tag === "custom-null-signature-system")!));
+        expect(Object.keys(blankTemplate("ammunition", "ammo-custom"))).toEqual(Object.keys(ammoCustom.find((item) => item.tag === "ammo-ac-15-standard")!));
     });
 });

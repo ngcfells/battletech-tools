@@ -36,3 +36,14 @@ describe("builders hide what the edition and level do not offer", () => {
         expect(vehicle.getAvailableEquipment(false, 4).some((item) => item.tag === TAG)).toBe(true);
     });
 });
+
+describe("the rules-edition issue list follows the pickers", () => {
+    // Final review finding: custom equipment offered under an earlier edition was flagged as soon as it was installed.
+    it("does not flag custom equipment the edition's picker offers", () => {
+        const mech = new BattleMech();
+        mech.setRulesEdition("battledroids");
+        mech.addEquipmentFromTag("custom-ac-15", "is", "un", false, null, "", false, [], undefined, undefined, -1, "", true);
+        expect(mech.getInstalledEquipment().some((item) => item.tag === "custom-ac-15")).toBe(true);
+        expect(mech.getRulesEditionIssues(6).filter((line) => line.startsWith("Equipment:"))).toEqual([]);
+    });
+});

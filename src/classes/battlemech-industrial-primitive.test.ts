@@ -2,10 +2,8 @@ import { describe, expect, it } from "vitest";
 import { BattleMech } from "./battlemech";
 import { getCockpitType } from "../data/mech-cockpit-types";
 import { sswMechs } from "../data/ssw/sswMechs";
-import { equipmentArtillery } from "../data/equipment-artillery";
 import { getTargetToHitFromWeapon } from "../utils";
-
-const universalArtilleryList = equipmentArtillery.filter((item) => item.techBase === "universal");
+import { universalEquipment } from "../data/universal-equipment";
 
 const build = (options: { tech?: string, era?: string, type?: string, tonnage?: number, walk?: number, structure?: string, engine?: string } = {}) => {
     const mech = new BattleMech();
@@ -215,7 +213,7 @@ describe("Extended Fuel Tanks (TM pp.68, 244)", () => {
         mech.moveCritical("un", mech.unallocatedCriticals.findIndex(critical => critical?.uuid === item.uuid), loc, (mech.getCriticals() as any)[key].findIndex((critical: unknown) => !critical));
 
     it("lists the record with the book's dates, cost and limits", () => {
-        expect(universalArtilleryList.find(item => item.tag === "extended-fuel-tank")).toMatchObject({
+        expect(universalEquipment.find(item => item.tag === "extended-fuel-tank")).toMatchObject({
             name: "Extended Fuel Tank", industrialMechOnly: true, requiresEngine: "ice-or-fuel-cell", allowedLocations: ["ct", "lt", "rt"],
             explosive: true, explosiveAsAmmo: true, prototype: 2100, introduced: 2300, extinct: null, reintroduced: null,
             techRating: "c", book: "TM", page: 244, variableFormula: "extended-fuel-tank",

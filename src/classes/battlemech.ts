@@ -10,7 +10,7 @@ import type { CustomComponentKind, ISSWUnresolvedItem } from "../data/custom-con
 import { getCockpitType } from "../data/mech-cockpit-types";
 import { btMechTonnages } from "../data/mech-tonnages";
 import { DEFAULT_RULES_EDITION, editionEngineHoldsHeatSinks, getEditionJumpJetWeight, getEditionPlayRules, getEditionStats, getEditionStructure, getEquipmentForEdition, getRulesEdition, isEarlierRulesEdition, isInRulesEdition, isOfferedInEdition, getRecordOfferIssue } from "../data/rules-editions";
-import { APOCRYPHAL_RULES_LEVEL, CUSTOM_HOMEBREW_RULES_LEVEL, EXPERIMENTAL_RULES_LEVEL, equipmentMatchesIdentifier, getWeaponAmmoFamilies, getEquipmentRulesLevel, ARTEMIS_FIRE_CONTROL, isArtemisCapableLauncher, isEquipmentOffered, isOmniFixedOnly, getAlphaStrikeEquipmentDisplayAbilityCodes, getAmmoBattleValuePerTon, getAmmoFamily, getAmmoRoundsPerTon, getCompatibleAmmo, getEffectiveIntroduction, getEquipmentListByTech, getEquipmentListForChassis, getStarLeagueCarryOverDates, getWeaponShotsPerTon, getBattleArmorScaleListByTech, getEquipmentCatalogDefinitions } from "../data/equipment-registry";
+import { APOCRYPHAL_RULES_LEVEL, CUSTOM_HOMEBREW_RULES_LEVEL, EXPERIMENTAL_RULES_LEVEL, equipmentMatchesIdentifier, getWeaponAmmoFamilies, getEquipmentRulesLevel, ARTEMIS_FIRE_CONTROL, isArtemisCapableLauncher, isEquipmentOffered, isOmniFixedOnly, getAlphaStrikeEquipmentDisplayAbilityCodes, getAmmoBattleValuePerTon, getAmmoFamily, getAmmoRoundsPerTon, getCompatibleAmmo, getEffectiveIntroduction, getEquipmentListByTech, getEquipmentListForChassis, getStarLeagueCarryOverDates, getWeaponShotsPerTon, getBattleArmorScaleListByTech, getEquipmentCatalogDefinitions, getEquipmentOfferIssue } from "../data/equipment-registry";
 import { getFractionalArmorTonsPerPoint, getFractionalEngineWeight, roundUpToKilogram } from "../data/fractional-accounting";
 import { isUniversalEquipment } from "../data/universal-equipment";
 import { mechEngineOptions } from "../data/mech-engine-options";
@@ -5831,9 +5831,12 @@ export class BattleMech {
         if (this._myomerType.tag !== "standard") check("Myomer", this._myomerType);
         const listed = new Set<string>();
         for (const item of this._equipmentList) {
+            // Equipment is judged as the pickers judge it, so offered Custom Homebrew items are not flagged.
             if (item && !listed.has(item.tag)) {
                 listed.add(item.tag);
-                check("Equipment", item);
+                if (getEquipmentOfferIssue(item, this._rulesEdition, rulesLevel ?? 0) === "edition") {
+                    issues.push(`Equipment: ${item.name} (not in ${getRulesEdition(this._rulesEdition).name})`);
+                }
             }
         }
         return issues;

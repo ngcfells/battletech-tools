@@ -1,9 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { equipmentArtillery } from "../data/equipment-artillery";
 import Vehicle, { formatVehicleASDamage } from "./vehicle";
 import { getVehicleTonnageBounds } from "../data/vehicle-motive-types";
-
-const universalArtilleryList = equipmentArtillery.filter((item) => item.techBase === "universal");
+import { universalEquipment } from "../data/universal-equipment";
 
 describe("Vehicle tonnage bounds by motive type and rules level", () => {
     it("caps Tracked vehicles at 100 tons under standard rules and 200 under Advanced+", () => {
@@ -743,7 +741,7 @@ describe("Batch 54 industrial equipment for vehicles and the combat vehicle slot
 
     it("lists the industrial items with the table values", () => {
         for (const [tag, name, weight, cbills, [battlemech, combatVehicle, supportVehicle, aerospaceFighter, smallCraft, dropShip], techRating, prototype, introduced, page] of items) {
-            const item = universalArtilleryList.find(entry => entry.tag === tag);
+            const item = universalEquipment.find(entry => entry.tag === tag);
             expect(item, tag).toMatchObject({
                 name, weight, cbills, techRating, introduced, extinct: null, reintroduced: null, book: "TM", page, battleValue: 0,
                 space: { battlemech, protomech: -1, combatVehicle, supportVehicle, aerospaceFighter, smallCraft, dropShip },
@@ -751,7 +749,7 @@ describe("Batch 54 industrial equipment for vehicles and the combat vehicle slot
             expect(item?.prototype ?? null, tag).toBe(prototype);
         }
         // The Arresting Hoist is its own item now, no longer a second name for the Lift Hoist.
-        expect(universalArtilleryList.find(entry => entry.tag === "lift-hoist")?.altNames).not.toContain("Arresting Hoist");
+        expect(universalEquipment.find(entry => entry.tag === "lift-hoist")?.altNames).not.toContain("Arresting Hoist");
     });
 
     it("offers a combat vehicle only what has a combat vehicle slot value", () => {

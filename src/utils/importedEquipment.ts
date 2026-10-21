@@ -59,7 +59,7 @@ function getIndex(catalog: EquipmentCatalog): ICatalogIndex {
         for (const definition of getEquipmentCatalogDefinitions()) {
             for (const item of definition.equipment) {
                 const tier = getEquipmentTier(definition, item);
-                // Universal records are listed in the IS and Clan files too; they belong to the universal tier.
+                // A record whose tag is universal belongs to the universal tier, not to the IS or Clan one.
                 if (tier !== "universal" && isUniversalEquipment(item)) {
                     continue;
                 }

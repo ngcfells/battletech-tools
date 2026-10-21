@@ -3337,4 +3337,66 @@ export const equipmentEnergy: IEquipmentItem[] = [
     { isAmmo: false, name: "Small Chemical Laser", altNames: ["Clan Small Chemical Laser"], tag: "clan-small-chemical-laser", editions: ["total-warfare", "battlemech-manual", "core-rulebook"], techBase: "clan", altTags: [], catalog: "clan", sort: "laser, chemical, small", category: "Energy Weapons", alternateName: "Small Chem Laser", damage: 3, notes: "Chemical laser: fires from explosive ammunition instead of drawing heavy power.", damageAero: 3, accuracyModifier: 0, cbills: 10000, prototype: 3059, introduced: 3083, extinct: null, reintroduced: null, battleValue: 7, heat: 1, weight: 0.5, range: { min: 0, short: 1, medium: 2, long: 3 }, space: { battlemech: 1, protomech: 1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, ammoTypes: ["ammo-clan-small-chemical-laser-standard"], shotsPerTon: 60, ammoBattleValue: 1, minAmmoTons: 1, explosive: false, weaponType: ["DE"], techRating: "e", book: "TO:AUE", page: 132, alphaStrike: { heat: 1, rangeShort: 0.3, rangeMedium: 0, rangeLong: 0, rangeExtreme: 0, tc: true, notes: [] }, heatAero: 1, rangeAero: "s" },
     { isAmmo: false, name: "Prototype ER Medium Laser (Clan)", altNames: ["Prototype ER Medium Laser (CP)", "ER Medium Laser CP"], tag: "clan-prototype-er-medium-laser", editions: ["total-warfare", "battlemech-manual", "core-rulebook"], techBase: "clan", altTags: [], catalog: "clan", sort: "laser, er, clan, 2, medium, prototype", category: "Energy Weapons", alternateName: "", damage: 5, notes: "IO prototype: Experimental rules only; prototype reliability rules apply.", damageAero: 7, accuracyModifier: 0, cbills: 80000, introduced: null, extinct: 2824, reintroduced: null, battleValue: 62, heat: 5, weight: 1.5, range: { min: 0, short: 4, medium: 8, long: 12 }, space: { battlemech: 1, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, shotsPerTon: 0, minAmmoTons: 0, explosive: false, weaponType: ["DE"], techRating: "e", book: "IO:AE", page: 91, alphaStrike: { heat: 5, rangeShort: 0.7, rangeMedium: 0.7, rangeLong: 0, rangeExtreme: 0, tc: true, notes: ["Provisional: copied from the production weapon"] }, heatAero: 5, prototype: 2819, rangeAero: "m" },
     { isAmmo: false, name: "Prototype ER Small Laser (Clan)", altNames: ["Prototype ER Small Laser (CP)", "ER Small Laser CP"], tag: "clan-prototype-er-small-laser", editions: ["total-warfare", "battlemech-manual", "core-rulebook"], techBase: "clan", altTags: [], catalog: "clan", sort: "laser, er, clan, 1, small, prototype", category: "Energy Weapons", alternateName: "", damage: 3, notes: "IO prototype: Experimental rules only; prototype reliability rules apply.", damageAero: 3, accuracyModifier: 0, cbills: 11250, introduced: null, extinct: 2825, reintroduced: null, battleValue: 17, heat: 2, weight: 0.5, range: { min: 0, short: 2, medium: 4, long: 5 }, space: { battlemech: 1, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, shotsPerTon: 0, minAmmoTons: 0, explosive: false, weaponType: ["DE"], techRating: "e", book: "IO:AE", page: 91, alphaStrike: { heat: 2, rangeShort: 0.5, rangeMedium: 0, rangeLong: 0, rangeExtreme: 0, tc: true, notes: ["Provisional: copied from the production weapon"] }, heatAero: 2, prototype: 2819, rangeAero: "s" },
+    {
+        isAmmo: false,
+        name: "Vehicle Flamer",
+        tag: "vehicle-flamer",
+        editions: ["battletech-manual", "battletech-compendium", "compendium-rules-of-warfare", "battletech-4th-edition", "master-rules", "master-rules-revised", "total-warfare", "battlemech-manual", "core-rulebook"],
+        techBase: "universal",
+        introducedInEdition: "battletech-manual",
+        editionStats: {
+            "battletech-manual": { book: "BTM", page: 45, name: "Vehicle Flamer (conventional)", heat: 3, damage: 2, range: { min: 0, short: 1, medium: 2, long: 3 }, weight: 5, shotsPerTon: 20, notes: "Vehicle-mounted, resembling a conventional flamethrower (BTM p.45). The table prints 5 tons, five times the fusion Flamer; entered as printed, since nothing else in the book gives its weight. No critical locations are printed." },
+            "battletech-compendium": { book: "BTC", page: 116, name: "Flamer (Vehicle)", heat: 3, damage: 2, range: { min: 0, short: 1, medium: 2, long: 3 }, weight: 0.5, criticals: 1, shotsPerTon: 20, notes: "Half a ton and one critical slot on both the Inner Sphere and the Clan table (BTC pp.115-116); the Manual printed 5 tons. No price is printed (BTC p.129)." },
+            "compendium-rules-of-warfare": { book: "BTC:RoW", page: 105, name: "Flamer (Vehicle)", heat: 3, damage: 2, range: { min: 0, short: 1, medium: 2, long: 3 }, weight: 0.5, criticals: 1, shotsPerTon: 20, cbills: 7500, notes: "Listed among the Ballistic Weapons, with the same row on the Clan table (BTC:RoW p.104). No price is printed for it or its ammunition: the price list has one Flamer row, at 7,500 C-bills (BTC:RoW p.124). The 7,500 entered is MegaMek's (user ruling, 2026-10-08: MegaMek's price where the book prints none); BMR p.138 later prints the same figure." },
+            "battletech-4th-edition": { book: "BT4", page: 45, name: "Flamer (Vehicle)", heat: 3, damage: 2, range: { min: 0, short: 1, medium: 2, long: 3 }, weight: 0.5, criticals: 1, shotsPerTon: 20, notes: "Listed among the Ballistic Weapons. The Equipment section describes one Flamer and does not mention the vehicle version (BT4 p.46)." },
+            "master-rules": { book: "BMR", page: 115, name: "Flamer (Vehicle)", heat: 3, damage: 2, range: { min: 0, short: 1, medium: 2, long: 3 }, weight: 0.5, criticals: 1, shotsPerTon: 20, cbills: 7500, notes: "The same row on the Clan table (BMR p.116). Burns fuel from tanks, so it counts as a ballistic weapon and a vehicle needs no heat sinks for it; a BattleMech may mount it and must sink its heat as usual (BMR p.127)." },
+            "master-rules-revised": { book: "BMR(R)", page: 121, name: "Flamer (Vehicle)", heat: 3, damage: 2, range: { min: 0, short: 1, medium: 2, long: 3 }, weight: 0.5, criticals: 1, shotsPerTon: 20, cbills: 7500, notes: "The same row on the Clan table (BMR(R) p.123). Burns fuel from tanks, so it counts as a ballistic weapon and a vehicle needs no heat sinks for it; a BattleMech may mount it and must sink its heat as usual (BMR(R) p.137)." },
+        },
+        altNames: ["Vehicle Flamer (Clan)"],
+        altTags: ["vehicle-flamer-clan"],
+        category: "Energy Weapons",
+        sort: "flamer, vehicle",
+        damage: 2,
+        damageAero: 2,
+        accuracyModifier: 0,
+        cbills: 7500,
+        introduced: 1950,
+        extinct: null,
+        reintroduced: null,
+        battleValue: 5,
+        heat: 3,
+        weight: 0.5,
+        range: {
+            min: 0,
+            short: 1,
+            medium: 2,
+            long: 3
+        },
+        space: { battlemech: 1, protomech: 1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 },
+        shotsPerTon: 20,
+        ammoBattleValue: 1,
+        minAmmoTons: 1,
+        explosive: false,
+        weaponType: [
+            "DE",
+            "H"
+        ],
+        techRating: "b",
+        book: "TM",
+        page: 218,
+        alphaStrike: {
+            heat: 3,
+            rangeShort: 0.2,
+            rangeMedium: 0,
+            rangeLong: 0,
+            rangeExtreme: 0,
+            tc: false,
+            notes: [
+                "Heat",
+                "Point Defense"
+            ]
+        },
+        heatAero: 3,
+        rangeAero: "s"
+    },
 ];

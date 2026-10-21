@@ -1,6 +1,6 @@
 import { IEquipmentItem } from "./data-interfaces";
 import { equipmentBallistic } from "./equipment-ballistic";
-import { equipmentArtillery } from "./equipment-artillery";
+import { universalEquipment } from "./universal-equipment";
 
 /*
  * ArtVee design 2026-10-20 (Custom Homebrew): the combo guns, an artillery tube with a drop-in autocannon breech.
@@ -12,7 +12,6 @@ import { equipmentArtillery } from "./equipment-artillery";
  * here, so each bin counts its own ammunition's BV.
  */
 
-const universalArtilleryList = equipmentArtillery.filter((item) => item.techBase === "universal");
 const isBallisticList = equipmentBallistic.filter((item) => item.techBase === "is");
 
 interface IComboGunRow {
@@ -41,7 +40,7 @@ const comboRows: IComboGunRow[] = [
 function comboGun(row: IComboGunRow, techBase: "is" | "clan"): IEquipmentItem {
     const ac = isBallisticList.find((item) => item.tag === row.acTag);
     if (!ac || ac.battleValue === undefined) throw new Error(`Combo gun: AC record ${row.acTag} not found`);
-    const piece = universalArtilleryList.find((item) => item.tag === row.pieceTag);
+    const piece = universalEquipment.find((item) => item.tag === row.pieceTag);
     if (!piece || piece.battleValue === undefined) throw new Error(`Combo gun: artillery record ${row.pieceTag} not found`);
     const clan = techBase === "clan";
     // Clan standard AC ammunition is extinct from 2850, so the Clan gun feeds from its own breech rounds.
@@ -96,5 +95,5 @@ export const artilleryCustom: IEquipmentItem[] = [
 /** The canon artillery piece a combo gun fires as in Siege Mode, or undefined for any other item. */
 export function getComboArtillery(item: IEquipmentItem): IEquipmentItem | undefined {
     if (!item.comboArtilleryTag) return undefined;
-    return universalArtilleryList.find((piece) => piece.tag === item.comboArtilleryTag);
+    return universalEquipment.find((piece) => piece.tag === item.comboArtilleryTag);
 }

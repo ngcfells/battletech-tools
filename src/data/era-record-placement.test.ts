@@ -10,6 +10,7 @@ import { equipmentArtillery } from "./equipment-artillery";
 import { equipmentEnergy } from "./equipment-energy";
 import { ammoCatalog } from "./ammo";
 import { equipmentMisc } from "./equipment-misc";
+import { universalEquipment } from "./universal-equipment";
 
 const isAmmoList = ammoCatalog.filter((item) => item.techBase === "is");
 const clanAmmoList = ammoCatalog.filter((item) => item.techBase === "clan");
@@ -17,8 +18,6 @@ const universalAmmoList = ammoCatalog.filter((item) => item.techBase === "univer
 
 const isArtilleryList = equipmentArtillery.filter((item) => item.techBase === "is");
 const clanArtilleryList = equipmentArtillery.filter((item) => item.techBase === "clan");
-const universalArtilleryList = equipmentArtillery.filter((item) => item.techBase === "universal");
-
 const isMiscList = equipmentMisc.filter((item) => item.techBase === "is");
 const clanMiscList = equipmentMisc.filter((item) => item.techBase === "clan");
 
@@ -38,7 +37,7 @@ describe("records whose IS and Clan dates differ are not universal", () => {
 
     // TO:AUE p.134 gives "Reintroduced: N/A"; the 3073 the record once carried had no source.
     it("splits the Laser Insulator: the IS lost it in 2820, the Clans never did (TO:AUE p.134; IO:AE p.38)", () => {
-        expect(hasTag(universalArtilleryList, "laser-insulator")).toBe(false);
+        expect(hasTag(universalEquipment, "laser-insulator")).toBe(false);
         expect(isMiscList.find((item) => item.tag === "laser-insulator"))
             .toMatchObject({ extinct: 2820, reintroduced: null });
         const clan = clanMiscList.find((item) => item.tag === "clan-laser-insulator")!;
@@ -51,7 +50,7 @@ describe("artillery cannons split by side (TO:AUE pp.97, 217; IO:AE p.31)", () =
     // The table gives "3012P / 3032P" and one production year, 3079, for both sides.
     it("gives the IS cannons a 3012 prototype and the Clan ones 3032, both in production from 3079", () => {
         for (const gun of ["long-tom", "sniper", "thumper"]) {
-            expect(hasTag(universalArtilleryList, `${gun}-cannon`)).toBe(false);
+            expect(hasTag(universalEquipment, `${gun}-cannon`)).toBe(false);
             expect(isArtilleryList.find((item) => item.tag === `${gun}-cannon`))
                 .toMatchObject({ prototype: 3012, introduced: 3079 });
             const clan = clanArtilleryList.find((item) => item.tag === `clan-${gun}-cannon`)!;

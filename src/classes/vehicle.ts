@@ -2781,7 +2781,7 @@ export default class Vehicle {
         const byTechBase = returnItems.filter((item) => item.catalog !== "custom"
             || (item.techBase !== "is" && item.techBase !== "clan")
             || (item.techBase === "is" ? includeIS : includeClan));
-        // Apocryphal, Custom Homebrew and Munchkin items are only offered at their own level or above.
+        // Every item is offered only in its editions and at its level or above; custom items need Custom Homebrew.
         const offeredLevel = includeCustom ? Math.max(rulesLevel, CUSTOM_HOMEBREW_RULES_LEVEL) : rulesLevel;
         return byTechBase.filter((item) => isEquipmentOffered(item, this._rulesEdition, offeredLevel));
     }
