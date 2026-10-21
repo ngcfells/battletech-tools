@@ -198,6 +198,14 @@ describe("ArtVee construction", () => {
         expect(plain().setArtVee(true, 5)).toBe(false);
     });
 
+    it("rates the ArtVee once, blended as for LAMs (IO:AE p.185)", () => {
+        const log = thumperArtVee().getBattleValueLog();
+        expect(log).toContain("ArtVee: movement from Vehicle Mode; Siege Mode (0 MP) adds nothing (blended, IO:AE p.185)");
+        expect(log).toContain("+ ArtVee Thumper Combo Gun (turret) = 93.00");
+        expect(log).toContain("+ Ammunition for custom-artvee-thumper-combo = 14.00");
+        expect(plain().getBattleValueLog()).not.toContain("ArtVee:");
+    });
+
     it("imports", () => {
         const vehicle = thumperArtVee();
         const saved = JSON.stringify(vehicle.export());

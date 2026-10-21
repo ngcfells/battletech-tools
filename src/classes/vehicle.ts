@@ -2855,6 +2855,7 @@ export default class Vehicle {
         log += `Defensive Factor: 1 + max(Flank TMM ${runTMM}${airborne ? " incl. +1 airborne" : ""}, Jump TMM ${jumpTMM}) / 10 = ${defensiveFactor.toFixed(2)} -> ${defensive.toFixed(2)}<br />`;
 
         log += "<strong>OFFENSIVE BATTLE RATING</strong><br />";
+        if (this.isArtVee()) log += "ArtVee: movement from Vehicle Mode; Siege Mode (0 MP) adds nothing (blended, IO:AE p.185)<br />";
         const hasTC = this.hasTargetingComputer();
         const baseWeaponBV = (item: IEquipmentItem) => (item.battleValue || 0) * (hasTC && isTargetingComputerWeapon(item) ? 1.25 : 1);
         const offensiveWeapons = this._equipmentList.filter((item) => this._isWeapon(item));
