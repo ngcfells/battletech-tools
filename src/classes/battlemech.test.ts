@@ -18,8 +18,7 @@ import { mechClanAmmo } from "../data/mech-clan-ammo";
 import { mechUniversalAmmo } from "../data/mech-universal-ammo";
 import { mechJumpJetTypes } from "../data/mech-jump-jet-types";
 import { btEraOptions } from "../data/era-options";
-import { mechISEquipmentMissiles } from "../data/mech-is-equipment-weapons-missiles";
-import { mechClanEquipmentMissile } from "../data/mech-clan-equipment-weapons-missile";
+import { equipmentMissile } from "../data/equipment-missile";
 import { mechISEquipmentArtillery } from "../data/mech-is-equipment-weapons-artillery";
 import { mechClanEquipmentArtillery } from "../data/mech-clan-equipment-weapons-artillery";
 import { equipmentBallistic } from "../data/equipment-ballistic";
@@ -29,6 +28,9 @@ import { mechClanEquipmentMisc } from "../data/mech-clan-equipment-weapons-misc"
 import { mechUniversalEquipment } from "../data/mech-universal-equipment";
 import { getAvailableTonnagesForMechType, getTonnageBoundsForMechType } from "../data/mech-tonnages";
 import { mechCustomEquipmentMisc } from "../data/mech-custom-equipment-weapons-misc";
+
+const isMissileList = equipmentMissile.filter((item) => item.techBase === "is");
+const clanMissileList = equipmentMissile.filter((item) => item.techBase === "clan");
 
 const isBallisticList = equipmentBallistic.filter((item) => item.techBase === "is");
 const clanBallisticList = equipmentBallistic.filter((item) => item.techBase === "clan");
@@ -3238,13 +3240,13 @@ describe("Batch 10c missile and artillery catalogs", () => {
             "prototype-rocket-launcher-20": [1950, null, 3064, null, "IO:AE", 67],
         };
         for (const [tag, want] of Object.entries(expected)) {
-            const item = mechISEquipmentMissiles.find(record => record.tag === tag);
+            const item = isMissileList.find(record => record.tag === tag);
             expect([item?.prototype, item?.introduced, item?.extinct, item?.reintroduced, item?.book, item?.page], tag).toEqual(want);
         }
     });
 
     it("uses null, not 0, for unknown dates in the isMissile records", () => {
-        for (const item of mechISEquipmentMissiles) {
+        for (const item of isMissileList) {
             expect(item.introduced, item.tag).not.toBe(0);
             expect(item.extinct, item.tag).not.toBe(0);
             expect(item.reintroduced, item.tag).not.toBe(0);
@@ -3366,13 +3368,13 @@ describe("Batch 10c missile and artillery catalogs", () => {
             "clan-prototype-streak-srm-6": [2819, null, 2826, null, "IO:AE", 91],
         };
         for (const [tag, want] of Object.entries(expected)) {
-            const item = mechClanEquipmentMissile.find(record => record.tag === tag);
+            const item = clanMissileList.find(record => record.tag === tag);
             expect([item?.prototype, item?.introduced, item?.extinct, item?.reintroduced, item?.book, item?.page], tag).toEqual(want);
         }
     });
 
     it("uses null, not 0, for unknown dates in the clanMissile records", () => {
-        for (const item of mechClanEquipmentMissile) {
+        for (const item of clanMissileList) {
             expect(item.introduced, item.tag).not.toBe(0);
             expect(item.extinct, item.tag).not.toBe(0);
             expect(item.reintroduced, item.tag).not.toBe(0);
@@ -3654,7 +3656,7 @@ describe("Batch 12b standard ammunition follows its launcher", () => {
 describe("Batch 13 records without a canon source", () => {
     it("keeps Enhanced ER Large Laser and Enhanced Clan LRM 10 out of the canon Clan catalogs", () => {
         expect(clanEnergyList.some(item => item.tag === "enhanced_er_large_laser")).toBe(false);
-        expect(mechClanEquipmentMissile.some(item => item.tag === "enhanced_clan_lrm_10")).toBe(false);
+        expect(clanMissileList.some(item => item.tag === "enhanced_clan_lrm_10")).toBe(false);
     });
 
     it("lists them as Custom Homebrew, with the old tags, until a source is found", () => {
@@ -3684,18 +3686,18 @@ describe("Batch 14 prototype weapon statistics", () => {
             [isEnergyList, "primitive-prototype-medium-laser", { weight: 1, cbills: 40000, battleValue: 46, heat: 5, range: { min: 0, short: 3, medium: 6, long: 9 }, techRating: "c", rangeAero: "s" }],
             [isEnergyList, "primitive-prototype-large-laser", { weight: 5, cbills: 100000, battleValue: 123, heat: 12, range: { min: 0, short: 5, medium: 10, long: 15 }, techRating: "c", rangeAero: "m" }],
             [isEnergyList, "primitive-prototype-ppc", { weight: 7, cbills: 200000, battleValue: 176, heat: 15, range: { min: 3, short: 6, medium: 12, long: 18 }, techRating: "d", rangeAero: "m" }],
-            [mechISEquipmentMissiles, "primitive-prototype-lrm-15", { weight: 7, cbills: 175000, battleValue: 132, shotsPerTon: 6, ammoBattleValue: 13 }],
-            [mechISEquipmentMissiles, "primitive-prototype-lrm-20", { weight: 10, cbills: 250000, battleValue: 168, shotsPerTon: 5, ammoBattleValue: 16 }],
-            [mechISEquipmentMissiles, "primitive-prototype-srm-2", { weight: 1, cbills: 10000, battleValue: 10, shotsPerTon: 38, ammoBattleValue: 1 }],
-            [mechISEquipmentMissiles, "primitive-prototype-srm-4", { weight: 2, cbills: 60000, battleValue: 21, shotsPerTon: 19, ammoBattleValue: 3 }],
-            [mechISEquipmentMissiles, "primitive-prototype-lrm-5", { name: "Primitive Prototype LRM 5", weight: 2, space: { battlemech: 1, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, cbills: 30000, battleValue: 38, heat: 2, shotsPerTon: 18, ammoBattleValue: 4, damageClusters: 5, prototype: 2295, introduced: null, extinct: 2300, book: "IO:AE", page: 112 }],
-            [mechISEquipmentMissiles, "primitive-prototype-lrm-10", { name: "Primitive Prototype LRM 10", weight: 5, space: { battlemech: 2, protomech: -1, combatVehicle: 1, supportVehicle: 2, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, cbills: 100000, battleValue: 78, heat: 4, shotsPerTon: 9, ammoBattleValue: 8, damageClusters: 10, prototype: 2295, introduced: null, extinct: 2300, book: "IO:AE", page: 112 }],
-            [mechISEquipmentMissiles, "primitive-prototype-srm-6", { name: "Primitive Prototype SRM 6", weight: 3, space: { battlemech: 2, protomech: -1, combatVehicle: 1, supportVehicle: 2, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, cbills: 80000, battleValue: 41, heat: 4, shotsPerTon: 11, ammoBattleValue: 4, damageClusters: 6, prototype: 2365, introduced: null, extinct: 2370, book: "IO:AE", page: 112 }],
-            [mechClanEquipmentMissile, "clan-improved-srm-2", { cbills: 15000, battleValue: 28, ammoBattleValue: 4 }],
-            [mechClanEquipmentMissile, "clan-improved-srm-4", { cbills: 90000, battleValue: 52, ammoBattleValue: 7 }],
-            [mechClanEquipmentMissile, "clan-improved-srm-6", { cbills: 120000, battleValue: 79, ammoBattleValue: 10 }],
-            [mechClanEquipmentMissile, "clan-prototype-streak-srm-4", { cbills: 90000, battleValue: 59, ammoBattleValue: 7 }],
-            [mechClanEquipmentMissile, "clan-prototype-streak-srm-6", { cbills: 120000, battleValue: 89, ammoBattleValue: 11 }],
+            [isMissileList, "primitive-prototype-lrm-15", { weight: 7, cbills: 175000, battleValue: 132, shotsPerTon: 6, ammoBattleValue: 13 }],
+            [isMissileList, "primitive-prototype-lrm-20", { weight: 10, cbills: 250000, battleValue: 168, shotsPerTon: 5, ammoBattleValue: 16 }],
+            [isMissileList, "primitive-prototype-srm-2", { weight: 1, cbills: 10000, battleValue: 10, shotsPerTon: 38, ammoBattleValue: 1 }],
+            [isMissileList, "primitive-prototype-srm-4", { weight: 2, cbills: 60000, battleValue: 21, shotsPerTon: 19, ammoBattleValue: 3 }],
+            [isMissileList, "primitive-prototype-lrm-5", { name: "Primitive Prototype LRM 5", weight: 2, space: { battlemech: 1, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, cbills: 30000, battleValue: 38, heat: 2, shotsPerTon: 18, ammoBattleValue: 4, damageClusters: 5, prototype: 2295, introduced: null, extinct: 2300, book: "IO:AE", page: 112 }],
+            [isMissileList, "primitive-prototype-lrm-10", { name: "Primitive Prototype LRM 10", weight: 5, space: { battlemech: 2, protomech: -1, combatVehicle: 1, supportVehicle: 2, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, cbills: 100000, battleValue: 78, heat: 4, shotsPerTon: 9, ammoBattleValue: 8, damageClusters: 10, prototype: 2295, introduced: null, extinct: 2300, book: "IO:AE", page: 112 }],
+            [isMissileList, "primitive-prototype-srm-6", { name: "Primitive Prototype SRM 6", weight: 3, space: { battlemech: 2, protomech: -1, combatVehicle: 1, supportVehicle: 2, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, cbills: 80000, battleValue: 41, heat: 4, shotsPerTon: 11, ammoBattleValue: 4, damageClusters: 6, prototype: 2365, introduced: null, extinct: 2370, book: "IO:AE", page: 112 }],
+            [clanMissileList, "clan-improved-srm-2", { cbills: 15000, battleValue: 28, ammoBattleValue: 4 }],
+            [clanMissileList, "clan-improved-srm-4", { cbills: 90000, battleValue: 52, ammoBattleValue: 7 }],
+            [clanMissileList, "clan-improved-srm-6", { cbills: 120000, battleValue: 79, ammoBattleValue: 10 }],
+            [clanMissileList, "clan-prototype-streak-srm-4", { cbills: 90000, battleValue: 59, ammoBattleValue: 7 }],
+            [clanMissileList, "clan-prototype-streak-srm-6", { cbills: 120000, battleValue: 89, ammoBattleValue: 11 }],
             [clanBallisticList, "clan-prototype-lb-2-x-ac", { battleValue: 42, ammoBattleValue: 5 }],
             [clanBallisticList, "clan-prototype-lb-5-x-ac", { battleValue: 83, ammoBattleValue: 10 }],
             [clanBallisticList, "clan-prototype-lb-20-x-ac", { battleValue: 237, ammoBattleValue: 30 }],
@@ -3735,8 +3737,8 @@ describe("Batch 15 tech-base splits", () => {
             [8, [10, 5], [5, 3], 50, 6],
         ];
         for (const [size, [isTons, isSlots], [clanTons, clanSlots], bv, ammoBV] of sizes) {
-            const is = mechISEquipmentMissiles.find(item => item.tag === `mech-mortar-${size}`);
-            const clan = mechClanEquipmentMissile.find(item => item.tag === `clan-mech-mortar-${size}`);
+            const is = isMissileList.find(item => item.tag === `mech-mortar-${size}`);
+            const clan = clanMissileList.find(item => item.tag === `clan-mech-mortar-${size}`);
             expect(is, `mech-mortar-${size}`).toMatchObject({
                 catalog: "is", weight: isTons, battleValue: bv, ammoBattleValue: ammoBV, techRating: "b",
                 prototype: 2526, introduced: 2531, extinct: 2819, reintroduced: 3043, book: "TO:AUE", page: 136,
@@ -4041,16 +4043,16 @@ describe("Batch 18 TechManual table audit", () => {
             [isBallisticList, "rotary-ac-5", { techRating: "e" }],
             [isEnergyList, "standard-flamer", { techRating: "c" }],
             [isEnergyList, "er-large-laser", { techRating: "e" }],
-            [mechISEquipmentMissiles, "mrm-10", { techRating: "c" }],
-            [mechISEquipmentMissiles, "mrm-20", { techRating: "c" }],
-            [mechISEquipmentMissiles, "mrm-30", { techRating: "c" }],
-            [mechISEquipmentMissiles, "mrm-40", { techRating: "c" }],
-            [mechISEquipmentMissiles, "rocket-launcher-10", { techRating: "b" }],
-            [mechISEquipmentMissiles, "rocket-launcher-15", { techRating: "b" }],
-            [mechISEquipmentMissiles, "rocket-launcher-20", { techRating: "b" }],
-            [mechISEquipmentMissiles, "streak-srm-2", { techRating: "e" }],
-            [mechISEquipmentMissiles, "streak-srm-4", { techRating: "e" }],
-            [mechISEquipmentMissiles, "streak-srm-6", { techRating: "e" }],
+            [isMissileList, "mrm-10", { techRating: "c" }],
+            [isMissileList, "mrm-20", { techRating: "c" }],
+            [isMissileList, "mrm-30", { techRating: "c" }],
+            [isMissileList, "mrm-40", { techRating: "c" }],
+            [isMissileList, "rocket-launcher-10", { techRating: "b" }],
+            [isMissileList, "rocket-launcher-15", { techRating: "b" }],
+            [isMissileList, "rocket-launcher-20", { techRating: "b" }],
+            [isMissileList, "streak-srm-2", { techRating: "e" }],
+            [isMissileList, "streak-srm-4", { techRating: "e" }],
+            [isMissileList, "streak-srm-6", { techRating: "e" }],
             [clanBallisticList, "clan-autocannon-lbx-2", { techRating: "f" }],
             [clanBallisticList, "clan-autocannon-lbx-5", { techRating: "f" }],
             [clanBallisticList, "clan-autocannon-lbx-10", { techRating: "f" }],
@@ -4066,10 +4068,10 @@ describe("Batch 18 TechManual table audit", () => {
             [clanEnergyList, "er-small-laser-clan", { techRating: "f" }],
             [clanEnergyList, "small-heavy-laser", { techRating: "f" }],
             [clanEnergyList, "plasma-cannon", { techRating: "f" }],
-            [mechClanEquipmentMissile, "clan-lrm-5", { techRating: "f" }],
-            [mechClanEquipmentMissile, "clan-lrm-10", { techRating: "f" }],
-            [mechClanEquipmentMissile, "clan-lrm-15", { techRating: "f" }],
-            [mechClanEquipmentMissile, "clan-lrm-20", { techRating: "f" }],
+            [clanMissileList, "clan-lrm-5", { techRating: "f" }],
+            [clanMissileList, "clan-lrm-10", { techRating: "f" }],
+            [clanMissileList, "clan-lrm-15", { techRating: "f" }],
+            [clanMissileList, "clan-lrm-20", { techRating: "f" }],
             [mechUniversalEquipment, "nail-gun", { cbills: 7000, battleValue: 1, ammoBattleValue: 0, range: { min: 0, short: 1, medium: 0, long: 0 } }],
             [mechUniversalEquipment, "mining-drill", { cbills: 100000 }],
             [mechUniversalEquipment, "remote-sensor-dispenser", { cbills: 30000 }],
@@ -4086,27 +4088,27 @@ describe("Batch 18 TechManual table audit", () => {
 describe("Batch 19 TO:AUE table audit", () => {
     it("matches the TO:AUE game data, construction data and tech ratings (pp.216-223)", () => {
         const expected: [{ tag: string }[], string, Record<string, unknown>][] = [
-            [mechISEquipmentMissiles, "thunderbolt-5", { space: { battlemech: 1, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, range: { min: 5, short: 6, medium: 12, long: 18 } }],
-            [mechISEquipmentMissiles, "thunderbolt-5-os", { space: { battlemech: 1, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, range: { min: 5, short: 6, medium: 12, long: 18 } }],
-            [mechISEquipmentMissiles, "thunderbolt-5-ios", { space: { battlemech: 1, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, range: { min: 5, short: 6, medium: 12, long: 18 } }],
-            [mechISEquipmentMissiles, "thunderbolt-10", { space: { battlemech: 2, protomech: -1, combatVehicle: 1, supportVehicle: 2, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, range: { min: 5, short: 6, medium: 12, long: 18 } }],
-            [mechISEquipmentMissiles, "thunderbolt-10-os", { space: { battlemech: 2, protomech: -1, combatVehicle: 1, supportVehicle: 2, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, range: { min: 5, short: 6, medium: 12, long: 18 } }],
-            [mechISEquipmentMissiles, "thunderbolt-10-ios", { space: { battlemech: 2, protomech: -1, combatVehicle: 1, supportVehicle: 2, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, range: { min: 5, short: 6, medium: 12, long: 18 } }],
-            [mechISEquipmentMissiles, "thunderbolt-15", { space: { battlemech: 3, protomech: -1, combatVehicle: 1, supportVehicle: 3, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, range: { min: 5, short: 6, medium: 12, long: 18 } }],
-            [mechISEquipmentMissiles, "thunderbolt-15-os", { space: { battlemech: 3, protomech: -1, combatVehicle: 1, supportVehicle: 3, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, range: { min: 5, short: 6, medium: 12, long: 18 } }],
-            [mechISEquipmentMissiles, "thunderbolt-15-ios", { space: { battlemech: 3, protomech: -1, combatVehicle: 1, supportVehicle: 3, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, range: { min: 5, short: 6, medium: 12, long: 18 } }],
-            [mechISEquipmentMissiles, "thunderbolt-20", { space: { battlemech: 5, protomech: -1, combatVehicle: 1, supportVehicle: 5, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, range: { min: 5, short: 6, medium: 12, long: 18 } }],
-            [mechISEquipmentMissiles, "thunderbolt-20-os", { space: { battlemech: 5, protomech: -1, combatVehicle: 1, supportVehicle: 5, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, range: { min: 5, short: 6, medium: 12, long: 18 } }],
-            [mechISEquipmentMissiles, "thunderbolt-20-ios", { space: { battlemech: 5, protomech: -1, combatVehicle: 1, supportVehicle: 5, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, range: { min: 5, short: 6, medium: 12, long: 18 } }],
+            [isMissileList, "thunderbolt-5", { space: { battlemech: 1, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, range: { min: 5, short: 6, medium: 12, long: 18 } }],
+            [isMissileList, "thunderbolt-5-os", { space: { battlemech: 1, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, range: { min: 5, short: 6, medium: 12, long: 18 } }],
+            [isMissileList, "thunderbolt-5-ios", { space: { battlemech: 1, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, range: { min: 5, short: 6, medium: 12, long: 18 } }],
+            [isMissileList, "thunderbolt-10", { space: { battlemech: 2, protomech: -1, combatVehicle: 1, supportVehicle: 2, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, range: { min: 5, short: 6, medium: 12, long: 18 } }],
+            [isMissileList, "thunderbolt-10-os", { space: { battlemech: 2, protomech: -1, combatVehicle: 1, supportVehicle: 2, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, range: { min: 5, short: 6, medium: 12, long: 18 } }],
+            [isMissileList, "thunderbolt-10-ios", { space: { battlemech: 2, protomech: -1, combatVehicle: 1, supportVehicle: 2, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, range: { min: 5, short: 6, medium: 12, long: 18 } }],
+            [isMissileList, "thunderbolt-15", { space: { battlemech: 3, protomech: -1, combatVehicle: 1, supportVehicle: 3, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, range: { min: 5, short: 6, medium: 12, long: 18 } }],
+            [isMissileList, "thunderbolt-15-os", { space: { battlemech: 3, protomech: -1, combatVehicle: 1, supportVehicle: 3, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, range: { min: 5, short: 6, medium: 12, long: 18 } }],
+            [isMissileList, "thunderbolt-15-ios", { space: { battlemech: 3, protomech: -1, combatVehicle: 1, supportVehicle: 3, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, range: { min: 5, short: 6, medium: 12, long: 18 } }],
+            [isMissileList, "thunderbolt-20", { space: { battlemech: 5, protomech: -1, combatVehicle: 1, supportVehicle: 5, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, range: { min: 5, short: 6, medium: 12, long: 18 } }],
+            [isMissileList, "thunderbolt-20-os", { space: { battlemech: 5, protomech: -1, combatVehicle: 1, supportVehicle: 5, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, range: { min: 5, short: 6, medium: 12, long: 18 } }],
+            [isMissileList, "thunderbolt-20-ios", { space: { battlemech: 5, protomech: -1, combatVehicle: 1, supportVehicle: 5, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, range: { min: 5, short: 6, medium: 12, long: 18 } }],
             [clanBallisticList, "protomech-autocannon-2", { space: { battlemech: 2, protomech: 1, combatVehicle: 1, supportVehicle: 2, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
             [clanBallisticList, "protomech-autocannon-4", { space: { battlemech: 3, protomech: 1, combatVehicle: 1, supportVehicle: 3, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
             [clanBallisticList, "protomech-autocannon-8", { space: { battlemech: 4, protomech: 1, combatVehicle: 1, supportVehicle: 4, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
             [clanBallisticList, "clan-autocannon-rac-2", { techRating: "f" }],
             [clanBallisticList, "clan-autocannon-rac-5", { techRating: "f" }],
-            [mechClanEquipmentMissile, "streak-lrm-5", { techRating: "f" }],
-            [mechClanEquipmentMissile, "streak-lrm-10", { techRating: "f" }],
-            [mechClanEquipmentMissile, "streak-lrm-15", { techRating: "f" }],
-            [mechClanEquipmentMissile, "streak-lrm-20", { techRating: "f" }],
+            [clanMissileList, "streak-lrm-5", { techRating: "f" }],
+            [clanMissileList, "streak-lrm-10", { techRating: "f" }],
+            [clanMissileList, "streak-lrm-15", { techRating: "f" }],
+            [clanMissileList, "streak-lrm-20", { techRating: "f" }],
             [mechClanEquipmentMisc, "clan-watchdog-cews", { cbills: 600000 }],
         ];
         for (const [catalog, tag, fields] of expected) {
@@ -4941,20 +4943,20 @@ describe("Batch 28 unit slot columns of the Weapons and Equipment Tables (TM pp.
             [isBallisticList, "autocannon-light-5", { space: { battlemech: 2, protomech: -1, combatVehicle: 1, supportVehicle: 2, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
             [isBallisticList, "machine-gun-heavy", { space: { battlemech: 1, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
             [isBallisticList, "is-machine-gun-array", { space: { battlemech: 1, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: 1, smallCraft: 1, dropShip: 0 } }],
-            [mechISEquipmentMissiles, "mrm-10", { space: { battlemech: 2, protomech: -1, combatVehicle: 1, supportVehicle: 2, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
-            [mechISEquipmentMissiles, "mrm-20", { space: { battlemech: 3, protomech: -1, combatVehicle: 1, supportVehicle: 3, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
-            [mechISEquipmentMissiles, "mrm-30", { space: { battlemech: 5, protomech: -1, combatVehicle: 1, supportVehicle: 5, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
-            [mechISEquipmentMissiles, "mrm-40", { space: { battlemech: 7, protomech: -1, combatVehicle: 1, supportVehicle: 7, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
-            [mechISEquipmentMissiles, "rocket-launcher-15", { space: { battlemech: 2, protomech: -1, combatVehicle: 1, supportVehicle: 2, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
-            [mechISEquipmentMissiles, "rocket-launcher-20", { space: { battlemech: 3, protomech: -1, combatVehicle: 1, supportVehicle: 3, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
-            [mechISEquipmentMissiles, "mml-3", { space: { battlemech: 2, protomech: -1, combatVehicle: 1, supportVehicle: 2, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
-            [mechISEquipmentMissiles, "mml-5", { space: { battlemech: 3, protomech: -1, combatVehicle: 1, supportVehicle: 3, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
-            [mechISEquipmentMissiles, "mml-7", { space: { battlemech: 4, protomech: -1, combatVehicle: 1, supportVehicle: 4, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
-            [mechISEquipmentMissiles, "mml-9", { space: { battlemech: 5, protomech: -1, combatVehicle: 1, supportVehicle: 5, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
-            [mechISEquipmentMissiles, "mml-3-artemis-iv", { space: { battlemech: 3, protomech: -1, combatVehicle: 1, supportVehicle: 3, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
-            [mechISEquipmentMissiles, "mml-5-artemis-iv", { space: { battlemech: 4, protomech: -1, combatVehicle: 1, supportVehicle: 4, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
-            [mechISEquipmentMissiles, "mml-7-artemis-iv", { space: { battlemech: 5, protomech: -1, combatVehicle: 1, supportVehicle: 5, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
-            [mechISEquipmentMissiles, "mml-9-artemis-iv", { space: { battlemech: 6, protomech: -1, combatVehicle: 1, supportVehicle: 6, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
+            [isMissileList, "mrm-10", { space: { battlemech: 2, protomech: -1, combatVehicle: 1, supportVehicle: 2, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
+            [isMissileList, "mrm-20", { space: { battlemech: 3, protomech: -1, combatVehicle: 1, supportVehicle: 3, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
+            [isMissileList, "mrm-30", { space: { battlemech: 5, protomech: -1, combatVehicle: 1, supportVehicle: 5, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
+            [isMissileList, "mrm-40", { space: { battlemech: 7, protomech: -1, combatVehicle: 1, supportVehicle: 7, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
+            [isMissileList, "rocket-launcher-15", { space: { battlemech: 2, protomech: -1, combatVehicle: 1, supportVehicle: 2, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
+            [isMissileList, "rocket-launcher-20", { space: { battlemech: 3, protomech: -1, combatVehicle: 1, supportVehicle: 3, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
+            [isMissileList, "mml-3", { space: { battlemech: 2, protomech: -1, combatVehicle: 1, supportVehicle: 2, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
+            [isMissileList, "mml-5", { space: { battlemech: 3, protomech: -1, combatVehicle: 1, supportVehicle: 3, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
+            [isMissileList, "mml-7", { space: { battlemech: 4, protomech: -1, combatVehicle: 1, supportVehicle: 4, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
+            [isMissileList, "mml-9", { space: { battlemech: 5, protomech: -1, combatVehicle: 1, supportVehicle: 5, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
+            [isMissileList, "mml-3-artemis-iv", { space: { battlemech: 3, protomech: -1, combatVehicle: 1, supportVehicle: 3, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
+            [isMissileList, "mml-5-artemis-iv", { space: { battlemech: 4, protomech: -1, combatVehicle: 1, supportVehicle: 4, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
+            [isMissileList, "mml-7-artemis-iv", { space: { battlemech: 5, protomech: -1, combatVehicle: 1, supportVehicle: 5, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
+            [isMissileList, "mml-9-artemis-iv", { space: { battlemech: 6, protomech: -1, combatVehicle: 1, supportVehicle: 6, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
             [mechISEquipmentMisc, "beagle-active-probe", { space: { battlemech: 2, protomech: -1, combatVehicle: 1, supportVehicle: 2, aerospaceFighter: 1, smallCraft: 1, dropShip: -1 } }],
             [mechISEquipmentMisc, "ecm-suite", { space: { battlemech: 2, protomech: -1, combatVehicle: 1, supportVehicle: 2, aerospaceFighter: 1, smallCraft: 1, dropShip: -1 } }],
             [mechISEquipmentMisc, "masc", { space: { battlemech: 1, protomech: -1, combatVehicle: -1, supportVehicle: -1, aerospaceFighter: -1, smallCraft: -1, dropShip: -1 } }],
@@ -4973,15 +4975,15 @@ describe("Batch 28 unit slot columns of the Weapons and Equipment Tables (TM pp.
             // The table's ProtoMech column reads NA, but the ProtoMech Ammunition Weight Table lists the plasma cannon
             // (TM p.88) and the Boggart mounts one (Wars of Reaving): entered as mountable, with MegaMek.
             [clanEnergyList, "plasma-cannon", { space: { battlemech: 1, protomech: 1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
-            [mechClanEquipmentMissile, "atm-3", { space: { battlemech: 2, protomech: -1, combatVehicle: 1, supportVehicle: 2, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
-            [mechClanEquipmentMissile, "atm-6", { space: { battlemech: 3, protomech: -1, combatVehicle: 1, supportVehicle: 3, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
-            [mechClanEquipmentMissile, "atm-9", { space: { battlemech: 4, protomech: -1, combatVehicle: 1, supportVehicle: 4, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
-            [mechClanEquipmentMissile, "atm-12", { space: { battlemech: 5, protomech: -1, combatVehicle: 1, supportVehicle: 5, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
-            [mechClanEquipmentMissile, "clan-lrm-10", { space: { battlemech: 1, protomech: 1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
-            [mechClanEquipmentMissile, "clan-lrm-15", { space: { battlemech: 2, protomech: 1, combatVehicle: 1, supportVehicle: 2, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
-            [mechClanEquipmentMissile, "clan-lrm-20", { space: { battlemech: 4, protomech: 1, combatVehicle: 1, supportVehicle: 4, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
-            [mechClanEquipmentMissile, "clan-srm-6", { space: { battlemech: 1, protomech: 1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
-            [mechClanEquipmentMissile, "clan-streak-srm-6", { space: { battlemech: 2, protomech: 1, combatVehicle: 1, supportVehicle: 2, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
+            [clanMissileList, "atm-3", { space: { battlemech: 2, protomech: -1, combatVehicle: 1, supportVehicle: 2, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
+            [clanMissileList, "atm-6", { space: { battlemech: 3, protomech: -1, combatVehicle: 1, supportVehicle: 3, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
+            [clanMissileList, "atm-9", { space: { battlemech: 4, protomech: -1, combatVehicle: 1, supportVehicle: 4, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
+            [clanMissileList, "atm-12", { space: { battlemech: 5, protomech: -1, combatVehicle: 1, supportVehicle: 5, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
+            [clanMissileList, "clan-lrm-10", { space: { battlemech: 1, protomech: 1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
+            [clanMissileList, "clan-lrm-15", { space: { battlemech: 2, protomech: 1, combatVehicle: 1, supportVehicle: 2, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
+            [clanMissileList, "clan-lrm-20", { space: { battlemech: 4, protomech: 1, combatVehicle: 1, supportVehicle: 4, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
+            [clanMissileList, "clan-srm-6", { space: { battlemech: 1, protomech: 1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
+            [clanMissileList, "clan-streak-srm-6", { space: { battlemech: 2, protomech: 1, combatVehicle: 1, supportVehicle: 2, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
             [mechClanEquipmentMisc, "clan-active-probe", { space: { battlemech: 1, protomech: 1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: 1, smallCraft: 1, dropShip: -1 } }],
             [mechClanEquipmentMisc, "clan-light-active-probe", { space: { battlemech: 1, protomech: 1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: 1, smallCraft: 1, dropShip: 0 } }],
             [mechClanEquipmentMisc, "clan-ecm-system", { space: { battlemech: 1, protomech: 1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: 1, smallCraft: 1, dropShip: -1 } }],
@@ -5019,23 +5021,23 @@ describe("Batch 29 unit slot columns of the TO:AUE construction tables (pp.217-2
             [clanEnergyList, "clan-heavy-flamer", { space: { battlemech: 1, protomech: 1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: -1, smallCraft: -1, dropShip: -1 } }],
             [clanEnergyList, "clan-improved-heavy-medium-laser", { space: { battlemech: 2, protomech: 1, combatVehicle: 1, supportVehicle: 2, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
             [clanEnergyList, "clan-improved-heavy-large-laser", { space: { battlemech: 3, protomech: 1, combatVehicle: 1, supportVehicle: 3, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
-            [mechISEquipmentMissiles, "mech-mortar-1", { space: { battlemech: 1, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: -1, smallCraft: -1, dropShip: -1 } }],
-            [mechISEquipmentMissiles, "mech-mortar-2", { space: { battlemech: 2, protomech: -1, combatVehicle: 1, supportVehicle: 2, aerospaceFighter: -1, smallCraft: -1, dropShip: -1 } }],
-            [mechISEquipmentMissiles, "mech-mortar-4", { space: { battlemech: 3, protomech: -1, combatVehicle: 1, supportVehicle: 3, aerospaceFighter: -1, smallCraft: -1, dropShip: -1 } }],
-            [mechISEquipmentMissiles, "mech-mortar-8", { space: { battlemech: 5, protomech: -1, combatVehicle: 1, supportVehicle: 5, aerospaceFighter: -1, smallCraft: -1, dropShip: -1 } }],
-            [mechISEquipmentMissiles, "enhanced-lrm-10", { space: { battlemech: 4, protomech: -1, combatVehicle: 1, supportVehicle: 4, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
-            [mechISEquipmentMissiles, "enhanced-lrm-15", { space: { battlemech: 6, protomech: -1, combatVehicle: 1, supportVehicle: 6, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
-            [mechISEquipmentMissiles, "enhanced-lrm-20", { space: { battlemech: 9, protomech: -1, combatVehicle: 1, supportVehicle: 9, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
-            [mechISEquipmentMissiles, "extended-lrm-10", { space: { battlemech: 4, protomech: -1, combatVehicle: 1, supportVehicle: 4, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
-            [mechISEquipmentMissiles, "extended-lrm-15", { space: { battlemech: 6, protomech: -1, combatVehicle: 1, supportVehicle: 6, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
-            [mechISEquipmentMissiles, "extended-lrm-20", { space: { battlemech: 8, protomech: -1, combatVehicle: 1, supportVehicle: 8, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
-            [mechClanEquipmentMissile, "clan-mech-mortar-1", { space: { battlemech: 1, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: -1, smallCraft: -1, dropShip: -1 } }],
-            [mechClanEquipmentMissile, "clan-mech-mortar-2", { space: { battlemech: 1, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: -1, smallCraft: -1, dropShip: -1 } }],
-            [mechClanEquipmentMissile, "clan-mech-mortar-4", { space: { battlemech: 2, protomech: -1, combatVehicle: 1, supportVehicle: 2, aerospaceFighter: -1, smallCraft: -1, dropShip: -1 } }],
-            [mechClanEquipmentMissile, "clan-mech-mortar-8", { space: { battlemech: 3, protomech: -1, combatVehicle: 1, supportVehicle: 3, aerospaceFighter: -1, smallCraft: -1, dropShip: -1 } }],
-            [mechClanEquipmentMissile, "streak-lrm-10", { space: { battlemech: 2, protomech: 1, combatVehicle: 1, supportVehicle: 2, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
-            [mechClanEquipmentMissile, "streak-lrm-15", { space: { battlemech: 3, protomech: 1, combatVehicle: 1, supportVehicle: 3, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
-            [mechClanEquipmentMissile, "streak-lrm-20", { space: { battlemech: 5, protomech: 1, combatVehicle: 1, supportVehicle: 5, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
+            [isMissileList, "mech-mortar-1", { space: { battlemech: 1, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: -1, smallCraft: -1, dropShip: -1 } }],
+            [isMissileList, "mech-mortar-2", { space: { battlemech: 2, protomech: -1, combatVehicle: 1, supportVehicle: 2, aerospaceFighter: -1, smallCraft: -1, dropShip: -1 } }],
+            [isMissileList, "mech-mortar-4", { space: { battlemech: 3, protomech: -1, combatVehicle: 1, supportVehicle: 3, aerospaceFighter: -1, smallCraft: -1, dropShip: -1 } }],
+            [isMissileList, "mech-mortar-8", { space: { battlemech: 5, protomech: -1, combatVehicle: 1, supportVehicle: 5, aerospaceFighter: -1, smallCraft: -1, dropShip: -1 } }],
+            [isMissileList, "enhanced-lrm-10", { space: { battlemech: 4, protomech: -1, combatVehicle: 1, supportVehicle: 4, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
+            [isMissileList, "enhanced-lrm-15", { space: { battlemech: 6, protomech: -1, combatVehicle: 1, supportVehicle: 6, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
+            [isMissileList, "enhanced-lrm-20", { space: { battlemech: 9, protomech: -1, combatVehicle: 1, supportVehicle: 9, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
+            [isMissileList, "extended-lrm-10", { space: { battlemech: 4, protomech: -1, combatVehicle: 1, supportVehicle: 4, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
+            [isMissileList, "extended-lrm-15", { space: { battlemech: 6, protomech: -1, combatVehicle: 1, supportVehicle: 6, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
+            [isMissileList, "extended-lrm-20", { space: { battlemech: 8, protomech: -1, combatVehicle: 1, supportVehicle: 8, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
+            [clanMissileList, "clan-mech-mortar-1", { space: { battlemech: 1, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: -1, smallCraft: -1, dropShip: -1 } }],
+            [clanMissileList, "clan-mech-mortar-2", { space: { battlemech: 1, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: -1, smallCraft: -1, dropShip: -1 } }],
+            [clanMissileList, "clan-mech-mortar-4", { space: { battlemech: 2, protomech: -1, combatVehicle: 1, supportVehicle: 2, aerospaceFighter: -1, smallCraft: -1, dropShip: -1 } }],
+            [clanMissileList, "clan-mech-mortar-8", { space: { battlemech: 3, protomech: -1, combatVehicle: 1, supportVehicle: 3, aerospaceFighter: -1, smallCraft: -1, dropShip: -1 } }],
+            [clanMissileList, "streak-lrm-10", { space: { battlemech: 2, protomech: 1, combatVehicle: 1, supportVehicle: 2, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
+            [clanMissileList, "streak-lrm-15", { space: { battlemech: 3, protomech: 1, combatVehicle: 1, supportVehicle: 3, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
+            [clanMissileList, "streak-lrm-20", { space: { battlemech: 5, protomech: 1, combatVehicle: 1, supportVehicle: 5, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
             [isBallisticList, "light-rifle", { space: { battlemech: 1, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
             [isBallisticList, "medium-rifle", { space: { battlemech: 2, protomech: -1, combatVehicle: 1, supportVehicle: 2, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
             [isBallisticList, "heavy-rifle", { space: { battlemech: 3, protomech: -1, combatVehicle: 1, supportVehicle: 3, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
@@ -5307,8 +5309,8 @@ describe("Batch 34 Primitive Prototype Long Tom and torpedo launchers (IO:AE p.1
             "primitive-prototype-srt-6": ["primitive-prototype-srm-6", "ammo-srt-standard"],
         };
         for (const [tag, [missileTag, ammo]] of Object.entries(pairs)) {
-            const torpedo = mechISEquipmentMissiles.find(item => item.tag === tag);
-            const missile = mechISEquipmentMissiles.find(item => item.tag === missileTag)!;
+            const torpedo = isMissileList.find(item => item.tag === tag);
+            const missile = isMissileList.find(item => item.tag === missileTag)!;
             expect(torpedo, tag).toMatchObject({
                 prototype: 2370, introduced: null, extinct: 2380, reintroduced: null, techRating: "c", book: "IO:AE", page: 112, ammoTypes: [ammo],
                 weight: missile.weight, cbills: missile.cbills, heat: missile.heat, range: missile.range, space: missile.space,
@@ -5921,7 +5923,7 @@ describe("Batch 45 MRM Apollo Fire Control System (TO:AUE pp.143, 195, 221)", ()
     const sizes = [10, 20, 30, 40];
 
     it("gives every standard MRM launcher its +1 to-hit modifier (TW p.303)", () => {
-        const launchers = mechISEquipmentMissiles.filter(item => /^mrm-\d+(-i?os)?$/.test(item.tag));
+        const launchers = isMissileList.filter(item => /^mrm-\d+(-i?os)?$/.test(item.tag));
         expect(launchers.length).toBe(12);
         for (const launcher of launchers) {
             expect(launcher.accuracyModifier, launcher.tag).toBe(1);
@@ -5930,8 +5932,8 @@ describe("Batch 45 MRM Apollo Fire Control System (TO:AUE pp.143, 195, 221)", ()
 
     it("lists each MRM launcher with the Apollo attached", () => {
         for (const size of sizes) {
-            const base = mechISEquipmentMissiles.find(item => item.tag === `mrm-${size}`)!;
-            const apollo = mechISEquipmentMissiles.find(item => item.tag === `mrm-${size}-apollo`);
+            const base = isMissileList.find(item => item.tag === `mrm-${size}`)!;
+            const apollo = isMissileList.find(item => item.tag === `mrm-${size}-apollo`);
             expect(apollo, `mrm-${size}`).toMatchObject({
                 name: `MRM ${size} + Apollo FCS`,
                 // +1 ton, +1 slot, +125,000 C-bills; the +1 to-hit modifier is negated
@@ -5946,8 +5948,8 @@ describe("Batch 45 MRM Apollo Fire Control System (TO:AUE pp.143, 195, 221)", ()
     });
 
     it("feeds from ordinary MRM ammunition", () => {
-        const apollo = mechISEquipmentMissiles.find(item => item.tag === "mrm-20-apollo")!;
-        expect(getWeaponAmmoFamilies(apollo)).toEqual(getWeaponAmmoFamilies(mechISEquipmentMissiles.find(item => item.tag === "mrm-20")!));
+        const apollo = isMissileList.find(item => item.tag === "mrm-20-apollo")!;
+        expect(getWeaponAmmoFamilies(apollo)).toEqual(getWeaponAmmoFamilies(isMissileList.find(item => item.tag === "mrm-20")!));
     });
 
     it("must be fitted to every standard MRM launcher on the unit", () => {
@@ -5996,7 +5998,7 @@ describe("Batch 46 C3 Remote Sensor Launcher (TO:AUE pp.110, 195, 217)", () => {
     const offered = (mech: BattleMech, tag: string, rulesLevel = 4) => !!mech.getAvailableEquipment(false, rulesLevel).find(item => item.tag === tag)?.available;
 
     it("lists the launcher and its sensor pods", () => {
-        const launcher = mechISEquipmentMissiles.find(item => item.tag === "c3-remote-sensor-launcher");
+        const launcher = isMissileList.find(item => item.tag === "c3-remote-sensor-launcher");
         expect(launcher).toMatchObject({
             name: "C3 Remote Sensor Launcher", cbills: 400000, weight: 4, battleValue: 30, heat: 0, damage: 0,
             range: { min: 0, short: 3, medium: 6, long: 9 },
