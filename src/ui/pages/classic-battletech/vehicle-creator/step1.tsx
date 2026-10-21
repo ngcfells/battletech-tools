@@ -427,6 +427,7 @@ export default class VehicleCreatorStep1 extends React.Component<IStep1Props, IS
         if (!vehicle) return <></>;
 
         const rulesLevel = this.props.appGlobals.appSettings.mechRulesFilter;
+        const artVeeSamples = getArtVeeSamples(rulesLevel);
         const chassisOptions = vehicle.getChassisModificationOptions(rulesLevel);
         const { min, max } = getVehicleTonnageBounds(vehicle.getMotiveType().tag, rulesLevel);
         const tonnageOptions: number[] = [];
@@ -468,12 +469,12 @@ export default class VehicleCreatorStep1 extends React.Component<IStep1Props, IS
                                     onChange={this.updateName}
                                 />
 
-                                {getArtVeeSamples(rulesLevel).length > 0 ? (
+                                {artVeeSamples.length > 0 ? (
                                     <label>
                                         Sample ArtVees (Custom Homebrew):
                                         <select value="" onChange={this.loadArtVeeSample} data-testid="artvee-samples">
                                             <option value="">Start from a sample ArtVee (optional)</option>
-                                            {getArtVeeSamples(rulesLevel).map((sample) => (
+                                            {artVeeSamples.map((sample) => (
                                                 <option key={sample.id} value={sample.id}>{sample.name} ({sample.save.tonnage} tons)</option>
                                             ))}
                                         </select>

@@ -348,7 +348,7 @@ describe("ArtVee construction", () => {
             expect(vehicle.getWeaponToHitModifier(gun)).not.toBeNull();
         });
 
-        it("lets the other weapons fire in both modes (not on the transformation turn)", () => {
+        it("lets the other weapons fire in both modes", () => {
             const vehicle = withLaser();
             const weapon = laser(vehicle);
             expect(vehicle.getArtVeeWeaponBlock(weapon)).toBeNull();
