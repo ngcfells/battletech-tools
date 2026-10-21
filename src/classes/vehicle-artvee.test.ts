@@ -323,7 +323,7 @@ describe("ArtVee construction", () => {
             expect(vehicle.getArtVeeWeaponBlock(gun)).toBeNull();
             expect(vehicle.getWeaponToHitModifier(gun)).not.toBeNull();
             vehicle.startArtVeeTransformation();
-            expect(vehicle.getArtVeeWeaponBlock(gun)).toBe("Transforming: the combo gun can't fire this turn");
+            expect(vehicle.getArtVeeWeaponBlock(gun)).toBeNull();
             expect(vehicle.getWeaponToHitModifier(gun)).toBeNull();
             vehicle.turnReset();
             expect(vehicle.getArtVeeWeaponBlock(gun)).toBe("Siege Mode: fires as the Thumper Artillery Piece artillery (artillery rules)");
@@ -334,16 +334,68 @@ describe("ArtVee construction", () => {
             expect(vehicle.getWeaponToHitModifier(gun)).not.toBeNull();
         });
 
-        it("lets the other weapons fire in both modes", () => {
+        it("lets the other weapons fire in both modes (not on the transformation turn)", () => {
             const vehicle = withLaser();
             const weapon = laser(vehicle);
             expect(vehicle.getArtVeeWeaponBlock(weapon)).toBeNull();
+            expect(vehicle.getWeaponToHitModifier(weapon)).not.toBeNull();
             vehicle.startArtVeeTransformation();
             expect(vehicle.getArtVeeWeaponBlock(weapon)).toBeNull();
-            expect(vehicle.getWeaponToHitModifier(weapon)).not.toBeNull();
             vehicle.turnReset();
             expect(vehicle.getArtVeeWeaponBlock(weapon)).toBeNull();
             expect(vehicle.getWeaponToHitModifier(weapon)).not.toBeNull();
+        });
+
+        it("cannot start transforming after moving this turn (ArtVee ruling 2026-10-21)", () => {
+            const vehicle = thumperArtVee();
+            vehicle.setMovement("cruise", 3);
+            expect(vehicle.getArtVeeTransformationBlock()).toBe("it has already moved this turn");
+            expect(vehicle.startArtVeeTransformation()).toBe("it has already moved this turn");
+            expect(vehicle.getInPlay().artVeeTransformingTo).toBe("");
+            expect(vehicle.getInPlay().movementMode).toBe("cruise");
+            expect(vehicle.getInPlay().hexesMoved).toBe(3);
+            vehicle.setMovement("stationary", 0);
+            expect(vehicle.startArtVeeTransformation()).toBeNull();
+            // The earlier reasons still win.
+            const stranded = thumperArtVee();
+            stranded.setMovement("cruise", 3);
+            stranded.getInPlay().artVeeConversionDestroyed = true;
+            expect(stranded.startArtVeeTransformation()).toBe("the conversion equipment is destroyed");
+        });
+
+        it("has no movement while transforming, but is stationary, not immobile (ArtVee ruling 2026-10-21)", () => {
+            const vehicle = thumperArtVee();
+            expect(vehicle.getEffectiveCruiseMP()).toBe(4);
+            vehicle.startArtVeeTransformation();
+            expect(vehicle.getEffectiveCruiseMP()).toBe(0);
+            expect(vehicle.getEffectiveFlankMP()).toBe(0);
+            expect(vehicle.getEffectiveJumpMP()).toBe(0);
+            vehicle.setMovement("cruise", 4);
+            expect(vehicle.getInPlay().movementMode).toBe("stationary");
+            expect(vehicle.getInPlay().hexesMoved).toBe(0);
+            expect(vehicle.isImmobile()).toBe(false);
+            expect(vehicle.getTargetMovementModifier()).toBe(0);
+            expect(vehicle.getAttackerMovementModifier()).toBe(0);
+            vehicle.turnReset();
+            vehicle.startArtVeeTransformation();
+            vehicle.turnReset();
+            expect(vehicle.getEffectiveCruiseMP()).toBe(4);
+        });
+
+        it("fires no weapon while transforming, and the other weapons fire again next turn (ArtVee ruling 2026-10-21)", () => {
+            const vehicle = withLaser();
+            const gun = combo(vehicle);
+            const weapon = laser(vehicle);
+            expect(vehicle.getCannotFireReason()).toBeNull();
+            vehicle.startArtVeeTransformation();
+            expect(vehicle.getCannotFireReason()).toBe("Transforming (ArtVee)");
+            expect(vehicle.getWeaponToHitModifier(gun)).toBeNull();
+            expect(vehicle.getWeaponToHitModifier(weapon)).toBeNull();
+            vehicle.turnReset();
+            expect(vehicle.getArtVeeMode()).toBe("siege");
+            expect(vehicle.getCannotFireReason()).toBeNull();
+            expect(vehicle.getWeaponToHitModifier(weapon)).not.toBeNull();
+            expect(vehicle.getArtVeeWeaponBlock(gun)).toContain("Siege Mode");
         });
 
         it("is stranded in its mode when the conversion equipment is destroyed", () => {
@@ -424,7 +476,7 @@ describe("ArtVee record sheet notes", () => {
         expect(getArtVeeNotes(vehicle).slice(0, 3)).toEqual([
             `ArtVee (MAP): Vehicle Mode ${vehicle.getCruiseMP()}/${vehicle.getFlankMP()}, Siege Mode 0/0`,
             "Thumper / AC/5 combo: Vehicle Mode AC/5 (5 damage, 1 heat, 3/7/14/21); Siege Mode Thumper artillery (6 heat, 15 damage, 21 mapsheets)",
-            "Transforms in the Movement Phase; the combo gun cannot fire that turn",
+            "Transforms in the Movement Phase before moving; it cannot move or fire that turn",
         ]);
         expect(getArtVeeNotes(vehicle)[0]).toBe("ArtVee (MAP): Vehicle Mode 4/6, Siege Mode 0/0");
     });

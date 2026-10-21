@@ -90,7 +90,7 @@ deployed.
 - **Range:** the longer barrel adds +1/+2/+3 hexes to the AC's short, medium and long ranges, the same step as
   Medium Laser to ER Medium Laser. Damage, heat and minimum range stay the AC's own.
 - **Profile by mode:** Vehicle Mode fires only the AC profile, Siege Mode only the artillery profile. On the turn
-  of a transformation neither fires.
+  of a transformation no weapon fires, the combo gun's either profile included.
 - **Weight, slots, cost:** those of the artillery piece (15 / 20 / 30 t). It takes 1 vehicle item slot, and
   must be in the turret. The breech and barrel are paid for by the conversion equipment.
 - **Ammunition:** separate bins. Artillery ammo (the piece's canon munitions) feeds the Siege Mode profile, and the
@@ -170,10 +170,10 @@ design in 3071.
 ## Play mode
 
 - **Mode flag** on the unit: Vehicle or Siege. Both appear on the record sheet with the current mode marked.
-- **Transformation (LAM timing):** declared in the Movement Phase. Going into Siege Mode, the tank may move first.
-  The combo gun does not fire that turn; the new mode takes effect at the end of the turn. Builder's call: whether
-  secondary weapons may fire on a transformation turn (LAMs can't fire anything; the user said only the combo gun
-  is mode-limited, so the default is that they may).
+- **Transformation (LAM timing):** declared in the Movement Phase, before the unit moves (it can't start after
+  moving). User ruling 2026-10-21: the transformation is the unit's only action that turn. It can't move and no
+  weapon fires (the stationary 0 target and attacker movement modifiers apply; it is stationary, not immobile). The new
+  Mode takes effect at the end of the turn, and the next turn moves and fires normally in it.
 - **Siege Mode:** 0/0 MP, the turret turns freely through 360°, and the combo gun fires its artillery profile with
   the full artillery rules. Siege Mode is not "immobile" for the −4 immobile-target modifier (my call); its target
   movement modifier is that of a unit that did not move.

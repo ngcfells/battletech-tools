@@ -79,6 +79,6 @@ export function getArtVeeNotes(vehicle: Vehicle): string[] {
         const code = gun.alphaStrike?.specialAbility?.find((special) => special.startsWith("ART"));
         if (code) alphaStrike.push(`Alpha Strike: ${code} in Siege Mode only; Siege Mode Move 0"`);
     }
-    notes.push("Transforms in the Movement Phase; the combo gun cannot fire that turn", ...alphaStrike);
+    notes.push("Transforms in the Movement Phase before moving; it cannot move or fire that turn", ...alphaStrike);
     return notes;
 }

@@ -297,7 +297,7 @@ export default class VehiclePlayPanel extends React.Component<IVehiclePlayPanelP
             { mode: "stationary", label: "Stationary", mp: 0 },
             { mode: "cruise", label: "Cruise", mp: vehicle.getEffectiveCruiseMP() },
         ];
-        if (vehicle.getArtVeeMode() === "siege") movementModes.splice(1);
+        if (vehicle.getArtVeeMode() === "siege" || inPlay.artVeeTransformingTo) movementModes.splice(1);
         else if (!vehicle.isCruiseOnly()) movementModes.push({ mode: "flank", label: "Flank", mp: vehicle.getEffectiveFlankMP() });
         if (vehicle.getEffectiveJumpMP() > 0 && vehicle.getArtVeeMode() !== "siege") movementModes.push({ mode: "jump", label: "Jump", mp: vehicle.getEffectiveJumpMP() });
         const maxHexes = movementModes.find((m) => m.mode === inPlay.movementMode)?.mp ?? 0;

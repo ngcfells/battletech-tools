@@ -1374,6 +1374,8 @@ export default class Vehicle {
         if (this._inPlay.artVeeConversionDestroyed) return "the conversion equipment is destroyed";
         if (this._inPlay.artVeeTransformingTo) return "it is already transforming";
         if (this._inPlay.criticals.crewKilled) return "the crew is killed";
+        // The transformation is declared before moving: it is the unit's only action that turn (ArtVee ruling 2026-10-21).
+        if (this._inPlay.movementMode !== "stationary" || this._inPlay.hexesMoved > 0) return "it has already moved this turn";
         return null;
     }
 
@@ -1393,7 +1395,6 @@ export default class Vehicle {
     /** Why a weapon can't fire in the ArtVee's current Mode, or null. Only the combo gun is Mode-limited. */
     public getArtVeeWeaponBlock(weapon: IEquipmentItem): string | null {
         if (!this._artVee || !weapon.comboArtilleryTag) return null;
-        if (this._inPlay.artVeeTransformingTo) return "Transforming: the combo gun can't fire this turn";
         if (this.getArtVeeMode() !== "siege") return null;
         const piece = getComboArtillery(weapon)?.name ?? "artillery";
         return `Siege Mode: fires as the ${piece} artillery (artillery rules)`;
@@ -4511,6 +4512,12 @@ export default class Vehicle {
     }
 
     public setMovement(mode: VehicleMovementMode, hexesMoved: number = 0): void {
+        // A transforming ArtVee is stationary whatever it is passed (ArtVee ruling 2026-10-21).
+        if (this._inPlay.artVeeTransformingTo) {
+            this._inPlay.movementMode = "stationary";
+            this._inPlay.hexesMoved = 0;
+            return;
+        }
         this._inPlay.movementMode = mode;
         this._inPlay.hexesMoved = Math.floor(savedNumber(hexesMoved, 0, 0, VEHICLE_MAX_HEXES_MOVED));
     }
@@ -4621,7 +4628,7 @@ export default class Vehicle {
     }
 
     public getEffectiveCruiseMP(): number {
-        if (this.getArtVeeMode() === "siege") return 0;
+        if (this.getArtVeeMode() === "siege" || this._inPlay.artVeeTransformingTo) return 0;
         return this.isImmobile() ? 0 : this._cruiseAfterTowing(this._getCruiseAfterDamage());
     }
 
@@ -4636,7 +4643,7 @@ export default class Vehicle {
     }
 
     public getEffectiveJumpMP(): number {
-        return this.isImmobile() || this.isCruiseOnly() || this.getArtVeeMode() === "siege" ? 0 : this._jumpMP;
+        return this.isImmobile() || this.isCruiseOnly() || this.getArtVeeMode() === "siege" || this._inPlay.artVeeTransformingTo ? 0 : this._jumpMP;
     }
 
     /**
@@ -4688,6 +4695,7 @@ export default class Vehicle {
         if (c.crewKilled) return "Crew killed";
         if (c.crewStunned) return "Crew stunned";
         if (c.sensorHits >= VEHICLE_MAX_SENSOR_HITS) return "Sensors destroyed";
+        if (this._inPlay.artVeeTransformingTo) return "Transforming (ArtVee)";
         return null;
     }
 
