@@ -5,7 +5,9 @@ import { mechUniversalAmmo } from "./mech-universal-ammo";
 import { mechCustomAmmo } from "./mech-custom-ammo";
 import { mechClanAmmo } from "./mech-clan-ammo";
 import { mechISAmmo } from "./mech-is-ammo";
-import { mechClanEquipmentEnergy } from "./mech-clan-equipment-weapons-energy";
+import { equipmentEnergy } from "./equipment-energy";
+
+const clanEnergyList = equipmentEnergy.filter((item) => item.techBase === "clan");
 
 describe("equipment catalog provenance", () => {
     it("resolves equipment aliases and preserves artillery map-sheet range", () => {
@@ -30,7 +32,7 @@ describe("equipment catalog provenance", () => {
     });
 
     it("uses the chemical lasers' own heat for Alpha Strike (TO:AUE p.132)", () => {
-        const chemical = mechClanEquipmentEnergy.filter(item => item.tag.endsWith("chemical-laser"));
+        const chemical = clanEnergyList.filter(item => item.tag.endsWith("chemical-laser"));
         expect(chemical.map(item => [item.tag, item.alphaStrike.heat])).toEqual(chemical.map(item => [item.tag, item.heat]));
         expect(chemical.map(item => item.heat)).toEqual([6, 2, 1]);
     });

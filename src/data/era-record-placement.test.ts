@@ -9,12 +9,14 @@ import { mechCustomEquipmentMisc } from "./mech-custom-equipment-weapons-misc";
 import { mechHeatSinkTypes } from "./mech-heat-sink-types";
 import { mechInternalStructureTypes } from "./mech-internal-structure-types";
 import { mechISEquipmentArtillery } from "./mech-is-equipment-weapons-artillery";
-import { mechISEquipmentEnergy } from "./mech-is-equipment-weapons-energy";
+import { equipmentEnergy } from "./equipment-energy";
 import { mechClanEquipmentMisc } from "./mech-clan-equipment-weapons-misc";
 import { mechISAmmo } from "./mech-is-ammo";
 import { mechISEquipmentMisc } from "./mech-is-equipment-weapons-misc";
 import { mechUniversalAmmo } from "./mech-universal-ammo";
 import { mechUniversalEquipment } from "./mech-universal-equipment";
+
+const isEnergyList = equipmentEnergy.filter((item) => item.techBase === "is");
 
 const hasTag = (list: { tag: string }[], tag: string) => list.some((item) => item.tag === tag);
 
@@ -70,7 +72,7 @@ describe("date corrections", () => {
             "er-ppc-capacitor": 3060, "snub-nose-ppc-capacitor": 3067,
         };
         for (const [tag, prototype] of Object.entries(prototypes)) {
-            expect(mechISEquipmentEnergy.find((item) => item.tag === tag), tag).toMatchObject({ introduced: 3081, prototype });
+            expect(isEnergyList.find((item) => item.tag === tag), tag).toMatchObject({ introduced: 3081, prototype });
         }
     });
 
