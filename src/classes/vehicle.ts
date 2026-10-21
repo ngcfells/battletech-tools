@@ -38,8 +38,9 @@ import {
     getVehicleBayAlphaStrikeSpecials, getVehicleBayCost, getVehicleBaySlots, getVehicleBayType, getVehicleBayWeight, IVehicleBay,
     MAX_VEHICLE_BAY_COUNT, MAX_VEHICLE_BAYS, MAX_VEHICLE_CARGO_TONS, normalizeVehicleBays, VEHICLE_BAY_TYPES,
 } from "../data/vehicle-transport-bays";
+import { ARTVEE_CONVERSION_EQUIPMENT } from "../data/combat-vehicle-chassis-modifications-custom";
 import { CUSTOM_HOMEBREW_RULES_LEVEL, EXPERIMENTAL_RULES_LEVEL, equipmentMatchesIdentifier, getAmmoBattleValuePerTon, getBattleArmorScaleListByTech, getCompatibleAmmo, getEffectiveIntroduction, getEquipmentListByTech, getEquipmentRulesLevel, getStarLeagueCarryOverDates, getWeaponShotsPerTon, isEquipmentWithinRulesLevel } from "../data/equipment-registry";
-import { isTargetingComputerWeapon, sizeVariableEquipment } from "../data/variable-equipment";
+import { isTargetingComputerWeapon, roundUpHalfTon, sizeVariableEquipment } from "../data/variable-equipment";
 import { getFractionalArmorTonsPerPoint, getFractionalEngineWeight, roundUpToKilogram } from "../data/fractional-accounting";
 import { getBattleArmorScaleExplosionDamage } from "../data/battle-armor-scale-equipment";
 import { getWeaponExplosionDamage } from "../data/weapon-explosions";
@@ -455,6 +456,8 @@ export interface IVehicleExport {
     dualTurret?: boolean;
     sponsonTurrets?: boolean;
     frankenVehicle?: IFrankenVehicle;
+    /** An ArtVee: a tracked vehicle that transforms into an artillery emplacement (Custom Homebrew). */
+    artVee?: boolean;
     /** An OmniVehicle: one base chassis whose pod-mounted equipment changes between configurations (TM pp.95-97). */
     omni?: boolean;
     jumpMP?: number;
@@ -570,6 +573,8 @@ export default class Vehicle {
     private _dualTurret: boolean = false;
     /** FrankenVehicle: the turret's donor; null on an ordinary vehicle. */
     private _frankenVehicle: IFrankenVehicle | null = null;
+    /** ArtVee: carries the conversion equipment and one combo gun (Custom Homebrew). */
+    private _artVee: boolean = false;
     private _sponsonTurrets: boolean = false;
     private _omni: boolean = false;
     private _podUUIDs: Set<string> = new Set();
@@ -1157,6 +1162,7 @@ export default class Vehicle {
             if (item) level = Math.max(level, getEquipmentRulesLevel(item));
         }
         if (this._frankenVehicle) level = Math.max(level, CUSTOM_HOMEBREW_RULES_LEVEL);
+        if (this._artVee) level = Math.max(level, ARTVEE_CONVERSION_EQUIPMENT.rulesLevel);
         // Fractional Accounting is "experimental-level unit design" (TO:AUE p.188).
         if (this.usesFractionalAccounting()) level = Math.max(level, EXPERIMENTAL_RULES_LEVEL);
         return level;
@@ -1269,12 +1275,16 @@ export default class Vehicle {
 
     /** Whether a dated chassis modification is allowed in the vehicle's era at this rules level; undated ones always are. */
     private _chassisModificationInEra(mod: ICombatVehicleChassisModification, rulesLevel: number): boolean {
-        if (!mod.dates) return true;
+        return !mod.dates || this._sidedDatesInEra(mod.dates, rulesLevel);
+    }
+
+    /** Whether either side's dates the tech base can use allow it in the vehicle's era at this rules level. */
+    private _sidedDatesInEra(dates: { is: ITechDates; clan: ITechDates }, rulesLevel: number): boolean {
         const techTag = this._tech.tag;
         const sides: ITechDates[] = [];
-        if (["is", "mis", "mclan"].includes(techTag)) sides.push(mod.dates.is);
-        if (["clan", "mis", "mclan"].includes(techTag)) sides.push(mod.dates.clan);
-        return sides.some((dates) => this._datesAvailability(dates, rulesLevel).available);
+        if (["is", "mis", "mclan"].includes(techTag)) sides.push(dates.is);
+        if (["clan", "mis", "mclan"].includes(techTag)) sides.push(dates.clan);
+        return sides.some((side) => this._datesAvailability(side, rulesLevel).available);
     }
 
     /** Chassis modifications this Combat Vehicle's motive type, era and rules level allow (TO:AUE pp.94, 114). */
@@ -1325,6 +1335,47 @@ export default class Vehicle {
 
     public getChassisModificationWeight(mod: ICombatVehicleChassisModification): number {
         return getCombatVehicleChassisModificationWeight(mod, this._tonnage, ["clan", "mclan"].includes(this._tech.tag) ? "clan" : "is");
+    }
+
+    // ArtVees ---------------------------------------------------------------------------------------------------
+    // The construction rules are here; the issues, warnings and variant logic are in vehicle-artvee.ts.
+
+    public isArtVee(): boolean {
+        return this._artVee;
+    }
+
+    /** A Custom Homebrew rule for tracked Combat Vehicles up to 100 t, in an era the conversion equipment is in date for. */
+    public canBeArtVee(rulesLevel: number): boolean {
+        return rulesLevel >= ARTVEE_CONVERSION_EQUIPMENT.rulesLevel && this._isArtVeeChassis()
+            && this._sidedDatesInEra(ARTVEE_CONVERSION_EQUIPMENT.dates, rulesLevel);
+    }
+
+    private _isArtVeeChassis(): boolean {
+        return !this._support && this._motiveType.tag === "tracked" && this._tonnage <= 100;
+    }
+
+    /** Makes the vehicle an ArtVee (it gets a turret and is not an Omni), or an ordinary vehicle again; equipment stays mounted. */
+    public setArtVee(artVee: boolean, rulesLevel: number = CUSTOM_HOMEBREW_RULES_LEVEL): boolean {
+        if (!artVee) {
+            this._artVee = false;
+        } else if (!this._artVee && this.canBeArtVee(rulesLevel)) {
+            this._omni = false;
+            this._podUUIDs.clear();
+            this._hasTurret = true;
+            this._artVee = true;
+        }
+        this._calc();
+        return this._artVee;
+    }
+
+    /** The conversion equipment: a tenth of the tonnage, rounded up to the half ton; 0 on an ordinary vehicle. */
+    public getArtVeeConversionWeight(): number {
+        return this._artVee ? roundUpHalfTon(this._tonnage * ARTVEE_CONVERSION_EQUIPMENT.weightFraction) : 0;
+    }
+
+    /** An ArtVee stops being one when it is no longer a tracked Combat Vehicle of 100 t or less. */
+    private _pruneArtVee(): void {
+        if (this._artVee && !this._isArtVeeChassis()) this._artVee = false;
     }
 
     private _pruneFrankenVehicle(): void {
@@ -1832,6 +1883,7 @@ export default class Vehicle {
             return used;
         }
         used += this.getArmorItemSlots();
+        if (this._artVee) used += ARTVEE_CONVERSION_EQUIPMENT.bodySlots + ARTVEE_CONVERSION_EQUIPMENT.turretSlots;
         if (this._jumpMP > 0) used += 1;
         if (this._troopSpace > 0) used += 1;
         used += ENGINE_ITEM_SLOTS[this._engineType.tag] ?? 0;
@@ -2523,6 +2575,8 @@ export default class Vehicle {
     // hand-actuator-dependent equipment cannot be mounted on Combat Vehicles.
     private _isEquipmentAllowedForVehicle(item: IEquipmentItem): boolean {
         if (item.requiresHandActuator) return false;
+        // A combo gun needs the ArtVee conversion equipment (Custom Homebrew).
+        if (item.comboArtilleryTag && !this._artVee) return false;
         if (item.metadata?.domains && !item.metadata.domains.includes("vehicle")) return false;
         // No combat vehicle slot value in the equipment tables: not vehicle equipment (TM pp.341-345, TO:AUE pp.217-223).
         // Support Vehicles read their own column.
@@ -2956,6 +3010,13 @@ export default class Vehicle {
             const liftTons = Math.ceil(this._tonnage / 5) / 2;
             rows.push([`${this._motiveType.liftEquipment} (${liftTons} t)`, liftTons * (this._motiveType.hasRotor ? 40000 : 20000)]);
         }
+        if (this._artVee) {
+            // Half the weapons, equipment and structure cost, as the QuadVee's conversion equipment adds (IO:AE p.181).
+            const structureCost = this.getStructureWeight() * 10000;
+            const weaponsAndEquipmentCost = this._equipmentList.reduce((sum, item) => sum + (item.isAmmo ? 0 : item.cbills || 0), 0);
+            rows.push([`${ARTVEE_CONVERSION_EQUIPMENT.name} (${ARTVEE_CONVERSION_EQUIPMENT.costFraction} x weapons, equipment and structure)`,
+                ARTVEE_CONVERSION_EQUIPMENT.costFraction * (structureCost + weaponsAndEquipmentCost)]);
+        }
         const subtotal = rows.reduce((sum, [, value]) => sum + value, 0);
         const divisors: Record<string, number> = {
             hover: 50, "naval-sub": 50, hydrofoil: 75, "naval-surface": 200, wheeled: 200, tracked: 100, vtol: 30, wige: 25,
@@ -3054,6 +3115,7 @@ export default class Vehicle {
     private _calc() {
         this._prunePatchworkArmor();
         this._pruneFrankenVehicle();
+        this._pruneArtVee();
         this._pruneChassisModifications();
         // Mounting the first battle armor item turns Fractional Accounting on (Ghosts of Obeedah p.54).
         const hasBattleArmorEquipment = this.defaultsToFractionalAccounting();
@@ -3083,6 +3145,7 @@ export default class Vehicle {
         for (const mod of this.getChassisModifications()) {
             if (this.getChassisModificationWeight(mod) > 0) this._weights.push({ name: mod.name, weight: this.getChassisModificationWeight(mod) });
         }
+        if (this._artVee) this._weights.push({ name: ARTVEE_CONVERSION_EQUIPMENT.name, weight: this.getArtVeeConversionWeight() });
         this._weights.push({ name: "Armor", weight: this.getArmorWeight() });
 
         if (this.getWeightedHeatSinks() > 0) {
@@ -4590,6 +4653,7 @@ export default class Vehicle {
             dualTurret: this._dualTurret,
             sponsonTurrets: this._sponsonTurrets,
             frankenVehicle: this.getFrankenVehicle() ?? undefined,
+            artVee: this._artVee || undefined,
             omni: this._omni || undefined,
             jumpMP: this._jumpMP,
             troopSpace: this._troopSpace || undefined,
@@ -4826,6 +4890,11 @@ export default class Vehicle {
                     this._frankenVehicle = { turretDonorTonnage: this._tonnage, originalTurretWeight: 0, turretGunner: "commander" };
                     this.setFrankenVehicleTurret(franken as Partial<IFrankenVehicle>);
                 }
+            }
+            // ArtVee: restored once the motive and equipment are loaded; a vehicle that cannot be one loads as ordinary.
+            this._artVee = false;
+            if (importObject.artVee === true && !this.setArtVee(true)) {
+                issue("Dropped the ArtVee conversion: the vehicle is not a tracked Combat Vehicle");
             }
             // A saved design keeps the accounting it was saved with, battle armor items or not.
             this._hadBattleArmorEquipment = this.defaultsToFractionalAccounting();
