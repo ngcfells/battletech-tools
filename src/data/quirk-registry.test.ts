@@ -9,7 +9,7 @@ const mechOnly: IQuirk = {
     kind: "positive",
     cost: { points: 2 },
     unitTypes: ["mech"],
-    attaches: "unit",
+    attaches: ["unit"],
     summary: "A fixture.",
     sources: [{ book: "Test", page: 1 }],
     editions: ["total-warfare"],
@@ -22,7 +22,7 @@ const accurate: IQuirk = {
     name: "Test Accurate",
     altNames: [],
     cost: { per: { points: 1, damage: 5, scope: "weapon" }, zeroDamagePoints: 2 },
-    attaches: "weapon",
+    attaches: ["weapon"],
 };
 
 const custom: IQuirk = {
@@ -112,5 +112,17 @@ describe("getQuirkPoints", () => {
         };
         expect(getQuirkPoints(improved, assigned(improved.tag, "long"), 0)).toBe(3);
         expect(getQuirkPoints(improved, assigned(improved.tag, "short"), 0)).toBe(1);
+    });
+
+    it("costs a quirk by what it is attached to", () => {
+        const em: IQuirk = { ...mechOnly, kind: "negative", cost: { byAttach: { weapon: 1, unit: 2 } }, attaches: ["weapon", "unit"] };
+        expect(getQuirkPoints(em, { tag: em.tag, equipmentUuid: "w1" }, 0)).toBe(-1);
+        expect(getQuirkPoints(em, { tag: em.tag }, 0)).toBe(-2);
+    });
+
+    it("costs a quirk its numeric parameter", () => {
+        const weakHead: IQuirk = { ...mechOnly, kind: "negative", cost: { fromParameter: true }, parameter: { kind: "value" } };
+        expect(getQuirkPoints(weakHead, assigned(weakHead.tag, 2), 0)).toBe(-2);
+        expect(getQuirkPoints(weakHead, assigned(weakHead.tag), 0)).toBe(0);
     });
 });

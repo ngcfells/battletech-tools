@@ -1,4 +1,4 @@
-import { IAssignedQuirk, IQuirk, QuirkUnitType } from "./quirk-interfaces";
+import { IAssignedQuirk, IQuirk, QuirkAttach, QuirkUnitType } from "./quirk-interfaces";
 import { quirks } from "./quirks";
 import { customQuirks } from "./quirks-custom";
 import { getRecordOfferIssue } from "./rules-editions";
@@ -44,9 +44,15 @@ export function getQuirkOfferIssue(
     return getRecordOfferIssue({ ...quirk, rulesLevel: level }, editionTag, rulesLevel);
 }
 
+/** What an assigned quirk is attached to. */
+export function getAssignedAttach(assigned: IAssignedQuirk): QuirkAttach {
+    return assigned.equipmentUuid ? "weapon" : assigned.location ? "location" : "unit";
+}
+
 /**
  * The points an assigned quirk is worth: positive for a positive quirk, negative for a negative one. `maxDamage` is
- * the weapon's damage for a weapon-scope `per` cost, or the unit's largest weapon damage for a unit-scope one.
+ * the weapon's maximum damage for a weapon-scope `per` cost, or the maximum damage of all the unit's non-physical
+ * weapons for a unit-scope one (CO p.225, p.230).
  */
 export function getQuirkPoints(quirk: IQuirk, assigned: IAssignedQuirk, maxDamage: number): number {
     const sign = quirk.kind === "negative" ? -1 : 1;
@@ -56,6 +62,11 @@ export function getQuirkPoints(quirk: IQuirk, assigned: IAssignedQuirk, maxDamag
         points = maxDamage <= 0 && cost.zeroDamagePoints !== undefined
             ? cost.zeroDamagePoints
             : Math.ceil(Math.max(maxDamage, 0) / cost.per.damage) * cost.per.points;
+    } else if (cost.byAttach) {
+        points = cost.byAttach[getAssignedAttach(assigned)] ?? 0;
+    } else if (cost.fromParameter) {
+        const value = Number(assigned.parameter);
+        points = Number.isFinite(value) && value > 0 ? value : 0;
     } else if (cost.choices) {
         const options = quirk.parameter?.options;
         if (options && typeof assigned.parameter === "string") {
@@ -67,5 +78,5 @@ export function getQuirkPoints(quirk: IQuirk, assigned: IAssignedQuirk, maxDamag
     } else {
         points = cost.points ?? 0;
     }
-    return sign * points;
+    return points === 0 ? 0 : sign * points;
 }

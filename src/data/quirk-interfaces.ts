@@ -17,11 +17,13 @@ export interface IQuirkSource {
 }
 
 /**
- * A quirk's point cost, as printed. Exactly one of `points`, `choices` or `per`:
+ * A quirk's point cost, as printed. Exactly one of `points`, `choices`, `per`, `byAttach` or `fromParameter`:
  *   - `points`: a fixed cost;
  *   - `choices`: the costs the player picks from (Rugged 1 or 2), or, for a quirk whose `parameter` lists options,
  *     the cost of each option in the same order (Improved Targeting by range band);
- *   - `per`: points per so much damage "or fraction thereof", of the weapon or of the unit's largest weapon.
+ *   - `per`: points per so much damage "or fraction thereof", of the weapon or of all the unit's weapons;
+ *   - `byAttach`: a cost for each thing the quirk can be attached to (EM Interference: 1 on a weapon, 2 on the unit);
+ *   - `fromParameter`: the assigned numeric parameter is the cost (Weak Head Armor: the armor points lost).
  * `zeroDamagePoints` is the cost of a `per` quirk on a weapon that deals no damage.
  */
 export interface IQuirkCost {
@@ -29,6 +31,8 @@ export interface IQuirkCost {
     choices?: number[];
     per?: { points: number; damage: number; scope: "weapon" | "unit" };
     zeroDamagePoints?: number;
+    byAttach?: { [attach in QuirkAttach]?: number };
+    fromParameter?: true;
 }
 
 export interface IQuirk {
@@ -41,7 +45,8 @@ export interface IQuirk {
     unitTypes: QuirkUnitType[];
     /** The footnote restrictions as printed (VTOL only, quads only...), shown to the player, not enforced. */
     restrictions?: string;
-    attaches: QuirkAttach;
+    /** What the quirk may be attached to, in the order the builder offers them. */
+    attaches: QuirkAttach[];
     parameter?: { kind: "range-band" | "value" | "locations"; options?: string[] };
     /** Tags of quirks a unit may not carry with this one. */
     excludes?: string[];
@@ -55,7 +60,7 @@ export interface IQuirk {
     custom?: true;
 }
 
-/** A quirk on a unit, as saved. */
+/** A quirk on a unit, as saved. It is attached to `equipmentUuid` when set, else to `location` when set, else to the unit. */
 export interface IAssignedQuirk {
     tag: string;
     parameter?: string | number;
