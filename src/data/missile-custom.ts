@@ -14,7 +14,7 @@ import { IEquipmentItem } from "./data-interfaces";
  * excluded from the software's underlying license (GNU GPLv3).
  */
 
-export const mechCustomEquipmentMissile: IEquipmentItem[] = [
+export const missileCustom: IEquipmentItem[] = [
     {
         isAmmo: false,
         name: "SRM-8",

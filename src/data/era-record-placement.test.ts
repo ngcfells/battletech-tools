@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { getStarLeagueCarryOverDates, parseTechYear } from "./equipment-registry";
 import { getEraForYear } from "./era-options";
-import { mechCustomEquipmentBallistic } from "./mech-custom-equipment-weapons-ballistic";
-import { mechCustomEquipmentEnergy } from "./mech-custom-equipment-weapons-energy";
-import { mechCustomEquipmentMisc } from "./mech-custom-equipment-weapons-misc";
+import { ballisticCustom } from "./ballistic-custom";
+import { energyCustom } from "./energy-custom";
+import { miscCustom } from "./misc-custom";
 import { mechHeatSinkTypes } from "./mech-heat-sink-types";
 import { mechInternalStructureTypes } from "./mech-internal-structure-types";
 import { equipmentArtillery } from "./equipment-artillery";
@@ -88,11 +88,11 @@ describe("date corrections", () => {
     });
 
     it("dates custom items from the canon item they are built on (IO p.38, p.43, p.45)", () => {
-        expect(mechCustomEquipmentBallistic.find((item) => item.tag === "custom-ac-15"))
+        expect(ballisticCustom.find((item) => item.tag === "custom-ac-15"))
             .toMatchObject({ prototype: 2488, introduced: 2500 }); // AC/20
-        expect(mechCustomEquipmentEnergy.find((item) => item.tag === "custom-disruptor"))
+        expect(energyCustom.find((item) => item.tag === "custom-disruptor"))
             .toMatchObject({ prototype: 2306, introduced: 2316 }); // Large Laser
-        expect(mechCustomEquipmentMisc.find((item) => item.tag === "custom-null-signature-system"))
+        expect(miscCustom.find((item) => item.tag === "custom-null-signature-system"))
             .toMatchObject({ prototype: 2615, introduced: 2630, extinct: 2790, reintroduced: 3110 }); // Null-Signature System
     });
 });

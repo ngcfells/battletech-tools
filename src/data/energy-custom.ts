@@ -14,7 +14,7 @@ import { IEquipmentItem } from "./data-interfaces";
  * excluded from the software's underlying license (GNU GPLv3).
  */
 
-export const mechCustomEquipmentEnergy: IEquipmentItem[] = [
+export const energyCustom: IEquipmentItem[] = [
     {
        name: "COIL-L",
         tag: "coil_l",

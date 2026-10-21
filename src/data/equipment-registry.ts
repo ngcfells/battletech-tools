@@ -6,14 +6,12 @@ import { equipmentEnergy } from "./equipment-energy";
 import { equipmentMisc } from "./equipment-misc";
 import { equipmentMissile } from "./equipment-missile";
 import { equipmentArtillery } from "./equipment-artillery";
-import { mechCustomEquipmentBallistic } from "./mech-custom-equipment-weapons-ballistic";
-import { mechCustomEquipmentEnergy } from "./mech-custom-equipment-weapons-energy";
-import { mechCustomEquipmentMisc } from "./mech-custom-equipment-weapons-misc";
-import { mechCustomEquipmentMissile } from "./mech-custom-equipment-weapons-missile";
-import { mechCustomAmmo } from "./mech-custom-ammo";
-import { artilleryCustom } from "./artillery-custom";
+import { ballisticCustom } from "./ballistic-custom";
+import { energyCustom } from "./energy-custom";
 import { miscCustom } from "./misc-custom";
+import { missileCustom } from "./missile-custom";
 import { ammoCustom } from "./ammo-custom";
+import { artilleryCustom } from "./artillery-custom";
 import { ammoCatalog } from "./ammo";
 import { isUniversalEquipment } from "./universal-equipment";
 import { APOCRYPHAL_RULES_LEVEL, CUSTOM_HOMEBREW_RULES_LEVEL, EXPERIMENTAL_RULES_LEVEL, MUNCHKIN_RULES_LEVEL } from "./rules-level-options";
@@ -52,13 +50,11 @@ const equipmentCatalogDefinitions: IEquipmentCatalogDefinition[] = [
     { id: "equipment-misc", exportName: "equipmentMisc", category: "misc", equipment: equipmentMisc },
     { id: "equipment-artillery", exportName: "equipmentArtillery", category: "artillery", equipment: equipmentArtillery },
     { id: "ammo", exportName: "ammoCatalog", category: "ammunition", equipment: ammoCatalog },
-    { id: "mech-custom-equipment-weapons-ballistic", exportName: "mechCustomEquipmentBallistic", custom: true, category: "ballistic", equipment: mechCustomEquipmentBallistic },
-    { id: "mech-custom-equipment-weapons-energy", exportName: "mechCustomEquipmentEnergy", custom: true, category: "energy", equipment: mechCustomEquipmentEnergy },
-    { id: "mech-custom-equipment-weapons-missile", exportName: "mechCustomEquipmentMissile", custom: true, category: "missile", equipment: mechCustomEquipmentMissile },
-    { id: "mech-custom-equipment-weapons-misc", exportName: "mechCustomEquipmentMisc", custom: true, category: "misc", equipment: mechCustomEquipmentMisc },
-    { id: "artillery-custom", exportName: "artilleryCustom", custom: true, category: "artillery", equipment: artilleryCustom },
+    { id: "ballistic-custom", exportName: "ballisticCustom", custom: true, category: "ballistic", equipment: ballisticCustom },
+    { id: "energy-custom", exportName: "energyCustom", custom: true, category: "energy", equipment: energyCustom },
+    { id: "missile-custom", exportName: "missileCustom", custom: true, category: "missile", equipment: missileCustom },
     { id: "misc-custom", exportName: "miscCustom", custom: true, category: "misc", equipment: miscCustom },
-    { id: "mech-custom-ammo", exportName: "mechCustomAmmo", custom: true, category: "ammunition", equipment: mechCustomAmmo },
+    { id: "artillery-custom", exportName: "artilleryCustom", custom: true, category: "artillery", equipment: artilleryCustom },
     { id: "ammo-custom", exportName: "ammoCustom", custom: true, category: "ammunition", equipment: ammoCustom },
 ];
 

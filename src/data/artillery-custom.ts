@@ -2,10 +2,6 @@ import { IEquipmentItem } from "./data-interfaces";
 import { equipmentBallistic } from "./equipment-ballistic";
 import { equipmentArtillery } from "./equipment-artillery";
 
-const universalArtilleryList = equipmentArtillery.filter((item) => item.techBase === "universal");
-
-const isBallisticList = equipmentBallistic.filter((item) => item.techBase === "is");
-
 /*
  * ArtVee design 2026-10-20 (Custom Homebrew): the combo guns, an artillery tube with a drop-in autocannon breech.
  * In Vehicle Mode the gun fires as the autocannon (the top-level stats here, range +1/+2/+3 over the AC); in Siege
@@ -15,6 +11,9 @@ const isBallisticList = equipmentBallistic.filter((item) => item.techBase === "i
  * artillery piece's BV for its tech base (Siege Mode; TO:AUE p.195 Inner Sphere, p.197 Clan). Ammo BV is not set
  * here, so each bin counts its own ammunition's BV.
  */
+
+const universalArtilleryList = equipmentArtillery.filter((item) => item.techBase === "universal");
+const isBallisticList = equipmentBallistic.filter((item) => item.techBase === "is");
 
 interface IComboGunRow {
     name: string;

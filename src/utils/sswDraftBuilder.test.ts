@@ -18,16 +18,16 @@ describe("SSW draft builder", () => {
     });
 
     it("picks the custom catalog by kind and SSW type", () => {
-        expect(targetCatalogFor("equipment", "energy")).toBe("mech-custom-equipment-weapons-energy");
-        expect(targetCatalogFor("equipment", "ballistic")).toBe("mech-custom-equipment-weapons-ballistic");
-        expect(targetCatalogFor("equipment", "missile")).toBe("mech-custom-equipment-weapons-missile");
-        expect(targetCatalogFor("equipment", "physical")).toBe("mech-custom-equipment-weapons-misc");
-        expect(targetCatalogFor("ammunition", "ammunition")).toBe("mech-custom-ammo");
+        expect(targetCatalogFor("equipment", "energy")).toBe("energy-custom");
+        expect(targetCatalogFor("equipment", "ballistic")).toBe("ballistic-custom");
+        expect(targetCatalogFor("equipment", "missile")).toBe("missile-custom");
+        expect(targetCatalogFor("equipment", "physical")).toBe("misc-custom");
+        expect(targetCatalogFor("ammunition", "ammunition")).toBe("ammo-custom");
         expect(targetCatalogFor("armor", "armor")).toBe("mech-custom-armor-types");
     });
 
     it("templates follow the target catalog's first entry with every value unknown", () => {
-        const template = blankTemplate("ammunition", "mech-custom-ammo");
+        const template = blankTemplate("ammunition", "ammo-custom");
         expect(Object.keys(template).slice(0, 3)).toEqual(["isAmmo", "isSpecialAmmo", "name"]);
         expect(template.battleValue).toBeNull();
         expect(template.name).toBe("");
@@ -35,7 +35,7 @@ describe("SSW draft builder", () => {
 
     it("builds a placeholder draft from the file's facts", () => {
         const [draft] = buildDrafts([{ item: item({ tons: 7 }), slots: 3, design: "Griffin GRF-1N", source: source("griffin.ssw") }], [], newId);
-        expect(draft).toMatchObject({ kind: "equipment", faction: "is", targetCatalogId: "mech-custom-equipment-weapons-energy", status: "draft", slotsEstimated: true });
+        expect(draft).toMatchObject({ kind: "equipment", faction: "is", targetCatalogId: "energy-custom", status: "draft", slotsEstimated: true });
         expect(draft.record).toMatchObject({ name: "Widget Cannon", tag: "local-is-widget-cannon", altNames: ["Widget Cannon"], weight: 7, book: "Custom", introduced: null });
         expect((draft.record.space as Record<string, unknown>).battlemech).toBe(3);
         expect((draft.record.space as Record<string, unknown>).protomech).toBeNull();

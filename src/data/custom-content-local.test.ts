@@ -5,14 +5,14 @@ import { findImportedEquipment } from "../utils/importedEquipment";
 import type { ICustomContentDraft } from "./custom-content-types";
 import { getLocalCustomContentDrafts, registerLocalCustomContent, saveLocalCustomContentDrafts, toRuntimeRecord } from "./custom-content-local";
 import { getEquipmentListByTech } from "./equipment-registry";
-import { mechCustomEquipmentMisc } from "./mech-custom-equipment-weapons-misc";
+import { miscCustom } from "./misc-custom";
 
 const draft = (overrides: Partial<ICustomContentDraft> = {}): ICustomContentDraft => ({
     id: "d1",
     kind: "equipment",
     faction: "is",
-    targetCatalogId: "mech-custom-equipment-weapons-misc",
-    record: { ...JSON.parse(JSON.stringify(mechCustomEquipmentMisc[0])), name: "Widget Array", tag: "local-is-widget-array", altNames: ["Widget Array"], altTags: [], battleValue: null, book: "Custom" },
+    targetCatalogId: "misc-custom",
+    record: { ...JSON.parse(JSON.stringify(miscCustom.find((item) => item.tag === "custom-null-signature-system"))), name: "Widget Array", tag: "local-is-widget-array", altNames: ["Widget Array"], altTags: [], battleValue: null, book: "Custom" },
     status: "draft",
     slotsEstimated: true,
     sourceFiles: [],

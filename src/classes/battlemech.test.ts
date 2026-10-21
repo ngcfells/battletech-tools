@@ -11,8 +11,8 @@ import { getLargeEngineType, mechEngineTypes, mechLargeEngineTypes } from "../da
 import { mechEngineOptions } from "../data/mech-engine-options";
 import { mechHeatSinkTypes } from "../data/mech-heat-sink-types";
 import { mechCockpitTypes } from "../data/mech-cockpit-types";
-import { mechCustomEquipmentEnergy } from "../data/mech-custom-equipment-weapons-energy";
-import { mechCustomEquipmentMissile } from "../data/mech-custom-equipment-weapons-missile";
+import { energyCustom } from "../data/energy-custom";
+import { missileCustom } from "../data/missile-custom";
 import { ammoCatalog } from "../data/ammo";
 import { mechJumpJetTypes } from "../data/mech-jump-jet-types";
 import { btEraOptions } from "../data/era-options";
@@ -22,7 +22,6 @@ import { equipmentBallistic } from "../data/equipment-ballistic";
 import { equipmentEnergy } from "../data/equipment-energy";
 import { equipmentMisc } from "../data/equipment-misc";
 import { getAvailableTonnagesForMechType, getTonnageBoundsForMechType } from "../data/mech-tonnages";
-import { mechCustomEquipmentMisc } from "../data/mech-custom-equipment-weapons-misc";
 
 const isAmmoList = ammoCatalog.filter((item) => item.techBase === "is");
 const clanAmmoList = ammoCatalog.filter((item) => item.techBase === "clan");
@@ -2236,7 +2235,7 @@ describe("saved designs with custom equipment", () => {
     // Regression: a saved design lost its custom (homebrew) equipment on reload, because restoring a save looked
     // the tag up in the canon lists only. Canon still wins when a tag exists in both.
     it("keeps custom equipment through a save and reload", () => {
-        const customTag = mechCustomEquipmentMisc[0].tag;
+        const customTag = "custom-null-signature-system";
         const mech = new BattleMech();
         mech.setTonnage(50);
         const added = mech.addEquipmentFromTag(customTag, "is", "un", false, null, "", false, [], undefined, undefined, -1, "", true);
@@ -3666,8 +3665,8 @@ describe("Batch 13 records without a canon source", () => {
     });
 
     it("lists them as Custom Homebrew, with the old tags, until a source is found", () => {
-        const laser = mechCustomEquipmentEnergy.find(item => item.tag === "enhanced_er_large_laser");
-        const lrm = mechCustomEquipmentMissile.find(item => item.tag === "enhanced_clan_lrm_10");
+        const laser = energyCustom.find(item => item.tag === "enhanced_er_large_laser");
+        const lrm = missileCustom.find(item => item.tag === "enhanced_clan_lrm_10");
         for (const item of [laser, lrm]) {
             expect(item).toMatchObject({ catalog: "custom", book: "Custom", page: null, rulesLevel: CUSTOM_HOMEBREW_RULES_LEVEL });
             expect(item?.notes).toContain("No canon source found");
@@ -5354,7 +5353,7 @@ describe("Batch 34 Clan ER PPC with PPC Capacitor (IO:AE pp.40, 190, 197)", () =
             battleValue: 548,
         });
         // It was a Custom record while no source was known; the tag is unchanged, so saved designs load.
-        expect(mechCustomEquipmentEnergy.some(item => item.tag === "clan-er-ppc-capacitor")).toBe(false);
+        expect(energyCustom.some(item => item.tag === "clan-er-ppc-capacitor")).toBe(false);
     });
 
     it("is offered to Clan designs only once the Clans have the capacitor", () => {

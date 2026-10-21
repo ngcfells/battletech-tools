@@ -25,13 +25,13 @@ export function estimateSlots(start: number, occupancy: boolean[]): number {
 }
 
 export function targetCatalogFor(kind: CustomContentKind, sswType: string): string {
-    if (kind === "ammunition") return "mech-custom-ammo";
+    if (kind === "ammunition") return "ammo-custom";
     if (kind !== "equipment") return CUSTOM_COMPONENT_CATALOGS[kind].id;
     switch (sswType) {
-        case "energy": return "mech-custom-equipment-weapons-energy";
-        case "ballistic": return "mech-custom-equipment-weapons-ballistic";
-        case "missile": return "mech-custom-equipment-weapons-missile";
-        default: return "mech-custom-equipment-weapons-misc";
+        case "energy": return "energy-custom";
+        case "ballistic": return "ballistic-custom";
+        case "missile": return "missile-custom";
+        default: return "misc-custom";
     }
 }
 
@@ -68,7 +68,8 @@ const valueAt = (record: Record<string, unknown>, path: string): unknown =>
     path.split(".").reduce<unknown>((value, key) => (value as Record<string, unknown> | null)?.[key], record);
 
 export function missingFields(draft: ICustomContentDraft): string[] {
-    const isWeapon = draft.kind === "equipment" && draft.targetCatalogId !== "mech-custom-equipment-weapons-misc";
+    // Drafts saved before the custom files were split by category name the old misc catalog.
+    const isWeapon = draft.kind === "equipment" && !["misc-custom", "mech-custom-equipment-weapons-misc"].includes(draft.targetCatalogId);
     const paths = [...REQUIRED_FIELDS[draft.kind], ...(isWeapon ? WEAPON_FIELDS : [])];
     const missing = paths.filter((path) => {
         const value = valueAt(draft.record, path);

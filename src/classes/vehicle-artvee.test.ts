@@ -1,13 +1,13 @@
 import { afterEach, describe, expect, it } from "vitest";
 import { setLocalCustomEquipment } from "../data/equipment-registry";
 import type { IEquipmentItem } from "../data/data-interfaces";
-import { mechCustomEquipmentEnergy } from "../data/mech-custom-equipment-weapons-energy";
+import { energyCustom } from "../data/energy-custom";
 import { ARTVEE_CONVERSION_EQUIPMENT } from "../data/combat-vehicle-chassis-modifications-custom";
 import Vehicle from "./vehicle";
 import { getArtVeeComboGuns, getArtVeeIssues, getArtVeeNotes, getArtVeeVariant, getArtVeeWarnings } from "./vehicle-artvee";
 
 describe("custom records by tech base", () => {
-    const template = mechCustomEquipmentEnergy[0];
+    const template = energyCustom[0];
     const fixture = (tag: string, techBase: "is" | "clan"): IEquipmentItem => ({
         ...structuredClone(template),
         name: tag,

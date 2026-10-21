@@ -15,7 +15,7 @@ export interface ICustomContentDraft {
     id: string;
     kind: CustomContentKind;
     faction: CustomFaction;
-    /** Catalog id, e.g. "mech-custom-ammo" or "mech-custom-armor-types". */
+    /** Catalog id, e.g. "ammo-custom" or "mech-custom-armor-types". */
     targetCatalogId: string;
     /** The catalog record, field-for-field; null where the stat is still unknown. */
     record: Record<string, unknown>;
