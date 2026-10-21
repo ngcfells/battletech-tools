@@ -17,7 +17,7 @@ import { DEFAULT_RULES_EDITION, btRulesEditions } from "./rules-editions";
 type Record = IEditionHistory & { tag?: string; tons?: number };
 
 const equipment = getEquipmentCatalogDefinitions()
-    .filter((definition) => definition.techBase !== "custom")
+    .filter((definition) => !definition.custom)
     .flatMap((definition) => definition.equipment)
     .filter((item) => getEquipmentRulesLevel(item) < CUSTOM_HOMEBREW_RULES_LEVEL);
 const records: Record[] = [

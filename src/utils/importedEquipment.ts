@@ -1,5 +1,5 @@
 import { IEquipmentItem } from "../data/data-interfaces";
-import { EquipmentCatalog, getEquipmentCatalogDefinitions, getLocalCustomEquipment } from "../data/equipment-registry";
+import { EquipmentCatalog, getEquipmentCatalogDefinitions, getEquipmentTier, getLocalCustomEquipment } from "../data/equipment-registry";
 import { isUniversalEquipment } from "../data/mech-universal-equipment";
 import { customTagFaction } from "./customTags";
 
@@ -57,15 +57,16 @@ function getIndex(catalog: EquipmentCatalog): ICatalogIndex {
     if (!indexes) {
         indexes = new Map();
         for (const definition of getEquipmentCatalogDefinitions()) {
-            let index = indexes.get(definition.techBase);
-            if (!index) {
-                index = { primary: new Map(), any: new Map() };
-                indexes.set(definition.techBase, index);
-            }
             for (const item of definition.equipment) {
+                const tier = getEquipmentTier(definition, item);
                 // Universal records are listed in the IS and Clan files too; they belong to the universal tier.
-                if (definition.techBase !== "universal" && isUniversalEquipment(item)) {
+                if (tier !== "universal" && isUniversalEquipment(item)) {
                     continue;
+                }
+                let index = indexes.get(tier);
+                if (!index) {
+                    index = { primary: new Map(), any: new Map() };
+                    indexes.set(tier, index);
                 }
                 add(index.primary, item.name, item);
                 add(index.primary, item.tag, item);

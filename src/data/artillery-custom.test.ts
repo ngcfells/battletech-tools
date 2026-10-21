@@ -102,7 +102,7 @@ describe("ArtVee combo guns", () => {
 
     it("is registered in the custom artillery catalog with IS and Clan dates", () => {
         const definition = getEquipmentCatalogDefinitions().find((catalog) => catalog.id === "artillery-custom");
-        expect(definition?.techBase).toBe("custom");
+        expect(definition?.custom).toBe(true);
         expect(definition?.category).toBe("artillery");
         expect(gun("custom-artvee-sniper-combo")).toMatchObject({ techBase: "is", prototype: 2690, introduced: 2700, extinct: 2865, reintroduced: 3071 });
         expect(gun("custom-clan-artvee-sniper-combo")).toMatchObject({ techBase: "clan", prototype: 2690, introduced: 2700, extinct: null, reintroduced: null });

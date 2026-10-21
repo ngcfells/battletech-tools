@@ -14,7 +14,7 @@ import { btMechTonnages } from "./mech-tonnages";
 import { mechTypeOptions } from "./mech-type-options";
 import { getRecordEditions } from "./rules-editions";
 
-// Writes .superpowers/ic/editions.json for tools/write_editions.py: { "<file>.ts": { "<tag>" | "tons:<n>": { editions, techBase? } } }.
+// Writes .superpowers/ic/editions.json for tools/write_editions.py: { "<file>.ts": { "<tag>" | "tons:<n>": { editions } } }.
 // Run with WRITE_EDITIONS=1; skipped otherwise.
 type Entry = { editions: string[]; techBase?: string };
 type Record = IEditionHistory & { tag?: string; tons?: number; rulesLevel?: number };
@@ -29,10 +29,10 @@ describe("editions generator", () => {
             out[file][key] = { editions: getRecordEditions({ ...record, editions: undefined }), ...(techBase ? { techBase } : {}) };
         };
         for (const definition of getEquipmentCatalogDefinitions()) {
-            if (definition.techBase === "custom") continue;
+            if (definition.custom) continue;
             for (const item of definition.equipment) {
                 if (getEquipmentRulesLevel(item) >= CUSTOM_HOMEBREW_RULES_LEVEL) continue;
-                add(`${definition.id}.ts`, item, item.techBase ? undefined : definition.techBase);
+                add(`${definition.id}.ts`, item);
             }
         }
         const components: [string, Record[]][] = [

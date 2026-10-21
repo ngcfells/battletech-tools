@@ -59,7 +59,7 @@ describe("equipment catalogs", () => {
                     const key = identifier.toLowerCase();
                     const other = seen.get(key);
                     if (other !== undefined && other !== item.tag) {
-                        duplicates.push(`${definition.techBase}: "${identifier}" (${other}, ${item.tag})`);
+                        duplicates.push(`${definition.id}: "${identifier}" (${other}, ${item.tag})`);
                     }
                     seen.set(key, item.tag);
                 }

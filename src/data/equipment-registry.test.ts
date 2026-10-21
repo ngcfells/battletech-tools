@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { calculateShotsPerTon, equipmentMatchesIdentifier, getAlphaStrikeEquipmentAbilityCodes, getAlphaStrikeEquipmentDisplayAbilityCodes, getAmmoBattleValuePerTon, getAmmoFamily, getCompatibleAmmo, getEquipmentCatalogDefinitions, getEquipmentCatalogSummaries, getEquipmentListByTech, getEquipmentListForChassis, getEquipmentMaximumRangeInHexes, getWeaponShotsPerTon, getWeaponAmmoFamilies } from "./equipment-registry";
+import { calculateShotsPerTon, equipmentMatchesIdentifier, getAlphaStrikeEquipmentAbilityCodes, getAlphaStrikeEquipmentDisplayAbilityCodes, getAmmoBattleValuePerTon, getAmmoFamily, getCompatibleAmmo, getEquipmentCatalogDefinitions, getEquipmentCatalogSummaries, getEquipmentTier, getEquipmentListByTech, getEquipmentListForChassis, getEquipmentMaximumRangeInHexes, getWeaponShotsPerTon, getWeaponAmmoFamilies } from "./equipment-registry";
 import { mechUniversalEquipment } from "./mech-universal-equipment";
 import { mechUniversalAmmo } from "./mech-universal-ammo";
 import { mechCustomAmmo } from "./mech-custom-ammo";
@@ -343,8 +343,7 @@ describe("equipment catalog provenance", () => {
         const clanItems = getEquipmentListByTech("clan");
         const mixedItems = getEquipmentListByTech("mis");
         const universalTags = getEquipmentCatalogDefinitions()
-            .filter(catalog => catalog.techBase === "universal")
-            .flatMap(catalog => catalog.equipment)
+            .flatMap(catalog => catalog.equipment.filter(item => getEquipmentTier(catalog, item) === "universal"))
             .map(item => item.tag);
 
         for (const tag of universalTags) {
@@ -445,8 +444,8 @@ describe("equipment catalog provenance", () => {
     it("never uses another record's tag as an altTag on the same tech side", () => {
         // IS and Clan splits may both keep a historical altTag; tech base picks the record.
         for (const side of ["is", "clan", "custom"] as const) {
-            const definitions = getEquipmentCatalogDefinitions().filter(definition => definition.techBase === side || definition.techBase === "universal");
-            const items = definitions.flatMap(definition => definition.equipment);
+            const items = getEquipmentCatalogDefinitions().flatMap(definition => definition.equipment
+                .filter(item => [side, "universal"].includes(getEquipmentTier(definition, item))));
             const tags = new Set(items.map(item => item.tag));
             for (const item of items) {
                 for (const altTag of item.altTags ?? []) {
@@ -482,12 +481,12 @@ describe("equipment catalog provenance", () => {
         expect(getEquipmentListByTech("is").filter(item => item.tag === "mrm-10")[0].alphaStrike.rangeShort).toBe(0.57);
         expect(getEquipmentListByTech("clan").filter(item => item.tag === "streak-lrm-20")[0].notes).toContain("workbook");
         expect(getEquipmentListByTech("is").filter(item => item.tag === "vehicle-flamer")).toHaveLength(1);
-        expect(getEquipmentCatalogDefinitions().find(catalog => catalog.techBase === "universal")?.equipment.some(item => item.tag === "vehicle-flamer")).toBe(true);
+        expect(getEquipmentCatalogDefinitions().find(catalog => catalog.id === "mech-universal-equipment")?.equipment.some(item => item.tag === "vehicle-flamer")).toBe(true);
         expect(getEquipmentListByTech("is").find(item => item.tag === "rocket-launcher-20")?.weight).toBe(1.5);
         expect(getEquipmentListByTech("is").filter(item => item.tag === "rocket-launcher-20")).toHaveLength(1);
         expect(getEquipmentListByTech("clan").find(item => item.tag === "clan-srm-2-artemis-iv")?.weight).toBe(1.5);
         expect(getEquipmentListByTech("clan").find(item => item.tag === "clan-srm-6-artemis-iv")?.space.battlemech).toBe(2);
-        expect(getEquipmentCatalogDefinitions().find(catalog => catalog.techBase === "universal")?.equipment.find(item => item.tag === "ppc-capacitor")).toBeUndefined();
+        expect(getEquipmentCatalogDefinitions().find(catalog => catalog.id === "mech-universal-equipment")?.equipment.find(item => item.tag === "ppc-capacitor")).toBeUndefined();
     });
 
     it("covers the requested Clan missile families without Clan MRMs", () => {

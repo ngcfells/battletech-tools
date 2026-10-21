@@ -5760,8 +5760,8 @@ export class BattleMech {
             return btTechOptions;
         }
         const edition = getRulesEdition(this._rulesEdition);
-        const clan = getEquipmentCatalogDefinitions().some((catalog) => catalog.techBase === "clan"
-            && catalog.equipment.some((item) => isInRulesEdition(item, edition.tag)));
+        const clan = getEquipmentCatalogDefinitions().some((catalog) => !catalog.custom
+            && catalog.equipment.some((item) => item.techBase === "clan" && isInRulesEdition(item, edition.tag)));
         return btTechOptions.filter((option) => option.tag === "is" || (clan && option.tag === "clan")
             || (clan && edition.mixedTech === true && (option.tag === "mis" || option.tag === "mclan")));
     }

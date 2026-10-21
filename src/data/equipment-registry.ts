@@ -32,14 +32,16 @@ export type EquipmentCatalog = "is" | "clan" | "custom" | "universal";
 export interface IEquipmentCatalogDefinition {
     id: string;
     exportName: string;
-    techBase: EquipmentCatalog;
+    /** A Custom Homebrew or Munchkin catalog. Official catalogs leave it out; their records say their own tech base. */
+    custom?: true;
     category: "ballistic" | "energy" | "missile" | "misc" | "artillery" | "ammunition";
     equipment: IEquipmentItem[];
 }
 
 export interface IEquipmentCatalogSummary {
     catalogId: string;
-    techBase: EquipmentCatalog;
+    /** The tiers its records belong to (see getEquipmentTier). */
+    techBases: EquipmentCatalog[];
     category: IEquipmentCatalogDefinition["category"];
     itemCount: number;
     ammoCount: number;
@@ -51,28 +53,28 @@ export interface IEquipmentCatalogSummary {
 }
 
 const equipmentCatalogDefinitions: IEquipmentCatalogDefinition[] = [
-    { id: "mech-is-equipment-weapons-ballistic", exportName: "mechISEquipmentBallistic", techBase: "is", category: "ballistic", equipment: mechISEquipmentBallistic },
-    { id: "mech-is-equipment-weapons-energy", exportName: "mechISEquipmentEnergy", techBase: "is", category: "energy", equipment: mechISEquipmentEnergy },
-    { id: "mech-is-equipment-weapons-missiles", exportName: "mechISEquipmentMissiles", techBase: "is", category: "missile", equipment: mechISEquipmentMissiles },
-    { id: "mech-is-equipment-weapons-misc", exportName: "mechISEquipmentMisc", techBase: "is", category: "misc", equipment: mechISEquipmentMisc },
-    { id: "mech-is-equipment-weapons-artillery", exportName: "mechISEquipmentArtillery", techBase: "is", category: "artillery", equipment: mechISEquipmentArtillery },
-    { id: "mech-is-ammo", exportName: "mechISAmmo", techBase: "is", category: "ammunition", equipment: mechISAmmo },
-    { id: "mech-clan-equipment-weapons-ballistic", exportName: "mechClanEquipmentBallistic", techBase: "clan", category: "ballistic", equipment: mechClanEquipmentBallistic },
-    { id: "mech-clan-equipment-weapons-energy", exportName: "mechClanEquipmentEnergy", techBase: "clan", category: "energy", equipment: mechClanEquipmentEnergy },
-    { id: "mech-clan-equipment-weapons-missile", exportName: "mechClanEquipmentMissile", techBase: "clan", category: "missile", equipment: mechClanEquipmentMissile },
-    { id: "mech-clan-equipment-weapons-misc", exportName: "mechClanEquipmentMisc", techBase: "clan", category: "misc", equipment: mechClanEquipmentMisc },
-    { id: "mech-clan-equipment-weapons-artillery", exportName: "mechClanEquipmentArtillery", techBase: "clan", category: "artillery", equipment: mechClanEquipmentArtillery },
-    { id: "mech-clan-ammo", exportName: "mechClanAmmo", techBase: "clan", category: "ammunition", equipment: mechClanAmmo },
-    { id: "mech-custom-equipment-weapons-ballistic", exportName: "mechCustomEquipmentBallistic", techBase: "custom", category: "ballistic", equipment: mechCustomEquipmentBallistic },
-    { id: "mech-custom-equipment-weapons-energy", exportName: "mechCustomEquipmentEnergy", techBase: "custom", category: "energy", equipment: mechCustomEquipmentEnergy },
-    { id: "mech-custom-equipment-weapons-missile", exportName: "mechCustomEquipmentMissile", techBase: "custom", category: "missile", equipment: mechCustomEquipmentMissile },
-    { id: "mech-custom-equipment-weapons-misc", exportName: "mechCustomEquipmentMisc", techBase: "custom", category: "misc", equipment: mechCustomEquipmentMisc },
-    { id: "artillery-custom", exportName: "artilleryCustom", techBase: "custom", category: "artillery", equipment: artilleryCustom },
-    { id: "misc-custom", exportName: "miscCustom", techBase: "custom", category: "misc", equipment: miscCustom },
-    { id: "mech-custom-ammo", exportName: "mechCustomAmmo", techBase: "custom", category: "ammunition", equipment: mechCustomAmmo },
-    { id: "ammo-custom", exportName: "ammoCustom", techBase: "custom", category: "ammunition", equipment: ammoCustom },
-    { id: "mech-universal-equipment", exportName: "mechUniversalEquipment", techBase: "universal", category: "artillery", equipment: mechUniversalEquipment },
-    { id: "mech-universal-ammo", exportName: "mechUniversalAmmo", techBase: "universal", category: "ammunition", equipment: mechUniversalAmmo },
+    { id: "mech-is-equipment-weapons-ballistic", exportName: "mechISEquipmentBallistic", category: "ballistic", equipment: mechISEquipmentBallistic },
+    { id: "mech-is-equipment-weapons-energy", exportName: "mechISEquipmentEnergy", category: "energy", equipment: mechISEquipmentEnergy },
+    { id: "mech-is-equipment-weapons-missiles", exportName: "mechISEquipmentMissiles", category: "missile", equipment: mechISEquipmentMissiles },
+    { id: "mech-is-equipment-weapons-misc", exportName: "mechISEquipmentMisc", category: "misc", equipment: mechISEquipmentMisc },
+    { id: "mech-is-equipment-weapons-artillery", exportName: "mechISEquipmentArtillery", category: "artillery", equipment: mechISEquipmentArtillery },
+    { id: "mech-is-ammo", exportName: "mechISAmmo", category: "ammunition", equipment: mechISAmmo },
+    { id: "mech-clan-equipment-weapons-ballistic", exportName: "mechClanEquipmentBallistic", category: "ballistic", equipment: mechClanEquipmentBallistic },
+    { id: "mech-clan-equipment-weapons-energy", exportName: "mechClanEquipmentEnergy", category: "energy", equipment: mechClanEquipmentEnergy },
+    { id: "mech-clan-equipment-weapons-missile", exportName: "mechClanEquipmentMissile", category: "missile", equipment: mechClanEquipmentMissile },
+    { id: "mech-clan-equipment-weapons-misc", exportName: "mechClanEquipmentMisc", category: "misc", equipment: mechClanEquipmentMisc },
+    { id: "mech-clan-equipment-weapons-artillery", exportName: "mechClanEquipmentArtillery", category: "artillery", equipment: mechClanEquipmentArtillery },
+    { id: "mech-clan-ammo", exportName: "mechClanAmmo", category: "ammunition", equipment: mechClanAmmo },
+    { id: "mech-custom-equipment-weapons-ballistic", exportName: "mechCustomEquipmentBallistic", custom: true, category: "ballistic", equipment: mechCustomEquipmentBallistic },
+    { id: "mech-custom-equipment-weapons-energy", exportName: "mechCustomEquipmentEnergy", custom: true, category: "energy", equipment: mechCustomEquipmentEnergy },
+    { id: "mech-custom-equipment-weapons-missile", exportName: "mechCustomEquipmentMissile", custom: true, category: "missile", equipment: mechCustomEquipmentMissile },
+    { id: "mech-custom-equipment-weapons-misc", exportName: "mechCustomEquipmentMisc", custom: true, category: "misc", equipment: mechCustomEquipmentMisc },
+    { id: "artillery-custom", exportName: "artilleryCustom", custom: true, category: "artillery", equipment: artilleryCustom },
+    { id: "misc-custom", exportName: "miscCustom", custom: true, category: "misc", equipment: miscCustom },
+    { id: "mech-custom-ammo", exportName: "mechCustomAmmo", custom: true, category: "ammunition", equipment: mechCustomAmmo },
+    { id: "ammo-custom", exportName: "ammoCustom", custom: true, category: "ammunition", equipment: ammoCustom },
+    { id: "mech-universal-equipment", exportName: "mechUniversalEquipment", category: "artillery", equipment: mechUniversalEquipment },
+    { id: "mech-universal-ammo", exportName: "mechUniversalAmmo", category: "ammunition", equipment: mechUniversalAmmo },
 ];
 
 function cloneEquipment(items: IEquipmentItem[]): IEquipmentItem[] {
@@ -93,10 +95,14 @@ export function getLocalCustomEquipment(): IEquipmentItem[] {
     return localCustomEquipment;
 }
 
+/** The tier a catalog record belongs to: "custom" for the custom catalogs, otherwise the record's own tech base. */
+export function getEquipmentTier(definition: Pick<IEquipmentCatalogDefinition, "custom">, item: IEquipmentItem): EquipmentCatalog {
+    return definition.custom ? "custom" : item.techBase ?? "is";
+}
+
 function getCatalogByTech(techBase: EquipmentCatalog): IEquipmentItem[] {
     const items = equipmentCatalogDefinitions
-        .filter((catalog) => catalog.techBase === techBase)
-        .flatMap((catalog) => catalog.equipment)
+        .flatMap((catalog) => catalog.equipment.filter((item) => getEquipmentTier(catalog, item) === techBase))
         .filter((item) => techBase === "universal" || !isUniversalEquipment(item));
     return techBase === "custom" ? [...items, ...localCustomEquipment] : items;
 }
@@ -335,7 +341,7 @@ function getAllAmmo(): IEquipmentItem[] {
 
 function getCustomAmmo(): IEquipmentItem[] {
     return equipmentCatalogDefinitions
-        .filter(catalog => catalog.category === "ammunition" && catalog.techBase === "custom")
+        .filter(catalog => catalog.category === "ammunition" && catalog.custom)
         .flatMap(catalog => catalog.equipment);
 }
 
@@ -505,7 +511,7 @@ export function getEquipmentCatalogSummaries(): IEquipmentCatalogSummary[] {
 
         return {
             catalogId: definition.id,
-            techBase: definition.techBase,
+            techBases: Array.from(new Set(definition.equipment.map(item => getEquipmentTier(definition, item)))),
             category: definition.category,
             itemCount: definition.equipment.length,
             ammoCount: definition.equipment.filter(item => item.isAmmo).length,

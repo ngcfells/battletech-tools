@@ -13,8 +13,8 @@ const find = (tag: string) => {
 describe("Future Wars #32 smoke devices (Custom Homebrew)", () => {
     it("registers both catalogs as custom, under misc and ammunition", () => {
         const defs = getEquipmentCatalogDefinitions();
-        expect(defs.find((d) => d.id === "misc-custom")).toMatchObject({ techBase: "custom", category: "misc" });
-        expect(defs.find((d) => d.id === "ammo-custom")).toMatchObject({ techBase: "custom", category: "ammunition" });
+        expect(defs.find((d) => d.id === "misc-custom")).toMatchObject({ custom: true, category: "misc" });
+        expect(defs.find((d) => d.id === "ammo-custom")).toMatchObject({ custom: true, category: "ammunition" });
     });
 
     it("Smoker: half a ton, 3 heat, fed by its fuel at 50 hexes of smoke to the ton", () => {
