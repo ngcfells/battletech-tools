@@ -65,7 +65,7 @@ const fail = (base: Pick<ISSWImportResult, "fileName" | "xml" | "sha256">, reaso
 const draftsInUse = (mech: BattleMech, drafts: ICustomContentDraft[]): ISSWUnresolvedItem[] => {
     const exported = JSON.stringify(mech.export(true));
     return drafts
-        .filter((draft) => exported.includes(JSON.stringify(draft.record.tag)))
+        .filter((draft) => draft.kind !== "quirk" && exported.includes(JSON.stringify(draft.record.tag)))
         .map((draft) => ({
             kind: draft.kind, name: String(draft.record.name), sswName: String(draft.record.name),
             faction: draft.faction === "clan" ? "clan" : "is", sswType: "", location: "", slotIndex: -1,

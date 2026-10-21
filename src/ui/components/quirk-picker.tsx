@@ -4,15 +4,46 @@ import { QuirkList } from '../../classes/quirk-list';
 import { IAssignedQuirk, IQuirk, QuirkAttach, QuirkUnitType } from '../../data/quirk-interfaces';
 import { getAssignedAttach, getOfferedQuirks, getQuirk, getQuirkOfferIssue, getQuirkPoints } from '../../data/quirk-registry';
 import { getRulesEdition } from '../../data/rules-editions';
+import { CUSTOM_HOMEBREW_RULES_LEVEL } from '../../data/rules-level-options';
+import { buildCustomQuirkDraft, customQuirkTag, getLocalCustomContentDrafts, saveLocalCustomContentDrafts } from '../../data/custom-content-local';
+import { generateUUID } from '../../utils/generateUUID';
 
 const ATTACH_NAMES: Record<QuirkAttach, string> = { unit: "Whole unit", location: "Location", weapon: "Weapon" };
+const BLANK_CUSTOM = { customName: "", customKind: "positive" as const, customPoints: "", customAttach: "unit" as QuirkAttach, customSummary: "" };
 
 /** The builder's list of a unit's design quirks, with a row to add one. Quirks never block a design. */
 export default class QuirkPicker extends React.Component<IQuirkPickerProps, IQuirkPickerState> {
     constructor(props: IQuirkPickerProps) {
         super(props);
-        this.state = { tag: "", attach: "unit", target: "", parameter: "", fromYear: "", toYear: "", message: "" };
+        this.state = { tag: "", attach: "unit", target: "", parameter: "", fromYear: "", toYear: "", message: "", ...BLANK_CUSTOM };
     }
+
+    /** Saves a custom quirk for this unit type in this browser; it is then offered like any other. */
+    private _saveCustom = (): void => {
+        const name = this.state.customName.trim();
+        const points = Number(this.state.customPoints);
+        if (!name || !customQuirkTag(name).replace("quirk-custom-", "")) {
+            this.setState({ message: "Name the custom quirk" });
+            return;
+        }
+        if (!Number.isFinite(points) || points <= 0) {
+            this.setState({ message: "Give the custom quirk a cost of more than 0 points" });
+            return;
+        }
+        if (getQuirk(name) || getQuirk(customQuirkTag(name))) {
+            this.setState({ message: `A quirk named ${name} already exists` });
+            return;
+        }
+        const draft = buildCustomQuirkDraft(generateUUID(), {
+            name, kind: this.state.customKind, points, attaches: [this.state.customAttach],
+            unitTypes: [this.props.unitType], summary: this.state.customSummary,
+        });
+        const saved = saveLocalCustomContentDrafts([...getLocalCustomContentDrafts(), draft]);
+        this.setState({
+            ...BLANK_CUSTOM, tag: String(draft.record.tag), attach: this.state.customAttach, target: "", parameter: "",
+            message: saved ? "" : "This browser would not save the custom quirk (private mode or storage full). It works until you close this tab.",
+        });
+    };
 
     private _selected(): IQuirk | undefined {
         return this.state.tag ? getQuirk(this.state.tag) : undefined;
@@ -198,6 +229,27 @@ export default class QuirkPicker extends React.Component<IQuirkPickerProps, IQui
                 </div>
                 {selected ? <p className="smaller-text">{selected.summary}{selected.restrictions ? ` ${selected.restrictions}` : ""}</p> : null}
                 {this.state.message ? <p className="color-red" role="alert">{this.state.message}</p> : null}
+                {this.props.rulesLevel >= CUSTOM_HOMEBREW_RULES_LEVEL ? (
+                    <div>
+                        <h4>Add custom quirk</h4>
+                        <p className="smaller-text">Saved in this browser only, for this unit type; offered at the Custom rules level in every edition.</p>
+                        <label>Name <input type="text" aria-label="Custom quirk name" value={this.state.customName} onChange={(event) => this.setState({ customName: event.target.value })} /></label>
+                        <label>{" "}Kind{" "}
+                            <select aria-label="Custom quirk kind" value={this.state.customKind} onChange={(event) => this.setState({ customKind: event.target.value as "positive" | "negative" })}>
+                                <option value="positive">Positive</option>
+                                <option value="negative">Negative</option>
+                            </select>
+                        </label>
+                        <label>{" "}Points <input type="number" min={1} aria-label="Custom quirk points" value={this.state.customPoints} onChange={(event) => this.setState({ customPoints: event.target.value })} style={{ width: "5em" }} /></label>
+                        <label>{" "}On{" "}
+                            <select aria-label="Custom quirk attaches to" value={this.state.customAttach} onChange={(event) => this.setState({ customAttach: event.target.value as QuirkAttach })}>
+                                {(Object.keys(ATTACH_NAMES) as QuirkAttach[]).map((attach) => <option key={attach} value={attach}>{ATTACH_NAMES[attach]}</option>)}
+                            </select>
+                        </label>
+                        <div><label>Summary <textarea aria-label="Custom quirk summary" value={this.state.customSummary} onChange={(event) => this.setState({ customSummary: event.target.value })} rows={2} style={{ width: "100%" }} /></label></div>
+                        <button type="button" className="btn btn-sm btn-primary" onClick={this._saveCustom}>Save custom quirk</button>
+                    </div>
+                ) : null}
             </div>
         );
     };
@@ -222,4 +274,9 @@ interface IQuirkPickerState {
     fromYear: string;
     toYear: string;
     message: string;
+    customName: string;
+    customKind: "positive" | "negative";
+    customPoints: string;
+    customAttach: QuirkAttach;
+    customSummary: string;
 }

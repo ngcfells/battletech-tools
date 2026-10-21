@@ -2,7 +2,7 @@
 // mech-custom-* catalogs. See docs/superpowers/specs/2026-09-30-ssw-runtime-import-custom-content-design.md.
 
 export type CustomComponentKind = "armor" | "structure" | "engine" | "gyro" | "heatSink" | "jumpJet" | "myomer";
-export type CustomContentKind = "equipment" | "ammunition" | CustomComponentKind;
+export type CustomContentKind = "equipment" | "ammunition" | "quirk" | CustomComponentKind;
 export type CustomFaction = "is" | "clan" | "universal";
 
 export interface ICustomContentSource {

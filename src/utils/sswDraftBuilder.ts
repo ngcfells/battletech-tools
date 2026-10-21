@@ -26,6 +26,7 @@ export function estimateSlots(start: number, occupancy: boolean[]): number {
 
 export function targetCatalogFor(kind: CustomContentKind, sswType: string): string {
     if (kind === "ammunition") return "ammo-custom";
+    if (kind === "quirk") return "quirks-custom";
     if (kind !== "equipment") return CUSTOM_COMPONENT_CATALOGS[kind].id;
     switch (sswType) {
         case "energy": return "energy-custom";
@@ -50,9 +51,10 @@ const TEMPLATE_TAGS: Record<string, string> = { "misc-custom": "custom-null-sign
 /** The target catalog's template entry (canon's first record for an empty component catalog), every value unknown. */
 export function blankTemplate(kind: CustomContentKind, targetCatalogId: string): Record<string, unknown> {
     const catalog = getEquipmentCatalogById(targetCatalogId);
-    const first = kind === "equipment" || kind === "ammunition"
-        ? catalog?.find((item) => item.tag === TEMPLATE_TAGS[targetCatalogId]) ?? catalog?.[0]
-        : CANON_COMPONENT_TEMPLATES[kind];
+    const first = kind === "quirk" ? {}
+        : kind === "equipment" || kind === "ammunition"
+            ? catalog?.find((item) => item.tag === TEMPLATE_TAGS[targetCatalogId]) ?? catalog?.[0]
+            : CANON_COMPONENT_TEMPLATES[kind];
     return unknownValues(JSON.parse(JSON.stringify(first ?? {}))) as Record<string, unknown>;
 }
 
@@ -66,6 +68,7 @@ export const REQUIRED_FIELDS: Record<CustomContentKind, string[]> = {
     heatSink: ["dissipation", "cost", "introduced"],
     jumpJet: ["weight_multiplier.light", "weight_multiplier.medium", "weight_multiplier.heavy", "criticals", "costMultiplier", "introduced"],
     myomer: ["criticals", "costPerTon", "bvWeightMultiplier", "introduced"],
+    quirk: ["name", "summary"],
 };
 const WEAPON_FIELDS = ["damage", "heat", "range.short", "range.medium", "range.long"];
 

@@ -5,16 +5,21 @@ import { QuirkList } from "../../classes/quirk-list";
 import { BattleMech } from "../../classes/battlemech";
 import Vehicle from "../../classes/vehicle";
 import { getOfferedQuirks } from "../../data/quirk-registry";
+import { registerLocalCustomContent } from "../../data/custom-content-local";
 import QuirkPicker from "./quirk-picker";
 
-afterEach(cleanup);
+afterEach(() => {
+    cleanup();
+    localStorage.clear();
+    registerLocalCustomContent([]);
+});
 
-const picker = (quirks: QuirkList, editionTag: string, onChange = vi.fn()) => render(
+const picker = (quirks: QuirkList, editionTag: string, onChange = vi.fn(), rulesLevel = 3) => render(
     <QuirkPicker
         quirks={quirks}
         unitType="mech"
         editionTag={editionTag}
-        rulesLevel={3}
+        rulesLevel={rulesLevel}
         locations={[{ tag: "ra", label: "Right Arm" }]}
         weapons={[{ uuid: "w1", label: "Medium Laser (RA)", maxDamage: 5 }]}
         unitMaxDamage={5}
@@ -92,6 +97,35 @@ describe("QuirkPicker", () => {
         fireEvent.click(screen.getByRole("button", { name: "Remove Command 'Mech" }));
         expect(quirks.getAll()).toEqual([]);
         expect(onChange).toHaveBeenCalled();
+    });
+});
+
+describe("custom quirks", () => {
+    it("only offers the custom quirk form from the custom rules level up", () => {
+        picker(new QuirkList(), "total-warfare");
+        expect(screen.queryByRole("button", { name: "Save custom quirk" })).toBeNull();
+    });
+
+    it("saves a custom quirk in this browser and offers it", () => {
+        picker(new QuirkList(), "total-warfare", vi.fn(), 6);
+        fireEvent.change(screen.getByLabelText("Custom quirk name"), { target: { value: "Lucky Paint" } });
+        fireEvent.change(screen.getByLabelText("Custom quirk kind"), { target: { value: "negative" } });
+        fireEvent.change(screen.getByLabelText("Custom quirk points"), { target: { value: "2" } });
+        fireEvent.change(screen.getByLabelText("Custom quirk summary"), { target: { value: "The crew swear by it." } });
+        fireEvent.click(screen.getByRole("button", { name: "Save custom quirk" }));
+        const saved = JSON.parse(localStorage.getItem("localCustomContent") ?? "[]");
+        expect(saved).toHaveLength(1);
+        expect(saved[0]).toMatchObject({ kind: "quirk", record: { tag: "quirk-custom-lucky-paint", kind: "negative", cost: { points: 2 }, unitTypes: ["mech"], attaches: ["unit"] } });
+        expect(Array.from(quirkSelect().options).map((option) => option.value)).toContain("quirk-custom-lucky-paint");
+    });
+
+    it("refuses a custom quirk named like an existing quirk", () => {
+        picker(new QuirkList(), "total-warfare", vi.fn(), 6);
+        fireEvent.change(screen.getByLabelText("Custom quirk name"), { target: { value: "Command 'Mech" } });
+        fireEvent.change(screen.getByLabelText("Custom quirk points"), { target: { value: "2" } });
+        fireEvent.click(screen.getByRole("button", { name: "Save custom quirk" }));
+        expect(screen.getByRole("alert").textContent).toMatch(/already/);
+        expect(localStorage.getItem("localCustomContent")).toBeNull();
     });
 });
 

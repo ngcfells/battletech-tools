@@ -2,6 +2,9 @@ import type { IEquipmentItem } from "./data-interfaces";
 import type { ICustomContentDraft } from "./custom-content-types";
 import { CUSTOM_COMPONENT_KINDS, setLocalCustomComponents } from "./custom-component-registry";
 import { setLocalCustomEquipment } from "./equipment-registry";
+import type { IQuirk, QuirkAttach, QuirkUnitType } from "./quirk-interfaces";
+import { setLocalCustomQuirks } from "./quirk-registry";
+import { CUSTOM_HOMEBREW_RULES_LEVEL } from "./rules-level-options";
 import { resetImportedEquipmentIndex } from "../utils/importedEquipment";
 
 // Custom content drafts saved in this browser only, made from imported designs. They are registered with the
@@ -10,7 +13,7 @@ import { resetImportedEquipmentIndex } from "../utils/importedEquipment";
 const LOCAL_CUSTOM_CONTENT_STORAGE_KEY = "localCustomContent";
 const DATE_FIELDS = new Set(["introduced", "extinct", "reintroduced", "prototype"]);
 
-const DRAFT_KINDS = new Set<string>(["equipment", "ammunition", ...CUSTOM_COMPONENT_KINDS]);
+const DRAFT_KINDS = new Set<string>(["equipment", "ammunition", "quirk", ...CUSTOM_COMPONENT_KINDS]);
 
 // Stats the construction and Battle Value maths read as numbers. In a stored record each is a number, null
 // (unknown) or absent; `damage` and `criticals` may instead be an object of such values.
@@ -24,6 +27,12 @@ const isStat = (value: unknown, nested: boolean = true): boolean => {
         && Object.values(value as Record<string, unknown>).every((entry) => isStat(entry, false));
 };
 
+// The quirk registry reads these on every lookup and offer.
+const isWellFormedQuirk = (record: Record<string, unknown>): boolean =>
+    (record.kind === "positive" || record.kind === "negative") && !!record.cost && typeof record.cost === "object"
+    && ["altNames", "unitTypes", "attaches", "editions", "sources"].every((field) => Array.isArray(record[field]))
+    && typeof record.summary === "string";
+
 // Storage is user-editable: one malformed entry must not break startup or every later lookup, so drop it.
 const isWellFormedDraft = (value: unknown): value is ICustomContentDraft => {
     const draft = value as ICustomContentDraft | null;
@@ -31,8 +40,46 @@ const isWellFormedDraft = (value: unknown): value is ICustomContentDraft => {
         && !!draft.record && typeof draft.record === "object" && !Array.isArray(draft.record)
         && typeof draft.record.name === "string" && typeof draft.record.tag === "string"
         && NUMERIC_FIELDS.every((field) => isStat(draft.record[field]))
+        && (draft.kind !== "quirk" || isWellFormedQuirk(draft.record))
         && Array.isArray(draft.sourceFiles);
 };
+
+export interface ICustomQuirkFields {
+    name: string;
+    kind: "positive" | "negative";
+    /** The quirk's value as a plain number; the kind gives its sign. */
+    points: number;
+    attaches: QuirkAttach[];
+    unitTypes: QuirkUnitType[];
+    summary: string;
+}
+
+/** The tag a custom quirk of this name gets: "quirk-custom-" and the name in kebab case. */
+export const customQuirkTag = (name: string): string =>
+    "quirk-custom-" + name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+
+/** A custom quirk as a draft saved in this browser, offered in every edition from the custom rules level up. */
+export function buildCustomQuirkDraft(id: string, fields: ICustomQuirkFields): ICustomContentDraft {
+    const record: IQuirk = {
+        tag: customQuirkTag(fields.name),
+        name: fields.name.trim(),
+        altNames: [],
+        kind: fields.kind,
+        cost: { points: Math.abs(fields.points) },
+        unitTypes: [...fields.unitTypes],
+        attaches: [...fields.attaches],
+        summary: fields.summary.trim(),
+        sources: [],
+        editions: [],
+        rulesLevel: CUSTOM_HOMEBREW_RULES_LEVEL,
+        custom: true,
+    };
+    return {
+        id, kind: "quirk", faction: "universal", targetCatalogId: "quirks-custom",
+        record: record as unknown as Record<string, unknown>,
+        status: "complete", slotsEstimated: false, sourceFiles: [], sourceNote: "",
+    };
+}
 
 export function getLocalCustomContentDrafts(): ICustomContentDraft[] {
     try {
@@ -80,5 +127,6 @@ export function registerLocalCustomContent(drafts: ICustomContentDraft[] = getLo
             .filter((draft) => draft.kind === kind)
             .map((draft) => toRuntimeRecord(draft.record)));
     }
+    setLocalCustomQuirks(drafts.filter((draft) => draft.kind === "quirk").map((draft) => draft.record as unknown as IQuirk));
     resetImportedEquipmentIndex();
 }
