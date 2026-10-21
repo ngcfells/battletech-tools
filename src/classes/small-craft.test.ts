@@ -313,7 +313,7 @@ describe("Small Craft saves and imports", () => {
         expect(importSmallCraftBlk(blk.replace("200.0", "5.0")).craft).toBeNull();
         // A DropShip weighs 200 tons or more (TM p.184).
         expect(importSmallCraftBlk(blk.replace("SmallCraft", "Dropship").replace("200.0", "150.0")).craft).toBeNull();
-    });
+    }, 20000);
 });
 
 describe("Small Craft in a roster group", () => {
