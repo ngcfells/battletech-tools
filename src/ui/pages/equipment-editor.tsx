@@ -4,6 +4,7 @@ import { FaEdit, FaPlus, FaTrash } from "react-icons/fa";
 import { CONST_GITHUB_OWNER, CONST_GITHUB_REPO } from '../../configVars';
 import { IEquipmentItem } from "../../data/data-interfaces";
 import { getEquipmentCatalogById, getEquipmentCatalogDefinitions, getEquipmentCatalogExportName } from '../../data/equipment-registry';
+import { getRecordEditions, getRecordLevelInEdition, getRulesEdition, getRulesLevelOptionsForEdition } from '../../data/rules-editions';
 import { getAeroRangeLabel, sortEquipment } from '../../utils';
 import { addCommas } from "../../utils/addCommas";
 import { exportCleanJSON } from "../../utils/exportCleanJSON";
@@ -13,6 +14,19 @@ import EquipmentEditForm from '../components/equipment-edit-form';
 import StandardModal from '../components/standard-modal';
 import UIPage from '../components/ui-page';
 import './equipment-editor.scss';
+
+/** Each edition a record is in, with its rules level there: "Total Warfare (Advanced); ...", or "Never canon". */
+export function formatRecordEditions(record: Parameters<typeof getRecordEditions>[0]): string {
+    const editions = getRecordEditions(record);
+    if (editions.length === 0) {
+        return "Never canon";
+    }
+    return editions.map(tag => {
+        const level = getRecordLevelInEdition(record, tag);
+        const levelName = getRulesLevelOptionsForEdition(tag).find(option => option.id === level)?.name ?? String(level);
+        return `${getRulesEdition(tag).name} (${levelName})`;
+    }).join("; ");
+}
 const Edit = FaEdit as any;
 const Plus = FaPlus as any;
 const Trash = FaTrash as any;
@@ -568,7 +582,7 @@ export default class EquipmentEditor extends React.Component<IEquipmentEditorPro
 <table className="table">
     <thead>
         <tr>
-            <th colSpan={10} className="text-center">
+            <th colSpan={11} className="text-center">
                 {this._getTechnologyName()} {this._getCategoryName()}
             </th>
         </tr>
@@ -594,6 +608,7 @@ export default class EquipmentEditor extends React.Component<IEquipmentEditorPro
             <th className="min-width text-center no-wrap">Explosive</th>
 
             <th className="min-width text-center no-wrap">Active</th>
+            <th className="min-width text-center">Editions</th>
 
             <th
                 className="min-width text-right no-wrap"
@@ -725,6 +740,9 @@ export default class EquipmentEditor extends React.Component<IEquipmentEditorPro
                     {item.reintroduced && item.reintroduced > 0 ? (
                         <div className="small-text">Reintroduced: {item.reintroduced}</div>
                     ): null}
+                </td>
+                <td className="text-center small-text">
+                    {formatRecordEditions(item)}
                 </td>
 
                 <td className="text-center no-wrap">
