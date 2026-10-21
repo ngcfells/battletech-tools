@@ -70,3 +70,11 @@ export interface IAssignedQuirk {
     fromYear?: number;
     toYear?: number;
 }
+
+/** What a unit offers quirks to attach to, and the damage its quirk costs are priced from. */
+export interface IQuirkTargets {
+    locations: { tag: string; label: string }[];
+    weapons: { uuid: string; label: string; maxDamage: number }[];
+    /** The maximum damage of all the unit's non-physical weapons together, for unit-wide damage costs. */
+    unitMaxDamage: number;
+}

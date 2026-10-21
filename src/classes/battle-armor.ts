@@ -1,5 +1,6 @@
 import { generateUUID } from "../utils/generateUUID";
-import { IAssignedQuirk, QuirkUnitType } from "../data/quirk-interfaces";
+import { IAssignedQuirk, IQuirkTargets, QuirkUnitType } from "../data/quirk-interfaces";
+import { getQuirkIssues, getQuirkTargets } from "../data/quirk-registry";
 import { QuirkList } from "./quirk-list";
 import { DEFAULT_RULES_EDITION, getSelectableRulesEditionTag } from "../data/rules-editions";
 import { battleArmorArmorTypes, battleArmorMaximumArmor } from "../data/battle-armor-armor-types";
@@ -329,6 +330,16 @@ export default class BattleArmor {
 
     /** Which column of the quirk tables this unit is graded by. */
     public getQuirkUnitType(): QuirkUnitType { return "battle-armor"; }
+
+    /** What the quirk picker can attach quirks to on this unit. */
+    public getQuirkTargets(): IQuirkTargets {
+        return getQuirkTargets(this.getLocations().map((location) => ({ tag: location, label: BATTLE_ARMOR_LOCATION_NAMES[location] })), this._baseItems.map((entry) => ({ uuid: entry.uuid, label: this.getItemLabel(entry), damage: findBattleArmorEquipment(entry.tag)?.damage })));
+    }
+
+    /** One line for each quirk this unit could not be given now: rules edition, rules level or unit type. */
+    public getQuirkIssues(rulesLevel: number): string[] {
+        return getQuirkIssues(this.quirks.getAll(), this.getQuirkUnitType(), this._rulesEdition, rulesLevel);
+    }
     public getName(): string { return this._name; }
     /** The rules edition the design is built under. Only the editions with rules for this unit type are offered. */
     public getRulesEdition(): string { return this._rulesEdition; }

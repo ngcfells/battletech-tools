@@ -1,5 +1,6 @@
 import { AlphaStrikeStructureColumn, getAlphaStrikeMechStructure } from "../data/alpha-strike-mech-structure";
-import { IAssignedQuirk, QuirkUnitType } from "../data/quirk-interfaces";
+import { IAssignedQuirk, IQuirkTargets, QuirkUnitType } from "../data/quirk-interfaces";
+import { getQuirkIssues, getQuirkTargets } from "../data/quirk-registry";
 import { QuirkList } from "./quirk-list";
 import { getEditionSkillMultipliers, getSkillMultiplier } from "../data/skill-multipliers";
 import { battlemechLocations } from "../data/battlemech-locations";
@@ -616,6 +617,16 @@ export class BattleMech {
 
     /** Which column of the quirk tables this unit is graded by. */
     public getQuirkUnitType(): QuirkUnitType { return "mech"; }
+
+    /** What the quirk picker can attach quirks to on this unit. */
+    public getQuirkTargets(): IQuirkTargets {
+        return getQuirkTargets(battlemechLocations.filter((location) => !location.rear).map((location) => ({ tag: location.tag, label: location.name })), this._equipmentList.filter((item) => item && !item.isAmmo).map((item) => ({ ...item, label: (item.location ? `${item.name} (${item.location!.toUpperCase()})` : item.name) })));
+    }
+
+    /** One line for each quirk this unit could not be given now: rules edition, rules level or unit type. */
+    public getQuirkIssues(rulesLevel: number): string[] {
+        return getQuirkIssues(this.quirks.getAll(), this.getQuirkUnitType(), this._rulesEdition, rulesLevel);
+    }
 
     public setTargets(
         a: ITargetToHit,
@@ -5848,6 +5859,7 @@ export class BattleMech {
                 }
             }
         }
+        issues.push(...getQuirkIssues(this.quirks.getAll(), this.getQuirkUnitType(), this._rulesEdition, rulesLevel ?? 0, "edition"));
         return issues;
     }
 

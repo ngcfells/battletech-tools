@@ -2,6 +2,7 @@ import React, { type JSX } from 'react';
 import { Link } from 'react-router';
 import { IAppGlobals } from '../../../app-router';
 import VehicleCreatorSideMenu from '../../../components/vehicle-creator-side-menu';
+import QuirkPicker from '../../../components/quirk-picker';
 import TextSection from '../../../components/text-section';
 import UIPage from '../../../components/ui-page';
 import SanitizedHTML from '../../../components/sanitized-html';
@@ -99,6 +100,15 @@ export default class VehicleCreatorSummary extends React.Component<ISummaryProps
                                 MUL card.
                             </p>
                             <Link to={`${process.env.PUBLIC_URL}/classic-battletech/vehicle-creator/print-as`} className="btn btn-primary btn-sm">Print Alpha Strike Card</Link>
+
+                            <QuirkPicker
+                                quirks={vehicle.quirks}
+                                unitType={vehicle.getQuirkUnitType()}
+                                editionTag={vehicle.getRulesEdition()}
+                                rulesLevel={this.props.appGlobals.appSettings.mechRulesFilter}
+                                {...vehicle.getQuirkTargets()}
+                                onChange={() => this.props.appGlobals.saveCurrentVehicle(vehicle)}
+                            />
 
                             <h3>Battle Value Calculation</h3>
                             <SanitizedHTML raw={true} html={vehicle.getBattleValueLog()} />

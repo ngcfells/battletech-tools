@@ -1,7 +1,8 @@
-import { IAssignedQuirk, IQuirk, QuirkAttach, QuirkUnitType } from "./quirk-interfaces";
+import { IAssignedQuirk, IQuirk, IQuirkTargets, QuirkAttach, QuirkUnitType } from "./quirk-interfaces";
 import { quirks } from "./quirks";
 import { customQuirks } from "./quirks-custom";
-import { getRecordOfferIssue } from "./rules-editions";
+import { IDamagePerRange } from "./data-interfaces";
+import { getRecordOfferIssue, getRulesEdition } from "./rules-editions";
 import { CUSTOM_HOMEBREW_RULES_LEVEL } from "./rules-level-options";
 
 let localCustomQuirks: IQuirk[] = [];
@@ -79,4 +80,81 @@ export function getQuirkPoints(quirk: IQuirk, assigned: IAssignedQuirk, maxDamag
         points = cost.points ?? 0;
     }
     return points === 0 ? 0 : sign * points;
+}
+
+/** The quirks the builder offers this unit type in this edition at this rules level: positive first, then by name. */
+export function getOfferedQuirks(unitType: QuirkUnitType, editionTag: string, rulesLevel: number): IQuirk[] {
+    return getQuirks()
+        .filter((quirk) => getQuirkOfferIssue(quirk, unitType, editionTag, rulesLevel) === null)
+        .sort((a, b) => (a.kind === b.kind ? a.name.localeCompare(b.name) : a.kind === "positive" ? -1 : 1));
+}
+
+/**
+ * One line for each assigned quirk the unit could not be given now, worded like the equipment lines. `only`
+ * limits the lines to one kind of issue, for lists that report rules levels elsewhere.
+ */
+export function getQuirkIssues(
+    assigned: IAssignedQuirk[],
+    unitType: QuirkUnitType,
+    editionTag: string,
+    rulesLevel: number,
+    only?: "edition",
+): string[] {
+    const issues: string[] = [];
+    for (const quirk of assigned) {
+        const record = getQuirk(quirk.tag);
+        let line: string | null = null;
+        if (!record) {
+            line = only ? null : `Quirk: ${quirk.tag} (not in this browser's quirk list)`;
+        } else {
+            const issue = getQuirkOfferIssue(record, unitType, editionTag, rulesLevel);
+            if (issue === "edition") {
+                line = `Quirk: ${record.name} (not in ${getRulesEdition(editionTag).name})`;
+            } else if (issue === "level" && !only) {
+                line = `Quirk: ${record.name} (above the selected rules level)`;
+            } else if (issue === "unit-type" && !only) {
+                line = `Quirk: ${record.name} (not for this unit type)`;
+            }
+        }
+        if (line && !issues.includes(line)) {
+            issues.push(line);
+        }
+    }
+    return issues;
+}
+
+/**
+ * A weapon's maximum damage for pricing quirks by damage: the highest of its range brackets or its damage, or all its
+ * clusters hitting. Launchers whose records give damage per missile and no cluster count price as weapons that deal
+ * no damage for now.
+ */
+export function getWeaponMaxDamage(item: { damage?: number | IDamagePerRange | string; damageClusters?: number; damagePerCluster?: number }): number {
+    const { damage } = item;
+    let most = 0;
+    if (typeof damage === "number") {
+        most = damage;
+    } else if (typeof damage === "string") {
+        const value = parseFloat(damage);
+        most = Number.isFinite(value) ? value : 0;
+    } else if (damage) {
+        most = Math.max(damage.short, damage.medium, damage.long);
+    }
+    if (item.damageClusters && item.damagePerCluster) {
+        most = Math.max(most, item.damageClusters * item.damagePerCluster);
+    }
+    return Math.max(most, 0);
+}
+
+/** What a builder can attach quirks to, and the damage figures quirk costs are priced from. */
+export function getQuirkTargets(
+    locations: { tag: string; label: string }[],
+    items: { uuid?: string; label: string; category?: string; damage?: number | IDamagePerRange | string; damageClusters?: number; damagePerCluster?: number }[],
+): IQuirkTargets {
+    const weapons = items.filter((item) => item.uuid).map((item) => ({ uuid: item.uuid as string, label: item.label, maxDamage: getWeaponMaxDamage(item), physical: item.category === "Melee" }));
+    return {
+        locations,
+        weapons: weapons.map(({ uuid, label, maxDamage }) => ({ uuid, label, maxDamage })),
+        // Unit-wide costs count every weapon but physical ones (CO p.225, p.230).
+        unitMaxDamage: weapons.filter((weapon) => !weapon.physical).reduce((sum, weapon) => sum + weapon.maxDamage, 0),
+    };
 }

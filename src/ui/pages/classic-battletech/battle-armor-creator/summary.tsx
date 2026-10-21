@@ -4,6 +4,7 @@ import { FaArrowCircleLeft } from "react-icons/fa";
 import { formatBattleArmorASDamage } from '../../../../classes/battle-armor';
 import { IAppGlobals } from '../../../app-router';
 import BattleArmorCreatorSideMenu from '../../../components/battle-armor-creator-side-menu';
+import QuirkPicker from '../../../components/quirk-picker';
 import TextSection from '../../../components/text-section';
 import UIPage from '../../../components/ui-page';
 const ArrowCircleLeft = FaArrowCircleLeft as any;
@@ -105,6 +106,15 @@ export default class BattleArmorCreatorSummary extends React.Component<ISummaryP
                                     <tr><th>Total</th><th className="text-right">{suit.getWeight()} kg</th></tr>
                                 </tbody>
                             </table>
+
+                            <QuirkPicker
+                                quirks={suit.quirks}
+                                unitType={suit.getQuirkUnitType()}
+                                editionTag={suit.getRulesEdition()}
+                                rulesLevel={this.props.appGlobals.appSettings.mechRulesFilter}
+                                {...suit.getQuirkTargets()}
+                                onChange={() => this.props.appGlobals.saveCurrentBattleArmor(suit)}
+                            />
 
                             <h3>Battle Value Calculation</h3>
                             <ul data-testid="ba-bv-log">

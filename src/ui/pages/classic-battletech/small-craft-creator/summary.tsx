@@ -5,6 +5,7 @@ import { IAppGlobals } from '../../../app-router';
 import SanitizedHTML from '../../../components/sanitized-html';
 import SmallCraftAlphaStrikeCard from '../../../components/small-craft-as-card';
 import SmallCraftCreatorSideMenu from '../../../components/small-craft-creator-side-menu';
+import QuirkPicker from '../../../components/quirk-picker';
 import TextSection from '../../../components/text-section';
 import UIPage from '../../../components/ui-page';
 const ArrowCircleLeft = FaArrowCircleLeft as any;
@@ -74,6 +75,15 @@ export default class SmallCraftCreatorSummary extends React.Component<ISummaryPr
                                     <tr><th>Total</th><th className="text-right">{craft.getCurrentTonnage()} of {craft.getTonnage()} tons</th></tr>
                                 </tbody>
                             </table>
+
+                            <QuirkPicker
+                                quirks={craft.quirks}
+                                unitType={craft.getQuirkUnitType()}
+                                editionTag={craft.getRulesEdition()}
+                                rulesLevel={this.props.appGlobals.appSettings.mechRulesFilter}
+                                {...craft.getQuirkTargets()}
+                                onChange={() => this.props.appGlobals.saveCurrentSmallCraft(craft)}
+                            />
 
                             <h3>Battle Value Calculation</h3>
                             <SanitizedHTML raw={true} html={craft.getBattleValueLog()} />

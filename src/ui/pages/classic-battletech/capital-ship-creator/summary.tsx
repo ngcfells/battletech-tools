@@ -5,6 +5,7 @@ import { IAppGlobals } from '../../../app-router';
 import SanitizedHTML from '../../../components/sanitized-html';
 import CapitalShipCreatorSideMenu from '../../../components/capital-ship-creator-side-menu';
 import CapitalShipAlphaStrikeCard from '../../../components/capital-ship-as-card';
+import QuirkPicker from '../../../components/quirk-picker';
 import TextSection from '../../../components/text-section';
 import UIPage from '../../../components/ui-page';
 const ArrowCircleLeft = FaArrowCircleLeft as any;
@@ -71,6 +72,15 @@ export default class CapitalShipCreatorSummary extends React.Component<ISummaryP
                                     <tr><th>Total</th><th className="text-right">{ship.getCurrentTonnage().toLocaleString("en-US")} of {ship.getTonnage().toLocaleString("en-US")} tons</th></tr>
                                 </tbody>
                             </table>
+
+                            <QuirkPicker
+                                quirks={ship.quirks}
+                                unitType={ship.getQuirkUnitType()}
+                                editionTag={ship.getRulesEdition()}
+                                rulesLevel={this.props.appGlobals.appSettings.mechRulesFilter}
+                                {...ship.getQuirkTargets()}
+                                onChange={() => this.props.appGlobals.saveCurrentCapitalShip(ship)}
+                            />
 
                             <h3>Battle Value Calculation</h3>
                             <SanitizedHTML raw={true} html={ship.getBattleValueLog()} />

@@ -1,5 +1,6 @@
 import { generateUUID } from "../utils/generateUUID";
-import { IAssignedQuirk, QuirkUnitType } from "../data/quirk-interfaces";
+import { IAssignedQuirk, IQuirkTargets, QuirkUnitType } from "../data/quirk-interfaces";
+import { getQuirkIssues, getQuirkTargets } from "../data/quirk-registry";
 import { QuirkList } from "./quirk-list";
 import { DEFAULT_RULES_EDITION, getSelectableRulesEditionTag } from "../data/rules-editions";
 import { aerospaceArmorTypes, getAerospaceArmorPointsPerTon } from "../data/aerospace-armor-types";
@@ -308,6 +309,16 @@ export default class SmallCraft {
 
     /** Which column of the quirk tables this unit is graded by. */
     public getQuirkUnitType(): QuirkUnitType { return this.isDropShip() ? "dropship" : "fighter-small-craft"; }
+
+    /** What the quirk picker can attach quirks to on this unit. */
+    public getQuirkTargets(): IQuirkTargets {
+        return getQuirkTargets(SMALL_CRAFT_ARCS.map((arc) => ({ tag: arc, label: this.getArcName(arc) })), this._equipmentList.filter((item) => !item.isAmmo).map((item) => ({ ...item, label: (item.location ? `${item.name} (${(SMALL_CRAFT_ARCS as string[]).includes(item.location!) ? this.getArcName(item.location as SmallCraftArc) : item.location})` : item.name) })));
+    }
+
+    /** One line for each quirk this unit could not be given now: rules edition, rules level or unit type. */
+    public getQuirkIssues(rulesLevel: number): string[] {
+        return getQuirkIssues(this.quirks.getAll(), this.getQuirkUnitType(), this._rulesEdition, rulesLevel);
+    }
 
     public getName(): string { return this._name; }
     /** The rules edition the design is built under. Only the editions with rules for this unit type are offered. */

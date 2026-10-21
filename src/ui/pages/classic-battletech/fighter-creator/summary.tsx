@@ -5,6 +5,7 @@ import { FIGHTER_ARCS, FIGHTER_LOCATIONS, formatFighterASDamage } from '../../..
 import { IAppGlobals } from '../../../app-router';
 import FighterCreatorSideMenu from '../../../components/fighter-creator-side-menu';
 import SanitizedHTML from '../../../components/sanitized-html';
+import QuirkPicker from '../../../components/quirk-picker';
 import TextSection from '../../../components/text-section';
 import UIPage from '../../../components/ui-page';
 const ArrowCircleLeft = FaArrowCircleLeft as any;
@@ -123,6 +124,15 @@ export default class FighterCreatorSummary extends React.Component<ISummaryProps
                                 checked against Master Unit List cards. Published fighters should still use their MUL card.
                             </p>
                             <Link to={`${process.env.PUBLIC_URL}/classic-battletech/fighter-creator/print-as`} className="btn btn-primary btn-sm">Print Alpha Strike Card</Link>
+
+                            <QuirkPicker
+                                quirks={fighter.quirks}
+                                unitType={fighter.getQuirkUnitType()}
+                                editionTag={fighter.getRulesEdition()}
+                                rulesLevel={this.props.appGlobals.appSettings.mechRulesFilter}
+                                {...fighter.getQuirkTargets()}
+                                onChange={() => this.props.appGlobals.saveCurrentFighter(fighter)}
+                            />
 
                             <h3>Battle Value Calculation</h3>
                             <SanitizedHTML raw={true} html={fighter.getBattleValueLog()} />
