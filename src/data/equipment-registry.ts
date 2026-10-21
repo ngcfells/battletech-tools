@@ -16,6 +16,7 @@ import { mechCustomEquipmentEnergy } from "./mech-custom-equipment-weapons-energ
 import { mechCustomEquipmentMisc } from "./mech-custom-equipment-weapons-misc";
 import { mechCustomEquipmentMissile } from "./mech-custom-equipment-weapons-missile";
 import { mechCustomAmmo } from "./mech-custom-ammo";
+import { artilleryCustom } from "./artillery-custom";
 import { mechISAmmo } from "./mech-is-ammo";
 import { mechClanAmmo } from "./mech-clan-ammo";
 import { mechUniversalAmmo } from "./mech-universal-ammo";
@@ -63,6 +64,7 @@ const equipmentCatalogDefinitions: IEquipmentCatalogDefinition[] = [
     { id: "mech-custom-equipment-weapons-energy", exportName: "mechCustomEquipmentEnergy", techBase: "custom", category: "energy", equipment: mechCustomEquipmentEnergy },
     { id: "mech-custom-equipment-weapons-missile", exportName: "mechCustomEquipmentMissile", techBase: "custom", category: "missile", equipment: mechCustomEquipmentMissile },
     { id: "mech-custom-equipment-weapons-misc", exportName: "mechCustomEquipmentMisc", techBase: "custom", category: "misc", equipment: mechCustomEquipmentMisc },
+    { id: "artillery-custom", exportName: "artilleryCustom", techBase: "custom", category: "artillery", equipment: artilleryCustom },
     { id: "mech-custom-ammo", exportName: "mechCustomAmmo", techBase: "custom", category: "ammunition", equipment: mechCustomAmmo },
     { id: "mech-universal-equipment", exportName: "mechUniversalEquipment", techBase: "universal", category: "artillery", equipment: mechUniversalEquipment },
     { id: "mech-universal-ammo", exportName: "mechUniversalAmmo", techBase: "universal", category: "ammunition", equipment: mechUniversalAmmo },

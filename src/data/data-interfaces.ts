@@ -300,6 +300,11 @@ export interface IEquipmentItem {
     damageClusters?: number;
     ammoPerShot?: number;
     ammoTypes?: string[];
+    /**
+     * ArtVee combo guns: the tag of the canon artillery piece the weapon fires as in Siege Mode. The record's
+     * own stats are the Vehicle Mode (autocannon) profile.
+     */
+    comboArtilleryTag?: string;
     ammoProfile?: IAmmoProfile;
     accuracyModifier?: number | IAccuracyModifier;
     accuracyModifiier?: number;
