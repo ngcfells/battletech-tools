@@ -132,13 +132,13 @@ export default class RecordSheetEquipmentTable extends React.Component<IRecordSh
 
 
                 let targetColor = getTargetColor( this.props.mechData.equipmentList[ eq_count].target );
-                // The printed sheet shows no live quirk math.
+                // The live sheet in Play Mode takes the game's "Use design quirks" switch, as the attack list does.
                 let targetGATOR = getTargetToHitFromWeapon(
                     this.props.mechData,
                     eq_count,
                     null,
                     null,
-                    false,
+                    !!this.props.quirksInPlay,
                 );
 
 
@@ -328,6 +328,8 @@ interface IRecordSheetEquipmentTableProps {
     boxStrokeColor?: string;
     mechData: BattleMech;
     inPlay?: boolean;
+    /** The game's "Use design quirks" switch, for the to-hit numbers in play. */
+    quirksInPlay?: boolean;
     xLoc: number;
     yLoc: number;
     width: number;

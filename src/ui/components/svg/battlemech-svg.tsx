@@ -538,6 +538,7 @@ export default class BattleMechSVG extends React.Component<IBattleMechSVGProps, 
         bgColor={bgColor}
         mechData={this.props.mechData}
         inPlay={this.props.inPlay}
+        quirksInPlay={this.props.quirksInPlay}
         onChange={this.props.onChange}
         viewGATOR={this.props.viewGATOR}
         boxStrokeColor={this.props.currentPhase === 2 ? currentPhaseGroupColor : undefined}
@@ -1956,6 +1957,8 @@ interface IBattleMechSVGProps {
     strokeColor?: string;
     mechData: BattleMech;
     inPlay?: boolean;
+    /** The game's "Use design quirks" switch, for the to-hit numbers in play. */
+    quirksInPlay?: boolean;
     currentPhase?: number;
 
     onChange?( mech: BattleMech ): void;

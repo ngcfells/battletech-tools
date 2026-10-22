@@ -1391,6 +1391,7 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
     <BattleMechSVG
       mechData={selectedMech}
       inPlay={true}
+      quirksInPlay={quirksInPlay}
       bgColor={selectedMech.isWrecked() ? "#666" : ""}
       openSetCriticalDialog={() => this.openSetCriticalDialog(selectedMech)}
       openSetTargetDialog={() => this.openSetTargetDialog(selectedMech)}
@@ -2988,6 +2989,7 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
               <BattleMechSVG
                 mechData={selectedMech}
                 inPlay={true}
+                quirksInPlay={quirksInPlay}
                 bgColor={selectedMech.isWrecked() ? "#666" : ""}
                 openSetCriticalDialog={() => this.openSetCriticalDialog(selectedMech)}
                 openSetTargetDialog={() => this.openSetTargetDialog(selectedMech)}
