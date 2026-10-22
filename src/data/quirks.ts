@@ -1,4 +1,5 @@
 import { IQuirk } from "./quirk-interfaces";
+import { APOCRYPHAL_RULES_LEVEL } from "./rules-level-options";
 
 /*
  * DISCLAIMER: This file processes gameplay data derived from the BattleTech universe. 
@@ -1035,12 +1036,13 @@ export const quirks: IQuirk[] = [
         cost: { points: 2 },
         unitTypes: ["mech"],
         attaches: ["unit"],
-        summary: "The 'Mech cannot torso twist.",
-        sources: [{ book: "Campaign Operations", page: 234 }, { book: "Strategic Operations", page: 198 }],
+        summary: "The 'Mech cannot torso twist. The Campaign Operations errata deletes this quirk; it stays here, Apocryphal, for the designs that have it.",
+        sources: [{ book: "Campaign Operations", page: 234 }, { book: "Strategic Operations", page: 198 }, { book: "Campaign Operations Errata v5.0", page: 8 }],
         effects: [],
         alphaStrike: { cost: -2, page: 66, effects: [] },
         editions: ["total-warfare", "battlemech-manual", "core-rulebook"],
-        rulesLevel: 3,
+        // Deleted by the errata; kept for designs without a torso twist (user ruling 2026-10-22).
+        rulesLevel: APOCRYPHAL_RULES_LEVEL,
     },
     {
         tag: "quirk-non-functional-item",
@@ -1320,8 +1322,8 @@ export const quirks: IQuirk[] = [
         cost: { points: 1 },
         unitTypes: ["mech"],
         attaches: ["unit"],
-        summary: "Each leg rolls for a critical hit when the 'Mech is kicked or makes a Death From Above, even if no armor is breached.",
-        sources: [{ book: "Campaign Operations", page: 235 }, { book: "BattleMech Manual", page: 89 }, { book: "Strategic Operations", page: 199 }],
+        summary: "Its own Death From Above rolls for a critical hit on each leg; a kick rolls for the leg kicked. Either rolls even if no armor is breached.",
+        sources: [{ book: "Campaign Operations", page: 235 }, { book: "BattleMech Manual", page: 89 }, { book: "Strategic Operations", page: 199 }, { book: "Campaign Operations Errata v5.0", page: 8 }],
         effects: [{ type: "damage", note: "a kicked leg, or both legs after its own Death From Above, roll for a critical hit even with armor left" }],
         alphaStrike: { cost: -1, page: 67, effects: [{ type: "triggered-roll", target: 8, trigger: "its own Death From Above", outcome: "an MP Hit critical" }] },
         editions: ["total-warfare", "battlemech-manual", "core-rulebook"],

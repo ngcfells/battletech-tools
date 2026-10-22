@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { getQuirk } from "./quirk-registry";
 import { quirks } from "./quirks";
+import { APOCRYPHAL_RULES_LEVEL } from "./rules-level-options";
 
 // From the Positive and Negative Quirk Tables (Campaign Operations pp.228 and 232), with each range-bracket row of
 // Improved and Poor Targeting as one quirk, plus Trailer Hitch, which only Strategic Operations (2008) prints.
@@ -95,7 +96,7 @@ describe("official quirks", () => {
     it("cites a book and a page for every source", () => {
         for (const quirk of quirks) {
             for (const source of quirk.sources) {
-                expect(["Campaign Operations", "BattleMech Manual", "Strategic Operations"], quirk.name).toContain(source.book);
+                expect(["Campaign Operations", "BattleMech Manual", "Strategic Operations", "Campaign Operations Errata v5.0"], quirk.name).toContain(source.book);
                 expect(source.page, quirk.name).toBeGreaterThan(0);
             }
         }
@@ -201,5 +202,22 @@ describe("quirk effects in play", () => {
         expect(getQuirk("quirk-poor-targeting")?.alphaStrike).toEqual({ cost: [-2, -3, -4], page: 67, effects: [{ type: "to-hit", modifier: 1, scope: "unit", rangeBand: "parameter" }] });
         expect(getQuirk("quirk-sensor-ghosts")?.alphaStrike?.effects).toEqual([{ type: "to-hit", modifier: 1, scope: "unit" }]);
         expect(getQuirk("quirk-variable-range-targeting")?.alphaStrike?.effects).toEqual([{ type: "to-hit", modifier: -1, scope: "unit" }]);
+    });
+});
+
+// Campaign Operations errata v5.0 p.8 (from v4.0): No Torso Twist deleted, Weak Legs rewritten.
+describe("the Campaign Operations errata", () => {
+    // User ruling 2026-10-22: designs without a torso twist exist, so the quirk stays, at the Apocryphal level.
+    it("keeps No Torso Twist at the Apocryphal level, citing the errata that deletes it", () => {
+        const record = getQuirk("quirk-no-torso-twist");
+        expect(record?.rulesLevel).toBe(APOCRYPHAL_RULES_LEVEL);
+        expect(record?.sources).toContainEqual({ book: "Campaign Operations Errata v5.0", page: 8 });
+        expect(record?.summary).toContain("errata");
+    });
+
+    it("rolls Weak Legs for the kicked leg only, and for both legs after its own Death From Above", () => {
+        const record = getQuirk("quirk-weak-legs");
+        expect(record?.summary).toBe("Its own Death From Above rolls for a critical hit on each leg; a kick rolls for the leg kicked. Either rolls even if no armor is breached.");
+        expect(record?.sources).toContainEqual({ book: "Campaign Operations Errata v5.0", page: 8 });
     });
 });
