@@ -42,10 +42,12 @@ Local references (git-ignored, never imported by shipped code):
   pilot data, hit location and critical hit boxes, armor diagram and each chassis's torso weapon roll, TW
   pp.185-187, IO:AE pp.93-94); buildings (the TO:AUE p.215 Structure Record Sheet with a four-level structure map,
   each hex's CF, armor and entry cost, the building critical hits table and the structure rules, with continuation
-  pages for long walls). The drawing helpers are
+  pages for long walls); Airships and Satellites (the TW Airship Record Sheet and the TO:AUE p.213 Satellite
+  Record Sheet: craft data and inventory, armor diagram with our own silhouettes, crew data, critical damage with
+  the thrusters and the -1 to -5 engine track, and for an Airship the velocity record and the Airship Velocity
+  Table, TW p.204; Fixed-Wing Support Vehicles stay on the conventional fighter sheet). The drawing helpers are
   shared in `src/ui/components/svg/record-sheet-svg-kit.tsx` and `aerospace-record-sheet-svg-blocks.tsx`. Still
-  owed, in order: the airship and other aerospace Support Vehicle sheets
-  (velocity record and airship velocity table) and the *Battledroids* sheet.
+  owed: the *Battledroids* sheet.
 - [ ] Verify before using: a fan-made vehicle sheet says a CASE-protected ammunition critical removes all rear
   armor and stuns the crew. Find the rule in the library before printing it on our sheet.
 - [ ] Anti-orbital Long Tom rounds (beta feedback item 9): mechanics and rules level to be decided with the user.
@@ -365,6 +367,8 @@ played first, then by dependency.
   torpedoes, primitive autocannon ammunition, vehicle flamer and heavy/medium rifle ammunition; the
   troopspace, infantry, battle armor and light vehicle bays on vehicles and aircraft; MegaMek's internal names
   for light weapons ("InfantryAssaultRifle", "InfantrySRMLight"), which the importer matches by display name only.
+- [x] Airship and Satellite record sheets like the Total Warfare and Tactical Operations ones (TO:AUE p.213),
+  2026-10-22, with the Airship Velocity Table (TW p.204).
 - [ ] Support Vehicles still owed: Patchwork armor (the Patchwork code is on
   `feature/patchwork-vehicles-fighters`); BV and Alpha Strike checks against published cards (the bundled
   live MUL lists Support Vehicles with BV 0); Large Naval sinking, running aground and boarding, and rail

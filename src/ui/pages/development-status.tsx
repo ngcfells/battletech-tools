@@ -100,6 +100,7 @@ export default class DevelopmentStatus extends React.Component<IDevelopmentStatu
                       <li><del>Conventional infantry record sheets the same way: four platoons to a page with the anti-'Mech, non-infantry weapon and burst-fire damage tables</del></li>
                       <li><del>ProtoMech record sheets the same way: a Point of five to a page with the hit location and critical hit tables</del></li>
                       <li><del>Building record sheets laid out like the Tactical Operations Structure Record Sheet, with the critical hits table and the structure rules</del></li>
+                      <li><del>Airship and Satellite record sheets laid out like the Total Warfare and Tactical Operations ones, with the Airship Velocity Table</del></li>
                     </ul>
                     <h4>Coming</h4>
                     <ul>

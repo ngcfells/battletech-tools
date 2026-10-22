@@ -164,7 +164,7 @@ export default class Home extends React.Component<IHomeProps, IHomeState> {
                   <ul className="news">
                   <li>
                   <h3>
-                      <strong>October 22nd, 2026</strong> - Beta feedback and new record sheets for vehicles, fighters, Small Craft, DropShips, capital ships, battle armor, infantry, ProtoMechs and buildings
+                      <strong>October 22nd, 2026</strong> - Beta feedback and new record sheets for vehicles, fighters, Small Craft, DropShips, capital ships, battle armor, infantry, ProtoMechs, buildings, airships and satellites
                     </h3>
                     <h4>Author - NGCFells</h4>
                       <p>New on the <a href="https://ngcfells.github.io/battletech-tools" target="_blank" rel="noopener noreferrer">beta test site</a>, from your reports:</p>
@@ -184,7 +184,7 @@ export default class Home extends React.Component<IHomeProps, IHomeState> {
                         <li>The conventional infantry sheet holds four platoons to a page: thirty numbered troopers with the damage the platoon does under each, the range modifiers out to its reach, and its movement, armor and skills. Troopers it does not have and ranges it cannot reach are blacked out. An oversized platoon gets a block for each sub-platoon. Below them are the leg attack, swarm attack, swarm attack modifier, non-infantry weapon damage and burst-fire damage tables.</li>
                         <li>The ProtoMech sheet holds a Point of five to a page: each block has the weapons inventory, pilot data with the consciousness track, the hit location table with its critical hit boxes and an armor diagram. The torso weapon roll names your torso weapons, and quads and Gliders get their own hit tables.</li>
                         <li>Buildings print on a Structure Record Sheet like the Tactical Operations one: structure data, the weapons inventory, a line for every hex with its Construction Factor, armor and what entering it costs, crew data and a numbered map to mark the footprint on, level by level. Beside the map are the building critical hits table and the building's Damage Threshold and damage figures. Long walls run on to continuation pages.</li>
-                        <li>The airship and other aerospace Support Vehicles follow.</li>
+                        <li>Airships and satellites get their own sheets, laid out like the Total Warfare Airship and Tactical Operations Satellite ones: craft data and weapons, the armor diagram, crew data, and critical damage with the thrusters. An airship's sheet adds the velocity record and the Airship Velocity Table, which gives the Thrust Points for each turn of the four-turn cycle. Fixed-wing Support Vehicles stay on the conventional fighter sheet.</li>
                       </ul>
                    </li>
                   <li>
