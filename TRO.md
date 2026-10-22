@@ -38,18 +38,17 @@ rounds, against 5 for the standard round. Each round also costs twice as much as
 sub-capital weapons (StratOps pp.91, 97-99), as a ballistic attack. A hit does 2 points of capital-scale damage.
 It loads in any Long Tom. These house rules add to the StratOps rules (user rulings 2026-10-22):
 
-- **Rate of fire:** The round has a long way to travel, and a turn in space is longer than a ground turn. So
-  several ground turns pass between shots. The gun needs time to let the breech cool, to be inspected, and to load
-  the extra propellant.
+- **Rate of fire:** The round has a long way to travel, and a turn in space is longer than a ground turn:
+  6 ground turns pass for each space turn, and the gun fires once a space turn. Between shots the breech cools and
+  is inspected, and the gun loads the extra propellant.
 - **Reach:** The target must be in the first section of the space/atmospheric map. Anything farther out is out of
   reach.
 - **Moving targets:** The round flies to the hex the target was in when it fired. If the target has moved one hex
-  out of that hex, the round can still hit, but it is unlikely, because space is vast.
-- **Bystanders:** Anything else that has moved into the aimed hex may be hit instead.
+  out of that hex, the round can still hit, but it is unlikely, because space is vast: make the normal attack roll
+  at +4 to the to-hit number. Two hexes or more is a miss.
+- **Bystanders:** Anything else that has moved into the aimed hex may be hit instead, on the normal attack roll.
 - **Defenses:** The round is too small to target well. Fighters and point defense are rarely any use against it,
-  but even blind squirrels find nuts now and then.
-
-The exact rolls for the last three points are not yet decided.
+  but even blind squirrels find nuts now and then: they stop it only on a natural 12.
 
 **Battle Value:** The standard round is 46 a ton, about 9.2 a shot. 3 shots come to 27.6, rounded up to 28. Its
 reach to orbit adds no range on the ground map, so range does not change the figure.

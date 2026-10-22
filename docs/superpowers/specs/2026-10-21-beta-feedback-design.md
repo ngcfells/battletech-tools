@@ -57,7 +57,9 @@ own tests and commit, in this order.
    be in the first section of the space/atmospheric map; anything farther is out of reach. A target that has moved one
    hex out of the aimed hex can still be hit, but it is unlikely. Something else that has moved into the hex may be hit.
    The round is too small for defenses to target well: fighters and point defense are rarely useful against it, but
-   now and then they get lucky.
+   now and then they get lucky. **Numbers ruled 2026-10-22:** 6 ground turns to a space turn, one shot a space turn; one
+   hex off is the normal attack roll at +4, two or more a miss; a bystander in the hex is hit on the normal roll; fighters
+   and point defense stop it only on a natural 12. The app tracks turns and rounds; players keep a physical map.
    Era availability is still open (lost Star League tech, or a new development); BV is the standard round's until ruled.
 
 10. **Record sheets carry every chart and rules helper an official sheet has.** (Added by the user 2026-10-21.)
