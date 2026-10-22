@@ -14,8 +14,7 @@ import { CAPITAL_MISSILE_CRITICAL_CHANCE, CAPITAL_SHIP_CRITICAL_NAMES, CapitalSh
 import { CUSTOM_HOMEBREW_RULES_LEVEL, getArtemisLauncherBattleValue, getAmmoBattleValuePerTon, getCompatibleAmmo, getEquipmentRulesLevel, getEffectiveIntroduction, getEquipmentListByTech, getWeaponShotsPerTon, isEquipmentOffered } from "../data/equipment-registry";
 import { findByTag } from "../data/tag-match";
 import { sizeDroneSystems } from "../data/variable-equipment";
-import { getEquipmentSubtype } from "../data/equipment-subtypes";
-import { getAerospaceDamageByBracket } from "../data/aerospace-record-sheet";
+import { IWeaponBay, capitalBayWeapon, groupWeaponBays, standardBayWeapon } from "../data/weapon-bays";
 import { ADVANCED_RULES_LEVEL } from "../data/rules-level-options";
 import {
     CAPITAL_WEAPON_ALPHA_STRIKE, ILargeCraftASDamageValue, LARGE_CRAFT_AS_ATTACK_CLASSES, LARGE_CRAFT_AS_DEFENSIVE_ABILITY_FACTORS, LargeCraftASAttackClass,
@@ -223,19 +222,7 @@ export const normalizeCapitalShipExport = (raw: unknown): { ship: ICapitalShipEx
 };
 
 /** A weapon bay (SO:AA p.142) as the record sheet lists it (SO:AA p.146). */
-export interface ICapitalShipWeaponBay {
-    /** The weapon class. */
-    name: string;
-    /** Capital weapons: values are capital scale; otherwise standard scale. */
-    capital: boolean;
-    /** Capital-scale damage, for the 70-point bay limit. */
-    damage: number;
-    heat: number;
-    weapons: number;
-    weaponNames: string[];
-    /** Attack Values at Short, Medium, Long and Extreme; null when a weapon's are unknown. */
-    values: [number, number, number, number] | null;
-}
+export type ICapitalShipWeaponBay = IWeaponBay;
 
 export default class CapitalShip {
     private _uuid: string = generateUUID();
@@ -725,43 +712,10 @@ export default class CapitalShip {
      * damage / 10; the class is the weapon family (equipment-subtypes.ts) or the capital weapon category.
      */
     public getArcWeaponBays(arc: AdvancedAerospaceArc): ICapitalShipWeaponBay[] {
-        type Entry = { name: string; damage: number; heat: number; values: [number, number, number, number] | null };
-        const groups = new Map<string, { capital: boolean; weapons: Entry[] }>();
-        const add = (bayClass: string, capital: boolean, entry: Entry) => {
-            const group = groups.get(bayClass) ?? { capital, weapons: [] };
-            group.weapons.push(entry);
-            groups.set(bayClass, group);
-        };
-        for (const item of this.getArcItems(arc).filter((entry) => this._isWeapon(entry))) {
-            add(getEquipmentSubtype(item) ?? item.category, false, { name: item.name, damage: (item.damageAero ?? 0) / 10, heat: item.heatAero ?? item.heat ?? 0, values: getAerospaceDamageByBracket(item) });
-        }
-        for (const mount of this.getArcCapitalWeapons(arc)) {
-            const reach = mount.weapon.range ? ["short", "medium", "long", "extreme"].indexOf(mount.weapon.range) : -1;
-            const values = mount.weapon.damage === null || reach < 0 ? null
-                : [0, 1, 2, 3].map((bracket) => (bracket <= reach ? mount.weapon.damage as number : 0)) as [number, number, number, number];
-            add(mount.weapon.category, true, { name: mount.weapon.name, damage: mount.weapon.damage ?? 0, heat: this.getCapitalWeaponHeat(mount), values });
-        }
-        const bays: ICapitalShipWeaponBay[] = [];
-        for (const [bayClass, group] of groups) {
-            const total = group.weapons.reduce((sum, weapon) => sum + weapon.damage, 0);
-            const count = Math.max(1, Math.ceil(total / ADVANCED_AEROSPACE_MAX_BAY_CAPITAL_DAMAGE - 1e-9));
-            const newBay = (): ICapitalShipWeaponBay => ({ name: bayClass, capital: group.capital, damage: 0, heat: 0, weapons: 0, weaponNames: [], values: [0, 0, 0, 0] });
-            const classBays = Array.from({ length: count }, newBay);
-            for (const weapon of [...group.weapons].sort((a, b) => b.damage - a.damage)) {
-                let bay = classBays.reduce((low, entry) => (entry.damage < low.damage ? entry : low), classBays[0]);
-                if (bay.weapons > 0 && bay.damage + weapon.damage > ADVANCED_AEROSPACE_MAX_BAY_CAPITAL_DAMAGE + 1e-9) {
-                    bay = newBay();
-                    classBays.push(bay);
-                }
-                bay.damage += weapon.damage;
-                bay.heat += weapon.heat;
-                bay.weapons++;
-                bay.weaponNames.push(weapon.name);
-                bay.values = bay.values && weapon.values ? bay.values.map((value, index) => value + (weapon.values as number[])[index]) as [number, number, number, number] : null;
-            }
-            bays.push(...classBays);
-        }
-        return bays;
+        return groupWeaponBays([
+            ...this.getArcItems(arc).filter((entry) => this._isWeapon(entry)).map(standardBayWeapon),
+            ...this.getArcCapitalWeapons(arc).map((mount) => capitalBayWeapon(mount.weapon, this.getCapitalWeaponHeat(mount))),
+        ], ADVANCED_AEROSPACE_MAX_BAY_CAPITAL_DAMAGE);
     }
     /** Heat sinks must cover the hottest single weapon bay (SO:AA p.142). */
     public getHottestBayHeat(): number {

@@ -13,6 +13,7 @@ import Pilot, { IPilot } from "./pilot";
 import { getSkillMultiplier } from "../data/skill-multipliers";
 import { isTargetingComputerWeapon, sizeDroneSystems } from "../data/variable-equipment";
 import { findByTag } from "../data/tag-match";
+import { IWeaponBay, capitalBayWeapon, groupWeaponBays, standardBayWeapon } from "../data/weapon-bays";
 import { IAerospaceArmorType, ICapitalWeapon, IEquipmentItem, IEras, IHeatSync, ITechDates, ITechOptions } from "../data/data-interfaces";
 import {
     CAPITAL_WEAPON_CATALOG, findCapitalWeapon, getCapitalAmmoBattleValue, getCapitalAmmoCost, getCapitalAmmoTags, getCapitalAmmoTons,
@@ -827,6 +828,20 @@ export default class SmallCraft {
     }
     public getHullItems(): IEquipmentItem[] {
         return this._equipmentList.filter((item) => item.location === "hull");
+    }
+    /** An arc's weapon bays: its weapons of each class fired together, heat and damage summed (TM pp.194-195, p.199). */
+    public getArcWeaponBays(arc: SmallCraftArc): IWeaponBay[] {
+        return groupWeaponBays([
+            ...this.getArcItems(arc).filter((item) => this._isWeapon(item)).map(standardBayWeapon),
+            ...this.getArcCapitalWeapons(arc).map((mount) => capitalBayWeapon(mount.weapon, this.getCapitalWeaponHeat(mount))),
+        ]);
+    }
+    /** Whether the item fires in a weapon bay, rather than being listed on its own. */
+    public isBayWeapon(item: IEquipmentItem): boolean { return this._isWeapon(item); }
+    /** Heat of an arc's weapons fired together, as the DropShip sheet's Heat Data block lists it (TM p.199). */
+    public getArcHeat(arc: SmallCraftArc): number {
+        return this.getArcItems(arc).filter((item) => !item.isAmmo).reduce((sum, item) => sum + (item.heatAero ?? item.heat ?? 0), 0)
+            + this.getArcCapitalWeapons(arc).reduce((sum, mount) => sum + this.getCapitalWeaponHeat(mount), 0);
     }
     /** Weapons in an arc, for the limit of 12 (TM p.196). */
     public getArcWeaponCount(arc: SmallCraftArc): number { return this.getArcItems(arc).length + this.getArcCapitalWeapons(arc).length; }

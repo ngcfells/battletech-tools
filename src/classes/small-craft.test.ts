@@ -333,3 +333,19 @@ describe("Small Craft in a roster group", () => {
         expect(new BattleMechGroup().export().smallCraft).toBeUndefined();
     });
 });
+
+describe("DropShip weapon bays", () => {
+    it("groups an arc's weapons of one class into a bay and sums their heat and damage (TM pp.194-195)", () => {
+        const ship = new SmallCraft();
+        ship.setCraftType("dropShip");
+        ship.setTonnage(3000);
+        for (const tag of ["large-laser", "large-laser", "medium-laser", "medium-laser", "medium-laser"]) ship.addEquipmentFromTag(tag, "nose");
+        ship.addEquipmentFromTag("lrm-10", "nose");
+        const bays = ship.getArcWeaponBays("nose");
+        // TechManual's own example: 2 large lasers and 3 medium lasers deliver 31 at Short and 16 at Medium.
+        expect(bays.find((bay) => bay.weaponNames.includes("Large Laser"))).toMatchObject({ weapons: 5, heat: 25, values: [31, 16, 0, 0], capital: false });
+        expect(bays).toHaveLength(2);
+        expect(ship.getArcWeaponBays("aft")).toEqual([]);
+        expect(ship.getArcHeat("nose")).toBe(25 + 4);
+    });
+});
