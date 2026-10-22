@@ -44,6 +44,25 @@ export const weaponBayName = (bay: IWeaponBay): string => {
     return `${bay.name}: ${[...counts].map(([name, count]) => `${count} ${name}`).join(", ")}${bay.capital ? " (C)" : ""}`;
 };
 
+/**
+ * A Small Craft's or DropShip's inventory: its weapon bays, as both always fire full bays (TM pp.195, 199; user ruling
+ * 2026-10-22), then the rest of its equipment. In play a bay notes its destroyed weapons.
+ */
+export const craftInventoryRows = (craft: SmallCraft, codes: Record<SmallCraftArc | "hull", string>, play: boolean, quirkLines: ReturnType<typeof getUnitQuirkSheetLines>): IAerospaceInventoryRow[] => {
+    const bays = SMALL_CRAFT_ARCS.flatMap((arc) => craft.getArcWeaponBays(arc).map((bay): IAerospaceInventoryRow => {
+        const destroyed = play ? bay.uuids.filter((uuid) => craft.isWeaponDestroyed(uuid)).length : 0;
+        return {
+            quantity: 1, name: weaponBayName(bay) + (destroyed ? ` (${destroyed} destroyed)` : ""), location: codes[arc], heat: bay.heat, values: bay.values, capital: bay.capital,
+        };
+    }));
+    const equipment = aerospaceInventoryRows(
+        craft.getEquipmentList().filter((item) => !craft.isBayWeapon(item)),
+        (tag) => codes[tag as SmallCraftArc | "hull"] ?? tag,
+        (item) => (play && craft.isWeaponDestroyed(item.uuid ?? "") ? " (destroyed)" : "") + weaponQuirkSuffix(quirkLines, item.uuid),
+    ).map((row) => (row.quantity > 1 ? { ...row, name: `${row.quantity} ${row.name}` } : row));
+    return [...bays, ...equipment];
+};
+
 export default class DropShipRecordSheetSVG extends React.Component<IDropShipRecordSheetSVGProps> {
     get craft(): SmallCraft { return this.props.craft; }
 
@@ -64,19 +83,7 @@ export default class DropShipRecordSheetSVG extends React.Component<IDropShipRec
     }
 
     get inventoryRows(): IAerospaceInventoryRow[] {
-        const craft = this.craft;
-        const play = this.play;
-        const codes = ARC_CODES[this.shape];
-        const bays = SMALL_CRAFT_ARCS.flatMap((arc) => craft.getArcWeaponBays(arc).map((bay): IAerospaceInventoryRow => ({
-            quantity: 1, name: weaponBayName(bay), location: codes[arc], heat: bay.heat, values: bay.values, capital: bay.capital,
-        })));
-        const quirkLines = this.quirkLines;
-        const equipment = aerospaceInventoryRows(
-            craft.getEquipmentList().filter((item) => !craft.isBayWeapon(item)),
-            (tag) => codes[tag as SmallCraftArc | "hull"] ?? tag,
-            (item) => (play && craft.isWeaponDestroyed(item.uuid ?? "") ? " (destroyed)" : "") + weaponQuirkSuffix(quirkLines, item.uuid),
-        ).map((row) => (row.quantity > 1 ? { ...row, name: `${row.quantity} ${row.name}` } : row));
-        return [...bays, ...equipment];
+        return craftInventoryRows(this.craft, ARC_CODES[this.shape], !!this.play, this.quirkLines);
     }
 
     renderDropShipData(): JSX.Element {

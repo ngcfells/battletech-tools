@@ -20,6 +20,8 @@ export interface IWeaponBay {
     heat: number;
     weapons: number;
     weaponNames: string[];
+    /** The equipment ids of its standard-scale weapons, for firing the bay in play. */
+    uuids: string[];
     /** Attack Values at Short, Medium, Long and Extreme; null when a weapon's are unknown. */
     values: [number, number, number, number] | null;
 }
@@ -29,6 +31,8 @@ export interface IWeaponBayWeapon {
     bayClass: string;
     capital: boolean;
     name: string;
+    /** The equipment id of a standard-scale weapon. */
+    uuid?: string;
     /** Capital-scale damage. */
     damage: number;
     heat: number;
@@ -40,6 +44,7 @@ export const standardBayWeapon = (item: IEquipmentItem): IWeaponBayWeapon => ({
     bayClass: getEquipmentSubtype(item) ?? item.category,
     capital: false,
     name: item.name,
+    uuid: item.uuid,
     damage: (item.damageAero ?? 0) / 10,
     heat: item.heatAero ?? item.heat ?? 0,
     values: getAerospaceDamageByBracket(item),
@@ -69,7 +74,7 @@ export const groupWeaponBays = (weapons: IWeaponBayWeapon[], maxCapitalDamage: n
     for (const [bayClass, group] of groups) {
         const total = group.weapons.reduce((sum, weapon) => sum + weapon.damage, 0);
         const count = Math.max(1, Math.ceil(total / maxCapitalDamage - 1e-9));
-        const newBay = (): IWeaponBay => ({ name: bayClass, capital: group.capital, damage: 0, heat: 0, weapons: 0, weaponNames: [], values: [0, 0, 0, 0] });
+        const newBay = (): IWeaponBay => ({ name: bayClass, capital: group.capital, damage: 0, heat: 0, weapons: 0, weaponNames: [], uuids: [], values: [0, 0, 0, 0] });
         const classBays = Array.from({ length: count }, newBay);
         for (const weapon of [...group.weapons].sort((a, b) => b.damage - a.damage)) {
             let bay = classBays.reduce((low, entry) => (entry.damage < low.damage ? entry : low), classBays[0]);
@@ -81,6 +86,7 @@ export const groupWeaponBays = (weapons: IWeaponBayWeapon[], maxCapitalDamage: n
             bay.heat += weapon.heat;
             bay.weapons++;
             bay.weaponNames.push(weapon.name);
+            if (weapon.uuid) bay.uuids.push(weapon.uuid);
             bay.values = bay.values && weapon.values ? bay.values.map((value, index) => value + (weapon.values as number[])[index]) as [number, number, number, number] : null;
         }
         bays.push(...classBays);

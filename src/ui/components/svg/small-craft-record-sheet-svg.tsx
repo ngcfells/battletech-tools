@@ -2,13 +2,13 @@ import React, { type JSX } from 'react';
 import SmallCraft from '../../../classes/small-craft';
 import { AEROSPACE_FIGHTER_CRITICAL_BLOCK } from '../../../data/aerospace-record-sheet';
 import { SMALL_CRAFT_ARCS, SmallCraftArc, findTransportBayType, quartersTypes } from '../../../data/small-craft-construction';
-import { aerospaceInventoryRows } from '../aerospace-sheet-blocks';
-import { getUnitQuirkSheetLines, weaponQuirkSuffix } from '../quirk-sheet-block';
+import { getUnitQuirkSheetLines } from '../quirk-sheet-block';
 import { getRulesLevelName } from '../rules-level-print';
 import {
     ICriticalTrack, armorDataBox, criticalDamageBox, heatDataBox, heatScaleColumn, notesBox, pilotDataBox, unitDataBox, velocityRecordBox,
 } from './aerospace-record-sheet-svg-blocks';
 import FighterDiagramSVG from './fighter-diagram-svg';
+import { craftInventoryRows } from './dropship-record-sheet-svg';
 import { DOC_HEIGHT, DOC_WIDTH, INK, groupBox, sheetFooter, titleBanner, wrapText } from './record-sheet-svg-kit';
 
 // A full-page Small Craft record sheet, laid out like the Total Warfare Aerodyne and Spheroid Small Craft record
@@ -67,11 +67,9 @@ export default class SmallCraftRecordSheetSVG extends React.Component<ISmallCraf
                 { label: "Rules Level:", value: getRulesLevelName(craft.getRequiredRulesLevel()) },
                 { label: "Burn Days:", value: `${craft.getBurnDays()} at 1 G` },
             ],
-            rows: aerospaceInventoryRows(
-                craft.getEquipmentList(),
-                (tag) => codes[tag as SmallCraftArc | "hull"] ?? tag,
-                (item) => (play && craft.isWeaponDestroyed(item.uuid ?? "") ? " (destroyed)" : "") + weaponQuirkSuffix(quirkLines, item.uuid),
-            ),
+            rows: craftInventoryRows(craft, codes, !!play, quirkLines),
+            bays: true,
+            standardScaleOnly: true,
             locationTitle: "Arc",
             locationKey: `Arc: ${key}`,
             cost: craft.getCBillCost(),

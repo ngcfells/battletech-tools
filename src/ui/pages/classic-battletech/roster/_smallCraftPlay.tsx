@@ -1,7 +1,8 @@
 import * as React from 'react';
 import SmallCraft, { SMALL_CRAFT_CRITICAL_TRACKS, SMALL_CRAFT_HEAT_TRIGGERS } from '../../../../classes/small-craft';
-import { SMALL_CRAFT_FACINGS, SmallCraftArc, SmallCraftFacing } from '../../../../data/small-craft-construction';
+import { SMALL_CRAFT_ARCS, SMALL_CRAFT_FACINGS, SmallCraftArc, SmallCraftFacing } from '../../../../data/small-craft-construction';
 import { SMALL_CRAFT_ATTACK_DIRECTIONS, SmallCraftAttackDirection } from '../../../../data/small-craft-hit-tables';
+import { weaponBayName } from '../../../components/svg/dropship-record-sheet-svg';
 import FighterDiagramSVG from '../../../components/svg/fighter-diagram-svg';
 import { smallCraftName } from './_smallCraftGroupTable';
 
@@ -66,7 +67,10 @@ export default class SmallCraftPlayPanel extends React.Component<ISmallCraftPlay
         const craft = this.props.craft;
         const play = craft.getInPlay();
         const toHit = craft.getDamageToHitModifier();
-        const weapons = craft.getEquipmentList().filter((item) => !item.isAmmo && item.location && item.location !== "hull");
+        // Small Craft and DropShips always fire full weapon bays (TM pp.195, 199; user ruling 2026-10-22); a weapon
+        // critical hit still destroys one weapon of a bay (TW p.240). Other equipment in an arc is listed on its own.
+        const weapons = craft.getEquipmentList().filter((item) => !item.isAmmo && item.location && item.location !== "hull" && !craft.isBayWeapon(item));
+        const bays = SMALL_CRAFT_ARCS.flatMap((arc) => craft.getArcFiringBays(arc).map((bay, index) => ({ arc, index, bay })));
         const pending = craft.getPendingWeaponCritical();
         const heatTriggers = SMALL_CRAFT_HEAT_TRIGGERS.filter((trigger) => trigger.levels.some((level) => play.heat >= level));
         const armor = craft.getArmorAllocation();
@@ -203,7 +207,7 @@ export default class SmallCraftPlayPanel extends React.Component<ISmallCraftPlay
                             onChange={(e) => { craft.setHeat(+e.currentTarget.value || 0); this._changed(); }} />
                     </label>
                     <button className="btn btn-primary btn-sm" onClick={this.applyHeat}>End Turn: Apply Heat</button>
-                    <p className="small-text">Tick the weapons fired this turn below. A Small Craft tracks heat as a fighter does (TW p. 161).</p>
+                    <p className="small-text">Tick the bays fired this turn below: a bay fires all its working weapons together (TM p. 199). A Small Craft tracks heat as a fighter does (TW p. 161).</p>
                 </fieldset>
 
                 <h4>Weapons</h4>
@@ -212,6 +216,45 @@ export default class SmallCraftPlayPanel extends React.Component<ISmallCraftPlay
                         <tr><th>Weapon</th><th>Arc</th><th className="text-center">Heat</th><th className="text-center">Fired</th><th className="text-center">Destroyed</th></tr>
                     </thead>
                     <tbody>
+                        {bays.map(({ arc, index, bay }) => {
+                            const name = weaponBayName(bay);
+                            const working = bay.items.filter((item) => !craft.isWeaponDestroyed(item.uuid ?? ""));
+                            return (
+                                <React.Fragment key={`${arc}-${index}`}>
+                                    <tr className={working.length === 0 ? "color-red" : ""}>
+                                        <td><strong>{name}</strong></td>
+                                        <td>{craft.getArcName(arc)}</td>
+                                        <td className="text-center">{working.reduce((sum, item) => sum + (item.heatAero ?? item.heat ?? 0), 0)}</td>
+                                        <td className="text-center">
+                                            <input
+                                                type="checkbox"
+                                                aria-label={name + " fired"}
+                                                disabled={working.length === 0}
+                                                checked={craft.isBayFired(arc, index)}
+                                                onChange={(e) => { craft.setBayFired(arc, index, e.currentTarget.checked); this._changed(); }}
+                                            />
+                                        </td>
+                                        <td></td>
+                                    </tr>
+                                    {bay.items.map((item) => (
+                                        <tr key={item.uuid} className={craft.isWeaponDestroyed(item.uuid ?? "") ? "color-red" : ""}>
+                                            <td style={{ paddingLeft: "2em" }}>{item.name}</td>
+                                            <td></td>
+                                            <td className="text-center">{item.heatAero ?? item.heat ?? 0}</td>
+                                            <td></td>
+                                            <td className="text-center">
+                                                <input
+                                                    type="checkbox"
+                                                    aria-label={item.name + " destroyed"}
+                                                    checked={craft.isWeaponDestroyed(item.uuid ?? "")}
+                                                    onChange={(e) => { craft.setWeaponDestroyed(item.uuid ?? "", e.currentTarget.checked); this._changed(); }}
+                                                />
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </React.Fragment>
+                            );
+                        })}
                         {weapons.map((item) => (
                             <tr key={item.uuid} className={craft.isWeaponDestroyed(item.uuid ?? "") ? "color-red" : ""}>
                                 <td>{item.name}</td>
@@ -236,7 +279,7 @@ export default class SmallCraftPlayPanel extends React.Component<ISmallCraftPlay
                                 </td>
                             </tr>
                         ))}
-                        {weapons.length === 0 ? <tr><td colSpan={5}>No weapons mounted.</td></tr> : null}
+                        {weapons.length === 0 && bays.length === 0 ? <tr><td colSpan={5}>No weapons mounted.</td></tr> : null}
                     </tbody>
                 </table>
             </div>

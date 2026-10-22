@@ -28,6 +28,8 @@ export interface IUnitDataBox {
     locationKey: string;
     /** Weapon bays (a DropShip's): a Bay column in place of Qty and Type, with capital-scale brackets too (TM p.199). */
     bays?: boolean;
+    /** Bays without the capital-scale brackets: a Small Craft's, as it mounts no capital weapons. */
+    standardScaleOnly?: boolean;
     /** JumpShips, WarShips and stations: standard bays print capital scale with standard in parentheses (SO:AA p.9). */
     capitalScale?: boolean;
     /** The ammunition carried, on a line under the inventory. */
@@ -68,7 +70,7 @@ export const unitDataBox = (x: number, y: number, w: number, h: number, data: IU
             {entries(data.right, 400)}
             {data.extra ? data.extra(y + 115 + rowsUsed * 35) : null}
             <line x1={x + 10} y1={dividerY} x2={x + w - 10} y2={dividerY} stroke={INK} strokeWidth={2} />
-            {inventory(x, inventoryTop, w, inventoryBottom, data.rows, data.locationTitle ?? "Loc.", data.bays || data.capitalScale, data.capitalScale)}
+            {inventory(x, inventoryTop, w, inventoryBottom, data.rows, data.locationTitle ?? "Loc.", data.bays || data.capitalScale, data.capitalScale, !data.standardScaleOnly)}
             {ammoLines.map((line, i) => text(x + 20, inventoryBottom + 30 + i * 26, line, { size: 20, weight: i === 0 ? 700 : 400 }, `ammo${i}`))}
             {keyLines.map((line, i) => text(x + 20, keyTop + i * 21, line, { size: 17, fill: GRAY }, `key${i}`))}
             {label(x + 20, y + h - 30, "Cost:")}{valueText(x + 95, y + h - 30, `${data.cost.toLocaleString("en-US")} C-Bills`)}
@@ -82,10 +84,10 @@ export const unitDataBox = (x: number, y: number, w: number, h: number, data: IU
  * to fit between top and bottom; shaded write-in rows fill the rest, as on the official sheet. With bays, each row is
  * a weapon bay named for its class and weapons, and the capital-scale brackets head the columns too (TM p.199).
  */
-export const inventory = (x: number, top: number, w: number, bottom: number, rows: IAerospaceInventoryRow[], locationTitle: string, bays = false, capitalScale = false): JSX.Element => {
+export const inventory = (x: number, top: number, w: number, bottom: number, rows: IAerospaceInventoryRow[], locationTitle: string, bays = false, capitalScale = false, capitalBrackets = bays): JSX.Element => {
     const col = { qty: x + 30, type: bays ? x + 20 : x + 65, loc: x + 440, ht: x + 495, srv: x + 565, mrv: x + 630, lrv: x + 695, erv: x + 755 };
     const brackets = [col.srv, col.mrv, col.lrv, col.erv];
-    const head = bays ? 20 : 0;
+    const head = bays && capitalBrackets ? 20 : 0;
     const tableTop = top + 70 + head;
     const space = bottom - tableTop;
     const lineHeight = Math.min(34, space / Math.max(rows.length, 1));
@@ -95,8 +97,8 @@ export const inventory = (x: number, top: number, w: number, bottom: number, row
     return (
         <g>
             {text(x + 20, top, "Weapons & Equipment Inventory", { size: 26, weight: 700 })}
-            {bays ? text(x + 20, top + 25, "Capital Scale", { size: 16 }) : null}
-            {bays ? ["(1-12)", "(13-24)", "(25-40)", "(41-50)"].map((bracket, i) => text(brackets[i], top + 25, bracket, { size: 16, anchor: "middle" }, `c${bracket}`)) : null}
+            {head ? text(x + 20, top + 25, "Capital Scale", { size: 16 }) : null}
+            {head ? ["(1-12)", "(13-24)", "(25-40)", "(41-50)"].map((bracket, i) => text(brackets[i], top + 25, bracket, { size: 16, anchor: "middle" }, `c${bracket}`)) : null}
             {text(x + 20, top + 25 + head, "Standard Scale", { size: 16 })}
             {["(0-6)", "(7-12)", "(13-20)", "(21-25)"].map((bracket, i) => text(brackets[i], top + 25 + head, bracket, { size: 16, anchor: "middle" }, bracket))}
             {bays ? null : text(col.qty, top + 55, "Qty", { size: 20, weight: 700, anchor: "middle" })}

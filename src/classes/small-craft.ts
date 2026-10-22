@@ -836,6 +836,16 @@ export default class SmallCraft {
             ...this.getArcCapitalWeapons(arc).map((mount) => capitalBayWeapon(mount.weapon, this.getCapitalWeaponHeat(mount))),
         ]);
     }
+    /**
+     * An arc's bays as play fires them, each with its weapons: Small Craft and DropShips always fire full weapon bays
+     * (TM pp.195, 199; user ruling 2026-10-22). Standard-scale weapons only, as the play table tracks them.
+     */
+    public getArcFiringBays(arc: SmallCraftArc): (IWeaponBay & { items: IEquipmentItem[] })[] {
+        const items = this.getArcItems(arc).filter((item) => this._isWeapon(item));
+        return groupWeaponBays(items.map(standardBayWeapon)).map((bay) => ({
+            ...bay, items: bay.uuids.map((uuid) => items.find((item) => item.uuid === uuid)).filter((item): item is IEquipmentItem => !!item),
+        }));
+    }
     /** Whether the item fires in a weapon bay, rather than being listed on its own. */
     public isBayWeapon(item: IEquipmentItem): boolean { return this._isWeapon(item); }
     /** Heat of an arc's weapons fired together, as the DropShip sheet's Heat Data block lists it (TM p.199). */
@@ -1715,6 +1725,17 @@ export default class SmallCraft {
         this._inPlay.firedWeapons = this._inPlay.firedWeapons.filter((entry) => entry !== uuid);
         const item = this._equipmentList.find((entry) => entry.uuid === uuid);
         if (fired && item && !item.isAmmo && !this.isWeaponDestroyed(uuid)) this._inPlay.firedWeapons.push(uuid);
+    }
+
+    /** A bay has fired when its working weapons have; one with none working cannot fire. */
+    public isBayFired(arc: SmallCraftArc, index: number): boolean {
+        const working = (this.getArcFiringBays(arc)[index]?.items ?? []).filter((item) => !this.isWeaponDestroyed(item.uuid ?? ""));
+        return working.length > 0 && working.every((item) => this.isWeaponFired(item.uuid ?? ""));
+    }
+
+    /** Fires a bay's working weapons together, or clears them. */
+    public setBayFired(arc: SmallCraftArc, index: number, fired: boolean): void {
+        for (const item of this.getArcFiringBays(arc)[index]?.items ?? []) this.setWeaponFired(item.uuid ?? "", fired);
     }
 
     /** Heat this turn will add: the weapons marked as fired. */

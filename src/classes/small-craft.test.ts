@@ -260,6 +260,42 @@ describe("Small Craft in play (Total Warfare pp.237-240)", () => {
     });
 });
 
+describe("Small Craft fire full weapon bays (TM pp.195, 199; user ruling 2026-10-22)", () => {
+    const craft = (): SmallCraft => {
+        const built = new SmallCraft();
+        built.addEquipmentFromTag("large-laser", "nose");
+        built.addEquipmentFromTag("medium-laser", "nose");
+        built.addEquipmentFromTag("srm-6", "nose");
+        return built;
+    };
+
+    it("groups an arc's weapons into the bays it fires", () => {
+        const bays = craft().getArcFiringBays("nose");
+        expect(bays.map((bay) => bay.weapons)).toEqual([2, 1]);
+        expect(bays[0].items.map((item) => item.name)).toEqual(["Large Laser", "Medium Laser"]);
+    });
+
+    it("fires every working weapon of a bay together, and its heat with them", () => {
+        const built = craft();
+        const [lasers] = built.getArcFiringBays("nose");
+        built.setWeaponDestroyed(lasers.items[1].uuid ?? "", true);
+        built.setBayFired("nose", 0, true);
+        expect(built.isBayFired("nose", 0)).toBe(true);
+        expect(built.getHeatGeneratedThisTurn()).toBe(lasers.items[0].heatAero ?? lasers.items[0].heat);
+        expect(built.isBayFired("nose", 1)).toBe(false);
+        built.setBayFired("nose", 0, false);
+        expect(built.getHeatGeneratedThisTurn()).toBe(0);
+    });
+
+    it("cannot fire a bay whose weapons are all destroyed", () => {
+        const built = craft();
+        const srms = built.getArcFiringBays("nose")[1];
+        built.setWeaponDestroyed(srms.items[0].uuid ?? "", true);
+        built.setBayFired("nose", 1, true);
+        expect(built.isBayFired("nose", 1)).toBe(false);
+    });
+});
+
 describe("Small Craft saves and imports", () => {
     it("comes back the same from its own save", () => {
         const craft = buildAquarius();

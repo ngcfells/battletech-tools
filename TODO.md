@@ -301,8 +301,9 @@ played first, then by dependency.
 - [ ] The Alpha Strike large-craft card for DropShips.
 - [ ] K-F Boom and Docking Collar criticals in play: a DropShip's hit resolution says "a Small Craft has none"
   and there are no play tracks to fill the boxes the record sheet prints.
-- [ ] Ruling owed: TM p.199 says Small Craft also fire in full weapon bays, but the Total Warfare Small Craft sheet
-  lists weapons by quantity and TW p.234 gives bays to Large Craft. The Small Craft sheet lists weapons singly.
+- [x] Small Craft fire in full weapon bays (2026-10-22, user ruling: the latest publication with its errata stands,
+  TM errata v8.0 of 2024-08-22, which revised the p.195 bay rules, over TW, corrected 11th printing, (c) 2023). The
+  Small Craft sheet lists bays at standard scale, and play fires a bay from one box, for DropShips too.
 - [ ] Check imported DropShip BV against the MUL where it has one (most DropShips show BV 0 there; the
   Overlord A3 imports at 25,708 against 24,600).
 

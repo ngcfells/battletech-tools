@@ -46,6 +46,18 @@ describe("Small Craft record sheet", () => {
         expect(render(sample("spheroid"))).toContain("AL Aft-Left");
     });
 
+    it("lists weapon bays, as Small Craft always fire full bays (TM pp.195, 199; user ruling 2026-10-22)", () => {
+        const craft = sample("aerodyne");
+        craft.addEquipmentFromTag("medium-laser", "nose");
+        craft.addEquipmentFromTag("medium-laser", "nose");
+        const markup = render(craft);
+        expect(markup).toContain("Lasers: 1 Large Laser, 2 Medium Laser");
+        expect(markup).toContain(">Bay<");
+        expect(markup).not.toContain(">Qty<");
+        // Standard scale only: a Small Craft mounts no capital weapons, as the Total Warfare Small Craft sheet shows.
+        expect(markup).not.toContain("Capital Scale");
+    });
+
     it("prints crew, passengers, quarters and bays", () => {
         const markup = render(sample("aerodyne"));
         expect(markup).toContain("CREW &amp; CARGO");
