@@ -130,4 +130,14 @@ describe("QuirkList", () => {
         // 13 damage in one grouping: 1 point per 5 or fraction, 3 points
         expect(list.getPointTotals(["a", "b"], 0, () => 0, () => 13).positive).toBe(3);
     });
+    // A bay that gains a weapon must not take the quirk again, nor its weapons one by one (final review).
+    it("refuses the same quirk on a bay that shares a weapon with one that has it", () => {
+        const list = new QuirkList();
+        expect(list.add({ tag: "quirk-accurate-weapon", bayUuids: ["a", "b"] })).toBeNull();
+        expect(list.add({ tag: "quirk-accurate-weapon", bayUuids: ["a", "b", "c"] })).toBe("duplicate");
+        expect(list.add({ tag: "quirk-accurate-weapon", equipmentUuid: "b" })).toBe("duplicate");
+        expect(list.add({ tag: "quirk-accurate-weapon", bayUuids: ["c", "d"] })).toBeNull();
+        expect(list.add({ tag: "quirk-jettison-capable-weapon", equipmentUuid: "e" })).toBeNull();
+        expect(list.add({ tag: "quirk-jettison-capable-weapon", bayUuids: ["e", "f"] })).toBe("duplicate");
+    });
 });

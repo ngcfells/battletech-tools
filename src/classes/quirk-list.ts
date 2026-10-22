@@ -3,8 +3,15 @@ import { getQuirk, getQuirkPoints } from "../data/quirk-registry";
 
 const copy = (quirk: IAssignedQuirk): IAssignedQuirk => (quirk.bayUuids ? { ...quirk, bayUuids: [...quirk.bayUuids] } : { ...quirk });
 
-/** A bay's weapons as one key, in any order. */
-const bayKey = (quirk: IAssignedQuirk): string | undefined => quirk.bayUuids ? [...quirk.bayUuids].sort().join(",") : undefined;
+/** The weapons an assignment is on: a bay's, or the one weapon's; undefined for a unit or location quirk. */
+const weaponsOf = (quirk: IAssignedQuirk): string[] | undefined => quirk.bayUuids ?? (quirk.equipmentUuid ? [quirk.equipmentUuid] : undefined);
+
+/** The same weapon target: no weapons on either, or at least one weapon in common (a bay that has since gained one). */
+const sameWeapons = (a: IAssignedQuirk, b: IAssignedQuirk): boolean => {
+    const aWeapons = weaponsOf(a);
+    const bWeapons = weaponsOf(b);
+    return !aWeapons || !bWeapons ? aWeapons === bWeapons : aWeapons.some((uuid) => bWeapons.includes(uuid));
+};
 
 /** A bay quirk is in force while any of its bay's weapons is installed. */
 const isInstalled = (quirk: IAssignedQuirk, installedUuids: string[]): boolean =>
@@ -12,11 +19,11 @@ const isInstalled = (quirk: IAssignedQuirk, installedUuids: string[]): boolean =
         : !quirk.equipmentUuid || installedUuids.includes(quirk.equipmentUuid);
 
 /**
- * Two assignments of one quirk are the same when they share a target; a range bracket also tells them apart (one Improved
+ * Two assignments of one quirk are the same when they share a target (for weapons and bays, any weapon); a range bracket also tells them apart (one Improved
  * Targeting per bracket), but a value does not (Rugged 1 and Rugged 2 are one quirk twice).
  */
 const sameAssignment = (record: IQuirk, a: IAssignedQuirk, b: IAssignedQuirk): boolean =>
-    a.tag === b.tag && a.equipmentUuid === b.equipmentUuid && a.location === b.location && bayKey(a) === bayKey(b)
+    a.tag === b.tag && sameWeapons(a, b) && a.location === b.location
     && (record.parameter?.kind !== "range-band" || a.parameter === b.parameter);
 
 const inYears = (quirk: IAssignedQuirk, year: number | undefined): boolean =>
