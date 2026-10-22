@@ -52,6 +52,7 @@ import BattledroidsDroidHelper from '../../../components/battledroids-droid-help
 import Building from '../../../../classes/building';
 import BuildingPlayPanel from './_buildingPlay';
 import SpaceTrackerBar from './_spaceTrackerBar';
+import { AntiOrbitalGunControls, SpaceResolutionDialog } from './_antiOrbitalControls';
 const ArrowCircleDown = FaArrowCircleDown as any;
 const ArrowCircleLeft = FaArrowCircleLeft as any;
 const ArrowCircleRight = FaArrowCircleRight as any;
@@ -388,6 +389,16 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
         this.props.appGlobals.saveCurrentCBTForce( currentCBTForce );
       }
 
+    }
+
+    // The space turn tracker changed the force: save it and redraw.
+    spaceTrackerChanged = (): void => {
+      if( this.props.appGlobals.currentCBTForce ) {
+        this.props.appGlobals.saveCurrentCBTForce( this.props.appGlobals.currentCBTForce );
+      }
+      this.setState({
+        updated: true,
+      })
     }
 
     openSpaceResolutionDialog = (): void => {
@@ -1519,6 +1530,13 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
 
     {/* <h4>Step 3: ???</h4> */}
   </StandardModal>
+) : null}
+{this.state.spaceResolutionDialog && this.props.appGlobals.currentCBTForce ? (
+  <SpaceResolutionDialog
+    force={this.props.appGlobals.currentCBTForce}
+    onChange={this.spaceTrackerChanged}
+    onClose={this.closeSpaceResolutionDialog}
+  />
 ) : null}
 {this.state.resolveFireDialog && this.props.appGlobals.currentCBTForce ? (
   <StandardModal
@@ -2864,6 +2882,11 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
 </TextSection>
 
 <div className="selected-mech">
+          <AntiOrbitalGunControls
+            force={this.props.appGlobals.currentCBTForce}
+            unitUuid={selectedBuilding?.getUUID() ?? selectedVehicle?.getUUID() ?? selectedMech?.uuid ?? ""}
+            onChange={this.spaceTrackerChanged}
+          />
           {selectedBattledroidsUnit ? (
             <BattledroidsPlayPanel
               key={selectedBattledroidsUnit.getUUID()}
