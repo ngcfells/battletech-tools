@@ -187,7 +187,7 @@ export const criticalDamageBox = (x: number, y: number, w: number, h: number, co
             const stacked = track.boxes.length > 4;
             const boxesX = stacked ? lx : lx + 165;
             return (
-                <g key={track.name}>
+                <g key={track.name} data-testid={`crit-${track.name}`} data-filled={track.filled}>
                     {text(lx, stacked ? ly - 30 : ly, track.name, { size: 22, weight: 700 })}
                     {track.boxes.map((box, i) => hitBox(boxesX + i * 52, ly, box, `${track.name}${i}`, i < track.filled))}
                 </g>

@@ -66,6 +66,27 @@ export default class FighterDiagramSVG extends React.Component<IFighterDiagramSV
                         <ellipse cx={300} cy={222} rx={280} ry={218} />
                     </g>
                 );
+            case "airship":
+                // A rigid envelope with ribs, a gondola and swept tail fins reaching out under the side arcs.
+                return (
+                    <g data-testid="airship-silhouette" fill={fill} stroke={stroke} strokeWidth={2}>
+                        <path d="M205,110 L40,250 L8,330 L8,440 L220,410 Z M395,110 L560,250 L592,330 L592,440 L380,410 Z" />
+                        <ellipse cx={300} cy={232} rx={112} ry={230} />
+                        <path fill="none" d="M300,2 L300,462 M245,14 C215,120 215,350 245,450 M355,14 C385,120 385,350 355,450" />
+                        <path d="M286,455 L300,469 L314,455 Z" />
+                    </g>
+                );
+            case "satellite":
+                // A boxy bus with an antenna mast, and a solar panel on a strut to each side.
+                return (
+                    <g data-testid="satellite-silhouette" fill={fill} stroke={stroke} strokeWidth={2}>
+                        <rect x={204} y={6} width={192} height={458} rx={6} />
+                        <path fill="none" d="M300,6 L300,0 M204,235 L170,235 M396,235 L430,235" />
+                        <rect x={6} y={140} width={204} height={196} rx={4} />
+                        <rect x={390} y={140} width={204} height={196} rx={4} />
+                        <path fill="none" d="M74,140 L74,336 M142,140 L142,336 M458,140 L458,336 M526,140 L526,336" />
+                    </g>
+                );
             default:
                 return (
                     <polygon points="300,4 345,150 590,250 590,300 345,300 330,440 380,462 220,462 270,440 255,300 10,300 10,250 255,150"
@@ -118,7 +139,7 @@ interface IFighterDiagramSVGProps {
     /** The widest pip spacing to start from; a printed sheet gives its pips more room than play mode. */
     maxPipSpacing?: number;
     /** A solid craft silhouette behind the boxes, as on a printed record sheet, in place of the dashed outline; true is a fighter. */
-    silhouette?: boolean | "fighter" | "aerodyne" | "spheroid";
+    silhouette?: boolean | "fighter" | "aerodyne" | "spheroid" | "airship" | "satellite";
     /** A taller diagram, 600 x 760, for a DropShip's armor. */
     tall?: boolean;
     /** Damage thresholds by arc, shown when given. */

@@ -1,9 +1,10 @@
 import React, { type JSX } from 'react';
 import AerospaceFighter, { formatFighterASDamage } from '../../classes/aerospace-fighter';
 import FighterRecordSheetSVG from './svg/fighter-record-sheet-svg';
+import SupportAircraftRecordSheetSVG from './svg/support-aircraft-record-sheet-svg';
 
 // A fighter record sheet: the full-page sheet (see FighterRecordSheetSVG) and, when asked, a second page with the
-// converted Alpha Strike stats. With showDamage, damage marked in play is filled in.
+// converted Alpha Strike stats. Airships and Satellites print on their own sheet (see SupportAircraftRecordSheetSVG). With showDamage, damage marked in play is filled in.
 export default class FighterRecordSheet extends React.Component<IFighterRecordSheetProps> {
     renderAlphaStrike(): JSX.Element {
         const as = this.props.fighter.getAlphaStrikeStats();
@@ -25,14 +26,18 @@ export default class FighterRecordSheet extends React.Component<IFighterRecordSh
         );
     }
 
-    render = (): JSX.Element => (
-        <>
-            <div className="print-page" style={{ maxHeight: "none" }}>
-                <FighterRecordSheetSVG fighter={this.props.fighter} showPilot={this.props.showPilot} showDamage={this.props.showDamage} />
-            </div>
-            {this.props.showAlphaStrike ? this.renderAlphaStrike() : null}
-        </>
-    );
+    render = (): JSX.Element => {
+        const motive = this.props.fighter.getSupportMotive();
+        const Sheet = motive === "airship" || motive === "satellite" ? SupportAircraftRecordSheetSVG : FighterRecordSheetSVG;
+        return (
+            <>
+                <div className="print-page" style={{ maxHeight: "none" }}>
+                    <Sheet fighter={this.props.fighter} showPilot={this.props.showPilot} showDamage={this.props.showDamage} />
+                </div>
+                {this.props.showAlphaStrike ? this.renderAlphaStrike() : null}
+            </>
+        );
+    };
 }
 
 interface IFighterRecordSheetProps {

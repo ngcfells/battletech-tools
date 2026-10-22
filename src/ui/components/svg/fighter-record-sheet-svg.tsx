@@ -92,7 +92,8 @@ export default class FighterRecordSheetSVG extends React.Component<IFighterRecor
         });
     }
 
-    renderNotes(): JSX.Element {
+    /** The notes printed on the sheet; crewOnSheet leaves out the crew and BAR a sheet with its own crew data prints. */
+    noteLines(crewOnSheet = false): string[] {
         const fighter = this.fighter;
         const play = this.play;
         const notes: string[] = [];
@@ -105,14 +106,19 @@ export default class FighterRecordSheetSVG extends React.Component<IFighterRecor
         }
         if (fighter.isSupportVehicle()) {
             const fireControl = SUPPORT_VEHICLE_FIRE_CONTROL[fighter.getSupportFireControl()].name;
-            notes.push(`Tech Rating ${fighter.getSupportOverallTechRating()?.toUpperCase()}; Crew ${fighter.getCrew()}; BAR ${fighter.getBAR()}`);
+            const rating = `Tech Rating ${fighter.getSupportOverallTechRating()?.toUpperCase()}`;
+            notes.push(crewOnSheet ? rating : `${rating}; Crew ${fighter.getCrew()}; BAR ${fighter.getBAR()}`);
             notes.push(`${fireControl.includes("Fire Control") ? fireControl : `Fire Control: ${fireControl}`}${fighter.getFireControlToHitModifier() > 0 ? ` (+${fighter.getFireControlToHitModifier()} to-hit)` : ""}`);
             const mods = fighter.getSupportChassisModifications().map((tag) => SUPPORT_VEHICLE_CHASSIS_MODIFICATIONS.find((mod) => mod.tag === tag)?.name).filter(Boolean);
             if (mods.length) notes.push(`Chassis: ${mods.join(", ")}`);
         }
         if (fighter.getBays().length) notes.push(`Bays: ${fighter.getBays().map((bay) => `${fighter.getBayName(bay)} ${bay.amount}`).join(", ")}`);
         if (play && play.heatSinks > 0) notes.push(`Heat sinks lost: ${play.heatSinks}`);
-        return notesBox(LEFT.x, 1250, LEFT.w, 420, notes);
+        return notes;
+    }
+
+    renderNotes(): JSX.Element {
+        return notesBox(LEFT.x, 1250, LEFT.w, 420, this.noteLines());
     }
 
     // Bombs and pods: a box a hardpoint, the boxes past the fighter's hardpoints shaded, with the codes keyed below.
