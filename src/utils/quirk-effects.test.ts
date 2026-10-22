@@ -84,8 +84,8 @@ describe("heat", () => {
 
 describe("getQuirkInitiative", () => {
     it("gives Command 'Mech +1 and Battle Computer +2", () => {
-        expect(getQuirkInitiative(listOf({ tag: "quirk-command-mech" }), INSTALLED, 3025)).toEqual({ modifier: 1, label: "Command 'Mech (+1)" });
-        expect(getQuirkInitiative(listOf({ tag: "quirk-battle-computer" }), INSTALLED, 3025)).toEqual({ modifier: 2, label: "Battle Computer (+2)" });
+        expect(getQuirkInitiative(listOf({ tag: "quirk-command-mech" }), INSTALLED, 3025)).toEqual({ modifier: 1, label: "Command 'Mech (+1)", title: "Command 'Mech" });
+        expect(getQuirkInitiative(listOf({ tag: "quirk-battle-computer" }), INSTALLED, 3025)).toEqual({ modifier: 2, label: "Battle Computer (+2)", title: "Battle Computer" });
         expect(getQuirkInitiative(listOf(), INSTALLED, 3025)).toBeNull();
     });
 });
@@ -94,8 +94,8 @@ describe("getQuirkEffects", () => {
     it("lists each active quirk's effects with a label, and a quirk with none once with no effect", () => {
         const list = listOf({ tag: "quirk-exposed-actuators" }, { tag: "quirk-multi-trac" });
         expect(getQuirkEffects(list, INSTALLED, 3025)).toEqual([
-            { quirkName: "Exposed Actuators", label: "Exposed Actuators (-1)", effect: { type: "to-hit-against", modifier: -1, when: "Leg and Swarm attacks" } },
-            { quirkName: "Multi-Trac", label: "Multi-Trac", effect: null },
+            { quirkName: "Exposed Actuators", title: "Exposed Actuators", label: "Exposed Actuators (-1)", effect: { type: "to-hit-against", modifier: -1, when: "Leg and Swarm attacks" } },
+            { quirkName: "Multi-Trac", title: "Multi-Trac", label: "Multi-Trac", effect: null },
         ]);
     });
 });

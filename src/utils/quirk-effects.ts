@@ -1,11 +1,13 @@
 import { QuirkList } from "../classes/quirk-list";
-import { IAssignedQuirk, IQuirk, QuirkEffect, QuirkRangeBand } from "../data/quirk-interfaces";
+import { IAssignedQuirk, IQuirk, IQuirkTargets, QuirkEffect, QuirkRangeBand } from "../data/quirk-interfaces";
 import { getQuirk } from "../data/quirk-registry";
 
 /** One effect of one active quirk, labelled for play; `effect` is null for a quirk with none ("not yet applied in play"). */
 export interface IAppliedQuirkEffect {
     effect: QuirkEffect | null;
     quirkName: string;
+    /** The name with its range band, "Improved Targeting (Long)". */
+    title: string;
     /** "Accurate Weapon (-1)", "Improved Targeting (Long) (-1)"; just the name for an effect without a modifier. */
     label: string;
     /** The weapon or bay the quirk is on, if any. */
@@ -22,6 +24,28 @@ export interface IQuirkAttackContext {
     /** "weapon" when absent. */
     attack?: "weapon" | "punch" | "arm-physical" | "physical";
     attackerRanOrFlanked?: boolean;
+}
+
+/** A unit that carries quirks in play: 'Mech, vehicle, fighter, battle armor, Small Craft, capital ship. */
+export interface IQuirkCarrier {
+    quirks: QuirkList;
+    getEra(): { yearStart: number };
+    getQuirkTargets(): IQuirkTargets;
+    isDestroyed(): boolean;
+}
+
+/** The weapons and bays the unit has fitted now, for `QuirkList.getActive`. */
+export function getCarrierInstalledUuids(unit: IQuirkCarrier): string[] {
+    const targets = unit.getQuirkTargets();
+    return [...targets.weapons.map((weapon) => weapon.uuid), ...(targets.bays ?? []).flatMap((bay) => bay.uuids)];
+}
+
+/**
+ * The effects of a unit's quirks in play. Play has no game year, so an assignment's years are checked against the
+ * start of the unit's era (quirks design, "Eras").
+ */
+export function getCarrierQuirkEffects(unit: IQuirkCarrier): IAppliedQuirkEffect[] {
+    return getQuirkEffects(unit.quirks, getCarrierInstalledUuids(unit), unit.getEra().yearStart);
 }
 
 const signed = (value: number): string => (value > 0 ? `+${value}` : `${value}`);
@@ -53,6 +77,7 @@ export function getQuirkEffects(list: QuirkList, installedUuids: string[], year:
             applied.push({
                 effect,
                 quirkName: record.name,
+                title,
                 label: modifier === undefined ? title : `${title} (${signed(modifier)})`,
                 ...(equipmentUuids ? { equipmentUuids } : {}),
                 ...(assigned.parameter !== undefined ? { parameter: assigned.parameter } : {}),
@@ -112,12 +137,14 @@ export function getQuirkWeaponHeat(list: QuirkList, installedUuids: string[], ye
     return Math.max(minimum, result);
 }
 
+export interface IQuirkInitiative { modifier: number; label: string; title: string }
+
 /** The unit's largest Initiative effect, or null; a side takes the largest of its units', never the sum (CO p.225). */
-export function getQuirkInitiative(list: QuirkList, installedUuids: string[], year: number | undefined): { modifier: number; label: string } | null {
-    let best: { modifier: number; label: string } | null = null;
+export function getQuirkInitiative(list: QuirkList, installedUuids: string[], year: number | undefined): IQuirkInitiative | null {
+    let best: IQuirkInitiative | null = null;
     for (const applied of getQuirkEffects(list, installedUuids, year)) {
         if (applied.effect?.type === "initiative" && (!best || applied.effect.modifier > best.modifier)) {
-            best = { modifier: applied.effect.modifier, label: applied.label };
+            best = { modifier: applied.effect.modifier, label: applied.label, title: applied.title };
         }
     }
     return best;

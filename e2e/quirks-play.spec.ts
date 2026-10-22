@@ -27,3 +27,40 @@ test("the roster's design quirks switch is off by default and is saved with the 
 
     expect(errors).toEqual([]);
 });
+
+test("with the switch on, play shows the side's quirk Initiative and the unit's quirks; off, neither", async ({ page }) => {
+    const errors: string[] = [];
+    page.on("pageerror", (error) => errors.push(error.stack ?? error.message));
+    page.on("console", (message) => {
+        if (message.type() === "error") errors.push(`console.error: ${message.text()}`);
+    });
+
+    await page.goto("classic-battletech/mech-creator");
+    await page.getByTitle("Click here to clear out your current 'mech and start over.").click();
+    // The quirk records are rules level 3 (Advanced).
+    await page.goto("classic-battletech/mech-creator/step1");
+    await page.getByLabel("Rules Level").selectOption("3");
+    await page.goto("classic-battletech/mech-creator/summary");
+    await page.getByLabel("Quirk", { exact: true }).selectOption({ label: "+ Battle Computer" });
+    await page.getByRole("button", { name: "Add quirk" }).click();
+    await page.goto("classic-battletech/mech-creator");
+    await page.getByTitle("Click here to save a a new 'mech row").click();
+
+    await page.goto("classic-battletech/roster");
+    await page.getByTitle("Click here to open the add 'mech dialog").first().click();
+    await page.locator(".modal button.btn-xs.btn-primary").nth(1).click();
+
+    await page.goto("classic-battletech/roster/play");
+    await page.locator(".mech-selector li button").first().click();
+    await expect(page.getByTestId("quirk-initiative")).toHaveCount(0);
+    await expect(page.getByTestId("quirks-in-play")).toHaveCount(0);
+
+    await page.goto("classic-battletech/roster");
+    await page.locator("label.checkbox-input", { hasText: "Use design quirks" }).click();
+    await page.goto("classic-battletech/roster/play");
+    await page.locator(".mech-selector li button").first().click();
+    await expect(page.getByTestId("quirk-initiative")).toHaveText("Initiative: +2 (Battle Computer)");
+    await expect(page.getByTestId("quirks-in-play")).toContainText("Battle Computer: +2 to its side's Initiative");
+
+    expect(errors).toEqual([]);
+});

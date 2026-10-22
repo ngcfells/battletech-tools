@@ -4965,6 +4965,11 @@ export class BattleMech {
         return generated - this.getActiveHeatDissipation();
     }
 
+    /** Out of the game: head or center torso structure gone, or the MechWarrior killed (6 wounds). */
+    public isDestroyed(): boolean {
+        return !this._locationHasStructure("hd") || !this._locationHasStructure("ct") || this.pilot.wounds >= 6;
+    }
+
     /** The items quirks may be attached to in play: those fitted now, an OmniMech's current pods included. */
     public getQuirkInstalledUuids(equipmentList: IEquipmentItem[] | null = null): string[] {
         return (equipmentList ?? this.equipmentList).map((item) => item?.uuid).filter((uuid): uuid is string => !!uuid);

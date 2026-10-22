@@ -53,6 +53,8 @@ import Building from '../../../../classes/building';
 import BuildingPlayPanel from './_buildingPlay';
 import SpaceTrackerBar from './_spaceTrackerBar';
 import { AntiOrbitalGunControls, SpaceResolutionDialog } from './_antiOrbitalControls';
+import QuirksInPlay from '../../../components/quirks-in-play';
+import { getCarrierQuirkEffects, IQuirkCarrier } from '../../../../utils/quirk-effects';
 const ArrowCircleDown = FaArrowCircleDown as any;
 const ArrowCircleLeft = FaArrowCircleLeft as any;
 const ArrowCircleRight = FaArrowCircleRight as any;
@@ -1285,6 +1287,7 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
       let selectedMech: BattleMech | null = this.props.appGlobals.currentCBTForce.getSelectedMech();
       // The game's "Use design quirks" switch (quirks design, plan 3).
       const quirksInPlay = this.props.appGlobals.currentCBTForce.quirksInPlay;
+      const sideInitiative = quirksInPlay ? this.props.appGlobals.currentCBTForce.getInitiativeModifier() : null;
       const targetCarrierLoad = this.state.setTargetDialog
         ? this._carrierLoad( this.state.setTargetDialog.uuid, this.state.setTargetDialog.getName(), "mech", this.state.setTargetDialog.isOmnimech, this.state.setTargetDialog.isFrankenMech() )
         : null;
@@ -1372,6 +1375,9 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
           }
         }
       }
+      // The selected unit's quirks, in the same order the panels below are chosen; units without quirks show none.
+      const quirkCarrier: IQuirkCarrier | null = selectedBattledroidsUnit || selectedBuilding || selectedInfantry || selectedProtoMech ? null
+        : selectedBattleArmor ?? selectedFighter ?? selectedSmallCraft ?? selectedCapitalShip ?? selectedVehicle ?? selectedMech;
       return (
         <>
 {this.state.zoomSheet && selectedMech ? (
@@ -2745,6 +2751,11 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
           onChange={this.setTurn}
         />
       </div>
+      {quirksInPlay && sideInitiative ? (
+        <div data-testid="quirk-initiative">
+          Initiative: {sideInitiative.modifier > 0 ? "+" : ""}{sideInitiative.modifier} ({sideInitiative.title})
+        </div>
+      ) : null}
       <div>
         <button
           className={this.props.appGlobals.currentCBTForce.phase === 0 ? "btn btn-phase-active btn-sm" : "btn btn-secondary btn-sm"}
@@ -2893,6 +2904,9 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
             unitUuid={selectedBuilding?.getUUID() ?? selectedVehicle?.getUUID() ?? selectedMech?.uuid ?? ""}
             onChange={this.spaceTrackerChanged}
           />
+          {quirkCarrier ? (
+            <QuirksInPlay effects={getCarrierQuirkEffects(quirkCarrier)} quirksInPlay={quirksInPlay} />
+          ) : null}
           {selectedBattledroidsUnit ? (
             <BattledroidsPlayPanel
               key={selectedBattledroidsUnit.getUUID()}

@@ -1,4 +1,5 @@
 import { generateUUID } from "../utils/generateUUID";
+import { getCarrierInstalledUuids, getQuirkInitiative, IQuirkCarrier, IQuirkInitiative } from "../utils/quirk-effects";
 import { BattleMech } from "./battlemech";
 import { BattleMechGroup, ICBTGroupExport } from "./battlemech-group";
 import { ISpaceTrackerExport, SpaceTracker } from "./space-tracker";
@@ -206,6 +207,23 @@ export class BattleMechForce {
             this._lastUpdated = new Date(importObj.lastUpdated);
         }
 
+    }
+
+    /**
+     * The side's Initiative quirk: the largest of its units still in the game, never the sum (CO p.225). Null when
+     * none has one. Read only with the game's "Use design quirks" switch on.
+     */
+    public getInitiativeModifier(): IQuirkInitiative | null {
+        let best: IQuirkInitiative | null = null;
+        for( const group of this.groups ) {
+            const units: IQuirkCarrier[] = [...group.members, ...group.vehicles, ...group.fighters, ...group.smallCraft, ...group.capitalShips, ...group.battleArmor];
+            for( const unit of units ) {
+                if( unit.isDestroyed() ) continue;
+                const initiative = getQuirkInitiative(unit.quirks, getCarrierInstalledUuids(unit), unit.getEra().yearStart);
+                if( initiative && (!best || initiative.modifier > best.modifier) ) best = initiative;
+            }
+        }
+        return best;
     }
 
     public applyHeat() {
