@@ -182,7 +182,8 @@ export default class Home extends React.Component<IHomeProps, IHomeState> {
                         <li>JumpShips, WarShips and space stations get full-page sheets laid out like the Strategic Operations ones: weapon bays in capital scale with standard scale in parentheses, each facing's armor in squares with its damage threshold, structural integrity, K-F drive, sail and docking collars in the hull, crew data, critical damage, heat generated per arc and the velocity record. Damage marked in play is filled in on the roster's printout.</li>
                         <li>The battle armor sheet holds five squads to a page, as the Total Warfare one does, with the leg attack, swarm attack, swarm attack modifier, swarm hit location and transport position tables beside them. The roster prints its battle armor five squads to a page, and the creator prints a design with its alternate loadouts.</li>
                         <li>The conventional infantry sheet holds four platoons to a page: thirty numbered troopers with the damage the platoon does under each, the range modifiers out to its reach, and its movement, armor and skills. Troopers it does not have and ranges it cannot reach are blacked out. An oversized platoon gets a block for each sub-platoon. Below them are the leg attack, swarm attack, swarm attack modifier, non-infantry weapon damage and burst-fire damage tables.</li>
-                        <li>ProtoMechs and the other unit types follow.</li>
+                        <li>The ProtoMech sheet holds a Point of five to a page: each block has the weapons inventory, pilot data with the consciousness track, the hit location table with its critical hit boxes and an armor diagram. The torso weapon roll names your torso weapons, and quads and Gliders get their own hit tables.</li>
+                        <li>Buildings and the other unit types follow.</li>
                       </ul>
                    </li>
                   <li>
