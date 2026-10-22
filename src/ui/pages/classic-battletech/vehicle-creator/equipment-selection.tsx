@@ -7,6 +7,7 @@ import { IAppGlobals } from '../../../app-router';
 import AvailableEquipment from '../../../components/available-equipment';
 import VehicleCreatorSideMenu from '../../../components/vehicle-creator-side-menu';
 import TextSection from '../../../components/text-section';
+import TonnageBar from '../../../components/tonnage-bar';
 import UIPage from '../../../components/ui-page';
 import VehicleLightWeapons from './_light-weapons';
 const ArrowCircleLeft = FaArrowCircleLeft as any;
@@ -93,6 +94,7 @@ export default class VehicleCreatorEquipmentSelection extends React.Component<IE
                         </div>
                     </div>
                 </div>
+                <TonnageBar used={vehicle.getCurrentTonnage()} total={vehicle.getTonnage()} slots={{ used: vehicle.getUsedItemSlots(), total: vehicle.getTotalItemSlots() }} />
             </UIPage>
         );
     }

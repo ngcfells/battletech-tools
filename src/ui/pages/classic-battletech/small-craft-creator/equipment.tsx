@@ -10,6 +10,7 @@ import { IAppGlobals } from '../../../app-router';
 import AvailableEquipment from '../../../components/available-equipment';
 import SmallCraftCreatorSideMenu from '../../../components/small-craft-creator-side-menu';
 import TextSection from '../../../components/text-section';
+import TonnageBar from '../../../components/tonnage-bar';
 import UIPage from '../../../components/ui-page';
 import SmallCraftStatusBar from './_statusBar';
 const ArrowCircleLeft = FaArrowCircleLeft as any;
@@ -224,6 +225,7 @@ export default class SmallCraftCreatorEquipment extends React.Component<IEquipme
                         </div>
                     </div>
                 </div>
+                <TonnageBar used={craft.getCurrentTonnage()} total={craft.getTonnage()} />
             </UIPage>
         );
     }

@@ -11,6 +11,7 @@ import AvailableEquipment from '../../../components/available-equipment';
 import BuildingCreatorSideMenu from '../../../components/building-creator-side-menu';
 import InputNumeric from "../../../components/form_elements/input_numeric";
 import TextSection from '../../../components/text-section';
+import TonnageBar from '../../../components/tonnage-bar';
 import UIPage from '../../../components/ui-page';
 const ArrowCircleLeft = FaArrowCircleLeft as any;
 const ArrowCircleRight = FaArrowCircleRight as any;
@@ -493,6 +494,7 @@ export default class BuildingCreatorEquipment extends React.Component<IEquipment
                         </div>
                     </div>
                 </div>
+                <TonnageBar used={building.getTotalWeight()} total={building.getTotalCapacity()} />
             </UIPage>
         );
     }

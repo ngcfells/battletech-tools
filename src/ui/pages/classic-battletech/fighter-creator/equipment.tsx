@@ -10,6 +10,7 @@ import { availabilityOptionLabel } from '../../../components/availability-option
 import FighterCreatorSideMenu from '../../../components/fighter-creator-side-menu';
 import InputNumeric from "../../../components/form_elements/input_numeric";
 import TextSection from '../../../components/text-section';
+import TonnageBar from '../../../components/tonnage-bar';
 import UIPage from '../../../components/ui-page';
 const ArrowCircleLeft = FaArrowCircleLeft as any;
 const ArrowCircleRight = FaArrowCircleRight as any;
@@ -202,6 +203,7 @@ export default class FighterCreatorEquipment extends React.Component<IEquipmentP
                         </div>
                     </div>
                 </div>
+                <TonnageBar used={fighter.getCurrentTonnage()} total={fighter.getTonnage()} slots={{ used: fighter.getUsedItemSlots(), total: fighter.getTotalItemSlots() }} />
             </UIPage>
         );
     }

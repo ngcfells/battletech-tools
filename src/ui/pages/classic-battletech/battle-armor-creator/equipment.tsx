@@ -7,6 +7,7 @@ import { IBattleArmorEquipment, battleArmorMineTypes, findBattleArmorEquipment, 
 import { IAppGlobals } from '../../../app-router';
 import BattleArmorCreatorSideMenu from '../../../components/battle-armor-creator-side-menu';
 import TextSection from '../../../components/text-section';
+import TonnageBar from '../../../components/tonnage-bar';
 import UIPage from '../../../components/ui-page';
 import BattleArmorStatusBar from './_statusBar';
 const ArrowCircleLeft = FaArrowCircleLeft as any;
@@ -266,6 +267,7 @@ export default class BattleArmorCreatorEquipment extends React.Component<IEquipm
                         </TextSection>
                     </div>
                 </div>
+                <TonnageBar used={suit.getWeight()} total={suit.getWeightClass().maxWeight} unit="kg" />
             </UIPage>
         );
     }

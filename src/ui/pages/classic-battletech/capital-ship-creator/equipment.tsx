@@ -10,6 +10,7 @@ import { IAppGlobals } from '../../../app-router';
 import AvailableEquipment from '../../../components/available-equipment';
 import CapitalShipCreatorSideMenu from '../../../components/capital-ship-creator-side-menu';
 import TextSection from '../../../components/text-section';
+import TonnageBar from '../../../components/tonnage-bar';
 import UIPage from '../../../components/ui-page';
 import CapitalShipStatusBar from './_statusBar';
 const ArrowCircleLeft = FaArrowCircleLeft as any;
@@ -179,6 +180,7 @@ export default class CapitalShipCreatorEquipment extends React.Component<IEquipm
                         </div>
                     </div>
                 </div>
+                <TonnageBar used={ship.getCurrentTonnage()} total={ship.getTonnage()} />
             </UIPage>
         );
     }

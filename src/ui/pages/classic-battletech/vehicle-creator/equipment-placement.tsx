@@ -4,6 +4,7 @@ import { Link } from 'react-router';
 import { IAppGlobals } from '../../../app-router';
 import VehicleCreatorSideMenu from '../../../components/vehicle-creator-side-menu';
 import TextSection from '../../../components/text-section';
+import TonnageBar from '../../../components/tonnage-bar';
 import UIPage from '../../../components/ui-page';
 const ArrowCircleLeft = FaArrowCircleLeft as any;
 const ArrowCircleRight = FaArrowCircleRight as any;
@@ -218,6 +219,7 @@ export default class VehicleCreatorEquipmentPlacement extends React.Component<IE
                         </TextSection>
                     </div>
                 </div>
+                <TonnageBar used={vehicle.getCurrentTonnage()} total={vehicle.getTonnage()} slots={{ used: vehicle.getUsedItemSlots(), total: vehicle.getTotalItemSlots() }} />
             </UIPage>
         );
     }

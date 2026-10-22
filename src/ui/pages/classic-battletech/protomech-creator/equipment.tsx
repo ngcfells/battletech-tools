@@ -6,6 +6,7 @@ import { ProtoMechMountLocation, getProtoMechEquipmentKg } from '../../../../dat
 import { IAppGlobals } from '../../../app-router';
 import ProtoMechCreatorSideMenu from '../../../components/protomech-creator-side-menu';
 import TextSection from '../../../components/text-section';
+import TonnageBar from '../../../components/tonnage-bar';
 import UIPage from '../../../components/ui-page';
 import ProtoMechStatusBar from './_statusBar';
 const ArrowCircleRight = FaArrowCircleRight as any;
@@ -217,6 +218,7 @@ export default class ProtoMechCreatorEquipment extends React.Component<IEquipmen
                         </TextSection>
                     </div>
                 </div>
+                <TonnageBar used={proto.getWeight()} total={proto.getMaxWeight()} unit="kg" />
             </UIPage>
         );
     }
