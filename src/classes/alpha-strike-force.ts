@@ -57,16 +57,18 @@ export default class AlphaStrikeForce {
 	public getActiveMembers() {
 		this.activeMembers = 0;
         this.forcePoints = 0;
-        for( var memCountGroup = 0; memCountGroup < this.groups.length; memCountGroup++ ) {
-            for( var memCount = 0; memCount < this.groups.length; memCount++ ) {
-                this.groups[memCountGroup].members[memCount].calcCurrentValues();
-                if( this.groups[memCountGroup].members[memCount].active )
+        let members = 0;
+        for( const group of this.groups ) {
+            for( const member of group.members ) {
+                member.calcCurrentValues();
+                members++;
+                if( member.active )
                     this.activeMembers++;
-                this.forcePoints += this.groups[memCountGroup].members[memCount].currentPoints / 1;
+                this.forcePoints += member.currentPoints / 1;
             }
         }
 
-		this.membersLabel = " (" + this.activeMembers + "/" + this.groups.length + ")";
+		this.membersLabel = " (" + this.activeMembers + "/" + members + ")";
     }
 
     public addToGroup(
@@ -84,6 +86,7 @@ export default class AlphaStrikeForce {
 
             // if( exportData ) {
                 // let newUnit = new AlphaStrikeUnit( exportData );
+                mulUnit.quirksInPlay = this.quirksInPlay;
                 this.groups[groupIndex].members.push( mulUnit  );
                 this.groups[groupIndex].sortUnits();
                 this.groups[groupIndex].setAvailableFormationBonuses( formationBonuses.filter(x=>x.IsValid(this.groups[groupIndex], this.groups)));
