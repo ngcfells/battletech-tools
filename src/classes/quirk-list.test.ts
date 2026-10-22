@@ -39,6 +39,14 @@ describe("QuirkList", () => {
         expect(list.add({ tag: "quirk-improved-targeting", parameter: "long" })).toBe("duplicate");
     });
 
+    it("refuses a value quirk twice on one target whatever its value", () => {
+        const list = new QuirkList();
+        expect(list.add({ tag: "quirk-rugged", parameter: 1 })).toBeNull();
+        expect(list.add({ tag: "quirk-rugged", parameter: 2 })).toBe("duplicate");
+        expect(list.add({ tag: "quirk-directional-torso-mount", location: "ct", parameter: 2 })).toBeNull();
+        expect(list.add({ tag: "quirk-directional-torso-mount", location: "ct", parameter: 3 })).toBe("duplicate");
+    });
+
     it("removes by index", () => {
         const list = new QuirkList();
         list.add({ tag: "quirk-command-mech" });
@@ -102,8 +110,15 @@ describe("QuirkList", () => {
         list.add({ tag: "quirk-accurate-weapon", equipmentUuid: "w1" });
         list.add({ tag: "quirk-no-ejection-system" });
         const weaponDamage = (uuid: string) => (uuid === "w1" ? 10 : 0);
-        const totals = list.getPointTotals(0, weaponDamage);
+        const totals = list.getPointTotals(["w1"], 0, weaponDamage);
         expect(totals.positive).toBe(4);
         expect(totals.negative).toBeLessThan(0);
+    });
+
+    it("leaves quirks on weapons not installed out of the totals", () => {
+        const list = new QuirkList();
+        list.add({ tag: "quirk-accurate-weapon", equipmentUuid: "gone" });
+        list.add({ tag: "quirk-jettison-capable-weapon", equipmentUuid: "gone" });
+        expect(list.getPointTotals([], 0, () => 0)).toEqual({ positive: 0, negative: 0 });
     });
 });

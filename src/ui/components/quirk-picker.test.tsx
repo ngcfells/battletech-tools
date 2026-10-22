@@ -88,6 +88,19 @@ describe("QuirkPicker", () => {
         expect(screen.getByText(/not installed/)).toBeTruthy();
     });
 
+    it("cites the balance advice on Campaign Operations p.225", () => {
+        picker(new QuirkList(), "total-warfare");
+        expect(screen.getByText(/Campaign Operations \(p\.225\) recommends/)).toBeTruthy();
+    });
+
+    it("counts no points for a quirk on a weapon not installed", () => {
+        const quirks = new QuirkList();
+        quirks.add({ tag: "quirk-accurate-weapon", equipmentUuid: "gone" });
+        picker(quirks, "total-warfare");
+        expect(screen.getByText(/weapon not installed\): 0/)).toBeTruthy();
+        expect(screen.getByText("Positive 0, negative 0")).toBeTruthy();
+    });
+
     it("totals the points and removes a quirk", () => {
         const quirks = new QuirkList();
         quirks.add({ tag: "quirk-command-mech" });

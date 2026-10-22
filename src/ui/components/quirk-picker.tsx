@@ -161,7 +161,8 @@ export default class QuirkPicker extends React.Component<IQuirkPickerProps, IQui
         if (issue === "edition") notes.push(`not offered in ${getRulesEdition(this.props.editionTag).name}`);
         else if (issue === "level") notes.push("above the selected rules level");
         else if (issue === "unit-type") notes.push("not for this unit type");
-        return { name: quirk.name, notes, points: getQuirkPoints(quirk, assigned, this._maxDamage(quirk, assigned)) };
+        const installed = attach !== "weapon" || this.props.weapons.some((entry) => entry.uuid === assigned.equipmentUuid);
+        return { name: quirk.name, notes, points: installed ? getQuirkPoints(quirk, assigned, this._maxDamage(quirk, assigned)) : 0 };
     }
 
     private _parameterControl(quirk: IQuirk): JSX.Element | null {
@@ -187,8 +188,11 @@ export default class QuirkPicker extends React.Component<IQuirkPickerProps, IQui
     render = (): JSX.Element => {
         const assigned = this.props.quirks.getAll();
         const described = assigned.map((entry) => this._describe(entry));
-        const positive = described.reduce((sum, entry) => sum + Math.max(entry.points, 0), 0);
-        const negative = described.reduce((sum, entry) => sum + Math.min(entry.points, 0), 0);
+        const { positive, negative } = this.props.quirks.getPointTotals(
+            this.props.weapons.map((weapon) => weapon.uuid),
+            this.props.unitMaxDamage,
+            (uuid) => this.props.weapons.find((weapon) => weapon.uuid === uuid)?.maxDamage ?? 0,
+        );
         const offered = getOfferedQuirks(this.props.unitType, this.props.editionTag, this.props.rulesLevel);
         const selected = this._selected();
         const attaches = selected?.attaches ?? [];
@@ -196,7 +200,7 @@ export default class QuirkPicker extends React.Component<IQuirkPickerProps, IQui
             <div className="quirk-picker">
                 <h3>Design Quirks</h3>
                 <p className="smaller-text">
-                    An optional rule all players should agree to. Campaign Operations (p.224) recommends giving a design
+                    An optional rule all players should agree to. Campaign Operations (p.225) recommends giving a design
                     negative quirks worth at least as much as its positive ones; each group decides whether to require it.
                 </p>
                 {assigned.length > 0 ? (

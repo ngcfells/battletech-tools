@@ -1,11 +1,15 @@
-import { IAssignedQuirk } from "../data/quirk-interfaces";
+import { IAssignedQuirk, IQuirk } from "../data/quirk-interfaces";
 import { getQuirk, getQuirkPoints } from "../data/quirk-registry";
 
 const copy = (quirk: IAssignedQuirk): IAssignedQuirk => ({ ...quirk });
 
-/** Two assignments of one quirk are the same when they share a target and a parameter (one Improved Targeting per bracket). */
-const sameAssignment = (a: IAssignedQuirk, b: IAssignedQuirk): boolean =>
-    a.tag === b.tag && a.equipmentUuid === b.equipmentUuid && a.location === b.location && a.parameter === b.parameter;
+/**
+ * Two assignments of one quirk are the same when they share a target; a range bracket also tells them apart (one Improved
+ * Targeting per bracket), but a value does not (Rugged 1 and Rugged 2 are one quirk twice).
+ */
+const sameAssignment = (record: IQuirk, a: IAssignedQuirk, b: IAssignedQuirk): boolean =>
+    a.tag === b.tag && a.equipmentUuid === b.equipmentUuid && a.location === b.location
+    && (record.parameter?.kind !== "range-band" || a.parameter === b.parameter);
 
 const inYears = (quirk: IAssignedQuirk, year: number | undefined): boolean =>
     year === undefined || ((quirk.fromYear === undefined || year >= quirk.fromYear) && (quirk.toYear === undefined || year <= quirk.toYear));
@@ -24,7 +28,7 @@ export class QuirkList {
         if (!record) {
             return "unknown quirk";
         }
-        if (this._quirks.some((other) => sameAssignment(other, quirk))) {
+        if (this._quirks.some((other) => sameAssignment(record, other, quirk))) {
             return "duplicate";
         }
         if (record.once && this._quirks.some((other) => getQuirk(other.tag)?.tag === record.tag)) {
@@ -67,11 +71,14 @@ export class QuirkList {
             .map(copy);
     }
 
-    /** The positive and negative point totals; `unitMaxDamage` is the sum of all non-physical weapons' maximum damage. */
-    public getPointTotals(unitMaxDamage: number, weaponDamage: (uuid: string) => number): { positive: number; negative: number } {
+    /**
+     * The positive and negative point totals of the active quirks, so a quirk on a weapon not installed counts nothing;
+     * `unitMaxDamage` is the sum of all non-physical weapons' maximum damage.
+     */
+    public getPointTotals(installedUuids: string[], unitMaxDamage: number, weaponDamage: (uuid: string) => number): { positive: number; negative: number } {
         let positive = 0;
         let negative = 0;
-        for (const quirk of this._quirks) {
+        for (const quirk of this.getActive(installedUuids, undefined)) {
             const record = getQuirk(quirk.tag);
             if (!record) {
                 continue;
