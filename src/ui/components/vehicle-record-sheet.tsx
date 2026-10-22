@@ -12,7 +12,9 @@ export default class VehicleRecordSheet extends React.Component<IVehicleRecordSh
         const vehicle = this.props.vehicle;
         const quirkLines = getUnitQuirkSheetLines(vehicle.quirks, vehicle.getEquipmentList().map((item) => ({ uuid: item.uuid, label: item.name })), vehicle.getQuirkTargets().locations);
         const as = vehicle.getAlphaStrikeStats();
-        const equipmentByLocation = (location: string) => vehicle.getEquipmentList().filter((item) => (item.location || "") === location);
+        // Ammunition sits in the Body, whatever location it was given (TM p. 107).
+        const equipmentByLocation = (location: string) => vehicle.getEquipmentList().filter((item) => !item.isAmmo && (item.location || "") === location);
+        const bodyAmmo = vehicle.getEquipmentList().filter((item) => item.isAmmo);
         const pilot = vehicle.getPilot();
         const support = vehicle.getSupportVehicleSettings();
 
@@ -59,10 +61,16 @@ export default class VehicleRecordSheet extends React.Component<IVehicleRecordSh
                     <tbody>
                         {vehicle.getLocations().filter((loc) => loc.tag !== "rotor").map((loc) => (
                             <tr key={loc.tag}>
-                                <td>{loc.name}{vehicle.hasSponsonTurrets() && /left|right/i.test(loc.tag) ? " (sponson)" : ""}</td>
+                                <td>{loc.name}</td>
                                 <td>{equipmentByLocation(loc.tag).map((item) => `${item.name}${item.pintle ? " (pintle)" : ""}${vehicle.isSponsonMounted(item) ? " (sponson)" : ""}${weaponQuirkSuffix(quirkLines, item.uuid)}`).join(", ") || "-"}</td>
                             </tr>
                         ))}
+                        {bodyAmmo.length > 0 ? (
+                            <tr>
+                                <td>Body (BD)</td>
+                                <td>{bodyAmmo.map((item) => `${item.name} (${vehicle.getAmmoBinShots(item)} shots)`).join(", ")}</td>
+                            </tr>
+                        ) : null}
                         <tr>
                             <td>Unallocated</td>
                             <td>{equipmentByLocation("").map((item) => item.name + weaponQuirkSuffix(quirkLines, item.uuid)).join(", ") || "-"}</td>

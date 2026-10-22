@@ -41,8 +41,8 @@ own tests and commit, in this order.
    app is too small to read. No text smaller than 0.75rem anywhere; warning text at least 0.875rem, keeping
    WCAG 2.1 AA contrast (4.5:1) for the red against its background.
 
-9. **Anti-orbital Long Tom rounds: discussion only, not built in this pass.** (Requested on the BattleTech Discord
-   by SmilingNid, with ideas from Vehrec, Arkaxe and Ryan DesCastris; added by the user 2026-10-21.) Decide the
+9. **Anti-orbital Long Tom rounds: discussion only, not built in this pass.** (Requested on the Star League Discord
+   server, a BattleTech group, by SmilingNid, with ideas from Vehrec, Arkaxe and Ryan DesCastris; added by the user 2026-10-21.) Decide the
    mechanics and the rules level (Apocryphal, Custom or Munchkin) with the user before any code.
 
 ## Non-goals

@@ -39,4 +39,15 @@ describe("vehicle equipment placement: sponsons", () => {
         expect(placed.location).toBe("right");
         expect(tank.isSponsonMounted(placed)).toBe(true);
     });
+
+    it("puts ammunition in the Body, with no location to choose (TM p. 107)", () => {
+        const tank = new Vehicle();
+        tank.setMotiveType("tracked");
+        tank.setTonnage(60);
+        tank.addEquipmentFromTag("ammo-is-ac-5-standard");
+        const ammo = tank.getEquipmentList()[tank.getEquipmentList().length - 1];
+        renderPlacement(tank);
+        expect(screen.queryByLabelText(`${ammo.name} location`)).toBeNull();
+        expect(screen.getByTestId(`body-${ammo.uuid}`).textContent).toBe("Body");
+    });
 });

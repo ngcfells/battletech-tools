@@ -6,8 +6,8 @@ Date: 2026-10-20. Rules level: **Custom Homebrew (6)**. Nothing here is canon ex
 ## Intent
 
 A tracked tank that transforms the way a LAM does, between **Vehicle Mode** (it moves and fires an autocannon) and
-**Siege Mode** (immobile, firing real artillery). The idea comes from the StarCraft siege tank and was brought to
-BattleTech terms by the user. The name is **ArtVee**, short for Artillery Vehicle, patterned on QuadVee. Some powers
+**Siege Mode** (immobile, firing real artillery). The idea comes from the StarCraft siege tank; it was put forward by kris (helvedes heste) [SLDF] on the Star League
+Discord server (a BattleTech group) and brought to BattleTech terms by the user. The name is **ArtVee**, short for Artillery Vehicle, patterned on QuadVee. Some powers
 call them **MAPs** (Mobile Artillery Platforms); the record sheet and builder text mention that alias.
 
 The ArtVee is meant to be strongly defended once it is set up: heavy armor, protected tracks, and secondary weapons

@@ -145,18 +145,23 @@ export default class VehicleCreatorEquipmentPlacement extends React.Component<IE
                                             </td>
                                             <td>{vehicle.getItemSlots(item)}</td>
                                             <td>
-                                                <select
-                                                    aria-label={`${item.name} location`}
-                                                    value={vehicle.isSponsonMounted(item) ? `${item.location}|sponson` : item.location ?? ""}
-                                                    onChange={(e) => this.setLocation(item.uuid, e.currentTarget.value)}
-                                                >
-                                                    {locationOptions.map((loc) => (
-                                                        <option key={loc.tag} value={loc.tag}>{loc.name}</option>
-                                                    ))}
-                                                    {vehicle.isSponsonWeapon(item) ? sponsonOptions.map((loc) => (
-                                                        <option key={`${loc.tag}|sponson`} value={`${loc.tag}|sponson`}>{loc.name.replace(/ Side$/, "")} Sponson</option>
-                                                    )) : null}
-                                                </select>
+                                                {item.isAmmo ? (
+                                                    // Ammunition goes in the Body, the vehicle's center, never a facing (TM p. 107).
+                                                    <span data-testid={`body-${item.uuid}`}>Body</span>
+                                                ) : (
+                                                    <select
+                                                        aria-label={`${item.name} location`}
+                                                        value={vehicle.isSponsonMounted(item) ? `${item.location}|sponson` : item.location ?? ""}
+                                                        onChange={(e) => this.setLocation(item.uuid, e.currentTarget.value)}
+                                                    >
+                                                        {locationOptions.map((loc) => (
+                                                            <option key={loc.tag} value={loc.tag}>{loc.name}</option>
+                                                        ))}
+                                                        {vehicle.isSponsonWeapon(item) ? sponsonOptions.map((loc) => (
+                                                            <option key={`${loc.tag}|sponson`} value={`${loc.tag}|sponson`}>{loc.name.replace(/ Side$/, "")} Sponson</option>
+                                                        )) : null}
+                                                    </select>
+                                                )}
                                             </td>
                                             {vehicle.isOmni() ? (
                                                 <td>
