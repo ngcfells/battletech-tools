@@ -34,9 +34,10 @@ Local references (git-ignored, never imported by shipped code):
   Done: Combat and Support Vehicles (ground, VTOL, naval, submarine, super-heavy, Large Support Vehicle,
   Large Naval Vessel); 'Mechs (heat scale 30 down to 0 with Overflow; every other TW block was already there);
   aerospace and conventional fighters and fixed-wing support vehicles; Small Craft and DropShips (aerodyne and
-  spheroid; DropShip weapons listed by bay, TM p.199). The drawing helpers are shared in
+  spheroid; DropShip weapons listed by bay, TM p.199); JumpShips, WarShips and space stations (SO:AA pp.9-11,
+  laid out like the Strategic Operations sheets). The drawing helpers are shared in
   `src/ui/components/svg/record-sheet-svg-kit.tsx` and `aerospace-record-sheet-svg-blocks.tsx`. Still owed, in
-  order: JumpShips/WarShips/space stations, battle armor,
+  order: battle armor,
   conventional infantry, ProtoMechs, buildings, then the airship and other aerospace Support Vehicle sheets
   (velocity record and airship velocity table) and the *Battledroids* sheet.
 - [ ] Verify before using: a fan-made vehicle sheet says a CASE-protected ammunition critical removes all rear
@@ -297,6 +298,11 @@ played first, then by dependency.
   - JumpShip firing arcs: SO:AA p.142's text gives JumpShips the broadsides, its p.133 table does not. Same
     book, so MegaMek decides (broadsides on WarShips only); flagged in the module.
   - The K-F boom on a station has no weight in SO:AA (p.139); only its cost multiplier is modelled.
+  - 2026-10-22: the record sheet is a full page like the Strategic Operations JumpShip, WarShip and station sheets
+    (armor in capital-scale squares by facing, integrity tracks in the hull, crew data, critical damage, heat per
+    arc, velocity record).
+- [ ] A station's jump sail with energy storage batteries (SO:AA p.136) is not built; its record sheet leaves the
+  official sheet's Sail Integrity line blank to write in.
 - [ ] SDS (Caspar) drone control system (IO p.143; Historical: Liberation of Terra I p.159): a percentage of
   the vessel's weight on top of the controls, quarters for half the minimum crew, the SDS self-destruct, and
   WarShip drones of 800,000 tons at most. SDS WarShip drones still carry a K-F drive; the fail-safe only stops

@@ -95,6 +95,7 @@ export default class DevelopmentStatus extends React.Component<IDevelopmentStatu
                       <li><del>Vehicle record sheets with every table the official sheets print: hit locations, motive damage, critical hits, VTOL elevation and submarine depth tracks</del></li>
                       <li><del>Fighter record sheets the same way: external stores, heat scale, velocity record, and the ground map movement and fighter return tables for conventional fighters</del></li>
                       <li><del>Small Craft and DropShip record sheets the same way, aerodyne and spheroid, with DropShip weapons listed by bay</del></li>
+                      <li><del>JumpShip, WarShip and space station record sheets the same way, with capital-scale armor by facing and the integrity tracks</del></li>
                     </ul>
                     <h4>Coming</h4>
                     <ul>
