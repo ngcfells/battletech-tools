@@ -2479,4 +2479,604 @@ export const canonMechQuirks: ICanonQuirkEntry[] = [
         ],
         source: { book: "BattleMech Manual", page: 93 },
     },
+    {
+        chassis: "Penthesilea",
+        quirks: [
+            { tag: "quirk-rugged", parameter: 1 },
+            { tag: "quirk-stabilized-weapon", weapon: { name: "ER Medium Laser", location: "ct", all: true } },
+        ],
+        source: { book: "BattleMech Manual", page: 94 },
+    },
+    {
+        chassis: "Peregrine (Horned Owl)",
+        altChassis: ["Peregrine", "Horned Owl"],
+        quirks: [
+            { tag: "quirk-stabilized-weapon", note: "CT" },
+        ],
+        source: { book: "BattleMech Manual", page: 94 },
+    },
+    {
+        chassis: "Perseus",
+        quirks: [
+            { tag: "quirk-anti-aircraft-targeting" },
+            { tag: "quirk-easy-to-maintain" },
+        ],
+        source: { book: "BattleMech Manual", page: 94 },
+    },
+    {
+        chassis: "Phantom",
+        quirks: [
+            { tag: "quirk-improved-sensors" },
+        ],
+        source: { book: "BattleMech Manual", page: 94 },
+    },
+    {
+        chassis: "Phoenix",
+        quirks: [
+            { tag: "quirk-directional-torso-mount", note: "SRMs" },
+            { tag: "quirk-em-interference" },
+        ],
+        source: { book: "BattleMech Manual", page: 94 },
+    },
+    {
+        chassis: "Phoenix Hawk",
+        quirks: [
+            { tag: "quirk-command-mech" },
+            { tag: "quirk-improved-communications" },
+            { tag: "quirk-jettison-capable-weapon", weapon: { name: "Large Laser" } },
+            { tag: "quirk-ubiquitous" },
+        ],
+        source: { book: "BattleMech Manual", page: 94 },
+    },
+    {
+        chassis: "Phoenix Hawk IIC",
+        quirks: [
+            { tag: "quirk-easy-to-maintain" },
+            { tag: "quirk-fast-reload", note: "torso weapons" },
+        ],
+        source: { book: "BattleMech Manual", page: 94 },
+    },
+    {
+        chassis: "Pillager",
+        quirks: [
+            { tag: "quirk-battlefists" },
+        ],
+        source: { book: "BattleMech Manual", page: 94 },
+    },
+    {
+        chassis: "Pinion",
+        quirks: [
+            { tag: "quirk-bad-reputation", techBase: "clan" },
+        ],
+        source: { book: "BattleMech Manual", page: 94 },
+    },
+    {
+        chassis: "Piranha",
+        quirks: [
+            { tag: "quirk-improved-targeting", parameter: "short" },
+        ],
+        source: { book: "BattleMech Manual", page: 94 },
+    },
+    {
+        chassis: "Porcupine",
+        quirks: [
+            { tag: "quirk-distracting" },
+        ],
+        source: { book: "BattleMech Manual", page: 94 },
+    },
+    {
+        chassis: "Pouncer",
+        quirks: [
+            { tag: "quirk-weak-head-armor", parameter: 2 },
+        ],
+        source: { book: "BattleMech Manual", page: 94 },
+    },
+    {
+        chassis: "Predator",
+        quirks: [
+            { tag: "quirk-cramped-cockpit" },
+            { tag: "quirk-difficult-ejection" },
+        ],
+        source: { book: "BattleMech Manual", page: 94 },
+    },
+    {
+        chassis: "Prefect",
+        quirks: [
+            { tag: "quirk-extended-torso-twist" },
+        ],
+        source: { book: "BattleMech Manual", page: 94 },
+    },
+    {
+        chassis: "Preta",
+        quirks: [
+            { tag: "quirk-improved-communications" },
+            { tag: "quirk-improved-sensors" },
+            { tag: "quirk-bad-reputation" },
+            { tag: "quirk-exposed-actuators" },
+        ],
+        source: { book: "BattleMech Manual", page: 94 },
+    },
+    {
+        chassis: "Prometheus",
+        quirks: [
+            { tag: "quirk-non-standard-parts" },
+            { tag: "quirk-prototype" },
+        ],
+        source: { book: "BattleMech Manual", page: 94 },
+    },
+    {
+        chassis: "Prowler",
+        quirks: [
+            { tag: "quirk-poor-life-support" },
+        ],
+        source: { book: "BattleMech Manual", page: 94 },
+    },
+    {
+        chassis: "Pulverizer",
+        quirks: [
+            { tag: "quirk-accurate-weapon", weapon: { name: "Enhanced ER PPC" } },
+            { tag: "quirk-easy-to-maintain" },
+            { tag: "quirk-protected-actuators" },
+            { tag: "quirk-bad-reputation", techBase: "clan" },
+        ],
+        source: { book: "BattleMech Manual", page: 94 },
+    },
+    {
+        chassis: "Puma (Adder)",
+        altChassis: ["Puma", "Adder"],
+        quirks: [
+            { tag: "quirk-narrow-low-profile" },
+        ],
+        source: { book: "BattleMech Manual", page: 94 },
+    },
+    {
+        chassis: "Quickdraw",
+        quirks: [
+            { tag: "quirk-hyper-extending-actuators" },
+            { tag: "quirk-exposed-actuators" },
+        ],
+        source: { book: "BattleMech Manual", page: 94 },
+    },
+    {
+        chassis: "Rabid Coyote",
+        quirks: [
+            { tag: "quirk-improved-targeting", parameter: "short" },
+            { tag: "quirk-bad-reputation", techBase: "clan" },
+        ],
+        source: { book: "BattleMech Manual", page: 94 },
+    },
+    {
+        chassis: "Raijin",
+        quirks: [
+            { tag: "quirk-directional-torso-mount", locations: ["lt", "rt"] },
+            { tag: "quirk-extended-torso-twist" },
+            { tag: "quirk-bad-reputation" },
+        ],
+        source: { book: "BattleMech Manual", page: 94 },
+    },
+    {
+        chassis: "Raijin II",
+        quirks: [
+            { tag: "quirk-extended-torso-twist" },
+            { tag: "quirk-bad-reputation" },
+        ],
+        source: { book: "BattleMech Manual", page: 94 },
+    },
+    {
+        chassis: "Rakshasa",
+        quirks: [
+            { tag: "quirk-easy-to-maintain" },
+            { tag: "quirk-weak-head-armor", parameter: 1 },
+        ],
+        source: { book: "BattleMech Manual", page: 94 },
+    },
+    {
+        chassis: "Rampage",
+        quirks: [
+            { tag: "quirk-vestigial-hands", locations: ["ra"] },
+            { tag: "quirk-bad-reputation" },
+            { tag: "quirk-obsolete", parameter: 2780 },
+        ],
+        source: { book: "BattleMech Manual", page: 94 },
+    },
+    {
+        chassis: "Raptor",
+        quirks: [
+            { tag: "quirk-easy-to-maintain" },
+        ],
+        source: { book: "BattleMech Manual", page: 94 },
+    },
+    {
+        chassis: "Raptor II",
+        quirks: [
+            { tag: "quirk-no-minimal-arms" },
+            { tag: "quirk-no-ejection-system" },
+        ],
+        source: { book: "BattleMech Manual", page: 94 },
+    },
+    {
+        chassis: "Raven",
+        quirks: [
+            { tag: "quirk-no-minimal-arms" },
+        ],
+        source: { book: "BattleMech Manual", page: 94 },
+    },
+    {
+        chassis: "Razorback",
+        quirks: [
+            { tag: "quirk-narrow-low-profile" },
+            { tag: "quirk-no-minimal-arms" },
+        ],
+        source: { book: "BattleMech Manual", page: 94 },
+    },
+    {
+        chassis: "Red Shift",
+        quirks: [
+            { tag: "quirk-accurate-weapon", weapon: { name: "TAG" } },
+            { tag: "quirk-improved-communications" },
+            { tag: "quirk-narrow-low-profile" },
+            { tag: "quirk-bad-reputation" },
+        ],
+        source: { book: "BattleMech Manual", page: 94 },
+    },
+    {
+        chassis: "Rifleman",
+        quirks: [
+            { tag: "quirk-anti-aircraft-targeting" },
+            { tag: "quirk-improved-communications" },
+            { tag: "quirk-searchlight" },
+            { tag: "quirk-ubiquitous" },
+        ],
+        source: { book: "BattleMech Manual", page: 94 },
+    },
+    {
+        chassis: "Rifleman II",
+        quirks: [
+            { tag: "quirk-anti-aircraft-targeting" },
+            { tag: "quirk-improved-communications" },
+            { tag: "quirk-searchlight" },
+        ],
+        source: { book: "BattleMech Manual", page: 94 },
+    },
+    {
+        chassis: "Rifleman IIC",
+        quirks: [
+            { tag: "quirk-anti-aircraft-targeting" },
+            { tag: "quirk-improved-communications" },
+        ],
+        source: { book: "BattleMech Manual", page: 94 },
+    },
+    {
+        chassis: "Ronin",
+        quirks: [
+            { tag: "quirk-non-standard-parts" },
+        ],
+        source: { book: "BattleMech Manual", page: 94 },
+    },
+    {
+        chassis: "Rook",
+        quirks: [
+            { tag: "quirk-rugged", parameter: 1 },
+        ],
+        source: { book: "BattleMech Manual", page: 94 },
+    },
+    {
+        chassis: "Ryoken (Stormcrow)",
+        altChassis: ["Ryoken", "Stormcrow"],
+        quirks: [
+            { tag: "quirk-stable" },
+        ],
+        source: { book: "BattleMech Manual", page: 94 },
+    },
+    {
+        chassis: "Ryoken II",
+        quirks: [
+            { tag: "quirk-stable" },
+        ],
+        source: { book: "BattleMech Manual", page: 94 },
+    },
+    {
+        chassis: "Sagittaire",
+        quirks: [
+            { tag: "quirk-improved-targeting", parameter: "short" },
+            { tag: "quirk-difficult-to-maintain" },
+            { tag: "quirk-weak-head-armor", parameter: 1 },
+        ],
+        source: { book: "BattleMech Manual", page: 94 },
+    },
+    {
+        chassis: "Salamander",
+        quirks: [
+            { tag: "quirk-difficult-to-maintain" },
+        ],
+        source: { book: "BattleMech Manual", page: 94 },
+    },
+    {
+        chassis: "Sasquatch",
+        quirks: [
+            { tag: "quirk-difficult-to-maintain" },
+        ],
+        source: { book: "BattleMech Manual", page: 94 },
+    },
+    {
+        chassis: "Savage Coyote",
+        quirks: [
+            { tag: "quirk-oversized" },
+        ],
+        source: { book: "BattleMech Manual", page: 94 },
+    },
+    {
+        chassis: "Scarabus",
+        quirks: [
+            { tag: "quirk-rugged", parameter: 1 },
+        ],
+        source: { book: "BattleMech Manual", page: 94 },
+    },
+    {
+        chassis: "Scorpion",
+        quirks: [
+            { tag: "quirk-bad-reputation" },
+            { tag: "quirk-hard-to-pilot" },
+        ],
+        source: { book: "BattleMech Manual", page: 94 },
+    },
+    {
+        chassis: "Scylla",
+        quirks: [
+            { tag: "quirk-oversized" },
+        ],
+        source: { book: "BattleMech Manual", page: 94 },
+    },
+    {
+        chassis: "Sentinel",
+        quirks: [
+            { tag: "quirk-improved-communications" },
+            { tag: "quirk-ammunition-feed-problem", weapon: { name: "SRM 2" } },
+        ],
+        source: { book: "BattleMech Manual", page: 94 },
+    },
+    {
+        chassis: "Sentry",
+        quirks: [
+            { tag: "quirk-easy-to-maintain" },
+            { tag: "quirk-easy-to-pilot" },
+            { tag: "quirk-rugged", parameter: 1 },
+            { tag: "quirk-ubiquitous" },
+        ],
+        source: { book: "BattleMech Manual", page: 94 },
+    },
+    {
+        chassis: "Seraph",
+        quirks: [
+            { tag: "quirk-improved-communications" },
+            { tag: "quirk-improved-sensors" },
+            { tag: "quirk-bad-reputation" },
+        ],
+        source: { book: "BattleMech Manual", page: 94 },
+    },
+    {
+        chassis: "Sha Yu",
+        quirks: [
+            { tag: "quirk-improved-communications" },
+        ],
+        source: { book: "BattleMech Manual", page: 94 },
+    },
+    {
+        chassis: "Shadow Cat",
+        quirks: [
+            { tag: "quirk-narrow-low-profile" },
+        ],
+        source: { book: "BattleMech Manual", page: 94 },
+    },
+    {
+        chassis: "Shadow Cat II",
+        quirks: [
+            { tag: "quirk-easy-to-maintain" },
+            { tag: "quirk-narrow-low-profile" },
+        ],
+        source: { book: "BattleMech Manual", page: 94 },
+    },
+    {
+        chassis: "Shadow Hawk",
+        quirks: [
+            { tag: "quirk-battlefists" },
+            { tag: "quirk-improved-life-support" },
+            { tag: "quirk-rugged", parameter: 1 },
+            { tag: "quirk-ubiquitous" },
+        ],
+        source: { book: "BattleMech Manual", page: 94 },
+    },
+    {
+        chassis: "Shadow Hawk IIC",
+        quirks: [
+            { tag: "quirk-battlefists" },
+            { tag: "quirk-improved-life-support" },
+        ],
+        source: { book: "BattleMech Manual", page: 94 },
+    },
+    {
+        chassis: "Shen Yi",
+        quirks: [
+            { tag: "quirk-weak-head-armor", parameter: 1 },
+        ],
+        source: { book: "BattleMech Manual", page: 94 },
+    },
+    {
+        chassis: "Shockwave",
+        quirks: [
+            { tag: "quirk-battlefists" },
+            { tag: "quirk-easy-to-maintain" },
+            { tag: "quirk-exposed-weapon-linkage", weapon: { name: "Rotary AC/5" } },
+        ],
+        source: { book: "BattleMech Manual", page: 94 },
+    },
+    {
+        chassis: "Shogun",
+        quirks: [
+            { tag: "quirk-barrel-fist", locations: ["la", "ra"] },
+            { tag: "quirk-difficult-to-maintain" },
+            { tag: "quirk-non-standard-parts" },
+        ],
+        source: { book: "BattleMech Manual", page: 94 },
+    },
+    {
+        chassis: "Shootist",
+        quirks: [
+            { tag: "quirk-command-mech" },
+        ],
+        source: { book: "BattleMech Manual", page: 94 },
+    },
+    {
+        chassis: "Shugenja",
+        quirks: [
+            { tag: "quirk-cowl" },
+            { tag: "quirk-hyper-extending-actuators" },
+            { tag: "quirk-exposed-actuators" },
+        ],
+        source: { book: "BattleMech Manual", page: 94 },
+    },
+    {
+        chassis: "Silver Fox",
+        quirks: [
+            { tag: "quirk-non-standard-parts" },
+            { tag: "quirk-weak-head-armor", parameter: 1 },
+        ],
+        source: { book: "BattleMech Manual", page: 94 },
+    },
+    {
+        chassis: "Sirocco",
+        quirks: [
+            { tag: "quirk-directional-torso-mount", note: "All" },
+            { tag: "quirk-difficult-to-maintain" },
+        ],
+        source: { book: "BattleMech Manual", page: 94 },
+    },
+    {
+        chassis: "Slagmaiden",
+        quirks: [
+            { tag: "quirk-jettison-capable-weapon", note: "Shield" },
+            { tag: "quirk-exposed-actuators" },
+            { tag: "quirk-prototype" },
+        ],
+        source: { book: "BattleMech Manual", page: 94 },
+    },
+    {
+        chassis: "Sling",
+        quirks: [
+            { tag: "quirk-cramped-cockpit" },
+        ],
+        source: { book: "BattleMech Manual", page: 94 },
+    },
+    {
+        chassis: "Snake",
+        quirks: [
+            { tag: "quirk-improved-targeting", parameter: "short" },
+            { tag: "quirk-protected-actuators" },
+        ],
+        source: { book: "BattleMech Manual", page: 94 },
+    },
+    {
+        chassis: "Snow Fox",
+        quirks: [
+            { tag: "quirk-narrow-low-profile" },
+            { tag: "quirk-hard-to-pilot" },
+        ],
+        source: { book: "BattleMech Manual", page: 94 },
+    },
+    {
+        chassis: "Solitaire",
+        quirks: [
+            { tag: "quirk-improved-cooling-jacket", weapon: { name: "Heavy Large Laser" } },
+            { tag: "quirk-stabilized-weapon", weapon: { name: "Heavy Large Laser" } },
+            { tag: "quirk-exposed-actuators" },
+        ],
+        source: { book: "BattleMech Manual", page: 94 },
+    },
+    {
+        chassis: "Spartan",
+        quirks: [
+            { tag: "quirk-improved-sensors" },
+        ],
+        source: { book: "BattleMech Manual", page: 94 },
+    },
+    {
+        chassis: "Spatha",
+        quirks: [
+            { tag: "quirk-difficult-to-maintain" },
+            { tag: "quirk-non-standard-parts" },
+        ],
+        source: { book: "BattleMech Manual", page: 94 },
+    },
+    {
+        chassis: "Spector",
+        quirks: [
+            { tag: "quirk-difficult-to-maintain" },
+            { tag: "quirk-rugged", parameter: 1 },
+        ],
+        source: { book: "BattleMech Manual", page: 94 },
+    },
+    {
+        chassis: "Sphinx",
+        quirks: [
+            { tag: "quirk-easy-to-maintain" },
+            { tag: "quirk-rugged", parameter: 1 },
+        ],
+        source: { book: "BattleMech Manual", page: 94 },
+    },
+    {
+        chassis: "Spider",
+        quirks: [
+            { tag: "quirk-easy-to-maintain" },
+            { tag: "quirk-nimble-jumper" },
+            { tag: "quirk-no-ejection-system" },
+        ],
+        source: { book: "BattleMech Manual", page: 94 },
+    },
+    {
+        chassis: "Spirit",
+        quirks: [
+            { tag: "quirk-jettison-capable-weapon", weapon: { name: "Streak SRM 4" } },
+        ],
+        source: { book: "BattleMech Manual", page: 94 },
+    },
+    {
+        chassis: "Stag",
+        quirks: [
+            { tag: "quirk-improved-communications" },
+            { tag: "quirk-improved-sensors" },
+            { tag: "quirk-stabilized-weapon", weapon: { name: "ER Large Laser", location: "ra" } },
+            { tag: "quirk-bad-reputation", techBase: "clan" },
+        ],
+        source: { book: "BattleMech Manual", page: 94 },
+    },
+    {
+        chassis: "Stalker",
+        quirks: [
+            { tag: "quirk-combat-computer" },
+            { tag: "quirk-ubiquitous" },
+            { tag: "quirk-no-minimal-arms" },
+        ],
+        source: { book: "BattleMech Manual", page: 94 },
+    },
+    {
+        chassis: "Stalking Spider",
+        quirks: [
+            { tag: "quirk-stable" },
+        ],
+        source: { book: "BattleMech Manual", page: 94 },
+    },
+    {
+        chassis: "Starslayer",
+        quirks: [
+            { tag: "quirk-rugged", parameter: 1 },
+        ],
+        source: { book: "BattleMech Manual", page: 94 },
+    },
+    {
+        chassis: "Stealth",
+        quirks: [
+            { tag: "quirk-improved-sensors" },
+        ],
+        source: { book: "BattleMech Manual", page: 94 },
+    },
 ];
