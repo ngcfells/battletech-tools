@@ -264,9 +264,14 @@ input[type=number] {
     background: $headerFooterBackground;
     transition: left .5s;
     height: 100vh;
+    height: 100dvh;
     top: 0;
     position: fixed;
     padding: 4rem 1rem;
+    // The page behind is locked while the menu is open, so the menu scrolls on its own.
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
   }
 
   .content {

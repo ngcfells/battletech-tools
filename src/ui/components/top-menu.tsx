@@ -14,6 +14,7 @@ export default class TopMenu extends React.Component<ITopMenuProps, ITopMenuStat
         super(props);
         this.state = {
             updated: false,
+            openGroup: undefined,
         }
 
     }
@@ -23,6 +24,10 @@ export default class TopMenu extends React.Component<ITopMenuProps, ITopMenuStat
     }
     closeMobile= (): void => {
         this.props.appGlobals.closeMobile();
+    }
+    /** Opens a mobile menu group, closing the open one; tapping the open group closes it. */
+    toggleGroup = (tag: string, open: boolean): void => {
+        this.setState({ openGroup: open ? null : tag });
     }
 
     render = (): JSX.Element => {
@@ -376,9 +381,21 @@ export default class TopMenu extends React.Component<ITopMenuProps, ITopMenuStat
                 {menuStructure.map( (item, itemIndex) => {
                     return (
                         <React.Fragment key={itemIndex}>
-                            {item.subMenu && item.subMenu.length > 0 && item.startsWithTag ? (
+                            {item.subMenu && item.subMenu.length > 0 && item.startsWithTag ? (() => {
+                                // Until a group is tapped, the one holding the current page is open.
+                                const groupTag = item.startsWithTag;
+                                const open = this.state.openGroup === undefined
+                                    ? !!this.props.current?.startsWith(groupTag)
+                                    : this.state.openGroup === groupTag;
+                                return (
                                 <li>
-                                <div>{item.label}</div>
+                                <button
+                                    type="button"
+                                    className={`mobile-menu-group${open ? " open" : ""}`}
+                                    aria-expanded={open}
+                                    onClick={() => this.toggleGroup(groupTag, open)}
+                                >{item.label}<span aria-hidden="true">{open ? "▾" : "▸"}</span></button>
+                                {open ? (
                                 <ul className="sub-menu">
                                     {item.subMenu.map( (subItem, subItemIndex) => {
                                         return (
@@ -387,8 +404,10 @@ export default class TopMenu extends React.Component<ITopMenuProps, ITopMenuStat
                                     })}
 
                                 </ul>
+                                ) : null}
                             </li>
-                            ) : (
+                                );
+                            })() : (
                                 <li><Link onClick={this.closeMobile} className={this.props.current === item.tag ? "current" : "" } to={`${process.env.PUBLIC_URL}${item.url}`}>{item.label}</Link></li>
                             )}
                         </React.Fragment>
@@ -411,6 +430,8 @@ interface ITopMenuProps {
 
 interface ITopMenuState {
     updated: boolean;
+    /** The open mobile menu group: undefined until one is tapped (the current page's group shows), null for none. */
+    openGroup?: string | null;
 
 }
 
