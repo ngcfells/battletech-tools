@@ -35,4 +35,27 @@ describe("CanonQuirksButton", () => {
         fireEvent.click(screen.getByRole("button", { name: LABEL }));
         expect(screen.getByText("Added 1 canon quirk.")).toBeTruthy();
     });
+
+    // The message is about the 'Mech as it was; it goes once the quirks change or another 'Mech loads (final review).
+    it("drops its message once the quirks change", () => {
+        const mech = new BattleMech();
+        mech.setModel("Catapult");
+        const { rerender } = render(<CanonQuirksButton unit={mech} onApplied={vi.fn()} />);
+        fireEvent.click(screen.getByRole("button", { name: LABEL }));
+        expect(screen.queryByText(/^Added /)).not.toBeNull();
+        mech.quirks.remove(0);
+        rerender(<CanonQuirksButton unit={mech} onApplied={vi.fn()} />);
+        expect(screen.queryByText(/^Added /)).toBeNull();
+    });
+
+    it("drops its message when another 'Mech loads", () => {
+        const mech = new BattleMech();
+        mech.setModel("Catapult");
+        const { rerender } = render(<CanonQuirksButton unit={mech} onApplied={vi.fn()} />);
+        fireEvent.click(screen.getByRole("button", { name: LABEL }));
+        const other = new BattleMech();
+        other.setModel("Catapult");
+        rerender(<CanonQuirksButton unit={other} onApplied={vi.fn()} />);
+        expect(screen.queryByText(/^Added /)).toBeNull();
+    });
 });
