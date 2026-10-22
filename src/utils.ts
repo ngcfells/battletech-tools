@@ -1009,7 +1009,7 @@ export function getTargetToHitFromWeapon(
         } else if( gator.finalToHit === 7 ) {
             percentageToHit = 58.33;
         } else if( gator.finalToHit === 8 ) {
-            percentageToHit = 31.66;
+            percentageToHit = 41.66;
         } else if( gator.finalToHit === 9 ) {
             percentageToHit = 27.77;
         } else if( gator.finalToHit === 10 ) {
