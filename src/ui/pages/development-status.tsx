@@ -90,6 +90,9 @@ export default class DevelopmentStatus extends React.Component<IDevelopmentStatu
                       <li><del>Buildings, gun emplacements and Castles Brian</del></li>
                       <li><del>JumpShips, WarShips and space stations</del></li>
                       <li><del>Save the current design before a load, import or start over replaces it</del></li>
+                      <li><del>Era first in every builder; the era decides which tech bases you can pick</del></li>
+                      <li><del>A tonnage bar that stays on screen, and an ammunition list that shows only ammo for your weapons</del></li>
+                      <li><del>Vehicle record sheets with every table the official sheets print: hit locations, motive damage, critical hits, VTOL elevation and submarine depth tracks</del></li>
                     </ul>
                     <h4>Coming</h4>
                     <ul>
@@ -97,6 +100,7 @@ export default class DevelopmentStatus extends React.Component<IDevelopmentStatu
                       <li>Earlier rules editions for each unit type, as their rulebooks are entered</li>
                       <li>Beast-mounted infantry, field guns and field artillery</li>
                       <li>A DropShip record sheet and Alpha Strike card of its own</li>
+                      <li>Every other record sheet given the tables and helpers its official sheet prints, unit type by unit type</li>
                       <li>Buildings in Alpha Strike</li>
                     </ul>
                   </TextSection>

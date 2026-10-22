@@ -164,6 +164,22 @@ export default class Home extends React.Component<IHomeProps, IHomeState> {
                   <ul className="news">
                   <li>
                   <h3>
+                      <strong>October 22nd, 2026</strong> - Beta feedback and a new vehicle record sheet
+                    </h3>
+                    <h4>Author - NGCFells</h4>
+                      <p>New on the <a href="https://ngcfells.github.io/battletech-tools" target="_blank" rel="noopener noreferrer">beta test site</a>, from your reports:</p>
+                      <ul>
+                        <li>Every builder asks for the era first, and the era decides which tech bases you can pick. The Clan tech base starts with the Clan Founding Years, not the Star League.</li>
+                        <li>The equipment list shows only ammunition for the weapons you have mounted; tick "Show all ammunition" to see the rest. Ammunition sorts by weapon in every list.</li>
+                        <li>A tonnage bar stays on screen while you add equipment, and turns red when you are over.</li>
+                        <li>Sponsons are placement choices: you decide which weapons go in them.</li>
+                        <li>Vehicle ammunition goes in the Body, and the vehicle armor diagram has a top-down outline for each motive type.</li>
+                        <li>Warnings and small print are larger and easier to read.</li>
+                        <li>The vehicle record sheet is now one full page with every table the official sheets print: hit locations, motive system damage and critical hits, plus the VTOL elevation track, the submarine depth track and the super-heavy, Large Support Vehicle and Large Naval Vessel tables. Other unit types follow.</li>
+                      </ul>
+                   </li>
+                  <li>
+                  <h3>
                       <strong>October 16th, 2026</strong> - JumpShips, WarShips and <i>Battledroids</i>
                     </h3>
                     <h4>Author - NGCFells</h4>

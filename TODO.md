@@ -28,6 +28,18 @@ Local references (git-ignored, never imported by shipped code):
 
 ## 1. Fix what ships
 
+- [ ] Record sheet parity (beta feedback item 10, spec `docs/superpowers/specs/2026-10-21-beta-feedback-design.md`):
+  every sheet carries the tables and helpers the Total Warfare record sheet for that unit type prints, laid out
+  close to it, with our own silhouettes, and is checked in the browser against a render of the official sheet.
+  Combat and Support Vehicles are done (ground, VTOL, naval, submarine, super-heavy, Large Support Vehicle,
+  Large Naval Vessel). Still owed, in order: 'Mechs (review against the biped and quad sheets),
+  aerospace and conventional fighters, Small Craft, DropShips, JumpShips/WarShips/space stations, battle armor,
+  conventional infantry, ProtoMechs, buildings, then the airship and other aerospace Support Vehicle sheets
+  (velocity record and airship velocity table) and the *Battledroids* sheet.
+- [ ] Verify before using: a fan-made vehicle sheet says a CASE-protected ammunition critical removes all rear
+  armor and stuns the crew. Find the rule in the library before printing it on our sheet.
+- [ ] Anti-orbital Long Tom rounds (beta feedback item 9): mechanics and rules level to be decided with the user.
+
 - [ ] BV differs from SSW's BV2 figure: after the import fixes, 350 of 2,610 non-bundled designs match
   exactly and 805 within 2%. Work through the differences by cause (unplaced criticals and unknown
   equipment first, since they skew BV).
