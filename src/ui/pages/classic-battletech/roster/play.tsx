@@ -668,6 +668,22 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
       })
     }
 
+    updateTargetAirborne = (
+      e: React.FormEvent<HTMLInputElement>,
+      target: "a" | "b" | "c"
+    ) => {
+      if( e && e.preventDefault ) {
+        e.preventDefault();
+      }
+      const targetData = this.state.targetData;
+      if( targetData ) {
+        targetData[target].airborne = e.currentTarget.checked;
+      }
+      this.setState({
+        targetData: targetData,
+      })
+    }
+
     updateTargetJumped = (
       e: React.FormEvent<HTMLInputElement>,
       target: string
@@ -2086,6 +2102,14 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
               description="Secondary targets are -1 to hit, or -2 in rear arc"
               onChange={(e) => this.updateRearArc(e, "a")}
             />
+            {quirksInPlay ? (
+              <InputCheckbox
+                label="Airborne"
+                checked={!!this.state.targetData.a.airborne}
+                description="Airborne, not grounded: an aerospace unit, a VTOL or a 'Mech on a combat drop, but not a jumping 'Mech. For Anti-Aircraft Targeting (CO p.225)."
+                onChange={(e) => this.updateTargetAirborne(e, "a")}
+              />
+            ) : null}
 
           </div>
           <div className="col">
@@ -2153,6 +2177,14 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
               description="Secondary targets are -1 to hit, or -2 in rear arc"
               onChange={(e) => this.updateRearArc(e, "b")}
             />
+            {quirksInPlay ? (
+              <InputCheckbox
+                label="Airborne"
+                checked={!!this.state.targetData.b.airborne}
+                description="Airborne, not grounded: an aerospace unit, a VTOL or a 'Mech on a combat drop, but not a jumping 'Mech. For Anti-Aircraft Targeting (CO p.225)."
+                onChange={(e) => this.updateTargetAirborne(e, "b")}
+              />
+            ) : null}
 
           </div>
           <div className="col">
@@ -2222,6 +2254,14 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
               description="Secondary targets are -1 to hit, or -2 in rear arc"
               onChange={(e) => this.updateRearArc(e, "c")}
             />
+            {quirksInPlay ? (
+              <InputCheckbox
+                label="Airborne"
+                checked={!!this.state.targetData.c.airborne}
+                description="Airborne, not grounded: an aerospace unit, a VTOL or a 'Mech on a combat drop, but not a jumping 'Mech. For Anti-Aircraft Targeting (CO p.225)."
+                onChange={(e) => this.updateTargetAirborne(e, "c")}
+              />
+            ) : null}
           </div>
           <div className="col">
 

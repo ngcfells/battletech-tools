@@ -980,6 +980,7 @@ export function getTargetToHitFromWeapon(
                 const quirkToHit = getQuirkToHit(mech.quirks, mech.getQuirkInstalledUuids(equipmentList), mech.getQuirkPlayYear(), {
                     weaponUuid: weapon.uuid,
                     rangeBand,
+                    vsAirborne: !!target.airborne,
                     attackerRanOrFlanked: mech.currentMovementMode === "r",
                 });
                 if( quirkToHit.labels.length > 0 ) {

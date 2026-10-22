@@ -268,6 +268,8 @@ export interface ITargetToHit {
     jumped: boolean;
     primary: boolean;
     inRearArc: boolean;
+    /** Airborne, not grounded: an aerospace unit, a VTOL, a 'Mech on a combat drop; not a jumping 'Mech (CO p.225). */
+    airborne?: boolean;
 }
 
 export interface IGATOR {

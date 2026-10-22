@@ -1,5 +1,5 @@
 // @vitest-environment happy-dom
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import Vehicle from "../../../../classes/vehicle";
 import VehiclePlayPanel from "./_vehiclePlay";
@@ -79,5 +79,18 @@ describe("vehicle play quirks", () => {
         cleanup();
         render(<VehiclePlayPanel vehicle={vehicle} onChange={vi.fn()} />);
         expect(toHitCells()).toEqual(plain);
+    });
+
+    // Anti-Aircraft Targeting: -2 against airborne (not grounded) units, not jumping 'Mechs (CO p.225).
+    it("gives Anti-Aircraft Targeting -2 once the target is marked airborne", () => {
+        const vehicle = laserTank();
+        render(<VehiclePlayPanel vehicle={vehicle} onChange={vi.fn()} quirksInPlay={true} />);
+        const plain = toHitCells();
+        cleanup();
+        expect(vehicle.quirks.add({ tag: "quirk-anti-aircraft-targeting" })).toBeNull();
+        render(<VehiclePlayPanel vehicle={vehicle} onChange={vi.fn()} quirksInPlay={true} />);
+        expect(toHitCells()).toEqual(plain);
+        fireEvent.click(screen.getByLabelText("Target airborne"));
+        expect(toHitCells()).toEqual(plain.map((cell) => `${parseInt(cell, 10) - 2}+`));
     });
 });

@@ -46,6 +46,15 @@ describe("quirk to-hit in the GATOR", () => {
         expect(getTargetToHitFromWeapon(mech, 0, long, null, true).finalToHit).toBe(plainLong - 1);
     });
 
+    // Anti-Aircraft Targeting: -2 against airborne (not grounded) units, not jumping 'Mechs (CO p.225).
+    it("gives Anti-Aircraft Targeting -2 against an airborne target only", () => {
+        const mech = mechWith("medium-laser");
+        const plain = getTargetToHitFromWeapon(mech, 0, SHORT_RANGE, null, true).finalToHit;
+        mech.quirks.add({ tag: "quirk-anti-aircraft-targeting" });
+        expect(getTargetToHitFromWeapon(mech, 0, SHORT_RANGE, null, true).finalToHit).toBe(plain);
+        expect(getTargetToHitFromWeapon(mech, 0, { ...SHORT_RANGE, airborne: true }, null, true).finalToHit).toBe(plain - 2);
+    });
+
     it("leaves an out-of-range shot impossible", () => {
         const mech = mechWith("medium-laser");
         mech.quirks.add({ tag: "quirk-sensor-ghosts" });

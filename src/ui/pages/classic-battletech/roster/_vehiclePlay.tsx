@@ -6,7 +6,7 @@ import { IBattleArmorCarrierLoad, isCarrierWeaponBlocked } from '../../../../cla
 import TextSection from '../../../components/text-section';
 import VehicleDiagramSVG from '../../../components/svg/vehicle-diagram-svg';
 import { vehicleName } from './_vehicleGroupTable';
-import { getQuirkToHit } from '../../../../utils/quirk-effects';
+import { getCarrierQuirkEffects, getQuirkToHit } from '../../../../utils/quirk-effects';
 import { QuirkRangeBand } from '../../../../data/quirk-interfaces';
 
 const MOTIVE_LEVELS: { level: VehicleMotiveHit; label: string }[] = [
@@ -98,6 +98,7 @@ export default class VehiclePlayPanel extends React.Component<IVehiclePlayPanelP
             pendingRoll: null,
             pendingRollValue: "",
             log: [],
+            targetAirborne: false,
         }
     }
 
@@ -266,7 +267,7 @@ export default class VehiclePlayPanel extends React.Component<IVehiclePlayPanelP
             vehicle.quirks,
             vehicle.getEquipmentList().filter((item) => item.uuid && vehicle.getWeaponStatus(item.uuid) !== "destroyed").map((item) => item.uuid!),
             vehicle.getEra().yearStart,
-            { weaponUuid: weapon.uuid, rangeBand, attackerRanOrFlanked: vehicle.getInPlay().movementMode === "flank" },
+            { weaponUuid: weapon.uuid, rangeBand, vsAirborne: this.state.targetAirborne, attackerRanOrFlanked: vehicle.getInPlay().movementMode === "flank" },
         ).modifier;
         const target = (rangeModifier: number, rangeBand: QuirkRangeBand) => modifier === null || blocked ? "-" : `${gunnery + modifier + rangeModifier + quirkToHit(rangeBand)}+`;
         const range = weapon.range;
@@ -749,6 +750,16 @@ export default class VehiclePlayPanel extends React.Component<IVehiclePlayPanelP
                             {this.props.carrierLoad.notes.map((note, index) => <p key={index}>{note}</p>)}
                         </div>
                     ) : null}
+                    {this.props.quirksInPlay && getCarrierQuirkEffects(this.props.vehicle).some((applied) => applied.effect?.type === "to-hit" && applied.effect.vsAirborne) ? (
+                        <label className="d-block">
+                            <input
+                                type="checkbox"
+                                aria-label="Target airborne"
+                                checked={this.state.targetAirborne}
+                                onChange={(e) => this.setState({ targetAirborne: e.currentTarget.checked })}
+                            />{" "}Target airborne (not a jumping 'Mech; CO p.225)
+                        </label>
+                    ) : null}
                     <table className="table">
                         <thead>
                             <tr>
@@ -792,6 +803,8 @@ interface IVehiclePlayPanelProps {
 }
 
 interface IVehiclePlayPanelState {
+    /** The target is airborne, for Anti-Aircraft Targeting (CO p.225). */
+    targetAirborne: boolean;
     direction: VehicleAttackDirection;
     attackerUnderwater: boolean;
     armorPiercing: 0 | 2 | 5 | 10 | 20;
