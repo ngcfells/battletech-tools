@@ -372,7 +372,7 @@ export default class AerospaceFighter {
 
     /** One line for each quirk this unit could not be given now: rules edition, rules level or unit type. */
     public getQuirkIssues(rulesLevel: number): string[] {
-        return getQuirkIssues(this.quirks.getAll(), this.getQuirkUnitType(), this._rulesEdition, rulesLevel);
+        return getQuirkIssues(this.quirks.getAll(), this.getQuirkUnitType(), this._rulesEdition, rulesLevel, undefined, this.getQuirkTargets());
     }
 
     public getName(): string { return this._name; }

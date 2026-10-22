@@ -117,6 +117,8 @@ export function getQuirkIssues(
     editionTag: string,
     rulesLevel: number,
     only?: "edition",
+    /** The unit's weapons and bays, to check where a weapon quirk sits. */
+    targets?: IQuirkTargets,
 ): string[] {
     const issues: string[] = [];
     for (const quirk of assigned) {
@@ -132,6 +134,8 @@ export function getQuirkIssues(
                 line = `Quirk: ${record.name} (above the selected rules level)`;
             } else if (issue === "unit-type" && !only) {
                 line = `Quirk: ${record.name} (not for this unit type)`;
+            } else if (!only && targets && record.heatOnly && quirkTargetHeat(quirk, targets) === 0) {
+                line = `Quirk: ${record.name} (on a weapon that makes no heat)`;
             }
         }
         if (line && !issues.includes(line)) {
@@ -169,14 +173,14 @@ export function getWeaponMaxDamage(item: { damage?: number | IDamagePerRange | s
  */
 export function getQuirkTargets(
     locations: IQuirkLocation[],
-    items: { uuid?: string; label: string; category?: string; damage?: number | IDamagePerRange | string; damageClusters?: number; damagePerCluster?: number }[],
+    items: { uuid?: string; label: string; category?: string; damage?: number | IDamagePerRange | string; damageClusters?: number; damagePerCluster?: number; heat?: number }[],
     bays?: NonNullable<IQuirkTargets["bays"]>,
 ): IQuirkTargets {
-    const weapons = items.filter((item) => item.uuid).map((item) => ({ uuid: item.uuid as string, label: item.label, maxDamage: getWeaponMaxDamage(item), physical: item.category === "Melee" }));
+    const weapons = items.filter((item) => item.uuid).map((item) => ({ uuid: item.uuid as string, label: item.label, maxDamage: getWeaponMaxDamage(item), physical: item.category === "Melee", heat: item.heat }));
     const inBay = new Set((bays ?? []).flatMap((bay) => bay.uuids));
     return {
         locations,
-        weapons: weapons.filter((weapon) => !inBay.has(weapon.uuid)).map(({ uuid, label, maxDamage }) => ({ uuid, label, maxDamage })),
+        weapons: weapons.filter((weapon) => !inBay.has(weapon.uuid)).map(({ uuid, label, maxDamage, heat }) => ({ uuid, label, maxDamage, ...(heat !== undefined ? { heat: +heat } : {}) })),
         // Unit-wide costs count every weapon but physical ones (CO p.225, p.230).
         unitMaxDamage: weapons.filter((weapon) => !weapon.physical).reduce((sum, weapon) => sum + weapon.maxDamage, 0),
         ...(bays ? { bays } : {}),
@@ -185,5 +189,14 @@ export function getQuirkTargets(
 
 /** A bay as a quirk target: labelled by its contents and arc, priced at its largest Attack Value (CO p.225). */
 export const quirkBayTarget = (bay: IWeaponBay, arcLabel: string): NonNullable<IQuirkTargets["bays"]>[number] => ({
-    uuids: [...bay.uuids], label: `${weaponBayName(bay)} (${arcLabel})`, maxDamage: bay.values ? Math.max(...bay.values) : 0,
+    uuids: [...bay.uuids], label: `${weaponBayName(bay)} (${arcLabel})`, maxDamage: bay.values ? Math.max(...bay.values) : 0, heat: bay.heat,
 });
+
+/** The heat of the weapon or bay a weapon quirk sits on, if the unit has it and its heat is known. */
+export function quirkTargetHeat(quirk: IAssignedQuirk, targets: IQuirkTargets): number | undefined {
+    if (quirk.bayUuids) {
+        const key = [...quirk.bayUuids].sort().join(",");
+        return targets.bays?.find((bay) => [...bay.uuids].sort().join(",") === key)?.heat;
+    }
+    return quirk.equipmentUuid ? targets.weapons.find((weapon) => weapon.uuid === quirk.equipmentUuid)?.heat : undefined;
+}

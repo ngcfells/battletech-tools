@@ -81,6 +81,27 @@ describe("QuirkPicker", () => {
         expect(onChange).toHaveBeenCalled();
     });
 
+    // User ruling 2026-10-22: Improved Cooling Jacket only goes on a weapon that makes heat.
+    it("offers Improved Cooling Jacket only for weapons that make heat", () => {
+        render(
+            <QuirkPicker
+                quirks={new QuirkList()}
+                unitType="mech"
+                editionTag="total-warfare"
+                rulesLevel={3}
+                locations={[{ tag: "ra", label: "Right Arm" }]}
+                weapons={[{ uuid: "w1", label: "Medium Laser (RA)", maxDamage: 5, heat: 3 }, { uuid: "w2", label: "Machine Gun (RA)", maxDamage: 2, heat: 0 }]}
+                unitMaxDamage={7}
+                onChange={vi.fn()}
+            />,
+        );
+        fireEvent.change(quirkSelect(), { target: { value: "quirk-improved-cooling-jacket" } });
+        const options = Array.from((screen.getByLabelText("Weapon") as HTMLSelectElement).options).map((option) => option.value);
+        expect(options).toEqual(["", "w1"]);
+        fireEvent.change(quirkSelect(), { target: { value: "quirk-accurate-weapon" } });
+        expect(Array.from((screen.getByLabelText("Weapon") as HTMLSelectElement).options).map((option) => option.value)).toEqual(["", "w1", "w2"]);
+    });
+
     it("notes a weapon quirk whose weapon is not installed", () => {
         const quirks = new QuirkList();
         quirks.add({ tag: "quirk-accurate-weapon", equipmentUuid: "gone" });

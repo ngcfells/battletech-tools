@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it } from "vitest";
 import { IAssignedQuirk, IQuirk } from "./quirk-interfaces";
-import { getQuirk, getQuirkOfferIssue, getQuirkPoints, setLocalCustomQuirks } from "./quirk-registry";
+import { getQuirk, getQuirkIssues, getQuirkOfferIssue, getQuirkPoints, getQuirkTargets, setLocalCustomQuirks } from "./quirk-registry";
 
 const mechOnly: IQuirk = {
     tag: "quirk-test-mech-only",
@@ -39,6 +39,24 @@ const custom: IQuirk = {
 const assigned = (tag: string, parameter?: string | number): IAssignedQuirk => ({ tag, parameter });
 
 afterEach(() => setLocalCustomQuirks([]));
+
+// User ruling 2026-10-22: Improved Cooling Jacket only goes on a weapon that makes heat.
+describe("a heat-only weapon quirk", () => {
+    const targets = getQuirkTargets([], [
+        { uuid: "w1", label: "Medium Laser", damage: 5, heat: 3 },
+        { uuid: "w2", label: "Machine Gun", damage: 2, heat: 0 },
+    ]);
+
+    it("gives weapon targets their heat", () => {
+        expect(targets.weapons.map((weapon) => weapon.heat)).toEqual([3, 0]);
+    });
+
+    it("is an issue on a weapon that makes no heat, and not on one that does", () => {
+        const onGun = getQuirkIssues([{ tag: "quirk-improved-cooling-jacket", equipmentUuid: "w2" }], "mech", "total-warfare", 3, undefined, targets);
+        expect(onGun).toEqual(["Quirk: Improved Cooling Jacket (on a weapon that makes no heat)"]);
+        expect(getQuirkIssues([{ tag: "quirk-improved-cooling-jacket", equipmentUuid: "w1" }], "mech", "total-warfare", 3, undefined, targets)).toEqual([]);
+    });
+});
 
 describe("getQuirkOfferIssue", () => {
     it("refuses a quirk for a unit type it does not list", () => {

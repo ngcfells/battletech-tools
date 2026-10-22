@@ -277,8 +277,8 @@ export default class QuirkPicker extends React.Component<IQuirkPickerProps, IQui
                         <label>{" "}Weapon{" "}
                             <select aria-label="Weapon" value={this.state.target} onChange={(event) => this.setState({ target: event.target.value })}>
                                 <option value="">Choose</option>
-                                {this.props.weapons.map((weapon) => <option key={weapon.uuid} value={weapon.uuid}>{weapon.label}</option>)}
-                                {bays.map((bay) => <option key={bay.uuids.join(",")} value={BAY_PREFIX + bay.uuids.join(",")}>{bay.label}</option>)}
+                                {this.props.weapons.filter((weapon) => !selected.heatOnly || weapon.heat !== 0).map((weapon) => <option key={weapon.uuid} value={weapon.uuid}>{weapon.label}</option>)}
+                                {bays.filter((bay) => !selected.heatOnly || bay.heat !== 0).map((bay) => <option key={bay.uuids.join(",")} value={BAY_PREFIX + bay.uuids.join(",")}>{bay.label}</option>)}
                             </select>
                         </label>
                     ) : null}
@@ -333,9 +333,9 @@ interface IQuirkPickerProps {
     editionTag: string;
     rulesLevel: number;
     locations: IQuirkLocation[];
-    weapons: { uuid: string; label: string; maxDamage: number }[];
+    weapons: { uuid: string; label: string; maxDamage: number; heat?: number }[];
     /** Weapon bays, on craft that fire them; offered with the weapons, each as one target (CO p.225). */
-    bays?: { uuids: string[]; label: string; maxDamage: number }[];
+    bays?: { uuids: string[]; label: string; maxDamage: number; heat?: number }[];
     unitMaxDamage: number;
     /** A quad 'Mech, which alone may take the quad-only cost choices. */
     quad?: boolean;

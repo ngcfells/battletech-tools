@@ -104,6 +104,8 @@ export interface IQuirk {
     parameter?: { kind: "range-band" | "value" | "locations"; options?: string[] };
     /** The locations it may go on; on the whole unit it needs at least one of them. */
     locationRule?: QuirkLocationRule;
+    /** Only on a weapon or bay that makes heat (Improved Cooling Jacket; user ruling 2026-10-22). */
+    heatOnly?: boolean;
     /** Cost choices only a quad 'Mech may take (the 3-point Directional Torso Mount is a turret, CO p.226). */
     quadOnlyChoices?: number[];
     /** Assigned at most once per unit, whatever it is attached to (Battlefists is paid once, CO p.225). */
@@ -143,14 +145,14 @@ export interface IAssignedQuirk {
 /** What a unit offers quirks to attach to, and the damage its quirk costs are priced from. */
 export interface IQuirkTargets {
     locations: IQuirkLocation[];
-    weapons: { uuid: string; label: string; maxDamage: number }[];
+    weapons: { uuid: string; label: string; maxDamage: number; heat?: number }[];
     /** The maximum damage of all the unit's non-physical weapons together, for unit-wide damage costs. */
     unitMaxDamage: number;
     /**
      * Weapon bays, on craft that fire them: each bay is one weapon target, priced from its largest Attack Value
      * (CO p.225). Their weapons are not listed in `weapons`.
      */
-    bays?: { uuids: string[]; label: string; maxDamage: number }[];
+    bays?: { uuids: string[]; label: string; maxDamage: number; heat?: number }[];
     /** A quad 'Mech (QuadVees included), for the quad-only cost choices. */
     quad?: boolean;
 }
