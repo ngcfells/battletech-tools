@@ -97,8 +97,8 @@ export const ammoCustom: IEquipmentItem[] = [
     clanBreechAmmo("20"),
     {
         // Beta feedback item 9: requested on the Star League Discord by SmilingNid, with ideas from Vehrec, Arkaxe and
-        // Ryan DesCastris. User rulings 2026-10-22: Custom; 2 capital-scale damage (the Long Tom's 20 converted at 10
-        // to 1, StratOps); half the standard round's 5 shots a ton, rounded up.
+        // Ryan DesCastris. User rulings 2026-10-22: Custom; 2 capital-scale damage (the Long Tom's 25, TO:AUE p.96,
+        // converted at 10 to 1, StratOps, is 2.5, rounded down); half the standard round's 5 shots a ton, rounded up.
         isAmmo: true,
         isSpecialAmmo: true,
         name: "Long Tom Artillery - Anti-Orbital Ammo (IS)",
@@ -130,7 +130,7 @@ export const ammoCustom: IEquipmentItem[] = [
         rulesLevel: 6,
         notes: "A Long Tom round with an overcharged propellant load, a rocket sustainer and a guided terminal stage. It makes a surface-to-orbit attack under the "
             + "Strategic Operations rules for capital and sub-capital weapons (StratOps pp.91, 97-99), as a ballistic attack, for 2 points of capital-scale damage "
-            + "(20 standard). 3 shots a ton. Requested on the Star League Discord by SmilingNid, with ideas from Vehrec, Arkaxe and Ryan DesCastris. "
+            + "(the Long Tom's 25 standard is 2.5, rounded down: the guided stage takes up room in the shell; user ruling 2026-10-22). 3 shots a ton. Requested on the Star League Discord by SmilingNid, with ideas from Vehrec, Arkaxe and Ryan DesCastris. "
             + "60,000 C-bills a ton, twice the single-stage guided Copperhead round, for its three stages, extra explosive and guided payload (user ruling 2026-10-22: 'elevated significantly'). "
             + "Tech rating E, as Copperhead. Developed by the Federated Suns after the Smoke Jaguars razed Edo on Turtle Bay from orbit (7 May 3050, Era Report: 3052 p.17) "
             + "so that it could never happen to them; prototype 3055, in production 3062, and used against the Word of Blake in the Jihad (user rulings 2026-10-22). "

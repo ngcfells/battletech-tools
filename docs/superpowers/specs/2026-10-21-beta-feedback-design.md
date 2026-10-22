@@ -46,12 +46,18 @@ own tests and commit, in this order.
    mechanics and the rules level (Apocryphal, Custom or Munchkin) with the user before any code.
    **Decided 2026-10-22:** Custom (rules level 6), built in as Long Tom ammunition. It makes a surface-to-orbit
    attack under the StratOps rules for capital weapons (pp.91, 97-99), as a ballistic attack, for 2 capital-scale
-   damage (the Long Tom's 20 at 10 to 1). 3 shots a ton (half the standard round's 5, rounded up). 60,000 C-bills a
+   damage (the Long Tom's 25, TO:AUE p.96, at 10 to 1 is 2.5, rounded down by user ruling). 3 shots a ton (half the standard round's 5, rounded up). 60,000 C-bills a
    ton, twice Copperhead, for its three stages, extra explosive and guided payload. Tech rating E, as Copperhead.
    Era: Inner Sphere only, a Federated Suns development after the Smoke Jaguars razed Edo on Turtle Bay from orbit
    (7 May 3050, Era Report: 3052 p.17) so that it could never happen to them; prototype 3055, introduced 3062, used
    against the Word of Blake in the Jihad. Tag `ammo-is-long-tom-anti-orbital`. Battle Value is the standard
-   round's 46 until ruled.
+   round's 46 until ruled. **Battle Value ruled 2026-10-22: 28** (46 a ton prorated to 3 shots; the orbital reach adds no
+   ground-map range). **Map play, user's rules 2026-10-22, design pending:** rounds in space are longer than ground turns,
+   so several ground turns pass between shots (extra propellant, and the breech cools and is inspected). The target must
+   be in the first section of the space/atmospheric map; anything farther is out of reach. A target that has moved one
+   hex out of the aimed hex can still be hit, but it is unlikely. Something else that has moved into the hex may be hit.
+   The round is too small for defenses to target well: fighters and point defense are rarely useful against it, but
+   now and then they get lucky.
    Era availability is still open (lost Star League tech, or a new development); BV is the standard round's until ruled.
 
 10. **Record sheets carry every chart and rules helper an official sheet has.** (Added by the user 2026-10-21.)

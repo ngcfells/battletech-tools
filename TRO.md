@@ -18,7 +18,7 @@ Every entry is Custom (rules level 6) unless it says otherwise. The rulings behi
 | **Prototype** | 3055 (Federated Suns) |
 | **Introduced** | 3062 |
 | **Weight** | 1 ton (3 shots) |
-| **Damage** | 2 capital (20 standard) |
+| **Damage** | 2 capital (the Long Tom's 25 standard is 2.5, rounded down) |
 | **Cost** | 60,000 C-bills a ton |
 | **Battle Value** | 28 a ton |
 | **Explosive** | Yes |
@@ -30,8 +30,9 @@ against the Word of Blake's fleets in the Jihad.
 
 **Capabilities:** Each round has three stages. An overcharged propellant charge throws it clear of the tube, and a
 rocket sustainer carries it up out of the atmosphere. The last stage is a small semi-guided payload that steers onto
-the target. The round is too small for most defenses to track. The extra propellant takes up room in the shell,
-so a ton holds only 3 rounds, against 5 for the standard round. Each round also costs twice as much as a Copperhead.
+the target. The round is too small for most defenses to track. The extra propellant and the guided stage take up
+room in the shell. As a result, it hits a little lighter than the high-explosive round, and a ton holds only 3
+rounds, against 5 for the standard round. Each round also costs twice as much as a Copperhead.
 
 **Game rules:** The round fires a surface-to-orbit attack under the Strategic Operations rules for capital and
 sub-capital weapons (StratOps pp.91, 97-99), as a ballistic attack. A hit does 2 points of capital-scale damage.
@@ -44,4 +45,37 @@ reach to orbit adds no range on the ground map, so range does not change the fig
 
 ## Others' customs
 
-None yet.
+### Hailstorm Artillery
+
+| Item | Value |
+| --- | --- |
+| **Source** | MechWarrior 5: Mercenaries and Clans (video games) |
+| **Tech base** | Inner Sphere and Clan |
+| **Rules level** | Apocryphal |
+| **Tech rating** | B, as the Long Tom |
+| **Prototype** | 2445 |
+| **Introduced** | 2500 |
+| **Weight** | 25 tons, towed only |
+| **Damage** | 35 to the target hex; 25, 15 and 5 to the rings around it |
+| **Range** | 12 mapsheets |
+| **Ammunition** | 4 shots a ton |
+| **Cost** | 375,000 C-bills; standard rounds 11,200 a ton |
+| **Battle Value** | 515; standard rounds 52 a ton |
+
+**Overview:** In the MechWarrior 5 games, Hailstorm batteries shell 'Mechs from behind the lines. The games give
+no tabletop stats, so the figures above are ours. The Hailstorm is a heavy, short-barreled tube on a towed carriage.
+It hits harder than the Long Tom, but it reaches less than half as far.
+
+**Capabilities:** It mounts only on a Support Vehicle trailer, which a tractor pulls into position. It fires the
+munitions the Long Tom, Sniper and Thumper all share, in its own caliber: high-explosive, cluster, Copperhead, FAE,
+FASCAM, flechette, illumination, smoke and Thunder.
+
+**Game rules:** It fires as the Long Tom does, under the artillery rules (TO:AUE p.96). Each round uses the Long
+Tom round's rules. Where a round's damage follows the Long Tom's 25, the Hailstorm does 35 instead; that is our
+provisional reading.
+
+**How we derived it:** The cost is 15,000 C-bills a ton, the rate for the Long Tom and Sniper. The Battle Value is the
+Long Tom's 368 × 35/25. Each round costs and counts per shot as the Long Tom's round × 35/25. A ton holds 4 shots
+against the Long Tom's 5, so a ton comes to 1.12 times the Long Tom's ton.
+
+**Credit:** Added at the user's request (user rulings 2026-10-22).

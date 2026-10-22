@@ -12,6 +12,7 @@ import { miscCustom } from "./misc-custom";
 import { missileCustom } from "./missile-custom";
 import { ammoCustom } from "./ammo-custom";
 import { artilleryCustom } from "./artillery-custom";
+import { ammoApocryphal, artilleryApocryphal } from "./hailstorm-apocryphal";
 import { ammoCatalog } from "./ammo";
 import { isUniversalEquipment } from "./universal-equipment";
 import { APOCRYPHAL_RULES_LEVEL, CUSTOM_HOMEBREW_RULES_LEVEL, EXPERIMENTAL_RULES_LEVEL, MUNCHKIN_RULES_LEVEL } from "./rules-level-options";
@@ -50,6 +51,8 @@ const equipmentCatalogDefinitions: IEquipmentCatalogDefinition[] = [
     { id: "equipment-misc", exportName: "equipmentMisc", category: "misc", equipment: equipmentMisc },
     { id: "equipment-artillery", exportName: "equipmentArtillery", category: "artillery", equipment: equipmentArtillery },
     { id: "ammo", exportName: "ammoCatalog", category: "ammunition", equipment: ammoCatalog },
+    { id: "artillery-apocryphal", exportName: "artilleryApocryphal", category: "artillery", equipment: artilleryApocryphal },
+    { id: "ammo-apocryphal", exportName: "ammoApocryphal", category: "ammunition", equipment: ammoApocryphal },
     { id: "ballistic-custom", exportName: "ballisticCustom", custom: true, category: "ballistic", equipment: ballisticCustom },
     { id: "energy-custom", exportName: "energyCustom", custom: true, category: "energy", equipment: energyCustom },
     { id: "missile-custom", exportName: "missileCustom", custom: true, category: "missile", equipment: missileCustom },

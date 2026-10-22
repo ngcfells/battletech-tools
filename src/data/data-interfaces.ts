@@ -316,6 +316,8 @@ export interface IEquipmentItem {
      * own stats are the Vehicle Mode (autocannon) profile.
      */
     comboArtilleryTag?: string;
+    /** Towed equipment: mounts only on a Support Vehicle with the Trailer chassis modification. */
+    trailerOnly?: boolean;
     /** Vehicle motive tags (vehicle-motive-types.ts) this equipment cannot be mounted on, e.g. ["vtol"]. */
     excludedMotives?: string[];
     ammoProfile?: IAmmoProfile;

@@ -5,8 +5,8 @@ import { getCompatibleAmmo, getEquipmentRulesLevel, getWeaponShotsPerTon } from 
 import { equipmentArtillery } from "./equipment-artillery";
 
 // Anti-orbital Long Tom rounds (beta feedback item 9): requested on the Star League Discord by SmilingNid, with ideas
-// from Vehrec, Arkaxe and Ryan DesCastris. User rulings 2026-10-22: Custom rules level; the Long Tom's 20 damage at
-// capital scale (2); half the standard round's 5 shots a ton, rounded up (3); built in; tech rating E as Copperhead;
+// from Vehrec, Arkaxe and Ryan DesCastris. User rulings 2026-10-22: Custom rules level; the Long Tom's 25 damage (TO:AUE
+// p.96) at capital scale is 2.5, rounded down (2); half the standard round's 5 shots a ton, rounded up (3); built in; tech rating E as Copperhead;
 // 60,000 C-bills a ton; developed by the Federated Suns after Smoke Jaguars razed Edo from orbit (7 May 3050,
 // Era Report: 3052), prototype 3055, introduced 3062, Inner Sphere only.
 describe("anti-orbital Long Tom ammunition", () => {

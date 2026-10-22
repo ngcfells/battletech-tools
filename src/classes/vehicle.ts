@@ -2716,6 +2716,7 @@ export default class Vehicle {
         if (item.requiresHandActuator) return false;
         // A combo gun needs the ArtVee conversion equipment (Custom Homebrew).
         if (item.comboArtilleryTag && !this._artVee) return false;
+        if (item.trailerOnly && !this.isTrailer()) return false;
         if (item.excludedMotives?.includes(this._motiveType.tag)) return false;
         if (item.metadata?.domains && !item.metadata.domains.includes("vehicle")) return false;
         // No combat vehicle slot value in the equipment tables: not vehicle equipment (TM pp.341-345, TO:AUE pp.217-223).
