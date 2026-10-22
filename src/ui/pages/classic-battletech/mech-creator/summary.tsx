@@ -10,6 +10,7 @@ import UIPage from '../../../components/ui-page';
 import AlphaStrikeUnitSVG from '../../../components/svg/alpha-strike-unit-svg';
 import BattleMechSVG from '../../../components/svg/battlemech-svg';
 import QuirkPicker from '../../../components/quirk-picker';
+import CanonQuirksButton from '../../../components/canon-quirks-button';
 import TextSection from '../../../components/text-section';
 import InputField from '../../../components/form_elements/input_field';
 import { editionHasBattleValue, editionHasPrices, getRulesEdition } from '../../../../data/rules-editions';
@@ -184,6 +185,14 @@ export default class MechCreatorSummary extends React.Component<IHomeProps, IHom
                               </fieldset>
                             </div>
                           </div>
+
+                          <CanonQuirksButton
+                            unit={this.props.appGlobals.currentBattleMech}
+                            onApplied={() => {
+                              this.props.appGlobals.saveCurrentBattleMech(this.props.appGlobals.currentBattleMech);
+                              this.setState({ updated: !this.state.updated });
+                            }}
+                          />
 
                           <QuirkPicker
                             quirks={this.props.appGlobals.currentBattleMech.quirks}

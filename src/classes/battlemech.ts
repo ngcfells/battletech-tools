@@ -1,6 +1,8 @@
 import { AlphaStrikeStructureColumn, getAlphaStrikeMechStructure } from "../data/alpha-strike-mech-structure";
 import { IAssignedQuirk, IQuirkTargets, QuirkUnitType } from "../data/quirk-interfaces";
-import { getQuirkIssues, getQuirkTargets } from "../data/quirk-registry";
+import { getQuirk, getQuirkIssues, getQuirkTargets } from "../data/quirk-registry";
+import { findCanonEntry, resolveCanonQuirks } from "../data/quirk-canon";
+import { ICanonQuirkEntry } from "../data/quirk-canon-interfaces";
 import { QuirkList } from "./quirk-list";
 import { getEditionSkillMultipliers, getSkillMultiplier } from "../data/skill-multipliers";
 import { battlemechLocations } from "../data/battlemech-locations";
@@ -636,6 +638,40 @@ export class BattleMech {
     /** One line for each quirk this unit could not be given now: rules edition, rules level or unit type. */
     public getQuirkIssues(rulesLevel: number): string[] {
         return getQuirkIssues(this.quirks.getAll(), this.getQuirkUnitType(), this._rulesEdition, rulesLevel);
+    }
+
+    /** The BattleMech Quirk Table's row for this chassis (BMM pp.90-95), by its model or its nickname. */
+    private _canonQuirkEntry(): ICanonQuirkEntry | undefined {
+        return findCanonEntry(this._model) ?? findCanonEntry(this._nickname);
+    }
+
+    /** Whether the BattleMech Quirk Table lists this chassis. */
+    public hasCanonQuirks(): boolean {
+        return !!this._canonQuirkEntry();
+    }
+
+    /**
+     * Adds the chassis' canon quirks (BMM pp.90-95) to the player's own. A quirk already on the unit, or one the
+     * quirk rules refuse beside another, is not added; null when the table does not list the chassis.
+     */
+    public applyCanonQuirks(): { added: number; notes: string[] } | null {
+        const entry = this._canonQuirkEntry();
+        if (!entry) return null;
+        const clan = this._tech.tag === "clan" || this._tech.tag === "mclan";
+        const weaponInfo = (uuid: string) => {
+            const item = this._equipmentList.find((equipment) => equipment && equipment.uuid === uuid);
+            // The table names weapons without the catalog's Clan marking: "ER Large Laser (Clan)" is an ER Large Laser.
+            return item ? { name: item.name.replace(/^Clan /, "").replace(/ \(Clan\)$/, ""), location: item.location } : undefined;
+        };
+        const resolution = resolveCanonQuirks(entry, { targets: this.getQuirkTargets(), weaponInfo, clan });
+        let added = 0;
+        const notes = [...resolution.notes];
+        for (const quirk of resolution.quirks) {
+            const refused = this.quirks.add(quirk);
+            if (!refused) added++;
+            else if (refused !== "duplicate") notes.push(`${getQuirk(quirk.tag)?.name ?? quirk.tag}: ${refused}, not added`);
+        }
+        return { added, notes };
     }
 
     public setTargets(
