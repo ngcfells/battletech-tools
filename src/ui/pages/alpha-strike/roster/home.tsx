@@ -9,6 +9,7 @@ import StandardModal from '../../../components/standard-modal';
 import TextSection from '../../../components/text-section';
 import UIPage from '../../../components/ui-page';
 import InputCheckbox from '../../../components/form_elements/input_checkbox';
+import InputNumeric from '../../../components/form_elements/input_numeric';
 import './home.scss';
 import AlphaStrikeAddUnitsView from './_AddUnitsPage';
 import CurrentForceList from './_CurrentForceList';
@@ -215,6 +216,14 @@ export default class AlphaStrikeRosterHome extends React.Component<IHomeProps, I
       }
     }
 
+    // The year play checks quirks' years against; a cleared box goes back to each design's era start.
+    setGameYear = ( newValue: number ): void => {
+      if( this.props.appGlobals.currentASForce ) {
+        this.props.appGlobals.currentASForce.setGameYear( newValue );
+        this.props.appGlobals.saveCurrentASForce( this.props.appGlobals.currentASForce );
+      }
+    }
+
     openViewUnit = ( theUnit: AlphaStrikeUnit ): void => {
       let showASUnit = theUnit;
 
@@ -335,6 +344,14 @@ export default class AlphaStrikeRosterHome extends React.Component<IHomeProps, I
                   checked={this.props.appGlobals.currentASForce.quirksInPlay}
                   setValue={this.setQuirksInPlay}
                 />
+                {this.props.appGlobals.currentASForce.quirksInPlay ? (
+                  <InputNumeric
+                    label="Game year"
+                    description="Quirks that have ended or not yet begun by this year don't apply; leave it blank to use each design's era start"
+                    value={this.props.appGlobals.currentASForce.gameYear ?? ""}
+                    setValue={this.setGameYear}
+                  />
+                ) : null}
               </div>
               <div className="col-6">
                 <Link

@@ -229,6 +229,8 @@ export default class CapitalShip {
 
     /** The design quirks assigned to this unit (quirk tables, Campaign Operations pp.228 and 232). */
     public quirks: QuirkList = new QuirkList();
+    /** The force's "Game year", set by `BattleMechForce.syncQuirkPlayYear`; not saved with the unit. */
+    public quirkPlayYear: number | null = null;
     public lastUpdated: Date = new Date();
 
     private _name: string = "";

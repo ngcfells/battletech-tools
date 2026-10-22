@@ -35,7 +35,9 @@ export interface IQuirkAttackContext {
 /** A unit that carries quirks in play: 'Mech, vehicle, fighter, battle armor, Small Craft, capital ship. */
 export interface IQuirkCarrier {
     quirks: QuirkList;
-    getEra(): { yearStart: number };
+    getEra(): { yearStart: number; yearEnd?: number | null };
+    /** The game's year, from the force's "Game year"; null or absent when the roster sets none. */
+    quirkPlayYear?: number | null;
     getQuirkTargets(): IQuirkTargets;
     isDestroyed(): boolean;
 }
@@ -46,10 +48,17 @@ export function getCarrierInstalledUuids(unit: IQuirkCarrier): string[] {
     return [...targets.weapons.map((weapon) => weapon.uuid), ...(targets.bays ?? []).flatMap((bay) => bay.uuids)];
 }
 
-/**
- * The effects of a unit's quirks in play. Play has no game year, so an assignment's years are checked against the
- * start of the unit's era (quirks design, "Eras").
- */
+/** A force's "Game year" as entered: a whole year above 0, else none (a cleared box reads as 0). */
+export function normalizeGameYear(value: unknown): number | null {
+    return typeof value === "number" && Number.isFinite(value) && value >= 1 ? Math.floor(value) : null;
+}
+
+/** The year play checks a quirk's years against: the game's year, or without one the start of the unit's era. */
+export function getCarrierPlayYear(unit: IQuirkCarrier): number {
+    return unit.quirkPlayYear ?? unit.getEra().yearStart;
+}
+
+/** The effects of a unit's quirks in play, with an assignment's years checked against `getCarrierPlayYear`. */
 export function getCarrierQuirkEffects(unit: IQuirkCarrier): IAppliedQuirkEffect[] {
     const targets = unit.getQuirkTargets();
     const bayKey = (uuids: string[]): string => [...uuids].sort().join(",");
@@ -64,7 +73,7 @@ export function getCarrierQuirkEffects(unit: IQuirkCarrier): IAppliedQuirkEffect
         return targets.bays?.find((bay) => bayKey(bay.uuids) === bayKey(uuids))?.label
             ?? (uuids.length === 1 ? targets.weapons.find((weapon) => weapon.uuid === uuids[0])?.label : undefined);
     };
-    return getQuirkEffects(unit.quirks, getCarrierInstalledUuids(unit), unit.getEra().yearStart).map((applied) => {
+    return getQuirkEffects(unit.quirks, getCarrierInstalledUuids(unit), getCarrierPlayYear(unit)).map((applied) => {
         const on = nameOf(applied);
         return on ? { ...applied, on } : applied;
     });
@@ -74,15 +83,35 @@ export function getCarrierQuirkEffects(unit: IQuirkCarrier): IAppliedQuirkEffect
 export interface IAlphaStrikeQuirk {
     tag: string;
     parameter?: string | number;
+    /** The assignment's years, so play can check them against the game's year. */
+    fromYear?: number;
+    toYear?: number;
 }
 
 export type AlphaStrikeRangeBand = QuirkRangeBand | "extreme";
 
-/** The design's quirks in force that the Alpha Strike Companion lists; only those act in Alpha Strike (ASC p.59). */
+/**
+ * The design's quirks that the Alpha Strike Companion lists (only those act in Alpha Strike, ASC p.59) and that are in
+ * force at some time in the unit's era, each with its years for `getAlphaStrikeQuirksInYear`.
+ */
 export function getAlphaStrikeQuirks(unit: IQuirkCarrier): IAlphaStrikeQuirk[] {
-    return unit.quirks.getActive(getCarrierInstalledUuids(unit), unit.getEra().yearStart)
+    const era = unit.getEra();
+    const eraEnd = era.yearEnd ?? Number.POSITIVE_INFINITY;
+    return unit.quirks.getActive(getCarrierInstalledUuids(unit), undefined)
         .filter((assigned) => getQuirk(assigned.tag)?.alphaStrike)
-        .map((assigned) => (assigned.parameter !== undefined ? { tag: assigned.tag, parameter: assigned.parameter } : { tag: assigned.tag }));
+        .filter((assigned) => (assigned.fromYear === undefined || assigned.fromYear <= eraEnd) && (assigned.toYear === undefined || assigned.toYear >= era.yearStart))
+        .map((assigned) => ({
+            tag: assigned.tag,
+            ...(assigned.parameter !== undefined ? { parameter: assigned.parameter } : {}),
+            ...(assigned.fromYear !== undefined ? { fromYear: assigned.fromYear } : {}),
+            ...(assigned.toYear !== undefined ? { toYear: assigned.toYear } : {}),
+        }));
+}
+
+/** The card's quirks in force in a year; all of them with no year. */
+export function getAlphaStrikeQuirksInYear(quirks: IAlphaStrikeQuirk[], year: number | undefined): IAlphaStrikeQuirk[] {
+    return year === undefined ? quirks
+        : quirks.filter((quirk) => (quirk.fromYear === undefined || year >= quirk.fromYear) && (quirk.toYear === undefined || year <= quirk.toYear));
 }
 
 /** The Companion to-hit modifier of the unit's weapon attacks in one range band. */

@@ -1303,6 +1303,8 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
       let selectedMech: BattleMech | null = this.props.appGlobals.currentCBTForce.getSelectedMech();
       // The game's "Use design quirks" switch (quirks design, plan 3).
       const quirksInPlay = this.props.appGlobals.currentCBTForce.quirksInPlay;
+      // Units added on the roster since the force loaded have not had the game year yet.
+      if( quirksInPlay ) this.props.appGlobals.currentCBTForce.syncQuirkPlayYear();
       const sideInitiative = quirksInPlay ? this.props.appGlobals.currentCBTForce.getInitiativeModifier() : null;
       const targetCarrierLoad = this.state.setTargetDialog
         ? this._carrierLoad( this.state.setTargetDialog.uuid, this.state.setTargetDialog.getName(), "mech", this.state.setTargetDialog.isOmnimech, this.state.setTargetDialog.isFrankenMech() )

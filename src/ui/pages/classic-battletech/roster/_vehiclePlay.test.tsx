@@ -93,4 +93,20 @@ describe("vehicle play quirks", () => {
         fireEvent.click(screen.getByLabelText("Target airborne"));
         expect(toHitCells()).toEqual(plain.map((cell) => `${parseInt(cell, 10) - 2}+`));
     });
+
+    // The force's game year: a quirk that has ended by then no longer counts (final review).
+    it("drops a quirk that has ended by the game year", () => {
+        const vehicle = laserTank();
+        render(<VehiclePlayPanel vehicle={vehicle} onChange={vi.fn()} quirksInPlay={true} />);
+        const plain = toHitCells();
+        cleanup();
+        const eraStart = vehicle.getEra().yearStart;
+        expect(vehicle.quirks.add({ tag: "quirk-accurate-weapon", equipmentUuid: vehicle.getEquipmentList()[0].uuid, toYear: eraStart + 10 })).toBeNull();
+        render(<VehiclePlayPanel vehicle={vehicle} onChange={vi.fn()} quirksInPlay={true} />);
+        expect(toHitCells()).toEqual(plain.map((cell) => `${parseInt(cell, 10) - 1}+`));
+        cleanup();
+        vehicle.quirkPlayYear = eraStart + 20;
+        render(<VehiclePlayPanel vehicle={vehicle} onChange={vi.fn()} quirksInPlay={true} />);
+        expect(toHitCells()).toEqual(plain);
+    });
 });

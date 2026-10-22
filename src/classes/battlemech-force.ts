@@ -1,5 +1,5 @@
 import { generateUUID } from "../utils/generateUUID";
-import { getCarrierInstalledUuids, getQuirkInitiative, IQuirkCarrier, IQuirkInitiative } from "../utils/quirk-effects";
+import { getCarrierInstalledUuids, getQuirkInitiative, IQuirkCarrier, IQuirkInitiative, normalizeGameYear } from "../utils/quirk-effects";
 import { BattleMech } from "./battlemech";
 import { BattleMechGroup, ICBTGroupExport } from "./battlemech-group";
 import { ISpaceTrackerExport, SpaceTracker } from "./space-tracker";
@@ -23,6 +23,8 @@ export interface ICBTForceExport {
     spaceTracker?: ISpaceTrackerExport;
     /** "Use design quirks": quirk effects apply in Play Mode. Missing in older saves. */
     quirksInPlay?: boolean;
+    /** "Game year": the year play checks quirks' years against. Missing in older saves. */
+    gameYear?: number | null;
 }
 
 export class BattleMechForce {
@@ -49,6 +51,8 @@ export class BattleMechForce {
     public spaceTracker: SpaceTracker = new SpaceTracker();
 
     public quirksInPlay: boolean = false;
+    /** "Game year": play checks quirks' years against it; null for the start of each unit's era. */
+    public gameYear: number | null = null;
 
     constructor(importObj: ICBTForceExport | null = null ) {
         if( importObj ) {
@@ -116,6 +120,7 @@ export class BattleMechForce {
             heatApplied: this.heatApplied,
             spaceInPlay: this.spaceInPlay,
             quirksInPlay: this.quirksInPlay,
+            gameYear: this.gameYear,
         }
         if( this.spaceTracker.hasState() ) {
             returnValue.spaceTracker = this.spaceTracker.export();
@@ -201,12 +206,29 @@ export class BattleMechForce {
 
         this.spaceInPlay = importObj.spaceInPlay === true;
         this.quirksInPlay = !!importObj.quirksInPlay;
+        this.gameYear = normalizeGameYear(importObj.gameYear);
+        this.syncQuirkPlayYear();
         this.spaceTracker = new SpaceTracker( importObj.spaceTracker );
 
         if( importObj.lastUpdated ) {
             this._lastUpdated = new Date(importObj.lastUpdated);
         }
 
+    }
+
+    public setGameYear(year: number): void {
+        this.gameYear = normalizeGameYear(year);
+        this.syncQuirkPlayYear();
+    }
+
+    /** Hands the game year to every unit, which checks its quirks' years against it in play. */
+    public syncQuirkPlayYear(): void {
+        for( const group of this.groups ) {
+            const units: IQuirkCarrier[] = [...group.members, ...group.vehicles, ...group.fighters, ...group.smallCraft, ...group.capitalShips, ...group.battleArmor];
+            for( const unit of units ) {
+                unit.quirkPlayYear = this.gameYear;
+            }
+        }
     }
 
     /**
@@ -219,7 +241,7 @@ export class BattleMechForce {
             const units: IQuirkCarrier[] = [...group.members, ...group.vehicles, ...group.fighters, ...group.smallCraft, ...group.capitalShips, ...group.battleArmor];
             for( const unit of units ) {
                 if( unit.isDestroyed() ) continue;
-                const initiative = getQuirkInitiative(unit.quirks, getCarrierInstalledUuids(unit), unit.getEra().yearStart);
+                const initiative = getQuirkInitiative(unit.quirks, getCarrierInstalledUuids(unit), this.gameYear ?? unit.getEra().yearStart);
                 if( initiative && (!best || initiative.modifier > best.modifier) ) best = initiative;
             }
         }

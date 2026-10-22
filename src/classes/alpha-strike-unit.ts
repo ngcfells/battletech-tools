@@ -3,7 +3,7 @@ import { CONST_AS_SPECIAL_ABILITIES, IASSpecialAbility } from "../data/alpha-str
 import { APOCRYPHAL_RULES_LEVEL } from "../data/rules-level-options";
 import { IAlphaStrikeExport } from "../utils/calculateAlphaStrikeValue";
 import { generateUUID } from "../utils/generateUUID";
-import { getAlphaStrikeQuirkToHit, IAlphaStrikeQuirk } from "../utils/quirk-effects";
+import { getAlphaStrikeQuirksInYear, getAlphaStrikeQuirkToHit, IAlphaStrikeQuirk } from "../utils/quirk-effects";
 import Pilot, { IPilot } from "./pilot";
 
 export interface IAlphaStrikeDamage {
@@ -135,6 +135,8 @@ export interface IAlphaStrikeUnitExport {
     rulesLevel?: number;
     /** The design's Alpha Strike Companion quirks; none for a MUL unit or an older save. */
     quirks?: IAlphaStrikeQuirk[];
+    /** The start of the design's era: the year its quirks are checked against when the game sets none. */
+    quirkEraStart?: number;
 
 
     customName?: string;
@@ -222,6 +224,10 @@ export class AlphaStrikeUnit {
     public quirks: IAlphaStrikeQuirk[] = [];
     /** The force's "Use design quirks" switch, set by `AlphaStrikeForce.syncQuirksInPlay`; not saved with the unit. */
     public quirksInPlay: boolean = false;
+    /** The start of the design's era, saved with the unit; quirks are checked against it when the game sets no year. */
+    public quirkEraStart: number | undefined = undefined;
+    /** The force's "Game year", set by `AlphaStrikeForce.syncQuirksInPlay`; not saved with the unit. */
+    public quirkPlayYear: number | null = null;
 
     public showDetails: boolean = false;
 
@@ -491,6 +497,7 @@ export class AlphaStrikeUnit {
             this.quirks = Array.isArray(incomingMechData.quirks)
                 ? incomingMechData.quirks.filter((quirk) => quirk && typeof quirk.tag === "string").map((quirk) => ({ ...quirk }))
                 : [];
+            this.quirkEraStart = typeof incomingMechData.quirkEraStart === "number" ? incomingMechData.quirkEraStart : undefined;
 
             this.role =  incomingMechData.role;
 
@@ -1608,10 +1615,11 @@ export class AlphaStrikeUnit {
         this.currentToHitExtreme = this.currentSkill + 6 + this.currentHeat + currentFCHits * 2; // + currentEngineHits;
         // The Companion's quirks, with the game's "Use design quirks" switch on (ASC pp.59-67).
         if( this.quirksInPlay ) {
-            this.currentToHitShort += getAlphaStrikeQuirkToHit(this.quirks, "short");
-            this.currentToHitMedium += getAlphaStrikeQuirkToHit(this.quirks, "medium");
-            this.currentToHitLong += getAlphaStrikeQuirkToHit(this.quirks, "long");
-            this.currentToHitExtreme += getAlphaStrikeQuirkToHit(this.quirks, "extreme");
+            const quirks = getAlphaStrikeQuirksInYear(this.quirks, this.quirkPlayYear ?? this.quirkEraStart);
+            this.currentToHitShort += getAlphaStrikeQuirkToHit(quirks, "short");
+            this.currentToHitMedium += getAlphaStrikeQuirkToHit(quirks, "medium");
+            this.currentToHitLong += getAlphaStrikeQuirkToHit(quirks, "long");
+            this.currentToHitExtreme += getAlphaStrikeQuirkToHit(quirks, "extreme");
         }
 
         this.currentHeat = this.currentHeat / 1;
@@ -1939,6 +1947,7 @@ export class AlphaStrikeUnit {
             tro:  this.tro,
             rulesLevel:  this.rulesLevel,
             quirks:  this.quirks.map((quirk) => ({ ...quirk })),
+            quirkEraStart:  this.quirkEraStart,
             role:  this.role,
             threshold:  this.threshold,
             pilot:  this._pilot,

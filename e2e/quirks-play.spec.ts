@@ -64,3 +64,31 @@ test("with the switch on, play shows the side's quirk Initiative and the unit's 
 
     expect(errors).toEqual([]);
 });
+
+test("with the switch on, the roster takes a game year and saves it with the force", async ({ page }) => {
+    const errors: string[] = [];
+    page.on("pageerror", (error) => errors.push(error.stack ?? error.message));
+    page.on("console", (message) => {
+        if (message.type() === "error") errors.push(`console.error: ${message.text()}`);
+    });
+
+    await page.goto("classic-battletech/mech-creator");
+    await page.getByTitle("Click here to clear out your current 'mech and start over.").click();
+    await page.getByTitle("Click here to save a a new 'mech row").click();
+
+    await page.goto("classic-battletech/roster");
+    await page.getByTitle("Click here to open the add 'mech dialog").first().click();
+    await page.locator(".modal button.btn-xs.btn-primary").nth(1).click();
+    await page.goto("classic-battletech/roster");
+
+    await expect(page.getByLabel("Game year")).toHaveCount(0);
+    await page.locator("label.checkbox-input", { hasText: "Use design quirks" }).click();
+    await page.getByLabel("Game year").fill("3025");
+    await page.reload();
+    await expect(page.getByLabel("Game year")).toHaveValue("3025");
+    await page.getByLabel("Game year").fill("");
+    await page.reload();
+    await expect(page.getByLabel("Game year")).toHaveValue("");
+
+    expect(errors).toEqual([]);
+});

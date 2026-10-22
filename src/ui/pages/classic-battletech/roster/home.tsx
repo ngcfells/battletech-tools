@@ -7,6 +7,7 @@ import { unitGroupNames } from '../../../../data/group-names';
 import { makeURLSlug } from '../../../../utils/makeURLSlug';
 import { IAppGlobals } from '../../../app-router';
 import InputCheckbox from '../../../components/form_elements/input_checkbox';
+import InputNumeric from '../../../components/form_elements/input_numeric';
 import InputField from '../../../components/form_elements/input_field';
 import TextSection from '../../../components/text-section';
 import UIPage from '../../../components/ui-page';
@@ -61,6 +62,14 @@ export default class BattleMechRosterHome extends React.Component<IHomeProps, IH
     setQuirksInPlay = ( newValue: boolean ): void => {
       if( this.props.appGlobals.currentCBTForce) {
         this.props.appGlobals.currentCBTForce.quirksInPlay = newValue;
+        this.props.appGlobals.saveCurrentCBTForce( this.props.appGlobals.currentCBTForce );
+      }
+    }
+
+    // The year play checks quirks' years against; a cleared box goes back to each unit's era start.
+    setGameYear = ( newValue: number ): void => {
+      if( this.props.appGlobals.currentCBTForce) {
+        this.props.appGlobals.currentCBTForce.setGameYear( newValue );
         this.props.appGlobals.saveCurrentCBTForce( this.props.appGlobals.currentCBTForce );
       }
     }
@@ -217,6 +226,14 @@ export default class BattleMechRosterHome extends React.Component<IHomeProps, IH
                   checked={this.props.appGlobals.currentCBTForce.quirksInPlay}
                   setValue={this.setQuirksInPlay}
                 />
+                {this.props.appGlobals.currentCBTForce.quirksInPlay ? (
+                  <InputNumeric
+                    label="Game year"
+                    description="Quirks that have ended or not yet begun by this year don't apply; leave it blank to use each unit's era start"
+                    value={this.props.appGlobals.currentCBTForce.gameYear ?? ""}
+                    setValue={this.setGameYear}
+                  />
+                ) : null}
               </div>
               <div className="col-6">
                 <Link

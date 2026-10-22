@@ -1,5 +1,6 @@
 import { formationBonuses } from '../data/formation-bonuses';
 import { generateUUID } from '../utils/generateUUID';
+import { normalizeGameYear } from '../utils/quirk-effects';
 import AlphaStrikeGroup, { IASGroupExport } from './alpha-strike-group';
 import { AlphaStrikeUnit } from './alpha-strike-unit';
 
@@ -12,6 +13,8 @@ export interface IASForceExport {
     phase: number;
     /** "Use design quirks": the Alpha Strike Companion's quirks apply in play. Missing in older saves. */
     quirksInPlay?: boolean;
+    /** "Game year": the year play checks quirks' years against. Missing in older saves. */
+    gameYear?: number | null;
 }
 
 export default class AlphaStrikeForce {
@@ -30,6 +33,8 @@ export default class AlphaStrikeForce {
     public phase: number = 0;
 
     public quirksInPlay: boolean = false;
+    /** "Game year": play checks the cards' quirks' years against it; null for the start of each design's era. */
+    public gameYear: number | null = null;
 
     constructor(importObj: IASForceExport | null = null ) {
         if( importObj ) {
@@ -87,6 +92,7 @@ export default class AlphaStrikeForce {
             // if( exportData ) {
                 // let newUnit = new AlphaStrikeUnit( exportData );
                 mulUnit.quirksInPlay = this.quirksInPlay;
+                mulUnit.quirkPlayYear = this.gameYear;
                 this.groups[groupIndex].members.push( mulUnit  );
                 this.groups[groupIndex].sortUnits();
                 this.groups[groupIndex].setAvailableFormationBonuses( formationBonuses.filter(x=>x.IsValid(this.groups[groupIndex], this.groups)));
@@ -190,6 +196,7 @@ export default class AlphaStrikeForce {
             turn: this.turn,
             phase: this.phase,
             quirksInPlay: this.quirksInPlay,
+            gameYear: this.gameYear,
         }
 
         for( let group of this.groups) {
@@ -216,13 +223,19 @@ export default class AlphaStrikeForce {
         }
     }
 
-    /** Hands the "Use design quirks" switch to every unit, which reads it in `calcCurrentValues`. */
+    /** Hands the "Use design quirks" switch and the game year to every unit, which reads them in `calcCurrentValues`. */
     public syncQuirksInPlay(): void {
         for( const group of this.groups ) {
             for( const unit of group.members ) {
                 unit.quirksInPlay = this.quirksInPlay;
+                unit.quirkPlayYear = this.gameYear;
             }
         }
+    }
+
+    public setGameYear(year: number): void {
+        this.gameYear = normalizeGameYear(year);
+        this.syncQuirksInPlay();
     }
 
     public import(importObj: IASForceExport) {
@@ -238,6 +251,7 @@ export default class AlphaStrikeForce {
         }
 
         this.quirksInPlay = !!importObj.quirksInPlay;
+        this.gameYear = normalizeGameYear(importObj.gameYear);
         this.syncQuirksInPlay();
 
         if( importObj.lastUpdated ) {

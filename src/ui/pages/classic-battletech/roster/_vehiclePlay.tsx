@@ -6,7 +6,7 @@ import { IBattleArmorCarrierLoad, isCarrierWeaponBlocked } from '../../../../cla
 import TextSection from '../../../components/text-section';
 import VehicleDiagramSVG from '../../../components/svg/vehicle-diagram-svg';
 import { vehicleName } from './_vehicleGroupTable';
-import { getCarrierQuirkEffects, getQuirkToHit } from '../../../../utils/quirk-effects';
+import { getCarrierPlayYear, getCarrierQuirkEffects, getQuirkToHit } from '../../../../utils/quirk-effects';
 import { QuirkRangeBand } from '../../../../data/quirk-interfaces';
 
 const MOTIVE_LEVELS: { level: VehicleMotiveHit; label: string }[] = [
@@ -266,7 +266,7 @@ export default class VehiclePlayPanel extends React.Component<IVehiclePlayPanelP
         const quirkToHit = (rangeBand: QuirkRangeBand): number => !this.props.quirksInPlay ? 0 : getQuirkToHit(
             vehicle.quirks,
             vehicle.getEquipmentList().filter((item) => item.uuid && vehicle.getWeaponStatus(item.uuid) !== "destroyed").map((item) => item.uuid!),
-            vehicle.getEra().yearStart,
+            getCarrierPlayYear(vehicle),
             { weaponUuid: weapon.uuid, rangeBand, vsAirborne: this.state.targetAirborne, attackerRanOrFlanked: vehicle.getInPlay().movementMode === "flank" },
         ).modifier;
         const target = (rangeModifier: number, rangeBand: QuirkRangeBand) => modifier === null || blocked ? "-" : `${gunnery + modifier + rangeModifier + quirkToHit(rangeBand)}+`;

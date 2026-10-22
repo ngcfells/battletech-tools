@@ -2786,6 +2786,7 @@ export class BattleMech {
         unitObj.importMUL( asMechData )
         unitObj.mechCreatorUUID = this._uuid;
         unitObj.quirks = getAlphaStrikeQuirks(this);
+        unitObj.quirkEraStart = this.getEra().yearStart;
         // Carry the design's rules level so the Alpha Strike print guard and stamp apply.
         unitObj.rulesLevel = this.getRequiredRulesLevel();
         return unitObj;
@@ -4989,9 +4990,12 @@ export class BattleMech {
         return (equipmentList ?? this.equipmentList).map((item) => item?.uuid).filter((uuid): uuid is string => !!uuid);
     }
 
-    /** The year play checks a quirk's dates against: the start of the unit's era (quirks design, "Eras"). */
+    /** The force's "Game year", set by `BattleMechForce.syncQuirkPlayYear`; not saved with the 'Mech. */
+    public quirkPlayYear: number | null = null;
+
+    /** The year play checks a quirk's dates against: the game's year, or without one the start of the unit's era. */
     public getQuirkPlayYear(): number {
-        return this._era.yearStart;
+        return this.quirkPlayYear ?? this._era.yearStart;
     }
 
     public applyHeat(quirksInPlay: boolean = false) {
