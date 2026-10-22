@@ -35,10 +35,10 @@ Local references (git-ignored, never imported by shipped code):
   Large Naval Vessel); 'Mechs (heat scale 30 down to 0 with Overflow; every other TW block was already there);
   aerospace and conventional fighters and fixed-wing support vehicles; Small Craft and DropShips (aerodyne and
   spheroid; DropShip weapons listed by bay, TM p.199); JumpShips, WarShips and space stations (SO:AA pp.9-11,
-  laid out like the Strategic Operations sheets). The drawing helpers are shared in
-  `src/ui/components/svg/record-sheet-svg-kit.tsx` and `aerospace-record-sheet-svg-blocks.tsx`. Still owed, in
-  order: battle armor,
-  conventional infantry, ProtoMechs, buildings, then the airship and other aerospace Support Vehicle sheets
+  laid out like the Strategic Operations sheets); battle armor (five squads to a page with the leg, swarm,
+  swarm modifier, swarm hit location and transport position tables, TW pp.221-222, 227). The drawing helpers are
+  shared in `src/ui/components/svg/record-sheet-svg-kit.tsx` and `aerospace-record-sheet-svg-blocks.tsx`. Still
+  owed, in order: conventional infantry, ProtoMechs, buildings, then the airship and other aerospace Support Vehicle sheets
   (velocity record and airship velocity table) and the *Battledroids* sheet.
 - [ ] Verify before using: a fan-made vehicle sheet says a CASE-protected ammunition critical removes all rear
   armor and stuns the crew. Find the rule in the library before printing it on our sheet.
@@ -210,6 +210,8 @@ played first, then by dependency.
 ### Battle Armor
 
 - [ ] Battle armor still owed: `.blk` export (left off for now at the user's word, 2026-10-08).
+- [x] Record sheet like the Total Warfare one (2026-10-22): five squads to a page, so the roster prints its
+  battle armor together and the creator prints the base design with its loadouts.
 
 ### Conventional Infantry
 

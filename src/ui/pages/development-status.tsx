@@ -96,6 +96,7 @@ export default class DevelopmentStatus extends React.Component<IDevelopmentStatu
                       <li><del>Fighter record sheets the same way: external stores, heat scale, velocity record, and the ground map movement and fighter return tables for conventional fighters</del></li>
                       <li><del>Small Craft and DropShip record sheets the same way, aerodyne and spheroid, with DropShip weapons listed by bay</del></li>
                       <li><del>JumpShip, WarShip and space station record sheets the same way, with capital-scale armor by facing and the integrity tracks</del></li>
+                      <li><del>Battle armor record sheets the same way: five squads to a page with the leg attack, swarm attack and transport position tables</del></li>
                     </ul>
                     <h4>Coming</h4>
                     <ul>

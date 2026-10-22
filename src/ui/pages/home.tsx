@@ -164,7 +164,7 @@ export default class Home extends React.Component<IHomeProps, IHomeState> {
                   <ul className="news">
                   <li>
                   <h3>
-                      <strong>October 22nd, 2026</strong> - Beta feedback and new vehicle, fighter, Small Craft, DropShip and capital ship record sheets
+                      <strong>October 22nd, 2026</strong> - Beta feedback and new record sheets for vehicles, fighters, Small Craft, DropShips, capital ships and battle armor
                     </h3>
                     <h4>Author - NGCFells</h4>
                       <p>New on the <a href="https://ngcfells.github.io/battletech-tools" target="_blank" rel="noopener noreferrer">beta test site</a>, from your reports:</p>
@@ -180,7 +180,8 @@ export default class Home extends React.Component<IHomeProps, IHomeState> {
                         <li>The 'Mech sheet's heat scale now runs from 30 at the top down to 0, with an Overflow box, as on the official sheet.</li>
                         <li>Small Craft and DropShips get full-page sheets for aerodyne and spheroid shapes. The Small Craft sheet adds a crew and cargo box; the DropShip sheet lists weapons by bay with their combined heat and damage, carried fighters and Small Craft with their launch rate, crew data, the K-F boom and docking collar, and heat generated per arc.</li>
                         <li>JumpShips, WarShips and space stations get full-page sheets laid out like the Strategic Operations ones: weapon bays in capital scale with standard scale in parentheses, each facing's armor in squares with its damage threshold, structural integrity, K-F drive, sail and docking collars in the hull, crew data, critical damage, heat generated per arc and the velocity record. Damage marked in play is filled in on the roster's printout.</li>
-                        <li>Battle armor, infantry, ProtoMechs and the other unit types follow.</li>
+                        <li>The battle armor sheet holds five squads to a page, as the Total Warfare one does, with the leg attack, swarm attack, swarm attack modifier, swarm hit location and transport position tables beside them. The roster prints its battle armor five squads to a page, and the creator prints a design with its alternate loadouts.</li>
+                        <li>Infantry, ProtoMechs and the other unit types follow.</li>
                       </ul>
                    </li>
                   <li>
