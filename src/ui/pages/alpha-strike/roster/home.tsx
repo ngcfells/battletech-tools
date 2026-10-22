@@ -8,6 +8,7 @@ import { IAppGlobals } from '../../../app-router';
 import StandardModal from '../../../components/standard-modal';
 import TextSection from '../../../components/text-section';
 import UIPage from '../../../components/ui-page';
+import InputCheckbox from '../../../components/form_elements/input_checkbox';
 import './home.scss';
 import AlphaStrikeAddUnitsView from './_AddUnitsPage';
 import CurrentForceList from './_CurrentForceList';
@@ -205,6 +206,14 @@ export default class AlphaStrikeRosterHome extends React.Component<IHomeProps, I
       }
     }
 
+    // The Alpha Strike Companion's quirks in play (quirks design, plan 3); off by default.
+    setQuirksInPlay = ( newValue: boolean ): void => {
+      if( this.props.appGlobals.currentASForce ) {
+        this.props.appGlobals.currentASForce.quirksInPlay = newValue;
+        this.props.appGlobals.saveCurrentASForce( this.props.appGlobals.currentASForce );
+      }
+    }
+
     openViewUnit = ( theUnit: AlphaStrikeUnit ): void => {
       let showASUnit = theUnit;
 
@@ -318,6 +327,14 @@ export default class AlphaStrikeRosterHome extends React.Component<IHomeProps, I
 
           {this.props.appGlobals.currentASForce && this.props.appGlobals.currentASForce.getTotalUnits() > 0 ? (
             <div className="row">
+              <div className="col-12">
+                <InputCheckbox
+                  label="Use design quirks"
+                  description="Applies the Alpha Strike Companion's quirks of units built in the app, in play"
+                  checked={this.props.appGlobals.currentASForce.quirksInPlay}
+                  setValue={this.setQuirksInPlay}
+                />
+              </div>
               <div className="col-6">
                 <Link
                   to={`${process.env.PUBLIC_URL}/alpha-strike/roster/play`}

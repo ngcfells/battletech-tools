@@ -20,6 +20,8 @@ export interface ICBTForceExport {
     spaceInPlay?: boolean;
     /** Saved whenever it tracks anything, so turning the option off and on again keeps the shots in flight. */
     spaceTracker?: ISpaceTrackerExport;
+    /** "Use design quirks": quirk effects apply in Play Mode. Missing in older saves. */
+    quirksInPlay?: boolean;
 }
 
 export class BattleMechForce {
@@ -44,6 +46,8 @@ export class BattleMechForce {
 
     public spaceInPlay: boolean = false;
     public spaceTracker: SpaceTracker = new SpaceTracker();
+
+    public quirksInPlay: boolean = false;
 
     constructor(importObj: ICBTForceExport | null = null ) {
         if( importObj ) {
@@ -110,6 +114,7 @@ export class BattleMechForce {
             hideHelp: this.hideHelp,
             heatApplied: this.heatApplied,
             spaceInPlay: this.spaceInPlay,
+            quirksInPlay: this.quirksInPlay,
         }
         if( this.spaceTracker.hasState() ) {
             returnValue.spaceTracker = this.spaceTracker.export();
@@ -194,6 +199,7 @@ export class BattleMechForce {
         }
 
         this.spaceInPlay = importObj.spaceInPlay === true;
+        this.quirksInPlay = !!importObj.quirksInPlay;
         this.spaceTracker = new SpaceTracker( importObj.spaceTracker );
 
         if( importObj.lastUpdated ) {

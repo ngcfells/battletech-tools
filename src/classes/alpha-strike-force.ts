@@ -10,7 +10,8 @@ export interface IASForceExport {
 
     turn: number;
     phase: number;
-
+    /** "Use design quirks": the Alpha Strike Companion's quirks apply in play. Missing in older saves. */
+    quirksInPlay?: boolean;
 }
 
 export default class AlphaStrikeForce {
@@ -27,6 +28,8 @@ export default class AlphaStrikeForce {
 
     public turn: number = 1;
     public phase: number = 0;
+
+    public quirksInPlay: boolean = false;
 
     constructor(importObj: IASForceExport | null = null ) {
         if( importObj ) {
@@ -183,6 +186,7 @@ export default class AlphaStrikeForce {
 
             turn: this.turn,
             phase: this.phase,
+            quirksInPlay: this.quirksInPlay,
         }
 
         for( let group of this.groups) {
@@ -220,6 +224,8 @@ export default class AlphaStrikeForce {
         if( typeof(importObj.phase) !== "undefined" ) {
             this.phase = importObj.phase;
         }
+
+        this.quirksInPlay = !!importObj.quirksInPlay;
 
         if( importObj.lastUpdated ) {
             this._lastUpdated = new Date(importObj.lastUpdated);

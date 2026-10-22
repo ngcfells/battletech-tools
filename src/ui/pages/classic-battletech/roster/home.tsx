@@ -57,6 +57,14 @@ export default class BattleMechRosterHome extends React.Component<IHomeProps, IH
       }
     }
 
+    // Quirk effects in Play Mode (quirks design, plan 3); off by default.
+    setQuirksInPlay = ( newValue: boolean ): void => {
+      if( this.props.appGlobals.currentCBTForce) {
+        this.props.appGlobals.currentCBTForce.quirksInPlay = newValue;
+        this.props.appGlobals.saveCurrentCBTForce( this.props.appGlobals.currentCBTForce );
+      }
+    }
+
     removeGroup = ( bmGroupIndex: number ): void => {
       if( this.props.appGlobals.currentCBTForce && this.props.appGlobals.currentCBTForce.groups.length > bmGroupIndex ) {
         if(this.props.appGlobals.currentCBTForce.groups[bmGroupIndex].getTotalUnits() === 0 ) {
@@ -202,6 +210,12 @@ export default class BattleMechRosterHome extends React.Component<IHomeProps, IH
                   description="Tracks space turns (6 ground turns each) and anti-orbital shots in Play Mode"
                   checked={this.props.appGlobals.currentCBTForce.spaceInPlay}
                   setValue={this.setSpaceInPlay}
+                />
+                <InputCheckbox
+                  label="Use design quirks"
+                  description="Applies the units' design quirks in Play Mode: to-hit, heat and Initiative"
+                  checked={this.props.appGlobals.currentCBTForce.quirksInPlay}
+                  setValue={this.setQuirksInPlay}
                 />
               </div>
               <div className="col-6">
