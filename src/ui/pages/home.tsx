@@ -164,7 +164,7 @@ export default class Home extends React.Component<IHomeProps, IHomeState> {
                   <ul className="news">
                   <li>
                   <h3>
-                      <strong>October 22nd, 2026</strong> - Beta feedback and new vehicle and fighter record sheets
+                      <strong>October 22nd, 2026</strong> - Beta feedback and new vehicle, fighter, Small Craft and DropShip record sheets
                     </h3>
                     <h4>Author - NGCFells</h4>
                       <p>New on the <a href="https://ngcfells.github.io/battletech-tools" target="_blank" rel="noopener noreferrer">beta test site</a>, from your reports:</p>
@@ -178,7 +178,8 @@ export default class Home extends React.Component<IHomeProps, IHomeState> {
                         <li>The vehicle record sheet is now one full page with every table the official sheets print: hit locations, motive system damage and critical hits, plus the VTOL elevation track, the submarine depth track and the super-heavy, Large Support Vehicle and Large Naval Vessel tables.</li>
                         <li>The fighter record sheet is one full page too: external stores boxes for your bombs, the armor diagram, critical damage, pilot data, the velocity record and the heat scale, or, for conventional fighters, the ground map straight movement and fighter return tables.</li>
                         <li>The 'Mech sheet's heat scale now runs from 30 at the top down to 0, with an Overflow box, as on the official sheet.</li>
-                        <li>Small Craft, DropShips and the other unit types follow.</li>
+                        <li>Small Craft and DropShips get full-page sheets for aerodyne and spheroid shapes. The Small Craft sheet adds a crew and cargo box; the DropShip sheet lists weapons by bay with their combined heat and damage, carried fighters and Small Craft with their launch rate, crew data, the K-F boom and docking collar, and heat generated per arc.</li>
+                        <li>JumpShips, WarShips and the other unit types follow.</li>
                       </ul>
                    </li>
                   <li>

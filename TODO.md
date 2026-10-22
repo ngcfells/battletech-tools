@@ -33,9 +33,10 @@ Local references (git-ignored, never imported by shipped code):
   close to it, with our own silhouettes, and is checked in the browser against a render of the official sheet.
   Done: Combat and Support Vehicles (ground, VTOL, naval, submarine, super-heavy, Large Support Vehicle,
   Large Naval Vessel); 'Mechs (heat scale 30 down to 0 with Overflow; every other TW block was already there);
-  aerospace and conventional fighters and fixed-wing support vehicles. The drawing helpers are shared in
-  `src/ui/components/svg/record-sheet-svg-kit.tsx`. Still owed, in order: Small Craft, DropShips,
-  JumpShips/WarShips/space stations, battle armor,
+  aerospace and conventional fighters and fixed-wing support vehicles; Small Craft and DropShips (aerodyne and
+  spheroid; DropShip weapons listed by bay, TM p.199). The drawing helpers are shared in
+  `src/ui/components/svg/record-sheet-svg-kit.tsx` and `aerospace-record-sheet-svg-blocks.tsx`. Still owed, in
+  order: JumpShips/WarShips/space stations, battle armor,
   conventional infantry, ProtoMechs, buildings, then the airship and other aerospace Support Vehicle sheets
   (velocity record and airship velocity table) and the *Battledroids* sheet.
 - [ ] Verify before using: a fan-made vehicle sheet says a CASE-protected ammunition critical removes all rear
@@ -273,7 +274,12 @@ played first, then by dependency.
 ### DropShips
 
 - [ ] Capital and sub-capital weapons in the DropShip Alpha Strike conversion and in play (damage, criticals).
-- [ ] DropShip record sheet layout (it uses the Small Craft sheet now) and the Alpha Strike large-craft card.
+- [x] DropShip record sheet layout (2026-10-22: its own page, weapon bays, crew data, K-F boom and docking collar).
+- [ ] The Alpha Strike large-craft card for DropShips.
+- [ ] K-F Boom and Docking Collar criticals in play: a DropShip's hit resolution says "a Small Craft has none"
+  and there are no play tracks to fill the boxes the record sheet prints.
+- [ ] Ruling owed: TM p.199 says Small Craft also fire in full weapon bays, but the Total Warfare Small Craft sheet
+  lists weapons by quantity and TW p.234 gives bays to Large Craft. The Small Craft sheet lists weapons singly.
 - [ ] Check imported DropShip BV against the MUL where it has one (most DropShips show BV 0 there; the
   Overlord A3 imports at 25,708 against 24,600).
 
