@@ -18,7 +18,7 @@ import {
 } from '../../../data/vehicle-record-sheet-tables';
 import { getUnitQuirkSheetLines, weaponQuirkSuffix } from '../quirk-sheet-block';
 import { getRulesLevelName } from '../rules-level-print';
-import RecordSheetGroupBoxSVG from './record-sheet-group-box-svg';
+import { DOC_HEIGHT, DOC_WIDTH, GRAY, INK, SHADE, checkbox, groupBox, hitBox, sheetFooter, text, wrapText } from './record-sheet-svg-kit';
 import VehicleDiagramSVG from './vehicle-diagram-svg';
 
 // A full-page Combat or Support Vehicle record sheet, laid out like the Total Warfare record sheets (Ground
@@ -27,11 +27,6 @@ import VehicleDiagramSVG from './vehicle-diagram-svg';
 // attacks) and critical hits tables below. Our own diagram and title block; no official art or logo.
 // Coordinates are in a 2000 x 2600 document, US Letter in proportion, as on our 'Mech sheet.
 
-const DOC_WIDTH = 2000;
-const DOC_HEIGHT = 2600;
-const INK = "rgb(0,0,0)";
-const GRAY = "rgb(110,110,110)";
-const SHADE = "rgb(225,225,225)";
 
 // The armor diagram takes about a third of the page, as on the official sheets.
 const LEFT = { x: 25, w: 860 };
@@ -40,48 +35,7 @@ const RIGHT = { x: 1365, w: 610 };
 const TOP = 150;
 const TOP_BOTTOM = 1290;
 
-interface ITextOptions { size?: number; weight?: number; anchor?: "start" | "middle" | "end"; fill?: string; italic?: boolean; testid?: string }
-
-const text = (x: number, y: number, value: React.ReactNode, options: ITextOptions = {}, key?: string): JSX.Element => (
-    <text key={key} x={x} y={y} fontFamily="sans-serif" fontSize={options.size ?? 24} fontWeight={options.weight ?? 400}
-        textAnchor={options.anchor ?? "start"} fill={options.fill ?? INK} fontStyle={options.italic ? "italic" : undefined}
-        data-testid={options.testid}>{value}</text>
-);
-
-const checkbox = (x: number, y: number, key?: string): JSX.Element => (
-    <rect key={key} x={x} y={y - 20} width={24} height={24} rx={4} fill="white" stroke={INK} strokeWidth={2} />
-);
-
-// A crew or critical hit box: a rounded box holding its modifier, "+1" or "D".
-const hitBox = (x: number, y: number, label: string, key?: string): JSX.Element => (
-    <g key={key}>
-        <rect x={x} y={y - 22} width={38} height={28} rx={6} fill="white" stroke={INK} strokeWidth={2} />
-        {text(x + 19, y, label, { size: 20, anchor: "middle" })}
-    </g>
-);
-
-/** Splits text into lines of at most `width` characters, breaking at spaces. */
-export const wrapText = (value: string, width: number): string[] => {
-    const lines: string[] = [];
-    let line = "";
-    for (const word of value.split(" ")) {
-        if (line && line.length + word.length + 1 > width) {
-            lines.push(line);
-            line = word;
-        } else {
-            line = line ? `${line} ${word}` : word;
-        }
-    }
-    return line ? [...lines, line] : lines;
-};
-
-// A long title shrinks to fit its tab (about 0.62 em a capital).
-const groupBox = (x: number, y: number, w: number, h: number, title: string, children: React.ReactNode): JSX.Element => (
-    <RecordSheetGroupBoxSVG xLoc={x} yLoc={y} width={w} height={h} title={title} bgColor="rgb(255,255,255)" strokeColor={INK}
-        textSize={Math.min(35, Math.floor((w - 110) / (title.length * 0.62)))}>
-        {children}
-    </RecordSheetGroupBoxSVG>
-);
+export { wrapText };
 
 // Location codes as the official sheets print them (FR, LS, RS, RR, TU, BD); the rest follow the same pattern.
 const LOCATION_CODES: Partial<Record<VehicleLocation, string>> = {
@@ -589,15 +543,7 @@ export default class VehicleRecordSheetSVG extends React.Component<IVehicleRecor
     }
 
     renderFooter(): JSX.Element {
-        const y = DOC_HEIGHT - 80;
-        return (
-            <g>
-                {text(LEFT.x, y, "Created with Jeff's BattleTech Tools IIC", { size: 22, weight: 700, fill: GRAY })}
-                {text(LEFT.x, y + 30, "https://heysporky.github.io/battletech-tools/", { size: 18, fill: GRAY })}
-                {text(DOC_WIDTH - LEFT.x, y, "Tables: Total Warfare pp. 192-197. MechWarrior, BattleMech, 'Mech and AeroTech are registered trademarks of The Topps Company, Inc.", { size: 16, anchor: "end", fill: GRAY })}
-                {text(DOC_WIDTH - LEFT.x, y + 30, "Catalyst Game Labs is a trademark of InMediaRes Productions, LLC. This sheet is not published or endorsed by either.", { size: 16, anchor: "end", fill: GRAY })}
-            </g>
-        );
+        return sheetFooter("Tables: Total Warfare pp. 192-197.");
     }
 
     render = (): JSX.Element => (
