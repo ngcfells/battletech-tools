@@ -96,6 +96,44 @@ export const ammoCustom: IEquipmentItem[] = [
     clanBreechAmmo("10"),
     clanBreechAmmo("20"),
     {
+        // Beta feedback item 9: requested on the Star League Discord by SmilingNid, with ideas from Vehrec, Arkaxe and
+        // Ryan DesCastris. User rulings 2026-10-22: Custom; 2 capital-scale damage (the Long Tom's 20 converted at 10
+        // to 1, StratOps); half the standard round's 5 shots a ton, rounded up.
+        isAmmo: true,
+        isSpecialAmmo: true,
+        name: "Long Tom Artillery - Anti-Orbital Ammo",
+        altNames: ["Anti-Orbital Long Tom Ammo", "Long Tom Anti-Orbital Shells"],
+        tag: "ammo-long-tom-anti-orbital",
+        techBase: "universal",
+        altTags: ["ammo-custom-long-tom-anti-orbital"],
+        sort: "ammo, long tom artillery, anti-orbital",
+        category: "Ammunition",
+        cbills: 60000,
+        introduced: 2500,
+        extinct: null,
+        reintroduced: null,
+        battleValue: 46,
+        heat: 0,
+        heatAero: 0,
+        weight: 1,
+        range: { min: 0, short: 0, medium: 0, long: 0 },
+        space: { battlemech: 1, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 },
+        roundsPerTon: 3,
+        explosive: true,
+        techRating: "e",
+        book: "Custom",
+        page: 0,
+        alphaStrike: { specialAbility: [], heat: 0, rangeShort: 0, rangeMedium: 0, rangeLong: 0, rangeExtreme: 0, tc: false, notes: ["Custom equipment: no Alpha Strike effect"] },
+        damage: 2,
+        catalog: "custom",
+        rulesLevel: 6,
+        notes: "A Long Tom round with an overcharged propellant load, a rocket sustainer and a guided terminal stage. It makes a surface-to-orbit attack under the "
+            + "Strategic Operations rules for capital and sub-capital weapons (StratOps pp.91, 97-99), as a ballistic attack, for 2 points of capital-scale damage "
+            + "(20 standard). 3 shots a ton. Requested on the Star League Discord by SmilingNid, with ideas from Vehrec, Arkaxe and Ryan DesCastris. "
+            + "60,000 C-bills a ton, twice the single-stage guided Copperhead round, for its three stages, extra explosive and guided payload (user ruling 2026-10-22: 'elevated significantly'). "
+            + "Tech rating E, as Copperhead (user ruling 2026-10-22). Battle Value and dates are the standard Long Tom round's, pending a ruling."
+    },
+    {
         isAmmo: true,
         isSpecialAmmo: false,
         name: "AC/15 - Standard Ammo",

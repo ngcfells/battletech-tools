@@ -54,7 +54,8 @@ Local references (git-ignored, never imported by shipped code):
   record sheet (the photocopiable droid sheets bound into BD) is not built.
 - [ ] Verify before using: a fan-made vehicle sheet says a CASE-protected ammunition critical removes all rear
   armor and stuns the crew. Find the rule in the library before printing it on our sheet.
-- [ ] Anti-orbital Long Tom rounds (beta feedback item 9): mechanics and rules level to be decided with the user.
+- [ ] Anti-orbital Long Tom rounds (beta feedback item 9): built as Custom Long Tom ammunition (2026-10-22; rulings in
+  the spec). Still owed: era availability (lost Star League tech or a new development) and its Battle Value.
 
 - [ ] BV differs from SSW's BV2 figure: after the import fixes, 350 of 2,610 non-bundled designs match
   exactly and 805 within 2%. Work through the differences by cause (unplaced criticals and unknown

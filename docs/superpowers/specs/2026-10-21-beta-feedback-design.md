@@ -44,6 +44,11 @@ own tests and commit, in this order.
 9. **Anti-orbital Long Tom rounds: discussion only, not built in this pass.** (Requested on the Star League Discord
    server, a BattleTech group, by SmilingNid, with ideas from Vehrec, Arkaxe and Ryan DesCastris; added by the user 2026-10-21.) Decide the
    mechanics and the rules level (Apocryphal, Custom or Munchkin) with the user before any code.
+   **Decided 2026-10-22:** Custom (rules level 6), built in as Long Tom ammunition. It makes a surface-to-orbit
+   attack under the StratOps rules for capital weapons (pp.91, 97-99), as a ballistic attack, for 2 capital-scale
+   damage (the Long Tom's 20 at 10 to 1). 3 shots a ton (half the standard round's 5, rounded up). 60,000 C-bills a
+   ton, twice Copperhead, for its three stages, extra explosive and guided payload. Tech rating E, as Copperhead.
+   Era availability is still open (lost Star League tech, or a new development); BV is the standard round's until ruled.
 
 10. **Record sheets carry every chart and rules helper an official sheet has.** (Added by the user 2026-10-21.)
     For each unit type, review the official record sheets and give ours the same tables and helpers, laid out as
