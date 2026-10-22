@@ -12,7 +12,7 @@ import { DOC_HEIGHT, DOC_WIDTH, GRAY, INK, SHADE, blank, checkbox, groupBox, she
 // A battle armor record sheet laid out like the Total Warfare one: five squad blocks down the left, each with the
 // unit data, weapons and a row of circles per trooper, and the leg attack, swarm attack, swarm modifier, swarm hit
 // location and transport position tables down the right. Up to five squads print on one page; blocks left over are
-// left to write in, as on the official sheet. Our own trooper figure; no official art or logo.
+// left to write in, as on the official sheet. Our own trooper figure; no official art; the BattleTech logo is in the shared footer.
 
 export const BA_SQUADS_PER_PAGE = 5;
 

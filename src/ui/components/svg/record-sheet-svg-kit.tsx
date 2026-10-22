@@ -1,9 +1,10 @@
 import React, { type JSX } from 'react';
+import BattleTechLogo from '../battletech-logo';
 import RecordSheetGroupBoxSVG from './record-sheet-group-box-svg';
 
 // Drawing helpers the full-page record sheets share (vehicle, fighter, Small Craft and the rest). Coordinates are
-// in a 2000 x 2600 document, US Letter in proportion, as on our 'Mech sheet. Our own title block and footer; no
-// official art or logo.
+// in a 2000 x 2600 document, US Letter in proportion, as on our 'Mech sheet. Our own title block; the footer carries
+// the BattleTech logo and the trademark notice, as the official sheets and MegaMekLab's do (user ruling 2026-10-22).
 
 export const DOC_WIDTH = 2000;
 export const DOC_HEIGHT = 2600;
@@ -113,16 +114,33 @@ export const rollTable = (table: ISheetTable, x: number, y: number, w: number, c
     );
 };
 
-/** Our footer: the app's name and address, where the tables come from, and the trademark notices. */
+/**
+ * The trademark notice, worded as on the official Total Warfare sheets and as MegaMekLab and Solaris Skunk Werks print
+ * it, with the year filled in as MegaMekLab does. Their closing "Permission to photocopy for personal use" is the
+ * publisher's grant on its own sheets, so ours leave it out.
+ */
+export const TRADEMARK_NOTICE = (year: number): string[] => [
+    `© ${year} The Topps Company, Inc. Classic BattleTech, BattleTech, 'Mech and BattleMech are trademarks of The Topps Company, Inc. All rights reserved.`,
+    "Catalyst Game Labs and the Catalyst Game Labs logo are trademarks of InMediaRes Productions, LLC.",
+];
+
+export const NOT_ENDORSED = "This sheet is not published or endorsed by The Topps Company, Inc. or Catalyst Game Labs.";
+
+/** Our footer: the BattleTech logo, the app's name and address, where the tables come from, and the trademark notice. */
 export const sheetFooter = (tablesCitation: string): JSX.Element => {
-    const y = DOC_HEIGHT - 80;
+    const y = DOC_HEIGHT - 70;
     const x = 25;
+    const notice = TRADEMARK_NOTICE(new Date().getFullYear());
     return (
         <g>
-            {text(x, y, "Created with Jeff's BattleTech Tools IIC", { size: 22, weight: 700, fill: GRAY })}
-            {text(x, y + 30, "https://heysporky.github.io/battletech-tools/", { size: 18, fill: GRAY })}
-            {text(DOC_WIDTH - x, y, `${tablesCitation} MechWarrior, BattleMech, 'Mech and AeroTech are registered trademarks of The Topps Company, Inc.`, { size: 16, anchor: "end", fill: GRAY })}
-            {text(DOC_WIDTH - x, y + 30, "Catalyst Game Labs is a trademark of InMediaRes Productions, LLC. This sheet is not published or endorsed by either.", { size: 16, anchor: "end", fill: GRAY })}
+            <g data-testid="battletech-logo">
+                <BattleTechLogo xLoc={x} yLoc={DOC_HEIGHT - 98} width={300} baseColor={INK} altColor={GRAY} />
+            </g>
+            {text(x, y + 38, "Created with Jeff's BattleTech Tools IIC", { size: 18, weight: 700, fill: GRAY })}
+            {text(x, y + 60, "https://heysporky.github.io/battletech-tools/", { size: 15, fill: GRAY })}
+            {text(DOC_WIDTH - x, y, `${tablesCitation} ${NOT_ENDORSED}`, { size: 15, anchor: "end", fill: GRAY })}
+            {text(DOC_WIDTH - x, y + 26, notice[0], { size: 15, anchor: "end", fill: GRAY })}
+            {text(DOC_WIDTH - x, y + 52, notice[1], { size: 15, anchor: "end", fill: GRAY })}
         </g>
     );
 };

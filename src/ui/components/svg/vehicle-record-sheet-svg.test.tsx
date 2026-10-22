@@ -107,7 +107,7 @@ describe("vehicle record sheet (full page)", () => {
         expect(render(tank(), { showCrew: true })).toContain("data-testid=\"crew-gunnery\"");
     });
 
-    it("carries our own footer and no official logo", () => {
+    it("carries our own footer and title block, not the official one", () => {
         const markup = render(tank());
         expect(markup).toContain("Created with Jeff's BattleTech Tools IIC");
         expect(markup).not.toContain("CLASSIC BATTLETECH");

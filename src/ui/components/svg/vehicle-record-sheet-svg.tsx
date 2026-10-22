@@ -24,7 +24,7 @@ import VehicleDiagramSVG from './vehicle-diagram-svg';
 // A full-page Combat or Support Vehicle record sheet, laid out like the Total Warfare record sheets (Ground
 // Vehicle, V.T.O.L. and Naval Vehicle): vehicle data, weapons inventory, crew and critical damage boxes, notes
 // and the armor diagram on top; the hit location, motive system damage (or VTOL elevation track and physical
-// attacks) and critical hits tables below. Our own diagram and title block; no official art or logo.
+// attacks) and critical hits tables below. Our own diagram and title block; no official art; the BattleTech logo is in the shared footer.
 // Coordinates are in a 2000 x 2600 document, US Letter in proportion, as on our 'Mech sheet.
 
 

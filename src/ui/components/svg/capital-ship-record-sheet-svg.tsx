@@ -13,7 +13,7 @@ import { DOC_HEIGHT, DOC_WIDTH, GRAY, INK, groupBox, sheetFooter, text, titleBan
 // unit data with the weapon bays down the left, the armor diagram in capital-scale squares on the right with the
 // structural integrity, K-F drive, sail and docking collars in the hull; crew data, critical damage, heat data per
 // arc, notes and (not for a station) the velocity record below. Filled in as SO:AA pp.9-11 and p.146 say. Our own
-// title block and hull drawing; no official art or logo.
+// title block and hull drawing; no official art; the BattleTech logo is in the shared footer.
 
 const LEFT = { x: 25, w: 790 };
 const MIDDLE_X = 835;

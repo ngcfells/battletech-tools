@@ -13,7 +13,7 @@ import { DOC_HEIGHT, DOC_WIDTH, groupBox, sheetFooter, text, titleBanner } from 
 // A full-page DropShip record sheet, laid out like the Total Warfare Aerodyne and Spheroid DropShip record sheets:
 // DropShip data with the weapon bays down the left and the armor diagram filling the right; notes, crew data and the
 // velocity record below, with critical damage and the heat data (heat generated per arc, no heat scale) on the right.
-// Our own title block and silhouettes; no official art or logo.
+// Our own title block and silhouettes; no official art; the BattleTech logo is in the shared footer.
 
 const LEFT = { x: 25, w: 790 };
 const MIDDLE_X = 835;

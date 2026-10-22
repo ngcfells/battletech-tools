@@ -5,6 +5,7 @@ import { CONST_HIGHLIGHT_COLOR } from '../../../configVars';
 import { editionHasPrices } from '../../../data/rules-editions';
 import { breakLines } from '../../../utils/breakLines';
 import BattleTechLogo from '../battletech-logo';
+import { NOT_ENDORSED, TRADEMARK_NOTICE } from './record-sheet-svg-kit';
 import BattleMechHeatEffectsBoxSVG from './battlemech-heat-effects-box-svg';
 import BipedArmorCircles from './biped-armor-circles';
 import BipedArmorDiagramSVG from './biped-armor-diagram';
@@ -1867,9 +1868,9 @@ export default class BattleMechSVG extends React.Component<IBattleMechSVGProps, 
         fontFamily="sans-serif"
         fill={this.colorTan}
         style={{fontWeight: 100}}
-        fontSize={15}
+        fontSize={14}
     >
-    MechWarrior, BattleMech, ‘Mech and AeroTech are registered trademarks of The Topps Company, Inc. All Rights Reserved.
+    {TRADEMARK_NOTICE( new Date().getFullYear() )[0]}
     </text>
     <text
         x={450}
@@ -1878,9 +1879,9 @@ export default class BattleMechSVG extends React.Component<IBattleMechSVGProps, 
         fontFamily="sans-serif"
         fill={this.colorTan}
         style={{fontWeight: 100}}
-        fontSize={15}
+        fontSize={14}
     >
-Catalyst Game Labs and the Catalyst Game Labs logo are trademarks of InMediaRes Production, LLC. Used with permission.
+    {TRADEMARK_NOTICE( new Date().getFullYear() )[1]}
     </text>
     <text
         x={450}
@@ -1889,9 +1890,9 @@ Catalyst Game Labs and the Catalyst Game Labs logo are trademarks of InMediaRes 
         fontFamily="sans-serif"
         fill={this.colorTan}
         style={{fontWeight: 100}}
-        fontSize={15}
+        fontSize={14}
     >
-Neither Topps nor Catalyst Game Labs makes no representation or warranty as to the quality, viability, or suitability for purpose of this product.
+    {NOT_ENDORSED}
     </text>
     <text
         x={20}

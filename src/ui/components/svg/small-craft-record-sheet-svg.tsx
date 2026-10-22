@@ -14,7 +14,7 @@ import { DOC_HEIGHT, DOC_WIDTH, INK, groupBox, sheetFooter, titleBanner, wrapTex
 // A full-page Small Craft record sheet, laid out like the Total Warfare Aerodyne and Spheroid Small Craft record
 // sheets: craft data with the weapons inventory, notes and the armor diagram on top; critical damage, crew data and the
 // velocity record below, with the heat data and heat scale on the right. Armor data and a crew and cargo box take the
-// place the fighter sheet gives its external stores. Our own title block and craft silhouettes; no official art or logo.
+// place the fighter sheet gives its external stores. Our own title block and craft silhouettes; no official art; the BattleTech logo is in the shared footer.
 
 const LEFT = { x: 25, w: 790 };
 const MIDDLE_X = 835;

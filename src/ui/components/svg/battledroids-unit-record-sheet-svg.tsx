@@ -8,7 +8,7 @@ import { DOC_HEIGHT, DOC_WIDTH, INK, SHADE, checkbox, groupBox, rollTable, sheet
 // A full-page record sheet for the tanks, jeeps and infantry of Expert Battledroids (BD pp.22-23). The book prints
 // none for them, so this follows its droid record sheet: two units to a page, each with an armor diagram (or damage
 // boxes), its data and its weapons, and the rules the book gives the unit; the right column carries what the book's
-// tables sheet gives a player firing them. Our own title block and silhouettes; no official art or logo.
+// tables sheet gives a player firing them. Our own title block and silhouettes; no official art; the BattleTech logo is in the shared footer.
 
 const UNIT = { x: 25, w: 1280, h: 1150 };
 const UNIT_Y = [140, 1310];

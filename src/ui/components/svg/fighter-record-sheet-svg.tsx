@@ -15,7 +15,7 @@ import { DOC_HEIGHT, DOC_WIDTH, GRAY, INK, SHADE, checkbox, groupBox, rollTable,
 // fighter data with the weapons inventory, external stores, notes and the armor diagram on top; critical damage,
 // pilot data and the velocity record below, with the heat data and heat scale (aerospace fighters) or the ground map
 // straight movement and fighter return tables (conventional fighters) on the right. Fixed-wing support vehicles use
-// the conventional layout. Our own title block and craft silhouette; no official art or logo.
+// the conventional layout. Our own title block and craft silhouette; no official art; the BattleTech logo is in the shared footer.
 
 const LEFT = { x: 25, w: 790 };
 const MIDDLE_X = 835;

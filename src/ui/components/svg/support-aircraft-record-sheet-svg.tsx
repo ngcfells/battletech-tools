@@ -14,7 +14,7 @@ import { DOC_HEIGHT, DOC_WIDTH, INK, SHADE, groupBox, hitBox, sheetFooter, text,
 // Operations Satellite Record Sheet (TO:AUE p.213): the craft data with its weapons inventory down the left, the armor
 // diagram on the right, then notes, crew data and critical damage, with the velocity record and the Airship Velocity
 // Table (TW p.204) for an Airship. A Satellite holds station, so it has neither. Fixed-wing Support Vehicles print on
-// the conventional fighter sheet. Our own title block and craft silhouettes; no official art or logo.
+// the conventional fighter sheet. Our own title block and craft silhouettes; no official art; the BattleTech logo is in the shared footer.
 
 const LEFT = { x: 25, w: 790 };
 const MIDDLE_X = 835;
