@@ -1,0 +1,69 @@
+import { ICanonQuirkEntry, ICanonResolution } from "./quirk-canon-interfaces";
+import { IAssignedQuirk, IQuirkTargets } from "./quirk-interfaces";
+import { getQuirk } from "./quirk-registry";
+import { canonMechQuirks } from "./quirks-canon-mechs";
+
+/** A chassis name to match on: case, apostrophes and spacing ignored. */
+const chassisKey = (value: string): string => value.toLowerCase().replace(/['’]/g, "").replace(/\s+/g, " ").trim();
+
+/** A weapon name to match on: case, spacing, hyphens and a plural "s" ignored ("Medium Lasers" is a Medium Laser). */
+const weaponKey = (value: string): string => value.toLowerCase().replace(/[\s-]+/g, "").replace(/s$/, "");
+
+/** The canon entry for a chassis, by its name or another name it goes by. */
+export const findCanonEntry = (chassis: string, entries: ICanonQuirkEntry[] = canonMechQuirks): ICanonQuirkEntry | undefined => {
+    const wanted = chassisKey(chassis);
+    return wanted ? entries.find((entry) => [entry.chassis, ...(entry.altChassis ?? [])].some((name) => chassisKey(name) === wanted)) : undefined;
+};
+
+/**
+ * Places a canon entry's quirks on one unit. A quirk it cannot place (no such weapon, the other tech base, a
+ * qualifier it cannot read, a tag the catalog lacks) is left off with a note; it never goes on a different weapon.
+ */
+export const resolveCanonQuirks = (entry: ICanonQuirkEntry, unit: {
+    targets: IQuirkTargets;
+    /** Each weapon target's equipment name and location tag, by uuid. */
+    weaponInfo: (uuid: string) => { name: string; location?: string } | undefined;
+    clan: boolean;
+}): ICanonResolution => {
+    const quirks: IAssignedQuirk[] = [];
+    const notes: string[] = [];
+    for (const canon of entry.quirks) {
+        const record = getQuirk(canon.tag);
+        if (!record) {
+            notes.push(`${canon.tag}: not in the quirk catalog`);
+            continue;
+        }
+        if (canon.note) {
+            notes.push(`${record.name} (${canon.note}): not applied, check by hand`);
+            continue;
+        }
+        if (canon.techBase && (canon.techBase === "clan") !== unit.clan) {
+            notes.push(`${record.name}: ${canon.techBase === "clan" ? "Clan" : "Inner Sphere"} only, not applied`);
+            continue;
+        }
+        const base: IAssignedQuirk = { tag: record.tag };
+        if (canon.parameter !== undefined) base.parameter = canon.parameter;
+        if (canon.fromYear !== undefined) base.fromYear = canon.fromYear;
+        if (canon.toYear !== undefined) base.toYear = canon.toYear;
+        if (canon.weapon) {
+            const wanted = weaponKey(canon.weapon.name);
+            const matches = unit.targets.weapons.filter((weapon) => {
+                const info = unit.weaponInfo(weapon.uuid);
+                return info && weaponKey(info.name) === wanted && (!canon.weapon!.location || info.location === canon.weapon!.location);
+            });
+            if (!matches.length) {
+                const where = canon.weapon.location ? ` in the ${canon.weapon.location.toUpperCase()}` : "";
+                notes.push(`${record.name}: no ${canon.weapon.name}${where} on this 'Mech, not applied`);
+                continue;
+            }
+            const chosen = canon.weapon.all ? matches : matches.slice(0, 1);
+            if (!canon.weapon.all && matches.length > 1) notes.push(`${record.name}: put on the first of ${matches.length} ${canon.weapon.name}`);
+            quirks.push(...chosen.map((weapon) => ({ ...base, equipmentUuid: weapon.uuid })));
+        } else if (canon.locations) {
+            quirks.push(...canon.locations.map((location) => ({ ...base, location })));
+        } else {
+            quirks.push(base);
+        }
+    }
+    return { quirks, notes };
+};
