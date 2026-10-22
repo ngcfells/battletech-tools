@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { IQuirkTargets } from "../data/quirk-interfaces";
 import { parseBlkFile } from "./blk-file";
-import { blkWeaponFinder, readBlkQuirks } from "./blk-quirks";
+import { QuirkList } from "../classes/quirk-list";
+import { applyBlkQuirks, blkWeaponFinder, readBlkQuirks } from "./blk-quirks";
 
 const targets: IQuirkTargets = {
     locations: [{ tag: "nose", label: "Nose" }, { tag: "body", label: "Body" }],
@@ -53,5 +54,25 @@ describe("readBlkQuirks", () => {
             "Accurate Weapon: no ISPPC in NOS on this unit, left off.",
             "Accurate Weapon: no MediumLaser in Squad on this unit, left off.",
         ]);
+    });
+
+    it("gives each of two identical weapons in one location its own quirk", () => {
+        const twins: IQuirkTargets = { ...targets, weapons: [{ uuid: "m1", label: "Medium Laser", maxDamage: 5 }, { uuid: "m2", label: "Medium Laser", maxDamage: 5 }], bays: [] };
+        const finder = blkWeaponFinder([{ name: "MediumLaser", location: "nose", uuid: "m1" }, { name: "MediumLaser", location: "nose", uuid: "m2" }], () => "nose");
+        const result = readBlkQuirks(parseBlkFile("<weaponQuirks>\naccurate:NOS:0:MediumLaser\naccurate:NOS:1:MediumLaser\n</weaponQuirks>")!, { targets: twins, weaponAt: finder });
+        expect(result.quirks).toEqual([{ tag: "quirk-accurate-weapon", equipmentUuid: "m1" }, { tag: "quirk-accurate-weapon", equipmentUuid: "m2" }]);
+    });
+});
+
+describe("applyBlkQuirks", () => {
+    it("adds a bay's quirk once and says nothing of the bay's other weapon lines", () => {
+        const quirks = new QuirkList();
+        const issues: string[] = [];
+        applyBlkQuirks(parseBlkFile("<weaponQuirks>\naccurate:NOS:0:LargeLaser\naccurate:NOS:1:MediumLaser\n</weaponQuirks>")!, { quirks, getQuirkTargets: () => targets }, [
+            { name: "LargeLaser", location: "nose", uuid: "l1" },
+            { name: "MediumLaser", location: "nose", uuid: "l2" },
+        ], issues, () => "nose");
+        expect(quirks.getAll()).toEqual([{ tag: "quirk-accurate-weapon", bayUuids: ["l1", "l2"] }]);
+        expect(issues).toEqual([]);
     });
 });

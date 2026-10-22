@@ -22,23 +22,24 @@ export interface IBlkImportedItem {
 }
 
 /**
- * A weapon finder for readBlkQuirks: the imported item with the file's equipment name, in the location the file's
- * location abbreviation stands for (any location when the importer cannot place the abbreviation). Of several
- * identical weapons there, the first.
+ * A weapon finder for readBlkQuirks: the imported items with the file's equipment name, in the location the file's
+ * location abbreviation stands for (any location when the importer cannot place the abbreviation), in mount order.
  */
 export const blkWeaponFinder = (items: IBlkImportedItem[], locationOf: (abbr: string) => string | undefined = () => undefined) =>
-    (location: string, _slot: number, name: string): string | undefined => {
+    (location: string, _slot: number, name: string): string[] => {
         const where = locationOf(location);
-        return items.find((item) => item.name.toLowerCase() === name.toLowerCase() && (!where || item.location === where))?.uuid;
+        return items.filter((item) => item.name.toLowerCase() === name.toLowerCase() && (!where || item.location === where)).map((item) => item.uuid);
     };
 
 /** The quirks a BLK file lists, placed on the imported unit; a line it cannot place goes in issues. */
 export const readBlkQuirks = (file: IBlkFile, unit: {
     targets: IQuirkTargets;
-    weaponAt: (location: string, slot: number, name: string) => string | undefined;
+    weaponAt: (location: string, slot: number, name: string) => string[];
 }): { quirks: IAssignedQuirk[]; issues: string[] } => {
     const quirks: IAssignedQuirk[] = [];
     const issues: string[] = [];
+    // Our slots are not MegaMek's: of identical weapons, each line takes the first that does not yet have its quirk.
+    const placed = new Set<string>();
     const unknown = (code: string) => issues.push(`Quirk '${code.slice(0, 60)}' is not one this builder knows: left off.`);
     for (const code of blkLines(file, "quirks")) {
         const record = getQuirk(code);
@@ -59,7 +60,9 @@ export const readBlkQuirks = (file: IBlkFile, unit: {
             unknown(code);
             continue;
         }
-        const uuid = unit.weaponAt(location, Number(slot), name);
+        const found = unit.weaponAt(location, Number(slot), name);
+        const uuid = found.find((candidate) => !placed.has(`${record.tag}|${candidate}`)) ?? found[0];
+        if (uuid) placed.add(`${record.tag}|${uuid}`);
         const bay = uuid ? unit.targets.bays?.find((entry) => entry.uuids.includes(uuid)) : undefined;
         if (bay) quirks.push({ tag: record.tag, bayUuids: [...bay.uuids] });
         else if (uuid && unit.targets.weapons.some((weapon) => weapon.uuid === uuid)) quirks.push({ tag: record.tag, equipmentUuid: uuid });
@@ -70,7 +73,7 @@ export const readBlkQuirks = (file: IBlkFile, unit: {
 
 /**
  * Reads the file's quirks onto an imported unit, after its equipment is placed; what cannot be placed, and what the
- * quirk rules refuse, goes in issues.
+ * quirk rules refuse beyond a repeat, goes in issues.
  */
 export const applyBlkQuirks = (file: IBlkFile, unit: {
     quirks: { add: (quirk: IAssignedQuirk) => string | null };
@@ -80,6 +83,7 @@ export const applyBlkQuirks = (file: IBlkFile, unit: {
     issues.push(...result.issues);
     for (const quirk of result.quirks) {
         const refused = unit.quirks.add(quirk);
-        if (refused) issues.push(`Quirk ${getQuirk(quirk.tag)?.name ?? quirk.tag}: ${refused}`);
+        // A bay's other weapon lines name the same bay quirk again: nothing to report.
+        if (refused && refused !== "duplicate") issues.push(`Quirk ${getQuirk(quirk.tag)?.name ?? quirk.tag}: ${refused}`);
     }
 };

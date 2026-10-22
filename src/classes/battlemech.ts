@@ -640,9 +640,12 @@ export class BattleMech {
         return getQuirkIssues(this.quirks.getAll(), this.getQuirkUnitType(), this._rulesEdition, rulesLevel);
     }
 
-    /** The BattleMech Quirk Table's row for this chassis (BMM pp.90-95), by its model or its nickname. */
+    /**
+     * The BattleMech Quirk Table's row for this chassis (BMM pp.90-95): by its name ("Atlas"), else its model field,
+     * which holds the chassis for some Clan 'Mechs ("Timber Wolf"), else its nickname.
+     */
     private _canonQuirkEntry(): ICanonQuirkEntry | undefined {
-        return findCanonEntry(this._model) ?? findCanonEntry(this._nickname);
+        return findCanonEntry(this._name) ?? findCanonEntry(this._model) ?? findCanonEntry(this._nickname);
     }
 
     /** Whether the BattleMech Quirk Table lists this chassis. */
@@ -663,7 +666,7 @@ export class BattleMech {
             // The table names weapons without the catalog's Clan marking: "ER Large Laser (Clan)" is an ER Large Laser.
             return item ? { name: item.name.replace(/^Clan /, "").replace(/ \(Clan\)$/, ""), location: item.location } : undefined;
         };
-        const resolution = resolveCanonQuirks(entry, { targets: this.getQuirkTargets(), weaponInfo, clan });
+        const resolution = resolveCanonQuirks(entry, { targets: this.getQuirkTargets(), weaponInfo, clan, assigned: this.quirks.getAll() });
         let added = 0;
         const notes = [...resolution.notes];
         for (const quirk of resolution.quirks) {

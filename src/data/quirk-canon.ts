@@ -24,6 +24,8 @@ export const resolveCanonQuirks = (entry: ICanonQuirkEntry, unit: {
     /** Each weapon target's equipment name and location tag, by uuid. */
     weaponInfo: (uuid: string) => { name: string; location?: string } | undefined;
     clan: boolean;
+    /** The quirks already on the unit: a one-weapon quirk the player has moved to another such weapon stays there. */
+    assigned?: IAssignedQuirk[];
 }): ICanonResolution => {
     const quirks: IAssignedQuirk[] = [];
     const notes: string[] = [];
@@ -56,6 +58,7 @@ export const resolveCanonQuirks = (entry: ICanonQuirkEntry, unit: {
                 notes.push(`${record.name}: no ${canon.weapon.name}${where} on this 'Mech, not applied`);
                 continue;
             }
+            if (!canon.weapon.all && matches.some((weapon) => unit.assigned?.some((quirk) => quirk.tag === record.tag && quirk.equipmentUuid === weapon.uuid))) continue;
             const chosen = canon.weapon.all ? matches : matches.slice(0, 1);
             if (!canon.weapon.all && matches.length > 1) notes.push(`${record.name}: put on the first of ${matches.length} ${canon.weapon.name}`);
             quirks.push(...chosen.map((weapon) => ({ ...base, equipmentUuid: weapon.uuid })));
