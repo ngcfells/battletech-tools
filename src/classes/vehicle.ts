@@ -89,6 +89,8 @@ export interface IVehicleEquipmentExport {
     halfTon?: boolean;
     /** A Light or Medium weapon on a pintle (TM p.234). */
     pintle?: boolean;
+    /** A side weapon in that side's sponson turret (TO p. 348). */
+    sponson?: boolean;
     /** Drones a Drone Carrier Control System controls (TO:AUE p.117). */
     drones?: number;
     currentAmmo?: number;
@@ -291,6 +293,8 @@ export const isTurretLocation = (location: string | undefined): location is Vehi
 /** A Large Naval Vessel's crew boxes, as a DropShip's (TO:AUE p.27). */
 export const LARGE_NAVAL_CREW_BOXES = 6;
 
+/** The side locations whose weapons may go in that side's sponson turret (TO p. 348). */
+const SPONSON_SIDE_LOCATIONS: string[] = ["left", "right", "frontLeft", "frontRight", "rearLeft", "rearRight"];
 const VEHICLE_LOCATION_TAGS: VehicleLocation[] = ["front", "left", "right", "rear", "frontLeft", "frontRight", "rearLeft", "rearRight", "rotor", ...VEHICLE_TURRET_LOCATIONS];
 const MOTIVE_HIT_LEVELS: VehicleMotiveHit[] = ["minor", "moderate", "heavy", "immobilized"];
 const MOVEMENT_MODES: VehicleMovementMode[] = ["stationary", "cruise", "flank", "jump"];
@@ -475,6 +479,8 @@ export interface IVehicleExport {
     hasTurret: boolean;
     dualTurret?: boolean;
     sponsonTurrets?: boolean;
+    /** Each equipment entry says whether it is in a sponson; older saves put every side weapon in one. */
+    sponsonMounts?: boolean;
     frankenVehicle?: IFrankenVehicle;
     /** An ArtVee: a tracked vehicle that transforms into an artillery emplacement (Custom Homebrew). */
     artVee?: boolean;
@@ -1153,15 +1159,49 @@ export default class Vehicle {
     }
 
     public setSponsonTurrets(sponsons: boolean): boolean {
+        const had = this._sponsonTurrets;
         this._sponsonTurrets = sponsons && this.canHaveSponsonTurrets();
+        // Fitting sponsons moves the side weapons into them, as before sponsons were placement choices; the designer can
+        // move any back out. Taking the sponsons off leaves the weapons on their sides.
+        if (this._sponsonTurrets && !had) for (const item of this._equipmentList) item.sponson = this._canBeSponsonMounted(item);
+        if (!this._sponsonTurrets) for (const item of this._equipmentList) delete item.sponson;
         this._calc();
         return this._sponsonTurrets;
+    }
+
+    /** A weapon on a side (any side facing of a superheavy) can go in that side's sponson. */
+    private _canBeSponsonMounted(item: IEquipmentItem): boolean {
+        return this.isSponsonWeapon(item) && !!item.location && this.isSponsonSide(item.location);
+    }
+
+    /** True for a weapon this vehicle could put in a sponson: it has sponson turrets and the item is a weapon. */
+    public isSponsonWeapon(item: IEquipmentItem): boolean {
+        return this._sponsonTurrets && !item.isAmmo && (item.damage !== undefined || !!item.range);
+    }
+
+    /** True for a side location, whose weapons may go in that side's sponson. */
+    public isSponsonSide(location: string): boolean {
+        return SPONSON_SIDE_LOCATIONS.includes(location);
+    }
+
+    /** True for a side weapon the designer put in its side's sponson turret (beta feedback 2026-10-21; TO p. 348). */
+    public isSponsonMounted(item: IEquipmentItem): boolean {
+        return this._sponsonTurrets && !!item.sponson;
+    }
+
+    /** Puts a side weapon in its side's sponson, or takes it out; false when it cannot go in one. */
+    public setEquipmentSponson(uuid: string, sponson: boolean): boolean {
+        const item = this._equipmentList.find((equipment) => equipment.uuid === uuid);
+        if (!item || (sponson && !this._canBeSponsonMounted(item))) return false;
+        if (sponson) item.sponson = true; else delete item.sponson;
+        this._calc();
+        return true;
     }
 
     private _sideWeaponTons(side: "left" | "right"): number {
         const locations = side === "left" ? ["left", "frontLeft", "rearLeft"] : ["right", "frontRight", "rearRight"];
         return this._equipmentList
-            .filter((item) => !item.isAmmo && !!item.location && locations.includes(item.location) && (item.damage !== undefined || !!item.range))
+            .filter((item) => this.isSponsonMounted(item) && !!item.location && locations.includes(item.location))
             .reduce((sum, item) => sum + item.weight, 0);
     }
 
@@ -2644,6 +2684,8 @@ export default class Vehicle {
             item.location = location;
             // A pintle sits on a side; in the turret or unplaced, the weapon is off it (TM p.234).
             if (item.pintle && (!location || location === "turret")) item.pintle = false;
+            // A sponson is on its side; off the side, the weapon is out of it.
+            if (item.sponson && !this._canBeSponsonMounted(item)) delete item.sponson;
             this._calc();
         }
         return this._equipmentList;
@@ -4427,9 +4469,9 @@ export default class Vehicle {
             case "rear":
                 return { arc: "rear", turretRotation: null };
             case "left": case "frontLeft": case "rearLeft":
-                return this._sponsonTurrets ? { arc: "left", turretRotation: null, sponson: true } : { arc: "left", turretRotation: null };
+                return this.isSponsonMounted(weapon) ? { arc: "left", turretRotation: null, sponson: true } : { arc: "left", turretRotation: null };
             case "right": case "frontRight": case "rearRight":
-                return this._sponsonTurrets ? { arc: "right", turretRotation: null, sponson: true } : { arc: "right", turretRotation: null };
+                return this.isSponsonMounted(weapon) ? { arc: "right", turretRotation: null, sponson: true } : { arc: "right", turretRotation: null };
             default:
                 return { arc: "front", turretRotation: null };
         }
@@ -4778,6 +4820,7 @@ export default class Vehicle {
             hasTurret: this._hasTurret,
             dualTurret: this._dualTurret,
             sponsonTurrets: this._sponsonTurrets,
+            sponsonMounts: this._sponsonTurrets || undefined,
             frankenVehicle: this.getFrankenVehicle() ?? undefined,
             artVee: this._artVee || undefined,
             omni: this._omni || undefined,
@@ -4808,6 +4851,7 @@ export default class Vehicle {
                 size: findSupportVehicleLightWeapon(item.tag) ? item.size : undefined,
                 halfTon: this.isHalfTonBin(item) || undefined,
                 pintle: item.pintle || undefined,
+                sponson: this.isSponsonMounted(item) || undefined,
                 drones: item.variableFormula === "drone-carrier-control" ? item.controlledDrones : undefined,
                 currentAmmo: item.currentAmmo,
                 selectedAmmoBinUUID: item.selectedAmmoBinUUID,
@@ -4980,6 +5024,8 @@ export default class Vehicle {
                 }
                 const item = this._newEquipment(catalogItem, entry.location, entry.rear, entry.uuid);
                 if (lightWeapon && entry.pintle === true && item.location && item.location !== "turret") item.pintle = true;
+                // Older saves have no sponson choices: their side weapons were the sponsons' weapons.
+                if ((importObject.sponsonMounts === true ? entry.sponson === true : true) && this._canBeSponsonMounted(item)) item.sponson = true;
                 if (item.variableFormula === "drone-carrier-control" && typeof entry.drones === "number") item.controlledDrones = savedNumber(entry.drones, 1, 1, 1000);
                 if (entry.halfTon === true && this.canBeHalfTonBin(item)) {
                     item.weight = catalogItem.weight / 2;

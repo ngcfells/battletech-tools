@@ -27,7 +27,10 @@ export default class VehicleCreatorEquipmentPlacement extends React.Component<IE
     setLocation = (uuid: string | undefined, location: string): void => {
         const vehicle = this.props.appGlobals.currentVehicle;
         if (vehicle && uuid) {
-            vehicle.setEquipmentLocation(uuid, location);
+            // "left|sponson" is the left side's sponson turret: the weapon sits on its side, in the sponson.
+            const [tag, mount] = location.split("|");
+            vehicle.setEquipmentLocation(uuid, tag);
+            vehicle.setEquipmentSponson(uuid, mount === "sponson");
             this.props.appGlobals.saveCurrentVehicle(vehicle);
         }
     }
@@ -76,6 +79,8 @@ export default class VehicleCreatorEquipmentPlacement extends React.Component<IE
             ...vehicle.getLocations().filter((loc) => loc.tag !== "rotor"),
         ];
         const placementLocations = locationOptions.filter((loc) => loc.tag !== "");
+        // With sponson turrets, each side also offers its sponson (beta feedback 2026-10-21; TO p. 348).
+        const sponsonOptions = vehicle.hasSponsonTurrets() ? placementLocations.filter((loc) => vehicle.isSponsonSide(loc.tag)) : [];
 
         return (
             <UIPage current="classic-battletech-vehicle-creator" appGlobals={this.props.appGlobals}>
@@ -91,8 +96,8 @@ export default class VehicleCreatorEquipmentPlacement extends React.Component<IE
                             </p>
                             {vehicle.hasSponsonTurrets() ? (
                                 <p className={vehicle.getSponsonIssue() ? "color-red" : ""}>
-                                    <strong>Sponson Turrets</strong>: weapons on the left and right sides go in the sponsons
-                                    ({vehicle.getSponsonWeight()} t). {vehicle.getSponsonIssue() ?? "Both sponsons carry the same tonnage."} (TO pp. 348, 411)
+                                    <strong>Sponson Turrets</strong>: place weapons in the Left and Right Sponson locations
+                                    ({vehicle.getSponsonWeight()} t, 5% of each sponson's weapons rounded up to the half ton); a sponson weapon is a side weapon for critical hits. {vehicle.getSponsonIssue() ?? "Both sponsons carry the same tonnage."} (TO pp. 348, 411)
                                 </p>
                             ) : null}
                             <table className="table">
@@ -141,12 +146,16 @@ export default class VehicleCreatorEquipmentPlacement extends React.Component<IE
                                             <td>{vehicle.getItemSlots(item)}</td>
                                             <td>
                                                 <select
-                                                    value={item.location ?? ""}
+                                                    aria-label={`${item.name} location`}
+                                                    value={vehicle.isSponsonMounted(item) ? `${item.location}|sponson` : item.location ?? ""}
                                                     onChange={(e) => this.setLocation(item.uuid, e.currentTarget.value)}
                                                 >
                                                     {locationOptions.map((loc) => (
                                                         <option key={loc.tag} value={loc.tag}>{loc.name}</option>
                                                     ))}
+                                                    {vehicle.isSponsonWeapon(item) ? sponsonOptions.map((loc) => (
+                                                        <option key={`${loc.tag}|sponson`} value={`${loc.tag}|sponson`}>{loc.name.replace(/ Side$/, "")} Sponson</option>
+                                                    )) : null}
                                                 </select>
                                             </td>
                                             {vehicle.isOmni() ? (

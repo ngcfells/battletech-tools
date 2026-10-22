@@ -60,7 +60,7 @@ export default class VehicleRecordSheet extends React.Component<IVehicleRecordSh
                         {vehicle.getLocations().filter((loc) => loc.tag !== "rotor").map((loc) => (
                             <tr key={loc.tag}>
                                 <td>{loc.name}{vehicle.hasSponsonTurrets() && /left|right/i.test(loc.tag) ? " (sponson)" : ""}</td>
-                                <td>{equipmentByLocation(loc.tag).map((item) => `${item.name}${item.pintle ? " (pintle)" : ""}${weaponQuirkSuffix(quirkLines, item.uuid)}`).join(", ") || "-"}</td>
+                                <td>{equipmentByLocation(loc.tag).map((item) => `${item.name}${item.pintle ? " (pintle)" : ""}${vehicle.isSponsonMounted(item) ? " (sponson)" : ""}${weaponQuirkSuffix(quirkLines, item.uuid)}`).join(", ") || "-"}</td>
                             </tr>
                         ))}
                         <tr>

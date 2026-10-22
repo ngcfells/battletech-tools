@@ -416,6 +416,8 @@ export interface IEquipmentItem {
     rear?: boolean;
     /** On a Small Support Vehicle: mounted on a pintle on its location's side (TM p.234). */
     pintle?: boolean;
+    /** On a Combat Vehicle with sponson turrets: a side weapon in that side's sponson (TO p. 348). */
+    sponson?: boolean;
     criticals?: number;
     available?: boolean;
     rulesLevel?: number;
