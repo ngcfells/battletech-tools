@@ -188,6 +188,7 @@ export default class Home extends React.Component<IHomeProps, IHomeState> {
                         <li>The <i>Battledroids</i> tanks, jeeps and infantry squads print two to a page, in the style of the book's droid record sheet: an armor diagram or damage boxes, the unit's data and weapons, and the rules the book gives it. Beside them are the To-Hit Number, movement, terrain and target modifiers, the Tank Hit Locations, the Missile Hit Table and the tank firing arc. Missile launchers show their damage per missile.</li>
                         <li>Anti-orbital Long Tom ammunition, a Custom round requested on the Star League Discord by SmilingNid: it fires surface-to-orbit under the Strategic Operations rules for 2 points of capital-scale damage, 3 shots a ton. The Federated Suns built it after Edo, with a prototype in 3055 and production from 3062.</li>
                         <li>The Hailstorm, the towed artillery piece from the <i>MechWarrior 5</i> games, at the Apocryphal rules level: 35 points out to 12 mapsheets, with the rounds the other tubes fire. It mounts only on a Support Vehicle trailer.</li>
+                        <li>For games with space forces, a space turn tracker in Play Mode: tick "Space forces in this game" on the roster page. It counts the space turn (6 ground turns each), tracks each anti-orbital Long Tom shot from firing to the space phase, and reminds you of the rolls for firing early and for resolving each shot.</li>
                       </ul>
                    </li>
                   <li>

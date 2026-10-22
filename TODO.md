@@ -55,7 +55,7 @@ Local references (git-ignored, never imported by shipped code):
 - [ ] Verify before using: a fan-made vehicle sheet says a CASE-protected ammunition critical removes all rear
   armor and stuns the crew. Find the rule in the library before printing it on our sheet.
 - [ ] Anti-orbital Long Tom rounds (beta feedback item 9): built as Custom Long Tom ammunition (2026-10-22; rulings in
-  the spec), a Federated Suns development: prototype 3055, introduced 3062, Battle Value 28 (46 a ton prorated to 3 shots). Entry in TRO.md. Still owed: map play (the user's rules are in the spec).
+  the spec), a Federated Suns development: prototype 3055, introduced 3062, Battle Value 28 (46 a ton prorated to 3 shots). Entry in TRO.md. Map play: the space turn tracker in Play Mode (setup option "Space forces in this game"; design and plan of 2026-10-22).
 - [x] Hailstorm Artillery (Apocryphal, MechWarrior 5): towed, 35 damage at 12 mapsheets, 25 tons, 4 shots a ton, with the
   munitions the other tubes share (2026-10-22; TRO.md). Cost, BV and heat are scaled from the Long Tom.
 

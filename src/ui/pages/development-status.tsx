@@ -104,6 +104,7 @@ export default class DevelopmentStatus extends React.Component<IDevelopmentStatu
                       <li><del><i>Battledroids</i> unit record sheets: tanks, jeeps and infantry two to a page in the style of the book's droid sheet, with its tables</del></li>
                       <li><del>Anti-orbital Long Tom ammunition (Custom)</del></li>
                       <li><del>Hailstorm towed artillery (Apocryphal)</del></li>
+                      <li><del>Space turn tracker for anti-orbital fire</del></li>
                     </ul>
                     <h4>Coming</h4>
                     <ul>

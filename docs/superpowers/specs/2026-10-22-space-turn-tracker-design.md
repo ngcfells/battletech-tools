@@ -1,6 +1,6 @@
 # Space Turn Tracker and Anti-Orbital Fire: Design
 
-Status: draft for user approval, 2026-10-22.
+Status: approved 2026-10-22; built (plan `docs/superpowers/plans/2026-10-22-space-turn-tracker.md`).
 Parent: beta feedback item 9 (`2026-10-21-beta-feedback-design.md`). The round itself is built (commits 59fd4c02 to 6c7ea0e2).
 Tabletop rules: `TRO.md`, Long Tom Artillery: Anti-Orbital Ammo.
 

@@ -57,6 +57,8 @@ It loads in any Long Tom. These house rules add to the StratOps rules (user ruli
 - **Defenses:** The round is too small to target well. Fighters and point defense are rarely any use against it,
   but even blind squirrels find nuts now and then: they stop it only on a natural 12.
 
+In Play Mode, turn on "Space forces in this game" on the roster page to track the space turns and each shot.
+
 **Battle Value:** The standard round is 46 a ton, about 9.2 a shot. 3 shots come to 27.6, rounded up to 28. Its
 reach to orbit adds no range on the ground map, so range does not change the figure.
 
