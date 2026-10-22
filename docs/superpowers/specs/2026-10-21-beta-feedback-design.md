@@ -45,6 +45,12 @@ own tests and commit, in this order.
    server, a BattleTech group, by SmilingNid, with ideas from Vehrec, Arkaxe and Ryan DesCastris; added by the user 2026-10-21.) Decide the
    mechanics and the rules level (Apocryphal, Custom or Munchkin) with the user before any code.
 
+10. **Record sheets carry every chart and rules helper an official sheet has.** (Added by the user 2026-10-21.)
+    For each unit type, review the official record sheets and give ours the same tables and helpers, laid out as
+    close as we can without copying them; our silhouettes stay our own. A player who prints our sheet has everything
+    the official sheet for that unit type would give them (or the closest similar sheet, for our custom unit types).
+    Its own design and plan, not built in this pass.
+
 ## Non-goals
 
 - No change to which equipment a tech base may mount, beyond the Star League ruling.
