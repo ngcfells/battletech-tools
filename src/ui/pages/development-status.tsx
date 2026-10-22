@@ -93,6 +93,7 @@ export default class DevelopmentStatus extends React.Component<IDevelopmentStatu
                       <li><del>Era first in every builder; the era decides which tech bases you can pick</del></li>
                       <li><del>A tonnage bar that stays on screen, and an ammunition list that shows only ammo for your weapons</del></li>
                       <li><del>Vehicle record sheets with every table the official sheets print: hit locations, motive damage, critical hits, VTOL elevation and submarine depth tracks</del></li>
+                      <li><del>Fighter record sheets the same way: external stores, heat scale, velocity record, and the ground map movement and fighter return tables for conventional fighters</del></li>
                     </ul>
                     <h4>Coming</h4>
                     <ul>

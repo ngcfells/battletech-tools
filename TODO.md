@@ -31,9 +31,11 @@ Local references (git-ignored, never imported by shipped code):
 - [ ] Record sheet parity (beta feedback item 10, spec `docs/superpowers/specs/2026-10-21-beta-feedback-design.md`):
   every sheet carries the tables and helpers the Total Warfare record sheet for that unit type prints, laid out
   close to it, with our own silhouettes, and is checked in the browser against a render of the official sheet.
-  Combat and Support Vehicles are done (ground, VTOL, naval, submarine, super-heavy, Large Support Vehicle,
-  Large Naval Vessel). Still owed, in order: 'Mechs (review against the biped and quad sheets),
-  aerospace and conventional fighters, Small Craft, DropShips, JumpShips/WarShips/space stations, battle armor,
+  Done: Combat and Support Vehicles (ground, VTOL, naval, submarine, super-heavy, Large Support Vehicle,
+  Large Naval Vessel); 'Mechs (heat scale 30 down to 0 with Overflow; every other TW block was already there);
+  aerospace and conventional fighters and fixed-wing support vehicles. The drawing helpers are shared in
+  `src/ui/components/svg/record-sheet-svg-kit.tsx`. Still owed, in order: Small Craft, DropShips,
+  JumpShips/WarShips/space stations, battle armor,
   conventional infantry, ProtoMechs, buildings, then the airship and other aerospace Support Vehicle sheets
   (velocity record and airship velocity table) and the *Battledroids* sheet.
 - [ ] Verify before using: a fan-made vehicle sheet says a CASE-protected ammunition critical removes all rear
