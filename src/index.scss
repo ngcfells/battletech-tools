@@ -391,11 +391,12 @@ input[type=number] {
     border-bottom: solid 1px $colorWhite !important;
     border-top: none !important;
 
-    tr td {
+    // A header cell in the body (a totals row) takes the row's dark background too, not Bootstrap's white (issue #10).
+    tr td, tr th {
       background: #222;
     }
 
-    &:nth-child(odd) tr td {
+    &:nth-child(odd) tr td, &:nth-child(odd) tr th {
       background: #444;
     }
   }
