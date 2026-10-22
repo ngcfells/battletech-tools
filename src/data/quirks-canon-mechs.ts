@@ -653,4 +653,617 @@ export const canonMechQuirks: ICanonQuirkEntry[] = [
         ],
         source: { book: "BattleMech Manual", page: 90 },
     },
+    {
+        chassis: "Copperhead",
+        quirks: [
+            { tag: "quirk-difficult-to-maintain" },
+        ],
+        source: { book: "BattleMech Manual", page: 91 },
+    },
+    {
+        chassis: "Corvis",
+        quirks: [
+            { tag: "quirk-modular-weapons" },
+        ],
+        source: { book: "BattleMech Manual", page: 91 },
+    },
+    {
+        chassis: "Cossack",
+        quirks: [
+            { tag: "quirk-extended-torso-twist" },
+        ],
+        source: { book: "BattleMech Manual", page: 91 },
+    },
+    {
+        chassis: "Cougar",
+        quirks: [
+            { tag: "quirk-ubiquitous" },
+        ],
+        source: { book: "BattleMech Manual", page: 91 },
+    },
+    {
+        chassis: "Coyotl",
+        quirks: [
+            { tag: "quirk-extended-torso-twist" },
+        ],
+        source: { book: "BattleMech Manual", page: 91 },
+    },
+    {
+        chassis: "Crab",
+        quirks: [
+            { tag: "quirk-easy-to-maintain" },
+        ],
+        source: { book: "BattleMech Manual", page: 91 },
+    },
+    {
+        chassis: "Crimson Hawk",
+        quirks: [
+            { tag: "quirk-protected-actuators" },
+        ],
+        source: { book: "BattleMech Manual", page: 91 },
+    },
+    {
+        chassis: "Crimson Langur",
+        quirks: [
+            { tag: "quirk-easy-to-maintain" },
+            { tag: "quirk-improved-communications" },
+            { tag: "quirk-protected-actuators" },
+        ],
+        source: { book: "BattleMech Manual", page: 91 },
+    },
+    {
+        chassis: "Crockett",
+        quirks: [
+            { tag: "quirk-easy-to-pilot" },
+            { tag: "quirk-poor-life-support" },
+        ],
+        source: { book: "BattleMech Manual", page: 91 },
+    },
+    {
+        chassis: "Cronus",
+        quirks: [
+            { tag: "quirk-easy-to-maintain" },
+        ],
+        source: { book: "BattleMech Manual", page: 91 },
+    },
+    {
+        chassis: "Crossbow",
+        quirks: [
+            { tag: "quirk-modular-weapons", note: "LRM 10s" },
+            { tag: "quirk-obsolete", note: "2550-3070" },
+            { tag: "quirk-poor-targeting", parameter: "long" },
+        ],
+        source: { book: "BattleMech Manual", page: 91 },
+    },
+    {
+        chassis: "Crossbow (Omni)",
+        quirks: [
+            { tag: "quirk-improved-targeting", parameter: "short" },
+        ],
+        source: { book: "BattleMech Manual", page: 91 },
+    },
+    {
+        chassis: "Crusader",
+        quirks: [
+            { tag: "quirk-easy-to-maintain" },
+            { tag: "quirk-rugged", parameter: 1 },
+            { tag: "quirk-stabilized-weapon", note: "Legs" },
+            { tag: "quirk-ubiquitous" },
+        ],
+        source: { book: "BattleMech Manual", page: 91 },
+    },
+    {
+        chassis: "Cudgel",
+        quirks: [
+            { tag: "quirk-difficult-to-maintain" },
+        ],
+        source: { book: "BattleMech Manual", page: 91 },
+    },
+    {
+        chassis: "Cuirass",
+        quirks: [
+            { tag: "quirk-easy-to-maintain" },
+        ],
+        source: { book: "BattleMech Manual", page: 91 },
+    },
+    {
+        chassis: "Cyclops",
+        quirks: [
+            { tag: "quirk-battle-computer" },
+            { tag: "quirk-cowl" },
+            { tag: "quirk-difficult-ejection" },
+            { tag: "quirk-weak-head-armor", parameter: 2 },
+        ],
+        source: { book: "BattleMech Manual", page: 91 },
+    },
+    {
+        chassis: "Cygnus",
+        quirks: [
+            { tag: "quirk-exposed-weapon-linkage", note: "no weapon named" },
+            { tag: "quirk-static-ammo-feed", note: "no weapon named" },
+        ],
+        source: { book: "BattleMech Manual", page: 91 },
+    },
+    {
+        chassis: "Daboku",
+        quirks: [
+            { tag: "quirk-stabilized-weapon", note: "Autocannons" },
+            { tag: "quirk-prototype" },
+        ],
+        source: { book: "BattleMech Manual", page: 91 },
+    },
+    {
+        chassis: "Daedalus",
+        quirks: [
+            { tag: "quirk-difficult-to-maintain" },
+        ],
+        source: { book: "BattleMech Manual", page: 91 },
+    },
+    {
+        chassis: "Daikyu",
+        quirks: [
+            { tag: "quirk-extended-torso-twist" },
+        ],
+        source: { book: "BattleMech Manual", page: 91 },
+    },
+    {
+        chassis: "Daimyo",
+        quirks: [
+            { tag: "quirk-extended-torso-twist" },
+            { tag: "quirk-narrow-low-profile" },
+            { tag: "quirk-difficult-to-maintain" },
+        ],
+        source: { book: "BattleMech Manual", page: 91 },
+    },
+    {
+        chassis: "Daishi (Dire Wolf)",
+        altChassis: ["Daishi", "Dire Wolf"],
+        quirks: [
+            { tag: "quirk-improved-targeting", parameter: "long" },
+            { tag: "quirk-difficult-ejection" },
+        ],
+        source: { book: "BattleMech Manual", page: 91 },
+    },
+    {
+        chassis: "Dark Crow",
+        quirks: [
+            { tag: "quirk-low-mounted-arms" },
+        ],
+        source: { book: "BattleMech Manual", page: 91 },
+    },
+    {
+        chassis: "Dart",
+        quirks: [
+            { tag: "quirk-extended-torso-twist" },
+        ],
+        source: { book: "BattleMech Manual", page: 91 },
+    },
+    {
+        chassis: "Dasher (Fire Moth)",
+        altChassis: ["Dasher", "Fire Moth"],
+        quirks: [
+            { tag: "quirk-narrow-low-profile" },
+            { tag: "quirk-overhead-arms" },
+        ],
+        source: { book: "BattleMech Manual", page: 91 },
+    },
+    {
+        chassis: "Dasher II",
+        quirks: [
+            { tag: "quirk-poor-performance" },
+        ],
+        source: { book: "BattleMech Manual", page: 91 },
+    },
+    {
+        chassis: "Defiance",
+        quirks: [
+            { tag: "quirk-barrel-fist", locations: ["la", "ra"] },
+            { tag: "quirk-hyper-extending-actuators" },
+            { tag: "quirk-searchlight" },
+            { tag: "quirk-stable" },
+        ],
+        source: { book: "BattleMech Manual", page: 91 },
+    },
+    {
+        chassis: "Deimos",
+        quirks: [
+            { tag: "quirk-anti-aircraft-targeting" },
+        ],
+        source: { book: "BattleMech Manual", page: 91 },
+    },
+    {
+        chassis: "Dervish",
+        quirks: [
+            { tag: "quirk-easy-to-maintain" },
+            { tag: "quirk-hyper-extending-actuators" },
+        ],
+        source: { book: "BattleMech Manual", page: 91 },
+    },
+    {
+        chassis: "Deva",
+        quirks: [
+            { tag: "quirk-improved-communications" },
+            { tag: "quirk-improved-sensors" },
+            { tag: "quirk-bad-reputation" },
+        ],
+        source: { book: "BattleMech Manual", page: 91 },
+    },
+    {
+        chassis: "Devastator",
+        quirks: [
+            { tag: "quirk-hyper-extending-actuators" },
+            { tag: "quirk-searchlight" },
+        ],
+        source: { book: "BattleMech Manual", page: 91 },
+    },
+    {
+        chassis: "Dragon",
+        quirks: [
+            { tag: "quirk-narrow-low-profile" },
+            { tag: "quirk-stable" },
+        ],
+        source: { book: "BattleMech Manual", page: 91 },
+    },
+    {
+        chassis: "Dragon Fire",
+        quirks: [
+            { tag: "quirk-good-reputation", parameter: 1 },
+            { tag: "quirk-no-minimal-arms" },
+        ],
+        source: { book: "BattleMech Manual", page: 91 },
+    },
+    {
+        chassis: "Dragonfly (Viper)",
+        altChassis: ["Dragonfly"],
+        quirks: [
+            { tag: "quirk-improved-targeting", parameter: "long" },
+            { tag: "quirk-narrow-low-profile" },
+        ],
+        source: { book: "BattleMech Manual", page: 91 },
+    },
+    {
+        chassis: "Dragoon",
+        quirks: [
+            { tag: "quirk-easy-to-maintain" },
+            { tag: "quirk-modular-weapons" },
+            { tag: "quirk-bad-reputation" },
+            { tag: "quirk-obsolete", parameter: 2780 },
+        ],
+        source: { book: "BattleMech Manual", page: 91 },
+    },
+    {
+        chassis: "Duan Gung",
+        quirks: [
+            { tag: "quirk-protected-actuators" },
+            { tag: "quirk-non-standard-parts" },
+        ],
+        source: { book: "BattleMech Manual", page: 91 },
+    },
+    {
+        chassis: "Eagle",
+        quirks: [
+            { tag: "quirk-extended-torso-twist" },
+            { tag: "quirk-weak-head-armor", parameter: 1 },
+        ],
+        source: { book: "BattleMech Manual", page: 91 },
+    },
+    {
+        chassis: "Ebony",
+        quirks: [
+            { tag: "quirk-improved-targeting", parameter: "medium" },
+        ],
+        source: { book: "BattleMech Manual", page: 91 },
+    },
+    {
+        chassis: "Eidolon",
+        quirks: [
+            { tag: "quirk-non-standard-parts" },
+        ],
+        source: { book: "BattleMech Manual", page: 91 },
+    },
+    {
+        chassis: "Eisenfaust",
+        quirks: [
+            { tag: "quirk-battlefists" },
+            { tag: "quirk-easy-to-maintain" },
+            { tag: "quirk-protected-actuators" },
+        ],
+        source: { book: "BattleMech Manual", page: 91 },
+    },
+    {
+        chassis: "Emperor",
+        quirks: [
+            { tag: "quirk-command-mech" },
+            { tag: "quirk-improved-cooling-jacket", weapon: { name: "Large Laser", location: "la" } },
+            { tag: "quirk-improved-cooling-jacket", weapon: { name: "Large Laser", location: "ra" } },
+        ],
+        source: { book: "BattleMech Manual", page: 91 },
+    },
+    {
+        chassis: "Enfield",
+        quirks: [
+            { tag: "quirk-extended-torso-twist" },
+        ],
+        source: { book: "BattleMech Manual", page: 91 },
+    },
+    {
+        chassis: "Enforcer",
+        quirks: [
+            { tag: "quirk-barrel-fist", locations: ["la", "ra"] },
+            { tag: "quirk-fast-reload", weapon: { name: "Autocannon/10" } },
+            { tag: "quirk-improved-cooling-jacket", weapon: { name: "Autocannon/10" } },
+            { tag: "quirk-ammunition-feed-problem", weapon: { name: "Autocannon/10" } },
+        ],
+        source: { book: "BattleMech Manual", page: 91 },
+    },
+    {
+        chassis: "Enforcer III",
+        quirks: [
+            { tag: "quirk-barrel-fist", locations: ["la", "ra"] },
+            { tag: "quirk-fast-reload", weapon: { name: "Ultra AC/10" } },
+        ],
+        source: { book: "BattleMech Manual", page: 91 },
+    },
+    {
+        chassis: "Epimetheus",
+        quirks: [
+            { tag: "quirk-non-standard-parts" },
+            { tag: "quirk-prototype" },
+        ],
+        source: { book: "BattleMech Manual", page: 91 },
+    },
+    {
+        chassis: "Excalibur",
+        quirks: [
+            { tag: "quirk-vestigial-hands" },
+        ],
+        source: { book: "BattleMech Manual", page: 91 },
+    },
+    {
+        chassis: "Exterminator",
+        quirks: [
+            { tag: "quirk-difficult-to-maintain" },
+        ],
+        source: { book: "BattleMech Manual", page: 91 },
+    },
+    {
+        chassis: "Eyleuka",
+        quirks: [
+            { tag: "quirk-exposed-actuators" },
+        ],
+        source: { book: "BattleMech Manual", page: 91 },
+    },
+    {
+        chassis: "Fafnir",
+        quirks: [
+            { tag: "quirk-stabilized-weapon", weapon: { name: "Heavy Gauss Rifle", location: "lt", all: true } },
+            { tag: "quirk-stabilized-weapon", weapon: { name: "Heavy Gauss Rifle", location: "rt", all: true } },
+            { tag: "quirk-no-minimal-arms" },
+        ],
+        source: { book: "BattleMech Manual", page: 91 },
+    },
+    {
+        chassis: "Falcon",
+        quirks: [
+            { tag: "quirk-narrow-low-profile" },
+        ],
+        source: { book: "BattleMech Manual", page: 91 },
+    },
+    {
+        chassis: "Falcon Hawk",
+        quirks: [
+            { tag: "quirk-good-reputation", parameter: 1 },
+        ],
+        source: { book: "BattleMech Manual", page: 91 },
+    },
+    {
+        chassis: "Falconer",
+        quirks: [
+            { tag: "quirk-stable" },
+        ],
+        source: { book: "BattleMech Manual", page: 91 },
+    },
+    {
+        chassis: "Fennec",
+        quirks: [
+            { tag: "quirk-no-minimal-arms" },
+        ],
+        source: { book: "BattleMech Manual", page: 91 },
+    },
+    {
+        chassis: "Fenris (Ice Ferret)",
+        altChassis: ["Fenris", "Ice Ferret"],
+        quirks: [
+            { tag: "quirk-improved-sensors" },
+        ],
+        source: { book: "BattleMech Manual", page: 91 },
+    },
+    {
+        chassis: "Fire Falcon",
+        quirks: [
+            { tag: "quirk-improved-sensors" },
+        ],
+        source: { book: "BattleMech Manual", page: 91 },
+    },
+    {
+        chassis: "Fire Scorpion",
+        quirks: [
+            { tag: "quirk-cowl" },
+        ],
+        source: { book: "BattleMech Manual", page: 91 },
+    },
+    {
+        chassis: "Fireball",
+        quirks: [
+            { tag: "quirk-improved-communications" },
+            { tag: "quirk-narrow-low-profile" },
+        ],
+        source: { book: "BattleMech Manual", page: 91 },
+    },
+    {
+        chassis: "Firebee",
+        quirks: [
+            { tag: "quirk-poor-life-support" },
+            { tag: "quirk-weak-legs" },
+        ],
+        source: { book: "BattleMech Manual", page: 91 },
+    },
+    {
+        chassis: "Firefly",
+        quirks: [
+            { tag: "quirk-no-minimal-arms" },
+        ],
+        source: { book: "BattleMech Manual", page: 91 },
+    },
+    {
+        chassis: "Firestarter",
+        quirks: [
+            { tag: "quirk-ubiquitous" },
+            { tag: "quirk-exposed-weapon-linkage", weapon: { name: "Flamer", location: "la", all: true } },
+            { tag: "quirk-exposed-weapon-linkage", weapon: { name: "Flamer", location: "ra", all: true } },
+        ],
+        source: { book: "BattleMech Manual", page: 91 },
+    },
+    {
+        chassis: "Firestarter (Omni)",
+        quirks: [
+            { tag: "quirk-cowl" },
+            { tag: "quirk-difficult-to-maintain" },
+        ],
+        source: { book: "BattleMech Manual", page: 91 },
+    },
+    {
+        chassis: "Flamberge",
+        quirks: [
+            { tag: "quirk-improved-targeting", parameter: "medium" },
+        ],
+        source: { book: "BattleMech Manual", page: 91 },
+    },
+    {
+        chassis: "Flashfire",
+        quirks: [
+            { tag: "quirk-modular-weapons", note: "Fluid Guns" },
+        ],
+        source: { book: "BattleMech Manual", page: 91 },
+    },
+    {
+        chassis: "Flashman",
+        quirks: [
+            { tag: "quirk-rugged", parameter: 1 },
+        ],
+        source: { book: "BattleMech Manual", page: 91 },
+    },
+    {
+        chassis: "Flea",
+        quirks: [
+            { tag: "quirk-easy-to-maintain" },
+            { tag: "quirk-improved-life-support" },
+            { tag: "quirk-no-minimal-arms" },
+        ],
+        source: { book: "BattleMech Manual", page: 91 },
+    },
+    {
+        chassis: "Galahad",
+        quirks: [
+            { tag: "quirk-difficult-to-maintain" },
+        ],
+        source: { book: "BattleMech Manual", page: 91 },
+    },
+    {
+        chassis: "Galahad (Glass Spider)",
+        altChassis: ["Glass Spider"],
+        quirks: [
+            { tag: "quirk-anti-aircraft-targeting" },
+            { tag: "quirk-extended-torso-twist" },
+            { tag: "quirk-multi-trac" },
+        ],
+        source: { book: "BattleMech Manual", page: 91 },
+    },
+    {
+        chassis: "Gallant",
+        quirks: [
+            { tag: "quirk-stabilized-weapon", weapon: { name: "Large Pulse Laser", location: "ra", all: true } },
+        ],
+        source: { book: "BattleMech Manual", page: 91 },
+    },
+    {
+        chassis: "Gallowglas",
+        quirks: [
+            { tag: "quirk-good-reputation", parameter: 1 },
+        ],
+        source: { book: "BattleMech Manual", page: 91 },
+    },
+    {
+        chassis: "Garm",
+        quirks: [
+            { tag: "quirk-extended-torso-twist" },
+        ],
+        source: { book: "BattleMech Manual", page: 91 },
+    },
+    {
+        chassis: "Ghost",
+        quirks: [
+            { tag: "quirk-extended-torso-twist" },
+            { tag: "quirk-improved-communications" },
+            { tag: "quirk-improved-sensors" },
+        ],
+        source: { book: "BattleMech Manual", page: 91 },
+    },
+    {
+        chassis: "Gladiator",
+        quirks: [
+            { tag: "quirk-cowl" },
+            { tag: "quirk-bad-reputation" },
+        ],
+        source: { book: "BattleMech Manual", page: 91 },
+    },
+    {
+        chassis: "Gladiator (Executioner)",
+        altChassis: ["Executioner"],
+        quirks: [
+            { tag: "quirk-distracting" },
+        ],
+        source: { book: "BattleMech Manual", page: 91 },
+    },
+    {
+        chassis: "Goliath",
+        quirks: [
+            { tag: "quirk-multi-trac" },
+            { tag: "quirk-exposed-actuators" },
+        ],
+        source: { book: "BattleMech Manual", page: 91 },
+    },
+    {
+        chassis: "Goshawk (Vapor Eagle)",
+        altChassis: ["Goshawk", "Vapor Eagle"],
+        quirks: [
+            { tag: "quirk-nimble-jumper" },
+        ],
+        source: { book: "BattleMech Manual", page: 91 },
+    },
+    {
+        chassis: "Goshawk II",
+        quirks: [
+            { tag: "quirk-improved-life-support" },
+            { tag: "quirk-nimble-jumper" },
+        ],
+        source: { book: "BattleMech Manual", page: 91 },
+    },
+    {
+        chassis: "Grand Crusader",
+        quirks: [
+            { tag: "quirk-directional-torso-mount", locations: ["lt", "rt"] },
+            { tag: "quirk-bad-reputation" },
+        ],
+        source: { book: "BattleMech Manual", page: 91 },
+    },
+    {
+        chassis: "Grand Crusader II",
+        quirks: [
+            { tag: "quirk-easy-to-maintain" },
+            { tag: "quirk-stable" },
+            { tag: "quirk-bad-reputation" },
+        ],
+        source: { book: "BattleMech Manual", page: 91 },
+    },
 ];
