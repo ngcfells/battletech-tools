@@ -15,7 +15,7 @@ export default class FighterCreatorRecordSheet extends React.Component<IRecordSh
 
         return (
             <PrintablePage backTo={`${process.env.PUBLIC_URL}/classic-battletech/fighter-creator/summary`} appGlobals={this.props.appGlobals} requiredRulesLevel={fighter.getRequiredRulesLevel()}>
-                <FighterRecordSheet fighter={fighter} />
+                <FighterRecordSheet fighter={fighter} showAlphaStrike={true} />
             </PrintablePage>
         );
     }
