@@ -136,6 +136,7 @@ export default class SmallCraftCreatorEquipment extends React.Component<IEquipme
                                     <AvailableEquipment
                                         appGlobals={this.props.appGlobals}
                                         equipment={craft.getAvailableEquipment(rulesLevel >= CUSTOM_HOMEBREW_RULES_LEVEL, rulesLevel)}
+                                        mounted={craft.getEquipmentList()}
                                         addFunction={this.addEquipment}
                                     />
 

@@ -126,6 +126,7 @@ export default class CapitalShipCreatorEquipment extends React.Component<IEquipm
                                     <AvailableEquipment
                                         appGlobals={this.props.appGlobals}
                                         equipment={ship.getAvailableEquipment(rulesLevel >= CUSTOM_HOMEBREW_RULES_LEVEL, rulesLevel)}
+                                        mounted={ship.getEquipmentList()}
                                         addFunction={this.addEquipment}
                                     />
                                     <div className="clear-both overflow-hidden">

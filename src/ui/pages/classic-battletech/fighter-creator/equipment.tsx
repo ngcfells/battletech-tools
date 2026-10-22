@@ -63,6 +63,7 @@ export default class FighterCreatorEquipment extends React.Component<IEquipmentP
                                 <AvailableEquipment
                                     appGlobals={this.props.appGlobals}
                                     equipment={fighter.getAvailableEquipment(rulesLevel >= CUSTOM_HOMEBREW_RULES_LEVEL, rulesLevel)}
+                                    mounted={fighter.getEquipmentList()}
                                     addFunction={this.addEquipment}
                                 />
 

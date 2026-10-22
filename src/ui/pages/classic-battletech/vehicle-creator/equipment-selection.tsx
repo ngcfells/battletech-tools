@@ -55,6 +55,7 @@ export default class VehicleCreatorEquipmentSelection extends React.Component<IE
                                 <AvailableEquipment
                                     appGlobals={this.props.appGlobals}
                                     equipment={vehicle.getAvailableEquipmentByCatalog("all", this.props.appGlobals.appSettings.mechRulesFilter >= CUSTOM_HOMEBREW_RULES_LEVEL, this.props.appGlobals.appSettings.mechRulesFilter)}
+                                    mounted={vehicle.getEquipmentList()}
                                     addFunction={this.addEquipment}
                                 />
                                 {vehicle.isSupportVehicle() && vehicle.getTonnage() < 5 ? <VehicleLightWeapons appGlobals={this.props.appGlobals} /> : null}

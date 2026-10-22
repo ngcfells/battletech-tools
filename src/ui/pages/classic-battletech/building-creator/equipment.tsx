@@ -185,6 +185,7 @@ export default class BuildingCreatorEquipment extends React.Component<IEquipment
                                         <AvailableEquipment
                                             appGlobals={this.props.appGlobals}
                                             equipment={available}
+                                            mounted={building.getEquipment().map((mount) => mount.item)}
                                             addFunction={this.addEquipment}
                                         />
                                     </>

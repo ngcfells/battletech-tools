@@ -216,6 +216,7 @@ export default class MechCreatorStep5 extends React.Component<IHomeProps, IHomeS
                       <AvailableEquipment
                         appGlobals={this.props.appGlobals}
                         equipment={currentMech.getAvailableEquipmentByCatalog(this.state.equipmentCatalog, includeCustom, shownLevel)}
+                        mounted={currentMech.getInstalledEquipment()}
                         addFunction={this.addEquipment}
                       />
                   </div>
