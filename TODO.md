@@ -40,9 +40,11 @@ Local references (git-ignored, never imported by shipped code):
   (four platoons or sub-platoons to a page with the leg, swarm, swarm modifier, non-infantry weapon and
   burst-fire tables, TW pp.216-217, 221); ProtoMechs (a Point of five to a page with the weapons inventory,
   pilot data, hit location and critical hit boxes, armor diagram and each chassis's torso weapon roll, TW
-  pp.185-187, IO:AE pp.93-94). The drawing helpers are
+  pp.185-187, IO:AE pp.93-94); buildings (the TO:AUE p.215 Structure Record Sheet with a four-level structure map,
+  each hex's CF, armor and entry cost, the building critical hits table and the structure rules, with continuation
+  pages for long walls). The drawing helpers are
   shared in `src/ui/components/svg/record-sheet-svg-kit.tsx` and `aerospace-record-sheet-svg-blocks.tsx`. Still
-  owed, in order: buildings, then the airship and other aerospace Support Vehicle sheets
+  owed, in order: the airship and other aerospace Support Vehicle sheets
   (velocity record and airship velocity table) and the *Battledroids* sheet.
 - [ ] Verify before using: a fan-made vehicle sheet says a CASE-protected ammunition critical removes all rear
   armor and stuns the crew. Find the rule in the library before printing it on our sheet.
@@ -320,6 +322,8 @@ played first, then by dependency.
   them jumping while the AI is active.
 
 ### Buildings, Gun Emplacements and Mobile Structures
+
+- [x] Record sheet like the Tactical Operations Structure Record Sheet (TO:AUE p.215), 2026-10-22.
 
 - [ ] Capital weapons by rules edition (user, 2026-10-07: where editions disagree, each edition's values are
   listed so the selected edition shows its own). `ICapitalWeapon` takes `introducedInEdition` and

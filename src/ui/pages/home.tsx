@@ -164,7 +164,7 @@ export default class Home extends React.Component<IHomeProps, IHomeState> {
                   <ul className="news">
                   <li>
                   <h3>
-                      <strong>October 22nd, 2026</strong> - Beta feedback and new record sheets for vehicles, fighters, Small Craft, DropShips, capital ships, battle armor and infantry
+                      <strong>October 22nd, 2026</strong> - Beta feedback and new record sheets for vehicles, fighters, Small Craft, DropShips, capital ships, battle armor, infantry, ProtoMechs and buildings
                     </h3>
                     <h4>Author - NGCFells</h4>
                       <p>New on the <a href="https://ngcfells.github.io/battletech-tools" target="_blank" rel="noopener noreferrer">beta test site</a>, from your reports:</p>
@@ -183,7 +183,8 @@ export default class Home extends React.Component<IHomeProps, IHomeState> {
                         <li>The battle armor sheet holds five squads to a page, as the Total Warfare one does, with the leg attack, swarm attack, swarm attack modifier, swarm hit location and transport position tables beside them. The roster prints its battle armor five squads to a page, and the creator prints a design with its alternate loadouts.</li>
                         <li>The conventional infantry sheet holds four platoons to a page: thirty numbered troopers with the damage the platoon does under each, the range modifiers out to its reach, and its movement, armor and skills. Troopers it does not have and ranges it cannot reach are blacked out. An oversized platoon gets a block for each sub-platoon. Below them are the leg attack, swarm attack, swarm attack modifier, non-infantry weapon damage and burst-fire damage tables.</li>
                         <li>The ProtoMech sheet holds a Point of five to a page: each block has the weapons inventory, pilot data with the consciousness track, the hit location table with its critical hit boxes and an armor diagram. The torso weapon roll names your torso weapons, and quads and Gliders get their own hit tables.</li>
-                        <li>Buildings and the other unit types follow.</li>
+                        <li>Buildings print on a Structure Record Sheet like the Tactical Operations one: structure data, the weapons inventory, a line for every hex with its Construction Factor, armor and what entering it costs, crew data and a numbered map to mark the footprint on, level by level. Beside the map are the building critical hits table and the building's Damage Threshold and damage figures. Long walls run on to continuation pages.</li>
+                        <li>The airship and other aerospace Support Vehicles follow.</li>
                       </ul>
                    </li>
                   <li>
