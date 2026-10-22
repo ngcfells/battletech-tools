@@ -41,6 +41,13 @@ It loads in any Long Tom. These house rules add to the StratOps rules (user ruli
 - **Rate of fire:** The round has a long way to travel, and a turn in space is longer than a ground turn:
   6 ground turns pass for each space turn, and the gun fires once a space turn. Between shots the breech cools and
   is inspected, and the gun loads the extra propellant.
+- **Firing early:** Until the next space turn, the Long Tom cannot safely fire any round, ground artillery included.
+  A crew that fires early anyway rolls 2D6 first. On 2-4 the gun fails catastrophically: it is destroyed and
+  inoperable for the rest of the game. On 5-8 it misfires. On 9-12 it fires normally.
+- **Misfire:** The round goes wild. Roll 1D6 for its direction from the aimed hex on the Scatter Diagram (TacOps
+  p.182), then 3D6 for how many hexes it travels (the Advanced Scatter roll for the worst misses). It goes off where
+  it lands for its normal damage, hitting whatever is there, friendly units included. If it lands off the playing
+  area, it is lost.
 - **Reach:** The target must be in the first section of the space/atmospheric map. Anything farther out is out of
   reach.
 - **Moving targets:** The round flies to the hex the target was in when it fired. If the target has moved one hex
