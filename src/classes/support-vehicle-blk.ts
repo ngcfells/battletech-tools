@@ -3,6 +3,7 @@ import { blkLines, blkValue, IBlkFile, parseBlkFile } from "../utils/blk-file";
 import { IBlkAmmoLine, findBlkAmmo, findBlkAmmoWeapon, parseBlkAmmoLine } from "../utils/blk-ammo";
 import { findImportedEquipment } from "../utils/importedEquipment";
 import { infantryWeapons } from "../data/infantry-weapons";
+import { applyBlkQuirks, IBlkImportedItem } from "../utils/blk-quirks";
 import Vehicle from "./vehicle";
 import AerospaceFighter, { FighterArc, FighterLocation } from "./aerospace-fighter";
 
@@ -59,6 +60,10 @@ const ARMOR_ORDER: Record<string, string[]> = {
     largesupporttank: ["front", "frontRight", "frontLeft", "rearRight", "rearLeft", "rear", "turret", "turret2"],
     supportvtol: ["front", "right", "left", "rear", "rotor", "turret"],
 };
+
+// MegaMek's location abbreviations in a weapon quirk line; one not listed here is matched by the weapon's name alone.
+const BLK_VEHICLE_LOCATIONS: Record<string, string> = { FR: "front", RS: "right", LS: "left", RR: "rear", TU: "turret", RO: "rotor" };
+const BLK_FIXED_WING_LOCATIONS: Record<string, string> = { NOS: "nose", LWG: "leftWing", RWG: "rightWing", AFT: "aft" };
 
 const key = (name: string): string => name.toLowerCase().replace(/[^a-z0-9]/g, "");
 const numberOf = (file: IBlkFile, tag: string, fallback: number = 0): number => {
@@ -152,6 +157,7 @@ export const importSupportVehicleBlk = (text: string): ISupportVehicleBlkResult 
 
     // Equipment.
     const pendingAmmo: { line: string; ammo: IBlkAmmoLine }[] = [];
+    const placed: IBlkImportedItem[] = [];
     const blocks: [string, string | undefined][] = [["body", undefined], ...layout.map(([block, location]) => [block, location] as [string, string])];
     for (const [block, location] of blocks) {
         for (const rawLine of blkLines(file, `${block} equipment`)) {
@@ -188,6 +194,7 @@ export const importSupportVehicleBlk = (text: string): ISupportVehicleBlkResult 
                 issues.push(`"${line}" could not be mounted and was left off.`);
                 continue;
             }
+            if (added.uuid) placed.push({ name, location: location ?? "", uuid: added.uuid });
             if (omniPod) vehicle.setPodMounted(added.uuid, true);
             if (/\((ST|PT)\)/i.test(line)) vehicle.setPintle(added.uuid ?? "", true);
         }
@@ -227,6 +234,7 @@ export const importSupportVehicleBlk = (text: string): ISupportVehicleBlkResult 
     }
     const fuel = numberOf(file, "fuel", -1);
     if (fuel >= 0) vehicle.setSupportVehicleFuel(fuel);
+    applyBlkQuirks(file, vehicle, placed, issues, (abbr) => BLK_VEHICLE_LOCATIONS[abbr.toUpperCase()]);
     return { vehicle, issues, notes };
 };
 
@@ -304,6 +312,7 @@ export const importFixedWingSupportBlk = (text: string): IFixedWingSupportBlkRes
 
     // Equipment.
     const pendingAmmo: { line: string; ammo: IBlkAmmoLine }[] = [];
+    const placed: IBlkImportedItem[] = [];
     for (const [block, location] of FIXED_WING_LOCATIONS) {
         for (const rawLine of blkLines(file, `${block} equipment`)) {
             const line = rawLine.trim();
@@ -322,6 +331,7 @@ export const importFixedWingSupportBlk = (text: string): IFixedWingSupportBlkRes
                 issues.push(`"${line}" ${match ? "could not be mounted" : "has no match in this catalog"} and was left off.`);
                 continue;
             }
+            if (added.uuid) placed.push({ name, location, uuid: added.uuid });
             if (/:OMNI/i.test(line)) fighter.setPodMounted(added.uuid ?? "", true);
         }
     }
@@ -361,5 +371,6 @@ export const importFixedWingSupportBlk = (text: string): IFixedWingSupportBlkRes
             notes.push(`The file's ${fuelPoints} Fuel Points are ${fighter.getFuelPoints()} here: fuel is bought by the half ton from 5 tons, by the kilogram below (TM p.129).`);
         }
     }
+    applyBlkQuirks(file, fighter, placed, issues, (abbr) => BLK_FIXED_WING_LOCATIONS[abbr.toUpperCase()]);
     return { fighter, issues, notes };
 };

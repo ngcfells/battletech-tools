@@ -9,6 +9,7 @@ import { findImportedEquipment } from "../utils/importedEquipment";
 import { IBlkAmmoLine, findBlkAmmo, findBlkAmmoWeapon, parseBlkAmmoLine } from "../utils/blk-ammo";
 import { findCapitalWeaponByName, getCapitalAmmoTags } from "../data/capital-weapon-helpers";
 import { ICapitalWeapon } from "../data/data-interfaces";
+import { applyBlkQuirks, IBlkImportedItem } from "../utils/blk-quirks";
 
 // Reads a MegaMek Small Craft ".blk" file into a SmallCraft. The file names its equipment by MegaMek's lookup
 // names; the tables below pair those names with this catalog. Anything that has no match is left off and
@@ -99,6 +100,9 @@ const LOCATIONS: { block: string; arc: SmallCraftArc | "hull"; rear?: SmallCraft
     { block: "aft equipment", arc: "aft" },
     { block: "hull equipment", arc: "hull" },
 ];
+
+// MegaMek's location abbreviations in a weapon quirk line, as the file's equipment blocks.
+const BLK_ARCS: Record<string, string> = { NOS: "nose", LS: "left", LWG: "left", RS: "right", RWG: "right", AFT: "aft", HULL: "hull" };
 
 const lookupName = (name: string): string => name.toLowerCase().replace(/[^a-z0-9]/g, "");
 
@@ -215,6 +219,8 @@ export const importSmallCraftBlk = (text: string): ISmallCraftBlkResult => {
     const techCatalog = clan ? "clan" : "is";
     const ammoCatalog: IEquipmentItem[] = [...getEquipmentListByTech("is", false), ...getEquipmentListByTech("clan", false)].filter((item) => item.isAmmo);
     const mounted: Record<string, IEquipmentItem[]> = Object.create(null);
+    // What the file placed where, by its own names, for its weapon quirk lines; a side's rear half counts as the side.
+    const placed: IBlkImportedItem[] = [];
     const pendingAmmo: string[] = [];
     const pendingFireControl: { name: string; arc: string; rear?: string }[] = [];
     const pendingLineAmmo: { line: IBlkAmmoLine; raw: string }[] = [];
@@ -236,7 +242,10 @@ export const importSmallCraftBlk = (text: string): ISmallCraftBlkResult => {
                 const mount = craft.addCapitalWeapon(capitalWeapon.tag, capitalArc);
                 if (!mount) issues.push(`"${rawLine.trim()}" cannot be mounted on a ${craft.getCraftTypeName()} and was left off.`);
                 // Shots come from the file's ammunition lines, not the 10 a new launcher starts with.
-                else for (const tag of Object.keys(mount.shots)) craft.setCapitalWeaponShots(mount.uuid, tag, 0);
+                else {
+                    for (const tag of Object.keys(mount.shots)) craft.setCapitalWeaponShots(mount.uuid, tag, 0);
+                    placed.push({ name: fileName, location: location.arc, uuid: mount.uuid });
+                }
                 continue;
             }
             const name = lookupName(fileName);
@@ -269,6 +278,7 @@ export const importSmallCraftBlk = (text: string): ISmallCraftBlkResult => {
                 continue;
             }
             (mounted[name] = mounted[name] ?? []).push(item);
+            if (item.uuid) placed.push({ name: fileName, location: location.arc, uuid: item.uuid });
         }
     }
     // A fire control system upgrades one launcher in its arc to the catalog's record for the fitted launcher. The
@@ -284,6 +294,7 @@ export const importSmallCraftBlk = (text: string): ISmallCraftBlkResult => {
                 const index = list.indexOf(launcher);
                 if (index >= 0) list[index] = upgraded;
             }
+            for (const entry of placed) if (entry.uuid === launcher.uuid && upgraded.uuid) entry.uuid = upgraded.uuid;
         } else {
             issues.push(`A fire control system (${fireControl.name}) had no launcher to fit and was left off.`);
         }
@@ -380,5 +391,6 @@ export const importSmallCraftBlk = (text: string): ISmallCraftBlkResult => {
     craft.setPassengers(passengers);
     craft.setLifeBoats(numberOf(file, "life_boat"));
     craft.setEscapePods(numberOf(file, "escape_pod"));
+    applyBlkQuirks(file, craft, placed, issues, (abbr) => BLK_ARCS[abbr.toUpperCase()]);
     return { craft, issues, notes };
 };

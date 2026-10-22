@@ -18,7 +18,7 @@ export const quirks: IQuirk[] = [
     {
         tag: "quirk-accurate-weapon",
         name: "Accurate Weapon",
-        altNames: [],
+        altNames: ["accurate"],
         kind: "positive",
         cost: { per: { points: 1, damage: 5, scope: "weapon" }, zeroDamagePoints: 2 },
         unitTypes: ["mech", "vehicle", "battle-armor", "fighter-small-craft", "dropship", "large-craft"],
@@ -31,7 +31,7 @@ export const quirks: IQuirk[] = [
     {
         tag: "quirk-anti-aircraft-targeting",
         name: "Anti-Aircraft Targeting",
-        altNames: [],
+        altNames: ["anti_air"],
         kind: "positive",
         cost: { per: { points: 1, damage: 7, scope: "unit" } },
         unitTypes: ["mech", "vehicle"],
@@ -44,7 +44,7 @@ export const quirks: IQuirk[] = [
     {
         tag: "quirk-atmospheric-flyer",
         name: "Atmospheric Flyer",
-        altNames: [],
+        altNames: ["atmo_flyer"],
         kind: "positive",
         cost: { points: 3 },
         unitTypes: ["fighter-small-craft", "dropship"],
@@ -57,7 +57,7 @@ export const quirks: IQuirk[] = [
     {
         tag: "quirk-barrel-fist",
         name: "Barrel Fist",
-        altNames: [],
+        altNames: ["barrel_fists_la", "barrel_fists_ra"],
         kind: "positive",
         cost: { points: 1 },
         unitTypes: ["mech"],
@@ -72,7 +72,7 @@ export const quirks: IQuirk[] = [
     {
         tag: "quirk-battle-computer",
         name: "Battle Computer",
-        altNames: [],
+        altNames: ["battle_computer"],
         kind: "positive",
         cost: { points: 5 },
         unitTypes: ["mech", "vehicle"],
@@ -86,7 +86,7 @@ export const quirks: IQuirk[] = [
     {
         tag: "quirk-battlefists",
         name: "Battlefists",
-        altNames: [],
+        altNames: ["battle_fists_la", "battle_fists_ra"],
         kind: "positive",
         cost: { points: 2 },
         unitTypes: ["mech"],
@@ -102,7 +102,7 @@ export const quirks: IQuirk[] = [
     {
         tag: "quirk-combat-computer",
         name: "Combat Computer",
-        altNames: [],
+        altNames: ["combat_computer"],
         kind: "positive",
         cost: { points: 3 },
         unitTypes: ["mech", "fighter-small-craft"],
@@ -115,7 +115,7 @@ export const quirks: IQuirk[] = [
     {
         tag: "quirk-command-mech",
         name: "Command 'Mech",
-        altNames: ["Command BattleMech", "Command ’Mech"],
+        altNames: ["Command BattleMech", "Command ’Mech", "command_mech"],
         kind: "positive",
         cost: { points: 2 },
         unitTypes: ["mech"],
@@ -129,7 +129,7 @@ export const quirks: IQuirk[] = [
     {
         tag: "quirk-compact-mech",
         name: "Compact 'Mech",
-        altNames: ["Compact ’Mech"],
+        altNames: ["Compact ’Mech", "compact_mech"],
         kind: "positive",
         cost: { points: 1 },
         unitTypes: ["mech"],
@@ -156,7 +156,7 @@ export const quirks: IQuirk[] = [
     {
         tag: "quirk-directional-torso-mount",
         name: "Directional Torso Mount",
-        altNames: [],
+        altNames: ["directional_torso_mount", "directional_torso_mount_360", "direct_torso_mount", "direct_torso_mount_quad"],
         kind: "positive",
         cost: { choices: [2, 3] },
         unitTypes: ["mech"],
@@ -186,7 +186,7 @@ export const quirks: IQuirk[] = [
     {
         tag: "quirk-docking-arms",
         name: "Docking Arms",
-        altNames: [],
+        altNames: ["docking_arms"],
         kind: "positive",
         cost: { points: 1 },
         unitTypes: ["large-craft"],
@@ -199,7 +199,7 @@ export const quirks: IQuirk[] = [
     {
         tag: "quirk-easy-to-maintain",
         name: "Easy to Maintain",
-        altNames: [],
+        altNames: ["easy_maintain"],
         kind: "positive",
         cost: { points: 1 },
         unitTypes: ["mech", "vehicle", "battle-armor", "fighter-small-craft", "dropship", "large-craft"],
@@ -212,7 +212,7 @@ export const quirks: IQuirk[] = [
     {
         tag: "quirk-easy-to-pilot",
         name: "Easy to Pilot",
-        altNames: [],
+        altNames: ["easy_pilot"],
         kind: "positive",
         cost: { points: 2 },
         unitTypes: ["mech", "battle-armor", "fighter-small-craft", "dropship", "large-craft"],
@@ -225,7 +225,7 @@ export const quirks: IQuirk[] = [
     {
         tag: "quirk-extended-torso-twist",
         name: "Extended Torso Twist",
-        altNames: [],
+        altNames: ["ext_twist"],
         kind: "positive",
         cost: { points: 3 },
         unitTypes: ["mech"],
@@ -238,7 +238,7 @@ export const quirks: IQuirk[] = [
     {
         tag: "quirk-fast-reload",
         name: "Fast Reload",
-        altNames: [],
+        altNames: ["fast_reload"],
         kind: "positive",
         cost: { points: 1 },
         unitTypes: ["mech", "vehicle", "battle-armor", "fighter-small-craft"],
@@ -251,7 +251,7 @@ export const quirks: IQuirk[] = [
     {
         tag: "quirk-fine-manipulators",
         name: "Fine Manipulators",
-        altNames: [],
+        altNames: ["fine_manipulators"],
         kind: "positive",
         cost: { points: 0 },
         unitTypes: ["mech"],
@@ -265,7 +265,7 @@ export const quirks: IQuirk[] = [
     {
         tag: "quirk-good-reputation",
         name: "Good Reputation",
-        altNames: [],
+        altNames: ["good_rep_1", "good_rep_2"],
         kind: "positive",
         cost: { points: 0 },
         unitTypes: ["mech", "vehicle", "battle-armor", "fighter-small-craft", "dropship", "large-craft"],
@@ -280,7 +280,7 @@ export const quirks: IQuirk[] = [
     {
         tag: "quirk-hyper-extending-actuators",
         name: "Hyper-Extending Actuators",
-        altNames: [],
+        altNames: ["hyper_actuator"],
         kind: "positive",
         cost: { points: 1 },
         unitTypes: ["mech"],
@@ -293,7 +293,7 @@ export const quirks: IQuirk[] = [
     {
         tag: "quirk-improved-communications",
         name: "Improved Communications",
-        altNames: [],
+        altNames: ["imp_com"],
         kind: "positive",
         cost: { points: 1 },
         unitTypes: ["mech", "vehicle", "battle-armor", "fighter-small-craft", "dropship", "large-craft"],
@@ -306,7 +306,7 @@ export const quirks: IQuirk[] = [
     {
         tag: "quirk-improved-cooling-jacket",
         name: "Improved Cooling Jacket",
-        altNames: [],
+        altNames: ["imp_cooling"],
         kind: "positive",
         cost: { points: 1 },
         unitTypes: ["mech", "fighter-small-craft", "dropship", "large-craft"],
@@ -319,7 +319,7 @@ export const quirks: IQuirk[] = [
     {
         tag: "quirk-improved-life-support",
         name: "Improved Life Support",
-        altNames: [],
+        altNames: ["imp_life_support"],
         kind: "positive",
         cost: { points: 1 },
         unitTypes: ["mech", "fighter-small-craft"],
@@ -332,7 +332,7 @@ export const quirks: IQuirk[] = [
     {
         tag: "quirk-improved-sensors",
         name: "Improved Sensors",
-        altNames: [],
+        altNames: ["imp_sensors"],
         kind: "positive",
         cost: { points: 3 },
         unitTypes: ["mech", "vehicle"],
@@ -345,7 +345,7 @@ export const quirks: IQuirk[] = [
     {
         tag: "quirk-improved-targeting",
         name: "Improved Targeting",
-        altNames: [],
+        altNames: ["imp_target_short", "imp_target_med", "imp_target_long"],
         kind: "positive",
         cost: { choices: [3, 4, 5] },
         unitTypes: ["mech", "vehicle", "fighter-small-craft", "dropship", "large-craft"],
@@ -360,7 +360,7 @@ export const quirks: IQuirk[] = [
     {
         tag: "quirk-internal-bomb-bay",
         name: "Internal Bomb Bay",
-        altNames: [],
+        altNames: ["internal_bomb"],
         kind: "positive",
         cost: { points: 3 },
         unitTypes: ["fighter-small-craft", "dropship"],
@@ -373,7 +373,7 @@ export const quirks: IQuirk[] = [
     {
         tag: "quirk-jettison-capable-weapon",
         name: "Jettison-Capable Weapon",
-        altNames: [],
+        altNames: ["jettison_capable"],
         kind: "positive",
         cost: { points: 1 },
         unitTypes: ["mech"],
@@ -387,7 +387,7 @@ export const quirks: IQuirk[] = [
     {
         tag: "quirk-modular-weapons",
         name: "Modular Weapons",
-        altNames: [],
+        altNames: ["mod_weapons"],
         kind: "positive",
         cost: { points: 1 },
         unitTypes: ["mech", "vehicle", "battle-armor", "fighter-small-craft", "dropship"],
@@ -400,7 +400,7 @@ export const quirks: IQuirk[] = [
     {
         tag: "quirk-multi-trac",
         name: "Multi-Trac",
-        altNames: [],
+        altNames: ["multi_trac"],
         kind: "positive",
         cost: { points: 2 },
         unitTypes: ["mech"],
@@ -413,7 +413,7 @@ export const quirks: IQuirk[] = [
     {
         tag: "quirk-narrow-low-profile",
         name: "Narrow/Low Profile",
-        altNames: [],
+        altNames: ["low_profile"],
         kind: "positive",
         cost: { points: 3 },
         unitTypes: ["mech", "vehicle"],
@@ -427,7 +427,7 @@ export const quirks: IQuirk[] = [
     {
         tag: "quirk-nimble-jumper",
         name: "Nimble Jumper",
-        altNames: [],
+        altNames: ["nimble_jumper"],
         kind: "positive",
         cost: { points: 3 },
         unitTypes: ["mech"],
@@ -441,7 +441,7 @@ export const quirks: IQuirk[] = [
     {
         tag: "quirk-overhead-arms",
         name: "Overhead Arms",
-        altNames: [],
+        altNames: ["overhead_arms"],
         kind: "positive",
         cost: { points: 2 },
         unitTypes: ["mech"],
@@ -456,7 +456,7 @@ export const quirks: IQuirk[] = [
     {
         tag: "quirk-power-reverse",
         name: "Power Reverse",
-        altNames: [],
+        altNames: ["power_reverse"],
         kind: "positive",
         cost: { points: 3 },
         unitTypes: ["vehicle"],
@@ -470,7 +470,7 @@ export const quirks: IQuirk[] = [
     {
         tag: "quirk-protected-actuators",
         name: "Protected Actuators",
-        altNames: [],
+        altNames: ["pro_actuator"],
         kind: "positive",
         cost: { points: 1 },
         unitTypes: ["mech"],
@@ -483,7 +483,7 @@ export const quirks: IQuirk[] = [
     {
         tag: "quirk-reinforced-legs",
         name: "Reinforced Legs",
-        altNames: [],
+        altNames: ["reinforced_legs"],
         kind: "positive",
         cost: { points: 1 },
         unitTypes: ["mech"],
@@ -496,7 +496,7 @@ export const quirks: IQuirk[] = [
     {
         tag: "quirk-rugged",
         name: "Rugged",
-        altNames: [],
+        altNames: ["rugged_1", "rugged_2"],
         kind: "positive",
         cost: { choices: [1, 2] },
         unitTypes: ["mech", "vehicle", "battle-armor", "fighter-small-craft", "dropship", "large-craft"],
@@ -510,7 +510,7 @@ export const quirks: IQuirk[] = [
     {
         tag: "quirk-rumble-seat",
         name: "Rumble Seat",
-        altNames: [],
+        altNames: ["rumble_seat"],
         kind: "positive",
         cost: { points: 0 },
         unitTypes: ["vehicle", "fighter-small-craft"],
@@ -525,7 +525,7 @@ export const quirks: IQuirk[] = [
     {
         tag: "quirk-scout-bike",
         name: "Scout Bike",
-        altNames: [],
+        altNames: ["scout_bike"],
         kind: "positive",
         cost: { points: 2 },
         unitTypes: ["vehicle"],
@@ -553,7 +553,7 @@ export const quirks: IQuirk[] = [
     {
         tag: "quirk-stabilized-weapon",
         name: "Stabilized Weapon",
-        altNames: [],
+        altNames: ["stable_weapon"],
         kind: "positive",
         cost: { per: { points: 1, damage: 7, scope: "weapon" }, zeroDamagePoints: 1 },
         unitTypes: ["mech", "vehicle", "battle-armor"],
@@ -579,7 +579,7 @@ export const quirks: IQuirk[] = [
     {
         tag: "quirk-ubiquitous",
         name: "Ubiquitous",
-        altNames: [],
+        altNames: ["ubiquitous_is", "ubiquitous_clan"],
         kind: "positive",
         cost: { points: 1 },
         unitTypes: ["mech", "vehicle", "battle-armor", "fighter-small-craft", "dropship"],
@@ -592,7 +592,7 @@ export const quirks: IQuirk[] = [
     {
         tag: "quirk-variable-range-targeting",
         name: "Variable Range Targeting",
-        altNames: [],
+        altNames: ["variable_range_targeting"],
         kind: "positive",
         cost: { per: { points: 1, damage: 5, scope: "unit" } },
         unitTypes: ["mech"],
@@ -606,7 +606,7 @@ export const quirks: IQuirk[] = [
     {
         tag: "quirk-vestigial-hands",
         name: "Vestigial Hands",
-        altNames: [],
+        altNames: ["vestigial_hands_la", "vestigial_hands_ra"],
         kind: "positive",
         cost: { points: 0 },
         unitTypes: ["mech"],
@@ -619,7 +619,7 @@ export const quirks: IQuirk[] = [
     {
         tag: "quirk-vtol-rotor-arrangement",
         name: "VTOL Rotor Arrangement",
-        altNames: [],
+        altNames: ["vtol_rotor_coaxial", "vtol_rotor_dual"],
         kind: "positive",
         cost: { points: 1 },
         unitTypes: ["vehicle"],
@@ -634,7 +634,7 @@ export const quirks: IQuirk[] = [
     {
         tag: "quirk-trailer-hitch",
         name: "Trailer Hitch",
-        altNames: [],
+        altNames: ["trailer_hitch"],
         kind: "positive",
         cost: { points: 1 },
         unitTypes: ["vehicle"],
@@ -648,7 +648,7 @@ export const quirks: IQuirk[] = [
     {
         tag: "quirk-ammunition-feed-problem",
         name: "Ammunition Feed Problem",
-        altNames: [],
+        altNames: ["ammo_feed_problems"],
         kind: "negative",
         cost: { points: 1 },
         unitTypes: ["mech", "vehicle", "battle-armor", "fighter-small-craft", "dropship", "large-craft"],
@@ -662,7 +662,7 @@ export const quirks: IQuirk[] = [
     {
         tag: "quirk-atmospheric-flight-instability",
         name: "Atmospheric Flight Instability",
-        altNames: [],
+        altNames: ["atmo_instability"],
         kind: "negative",
         cost: { points: 2 },
         unitTypes: ["fighter-small-craft", "dropship"],
@@ -675,7 +675,7 @@ export const quirks: IQuirk[] = [
     {
         tag: "quirk-bad-reputation",
         name: "Bad Reputation",
-        altNames: [],
+        altNames: ["bad_rep_is", "bad_rep_clan"],
         kind: "negative",
         cost: { points: 1 },
         unitTypes: ["mech", "vehicle", "battle-armor", "fighter-small-craft", "dropship", "large-craft"],
@@ -688,7 +688,7 @@ export const quirks: IQuirk[] = [
     {
         tag: "quirk-cooling-system-flaws",
         name: "Cooling System Flaws",
-        altNames: [],
+        altNames: ["flawed_cooling"],
         kind: "negative",
         cost: { points: 3 },
         unitTypes: ["mech"],
@@ -701,7 +701,7 @@ export const quirks: IQuirk[] = [
     {
         tag: "quirk-cramped-cockpit",
         name: "Cramped Cockpit",
-        altNames: [],
+        altNames: ["cramped_cockpit"],
         kind: "negative",
         cost: { points: 2 },
         unitTypes: ["mech", "fighter-small-craft"],
@@ -716,7 +716,7 @@ export const quirks: IQuirk[] = [
     {
         tag: "quirk-difficult-ejection",
         name: "Difficult Ejection",
-        altNames: [],
+        altNames: ["difficult_eject"],
         kind: "negative",
         cost: { points: 1 },
         unitTypes: ["mech", "fighter-small-craft"],
@@ -729,7 +729,7 @@ export const quirks: IQuirk[] = [
     {
         tag: "quirk-difficult-to-maintain",
         name: "Difficult to Maintain",
-        altNames: [],
+        altNames: ["difficult_maintain"],
         kind: "negative",
         cost: { points: 1 },
         unitTypes: ["mech", "vehicle", "battle-armor", "fighter-small-craft", "dropship", "large-craft"],
@@ -742,7 +742,7 @@ export const quirks: IQuirk[] = [
     {
         tag: "quirk-em-interference",
         name: "EM Interference",
-        altNames: [],
+        altNames: ["em_inter_whole", "em_interference"],
         kind: "negative",
         cost: { byAttach: { weapon: 1, unit: 2 } },
         unitTypes: ["mech", "vehicle", "battle-armor", "fighter-small-craft", "dropship"],
@@ -756,7 +756,7 @@ export const quirks: IQuirk[] = [
     {
         tag: "quirk-exposed-actuators",
         name: "Exposed Actuators",
-        altNames: [],
+        altNames: ["exp_actuator"],
         kind: "negative",
         cost: { points: 1 },
         unitTypes: ["mech"],
@@ -769,7 +769,7 @@ export const quirks: IQuirk[] = [
     {
         tag: "quirk-exposed-weapon-linkage",
         name: "Exposed Weapon Linkage",
-        altNames: [],
+        altNames: ["exposed_linkage"],
         kind: "negative",
         cost: { points: 2 },
         unitTypes: ["mech", "vehicle"],
@@ -783,7 +783,7 @@ export const quirks: IQuirk[] = [
     {
         tag: "quirk-fragile-fuel-tank",
         name: "Fragile Fuel Tank",
-        altNames: [],
+        altNames: ["fragile_fuel"],
         kind: "negative",
         cost: { points: 2 },
         unitTypes: ["vehicle", "fighter-small-craft", "dropship", "large-craft"],
@@ -797,7 +797,7 @@ export const quirks: IQuirk[] = [
     {
         tag: "quirk-gas-hog",
         name: "Gas Hog",
-        altNames: [],
+        altNames: ["gas_hog"],
         kind: "negative",
         cost: { points: 2 },
         unitTypes: ["mech", "vehicle", "fighter-small-craft", "dropship", "large-craft"],
@@ -811,7 +811,7 @@ export const quirks: IQuirk[] = [
     {
         tag: "quirk-hard-to-pilot",
         name: "Hard to Pilot",
-        altNames: [],
+        altNames: ["hard_pilot"],
         kind: "negative",
         cost: { points: 2 },
         unitTypes: ["mech", "vehicle", "battle-armor", "fighter-small-craft", "dropship", "large-craft"],
@@ -824,7 +824,7 @@ export const quirks: IQuirk[] = [
     {
         tag: "quirk-illegal-design",
         name: "Illegal Design",
-        altNames: [],
+        altNames: ["illegal_design"],
         kind: "negative",
         cost: { points: 0 },
         unitTypes: ["mech", "vehicle", "battle-armor", "fighter-small-craft", "dropship", "large-craft"],
@@ -837,7 +837,7 @@ export const quirks: IQuirk[] = [
     {
         tag: "quirk-inaccurate-weapon",
         name: "Inaccurate Weapon",
-        altNames: [],
+        altNames: ["inaccurate"],
         kind: "negative",
         cost: { per: { points: 1, damage: 5, scope: "weapon" } },
         unitTypes: ["mech", "vehicle", "battle-armor", "fighter-small-craft", "dropship", "large-craft"],
@@ -850,7 +850,7 @@ export const quirks: IQuirk[] = [
     {
         tag: "quirk-large-dropship",
         name: "Large DropShip",
-        altNames: [],
+        altNames: ["large_dropper"],
         kind: "negative",
         cost: { points: 2 },
         unitTypes: ["dropship"],
@@ -863,7 +863,7 @@ export const quirks: IQuirk[] = [
     {
         tag: "quirk-low-mounted-arms",
         name: "Low-Mounted Arms",
-        altNames: [],
+        altNames: ["low_arms"],
         kind: "negative",
         cost: { points: 2 },
         unitTypes: ["mech"],
@@ -878,7 +878,7 @@ export const quirks: IQuirk[] = [
     {
         tag: "quirk-no-minimal-arms",
         name: "No/Minimal Arms",
-        altNames: [],
+        altNames: ["no_arms"],
         kind: "negative",
         cost: { points: 2 },
         unitTypes: ["mech"],
@@ -891,7 +891,7 @@ export const quirks: IQuirk[] = [
     {
         tag: "quirk-no-cooling-jacket",
         name: "No Cooling Jacket",
-        altNames: [],
+        altNames: ["no_cooling"],
         kind: "negative",
         cost: { points: 2 },
         unitTypes: ["mech", "fighter-small-craft", "dropship", "large-craft"],
@@ -904,7 +904,7 @@ export const quirks: IQuirk[] = [
     {
         tag: "quirk-no-ejection-system",
         name: "No Ejection System",
-        altNames: ["No Ejection Mechanism"],
+        altNames: ["No Ejection Mechanism", "no_eject"],
         kind: "negative",
         cost: { points: 2 },
         unitTypes: ["mech", "fighter-small-craft"],
@@ -917,7 +917,7 @@ export const quirks: IQuirk[] = [
     {
         tag: "quirk-no-torso-twist",
         name: "No Torso Twist",
-        altNames: [],
+        altNames: ["no_twist"],
         kind: "negative",
         cost: { points: 2 },
         unitTypes: ["mech"],
@@ -930,7 +930,7 @@ export const quirks: IQuirk[] = [
     {
         tag: "quirk-non-functional-item",
         name: "Non-Functional Item",
-        altNames: [],
+        altNames: ["non_functional"],
         kind: "negative",
         cost: { points: 5 },
         unitTypes: ["mech", "vehicle", "battle-armor", "fighter-small-craft", "dropship", "large-craft"],
@@ -943,7 +943,7 @@ export const quirks: IQuirk[] = [
     {
         tag: "quirk-non-standard-parts",
         name: "Non-Standard Parts",
-        altNames: [],
+        altNames: ["non_standard"],
         kind: "negative",
         cost: { points: 1 },
         unitTypes: ["mech", "vehicle", "battle-armor", "fighter-small-craft", "dropship", "large-craft"],
@@ -985,7 +985,7 @@ export const quirks: IQuirk[] = [
     {
         tag: "quirk-poor-cooling-jacket",
         name: "Poor Cooling Jacket",
-        altNames: [],
+        altNames: ["poor_cooling"],
         kind: "negative",
         cost: { points: 1 },
         unitTypes: ["mech", "fighter-small-craft", "dropship", "large-craft"],
@@ -998,7 +998,7 @@ export const quirks: IQuirk[] = [
     {
         tag: "quirk-poor-life-support",
         name: "Poor Life Support",
-        altNames: [],
+        altNames: ["poor_life_support"],
         kind: "negative",
         cost: { points: 1 },
         unitTypes: ["mech", "fighter-small-craft"],
@@ -1011,7 +1011,7 @@ export const quirks: IQuirk[] = [
     {
         tag: "quirk-poor-performance",
         name: "Poor Performance",
-        altNames: [],
+        altNames: ["poor_performance"],
         kind: "negative",
         cost: { points: 3 },
         unitTypes: ["mech", "vehicle", "fighter-small-craft", "dropship", "large-craft"],
@@ -1025,7 +1025,7 @@ export const quirks: IQuirk[] = [
     {
         tag: "quirk-poor-sealing",
         name: "Poor Sealing",
-        altNames: [],
+        altNames: ["poor_sealing"],
         kind: "negative",
         cost: { points: 2 },
         unitTypes: ["mech", "vehicle", "battle-armor"],
@@ -1038,7 +1038,7 @@ export const quirks: IQuirk[] = [
     {
         tag: "quirk-poor-targeting",
         name: "Poor Targeting",
-        altNames: [],
+        altNames: ["poor_target_short", "poor_target_med", "poor_target_long"],
         kind: "negative",
         cost: { points: 2 },
         unitTypes: ["mech", "vehicle", "battle-armor", "fighter-small-craft", "dropship", "large-craft"],
@@ -1052,7 +1052,7 @@ export const quirks: IQuirk[] = [
     {
         tag: "quirk-poor-workmanship",
         name: "Poor Workmanship",
-        altNames: [],
+        altNames: ["poor_work"],
         kind: "negative",
         cost: { points: 1 },
         unitTypes: ["mech", "vehicle", "battle-armor", "fighter-small-craft", "dropship", "large-craft"],
@@ -1091,7 +1091,7 @@ export const quirks: IQuirk[] = [
     {
         tag: "quirk-sensor-ghosts",
         name: "Sensor Ghosts",
-        altNames: [],
+        altNames: ["sensor_ghosts"],
         kind: "negative",
         cost: { points: 3 },
         unitTypes: ["mech", "vehicle", "battle-armor", "fighter-small-craft", "dropship", "large-craft"],
@@ -1117,7 +1117,7 @@ export const quirks: IQuirk[] = [
     {
         tag: "quirk-static-ammo-feed",
         name: "Static Ammo Feed",
-        altNames: [],
+        altNames: ["static_feed"],
         kind: "negative",
         cost: { points: 1 },
         unitTypes: ["mech", "vehicle"],
@@ -1144,7 +1144,7 @@ export const quirks: IQuirk[] = [
     {
         tag: "quirk-un-streamlined",
         name: "Un-streamlined",
-        altNames: [],
+        altNames: ["unstreamlined"],
         kind: "negative",
         cost: { points: 2 },
         unitTypes: ["fighter-small-craft", "dropship"],
@@ -1157,7 +1157,7 @@ export const quirks: IQuirk[] = [
     {
         tag: "quirk-weak-head-armor",
         name: "Weak Head Armor",
-        altNames: [],
+        altNames: ["weak_head_1", "weak_head_2", "weak_head_3", "weak_head_4", "weak_head_5"],
         kind: "negative",
         cost: { fromParameter: true },
         unitTypes: ["mech"],
@@ -1171,7 +1171,7 @@ export const quirks: IQuirk[] = [
     {
         tag: "quirk-weak-legs",
         name: "Weak Legs",
-        altNames: [],
+        altNames: ["weak_legs"],
         kind: "negative",
         cost: { points: 1 },
         unitTypes: ["mech"],
@@ -1184,7 +1184,7 @@ export const quirks: IQuirk[] = [
     {
         tag: "quirk-weak-undercarriage",
         name: "Weak Undercarriage",
-        altNames: [],
+        altNames: ["weak_undercarriage"],
         kind: "negative",
         cost: { points: 1 },
         unitTypes: ["fighter-small-craft", "dropship"],

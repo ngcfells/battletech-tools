@@ -534,6 +534,13 @@ describe("MegaMek battle armor file import", () => {
         expect(suit.getBattleValue()).toBe(447);
     });
 
+    it("brings the file's quirks across, on the weapon it names", () => {
+        const { suit, issues } = importBattleArmorBlk(`${BLK}<quirks>\nlow_profile\n</quirks>\n<weaponQuirks>\naccurate:Point:0:CLBASmall Laser\nstatic_feed:Point:1:ISPPC\n</weaponQuirks>\n`);
+        const laser = suit!.getItems().find((item) => item.tag === "clan-small-laser")!;
+        expect(suit!.quirks.getAll()).toEqual([{ tag: "quirk-narrow-low-profile" }, { tag: "quirk-accurate-weapon", equipmentUuid: laser.uuid }]);
+        expect(issues).toContain("Static Ammo Feed: no ISPPC in Point on this unit, left off.");
+    });
+
     it("refuses a file for another unit type, and text that is not a unit file", () => {
         expect(importBattleArmorBlk("<UnitType>\nTank\n</UnitType>").issues[0]).toContain("not a battle armor file");
         expect(importBattleArmorBlk("{}").suit).toBeNull();

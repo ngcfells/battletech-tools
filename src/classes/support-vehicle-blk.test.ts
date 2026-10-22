@@ -32,6 +32,13 @@ describe("MegaMek Support Vehicle import", () => {
         expect(issues).toEqual(["\"No Such Gun\" has no match in this catalog and was left off."]);
     });
 
+    it("brings the file's quirks across, on the weapon it names", () => {
+        const { vehicle, issues } = importSupportVehicleBlk(`${tank}\n<quirks>\nlow_profile\n</quirks>\n<weaponQuirks>\naccurate:FR:0:Machine Gun\n</weaponQuirks>`);
+        const gun = vehicle!.getEquipmentList().find((item) => item.tag === "machine-gun")!;
+        expect(vehicle!.quirks.getAll()).toEqual([{ tag: "quirk-narrow-low-profile" }, { tag: "quirk-accurate-weapon", equipmentUuid: gun.uuid }]);
+        expect(issues).toEqual(["\"No Such Gun\" has no match in this catalog and was left off."]);
+    });
+
     it("refuses files that are not ground or VTOL Support Vehicles", () => {
         expect(importSupportVehicleBlk(tank.replace("SupportTank", "Tank")).vehicle).toBeNull();
         expect(importSupportVehicleBlk("not a unit file").vehicle).toBeNull();
@@ -65,6 +72,11 @@ describe("MegaMek Fixed-Wing Support Vehicle import", () => {
         expect(fighter?.getFuelPoints()).toBe(50);
         expect(notes.some((note) => note.startsWith("The file's 40 Fuel Points are 50 here"))).toBe(true);
         expect(issues).toEqual([]);
+    });
+
+    it("brings the file's quirks across", () => {
+        const { fighter } = importFixedWingSupportBlk(`${plane}\n<quirks>\nlow_profile\n</quirks>`);
+        expect(fighter!.quirks.getAll()).toEqual([{ tag: "quirk-narrow-low-profile" }]);
     });
 
     it("refuses other unit types", () => {

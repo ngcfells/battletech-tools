@@ -347,6 +347,8 @@ describe("Small Craft saves and imports", () => {
         expect(craft.getCrew()).toBe(10);
         expect(result.issues).toEqual(["\"No Such Gun\" has no match in this catalog and was left off."]);
         expect(importSmallCraftBlk(blk.replace("200.0", "5.0")).craft).toBeNull();
+        const quirked = importSmallCraftBlk(`${blk}\n<quirks>\nlow_profile\n</quirks>`);
+        expect((quirked.craft as SmallCraft).quirks.getAll()).toEqual([{ tag: "quirk-narrow-low-profile" }]);
         // A DropShip weighs 200 tons or more (TM p.184).
         expect(importSmallCraftBlk(blk.replace("SmallCraft", "Dropship").replace("200.0", "150.0")).craft).toBeNull();
     }, 20000);

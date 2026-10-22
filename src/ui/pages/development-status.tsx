@@ -142,6 +142,10 @@ export default class DevelopmentStatus extends React.Component<IDevelopmentStatu
             label="Imports and Exports"
             className="grow with-margins large-max-width-50"
           >
+                    <h4>Done</h4>
+                    <ul>
+                      <li><del>Design and weapon quirks from MegaMek .blk files (Battle Armor, Small Craft, DropShips, Support Vehicles)</del></li>
+                    </ul>
                     <h4>Coming</h4>
                     <ul>
                       <li>MegaMek and MegaMekLab files (.mtf, .blk) for every unit type, both ways</li>

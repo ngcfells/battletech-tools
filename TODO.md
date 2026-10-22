@@ -664,6 +664,9 @@ in HeySporky/battletech-tools. All of it is merged into local `master` together 
   their play effects, keep them in saves, and read and write them in the MegaMek and SSW adapters (which
   already carry quirks, see "Shared" above). Design: docs/superpowers/specs/2026-10-21-quirks-design.md
   (approved 2026-10-21), which adds targeting/tracking and comms systems as line items.
+  - [x] BLK import reads `<quirks>` and `<weaponQuirks>` by MegaMek's codes (kept as altNames) for Battle Armor,
+    Small Craft/DropShips and Support Vehicles; an unknown code or unplaceable weapon goes in the import issues.
+    SSW files carry no quirk element, so the SSW import has none to read.
 - [ ] Much later: custom targeting/tracking (T&T) quirks drawn from the lore, beyond the Lost Issues table
   (user, 2026-10-21). They go in as custom quirk and T&T records once the quirk catalog exists.
 

@@ -1,3 +1,4 @@
+import { applyBlkQuirks, IBlkImportedItem } from "../utils/blk-quirks";
 import { battleArmorArmorTypes } from "../data/battle-armor-armor-types";
 import { BattleArmorTechBase, BattleArmorWeightClass, battleArmorManipulators } from "../data/battle-armor-construction";
 import { findBattleArmorEquipment } from "../data/battle-armor-equipment";
@@ -266,6 +267,7 @@ export const importBattleArmorBlk = (text: string): IBattleArmorBlkImport => {
     const armorTech = blkValue(file, "armor_tech");
     let armorBase: BattleArmorTechBase | undefined = /^\d+$/.test(armorTech) ? (["2", "6", "8", "10", "12"].includes(armorTech) ? "clan" : "is") : undefined;
     const pending: IBlkLine[] = [];
+    const placed: IBlkImportedItem[] = [];
     for (const line of [...lines, ...slotless]) {
         if (IGNORED.has(line.key)) continue;
         // Armor is listed once for each slot it takes.
@@ -302,6 +304,8 @@ export const importBattleArmorBlk = (text: string): IBattleArmorBlkImport => {
             continue;
         }
         const index = suit.getItems().length - 1;
+        const mountedItem = suit.getItems()[index];
+        if (mountedItem.uuid) placed.push({ name: line.name, location: mountedItem.location ?? "", uuid: mountedItem.uuid });
         const change: Partial<IBattleArmorMountedItem> = {};
         if (launcher?.oneShot) change.oneShot = true;
         if (line.squadSupport) change.squadSupport = true;
@@ -381,5 +385,7 @@ export const importBattleArmorBlk = (text: string): IBattleArmorBlkImport => {
         if (era) suit.setEra(era.tag);
     }
 
+    // MegaMek's battle armor locations are the squad and its troopers, not arms and body: weapons match by name.
+    applyBlkQuirks(file, suit, placed, issues);
     return { suit, issues };
 };

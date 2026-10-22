@@ -101,3 +101,19 @@ describe("official quirks", () => {
         }
     });
 });
+
+describe("MegaMek quirk codes", () => {
+    it("finds a quirk by its MegaMek code", () => {
+        expect(getQuirk("command_mech")?.tag).toBe(getQuirk("Command 'Mech")?.tag);
+        expect(getQuirk("imp_com")?.tag).toBe("quirk-improved-communications");
+        expect(getQuirk("rugged_2")?.tag).toBe("quirk-rugged");
+        expect(getQuirk("battle_fists_la")?.tag).toBe("quirk-battlefists");
+        expect(getQuirk("stable_weapon")?.tag).toBe("quirk-stabilized-weapon");
+        expect(getQuirk("no_arms")?.tag).toBe("quirk-no-minimal-arms");
+    });
+
+    it("gives no two quirks the same code", () => {
+        const codes = quirks.flatMap((quirk) => quirk.altNames.filter((name) => /^[a-z0-9_]+$/.test(name)));
+        expect(codes.filter((code, index) => codes.indexOf(code) !== index)).toEqual([]);
+    });
+});
