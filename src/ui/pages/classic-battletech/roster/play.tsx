@@ -494,8 +494,8 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
 
         this.setState({
           updated: true,
-          // A new space turn opens with its anti-orbital shots to resolve.
-          spaceResolutionDialog: currentCBTForce.spaceInPlay && currentCBTForce.spaceTracker.getDueShots( currentCBTForce.turn ).length > 0,
+          // A new space turn opens with its anti-orbital shots to resolve; any left unresolved stay on the bar.
+          spaceResolutionDialog: currentCBTForce.spaceInPlay && currentCBTForce.spaceTracker.opensSpacePhase( currentCBTForce.turn ),
         })
       }
 

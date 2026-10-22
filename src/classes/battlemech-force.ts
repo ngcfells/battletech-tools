@@ -18,7 +18,7 @@ export interface ICBTForceExport {
 
     /** "Space forces in this game": the space turn tracker (design 2026-10-22). Missing in older saves. */
     spaceInPlay?: boolean;
-    /** Saved only while spaceInPlay is on. */
+    /** Saved whenever it tracks anything, so turning the option off and on again keeps the shots in flight. */
     spaceTracker?: ISpaceTrackerExport;
 }
 
@@ -111,7 +111,7 @@ export class BattleMechForce {
             heatApplied: this.heatApplied,
             spaceInPlay: this.spaceInPlay,
         }
-        if( this.spaceInPlay ) {
+        if( this.spaceTracker.hasState() ) {
             returnValue.spaceTracker = this.spaceTracker.export();
         }
 
@@ -194,7 +194,7 @@ export class BattleMechForce {
         }
 
         this.spaceInPlay = importObj.spaceInPlay === true;
-        this.spaceTracker = new SpaceTracker( this.spaceInPlay ? importObj.spaceTracker : undefined );
+        this.spaceTracker = new SpaceTracker( importObj.spaceTracker );
 
         if( importObj.lastUpdated ) {
             this._lastUpdated = new Date(importObj.lastUpdated);

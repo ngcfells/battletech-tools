@@ -18,6 +18,11 @@ export function getGroundTurnsUntilNextSpaceTurn(turn: number): number {
     return GROUND_TURNS_PER_SPACE_TURN - ((groundTurn(turn) - 1) % GROUND_TURNS_PER_SPACE_TURN);
 }
 
+/** The first ground turn of a space turn (1, 7, 13...), when its space phase resolves the shots in flight. */
+export function isSpaceTurnStart(turn: number): boolean {
+    return (groundTurn(turn) - 1) % GROUND_TURNS_PER_SPACE_TURN === 0;
+}
+
 /** Ground turns before a gun that fired in a given space turn may safely fire again; 0 when it may now. */
 export function getCooldownGroundTurns(turn: number, lastSpaceTurnFired: number | null): number {
     return lastSpaceTurnFired === getSpaceTurn(turn) ? getGroundTurnsUntilNextSpaceTurn(turn) : 0;

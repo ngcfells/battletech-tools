@@ -61,6 +61,17 @@ describe("anti-orbital gun controls", () => {
         expect(screen.getByText(/Destroyed: inoperable for the rest of the game/)).toBeTruthy();
         expect((screen.getByRole("button", { name: "Fire anti-orbital" }) as HTMLButtonElement).disabled).toBe(true);
     });
+
+    it("shows a gun's message only in the turn it was made", () => {
+        const { force, vehicle } = setup();
+        force.turn = 2;
+        const { rerender } = controls(force, vehicle);
+        fireAt("0712");
+        expect(screen.getByText(/Fired at hex 0712/)).toBeTruthy();
+        force.turn = 3;
+        rerender(<AntiOrbitalGunControls force={force} unitUuid={vehicle.getUUID()} onChange={vi.fn()} />);
+        expect(screen.queryByText(/Fired at hex 0712/)).toBeNull();
+    });
 });
 
 describe("space resolution dialog", () => {

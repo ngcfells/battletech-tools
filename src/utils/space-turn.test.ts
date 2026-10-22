@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
-    getCooldownGroundTurns, getEarlyFireResult, getGroundTurnsUntilNextSpaceTurn, getSpaceTurn,
+    getCooldownGroundTurns, getEarlyFireResult, getGroundTurnsUntilNextSpaceTurn, getSpaceTurn, isSpaceTurnStart,
     HIT_REMINDER, MISFIRE_REMINDER, RESOLUTION_ROLLS,
 } from "./space-turn";
 
@@ -44,5 +44,12 @@ describe("resolution table", () => {
         expect(HIT_REMINDER).toContain("2 capital (20 standard)");
         expect(MISFIRE_REMINDER).toContain("TacOps p.182");
         expect(MISFIRE_REMINDER).toContain("3D6");
+    });
+});
+
+describe("space turn start (minors, 2026-10-22)", () => {
+    it("is the first ground turn of each space turn", () => {
+        expect([1, 7, 13].map(isSpaceTurnStart)).toEqual([true, true, true]);
+        expect([2, 6, 8, 12].map(isSpaceTurnStart)).toEqual([false, false, false, false]);
     });
 });

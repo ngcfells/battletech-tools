@@ -85,7 +85,12 @@ each anti-orbital shot. The players keep a physical map.
 - **Which guns qualify:** any unit whose weapon can load the round (`getCompatibleAmmo`). This includes 'Mechs,
   vehicles, Support Vehicles, buildings and ArtVee combo guns in Siege Mode, wherever a Long Tom can be mounted.
 - **Saved state:** the option, the shots in flight and each gun's last space turn fired are saved with the force, so
-  a game resumes after a reload.
+  a game resumes after a reload. Turning the option off mid-game hides the tracker but keeps that state, so turning it
+  back on brings the shots in flight back; a game that never used the tracker saves only the off flag (my call,
+  2026-10-22).
+- **The space phase dialog** opens by itself only on the first ground turn of a space turn with shots due. Shots left
+  unresolved stay on the turn bar with its Resolve button (my call, 2026-10-22). A gun's message shows only in the
+  ground turn it was made.
 
 ## Open, for the user
 

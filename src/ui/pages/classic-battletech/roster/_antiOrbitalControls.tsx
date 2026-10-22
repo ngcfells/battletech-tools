@@ -14,9 +14,11 @@ interface IGunEntry {
     target: string;
     roll: string;
     message: string;
+    /** The ground turn the message was made in: it shows only in that turn. */
+    messageTurn: number;
 }
 
-const emptyEntry: IGunEntry = { hex: "", target: "", roll: "", message: "" };
+const emptyEntry: IGunEntry = { hex: "", target: "", roll: "", message: "", messageTurn: 0 };
 
 const plural = (count: number, word: string): string => `${count} ${word}${count === 1 ? "" : "s"}`;
 
@@ -27,7 +29,8 @@ function GunRow(props: { force: BattleMechForce; gun: IAntiOrbitalGun; onChange:
     const id = React.useId();
     const destroyed = tracker.isGunDestroyed(gun);
     const cooldown = tracker.getGunCooldown(gun, force.turn);
-    const set = (fields: Partial<IGunEntry>) => setEntry((current) => ({ ...current, ...fields }));
+    const set = (fields: Partial<IGunEntry>) =>
+        setEntry((current) => ({ ...current, ...fields, ...("message" in fields ? { messageTurn: force.turn } : {}) }));
 
     const fire = () => {
         const roll = entry.roll.trim() === "" ? undefined : Number(entry.roll);
@@ -83,7 +86,7 @@ function GunRow(props: { force: BattleMechForce; gun: IAntiOrbitalGun; onChange:
                     Early ground shot
                 </button>
             ) : null}
-            {entry.message ? <div className="small-text">{entry.message}</div> : null}
+            {entry.message && entry.messageTurn === force.turn ? <div className="small-text">{entry.message}</div> : null}
         </fieldset>
     );
 }

@@ -3,7 +3,7 @@ import { getComboArtillery } from "../data/artillery-custom";
 import { IEquipmentItem } from "../data/data-interfaces";
 import { equipmentMatchesIdentifier, getCompatibleAmmo } from "../data/equipment-registry";
 import { generateUUID } from "../utils/generateUUID";
-import { EarlyFireResult, getCooldownGroundTurns, getEarlyFireResult, getSpaceTurn, MISFIRE_REMINDER } from "../utils/space-turn";
+import { EarlyFireResult, getCooldownGroundTurns, getEarlyFireResult, getSpaceTurn, isSpaceTurnStart, MISFIRE_REMINDER } from "../utils/space-turn";
 import type { BattleMech } from "./battlemech";
 import type { BattleMechForce } from "./battlemech-force";
 import type Building from "./building";
@@ -249,5 +249,15 @@ export class SpaceTracker {
     public getDueShots(groundTurn: number): IAntiOrbitalShot[] {
         const spaceTurn = getSpaceTurn(groundTurn);
         return this.shotsInFlight.filter((shot) => shot.firedSpaceTurn < spaceTurn);
+    }
+
+    /** True when this ground turn opens a space turn with shots to resolve: the one time the space phase asks. */
+    public opensSpacePhase(groundTurn: number): boolean {
+        return isSpaceTurnStart(groundTurn) && this.getDueShots(groundTurn).length > 0;
+    }
+
+    /** True while anything is tracked: shots in flight, a gun's last space turn fired, or a destroyed gun. */
+    public hasState(): boolean {
+        return this.shotsInFlight.length > 0 || Object.keys(this.lastFired).length > 0 || this.destroyedGuns.length > 0;
     }
 }

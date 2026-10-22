@@ -50,3 +50,24 @@ describe("space tracker state", () => {
         expect(tracker.getDueShots(7)).toHaveLength(1);
     });
 });
+
+describe("deferred minors (2026-10-22)", () => {
+    it("opens the space phase only on the first ground turn of a space turn with shots due", () => {
+        const tracker = new SpaceTracker({ shotsInFlight: [shot()] });
+        expect(tracker.opensSpacePhase(6)).toBe(false);
+        expect(tracker.opensSpacePhase(7)).toBe(true);
+        expect(tracker.opensSpacePhase(8)).toBe(false);
+        expect(new SpaceTracker().opensSpacePhase(7)).toBe(false);
+    });
+
+    it("keeps shots in flight with the option off, through a reload, for when it is turned back on", () => {
+        const force = new BattleMechForce();
+        force.spaceInPlay = true;
+        force.spaceTracker.shotsInFlight.push(shot());
+        force.spaceInPlay = false;
+        const back = new BattleMechForce(JSON.parse(JSON.stringify(force.export())));
+        expect(back.spaceInPlay).toBe(false);
+        back.spaceInPlay = true;
+        expect(back.spaceTracker.shotsInFlight).toHaveLength(1);
+    });
+});
