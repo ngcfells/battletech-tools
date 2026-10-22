@@ -78,6 +78,14 @@ describe("sample ArtVees", () => {
             for (const item of [...acAmmo, ...artilleryAmmo]) expect(getCompatibleAmmo(gun, item)).toBe(true);
         });
 
+        it("feeds every ammunition bin to a weapon it carries", () => {
+            const equipment = vehicle.getEquipmentList();
+            const weapons = equipment.filter((item) => !item.isAmmo);
+            for (const bin of equipment.filter((item) => item.isAmmo)) {
+                expect(weapons.some((weapon) => getCompatibleAmmo(weapon, bin)), bin.tag).toBe(true);
+            }
+        });
+
         it("uses production technology only", () => {
             expect(getNonProductionItems(vehicle)).toEqual([]);
         });

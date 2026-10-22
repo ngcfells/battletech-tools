@@ -80,5 +80,6 @@ export function getArtVeeNotes(vehicle: Vehicle): string[] {
         if (code) alphaStrike.push(`Alpha Strike: ${code} in Siege Mode only; Siege Mode Move 0"`);
     }
     notes.push("Transforms in the Movement Phase before moving; it cannot move or fire that turn", ...alphaStrike);
-    return notes;
+    // Identical combo guns share one line each.
+    return [...new Set(notes)];
 }

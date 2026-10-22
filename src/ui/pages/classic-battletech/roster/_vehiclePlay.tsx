@@ -231,7 +231,7 @@ export default class VehiclePlayPanel extends React.Component<IVehiclePlayPanelP
                         title={reason ?? undefined}
                         onClick={() => { vehicle.startArtVeeTransformation(); this._changed(); }}
                     >Transform to {target} Mode</button>
-                    {inPlay.artVeeTransformingTo ? (
+                    {inPlay.artVeeTransformingTo && !vehicle.getArtVeeTransformationBlockedByDamage() ? (
                         <button
                             type="button"
                             className="btn btn-sm btn-secondary ms-1"
@@ -513,7 +513,7 @@ export default class VehiclePlayPanel extends React.Component<IVehiclePlayPanelP
                                 <legend>Movement</legend>
                                 <select
                                     aria-label="Movement mode"
-                                    value={inPlay.movementMode}
+                                    value={movementModes.some((m) => m.mode === inPlay.movementMode) ? inPlay.movementMode : "stationary"}
                                     onChange={(e) => { vehicle.setMovement(e.currentTarget.value as VehicleMovementMode, inPlay.hexesMoved); this._changed(); }}
                                 >
                                     {movementModes.map((m) => <option key={m.mode} value={m.mode}>{m.label} ({m.mp} MP)</option>)}

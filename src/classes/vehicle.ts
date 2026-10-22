@@ -1315,11 +1315,7 @@ export default class Vehicle {
 
     /** Whether either side's dates the tech base can use allow it in the vehicle's era at this rules level. */
     private _sidedDatesInEra(dates: { is: ITechDates; clan: ITechDates }, rulesLevel: number): boolean {
-        const techTag = this._tech.tag;
-        const sides: ITechDates[] = [];
-        if (["is", "mis", "mclan"].includes(techTag)) sides.push(dates.is);
-        if (["clan", "mis", "mclan"].includes(techTag)) sides.push(dates.clan);
-        return sides.some((side) => this._datesAvailability(side, rulesLevel).available);
+        return this._techSides(dates).some((side) => this._datesAvailability(side.dates, rulesLevel).available);
     }
 
     /** Chassis modifications this Combat Vehicle's motive type, era and rules level allow (TO:AUE pp.94, 114). */
@@ -1335,15 +1331,20 @@ export default class Vehicle {
     }
 
     /** Mounted chassis modifications the current era no longer allows (a design set in one era, then moved to an earlier one). */
+    /** The tech sides whose dates apply to this vehicle: Inner Sphere, Clan, or both for mixed tech. */
+    private _techSides(dates: { is: ITechDates; clan: ITechDates }): { side: string; dates: ITechDates }[] {
+        const techTag = this._tech.tag;
+        return [
+            ...(["is", "mis", "mclan"].includes(techTag) ? [{ side: "Inner Sphere", dates: dates.is }] : []),
+            ...(["clan", "mis", "mclan"].includes(techTag) ? [{ side: "Clan", dates: dates.clan }] : []),
+        ];
+    }
+
     public getChassisModificationIssues(): string[] {
         const issues: string[] = [];
         for (const mod of this.getChassisModifications()) {
             if (!mod.dates || this._chassisModificationInEra(mod, EXPERIMENTAL_RULES_LEVEL)) continue;
-            const techTag = this._tech.tag;
-            const options = [
-                ...(["is", "mis", "mclan"].includes(techTag) ? [{ side: "Inner Sphere", dates: mod.dates.is }] : []),
-                ...(["clan", "mis", "mclan"].includes(techTag) ? [{ side: "Clan", dates: mod.dates.clan }] : []),
-            ];
+            const options = this._techSides(mod.dates);
             const earliest = options.reduce((best, option) => (option.dates.prototype ?? Infinity) < (best.dates.prototype ?? Infinity) ? option : best);
             issues.push(`${mod.name}: not available before ${earliest.dates.prototype} (${earliest.side} prototype, ${mod.book} p.${mod.page})`);
         }
@@ -1458,13 +1459,8 @@ export default class Vehicle {
     /** Why an ArtVee's conversion equipment is out of date in the vehicle's era, with the dates; null when it is in date or the vehicle is no ArtVee. */
     public getArtVeeEraIssue(): string | null {
         if (!this._artVee || this._sidedDatesInEra(ARTVEE_CONVERSION_EQUIPMENT.dates, CUSTOM_HOMEBREW_RULES_LEVEL)) return null;
-        const techTag = this._tech.tag;
-        const describe = (side: string, dates: ITechDates): string =>
-            `${side} prototype ${dates.prototype ?? "none"}, introduced ${dates.introduced ?? "none"}, extinct ${dates.extinct ?? "never"}, reintroduced ${dates.reintroduced ?? "never"}`;
-        const sides = [
-            ...(["is", "mis", "mclan"].includes(techTag) ? [describe("Inner Sphere", ARTVEE_CONVERSION_EQUIPMENT.dates.is)] : []),
-            ...(["clan", "mis", "mclan"].includes(techTag) ? [describe("Clan", ARTVEE_CONVERSION_EQUIPMENT.dates.clan)] : []),
-        ];
+        const sides = this._techSides(ARTVEE_CONVERSION_EQUIPMENT.dates).map(({ side, dates }) =>
+            `${side} prototype ${dates.prototype ?? "none"}, introduced ${dates.introduced ?? "none"}, extinct ${dates.extinct ?? "never"}, reintroduced ${dates.reintroduced ?? "never"}`);
         return `${ARTVEE_CONVERSION_EQUIPMENT.name}: not available in this era (${sides.join("; ")})`;
     }
 
@@ -1983,7 +1979,7 @@ export default class Vehicle {
             return used;
         }
         used += this.getArmorItemSlots();
-        if (this._artVee) used += ARTVEE_CONVERSION_EQUIPMENT.bodySlots + ARTVEE_CONVERSION_EQUIPMENT.turretSlots;
+        if (this._artVee) used += ARTVEE_CONVERSION_EQUIPMENT.bodySlots + (this._hasTurret ? ARTVEE_CONVERSION_EQUIPMENT.turretSlots : 0);
         if (this._jumpMP > 0) used += 1;
         if (this._troopSpace > 0) used += 1;
         used += ENGINE_ITEM_SLOTS[this._engineType.tag] ?? 0;
@@ -3089,7 +3085,8 @@ export default class Vehicle {
         } else {
             rows.push([`Armor (${this.getArmorWeight()} t)`, this.getArmorWeight() * (this._armorType.costMultiplier || 10000)]);
         }
-        rows.push([`Internal Structure (${this.getStructureWeight()} t)`, this.getStructureWeight() * 10000]);
+        const structureCost = this.getStructureWeight() * 10000;
+        rows.push([`Internal Structure (${this.getStructureWeight()} t)`, structureCost]);
         rows.push([`Control Systems (${this.getControlSystemsWeight()} t)`, this.getControlSystemsWeight() * 10000]);
         if (this._roboticControl !== "none") {
             rows.push([`${this.getRoboticControl().name} (${this.getRoboticControlWeight()} t)`, getRoboticControlCost(this._roboticControl, this.getRoboticControlWeight())]);
@@ -3115,7 +3112,6 @@ export default class Vehicle {
         }
         if (this._artVee) {
             // Half the weapons, equipment and structure cost, as the QuadVee's conversion equipment adds (IO:AE p.181).
-            const structureCost = this.getStructureWeight() * 10000;
             const weaponsAndEquipmentCost = this._equipmentList.reduce((sum, item) => sum + (item.isAmmo ? 0 : item.cbills || 0), 0);
             rows.push([`${ARTVEE_CONVERSION_EQUIPMENT.name} (${ARTVEE_CONVERSION_EQUIPMENT.costFraction} x weapons, equipment and structure)`,
                 ARTVEE_CONVERSION_EQUIPMENT.costFraction * (structureCost + weaponsAndEquipmentCost)]);
@@ -4215,7 +4211,7 @@ export default class Vehicle {
                 const weapon = pickWeapon(candidates);
                 if (weapon?.uuid === ARTVEE_CONVERSION_PICK) {
                     this._inPlay.artVeeConversionDestroyed = true;
-                    return `${weapon.name} destroyed: stuck in its current Mode`;
+                    return `${name}: ${weapon.name} (stuck in its current Mode)`;
                 }
                 if (weapon?.uuid) this.setWeaponStatus(weapon.uuid, "destroyed");
                 // A destroyed weapon that can explode is an ammunition explosion in its location (TW p. 195).
@@ -4539,8 +4535,8 @@ export default class Vehicle {
     }
 
     public setMovement(mode: VehicleMovementMode, hexesMoved: number = 0): void {
-        // A transforming ArtVee is stationary whatever it is passed (ArtVee ruling 2026-10-21).
-        if (this._inPlay.artVeeTransformingTo) {
+        // A transforming ArtVee, or one in Siege Mode, is stationary whatever it is passed (ArtVee ruling 2026-10-21).
+        if (this._inPlay.artVeeTransformingTo || this.getArtVeeMode() === "siege") {
             this._inPlay.movementMode = "stationary";
             this._inPlay.hexesMoved = 0;
             return;
@@ -5027,7 +5023,7 @@ export default class Vehicle {
             this._artVee = false;
             if (importObject.artVee === true) {
                 if (!this._isArtVeeChassis()) {
-                    issue("Dropped the ArtVee conversion: the vehicle is not a tracked Combat Vehicle");
+                    issue("Dropped the ArtVee conversion: the vehicle is not a tracked Combat Vehicle of 100 t or less");
                 } else {
                     if (this._omni) issue("Dropped OmniVehicle pods: an ArtVee is not an OmniVehicle");
                     this._makeArtVee();

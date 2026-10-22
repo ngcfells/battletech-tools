@@ -111,6 +111,14 @@ describe("ArtVee construction", () => {
         expect(ARTVEE_CONVERSION_EQUIPMENT.bodySlots + ARTVEE_CONVERSION_EQUIPMENT.turretSlots).toBe(3);
     });
 
+    it("takes no turret slot once its turret is removed", () => {
+        const vehicle = thumperArtVee();
+        const withTurret = vehicle.getUsedItemSlots();
+        vehicle.setHasTurret(false);
+        expect(vehicle.isArtVee()).toBe(true);
+        expect(vehicle.getUsedItemSlots()).toBe(withTurret - ARTVEE_CONVERSION_EQUIPMENT.turretSlots);
+    });
+
     it("adds half the weapons, equipment and structure cost before the final multiplier (IO:AE p.181 precedent)", () => {
         const vehicle = thumperArtVee();
         const log = vehicle.getCBillCostLog();
@@ -211,6 +219,28 @@ describe("ArtVee construction", () => {
         expect(plain().setArtVee(true, 5)).toBe(false);
     });
 
+    it("offers IS combo guns to IS vehicles, Clan ones to Clan vehicles, and both to mixed tech", () => {
+        const combos = (tech: string): string[] => {
+            const vehicle = thumperArtVee();
+            vehicle.setTech(tech);
+            return vehicle.getAvailableEquipment(true, 6).filter((item) => item.comboArtilleryTag).map((item) => item.tag);
+        };
+        expect(combos("is").length).toBeGreaterThan(0);
+        expect(combos("is").every((tag) => !tag.startsWith("custom-clan-"))).toBe(true);
+        expect(combos("clan").length).toBeGreaterThan(0);
+        expect(combos("clan").every((tag) => tag.startsWith("custom-clan-"))).toBe(true);
+        for (const tech of ["mis", "mclan"]) {
+            expect(combos(tech), tech).toContain("custom-artvee-thumper-combo");
+            expect(combos(tech), tech).toContain("custom-clan-artvee-thumper-combo");
+        }
+    });
+
+    it("rates the same as the vehicle without the conversion, Siege Mode adding nothing (IO:AE p.185)", () => {
+        const artVee = thumperArtVee();
+        expect(artVee.getBattleValue()).toBe(202);
+        expect(plain().getBattleValue()).toBe(artVee.getBattleValue());
+    });
+
     it("rates the ArtVee once, blended as for LAMs (IO:AE p.185)", () => {
         const log = thumperArtVee().getBattleValueLog();
         expect(log).toContain("ArtVee: movement from Vehicle Mode; Siege Mode (0 MP) adds nothing (blended, IO:AE p.185)");
@@ -238,7 +268,7 @@ describe("ArtVee construction", () => {
         wheeled.motiveType = "wheeled";
         const dropped = new Vehicle(JSON.stringify(wheeled));
         expect(dropped.isArtVee()).toBe(false);
-        expect(dropped.getImportIssues()).toContain("Dropped the ArtVee conversion: the vehicle is not a tracked Combat Vehicle");
+        expect(dropped.getImportIssues()).toContain("Dropped the ArtVee conversion: the vehicle is not a tracked Combat Vehicle of 100 t or less");
     });
 
     it("keeps the flag out of its era, with an issue naming the dates, and across export and import", () => {
@@ -309,6 +339,15 @@ describe("ArtVee construction", () => {
             expect(vehicle.getCannotFireReason()).toBeNull();
             vehicle.turnReset();
             expect(vehicle.getArtVeeMode()).toBe("vehicle");
+        });
+
+        it("in Siege Mode stays stationary whatever movement it is given", () => {
+            const vehicle = thumperArtVee();
+            vehicle.startArtVeeTransformation();
+            vehicle.turnReset();
+            vehicle.setMovement("cruise", 3);
+            expect(vehicle.getInPlay().movementMode).toBe("stationary");
+            expect(vehicle.getInPlay().hexesMoved).toBe(0);
         });
 
         it("in Siege Mode has 0 MP but is not immobile", () => {
@@ -417,7 +456,7 @@ describe("ArtVee construction", () => {
             const vehicle = thumperArtVee();
             // Only the conversion equipment is a candidate when it is the pick.
             const text = vehicle.applyCriticalHit("weaponDestroyed", "front", "artvee-conversion");
-            expect(text).toContain("ArtVee Conversion Equipment destroyed: stuck in its current Mode");
+            expect(text).toBe("Weapon Destroyed: ArtVee Conversion Equipment (stuck in its current Mode)");
             expect(vehicle.getInPlay().artVeeConversionDestroyed).toBe(true);
             expect(vehicle.startArtVeeTransformation()).toBe("the conversion equipment is destroyed");
             expect(vehicle.getArtVeeMode()).toBe("vehicle");
@@ -503,6 +542,14 @@ describe("ArtVee record sheet notes", () => {
         expect(getArtVeeNotes(vehicle)).toContain('Alpha Strike: ARTTH-1 in Siege Mode only; Siege Mode Move 0"');
         vehicle.setChassisModification("armored-motive", true, 6);
         expect(vehicle.getAlphaStrikeStats().specialAbilities).toContain("ARS");
+    });
+
+    it("notes two identical combo guns once", () => {
+        const vehicle = build();
+        vehicle.addEquipmentFromTag("custom-artvee-thumper-combo", "front");
+        const notes = getArtVeeNotes(vehicle);
+        expect(getArtVeeComboGuns(vehicle)).toHaveLength(2);
+        expect(new Set(notes).size).toBe(notes.length);
     });
 
     it("has no notes for an ordinary vehicle", () => {
