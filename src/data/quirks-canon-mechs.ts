@@ -1266,4 +1266,633 @@ export const canonMechQuirks: ICanonQuirkEntry[] = [
         ],
         source: { book: "BattleMech Manual", page: 91 },
     },
+    {
+        chassis: "Grand Dragon",
+        quirks: [
+            { tag: "quirk-extended-torso-twist" },
+            { tag: "quirk-narrow-low-profile" },
+            { tag: "quirk-stable" },
+        ],
+        source: { book: "BattleMech Manual", page: 92 },
+    },
+    {
+        chassis: "Grand Titan",
+        quirks: [
+            { tag: "quirk-multi-trac" },
+            { tag: "quirk-difficult-to-maintain" },
+        ],
+        source: { book: "BattleMech Manual", page: 92 },
+    },
+    {
+        chassis: "Grasshopper",
+        quirks: [
+            { tag: "quirk-rugged", parameter: 1 },
+        ],
+        source: { book: "BattleMech Manual", page: 92 },
+    },
+    {
+        chassis: "Great Turtle",
+        quirks: [
+            { tag: "quirk-improved-targeting", parameter: "short" },
+            { tag: "quirk-poor-performance" },
+        ],
+        source: { book: "BattleMech Manual", page: 92 },
+    },
+    {
+        chassis: "Great Wyrm",
+        quirks: [
+            { tag: "quirk-stable" },
+        ],
+        source: { book: "BattleMech Manual", page: 92 },
+    },
+    {
+        chassis: "Grendel (Mongrel)",
+        altChassis: ["Grendel", "Mongrel"],
+        quirks: [
+            { tag: "quirk-rugged", parameter: 1 },
+        ],
+        source: { book: "BattleMech Manual", page: 92 },
+    },
+    {
+        chassis: "Griffin",
+        quirks: [
+            { tag: "quirk-battlefists" },
+            { tag: "quirk-jettison-capable-weapon", weapon: { name: "PPC" } },
+            { tag: "quirk-rugged", parameter: 1 },
+            { tag: "quirk-ubiquitous" },
+        ],
+        source: { book: "BattleMech Manual", page: 92 },
+    },
+    {
+        chassis: "Griffin IIC",
+        quirks: [
+            { tag: "quirk-battlefists" },
+        ],
+        source: { book: "BattleMech Manual", page: 92 },
+    },
+    {
+        chassis: "Grigori",
+        quirks: [
+            { tag: "quirk-improved-communications" },
+            { tag: "quirk-improved-sensors" },
+            { tag: "quirk-bad-reputation" },
+        ],
+        source: { book: "BattleMech Manual", page: 92 },
+    },
+    {
+        chassis: "Grim Reaper",
+        quirks: [
+            { tag: "quirk-easy-to-maintain" },
+            { tag: "quirk-protected-actuators" },
+        ],
+        source: { book: "BattleMech Manual", page: 92 },
+    },
+    {
+        chassis: "Grizzly",
+        quirks: [
+            { tag: "quirk-difficult-to-maintain" },
+            { tag: "quirk-exposed-actuators" },
+        ],
+        source: { book: "BattleMech Manual", page: 92 },
+    },
+    {
+        chassis: "Guillotine",
+        quirks: [
+            { tag: "quirk-searchlight" },
+        ],
+        source: { book: "BattleMech Manual", page: 92 },
+    },
+    {
+        chassis: "Guillotine IIC",
+        quirks: [
+            { tag: "quirk-searchlight" },
+        ],
+        source: { book: "BattleMech Manual", page: 92 },
+    },
+    {
+        chassis: "Gunslinger",
+        quirks: [
+            { tag: "quirk-cowl" },
+        ],
+        source: { book: "BattleMech Manual", page: 92 },
+    },
+    {
+        chassis: "Gurkha",
+        quirks: [
+            { tag: "quirk-bad-reputation" },
+            { tag: "quirk-exposed-actuators" },
+        ],
+        source: { book: "BattleMech Manual", page: 92 },
+    },
+    {
+        chassis: "Ha Otoko",
+        quirks: [
+            { tag: "quirk-bad-reputation", techBase: "clan" },
+        ],
+        source: { book: "BattleMech Manual", page: 92 },
+    },
+    {
+        chassis: "Hachiwara",
+        quirks: [
+            { tag: "quirk-difficult-to-maintain" },
+        ],
+        source: { book: "BattleMech Manual", page: 92 },
+    },
+    {
+        chassis: "Hammer",
+        quirks: [
+            { tag: "quirk-extended-torso-twist" },
+            { tag: "quirk-improved-targeting", parameter: "long" },
+        ],
+        source: { book: "BattleMech Manual", page: 92 },
+    },
+    {
+        chassis: "Hammerhands",
+        quirks: [
+            { tag: "quirk-barrel-fist", locations: ["la", "ra"] },
+            { tag: "quirk-protected-actuators" },
+        ],
+        source: { book: "BattleMech Manual", page: 92 },
+    },
+    {
+        chassis: "Hankyu (Arctic Cheetah)",
+        altChassis: ["Hankyu", "Arctic Cheetah"],
+        quirks: [
+            { tag: "quirk-protected-actuators" },
+        ],
+        source: { book: "BattleMech Manual", page: 92 },
+    },
+    {
+        chassis: "Hatamoto",
+        quirks: [
+            { tag: "quirk-barrel-fist", locations: ["la"] },
+            { tag: "quirk-easy-to-maintain" },
+            { tag: "quirk-modular-weapons", note: "Torso SRMs" },
+        ],
+        source: { book: "BattleMech Manual", page: 92 },
+    },
+    {
+        chassis: "Hatchetman",
+        quirks: [
+            { tag: "quirk-anti-aircraft-targeting" },
+        ],
+        source: { book: "BattleMech Manual", page: 92 },
+    },
+    {
+        chassis: "Hauptmann",
+        quirks: [
+            { tag: "quirk-easy-to-maintain" },
+            { tag: "quirk-extended-torso-twist" },
+        ],
+        source: { book: "BattleMech Manual", page: 92 },
+    },
+    {
+        chassis: "Hector",
+        quirks: [
+            { tag: "quirk-bad-reputation" },
+            { tag: "quirk-exposed-actuators" },
+            { tag: "quirk-obsolete", parameter: 2420 },
+        ],
+        source: { book: "BattleMech Manual", page: 92 },
+    },
+    {
+        chassis: "Helepolis",
+        quirks: [
+            { tag: "quirk-reinforced-legs" },
+            { tag: "quirk-stable" },
+        ],
+        source: { book: "BattleMech Manual", page: 92 },
+    },
+    {
+        chassis: "Helios",
+        quirks: [
+            { tag: "quirk-easy-to-maintain" },
+        ],
+        source: { book: "BattleMech Manual", page: 92 },
+    },
+    {
+        chassis: "Hellfire",
+        quirks: [
+            { tag: "quirk-difficult-to-maintain" },
+        ],
+        source: { book: "BattleMech Manual", page: 92 },
+    },
+    {
+        chassis: "Hellhound (Conjurer)",
+        altChassis: ["Hellhound", "Conjurer"],
+        quirks: [
+            { tag: "quirk-extended-torso-twist" },
+        ],
+        source: { book: "BattleMech Manual", page: 92 },
+    },
+    {
+        chassis: "Hellion",
+        quirks: [
+            { tag: "quirk-weak-head-armor", parameter: 1 },
+        ],
+        source: { book: "BattleMech Manual", page: 92 },
+    },
+    {
+        chassis: "Hellspawn",
+        quirks: [
+            { tag: "quirk-bad-reputation" },
+        ],
+        source: { book: "BattleMech Manual", page: 92 },
+    },
+    {
+        chassis: "Hellstar",
+        quirks: [
+            { tag: "quirk-barrel-fist", locations: ["la", "ra"] },
+            { tag: "quirk-exposed-actuators" },
+        ],
+        source: { book: "BattleMech Manual", page: 92 },
+    },
+    {
+        chassis: "Hercules",
+        quirks: [
+            { tag: "quirk-difficult-to-maintain" },
+        ],
+        source: { book: "BattleMech Manual", page: 92 },
+    },
+    {
+        chassis: "Hermes",
+        quirks: [
+            { tag: "quirk-improved-communications" },
+            { tag: "quirk-stable" },
+        ],
+        source: { book: "BattleMech Manual", page: 92 },
+    },
+    {
+        chassis: "Hermes II",
+        quirks: [
+            { tag: "quirk-easy-to-maintain" },
+            { tag: "quirk-improved-communications" },
+        ],
+        source: { book: "BattleMech Manual", page: 92 },
+    },
+    {
+        chassis: "Highlander",
+        quirks: [
+            { tag: "quirk-command-mech" },
+            { tag: "quirk-cowl" },
+            { tag: "quirk-reinforced-legs" },
+            { tag: "quirk-difficult-ejection" },
+        ],
+        source: { book: "BattleMech Manual", page: 92 },
+    },
+    {
+        chassis: "Highlander IIC",
+        quirks: [
+            { tag: "quirk-command-mech" },
+            { tag: "quirk-cowl" },
+            { tag: "quirk-reinforced-legs" },
+            { tag: "quirk-difficult-ejection" },
+        ],
+        source: { book: "BattleMech Manual", page: 92 },
+    },
+    {
+        chassis: "Hitman",
+        quirks: [
+            { tag: "quirk-accurate-weapon", weapon: { name: "TAG" } },
+            { tag: "quirk-stabilized-weapon", weapon: { name: "TAG" } },
+        ],
+        source: { book: "BattleMech Manual", page: 92 },
+    },
+    {
+        chassis: "Hollander",
+        quirks: [
+            { tag: "quirk-reinforced-legs" },
+            { tag: "quirk-stabilized-weapon", weapon: { name: "Gauss Rifle" } },
+            { tag: "quirk-unbalanced" },
+        ],
+        source: { book: "BattleMech Manual", page: 92 },
+    },
+    {
+        chassis: "Hollander II",
+        quirks: [
+            { tag: "quirk-reinforced-legs" },
+            { tag: "quirk-stabilized-weapon", weapon: { name: "Gauss Rifle" } },
+        ],
+        source: { book: "BattleMech Manual", page: 92 },
+    },
+    {
+        chassis: "Hoplite",
+        quirks: [
+            { tag: "quirk-no-minimal-arms" },
+        ],
+        source: { book: "BattleMech Manual", page: 92 },
+    },
+    {
+        chassis: "Hornet",
+        quirks: [
+            { tag: "quirk-narrow-low-profile" },
+            { tag: "quirk-no-minimal-arms" },
+        ],
+        source: { book: "BattleMech Manual", page: 92 },
+    },
+    {
+        chassis: "Hunchback",
+        quirks: [
+            { tag: "quirk-battlefists" },
+        ],
+        source: { book: "BattleMech Manual", page: 92 },
+    },
+    {
+        chassis: "Hunchback IIC",
+        quirks: [
+            { tag: "quirk-bad-reputation", techBase: "clan" },
+        ],
+        source: { book: "BattleMech Manual", page: 92 },
+    },
+    {
+        chassis: "Huron Warrior",
+        quirks: [
+            { tag: "quirk-improved-sensors" },
+        ],
+        source: { book: "BattleMech Manual", page: 92 },
+    },
+    {
+        chassis: "Hussar",
+        quirks: [
+            { tag: "quirk-directional-torso-mount", locations: ["ct"] },
+            { tag: "quirk-improved-communications" },
+            { tag: "quirk-rugged", parameter: 1 },
+        ],
+        source: { book: "BattleMech Manual", page: 92 },
+    },
+    {
+        chassis: "Icarus II",
+        quirks: [
+            { tag: "quirk-improved-targeting", parameter: "short" },
+        ],
+        source: { book: "BattleMech Manual", page: 92 },
+    },
+    {
+        chassis: "Icestorm",
+        quirks: [
+            { tag: "quirk-improved-sensors" },
+            { tag: "quirk-rugged", parameter: 1 },
+        ],
+        source: { book: "BattleMech Manual", page: 92 },
+    },
+    {
+        chassis: "Imp",
+        quirks: [
+            { tag: "quirk-command-mech" },
+            { tag: "quirk-difficult-to-maintain" },
+        ],
+        source: { book: "BattleMech Manual", page: 92 },
+    },
+    {
+        chassis: "Initiate",
+        quirks: [
+            { tag: "quirk-hyper-extending-actuators" },
+            { tag: "quirk-bad-reputation" },
+        ],
+        source: { book: "BattleMech Manual", page: 92 },
+    },
+    {
+        chassis: "Jackal",
+        quirks: [
+            { tag: "quirk-improved-cooling-jacket", weapon: { name: "ER PPC" } },
+            { tag: "quirk-weak-legs" },
+        ],
+        source: { book: "BattleMech Manual", page: 92 },
+    },
+    {
+        chassis: "Jackrabbit",
+        quirks: [
+            { tag: "quirk-easy-to-maintain" },
+            { tag: "quirk-bad-reputation" },
+        ],
+        source: { book: "BattleMech Manual", page: 92 },
+    },
+    {
+        chassis: "JagerMech",
+        quirks: [
+            { tag: "quirk-anti-aircraft-targeting" },
+        ],
+        source: { book: "BattleMech Manual", page: 92 },
+    },
+    {
+        chassis: "JagerMech III",
+        quirks: [
+            { tag: "quirk-anti-aircraft-targeting" },
+            { tag: "quirk-overhead-arms" },
+        ],
+        source: { book: "BattleMech Manual", page: 92 },
+    },
+    {
+        chassis: "Javelin",
+        quirks: [
+            { tag: "quirk-unbalanced" },
+        ],
+        source: { book: "BattleMech Manual", page: 92 },
+    },
+    {
+        chassis: "Jenner",
+        quirks: [
+            { tag: "quirk-no-minimal-arms" },
+        ],
+        source: { book: "BattleMech Manual", page: 92 },
+    },
+    {
+        chassis: "Jenner IIC",
+        quirks: [
+            { tag: "quirk-no-minimal-arms" },
+        ],
+        source: { book: "BattleMech Manual", page: 92 },
+    },
+    {
+        chassis: "Jinggau",
+        quirks: [
+            { tag: "quirk-narrow-low-profile" },
+            { tag: "quirk-weak-head-armor", parameter: 2 },
+        ],
+        source: { book: "BattleMech Manual", page: 92 },
+    },
+    {
+        chassis: "Juggernaut",
+        quirks: [
+            { tag: "quirk-improved-life-support" },
+            { tag: "quirk-difficult-to-maintain" },
+        ],
+        source: { book: "BattleMech Manual", page: 92 },
+    },
+    {
+        chassis: "Jupiter",
+        quirks: [
+            { tag: "quirk-fine-manipulators" },
+            { tag: "quirk-improved-sensors" },
+            { tag: "quirk-improved-targeting", parameter: "long" },
+        ],
+        source: { book: "BattleMech Manual", page: 92 },
+    },
+    {
+        chassis: "Kabuto",
+        quirks: [
+            { tag: "quirk-extended-torso-twist" },
+        ],
+        source: { book: "BattleMech Manual", page: 92 },
+    },
+    {
+        chassis: "Karhu",
+        quirks: [
+            { tag: "quirk-em-interference" },
+        ],
+        source: { book: "BattleMech Manual", page: 92 },
+    },
+    {
+        chassis: "King Crab",
+        quirks: [
+            { tag: "quirk-command-mech" },
+        ],
+        source: { book: "BattleMech Manual", page: 92 },
+    },
+    {
+        chassis: "Kingfisher",
+        quirks: [
+            { tag: "quirk-rugged", parameter: 1 },
+        ],
+        source: { book: "BattleMech Manual", page: 92 },
+    },
+    {
+        chassis: "Kintaro",
+        quirks: [
+            { tag: "quirk-rugged", parameter: 1 },
+        ],
+        source: { book: "BattleMech Manual", page: 92 },
+    },
+    {
+        chassis: "Kodiak",
+        quirks: [
+            { tag: "quirk-battlefists" },
+            { tag: "quirk-distracting" },
+        ],
+        source: { book: "BattleMech Manual", page: 92 },
+    },
+    {
+        chassis: "Komodo",
+        quirks: [
+            { tag: "quirk-extended-torso-twist" },
+            { tag: "quirk-narrow-low-profile" },
+            { tag: "quirk-protected-actuators" },
+            { tag: "quirk-weak-head-armor", parameter: 2 },
+        ],
+        source: { book: "BattleMech Manual", page: 92 },
+    },
+    {
+        chassis: "Koschei",
+        quirks: [
+            { tag: "quirk-improved-life-support" },
+            { tag: "quirk-weak-head-armor", parameter: 1 },
+        ],
+        source: { book: "BattleMech Manual", page: 92 },
+    },
+    {
+        chassis: "Koshi (Mist Lynx)",
+        altChassis: ["Koshi", "Mist Lynx"],
+        quirks: [
+            { tag: "quirk-improved-sensors" },
+            { tag: "quirk-narrow-low-profile" },
+        ],
+        source: { book: "BattleMech Manual", page: 92 },
+    },
+    {
+        chassis: "Koto",
+        quirks: [
+            { tag: "quirk-em-interference" },
+        ],
+        source: { book: "BattleMech Manual", page: 92 },
+    },
+    {
+        chassis: "Kraken (Bane)",
+        altChassis: ["Kraken", "Bane"],
+        quirks: [
+            { tag: "quirk-extended-torso-twist" },
+            { tag: "quirk-protected-actuators" },
+        ],
+        source: { book: "BattleMech Manual", page: 92 },
+    },
+    {
+        chassis: "Kuma",
+        quirks: [
+            { tag: "quirk-accurate-weapon", weapon: { name: "Heavy Large Laser" } },
+            { tag: "quirk-hard-to-pilot" },
+        ],
+        source: { book: "BattleMech Manual", page: 92 },
+    },
+    {
+        chassis: "Kyudo",
+        quirks: [
+            { tag: "quirk-easy-to-pilot" },
+            { tag: "quirk-exposed-actuators" },
+        ],
+        source: { book: "BattleMech Manual", page: 92 },
+    },
+    {
+        chassis: "Lancelot",
+        quirks: [
+            { tag: "quirk-anti-aircraft-targeting" },
+            { tag: "quirk-narrow-low-profile" },
+            { tag: "quirk-bad-reputation" },
+        ],
+        source: { book: "BattleMech Manual", page: 92 },
+    },
+    {
+        chassis: "Lao Hu",
+        quirks: [
+            { tag: "quirk-good-reputation", parameter: 1 },
+        ],
+        source: { book: "BattleMech Manual", page: 92 },
+    },
+    {
+        chassis: "Legacy",
+        quirks: [
+            { tag: "quirk-directional-torso-mount", locations: ["lt", "rt"] },
+            { tag: "quirk-bad-reputation" },
+        ],
+        source: { book: "BattleMech Manual", page: 92 },
+    },
+    {
+        chassis: "Legionnaire",
+        quirks: [
+            { tag: "quirk-easy-to-maintain" },
+            { tag: "quirk-improved-targeting", parameter: "medium" },
+            { tag: "quirk-exposed-weapon-linkage", note: "no weapon named" },
+        ],
+        source: { book: "BattleMech Manual", page: 92 },
+    },
+    {
+        chassis: "Lightray",
+        quirks: [
+            { tag: "quirk-hyper-extending-actuators" },
+            { tag: "quirk-bad-reputation" },
+            { tag: "quirk-exposed-actuators" },
+        ],
+        source: { book: "BattleMech Manual", page: 92 },
+    },
+    {
+        chassis: "Linebacker",
+        quirks: [
+            { tag: "quirk-stable" },
+        ],
+        source: { book: "BattleMech Manual", page: 92 },
+    },
+    {
+        chassis: "Lineholder",
+        quirks: [
+            { tag: "quirk-easy-to-maintain" },
+        ],
+        source: { book: "BattleMech Manual", page: 92 },
+    },
+    {
+        chassis: "Lobo",
+        quirks: [
+            { tag: "quirk-directional-torso-mount", note: "AMS" },
+            { tag: "quirk-extended-torso-twist" },
+            { tag: "quirk-difficult-to-maintain" },
+        ],
+        source: { book: "BattleMech Manual", page: 92 },
+    },
 ];
