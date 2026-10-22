@@ -1,5 +1,5 @@
 import * as React from 'react';
-import SmallCraft, { SMALL_CRAFT_CRITICAL_TRACKS, SMALL_CRAFT_HEAT_TRIGGERS } from '../../../../classes/small-craft';
+import SmallCraft, { DockingCollarState, SMALL_CRAFT_CRITICAL_TRACKS, SMALL_CRAFT_HEAT_TRIGGERS } from '../../../../classes/small-craft';
 import { SMALL_CRAFT_ARCS, SMALL_CRAFT_FACINGS, SmallCraftArc, SmallCraftFacing } from '../../../../data/small-craft-construction';
 import { SMALL_CRAFT_ATTACK_DIRECTIONS, SmallCraftAttackDirection } from '../../../../data/small-craft-hit-tables';
 import { weaponBayName } from '../../../components/svg/dropship-record-sheet-svg';
@@ -188,6 +188,31 @@ export default class SmallCraftPlayPanel extends React.Component<ISmallCraftPlay
                             onChange={(e) => { craft.setCargoLostPercent(+e.currentTarget.value || 0); this._changed(); }} />
                     </label>
                 </p>
+                {craft.isDropShip() ? (
+                    <fieldset className="fieldset" data-testid="dropship-docking">
+                        <legend>K-F Boom and Docking</legend>
+                        <label style={{ marginRight: "1em" }}>
+                            <input type="checkbox" aria-label="K-F boom destroyed" checked={play.kfBoom}
+                                onChange={(e) => { craft.setKFBoomDestroyed(e.currentTarget.checked); this._changed(); }} />
+                            &nbsp;K-F boom destroyed
+                        </label>
+                        <label>
+                            Docking collar:
+                            <select aria-label="Docking collar" value={play.dockingCollar}
+                                onChange={(e) => { craft.setDockingCollar(e.currentTarget.value as DockingCollarState); this._changed(); }}>
+                                <option value="working">Working</option>
+                                <option value="damaged">Damaged (docking mishap)</option>
+                                <option value="destroyed">Destroyed (critical hit)</option>
+                            </select>
+                        </label>
+                        {craft.getDockingNotes().map((note) => <p key={note} className="color-red">{note}</p>)}
+                        <p className="small-text">
+                            Docking takes 30 turns, then a Control Roll; the Docking Damage Table gives the result by Margin of Failure (AT2R pp.48-49).
+                            Modifiers from this DropShip: {craft.getDockingModifiers().map((line) => `${line.condition}: ${line.modifier > 0 ? "+" : ""}${line.modifier}`).join("; ") || "none"}.
+                            Also: docking during combat +2, a trained docking pilot -2, -1 per 15 minutes added and +1 per 5 minutes taken off (5 minutes at least).
+                        </p>
+                    </fieldset>
+                ) : null}
 
                 <fieldset className="fieldset" data-testid="small-craft-heat">
                     <legend>Heat</legend>

@@ -199,8 +199,8 @@ export default class DropShipRecordSheetSVG extends React.Component<IDropShipRec
             [
                 track("Gear", fighterBoxes("Gear"), play?.gear ? 1 : 0),
                 track("Life Support", fighterBoxes("Life Support"), play?.lifeSupport ? 1 : 0),
-                track("K-F Boom", ["D"], 0),
-                track("Docking Collar", ["D"], 0),
+                track("K-F Boom", ["D"], play?.kfBoom ? 1 : 0),
+                track("Docking Collar", ["D"], play?.dockingCollar === "destroyed" ? 1 : 0),
             ],
         ], [30, 420]);
     }

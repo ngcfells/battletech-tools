@@ -20,6 +20,19 @@ const render = (ship: SmallCraft, props: { showPilot?: boolean; showDamage?: boo
     renderToStaticMarkup(<DropShipRecordSheetSVG craft={ship} {...props} />);
 
 describe("DropShip record sheet", () => {
+    it("fills the K-F Boom and Docking Collar boxes once they are destroyed in play", () => {
+        const ship = sample("aerodyne");
+        ship.setKFBoomDestroyed(true);
+        ship.setDockingCollar("damaged");
+        let markup = render(ship, { showDamage: true });
+        expect(markup).toContain('data-testid="crit-K-F Boom" data-filled="1"');
+        expect(markup).toContain('data-testid="crit-Docking Collar" data-filled="0"');
+        ship.setDockingCollar("destroyed");
+        markup = render(ship, { showDamage: true });
+        expect(markup).toContain('data-testid="crit-Docking Collar" data-filled="1"');
+        expect(render(ship)).toContain('data-testid="crit-K-F Boom" data-filled="0"');
+    });
+
     it("is titled for its shape, with the blocks the Total Warfare DropShip sheets print and no heat scale", () => {
         const aerodyne = render(sample("aerodyne"));
         expect(aerodyne).toContain("AERODYNE DROPSHIP RECORD SHEET");

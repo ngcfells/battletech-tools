@@ -138,6 +138,9 @@ export interface ISmallCraftPendingWeaponCritical {
 }
 
 /** Damage and critical hits taken in play (TW pp.237-240). */
+export type DockingCollarState = "working" | "damaged" | "destroyed";
+export const DOCKING_COLLAR_STATES: DockingCollarState[] = ["working", "damaged", "destroyed"];
+
 export interface ISmallCraftInPlay {
     armorDamage: ISmallCraftArmorAllocation;
     structureDamage: number;
@@ -154,6 +157,10 @@ export interface ISmallCraftInPlay {
     /** Percent of the cargo and carried units destroyed by Cargo critical hits. */
     cargoLostPercent: number;
     fuelExploded: boolean;
+    /** A DropShip's K-F boom, destroyed by a critical hit (TW p.240; AT2R p.30). */
+    kfBoom: boolean;
+    /** A DropShip's docking collar: damaged by a docking mishap, destroyed by a critical hit (AT2R pp.29, 48-49). */
+    dockingCollar: DockingCollarState;
     destroyedWeapons: string[];
     heat: number;
     firedWeapons: string[];
@@ -164,7 +171,7 @@ const emptyArmor = (): ISmallCraftArmorAllocation => ({ nose: 0, left: 0, right:
 const emptyQuarters = (): ISmallCraftQuarters => ({ firstClass: 0, secondClass: 0, crew: 0, steerage: 0 });
 const newInPlay = (): ISmallCraftInPlay => ({
     armorDamage: emptyArmor(), structureDamage: 0, avionics: 0, engine: 0, fcs: 0, sensors: 0, crewHits: 0, leftThruster: 0, rightThruster: 0,
-    gear: false, lifeSupport: false, doorsDamaged: 0, cargoLostPercent: 0, fuelExploded: false, destroyedWeapons: [], heat: 0, firedWeapons: [],
+    gear: false, lifeSupport: false, doorsDamaged: 0, cargoLostPercent: 0, fuelExploded: false, kfBoom: false, dockingCollar: "working", destroyedWeapons: [], heat: 0, firedWeapons: [],
     pendingWeaponCriticals: [],
 });
 
@@ -1820,6 +1827,40 @@ export default class SmallCraft {
     public setLifeSupportDamaged(damaged: boolean): void { this._inPlay.lifeSupport = damaged === true; }
     public setDoorsDamaged(count: number): void { this._inPlay.doorsDamaged = wholeNumber(count, 0, this.getBayDoors()); }
     public setCargoLostPercent(percent: number): void { this._inPlay.cargoLostPercent = wholeNumber(percent, 0, 100); }
+    /** Only a DropShip has a K-F boom and a docking collar. */
+    public setKFBoomDestroyed(destroyed: boolean): void { this._inPlay.kfBoom = this.isDropShip() && destroyed === true; }
+    public setDockingCollar(state: DockingCollarState): void {
+        this._inPlay.dockingCollar = this.isDropShip() && DOCKING_COLLAR_STATES.includes(state) ? state : "working";
+    }
+
+    /** What the K-F boom's and docking collar's damage means for the DropShip (AT2R pp.29-30, 48-49). */
+    public getDockingNotes(): string[] {
+        const play = this._inPlay;
+        const notes: string[] = [];
+        if (play.kfBoom) notes.push("K-F boom destroyed: the DropShip cannot be carried through hyperspace (AT2R p.30).");
+        if (play.dockingCollar === "damaged") notes.push("Docking collar damaged: a docking attempt takes twice as long (AT2R pp.48-49).");
+        if (play.dockingCollar === "destroyed") notes.push("Docking collar destroyed: the DropShip cannot dock with a JumpShip or WarShip, and if already docked it cannot disconnect (AT2R p.29).");
+        return notes;
+    }
+
+    /**
+     * The Docking Modifiers Table's lines this DropShip's own state brings to its Control Roll: +1 a box of thruster,
+     * sensor and avionics damage, and its size when it is the docking unit (AT2R pp.48-49). Combat, the docking time
+     * and a trained docking pilot depend on the moment and are left to the players.
+     */
+    public getDockingModifiers(): { condition: string; modifier: number }[] {
+        if (!this.isDropShip()) return [];
+        const play = this._inPlay;
+        const boxes = (count: number) => `${count} ${count === 1 ? "box" : "boxes"}`;
+        const lines: { condition: string; modifier: number }[] = [];
+        const thrusters = play.leftThruster + play.rightThruster;
+        if (thrusters > 0) lines.push({ condition: `Thruster damage, ${boxes(thrusters)}`, modifier: thrusters });
+        if (play.sensors > 0) lines.push({ condition: `Sensor damage, ${boxes(play.sensors)}`, modifier: play.sensors });
+        if (play.avionics > 0) lines.push({ condition: `Avionics damage, ${boxes(play.avionics)}`, modifier: play.avionics });
+        if (this._tonnage > 20000) lines.push({ condition: "Docking unit is a DropShip over 20,000 tons", modifier: 2 });
+        if (this._tonnage < 5000) lines.push({ condition: "Docking unit is a DropShip under 5,000 tons", modifier: -1 });
+        return lines;
+    }
 
     public isWeaponDestroyed(uuid: string): boolean { return this._inPlay.destroyedWeapons.includes(uuid); }
 
@@ -1844,6 +1885,7 @@ export default class SmallCraft {
         return this.getCurrentArmor() < this.getTotalArmorPoints() || play.structureDamage > 0 || play.avionics > 0 || play.engine > 0
             || play.fcs > 0 || play.sensors > 0 || play.crewHits > 0 || play.leftThruster > 0 || play.rightThruster > 0 || play.gear
             || play.lifeSupport || play.doorsDamaged > 0 || play.cargoLostPercent > 0 || play.fuelExploded
+            || play.kfBoom || play.dockingCollar !== "working"
             || play.destroyedWeapons.length > 0 || play.heat > 0;
     }
 
@@ -1914,10 +1956,18 @@ export default class SmallCraft {
                 play.cargoLostPercent = Math.min(100, play.cargoLostPercent + percent);
                 return `Cargo hit: ${percent} percent of the cargo is destroyed (damage ${damage} / twice the Structural Integrity); roll 1D6, 1-3 general cargo, 4-6 carried units`;
             }
+            // A Small Craft has neither, so the hit has no effect, as AT2R treats a missing system. On a DropShip it
+            // destroys the boom or the collar (TW p.240; AT2R pp.29-30).
             case "kfBoom":
-                return "K-F Boom hit: a Small Craft has none, no effect";
+                if (!this.isDropShip()) return "K-F Boom hit: a Small Craft has none, no effect";
+                if (play.kfBoom) return "K-F Boom hit: the boom is already destroyed, no further effect";
+                play.kfBoom = true;
+                return "K-F Boom hit: the boom is destroyed; the DropShip cannot be carried through hyperspace";
             case "dockingCollar":
-                return "Docking Collar hit: a Small Craft has none, no effect";
+                if (!this.isDropShip()) return "Docking Collar hit: a Small Craft has none, no effect";
+                if (play.dockingCollar === "destroyed") return "Docking Collar hit: the collar is already destroyed, no further effect";
+                play.dockingCollar = "destroyed";
+                return "Docking Collar hit: the collar is destroyed; the DropShip cannot dock with a JumpShip or WarShip, and if already docked it cannot disconnect";
             case "fuel": {
                 const roll = fuelRoll ?? d6() + d6();
                 if (roll >= 10) {
@@ -2052,6 +2102,8 @@ export default class SmallCraft {
         this.setDoorsDamaged(savedNumber(inPlay.doorsDamaged, 0, 0, 10));
         this.setCargoLostPercent(savedNumber(inPlay.cargoLostPercent, 0, 0, 100));
         this._inPlay.fuelExploded = inPlay.fuelExploded === true;
+        this.setKFBoomDestroyed(inPlay.kfBoom === true);
+        this.setDockingCollar(inPlay.dockingCollar as DockingCollarState);
         const destroyed = Array.isArray(inPlay.destroyedWeapons) ? inPlay.destroyedWeapons.slice(0, MAX_SMALL_CRAFT_EQUIPMENT) : [];
         for (const uuid of destroyed) if (typeof uuid === "string") this.setWeaponDestroyed(uuid, true);
         this.setHeat(savedNumber(inPlay.heat, 0, 0, 200));

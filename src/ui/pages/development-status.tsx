@@ -94,7 +94,8 @@ export default class DevelopmentStatus extends React.Component<IDevelopmentStatu
                       <li><del>A tonnage bar that stays on screen, and an ammunition list that shows only ammo for your weapons</del></li>
                       <li><del>Vehicle record sheets with every table the official sheets print: hit locations, motive damage, critical hits, VTOL elevation and submarine depth tracks</del></li>
                       <li><del>Fighter record sheets the same way: external stores, heat scale, velocity record, and the ground map movement and fighter return tables for conventional fighters</del></li>
-                      <li><del>Small Craft and DropShip record sheets the same way, aerodyne and spheroid, with DropShip weapons listed by bay</del></li>
+                      <li><del>Small Craft and DropShip record sheets the same way, aerodyne and spheroid, with weapons listed by bay</del></li>
+                      <li><del>Small Craft and DropShips fire whole weapon bays in play; DropShip K-F boom and docking collar hits, with the docking reminders</del></li>
                       <li><del>JumpShip, WarShip and space station record sheets the same way, with capital-scale armor by facing and the integrity tracks</del></li>
                       <li><del>Battle armor record sheets the same way: five squads to a page with the leg attack, swarm attack and transport position tables</del></li>
                       <li><del>Conventional infantry record sheets the same way: four platoons to a page with the anti-'Mech, non-infantry weapon and burst-fire damage tables</del></li>

@@ -255,3 +255,62 @@ describe("DropShip capital weapons (TM pp.194, 210, 342)", () => {
         expect(result.issues).toEqual([]);
     });
 });
+
+describe("K-F boom and docking collar hits (TW p.240; AeroTech 2 Revised pp.29-30, 48-49)", () => {
+    it("destroys a DropShip's K-F boom: it cannot be carried through hyperspace", () => {
+        const ship = buildArcadia();
+        const log = ship.resolveAttack(12, "nose", 0, { natural12: true, criticalRolls: [8] });
+        expect(ship.getInPlay().kfBoom).toBe(true);
+        expect(log.join(" ")).toContain("cannot be carried through hyperspace");
+        expect(ship.isDamaged()).toBe(true);
+        expect(ship.resolveAttack(12, "nose", 0, { natural12: true, criticalRolls: [8] }).join(" ")).toContain("already destroyed");
+    });
+
+    it("destroys a DropShip's docking collar: no docking, and a ship already docked cannot disconnect", () => {
+        const ship = buildArcadia();
+        const log = ship.resolveAttack(8, "aft", 0, { natural12: true, criticalRolls: [8] }).join(" ");
+        expect(ship.getInPlay().dockingCollar).toBe("destroyed");
+        expect(log).toContain("cannot dock with a JumpShip or WarShip");
+        expect(log).toContain("cannot disconnect");
+    });
+
+    it("leaves a Small Craft as it was: it has neither", () => {
+        const craft = new SmallCraft();
+        craft.setStructuralIntegrity(5);
+        expect(craft.resolveAttack(12, "nose", 0, { natural12: true, criticalRolls: [8] }).join(" ")).toContain("a Small Craft has none, no effect");
+        expect(craft.getInPlay().kfBoom).toBe(false);
+        craft.setKFBoomDestroyed(true);
+        craft.setDockingCollar("destroyed");
+        expect(craft.getInPlay().kfBoom).toBe(false);
+        expect(craft.getInPlay().dockingCollar).toBe("working");
+    });
+
+    it("gives the docking reminders and the modifiers its own damage brings", () => {
+        const ship = buildArcadia();
+        expect(ship.getDockingNotes()).toEqual([]);
+        ship.setDockingCollar("damaged");
+        ship.setKFBoomDestroyed(true);
+        expect(ship.getDockingNotes()).toEqual([
+            "K-F boom destroyed: the DropShip cannot be carried through hyperspace (AT2R p.30).",
+            "Docking collar damaged: a docking attempt takes twice as long (AT2R pp.48-49).",
+        ]);
+        ship.setDockingCollar("destroyed");
+        expect(ship.getDockingNotes()[1]).toBe("Docking collar destroyed: the DropShip cannot dock with a JumpShip or WarShip, and if already docked it cannot disconnect (AT2R p.29).");
+        ship.setCriticalHits("leftThruster", 2);
+        ship.setCriticalHits("sensors", 1);
+        expect(ship.getDockingModifiers()).toEqual([
+            { condition: "Thruster damage, 2 boxes", modifier: 2 },
+            { condition: "Sensor damage, 1 box", modifier: 1 },
+            { condition: "Docking unit is a DropShip under 5,000 tons", modifier: -1 },
+        ]);
+    });
+
+    it("keeps the boom and collar through a save", () => {
+        const ship = buildArcadia();
+        ship.setKFBoomDestroyed(true);
+        ship.setDockingCollar("damaged");
+        const copy = new SmallCraft(ship.exportJSON());
+        expect(copy.getInPlay().kfBoom).toBe(true);
+        expect(copy.getInPlay().dockingCollar).toBe("damaged");
+    });
+});

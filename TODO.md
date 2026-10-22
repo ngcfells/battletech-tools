@@ -299,8 +299,10 @@ played first, then by dependency.
 - [ ] Capital and sub-capital weapons in the DropShip Alpha Strike conversion and in play (damage, criticals).
 - [x] DropShip record sheet layout (2026-10-22: its own page, weapon bays, crew data, K-F boom and docking collar).
 - [ ] The Alpha Strike large-craft card for DropShips.
-- [ ] K-F Boom and Docking Collar criticals in play: a DropShip's hit resolution says "a Small Craft has none"
-  and there are no play tracks to fill the boxes the record sheet prints.
+- [x] K-F Boom and Docking Collar criticals in play (2026-10-22, from AeroTech 2 Revised pp.29-30, 48-49): a
+  DropShip's boom or collar is destroyed and its box filled; a Small Craft's hit has no effect. The collar can also be
+  marked damaged by a docking mishap (twice the docking time); play shows the docking modifiers the ship's own damage
+  brings. The docking procedure itself is not tracked (no map system).
 - [x] Small Craft fire in full weapon bays (2026-10-22, user ruling: the latest publication with its errata stands,
   TM errata v8.0 of 2024-08-22, which revised the p.195 bay rules, over TW, corrected 11th printing, (c) 2023). The
   Small Craft sheet lists bays at standard scale, and play fires a bay from one box, for DropShips too.
