@@ -187,7 +187,7 @@ export default class BattleArmorCreatorHome extends React.Component<IHomeProps, 
                                         <th>Name</th>
                                         <th>Class</th>
                                         <th>Troopers</th>
-                                        <th></th>
+                                        <th><span className="visually-hidden">Actions</span></th>
                                     </tr>
                                 </thead>
                                 <tbody>

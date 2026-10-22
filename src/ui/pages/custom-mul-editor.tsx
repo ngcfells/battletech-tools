@@ -460,8 +460,8 @@ export default class CustomMULEditor extends React.Component<ICustomMULEditorPro
                 <table className="table">
                     <thead>
                         <tr>
-                            <th>&nbsp;</th>
-                            <th>&nbsp;</th>
+                            <th><span className="visually-hidden">Actions</span></th>
+                            <th><span className="visually-hidden">Actions</span></th>
                             <th>Name</th>
                             <th>Type</th>
                             <th className="text-center">PV</th>
@@ -571,7 +571,7 @@ export default class CustomMULEditor extends React.Component<ICustomMULEditorPro
                 <table className="table">
                     <thead>
                         <tr>
-                            <th>&nbsp;</th>
+                            <th><span className="visually-hidden">Actions</span></th>
                             <th>Name</th>
                             <th>Type</th>
                             <th className="text-center">PV</th>

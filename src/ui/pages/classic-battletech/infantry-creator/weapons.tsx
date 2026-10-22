@@ -106,7 +106,7 @@ export default class InfantryCreatorWeapons extends React.Component<IWeaponsProp
                             <table className="table" data-testid="infantry-weapons">
                                 <thead>
                                     <tr>
-                                        <th></th><th>Weapon</th><th>Type</th><th className="text-center">Base Range</th><th className="text-center">Damage</th>
+                                        <th><span className="visually-hidden">Actions</span></th><th>Weapon</th><th>Type</th><th className="text-center">Base Range</th><th className="text-center">Damage</th>
                                         <th className="text-center">Crew</th><th className="text-center">Troopers</th><th className="text-right">Cost</th>
                                     </tr>
                                 </thead>

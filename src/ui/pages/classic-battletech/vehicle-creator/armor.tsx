@@ -238,6 +238,7 @@ export default class VehicleCreatorArmor extends React.Component<IArmorProps, IA
                                                     value={armor[loc.tag] ?? 0}
                                                     min={0}
                                                     max={maxArmor[loc.tag] ?? 0}
+                                                    ariaLabel={`${loc.name} armor points`}
                                                     setValue={(newValue) => this.updateArmorPoints(loc.tag, newValue)}
                                                 />
                                             </td>

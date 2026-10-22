@@ -482,10 +482,10 @@ export default class MechCreatorStep6 extends React.Component<IHomeProps, IHomeS
                                 <div className="row">
                                   <div className="col-4">
                                     {this.props.appGlobals.currentBattleMech.isQuad() || this.props.appGlobals.currentBattleMech.isQuadVee() ? (
-                                      <h4 className="text-center">Left Front Leg</h4>
+                                      <h3 className="h4 text-center">Left Front Leg</h3>
                                     ) : (
                                       <>
-                                      <h4 className="text-center">Left Arm</h4>
+                                      <h3 className="h4 text-center">Left Arm</h3>
                                       <InputCheckbox
                                         checked={this.props.appGlobals.currentBattleMech.hasLowerArmActuator("la")}
                                         onChange={() => this.toggleLowerArmActuator("la") }
@@ -513,7 +513,7 @@ export default class MechCreatorStep6 extends React.Component<IHomeProps, IHomeS
                                       currentSelectedItemSize={this.state.selectedItemSize}
                                       currentSelectedItemName={this.state.selectedItemName}
                                     />
-                                    <h4 className="text-center">Left Torso</h4>
+                                    <h3 className="h4 text-center">Left Torso</h3>
                                     <CriticalAllocationSection
                                       appGlobals={this.props.appGlobals}
                                       mech={this.props.appGlobals.currentBattleMech}
@@ -526,9 +526,9 @@ export default class MechCreatorStep6 extends React.Component<IHomeProps, IHomeS
                                       currentSelectedItemName={this.state.selectedItemName}
                                     />
                                     {this.props.appGlobals.currentBattleMech.isQuad() || this.props.appGlobals.currentBattleMech.isQuadVee() ? (
-                                      <h4 className="text-center">Left Rear Leg</h4>
+                                      <h3 className="h4 text-center">Left Rear Leg</h3>
                                     ) : (
-                                      <h4 className="text-center">Left Leg</h4>
+                                      <h3 className="h4 text-center">Left Leg</h3>
                                     )}
 
                                     <CriticalAllocationSection
@@ -544,7 +544,7 @@ export default class MechCreatorStep6 extends React.Component<IHomeProps, IHomeS
                                     />
                                   </div>
                                   <div className="col-4">
-                                    <h4 className="text-center">Head</h4>
+                                    <h3 className="h4 text-center">Head</h3>
                                     <CriticalAllocationSection
                                       appGlobals={this.props.appGlobals}
                                       mech={this.props.appGlobals.currentBattleMech}
@@ -557,7 +557,7 @@ export default class MechCreatorStep6 extends React.Component<IHomeProps, IHomeS
                                       currentSelectedItemName={this.state.selectedItemName}
                                     />
 
-                                    <h4 className="text-center">Center Torso</h4>
+                                    <h3 className="h4 text-center">Center Torso</h3>
                                     <CriticalAllocationSection
                                       appGlobals={this.props.appGlobals}
                                       crits={this.props.appGlobals.currentBattleMech.criticals.centerTorso}
@@ -571,7 +571,7 @@ export default class MechCreatorStep6 extends React.Component<IHomeProps, IHomeS
                                     />
                                     {this.props.appGlobals.currentBattleMech.isTripod() ? (
                                       <>
-                                        <h4 className="text-center">Center Leg</h4>
+                                        <h3 className="h4 text-center">Center Leg</h3>
                                         <CriticalAllocationSection
                                           appGlobals={this.props.appGlobals}
                                           crits={this.props.appGlobals.currentBattleMech.criticals.centerLeg}
@@ -588,10 +588,10 @@ export default class MechCreatorStep6 extends React.Component<IHomeProps, IHomeS
                                   </div>
                                   <div className="col-4">
                                   {this.props.appGlobals.currentBattleMech.isQuad() || this.props.appGlobals.currentBattleMech.isQuadVee() ? (
-                                      <h4 className="text-center">Right Front Leg</h4>
+                                      <h3 className="h4 text-center">Right Front Leg</h3>
                                     ) : (
                                       <>
-                                      <h4 className="text-center">Right Arm</h4>
+                                      <h3 className="h4 text-center">Right Arm</h3>
                                       <InputCheckbox
                                         checked={this.props.appGlobals.currentBattleMech.hasLowerArmActuator("ra")}
                                         onChange={() => this.toggleLowerArmActuator("ra") }
@@ -618,7 +618,7 @@ export default class MechCreatorStep6 extends React.Component<IHomeProps, IHomeS
                                       currentSelectedItemSize={this.state.selectedItemSize}
                                       currentSelectedItemName={this.state.selectedItemName}
                                     />
-                                    <h4 className="text-center">Right Torso</h4>
+                                    <h3 className="h4 text-center">Right Torso</h3>
                                     <CriticalAllocationSection
                                       appGlobals={this.props.appGlobals}
                                       crits={this.props.appGlobals.currentBattleMech.criticals.rightTorso}
@@ -631,9 +631,9 @@ export default class MechCreatorStep6 extends React.Component<IHomeProps, IHomeS
                                       currentSelectedItemName={this.state.selectedItemName}
                                     />
                                     {this.props.appGlobals.currentBattleMech.isQuad() || this.props.appGlobals.currentBattleMech.isQuadVee() ? (
-                                      <h4 className="text-center">Right Rear Leg</h4>
+                                      <h3 className="h4 text-center">Right Rear Leg</h3>
                                     ) : (
-                                      <h4 className="text-center">Right Leg</h4>
+                                      <h3 className="h4 text-center">Right Leg</h3>
                                     )}
 
                                     <CriticalAllocationSection

@@ -155,7 +155,7 @@ export default class BattleArmorCreatorEquipment extends React.Component<IEquipm
                         <TextSection label="Step 5: Mounted Weapons and Equipment">
                             <table className="table">
                                 <thead>
-                                    <tr><th>Item</th><th>Location</th><th>Options</th><th className="text-right">Weight</th><th className="text-right">Slots</th><th></th></tr>
+                                    <tr><th>Item</th><th>Location</th><th>Options</th><th className="text-right">Weight</th><th className="text-right">Slots</th><th><span className="visually-hidden">Actions</span></th></tr>
                                 </thead>
                                 <tbody>
                                     {suit.getItems().length > 0 ? suit.getItems().map((entry, index) => this._itemRow(suit, entry, index)) : (
@@ -221,7 +221,7 @@ export default class BattleArmorCreatorEquipment extends React.Component<IEquipm
                             </label>
                             <table className="table">
                                 <thead>
-                                    <tr><th>Item</th><th>Damage</th><th>Range (min/sht/med/lng)</th><th>Weight</th><th>Ammo</th><th>Slots</th><th>BV</th><th></th></tr>
+                                    <tr><th>Item</th><th>Damage</th><th>Range (min/sht/med/lng)</th><th>Weight</th><th>Ammo</th><th>Slots</th><th>BV</th><th><span className="visually-hidden">Actions</span></th></tr>
                                 </thead>
                                 <tbody>
                                     {groups.map((group) => (

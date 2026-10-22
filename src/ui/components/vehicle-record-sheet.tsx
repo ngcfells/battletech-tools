@@ -10,7 +10,7 @@ export default class VehicleRecordSheet extends React.Component<IVehicleRecordSh
         const as = vehicle.getAlphaStrikeStats();
         return (
             <div className="print-page vehicle-sheet-extras" style={{ breakBefore: "page" }}>
-                <h3>Alpha Strike</h3>
+                <h2 className="h3">Alpha Strike</h2>
                 <table className="table">
                     <tbody>
                         <tr><td>Size / TMM</td><td>{as.size} / {as.tmm}</td></tr>

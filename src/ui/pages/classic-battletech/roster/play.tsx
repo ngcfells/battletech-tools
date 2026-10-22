@@ -1570,7 +1570,7 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
                     <th className="min-width">R</th>
                     <th className="min-width no-wrap">To-Hit</th>
                     <th className="min-width no-wrap">Damage</th>
-                    <th className="min-width no-wrap"></th>
+                    <th className="min-width no-wrap"><span className="visually-hidden">Actions</span></th>
                   </tr>
 
                 </thead>

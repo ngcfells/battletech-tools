@@ -31,7 +31,7 @@ export default class DevelopmentStatus extends React.Component<IDevelopmentStatu
                 label="Alpha Strike"
                 className="grow with-margins large-max-width-50"
               >
-                    <h4>Done</h4>
+                    <h3 className="h4">Done</h3>
                     <ul>
                       <li><del>Force Manual formation bonuses (Davion, Kurita)</del></li>
                       <li><del>Filter units by era, faction and special ability</del></li>
@@ -39,7 +39,7 @@ export default class DevelopmentStatus extends React.Component<IDevelopmentStatu
                       <li><del>SPA point calculation fix</del></li>
                       <li><del><i>BattleTech: Aces</i> companion: card library, card reader, rules, to-hit calculator, campaigns</del></li>
                     </ul>
-                    <h4>Coming</h4>
+                    <h3 className="h4">Coming</h3>
                     <ul>
                       <li><i>BattleTech: Aces</i>: the automated opponent, its additional rules and the <i>Scouring Sands</i> campaign</li>
                       <li>Small Craft and DropShips in Alpha Strike forces</li>
@@ -51,7 +51,7 @@ export default class DevelopmentStatus extends React.Component<IDevelopmentStatu
             label="'Mech Creator"
             className="grow with-margins large-max-width-50"
           >
-                    <h4>Done</h4>
+                    <h3 className="h4">Done</h3>
                     <ul>
                       <li><del>Every TechManual construction step, the record sheet and critical allocation</del></li>
                       <li><del>Biped, Quad, Tripod, LAM and QuadVee; OmniMechs, Superheavy, IndustrialMechs and Primitive 'Mechs</del></li>
@@ -64,7 +64,7 @@ export default class DevelopmentStatus extends React.Component<IDevelopmentStatu
                       <li><del>Patchwork Armor, Fractional Accounting and FrankenMechs</del></li>
                       <li><del>Solaris Skunk Werks import</del></li>
                     </ul>
-                    <h4>Coming</h4>
+                    <h3 className="h4">Coming</h3>
                     <ul>
                       <li>The last missing equipment (M-Pod, B-Pod, Artemis V and Apollo launchers and others)</li>
                       <li>Placement rules for spread equipment, and cockpits limited by era</li>
@@ -80,7 +80,7 @@ export default class DevelopmentStatus extends React.Component<IDevelopmentStatu
             label="Other Unit Creators"
             className="grow with-margins large-max-width-50"
           >
-                    <h4>Done</h4>
+                    <h3 className="h4">Done</h3>
                     <ul>
                       <li><del>Combat Vehicles, OmniVehicles and Support Vehicles</del></li>
                       <li><del>Aerospace, conventional and OmniFighters</del></li>
@@ -107,7 +107,7 @@ export default class DevelopmentStatus extends React.Component<IDevelopmentStatu
                       <li><del>Hailstorm towed artillery (Apocryphal)</del></li>
                       <li><del>Space turn tracker for anti-orbital fire</del></li>
                     </ul>
-                    <h4>Coming</h4>
+                    <h3 className="h4">Coming</h3>
                     <ul>
                       <li>Mobile Structures</li>
                       <li>Earlier rules editions for each unit type, as their rulebooks are entered</li>
@@ -122,7 +122,7 @@ export default class DevelopmentStatus extends React.Component<IDevelopmentStatu
             label="Classic BattleTech Roster"
             className="grow with-margins large-max-width-50"
           >
-                    <h4>Done</h4>
+                    <h3 className="h4">Done</h3>
                     <ul>
                       <li><del>Apply heat, and manual adjustments</del></li>
                       <li><del>Take Damage dialog</del></li>
@@ -130,7 +130,7 @@ export default class DevelopmentStatus extends React.Component<IDevelopmentStatu
                       <li><del>Play for every unit type the creators build, JumpShips and WarShips included</del></li>
                       <li><del><i>Battledroids</i> games</del></li>
                     </ul>
-                    <h4>Coming</h4>
+                    <h3 className="h4">Coming</h3>
                     <ul>
                       <li>MechWarrior hits</li>
                       <li>Atmospheric and orbital movement for fighters</li>
@@ -142,11 +142,11 @@ export default class DevelopmentStatus extends React.Component<IDevelopmentStatu
             label="Imports and Exports"
             className="grow with-margins large-max-width-50"
           >
-                    <h4>Done</h4>
+                    <h3 className="h4">Done</h3>
                     <ul>
                       <li><del>Design and weapon quirks from MegaMek .blk files (Battle Armor, Small Craft, DropShips, Support Vehicles)</del></li>
                     </ul>
-                    <h4>Coming</h4>
+                    <h3 className="h4">Coming</h3>
                     <ul>
                       <li>MegaMek and MegaMekLab files (.mtf, .blk) for every unit type, both ways</li>
                       <li>Solaris Skunk Werks export, and OmniMech configurations on import</li>
@@ -160,7 +160,7 @@ export default class DevelopmentStatus extends React.Component<IDevelopmentStatu
             label="General App"
             className="grow with-margins large-max-width-50"
           >
-                    <h4>Possible Future</h4>
+                    <h3 className="h4">Possible Future</h3>
                     <ul>
                       <li>Google Drive Sign in/Sync</li>
                       <li>Office 365/ OneDrive Sign in/Sync</li>
@@ -168,7 +168,7 @@ export default class DevelopmentStatus extends React.Component<IDevelopmentStatu
                       <li>Apple iCloud Drive Sign in/Sync</li>
                       <li>NextCloud Sign in/Sync</li>
                     </ul>
-                    <h4>Maybe, Someday</h4>
+                    <h3 className="h4">Maybe, Someday</h3>
                     <ul>
                       <li>BattleTech Clix (WizKids) support</li>
                       <li>A simulator for the NOVA Combat Books</li>

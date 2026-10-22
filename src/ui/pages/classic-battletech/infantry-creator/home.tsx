@@ -136,7 +136,7 @@ export default class InfantryCreatorHome extends React.Component<IHomeProps> {
                                         <th>Name</th>
                                         <th>Motive Type</th>
                                         <th>Troopers</th>
-                                        <th></th>
+                                        <th><span className="visually-hidden">Actions</span></th>
                                     </tr>
                                 </thead>
                                 <tbody>

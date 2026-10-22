@@ -75,7 +75,7 @@ export default class BattleArmorGroupTable extends React.Component<IBattleArmorG
             <table className="table" data-testid="battle-armor-group-table">
                 <thead>
                     <tr>
-                        {this.props.showEdit ? <th className="min-width no-wrap"></th> : null}
+                        {this.props.showEdit ? <th className="min-width no-wrap"><span className="visually-hidden">Actions</span></th> : null}
                         <th>Battle Armor</th>
                         <th>Troopers</th>
                         <th>Tech</th>

@@ -150,7 +150,7 @@ export default class FighterCreatorHome extends React.Component<IHomeProps> {
                                         <th>Type</th>
                                         <th>Thrust</th>
                                         <th>Tons</th>
-                                        <th></th>
+                                        <th><span className="visually-hidden">Actions</span></th>
                                     </tr>
                                 </thead>
                                 <tbody>

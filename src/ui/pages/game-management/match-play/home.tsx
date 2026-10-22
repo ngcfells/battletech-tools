@@ -133,7 +133,7 @@ export default class AlphaStrikeGameManagementHome extends React.Component<IAlph
                 <div className="row" style={{margin: 'auto'}}>
                     <div className="col-md-2">
                     <label htmlFor="numberOfOptions">Use bans?</label>
-                    <select value={this.numberOfOptions} onChange={(e) => {this.numberOfOptions = parseInt(e.currentTarget.value); this.regenerateCards(); this.setState({updated: true})}}>
+                    <select id="numberOfOptions" value={this.numberOfOptions} onChange={(e) => {this.numberOfOptions = parseInt(e.currentTarget.value); this.regenerateCards(); this.setState({updated: true})}}>
                         <option value="1">No</option>
                         <option value="3">Yes</option>
                         </select>
@@ -141,7 +141,7 @@ export default class AlphaStrikeGameManagementHome extends React.Component<IAlph
                     </div>
                     <div className="col-md-2">
                     <label htmlFor="gameSize">Game Size?</label>
-                    <select value={this.gameSize} onChange={(e) => {this.gameSize = e.currentTarget.value; this.setState({updated: true})}}>
+                    <select id="gameSize" value={this.gameSize} onChange={(e) => {this.gameSize = e.currentTarget.value; this.setState({updated: true})}}>
                         <option value="battle">Battle (500 PV)</option>
                         <option value="skirmish">Skirmish (250 PV)</option>
                         </select>
@@ -149,7 +149,7 @@ export default class AlphaStrikeGameManagementHome extends React.Component<IAlph
                     </div>
                     <div className="col-md-2">
                     <label htmlFor="generateTerrain">Random Terrain Type?</label>
-                    <select value={this.generateTerrain} onChange={(e) => {this.generateTerrain = e.currentTarget.value; this.setState({updated: true})}}>
+                    <select id="generateTerrain" value={this.generateTerrain} onChange={(e) => {this.generateTerrain = e.currentTarget.value; this.setState({updated: true})}}>
                         <option value="no">No</option>
                         <option value="yes">Yes</option>
                         </select>

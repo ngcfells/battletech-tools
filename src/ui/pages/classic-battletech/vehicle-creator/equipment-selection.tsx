@@ -74,7 +74,7 @@ export default class VehicleCreatorEquipmentSelection extends React.Component<IE
                             <TextSection label="Installed Equipment">
                                 <table className="table">
                                     <thead>
-                                        <tr><th>Name</th><th>Weight</th><th></th></tr>
+                                        <tr><th>Name</th><th>Weight</th><th><span className="visually-hidden">Actions</span></th></tr>
                                     </thead>
                                     <tbody>
                                         {vehicle.getEquipmentList().map((item) => (

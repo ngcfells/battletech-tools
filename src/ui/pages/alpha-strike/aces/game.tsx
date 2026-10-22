@@ -406,6 +406,7 @@ export default class AcesGamePage extends React.Component<IAcesGamePageProps, IA
                                             <input
                                                 type="number"
                                                 className="aces-number"
+                                                aria-label={`${deck.name} decks owned`}
                                                 min={0}
                                                 value={game.getDecksOwned( deck.id )}
                                                 onChange={( e ) => {
@@ -867,7 +868,7 @@ export default class AcesGamePage extends React.Component<IAcesGamePageProps, IA
                         {phase === "initiative" || phase === "movement" ? <th>Token</th> : null}
                         {phase === "combat" ? <th>Combat priority</th> : null}
                         <th>Orders</th>
-                        <th></th>
+                        <th><span className="visually-hidden">Actions</span></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -882,7 +883,7 @@ export default class AcesGamePage extends React.Component<IAcesGamePageProps, IA
                                     <br /><span className="aces-muted">{unit.type} {unit.role ? "- " + unit.role : ""} - {unit.currentPoints || unit.basePoints} PV{wrecked ? " - destroyed" : ""}</span>
                                 </td>
                                 <td>
-                                    <select value={state.deckId} onChange={( e ) => { const value = e.currentTarget.value as TAcesDeckId | ""; this._update( ( g ) => g.setUnitDeck( unit.uuid, value ) ); }}>
+                                    <select aria-label={`${unitName( unit )} deck`} value={state.deckId} onChange={( e ) => { const value = e.currentTarget.value as TAcesDeckId | ""; this._update( ( g ) => g.setUnitDeck( unit.uuid, value ) ); }}>
                                         <option value="">None</option>
                                         {acesDecks.filter( ( entry ) => entry.product === "Aces" || game.hasScouringSands || entry.id === state.deckId ).map( ( entry ) => (
                                             <option key={entry.id} value={entry.id}>{entry.name}</option>
@@ -892,12 +893,12 @@ export default class AcesGamePage extends React.Component<IAcesGamePageProps, IA
                                 </td>
                                 {phase === "initiative" || phase === "movement" ? (
                                     <td>
-                                        <input type="number" className="aces-number" disabled={state.cardIds.length > 0} title={state.cardIds.length > 0 ? "Taken from the unit's top card" : undefined} value={state.movePriority === null ? "" : state.movePriority} onChange={( e ) => { const value = this._number( e.currentTarget.value ); this._update( () => { state.movePriority = value; } ); }} />
+                                        <input type="number" className="aces-number" aria-label={`${unitName( unit )} movement priority`} disabled={state.cardIds.length > 0} title={state.cardIds.length > 0 ? "Taken from the unit's top card" : undefined} value={state.movePriority === null ? "" : state.movePriority} onChange={( e ) => { const value = this._number( e.currentTarget.value ); this._update( () => { state.movePriority = value; } ); }} />
                                     </td>
                                 ) : null}
                                 {phase === "initiative" || phase === "movement" ? (
                                     <td>
-                                        <select value={state.token || ""} onChange={( e ) => { const value = ( e.currentTarget.value || null ) as TAcesPriorityToken | null; this._update( ( g ) => { g.assignToken( unit.uuid, value ); } ); }}>
+                                        <select aria-label={`${unitName( unit )} priority token`} value={state.token || ""} onChange={( e ) => { const value = ( e.currentTarget.value || null ) as TAcesPriorityToken | null; this._update( ( g ) => { g.assignToken( unit.uuid, value ); } ); }}>
                                             <option value="">None</option>
                                             <option value="move-first">Move First</option>
                                             <option value="move-last">Move Last</option>
@@ -906,7 +907,7 @@ export default class AcesGamePage extends React.Component<IAcesGamePageProps, IA
                                 ) : null}
                                 {phase === "combat" ? (
                                     <td>
-                                        <input type="number" className="aces-number" disabled={state.cardIds.length > 0} title={state.cardIds.length > 0 ? "Taken from the unit's top card" : undefined} value={state.combatPriority === null ? "" : state.combatPriority} onChange={( e ) => { const value = this._number( e.currentTarget.value ); this._update( () => { state.combatPriority = value; } ); }} />
+                                        <input type="number" className="aces-number" aria-label={`${unitName( unit )} combat priority`} disabled={state.cardIds.length > 0} title={state.cardIds.length > 0 ? "Taken from the unit's top card" : undefined} value={state.combatPriority === null ? "" : state.combatPriority} onChange={( e ) => { const value = this._number( e.currentTarget.value ); this._update( () => { state.combatPriority = value; } ); }} />
                                     </td>
                                 ) : null}
                                 <td>

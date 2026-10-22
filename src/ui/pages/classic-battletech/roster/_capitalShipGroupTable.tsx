@@ -87,7 +87,7 @@ export default class CapitalShipGroupTable extends React.Component<ICapitalShipG
             <table className="table" data-testid="capital-ship-group-table">
                 <thead>
                     <tr>
-                        {this.props.showEdit ? <th className="min-width no-wrap"></th> : null}
+                        {this.props.showEdit ? <th className="min-width no-wrap"><span className="visually-hidden">Actions</span></th> : null}
                         <th>Vessel</th>
                         <th>Tons</th>
                         <th>Tech</th>

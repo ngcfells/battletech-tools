@@ -71,7 +71,7 @@ export default class SmallCraftCreatorEquipment extends React.Component<IEquipme
                 ) : null}
                 <table className="table" data-testid="sc-capital-installed">
                     <thead>
-                        <tr><th>Name</th><th>Tons</th><th>Location</th><th>Shots</th><th></th></tr>
+                        <tr><th>Name</th><th>Tons</th><th>Location</th><th>Shots</th><th><span className="visually-hidden">Actions</span></th></tr>
                     </thead>
                     <tbody>
                         {mounts.map((mount) => (
@@ -172,7 +172,7 @@ export default class SmallCraftCreatorEquipment extends React.Component<IEquipme
                                     </p>
                                     <table className="table" data-testid="sc-installed">
                                         <thead>
-                                            <tr><th>Name</th><th>Tons</th><th>Location</th><th></th></tr>
+                                            <tr><th>Name</th><th>Tons</th><th>Location</th><th><span className="visually-hidden">Actions</span></th></tr>
                                         </thead>
                                         <tbody>
                                             {craft.getEquipmentList().map((item) => (

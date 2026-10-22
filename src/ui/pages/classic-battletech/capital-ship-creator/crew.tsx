@@ -122,7 +122,7 @@ export default class CapitalShipCreatorCrew extends React.Component<ICrewProps> 
                         <TextSection label="Transport Bays">
                             <table className="table" data-testid="cs-bays">
                                 <thead>
-                                    <tr><th>Bay</th><th>Amount</th><th>Doors</th><th>Tons</th><th>Holds</th><th></th></tr>
+                                    <tr><th>Bay</th><th>Amount</th><th>Doors</th><th>Tons</th><th>Holds</th><th><span className="visually-hidden">Actions</span></th></tr>
                                 </thead>
                                 <tbody>
                                     {ship.getBays().map((bay, index) => {

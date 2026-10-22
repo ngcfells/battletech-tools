@@ -212,7 +212,7 @@ export default class BuildingCreatorEquipment extends React.Component<IEquipment
                                 </p>
                                 <table className="table" data-testid="building-equipment">
                                     <thead>
-                                        <tr><th>Name</th><th>Tons</th>{building.getHexes() > 1 ? <th>Hex</th> : null}<th>Turret</th><th>Automated</th><th></th></tr>
+                                        <tr><th>Name</th><th>Tons</th>{building.getHexes() > 1 ? <th>Hex</th> : null}<th>Turret</th><th>Automated</th><th><span className="visually-hidden">Actions</span></th></tr>
                                     </thead>
                                     <tbody>
                                         {building.getEquipment().map((mount) => (
@@ -291,7 +291,7 @@ export default class BuildingCreatorEquipment extends React.Component<IEquipment
                                     </div>
                                     <table className="table" data-testid="building-light-weapons">
                                         <thead>
-                                            <tr><th>Name</th><th>Class</th><th>Kg</th>{building.getHexes() > 1 ? <th>Hex</th> : null}<th>Mount</th><th>Extra Clips</th><th>Shots</th><th>Crew</th><th></th></tr>
+                                            <tr><th>Name</th><th>Class</th><th>Kg</th>{building.getHexes() > 1 ? <th>Hex</th> : null}<th>Mount</th><th>Extra Clips</th><th>Shots</th><th>Crew</th><th><span className="visually-hidden">Actions</span></th></tr>
                                         </thead>
                                         <tbody>
                                             {building.getLightWeapons().map((mount) => (
@@ -379,7 +379,7 @@ export default class BuildingCreatorEquipment extends React.Component<IEquipment
                                     </label>
                                     <table className="table" data-testid="building-capital-weapons">
                                         <thead>
-                                            <tr><th>Name</th><th>Tons</th><th>Fire Control</th><th>Heat</th><th>Damage</th><th>Range</th>{building.getHexes() > 1 ? <th>Hex</th> : null}{building.getHexes() > 1 ? <th>Shared With Hexes</th> : null}<th>Shots</th><th>Ammo Tons</th>{showBunkers ? <th>Ammo Bunker</th> : null}<th></th></tr>
+                                            <tr><th>Name</th><th>Tons</th><th>Fire Control</th><th>Heat</th><th>Damage</th><th>Range</th>{building.getHexes() > 1 ? <th>Hex</th> : null}{building.getHexes() > 1 ? <th>Shared With Hexes</th> : null}<th>Shots</th><th>Ammo Tons</th>{showBunkers ? <th>Ammo Bunker</th> : null}<th><span className="visually-hidden">Actions</span></th></tr>
                                         </thead>
                                         <tbody>
                                             {building.getCapitalWeapons().map((mount) => (

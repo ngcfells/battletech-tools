@@ -136,7 +136,7 @@ export default class BuildingCreatorHome extends React.Component<IHomeProps> {
                                         <th>Name</th>
                                         <th>Classification</th>
                                         <th>CF</th>
-                                        <th></th>
+                                        <th><span className="visually-hidden">Actions</span></th>
                                     </tr>
                                 </thead>
                                 <tbody>

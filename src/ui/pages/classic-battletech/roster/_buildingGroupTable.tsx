@@ -83,7 +83,7 @@ export default class BuildingGroupTable extends React.Component<IBuildingGroupTa
             <table className="table">
                 <thead>
                     <tr>
-                        {this.props.showEdit ? <th className="min-width no-wrap"></th> : null}
+                        {this.props.showEdit ? <th className="min-width no-wrap"><span className="visually-hidden">Actions</span></th> : null}
                         <th>Building</th>
                         <th className="min-width no-wrap text-center">Armor</th>
                         <th>Tech</th>

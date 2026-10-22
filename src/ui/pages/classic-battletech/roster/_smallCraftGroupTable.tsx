@@ -87,7 +87,7 @@ export default class SmallCraftGroupTable extends React.Component<ISmallCraftGro
             <table className="table" data-testid="small-craft-group-table">
                 <thead>
                     <tr>
-                        {this.props.showEdit ? <th className="min-width no-wrap"></th> : null}
+                        {this.props.showEdit ? <th className="min-width no-wrap"><span className="visually-hidden">Actions</span></th> : null}
                         <th>Small Craft</th>
                         <th>Tons</th>
                         <th>Tech</th>

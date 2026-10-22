@@ -70,7 +70,7 @@ export default class CapitalShipCreatorEquipment extends React.Component<IEquipm
                 ) : <p>No capital weapons are available to this tech base, era and rules level.</p>}
                 <table className="table" data-testid="cs-capital-installed">
                     <thead>
-                        <tr><th>Name</th><th>Tons</th><th>Arc</th><th>Shots</th><th></th></tr>
+                        <tr><th>Name</th><th>Tons</th><th>Arc</th><th>Shots</th><th><span className="visually-hidden">Actions</span></th></tr>
                     </thead>
                     <tbody>
                         {mounts.map((mount) => (
@@ -156,7 +156,7 @@ export default class CapitalShipCreatorEquipment extends React.Component<IEquipm
                                     <p><strong>Gunners needed</strong>: {ship.getMinimumGunners()} (one for every six standard weapons and one for each capital weapon, SO:AA p.138)</p>
                                     <table className="table" data-testid="cs-installed">
                                         <thead>
-                                            <tr><th>Name</th><th>Tons</th><th>Location</th><th></th></tr>
+                                            <tr><th>Name</th><th>Tons</th><th>Location</th><th><span className="visually-hidden">Actions</span></th></tr>
                                         </thead>
                                         <tbody>
                                             {ship.getEquipmentList().map((item) => (

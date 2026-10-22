@@ -39,7 +39,7 @@ export default class MechCreatorExports extends React.Component<IHomeProps, IHom
                         label="Exports"
                       >
 
-                          <h5>Help wanted</h5>
+                          <h3 className="h5">Help wanted</h3>
 
                           <p>If you'd like to make an exporter for your own software send me a PR 😎</p>
 

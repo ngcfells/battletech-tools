@@ -212,13 +212,13 @@ export default class MechCreatorSummary extends React.Component<IHomeProps, IHom
                             </div>
                             <div className="col-lg-6">
                               <h3 className="text-center">Record Sheets</h3>
-                              <Link to={`${process.env.PUBLIC_URL}/classic-battletech/mech-creator/print-rs`}>
+                              <Link to={`${process.env.PUBLIC_URL}/classic-battletech/mech-creator/print-rs`} aria-label="Print the record sheet">
                                 <BattleMechSVG
                                   mechData={this.props.appGlobals.currentBattleMech}
                                 />
                               </Link>
                               <br />
-                              <Link to={`${process.env.PUBLIC_URL}/classic-battletech/mech-creator/print-as`}>
+                              <Link to={`${process.env.PUBLIC_URL}/classic-battletech/mech-creator/print-as`} aria-label="Print the Alpha Strike card">
                                 <AlphaStrikeUnitSVG
                                   appGlobals={this.props.appGlobals}
                                   asUnit={this.props.appGlobals.currentBattleMech.getAlphaStrikeForceStats()}

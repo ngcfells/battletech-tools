@@ -20,7 +20,7 @@ export default class PrintablePage extends React.Component<IPrintablePageProps, 
     render = (): JSX.Element => {
         return (
         <>
-          <div className="print-bar">
+          <header className="print-bar">
             <a
                 href={CONST_BATTLETECH_URL}
                 rel="noopener noreferrer"
@@ -33,11 +33,10 @@ export default class PrintablePage extends React.Component<IPrintablePageProps, 
 
             <Link
               to={this.props.backTo}
-              className="pull-left"
+              className="btn btn-primary pull-left"
+              aria-label="Back"
             >
-              <button className="btn btn-primary">
-                <ArrowCircleLeft />
-              </button>
+              <ArrowCircleLeft />
             </Link>
             <button
               className="btn btn-primary"
@@ -45,11 +44,12 @@ export default class PrintablePage extends React.Component<IPrintablePageProps, 
             >
               <Print /> Print
             </button>
-          </div>
-          <div className="print-bg">
+          </header>
+          <main className="print-bg">
+            <h1 className="visually-hidden">Printable page</h1>
             <RulesLevelStamp requiredRulesLevel={this.props.requiredRulesLevel} provisionalNote={this.props.provisionalNote} />
             <ErrorBoundary showSettingsLink={true}>{this.props.children}</ErrorBoundary>
-          </div>
+          </main>
         </>
         )
     }

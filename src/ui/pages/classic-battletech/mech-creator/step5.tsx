@@ -400,7 +400,7 @@ export default class MechCreatorStep5 extends React.Component<IHomeProps, IHomeS
                                     <th>Weight</th>
                                     <th>Rear</th>
                                     {this.props.appGlobals.currentBattleMech.isOmnimech ? <th>Fixed</th> : null}
-                                    <th>&nbsp;</th>
+                                    <th><span className="visually-hidden">Actions</span></th>
                                   </tr>
                                 </thead>
 

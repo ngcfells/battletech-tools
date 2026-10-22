@@ -332,8 +332,9 @@ export default class TopMenu extends React.Component<ITopMenuProps, ITopMenuStat
       return (
           <>
           <header className="topmenu">
+            <nav aria-label="Main menu">
             <ul className="main-menu">
-                <li onClick={this.toggleMobile} className="mobile-menu-button d-inline d-md-none"><Bars /></li>
+                <li className="mobile-menu-button d-inline d-md-none"><button type="button" className="mobile-menu-toggle" aria-label="Menu" onClick={this.toggleMobile}><Bars /></button></li>
                 {menuStructure.map( (item, itemIndex) => {
                     return (
                         <React.Fragment key={itemIndex}>
@@ -364,8 +365,10 @@ export default class TopMenu extends React.Component<ITopMenuProps, ITopMenuStat
                     </a>
                 </li>
             </ul>
+            </nav>
         {/* {subMenu} */}
         {currentSubmenu ? (
+            <nav aria-label="Section menu">
             <ul className="sub-menu">
                 {currentSubmenu.map( (item, itemIndex) => {
                     return (
@@ -373,10 +376,11 @@ export default class TopMenu extends React.Component<ITopMenuProps, ITopMenuStat
                     )
                 })}
             </ul>
+            </nav>
         ) : null}
 
           </header>
-            <div className="mobile-menu">
+            <nav className="mobile-menu" aria-label="Mobile menu">
                 <ul className="main-menu">
                 {menuStructure.map( (item, itemIndex) => {
                     return (
@@ -416,7 +420,7 @@ export default class TopMenu extends React.Component<ITopMenuProps, ITopMenuStat
 
                 </ul>
 
-            </div>
+            </nav>
           </>
       );
     }

@@ -463,6 +463,7 @@ label="Quickly add a ForcePack"
       <li key={packindex} className="overflow-hidden">
         <button
           className="btn btn-md btn-primary pull-left margin-right"
+          aria-label={`Add the ${pack.name}`}
           onClick={(e) => this.addForcePack( e, pack)}
         >
           <PlusCircle />

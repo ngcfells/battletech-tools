@@ -75,7 +75,7 @@ export default class ProtoMechGroupTable extends React.Component<IProtoMechGroup
             <table className="table" data-testid="protomech-group-table">
                 <thead>
                     <tr>
-                        {this.props.showEdit ? <th className="min-width no-wrap"></th> : null}
+                        {this.props.showEdit ? <th className="min-width no-wrap"><span className="visually-hidden">Actions</span></th> : null}
                         <th>ProtoMech Point</th>
                         <th>ProtoMechs</th>
                         <th>Tech</th>

@@ -87,7 +87,7 @@ export default class FighterGroupTable extends React.Component<IFighterGroupTabl
             <table className="table">
                 <thead>
                     <tr>
-                        {this.props.showEdit ? <th className="min-width no-wrap"></th> : null}
+                        {this.props.showEdit ? <th className="min-width no-wrap"><span className="visually-hidden">Actions</span></th> : null}
                         <th>Fighter</th>
                         <th>Tons</th>
                         <th>Tech</th>

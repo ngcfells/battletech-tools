@@ -666,7 +666,7 @@ export default class AlphaStrikeAddUnitsView extends React.Component<IAlphaStrik
                     <table className="table">
                       <thead>
                         <tr>
-                          <th>&nbsp;</th>
+                          <th><span className="visually-hidden">Actions</span></th>
                           <th>Name</th>
                           <th>Rules</th>
                           <th>Tech</th>
@@ -676,7 +676,7 @@ export default class AlphaStrikeAddUnitsView extends React.Component<IAlphaStrik
 
                         </tr>
                         <tr>
-                          <th>&nbsp;</th>
+                          <th><span className="visually-hidden">Actions</span></th>
                           <th colSpan={4}>Notes</th>
                           <th colSpan={2}>Role</th>
                         </tr>
@@ -856,7 +856,7 @@ export default class AlphaStrikeAddUnitsView extends React.Component<IAlphaStrik
                   <table className="table">
                     <thead>
                       <tr>
-                        <th>&nbsp;</th>
+                        <th><span className="visually-hidden">Actions</span></th>
                         <th>Name</th>
                         {/* <th>Rules</th>
                         <th>Tech</th>
@@ -866,7 +866,7 @@ export default class AlphaStrikeAddUnitsView extends React.Component<IAlphaStrik
 
                       </tr>
                       <tr>
-                        <th>&nbsp;</th>
+                        <th><span className="visually-hidden">Actions</span></th>
                         <th colSpan={3}>Notes</th>
 
                       </tr>
@@ -966,7 +966,7 @@ title="View this unit's Alpha Strike Card"
         <table className="table">
             <thead>
                 <tr>
-                    <th>&nbsp;</th>
+                    <th><span className="visually-hidden">Actions</span></th>
                     <th>Name</th>
                     <th>Points</th>
                 </tr>
@@ -1030,7 +1030,7 @@ title="View this unit's Alpha Strike Card"
         <table className="table">
             <thead>
                 <tr>
-                    <th>&nbsp;</th>
+                    <th><span className="visually-hidden">Actions</span></th>
                     <th>Name</th>
                     <th>Points</th>
                 </tr>
@@ -1094,7 +1094,7 @@ title="View this unit's Alpha Strike Card"
         <table className="table" data-testid="as-battle-armor-saves">
             <thead>
                 <tr>
-                    <th>&nbsp;</th>
+                    <th><span className="visually-hidden">Actions</span></th>
                     <th>Name</th>
                     <th>Points</th>
                 </tr>
@@ -1163,7 +1163,7 @@ title="View this unit's Alpha Strike Card"
         <table className="table" data-testid="as-protomech-saves">
             <thead>
                 <tr>
-                    <th>&nbsp;</th>
+                    <th><span className="visually-hidden">Actions</span></th>
                     <th>Name</th>
                     <th>Points</th>
                 </tr>

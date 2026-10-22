@@ -213,7 +213,7 @@ export default class MechCreatorHome extends React.Component<IHomeProps, IHomeSt
                           <th title="This is the current battle value for the 'mech">BV</th>
                           <th title="This is the Alpha Strike Value">ASV</th>
                           <th className="no-wrap" title="This is the C-Bill cost">C-Bills</th>
-                          <th></th>
+                          <th><span className="visually-hidden">Actions</span></th>
                         </tr>
                       </thead>
 

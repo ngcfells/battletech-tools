@@ -123,7 +123,7 @@ export default class AvailableEquipment extends React.Component<IAvailableEquipm
                 <th>Cat</th>
                 <th>Criticals</th>
                 <th>Weight</th>
-                <th>&nbsp;</th>
+                <th><span className="visually-hidden">Actions</span></th>
             </tr>
         </thead>
 

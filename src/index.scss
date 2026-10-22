@@ -149,6 +149,8 @@ a {
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+  // Bootstrap's pink cannot be read on the dark sections; the typeface marks code.
+  color: inherit;
 }
 
 .flex {
@@ -219,7 +221,7 @@ input[type=number] {
   padding: .5rem;
   legend {
     background: $primaryBG;
-    color: $primaryTextColor;
+    color: $onPrimaryTextColor;
     padding: 0 .5rem;
     border-radius: .5rem;
     display: inline-block;
@@ -446,9 +448,13 @@ input[type=number] {
   color: $colorBlue;
 }
 .color-red {
-  color: $colorRed;
+  // Readable on every dark section and table row (#222 to #444); print keeps the dark red below.
+  color: #ff9494;
   // Warning text is never smaller than 0.875rem, so it can be read (beta feedback 2026-10-21).
   font-size: max(.875rem, 1em);
+  @media print {
+    color: $colorRed;
+  }
 }
 .color-gray {
   color: #666
@@ -666,31 +672,31 @@ body {
   .btn-primary {
     background-color: $primaryBG;
     border-color: $primaryBG;
-    color: $primaryTextColor;
+    color: $onPrimaryTextColor;
     > svg {
-      stroke: $primaryTextColor !important;
-      color: $primaryTextColor !important;
-      fill: $primaryTextColor !important;
+      stroke: $onPrimaryTextColor !important;
+      color: $onPrimaryTextColor !important;
+      fill: $onPrimaryTextColor !important;
     }
     &:active {
       background-color: $primaryBG !important;
       border-color: $primaryBG !important;
-      color: $primaryTextColor !important;
+      color: $onPrimaryTextColor !important;
     }
     &:focus {
       background-color: $primaryBG !important;
       border-color: $primaryBG !important;
-      color: $primaryTextColor !important;
+      color: $onPrimaryTextColor !important;
     }
     &:hover {
       background-color: $primaryBGHover;
       border-color: $primaryBGHover;
-      color: $primaryTextColor;
+      color: $onPrimaryTextColor;
     }
     &:disabled {
       background-color: #222;
       border-color: #000;
-      color: 0;
+      color: $disabledTextColor;
     }
 
   }

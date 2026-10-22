@@ -182,7 +182,7 @@ export default class SmallCraftCreatorHome extends React.Component<IHomeProps, I
                                     <tr>
                                         <th>Name</th>
                                         <th>Hull</th>
-                                        <th></th>
+                                        <th><span className="visually-hidden">Actions</span></th>
                                     </tr>
                                 </thead>
                                 <tbody>

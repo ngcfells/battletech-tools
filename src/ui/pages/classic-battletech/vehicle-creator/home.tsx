@@ -146,7 +146,7 @@ export default class VehicleCreatorHome extends React.Component<IHomeProps, IHom
                                         <th>Name</th>
                                         <th>Motive Type</th>
                                         <th>Tons</th>
-                                        <th></th>
+                                        <th><span className="visually-hidden">Actions</span></th>
                                     </tr>
                                 </thead>
                                 {this.props.appGlobals.vehicleSaves && this.props.appGlobals.vehicleSaves.length > 0 ? (

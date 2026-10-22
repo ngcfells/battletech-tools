@@ -123,7 +123,8 @@ export default class AcesPrintPage extends React.Component<IAcesPrintPageProps, 
                         <li><span title="Open the Print Dialog" onClick={() => window.print()} className="current"><PrintIcon /></span></li>
                     </ul>
                 </header>
-                <div className="aces-page aces-print">
+                <main className="aces-page aces-print">
+                    <h1 className="visually-hidden">Aces print sheets</h1>
                     <div className="aces-inline print-bar">
                         {( Object.keys( partLabels ) as TPrintPart[] ).map( ( part ) => (
                             <label key={part}>
@@ -143,7 +144,7 @@ export default class AcesPrintPage extends React.Component<IAcesPrintPageProps, 
                         </>
                     )}
                     <p className="aces-muted">Printed from Jeff's BattleTech Tools. BattleTech: Aces is published by Catalyst Game Labs; card text is the players' own entry.</p>
-                </div>
+                </main>
             </>
         );
     }

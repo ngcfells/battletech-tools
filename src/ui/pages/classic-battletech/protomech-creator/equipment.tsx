@@ -51,7 +51,7 @@ export default class ProtoMechCreatorEquipment extends React.Component<IEquipmen
                         <TextSection label="Step 5: Mounted Weapons and Equipment">
                             <table className="table" data-testid="pm-mounts">
                                 <thead>
-                                    <tr><th>Item</th><th>Location</th><th>Weight</th><th>Ammunition</th><th></th></tr>
+                                    <tr><th>Item</th><th>Location</th><th>Weight</th><th>Ammunition</th><th><span className="visually-hidden">Actions</span></th></tr>
                                 </thead>
                                 <tbody>
                                     {mounts.length === 0 ? <tr><td colSpan={5}>Nothing mounted yet.</td></tr> : null}
@@ -134,7 +134,7 @@ export default class ProtoMechCreatorEquipment extends React.Component<IEquipmen
                             </label>
                             {!proto.hasMainGun() ? <p className="smaller-text">A main gun mount is chosen in Step 1.</p> : null}
 
-                            <h4>Missile Launchers, by the Tube</h4>
+                            <h3 className="h4">Missile Launchers, by the Tube</h3>
                             <table className="table">
                                 <tbody>
                                     {proto.getAvailableMissiles(rulesLevel).map((missile) => {
@@ -161,7 +161,7 @@ export default class ProtoMechCreatorEquipment extends React.Component<IEquipmen
                                 </tbody>
                             </table>
 
-                            <h4>ProtoMech Equipment</h4>
+                            <h3 className="h4">ProtoMech Equipment</h3>
                             <table className="table">
                                 <tbody>
                                     {proto.getAvailableSpecials(rulesLevel).length === 0 ? <tr><td>None at this rules level for this chassis.</td></tr> : null}
@@ -181,14 +181,14 @@ export default class ProtoMechCreatorEquipment extends React.Component<IEquipmen
                                 </tbody>
                             </table>
 
-                            <h4>Weapons and Electronics</h4>
+                            <h3 className="h4">Weapons and Electronics</h3>
                             <label>
                                 Search:
                                 <input type="text" value={this.state.filter} data-testid="pm-filter" onChange={(e) => this.setState({ filter: e.currentTarget.value })} />
                             </label>
                             <table className="table" data-testid="pm-catalog">
                                 <thead>
-                                    <tr><th>Item</th><th>Weight</th><th>Heat</th><th>Damage</th><th>Range</th><th>BV</th><th>Source</th><th></th></tr>
+                                    <tr><th>Item</th><th>Weight</th><th>Heat</th><th>Damage</th><th>Range</th><th>BV</th><th>Source</th><th><span className="visually-hidden">Actions</span></th></tr>
                                 </thead>
                                 <tbody>
                                     {catalog.map((item) => (

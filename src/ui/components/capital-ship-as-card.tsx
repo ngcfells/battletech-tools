@@ -8,7 +8,7 @@ export default class CapitalShipAlphaStrikeCard extends React.Component<ICapital
     render = (): JSX.Element => {
         const ship = this.props.ship;
         const stats = ship.getAlphaStrikeStats();
-        const cell: React.CSSProperties = { border: "1px solid #000", padding: "0.2em 0.6em", textAlign: "center" };
+        const cell: React.CSSProperties = { border: "1px solid #000", padding: "0.2em 0.6em", textAlign: "center", color: "#000" };
         const head: React.CSSProperties = { ...cell, background: "#ddd", fontWeight: "bold" };
         const rows = CAPITAL_SHIP_AS_ARCS.flatMap((arc) => LARGE_CRAFT_AS_ATTACK_CLASSES
             .filter((attackClass) => attackClass === "STD" || stats.arcs[arc.tag][attackClass].some((value) => value.damage > 0 || value.minimal))
@@ -17,7 +17,7 @@ export default class CapitalShipAlphaStrikeCard extends React.Component<ICapital
         return (
             <div data-testid="capital-ship-as-card" style={{ border: "2px solid #000", borderRadius: "0.6em", padding: "0.8em 1em", maxWidth: "46em", background: "#fff", color: "#000" }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
-                    <h3 style={{ margin: 0 }}>{`${ship.getName()} ${ship.getModel()}`.trim() || ship.getShipTypeName()}</h3>
+                    <h2 className="h3" style={{ margin: 0 }}>{`${ship.getName()} ${ship.getModel()}`.trim() || ship.getShipTypeName()}</h2>
                     <strong data-testid="capital-ship-as-pv">PV: {stats.pointValue}</strong>
                 </div>
                 <p style={{ margin: "0.4em 0" }} data-testid="capital-ship-as-line">

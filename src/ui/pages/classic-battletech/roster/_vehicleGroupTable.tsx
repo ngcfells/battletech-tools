@@ -87,7 +87,7 @@ export default class VehicleGroupTable extends React.Component<IVehicleGroupTabl
             <table className="table">
                 <thead>
                     <tr>
-                        {this.props.showEdit ? <th className="min-width no-wrap"></th> : null}
+                        {this.props.showEdit ? <th className="min-width no-wrap"><span className="visually-hidden">Actions</span></th> : null}
                         <th>Vehicle</th>
                         <th>Tons</th>
                         <th>Tech</th>

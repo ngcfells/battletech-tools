@@ -10,7 +10,7 @@ export default class FighterRecordSheet extends React.Component<IFighterRecordSh
         const as = this.props.fighter.getAlphaStrikeStats();
         return (
             <div className="print-page vehicle-sheet-extras" style={{ breakBefore: "page" }}>
-                <h3>Alpha Strike</h3>
+                <h2 className="h3">Alpha Strike</h2>
                 <table className="table">
                     <tbody>
                         <tr><td>Type / Size</td><td>{as.type} / {as.size}</td></tr>

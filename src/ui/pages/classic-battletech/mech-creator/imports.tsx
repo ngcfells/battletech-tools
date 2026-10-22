@@ -326,6 +326,7 @@ export default class MechCreatorImports extends React.Component<IHomeProps, IHom
   <div className="col">
   <label>
               <select
+                  aria-label="Rules level"
                   value={this.props.appGlobals.appSettings.mechRulesFilter}
                   onChange={this.updateMechRulesFilter}
               >
@@ -352,7 +353,7 @@ export default class MechCreatorImports extends React.Component<IHomeProps, IHom
                             <th className="min-width no-wrap text-center">Tonnage</th>
 
                             <th className="min-width no-wrap text-center">BV2</th>
-                            <th className="min-width no-wrap text-center">&nbsp;</th>
+                            <th className="min-width no-wrap text-center"><span className="visually-hidden">Actions</span></th>
                         </tr>
                     </thead>
                     {this.props.appGlobals.sswMechObjects.length === 0 ? (

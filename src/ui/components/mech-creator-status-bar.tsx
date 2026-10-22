@@ -11,7 +11,7 @@ export default class MechCreatorStatusBar extends React.Component<IMechCreatorSt
             return <></>
         }
       return (
-          <div className="mech-creator-status-bar">
+          <aside className="mech-creator-status-bar" aria-label="Design status">
             <span className={`no-wrap inline-block${this.props.appGlobals.currentBattleMech.getRemainingTonnage() < 0 ? " color-red" : ""}`}><strong>Remaining Tons</strong>: {this.props.appGlobals.currentBattleMech.getRemainingTonnage()}</span>&nbsp;|&nbsp;
             <span className="no-wrap inline-block"><strong>Unallocated Armor</strong>: {this.props.appGlobals.currentBattleMech.getUnallocatedArmor()}</span>&nbsp;|&nbsp;
             <span className="no-wrap inline-block"><strong>Unallocated Criticals</strong>: {getUnallocatedCriticals(this.props.appGlobals.currentBattleMech).length}</span>&nbsp;|&nbsp;
@@ -25,7 +25,7 @@ export default class MechCreatorStatusBar extends React.Component<IMechCreatorSt
                 <><span className="no-wrap inline-block"><strong>Heat Summary</strong>: <span className="color-red">{this.props.appGlobals.currentBattleMech.getHeatSummary()}</span></span></>
             )}
 
-          </div>
+          </aside>
       );
     }
 }

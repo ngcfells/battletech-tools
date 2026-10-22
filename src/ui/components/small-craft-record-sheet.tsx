@@ -16,7 +16,7 @@ export default class SmallCraftRecordSheet extends React.Component<ISmallCraftRe
             </div>
             {this.props.showAlphaStrike ? (
                 <div className="print-page vehicle-sheet-extras" style={{ breakBefore: "page" }}>
-                    <h3>Alpha Strike</h3>
+                    <h2 className="h3">Alpha Strike</h2>
                     <SmallCraftAlphaStrikeCard craft={this.props.craft} />
                 </div>
             ) : null}

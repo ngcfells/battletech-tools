@@ -276,7 +276,7 @@ export default class AcesCampaignPage extends React.Component<IAcesCampaignPageP
                 ) : null}
                 <table className="table tighter-padding">
                     <thead>
-                        <tr><th>Unit</th><th>Type</th><th>Size</th><th>PV</th><th>Buy / sell</th><th>Status</th><th></th></tr>
+                        <tr><th>Unit</th><th>Type</th><th>Size</th><th>PV</th><th>Buy / sell</th><th>Status</th><th><span className="visually-hidden">Actions</span></th></tr>
                     </thead>
                     <tbody>
                         {campaign.roster.map( ( unit ) => (
@@ -360,7 +360,7 @@ export default class AcesCampaignPage extends React.Component<IAcesCampaignPageP
             <>
                 <table className="table tighter-padding">
                     <thead>
-                        <tr><th>Pilot</th><th>Skill</th><th>Edge tokens</th><th>Edge abilities</th><th>Unallocated</th><th></th></tr>
+                        <tr><th>Pilot</th><th>Skill</th><th>Edge tokens</th><th>Edge abilities</th><th>Unallocated</th><th><span className="visually-hidden">Actions</span></th></tr>
                     </thead>
                     <tbody>
                         {campaign.pilots.map( ( pilot ) => (

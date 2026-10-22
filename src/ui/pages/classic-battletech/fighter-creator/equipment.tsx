@@ -103,7 +103,7 @@ export default class FighterCreatorEquipment extends React.Component<IEquipmentP
                                 </>)}
                                 <table className="table">
                                     <thead>
-                                        <tr><th>Name</th><th>Tons</th><th>Location</th>{fighter.isOmni() ? <th>Pod</th> : null}<th></th></tr>
+                                        <tr><th>Name</th><th>Tons</th><th>Location</th>{fighter.isOmni() ? <th>Pod</th> : null}<th><span className="visually-hidden">Actions</span></th></tr>
                                     </thead>
                                     <tbody>
                                         {fighter.getEquipmentList().map((item) => (

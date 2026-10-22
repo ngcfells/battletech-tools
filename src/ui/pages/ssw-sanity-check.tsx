@@ -441,9 +441,9 @@ export default class SSWSanityCheck extends React.Component<ISSWSanityCheckProps
                    <th>
                        Total Mechs Here: {totalMechs}
                    </th>
-                   <th></th>
-                   <th></th>
-                   <th></th>
+                   <th><span className="visually-hidden">Actions</span></th>
+                   <th><span className="visually-hidden">Actions</span></th>
+                   <th><span className="visually-hidden">Actions</span></th>
                    <th>
                        CBill Errors: {cbillDiscrpancies} ({Math.round( cbillDiscrpancies / totalMechs * 10000) / 100 } %)
                    </th>

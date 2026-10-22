@@ -187,7 +187,7 @@ export default class ProtoMechCreatorHome extends React.Component<IHomeProps, IH
                                         <th>Name</th>
                                         <th>Chassis</th>
                                         <th>Point</th>
-                                        <th></th>
+                                        <th><span className="visually-hidden">Actions</span></th>
                                     </tr>
                                 </thead>
                                 <tbody>

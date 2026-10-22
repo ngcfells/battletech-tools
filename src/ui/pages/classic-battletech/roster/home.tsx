@@ -188,7 +188,7 @@ export default class BattleMechRosterHome extends React.Component<IHomeProps, IH
         <UIPage current="classic-battletech-roster" appGlobals={this.props.appGlobals}>
 
           <div className="alert alert-danger">
-            <h4 className="text-center">In Development</h4>
+            <h2 className="h4 text-center">In Development</h2>
             <p>This area will be the equivalent of the Roster Maker in Alpha Strike. If anything seems to work, it likely doesn't. Use at your owm risk!</p>
             <p><strong>Update 2022 Apr 28</strong>: The Print Force area should be working great. The Play Mode is making huge srides and getting closer! Initial tests are working for all phases, but it's still heavily under testing. I've not got to the Mechwarrior hits yet. There are quite a few interface bugs which are bothering me. </p>
             <del><p><strong>Update 2022 Apr 3</strong>: With the exception of the Play/Print buttons this <em>MIGHT</em> work. I'll work on the Print button first, then onward to the intense Play button (since I'll have to code the electronic record sheet functions)</p></del>
