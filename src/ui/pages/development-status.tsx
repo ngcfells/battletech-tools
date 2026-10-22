@@ -129,6 +129,7 @@ export default class DevelopmentStatus extends React.Component<IDevelopmentStatu
                       <li><del>Critical hit management</del></li>
                       <li><del>Play for every unit type the creators build, JumpShips and WarShips included</del></li>
                       <li><del><i>Battledroids</i> games</del></li>
+                      <li><del>Design quirks in play, with a per-game switch: to-hit, heat and Initiative worked out for you</del></li>
                     </ul>
                     <h3 className="h4">Coming</h3>
                     <ul>

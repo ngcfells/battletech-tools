@@ -667,6 +667,12 @@ in HeySporky/battletech-tools. All of it is merged into local `master` together 
   - [x] BLK import reads `<quirks>` and `<weaponQuirks>` by MegaMek's codes (kept as altNames) for Battle Armor,
     Small Craft/DropShips and Support Vehicles; an unknown code or unplaceable weapon goes in the import issues.
     SSW files carry no quirk element, so the SSW import has none to read.
+  - [x] Play effects (plan 3, docs/superpowers/plans/2026-10-22-quirks-play-effects.md): a per-game "Use design
+    quirks" switch on both rosters, off by default and saved with the force. With it on, Classic play adds quirk
+    to-hit modifiers to the GATOR (weapon, range band, ran or flanked), Combat Computer heat to the Heat Phase,
+    the side's largest quirk Initiative to the header, and lists each unit's quirks in play; Alpha Strike units
+    made from a design carry the Companion's quirks and apply their weapon to-hit by range band.
+  - [ ] Plan 4: the targeting/tracking and comms catalog, and the Lost Issues rules.
 - [ ] Much later: custom targeting/tracking (T&T) quirks drawn from the lore, beyond the Lost Issues table
   (user, 2026-10-21). They go in as custom quirk and T&T records once the quirk catalog exists.
 
