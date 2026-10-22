@@ -20,6 +20,13 @@ describe("fighter armor diagram", () => {
         expect(inner).not.toContain("style=");
     });
 
+    it("stands taller for a DropShip, its arcs given the extra height", () => {
+        const markup = renderToStaticMarkup(<svg><FighterDiagramSVG armor={armor} structuralIntegrity={8} x={0} y={0} width={600} tall silhouette="aerodyne" /></svg>);
+        expect(markup).toContain('viewBox="0 0 600 760"');
+        expect(markup).toContain('height="760"');
+        expect(markup).toMatch(/<rect x="215" y="20" width="170" height="230"/);
+    });
+
     it("draws a solid silhouette behind the boxes on the record sheet", () => {
         const markup = renderToStaticMarkup(<FighterDiagramSVG armor={armor} structuralIntegrity={8} silhouette />);
         expect(markup).toContain('data-testid="fighter-silhouette"');

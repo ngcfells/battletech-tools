@@ -77,27 +77,31 @@ export default class FighterDiagramSVG extends React.Component<IFighterDiagramSV
     render = (): JSX.Element => {
         const toggleSI = this.props.onToggleStructure;
         const width = this.props.width ?? 600;
+        // A DropShip's diagram stands taller, its arcs and silhouette stretched to fill a tall box.
+        const height = this.props.tall ? 760 : 470;
+        const arcH = this.props.tall ? 230 : 130, sideH = this.props.tall ? 240 : 135, siH = this.props.tall ? 240 : 150;
+        const sideY = arcH + 30, aftY = sideY + siH + 10;
         // Placed at x, y inside a record sheet's own SVG rather than scaled to the page.
         const embedded = this.props.x !== undefined;
         return (
             <svg
                 x={embedded ? this.props.x : undefined}
                 y={embedded ? this.props.y : undefined}
-                viewBox="0 0 600 470"
+                viewBox={`0 0 600 ${height}`}
                 width={width}
-                height={embedded ? Math.round(width / 600 * 470) : undefined}
+                height={embedded ? Math.round(width / 600 * height) : undefined}
                 xmlns="http://www.w3.org/2000/svg"
                 style={embedded ? undefined : { maxWidth: "100%", height: "auto" }}
             >
-                {this.renderOutline()}
-                {this.renderArc("nose", "Nose", 215, 20, 170, 130)}
-                {this.renderArc("leftWing", this.props.sideLabels?.left ?? "Left Wing", 15, 160, 190, 135)}
-                {this.renderArc("rightWing", this.props.sideLabels?.right ?? "Right Wing", 395, 160, 190, 135)}
-                {this.renderArc("aft", "Aft", 215, 320, 170, 130)}
+                {this.props.tall ? <g transform={`scale(1, ${height / 470})`}>{this.renderOutline()}</g> : this.renderOutline()}
+                {this.renderArc("nose", "Nose", 215, 20, 170, arcH)}
+                {this.renderArc("leftWing", this.props.sideLabels?.left ?? "Left Wing", 15, sideY, 190, sideH)}
+                {this.renderArc("rightWing", this.props.sideLabels?.right ?? "Right Wing", 395, sideY, 190, sideH)}
+                {this.renderArc("aft", "Aft", 215, aftY, 170, arcH)}
                 <g>
-                    <rect x={215} y={160} width={170} height={150} fill="rgb(245,245,245)" stroke="rgb(0,0,0)" strokeWidth={1.5} />
-                    <text x={219} y={172} fontSize={10} fontWeight="bold">Structural Integrity ({this.props.structuralIntegrity})</text>
-                    {this.renderPips(this.props.structuralIntegrity, this.props.structureDamage ?? 0, 220, 180, 160, 124, "si", toggleSI ? (index) => toggleSI(index) : undefined)}
+                    <rect x={215} y={sideY} width={170} height={siH} fill="rgb(245,245,245)" stroke="rgb(0,0,0)" strokeWidth={1.5} />
+                    <text x={219} y={sideY + 12} fontSize={10} fontWeight="bold">Structural Integrity ({this.props.structuralIntegrity})</text>
+                    {this.renderPips(this.props.structuralIntegrity, this.props.structureDamage ?? 0, 220, sideY + 20, 160, siH - 26, "si", toggleSI ? (index) => toggleSI(index) : undefined)}
                 </g>
             </svg>
         );
@@ -115,6 +119,8 @@ interface IFighterDiagramSVGProps {
     maxPipSpacing?: number;
     /** A solid craft silhouette behind the boxes, as on a printed record sheet, in place of the dashed outline; true is a fighter. */
     silhouette?: boolean | "fighter" | "aerodyne" | "spheroid";
+    /** A taller diagram, 600 x 760, for a DropShip's armor. */
+    tall?: boolean;
     /** Damage thresholds by arc, shown when given. */
     thresholds?: IFighterArmorAllocation;
     armorDamage?: IFighterArmorAllocation;

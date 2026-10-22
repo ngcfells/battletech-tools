@@ -26,6 +26,10 @@ export interface IUnitDataBox {
     rows: IAerospaceInventoryRow[];
     locationTitle?: string;
     locationKey: string;
+    /** Weapon bays (a DropShip's): a Bay column in place of Qty and Type, with capital-scale brackets too (TM p.199). */
+    bays?: boolean;
+    /** The ammunition carried, on a line under the inventory. */
+    ammo?: string;
     cost: number;
     bv: React.ReactNode;
 }
@@ -52,6 +56,8 @@ export const unitDataBox = (x: number, y: number, w: number, h: number, data: IU
     // A long key (a Small Craft's six arcs) wraps, and the inventory gives it the room.
     const keyLines = wrapText(data.locationKey, Math.floor((w - 40) / 8.4));
     const keyTop = y + h - 80 - (keyLines.length - 1) * 21;
+    const ammoLines = data.ammo !== undefined ? wrapText(`Ammo: ${data.ammo}`, Math.floor((w - 40) / 10)) : [];
+    const inventoryBottom = keyTop - 20 - ammoLines.length * 26 - (ammoLines.length ? 10 : 0);
     return groupBox(x, y, w, h, data.title, (
         <>
             {label(x + 20, y + 75, "Type:")}
@@ -60,7 +66,8 @@ export const unitDataBox = (x: number, y: number, w: number, h: number, data: IU
             {entries(data.right, 400)}
             {data.extra ? data.extra(y + 115 + rowsUsed * 35) : null}
             <line x1={x + 10} y1={dividerY} x2={x + w - 10} y2={dividerY} stroke={INK} strokeWidth={2} />
-            {inventory(x, inventoryTop, w, keyTop - 20, data.rows, data.locationTitle ?? "Loc.")}
+            {inventory(x, inventoryTop, w, inventoryBottom, data.rows, data.locationTitle ?? "Loc.", data.bays)}
+            {ammoLines.map((line, i) => text(x + 20, inventoryBottom + 30 + i * 26, line, { size: 20, weight: i === 0 ? 700 : 400 }, `ammo${i}`))}
             {keyLines.map((line, i) => text(x + 20, keyTop + i * 21, line, { size: 17, fill: GRAY }, `key${i}`))}
             {label(x + 20, y + h - 30, "Cost:")}{valueText(x + 95, y + h - 30, `${data.cost.toLocaleString("en-US")} C-Bills`)}
             {label(x + 420, y + h - 30, "BV:")}{valueText(x + 470, y + h - 30, data.bv)}
@@ -70,12 +77,14 @@ export const unitDataBox = (x: number, y: number, w: number, h: number, data: IU
 
 /**
  * The Weapons & Equipment Inventory, standard scale, with Attack Values by range bracket (TW p. 30). The rows shrink
- * to fit between top and bottom; shaded write-in rows fill the rest, as on the official sheet.
+ * to fit between top and bottom; shaded write-in rows fill the rest, as on the official sheet. With bays, each row is
+ * a weapon bay named for its class and weapons, and the capital-scale brackets head the columns too (TM p.199).
  */
-export const inventory = (x: number, top: number, w: number, bottom: number, rows: IAerospaceInventoryRow[], locationTitle: string): JSX.Element => {
-    const col = { qty: x + 30, type: x + 65, loc: x + 440, ht: x + 495, srv: x + 565, mrv: x + 630, lrv: x + 695, erv: x + 755 };
+export const inventory = (x: number, top: number, w: number, bottom: number, rows: IAerospaceInventoryRow[], locationTitle: string, bays = false): JSX.Element => {
+    const col = { qty: x + 30, type: bays ? x + 20 : x + 65, loc: x + 440, ht: x + 495, srv: x + 565, mrv: x + 630, lrv: x + 695, erv: x + 755 };
     const brackets = [col.srv, col.mrv, col.lrv, col.erv];
-    const tableTop = top + 70;
+    const head = bays ? 20 : 0;
+    const tableTop = top + 70 + head;
     const space = bottom - tableTop;
     const lineHeight = Math.min(34, space / Math.max(rows.length, 1));
     const lines = Math.max(rows.length, Math.floor(space / lineHeight));
@@ -84,13 +93,15 @@ export const inventory = (x: number, top: number, w: number, bottom: number, row
     return (
         <g>
             {text(x + 20, top, "Weapons & Equipment Inventory", { size: 26, weight: 700 })}
-            {text(x + 20, top + 25, "Standard Scale", { size: 16 })}
-            {["(0-6)", "(7-12)", "(13-20)", "(21-25)"].map((bracket, i) => text(brackets[i], top + 25, bracket, { size: 16, anchor: "middle" }, bracket))}
-            {text(col.qty, top + 55, "Qty", { size: 20, weight: 700, anchor: "middle" })}
-            {text(col.type, top + 55, "Type", { size: 20, weight: 700 })}
-            {text(col.loc, top + 55, locationTitle, { size: 20, weight: 700, anchor: "middle" })}
-            {text(col.ht, top + 55, "Ht", { size: 20, weight: 700, anchor: "middle" })}
-            {["SRV", "MRV", "LRV", "ERV"].map((head, i) => text(brackets[i], top + 55, head, { size: 20, weight: 700, anchor: "middle" }, head))}
+            {bays ? text(x + 20, top + 25, "Capital Scale", { size: 16 }) : null}
+            {bays ? ["(1-12)", "(13-24)", "(25-40)", "(41-50)"].map((bracket, i) => text(brackets[i], top + 25, bracket, { size: 16, anchor: "middle" }, `c${bracket}`)) : null}
+            {text(x + 20, top + 25 + head, "Standard Scale", { size: 16 })}
+            {["(0-6)", "(7-12)", "(13-20)", "(21-25)"].map((bracket, i) => text(brackets[i], top + 25 + head, bracket, { size: 16, anchor: "middle" }, bracket))}
+            {bays ? null : text(col.qty, top + 55, "Qty", { size: 20, weight: 700, anchor: "middle" })}
+            {text(col.type, top + 55 + head, bays ? "Bay" : "Type", { size: 20, weight: 700 })}
+            {text(col.loc, top + 55 + head, locationTitle, { size: 20, weight: 700, anchor: "middle" })}
+            {text(col.ht, top + 55 + head, "Ht", { size: 20, weight: 700, anchor: "middle" })}
+            {["SRV", "MRV", "LRV", "ERV"].map((name, i) => text(brackets[i], top + 55 + head, name, { size: 20, weight: 700, anchor: "middle" }, name))}
             {Array.from({ length: lines }, (_, index) => index % 2 === 0
                 ? <rect key={`shade${index}`} x={x + 10} y={tableTop + index * lineHeight} width={w - 20} height={lineHeight} fill={SHADE} /> : null)}
             {rows.length === 0 ? text(x + w / 2, tableTop + 60, "No Weapons or Equipment", { size: 24, anchor: "middle", fill: GRAY }) : null}
@@ -99,7 +110,7 @@ export const inventory = (x: number, top: number, w: number, bottom: number, row
                 const cell = (cx: number, v: React.ReactNode, key: string) => text(cx, baseline, v, { size, anchor: "middle" }, key);
                 return (
                     <g key={index}>
-                        {cell(col.qty, row.quantity, "q")}
+                        {bays ? null : cell(col.qty, row.quantity, "q")}
                         {text(col.type, baseline, row.name, { size: Math.max(13, Math.min(size, Math.floor(typeWidth / (row.name.length * 0.55)))) }, "n")}
                         {cell(col.loc, row.location, "l")}{cell(col.ht, row.heat, "h")}
                         {brackets.map((cx, i) => cell(cx, row.values ? (row.values[i] || "—") : "?", `v${i}`))}
@@ -157,13 +168,16 @@ export const armorDataBox = (x: number, y: number, w: number, h: number, arcs: {
 
 export interface ICriticalTrack { name: string; boxes: string[]; filled: number }
 
-/** Critical damage tracks in columns: each track's name and its boxes, filled black for hits taken in play. */
-export const criticalDamageBox = (x: number, y: number, w: number, h: number, columns: ICriticalTrack[][]): JSX.Element => {
+/**
+ * Critical damage tracks in columns: each track's name and its boxes, filled black for hits taken in play. Columns
+ * share the width evenly unless columnStarts gives each one's offset from the box's left edge.
+ */
+export const criticalDamageBox = (x: number, y: number, w: number, h: number, columns: ICriticalTrack[][], columnStarts?: number[]): JSX.Element => {
     const columnW = (w - 30) / columns.length;
     return groupBox(x, y, w, h, "CRITICAL DAMAGE", columns.map((tracks, c) => {
         const rowH = (h - 80) / Math.max(...columns.map((column) => column.length));
         return tracks.map((track, r) => {
-            const lx = x + 30 + c * columnW, ly = y + 105 + r * rowH;
+            const lx = x + (columnStarts ? columnStarts[c] : 30 + c * columnW), ly = y + 105 + r * rowH;
             // Six boxes need the room; their name goes above them.
             const stacked = track.boxes.length > 4;
             const boxesX = stacked ? lx : lx + 165;
