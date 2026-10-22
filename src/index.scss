@@ -446,6 +446,8 @@ input[type=number] {
 }
 .color-red {
   color: $colorRed;
+  // Warning text is never smaller than 0.875rem, so it can be read (beta feedback 2026-10-21).
+  font-size: max(.875rem, 1em);
 }
 .color-gray {
   color: #666
@@ -492,7 +494,7 @@ input[type=number] {
   margin-left: .5rem !important;
 }
 .small-pt-text {
-  font-size: .7rem;
+  font-size: .75rem;
 }
 .overflow-hidden {
   overflow: hidden;
@@ -650,7 +652,7 @@ body {
       margin-right: 1rem !important;
     }
     &.btn-xs {
-      font-size: 0.7rem;
+      font-size: 0.75rem;
       line-height: 1;
       padding: .25rem;
     }
@@ -1352,7 +1354,7 @@ body.retro {
     .print-section {
       .section-content {
         .lance-bonus {
-          font-size: .7rem;
+          font-size: .75rem;
         }
 
       }
