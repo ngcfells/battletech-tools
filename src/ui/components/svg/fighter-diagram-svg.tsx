@@ -45,6 +45,35 @@ export default class FighterDiagramSVG extends React.Component<IFighterDiagramSV
         );
     }
 
+    // Our own craft, drawn for the printed sheet, or a dashed outline in play mode.
+    renderOutline(): JSX.Element {
+        const fill = "rgb(222,222,222)", stroke = "rgb(150,150,150)";
+        switch (this.props.silhouette) {
+            case true:
+            case "fighter":
+                // A cranked delta with canards and twin fins.
+                return <path data-testid="fighter-silhouette" fill={fill} stroke={stroke} strokeWidth={2}
+                    d="M300,2 L322,70 L330,120 L390,128 L392,146 L345,152 L560,262 L596,300 L596,318 L345,312 L338,392 L392,446 L392,466 L322,452 L300,468 L278,452 L208,466 L208,446 L262,392 L255,312 L4,318 L4,300 L40,262 L255,152 L208,146 L210,128 L270,120 L278,70 Z" />;
+            case "aerodyne":
+                // A blunt lifting body with swept wings and a single dorsal fin.
+                return <path data-testid="aerodyne-silhouette" fill={fill} stroke={stroke} strokeWidth={2}
+                    d="M300,4 C342,10 362,64 368,130 L372,196 L560,326 L594,372 L594,396 L372,388 L362,436 L334,466 L266,466 L238,436 L228,388 L6,396 L6,372 L40,326 L228,196 L232,130 C238,64 258,10 300,4 Z" />;
+            case "spheroid":
+                // A sphere on three landing legs.
+                return (
+                    <g data-testid="spheroid-silhouette" fill={fill} stroke={stroke} strokeWidth={2}>
+                        <path d="M140,360 L96,462 L130,462 L176,380 Z M460,360 L504,462 L470,462 L424,380 Z M282,420 L282,466 L318,466 L318,420 Z" />
+                        <ellipse cx={300} cy={222} rx={280} ry={218} />
+                    </g>
+                );
+            default:
+                return (
+                    <polygon points="300,4 345,150 590,250 590,300 345,300 330,440 380,462 220,462 270,440 255,300 10,300 10,250 255,150"
+                        fill="none" stroke={this.outlineColor} strokeWidth={2} strokeDasharray="6 4" />
+                );
+        }
+    }
+
     render = (): JSX.Element => {
         const toggleSI = this.props.onToggleStructure;
         const width = this.props.width ?? 600;
@@ -60,14 +89,7 @@ export default class FighterDiagramSVG extends React.Component<IFighterDiagramSV
                 xmlns="http://www.w3.org/2000/svg"
                 style={embedded ? undefined : { maxWidth: "100%", height: "auto" }}
             >
-                {this.props.silhouette ? (
-                    // Our own craft, drawn for this sheet: a cranked delta with canards and twin fins.
-                    <path data-testid="fighter-silhouette" fill="rgb(222,222,222)" stroke="rgb(150,150,150)" strokeWidth={2}
-                        d="M300,2 L322,70 L330,120 L390,128 L392,146 L345,152 L560,262 L596,300 L596,318 L345,312 L338,392 L392,446 L392,466 L322,452 L300,468 L278,452 L208,466 L208,446 L262,392 L255,312 L4,318 L4,300 L40,262 L255,152 L208,146 L210,128 L270,120 L278,70 Z" />
-                ) : (
-                    <polygon points="300,4 345,150 590,250 590,300 345,300 330,440 380,462 220,462 270,440 255,300 10,300 10,250 255,150"
-                        fill="none" stroke={this.outlineColor} strokeWidth={2} strokeDasharray="6 4" />
-                )}
+                {this.renderOutline()}
                 {this.renderArc("nose", "Nose", 215, 20, 170, 130)}
                 {this.renderArc("leftWing", this.props.sideLabels?.left ?? "Left Wing", 15, 160, 190, 135)}
                 {this.renderArc("rightWing", this.props.sideLabels?.right ?? "Right Wing", 395, 160, 190, 135)}
@@ -91,8 +113,8 @@ interface IFighterDiagramSVGProps {
     y?: number;
     /** The widest pip spacing to start from; a printed sheet gives its pips more room than play mode. */
     maxPipSpacing?: number;
-    /** A solid craft silhouette behind the boxes, as on a printed record sheet, in place of the dashed outline. */
-    silhouette?: boolean;
+    /** A solid craft silhouette behind the boxes, as on a printed record sheet, in place of the dashed outline; true is a fighter. */
+    silhouette?: boolean | "fighter" | "aerodyne" | "spheroid";
     /** Damage thresholds by arc, shown when given. */
     thresholds?: IFighterArmorAllocation;
     armorDamage?: IFighterArmorAllocation;

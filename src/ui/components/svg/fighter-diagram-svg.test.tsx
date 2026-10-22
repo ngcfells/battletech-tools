@@ -26,6 +26,15 @@ describe("fighter armor diagram", () => {
         expect(renderToStaticMarkup(<FighterDiagramSVG armor={armor} structuralIntegrity={8} />)).not.toContain("fighter-silhouette");
     });
 
+    it("draws a Small Craft's own silhouette for its shape", () => {
+        const aerodyne = renderToStaticMarkup(<FighterDiagramSVG armor={armor} structuralIntegrity={8} silhouette="aerodyne" />);
+        expect(aerodyne).toContain('data-testid="aerodyne-silhouette"');
+        expect(aerodyne).not.toContain("fighter-silhouette");
+        const spheroid = renderToStaticMarkup(<FighterDiagramSVG armor={armor} structuralIntegrity={8} silhouette="spheroid" />);
+        expect(spheroid).toContain('data-testid="spheroid-silhouette"');
+        expect(spheroid).not.toContain("aerodyne-silhouette");
+    });
+
     it("draws larger pips when given room, as a printed sheet does, and keeps play mode's size otherwise", () => {
         // DamageCircleSVG draws its circle 3 inside the radius it is given.
         const radius = (markup: string) => Number(/<circle[^>]* r="([\d.]+)"/.exec(markup)![1]);

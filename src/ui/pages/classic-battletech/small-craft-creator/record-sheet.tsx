@@ -15,7 +15,7 @@ export default class SmallCraftCreatorRecordSheet extends React.Component<IRecor
 
         return (
             <PrintablePage backTo={`${process.env.PUBLIC_URL}/classic-battletech/small-craft-creator/summary`} appGlobals={this.props.appGlobals} requiredRulesLevel={craft.getRequiredRulesLevel()}>
-                <SmallCraftRecordSheet craft={craft} />
+                <SmallCraftRecordSheet craft={craft} showAlphaStrike={true} />
             </PrintablePage>
         );
     }
