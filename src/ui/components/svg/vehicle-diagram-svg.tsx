@@ -177,6 +177,8 @@ export default class VehicleDiagramSVG extends React.Component<IVehicleDiagramSV
         const a = this.props.armor;
         const width = this.props.width ?? 500;
         const height = 620;
+        // Placed at x, y inside a record sheet's own SVG rather than centred on the page.
+        const embedded = this.props.x !== undefined;
         const has = (tag: VehicleLocation) => this.props.locations.some((loc) => loc.tag === tag);
         const nameOf = (tag: VehicleLocation) => (this.props.locations.find((loc) => loc.tag === tag)?.name ?? tag).toUpperCase();
         const isChinTurret = has("turret") && this.props.motive.turret === "chin";
@@ -190,10 +192,12 @@ export default class VehicleDiagramSVG extends React.Component<IVehicleDiagramSV
 
         return (
             <svg
+                x={embedded ? this.props.x : undefined}
+                y={embedded ? this.props.y : undefined}
                 width={width}
                 height={Math.round(width / 500 * height)}
                 viewBox={`0 0 500 ${height}`}
-                style={{ display: "block", margin: "0 auto", maxWidth: "100%", height: "auto" }}
+                style={embedded ? undefined : { display: "block", margin: "0 auto", maxWidth: "100%", height: "auto" }}
             >
                 {this.renderOutline()}
                 <text x={496} y={14} fontSize={11} fontWeight="bold" textAnchor="end" fill="rgb(110,110,110)">{this.props.motive.name.toUpperCase()}</text>
@@ -244,6 +248,8 @@ interface IVehicleDiagramSVGProps {
     structure: IVehicleStructureAllocation;
     armor: IVehicleArmorAllocation;
     width?: number;
+    x?: number;
+    y?: number;
 }
 
 interface IVehicleDiagramSVGState {

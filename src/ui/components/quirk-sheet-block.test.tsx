@@ -40,7 +40,7 @@ describe("quirks on record sheets", () => {
         vehicle.quirks.add({ tag: "quirk-fast-reload", location: "front" });
         vehicle.quirks.add({ tag: "quirk-accurate-weapon", equipmentUuid: laser.uuid });
         const markup = renderToStaticMarkup(<VehicleRecordSheet vehicle={vehicle} />);
-        expect(markup).toContain("<h3>Quirks</h3><p>Rugged (1), Fast Reload (Front)</p>");
+        expect(markup).toContain("Quirks: Rugged (1), Fast Reload (Front)");
         expect(markup).toContain("Medium Laser [Accurate Weapon]");
     });
 

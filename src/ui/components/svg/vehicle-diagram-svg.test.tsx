@@ -31,6 +31,16 @@ describe("vehicle armor diagram (beta feedback 2026-10-21)", () => {
         expect(markup).toMatch(/<svg[^>]*style="display:block;margin:0 auto;max-width:100%;height:auto"/);
     });
 
+    it("sits at a given place inside a record sheet, without page styles", () => {
+        const vehicle = tank("tracked");
+        const markup = renderToStaticMarkup(
+            <VehicleDiagramSVG motive={vehicle.getMotiveType()} locations={vehicle.getLocations()}
+                structure={vehicle.getStructureAllocation()} armor={vehicle.getArmorAllocation()} width={460} x={1500} y={240} />
+        );
+        expect(markup).toMatch(/^<svg x="1500" y="240" width="460" height="570"/);
+        expect(markup).not.toContain("style=");
+    });
+
     it.each([
         ["tracked", "tracked"],
         ["wheeled", "wheeled"],

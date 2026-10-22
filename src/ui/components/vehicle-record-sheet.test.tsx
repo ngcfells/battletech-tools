@@ -16,7 +16,7 @@ describe("vehicle record sheet", () => {
         expect(renderToStaticMarkup(<VehicleRecordSheet vehicle={tank} />)).toContain("Large Laser (sponson)");
     });
 
-    it("prints ammunition in the Body, BD, with its shots, not as unallocated (TM p. 107)", () => {
+    it("prints ammunition on the sheet's Ammo line, with a box to track its shots (TM p. 107)", () => {
         const tank = new Vehicle();
         tank.setMotiveType("tracked");
         tank.setTonnage(60);
@@ -24,7 +24,7 @@ describe("vehicle record sheet", () => {
         tank.setEquipmentLocation(tank.getEquipmentList()[tank.getEquipmentList().length - 1].uuid!, "front");
         tank.addEquipmentFromTag("ammo-is-ac-5-standard");
         const markup = renderToStaticMarkup(<VehicleRecordSheet vehicle={tank} />);
-        expect(markup).toContain("<td>Body (BD)</td><td>AC/5 - Standard Ammo (IS) (20 shots)</td>");
-        expect(markup).toContain("<td>Unallocated</td><td>-</td>");
+        expect(markup).toContain("Ammo: (AC/5) 20");
+        expect(markup).toContain(">AC/5 - Standard Ammo (IS):<");
     });
 });

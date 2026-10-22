@@ -3886,6 +3886,11 @@ export default class Vehicle {
             ?? weapons.find((w) => getCompatibleAmmo(w, ammo));
     }
 
+    /** The weapon a bin feeds, for the sheet's Ammo line; undefined with no such weapon aboard. */
+    public getAmmoBinWeapon(ammo: IEquipmentItem): IEquipmentItem | undefined {
+        return ammo.isAmmo ? this._binWeapon(ammo) : undefined;
+    }
+
     // Shots in a full bin: the fed weapon's shots per ton times the bin's weight.
     private _fullBinShots(ammo: IEquipmentItem): number {
         const weapon = this._binWeapon(ammo);
