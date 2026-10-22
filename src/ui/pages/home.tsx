@@ -167,7 +167,7 @@ export default class Home extends React.Component<IHomeProps, IHomeState> {
                       <strong>October 22nd, 2026</strong> - Beta feedback and new record sheets for vehicles, fighters, Small Craft, DropShips, capital ships, battle armor, infantry, ProtoMechs, buildings, airships, satellites and <i>Battledroids</i> units
                     </h3>
                     <h4>Author - NGCFells</h4>
-                      <p>New on the <a href="https://ngcfells.github.io/battletech-tools" target="_blank" rel="noopener noreferrer">beta test site</a>, from your reports:</p>
+                      <p>New on the <a href="https://ngcfells.github.io/battletech-tools" target="_blank" rel="noopener noreferrer">beta test site</a> and offered to upstream</p>
                       <ul>
                         <li>Every builder asks for the era first, and the era decides which tech bases you can pick. The Clan tech base starts with the Clan Founding Years, not the Star League.</li>
                         <li>The equipment list shows only ammunition for the weapons you have mounted; tick "Show all ammunition" to see the rest. Ammunition sorts by weapon in every list.</li>
@@ -189,6 +189,7 @@ export default class Home extends React.Component<IHomeProps, IHomeState> {
                         <li>Anti-orbital Long Tom ammunition, a Custom round requested on the Star League Discord by SmilingNid: it fires surface-to-orbit under the Strategic Operations rules for 2 points of capital-scale damage, 3 shots a ton. The Federated Suns built it after Edo, with a prototype in 3055 and production from 3062.</li>
                         <li>The Hailstorm, the towed artillery piece from the <i>MechWarrior 5</i> games, at the Apocryphal rules level: 35 points out to 12 mapsheets, with the rounds the other tubes fire. It mounts only on a Support Vehicle trailer.</li>
                         <li>For games with space forces, a space turn tracker in Play Mode: tick "Space forces in this game" on the roster page. It counts the space turn (6 ground turns each), tracks each anti-orbital Long Tom shot from firing to the space phase, and reminds you of the rolls for firing early and for resolving each shot.</li>
+                        <li>New custom bimodal vehicle type has been added... the ArtVee or MAP(Mobile Artiller Platform). More details to follow shortly</li>
                       </ul>
                    </li>
                   <li>
