@@ -496,13 +496,14 @@ export default class ClassicBattleTechRosterPrint extends React.Component<IPrint
                         />
                       </div>
                   ))}
-                  {group.battleArmor.map( (squad) => (
-                      <div className={"page"} key={squad.getUUID()}>
+                  {/* Five battle armor squads to a page, as on the Total Warfare sheet. */}
+                  {Array.from({ length: Math.ceil(group.battleArmor.length / 5) }, (_, page) => group.battleArmor.slice(page * 5, page * 5 + 5)).map( (squads) => (
+                      <div className={"page"} key={squads[0].getUUID()}>
                         <RulesLevelStamp
-                          requiredRulesLevel={squad.getRequiredRulesLevel()}
+                          requiredRulesLevel={Math.max(...squads.map((squad) => squad.getRequiredRulesLevel()))}
                         />
                         <BattleArmorRecordSheet
-                          suit={squad}
+                          squads={squads}
                           showDamage={true}
                         />
                       </div>
