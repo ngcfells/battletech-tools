@@ -1,9 +1,13 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
+import { AlphaStrikeUnit } from "../../../classes/alpha-strike-unit";
 import { BattleMech } from "../../../classes/battlemech";
 import Vehicle from "../../../classes/vehicle";
+import type { IAppGlobals } from "../../app-router";
+import TrademarkNoticeParagraphs from "../trademark-notice";
+import AlphaStrikePrintUnitSVG from "./alpha-strike-print-unit";
 import BattleMechSVG from "./battlemech-svg";
-import { sheetFooter, TRADEMARK_NOTICE } from "./record-sheet-svg-kit";
+import { CARD_NOTICE, sheetFooter, TRADEMARK_NOTICE } from "./record-sheet-svg-kit";
 import VehicleRecordSheetSVG from "./vehicle-record-sheet-svg";
 
 // Rendered markup puts an apostrophe in as &#x27; and an ampersand as &amp;.
@@ -44,6 +48,24 @@ describe("record sheet trademark footer (user ruling 2026-10-22: the logo goes o
         const markup = text(renderToStaticMarkup(<VehicleRecordSheetSVG vehicle={new Vehicle()} />));
         expect(markup).toContain('data-testid="battletech-logo"');
         expect(markup).toContain(TOPPS);
+    });
+
+    it("prints the notice in full in a printed page's footer", () => {
+        const markup = text(renderToStaticMarkup(<TrademarkNoticeParagraphs />));
+        expect(markup).toContain(`<p>${TOPPS}</p>`);
+        expect(markup).toContain(`<p>${CGL}</p>`);
+        expect(markup).toContain("not published or endorsed by");
+    });
+
+    it("prints the short notice down an Alpha Strike card's edge, with permission", () => {
+        const unit = new AlphaStrikeUnit();
+        unit.name = "Atlas";
+        unit.type = "BM";
+        const appGlobals = { appSettings: {} } as unknown as IAppGlobals;
+        const markup = text(renderToStaticMarkup(<AlphaStrikePrintUnitSVG asUnit={unit} appGlobals={appGlobals} measurementsInHexes={false} />));
+        expect(CARD_NOTICE(year)).toBe(`© ${year} The Topps Company, Inc. All rights reserved. Used with permission.`);
+        expect(markup).toContain(CARD_NOTICE(year));
+        expect(markup).not.toContain("©2018");
     });
 
     it("prints the same notice on the 'Mech sheet, under its logo", () => {

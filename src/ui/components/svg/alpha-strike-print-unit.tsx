@@ -5,6 +5,7 @@ import { IASSpecialAbility } from '../../../data/alpha-strike-special-abilities'
 import { IAppGlobals } from '../../app-router';
 import { safeImageURL } from '../../../utils/safeImageURL';
 import BattleTechLogo from '../battletech-logo';
+import { CARD_NOTICE } from './record-sheet-svg-kit';
 import './alpha-strike-card-svg.scss';
 
 export default class AlphaStrikePrintUnitSVG extends React.Component<IAlphaStrikePrintUnitSVGProps, IAlphaStrikePrintUnitSVGState> {
@@ -568,7 +569,7 @@ export default class AlphaStrikePrintUnitSVG extends React.Component<IAlphaStrik
                     altColor='rgb(105,106,108)'
                 />
 
-                <text x="-450" y="1020" transform="rotate(-90)" fontSize="15" fill="rgb(0,0,0)">©2018 The Topps Company. All rights reserved.</text>
+                <text x="-450" y="1020" transform="rotate(-90)" fontSize="15" fill="rgb(0,0,0)">{CARD_NOTICE( new Date().getFullYear() )}</text>
 
                 </svg>
             </>

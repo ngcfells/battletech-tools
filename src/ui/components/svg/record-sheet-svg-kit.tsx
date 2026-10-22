@@ -125,7 +125,10 @@ export const TRADEMARK_NOTICE = (year: number): string[] => [
     "Catalyst Game Labs and the Catalyst Game Labs logo are trademarks of InMediaRes Productions, LLC. Used with permission.",
 ];
 
-export const NOT_ENDORSED = "This sheet is not published or endorsed by The Topps Company, Inc. or Catalyst Game Labs.";
+/** The notice down an Alpha Strike card's edge, where the full one will not fit; the printed page carries it in full. */
+export const CARD_NOTICE = (year: number): string => `© ${year} The Topps Company, Inc. All rights reserved. Used with permission.`;
+
+export const NOT_ENDORSED ="This sheet is not published or endorsed by The Topps Company, Inc. or Catalyst Game Labs.";
 
 /** Our footer: the BattleTech logo, the app's name and address, where the tables come from, and the trademark notice. */
 export const sheetFooter = (tablesCitation: string): JSX.Element => {

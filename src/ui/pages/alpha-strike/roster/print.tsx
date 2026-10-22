@@ -4,6 +4,7 @@ import { Link } from 'react-router';
 import { CONST_BATTLETECH_URL } from '../../../../configVars';
 import { IAppGlobals } from '../../../app-router';
 import BattleTechLogo from '../../../components/battletech-logo';
+import TrademarkNoticeParagraphs from '../../../components/trademark-notice';
 import AlphaStrikePilotCardSVG from '../../../components/svg/alpha-strike-pilot-card-svg';
 import AlphaStrikePrintUnitSVG from '../../../components/svg/alpha-strike-print-unit';
 import './print.scss';
@@ -261,7 +262,7 @@ export default class AlphaStrikeRosterPrint extends React.Component<IPrintProps,
                     />
               </div>
               <p>Printed using Jeff's BattleTech Tools IIC at https://{window.location.hostname}/battletech-tools/. Huge thanks to the Master Unit List</p>
-              <p>MechWarrior, BattleMech, ‘Mech and AeroTech are registered trademarks of The Topps Company, Inc. All Rights Reserved.</p>
+              <TrademarkNoticeParagraphs />
             </footer>
           </div>
 

@@ -3,6 +3,7 @@ import React, { type JSX } from 'react';
 import { Link } from 'react-router';
 import { IAppGlobals } from '../../../app-router';
 import BattleTechLogo from '../../../components/battletech-logo';
+import TrademarkNoticeParagraphs from '../../../components/trademark-notice';
 import './print.scss';
 import BattleMechSVG from "../../../components/svg/battlemech-svg";
 import { CONST_BATTLETECH_URL } from "../../../../configVars";
@@ -411,7 +412,7 @@ export default class ClassicBattleTechRosterPrint extends React.Component<IPrint
                 <BattleTechLogo />
               </div>
               <p>Printed using Jeff's BattleTech Tools IIC at https://{window.location.hostname}/battletech-tools/. Huge thanks to the Master Unit List</p>
-              <p>MechWarrior, BattleMech, ‘Mech and AeroTech are registered trademarks of The Topps Company, Inc. All Rights Reserved.</p>
+              <TrademarkNoticeParagraphs />
             </div>
           </div>
           {this.props.appGlobals.currentCBTForce.groups.map( (group, groupIndex) => {
@@ -553,7 +554,7 @@ export default class ClassicBattleTechRosterPrint extends React.Component<IPrint
                 <BattleTechLogo />
               </div>
               <p>Printed using Jeff's BattleTech Tools at https://heysporky.github.io/battletech-tools/. Huge thanks to the Master Unit List</p>
-              <p>MechWarrior, BattleMech, ‘Mech and AeroTech are registered trademarks of The Topps Company, Inc. All Rights Reserved.</p>
+              <TrademarkNoticeParagraphs />
             </footer> */}
             {/* <header className="print-header">&nbsp;</header> */}
 
