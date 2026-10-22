@@ -6,8 +6,11 @@ import { canonMechQuirks } from "./quirks-canon-mechs";
 /** A chassis name to match on: case, apostrophes and spacing ignored. */
 const chassisKey = (value: string): string => value.toLowerCase().replace(/['’]/g, "").replace(/\s+/g, " ").trim();
 
-/** A weapon name to match on: case, spacing, hyphens and a plural "s" ignored ("Medium Lasers" is a Medium Laser). */
-const weaponKey = (value: string): string => value.toLowerCase().replace(/[\s-]+/g, "").replace(/s$/, "");
+/** A weapon name to match on: case, spacing and hyphens ignored. */
+const weaponKey = (value: string): string => value.toLowerCase().replace(/[\s-]+/g, "");
+
+/** The same name, or one the other's plural ("Medium Lasers" is a Medium Laser). */
+const isWeaponPlural = (a: string, b: string): boolean => a === `${b}s` || b === `${a}s`;
 
 /** The canon entry for a chassis, by its name or another name it goes by. */
 export const findCanonEntry = (chassis: string, entries: ICanonQuirkEntry[] = canonMechQuirks): ICanonQuirkEntry | undefined => {
@@ -49,10 +52,14 @@ export const resolveCanonQuirks = (entry: ICanonQuirkEntry, unit: {
         if (canon.toYear !== undefined) base.toYear = canon.toYear;
         if (canon.weapon) {
             const wanted = weaponKey(canon.weapon.name);
-            const matches = unit.targets.weapons.filter((weapon) => {
+            // An exact name first; a plural only when no weapon has the exact name, so "X" and "Xs" stay apart.
+            const located = unit.targets.weapons.filter((weapon) => {
                 const info = unit.weaponInfo(weapon.uuid);
-                return info && weaponKey(info.name) === wanted && (!canon.weapon!.location || info.location === canon.weapon!.location);
+                return info && (!canon.weapon!.location || info.location === canon.weapon!.location);
             });
+            const nameOf = (uuid: string): string => weaponKey(unit.weaponInfo(uuid)!.name);
+            const exact = located.filter((weapon) => nameOf(weapon.uuid) === wanted);
+            const matches = exact.length ? exact : located.filter((weapon) => isWeaponPlural(nameOf(weapon.uuid), wanted));
             if (!matches.length) {
                 const where = canon.weapon.location ? ` in the ${canon.weapon.location.toUpperCase()}` : "";
                 notes.push(`${record.name}: no ${canon.weapon.name}${where} on this 'Mech, not applied`);

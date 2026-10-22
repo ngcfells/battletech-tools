@@ -34,6 +34,20 @@ describe("findCanonEntry", () => {
 });
 
 describe("resolveCanonQuirks", () => {
+    // A final "s" is dropped only to read a plural; two names that differ by one stay apart (final review).
+    it("does not merge two weapons whose names differ only by a final s", () => {
+        const pair: Record<string, { name: string; location?: string }> = { a: { name: "Thunder", location: "ra" }, b: { name: "Thunders", location: "ra" } };
+        const pairUnit = {
+            targets: { ...targets, weapons: Object.keys(pair).map((uuid) => ({ uuid, label: pair[uuid].name, maxDamage: 5 })) },
+            weaponInfo: (uuid: string) => pair[uuid],
+            clan: false,
+        };
+        expect(resolveCanonQuirks(entry([{ tag: "quirk-stabilized-weapon", weapon: { name: "Thunder", all: true } }]), pairUnit).quirks)
+            .toEqual([{ tag: "quirk-stabilized-weapon", equipmentUuid: "a" }]);
+        expect(resolveCanonQuirks(entry([{ tag: "quirk-stabilized-weapon", weapon: { name: "Thunders", all: true } }]), pairUnit).quirks)
+            .toEqual([{ tag: "quirk-stabilized-weapon", equipmentUuid: "b" }]);
+    });
+
     it("puts a weapon quirk on every matching weapon in the location, and notes what it cannot place", () => {
         const result = resolveCanonQuirks(entry([
             { tag: "quirk-stabilized-weapon", weapon: { name: "Medium Lasers", location: "ct", all: true } },
