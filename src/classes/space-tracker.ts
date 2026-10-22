@@ -1,10 +1,12 @@
 import { ammoCustom } from "../data/ammo-custom";
 import { getComboArtillery } from "../data/artillery-custom";
 import { IEquipmentItem } from "../data/data-interfaces";
-import { equipmentMatchesIdentifier, getCompatibleAmmo, getWeaponShotsPerTon } from "../data/equipment-registry";
+import { equipmentMatchesIdentifier, getCompatibleAmmo } from "../data/equipment-registry";
 import { generateUUID } from "../utils/generateUUID";
 import { EarlyFireResult, getCooldownGroundTurns, getEarlyFireResult, getSpaceTurn, MISFIRE_REMINDER } from "../utils/space-turn";
+import type { BattleMech } from "./battlemech";
 import type { BattleMechForce } from "./battlemech-force";
+import type Building from "./building";
 import type Vehicle from "./vehicle";
 
 /*
@@ -42,29 +44,37 @@ export interface IAntiOrbitalGun {
     /** The unit's anti-orbital bins. */
     bins: IEquipmentItem[];
     shotsLeft: number;
-    /** Set for a vehicle, whose sheet tracks destroyed weapons. */
-    vehicle?: Vehicle;
+    /** The unit, whose own play state counts its shots and its destroyed weapons. */
+    unit: IGunUnit;
 }
+
+/** The unit a gun is on: each kind counts its shots and destroyed weapons its own way. */
+export type IGunUnit = { kind: "mech"; mech: BattleMech } | { kind: "vehicle"; vehicle: Vehicle } | { kind: "building"; building: Building };
 
 export type FireResult =
     | { result: "fired"; shot: IAntiOrbitalShot }
     | { result: "needs-roll"; cooldown: number }
     | { result: "misfire"; reminder: string }
-    | { result: "destroyed" }
+    | { result: "destroyed"; reminder: string }
     | { result: "refused"; reason: string };
 
 const antiOrbitalRound = (): IEquipmentItem | undefined => ammoCustom.find((item) => item.tag === ANTI_ORBITAL_AMMO_TAG);
 
-const binCapacity = (piece: IEquipmentItem, bin: IEquipmentItem): number =>
-    Math.floor(getWeaponShotsPerTon(piece, bin) * (bin.weight || 1) + 1e-6);
-
-// As BattleMech.getAmmoBinRemaining: an untouched bin is full.
-const binShotsLeft = (piece: IEquipmentItem, bin: IEquipmentItem): number => {
-    const capacity = binCapacity(piece, bin);
+// Shots left in a bin, read the way the unit's own play panel reads them.
+const binShotsLeft = (unit: IGunUnit, bin: IEquipmentItem): number => {
+    if (unit.kind === "building") return unit.building.getAmmoShots(bin.uuid ?? "");
+    if (unit.kind === "mech") return unit.mech.getAmmoBinRemaining(bin);
+    const capacity = unit.vehicle.getAmmoBinShots(bin);
     return typeof bin.currentAmmo === "number" && bin.currentAmmo >= 0 ? Math.min(bin.currentAmmo, capacity) : capacity;
 };
 
-const gunsOn = (unitUuid: string, unitName: string, equipment: IEquipmentItem[], vehicle?: Vehicle): IAntiOrbitalGun[] => {
+const setBinShotsLeft = (unit: IGunUnit, bin: IEquipmentItem, shots: number): void => {
+    if (unit.kind === "building") unit.building.setAmmoShots(bin.uuid ?? "", shots);
+    else bin.currentAmmo = shots;
+};
+
+const gunsOn = (unitUuid: string, unitName: string, equipment: IEquipmentItem[], unit: IGunUnit): IAntiOrbitalGun[] => {
+    const vehicle = unit.kind === "vehicle" ? unit.vehicle : undefined;
     const round = antiOrbitalRound();
     if (!round) return [];
     const bins = equipment.filter((item) => item.isAmmo && equipmentMatchesIdentifier(item, ANTI_ORBITAL_AMMO_TAG));
@@ -77,8 +87,8 @@ const gunsOn = (unitUuid: string, unitName: string, equipment: IEquipmentItem[],
         const piece = combo ?? weapon;
         if (!getCompatibleAmmo(piece, round)) continue;
         guns.push({
-            key: `${unitUuid}:${weapon.uuid ?? weapon.tag}`, unitUuid, unitName, weapon, piece, bins, vehicle,
-            shotsLeft: bins.reduce((total, bin) => total + binShotsLeft(piece, bin), 0),
+            key: `${unitUuid}:${weapon.uuid ?? weapon.tag}`, unitUuid, unitName, weapon, piece, bins, unit,
+            shotsLeft: bins.reduce((total, bin) => total + binShotsLeft(unit, bin), 0),
         });
     }
     return guns;
@@ -88,9 +98,11 @@ const gunsOn = (unitUuid: string, unitName: string, equipment: IEquipmentItem[],
 export function findAntiOrbitalGuns(force: BattleMechForce): IAntiOrbitalGun[] {
     const guns: IAntiOrbitalGun[] = [];
     for (const group of force.groups) {
-        for (const mech of group.members) guns.push(...gunsOn(mech.uuid, mech.getName(), mech.equipmentList));
-        for (const vehicle of group.vehicles) guns.push(...gunsOn(vehicle.getUUID(), vehicle.getName(), vehicle.getEquipmentList(), vehicle));
-        for (const building of group.buildings) guns.push(...gunsOn(building.getUUID(), building.getName(), building.getEquipment().map((mount) => mount.item)));
+        for (const mech of group.members) guns.push(...gunsOn(mech.uuid, mech.getName(), mech.equipmentList, { kind: "mech", mech }));
+        for (const vehicle of group.vehicles) guns.push(...gunsOn(vehicle.getUUID(), vehicle.getName(), vehicle.getEquipmentList(), { kind: "vehicle", vehicle }));
+        for (const building of group.buildings) {
+            guns.push(...gunsOn(building.getUUID(), building.getName(), building.getEquipment().map((mount) => mount.item), { kind: "building", building }));
+        }
     }
     return guns;
 }
@@ -159,7 +171,10 @@ export class SpaceTracker {
     }
 
     public isGunDestroyed(gun: IAntiOrbitalGun): boolean {
-        return this.destroyedGuns.includes(gun.key) || gun.vehicle?.getWeaponStatus(gun.weapon.uuid) === "destroyed";
+        if (this.destroyedGuns.includes(gun.key)) return true;
+        if (gun.unit.kind === "vehicle") return gun.unit.vehicle.getWeaponStatus(gun.weapon.uuid) === "destroyed";
+        if (gun.unit.kind === "building") return gun.unit.building.isMountDestroyed(gun.weapon.uuid ?? "");
+        return false;
     }
 
     /** Ground turns before the gun may safely fire any round again; 0 when it may now. */
@@ -186,8 +201,7 @@ export class SpaceTracker {
         }
         this._spendShot(gun);
         if (early === "destroyed") {
-            this._destroy(gun);
-            return { result: "destroyed" };
+            return { result: "destroyed", reminder: this._destroy(gun) };
         }
         const spaceTurn = getSpaceTurn(groundTurn);
         this.lastFired[gun.key] = spaceTurn;
@@ -215,15 +229,20 @@ export class SpaceTracker {
     }
 
     private _spendShot(gun: IAntiOrbitalGun): void {
-        const bin = gun.bins.find((item) => binShotsLeft(gun.piece, item) > 0);
+        const bin = gun.bins.find((item) => binShotsLeft(gun.unit, item) > 0);
         if (!bin) return;
-        bin.currentAmmo = binShotsLeft(gun.piece, bin) - 1;
+        setBinShotsLeft(gun.unit, bin, binShotsLeft(gun.unit, bin) - 1);
         gun.shotsLeft = Math.max(0, gun.shotsLeft - 1);
     }
 
-    private _destroy(gun: IAntiOrbitalGun): void {
+    // Marks the gun destroyed on the unit's own sheet where play mode tracks it; returns what to tell the player.
+    private _destroy(gun: IAntiOrbitalGun): string {
         if (!this.destroyedGuns.includes(gun.key) && this.destroyedGuns.length < MAX_TRACKED_GUNS) this.destroyedGuns.push(gun.key);
-        if (gun.vehicle && gun.weapon.uuid) gun.vehicle.setWeaponStatus(gun.weapon.uuid, "destroyed");
+        const failure = "Catastrophic failure: the gun is destroyed, inoperable for the rest of the game, and the round is lost.";
+        if (gun.unit.kind === "vehicle" && gun.weapon.uuid) gun.unit.vehicle.setWeaponStatus(gun.weapon.uuid, "destroyed");
+        else if (gun.unit.kind === "building" && gun.weapon.uuid) gun.unit.building.setMountDestroyed(gun.weapon.uuid, true);
+        else return `${failure} Mark the weapon destroyed on the 'Mech's record sheet.`;
+        return failure;
     }
 
     /** Shots fired in an earlier space turn than this ground turn's: resolved at the start of this space turn. */

@@ -3892,17 +3892,24 @@ export default class Vehicle {
         return ammo.isAmmo ? this._binWeapon(ammo) : undefined;
     }
 
+    // Shots in a ton of a bin for the weapon it feeds. An ArtVee combo gun's artillery ammunition counts as its
+    // artillery piece's, so a special round's own shots a ton (3 anti-orbital rounds against 5 standard) carry over.
+    private _binShotsPerTon(weapon: IEquipmentItem, ammo: IEquipmentItem): number {
+        const piece = getComboArtillery(weapon);
+        return getWeaponShotsPerTon(piece && getCompatibleAmmo(piece, ammo) ? piece : weapon, ammo);
+    }
+
     // Shots in a full bin: the fed weapon's shots per ton times the bin's weight.
     private _fullBinShots(ammo: IEquipmentItem): number {
         const weapon = this._binWeapon(ammo);
-        return weapon ? Math.floor(getWeaponShotsPerTon(weapon, ammo) * (ammo.weight || 0) + 1e-6) : 0;
+        return weapon ? Math.floor(this._binShotsPerTon(weapon, ammo) * (ammo.weight || 0) + 1e-6) : 0;
     }
 
     /** Shots in one full ton of a bin's ammunition, for the weapon it feeds; 0 with no such weapon aboard. */
     public getAmmoBinShotsPerTon(ammo: IEquipmentItem): number {
         if (!ammo.isAmmo) return 0;
         const weapon = this._binWeapon(ammo);
-        return weapon ? getWeaponShotsPerTon(weapon, ammo) : 0;
+        return weapon ? this._binShotsPerTon(weapon, ammo) : 0;
     }
 
     /** Shots a bin holds as bought. */

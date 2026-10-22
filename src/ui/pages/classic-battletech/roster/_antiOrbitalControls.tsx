@@ -36,7 +36,7 @@ function GunRow(props: { force: BattleMechForce; gun: IAntiOrbitalGun; onChange:
             case "fired": set({ message: `Fired at hex ${result.shot.aimedHex}. It is resolved in the next space turn.`, roll: "" }); break;
             case "needs-roll": set({ message: `Firing before the next space turn is unsafe. Enter the 2D6 roll, then fire again.` }); break;
             case "misfire": set({ message: result.reminder, roll: "" }); break;
-            case "destroyed": set({ message: "", roll: "" }); break;
+            case "destroyed": set({ message: result.reminder, roll: "" }); break;
             case "refused": set({ message: result.reason }); break;
         }
         props.onChange();

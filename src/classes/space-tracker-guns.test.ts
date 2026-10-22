@@ -86,6 +86,62 @@ describe("anti-orbital guns", () => {
     });
 });
 
+describe("each unit's own shot count (final review 2026-10-22)", () => {
+    const castle = () => {
+        const building = new Building();
+        building.setClassification("castles-brian");
+        const gun = building.addEquipmentFromTag("long-tom-artillery")!;
+        const bin = building.addEquipmentFromTag(ANTI_ORBITAL_AMMO_TAG)!;
+        return { building, gun, bin };
+    };
+
+    it("spends a building's round in its own count, and it stays spent after a reload", () => {
+        const { building, bin } = castle();
+        const force = forceWith(building);
+        expect(force.spaceTracker.fire(onlyGun(force), "0712", "", 2).result).toBe("fired");
+        expect(building.getAmmoShots(bin.item.uuid!)).toBe(2);
+        const back = new BattleMechForce(JSON.parse(JSON.stringify(force.export())));
+        expect(onlyGun(back).shotsLeft).toBe(2);
+    });
+
+    it("counts a building's Long Tom destroyed in play, and marks it destroyed on an early 2-4", () => {
+        const first = castle();
+        first.building.setMountDestroyed(first.gun.item.uuid!, true);
+        const force = forceWith(first.building);
+        expect(force.spaceTracker.isGunDestroyed(onlyGun(force))).toBe(true);
+
+        const second = castle();
+        const other = forceWith(second.building);
+        other.spaceTracker.fire(onlyGun(other), "0712", "", 2);
+        expect(other.spaceTracker.rollEarlyFireForOtherRound(onlyGun(other), 2)).toBe("destroyed");
+        expect(second.building.isMountDestroyed(second.gun.item.uuid!)).toBe(true);
+    });
+
+    it("gives an ArtVee's bin 3 shots in Siege Mode, as the vehicle counts it too", () => {
+        const artVee = longTomArtVee();
+        artVee.startArtVeeTransformation();
+        artVee.turnReset();
+        const force = forceWith(artVee);
+        const bin = artVee.getEquipmentList().find((item) => item.tag === ANTI_ORBITAL_AMMO_TAG)!;
+        expect(artVee.getAmmoBinShots(bin)).toBe(3);
+        force.spaceTracker.fire(onlyGun(force), "0712", "", 2);
+        expect(bin.currentAmmo).toBe(2);
+        expect(onlyGun(force).shotsLeft).toBe(2);
+    });
+
+    it("tells the player to mark a 'Mech's Long Tom destroyed on its sheet", () => {
+        const mech = new BattleMech();
+        mech.setTech("is");
+        mech.setTonnage(100);
+        mech.addEquipmentFromTag("long-tom-artillery", "is", "rt", false, null, "", false, [], undefined, undefined);
+        mech.addEquipmentFromTag(ANTI_ORBITAL_AMMO_TAG, "is", "lt", false, null, "", false, [], undefined, undefined, -1, "", true);
+        const force = forceWith(mech);
+        force.spaceTracker.fire(onlyGun(force), "0712", "", 2);
+        const result = force.spaceTracker.fire(onlyGun(force), "0712", "", 3, 2);
+        expect(result.result === "destroyed" && result.reminder).toMatch(/record sheet/);
+    });
+});
+
 describe("firing", () => {
     const setup = () => {
         const vehicle = longTomTank();
