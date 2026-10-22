@@ -8,6 +8,7 @@ import InfantryCreatorSideMenu from '../../../components/infantry-creator-side-m
 import InputField from "../../../components/form_elements/input_field";
 import RulesEditionSelect from '../../../components/rules-edition-select';
 import RulesLevelSelect from '../../../components/rules-level-select';
+import { chooseEraByTechBase, getEraChoices, getTechChoices } from '../../../../data/era-choice';
 import TextSection from '../../../components/text-section';
 import UIPage from '../../../components/ui-page';
 const ArrowCircleRight = FaArrowCircleRight as any;
@@ -57,6 +58,19 @@ export default class InfantryCreatorPlatoon extends React.Component<IPlatoonProp
                             {/* The rules edition comes first: it decides what every field below offers. */}
                             <RulesEditionSelect unitType="infantry" value={platoon.getRulesEdition()} onChange={(tag) => this.update((p) => p.setRulesEdition(tag))} />
                             <RulesLevelSelect editionTag={platoon.getRulesEdition()} value={rulesLevel} onChange={this.updateRulesLevel} />
+                            {/* The era comes next and decides the tech base (user ruling 2026-10-21). */}
+                            <label>
+                                Era:
+                                <select value={platoon.getEra().tag} onChange={(e) => { const value = e.currentTarget.value; this.update((p) => chooseEraByTechBase(p, value)); }}>
+                                    {getEraChoices(["is", "clan"]).map((option) => (
+                                        <option key={option.tag} value={option.tag}>{option.name}</option>
+                                    ))}
+                                </select>
+                            </label>
+                            <p className="smaller-text">
+                                The weapons step offers what was in production in this era (TM pp. 298-301).
+                                {platoon.getEra().description ? ` ${platoon.getEra().description}` : ""}
+                            </p>
                             <InputField
                                 label="Platoon Name (e.g. Laser Rifle Platoon, Third Crucis Lancers)"
                                 value={platoon.getName()}
@@ -81,24 +95,13 @@ export default class InfantryCreatorPlatoon extends React.Component<IPlatoonProp
                             <label>
                                 Technology Base:
                                 <select value={platoon.getTechBase()} onChange={(e) => { const value = e.currentTarget.value; this.update((p) => p.setTechBase(value === "clan" ? "clan" : "is")); }}>
-                                    <option value="is">Inner Sphere</option>
-                                    <option value="clan">Clan</option>
-                                </select>
-                            </label>
-
-
-                            <label>
-                                Era:
-                                <select value={platoon.getEra().tag} onChange={(e) => { const value = e.currentTarget.value; this.update((p) => p.setEra(value)); }}>
-                                    {platoon.getAvailableEras().map((option) => (
-                                        <option key={option.tag} value={option.tag}>{option.name}</option>
+                                    {getTechChoices(platoon.getEra(), ["is", "clan"]).map((tag) => (
+                                        <option key={tag} value={tag}>{tag === "clan" ? "Clan" : "Inner Sphere"}</option>
                                     ))}
                                 </select>
                             </label>
-                            <p className="smaller-text">
-                                The weapons step offers what was in production in this era (TM pp. 298-301).
-                                {platoon.getEra().description ? ` ${platoon.getEra().description}` : ""}
-                            </p>
+
+
 
                             <label>
                                 Affiliation:

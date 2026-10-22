@@ -10,6 +10,7 @@ import BattleArmorCreatorSideMenu from '../../../components/battle-armor-creator
 import InputField from "../../../components/form_elements/input_field";
 import RulesEditionSelect from '../../../components/rules-edition-select';
 import RulesLevelSelect from '../../../components/rules-level-select';
+import { chooseEraByTechBase, getEraChoices, getTechChoices } from '../../../../data/era-choice';
 import TextSection from '../../../components/text-section';
 import UIPage from '../../../components/ui-page';
 import BattleArmorStatusBar from './_statusBar';
@@ -62,6 +63,15 @@ export default class BattleArmorCreatorChassis extends React.Component<IChassisP
                             {/* The rules edition comes first: it decides what every field below offers. */}
                             <RulesEditionSelect unitType="battle-armor" value={suit.getRulesEdition()} onChange={(tag) => this.update((s) => s.setRulesEdition(tag))} />
                             <RulesLevelSelect editionTag={suit.getRulesEdition()} value={rulesLevel} onChange={this.updateRulesLevel} />
+                            {/* The era comes next and decides the tech base (user ruling 2026-10-21). */}
+                            <label>
+                                Era:
+                                <select data-testid="ba-era" value={suit.getEra().tag} onChange={(e) => { const value = e.currentTarget.value; this.update((s) => chooseEraByTechBase(s, value)); }}>
+                                    {getEraChoices(["is", "clan"]).map((option) => (
+                                        <option key={option.tag} value={option.tag}>{option.name}</option>
+                                    ))}
+                                </select>
+                            </label>
                             <InputField
                                 label="Name (e.g. Elemental, Purifier Adaptive Battle Armor)"
                                 value={suit.getName()}
@@ -70,11 +80,12 @@ export default class BattleArmorCreatorChassis extends React.Component<IChassisP
                             <label>
                                 Technology Base:
                                 <select data-testid="ba-tech-base" value={suit.getTechBase()} onChange={(e) => { const value = e.currentTarget.value; this.update((s) => s.setTechBase(value === "clan" ? "clan" : "is")); }}>
-                                    <option value="is">Inner Sphere</option>
-                                    <option value="clan">Clan</option>
+                                    {getTechChoices(suit.getEra(), ["is", "clan"]).map((tag) => (
+                                        <option key={tag} value={tag}>{tag === "clan" ? "Clan" : "Inner Sphere"}</option>
+                                    ))}
                                 </select>
                             </label>
-                            {rulesLevel >= 3 || suit.isMixedTech() ? (
+                            {(rulesLevel >= 3 && getTechChoices(suit.getEra(), ["mis", "mclan"]).length > 0) || suit.isMixedTech() ? (
                                 <label>
                                     <input type="checkbox" data-testid="ba-mixed-tech" checked={suit.isMixedTech()} onChange={(e) => { const value = e.currentTarget.checked; this.update((s) => s.setMixedTech(value)); }} />
                                     &nbsp;Mixed technology: the chassis above, with armor and equipment of either technology base (Advanced; TO:AUE p. 189)
@@ -86,14 +97,6 @@ export default class BattleArmorCreatorChassis extends React.Component<IChassisP
                                     &nbsp;Automata: a robot on the Clan chassis weight, run by an Automata Core in place of a trooper (Experimental; Ghosts of Obeedah p. 51)
                                 </label>
                             ) : null}
-                            <label>
-                                Era:
-                                <select data-testid="ba-era" value={suit.getEra().tag} onChange={(e) => { const value = e.currentTarget.value; this.update((s) => s.setEra(value)); }}>
-                                    {suit.getAvailableEras().map((option) => (
-                                        <option key={option.tag} value={option.tag}>{option.name}</option>
-                                    ))}
-                                </select>
-                            </label>
                             <label>
                                 Weight Class:
                                 <select data-testid="ba-weight-class" value={weightClass.tag} onChange={(e) => { const value = e.currentTarget.value; this.update((s) => s.setWeightClass(value)); }}>

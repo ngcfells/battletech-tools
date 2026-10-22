@@ -4,6 +4,7 @@ import { FaArrowCircleRight } from "react-icons/fa";
 import SmallCraft from '../../../../classes/small-craft';
 import { SMALL_CRAFT_MAX_TONNAGE, SMALL_CRAFT_MIN_TONNAGE, SMALL_CRAFT_SHAPES, SMALL_CRAFT_TONNAGE_STEP } from '../../../../data/small-craft-construction';
 import { btTechOptions } from '../../../../data/tech-options';
+import { chooseEra, getEraChoices, getTechChoices } from '../../../../data/era-choice';
 import { IAppGlobals } from '../../../app-router';
 import InputField from "../../../components/form_elements/input_field";
 import InputNumeric from "../../../components/form_elements/input_numeric";
@@ -59,6 +60,16 @@ export default class SmallCraftCreatorChassis extends React.Component<IChassisPr
                             {/* The rules edition comes first: it decides what every field below offers. */}
                             <RulesEditionSelect unitType="small-craft" value={craft.getRulesEdition()} onChange={(tag) => this.update((c) => c.setRulesEdition(tag))} />
                             <RulesLevelSelect editionTag={craft.getRulesEdition()} value={rulesLevel} onChange={this.updateRulesLevel} />
+                            {/* The era comes next and decides the tech bases offered below (user ruling 2026-10-21). */}
+                            <label>
+                                Era:
+                                <select value={craft.getEra().tag} onChange={(e) => { const value = e.currentTarget.value; this.update((c) => chooseEra(c, value)); }}>
+                                    {getEraChoices(btTechOptions.map((option) => option.tag)).map((option) => (
+                                        <option key={option.tag} value={option.tag}>{option.name}</option>
+                                    ))}
+                                </select>
+                            </label>
+                            {craft.getEra().description ? <p className="smaller-text">{craft.getEra().description}</p> : null}
                             <InputField
                                 label="Model # (e.g. LC-100)"
                                 value={craft.getModel()}
@@ -104,22 +115,13 @@ export default class SmallCraftCreatorChassis extends React.Component<IChassisPr
                             <label>
                                 Technology Base:
                                 <select value={craft.getTech().tag} onChange={(e) => { const value = e.currentTarget.value; this.update((c) => c.setTech(value)); }}>
-                                    {btTechOptions.map((option) => (
+                                    {btTechOptions.filter((option) => getTechChoices(craft.getEra(), [option.tag]).length > 0).map((option) => (
                                         <option key={option.tag} value={option.tag}>{option.name}</option>
                                     ))}
                                 </select>
                             </label>
 
 
-                            <label>
-                                Era:
-                                <select value={craft.getEra().tag} onChange={(e) => { const value = e.currentTarget.value; this.update((c) => c.setEra(value)); }}>
-                                    {craft.getAvailableEras().map((option) => (
-                                        <option key={option.tag} value={option.tag}>{option.name}</option>
-                                    ))}
-                                </select>
-                            </label>
-                            {craft.getEra().description ? <p className="smaller-text">{craft.getEra().description}</p> : null}
 
                             <label>
                                 Tonnage:

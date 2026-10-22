@@ -123,7 +123,7 @@ describe("getEraForYear (SSW import sets the design's era from its year)", () =>
 	it("picks the tech base's era containing the year", () => {
 		expect(getEraForYear(2867, "clan")?.tag).toBe("clan-golden-years");
 		expect(getEraForYear(2867, "is")?.tag).toBe("early-sw");
-		expect(getEraForYear(2750, "clan")?.tag).toBe("star-league");
+		expect(getEraForYear(2750, "clan")?.tag).toBe("clan-founding-years");
 		expect(getEraForYear(3055, "clan")?.tag).toBe("clan-inv");
 	});
 	it("uses the next era when the year falls in a gap, and the latest after the last", () => {

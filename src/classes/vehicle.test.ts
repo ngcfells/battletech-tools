@@ -576,30 +576,32 @@ describe("Vehicle era availability", () => {
             vehicle(tech, era).getAvailableArmorTypes().find((armor) => armor.tag === "ferro-fibrous");
         expect(ferro("is", "late-sw-lt")?.available).toBe(false);
         expect(ferro("clan", "clan-golden-years")?.available).toBe(true);
-        // Star League Ferro-Fibrous carries over to Clan designs until Clan production, at the IS armor factor.
-        expect(ferro("clan", "star-league")?.available).toBe(true);
+        // Clan designs start in the Founding Years (user ruling 2026-10-21), with Clan Ferro-Fibrous in production.
+        expect(ferro("clan", "clan-founding-years")?.available).toBe(true);
     });
 
     it("uses the Clan dates for Clan engines", () => {
         const engine = (tech: string, era: string, tag: string) =>
             vehicle(tech, era).getAvailableEngineTypes().find((option) => option.tag === tag);
         expect(engine("clan", "clan-golden-years", "clan_xl")?.available).toBe(true);
-        expect(engine("clan", "star-league", "clan_xl")?.available).toBe(false);
         expect(engine("is", "clan-inv", "clan_xl")).toBeUndefined();
         expect(engine("clan", "clan-inv", "xl")?.available).toBe(false);
     });
 });
 
-describe("Vehicle Clan Star League carry-over", () => {
-    it("rates Ferro-Fibrous at the IS factor until Clan production (2825)", () => {
-        const pointsPerTon = (era: string) => {
-            const created = new Vehicle();
-            created.setTech("clan");
-            created.setEra(era);
-            created.setArmorType("ferro-fibrous");
-            return created.getArmorPointsPerTon();
-        };
-        expect(pointsPerTon("star-league")).toBeLessThan(pointsPerTon("clan-golden-years"));
+// Clan designs start in the Clan Founding Years (user ruling 2026-10-21), where Clan Ferro-Fibrous is in production.
+describe("Vehicle Clan tech from the first Clan era", () => {
+    it("cannot build a Clan design in the Star League era, and rates Ferro-Fibrous at the Clan factor", () => {
+        const created = new Vehicle();
+        created.setTech("clan");
+        created.setEra("star-league");
+        expect(created.getEra().tag).toBe("clan-founding-years");
+        created.setArmorType("ferro-fibrous");
+        const inner = new Vehicle();
+        inner.setTech("is");
+        inner.setEra("star-league");
+        inner.setArmorType("ferro-fibrous");
+        expect(created.getArmorPointsPerTon()).toBeGreaterThan(inner.getArmorPointsPerTon());
     });
 });
 

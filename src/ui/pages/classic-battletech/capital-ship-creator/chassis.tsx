@@ -4,6 +4,7 @@ import { FaArrowCircleRight } from "react-icons/fa";
 import CapitalShip, { MAX_CAPITAL_SHIP_SAFE_THRUST } from '../../../../classes/capital-ship';
 import { advancedAerospaceTypes } from '../../../../data/advanced-aerospace-construction';
 import { btTechOptions } from '../../../../data/tech-options';
+import { chooseEra, getEraChoices, getTechChoices } from '../../../../data/era-choice';
 import { CUSTOM_HOMEBREW_RULES_LEVEL, getRulesLevelOptions } from '../../../../data/rules-level-options';
 import { IAppGlobals } from '../../../app-router';
 import InputField from "../../../components/form_elements/input_field";
@@ -56,6 +57,19 @@ export default class CapitalShipCreatorChassis extends React.Component<IChassisP
                         <TextSection label="Step 1: Design the Hull">
                             {/* The rules edition comes first: it decides what every field below offers. */}
                             <RulesEditionSelect unitType="capital-ship" value={ship.getRulesEdition()} onChange={(tag) => this.update((s) => s.setRulesEdition(tag))} />
+                            <label>
+                                Rules Level:
+                                <select value={rulesLevel} onChange={this.updateRulesLevel}>
+                                    {getRulesLevelOptions().map((option) => <option key={option.id} value={option.id}>{option.name}</option>)}
+                                </select>
+                            </label>
+                            {/* The era comes next and decides the tech bases offered below (user ruling 2026-10-21). */}
+                            <label>
+                                Era:
+                                <select value={ship.getEra().tag} onChange={(e) => { const value = e.currentTarget.value; this.update((s) => chooseEra(s, value)); }}>
+                                    {getEraChoices(btTechOptions.map((option) => option.tag)).map((option) => <option key={option.tag} value={option.tag}>{option.name}</option>)}
+                                </select>
+                            </label>
                             <InputField
                                 label="Class (e.g. McKenna)"
                                 value={ship.getName()}
@@ -92,19 +106,7 @@ export default class CapitalShipCreatorChassis extends React.Component<IChassisP
                             <label>
                                 Technology Base:
                                 <select value={ship.getTech().tag} onChange={(e) => { const value = e.currentTarget.value; this.update((s) => s.setTech(value)); }}>
-                                    {btTechOptions.map((option) => <option key={option.tag} value={option.tag}>{option.name}</option>)}
-                                </select>
-                            </label>
-                            <label>
-                                Rules Level:
-                                <select value={rulesLevel} onChange={this.updateRulesLevel}>
-                                    {getRulesLevelOptions().map((option) => <option key={option.id} value={option.id}>{option.name}</option>)}
-                                </select>
-                            </label>
-                            <label>
-                                Era:
-                                <select value={ship.getEra().tag} onChange={(e) => { const value = e.currentTarget.value; this.update((s) => s.setEra(value)); }}>
-                                    {ship.getAvailableEras().map((option) => <option key={option.tag} value={option.tag}>{option.name}</option>)}
+                                    {btTechOptions.filter((option) => getTechChoices(ship.getEra(), [option.tag]).length > 0).map((option) => <option key={option.tag} value={option.tag}>{option.name}</option>)}
                                 </select>
                             </label>
                             <label>

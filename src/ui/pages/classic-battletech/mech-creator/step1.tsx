@@ -11,6 +11,7 @@ import { buildPrintedDroid, isUnmodifiedPrintedDroid } from '../../../../classes
 import { confirmEditPrintedDroid, getDesignLockNote } from '../../../components/design-lock';
 import RulesEditionSelect from '../../../components/rules-edition-select';
 import RulesLevelSelect from '../../../components/rules-level-select';
+import { chooseEra, getEraChoices, getTechChoices } from '../../../../data/era-choice';
 import { IAppGlobals } from '../../../app-router';
 import MechCreatorSideMenu from '../../../components/mech-creator-side-menu';
 import MechCreatorStatusbar from '../../../components/mech-creator-status-bar';
@@ -207,7 +208,7 @@ export default class MechCreatorStep1 extends React.Component<IHomeProps, IHomeS
     updateEra = ( e: React.FormEvent<HTMLSelectElement>): void => {
       if( this.props.appGlobals.currentBattleMech ) {
         let currentMech = this.props.appGlobals.currentBattleMech;
-        currentMech.setEra( e.currentTarget.value);
+        chooseEra( currentMech, e.currentTarget.value );
         this.props.appGlobals.saveCurrentBattleMech( currentMech );
       }
     }
@@ -239,6 +240,25 @@ export default class MechCreatorStep1 extends React.Component<IHomeProps, IHomeS
                           {/* The rules edition comes first: it decides what every field below offers, the rules levels included. */}
                           <RulesEditionSelect unitType="mech" value={this.props.appGlobals.currentBattleMech.getRulesEdition()} onChange={this.updateRulesEdition} />
                           <RulesLevelSelect editionTag={this.props.appGlobals.currentBattleMech.getRulesEdition()} value={this.props.appGlobals.appSettings.mechRulesFilter} onChange={this.updateRulesLevel} />
+                          {/* The era comes next and decides the tech bases offered below (user ruling 2026-10-21). */}
+                          <EditionChoice earlierEdition={false} hidden={!!getRulesEdition(this.props.appGlobals.currentBattleMech.getRulesEdition()).noEras}>
+                          <label>
+                            Mech Era:
+                            <select
+                              value={this.props.appGlobals.currentBattleMech.getEra().tag}
+                              onChange={this.updateEra}
+                            >
+                            {getEraChoices(this.props.appGlobals.currentBattleMech.getAvailableTechOptions().map((option) => option.tag)).map( (option) => {
+                              return (
+                                <option key={option.tag} value={option.tag}>{option.name}</option>
+                              )
+                            })}
+                            </select>
+                          </label>
+                          {this.props.appGlobals.currentBattleMech.getEra().description ? (
+                            <p className="smaller-text">{this.props.appGlobals.currentBattleMech.getEra().description}</p>
+                          ) : null}
+                          </EditionChoice>
                           {this.props.appGlobals.currentBattleMech.usesEarlierRulesEdition() ? (
                             <p className="smaller-text">
                               Built from the {getRulesEdition(this.props.appGlobals.currentBattleMech.getRulesEdition()).name} rulebook: only what it includes is offered,
@@ -307,7 +327,10 @@ export default class MechCreatorStep1 extends React.Component<IHomeProps, IHomeS
                                 value={this.props.appGlobals.currentBattleMech.getTech().tag}
                                 onChange={this.updateTech}
                               >
-                              {this.props.appGlobals.currentBattleMech.getAvailableTechOptions().map( (option) => {
+                              {((mech) => mech.getAvailableTechOptions()
+                                .filter((option) => !!getRulesEdition(mech.getRulesEdition()).noEras
+                                  || getTechChoices(mech.getEra(), [option.tag]).length > 0))(this.props.appGlobals.currentBattleMech)
+                                .map( (option) => {
                                 return (
                                   <option key={option.tag} value={option.tag}>{option.name}</option>
                                 )
@@ -408,24 +431,6 @@ export default class MechCreatorStep1 extends React.Component<IHomeProps, IHomeS
                             </>
                           ) : null}
 
-                          <EditionChoice earlierEdition={false} hidden={!!getRulesEdition(this.props.appGlobals.currentBattleMech.getRulesEdition()).noEras}>
-                          <label>
-                            Mech Era:
-                            <select
-                              value={this.props.appGlobals.currentBattleMech.getEra().tag}
-                              onChange={this.updateEra}
-                            >
-                            {this.props.appGlobals.currentBattleMech.getAvailableEras().map( (option) => {
-                              return (
-                                <option key={option.tag} value={option.tag}>{option.name}</option>
-                              )
-                            })}
-                            </select>
-                          </label>
-                          {this.props.appGlobals.currentBattleMech.getEra().description ? (
-                            <p className="smaller-text">{this.props.appGlobals.currentBattleMech.getEra().description}</p>
-                          ) : null}
-                          </EditionChoice>
 
                           {this.props.appGlobals.currentBattleMech.canUseFractionalAccounting( this.props.appGlobals.appSettings.mechRulesFilter )
                             || this.props.appGlobals.currentBattleMech.usesFractionalAccounting() ? (

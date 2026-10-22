@@ -3,6 +3,7 @@ import { Link } from 'react-router';
 import { FaArrowCircleRight } from "react-icons/fa";
 import AerospaceFighter, { FIGHTER_MIN_TONNAGE, FIGHTER_TYPES } from '../../../../classes/aerospace-fighter';
 import { btTechOptions } from '../../../../data/tech-options';
+import { chooseEra, getEraChoices, getTechChoices } from '../../../../data/era-choice';
 import { SRCS_RULES_LEVEL } from '../../../../data/robotic-control-systems';
 import { IAppGlobals } from '../../../app-router';
 import { availabilityOptionLabel, isOptionShown } from '../../../components/availability-options';
@@ -61,6 +62,16 @@ export default class FighterCreatorChassis extends React.Component<IChassisProps
                             {/* The rules edition comes first: it decides what every field below offers. */}
                             <RulesEditionSelect unitType="fighter" value={fighter.getRulesEdition()} onChange={(tag) => this.update((f) => f.setRulesEdition(tag))} />
                             <RulesLevelSelect editionTag={fighter.getRulesEdition()} value={rulesLevel} onChange={this.updateRulesLevel} />
+                            {/* The era comes next and decides the tech bases offered below (user ruling 2026-10-21). */}
+                            <label>
+                                Era:
+                                <select value={fighter.getEra().tag} onChange={(e) => { const value = e.currentTarget.value; this.update((f) => chooseEra(f, value)); }}>
+                                    {getEraChoices(btTechOptions.map((option) => option.tag)).map((option) => (
+                                        <option key={option.tag} value={option.tag}>{option.name}</option>
+                                    ))}
+                                </select>
+                            </label>
+                            {fighter.getEra().description ? <p className="smaller-text">{fighter.getEra().description}</p> : null}
                             <InputField
                                 label="Fighter Model # (e.g. SL-17)"
                                 value={fighter.getModel()}
@@ -91,22 +102,13 @@ export default class FighterCreatorChassis extends React.Component<IChassisProps
                             <label>
                                 Technology Base:
                                 <select value={fighter.getTech().tag} onChange={(e) => { const value = e.currentTarget.value; this.update((f) => f.setTech(value)); }}>
-                                    {btTechOptions.map((option) => (
+                                    {btTechOptions.filter((option) => getTechChoices(fighter.getEra(), [option.tag]).length > 0).map((option) => (
                                         <option key={option.tag} value={option.tag}>{option.name}</option>
                                     ))}
                                 </select>
                             </label>
 
 
-                            <label>
-                                Era:
-                                <select value={fighter.getEra().tag} onChange={(e) => { const value = e.currentTarget.value; this.update((f) => f.setEra(value)); }}>
-                                    {fighter.getAvailableEras().map((option) => (
-                                        <option key={option.tag} value={option.tag}>{option.name}</option>
-                                    ))}
-                                </select>
-                            </label>
-                            {fighter.getEra().description ? <p className="smaller-text">{fighter.getEra().description}</p> : null}
 
                             {fighter.isSupportVehicle() ? <SupportAircraftChassis fighter={fighter} update={this.update} /> : (<>
                             <label>

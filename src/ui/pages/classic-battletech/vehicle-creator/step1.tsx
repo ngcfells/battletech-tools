@@ -12,6 +12,7 @@ import InputField from "../../../components/form_elements/input_field";
 import InputCheckbox from "../../../components/form_elements/input_checkbox";
 import InputNumeric from "../../../components/form_elements/input_numeric";
 import { btTechOptions } from '../../../../data/tech-options';
+import { chooseEra, getEraChoices, getTechChoices } from '../../../../data/era-choice';
 import { getRulesLevelOptions } from '../../../../data/rules-level-options';
 import { vehicleMotiveTypes } from '../../../../data/vehicle-motive-types';
 import { getVehicleTonnageBounds } from '../../../../data/vehicle-motive-types';
@@ -72,7 +73,7 @@ export default class VehicleCreatorStep1 extends React.Component<IStep1Props, IS
     updateEra = (e: React.FormEvent<HTMLSelectElement>): void => {
         const vehicle = this.props.appGlobals.currentVehicle;
         if (vehicle) {
-            vehicle.setEra(e.currentTarget.value);
+            chooseEra(vehicle, e.currentTarget.value);
             this.props.appGlobals.saveCurrentVehicle(vehicle);
         }
     }
@@ -457,6 +458,18 @@ export default class VehicleCreatorStep1 extends React.Component<IStep1Props, IS
                                 {/* The rules edition comes first: it decides what every field below offers. */}
                                 <RulesEditionSelect unitType="vehicle" value={vehicle.getRulesEdition()} onChange={(tag) => { vehicle.setRulesEdition(tag); this.props.appGlobals.saveCurrentVehicle(vehicle); }} />
                                 <RulesLevelSelect editionTag={vehicle.getRulesEdition()} value={rulesLevel} onChange={this.updateRulesLevel} />
+                                {/* The era comes next and decides the tech bases offered below (user ruling 2026-10-21). */}
+                                <label>
+                                    Vehicle Era:
+                                    <select value={vehicle.getEra().tag} onChange={this.updateEra}>
+                                        {getEraChoices(btTechOptions.map((option) => option.tag)).map((option) => (
+                                            <option key={option.tag} value={option.tag}>{option.name}</option>
+                                        ))}
+                                    </select>
+                                </label>
+                                {vehicle.getEra().description ? (
+                                    <p className="smaller-text">{vehicle.getEra().description}</p>
+                                ) : null}
                                 <InputField
                                     label="Vehicle Model # (e.g. SRT-1, Vedette)"
                                     value={vehicle.getModel()}
@@ -492,7 +505,7 @@ export default class VehicleCreatorStep1 extends React.Component<IStep1Props, IS
                                 <label>
                                     Technology Base:
                                     <select value={vehicle.getTech().tag} onChange={this.updateTech}>
-                                        {btTechOptions.map((option) => (
+                                        {btTechOptions.filter((option) => getTechChoices(vehicle.getEra(), [option.tag]).length > 0).map((option) => (
                                             <option key={option.tag} value={option.tag}>{option.name}</option>
                                         ))}
                                     </select>
@@ -529,18 +542,6 @@ export default class VehicleCreatorStep1 extends React.Component<IStep1Props, IS
                                         </select>
                                     </label>
                                 )}
-
-                                <label>
-                                    Vehicle Era:
-                                    <select value={vehicle.getEra().tag} onChange={this.updateEra}>
-                                        {vehicle.getAvailableEras().map((option) => (
-                                            <option key={option.tag} value={option.tag}>{option.name}</option>
-                                        ))}
-                                    </select>
-                                </label>
-                                {vehicle.getEra().description ? (
-                                    <p className="smaller-text">{vehicle.getEra().description}</p>
-                                ) : null}
 
                                 {vehicle.isArtVee() ? null : (
                                     <InputCheckbox

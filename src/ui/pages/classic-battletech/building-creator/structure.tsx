@@ -4,6 +4,7 @@ import { FaArrowCircleRight } from "react-icons/fa";
 import Building from '../../../../classes/building';
 import { BUILDING_CLASSIFICATIONS } from '../../../../data/building-classifications';
 import { btTechOptions } from '../../../../data/tech-options';
+import { chooseEra, getEraChoices, getTechChoices } from '../../../../data/era-choice';
 import { IAppGlobals } from '../../../app-router';
 import BuildingCreatorSideMenu from '../../../components/building-creator-side-menu';
 import InputField from "../../../components/form_elements/input_field";
@@ -55,6 +56,15 @@ export default class BuildingCreatorStructure extends React.Component<IStructure
                             {/* The rules edition comes first: it decides what every field below offers. */}
                             <RulesEditionSelect unitType="building" value={building.getRulesEdition()} onChange={(tag) => this.update((b) => b.setRulesEdition(tag))} />
                             <RulesLevelSelect editionTag={building.getRulesEdition()} value={rulesLevel} onChange={this.updateRulesLevel} />
+                            {/* The era comes next and decides the tech bases offered below (user ruling 2026-10-21). */}
+                            <label>
+                                Era:
+                                <select value={building.getEra().tag} onChange={(e) => { const value = e.currentTarget.value; this.update((b) => chooseEra(b, value)); }}>
+                                    {getEraChoices(btTechOptions.map((option) => option.tag)).map((option) => (
+                                        <option key={option.tag} value={option.tag}>{option.name}</option>
+                                    ))}
+                                </select>
+                            </label>
                             <InputField
                                 label="Building Name (e.g. Battery Kenyon, Gate Bunker)"
                                 value={building.getName()}
@@ -64,7 +74,7 @@ export default class BuildingCreatorStructure extends React.Component<IStructure
                             <label>
                                 Technology Base:
                                 <select value={building.getTech().tag} onChange={(e) => { const value = e.currentTarget.value; this.update((b) => b.setTech(value)); }}>
-                                    {btTechOptions.map((option) => (
+                                    {btTechOptions.filter((option) => getTechChoices(building.getEra(), [option.tag]).length > 0).map((option) => (
                                         <option key={option.tag} value={option.tag}>{option.name}</option>
                                     ))}
                                 </select>
@@ -72,14 +82,6 @@ export default class BuildingCreatorStructure extends React.Component<IStructure
 
                             <p className="smaller-text">Building construction is an Advanced rule (Tactical Operations: Advanced Rules p. 126).</p>
 
-                            <label>
-                                Era:
-                                <select value={building.getEra().tag} onChange={(e) => { const value = e.currentTarget.value; this.update((b) => b.setEra(value)); }}>
-                                    {building.getAvailableEras().map((option) => (
-                                        <option key={option.tag} value={option.tag}>{option.name}</option>
-                                    ))}
-                                </select>
-                            </label>
 
                             <label>
                                 Building Classification:

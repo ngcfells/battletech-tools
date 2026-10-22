@@ -62,11 +62,6 @@ export default class ProtoMechCreatorChassis extends React.Component<IChassisPro
                             {/* The rules edition comes first: it decides what every field below offers. */}
                             <RulesEditionSelect unitType="protomech" value={proto.getRulesEdition()} onChange={(tag) => this.update((p) => p.setRulesEdition(tag))} />
                             <RulesLevelSelect editionTag={proto.getRulesEdition()} value={rulesLevel} onChange={this.updateRulesLevel} />
-                            <InputField
-                                label="Name (e.g. Centaur 2, Roc)"
-                                value={proto.getName()}
-                                onChange={(e) => { const value = e.currentTarget.value; this.update((p) => p.setName(value)); }}
-                            />
                             <label>
                                 Era:
                                 <select data-testid="pm-era" value={proto.getEra().tag} onChange={(e) => { const value = e.currentTarget.value; this.update((p) => p.setEra(value)); }}>
@@ -75,6 +70,11 @@ export default class ProtoMechCreatorChassis extends React.Component<IChassisPro
                                     ))}
                                 </select>
                             </label>
+                            <InputField
+                                label="Name (e.g. Centaur 2, Roc)"
+                                value={proto.getName()}
+                                onChange={(e) => { const value = e.currentTarget.value; this.update((p) => p.setName(value)); }}
+                            />
                             <label>
                                 Chassis Type:
                                 <select data-testid="pm-chassis" value={proto.getChassis()} onChange={(e) => { const value = e.currentTarget.value; this.update((p) => p.setChassis(value)); }}>
