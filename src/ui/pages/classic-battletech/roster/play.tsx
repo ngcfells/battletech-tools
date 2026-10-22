@@ -51,6 +51,7 @@ import BattledroidsRulesReference from '../../../components/battledroids-rules-r
 import BattledroidsDroidHelper from '../../../components/battledroids-droid-helper';
 import Building from '../../../../classes/building';
 import BuildingPlayPanel from './_buildingPlay';
+import SpaceTrackerBar from './_spaceTrackerBar';
 const ArrowCircleDown = FaArrowCircleDown as any;
 const ArrowCircleLeft = FaArrowCircleLeft as any;
 const ArrowCircleRight = FaArrowCircleRight as any;
@@ -80,6 +81,7 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
             setMovementJumpingMP: 0,
 
             resolveFireDialog: false,
+            spaceResolutionDialog: false,
 
 
             criticalHitDialog: null,
@@ -388,6 +390,18 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
 
     }
 
+    openSpaceResolutionDialog = (): void => {
+      this.setState({
+        spaceResolutionDialog: true,
+      })
+    }
+
+    closeSpaceResolutionDialog = (): void => {
+      this.setState({
+        spaceResolutionDialog: false,
+      })
+    }
+
     openResolveFireDialog = (
       e: React.FormEvent<HTMLButtonElement>,
       ) => {
@@ -469,6 +483,8 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
 
         this.setState({
           updated: true,
+          // A new space turn opens with its anti-orbital shots to resolve.
+          spaceResolutionDialog: currentCBTForce.spaceInPlay && currentCBTForce.spaceTracker.getDueShots( currentCBTForce.turn ).length > 0,
         })
       }
 
@@ -2762,6 +2778,10 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
       </div>
       <div className="grow-2">
         <h5>{this.props.appGlobals.currentCBTForce.getPhaseName(this.props.appGlobals.currentCBTForce.phase)}</h5>
+        <SpaceTrackerBar
+          force={this.props.appGlobals.currentCBTForce}
+          onResolve={this.openSpaceResolutionDialog}
+        />
       </div>
 
       {this.props.appGlobals.currentCBTForce.phase === 4 ? (
@@ -3422,6 +3442,8 @@ interface IPlayState {
   setMovementJumpingMP: number;
 
   resolveFireDialog: boolean;
+  /** The space turn tracker's resolution dialog (design 2026-10-22). */
+  spaceResolutionDialog: boolean;
 
   takeDamageDialog: BattleMech | null;
   takeDamageAmount: number;

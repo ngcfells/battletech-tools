@@ -6,6 +6,7 @@ import { BattleMechGroup, ICBTGroupExport } from '../../../../classes/battlemech
 import { unitGroupNames } from '../../../../data/group-names';
 import { makeURLSlug } from '../../../../utils/makeURLSlug';
 import { IAppGlobals } from '../../../app-router';
+import InputCheckbox from '../../../components/form_elements/input_checkbox';
 import InputField from '../../../components/form_elements/input_field';
 import TextSection from '../../../components/text-section';
 import UIPage from '../../../components/ui-page';
@@ -44,6 +45,14 @@ export default class BattleMechRosterHome extends React.Component<IHomeProps, IH
     newGroup = (): void => {
       if( this.props.appGlobals.currentCBTForce) {
         this.props.appGlobals.currentCBTForce.newGroup();
+        this.props.appGlobals.saveCurrentCBTForce( this.props.appGlobals.currentCBTForce );
+      }
+    }
+
+    // The space turn tracker in Play Mode (design 2026-10-22); off by default.
+    setSpaceInPlay = ( newValue: boolean ): void => {
+      if( this.props.appGlobals.currentCBTForce) {
+        this.props.appGlobals.currentCBTForce.spaceInPlay = newValue;
         this.props.appGlobals.saveCurrentCBTForce( this.props.appGlobals.currentCBTForce );
       }
     }
@@ -187,6 +196,14 @@ export default class BattleMechRosterHome extends React.Component<IHomeProps, IH
           </div>
           {this.props.appGlobals.currentCBTForce && this.props.appGlobals.currentCBTForce.getTotalUnits() > 0 ? (
             <div className="row">
+              <div className="col-12">
+                <InputCheckbox
+                  label="Space forces in this game"
+                  description="Tracks space turns (6 ground turns each) and anti-orbital shots in Play Mode"
+                  checked={this.props.appGlobals.currentCBTForce.spaceInPlay}
+                  setValue={this.setSpaceInPlay}
+                />
+              </div>
               <div className="col-6">
                 <Link
                   to={`${process.env.PUBLIC_URL}/classic-battletech/roster/play`}
