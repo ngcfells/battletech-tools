@@ -173,6 +173,35 @@ describe("quirk locations", () => {
         expect(screen.getByText(/needs an arm with a lower arm actuator and no hand actuator/)).toBeTruthy();
     });
 
+    const valueOptions = () => Array.from((screen.getByLabelText("Value") as HTMLSelectElement).options).map((option) => option.value);
+    const quadPicker = (quirks: QuirkList, quad: boolean) => render(
+        <QuirkPicker quirks={quirks} unitType="mech" editionTag="total-warfare" rulesLevel={3} locations={arms} weapons={[]} unitMaxDamage={0} quad={quad} onChange={vi.fn()} />,
+    );
+
+    it("offers only the 2-point Directional Torso Mount on a 'Mech that is not a quad (CO p.226)", () => {
+        quadPicker(new QuirkList(), false);
+        fireEvent.change(quirkSelect(), { target: { value: "quirk-directional-torso-mount" } });
+        expect(valueOptions()).toEqual(["2"]);
+    });
+
+    it("offers the 3-point Directional Torso Mount on a quad", () => {
+        const quirks = new QuirkList();
+        quadPicker(quirks, true);
+        fireEvent.change(quirkSelect(), { target: { value: "quirk-directional-torso-mount" } });
+        expect(valueOptions()).toEqual(["2", "3"]);
+        fireEvent.change(screen.getByLabelText("Value"), { target: { value: "3" } });
+        fireEvent.change(screen.getByLabelText("Location"), { target: { value: "rt" } });
+        fireEvent.click(screen.getByRole("button", { name: "Add quirk" }));
+        expect(quirks.getAll()).toEqual([{ tag: "quirk-directional-torso-mount", location: "rt", parameter: 3 }]);
+    });
+
+    it("notes a 3-point Directional Torso Mount on a 'Mech that is no longer a quad", () => {
+        const quirks = new QuirkList();
+        quirks.add({ tag: "quirk-directional-torso-mount", location: "rt", parameter: 3 });
+        quadPicker(quirks, false);
+        expect(screen.getByText(/the 3-point version needs a quad 'Mech/)).toBeTruthy();
+    });
+
     it("marks a 'Mech's arms and their actuators, and a quad has no arms", () => {
         const mech = new BattleMech();
         const ra = mech.getQuirkTargets().locations.find((location) => location.tag === "ra");
@@ -181,6 +210,13 @@ describe("quirk locations", () => {
         mech.setMechType("quad");
         expect(mech.isQuad()).toBe(true);
         expect(mech.getQuirkTargets().locations.find((location) => location.tag === "ra")?.arm).toBeFalsy();
+    });
+
+    it("tells the picker whether the 'Mech is a quad", () => {
+        const mech = new BattleMech();
+        expect(mech.getQuirkTargets().quad).toBeFalsy();
+        mech.setMechType("quad");
+        expect(mech.getQuirkTargets().quad).toBe(true);
     });
 });
 
@@ -226,5 +262,32 @@ describe("quirk issue lines", () => {
         vehicle.quirks.add({ tag: "quirk-rugged", parameter: 1 });
         expect(vehicle.getQuirkIssues(2)).toEqual(["Quirk: Rugged (above the selected rules level)"]);
         expect(vehicle.getQuirkIssues(3)).toEqual([]);
+    });
+});
+
+describe("Trailer Hitch", () => {
+    const offered = (editionTag: string, rulesLevel: number) => getOfferedQuirks("vehicle", editionTag, rulesLevel).some((quirk) => quirk.tag === "quirk-trailer-hitch");
+
+    it("is canon in Total Warfare and apocryphal in the editions after it", () => {
+        expect(offered("total-warfare", 3)).toBe(true);
+        expect(offered("battlemech-manual", 4)).toBe(false);
+        expect(offered("battlemech-manual", 5)).toBe(true);
+        expect(offered("core-rulebook", 5)).toBe(true);
+        expect(offered("master-rules", 5)).toBe(false);
+    });
+
+    it("is marked apocryphal in the picker after Total Warfare", () => {
+        const quirks = new QuirkList();
+        quirks.add({ tag: "quirk-trailer-hitch" });
+        render(<QuirkPicker quirks={quirks} unitType="vehicle" editionTag="battlemech-manual" rulesLevel={5} locations={[]} weapons={[]} unitMaxDamage={0} onChange={vi.fn()} />);
+        expect(screen.getByRole("listitem").textContent).toMatch(/^Trailer Hitch \(apocryphal\): \+1/);
+        expect(Array.from(quirkSelect().options).find((option) => option.value === "quirk-trailer-hitch")?.textContent).toBe("+ Trailer Hitch (apocryphal)");
+    });
+
+    it("is not marked apocryphal in Total Warfare", () => {
+        const quirks = new QuirkList();
+        quirks.add({ tag: "quirk-trailer-hitch" });
+        render(<QuirkPicker quirks={quirks} unitType="vehicle" editionTag="total-warfare" rulesLevel={5} locations={[]} weapons={[]} unitMaxDamage={0} onChange={vi.fn()} />);
+        expect(screen.queryByText(/apocryphal/)).toBeNull();
     });
 });

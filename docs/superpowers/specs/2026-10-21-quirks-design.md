@@ -33,6 +33,10 @@ easy to add.
     extract, and its Optional Rules Checklist (p.255) lists none. The user ruled they are present or should be, so
     the official quirk records list `core-rulebook`, cited to CO and BMM.
 11. **T&T and comms** names come from the SSW files first, then the TROs (Claude's call, confirmed).
+12. **Directional Torso Mount's 3-point (turret) version is enforced quad-only** (QuadVees count as quads); the
+    2-point version goes on any torso, the CT included.
+13. **Trailer Hitch** (SO p.196) is canon in Total Warfare and apocryphal in the editions after it, marked
+    "(apocryphal)" in the picker.
 
 ## Sources
 

@@ -3,7 +3,7 @@ import type { JSX } from "react";
 import { QuirkList } from '../../classes/quirk-list';
 import { IAssignedQuirk, IQuirk, IQuirkLocation, QuirkAttach, QuirkUnitType } from '../../data/quirk-interfaces';
 import { getAssignedAttach, getOfferedQuirks, getQuirk, getQuirkOfferIssue, getQuirkPoints, isQuirkLocationAllowed, QUIRK_LOCATION_RULE_TEXT } from '../../data/quirk-registry';
-import { getRulesEdition } from '../../data/rules-editions';
+import { getRecordEditions, getRulesEdition } from '../../data/rules-editions';
 import { CUSTOM_HOMEBREW_RULES_LEVEL } from '../../data/rules-level-options';
 import { buildCustomQuirkDraft, customQuirkTag, getLocalCustomContentDrafts, saveLocalCustomContentDrafts } from '../../data/custom-content-local';
 import { generateUUID } from '../../utils/generateUUID';
@@ -66,6 +66,23 @@ export default class QuirkPicker extends React.Component<IQuirkPickerProps, IQui
         return broken ? `needs ${QUIRK_LOCATION_RULE_TEXT[quirk.locationRule]}` : null;
     }
 
+    /** The cost choices this unit may take: a quad-only choice only on a quad. */
+    private _choices(quirk: IQuirk): number[] | undefined {
+        return quirk.cost.choices?.filter((choice) => this.props.quad || !(quirk.quadOnlyChoices ?? []).includes(choice));
+    }
+
+    /** Why this assignment's cost choice does not fit the unit; null when it does. */
+    private _choiceRuleBroken(quirk: IQuirk, assigned: IAssignedQuirk): string | null {
+        const value = Number(assigned.parameter);
+        return !this.props.quad && (quirk.quadOnlyChoices ?? []).includes(value) ? `the ${value}-point version needs a quad 'Mech` : null;
+    }
+
+    /** Offered here only as apocrypha: a canon quirk the selected edition does not include. */
+    private _isApocryphal(quirk: IQuirk): boolean {
+        return !quirk.custom && !getRecordEditions(quirk).includes(this.props.editionTag)
+            && getQuirkOfferIssue(quirk, this.props.unitType, this.props.editionTag, this.props.rulesLevel) === null;
+    }
+
     private _selectQuirk = (event: React.ChangeEvent<HTMLSelectElement>): void => {
         const quirk = getQuirk(event.target.value);
         this.setState({ tag: event.target.value, attach: quirk?.attaches[0] ?? "unit", target: "", parameter: "", message: "" });
@@ -99,6 +116,11 @@ export default class QuirkPicker extends React.Component<IQuirkPickerProps, IQui
         if (parameter !== undefined) {
             assigned.parameter = parameter;
         }
+        const choiceBroken = this._choiceRuleBroken(quirk, assigned);
+        if (choiceBroken) {
+            this.setState({ message: `${quirk.name}: ${choiceBroken}` });
+            return;
+        }
         const fromYear = parseInt(this.state.fromYear, 10);
         const toYear = parseInt(this.state.toYear, 10);
         if (Number.isFinite(fromYear)) assigned.fromYear = fromYear;
@@ -127,8 +149,9 @@ export default class QuirkPicker extends React.Component<IQuirkPickerProps, IQui
             return this.state.parameter || quirk.parameter.options[0];
         }
         const value = Number(this.state.parameter);
-        if (quirk.cost.choices) {
-            return quirk.cost.choices.includes(value) ? value : quirk.cost.choices[0];
+        const choices = this._choices(quirk);
+        if (choices) {
+            return choices.includes(value) ? value : choices[0];
         }
         return this.state.parameter.trim() !== "" && Number.isFinite(value) ? value : undefined;
     }
@@ -156,6 +179,9 @@ export default class QuirkPicker extends React.Component<IQuirkPickerProps, IQui
         const ruleBroken = this._locationRuleBroken(quirk, assigned);
         if (ruleBroken) notes.push(ruleBroken);
         if (assigned.parameter !== undefined) notes.push(String(assigned.parameter));
+        const choiceBroken = this._choiceRuleBroken(quirk, assigned);
+        if (choiceBroken) notes.push(choiceBroken);
+        if (this._isApocryphal(quirk)) notes.push("apocryphal");
         if (assigned.fromYear !== undefined || assigned.toYear !== undefined) notes.push(`${assigned.fromYear ?? ""}-${assigned.toYear ?? ""}`);
         const issue = getQuirkOfferIssue(quirk, this.props.unitType, this.props.editionTag, this.props.rulesLevel);
         if (issue === "edition") notes.push(`not offered in ${getRulesEdition(this.props.editionTag).name}`);
@@ -170,11 +196,12 @@ export default class QuirkPicker extends React.Component<IQuirkPickerProps, IQui
             return null;
         }
         const update = (event: React.ChangeEvent<HTMLSelectElement | HTMLInputElement>) => this.setState({ parameter: event.target.value });
-        const choices = quirk.parameter.options ?? (quirk.cost.choices ? quirk.cost.choices.map(String) : null);
+        const choices = quirk.parameter.options ?? this._choices(quirk)?.map(String) ?? null;
         if (choices) {
+            const label = quirk.parameter.kind === "range-band" ? "Range bracket" : "Value";
             return (
-                <label>{quirk.parameter.kind === "range-band" ? "Range bracket" : "Value"}{" "}
-                    <select value={this.state.parameter || choices[0]} onChange={update}>
+                <label>{label}{" "}
+                    <select aria-label={label} value={choices.includes(this.state.parameter) ? this.state.parameter : choices[0]} onChange={update}>
                         {choices.map((choice) => <option key={choice} value={choice}>{choice}</option>)}
                     </select>
                 </label>
@@ -219,7 +246,7 @@ export default class QuirkPicker extends React.Component<IQuirkPickerProps, IQui
                         <select aria-label="Quirk" value={this.state.tag} onChange={this._selectQuirk}>
                             <option value="">{offered.length ? "Choose a quirk" : "None offered"}</option>
                             {offered.map((quirk) => (
-                                <option key={quirk.tag} value={quirk.tag}>{quirk.kind === "positive" ? "+" : "-"} {quirk.name}</option>
+                                <option key={quirk.tag} value={quirk.tag}>{quirk.kind === "positive" ? "+" : "-"} {quirk.name}{this._isApocryphal(quirk) ? " (apocryphal)" : ""}</option>
                             ))}
                         </select>
                     </label>
@@ -291,6 +318,8 @@ interface IQuirkPickerProps {
     locations: IQuirkLocation[];
     weapons: { uuid: string; label: string; maxDamage: number }[];
     unitMaxDamage: number;
+    /** A quad 'Mech, which alone may take the quad-only cost choices. */
+    quad?: boolean;
     onChange: () => void;
 }
 

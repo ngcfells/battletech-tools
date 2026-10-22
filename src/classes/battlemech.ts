@@ -629,7 +629,8 @@ export class BattleMech {
                 ...(["ct", "lt", "rt"].includes(location.tag) ? { torso: true } : {}),
             };
         });
-        return getQuirkTargets(locations, this._equipmentList.filter((item) => item && !item.isAmmo).map((item) => ({ ...item, label: (item.location ? `${item.name} (${item.location!.toUpperCase()})` : item.name) })));
+        const targets = getQuirkTargets(locations, this._equipmentList.filter((item) => item && !item.isAmmo).map((item) => ({ ...item, label: (item.location ? `${item.name} (${item.location!.toUpperCase()})` : item.name) })));
+        return hasArms ? targets : { ...targets, quad: true };
     }
 
     /** One line for each quirk this unit could not be given now: rules edition, rules level or unit type. */

@@ -163,6 +163,7 @@ export const quirks: IQuirk[] = [
         restrictions: "The 3-point (turret) version is for quad 'Mechs only; no weapons with placement restrictions.",
         attaches: ["location"],
         locationRule: "torso",
+        quadOnlyChoices: [3],
         parameter: { kind: "value" },
         summary: "Weapons in the mount fire into the front or the rear arc as set; the arc stays until changed. A hit on the location destroys the mount on 9+. The 3-point version is a full turret.",
         sources: [{ book: "Campaign Operations", page: 226 }, { book: "BattleMech Manual", page: 83 }],

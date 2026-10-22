@@ -64,6 +64,8 @@ export interface IQuirk {
     parameter?: { kind: "range-band" | "value" | "locations"; options?: string[] };
     /** The locations it may go on; on the whole unit it needs at least one of them. */
     locationRule?: QuirkLocationRule;
+    /** Cost choices only a quad 'Mech may take (the 3-point Directional Torso Mount is a turret, CO p.226). */
+    quadOnlyChoices?: number[];
     /** Assigned at most once per unit, whatever it is attached to (Battlefists is paid once, CO p.225). */
     once?: true;
     /** Tags of quirks a unit may not carry with this one. */
@@ -95,4 +97,6 @@ export interface IQuirkTargets {
     weapons: { uuid: string; label: string; maxDamage: number }[];
     /** The maximum damage of all the unit's non-physical weapons together, for unit-wide damage costs. */
     unitMaxDamage: number;
+    /** A quad 'Mech (QuadVees included), for the quad-only cost choices. */
+    quad?: boolean;
 }
