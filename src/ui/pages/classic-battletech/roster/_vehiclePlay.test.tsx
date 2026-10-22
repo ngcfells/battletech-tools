@@ -54,3 +54,30 @@ describe("ArtVee play panel", () => {
         expect(screen.queryByTestId("vehicle-artvee-cancel")).toBeNull();
     });
 });
+
+// Design quirks in play (quirks design, plan 3).
+describe("vehicle play quirks", () => {
+    const laserTank = (): Vehicle => {
+        const vehicle = new Vehicle();
+        vehicle.setTech("is");
+        vehicle.setMotiveType("tracked");
+        vehicle.setTonnage(40);
+        vehicle.setCruiseMP(4);
+        vehicle.addEquipmentFromTag("medium-laser", "front");
+        return vehicle;
+    };
+    const toHitCells = (): string[] => Array.from(screen.getByText("Medium Laser").closest("tr")!.querySelectorAll("td")).slice(5, 8).map((cell) => cell.textContent ?? "");
+
+    it("shows an Accurate weapon's to-hit one lower with the switch on, and unchanged with it off", () => {
+        const vehicle = laserTank();
+        render(<VehiclePlayPanel vehicle={vehicle} onChange={vi.fn()} quirksInPlay={true} />);
+        const plain = toHitCells();
+        cleanup();
+        vehicle.quirks.add({ tag: "quirk-accurate-weapon", equipmentUuid: vehicle.getEquipmentList()[0].uuid });
+        render(<VehiclePlayPanel vehicle={vehicle} onChange={vi.fn()} quirksInPlay={true} />);
+        expect(toHitCells()).toEqual(plain.map((cell) => `${parseInt(cell, 10) - 1}+`));
+        cleanup();
+        render(<VehiclePlayPanel vehicle={vehicle} onChange={vi.fn()} />);
+        expect(toHitCells()).toEqual(plain);
+    });
+});

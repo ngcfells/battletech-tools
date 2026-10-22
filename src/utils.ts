@@ -6,6 +6,7 @@ import { getEquipmentCatalogs, getEquipmentListByTech } from "./data/equipment-r
 import { DEFAULT_MUL_SOURCE_SELECTION, getMULRecordKey, getMULSourcesForSelection, loadMULListItems } from "./data/mul-list-items";
 import { IAppGlobals } from "./ui/app-router";
 import { replaceAll } from "./utils/replaceAll";
+import { getQuirkToHit } from "./utils/quirk-effects";
 import { unitHasAbility } from "./utils/mulAbilities";
 import { resolveMULEraFilter } from "./utils/mulUtilities";
 
@@ -838,6 +839,7 @@ export function getTargetToHitFromWeapon(
     index: number,
     target: ITargetToHit | null = null,
     equipmentList: IEquipmentItem[] | null = null,
+    quirksInPlay: boolean = false,
 ): IGATOR {
     let gator: IGATOR = JSON.parse(JSON.stringify(mech.getGATOR()));
 
@@ -970,6 +972,22 @@ export function getTargetToHitFromWeapon(
             } else {
                 gator.finalToHit = -1;
                 gator.explanation = "The target is out of this weapon's range.";
+            }
+
+            // Design quirks, with the game's "Use design quirks" switch on (CO pp.225-234).
+            const rangeBand = target.range <= weaponRange.short ? "short" : target.range <= weaponRange.medium ? "medium" : target.range <= weaponRange.long ? "long" : undefined;
+            if( quirksInPlay && rangeBand ) {
+                const quirkToHit = getQuirkToHit(mech.quirks, mech.getQuirkInstalledUuids(equipmentList), mech.getQuirkPlayYear(), {
+                    weaponUuid: weapon.uuid,
+                    rangeBand,
+                    attackerRanOrFlanked: mech.currentMovementMode === "r",
+                });
+                if( quirkToHit.labels.length > 0 ) {
+                    gator.finalToHit += quirkToHit.modifier;
+                    gator.otherModifiers += quirkToHit.modifier;
+                    otherModifiersExplanation.push( ...quirkToHit.labels );
+                    gator.otherModifiersExplanation = otherModifiersExplanation.join(", ");
+                }
             }
         }
     }

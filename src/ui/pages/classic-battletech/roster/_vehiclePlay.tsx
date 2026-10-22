@@ -6,6 +6,8 @@ import { IBattleArmorCarrierLoad, isCarrierWeaponBlocked } from '../../../../cla
 import TextSection from '../../../components/text-section';
 import VehicleDiagramSVG from '../../../components/svg/vehicle-diagram-svg';
 import { vehicleName } from './_vehicleGroupTable';
+import { getQuirkToHit } from '../../../../utils/quirk-effects';
+import { QuirkRangeBand } from '../../../../data/quirk-interfaces';
 
 const MOTIVE_LEVELS: { level: VehicleMotiveHit; label: string }[] = [
     { level: "minor", label: "Minor (+1 driving)" },
@@ -259,7 +261,14 @@ export default class VehiclePlayPanel extends React.Component<IVehiclePlayPanelP
         // A weapon in a side or rear location a mechanized battle armor trooper occupies may not fire (TW p. 226).
         const blocked = !!this.props.carrierLoad && isCarrierWeaponBlocked(this.props.carrierLoad, weapon);
         const artVeeBlock = vehicle.getArtVeeWeaponBlock(weapon);
-        const target = (rangeModifier: number) => modifier === null || blocked ? "-" : `${gunnery + modifier + rangeModifier}+`;
+        // Design quirks, with the game's "Use design quirks" switch on; a destroyed weapon's quirk no longer counts.
+        const quirkToHit = (rangeBand: QuirkRangeBand): number => !this.props.quirksInPlay ? 0 : getQuirkToHit(
+            vehicle.quirks,
+            vehicle.getEquipmentList().filter((item) => item.uuid && vehicle.getWeaponStatus(item.uuid) !== "destroyed").map((item) => item.uuid!),
+            vehicle.getEra().yearStart,
+            { weaponUuid: weapon.uuid, rangeBand, attackerRanOrFlanked: vehicle.getInPlay().movementMode === "flank" },
+        ).modifier;
+        const target = (rangeModifier: number, rangeBand: QuirkRangeBand) => modifier === null || blocked ? "-" : `${gunnery + modifier + rangeModifier + quirkToHit(rangeBand)}+`;
         const range = weapon.range;
         return (
             <tr key={weapon.uuid} className={status === "ok" && modifier !== null && !blocked ? "" : "color-red"}>
@@ -270,9 +279,9 @@ export default class VehiclePlayPanel extends React.Component<IVehiclePlayPanelP
                 <td className="text-center no-wrap">
                     {range ? `${range.min ? range.min + " / " : ""}${range.short}/${range.medium}/${range.long}` : "-"}
                 </td>
-                <td className="text-center">{target(0)}</td>
-                <td className="text-center">{target(2)}</td>
-                <td className="text-center">{target(4)}</td>
+                <td className="text-center">{target(0, "short")}</td>
+                <td className="text-center">{target(2, "medium")}</td>
+                <td className="text-center">{target(4, "long")}</td>
                 <td className="text-center">
                     <select
                         aria-label={`${weapon.name} status`}
@@ -778,6 +787,8 @@ interface IVehiclePlayPanelProps {
     /** Mechanized battle armor riding the vehicle, and what it stops the vehicle doing. */
     carrierLoad?: IBattleArmorCarrierLoad;
     onChange: (vehicle: Vehicle) => void;
+    /** The game's "Use design quirks" switch: the vehicle's quirks change its to-hit numbers. */
+    quirksInPlay?: boolean;
 }
 
 interface IVehiclePlayPanelState {

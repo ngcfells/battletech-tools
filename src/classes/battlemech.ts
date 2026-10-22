@@ -4,6 +4,7 @@ import { getQuirk, getQuirkIssues, getQuirkTargets } from "../data/quirk-registr
 import { findCanonEntry, resolveCanonQuirks } from "../data/quirk-canon";
 import { ICanonQuirkEntry } from "../data/quirk-canon-interfaces";
 import { QuirkList } from "./quirk-list";
+import { getQuirkHeatGenerated } from "../utils/quirk-effects";
 import { getEditionSkillMultipliers, getSkillMultiplier } from "../data/skill-multipliers";
 import { battlemechLocations } from "../data/battlemech-locations";
 import { IArmorType, ICockpitType, ICriticalLocations, IEngineOption, IEngineType, IEquipmentItem, IGyro, IHeatSync, IInternalStructure, IInternalStructurePerTon, IJumpJet, IMyomerType, IResolvedInternalStructure, ISplitLocation, ITechDates } from "../data/data-interfaces";
@@ -4951,20 +4952,31 @@ export class BattleMech {
     }
 
     public getTurnHeatDifference(
-        equipmentList: IEquipmentItem[] |  null = null
+        equipmentList: IEquipmentItem[] |  null = null,
+        quirksInPlay: boolean = false,
     ): number {
         if( equipmentList === null ) {
             equipmentList = this.equipmentList
         }
-        let rv = this.getActiveMoveHeat();
-        rv += this.getActiveWeaponHeat(equipmentList);
-        rv -= this.getActiveHeatDissipation();
+        // A quirk's change to the heat built up (Combat Computer) never takes generated heat below 0 (CO p.225).
+        const quirkHeat = quirksInPlay ? getQuirkHeatGenerated(this.quirks, this.getQuirkInstalledUuids(equipmentList), this.getQuirkPlayYear()) : 0;
+        const generated = Math.max(0, this.getActiveMoveHeat() + this.getActiveWeaponHeat(equipmentList) + quirkHeat);
 
-        return rv;
+        return generated - this.getActiveHeatDissipation();
     }
 
-    public applyHeat() {
-        this.currentHeat += this.getTurnHeatDifference();
+    /** The items quirks may be attached to in play: those fitted now, an OmniMech's current pods included. */
+    public getQuirkInstalledUuids(equipmentList: IEquipmentItem[] | null = null): string[] {
+        return (equipmentList ?? this.equipmentList).map((item) => item?.uuid).filter((uuid): uuid is string => !!uuid);
+    }
+
+    /** The year play checks a quirk's dates against: the start of the unit's era (quirks design, "Eras"). */
+    public getQuirkPlayYear(): number {
+        return this._era.yearStart;
+    }
+
+    public applyHeat(quirksInPlay: boolean = false) {
+        this.currentHeat += this.getTurnHeatDifference(null, quirksInPlay);
 
         if( this.currentHeat < 0 ) {
             this.currentHeat = 0;

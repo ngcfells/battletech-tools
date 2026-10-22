@@ -1283,6 +1283,8 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
         return <></>;
       }
       let selectedMech: BattleMech | null = this.props.appGlobals.currentCBTForce.getSelectedMech();
+      // The game's "Use design quirks" switch (quirks design, plan 3).
+      const quirksInPlay = this.props.appGlobals.currentCBTForce.quirksInPlay;
       const targetCarrierLoad = this.state.setTargetDialog
         ? this._carrierLoad( this.state.setTargetDialog.uuid, this.state.setTargetDialog.getName(), "mech", this.state.setTargetDialog.isOmnimech, this.state.setTargetDialog.isFrankenMech() )
         : null;
@@ -1589,6 +1591,9 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
                       let attackGATOR = getTargetToHitFromWeapon(
                           unit,
                           attackIndex,
+                          null,
+                          null,
+                          quirksInPlay,
 
                       )
                       if( !attack.isAmmo && !attack.isEquipment && attackGATOR.target ) {
@@ -2309,6 +2314,7 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
                     itemIndex,
                     targetData,
                     this.state.targetWeaponSelection,
+                    quirksInPlay,
                 );
                 }
 
@@ -2398,7 +2404,7 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
                     {this.state.setTargetDialog.getActiveHeatDissipation()}
                   </td>
                   <td>
-                    {this.state.setTargetDialog.getTurnHeatDifference(this.state.targetWeaponSelection)} heat
+                    {this.state.setTargetDialog.getTurnHeatDifference(this.state.targetWeaponSelection, quirksInPlay)} heat
                   </td>
                 </tr>
               </tbody>
@@ -2949,6 +2955,7 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
               vehicle={selectedVehicle}
               carrierLoad={this._carrierLoad( selectedVehicle.getUUID(), vehicleName(selectedVehicle), "vehicle", selectedVehicle.isOmni() )}
               onChange={this.onVehicleChange}
+              quirksInPlay={quirksInPlay}
             />
           ) : selectedMech ? (
             <>

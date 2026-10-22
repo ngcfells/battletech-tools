@@ -212,7 +212,7 @@ export class BattleMechForce {
         this.heatApplied = true;
         for( let group of this.groups ) {
             for( let unit of group.members ) {
-                unit.applyHeat();
+                unit.applyHeat(this.quirksInPlay);
             }
         }
     }

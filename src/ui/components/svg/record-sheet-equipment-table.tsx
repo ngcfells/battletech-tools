@@ -132,9 +132,13 @@ export default class RecordSheetEquipmentTable extends React.Component<IRecordSh
 
 
                 let targetColor = getTargetColor( this.props.mechData.equipmentList[ eq_count].target );
+                // The printed sheet shows no live quirk math.
                 let targetGATOR = getTargetToHitFromWeapon(
                     this.props.mechData,
                     eq_count,
+                    null,
+                    null,
+                    false,
                 );
 
 
