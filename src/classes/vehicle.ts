@@ -2,6 +2,7 @@ import { generateUUID } from "../utils/generateUUID";
 import { IAssignedQuirk, IQuirkTargets, QuirkUnitType } from "../data/quirk-interfaces";
 import { getQuirkIssues, getQuirkTargets } from "../data/quirk-registry";
 import { QuirkList } from "./quirk-list";
+import { getAlphaStrikeQuirks } from "../utils/quirk-effects";
 import { DEFAULT_RULES_EDITION, getSelectableRulesEditionTag } from "../data/rules-editions";
 import { getSkillMultiplier } from "../data/skill-multipliers";
 import { getComboArtillery } from "../data/artillery-custom";
@@ -3673,6 +3674,7 @@ export default class Vehicle {
         const unit = new AlphaStrikeUnit();
         unit.importMUL(record);
         unit.rulesLevel = Math.max(2, this.getRequiredRulesLevel());
+        unit.quirks = getAlphaStrikeQuirks(this);
         return unit;
     }
 

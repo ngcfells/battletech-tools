@@ -48,6 +48,39 @@ export function getCarrierQuirkEffects(unit: IQuirkCarrier): IAppliedQuirkEffect
     return getQuirkEffects(unit.quirks, getCarrierInstalledUuids(unit), unit.getEra().yearStart);
 }
 
+/** A quirk as an Alpha Strike unit made from a design carries it: one the Companion lists, with its parameter. */
+export interface IAlphaStrikeQuirk {
+    tag: string;
+    parameter?: string | number;
+}
+
+export type AlphaStrikeRangeBand = QuirkRangeBand | "extreme";
+
+/** The design's quirks in force that the Alpha Strike Companion lists; only those act in Alpha Strike (ASC p.59). */
+export function getAlphaStrikeQuirks(unit: IQuirkCarrier): IAlphaStrikeQuirk[] {
+    return unit.quirks.getActive(getCarrierInstalledUuids(unit), unit.getEra().yearStart)
+        .filter((assigned) => getQuirk(assigned.tag)?.alphaStrike)
+        .map((assigned) => (assigned.parameter !== undefined ? { tag: assigned.tag, parameter: assigned.parameter } : { tag: assigned.tag }));
+}
+
+/** The Companion to-hit modifier of the unit's weapon attacks in one range band. */
+export function getAlphaStrikeQuirkToHit(quirks: IAlphaStrikeQuirk[], band: AlphaStrikeRangeBand): number {
+    let modifier = 0;
+    for (const quirk of quirks) {
+        for (const effect of getQuirk(quirk.tag)?.alphaStrike?.effects ?? []) {
+            if (effect.type !== "to-hit" || (effect.attack ?? "weapon") !== "weapon" || effect.vsAirborne || effect.attackerRanOrFlanked) {
+                continue;
+            }
+            const effectBand = effect.rangeBand === "parameter" ? (typeof quirk.parameter === "string" ? quirk.parameter.toLowerCase() : undefined) : effect.rangeBand;
+            if (effect.rangeBand && effectBand !== band) {
+                continue;
+            }
+            modifier += effect.modifier;
+        }
+    }
+    return modifier;
+}
+
 const signed = (value: number): string => (value > 0 ? `+${value}` : `${value}`);
 
 const capitalised = (text: string): string => text.charAt(0).toUpperCase() + text.slice(1);

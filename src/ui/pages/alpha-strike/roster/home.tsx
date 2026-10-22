@@ -210,6 +210,7 @@ export default class AlphaStrikeRosterHome extends React.Component<IHomeProps, I
     setQuirksInPlay = ( newValue: boolean ): void => {
       if( this.props.appGlobals.currentASForce ) {
         this.props.appGlobals.currentASForce.quirksInPlay = newValue;
+        this.props.appGlobals.currentASForce.syncQuirksInPlay();
         this.props.appGlobals.saveCurrentASForce( this.props.appGlobals.currentASForce );
       }
     }

@@ -3,6 +3,7 @@ import { CONST_AS_SPECIAL_ABILITIES, IASSpecialAbility } from "../data/alpha-str
 import { APOCRYPHAL_RULES_LEVEL } from "../data/rules-level-options";
 import { IAlphaStrikeExport } from "../utils/calculateAlphaStrikeValue";
 import { generateUUID } from "../utils/generateUUID";
+import { getAlphaStrikeQuirkToHit, IAlphaStrikeQuirk } from "../utils/quirk-effects";
 import Pilot, { IPilot } from "./pilot";
 
 export interface IAlphaStrikeDamage {
@@ -132,6 +133,8 @@ export interface IAlphaStrikeUnitExport {
     mechCreatorUUID: string;
     /** Rules level id (rules-level-options): from the MUL "Rules" field or the unit's creator. */
     rulesLevel?: number;
+    /** The design's Alpha Strike Companion quirks; none for a MUL unit or an older save. */
+    quirks?: IAlphaStrikeQuirk[];
 
 
     customName?: string;
@@ -214,6 +217,11 @@ export class AlphaStrikeUnit {
 
     /** Rules level id (rules-level-options); undefined when unknown. */
     public rulesLevel: number | undefined = undefined;
+
+    /** The Companion quirks of the design this unit was made from (ASC pp.59-67); the MUL has no quirk data. */
+    public quirks: IAlphaStrikeQuirk[] = [];
+    /** The force's "Use design quirks" switch, set by `AlphaStrikeForce.syncQuirksInPlay`; not saved with the unit. */
+    public quirksInPlay: boolean = false;
 
     public showDetails: boolean = false;
 
@@ -480,6 +488,9 @@ export class AlphaStrikeUnit {
             this.tro = incomingMechData.tro;
 
             this.rulesLevel = typeof incomingMechData.rulesLevel === "number" ? incomingMechData.rulesLevel : undefined;
+            this.quirks = Array.isArray(incomingMechData.quirks)
+                ? incomingMechData.quirks.filter((quirk) => quirk && typeof quirk.tag === "string").map((quirk) => ({ ...quirk }))
+                : [];
 
             this.role =  incomingMechData.role;
 
@@ -1595,6 +1606,13 @@ export class AlphaStrikeUnit {
         this.currentToHitMedium = this.currentSkill + 2 + this.currentHeat + currentFCHits * 2; // + currentEngineHits;
         this.currentToHitLong = this.currentSkill + 4 + this.currentHeat + currentFCHits * 2; // + currentEngineHits;
         this.currentToHitExtreme = this.currentSkill + 6 + this.currentHeat + currentFCHits * 2; // + currentEngineHits;
+        // The Companion's quirks, with the game's "Use design quirks" switch on (ASC pp.59-67).
+        if( this.quirksInPlay ) {
+            this.currentToHitShort += getAlphaStrikeQuirkToHit(this.quirks, "short");
+            this.currentToHitMedium += getAlphaStrikeQuirkToHit(this.quirks, "medium");
+            this.currentToHitLong += getAlphaStrikeQuirkToHit(this.quirks, "long");
+            this.currentToHitExtreme += getAlphaStrikeQuirkToHit(this.quirks, "extreme");
+        }
 
         this.currentHeat = this.currentHeat / 1;
 
@@ -1920,6 +1938,7 @@ export class AlphaStrikeUnit {
             tonnage:  this.tonnage,
             tro:  this.tro,
             rulesLevel:  this.rulesLevel,
+            quirks:  this.quirks.map((quirk) => ({ ...quirk })),
             role:  this.role,
             threshold:  this.threshold,
             pilot:  this._pilot,

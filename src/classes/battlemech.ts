@@ -4,7 +4,7 @@ import { getQuirk, getQuirkIssues, getQuirkTargets } from "../data/quirk-registr
 import { findCanonEntry, resolveCanonQuirks } from "../data/quirk-canon";
 import { ICanonQuirkEntry } from "../data/quirk-canon-interfaces";
 import { QuirkList } from "./quirk-list";
-import { getQuirkHeatGenerated } from "../utils/quirk-effects";
+import { getAlphaStrikeQuirks, getQuirkHeatGenerated } from "../utils/quirk-effects";
 import { getEditionSkillMultipliers, getSkillMultiplier } from "../data/skill-multipliers";
 import { battlemechLocations } from "../data/battlemech-locations";
 import { IArmorType, ICockpitType, ICriticalLocations, IEngineOption, IEngineType, IEquipmentItem, IGyro, IHeatSync, IInternalStructure, IInternalStructurePerTon, IJumpJet, IMyomerType, IResolvedInternalStructure, ISplitLocation, ITechDates } from "../data/data-interfaces";
@@ -2783,6 +2783,7 @@ export class BattleMech {
         unitObj.setPilotSkill( this._pilot.gunnery );
         unitObj.importMUL( asMechData )
         unitObj.mechCreatorUUID = this._uuid;
+        unitObj.quirks = getAlphaStrikeQuirks(this);
         // Carry the design's rules level so the Alpha Strike print guard and stamp apply.
         unitObj.rulesLevel = this.getRequiredRulesLevel();
         return unitObj;

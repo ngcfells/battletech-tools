@@ -20,6 +20,8 @@ export default class AlphaStrikeRosterInPlay extends React.Component<IInPlayProp
 
     constructor(props: IInPlayProps) {
         super(props);
+        // Units added on the roster since the force was loaded take the "Use design quirks" switch here.
+        this.props.appGlobals.currentASForce?.syncQuirksInPlay();
 
 
         this.state = {

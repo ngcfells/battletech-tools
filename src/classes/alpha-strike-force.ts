@@ -213,6 +213,15 @@ export default class AlphaStrikeForce {
         }
     }
 
+    /** Hands the "Use design quirks" switch to every unit, which reads it in `calcCurrentValues`. */
+    public syncQuirksInPlay(): void {
+        for( const group of this.groups ) {
+            for( const unit of group.members ) {
+                unit.quirksInPlay = this.quirksInPlay;
+            }
+        }
+    }
+
     public import(importObj: IASForceExport) {
         for( let group of importObj.groups ) {
             this.groups.push( new AlphaStrikeGroup( group) );
@@ -226,6 +235,7 @@ export default class AlphaStrikeForce {
         }
 
         this.quirksInPlay = !!importObj.quirksInPlay;
+        this.syncQuirksInPlay();
 
         if( importObj.lastUpdated ) {
             this._lastUpdated = new Date(importObj.lastUpdated);
