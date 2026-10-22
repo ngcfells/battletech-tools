@@ -6,6 +6,8 @@ import BattleArmor from "../../classes/battle-armor";
 import { BattleMech } from "../../classes/battlemech";
 import CapitalShip from "../../classes/capital-ship";
 import Vehicle from "../../classes/vehicle";
+import { QuirkList } from "../../classes/quirk-list";
+import { bayQuirkSuffix, getUnitQuirkSheetLines } from "./quirk-sheet-block";
 import BattleArmorRecordSheet from "./battle-armor-record-sheet";
 import CapitalShipRecordSheet from "./capital-ship-record-sheet";
 import FighterRecordSheet from "./fighter-record-sheet";
@@ -68,5 +70,31 @@ describe("quirks on record sheets", () => {
         suit.addItem("is-er-small-laser", "la");
         suit.quirks.add({ tag: "quirk-accurate-weapon", equipmentUuid: suit.getItems()[0].uuid });
         expect(renderToStaticMarkup(<BattleArmorRecordSheet suit={suit} />)).toContain("[Accurate Weapon]");
+    });
+});
+
+// A bay quirk is costed once; when regrouping splits its bay, it prints once, on the part with most of its weapons.
+describe("a bay quirk after its bay splits", () => {
+    const lines = () => {
+        const quirks = new QuirkList();
+        expect(quirks.add({ tag: "quirk-accurate-weapon", bayUuids: ["a", "b", "c"] })).toBeNull();
+        return getUnitQuirkSheetLines(quirks, [{ uuid: "a", label: "A" }, { uuid: "b", label: "B" }, { uuid: "c", label: "C" }]);
+    };
+
+    it("prints on the bay holding most of the quirk's weapons, and not on the other", () => {
+        const bays = [["c"], ["a", "b"]];
+        expect(bayQuirkSuffix(lines(), ["a", "b"], bays)).toBe(" [Accurate Weapon]");
+        expect(bayQuirkSuffix(lines(), ["c"], bays)).toBe("");
+    });
+
+    it("prints on the first of two bays holding as many", () => {
+        const bays = [["a"], ["b"]];
+        const twoWeapons = (() => {
+            const quirks = new QuirkList();
+            expect(quirks.add({ tag: "quirk-accurate-weapon", bayUuids: ["a", "b"] })).toBeNull();
+            return getUnitQuirkSheetLines(quirks, [{ uuid: "a", label: "A" }, { uuid: "b", label: "B" }]);
+        })();
+        expect(bayQuirkSuffix(twoWeapons, ["a"], bays)).toBe(" [Accurate Weapon]");
+        expect(bayQuirkSuffix(twoWeapons, ["b"], bays)).toBe("");
     });
 });

@@ -74,9 +74,10 @@ export default class CapitalShipRecordSheetSVG extends React.Component<ICapitalS
         const ship = this.ship;
         const play = this.play;
         const quirkLines = this.quirkLines.lines;
+        const allBays = ship.getArcs().flatMap((arc) => ship.getArcWeaponBays(arc).map((bay) => bay.uuids));
         const bays = ship.getArcs().flatMap((arc) => ship.getArcWeaponBays(arc).map((bay, index): IAerospaceInventoryRow => ({
             quantity: 1,
-            name: weaponBayName(bay) + bayQuirkSuffix(quirkLines, bay.uuids) + (play && ship.isBayDestroyed(arc, index) ? " (destroyed)" : ""),
+            name: weaponBayName(bay) + bayQuirkSuffix(quirkLines, bay.uuids, allBays) + (play && ship.isBayDestroyed(arc, index) ? " (destroyed)" : ""),
             location: ARC_CODES[arc],
             heat: bay.heat,
             values: bay.values,

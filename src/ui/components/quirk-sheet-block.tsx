@@ -22,9 +22,22 @@ export function getUnitQuirkSheetLines(
     );
 }
 
-/** The quirk names printed beside a weapon bay, matched by any of its weapons' ids, or "" when it has none. */
-export function bayQuirkSuffix(lines: QuirkSheetLines, uuids: string[]): string {
-    const texts = lines.bays.filter((bay) => bay.uuids.some((uuid) => uuids.includes(uuid))).map((bay) => bay.text);
+/**
+ * The quirk names printed beside a weapon bay, matched by any of its weapons' ids, or "" when it has none. With the
+ * sheet's bays in `allBays`, a quirk whose bay has since split prints once, on the bay holding most of its weapons
+ * (the first of equals), as it is costed once (CO p.225).
+ */
+export function bayQuirkSuffix(lines: QuirkSheetLines, uuids: string[], allBays: string[][] = [uuids]): string {
+    const shared = (quirkUuids: string[], bay: string[]): number => bay.filter((uuid) => quirkUuids.includes(uuid)).length;
+    const sameBay = (bay: string[]): boolean => bay.length === uuids.length && bay.every((uuid) => uuids.includes(uuid));
+    const printsHere = (quirkUuids: string[]): boolean => {
+        let best: string[] | undefined;
+        for (const bay of allBays) {
+            if (shared(quirkUuids, bay) > (best ? shared(quirkUuids, best) : 0)) best = bay;
+        }
+        return !!best && sameBay(best);
+    };
+    const texts = lines.bays.filter((bay) => printsHere(bay.uuids)).map((bay) => bay.text);
     return texts.length ? ` [${texts.join(", ")}]` : "";
 }
 

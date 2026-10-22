@@ -44,10 +44,11 @@ export { weaponBayName };
  * 2026-10-22), then the rest of its equipment. In play a bay notes its destroyed weapons.
  */
 export const craftInventoryRows = (craft: SmallCraft, codes: Record<SmallCraftArc | "hull", string>, play: boolean, quirkLines: ReturnType<typeof getUnitQuirkSheetLines>): IAerospaceInventoryRow[] => {
+    const allBays = SMALL_CRAFT_ARCS.flatMap((arc) => craft.getArcWeaponBays(arc).map((bay) => bay.uuids));
     const bays = SMALL_CRAFT_ARCS.flatMap((arc) => craft.getArcWeaponBays(arc).map((bay): IAerospaceInventoryRow => {
         const destroyed = play ? bay.uuids.filter((uuid) => craft.isWeaponDestroyed(uuid)).length : 0;
         return {
-            quantity: 1, name: weaponBayName(bay) + bayQuirkSuffix(quirkLines, bay.uuids) + (destroyed ? ` (${destroyed} destroyed)` : ""), location: codes[arc], heat: bay.heat, values: bay.values, capital: bay.capital,
+            quantity: 1, name: weaponBayName(bay) + bayQuirkSuffix(quirkLines, bay.uuids, allBays) + (destroyed ? ` (${destroyed} destroyed)` : ""), location: codes[arc], heat: bay.heat, values: bay.values, capital: bay.capital,
         };
     }));
     const equipment = aerospaceInventoryRows(
