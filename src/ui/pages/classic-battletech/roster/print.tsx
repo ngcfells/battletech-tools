@@ -521,10 +521,11 @@ export default class ClassicBattleTechRosterPrint extends React.Component<IPrint
                         />
                       </div>
                   ))}
-                  {group.battledroidsUnits.map( (unit) => (
-                      <div className={"page"} key={unit.getUUID()}>
+                  {/* Two Battledroids tanks, jeeps or infantry squads to a page, as the book prints its droid sheets. */}
+                  {Array.from({ length: Math.ceil(group.battledroidsUnits.length / 2) }, (_, page) => group.battledroidsUnits.slice(page * 2, page * 2 + 2)).map( (units) => (
+                      <div className={"page"} key={units[0].getUUID()}>
                         <BattledroidsUnitRecordSheet
-                          unit={unit}
+                          units={units}
                           showDamage={true}
                         />
                       </div>

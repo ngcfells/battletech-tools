@@ -33,6 +33,15 @@ describe("Battledroids tanks, jeeps and infantry", () => {
         expect(new BattledroidsUnit("hnt-3r-hunter").getWeaponLines()[0].range.min).toBe(6);
     });
 
+    // The Weapons Table (BD p.20): short-range missiles do 2 points for each missile that hits, long-range 1; the
+    // auto cannon 5 and the machine gun 2.
+    it("gives each weapon line the damage of the Weapons Table, per missile for launchers", () => {
+        const damage = (tag: string) => new BattledroidsUnit(tag).getWeaponLines().map(line => line.damage);
+        expect(damage("scr-8n-scorpion")).toEqual(["2/Msl", "2/Msl", "2/Msl"]);
+        expect(damage("hnt-3r-hunter")).toEqual(["1/Msl"]);
+        expect(damage("vde-3t-vedette")).toEqual(["5", "2"]);
+    });
+
     // Tank Hit Locations, BD p.22.
     it("locates hits on a tank by the table", () => {
         const column = (side: boolean) => [2, 3, 4, 5, 9, 10, 12].map(roll => getBattledroidsTankHitLocation(roll, side));

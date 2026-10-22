@@ -139,7 +139,7 @@ export default class BattledroidsUnit {
                     arc: weapon.arc,
                     shots: weapon.shots,
                     shotsLeft: weapon.shots - fired,
-                    damage: item ? String(item.damage) : "",
+                    damage: !item ? "" : item.damagePerCluster ? `${item.damagePerCluster}/Msl` : String(item.damage),
                     range: {
                         min: item?.range?.min ?? 0,
                         short: item?.range?.short ?? 0,
