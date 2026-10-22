@@ -28,7 +28,7 @@ Local references (git-ignored, never imported by shipped code):
 
 ## 1. Fix what ships
 
-- [ ] Record sheet parity (beta feedback item 10, spec `docs/superpowers/specs/2026-10-21-beta-feedback-design.md`):
+- [x] Record sheet parity (beta feedback item 10, spec `docs/superpowers/specs/2026-10-21-beta-feedback-design.md`):
   every sheet carries the tables and helpers the Total Warfare record sheet for that unit type prints, laid out
   close to it, with our own silhouettes, and is checked in the browser against a render of the official sheet.
   Done: Combat and Support Vehicles (ground, VTOL, naval, submarine, super-heavy, Large Support Vehicle,
@@ -46,8 +46,12 @@ Local references (git-ignored, never imported by shipped code):
   Record Sheet: craft data and inventory, armor diagram with our own silhouettes, crew data, critical damage with
   the thrusters and the -1 to -5 engine track, and for an Airship the velocity record and the Airship Velocity
   Table, TW p.204; Fixed-Wing Support Vehicles stay on the conventional fighter sheet). The drawing helpers are
-  shared in `src/ui/components/svg/record-sheet-svg-kit.tsx` and `aerospace-record-sheet-svg-blocks.tsx`. Still
-  owed: the *Battledroids* sheet.
+  shared in `src/ui/components/svg/record-sheet-svg-kit.tsx` and `aerospace-record-sheet-svg-blocks.tsx`. The
+  *Battledroids* tanks, jeeps and infantry (BD pp.22-23) print two to a page in the style of the book's droid
+  sheet, with its to-hit, movement, terrain and target modifiers, the Tank Hit Locations, the Missile Hit Table and
+  the tank firing arc (2026-10-22).
+- [ ] *Battledroids* droids still print on the TW-style 'Mech sheet. A sheet in the style of the book's droid
+  record sheet (the photocopiable droid sheets bound into BD) is not built.
 - [ ] Verify before using: a fan-made vehicle sheet says a CASE-protected ammunition critical removes all rear
   armor and stuns the crew. Find the rule in the library before printing it on our sheet.
 - [ ] Anti-orbital Long Tom rounds (beta feedback item 9): mechanics and rules level to be decided with the user.
