@@ -49,6 +49,46 @@ export interface IQuirkLocation {
     hand?: boolean;
 }
 
+export type QuirkRangeBand = "short" | "medium" | "long";
+
+/**
+ * What a quirk does in play, from the page its record cites. Play applies an effect where the app works out that
+ * number (to-hit, heat, Initiative) and lists the rest on the unit's play panel. Phrases (`when`, `of`, `trigger`,
+ * `outcome`, `note`) are in our own words.
+ *   - `to-hit`: the unit's own attacks; `rangeBand: "parameter"` takes the band the quirk was assigned with; `attack`
+ *     is "weapon" when absent; `attackerRanOrFlanked` only after running or flanking (Stabilized Weapon).
+ *   - `to-hit-against`: attacks made on the unit.
+ *   - `initiative`: the side's Initiative; a side takes its largest, never the sum (CO p.225).
+ *   - `heat-generated`: the unit's heat built up each turn, never below zero (Combat Computer).
+ *   - `weapon-heat`: heat of the quirk's weapon when fired, never below `minimum`.
+ *   - `roll`: a modifier to a roll the app does not make (Piloting, Control, repair...).
+ *   - `triggered-roll`: a 2D6 roll for `target`+ after `trigger`.
+ *   - `multiplier`: a time, value or rate multiplied.
+ *   - `damage`: how damage to or by the unit changes.
+ */
+export type QuirkEffect =
+    | {
+        type: "to-hit"; modifier: number; scope: "unit" | "weapon"; rangeBand?: QuirkRangeBand | "parameter";
+        vsAirborne?: true; attack?: "weapon" | "punch" | "arm-physical" | "physical"; attackerRanOrFlanked?: true;
+    }
+    | { type: "to-hit-against"; modifier: number; when: string }
+    | { type: "initiative"; modifier: number }
+    | { type: "heat-generated"; modifier: number }
+    | { type: "weapon-heat"; modifier: number; minimum?: number }
+    | { type: "roll"; roll: string; modifier: number; when?: string }
+    | { type: "triggered-roll"; target: number; trigger: string; outcome: string }
+    | { type: "multiplier"; of: string; value: number }
+    | { type: "damage"; note: string };
+
+/** A quirk as the Alpha Strike Companion has it (pp.59-67): only these quirks act in Alpha Strike play (ASC p.59). */
+export interface IQuirkAlphaStrike {
+    /** Quirk points; one per range band for Improved and Poor Targeting, "variable" when priced by damage. */
+    cost: number | number[] | "variable";
+    page: number;
+    /** Empty when the Companion's rule is not one the app applies. */
+    effects: QuirkEffect[];
+}
+
 export interface IQuirk {
     tag: string;
     name: string;
@@ -73,6 +113,10 @@ export interface IQuirk {
     /** One or two sentences in our own words; never the rulebook's text. */
     summary: string;
     sources: IQuirkSource[];
+    /** What it does in play; absent or empty means "not yet applied in play". */
+    effects?: QuirkEffect[];
+    /** Present only when the Alpha Strike Companion lists the quirk. */
+    alphaStrike?: IQuirkAlphaStrike;
     editions: string[];
     editionLevels?: { [editionTag: string]: number };
     rulesLevel: number;

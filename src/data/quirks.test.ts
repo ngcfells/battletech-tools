@@ -117,3 +117,89 @@ describe("MegaMek quirk codes", () => {
         expect(codes.filter((code, index) => codes.indexOf(code) !== index)).toEqual([]);
     });
 });
+
+// Effects as read from the page images: Campaign Operations pp.225-235 (with its v5.0 errata) and the Alpha Strike
+// Companion pp.59-67.
+// The quirks whose rule is not one the app models as a number: listed in play as "not yet applied in play".
+const EXPECTED_UNAPPLIED = [
+    "quirk-compact-mech", "quirk-extended-torso-twist", "quirk-fine-manipulators", "quirk-hyper-extending-actuators",
+    "quirk-improved-communications", "quirk-improved-sensors", "quirk-jettison-capable-weapon", "quirk-multi-trac",
+    "quirk-rugged", "quirk-rumble-seat", "quirk-scout-bike", "quirk-variable-range-targeting", "quirk-vestigial-hands",
+    "quirk-vtol-rotor-arrangement", "quirk-trailer-hitch", "quirk-em-interference", "quirk-large-dropship",
+    "quirk-low-mounted-arms", "quirk-no-ejection-system", "quirk-no-torso-twist", "quirk-non-functional-item",
+    "quirk-obsolete", "quirk-poor-performance", "quirk-ramshackle", "quirk-slow-traverse", "quirk-static-ammo-feed",
+    "quirk-un-streamlined",
+];
+
+// The Alpha Strike Companion's lists (pp.60-61), by our tags.
+const ALPHA_STRIKE = [
+    "quirk-accurate-weapon", "quirk-anti-aircraft-targeting", "quirk-atmospheric-flyer", "quirk-battle-computer",
+    "quirk-battlefists", "quirk-combat-computer", "quirk-command-mech", "quirk-compact-mech", "quirk-cowl",
+    "quirk-distracting", "quirk-docking-arms", "quirk-easy-to-maintain", "quirk-easy-to-pilot",
+    "quirk-extended-torso-twist", "quirk-hyper-extending-actuators", "quirk-improved-communications",
+    "quirk-improved-sensors", "quirk-improved-targeting", "quirk-internal-bomb-bay", "quirk-modular-weapons",
+    "quirk-multi-trac", "quirk-narrow-low-profile", "quirk-overhead-arms", "quirk-protected-actuators",
+    "quirk-reinforced-legs", "quirk-searchlight", "quirk-trailer-hitch", "quirk-variable-range-targeting",
+    "quirk-ammunition-feed-problem", "quirk-atmospheric-flight-instability", "quirk-cooling-system-flaws",
+    "quirk-cramped-cockpit", "quirk-difficult-ejection", "quirk-difficult-to-maintain", "quirk-em-interference",
+    "quirk-exposed-actuators", "quirk-exposed-weapon-linkage", "quirk-fragile-fuel-tank", "quirk-gas-hog",
+    "quirk-hard-to-pilot", "quirk-illegal-design", "quirk-inaccurate-weapon", "quirk-large-dropship",
+    "quirk-low-mounted-arms", "quirk-no-minimal-arms", "quirk-no-ejection-system", "quirk-no-torso-twist",
+    "quirk-obsolete", "quirk-oversized", "quirk-poor-life-support", "quirk-poor-performance", "quirk-poor-sealing",
+    "quirk-poor-targeting", "quirk-poor-workmanship", "quirk-prototype", "quirk-sensor-ghosts",
+    "quirk-static-ammo-feed", "quirk-un-streamlined", "quirk-weak-legs", "quirk-weak-undercarriage",
+];
+
+describe("quirk effects in play", () => {
+    it("gives Accurate Weapon -1 to its weapon's to-hit", () => {
+        expect(getQuirk("quirk-accurate-weapon")?.effects).toEqual([{ type: "to-hit", modifier: -1, scope: "weapon" }]);
+    });
+
+    it("gives Anti-Aircraft Targeting -2 against airborne targets", () => {
+        expect(getQuirk("quirk-anti-aircraft-targeting")?.effects).toEqual([{ type: "to-hit", modifier: -2, scope: "unit", vsAirborne: true }]);
+    });
+
+    it("gives Improved Targeting -1 and Poor Targeting +1 in the band they were assigned", () => {
+        expect(getQuirk("quirk-improved-targeting")?.effects).toEqual([{ type: "to-hit", modifier: -1, scope: "unit", rangeBand: "parameter" }]);
+        expect(getQuirk("quirk-poor-targeting")?.effects).toEqual([{ type: "to-hit", modifier: 1, scope: "unit", rangeBand: "parameter" }]);
+    });
+
+    it("gives Stabilized Weapon -1 only after running or flanking", () => {
+        expect(getQuirk("quirk-stabilized-weapon")?.effects).toEqual([{ type: "to-hit", modifier: -1, scope: "weapon", attackerRanOrFlanked: true }]);
+    });
+
+    it("gives Command 'Mech +1 and Battle Computer +2 Initiative", () => {
+        expect(getQuirk("quirk-command-mech")?.effects).toEqual([{ type: "initiative", modifier: 1 }]);
+        expect(getQuirk("quirk-battle-computer")?.effects).toEqual([{ type: "initiative", modifier: 2 }]);
+    });
+
+    it("gives Combat Computer -4 heat generated", () => {
+        expect(getQuirk("quirk-combat-computer")?.effects).toEqual([{ type: "heat-generated", modifier: -4 }]);
+    });
+
+    it("changes a weapon's heat for the cooling jacket quirks", () => {
+        expect(getQuirk("quirk-improved-cooling-jacket")?.effects).toEqual([{ type: "weapon-heat", modifier: -1, minimum: 1 }]);
+        expect(getQuirk("quirk-poor-cooling-jacket")?.effects).toEqual([{ type: "weapon-heat", modifier: 1 }]);
+        expect(getQuirk("quirk-no-cooling-jacket")?.effects).toEqual([{ type: "weapon-heat", modifier: 2 }]);
+    });
+
+    it("gives every quirk an effects list, empty only where no effect type fits", () => {
+        expect(quirks.filter((quirk) => !quirk.effects).map((quirk) => quirk.tag)).toEqual([]);
+        expect(quirks.filter((quirk) => !quirk.effects?.length).map((quirk) => quirk.tag).sort()).toEqual([...EXPECTED_UNAPPLIED].sort());
+    });
+
+    it("keeps alphaStrike only on the quirks the Alpha Strike Companion lists, on its quirk pages", () => {
+        expect(quirks.filter((quirk) => quirk.alphaStrike).map((quirk) => quirk.tag).sort()).toEqual([...ALPHA_STRIKE].sort());
+        for (const quirk of quirks.filter((each) => each.alphaStrike))
+            expect(quirk.alphaStrike!.page, quirk.tag).toBeGreaterThanOrEqual(59);
+        for (const quirk of quirks.filter((each) => each.alphaStrike))
+            expect(quirk.alphaStrike!.page, quirk.tag).toBeLessThanOrEqual(67);
+    });
+
+    it("gives the Alpha Strike targeting quirks their to-hit by band, and Sensor Ghosts +1 to every weapon attack", () => {
+        expect(getQuirk("quirk-improved-targeting")?.alphaStrike).toEqual({ cost: [3, 4, 5], page: 63, effects: [{ type: "to-hit", modifier: -1, scope: "unit", rangeBand: "parameter" }] });
+        expect(getQuirk("quirk-poor-targeting")?.alphaStrike).toEqual({ cost: [-2, -3, -4], page: 67, effects: [{ type: "to-hit", modifier: 1, scope: "unit", rangeBand: "parameter" }] });
+        expect(getQuirk("quirk-sensor-ghosts")?.alphaStrike?.effects).toEqual([{ type: "to-hit", modifier: 1, scope: "unit" }]);
+        expect(getQuirk("quirk-variable-range-targeting")?.alphaStrike?.effects).toEqual([{ type: "to-hit", modifier: -1, scope: "unit" }]);
+    });
+});
