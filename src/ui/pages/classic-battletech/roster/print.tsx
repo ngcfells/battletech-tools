@@ -13,6 +13,7 @@ import FighterRecordSheet from "../../../components/fighter-record-sheet";
 import SmallCraftRecordSheet from "../../../components/small-craft-record-sheet";
 import CapitalShipRecordSheet from "../../../components/capital-ship-record-sheet";
 import InfantryRecordSheet from "../../../components/infantry-record-sheet";
+import { infantrySheetLines } from "../../../components/svg/infantry-record-sheet-svg";
 import BattleArmorRecordSheet from "../../../components/battle-armor-record-sheet";
 import ProtoMechRecordSheet from "../../../components/protomech-record-sheet";
 import BattledroidsUnitRecordSheet from "../../../components/battledroids-unit-record-sheet";
@@ -485,13 +486,14 @@ export default class ClassicBattleTechRosterPrint extends React.Component<IPrint
                         />
                       </div>
                   ))}
-                  {group.infantry.map( (platoon) => (
-                      <div className={"page"} key={platoon.getUUID()}>
+                  {/* Four infantry platoons or sub-platoons to a page, as on the record sheet books. */}
+                  {Array.from({ length: Math.ceil(infantrySheetLines(group.infantry).length / 4) }, (_, page) => infantrySheetLines(group.infantry).slice(page * 4, page * 4 + 4)).map( (lines) => (
+                      <div className={"page"} key={`${lines[0].platoon.getUUID()}-${lines[0].line}`}>
                         <RulesLevelStamp
-                          requiredRulesLevel={platoon.getRequiredRulesLevel()}
+                          requiredRulesLevel={Math.max(...lines.map((entry) => entry.platoon.getRequiredRulesLevel()))}
                         />
                         <InfantryRecordSheet
-                          platoon={platoon}
+                          lines={lines}
                           showDamage={true}
                         />
                       </div>
