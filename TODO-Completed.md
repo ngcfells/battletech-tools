@@ -10,6 +10,93 @@ there is done and verified, move it to the top of this file.
 
 ## Completed roadmap items
 
+### Moved from `TODO.md` on 2026-10-22 (9 items)
+
+Verified against the code on `beta` at 666326eb.
+
+#### JBTIICRework review (2026-10-06)
+
+- [x] Internal structure bug (found 2026-10-07): 25 tons had 5 leg points (6), and 55/60/65 tons had 17/19/20 center
+  torso points (18/20/21), against TM p.47. Confirmed in four printings; the 2026 Core Rulebook has no
+  construction rules. Upstream issue #113, fix in PR #114 (branch `fix/internal-structure-table`). Merged into
+  `feature/rules-editions-list` 2026-10-09; not yet in our master.
+  Done: the table now has 25 t leg 6 and the corrected center torso values.
+
+#### BattleMech construction and play gaps / Custom Homebrew
+
+- [x] Siege Tank (Custom Homebrew vehicle, requested 2026-10-18): a StarCraft-style tracked tank that
+  transforms like a LAM between Vehicle Mode (moves, direct fire) and Siege Mode (immobile, artillery with
+  more damage and range). Source: a design conversation the user pasted; nothing in it is canon, and some of
+  its rules claims are wrong (corrected below). User's decisions (2026-10-18): conversion equipment is 10%
+  of the vehicle's weight; tracked only; the construction math decides the minimum tonnage, no fixed thresholds; Siege
+  Mode must mount a real artillery weapon (Thumper, Sniper or Long Tom), not an Artillery Cannon, and does
+  more damage than Vehicle Mode. Deferred to Tuesday 2026-10-20 evening (weekly token limit). Core concepts:
+  - **Two modes, one unit.** A mode flag: Vehicle (normal tracked movement, e.g. 4/6 or 5/8, turret works
+    normally) and Siege (0/0 MP, turret turns freely through 360 degrees). Each mode has its own movement
+    and its own weapon profile.
+  - **Transformation, LAM timing.** Declared in the Movement Phase (going into Siege, the tank may move
+    first); no weapon fires on the turn it transforms; the new mode takes effect at the end of the turn.
+  - **Dual-mode main gun, one physical weapon with two profiles tied to the mode.** Vehicle Mode: AC/10
+    profile (10 damage, no minimum, 5/10/15; the source gives 7/14/21, which is not the AC/10's range, so
+    decide which is meant), direct fire, may fire after moving. Siege Mode: artillery profile with the full artillery
+    rules (multi-mapsheet range, indirect fire, scatter, minimum range), only while immobile. No mode
+    available = cannot fire. Weight, slots and cost are the artillery piece's (the source's suggestion).
+  - **Three variants by artillery piece.** Catalog figures (TO:AUE p.96), not the source's:
+  Done: superseded by the ArtVee design and build above.
+
+#### BattleMech construction and play gaps / Cockpits
+
+- [x] Enforce cockpit dates by era (Small Cockpit is offered in every era; IS 3067, Clan 3080).
+  Done: `getAvailableCockpits` checks each cockpit's dates (Small: IS 3067, Clan 3080).
+
+#### BattleMech construction and play gaps / IndustrialMechs and Primitive 'Mechs
+
+- [x] Alpha Strike specials on builder cards (already on upstream master, every unit): a weapon with no
+  `alphaStrike.specialAbility` falls back to its TechManual weapon type codes (`getAlphaStrikeEquipmentAbilityCodes`
+  in `equipment-registry.ts`), so cards print "DB", "DE", "S"; and `alphaStrike.notes` are pushed into the
+  specials, so "PROVISIONAL WORKBOOK CONVERSION" prints too (`calcAlphaStrike`). Fix on its own branch.
+  Done: only Alpha Strike ability codes and conversion keywords from `alphaStrike.notes` reach the card; weapon types fall back through `isAlphaStrikeAbilityCode`.
+
+#### BattleMech construction and play gaps / Equipment still missing or unwired
+
+- [x] Weapons still missing. Already in the catalogs (2026-10-17 check): M-Pod, B-Pod (TM p.205), BattleMech
+  Taser (TO:AUE p.157), TSEMP Cannon / One-Shot / Repeating, Cruise Missiles 50-120, C3 Remote Sensor
+  Launcher, Light/Heavy Plasma Rifle (CRB p.189, table p.248; BV and cost from MegaMek, dates unknown).
+  Added 2026-10-17:
+  - Enhanced LRT 5/10/15/20 (`enhanced-lrt-*`) and Enhanced LRT ammo (`ammo-is-enhanced-lrt-standard`): the
+    Enhanced LRM records with torpedo rules, as the LRTs copy the LRMs. TO:AUE p.139: "The maritime
+    equivalent of the Enhanced LRM (NLRM) is the Enhanced LRT (NLRT)"; BMM p.104: torpedo launchers "use the
+    same statistics as the launcher type chosen", indirect fire for LRT and NLRT only. No Artemis or one-shot
+    versions, since the LRTs have none as separate records.
+  - Light Blazer (`light-blazer`), from BattleTech Gothic (which counts as a source): Weapons and Equipment
+    Table p.93, heat 6, damage 7, 1-3/4-6/7-9; Abominations 1K shots per ton (p.92). Entered at the
+    Apocryphal rules level (licensed, outside the main setting); move it if Gothic should rank as canon.
+    Gothic has no construction rules: 2 tons inferred from the FS9-B Firestarter swap (p.107), 2 slots by
+    analogy with the Binary Laser Cannon; cost, BV and dates unknown (0 / null).
+  What the library shows for the rest:
+  - Rocket Launcher 1-5 and LRM 1: battle armor weapons only (TW p.305; in the battle armor catalog). No
+    'Mech-scale source.
+  - Kinslaughter H ER PPC: a brand name in the TM p.233 ER PPC entry ("Martinson Armaments' Kinslaughter
+    H-Class"), not a separate weapon. Use the ER PPC.
+  Done: every weapon listed is in the catalogs or ruled out by the library.
+- [x] For the accessibility pass (after the canon work, before more custom work): the theme's fieldset legend
+  (white on #dfab2d) fails WCAG contrast (2.09:1, axe `color-contrast`) everywhere it is used.
+  Done in the axe pass (ba9af26f): legends and `btn-primary` are #111 on #dfab2d.
+- [x] Fractional Accounting (TO:AUE p.188): the switch is in step 1 but locked
+  (`BattleMech.FRACTIONAL_ACCOUNTING_AVAILABLE = false`). Building it means engine multipliers, armor by the
+  point, ammunition by the shot, all rounded up to the kilogram; then turn the switch on.
+  Done (a1d479b0): Fractional Accounting for 'Mechs and Combat Vehicles; the lock is gone.
+- [x] Play panels fail axe color-contrast: white on gold fieldset legends and `btn-primary` buttons (2.09:1), and
+  `small-text` paragraphs inside a fieldset render #212529 on #333 (1.22:1). Found 2026-10-14 on the battle armor
+  play panel; it is the shared theme, so every play fieldset is affected.
+  Done in the axe pass (ba9af26f).
+
+#### Fix what ships
+
+- [x] Anti-orbital Long Tom rounds (beta feedback item 9): built as Custom Long Tom ammunition (2026-10-22; rulings in
+  the spec), a Federated Suns development: prototype 3055, introduced 3062, Battle Value 28 (46 a ton prorated to 3 shots). Entry in TRO.md. Map play: the space turn tracker in Play Mode (setup option "Space forces in this game"; design and plan of 2026-10-22).
+  Done: the Custom Long Tom ammunition and the space turn tracker (`space-tracker.ts`) are both built.
+
 ### Moved from `TODO.md` on 2026-10-18 (91 items)
 
 Grouped by the roadmap section they came from (with the open item they sat under, if any); sections and
