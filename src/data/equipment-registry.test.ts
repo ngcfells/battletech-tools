@@ -296,6 +296,28 @@ describe("equipment catalog provenance", () => {
         }
     });
 
+    it("sorts every ammunition record as `ammo, <weapon>, <munition>[, <side>]`, the weapon spelled as its name spells it", () => {
+        // The weapon is the name before " - " ("Long Tom Artillery - Smoke Ammo (IS)"), numbers padded so AC/2 sorts before AC/10.
+        const pad = (text: string) => text.toLowerCase().replace(/\d+/g, (digits) => digits.padStart(3, "0"));
+        const wrong: string[] = [];
+        for (const item of [...ammoCatalog, ...ammoCustom]) {
+            const plain = item.name.replace(/ \((IS|C|Clan)\)$/, "");
+            const weapon = plain.includes(" - ") ? plain.split(" - ")[0] : plain.replace(/ Ammo$/, "");
+            const side = /^ammo-(custom-)?(is|clan)-/.exec(item.tag)?.[2];
+            const fields = item.sort.split(", ");
+            const ok = /^ammo, [^,A-Z]+, [^,A-Z]+(, (is|clan))?$/.test(item.sort)
+                && fields[1] === pad(weapon)
+                && (side ? fields.length === 4 && fields[3] === side : fields.length === 3);
+            if (!ok) wrong.push(`${item.tag}: ${item.sort}`);
+        }
+        expect(wrong).toEqual([]);
+    });
+
+    it("sorts every Long Tom round together", () => {
+        const sorted = [...ammoCatalog].sort((a, b) => a.sort.localeCompare(b.sort)).map((item) => item.name.startsWith("Long Tom"));
+        expect(sorted.lastIndexOf(true) - sorted.indexOf(true) + 1).toBe(sorted.filter(Boolean).length);
+    });
+
     it("uses null, not 0, for ammunition that never went extinct", () => {
         for (const item of [...isAmmoList, ...clanAmmoList, ...universalAmmoList]) {
             expect(item.introduced, item.tag).not.toBe(0);
