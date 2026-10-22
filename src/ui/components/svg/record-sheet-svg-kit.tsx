@@ -117,11 +117,12 @@ export const rollTable = (table: ISheetTable, x: number, y: number, w: number, c
 /**
  * The trademark notice, worded as on the official Total Warfare sheets and as MegaMekLab and Solaris Skunk Werks print
  * it, with the year filled in as MegaMekLab does. Their closing "Permission to photocopy for personal use" is the
- * publisher's grant on its own sheets, so ours leave it out.
+ * publisher's grant on its own sheets, so ours leave it out. "Used with permission": tools like ours work under the
+ * permission the publishers give the community (user ruling 2026-10-22).
  */
 export const TRADEMARK_NOTICE = (year: number): string[] => [
     `© ${year} The Topps Company, Inc. Classic BattleTech, BattleTech, 'Mech and BattleMech are trademarks of The Topps Company, Inc. All rights reserved.`,
-    "Catalyst Game Labs and the Catalyst Game Labs logo are trademarks of InMediaRes Productions, LLC.",
+    "Catalyst Game Labs and the Catalyst Game Labs logo are trademarks of InMediaRes Productions, LLC. Used with permission.",
 ];
 
 export const NOT_ENDORSED = "This sheet is not published or endorsed by The Topps Company, Inc. or Catalyst Game Labs.";
