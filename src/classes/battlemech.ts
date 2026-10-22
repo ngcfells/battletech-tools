@@ -4966,9 +4966,15 @@ export class BattleMech {
         return generated - this.getActiveHeatDissipation();
     }
 
-    /** Out of the game: head or center torso structure gone, or the MechWarrior killed (6 wounds). */
+    /**
+     * Out of the game: head or center torso structure gone, a side torso gone with an XL engine, more than two engine
+     * hits (as `isWreckedBlurb` has them), or the MechWarrior killed (6 wounds).
+     */
     public isDestroyed(): boolean {
-        return !this._locationHasStructure("hd") || !this._locationHasStructure("ct") || this.pilot.wounds >= 6;
+        return !this._locationHasStructure("hd") || !this._locationHasStructure("ct")
+            || (this.hasXLEngine() && (!this._locationHasStructure("lt") || !this._locationHasStructure("rt")))
+            || this.engineHits() > 2
+            || this.pilot.wounds >= 6;
     }
 
     /** The items quirks may be attached to in play: those fitted now, an OmniMech's current pods included. */

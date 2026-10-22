@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import AlphaStrikeForce, { IASForceExport } from "./alpha-strike-force";
 import { BattleMech } from "./battlemech";
 import { BattleMechForce, ICBTForceExport } from "./battlemech-force";
@@ -64,5 +64,43 @@ describe("the Classic force's quirk Initiative", () => {
         const force = new BattleMechForce();
         force.groups[0].members.push(new BattleMech());
         expect(force.getInitiativeModifier()).toBeNull();
+    });
+});
+
+// Exactly the side torso's armor and structure, so no damage transfers to the center torso.
+const destroyLeftTorso = (mech: BattleMech): void => {
+    mech.takeDamage(mech.getArmorAllocation().leftTorso + mech.getInternalStructure().leftTorso, "lt", false);
+};
+
+// A wrecked 'Mech drops out of its side's Initiative, as the record sheet shows it wrecked (final review).
+describe("a destroyed 'Mech and its side's quirk Initiative", () => {
+    it("drops an XL engine 'Mech that has lost a side torso", () => {
+        const force = new BattleMechForce();
+        const mech = new BattleMech();
+        mech.setTonnage(50);
+        mech.setWalkSpeed(4);
+        mech.setEngineType("xl");
+        expect(mech.quirks.add({ tag: "quirk-battle-computer" })).toBeNull();
+        force.groups[0].members.push(mech);
+        expect(force.getInitiativeModifier()?.modifier).toBe(2);
+        destroyLeftTorso(mech);
+        expect(mech.isDestroyed()).toBe(true);
+        expect(force.getInitiativeModifier()).toBeNull();
+    });
+
+    it("drops a 'Mech with more than two engine hits", () => {
+        const mech = new BattleMech();
+        mech.setTonnage(50);
+        mech.setWalkSpeed(4);
+        vi.spyOn(mech, "engineHits").mockReturnValue(3);
+        expect(mech.isDestroyed()).toBe(true);
+    });
+
+    it("keeps a standard engine 'Mech that has lost a side torso", () => {
+        const mech = new BattleMech();
+        mech.setTonnage(50);
+        mech.setWalkSpeed(4);
+        destroyLeftTorso(mech);
+        expect(mech.isDestroyed()).toBe(false);
     });
 });
