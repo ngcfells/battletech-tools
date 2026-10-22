@@ -101,15 +101,15 @@ export const ammoCustom: IEquipmentItem[] = [
         // to 1, StratOps); half the standard round's 5 shots a ton, rounded up.
         isAmmo: true,
         isSpecialAmmo: true,
-        name: "Long Tom Artillery - Anti-Orbital Ammo",
+        name: "Long Tom Artillery - Anti-Orbital Ammo (IS)",
         altNames: ["Anti-Orbital Long Tom Ammo", "Long Tom Anti-Orbital Shells"],
-        tag: "ammo-long-tom-anti-orbital",
-        techBase: "universal",
-        altTags: ["ammo-custom-long-tom-anti-orbital"],
-        sort: "ammo, long tom artillery, anti-orbital",
+        tag: "ammo-is-long-tom-anti-orbital",
+        techBase: "is",
+        altTags: ["ammo-long-tom-anti-orbital", "ammo-custom-long-tom-anti-orbital"],
+        sort: "ammo, long tom artillery, anti-orbital, is",
         category: "Ammunition",
         cbills: 60000,
-        introduced: 2500,
+        introduced: 3062,
         extinct: null,
         reintroduced: null,
         battleValue: 46,
@@ -125,13 +125,16 @@ export const ammoCustom: IEquipmentItem[] = [
         page: 0,
         alphaStrike: { specialAbility: [], heat: 0, rangeShort: 0, rangeMedium: 0, rangeLong: 0, rangeExtreme: 0, tc: false, notes: ["Custom equipment: no Alpha Strike effect"] },
         damage: 2,
+        prototype: 3055,
         catalog: "custom",
         rulesLevel: 6,
         notes: "A Long Tom round with an overcharged propellant load, a rocket sustainer and a guided terminal stage. It makes a surface-to-orbit attack under the "
             + "Strategic Operations rules for capital and sub-capital weapons (StratOps pp.91, 97-99), as a ballistic attack, for 2 points of capital-scale damage "
             + "(20 standard). 3 shots a ton. Requested on the Star League Discord by SmilingNid, with ideas from Vehrec, Arkaxe and Ryan DesCastris. "
             + "60,000 C-bills a ton, twice the single-stage guided Copperhead round, for its three stages, extra explosive and guided payload (user ruling 2026-10-22: 'elevated significantly'). "
-            + "Tech rating E, as Copperhead (user ruling 2026-10-22). Battle Value and dates are the standard Long Tom round's, pending a ruling."
+            + "Tech rating E, as Copperhead. Developed by the Federated Suns after the Smoke Jaguars razed Edo on Turtle Bay from orbit (7 May 3050, Era Report: 3052 p.17) "
+            + "so that it could never happen to them; prototype 3055, in production 3062, and used against the Word of Blake in the Jihad (user rulings 2026-10-22). "
+            + "Battle Value is the standard Long Tom round's, pending a ruling."
     },
     {
         isAmmo: true,

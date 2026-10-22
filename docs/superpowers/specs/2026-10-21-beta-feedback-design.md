@@ -48,6 +48,10 @@ own tests and commit, in this order.
    attack under the StratOps rules for capital weapons (pp.91, 97-99), as a ballistic attack, for 2 capital-scale
    damage (the Long Tom's 20 at 10 to 1). 3 shots a ton (half the standard round's 5, rounded up). 60,000 C-bills a
    ton, twice Copperhead, for its three stages, extra explosive and guided payload. Tech rating E, as Copperhead.
+   Era: Inner Sphere only, a Federated Suns development after the Smoke Jaguars razed Edo on Turtle Bay from orbit
+   (7 May 3050, Era Report: 3052 p.17) so that it could never happen to them; prototype 3055, introduced 3062, used
+   against the Word of Blake in the Jihad. Tag `ammo-is-long-tom-anti-orbital`. Battle Value is the standard
+   round's 46 until ruled.
    Era availability is still open (lost Star League tech, or a new development); BV is the standard round's until ruled.
 
 10. **Record sheets carry every chart and rules helper an official sheet has.** (Added by the user 2026-10-21.)

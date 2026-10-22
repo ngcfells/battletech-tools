@@ -102,6 +102,7 @@ export default class DevelopmentStatus extends React.Component<IDevelopmentStatu
                       <li><del>Building record sheets laid out like the Tactical Operations Structure Record Sheet, with the critical hits table and the structure rules</del></li>
                       <li><del>Airship and Satellite record sheets laid out like the Total Warfare and Tactical Operations ones, with the Airship Velocity Table</del></li>
                       <li><del><i>Battledroids</i> unit record sheets: tanks, jeeps and infantry two to a page in the style of the book's droid sheet, with its tables</del></li>
+                      <li><del>Anti-orbital Long Tom ammunition (Custom)</del></li>
                     </ul>
                     <h4>Coming</h4>
                     <ul>
