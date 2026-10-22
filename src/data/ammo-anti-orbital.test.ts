@@ -23,6 +23,10 @@ describe("anti-orbital Long Tom ammunition", () => {
         expect(round).toMatchObject({ techBase: "is", prototype: 3055, introduced: 3062, extinct: null, reintroduced: null });
     });
 
+    it("is worth the standard round's Battle Value per shot: 46 for 5 shots, so 28 for 3", () => {
+        expect(round.battleValue).toBe(28);
+    });
+
     it("loads 3 shots a ton", () => {
         expect(getWeaponShotsPerTon(longTom, round)).toBe(3);
     });

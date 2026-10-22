@@ -55,7 +55,7 @@ Local references (git-ignored, never imported by shipped code):
 - [ ] Verify before using: a fan-made vehicle sheet says a CASE-protected ammunition critical removes all rear
   armor and stuns the crew. Find the rule in the library before printing it on our sheet.
 - [ ] Anti-orbital Long Tom rounds (beta feedback item 9): built as Custom Long Tom ammunition (2026-10-22; rulings in
-  the spec), a Federated Suns development: prototype 3055, introduced 3062. Still owed: its Battle Value.
+  the spec), a Federated Suns development: prototype 3055, introduced 3062, Battle Value 28 (46 a ton prorated to 3 shots). Entry in TRO.md. Still owed: map play.
 
 - [ ] BV differs from SSW's BV2 figure: after the import fixes, 350 of 2,610 non-bundled designs match
   exactly and 805 within 2%. Work through the differences by cause (unplaced criticals and unknown

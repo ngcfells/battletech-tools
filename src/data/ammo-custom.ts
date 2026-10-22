@@ -112,7 +112,7 @@ export const ammoCustom: IEquipmentItem[] = [
         introduced: 3062,
         extinct: null,
         reintroduced: null,
-        battleValue: 46,
+        battleValue: 28,
         heat: 0,
         heatAero: 0,
         weight: 1,
@@ -134,7 +134,7 @@ export const ammoCustom: IEquipmentItem[] = [
             + "60,000 C-bills a ton, twice the single-stage guided Copperhead round, for its three stages, extra explosive and guided payload (user ruling 2026-10-22: 'elevated significantly'). "
             + "Tech rating E, as Copperhead. Developed by the Federated Suns after the Smoke Jaguars razed Edo on Turtle Bay from orbit (7 May 3050, Era Report: 3052 p.17) "
             + "so that it could never happen to them; prototype 3055, in production 3062, and used against the Word of Blake in the Jihad (user rulings 2026-10-22). "
-            + "Battle Value is the standard Long Tom round's, pending a ruling."
+            + "Battle Value 28: the standard round's 46 a ton is about 9.2 a shot, and 3 shots come to 27.6, rounded up. Its reach to orbit adds no range on the ground map, so range is neutral."
     },
     {
         isAmmo: true,
