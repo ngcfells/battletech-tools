@@ -57,6 +57,13 @@ describe("record sheet trademark footer (user ruling 2026-10-22: the logo goes o
         expect(markup).toContain("not published or endorsed by");
     });
 
+    it("gives the About page the same notice, as the site's (user ruling 2026-10-22)", () => {
+        const markup = text(renderToStaticMarkup(<TrademarkNoticeParagraphs subject="site" />));
+        expect(markup).toContain(`<p>${TOPPS}</p>`);
+        expect(markup).toContain(`<p>${CGL}</p>`);
+        expect(markup).toContain("<p>This site is not published or endorsed by The Topps Company, Inc. or Catalyst Game Labs.</p>");
+    });
+
     it("prints the short notice down an Alpha Strike card's edge, with permission", () => {
         const unit = new AlphaStrikeUnit();
         unit.name = "Atlas";

@@ -3,6 +3,7 @@ import { IAppGlobals } from '../app-router';
 import './about.scss';
 import UIPage from '../components/ui-page';
 import TextSection from '../components/text-section';
+import TrademarkNoticeParagraphs from '../components/trademark-notice';
 
 export default class About extends React.Component<IAboutProps, IAboutState> {
 
@@ -72,9 +73,7 @@ export default class About extends React.Component<IAboutProps, IAboutState> {
           >
           <p>This site and app is a completely free fan-site that makes no claim to ownership to any of <a href="http://catalystgamelabs.com/">Catalyst Game Labs</a>, <a href="http://topps.com">The Topps Company, Inc</a>, or <a href="http://microsoft.com">Microsoft Corporation</a> properties.</p>
 
-          <p>InMediaRes Productions, LLC. BattleTech, Alpha Strike, BattleMech, 'Mech, and the BattleTech logo are registered trademarks or trademarks of <a href="http://topps.com">The Topps Company, Inc.</a> in the United States and/or other countries.</p>
-
-          <p> Catalyst Game Labs and the Catalyst Game Labs logo are trademarks of InMediaRes Production, LLC. Used with permission. Neither Topps nor Catalyst Game Labs makes no representation or warranty as to the quality, viability, or suitability for purpose of this product.</p>
+          <TrademarkNoticeParagraphs subject="site" />
 
           <p><a href="http://bg.battletech.com/?page_id=34">See additional information on the BattleTech The Board Game Website</a></p>
         </TextSection>
