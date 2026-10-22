@@ -6,9 +6,9 @@ import { IWeaponBay } from '../../../data/weapon-bays';
 import { IAerospaceInventoryRow, aerospaceInventoryRows } from '../aerospace-sheet-blocks';
 import { getUnitQuirkSheetLines, weaponQuirkSuffix } from '../quirk-sheet-block';
 import { getRulesLevelName } from '../rules-level-print';
-import { ICriticalTrack, criticalDamageBox, notesBox, unitDataBox, velocityRecordBox } from './aerospace-record-sheet-svg-blocks';
+import { ICriticalTrack, criticalDamageBox, heatPerArcBox, largeCraftCrewBox, notesBox, unitDataBox, velocityRecordBox } from './aerospace-record-sheet-svg-blocks';
 import FighterDiagramSVG from './fighter-diagram-svg';
-import { DOC_HEIGHT, DOC_WIDTH, INK, blank, checkbox, groupBox, sheetFooter, text, titleBanner } from './record-sheet-svg-kit';
+import { DOC_HEIGHT, DOC_WIDTH, groupBox, sheetFooter, text, titleBanner } from './record-sheet-svg-kit';
 
 // A full-page DropShip record sheet, laid out like the Total Warfare Aerodyne and Spheroid DropShip record sheets:
 // DropShip data with the weapon bays down the left and the armor diagram filling the right; notes, crew data and the
@@ -161,49 +161,19 @@ export default class DropShipRecordSheetSVG extends React.Component<IDropShipRec
         const craft = this.craft;
         const pilot = craft.getPilot();
         const show = this.props.showPilot;
-        const hits = this.play?.crewHits ?? 0;
-        const x = MIDDLE_X, y = LOWER, w = 470, h = 380;
-        const cellX = (i: number) => x + 140 + i * 52;
-        const row = (ry: number, name: string, values: string[], marks: boolean) => (
-            <g>
-                {text(x + 130, ry + 30, name, { size: 18, weight: 700, anchor: "end" })}
-                {values.map((value, i) => {
-                    const hit = marks && i < hits;
-                    return (
-                        <g key={i} data-hit={hit ? "filled" : undefined}>
-                            <rect x={cellX(i)} y={ry} width={52} height={44} fill={hit ? INK : "white"} stroke={INK} strokeWidth={2} />
-                            {text(cellX(i) + 26, ry + 30, value, { size: value.length > 2 ? 16 : 22, weight: 700, anchor: "middle", fill: hit ? "white" : INK })}
-                        </g>
-                    );
-                })}
-            </g>
-        );
-        const people: [string, number | undefined][] = [
-            ["Crew:", craft.getCrew()], ["Marines:", undefined],
-            ["Passengers:", craft.getPassengers()], ["Elementals:", undefined],
-            ["Other:", undefined], ["Battle Armor:", undefined],
-        ];
-        return groupBox(x, y, w, h, "CREW DATA", (
-            <>
-                {text(x + 20, y + 75, "Gunnery Skill:", { size: 20, weight: 700 })}
-                {show ? text(x + 165, y + 75, pilot.gunnery, { size: 22 }) : blank(x + 165, y + 75, 40)}
-                {text(x + 235, y + 75, "Piloting Skill:", { size: 20, weight: 700 })}
-                {show ? text(x + 380, y + 75, pilot.piloting, { size: 22 }) : blank(x + 380, y + 75, 40)}
-                {row(y + 95, "Hits Taken", ["1", "2", "3", "4", "5", "6"], true)}
-                {row(y + 139, "Modifier", CREW_MODIFIERS, false)}
-                {people.map(([name, value], i) => {
-                    const px = x + 20 + (i % 2) * 225, py = y + 230 + Math.floor(i / 2) * 34;
-                    return (
-                        <g key={name}>
-                            {text(px, py, name, { size: 18, weight: 700 })}
-                            {value !== undefined ? text(px + 200, py, value, { size: 20, anchor: "end" }) : blank(px + 130, py, 70)}
-                        </g>
-                    );
-                })}
-                {text(x + 20, y + 350, "Life Boats/Escape Pods:", { size: 18, weight: 700 })}
-                {text(x + 260, y + 350, `${craft.getLifeBoats()}/${craft.getEscapePods()}`, { size: 20 })}
-            </>
-        ));
+        return largeCraftCrewBox(MIDDLE_X, LOWER, 470, 380, {
+            gunnery: show ? pilot.gunnery : undefined,
+            piloting: show ? pilot.piloting : undefined,
+            hits: this.play?.crewHits ?? 0,
+            modifiers: CREW_MODIFIERS,
+            people: [
+                ["Crew:", craft.getCrew()], ["Marines:", undefined],
+                ["Passengers:", craft.getPassengers()], ["Elementals:", undefined],
+                ["Other:", undefined], ["Battle Armor:", undefined],
+            ],
+            lifeBoats: craft.getLifeBoats(),
+            escapePods: craft.getEscapePods(),
+        });
     }
 
     renderCriticalDamage(): JSX.Element {
@@ -231,27 +201,12 @@ export default class DropShipRecordSheetSVG extends React.Component<IDropShipRec
     // Heat sinks and the heat each arc makes firing everything in it, against the sinks' dissipation (TM p.199).
     renderHeatData(): JSX.Element {
         const craft = this.craft;
-        const x = RIGHT_X, y = 2240, h = BOTTOM - y;
-        const double = craft.getHeatSinkType().tag !== "single";
-        return groupBox(x, y, RIGHT_W, h, "HEAT DATA", (
-            <>
-                {text(x + 20, y + 75, "Heat Sinks:", { size: 20, weight: 700 })}
-                {text(x + 20, y + 110, `${craft.getTotalHeatSinks()} (${craft.getHeatDissipation()})`, { size: 24, weight: 700 })}
-                {text(x + 20, y + 165, "Single", { size: 18 })}{checkbox(x + 90, y + 165)}
-                {text(x + 20, y + 205, "Double", { size: 18 })}{checkbox(x + 90, y + 205)}
-                {text(x + 102, double ? y + 204 : y + 164, "X", { size: 22, weight: 700, anchor: "middle" })}
-                {text(x + 175, y + 75, "Heat Generation Per Arc", { size: 20, weight: 700 })}
-                {SMALL_CRAFT_ARCS.map((arc, i) => {
-                    const ax = x + 175 + (i % 2) * 235, ay = y + 110 + Math.floor(i / 2) * 38;
-                    return (
-                        <g key={arc}>
-                            {text(ax, ay, `${craft.getArcName(arc)}:`, { size: 17 })}
-                            {text(ax + 225, ay, craft.getArcHeat(arc), { size: 20, weight: 700, anchor: "end" })}
-                        </g>
-                    );
-                })}
-            </>
-        ));
+        return heatPerArcBox(RIGHT_X, 2240, RIGHT_W, BOTTOM - 2240, {
+            count: craft.getTotalHeatSinks(),
+            dissipation: craft.getHeatDissipation(),
+            double: craft.getHeatSinkType().tag !== "single",
+            arcs: SMALL_CRAFT_ARCS.map((arc) => [craft.getArcName(arc), craft.getArcHeat(arc)]),
+        });
     }
 
     render = (): JSX.Element => (

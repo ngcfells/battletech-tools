@@ -480,6 +480,8 @@ export default class ClassicBattleTechRosterPrint extends React.Component<IPrint
                         />
                         <CapitalShipRecordSheet
                           ship={ship}
+                          showPilot={true}
+                          showDamage={true}
                         />
                       </div>
                   ))}

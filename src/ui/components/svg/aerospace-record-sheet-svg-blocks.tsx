@@ -1,5 +1,5 @@
 import React, { type JSX } from 'react';
-import { AEROSPACE_HEAT_SCALE, AEROSPACE_PILOT_HITS } from '../../../data/aerospace-record-sheet';
+import { AEROSPACE_HEAT_SCALE, AEROSPACE_PILOT_HITS, toCapitalScale } from '../../../data/aerospace-record-sheet';
 import { IAerospaceInventoryRow } from '../aerospace-sheet-blocks';
 import { GRAY, INK, SHADE, blank, checkbox, groupBox, hitBox, text, wrapText } from './record-sheet-svg-kit';
 
@@ -28,6 +28,8 @@ export interface IUnitDataBox {
     locationKey: string;
     /** Weapon bays (a DropShip's): a Bay column in place of Qty and Type, with capital-scale brackets too (TM p.199). */
     bays?: boolean;
+    /** JumpShips, WarShips and stations: standard bays print capital scale with standard in parentheses (SO:AA p.9). */
+    capitalScale?: boolean;
     /** The ammunition carried, on a line under the inventory. */
     ammo?: string;
     cost: number;
@@ -66,7 +68,7 @@ export const unitDataBox = (x: number, y: number, w: number, h: number, data: IU
             {entries(data.right, 400)}
             {data.extra ? data.extra(y + 115 + rowsUsed * 35) : null}
             <line x1={x + 10} y1={dividerY} x2={x + w - 10} y2={dividerY} stroke={INK} strokeWidth={2} />
-            {inventory(x, inventoryTop, w, inventoryBottom, data.rows, data.locationTitle ?? "Loc.", data.bays)}
+            {inventory(x, inventoryTop, w, inventoryBottom, data.rows, data.locationTitle ?? "Loc.", data.bays || data.capitalScale, data.capitalScale)}
             {ammoLines.map((line, i) => text(x + 20, inventoryBottom + 30 + i * 26, line, { size: 20, weight: i === 0 ? 700 : 400 }, `ammo${i}`))}
             {keyLines.map((line, i) => text(x + 20, keyTop + i * 21, line, { size: 17, fill: GRAY }, `key${i}`))}
             {label(x + 20, y + h - 30, "Cost:")}{valueText(x + 95, y + h - 30, `${data.cost.toLocaleString("en-US")} C-Bills`)}
@@ -80,7 +82,7 @@ export const unitDataBox = (x: number, y: number, w: number, h: number, data: IU
  * to fit between top and bottom; shaded write-in rows fill the rest, as on the official sheet. With bays, each row is
  * a weapon bay named for its class and weapons, and the capital-scale brackets head the columns too (TM p.199).
  */
-export const inventory = (x: number, top: number, w: number, bottom: number, rows: IAerospaceInventoryRow[], locationTitle: string, bays = false): JSX.Element => {
+export const inventory = (x: number, top: number, w: number, bottom: number, rows: IAerospaceInventoryRow[], locationTitle: string, bays = false, capitalScale = false): JSX.Element => {
     const col = { qty: x + 30, type: bays ? x + 20 : x + 65, loc: x + 440, ht: x + 495, srv: x + 565, mrv: x + 630, lrv: x + 695, erv: x + 755 };
     const brackets = [col.srv, col.mrv, col.lrv, col.erv];
     const head = bays ? 20 : 0;
@@ -108,12 +110,15 @@ export const inventory = (x: number, top: number, w: number, bottom: number, row
             {rows.map((row, index) => {
                 const baseline = tableTop + index * lineHeight + lineHeight * 0.72;
                 const cell = (cx: number, v: React.ReactNode, key: string) => text(cx, baseline, v, { size, anchor: "middle" }, key);
+                // Capital scale with standard in parentheses needs a smaller figure to fit its column.
+                const scaled = capitalScale && !row.capital;
+                const valueCell = (cx: number, v: number, key: string) => text(cx, baseline, scaled ? `${toCapitalScale(v)} (${v})` : v, { size: scaled ? Math.min(size, 15) : size, anchor: "middle" }, key);
                 return (
                     <g key={index}>
                         {bays ? null : cell(col.qty, row.quantity, "q")}
                         {text(col.type, baseline, row.name, { size: Math.max(13, Math.min(size, Math.floor(typeWidth / (row.name.length * 0.55)))) }, "n")}
                         {cell(col.loc, row.location, "l")}{cell(col.ht, row.heat, "h")}
-                        {brackets.map((cx, i) => cell(cx, row.values ? (row.values[i] || "—") : "?", `v${i}`))}
+                        {brackets.map((cx, i) => (!row.values ? cell(cx, "?", `v${i}`) : row.values[i] ? valueCell(cx, row.values[i], `v${i}`) : cell(cx, "—", `v${i}`)))}
                     </g>
                 );
             })}
@@ -224,8 +229,9 @@ export const pilotDataBox = (x: number, y: number, w: number, h: number, pilot: 
 };
 
 /** The velocity record: turns 1-20 in two bands, with thrust, velocity, effective velocity and altitude to write in. */
-export const velocityRecordBox = (x: number, y: number, w: number, h: number): JSX.Element => {
-    const rows = ["Turn #", "Thrust", "Velocity", "Effective Velocity", "Altitude"];
+// JumpShips and WarShips stay in space, so their sheet has no Altitude row.
+export const velocityRecordBox = (x: number, y: number, w: number, h: number, altitude = true): JSX.Element => {
+    const rows = ["Turn #", "Thrust", "Velocity", "Effective Velocity", ...(altitude ? ["Altitude"] : [])];
     const labelW = 220, cellH = 30;
     const cellW = (w - 40 - labelW) / 10;
     const cells: JSX.Element[] = [];
@@ -299,3 +305,74 @@ export const heatScaleColumn = (x: number, top: number, heat: number): JSX.Eleme
         </g>
     );
 };
+
+/**
+ * Crew data for a DropShip or larger craft: skills, the crew's hits with the modifier for each (the sixth
+ * incapacitates), the people aboard (blank lines where the design does not say) and the life boats and escape pods.
+ */
+export const largeCraftCrewBox = (x: number, y: number, w: number, h: number, crew: {
+    gunnery?: number; piloting?: number; hits: number; modifiers: string[]; people: [string, number | undefined][]; lifeBoats: number; escapePods: number;
+}): JSX.Element => {
+    const cellX = (i: number) => x + 140 + i * 52;
+    const row = (ry: number, name: string, values: string[], marks: boolean) => (
+        <g>
+            {text(x + 130, ry + 30, name, { size: 18, weight: 700, anchor: "end" })}
+            {values.map((value, i) => {
+                const hit = marks && i < crew.hits;
+                return (
+                    <g key={i} data-hit={hit ? "filled" : undefined}>
+                        <rect x={cellX(i)} y={ry} width={52} height={44} fill={hit ? INK : "white"} stroke={INK} strokeWidth={2} />
+                        {text(cellX(i) + 26, ry + 30, value, { size: value.length > 2 ? 16 : 22, weight: 700, anchor: "middle", fill: hit ? "white" : INK })}
+                    </g>
+                );
+            })}
+        </g>
+    );
+    const boatsY = y + 230 + Math.ceil(crew.people.length / 2) * 34 + 16;
+    return groupBox(x, y, w, h, "CREW DATA", (
+        <>
+            {text(x + 20, y + 75, "Gunnery Skill:", { size: 20, weight: 700 })}
+            {crew.gunnery !== undefined ? text(x + 165, y + 75, crew.gunnery, { size: 22 }) : blank(x + 165, y + 75, 40)}
+            {text(x + 235, y + 75, "Piloting Skill:", { size: 20, weight: 700 })}
+            {crew.piloting !== undefined ? text(x + 380, y + 75, crew.piloting, { size: 22 }) : blank(x + 380, y + 75, 40)}
+            {row(y + 95, "Hits Taken", crew.modifiers.map((_, i) => `${i + 1}`), true)}
+            {row(y + 139, "Modifier", crew.modifiers, false)}
+            {crew.people.map(([name, value], i) => {
+                const px = x + 20 + (i % 2) * 225, py = y + 230 + Math.floor(i / 2) * 34;
+                return (
+                    <g key={name}>
+                        {text(px, py, name, { size: 18, weight: 700 })}
+                        {value !== undefined ? text(px + 200, py, value.toLocaleString("en-US"), { size: 20, anchor: "end" }) : blank(px + 130, py, 70)}
+                    </g>
+                );
+            })}
+            {text(x + 20, boatsY, "Life Boats/Escape Pods:", { size: 18, weight: 700 })}
+            {text(x + 260, boatsY, `${crew.lifeBoats}/${crew.escapePods}`, { size: 20 })}
+        </>
+    ));
+};
+
+/**
+ * Heat data for a DropShip or larger craft: the heat sinks with their dissipation, single or double, and the heat
+ * each arc makes firing everything in it. These craft have no heat scale (TM p.199; SO:AA p.11).
+ */
+export const heatPerArcBox = (x: number, y: number, w: number, h: number, sinks: { count: number; dissipation: number; double: boolean; arcs: [string, number][] }): JSX.Element =>
+    groupBox(x, y, w, h, "HEAT DATA", (
+        <>
+            {text(x + 20, y + 75, "Heat Sinks:", { size: 20, weight: 700 })}
+            {text(x + 20, y + 110, `${sinks.count.toLocaleString("en-US")} (${sinks.dissipation.toLocaleString("en-US")})`, { size: 22, weight: 700 })}
+            {text(x + 20, y + 165, "Single", { size: 18 })}{checkbox(x + 90, y + 165)}
+            {text(x + 20, y + 205, "Double", { size: 18 })}{checkbox(x + 90, y + 205)}
+            {text(x + 102, sinks.double ? y + 204 : y + 164, "X", { size: 22, weight: 700, anchor: "middle" })}
+            {text(x + 165, y + 75, "Heat Generation Per Arc", { size: 20, weight: 700 })}
+            {sinks.arcs.map(([name, heat], i) => {
+                const ax = x + 165 + (i % 2) * 240, ay = y + 110 + Math.floor(i / 2) * 36;
+                return (
+                    <g key={name}>
+                        {text(ax, ay, `${name}:`, { size: 17 })}
+                        {text(ax + 205, ay, heat.toLocaleString("en-US"), { size: 20, weight: 700, anchor: "end" })}
+                    </g>
+                );
+            })}
+        </>
+    ));

@@ -55,13 +55,12 @@ describe("quirks on record sheets", () => {
         expect(renderToStaticMarkup(<FighterRecordSheet fighter={fighter} />)).toContain("[Accurate Weapon]");
     });
 
-    it("names a large craft's quirked weapon and its arc in the Quirks block", () => {
+    it("names a large craft's quirked weapon and its arc in the notes", () => {
         const ship = new CapitalShip();
         const laser = ship.addEquipmentFromTag("large-laser", "nose")!;
         ship.quirks.add({ tag: "quirk-accurate-weapon", equipmentUuid: laser.uuid });
         const markup = renderToStaticMarkup(<CapitalShipRecordSheet ship={ship} />);
-        expect(markup).toContain("<h3>Quirks</h3>");
-        expect(markup).toMatch(/Large Laser \([^)]+\): Accurate Weapon/);
+        expect(markup).toContain("Weapon quirks: Large Laser (Nose): Accurate Weapon");
     });
 
     it("prints battle armor's weapon quirk beside the weapon", () => {
