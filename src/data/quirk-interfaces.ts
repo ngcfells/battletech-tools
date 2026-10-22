@@ -68,7 +68,7 @@ export type QuirkRangeBand = "short" | "medium" | "long";
  */
 export type QuirkEffect =
     | {
-        type: "to-hit"; modifier: number; scope: "unit" | "weapon"; rangeBand?: QuirkRangeBand | "parameter";
+        type: "to-hit"; modifier: number; scope: "unit" | "weapon" | "location"; rangeBand?: QuirkRangeBand | "parameter";
         vsAirborne?: true; attack?: "weapon" | "punch" | "arm-physical" | "physical"; attackerRanOrFlanked?: true;
     }
     | { type: "to-hit-against"; modifier: number; when: string }

@@ -73,7 +73,8 @@ export const quirks: IQuirk[] = [
         locationRule: "arm-without-hand",
         summary: "An arm with a lower arm actuator but no hand punches without the usual +1 for lacking a hand. Paid for each arm.",
         sources: [{ book: "Campaign Operations", page: 225 }, { book: "BattleMech Manual", page: 82 }],
-        effects: [{ type: "to-hit", modifier: -1, scope: "unit", attack: "punch" }],
+        // Its arm never has a hand, so cancelling the +1 is -1 on that arm's punches.
+        effects: [{ type: "to-hit", modifier: -1, scope: "location", attack: "punch" }],
         editions: ["total-warfare", "battlemech-manual", "core-rulebook"],
         rulesLevel: 3,
     },

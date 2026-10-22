@@ -12,6 +12,10 @@ export interface IAppliedQuirkEffect {
     label: string;
     /** The weapon or bay the quirk is on, if any. */
     equipmentUuids?: string[];
+    /** The location the quirk is on, if any. */
+    location?: string;
+    /** What the quirk is on, by name, for the play panel: "Medium Laser (RT)", "Left Arm". */
+    on?: string;
     /** The assignment's parameter: a range band, a value. */
     parameter?: string | number;
 }
@@ -19,6 +23,8 @@ export interface IAppliedQuirkEffect {
 /** What an attack is, for the to-hit effects that apply to it. */
 export interface IQuirkAttackContext {
     weaponUuid?: string;
+    /** Where the attack comes from: the punching arm. */
+    location?: string;
     rangeBand?: QuirkRangeBand;
     vsAirborne?: boolean;
     /** "weapon" when absent. */
@@ -45,7 +51,23 @@ export function getCarrierInstalledUuids(unit: IQuirkCarrier): string[] {
  * start of the unit's era (quirks design, "Eras").
  */
 export function getCarrierQuirkEffects(unit: IQuirkCarrier): IAppliedQuirkEffect[] {
-    return getQuirkEffects(unit.quirks, getCarrierInstalledUuids(unit), unit.getEra().yearStart);
+    const targets = unit.getQuirkTargets();
+    const bayKey = (uuids: string[]): string => [...uuids].sort().join(",");
+    const nameOf = (applied: IAppliedQuirkEffect): string | undefined => {
+        if (applied.location) {
+            return targets.locations.find((location) => location.tag === applied.location)?.label ?? applied.location.toUpperCase();
+        }
+        const uuids = applied.equipmentUuids;
+        if (!uuids) {
+            return undefined;
+        }
+        return targets.bays?.find((bay) => bayKey(bay.uuids) === bayKey(uuids))?.label
+            ?? (uuids.length === 1 ? targets.weapons.find((weapon) => weapon.uuid === uuids[0])?.label : undefined);
+    };
+    return getQuirkEffects(unit.quirks, getCarrierInstalledUuids(unit), unit.getEra().yearStart).map((applied) => {
+        const on = nameOf(applied);
+        return on ? { ...applied, on } : applied;
+    });
 }
 
 /** A quirk as an Alpha Strike unit made from a design carries it: one the Companion lists, with its parameter. */
@@ -113,6 +135,7 @@ export function getQuirkEffects(list: QuirkList, installedUuids: string[], year:
                 title,
                 label: modifier === undefined ? title : `${title} (${signed(modifier)})`,
                 ...(equipmentUuids ? { equipmentUuids } : {}),
+                ...(assigned.location ? { location: assigned.location } : {}),
                 ...(assigned.parameter !== undefined ? { parameter: assigned.parameter } : {}),
             });
         }
@@ -131,6 +154,9 @@ export function getQuirkToHit(list: QuirkList, installedUuids: string[], year: n
             continue;
         }
         if (effect.scope === "weapon" && !(context.weaponUuid && applied.equipmentUuids?.includes(context.weaponUuid))) {
+            continue;
+        }
+        if (effect.scope === "location" && !(context.location && applied.location === context.location)) {
             continue;
         }
         if (effect.vsAirborne && !context.vsAirborne) {

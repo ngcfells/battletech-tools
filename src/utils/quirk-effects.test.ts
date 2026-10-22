@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { QuirkList } from "../classes/quirk-list";
 import { IAssignedQuirk } from "../data/quirk-interfaces";
-import { getQuirkEffects, getQuirkHeatGenerated, getQuirkInitiative, getQuirkToHit, getQuirkWeaponHeat } from "./quirk-effects";
+import { BattleMech } from "../classes/battlemech";
+import { getCarrierQuirkEffects, getQuirkEffects, getQuirkHeatGenerated, getQuirkInitiative, getQuirkToHit, getQuirkWeaponHeat } from "./quirk-effects";
 
 const listOf = (...assigned: IAssignedQuirk[]): QuirkList => {
     const list = new QuirkList();
@@ -87,6 +88,30 @@ describe("getQuirkInitiative", () => {
         expect(getQuirkInitiative(listOf({ tag: "quirk-command-mech" }), INSTALLED, 3025)).toEqual({ modifier: 1, label: "Command 'Mech (+1)", title: "Command 'Mech" });
         expect(getQuirkInitiative(listOf({ tag: "quirk-battle-computer" }), INSTALLED, 3025)).toEqual({ modifier: 2, label: "Battle Computer (+2)", title: "Battle Computer" });
         expect(getQuirkInitiative(listOf(), INSTALLED, 3025)).toBeNull();
+    });
+});
+
+// Barrel Fist: the arm with it punches without the +1 for lacking a hand (CO p.225), so -1 on that arm's punches only.
+describe("Barrel Fist", () => {
+    it("takes 1 off punches from its own arm, and nothing from the other arm or for weapons", () => {
+        const list = listOf({ tag: "quirk-barrel-fist", location: "la" });
+        expect(getQuirkToHit(list, INSTALLED, 3025, { attack: "punch", location: "la" }).modifier).toBe(-1);
+        expect(getQuirkToHit(list, INSTALLED, 3025, { attack: "punch", location: "ra" }).modifier).toBe(0);
+        expect(getQuirkToHit(list, INSTALLED, 3025, { weaponUuid: "laser-a", rangeBand: "short", location: "la" }).modifier).toBe(0);
+    });
+});
+
+describe("what a quirk is on, in play", () => {
+    it("names the weapon a weapon quirk is on, and the location of a location quirk", () => {
+        const mech = new BattleMech();
+        mech.setTonnage(50);
+        mech.setWalkSpeed(4);
+        mech.addEquipmentFromTag("medium-laser", "is", "rt", false, undefined, "a", false, [], undefined, undefined);
+        expect(mech.quirks.add({ tag: "quirk-accurate-weapon", equipmentUuid: mech.equipmentList[0].uuid })).toBeNull();
+        expect(mech.quirks.add({ tag: "quirk-protected-actuators" })).toBeNull();
+        const effects = getCarrierQuirkEffects(mech);
+        expect(effects.find((applied) => applied.quirkName === "Accurate Weapon")?.on).toBe("Medium Laser (RT)");
+        expect(effects.find((applied) => applied.quirkName === "Protected Actuators")?.on).toBeUndefined();
     });
 });
 

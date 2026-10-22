@@ -20,6 +20,14 @@ describe("QuirksInPlay", () => {
         expect(screen.getByText(/Multi-Trac/).textContent).toContain("not yet applied in play");
     });
 
+    it("names the weapon a weapon quirk is on", () => {
+        const list = new QuirkList();
+        list.add({ tag: "quirk-accurate-weapon", equipmentUuid: "w1" });
+        const effects = getQuirkEffects(list, ["w1"], 3025).map((applied) => ({ ...applied, on: "Medium Laser (RT)" }));
+        render(<QuirksInPlay effects={effects} quirksInPlay={true} />);
+        expect(screen.getByTestId("quirks-in-play").textContent).toContain("Accurate Weapon on Medium Laser (RT): -1 to-hit (this weapon)");
+    });
+
     it("renders nothing with the switch off", () => {
         const { container } = render(<QuirksInPlay effects={effectsOf("quirk-exposed-actuators")} quirksInPlay={false} />);
         expect(container.innerHTML).toBe("");

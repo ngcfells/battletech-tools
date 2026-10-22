@@ -11,7 +11,7 @@ export const describeQuirkEffect = (effect: QuirkEffect | null): string => {
         case "to-hit": {
             const attack = effect.attack === "punch" ? " for punches" : effect.attack === "arm-physical" ? " for arm physical attacks" : effect.attack === "physical" ? " for physical attacks" : "";
             const conditions = [
-                effect.scope === "weapon" ? "this weapon" : "",
+                effect.scope === "weapon" ? "this weapon" : effect.scope === "location" ? "from this location" : "",
                 effect.rangeBand && effect.rangeBand !== "parameter" ? `at ${effect.rangeBand} range` : effect.rangeBand ? "in its range band" : "",
                 effect.vsAirborne ? "against airborne targets" : "",
                 effect.attackerRanOrFlanked ? "after running or flanking" : "",
@@ -41,7 +41,7 @@ export default class QuirksInPlay extends React.Component<IQuirksInPlayProps> {
                 <strong>Quirks in play</strong>
                 <ul className="small-text">
                     {this.props.effects.map((applied, index) => (
-                        <li key={index}>{applied.title}: {describeQuirkEffect(applied.effect)}</li>
+                        <li key={index}>{applied.title}{applied.on ? ` on ${applied.on}` : ""}: {describeQuirkEffect(applied.effect)}</li>
                     ))}
                 </ul>
             </div>
