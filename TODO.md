@@ -36,9 +36,11 @@ Local references (git-ignored, never imported by shipped code):
   aerospace and conventional fighters and fixed-wing support vehicles; Small Craft and DropShips (aerodyne and
   spheroid; DropShip weapons listed by bay, TM p.199); JumpShips, WarShips and space stations (SO:AA pp.9-11,
   laid out like the Strategic Operations sheets); battle armor (five squads to a page with the leg, swarm,
-  swarm modifier, swarm hit location and transport position tables, TW pp.221-222, 227). The drawing helpers are
+  swarm modifier, swarm hit location and transport position tables, TW pp.221-222, 227); conventional infantry
+  (four platoons or sub-platoons to a page with the leg, swarm, swarm modifier, non-infantry weapon and
+  burst-fire tables, TW pp.216-217, 221). The drawing helpers are
   shared in `src/ui/components/svg/record-sheet-svg-kit.tsx` and `aerospace-record-sheet-svg-blocks.tsx`. Still
-  owed, in order: conventional infantry, ProtoMechs, buildings, then the airship and other aerospace Support Vehicle sheets
+  owed, in order: ProtoMechs, buildings, then the airship and other aerospace Support Vehicle sheets
   (velocity record and airship velocity table) and the *Battledroids* sheet.
 - [ ] Verify before using: a fan-made vehicle sheet says a CASE-protected ammunition critical removes all rear
   armor and stuns the crew. Find the rule in the library before printing it on our sheet.
@@ -218,6 +220,8 @@ played first, then by dependency.
 - [ ] The Infantry Creator builds platoons (motive types, weapons by era, armor kits, specializations, record sheet,
   BV, cost, Alpha Strike card). Still owed: beast-mounted infantry, field guns and field artillery, and transport
   capacity checks against vehicle and aerospace bays.
+- [x] Record sheet like the Total Warfare one: four platoons to a page, a block per sub-platoon, and the
+  anti-'Mech, non-infantry weapon and burst-fire damage tables.
 
 ### Aerospace and Conventional Fighters
 

@@ -97,6 +97,7 @@ export default class DevelopmentStatus extends React.Component<IDevelopmentStatu
                       <li><del>Small Craft and DropShip record sheets the same way, aerodyne and spheroid, with DropShip weapons listed by bay</del></li>
                       <li><del>JumpShip, WarShip and space station record sheets the same way, with capital-scale armor by facing and the integrity tracks</del></li>
                       <li><del>Battle armor record sheets the same way: five squads to a page with the leg attack, swarm attack and transport position tables</del></li>
+                      <li><del>Conventional infantry record sheets the same way: four platoons to a page with the anti-'Mech, non-infantry weapon and burst-fire damage tables</del></li>
                     </ul>
                     <h4>Coming</h4>
                     <ul>
