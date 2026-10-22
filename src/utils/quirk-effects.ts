@@ -157,7 +157,7 @@ export function getQuirkHeatGenerated(list: QuirkList, installedUuids: string[],
         .reduce((sum, applied) => sum + (applied.effect?.type === "heat-generated" ? applied.effect.modifier : 0), 0);
 }
 
-/** A weapon's heat when fired, after its cooling jacket quirks, never below a quirk's minimum. */
+/** A weapon's heat when fired, after its cooling jacket quirks, never below a quirk's minimum (nor raised to it). */
 export function getQuirkWeaponHeat(list: QuirkList, installedUuids: string[], year: number | undefined, weaponUuid: string, heat: number): number {
     let result = heat;
     let minimum = Number.NEGATIVE_INFINITY;
@@ -167,7 +167,7 @@ export function getQuirkWeaponHeat(list: QuirkList, installedUuids: string[], ye
             minimum = Math.max(minimum, applied.effect.minimum ?? Number.NEGATIVE_INFINITY);
         }
     }
-    return Math.max(minimum, result);
+    return Math.max(Math.min(minimum, heat), result);
 }
 
 export interface IQuirkInitiative { modifier: number; label: string; title: string }

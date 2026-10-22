@@ -66,6 +66,33 @@ describe("Combat Computer heat", () => {
     });
 });
 
+// Cooling jacket weapon quirks change a fired weapon's heat (final review); Improved never below 1 (CO p.227).
+describe("cooling jacket heat", () => {
+    const firing = (tag: string, quirkTag: string | null): BattleMech => {
+        const mech = mechWith(tag);
+        const weapon = mech.equipmentList[0];
+        weapon.target = "a";
+        if (quirkTag) expect(mech.quirks.add({ tag: quirkTag, equipmentUuid: weapon.uuid })).toBeNull();
+        return mech;
+    };
+
+    it("adds 2 heat for a No Cooling Jacket medium laser, with the switch on only", () => {
+        const plain = firing("medium-laser", null).getActiveWeaponHeat();
+        const mech = firing("medium-laser", "quirk-no-cooling-jacket");
+        expect(mech.getActiveWeaponHeat(null, true)).toBe(plain + 2);
+        expect(mech.getActiveWeaponHeat()).toBe(plain);
+        mech.currentMovementMode = "w";
+        expect(mech.getTurnHeatDifference(null, true) - mech.getTurnHeatDifference()).toBe(2);
+    });
+
+    it("takes 1 heat off an Improved Cooling Jacket small laser, never below 1", () => {
+        const laser = firing("small-laser", "quirk-improved-cooling-jacket");
+        expect(laser.getActiveWeaponHeat(null, true)).toBe(1);
+        const medium = firing("medium-laser", "quirk-improved-cooling-jacket");
+        expect(medium.getActiveWeaponHeat(null, true)).toBe(firing("medium-laser", null).getActiveWeaponHeat() - 1);
+    });
+});
+
 describe("the force's Heat Phase", () => {
     it("applies Combat Computer heat only with the game's switch on", () => {
         const heatAfterTurn = (quirksInPlay: boolean): number => {

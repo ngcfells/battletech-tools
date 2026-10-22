@@ -2404,7 +2404,7 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
                     {this.state.setTargetDialog.getActiveMoveHeat()}
                   </td>
                   <td>
-                    {this.state.setTargetDialog.getActiveWeaponHeat(this.state.targetWeaponSelection)}
+                    {this.state.setTargetDialog.getActiveWeaponHeat(this.state.targetWeaponSelection, quirksInPlay)}
                   </td>
                   <td>
                     {this.state.setTargetDialog.getActiveHeatDissipation()}

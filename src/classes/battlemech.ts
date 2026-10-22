@@ -4,7 +4,7 @@ import { getQuirk, getQuirkIssues, getQuirkTargets } from "../data/quirk-registr
 import { findCanonEntry, resolveCanonQuirks } from "../data/quirk-canon";
 import { ICanonQuirkEntry } from "../data/quirk-canon-interfaces";
 import { QuirkList } from "./quirk-list";
-import { getAlphaStrikeQuirks, getQuirkHeatGenerated } from "../utils/quirk-effects";
+import { getAlphaStrikeQuirks, getQuirkHeatGenerated, getQuirkWeaponHeat } from "../utils/quirk-effects";
 import { getEditionSkillMultipliers, getSkillMultiplier } from "../data/skill-multipliers";
 import { battlemechLocations } from "../data/battlemech-locations";
 import { IArmorType, ICockpitType, ICriticalLocations, IEngineOption, IEngineType, IEquipmentItem, IGyro, IHeatSync, IInternalStructure, IInternalStructurePerTon, IJumpJet, IMyomerType, IResolvedInternalStructure, ISplitLocation, ITechDates } from "../data/data-interfaces";
@@ -4937,16 +4937,21 @@ export class BattleMech {
     }
 
     public getActiveWeaponHeat(
-        equipmentList: IEquipmentItem[] |  null = null
+        equipmentList: IEquipmentItem[] |  null = null,
+        quirksInPlay: boolean = false,
     ): number {
         if( equipmentList === null ) {
             equipmentList = this.equipmentList
         }
+        const installedUuids = quirksInPlay ? this.getQuirkInstalledUuids(equipmentList) : [];
         let rv = 0;
 
         for( let eq of equipmentList) {
             if( eq.target ) {
-                rv += +eq.heat;
+                // A cooling jacket quirk changes the weapon's heat when fired (CO pp.227, 234).
+                rv += quirksInPlay && eq.uuid
+                    ? getQuirkWeaponHeat(this.quirks, installedUuids, this.getQuirkPlayYear(), eq.uuid, +eq.heat)
+                    : +eq.heat;
             }
         }
         return rv;
@@ -4961,7 +4966,7 @@ export class BattleMech {
         }
         // A quirk's change to the heat built up (Combat Computer) never takes generated heat below 0 (CO p.225).
         const quirkHeat = quirksInPlay ? getQuirkHeatGenerated(this.quirks, this.getQuirkInstalledUuids(equipmentList), this.getQuirkPlayYear()) : 0;
-        const generated = Math.max(0, this.getActiveMoveHeat() + this.getActiveWeaponHeat(equipmentList) + quirkHeat);
+        const generated = Math.max(0, this.getActiveMoveHeat() + this.getActiveWeaponHeat(equipmentList, quirksInPlay) + quirkHeat);
 
         return generated - this.getActiveHeatDissipation();
     }
