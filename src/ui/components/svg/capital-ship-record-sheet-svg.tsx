@@ -3,7 +3,7 @@ import CapitalShip from '../../../classes/capital-ship';
 import { AdvancedAerospaceArc, AdvancedAerospaceFacing } from '../../../data/advanced-aerospace-construction';
 import { ADVANCED_AEROSPACE_CREW_HITS, ADVANCED_AEROSPACE_CRITICAL_BLOCK } from '../../../data/aerospace-record-sheet';
 import { IAerospaceInventoryRow, aerospaceInventoryRows } from '../aerospace-sheet-blocks';
-import { getUnitQuirkSheetLines } from '../quirk-sheet-block';
+import { bayQuirkSuffix, getUnitQuirkSheetLines } from '../quirk-sheet-block';
 import { getRulesLevelName } from '../rules-level-print';
 import { ICriticalTrack, criticalDamageBox, heatPerArcBox, largeCraftCrewBox, notesBox, unitDataBox, velocityRecordBox } from './aerospace-record-sheet-svg-blocks';
 import { weaponBayName } from './dropship-record-sheet-svg';
@@ -60,8 +60,8 @@ export default class CapitalShipRecordSheetSVG extends React.Component<ICapitalS
         const ship = this.ship;
         const label = (item: { name: string; location?: string }) => item.name + (item.location ? ` (${ship.getArcName(item.location as AdvancedAerospaceArc)})` : "");
         const items = ship.getEquipmentList().map((item) => ({ uuid: item.uuid, label: label(item) }));
-        const lines = getUnitQuirkSheetLines(ship.quirks, items, ship.getQuirkTargets().locations);
-        return { unit: lines.unit, weapons: lines.weapons.map((weapon) => `${items.find((item) => item.uuid === weapon.uuid)?.label ?? weapon.uuid}: ${weapon.text}`) };
+        const lines = getUnitQuirkSheetLines(ship.quirks, items, ship.getQuirkTargets().locations, ship.getCapitalWeapons().map((mount) => mount.uuid));
+        return { lines, unit: lines.unit, weapons: lines.weapons.map((weapon) => `${items.find((item) => item.uuid === weapon.uuid)?.label ?? weapon.uuid}: ${weapon.text}`) };
     }
 
     get carried(): { fighters: number; smallCraft: number; fighterDoors: number; smallCraftDoors: number } {
@@ -73,9 +73,10 @@ export default class CapitalShipRecordSheetSVG extends React.Component<ICapitalS
     get inventoryRows(): IAerospaceInventoryRow[] {
         const ship = this.ship;
         const play = this.play;
+        const quirkLines = this.quirkLines.lines;
         const bays = ship.getArcs().flatMap((arc) => ship.getArcWeaponBays(arc).map((bay, index): IAerospaceInventoryRow => ({
             quantity: 1,
-            name: weaponBayName(bay) + (play && ship.isBayDestroyed(arc, index) ? " (destroyed)" : ""),
+            name: weaponBayName(bay) + bayQuirkSuffix(quirkLines, bay.uuids) + (play && ship.isBayDestroyed(arc, index) ? " (destroyed)" : ""),
             location: ARC_CODES[arc],
             heat: bay.heat,
             values: bay.values,

@@ -2,6 +2,7 @@ import { IAssignedQuirk, IQuirk, IQuirkLocation, IQuirkTargets, QuirkAttach, Qui
 import { quirks } from "./quirks";
 import { customQuirks } from "./quirks-custom";
 import { IDamagePerRange } from "./data-interfaces";
+import { IWeaponBay, weaponBayName } from "./weapon-bays";
 import { getRecordOfferIssue, getRulesEdition } from "./rules-editions";
 import { CUSTOM_HOMEBREW_RULES_LEVEL } from "./rules-level-options";
 
@@ -64,7 +65,7 @@ export function isQuirkLocationAllowed(quirk: IQuirk, location: IQuirkLocation):
 
 /** What an assigned quirk is attached to. */
 export function getAssignedAttach(assigned: IAssignedQuirk): QuirkAttach {
-    return assigned.equipmentUuid ? "weapon" : assigned.location ? "location" : "unit";
+    return assigned.bayUuids || assigned.equipmentUuid ? "weapon" : assigned.location ? "location" : "unit";
 }
 
 /**
@@ -162,16 +163,27 @@ export function getWeaponMaxDamage(item: { damage?: number | IDamagePerRange | s
     return Math.max(most, 0);
 }
 
-/** What a builder can attach quirks to, and the damage figures quirk costs are priced from. */
+/**
+ * What a builder can attach quirks to, and the damage figures quirk costs are priced from. With `bays`, a weapon in a
+ * bay is offered only as its bay, though unit-wide costs still count it.
+ */
 export function getQuirkTargets(
     locations: IQuirkLocation[],
     items: { uuid?: string; label: string; category?: string; damage?: number | IDamagePerRange | string; damageClusters?: number; damagePerCluster?: number }[],
+    bays?: NonNullable<IQuirkTargets["bays"]>,
 ): IQuirkTargets {
     const weapons = items.filter((item) => item.uuid).map((item) => ({ uuid: item.uuid as string, label: item.label, maxDamage: getWeaponMaxDamage(item), physical: item.category === "Melee" }));
+    const inBay = new Set((bays ?? []).flatMap((bay) => bay.uuids));
     return {
         locations,
-        weapons: weapons.map(({ uuid, label, maxDamage }) => ({ uuid, label, maxDamage })),
+        weapons: weapons.filter((weapon) => !inBay.has(weapon.uuid)).map(({ uuid, label, maxDamage }) => ({ uuid, label, maxDamage })),
         // Unit-wide costs count every weapon but physical ones (CO p.225, p.230).
         unitMaxDamage: weapons.filter((weapon) => !weapon.physical).reduce((sum, weapon) => sum + weapon.maxDamage, 0),
+        ...(bays ? { bays } : {}),
     };
 }
+
+/** A bay as a quirk target: labelled by its contents and arc, priced at its largest Attack Value (CO p.225). */
+export const quirkBayTarget = (bay: IWeaponBay, arcLabel: string): NonNullable<IQuirkTargets["bays"]>[number] => ({
+    uuids: [...bay.uuids], label: `${weaponBayName(bay)} (${arcLabel})`, maxDamage: bay.values ? Math.max(...bay.values) : 0,
+});

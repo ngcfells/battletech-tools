@@ -20,7 +20,7 @@ export interface IWeaponBay {
     heat: number;
     weapons: number;
     weaponNames: string[];
-    /** The equipment ids of its standard-scale weapons, for firing the bay in play. */
+    /** The ids of its weapons (equipment and capital mounts), for firing the bay in play and for bay quirks. */
     uuids: string[];
     /** Attack Values at Short, Medium, Long and Extreme; null when a weapon's are unknown. */
     values: [number, number, number, number] | null;
@@ -31,7 +31,7 @@ export interface IWeaponBayWeapon {
     bayClass: string;
     capital: boolean;
     name: string;
-    /** The equipment id of a standard-scale weapon. */
+    /** The equipment id of a standard-scale weapon, or the mount id of a capital one. */
     uuid?: string;
     /** Capital-scale damage. */
     damage: number;
@@ -51,11 +51,18 @@ export const standardBayWeapon = (item: IEquipmentItem): IWeaponBayWeapon => ({
 });
 
 /** A capital weapon: its class is its category, its damage the same at every bracket it reaches. */
-export const capitalBayWeapon = (weapon: ICapitalWeapon, heat: number): IWeaponBayWeapon => {
+export const capitalBayWeapon = (weapon: ICapitalWeapon, heat: number, uuid?: string): IWeaponBayWeapon => {
     const reach = weapon.range ? ["short", "medium", "long", "extreme"].indexOf(weapon.range) : -1;
     const values = weapon.damage === null || reach < 0 ? null
         : [0, 1, 2, 3].map((bracket) => (bracket <= reach ? weapon.damage as number : 0)) as [number, number, number, number];
-    return { bayClass: weapon.category, capital: true, name: weapon.name, damage: weapon.damage ?? 0, heat, values };
+    return { bayClass: weapon.category, capital: true, name: weapon.name, uuid, damage: weapon.damage ?? 0, heat, values };
+};
+
+/** A bay's name for the inventory: its class, then how many of each weapon it fires (TM p.199). */
+export const weaponBayName = (bay: IWeaponBay): string => {
+    const counts = new Map<string, number>();
+    for (const name of bay.weaponNames) counts.set(name, (counts.get(name) ?? 0) + 1);
+    return `${bay.name}: ${[...counts].map(([name, count]) => `${count} ${name}`).join(", ")}${bay.capital ? " (C)" : ""}`;
 };
 
 /**

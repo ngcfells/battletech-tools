@@ -1,6 +1,6 @@
 import { generateUUID } from "../utils/generateUUID";
 import { IAssignedQuirk, IQuirkTargets, QuirkUnitType } from "../data/quirk-interfaces";
-import { getQuirkIssues, getQuirkTargets } from "../data/quirk-registry";
+import { getQuirkIssues, getQuirkTargets, quirkBayTarget } from "../data/quirk-registry";
 import { QuirkList } from "./quirk-list";
 import { DEFAULT_RULES_EDITION, getSelectableRulesEditionTag } from "../data/rules-editions";
 import { aerospaceArmorTypes, getAerospaceArmorPointsPerTon } from "../data/aerospace-armor-types";
@@ -285,9 +285,10 @@ export default class CapitalShip {
     /** Which column of the quirk tables this unit is graded by. */
     public getQuirkUnitType(): QuirkUnitType { return "large-craft"; }
 
-    /** What the quirk picker can attach quirks to on this unit. */
+    /** What the quirk picker can attach quirks to on this unit: its weapons as their bays (CO p.225). */
     public getQuirkTargets(): IQuirkTargets {
-        return getQuirkTargets([], this._equipmentList.filter((item) => !item.isAmmo).map((item) => ({ ...item, label: item.name })));
+        const bays = this.getArcs().flatMap((arc) => this.getArcWeaponBays(arc).map((bay) => quirkBayTarget(bay, this.getArcName(arc))));
+        return getQuirkTargets([], this._equipmentList.filter((item) => !item.isAmmo).map((item) => ({ ...item, label: item.name })), bays);
     }
 
     /** One line for each quirk this unit could not be given now: rules edition, rules level or unit type. */
@@ -714,7 +715,7 @@ export default class CapitalShip {
     public getArcWeaponBays(arc: AdvancedAerospaceArc): ICapitalShipWeaponBay[] {
         return groupWeaponBays([
             ...this.getArcItems(arc).filter((entry) => this._isWeapon(entry)).map(standardBayWeapon),
-            ...this.getArcCapitalWeapons(arc).map((mount) => capitalBayWeapon(mount.weapon, this.getCapitalWeaponHeat(mount))),
+            ...this.getArcCapitalWeapons(arc).map((mount) => capitalBayWeapon(mount.weapon, this.getCapitalWeaponHeat(mount), mount.uuid)),
         ], ADVANCED_AEROSPACE_MAX_BAY_CAPITAL_DAMAGE);
     }
     /** Heat sinks must cover the hottest single weapon bay (SO:AA p.142). */

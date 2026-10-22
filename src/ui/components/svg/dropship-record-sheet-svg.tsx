@@ -2,9 +2,9 @@ import React, { type JSX } from 'react';
 import SmallCraft from '../../../classes/small-craft';
 import { AEROSPACE_FIGHTER_CRITICAL_BLOCK } from '../../../data/aerospace-record-sheet';
 import { SMALL_CRAFT_ARCS, SmallCraftArc } from '../../../data/small-craft-construction';
-import { IWeaponBay } from '../../../data/weapon-bays';
+import { weaponBayName } from '../../../data/weapon-bays';
 import { IAerospaceInventoryRow, aerospaceInventoryRows } from '../aerospace-sheet-blocks';
-import { getUnitQuirkSheetLines, weaponQuirkSuffix } from '../quirk-sheet-block';
+import { bayQuirkSuffix, getUnitQuirkSheetLines, weaponQuirkSuffix } from '../quirk-sheet-block';
 import { getRulesLevelName } from '../rules-level-print';
 import { ICriticalTrack, criticalDamageBox, heatPerArcBox, largeCraftCrewBox, notesBox, unitDataBox, velocityRecordBox } from './aerospace-record-sheet-svg-blocks';
 import FighterDiagramSVG from './fighter-diagram-svg';
@@ -37,12 +37,7 @@ const THRUSTER_BOXES = ["+1", "+2", "+3", "D"];
 // The crew's hits: +1 to hit each, the sixth incapacitates the crew (TW p.240).
 const CREW_MODIFIERS = ["+1", "+2", "+3", "+4", "+5", "Incp."];
 
-/** A bay's name for the inventory: its class, then how many of each weapon it fires (TM p.199). */
-export const weaponBayName = (bay: IWeaponBay): string => {
-    const counts = new Map<string, number>();
-    for (const name of bay.weaponNames) counts.set(name, (counts.get(name) ?? 0) + 1);
-    return `${bay.name}: ${[...counts].map(([name, count]) => `${count} ${name}`).join(", ")}${bay.capital ? " (C)" : ""}`;
-};
+export { weaponBayName };
 
 /**
  * A Small Craft's or DropShip's inventory: its weapon bays, as both always fire full bays (TM pp.195, 199; user ruling
@@ -52,7 +47,7 @@ export const craftInventoryRows = (craft: SmallCraft, codes: Record<SmallCraftAr
     const bays = SMALL_CRAFT_ARCS.flatMap((arc) => craft.getArcWeaponBays(arc).map((bay): IAerospaceInventoryRow => {
         const destroyed = play ? bay.uuids.filter((uuid) => craft.isWeaponDestroyed(uuid)).length : 0;
         return {
-            quantity: 1, name: weaponBayName(bay) + (destroyed ? ` (${destroyed} destroyed)` : ""), location: codes[arc], heat: bay.heat, values: bay.values, capital: bay.capital,
+            quantity: 1, name: weaponBayName(bay) + bayQuirkSuffix(quirkLines, bay.uuids) + (destroyed ? ` (${destroyed} destroyed)` : ""), location: codes[arc], heat: bay.heat, values: bay.values, capital: bay.capital,
         };
     }));
     const equipment = aerospaceInventoryRows(
@@ -72,7 +67,8 @@ export default class DropShipRecordSheetSVG extends React.Component<IDropShipRec
 
     get quirkLines() {
         const craft = this.craft;
-        return getUnitQuirkSheetLines(craft.quirks, craft.getEquipmentList().map((item) => ({ uuid: item.uuid, label: item.name })), craft.getQuirkTargets().locations);
+        return getUnitQuirkSheetLines(craft.quirks, craft.getEquipmentList().map((item) => ({ uuid: item.uuid, label: item.name })), craft.getQuirkTargets().locations,
+            craft.getCapitalWeapons().map((mount) => mount.uuid));
     }
 
     // Fighters and Small Craft carried, and the launch rate of each: two a turn per working door (TM p.196).

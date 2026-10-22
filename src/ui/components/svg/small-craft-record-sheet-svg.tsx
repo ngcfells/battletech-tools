@@ -42,7 +42,8 @@ export default class SmallCraftRecordSheetSVG extends React.Component<ISmallCraf
 
     get quirkLines() {
         const craft = this.craft;
-        return getUnitQuirkSheetLines(craft.quirks, craft.getEquipmentList().map((item) => ({ uuid: item.uuid, label: item.name })), craft.getQuirkTargets().locations);
+        return getUnitQuirkSheetLines(craft.quirks, craft.getEquipmentList().map((item) => ({ uuid: item.uuid, label: item.name })), craft.getQuirkTargets().locations,
+            craft.getCapitalWeapons().map((mount) => mount.uuid));
     }
 
     renderCraftData(): JSX.Element {

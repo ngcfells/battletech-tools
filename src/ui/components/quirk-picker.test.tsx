@@ -291,3 +291,25 @@ describe("Trailer Hitch", () => {
         expect(screen.queryByText(/apocryphal/)).toBeNull();
     });
 });
+
+describe("QuirkPicker on a craft that fires bays", () => {
+    it("puts a weapon quirk on a whole bay", () => {
+        const quirks = new QuirkList();
+        render(
+            <QuirkPicker quirks={quirks} unitType="dropship" editionTag="total-warfare" rulesLevel={3} locations={[]} weapons={[]}
+                bays={[{ uuids: ["a", "b"], label: "Lasers: 1 Large Laser, 1 Medium Laser (Nose)", maxDamage: 13 }]} unitMaxDamage={13} onChange={vi.fn()} />,
+        );
+        fireEvent.change(quirkSelect(), { target: { value: "quirk-accurate-weapon" } });
+        fireEvent.change(screen.getByLabelText("Weapon"), { target: { value: "bay:a,b" } });
+        fireEvent.click(screen.getByRole("button", { name: "Add quirk" }));
+        expect(quirks.getAll()).toEqual([{ tag: "quirk-accurate-weapon", bayUuids: ["a", "b"] }]);
+    });
+
+    it("lists a quirk on an emptied bay as not installed, worth nothing", () => {
+        const quirks = new QuirkList();
+        quirks.add({ tag: "quirk-accurate-weapon", bayUuids: ["gone"] });
+        render(<QuirkPicker quirks={quirks} unitType="dropship" editionTag="total-warfare" rulesLevel={3} locations={[]} weapons={[]} bays={[]} unitMaxDamage={0} onChange={vi.fn()} />);
+        expect(screen.getByText(/Accurate Weapon \(weapon not installed\): 0/)).toBeTruthy();
+    });
+});
+

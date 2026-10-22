@@ -385,3 +385,19 @@ describe("DropShip weapon bays", () => {
         expect(ship.getArcHeat("nose")).toBe(25 + 4);
     });
 });
+
+describe("Small Craft quirk targets: weapon bays (CO p.225)", () => {
+    it("offers its bays, not its single weapons, as quirk targets", () => {
+        const craft = new SmallCraft();
+        craft.addEquipmentFromTag("large-laser", "nose");
+        craft.addEquipmentFromTag("medium-laser", "nose");
+        const targets = craft.getQuirkTargets();
+        expect(targets.weapons).toEqual([]);
+        expect(targets.bays).toHaveLength(1);
+        expect(targets.bays![0].uuids).toHaveLength(2);
+        expect(targets.bays![0].maxDamage).toBe(13);
+        expect(targets.bays![0].label).toBe("Lasers: 1 Large Laser, 1 Medium Laser (Nose)");
+        // Unit-wide costs still count every weapon.
+        expect(targets.unitMaxDamage).toBe(13);
+    });
+});

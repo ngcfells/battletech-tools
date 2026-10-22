@@ -1,6 +1,6 @@
 import { generateUUID } from "../utils/generateUUID";
 import { IAssignedQuirk, IQuirkTargets, QuirkUnitType } from "../data/quirk-interfaces";
-import { getQuirkIssues, getQuirkTargets } from "../data/quirk-registry";
+import { getQuirkIssues, getQuirkTargets, quirkBayTarget } from "../data/quirk-registry";
 import { QuirkList } from "./quirk-list";
 import { DEFAULT_RULES_EDITION, getSelectableRulesEditionTag } from "../data/rules-editions";
 import { aerospaceArmorTypes, getAerospaceArmorPointsPerTon } from "../data/aerospace-armor-types";
@@ -318,9 +318,10 @@ export default class SmallCraft {
     /** Which column of the quirk tables this unit is graded by. */
     public getQuirkUnitType(): QuirkUnitType { return this.isDropShip() ? "dropship" : "fighter-small-craft"; }
 
-    /** What the quirk picker can attach quirks to on this unit. */
+    /** What the quirk picker can attach quirks to on this unit: its weapons as their bays (CO p.225). */
     public getQuirkTargets(): IQuirkTargets {
-        return getQuirkTargets(SMALL_CRAFT_ARCS.map((arc) => ({ tag: arc, label: this.getArcName(arc) })), this._equipmentList.filter((item) => !item.isAmmo).map((item) => ({ ...item, label: (item.location ? `${item.name} (${(SMALL_CRAFT_ARCS as string[]).includes(item.location!) ? this.getArcName(item.location as SmallCraftArc) : item.location})` : item.name) })));
+        const bays = SMALL_CRAFT_ARCS.flatMap((arc) => this.getArcWeaponBays(arc).map((bay) => quirkBayTarget(bay, this.getArcName(arc))));
+        return getQuirkTargets(SMALL_CRAFT_ARCS.map((arc) => ({ tag: arc, label: this.getArcName(arc) })), this._equipmentList.filter((item) => !item.isAmmo).map((item) => ({ ...item, label: (item.location ? `${item.name} (${(SMALL_CRAFT_ARCS as string[]).includes(item.location!) ? this.getArcName(item.location as SmallCraftArc) : item.location})` : item.name) })), bays);
     }
 
     /** One line for each quirk this unit could not be given now: rules edition, rules level or unit type. */
@@ -840,7 +841,7 @@ export default class SmallCraft {
     public getArcWeaponBays(arc: SmallCraftArc): IWeaponBay[] {
         return groupWeaponBays([
             ...this.getArcItems(arc).filter((item) => this._isWeapon(item)).map(standardBayWeapon),
-            ...this.getArcCapitalWeapons(arc).map((mount) => capitalBayWeapon(mount.weapon, this.getCapitalWeaponHeat(mount))),
+            ...this.getArcCapitalWeapons(arc).map((mount) => capitalBayWeapon(mount.weapon, this.getCapitalWeaponHeat(mount), mount.uuid)),
         ]);
     }
     /**

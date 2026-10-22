@@ -23,23 +23,33 @@ const describe = (quirk: IAssignedQuirk, locationLabel: ((tag: string) => string
 };
 
 /**
- * The record sheet's quirk lines, from a unit's active quirks: unit and location quirks as lines, and each weapon's
- * quirks together under that weapon. A weapon quirk whose weapon `weaponLabel` does not know prints nothing. Locations
- * print by `locationLabel`'s name, else as the tag in capitals ("LA").
+ * The record sheet's quirk lines, from a unit's active quirks: unit and location quirks as lines, each weapon's
+ * quirks together under that weapon, and each bay's under its weapons' ids. A weapon quirk whose weapon `weaponLabel`
+ * does not know prints nothing. Locations print by `locationLabel`'s name, else as the tag in capitals ("LA").
  */
 export function getQuirkSheetLines(
     active: IAssignedQuirk[],
     weaponLabel: (uuid: string) => string | undefined,
     locationLabel: (tag: string) => string | undefined = () => undefined,
-): { unit: string[]; weapons: { uuid: string; text: string }[] } {
+): { unit: string[]; weapons: { uuid: string; text: string }[]; bays: { uuids: string[]; text: string }[] } {
     const unit: string[] = [];
     const byWeapon = new Map<string, string[]>();
+    const byBay = new Map<string, { uuids: string[]; names: string[] }>();
     for (const quirk of active) {
-        if (!quirk.equipmentUuid) {
+        if (quirk.bayUuids) {
+            const key = [...quirk.bayUuids].sort().join(",");
+            const entry = byBay.get(key) ?? { uuids: quirk.bayUuids, names: [] };
+            entry.names.push(describe(quirk, null));
+            byBay.set(key, entry);
+        } else if (!quirk.equipmentUuid) {
             unit.push(describe(quirk, locationLabel));
         } else if (weaponLabel(quirk.equipmentUuid) !== undefined) {
             byWeapon.set(quirk.equipmentUuid, [...(byWeapon.get(quirk.equipmentUuid) ?? []), describe(quirk, null)]);
         }
     }
-    return { unit, weapons: [...byWeapon].map(([uuid, names]) => ({ uuid, text: names.join(", ") })) };
+    return {
+        unit,
+        weapons: [...byWeapon].map(([uuid, names]) => ({ uuid, text: names.join(", ") })),
+        bays: [...byBay.values()].map((entry) => ({ uuids: [...entry.uuids], text: entry.names.join(", ") })),
+    };
 }

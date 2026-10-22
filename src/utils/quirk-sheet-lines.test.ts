@@ -6,7 +6,7 @@ const weaponLabel = (uuid: string) => labels[uuid];
 
 describe("getQuirkSheetLines", () => {
     it("prints nothing for no quirks", () => {
-        expect(getQuirkSheetLines([], weaponLabel)).toEqual({ unit: [], weapons: [] });
+        expect(getQuirkSheetLines([], weaponLabel)).toEqual({ unit: [], weapons: [], bays: [] });
     });
 
     it("prints a unit quirk by name", () => {

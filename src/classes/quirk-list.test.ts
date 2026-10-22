@@ -121,4 +121,13 @@ describe("QuirkList", () => {
         list.add({ tag: "quirk-jettison-capable-weapon", equipmentUuid: "gone" });
         expect(list.getPointTotals([], 0, () => 0)).toEqual({ positive: 0, negative: 0 });
     });
+    it("puts a bay quirk on the bay, costed once from the bay's damage (CO p.225)", () => {
+        const list = new QuirkList();
+        expect(list.add({ tag: "quirk-accurate-weapon", bayUuids: ["a", "b"] })).toBeNull();
+        expect(list.add({ tag: "quirk-accurate-weapon", bayUuids: ["b", "a"] })).toBe("duplicate");
+        expect(list.getActive(["b"], undefined)).toHaveLength(1);
+        expect(list.getActive([], undefined)).toHaveLength(0);
+        // 13 damage in one grouping: 1 point per 5 or fraction, 3 points
+        expect(list.getPointTotals(["a", "b"], 0, () => 0, () => 13).positive).toBe(3);
+    });
 });

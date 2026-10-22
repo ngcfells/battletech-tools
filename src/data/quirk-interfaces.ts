@@ -80,9 +80,14 @@ export interface IQuirk {
     custom?: true;
 }
 
-/** A quirk on a unit, as saved. It is attached to `equipmentUuid` when set, else to `location` when set, else to the unit. */
+/**
+ * A quirk on a unit, as saved. It is attached to the weapon bay of `bayUuids` when set, else to `equipmentUuid`, else
+ * to `location`, else to the unit.
+ */
 export interface IAssignedQuirk {
     tag: string;
+    /** The ids of the bay's weapons when assigned: a bay quirk goes on all of them, paid once (CO p.225). */
+    bayUuids?: string[];
     parameter?: string | number;
     location?: string;
     equipmentUuid?: string;
@@ -97,6 +102,11 @@ export interface IQuirkTargets {
     weapons: { uuid: string; label: string; maxDamage: number }[];
     /** The maximum damage of all the unit's non-physical weapons together, for unit-wide damage costs. */
     unitMaxDamage: number;
+    /**
+     * Weapon bays, on craft that fire them: each bay is one weapon target, priced from its largest Attack Value
+     * (CO p.225). Their weapons are not listed in `weapons`.
+     */
+    bays?: { uuids: string[]; label: string; maxDamage: number }[];
     /** A quad 'Mech (QuadVees included), for the quad-only cost choices. */
     quad?: boolean;
 }

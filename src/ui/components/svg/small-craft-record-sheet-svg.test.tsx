@@ -85,3 +85,14 @@ describe("Small Craft record sheet", () => {
         expect(render(craft, { showDamage: true }).match(/data-hit="filled"/g)).toHaveLength(5);
     });
 });
+
+describe("Small Craft record sheet: bay quirks", () => {
+    it("prints a bay's quirk on that bay's row", () => {
+        const craft = new SmallCraft();
+        craft.addEquipmentFromTag("large-laser", "nose");
+        craft.addEquipmentFromTag("medium-laser", "nose");
+        craft.quirks.add({ tag: "quirk-accurate-weapon", bayUuids: craft.getQuirkTargets().bays![0].uuids });
+        expect(render(craft)).toContain("Lasers: 1 Large Laser, 1 Medium Laser [Accurate Weapon]");
+    });
+});
+

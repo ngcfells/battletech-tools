@@ -9,6 +9,8 @@ import { buildCustomQuirkDraft, customQuirkTag, getLocalCustomContentDrafts, sav
 import { generateUUID } from '../../utils/generateUUID';
 
 const ATTACH_NAMES: Record<QuirkAttach, string> = { unit: "Whole unit", location: "Location", weapon: "Weapon" };
+/** A bay's option value in the weapon list: this, then its weapons' ids joined by commas. */
+const BAY_PREFIX = "bay:";
 const BLANK_CUSTOM = { customName: "", customKind: "positive" as const, customPoints: "", customAttach: "unit" as QuirkAttach, customSummary: "" };
 
 /** The builder's list of a unit's design quirks, with a row to add one. Quirks never block a design. */
@@ -99,7 +101,11 @@ export default class QuirkPicker extends React.Component<IQuirkPickerProps, IQui
                 this.setState({ message: "Choose a weapon" });
                 return;
             }
-            assigned.equipmentUuid = this.state.target;
+            if (this.state.target.startsWith(BAY_PREFIX)) {
+                assigned.bayUuids = this.state.target.slice(BAY_PREFIX.length).split(",");
+            } else {
+                assigned.equipmentUuid = this.state.target;
+            }
         } else if (this.state.attach === "location") {
             if (!this.state.target) {
                 this.setState({ message: "Choose a location" });
@@ -156,9 +162,17 @@ export default class QuirkPicker extends React.Component<IQuirkPickerProps, IQui
         return this.state.parameter.trim() !== "" && Number.isFinite(value) ? value : undefined;
     }
 
+    /** The installed weapon or bay an assigned quirk is on; a bay matches while it holds any of the quirk's weapons. */
+    private _weaponTarget(assigned: IAssignedQuirk): { label: string; maxDamage: number } | undefined {
+        if (assigned.bayUuids) {
+            return (this.props.bays ?? []).find((bay) => bay.uuids.some((uuid) => assigned.bayUuids!.includes(uuid)));
+        }
+        return this.props.weapons.find((weapon) => weapon.uuid === assigned.equipmentUuid);
+    }
+
     private _maxDamage(quirk: IQuirk, assigned: IAssignedQuirk): number {
-        if (quirk.cost.per?.scope === "weapon" && assigned.equipmentUuid) {
-            return this.props.weapons.find((weapon) => weapon.uuid === assigned.equipmentUuid)?.maxDamage ?? 0;
+        if (quirk.cost.per?.scope === "weapon" && (assigned.equipmentUuid || assigned.bayUuids)) {
+            return this._weaponTarget(assigned)?.maxDamage ?? 0;
         }
         return this.props.unitMaxDamage;
     }
@@ -171,7 +185,7 @@ export default class QuirkPicker extends React.Component<IQuirkPickerProps, IQui
         const notes: string[] = [];
         const attach = getAssignedAttach(assigned);
         if (attach === "weapon") {
-            const weapon = this.props.weapons.find((entry) => entry.uuid === assigned.equipmentUuid);
+            const weapon = this._weaponTarget(assigned);
             notes.push(weapon ? weapon.label : "weapon not installed");
         } else if (attach === "location") {
             notes.push(this.props.locations.find((entry) => entry.tag === assigned.location)?.label ?? assigned.location ?? "");
@@ -187,7 +201,7 @@ export default class QuirkPicker extends React.Component<IQuirkPickerProps, IQui
         if (issue === "edition") notes.push(`not offered in ${getRulesEdition(this.props.editionTag).name}`);
         else if (issue === "level") notes.push("above the selected rules level");
         else if (issue === "unit-type") notes.push("not for this unit type");
-        const installed = attach !== "weapon" || this.props.weapons.some((entry) => entry.uuid === assigned.equipmentUuid);
+        const installed = attach !== "weapon" || this._weaponTarget(assigned) !== undefined;
         return { name: quirk.name, notes, points: installed ? getQuirkPoints(quirk, assigned, this._maxDamage(quirk, assigned)) : 0 };
     }
 
@@ -215,10 +229,12 @@ export default class QuirkPicker extends React.Component<IQuirkPickerProps, IQui
     render = (): JSX.Element => {
         const assigned = this.props.quirks.getAll();
         const described = assigned.map((entry) => this._describe(entry));
+        const bays = this.props.bays ?? [];
         const { positive, negative } = this.props.quirks.getPointTotals(
-            this.props.weapons.map((weapon) => weapon.uuid),
+            [...this.props.weapons.map((weapon) => weapon.uuid), ...bays.flatMap((bay) => bay.uuids)],
             this.props.unitMaxDamage,
             (uuid) => this.props.weapons.find((weapon) => weapon.uuid === uuid)?.maxDamage ?? 0,
+            (uuids) => this._weaponTarget({ tag: "", bayUuids: uuids })?.maxDamage ?? 0,
         );
         const offered = getOfferedQuirks(this.props.unitType, this.props.editionTag, this.props.rulesLevel);
         const selected = this._selected();
@@ -262,6 +278,7 @@ export default class QuirkPicker extends React.Component<IQuirkPickerProps, IQui
                             <select aria-label="Weapon" value={this.state.target} onChange={(event) => this.setState({ target: event.target.value })}>
                                 <option value="">Choose</option>
                                 {this.props.weapons.map((weapon) => <option key={weapon.uuid} value={weapon.uuid}>{weapon.label}</option>)}
+                                {bays.map((bay) => <option key={bay.uuids.join(",")} value={BAY_PREFIX + bay.uuids.join(",")}>{bay.label}</option>)}
                             </select>
                         </label>
                     ) : null}
@@ -317,6 +334,8 @@ interface IQuirkPickerProps {
     rulesLevel: number;
     locations: IQuirkLocation[];
     weapons: { uuid: string; label: string; maxDamage: number }[];
+    /** Weapon bays, on craft that fire them; offered with the weapons, each as one target (CO p.225). */
+    bays?: { uuids: string[]; label: string; maxDamage: number }[];
     unitMaxDamage: number;
     /** A quad 'Mech, which alone may take the quad-only cost choices. */
     quad?: boolean;

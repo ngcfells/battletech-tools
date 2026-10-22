@@ -4,18 +4,28 @@ import { getQuirkSheetLines } from "../../utils/quirk-sheet-lines";
 
 export type QuirkSheetLines = ReturnType<typeof getQuirkSheetLines>;
 
-/** A unit's quirk lines for its record sheet: only quirks on weapons it still carries print. */
+/**
+ * A unit's quirk lines for its record sheet: only quirks on weapons it still carries print. `bayUuids` are the ids
+ * of weapons in its bays not among `items` (capital mounts), so their bays' quirks print too.
+ */
 export function getUnitQuirkSheetLines(
     quirks: QuirkList,
     items: { uuid?: string; label: string }[],
     locations: { tag: string; label: string }[] = [],
+    bayUuids: string[] = [],
 ): QuirkSheetLines {
     const installed = items.filter((item) => item.uuid);
     return getQuirkSheetLines(
-        quirks.getActive(installed.map((item) => item.uuid as string), undefined),
+        quirks.getActive([...installed.map((item) => item.uuid as string), ...bayUuids], undefined),
         (uuid) => installed.find((item) => item.uuid === uuid)?.label,
         (tag) => locations.find((location) => location.tag === tag)?.label,
     );
+}
+
+/** The quirk names printed beside a weapon bay, matched by any of its weapons' ids, or "" when it has none. */
+export function bayQuirkSuffix(lines: QuirkSheetLines, uuids: string[]): string {
+    const texts = lines.bays.filter((bay) => bay.uuids.some((uuid) => uuids.includes(uuid))).map((bay) => bay.text);
+    return texts.length ? ` [${texts.join(", ")}]` : "";
 }
 
 /** The quirk names printed beside a weapon, or "" when it has none. */

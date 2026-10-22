@@ -375,3 +375,15 @@ describe("Dragon's Breath MCM launch system (IO:AE pp.142-143, 215)", () => {
         expect(build("jumpShip", 100000).isCapitalWeaponAllowed(dragon)).toBe(false);
     });
 });
+
+describe("capital ship quirk targets: weapon bays (CO p.225)", () => {
+    it("offers a capital bay with its mounts' ids, priced at its capital damage", () => {
+        const ship = build("warShip", 420000);
+        ship.addCapitalWeapon("barracuda", "nose");
+        ship.addCapitalWeapon("barracuda", "nose");
+        const bays = ship.getQuirkTargets().bays ?? [];
+        expect(bays).toHaveLength(1);
+        expect(bays[0].uuids).toEqual(ship.getCapitalWeapons().map((mount) => mount.uuid));
+        expect(bays[0].maxDamage).toBe(4);
+    });
+});

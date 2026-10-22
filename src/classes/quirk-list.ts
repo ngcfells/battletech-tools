@@ -1,14 +1,22 @@
 import { IAssignedQuirk, IQuirk } from "../data/quirk-interfaces";
 import { getQuirk, getQuirkPoints } from "../data/quirk-registry";
 
-const copy = (quirk: IAssignedQuirk): IAssignedQuirk => ({ ...quirk });
+const copy = (quirk: IAssignedQuirk): IAssignedQuirk => (quirk.bayUuids ? { ...quirk, bayUuids: [...quirk.bayUuids] } : { ...quirk });
+
+/** A bay's weapons as one key, in any order. */
+const bayKey = (quirk: IAssignedQuirk): string | undefined => quirk.bayUuids ? [...quirk.bayUuids].sort().join(",") : undefined;
+
+/** A bay quirk is in force while any of its bay's weapons is installed. */
+const isInstalled = (quirk: IAssignedQuirk, installedUuids: string[]): boolean =>
+    quirk.bayUuids ? quirk.bayUuids.some((uuid) => installedUuids.includes(uuid))
+        : !quirk.equipmentUuid || installedUuids.includes(quirk.equipmentUuid);
 
 /**
  * Two assignments of one quirk are the same when they share a target; a range bracket also tells them apart (one Improved
  * Targeting per bracket), but a value does not (Rugged 1 and Rugged 2 are one quirk twice).
  */
 const sameAssignment = (record: IQuirk, a: IAssignedQuirk, b: IAssignedQuirk): boolean =>
-    a.tag === b.tag && a.equipmentUuid === b.equipmentUuid && a.location === b.location
+    a.tag === b.tag && a.equipmentUuid === b.equipmentUuid && a.location === b.location && bayKey(a) === bayKey(b)
     && (record.parameter?.kind !== "range-band" || a.parameter === b.parameter);
 
 const inYears = (quirk: IAssignedQuirk, year: number | undefined): boolean =>
@@ -61,21 +69,23 @@ export class QuirkList {
     }
 
     /**
-     * The assignments in force: weapon quirks only on installed weapons, and only those whose years include `year`.
+     * The assignments in force: weapon quirks only on installed weapons (bay quirks while any of the bay's weapons is),
+     * and only those whose years include `year`.
      * With `year` undefined, as in the builder and on the record sheet, every assignment counts whatever its years.
      */
     public getActive(installedUuids: string[], year: number | undefined): IAssignedQuirk[] {
         return this._quirks
-            .filter((quirk) => !quirk.equipmentUuid || installedUuids.includes(quirk.equipmentUuid))
+            .filter((quirk) => isInstalled(quirk, installedUuids))
             .filter((quirk) => inYears(quirk, year))
             .map(copy);
     }
 
     /**
      * The positive and negative point totals of the active quirks, so a quirk on a weapon not installed counts nothing;
-     * `unitMaxDamage` is the sum of all non-physical weapons' maximum damage.
+     * `unitMaxDamage` is the sum of all non-physical weapons' maximum damage. A bay quirk is priced once, from
+     * `bayDamage` of its weapons (CO p.225).
      */
-    public getPointTotals(installedUuids: string[], unitMaxDamage: number, weaponDamage: (uuid: string) => number): { positive: number; negative: number } {
+    public getPointTotals(installedUuids: string[], unitMaxDamage: number, weaponDamage: (uuid: string) => number, bayDamage: (uuids: string[]) => number = () => 0): { positive: number; negative: number } {
         let positive = 0;
         let negative = 0;
         for (const quirk of this.getActive(installedUuids, undefined)) {
@@ -83,7 +93,9 @@ export class QuirkList {
             if (!record) {
                 continue;
             }
-            const damage = record.cost.per?.scope === "weapon" && quirk.equipmentUuid ? weaponDamage(quirk.equipmentUuid) : unitMaxDamage;
+            const weaponScope = record.cost.per?.scope === "weapon";
+            const damage = weaponScope && quirk.bayUuids ? bayDamage(quirk.bayUuids)
+                : weaponScope && quirk.equipmentUuid ? weaponDamage(quirk.equipmentUuid) : unitMaxDamage;
             const points = getQuirkPoints(record, quirk, damage);
             if (points > 0) {
                 positive += points;
