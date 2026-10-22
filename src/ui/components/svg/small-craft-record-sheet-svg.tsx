@@ -9,7 +9,7 @@ import {
 } from './aerospace-record-sheet-svg-blocks';
 import FighterDiagramSVG from './fighter-diagram-svg';
 import { craftInventoryRows } from './dropship-record-sheet-svg';
-import { DOC_HEIGHT, DOC_WIDTH, INK, groupBox, sheetFooter, titleBanner, wrapText } from './record-sheet-svg-kit';
+import { DOC_HEIGHT, DOC_WIDTH, INK, groupBox, sheetFooter, titleBanner, wrapText, wrappedTspans } from './record-sheet-svg-kit';
 
 // A full-page Small Craft record sheet, laid out like the Total Warfare Aerodyne and Spheroid Small Craft record
 // sheets: craft data with the weapons inventory, notes and the armor diagram on top; critical damage, crew data and the
@@ -115,7 +115,7 @@ export default class SmallCraftRecordSheetSVG extends React.Component<ISmallCraf
             cursor += wrapped.length * 26 + 8;
             return (
                 <text key={index} x={x + 20} y={ly} fontFamily="sans-serif" fontSize={21} fill={INK}>
-                    {wrapped.map((part, pi) => <tspan key={pi} x={x + (pi === 0 ? 20 : 40)} dy={pi === 0 ? 0 : 26}>{part}</tspan>)}
+                    {wrappedTspans(wrapped, (pi) => x + (pi === 0 ? 20 : 40), 26)}
                 </text>
             );
         }));

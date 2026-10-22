@@ -18,7 +18,7 @@ import {
 } from '../../../data/vehicle-record-sheet-tables';
 import { getUnitQuirkSheetLines, weaponQuirkSuffix } from '../quirk-sheet-block';
 import { getRulesLevelName } from '../rules-level-print';
-import { DOC_HEIGHT, DOC_WIDTH, GRAY, INK, SHADE, checkbox, groupBox, hitBox, sheetFooter, text, wrapText } from './record-sheet-svg-kit';
+import { DOC_HEIGHT, DOC_WIDTH, GRAY, INK, SHADE, checkbox, groupBox, hitBox, sheetFooter, text, wrapText, wrappedTspans } from './record-sheet-svg-kit';
 import VehicleDiagramSVG from './vehicle-diagram-svg';
 
 // A full-page Combat or Support Vehicle record sheet, laid out like the Total Warfare record sheets (Ground
@@ -331,7 +331,7 @@ export default class VehicleRecordSheetSVG extends React.Component<IVehicleRecor
             const wrapped = wrapText(note.text, 38);
             lines.push(
                 <text key={index} x={x + 20} y={cursor} fontFamily="sans-serif" fontSize={20} fill={INK} data-testid={note.testid}>
-                    {wrapped.map((line, li) => <tspan key={li} x={x + 20} dy={li === 0 ? 0 : 24}>{line}</tspan>)}
+                    {wrappedTspans(wrapped, () => x + 20, 24)}
                 </text>
             );
             cursor += wrapped.length * 24 + 8;

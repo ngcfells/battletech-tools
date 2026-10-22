@@ -99,8 +99,13 @@ test.describe("axe", () => {
 
     for (const path of PAGES) {
         test(`/${path} has no accessibility violations`, async ({ page }) => {
+            // A cold first paint under parallel load can take most of the default 30 s before axe even starts.
+            test.setTimeout(90_000);
             await page.goto(path);
-            await page.waitForLoadState("networkidle");
+            // Not "networkidle": on a cold start the app loads every bundled SSW 'Mech in the background, which can
+            // outlast the test timeout. The page is ready once its route has painted the site banner.
+            await page.waitForLoadState("load");
+            await expect(page.getByRole("banner")).toBeVisible({ timeout: 60_000 });
             const results = await new AxeBuilder({ page }).analyze();
             const found = results.violations.map((violation) => `${violation.id} (${violation.nodes.length}): ${violation.nodes[0]?.target.join(" ")}`);
             expect(found).toEqual([]);

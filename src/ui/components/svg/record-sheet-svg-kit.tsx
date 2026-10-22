@@ -52,6 +52,10 @@ export const wrapText = (value: string, width: number): string[] => {
     return line ? [...lines, line] : lines;
 };
 
+/** Wrapped lines as tspans, each after the first `dy` lower; a line that breaks keeps its trailing space, so the text reads back whole. */
+export const wrappedTspans = (lines: string[], x: (index: number) => number, dy: number): JSX.Element[] =>
+    lines.map((line, i) => <tspan key={i} x={x(i)} dy={i === 0 ? 0 : dy}>{i < lines.length - 1 ? `${line} ` : line}</tspan>);
+
 // A long title shrinks to fit its tab (about 0.62 em a capital).
 export const groupBox = (x: number, y: number, w: number, h: number, title: string, children: React.ReactNode): JSX.Element => (
     <RecordSheetGroupBoxSVG xLoc={x} yLoc={y} width={w} height={h} title={title} bgColor="rgb(255,255,255)" strokeColor={INK}

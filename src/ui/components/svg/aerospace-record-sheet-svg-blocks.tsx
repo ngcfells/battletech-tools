@@ -1,7 +1,7 @@
 import React, { type JSX } from 'react';
 import { AEROSPACE_HEAT_SCALE, AEROSPACE_PILOT_HITS, toCapitalScale } from '../../../data/aerospace-record-sheet';
 import { IAerospaceInventoryRow } from '../aerospace-sheet-blocks';
-import { GRAY, INK, SHADE, blank, checkbox, groupBox, hitBox, text, wrapText } from './record-sheet-svg-kit';
+import { GRAY, INK, SHADE, blank, checkbox, groupBox, hitBox, text, wrapText, wrappedTspans } from './record-sheet-svg-kit';
 
 // Blocks the full-page aerospace record sheets share (fighters, Small Craft and DropShips), laid out like the Total
 // Warfare sheets: the unit data box with its weapons inventory, notes, armor data, critical damage, pilot data, the
@@ -137,7 +137,7 @@ export const notesBox = (x: number, y: number, w: number, h: number, notes: stri
         const wrapped = wrapText(note, width);
         lines.push(
             <text key={index} x={x + 20} y={cursor} fontFamily="sans-serif" fontSize={20} fill={INK}>
-                {wrapped.map((line, li) => <tspan key={li} x={x + 20} dy={li === 0 ? 0 : 24}>{line}</tspan>)}
+                {wrappedTspans(wrapped, () => x + 20, 24)}
             </text>
         );
         cursor += wrapped.length * 24 + 8;

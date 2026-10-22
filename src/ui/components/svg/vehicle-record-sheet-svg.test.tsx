@@ -113,3 +113,24 @@ describe("vehicle record sheet (full page)", () => {
         expect(markup).not.toContain("CLASSIC BATTLETECH");
     });
 });
+
+// A note wrapped over several lines keeps the space at each break, so it copies and reads back whole.
+describe("vehicle record sheet notes", () => {
+    it("keeps the spaces where a long note wraps", () => {
+        const vehicle = new Vehicle();
+        vehicle.setTech("is");
+        vehicle.setEra("jihad");
+        vehicle.setMotiveType("tracked");
+        vehicle.setTonnage(60);
+        vehicle.setEngineType("xl");
+        vehicle.setCruiseMP(4);
+        vehicle.setHasTurret(true);
+        vehicle.addEquipmentFromTag("custom-artvee-thumper-combo", "turret");
+        vehicle.addEquipmentFromTag("ammo-thumper-standard", "body");
+        vehicle.addEquipmentFromTag("ammo-is-ac-5-standard", "body");
+        vehicle.setArtVee(true);
+        const notes = [...render(vehicle).matchAll(/<text[^>]*data-testid="artvee-note"[^>]*>(.*?)<\/text>/g)]
+            .map((match) => match[1].replace(/<[^>]+>/g, ""));
+        expect(notes).toContain("Thumper / AC/5 combo: Vehicle Mode AC/5 (5 damage, 1 heat, 3/7/14/21); Siege Mode Thumper artillery (6 heat, 15 damage, 21 mapsheets)");
+    });
+});
