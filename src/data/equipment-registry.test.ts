@@ -675,3 +675,12 @@ describe("Batch 23 Rotary AC Caseless rounds", () => {
         ]);
     });
 });
+
+describe("equipment alternate tags", () => {
+    it("never repeat a tag or name the record's own tag", () => {
+        const bad = getEquipmentCatalogDefinitions().flatMap((definition) => definition.equipment)
+            .filter((item) => (item.altTags ?? []).length !== new Set(item.altTags).size || (item.altTags ?? []).includes(item.tag))
+            .map((item) => item.tag);
+        expect(bad).toEqual([]);
+    });
+});
