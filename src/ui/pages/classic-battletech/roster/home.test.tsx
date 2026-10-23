@@ -10,6 +10,13 @@ import BattleMechAddMechDialog from "./_addMechDialog";
 import BattleMechRosterHome from "./home";
 import { newMULSearchFilters } from "../../../../utils/mulSearchFilters";
 import { sswTestFixtures } from "../../../../data/ssw/sswTestFixtures";
+import { getMULDisplayName } from "../../../../classes/alpha-strike-unit";
+import Vehicle from "../../../../classes/vehicle";
+import AerospaceFighter from "../../../../classes/aerospace-fighter";
+import InfantryPlatoon from "../../../../classes/infantry-platoon";
+import BattleArmor from "../../../../classes/battle-armor";
+import ProtoMech from "../../../../classes/protomech";
+import { searchBundledMUL } from "../../../../utils";
 
 afterEach(cleanup);
 
@@ -110,4 +117,35 @@ describe("Classic roster Master Unit List search", () => {
         await waitFor(() => expect(screen.getAllByText(/No Classic design yet/).length).toBeGreaterThan(0), { timeout: 20_000 });
         expect(screen.getAllByRole("link", { name: "build it" })[0].getAttribute("href")).toContain("/classic-battletech/mech-creator");
     }, 30_000);
+
+    // Round 2: each other Classic type matches a saved design by name and lands in its own table in the group.
+    const otherTypes: { label: string; type: number; saves: keyof IAppGlobals; table: keyof BattleMechGroup; make: (name: string, model: string) => { exportJSON(): string } }[] = [
+        { label: "combat vehicle", type: 19, saves: "vehicleSaves", table: "vehicles", make: (name, model) => { const unit = new Vehicle(); unit.setName(name); unit.setModel(model); return unit; } },
+        { label: "fighter", type: 17, saves: "fighterSaves", table: "fighters", make: (name, model) => { const unit = new AerospaceFighter(); unit.setName(name); unit.setModel(model); return unit; } },
+        { label: "infantry platoon", type: 21, saves: "infantrySaves", table: "infantry", make: (name, model) => { const unit = new InfantryPlatoon(); unit.setName(name + " " + model); return unit; } },
+        { label: "battle armor squad", type: 22, saves: "battleArmorSaves", table: "battleArmor", make: (name, model) => { const unit = new BattleArmor(); unit.setName(name + " " + model); return unit; } },
+        { label: "ProtoMech point", type: 23, saves: "protoMechSaves", table: "protoMechs", make: (name, model) => { const unit = new ProtoMech(); unit.setName(name + " " + model); return unit; } },
+        { label: "support vehicle", type: 24, saves: "vehicleSaves", table: "vehicles", make: (name, model) => { const unit = new Vehicle(); unit.setName(name); unit.setModel(model); return unit; } },
+    ];
+    for (const kind of otherTypes) {
+        it("finds a saved " + kind.label + " on the MUL and adds it to the group's " + String(kind.table) + " table", async () => {
+            const appGlobals = makeAppGlobals();
+            const hit = (await searchBundledMUL(newMULSearchFilters({ type: kind.type }))).find((unit) => (unit.Variant ?? "").trim() !== "")!;
+            const design = kind.make(hit.Name, hit.Variant ?? "");
+            (appGlobals[kind.saves] as unknown[]).push(JSON.parse(design.exportJSON()));
+            appGlobals.appSettings.cbtMULSearch = newMULSearchFilters({ type: kind.type, term: hit.Name + " " + hit.Variant });
+            const onChange = vi.fn();
+            render(
+                <MemoryRouter>
+                    <BattleMechAddMechDialog appGlobals={appGlobals} currentForce={appGlobals.currentCBTForce!.groups[0]} currentForceIndex={0} onChange={onChange} />
+                </MemoryRouter>
+            );
+            const add = (await screen.findAllByRole("button", { name: "Add " + getMULDisplayName(hit) }, { timeout: 20_000 }))[0];
+            fireEvent.click(add);
+            expect(onChange).toHaveBeenCalledTimes(1);
+            const group: BattleMechGroup = onChange.mock.calls[0][0];
+            expect((group[kind.table] as unknown[]).length).toBe(1);
+            expect(group.members.length).toBe(0);
+        }, 30_000);
+    }
 });

@@ -5,7 +5,12 @@ import { getMULDisplayName, IASMULUnit } from '../../../../classes/alpha-strike-
 import { BattleMech } from '../../../../classes/battlemech';
 import { BattleMechGroup } from '../../../../classes/battlemech-group';
 import { searchBundledMUL } from '../../../../utils';
-import { buildClassicDesignIndex, ClassicDesignIndex, findClassicDesign, getClassicMechEntries } from '../../../../utils/classicMULMatch';
+import AerospaceFighter from '../../../../classes/aerospace-fighter';
+import BattleArmor from '../../../../classes/battle-armor';
+import InfantryPlatoon from '../../../../classes/infantry-platoon';
+import ProtoMech from '../../../../classes/protomech';
+import Vehicle from '../../../../classes/vehicle';
+import { buildClassicDesignIndex, ClassicDesignIndex, findClassicDesign, getClassicMechEntries, getClassicUnitEntries } from '../../../../utils/classicMULMatch';
 import { IMULSearchFilters } from '../../../../utils/mulSearchFilters';
 import { getMULEraLabel } from '../../../../utils/mulUtilities';
 import { paginate } from '../../../../utils/paginate';
@@ -24,8 +29,27 @@ const Eye = FaEye as any;
 const PlusCircle = FaPlusCircle as any;
 const TimesCircle = FaTimesCircle as any;
 
-// Round 1 of the Classic MUL search (Ideas #84) covers 'Mechs: BattleMechs and IndustrialMechs.
-const CBT_MUL_TYPE_IDS = [18, 20];
+type ClassicMULUnit = Vehicle | AerospaceFighter | InfantryPlatoon | BattleArmor | ProtoMech;
+
+interface IClassicMULKind {
+    typeIDs: number[];
+    creator: string;
+    saves: (appGlobals: IAppGlobals) => { uuid?: string; lastUpdated?: unknown }[];
+    load: (json: string) => ClassicMULUnit;
+    table: "vehicles" | "fighters" | "infantry" | "battleArmor" | "protoMechs";
+}
+
+// The Classic MUL search (Ideas #84): 'Mechs (BattleMechs and IndustrialMechs) match saved and bundled designs; the
+// other types match saved designs and go into their own table in the group.
+const CBT_MUL_MECH_TYPE_IDS = [18, 20];
+const CBT_MUL_KINDS: IClassicMULKind[] = [
+    { typeIDs: [19, 24], creator: "vehicle-creator", saves: (g) => g.vehicleSaves, load: (json) => new Vehicle( json ), table: "vehicles" },
+    { typeIDs: [17], creator: "fighter-creator", saves: (g) => g.fighterSaves, load: (json) => new AerospaceFighter( json ), table: "fighters" },
+    { typeIDs: [21], creator: "infantry-creator", saves: (g) => g.infantrySaves, load: (json) => new InfantryPlatoon( json ), table: "infantry" },
+    { typeIDs: [22], creator: "battle-armor-creator", saves: (g) => g.battleArmorSaves, load: (json) => new BattleArmor( json ), table: "battleArmor" },
+    { typeIDs: [23], creator: "protomech-creator", saves: (g) => g.protoMechSaves, load: (json) => new ProtoMech( json ), table: "protoMechs" },
+];
+const CBT_MUL_TYPE_IDS = CBT_MUL_MECH_TYPE_IDS.concat( ...CBT_MUL_KINDS.map( (kind) => kind.typeIDs ) );
 const MUL_RESULTS_PAGE_SIZE = 25;
 
 export default class BattleMechAddMechDialog extends React.Component<IBattleMechAddMechDialogProps, IBattleMechAddMechDialogState> {
@@ -33,6 +57,7 @@ export default class BattleMechAddMechDialog extends React.Component<IBattleMech
     private searchTimeout: ReturnType<typeof setTimeout> | null = null;
     private latestSearch = 0;
     private designIndex: { key: string; index: ClassicDesignIndex<BattleMech> } | null = null;
+    private unitIndexes = new Map<IClassicMULKind, { key: string; index: ClassicDesignIndex<ClassicMULUnit> }>();
 
     constructor(props: IBattleMechAddMechDialogProps) {
         super(props);
@@ -94,6 +119,28 @@ export default class BattleMechAddMechDialog extends React.Component<IBattleMech
             this.designIndex = { key, index: buildClassicDesignIndex( getClassicMechEntries( saved ).concat( getClassicMechEntries( bundled ) ) ) };
         }
         return this.designIndex.index;
+    }
+
+    getUnitIndex = ( kind: IClassicMULKind ): ClassicDesignIndex<ClassicMULUnit> => {
+        const saves = kind.saves( this.props.appGlobals );
+        const key = JSON.stringify( saves.map( (save) => String( save.uuid ) + String( save.lastUpdated ) ) );
+        let cached = this.unitIndexes.get( kind );
+        if( !cached || cached.key !== key ) {
+            cached = { key, index: buildClassicDesignIndex( getClassicUnitEntries( saves.map( (save) => kind.load( JSON.stringify( save ) ) ) ) ) };
+            this.unitIndexes.set( kind, cached );
+        }
+        return cached.index;
+    }
+
+    importOtherUnit = ( e: React.FormEvent<HTMLButtonElement>, kind: IClassicMULKind, design: ClassicMULUnit ): void => {
+        e.preventDefault();
+        if( this.props.currentForce ) {
+            const unit = kind.load( design.exportJSON() );
+            unit.newUUID();
+            unit.resetInPlay();
+            ( this.props.currentForce[kind.table] as ClassicMULUnit[] ).push( unit );
+            this.props.onChange( this.props.currentForce );
+        }
     }
 
 
@@ -225,7 +272,7 @@ export default class BattleMechAddMechDialog extends React.Component<IBattleMech
 <fieldset className="fieldset">
     <legend>Master Unit List Search</legend>
     <p className="small-text">
-        Search the Master Unit List copy kept in the app by name, era, faction and more, then add the matching Classic design: one you saved first, else the bundled Skunk Werks 'Mech. 'Mechs for now; the other unit types follow. Idea from Camille, Centrella-Sworn on the Star League Discord.
+        Search the Master Unit List copy kept in the app by name, era, faction and more, then add the matching Classic design. A 'Mech matches one you saved first, else the bundled Skunk Werks 'Mech; vehicles, fighters, infantry, battle armor and ProtoMechs match the designs you saved, by name and model (infantry, battle armor and ProtoMechs by a name holding both). Idea from Camille, Centrella-Sworn on the Star League Discord.
     </p>
     <MULSearchFilters
         filters={this.props.appGlobals.appSettings.cbtMULSearch}
@@ -253,6 +300,10 @@ export default class BattleMechAddMechDialog extends React.Component<IBattleMech
                 <tr><td className="text-center" colSpan={6}>No units on the Master Unit List match your filters.</td></tr>
             ) : null}
             {resultsPage.items.map( (unit: IASMULUnit) => {
+                const kind = CBT_MUL_KINDS.find( (item) => item.typeIDs.includes( unit.Type?.Id ) );
+                if( kind ) {
+                    return this.renderOtherMULRow( unit, kind );
+                }
                 const design = findClassicDesign( unit, index );
                 return (
                     <tr key={unit.MulUnitKey ?? unit.Id}>
@@ -279,6 +330,28 @@ export default class BattleMechAddMechDialog extends React.Component<IBattleMech
         </tbody>
     </table>
 </fieldset>
+        );
+    }
+
+    renderOtherMULRow = ( unit: IASMULUnit, kind: IClassicMULKind ): JSX.Element => {
+        const design = findClassicDesign( unit, this.getUnitIndex( kind ) );
+        return (
+            <tr key={unit.MulUnitKey ?? unit.Id}>
+                <td>{getMULDisplayName( unit )}</td>
+                <td className="min-width no-wrap text-left">{unit.Technology?.Name}</td>
+                <td className="min-width no-wrap text-left">{getMULEraLabel( unit.EraId )}</td>
+                <td className="min-width no-wrap text-center">{unit.Tonnage}</td>
+                <td className="min-width no-wrap text-center">{design ? design.getBattleValue() : unit.BattleValue}</td>
+                <td className="min-width no-wrap text-center">
+                    {design ? (
+                        <button className='btn btn-sm btn-primary' onClick={e => this.importOtherUnit(e, kind, design)} title={"Add " + design.getName() + " to this group"} aria-label={"Add " + getMULDisplayName( unit )}><PlusCircle /></button>
+                    ) : (
+                        <span className="small-text">
+                            No Classic design yet: <Link to={`${process.env.PUBLIC_URL}/classic-battletech/${kind.creator}`}>build it</Link>
+                        </span>
+                    )}
+                </td>
+            </tr>
         );
     }
 

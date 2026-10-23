@@ -1,6 +1,6 @@
 # Classic Roster MUL search: design
 
-Status: round 1 done (2026-10-23): 'Mechs, shared filters, unit-list checkboxes, ArtVees in the custom list. Round 2 next.
+Status: done (2026-10-23). Round 1: 'Mechs, shared filters, unit-list checkboxes, ArtVees in the custom list. Round 2: vehicles, support vehicles, fighters, infantry, battle armor and ProtoMechs match saved designs by name (`getClassicUnitEntries`) and go into their own group table.
 Origin Ideas discussion #84.
 
 Idea from **Camille, Centrella-Sworn** on the Star League Discord.
@@ -62,7 +62,7 @@ Measured on the bundled data: 486 of 508 SSW 'Mechs match a MUL entry before the
 4. Classic dialog search + results + add to group, with a component test that a found 'Mech lands in the group.
 5. News entry, then commit, push, `git deploy-beta`.
 
-## Round 2 (next)
+## Round 2 (done)
 
 Vehicles, fighters, infantry, battle armor, ProtoMechs, Support Vehicles and so on, from saved designs, added to
 their own table in the group.

@@ -57,6 +57,14 @@ export function findClassicDesign<T>(unit: Pick<IASMULUnit, "Name" | "Variant">,
     return null;
 }
 
+/**
+ * Index entries for the other Classic types. Vehicles and fighters carry a name and a model; infantry, battle armor
+ * and ProtoMechs only a name, which the user writes as the MUL's chassis and variant together.
+ */
+export function getClassicUnitEntries<T extends { getName(): string; getModel?(): string }>(units: T[]): IClassicDesignEntry<T>[] {
+    return units.map((unit) => ({ chassis: unit.getName(), model: unit.getModel ? unit.getModel() : "", design: unit }));
+}
+
 /** Index entries for 'Mechs; an OmniMech gives one per configuration, which the MUL lists as its own variant. */
 export function getClassicMechEntries(mechs: BattleMech[]): IClassicDesignEntry<BattleMech>[] {
     const entries: IClassicDesignEntry<BattleMech>[] = [];
