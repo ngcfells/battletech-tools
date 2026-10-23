@@ -218,6 +218,8 @@ export default class MechCreatorSummary extends React.Component<IHomeProps, IHom
                                 />
                               </Link>
                               <br />
+                              <Link to={`${process.env.PUBLIC_URL}/classic-battletech/mech-creator/print-tro`} className="btn btn-sm btn-primary">Print the TRO sheet</Link>
+                              <br />
                               <Link to={`${process.env.PUBLIC_URL}/classic-battletech/mech-creator/print-as`} aria-label="Print the Alpha Strike card">
                                 <AlphaStrikeUnitSVG
                                   appGlobals={this.props.appGlobals}
@@ -260,7 +262,7 @@ export default class MechCreatorSummary extends React.Component<IHomeProps, IHom
                             <hr />
                           <Link to={`${process.env.PUBLIC_URL}/classic-battletech/mech-creator/exports`} className="btn btn-sm btn-primary pull-right">Exports <ArrowCircleRight /></Link>
                             <div className="inline-block text-left">
-                              <Link to={`${process.env.PUBLIC_URL}/classic-battletech/mech-creator/step6`} className="btn btn-sm btn-primary"><ArrowCircleLeft /> Previous Step</Link>
+                              <Link to={`${process.env.PUBLIC_URL}/classic-battletech/mech-creator/step7`} className="btn btn-sm btn-primary"><ArrowCircleLeft /> Previous Step</Link>
                             </div>
                           </div>
                         </TextSection>

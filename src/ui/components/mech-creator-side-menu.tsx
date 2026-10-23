@@ -73,6 +73,15 @@ export default class MechCreatorSideMenu extends React.Component<IMechCreatorSid
                 </li>
                 <li>
                     <Link
+                        to={`${process.env.PUBLIC_URL}/classic-battletech/mech-creator/step7`}
+                        className={this.props.current === "step7" ? "btn btn-primary" : "btn btn-lightbg"}
+                    >
+                        <div className="title">Step 7</div>
+                        <div className="subtitle">Technical Readout (optional)</div>
+                    </Link>
+                </li>
+                <li>
+                    <Link
                         to={`${process.env.PUBLIC_URL}/classic-battletech/mech-creator/summary`}
                         className={this.props.current === "summary" ? "btn btn-primary" : "btn btn-lightbg"}
                     >

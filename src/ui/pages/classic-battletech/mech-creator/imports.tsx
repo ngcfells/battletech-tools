@@ -145,8 +145,11 @@ export default class MechCreatorImports extends React.Component<IHomeProps, IHom
       if( this.state.ParsedTRO ) {
         let currentBattleMech = this.props.appGlobals.currentBattleMech;
 
+        // The TRO text carries no Technical Readout fields; the importer must not wipe the ones already entered.
+        const troFields = this.props.appGlobals.currentBattleMech?.tro.export();
         currentBattleMech = new BattleMech();
         currentBattleMech.import( this.state.ParsedTRO.export() )
+        currentBattleMech.tro.import( troFields );
         const imported = currentBattleMech;
         replaceCurrentBattleMech( this.props.appGlobals, () => this.props.appGlobals.saveCurrentBattleMech( imported ) );
         this.setState({
