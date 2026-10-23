@@ -95,3 +95,12 @@ describe("'Mech Technical Readout", () => {
         expect(omni.tro.getCopyMake("medium-laser", pod.uuid!)).toEqual({ manufacturer: "Martell" });
     });
 });
+
+describe("'Mech reset and SSW import", () => {
+    it("an SSW import does not keep the previous design's quirks", () => {
+        const mech = new BattleMech();
+        mech.quirks.add({ tag: "quirk-command-mech" });
+        mech.importSSWXML(sswMechs[1]);
+        expect(mech.quirks.getAll()).toEqual([]);
+    });
+});

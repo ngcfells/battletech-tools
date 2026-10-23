@@ -595,6 +595,7 @@ export class BattleMech {
         this._rulesEdition = DEFAULT_RULES_EDITION;
         this._printedDroid = undefined;
         this.tro = new TechnicalReadout();
+        this.quirks = new QuirkList();
         this._rulesEditionReturn = undefined;
         this._advancedFireControl = false;
         this._patchworkArmor = {};
