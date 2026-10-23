@@ -31,7 +31,7 @@ import ShieldDiagramSVG from './shield-diagram-svg';
 import TakeDamageButtonSVG from './take-damage-button';
 import TargetSelectSVG from './target-select-svg';
 import TripodArmorCircles from './tripod-armor-circles';
-import TripodDiagramSVG, { TRIPOD_CENTER_LEG_BUBBLES } from './tripod-diagram-svg';
+import { TripodArmorDiagramSVG, TripodDamageTransferDiagramSVG, TripodInternalStructureDiagramSVG, TRIPOD_INTERNAL_CENTER_LEG_LAYOUT, tripodCenterLegBubbles } from './tripod-diagram-svg';
 
 export default class BattleMechSVG extends React.Component<IBattleMechSVGProps, IBattleMechSVGState> {
 
@@ -713,16 +713,13 @@ export default class BattleMechSVG extends React.Component<IBattleMechSVGProps, 
     {hasArms ? (
         <>
             {this.props.mechData.isTripod() ? (
-                <TripodDiagramSVG kind="armor" xLoc={1263} yLoc={-10} width={700} bgColor={bgColor} strokeColor={strokeColor} />
+                <TripodArmorDiagramSVG xLoc={1263} yLoc={-10} width={700} bgColor={bgColor} />
             ) : (
                 <BipedArmorDiagramSVG xLoc={1263} yLoc={-10} width={700} bgColor={bgColor} />
             )}
 
-            {this.props.mechData.isTripod() ? (
-                <TripodDiagramSVG kind="rear" xLoc={1413} yLoc={875} width={400} bgColor={bgColor} strokeColor={strokeColor} />
-            ) : (
-                <BipedRearArmorDiagramSVG xLoc={1413} yLoc={875} width={400} bgColor={bgColor} />
-            )}
+            {/* A Tripod's rear armor is the Biped's: the Center Leg has none. */}
+            <BipedRearArmorDiagramSVG xLoc={1413} yLoc={875} width={400} bgColor={bgColor} />
 
             {/* Each arm's shield beside the arm, as the Gundam RX-78-2 sheet draws it (TO:AUE p.103). */}
             {this.props.mechData.getShields().filter(shield => shield.location === "la" || shield.location === "ra").map(shield => (
@@ -761,7 +758,7 @@ export default class BattleMechSVG extends React.Component<IBattleMechSVGProps, 
 
 		<text x={this.armorBoxLeft + this.armorBoxWidth / 2  } y={this.armorBoxTop + 600} textAnchor="middle" fontFamily="sans-serif" fill={strokeColor} style={{fontWeight: 700}} fontSize={20}>CENTER</text>
 		<text x={this.armorBoxLeft + this.armorBoxWidth / 2 } y={this.armorBoxTop + 620} textAnchor="middle" fontFamily="sans-serif" fill={strokeColor} style={{fontWeight: 700}} fontSize={20}>TORSO</text>
-		<text x={this.armorBoxLeft + this.armorBoxWidth / 2 } y={this.armorBoxTop + 640} textAnchor="middle" fontFamily="sans-serif" fill={strokeColor} style={{fontWeight: 700}} fontSize={20}>[{this.props.mechData.getArmorAllocation().centerTorso })</text>
+		<text x={this.armorBoxLeft + this.armorBoxWidth / 2 } y={this.armorBoxTop + 640} textAnchor="middle" fontFamily="sans-serif" fill={strokeColor} style={{fontWeight: 700}} fontSize={20}>[{this.props.mechData.getArmorAllocation().centerTorso }]</text>
 
 		<text x={this.armorBoxLeft + this.armorBoxWidth / 2 } y={this.armorBoxTop + 1215} textAnchor="middle" fontFamily="sans-serif" fill={strokeColor} style={{fontWeight: 700}} fontSize={20}>CENTER TORSO (REAR) [{this.props.mechData.getArmorAllocation().centerTorsoRear }]</text>
 
@@ -841,7 +838,7 @@ export default class BattleMechSVG extends React.Component<IBattleMechSVGProps, 
 
 		<text x={this.armorBoxLeft + this.armorBoxWidth / 2 + 10  } y={this.armorBoxTop + 600} textAnchor="middle" fontFamily="sans-serif" fill={strokeColor} style={{fontWeight: 700}} fontSize={17}>CENTER</text>
 		<text x={this.armorBoxLeft + this.armorBoxWidth / 2 + 10  } y={this.armorBoxTop + 620} textAnchor="middle" fontFamily="sans-serif" fill={strokeColor} style={{fontWeight: 700}} fontSize={17}>TORSO</text>
-		<text x={this.armorBoxLeft + this.armorBoxWidth / 2 + 10  } y={this.armorBoxTop + 640} textAnchor="middle" fontFamily="sans-serif" fill={strokeColor} style={{fontWeight: 700}} fontSize={17}>[{ this.props.mechData.getArmorAllocation().centerTorso })</text>
+		<text x={this.armorBoxLeft + this.armorBoxWidth / 2 + 10  } y={this.armorBoxTop + 640} textAnchor="middle" fontFamily="sans-serif" fill={strokeColor} style={{fontWeight: 700}} fontSize={17}>[{ this.props.mechData.getArmorAllocation().centerTorso }]</text>
 
 		<text x={this.armorBoxLeft + this.armorBoxWidth / 2  } y={this.armorBoxTop + 1210} textAnchor="middle" fontFamily="sans-serif" fill={strokeColor} style={{fontWeight: 700}} fontSize={20}>CENTER TORSO (REAR) [{ this.props.mechData.getArmorAllocation().centerTorsoRear }]</text>
 
@@ -892,7 +889,7 @@ export default class BattleMechSVG extends React.Component<IBattleMechSVGProps, 
     {hasArms ? (
         <>
             {this.props.mechData.isTripod() ? (
-                <TripodDiagramSVG kind="internal" xLoc={1350} yLoc={1275} width={420} bgColor={bgColor} strokeColor={strokeColor} />
+                <TripodInternalStructureDiagramSVG xLoc={1350} yLoc={1275} width={420} />
             ) : (
                 <BipedInternalStructureDiagramSVG xLoc={1350} yLoc={1275} width={420} />
             )}
@@ -920,7 +917,7 @@ export default class BattleMechSVG extends React.Component<IBattleMechSVGProps, 
 
 		<text x={this.isBoxLeft + this.isBoxWidth / 2 } y={this.isBoxTop + 400} textAnchor="middle" fontFamily="sans-serif" fill={strokeColor} style={{fontWeight: 700}} fontSize={15}>CENTER</text>
 		<text x={this.isBoxLeft + this.isBoxWidth / 2 } y={this.isBoxTop + 420} textAnchor="middle" fontFamily="sans-serif" fill={strokeColor} style={{fontWeight: 700}} fontSize={15}>TORSO</text>
-		<text x={this.isBoxLeft + this.isBoxWidth / 2 } y={this.isBoxTop + 440} textAnchor="middle" fontFamily="sans-serif" fill={strokeColor} style={{fontWeight: 700}} fontSize={15}>[{this.props.mechData.getInternalStructure().centerTorso })</text>
+		<text x={this.isBoxLeft + this.isBoxWidth / 2 } y={this.isBoxTop + 440} textAnchor="middle" fontFamily="sans-serif" fill={strokeColor} style={{fontWeight: 700}} fontSize={15}>[{this.props.mechData.getInternalStructure().centerTorso }]</text>
 
         {/* Head IS */}
         {this.props.mechData.getInternalStructure().head > 0 ? (<><DamageCircleSVG isFilled={this.props.mechData.structureDamaged("hd", 0)} xLoc={this.isBoxLeft + this.isBoxWidth / 2 + 15 } yLoc={this.isBoxTop + 120} radius={10} inPlay={this.props.inPlay} clickLocation="hd" clickIndex={0} clickFunction={this.toggleISBubble}/></>) : (<></>)}
@@ -1155,17 +1152,18 @@ export default class BattleMechSVG extends React.Component<IBattleMechSVGProps, 
         {this.props.mechData.getInternalStructure().rightLeg > 29 ? (<><DamageCircleSVG isFilled={this.props.mechData.structureDamaged("rl", 29)} xLoc={this.isBoxLeft + this.isBoxWidth / 2 + 108} yLoc={this.isBoxTop + 560} radius={10} inPlay={this.props.inPlay} clickLocation="rl" clickIndex={29} clickFunction={this.toggleISBubble} /></>) : (<></>)}
 
         {this.props.mechData.isTripod() ? (
-            // No dedicated Tripod diagram exists yet (issue #77) - Center Leg structure pips
-            // are placed below the main legs so the location remains trackable in play.
+            // The Center Leg's structure, inside the leg TripodInternalStructureDiagramSVG draws (issue 77).
             <>
-                {TRIPOD_CENTER_LEG_BUBBLES.slice(0, this.props.mechData.getInternalStructure().centerLeg ?? 0).map((position, index) => {
+                <text x={this.isBoxLeft + this.isBoxWidth / 2} y={this.isBoxTop + TRIPOD_INTERNAL_CENTER_LEG_LAYOUT.labelY} textAnchor="middle" fontFamily="sans-serif" fill={strokeColor} style={{fontWeight: 700}} fontSize={11}>CTR LEG</text>
+                <text x={this.isBoxLeft + this.isBoxWidth / 2} y={this.isBoxTop + TRIPOD_INTERNAL_CENTER_LEG_LAYOUT.labelY + 13} textAnchor="middle" fontFamily="sans-serif" fill={strokeColor} style={{fontWeight: 700}} fontSize={11}>[{this.props.mechData.getInternalStructure().centerLeg ?? 0}]</text>
+                {tripodCenterLegBubbles(this.props.mechData.getInternalStructure().centerLeg ?? 0, TRIPOD_INTERNAL_CENTER_LEG_LAYOUT).map((position, index) => {
                     return (
                         <DamageCircleSVG
                             key={`cl-${index}`}
                             isFilled={this.props.mechData.structureDamaged("cl", index)}
-                            xLoc={this.isBoxLeft + this.isBoxWidth / 2 + position.x * 0.88}
-                            yLoc={this.isBoxTop + 480 + position.y * 0.88}
-                            radius={10}
+                            xLoc={this.isBoxLeft + this.isBoxWidth / 2 + position.x}
+                            yLoc={this.isBoxTop + TRIPOD_INTERNAL_CENTER_LEG_LAYOUT.firstRowY + position.y}
+                            radius={TRIPOD_INTERNAL_CENTER_LEG_LAYOUT.radius}
                             inPlay={this.props.inPlay}
                             clickLocation="cl"
                             clickIndex={index}
@@ -1177,9 +1175,10 @@ export default class BattleMechSVG extends React.Component<IBattleMechSVGProps, 
         ) : null}
 
         {this.props.inPlay && (this.props.currentPhase === 2 ||  this.props.currentPhase === 3) ?
+            // A Tripod's Center Leg fills the gap between the legs, so its button goes on the left.
             <TakeDamageButtonSVG
-                x={this.isBoxLeft + this.isBoxWidth / 2 - 50}
-                y={this.isBoxTop + 500}
+                x={this.props.mechData.isTripod() ? this.isBoxLeft + 20 : this.isBoxLeft + this.isBoxWidth / 2 - 50}
+                y={this.props.mechData.isTripod() ? this.isBoxTop + 420 : this.isBoxTop + 500}
                 height={100}
                 width={100}
                 onClick={this.props.openTakeDamageDialog}
@@ -1220,7 +1219,7 @@ export default class BattleMechSVG extends React.Component<IBattleMechSVGProps, 
 
             <text x={ this.isBoxLeft + this.isQuadCenterAdjust + this.isBoxWidth / 2  } y={this.isBoxTop + 360} textAnchor="middle" fontFamily="sans-serif" fill={strokeColor} style={{fontWeight: 700}} fontSize={13}>CENTER</text>
             <text x={ this.isBoxLeft + this.isQuadCenterAdjust + this.isBoxWidth / 2  } y={this.isBoxTop + 380} textAnchor="middle" fontFamily="sans-serif" fill={strokeColor} style={{fontWeight: 700}} fontSize={13}>TORSO</text>
-            <text x={ this.isBoxLeft + this.isQuadCenterAdjust + this.isBoxWidth / 2  } y={this.isBoxTop + 400} textAnchor="middle" fontFamily="sans-serif" fill={strokeColor} style={{fontWeight: 700}} fontSize={13}>[{ this.props.mechData.getInternalStructure().centerTorso })</text>
+            <text x={ this.isBoxLeft + this.isQuadCenterAdjust + this.isBoxWidth / 2  } y={this.isBoxTop + 400} textAnchor="middle" fontFamily="sans-serif" fill={strokeColor} style={{fontWeight: 700}} fontSize={13}>[{ this.props.mechData.getInternalStructure().centerTorso }]</text>
 
             {/* Head IS */}
             {this.props.mechData.getInternalStructure().head > 0 ? (<><DamageCircleSVG isFilled={this.props.mechData.structureDamaged("hd", 0)} xLoc={this.isBoxLeft + this.isBoxWidth / 2 + 15 } yLoc={this.isBoxTop + 105} radius={10} inPlay={this.props.inPlay} clickLocation="hd" clickIndex={0} clickFunction={this.toggleISBubble} /></>) : (<></>)}
@@ -1697,8 +1696,7 @@ export default class BattleMechSVG extends React.Component<IBattleMechSVGProps, 
     {hasArms ? (
         <>
             {this.props.mechData.isTripod() ? (
-                <TripodDiagramSVG
-                    kind="transfer"
+                <TripodDamageTransferDiagramSVG
                     xLoc={critBoxLeft + critBoxWidth / 2 - damageTransferWidth / 2}
                     yLoc={critBoxTop + 950}
                     width={damageTransferWidth}

@@ -30,10 +30,10 @@ export default class BipedArmorCircles extends React.Component<IBipedArmorCircle
             <>
 {this.props.inPlay && (this.props.currentPhase === 2 ||  this.props.currentPhase === 3 ) ?
     <TakeDamageButtonSVG
-        x={this.armorBoxLeft + this.props.armorBoxWidth / 2 - 75}
-        y={this.armorBoxTop + 700}
-        height={150}
-        width={150}
+        x={this.props.takeDamageButton ? this.props.takeDamageButton.x : this.armorBoxLeft + this.props.armorBoxWidth / 2 - 75}
+        y={this.props.takeDamageButton ? this.props.takeDamageButton.y : this.armorBoxTop + 700}
+        height={this.props.takeDamageButton ? this.props.takeDamageButton.size : 150}
+        width={this.props.takeDamageButton ? this.props.takeDamageButton.size : 150}
         onClick={this.props.openTakeDamageDialog}
     />
 : null}
@@ -555,6 +555,9 @@ interface IBipedArmorCirclesProps {
     armorBoxLeft: number;
     armorBoxWidth: number;
 
+
+    // Where the Take Damage button goes in play; between the legs unless a Tripod's Center Leg is there.
+    takeDamageButton?: { x: number; y: number; size: number };
 
     onChange?( mech: BattleMech ): void;
     openTakeDamageDialog?(): void;
