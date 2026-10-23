@@ -29,7 +29,12 @@ test("Step 7 keeps the Technical Readout fields, prints them, and the TRO text i
     await page.getByRole("button", { name: /Try the TRO text importer/ }).click();
     await page.locator("textarea").first().fill("Type: Test TRO\nTechnology Base: Inner Sphere\nTonnage: 50\n");
     await page.getByRole("button", { name: "Import and Replace" }).first().click();
+    // The design in hand has unsaved changes, so replacing it asks first.
+    await page.getByRole("dialog").getByRole("button", { name: "Discard it" }).click();
 
+    // The imported unit took over, and the TRO fields entered before it are still there.
+    await page.goto("classic-battletech/mech-creator/summary");
+    await expect(page.locator(".mech-tro").first()).toContainText("Type: Test TRO");
     await page.goto("classic-battletech/mech-creator/step7");
     await expect(page.getByLabel("Manufacturer", { exact: true })).toHaveValue("Earthwerks Incorporated");
 

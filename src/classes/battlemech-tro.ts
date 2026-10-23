@@ -59,6 +59,10 @@ export function getBattleMechTroAdapter(mech: BattleMech): ITroUnitAdapter {
             ];
         },
 
+        getKnownEquipmentTags(): string[] {
+            return [...mech.getInstalledEquipment().map((item) => item?.tag), ...mech.getOmniConfigurationEquipmentTags()].filter((tag): tag is string => !!tag);
+        },
+
         ensureEquipmentUuid(copy: ITroEquipmentCopy): string {
             if (copy.uuid) {
                 return copy.uuid;
@@ -106,7 +110,7 @@ export function getBattleMechTroAdapter(mech: BattleMech): ITroUnitAdapter {
             rows.push(
                 { label: mech.getHeatSyncName(), value: `${mech.getHeatSinks()}`, mass: `${mech.getHeatSinksWeight()}` },
                 { label: mech.getGyroName(), mass: `${mech.getGyroWeight()}` },
-                { label: mech.getCockpitType().tag === "small" ? "Small Cockpit" : "Cockpit", mass: `${mech.getCockpitWeight()}` },
+                { label: mech.getCockpitType().tag === "standard" ? "Cockpit" : mech.getCockpitType().name, mass: `${mech.getCockpitWeight()}` },
                 { label: `Armor Value (${mech.getArmorObj().name})`, value: `${mech.getTotalArmor()}`, mass: `${mech.getArmorWeight()}` },
                 ...mech._getPatchworkReadoutLines().map((line) => ({ label: line, indent: true })),
             );

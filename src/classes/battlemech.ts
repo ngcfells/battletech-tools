@@ -6410,6 +6410,11 @@ export class BattleMech {
         return clone;
     }
 
+    /** The catalog tag of every pod in every stored OmniMech configuration. */
+    public getOmniConfigurationEquipmentTags(): string[] {
+        return this._omniConfigurations.flatMap(configuration => configuration.equipment.map(item => item.tag));
+    }
+
     /** The uuid of every pod in every stored OmniMech configuration (the active one's pods are in the equipment list). */
     public getOmniConfigurationEquipmentUuids(): string[] {
         return this._omniConfigurations.flatMap(configuration => configuration.equipment.map(item => item.uuid).filter((uuid): uuid is string => !!uuid));

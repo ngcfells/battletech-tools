@@ -136,10 +136,10 @@ export class TechnicalReadout {
     }
 
     /**
-     * Drops makes for equipment that is gone: type entries no copy has and whose per-copy makes are all unknown, and per-copy
+     * Drops makes for equipment that is gone: type entries no copy has (and no other configuration holds, per knownTags) and whose per-copy makes are all unknown, and per-copy
      * makes for uuids no configuration holds. A mixed type with a single copy left goes back to unmixed.
      */
-    public prune(copies: ITroEquipmentCopy[], knownUuids: string[]): void {
+    public prune(copies: ITroEquipmentCopy[], knownUuids: string[], knownTags: string[] = []): void {
         for (const tag of Object.keys(this._equipment)) {
             const entry = this._equipment[tag];
             const current = copies.filter((copy) => copy.tag === tag);
@@ -151,7 +151,7 @@ export class TechnicalReadout {
                 }
             }
             const remaining = Object.keys(entry.copies ?? {});
-            if (current.length === 0 && remaining.length === 0) {
+            if (current.length === 0 && remaining.length === 0 && !knownTags.includes(tag)) {
                 delete this._equipment[tag];
                 continue;
             }
@@ -230,7 +230,8 @@ export class TechnicalReadout {
             const out: ITroEquipmentMake = trimMake(entry);
             if (entry.mixed) {
                 out.mixed = true;
-                const copyEntries = Object.entries(entry.copies ?? {}).filter(([, make]) => !makeIsEmpty(cleanMake(make)));
+                // An empty copy entry is kept: it says that copy has no make, not that it shares the type's.
+                const copyEntries = Object.entries(entry.copies ?? {});
                 if (copyEntries.length) {
                     out.copies = Object.fromEntries(copyEntries.map(([uuid, make]) => [uuid, trimMake(make)]));
                 }
@@ -283,9 +284,8 @@ export class TechnicalReadout {
                     const copies: Record<string, ITroMake> = {};
                     if (isObject(raw.copies)) {
                         for (const [uuid, copyRaw] of Object.entries(raw.copies)) {
-                            const make = importMake(copyRaw);
-                            if (!makeIsEmpty(make)) {
-                                copies[uuid] = make;
+                            if (isObject(copyRaw)) {
+                                copies[uuid] = importMake(copyRaw);
                             }
                         }
                     }

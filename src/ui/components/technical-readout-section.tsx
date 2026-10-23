@@ -21,7 +21,7 @@ interface ITechnicalReadoutSectionProps {
 export default class TechnicalReadoutSection extends React.Component<ITechnicalReadoutSectionProps> {
     componentDidMount(): void {
         const before = JSON.stringify(this.props.tro.export());
-        this.props.tro.prune(this.props.adapter.getEquipmentCopies(), this.props.adapter.getKnownEquipmentUuids());
+        this.props.tro.prune(this.props.adapter.getEquipmentCopies(), this.props.adapter.getKnownEquipmentUuids(), this.props.adapter.getKnownEquipmentTags());
         if (JSON.stringify(this.props.tro.export()) !== before) {
             this.props.onChange();
             this.forceUpdate();

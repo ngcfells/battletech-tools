@@ -70,6 +70,18 @@ describe("'Mech Technical Readout", () => {
         expect(keys).toEqual(["chassis", "engine", "armor", "heatSinks", "gyro", "cockpit", "myomer"]);
     });
 
+    it("an unmixed make on a pod survives opening Step 7 in a configuration without that weapon", () => {
+        const omni = new BattleMech();
+        omni.toggleOmni();
+        omni.addEquipmentFromTag("medium-laser", "is", "", false, undefined, "", false, [], undefined, undefined);
+        const adapter = getBattleMechTroAdapter(omni);
+        omni.tro.setTypeMake("medium-laser", { manufacturer: "Martell" });
+        expect(omni.addOmniConfiguration("B")).toBe(true);
+        omni.tro.prune(adapter.getEquipmentCopies(), adapter.getKnownEquipmentUuids(), adapter.getKnownEquipmentTags());
+        expect(omni.switchOmniConfiguration("Prime")).toBe(true);
+        expect(omni.tro.getTypeMake("medium-laser")).toEqual({ manufacturer: "Martell" });
+    });
+
     it("an OmniMech pod in another configuration keeps its make", () => {
         const omni = new BattleMech();
         omni.toggleOmni();
@@ -78,7 +90,7 @@ describe("'Mech Technical Readout", () => {
         omni.tro.setMixed("medium-laser", true, adapter.getEquipmentCopies());
         omni.tro.setCopyMake("medium-laser", pod.uuid!, { manufacturer: "Martell" });
         expect(omni.addOmniConfiguration("B")).toBe(true);
-        omni.tro.prune(adapter.getEquipmentCopies(), adapter.getKnownEquipmentUuids());
+        omni.tro.prune(adapter.getEquipmentCopies(), adapter.getKnownEquipmentUuids(), adapter.getKnownEquipmentTags());
         expect(omni.switchOmniConfiguration("Prime")).toBe(true);
         expect(omni.tro.getCopyMake("medium-laser", pod.uuid!)).toEqual({ manufacturer: "Martell" });
     });

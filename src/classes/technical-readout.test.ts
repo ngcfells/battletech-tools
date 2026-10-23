@@ -104,6 +104,26 @@ describe("TechnicalReadout", () => {
         expect(t.getCopyMake("medium-laser", "c")).toEqual({ manufacturer: "Martell" });
     });
 
+    it("a copy cleared on purpose stays blank through a save and load", () => {
+        const copies = [ml("c", "LT"), ml("d", "RT")];
+        const t = new TechnicalReadout();
+        t.setTypeMake("medium-laser", { manufacturer: "Diverse Optics" });
+        t.setMixed("medium-laser", true, copies);
+        t.setCopyMake("medium-laser", "d", {});
+        const u = new TechnicalReadout();
+        u.import(JSON.parse(JSON.stringify(t.export())));
+        expect(u.getArmamentLine(copies)).toBe("1 Diverse Optics Medium Laser, 1 Medium Laser");
+    });
+
+    it("prune keeps a type's make while another configuration holds the type", () => {
+        const t = new TechnicalReadout();
+        t.setTypeMake("lrm-20", { manufacturer: "Doombud" });
+        t.prune([], ["podInPrime"], ["lrm-20"]);
+        expect(t.getTypeMake("lrm-20")).toEqual({ manufacturer: "Doombud" });
+        t.prune([], [], []);
+        expect(t.export()).toBeUndefined();
+    });
+
     it("applyImportedCopyMakes: all alike is a type make, differing is mixed", () => {
         const t = new TechnicalReadout();
         const copies = [ml("c", "LT"), ml("d", "RT"), lrm("a"), lrm("b")];

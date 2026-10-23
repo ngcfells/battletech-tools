@@ -17,6 +17,7 @@ const adapter = (): ITroUnitAdapter => ({
     getComponentRows: () => [{ key: "engine", label: "Engine (Fusion 280)" }],
     getEquipmentCopies: () => copies,
     getKnownEquipmentUuids: () => copies.map((copy) => copy.uuid),
+    getKnownEquipmentTags: () => copies.map((copy) => copy.tag),
     ensureEquipmentUuid: (copy) => copy.uuid,
     getSpecValues: () => ({ title: "Test", subtitle: "", mass: "20 tons" }),
     getConstructionRows: () => [],

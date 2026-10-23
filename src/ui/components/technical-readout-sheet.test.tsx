@@ -12,6 +12,7 @@ const adapter: ITroUnitAdapter = {
         { uuid: "b", tag: "medium-laser", name: "Medium Laser", locationLabel: "RT" },
     ],
     getKnownEquipmentUuids: () => ["a", "b"],
+    getKnownEquipmentTags: () => ["medium-laser"],
     ensureEquipmentUuid: (copy) => copy.uuid,
     getSpecValues: () => ({ title: "Archer", subtitle: "ARC-2R, Inner Sphere, 70 tons", mass: "70 tons", cruisingSpeed: "43 kph", armorType: "Standard" }),
     getConstructionRows: () => [{ label: "Engine", value: "280", mass: "16" }],

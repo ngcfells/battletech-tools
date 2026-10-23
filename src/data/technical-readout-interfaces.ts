@@ -72,6 +72,8 @@ export interface ITroUnitAdapter {
     getEquipmentCopies(): ITroEquipmentCopy[];
     /** Every uuid any configuration holds (OmniMech pods too). */
     getKnownEquipmentUuids(): string[];
+    /** Every catalog tag any configuration holds, so a make on a pod in another configuration is not pruned. */
+    getKnownEquipmentTags(): string[];
     /** Gives a uuid-less copy one and returns it. */
     ensureEquipmentUuid(copy: ITroEquipmentCopy): string;
     getSpecValues(): ITroSpecValues;
