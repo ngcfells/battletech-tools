@@ -225,7 +225,7 @@ export default class VehicleCreatorEquipmentPlacement extends React.Component<IE
 
                             <div className="clear-both overflow-hidden">
                                 <hr />
-                                <Link to={`${process.env.PUBLIC_URL}/classic-battletech/vehicle-creator/summary`} className="btn btn-primary pull-right btn-sm">Next: Summary <ArrowCircleRight /></Link>
+                                <Link to={`${process.env.PUBLIC_URL}/classic-battletech/vehicle-creator/technical-readout`} className="btn btn-primary pull-right btn-sm">Next: Technical Readout <ArrowCircleRight /></Link>
                                 <div className="inline-block text-left">
                                     <Link to={`${process.env.PUBLIC_URL}/classic-battletech/vehicle-creator/equipment-selection`} className="btn btn-primary btn-sm"><ArrowCircleLeft /> Previous Step</Link>
                                 </div>

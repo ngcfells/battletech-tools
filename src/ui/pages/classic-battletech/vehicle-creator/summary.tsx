@@ -100,6 +100,8 @@ export default class VehicleCreatorSummary extends React.Component<ISummaryProps
                                 MUL card.
                             </p>
                             <Link to={`${process.env.PUBLIC_URL}/classic-battletech/vehicle-creator/print-as`} className="btn btn-primary btn-sm">Print Alpha Strike Card</Link>
+                            {" "}
+                            <Link to={`${process.env.PUBLIC_URL}/classic-battletech/vehicle-creator/print-tro`} className="btn btn-primary btn-sm">Print the TRO sheet</Link>
 
                             <QuirkPicker
                                 quirks={vehicle.quirks}

@@ -7,6 +7,8 @@ import VehicleCreatorStep1 from './step1';
 import VehicleCreatorArmor from './armor';
 import VehicleCreatorEquipmentSelection from './equipment-selection';
 import VehicleCreatorEquipmentPlacement from './equipment-placement';
+import VehicleCreatorTechnicalReadout from './technical-readout';
+import VehicleCreatorPrintTRO from './print-tro';
 import VehicleCreatorSummary from './summary';
 import VehicleCreatorRecordSheet from './record-sheet';
 import VehicleCreatorPrintAS from './print-as';
@@ -36,6 +38,14 @@ export default class VehicleCreatorRouter extends React.Component<IVehicleCreato
 
                 <Route path={`equipment-placement`} element={
                     <VehicleCreatorEquipmentPlacement appGlobals={this.props.appGlobals} />
+                }/>
+
+                <Route path={`technical-readout`} element={
+                    <VehicleCreatorTechnicalReadout appGlobals={this.props.appGlobals} />
+                }/>
+
+                <Route path={`print-tro`} element={
+                    <VehicleCreatorPrintTRO appGlobals={this.props.appGlobals} />
                 }/>
 
                 <Route path={`summary`} element={

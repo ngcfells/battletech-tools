@@ -55,6 +55,15 @@ export default class VehicleCreatorSideMenu extends React.Component<IVehicleCrea
                     </li>
                     <li>
                         <Link
+                            to={`${process.env.PUBLIC_URL}/classic-battletech/vehicle-creator/technical-readout`}
+                            className={this.props.current === "technical-readout" ? "btn btn-primary" : "btn btn-lightbg"}
+                        >
+                            <div className="title">Step 5</div>
+                            <div className="subtitle">Technical Readout</div>
+                        </Link>
+                    </li>
+                    <li>
+                        <Link
                             to={`${process.env.PUBLIC_URL}/classic-battletech/vehicle-creator/summary`}
                             className={this.props.current === "summary" ? "btn btn-primary" : "btn btn-lightbg"}
                         >
