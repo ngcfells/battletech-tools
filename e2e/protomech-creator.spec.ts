@@ -64,8 +64,9 @@ test("the TechManual's Delphyne-2 can be built, checked, saved and printed", asy
     await page.goto("classic-battletech/protomech-creator/summary");
 
     await page.getByRole("link", { name: "View Record Sheet" }).click();
-    await expect(page.getByRole("heading", { name: "Delphyne-2" })).toBeVisible();
-    await expect(page.getByTestId("protomech-sheet-unit-4")).toBeVisible();
+    // The whole Point: five ProtoMech blocks filled in.
+    await expect(page.getByTestId("proto-unit-1")).toContainText("Delphyne-2");
+    await expect(page.locator("[data-testid^='proto-unit-'][data-blank='false']")).toHaveCount(5);
 
     await page.goto("classic-battletech/protomech-creator");
     await page.getByRole("button", { name: /Save as New/ }).click();

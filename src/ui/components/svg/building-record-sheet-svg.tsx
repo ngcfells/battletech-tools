@@ -83,11 +83,43 @@ export const buildingWeaponLines = (building: Building, showDamage: boolean): IW
     return lines;
 };
 
+/** The building's fittings: subsurface, sealing, superstructure, ceilings, doors, elevators and storage. */
+export const buildingFittings = (building: Building): string[] => {
+    const doors = building.getDoors();
+    return [
+        ...(building.getSubsurface() !== "none" ? [`${building.getSubsurface() === "underwater" ? "Underwater" : "Underground"}, depth ${building.getDepth()}`] : []),
+        ...(building.isTunnel() ? ["Tunnel"] : []),
+        ...(building.isSealed() ? [`Environmental sealing (breach roll ${signed(building.getBreachModifier())})`] : []),
+        ...(building.isOpenSpace() ? ["Open-space construction"] : []),
+        ...(building.hasHeavyMetalSuperstructure() ? ["Heavy metal superstructure"] : []),
+        ...(building.getCeilings() !== "standard" ? [`${building.getCeilings() === "high" ? "High" : "Low"} ceilings`] : []),
+        ...(doors.length > 0 ? [`${doors.length} large ${doors.length === 1 ? "door" : "doors"} (${doors.map((height) => `${height} ${height === 1 ? "level" : "levels"}`).join(", ")})`] : []),
+        ...building.getElevators().map((elevator) => `Industrial elevator in hex ${elevator.hex}: ${elevator.capacity} tons, ${elevator.levels} ${elevator.levels === 1 ? "level" : "levels"}`),
+        ...(building.getLiquidStorage() > 0 ? [`Liquid storage for ${building.getLiquidCapacity()} tons`] : []),
+    ];
+};
+
+// The fittings line in the Structure Data block: smaller type as it grows, up to four lines; past that, the
+// first lines and a pointer to the full list on the next page.
+const FITTINGS_FITS: [number, number, number][] = [[88, 18, 24], [105, 15, 19], [122, 13, 16], [140, 11, 15]];
+const FITTINGS_SPACE = 48;
+const fittingsLayout = (building: Building): { lines: string[]; size: number; lineH: number; overflow: boolean } => {
+    const fittings = buildingFittings(building);
+    const value = fittings.length ? `Fittings: ${fittings.join("; ")}.` : `Damage scaling: ${building.getDamageScalingText()}`;
+    for (const [chars, size, lineH] of FITTINGS_FITS) {
+        const lines = wrapText(value, chars);
+        if ((lines.length - 1) * lineH <= FITTINGS_SPACE) return { lines, size, lineH, overflow: false };
+    }
+    const [chars, size, lineH] = FITTINGS_FITS[FITTINGS_FITS.length - 1];
+    const lines = wrapText(value, chars).slice(0, Math.floor(FITTINGS_SPACE / lineH));
+    return { lines: [...lines, "... more fittings on the next page."], size, lineH, overflow: true };
+};
+
 /** How many pages the building's sheet takes: hexes and inventory lines that do not fit run on. */
 export const buildingSheetPages = (building: Building, showDamage = false): number => {
     const hexes = Math.max(0, building.getHexes() - BUILDING_HEXES_PER_PAGE);
     const weapons = Math.max(0, buildingWeaponLines(building, showDamage).length - WEAPONS_PER_PAGE);
-    return 1 + Math.max(Math.ceil(hexes / HEXES_PER_CONTINUATION), Math.ceil(weapons / WEAPONS_PER_CONTINUATION));
+    return 1 + Math.max(Math.ceil(hexes / HEXES_PER_CONTINUATION), Math.ceil(weapons / WEAPONS_PER_CONTINUATION), fittingsLayout(building).overflow ? 1 : 0);
 };
 
 export default class BuildingRecordSheetSVG extends React.Component<IBuildingRecordSheetSVGProps> {
@@ -256,18 +288,7 @@ export default class BuildingRecordSheetSVG extends React.Component<IBuildingRec
         const type = building.getType();
         const generator = building.getGenerator();
         const clan = building.getTechBase() === "clan";
-        const doors = building.getDoors();
-        const modifications = [
-            ...(building.getSubsurface() !== "none" ? [`${building.getSubsurface() === "underwater" ? "Underwater" : "Underground"}, depth ${building.getDepth()}`] : []),
-            ...(building.isTunnel() ? ["Tunnel"] : []),
-            ...(building.isSealed() ? [`Environmental sealing (breach roll ${signed(building.getBreachModifier())})`] : []),
-            ...(building.isOpenSpace() ? ["Open-space construction"] : []),
-            ...(building.hasHeavyMetalSuperstructure() ? ["Heavy metal superstructure"] : []),
-            ...(building.getCeilings() !== "standard" ? [`${building.getCeilings() === "high" ? "High" : "Low"} ceilings`] : []),
-            ...(doors.length > 0 ? [`${doors.length} large ${doors.length === 1 ? "door" : "doors"} (${doors.map((height) => `${height} ${height === 1 ? "level" : "levels"}`).join(", ")})`] : []),
-            ...building.getElevators().map((elevator) => `Industrial elevator in hex ${elevator.hex}: ${elevator.capacity} tons, ${elevator.levels} ${elevator.levels === 1 ? "level" : "levels"}`),
-            ...(building.getLiquidStorage() > 0 ? [`Liquid storage for ${building.getLiquidCapacity()} tons`] : []),
-        ];
+        const fittings = fittingsLayout(building);
         const lines = buildingWeaponLines(building, this.showDamage);
         const hexes = Array.from({ length: Math.min(building.getHexes(), BUILDING_HEXES_PER_PAGE) }, (_, i) => i + 1);
         const conditions = this.conditionLines(Array.from({ length: building.getHexes() }, (_, i) => i + 1));
@@ -320,8 +341,9 @@ export default class BuildingRecordSheetSVG extends React.Component<IBuildingRec
                         {field(X + 250, dataY + 207, "CF:", `${cf}${building.isCapitalScale() ? " (capital)" : ""}`, "cf")}
                         {field(X + 20, dataY + 240, "Armor:", building.getArmorPoints() > 0 ? `${building.getArmorPoints()} a ${building.getHexLabel()}` : "None", "armor")}
                         {field(X + 330, dataY + 240, "Heat Sinks:", building.getHeatSinks() > 0 ? `${building.getHeatSinks()} ${building.getHeatSinkType().name}` : "0", "hs")}
-                        {wrapText(modifications.length ? `Fittings: ${modifications.join("; ")}.` : `Damage scaling: ${building.getDamageScalingText()}`, 88).slice(0, 2)
-                            .map((line, i) => text(X + 20, dataY + 273 + i * 24, line, { size: 18 }, `m${i}`))}
+                        <g data-testid="building-fittings">
+                            {fittings.lines.map((line, i) => text(X + 20, dataY + 273 + i * fittings.lineH, line, { size: fittings.size }, `m${i}`))}
+                        </g>
                     </>
                 ))}
 
@@ -413,12 +435,20 @@ export default class BuildingRecordSheetSVG extends React.Component<IBuildingRec
         const first = BUILDING_HEXES_PER_PAGE + (page - 1) * HEXES_PER_CONTINUATION + 1;
         const hexes = Array.from({ length: Math.max(0, Math.min(building.getHexes(), first + HEXES_PER_CONTINUATION - 1) - first + 1) }, (_, i) => first + i);
         const W = DOC_WIDTH - 2 * X;
+        const fittings = page === 1 && fittingsLayout(building).overflow ? buildingFittings(building).flatMap((fitting) => wrapText(fitting, 190)) : [];
+        const fittingsH = fittings.length ? 100 + fittings.length * 26 : 0;
+        const invY = TOP + (fittingsH ? fittingsH + 20 : 0);
         const invH = lines.length ? 130 + lines.length * 29 : 0;
-        const cfY = TOP + (invH ? invH + 20 : 0);
+        const cfY = invY + (invH ? invH + 20 : 0);
         const rows = Math.ceil(hexes.length / 4);
         return (
             <>
-                {lines.length ? groupBox(X, TOP, W, invH, "WEAPONS & EQUIPMENT INVENTORY (CONTINUED)", this.renderWeaponRows(lines, X, W, TOP + 75, 29, lines.length)) : null}
+                {fittings.length ? groupBox(X, TOP, W, fittingsH, "FITTINGS (CONTINUED)", (
+                    <g data-testid="building-fittings">
+                        {fittings.map((line, i) => text(X + 20, TOP + 80 + i * 26, line, { size: 19 }, `f${i}`))}
+                    </g>
+                )) : null}
+                {lines.length ? groupBox(X, invY, W, invH, "WEAPONS & EQUIPMENT INVENTORY (CONTINUED)", this.renderWeaponRows(lines, X, W, invY + 75, 29, lines.length)) : null}
                 {hexes.length ? groupBox(X, cfY, W, 110 + rows * 40, "CF & ARMOR (CONTINUED)", this.renderHexColumns(hexes, X, cfY + 72, W, 4, rows, 40)) : null}
             </>
         );

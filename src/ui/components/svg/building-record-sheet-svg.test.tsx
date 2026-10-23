@@ -2,7 +2,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import Building from "../../../classes/building";
 import BuildingRecordSheet from "../building-record-sheet";
-import BuildingRecordSheetSVG, { BUILDING_HEXES_PER_PAGE } from "./building-record-sheet-svg";
+import BuildingRecordSheetSVG, { BUILDING_HEXES_PER_PAGE, buildingSheetPages } from "./building-record-sheet-svg";
 
 // Kenyon's Clan gun emplacement from TO:AR p.129: Heavy, CF 80, 80 points of armor, two ER large lasers in the turret.
 const kenyon = (): Building => {
@@ -69,5 +69,42 @@ describe("Structure record sheet", () => {
         const markup = renderToStaticMarkup(<BuildingRecordSheet building={building} />);
         expect(markup.match(/STRUCTURE RECORD SHEET/g)).toHaveLength(2);
         expect(markup.match(/data-testid="building-hex"/g)).toHaveLength(BUILDING_HEXES_PER_PAGE + 5);
+    });
+    // A fortress fitted with everything: no fitting is cut off the sheet.
+    it("prints every fitting, on a continuation page when they do not fit", () => {
+        const sealed = (doors: number, elevators: number): Building => {
+            const building = tara();
+            building.setSealed(true);
+            building.setHeavyMetalSuperstructure(true);
+            building.setCeilings("low");
+            building.setSubsurface("underground");
+            building.setDepth(2);
+            building.setLiquidStorage(20);
+            for (let i = 0; i < doors; i++) building.addDoor(2);
+            for (let i = 0; i < elevators; i++) building.addElevator(i % 6 + 1, 20, 3);
+            return building;
+        };
+        const fittings = (building: Building): string[] => [
+            "Underground, depth 2", "Environmental sealing (breach roll", "Heavy metal superstructure", "Low ceilings",
+            "Liquid storage for", ...building.getElevators().map((elevator, i) => `Industrial elevator in hex ${elevator.hex}: 20 tons, 3 levels${i}`),
+        ];
+        // The text of every fittings block, its wrapped lines joined back up.
+        const sheet = (building: Building) => [...renderToStaticMarkup(<BuildingRecordSheet building={building} />)
+            .matchAll(/<g data-testid="building-fittings">(.*?)<\/g>/g)]
+            .map((block) => [...block[1].matchAll(/>([^<]+)</g)].map((line) => line[1]).join(" ")).join(" | ");
+
+        const few = sealed(2, 2);
+        expect(buildingSheetPages(few)).toBe(1);
+        for (const fitting of fittings(few).map((f) => f.replace(/\d$/, ""))) expect(sheet(few)).toContain(fitting);
+        expect(sheet(few)).toContain("2 large doors (2 levels, 2 levels)");
+
+        const many = sealed(12, 20);
+        expect(buildingSheetPages(many)).toBe(2);
+        const markup = sheet(many);
+        expect(renderToStaticMarkup(<BuildingRecordSheet building={many} />)).toContain("FITTINGS (CONTINUED)");
+        expect(markup).toContain("more fittings on the next page");
+        expect(markup).toContain("12 large doors");
+        for (let hex = 1; hex <= 6; hex++) expect(markup).toContain(`Industrial elevator in hex ${hex}: 20 tons, 3 levels`);
+        expect(markup.match(/Industrial elevator in hex/g)?.length ?? 0).toBeGreaterThanOrEqual(20);
     });
 });
