@@ -315,6 +315,21 @@ describe("ProtoMech saves and MegaMek files", () => {
         expect(issues).toEqual(["Unknown or unmountable equipment 'Mystery Gun' (Torso) was left off."]);
         expect(importProtoMechBlk("<UnitType>\nBattleArmor\n</UnitType>").proto).toBeNull();
     });
+
+    it("brings a MegaMek file's Technical Readout fields across (TRO round 2, #78)", () => {
+        const text = [
+            "<UnitType>", "ProtoMek", "</UnitType>", "<Name>", "Test", "</Name>", "<Model>", "2", "</Model>",
+            "<cruiseMP>", "6", "</cruiseMP>", "<armor>", "3", "7", "2", "2", "4", "</armor>", "<tonnage>", "5.0", "</tonnage>",
+            "<manufacturer>", "Bowie Industries", "</manufacturer>", "<primaryFactory>", "Brim", "</primaryFactory>",
+            "<systemManufacturers>", "ENGINE:Kenhi", "JUMP_JET:Hellespont", "</systemManufacturers>",
+            "<overview>", "<p>A fast raider.</p>", "</overview>",
+        ].join("\n");
+        const { proto } = importProtoMechBlk(text);
+        expect(proto!.tro.getProduction("manufacturer")).toBe("Bowie Industries");
+        expect(proto!.tro.getProduction("primaryFactory")).toBe("Brim");
+        expect([proto!.tro.getComponent("engine"), proto!.tro.getComponent("jumpJets")]).toEqual(["Kenhi", "Hellespont"]);
+        expect(proto!.tro.getText("overview")).toBe("A fast raider.");
+    });
 });
 
 describe("ProtoMech designs in print", () => {

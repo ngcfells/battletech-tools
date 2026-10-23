@@ -195,7 +195,8 @@ export default class Home extends React.Component<IHomeProps, IHomeState> {
                         <li>The Vehicle Creator has its Technical Readout step: Step 5, between Place Equipment and Summary. Enter the manufacturer, the makes of the chassis, engine, armor and each weapon, and the history text, then print the modern-style TRO sheet from that step or from the Summary.</li>
                         <li>The Fighter Creator has its Technical Readout step too: Step 4, between Weapons and Equipment and Summary, with the same printable TRO sheet.</li>
                         <li>The Infantry Creator has its Technical Readout step: Step 3, between Platoon Weaponry and Summary, with the same printable TRO sheet.</li>
-                        <li>The Battle Armor Creator has its Technical Readout step: Step 6, after Loadouts and before Summary, with the same printable TRO sheet. Importing a MegaMek battle armor file now brings its manufacturer, factory, component makes and history text across too. ProtoMechs come next.</li>
+                        <li>The Battle Armor Creator has its Technical Readout step: Step 6, after Loadouts and before Summary, with the same printable TRO sheet. Importing a MegaMek battle armor file now brings its manufacturer, factory, component makes and history text across too.</li>
+                        <li>The ProtoMech Creator has its Technical Readout step: Step 6, between Weapons and Equipment and Summary, with the same printable TRO sheet. Importing a MegaMek ProtoMech file brings its TRO fields across too. The sheet now gives a ProtoMech's mass in tons (it printed the kilogram total as tons).</li>
                       </ul>
                    </li>
                   <li>

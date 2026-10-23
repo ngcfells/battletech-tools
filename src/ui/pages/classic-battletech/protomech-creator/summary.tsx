@@ -119,7 +119,8 @@ export default class ProtoMechCreatorSummary extends React.Component<ISummaryPro
                                 <hr />
                                 <Link to={`${process.env.PUBLIC_URL}/classic-battletech/protomech-creator/record-sheet`} className="btn btn-primary pull-right btn-sm">View Record Sheet</Link>
                                 <Link to={`${process.env.PUBLIC_URL}/classic-battletech/protomech-creator/print-as`} className="btn btn-primary pull-right btn-sm">View Alpha Strike Card</Link>
-                                <Link to={`${process.env.PUBLIC_URL}/classic-battletech/protomech-creator/equipment`} className="btn btn-primary btn-sm"><ArrowCircleLeft /> Previous Step</Link>
+                                <Link to={`${process.env.PUBLIC_URL}/classic-battletech/protomech-creator/print-tro`} className="btn btn-primary pull-right btn-sm">Print the TRO sheet</Link>
+                                <Link to={`${process.env.PUBLIC_URL}/classic-battletech/protomech-creator/technical-readout`} className="btn btn-primary btn-sm"><ArrowCircleLeft /> Previous Step</Link>
                             </div>
                         </TextSection>
                     </div>

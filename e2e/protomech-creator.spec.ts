@@ -47,7 +47,14 @@ test("the TechManual's Delphyne-2 can be built, checked, saved and printed", asy
     await page.getByRole("button", { name: "Remove Machine Gun (Clan)" }).click();
     await expect(page.getByTestId("pm-issues")).toHaveCount(0);
 
-    await page.getByRole("link", { name: /Summary/ }).last().click();
+    await page.getByRole("link", { name: /Next: Technical Readout/ }).click();
+    await expect(page.getByText("Step 6: Technical Readout (optional)")).toBeVisible();
+    await page.getByLabel("Manufacturer", { exact: true }).fill("Bowie Industries");
+    await page.getByRole("link", { name: "Print TRO sheet" }).click();
+    await expect(page.getByText("Bowie Industries").first()).toBeVisible();
+    await expect(page.getByText("9 tons").first()).toBeVisible();
+    await page.goto("classic-battletech/protomech-creator/technical-readout");
+    await page.getByRole("link", { name: "Summary", exact: true }).click();
     await expect(page.getByTestId("pm-legal")).toBeVisible();
     await expect(page.getByText("Summary: Delphyne-2")).toBeVisible();
     // TM p.307: Battle Value 316. TM pp.279-285: (741,700 + 80,000) x 1.09.

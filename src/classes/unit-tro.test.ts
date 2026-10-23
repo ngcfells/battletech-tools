@@ -30,3 +30,13 @@ describe("Technical Readout on the other Classic unit types", () => {
         });
     }
 });
+
+describe("ProtoMech Technical Readout sheet", () => {
+    it("gives the mass in tons, not kilograms", () => {
+        const proto = new ProtoMech();
+        proto.setTons(9);
+        const spec = getUnitTroAdapter(proto).getSpecValues();
+        expect(spec.mass).toBe("9 tons");
+        expect(spec.subtitle).toContain("9 tons");
+    });
+});

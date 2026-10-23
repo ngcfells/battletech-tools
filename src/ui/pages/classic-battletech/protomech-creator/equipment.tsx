@@ -211,8 +211,8 @@ export default class ProtoMechCreatorEquipment extends React.Component<IEquipmen
                             </table>
                             <div className="clear-both overflow-hidden">
                                 <hr />
-                                <Link to={`${process.env.PUBLIC_URL}/classic-battletech/protomech-creator/summary`} className="btn btn-primary pull-right btn-sm">
-                                    Summary <ArrowCircleRight />
+                                <Link to={`${process.env.PUBLIC_URL}/classic-battletech/protomech-creator/technical-readout`} className="btn btn-primary pull-right btn-sm">
+                                    Next: Technical Readout <ArrowCircleRight />
                                 </Link>
                             </div>
                         </TextSection>

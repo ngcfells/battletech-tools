@@ -175,8 +175,8 @@ function protoMechParts(proto: ProtoMech): IUnitTroParts {
     return {
         spec: {
             title: proto.getName(),
-            subtitle: subtitle(proto.getChassisName(), `${proto.getWeight()} tons`),
-            mass: `${proto.getWeight()} tons`,
+            subtitle: subtitle(proto.getChassisName(), `${proto.getTons()} tons`),
+            mass: `${proto.getTons()} tons`,
             cruisingSpeed: kph(proto.getWalkMP()),
             maximumSpeed: kph(proto.getRunMP()),
             jumpCapacity: jump > 0 ? `${jump * 30} meters` : undefined,
