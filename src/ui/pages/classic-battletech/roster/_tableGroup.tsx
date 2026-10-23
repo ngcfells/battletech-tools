@@ -106,9 +106,16 @@ export default class BattleMechTableGroup extends React.Component<IBattleMechTab
     openAddingUnits = (
         e: React.FormEvent<HTMLButtonElement>,
         addingUnitsGroupIndex: number,
+        mulTypeID?: number,
     ) => {
       if( e && e.preventDefault ) {
         e.preventDefault()
+      }
+      // The other unit tables open the same search filtered to their own MUL type.
+      if( mulTypeID !== undefined ) {
+        const appSettings = this.props.appGlobals.appSettings;
+        appSettings.cbtMULSearch = { ...appSettings.cbtMULSearch, type: mulTypeID };
+        this.props.appGlobals.saveAppSettings( appSettings );
       }
 
       this.setState({
@@ -386,7 +393,7 @@ export default class BattleMechTableGroup extends React.Component<IBattleMechTab
         {this.props.showAdd ? (
           <button
             className="btn btn-primary btn-sm"
-            title="Click here to open the add 'mech dialog"
+            title="Add 'Mechs, or search the Master Unit List for any unit type"
             onClick={(e) => this.openAddingUnits( e, this.props.bmGroupIndex)}
             >
             Add
@@ -525,12 +532,14 @@ export default class BattleMechTableGroup extends React.Component<IBattleMechTab
 </table>
 <VehicleGroupTable
     appGlobals={this.props.appGlobals}
+    onSearchMUL={(e) => this.openAddingUnits( e, this.props.bmGroupIndex, 19 )}
     bmGroupIndex={this.props.bmGroupIndex}
     showAdd={this.props.showAdd}
     showEdit={this.props.showEdit}
 />
 <FighterGroupTable
     appGlobals={this.props.appGlobals}
+    onSearchMUL={(e) => this.openAddingUnits( e, this.props.bmGroupIndex, 17 )}
     bmGroupIndex={this.props.bmGroupIndex}
     showAdd={this.props.showAdd}
     showEdit={this.props.showEdit}
@@ -549,18 +558,21 @@ export default class BattleMechTableGroup extends React.Component<IBattleMechTab
 />
 <InfantryGroupTable
     appGlobals={this.props.appGlobals}
+    onSearchMUL={(e) => this.openAddingUnits( e, this.props.bmGroupIndex, 21 )}
     bmGroupIndex={this.props.bmGroupIndex}
     showAdd={this.props.showAdd}
     showEdit={this.props.showEdit}
 />
 <BattleArmorGroupTable
     appGlobals={this.props.appGlobals}
+    onSearchMUL={(e) => this.openAddingUnits( e, this.props.bmGroupIndex, 22 )}
     bmGroupIndex={this.props.bmGroupIndex}
     showAdd={this.props.showAdd}
     showEdit={this.props.showEdit}
 />
 <ProtoMechGroupTable
     appGlobals={this.props.appGlobals}
+    onSearchMUL={(e) => this.openAddingUnits( e, this.props.bmGroupIndex, 23 )}
     bmGroupIndex={this.props.bmGroupIndex}
     showAdd={this.props.showAdd}
     showEdit={this.props.showEdit}

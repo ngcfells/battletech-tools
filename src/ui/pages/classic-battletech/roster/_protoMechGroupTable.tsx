@@ -2,6 +2,7 @@ import * as React from 'react';
 import { FaTrash } from 'react-icons/fa';
 import ProtoMech, { PROTOMECH_POINT_SIZE } from '../../../../classes/protomech';
 import { IAppGlobals } from '../../../app-router';
+import MULSearchButton from './_mulSearchButton';
 import StatBar from '../../../components/stat-bar';
 const Trash = FaTrash as any;
 
@@ -176,6 +177,7 @@ export default class ProtoMechGroupTable extends React.Component<IProtoMechGroup
                                 ) : (
                                     <span className="small-text">Save designs in the ProtoMech Creator to add them to this group.</span>
                                 )}
+                                <MULSearchButton unitLabel="ProtoMechs" onClick={this.props.onSearchMUL} />
                             </td>
                         </tr>
                     </tfoot>
@@ -189,6 +191,7 @@ interface IProtoMechGroupTableProps {
     appGlobals: IAppGlobals;
     bmGroupIndex: number;
     showAdd: boolean;
+    onSearchMUL?: ( e: React.FormEvent<HTMLButtonElement> ) => void;
     showEdit: boolean;
 }
 

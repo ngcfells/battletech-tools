@@ -2,6 +2,7 @@ import * as React from 'react';
 import { FaTrash } from 'react-icons/fa';
 import InfantryPlatoon from '../../../../classes/infantry-platoon';
 import { IAppGlobals } from '../../../app-router';
+import MULSearchButton from './_mulSearchButton';
 import StatBar from '../../../components/stat-bar';
 const Trash = FaTrash as any;
 
@@ -174,6 +175,7 @@ export default class InfantryGroupTable extends React.Component<IInfantryGroupTa
                                 ) : (
                                     <span className="small-text">Save platoons in the Infantry Creator to add them to this group.</span>
                                 )}
+                                <MULSearchButton unitLabel="infantry platoons" onClick={this.props.onSearchMUL} />
                             </td>
                         </tr>
                     </tfoot>
@@ -193,6 +195,7 @@ interface IInfantryGroupTableProps {
     appGlobals: IAppGlobals;
     bmGroupIndex: number;
     showAdd: boolean;
+    onSearchMUL?: ( e: React.FormEvent<HTMLButtonElement> ) => void;
     showEdit: boolean;
 }
 

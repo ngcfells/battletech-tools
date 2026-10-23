@@ -2,6 +2,7 @@ import * as React from 'react';
 import { FaTrash } from 'react-icons/fa';
 import BattleArmor from '../../../../classes/battle-armor';
 import { IAppGlobals } from '../../../app-router';
+import MULSearchButton from './_mulSearchButton';
 import StatBar from '../../../components/stat-bar';
 const Trash = FaTrash as any;
 
@@ -190,6 +191,7 @@ export default class BattleArmorGroupTable extends React.Component<IBattleArmorG
                                 ) : (
                                     <span className="small-text">Save suits in the Battle Armor Creator to add them to this group.</span>
                                 )}
+                                <MULSearchButton unitLabel="battle armor" onClick={this.props.onSearchMUL} />
                             </td>
                         </tr>
                     </tfoot>
@@ -209,6 +211,7 @@ interface IBattleArmorGroupTableProps {
     appGlobals: IAppGlobals;
     bmGroupIndex: number;
     showAdd: boolean;
+    onSearchMUL?: ( e: React.FormEvent<HTMLButtonElement> ) => void;
     showEdit: boolean;
 }
 

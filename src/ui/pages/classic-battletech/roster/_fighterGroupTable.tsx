@@ -3,6 +3,7 @@ import { FaTrash } from 'react-icons/fa';
 import AerospaceFighter from '../../../../classes/aerospace-fighter';
 import Pilot from '../../../../classes/pilot';
 import { IAppGlobals } from '../../../app-router';
+import MULSearchButton from './_mulSearchButton';
 import StatBar from '../../../components/stat-bar';
 const Trash = FaTrash as any;
 
@@ -210,6 +211,7 @@ export default class FighterGroupTable extends React.Component<IFighterGroupTabl
                                 ) : (
                                     <span className="small-text">Save fighters in the Fighter Creator to add them to this group.</span>
                                 )}
+                                <MULSearchButton unitLabel="fighters" onClick={this.props.onSearchMUL} />
                             </td>
                         </tr>
                     </tfoot>
@@ -233,6 +235,7 @@ interface IFighterGroupTableProps {
     appGlobals: IAppGlobals;
     bmGroupIndex: number;
     showAdd: boolean;
+    onSearchMUL?: ( e: React.FormEvent<HTMLButtonElement> ) => void;
     showEdit: boolean;
 }
 

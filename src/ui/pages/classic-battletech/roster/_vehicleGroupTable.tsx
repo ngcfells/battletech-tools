@@ -3,6 +3,7 @@ import { FaTrash } from 'react-icons/fa';
 import Pilot from '../../../../classes/pilot';
 import Vehicle from '../../../../classes/vehicle';
 import { IAppGlobals } from '../../../app-router';
+import MULSearchButton from './_mulSearchButton';
 import StatBar from '../../../components/stat-bar';
 const Trash = FaTrash as any;
 
@@ -210,6 +211,7 @@ export default class VehicleGroupTable extends React.Component<IVehicleGroupTabl
                                 ) : (
                                     <span className="small-text">Save vehicles in the Vehicle Creator to add them to this group.</span>
                                 )}
+                                <MULSearchButton unitLabel="vehicles" onClick={this.props.onSearchMUL} />
                             </td>
                         </tr>
                     </tfoot>
@@ -233,6 +235,7 @@ interface IVehicleGroupTableProps {
     appGlobals: IAppGlobals;
     bmGroupIndex: number;
     showAdd: boolean;
+    onSearchMUL?: ( e: React.FormEvent<HTMLButtonElement> ) => void;
     showEdit: boolean;
 }
 
