@@ -30,3 +30,16 @@ describe("the in-play record sheet's to-hit numbers", () => {
         expect(toHit(true)).toBe(toHit(false) - 1);
     });
 });
+
+describe("a weapon with no medium or long bracket (issue 31)", () => {
+    it("prints a dash, not 0", () => {
+        const mech = new BattleMech();
+        mech.setTonnage(50);
+        mech.addEquipmentFromTag("nail-gun", "is", "rt", false, undefined, "", false, [], undefined, undefined);
+        expect(mech.equipmentList.length).toBe(1);
+        const markup = renderToStaticMarkup(
+            <svg><RecordSheetEquipmentTable mechData={mech} inPlay={false} quirksInPlay={false} xLoc={0} yLoc={0} width={1215} height={645} /></svg>,
+        );
+        expect(markup).toContain("—");
+    });
+});
