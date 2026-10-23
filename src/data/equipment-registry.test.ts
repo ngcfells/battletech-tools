@@ -684,3 +684,14 @@ describe("equipment alternate tags", () => {
         expect(bad).toEqual([]);
     });
 });
+
+describe("LRM aerospace damage (issue 28)", () => {
+    it("is 3 per 5 missiles of the rack, Inner Sphere and Clan", () => {
+        const items = getEquipmentCatalogDefinitions().flatMap((definition) => definition.equipment);
+        for (const size of [5, 10, 15, 20]) {
+            for (const prefix of ["", "clan-"]) {
+                expect(items.find((item) => item.tag === `${prefix}lrm-${size}`)?.damageAero, `${prefix}lrm-${size}`).toBe(size * 3 / 5);
+            }
+        }
+    });
+});
