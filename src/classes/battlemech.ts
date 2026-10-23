@@ -2031,7 +2031,8 @@ export class BattleMech {
             : this.isIndustrialMech() ? ["industrial", "industrial-advanced-fire-control"]
             : ["standard", "small"];
         return tags.map(tag => {
-            const cockpit = getCockpitType(tag);
+            // Copies: the availability marks are this 'Mech's, not the shared table's (issue 35).
+            const cockpit = { ...getCockpitType(tag) };
             const availability = this._techDatesAvailability(cockpit, rulesLevel);
             cockpit.availableAsPrototype = availability.asPrototype;
             // The cockpit a chassis must mount is never withheld.
@@ -4603,7 +4604,7 @@ export class BattleMech {
     public getAvailableMyomerTypes(rulesLevel: number = 2): IMyomerType[] {
         const techTag = this.getTech().tag;
         const pureTech = techTag === "is" || techTag === "clan" ? techTag : null;
-        return mechMyomerTypes.map(myomer => {
+        return mechMyomerTypes.map(entry => ({ ...entry })).map(myomer => {
             const availability = this._techDatesAvailability(myomer, rulesLevel);
             myomer.availableAsPrototype = availability.asPrototype;
             // Superheavy musculature is incompatible with Triple-Strength Myomer (IO:AE p.156).
@@ -4615,7 +4616,7 @@ export class BattleMech {
     }
 
     public getAvailableJumpJets(rulesLevel: number = 2): IJumpJet[] {
-        return mechJumpJetTypes.map(jumpJet => {
+        return mechJumpJetTypes.map(entry => ({ ...entry })).map(jumpJet => {
             const availability = this._techDatesAvailability(jumpJet, rulesLevel);
             jumpJet.availableAsPrototype = availability.asPrototype;
             // Superheavy 'Mechs mount no jump jets, improved jump jets or UMUs (IO:AE p.156).
@@ -9412,7 +9413,7 @@ export class BattleMech {
         const lookupTag = this.getEngineTechBase();
         const weights = this._engine?.weight;
         const large = this.isLargeEngine();
-        for (let engine of mechEngineTypes) {
+        for (const engine of mechEngineTypes.map(entry => ({ ...entry }))) {
             // Enforce strict key verification against the normalized tech base
             if (engine.criticals && lookupTag in engine.criticals) {
                 // Above rating 400 the large engine's own dates apply (IO:AE p.38); a type with
@@ -9556,7 +9557,7 @@ export class BattleMech {
     public getAvailableGyros(rulesLevel: number = 2): IGyro[] {
         let returnValue: IGyro[] = [];
 
-        for(let gyro of mechGyroTypes ) {
+        for (const gyro of mechGyroTypes.map(entry => ({ ...entry }))) {
             const availability = this._datesAvailability(gyro, rulesLevel);
             gyro.availableAsPrototype = availability.asPrototype;
             gyro.available = availability.available && this.isOfferedInEdition(gyro, rulesLevel) && !(gyro.innerSphereOnly && this.getTech().tag === "clan")
@@ -9571,7 +9572,7 @@ export class BattleMech {
     }
 
     public getAvailableInternalStructures(rulesLevel: number = 2): IInternalStructure[] {
-        return mechInternalStructureTypes.map(structure => {
+        return mechInternalStructureTypes.map(entry => ({ ...entry })).map(structure => {
             const availability = this._techDatesAvailability(structure, rulesLevel);
             structure.availableAsPrototype = availability.asPrototype;
             structure.available = availability.available && this.isOfferedInEdition(structure, rulesLevel) && !(structure.innerSphereOnly && this.getTech().tag === "clan")
@@ -9584,7 +9585,7 @@ export class BattleMech {
     }
 
     public getAvailableHeatSinks(rulesLevel: number = 2): IHeatSync[] {
-        return mechHeatSinkTypes.map(heatSink => {
+        return mechHeatSinkTypes.map(entry => ({ ...entry })).map(heatSink => {
             const availability = this._techDatesAvailability(heatSink, rulesLevel);
             const techTag = this.getTech().tag;
             const pureTech = techTag === "is" || techTag === "clan" ? techTag : null;
@@ -10170,7 +10171,7 @@ export class BattleMech {
         const techTag = this.getTech().tag;
         const isMixed = techTag === "mis" || techTag === "mclan";
 
-        for(let armor of mechArmorTypes ) {
+        for (const armor of mechArmorTypes.map(entry => ({ ...entry }))) {
             const hasCompatibleMultiplier = armor.unitTypes.battlemech
                 && armor.constructionStatus !== "deferred" && armor.constructionMode !== "equipment" && (isMixed
                 ? armor.armorMultiplier.is > 0 || armor.armorMultiplier.clan > 0
@@ -10938,11 +10939,14 @@ export class BattleMech {
 
     private _isAnachronistic(): boolean {
 
-        if( this._engineType.available === false ) {
+        // The option lists mark copies (issue 35), so look this 'Mech's own marks up by tag, at the
+        // rules level the design needs.
+        const rulesLevel = Math.max(this.getRequiredRulesLevel(), 2);
+        if (this.getAvailableEngines(rulesLevel).find(engine => engine.tag === this._engineType.tag)?.available === false) {
             return true;
         }
 
-        if( this._armorType.available === false ) {
+        if (this.getAvailableArmorTypes(rulesLevel).find(armor => armor.tag === this._armorType.tag)?.available === false) {
             return true;
         }
 
