@@ -174,6 +174,7 @@ export default class Home extends React.Component<IHomeProps, IHomeState> {
                         <li>Every builder asks for the era first, and the era decides which tech bases you can pick. The Clan tech base starts with the Clan Founding Years, not the Star League.</li>
                         <li>The equipment list shows only ammunition for the weapons you have mounted; tick "Show all ammunition" to see the rest. Ammunition sorts by weapon in every list.</li>
                         <li>A tonnage bar stays on screen while you add equipment, and turns red when you are over.</li>
+                        <li>The 'Mech Creator has an optional Step 7, Technical Readout: who made the design and its engine, armor and each weapon (a weapon type can be marked mixed, with a make per copy), plus the Overview, Capabilities and other TRO text. Print it as a TRO sheet. The SSW importer now keeps these fields, and they are saved with the design.</li>
                         <li>Sponsons are placement choices: you decide which weapons go in them.</li>
                         <li>Vehicle ammunition goes in the Body, and the vehicle armor diagram has a top-down outline for each motive type.</li>
                         <li>Warnings and small print are larger and easier to read.</li>

@@ -78,6 +78,11 @@ and fluff text, quirks, source/book fields, and per-format IDs (MUL id, SSW sola
 
 ### Shared
 
+- [ ] Technical Readout fields, round 2: every other creator gets the Technical Readout step with its own adapter
+  (component rows, equipment copies, construction rows), and the BLK importers (battle armor, ProtoMechs, Small
+  Craft, support vehicles) fill the record. Round 1 (the shared record, section, sheet and construction table,
+  the 'Mech Creator's Step 7, SSW import and the JSON save) is done on beta. Spec
+  `docs/superpowers/specs/2026-10-22-tro-fields-design.md`.
 - [ ] Make the canonical JSON format versioned, documented, and stable enough to be the app's long-term
   interchange format. Decide as group whether we should use a dedicated extension or stick with json. ([#53](https://github.com/ngcfells/battletech-tools/discussions/53))
 - [ ] Keep provenance on imported records: source file, source format, source book, and conversion warnings. ([#53](https://github.com/ngcfells/battletech-tools/discussions/53))
