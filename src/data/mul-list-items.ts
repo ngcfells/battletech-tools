@@ -19,26 +19,26 @@ type MULChunkEntry = Partial<IASMULUnit> & {
     Variant?: string;
 };
 
-// Which bundled lists the user wants searched. Each option is a superset of the one before it.
-export type MULSourceSelection = "mul2" | "mul2+mul1" | "mul2+mul1+custom";
+// Which bundled lists the user wants searched: any of them, ticked one by one, never none.
+export type MULSourceSelection = MULSource[];
 
-export const DEFAULT_MUL_SOURCE_SELECTION: MULSourceSelection = "mul2";
+export const DEFAULT_MUL_SOURCE_SELECTION: MULSourceSelection = ["mul2"];
 
-export const MUL_SOURCE_SELECTIONS: { value: MULSourceSelection; label: string; description: string }[] = [
+export const MUL_SOURCE_OPTIONS: { value: MULSource; label: string; description: string }[] = [
     {
         value: "mul2",
-        label: "MUL 2.0",
-        description: "Only units on the current Master Unit List (masterunitlist.battletech.com).",
+        label: "MUL 2.0 (live)",
+        description: "Units on the current Master Unit List (masterunitlist.battletech.com).",
     },
     {
-        value: "mul2+mul1",
-        label: "MUL 2.0 + MUL 1.0 leftovers",
-        description: "Adds legacy MUL 1.0 records that the current MUL no longer lists.",
+        value: "mul1",
+        label: "MUL 1.0 leftovers",
+        description: "Legacy MUL 1.0 records that the current MUL no longer lists.",
     },
     {
-        value: "mul2+mul1+custom",
-        label: "MUL 2.0 + MUL 1.0 + customs",
-        description: "Also adds non-canonical custom units: the shared curated list plus any saved in this browser.",
+        value: "custom",
+        label: "Custom units",
+        description: "Non-canonical units, such as the ArtVees: the shared curated list plus any saved in this browser.",
     },
 ];
 
@@ -48,19 +48,16 @@ export const MUL_SOURCE_LABELS: Record<MULSource, string> = {
     custom: "Custom",
 };
 
-export function isMULSourceSelection(value: unknown): value is MULSourceSelection {
-    return MUL_SOURCE_SELECTIONS.some((option) => option.value === value);
-}
+const MUL_SOURCE_ORDER: MULSource[] = MUL_SOURCE_OPTIONS.map((option) => option.value);
 
-export function getMULSourcesForSelection(selection: MULSourceSelection): MULSource[] {
-    switch (selection) {
-        case "mul2+mul1":
-            return ["mul2", "mul1"];
-        case "mul2+mul1+custom":
-            return ["mul2", "mul1", "custom"];
-        default:
-            return ["mul2"];
-    }
+/**
+ * Reads a saved list choice: an array of sources, or the "mul2+mul1+custom" strings saved before the lists became
+ * checkboxes. Returns the sources in a fixed order, or null when nothing valid is left.
+ */
+export function normalizeMULSourceSelection(value: unknown): MULSourceSelection | null {
+    const parts: unknown[] = Array.isArray(value) ? value : typeof value === "string" ? value.split("+") : [];
+    const sources = MUL_SOURCE_ORDER.filter((source) => parts.includes(source));
+    return sources.length > 0 ? sources : null;
 }
 
 const LEGACY_TYPE_ID_BY_NAME: Record<string, number> = {
@@ -195,7 +192,7 @@ function loadMULSource(source: MULSource): Promise<IASMULUnit[]> {
 }
 
 export async function loadMULListItems(selection: MULSourceSelection = DEFAULT_MUL_SOURCE_SELECTION): Promise<IASMULUnit[]> {
-    const sources = getMULSourcesForSelection(selection);
+    const sources = normalizeMULSourceSelection(selection) ?? DEFAULT_MUL_SOURCE_SELECTION;
     const lists = await Promise.all(sources.map(loadMULSource));
 
     // Read fresh on every call (never cached) so entries saved in the Custom MUL Editor show up at once.

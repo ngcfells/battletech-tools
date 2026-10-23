@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { getLegacyMULFactionID, getMULSourcesForSelection, loadMULListItems } from "./mul-list-items";
+import { getLegacyMULFactionID, loadMULListItems, normalizeMULSourceSelection } from "./mul-list-items";
 import { getMULFactionIDs, getMULFactionLabels } from "../utils/mulUtilities";
 
 describe("MUL chunk loader", () => {
@@ -18,13 +18,13 @@ describe("MUL chunk loader", () => {
     }, 30_000);
 
     it("adds MUL 1.0 leftovers only when selected, one record per legacy id", async () => {
-        const items = await loadMULListItems("mul2+mul1");
+        const items = await loadMULListItems(["mul2", "mul1"]);
         const legacy = items.filter((item) => item.MulSource === "mul1");
 
         expect(legacy.length).toBeGreaterThan(0);
         expect(legacy.some((item) => item.Id === 4800 && item.Name === "Pendragon PDG-2R")).toBe(true);
         expect(new Set(legacy.map((item) => item.Id)).size).toBe(legacy.length);
-        expect(items.length).toBe((await loadMULListItems("mul2")).length + legacy.length);
+        expect(items.length).toBe((await loadMULListItems(["mul2"])).length + legacy.length);
     }, 30_000);
 
     // MUL 2.0 renumbered factions from id 37 up (masterunitlist.battletech.com /data/factions.json).
@@ -64,17 +64,25 @@ describe("MUL chunk loader", () => {
             setItem: (key: string, value: string) => { store[key] = value; },
         });
         try {
-            const withCustoms = await loadMULListItems("mul2+mul1+custom");
+            const withCustoms = await loadMULListItems(["mul2", "mul1", "custom"]);
             expect(withCustoms.find((item) => item.MulUnitKey === "CUSTOM-LOCALTEST1")).toMatchObject({ MulSource: "custom", Name: "Local Test" });
-            expect((await loadMULListItems("mul2+mul1")).some((item) => item.MulUnitKey === "CUSTOM-LOCALTEST1")).toBe(false);
+            expect((await loadMULListItems(["mul2", "mul1"])).some((item) => item.MulUnitKey === "CUSTOM-LOCALTEST1")).toBe(false);
         } finally {
             vi.unstubAllGlobals();
         }
     }, 30_000);
 
-    it("expands each selection to a superset of the previous one", () => {
-        expect(getMULSourcesForSelection("mul2")).toEqual(["mul2"]);
-        expect(getMULSourcesForSelection("mul2+mul1")).toEqual(["mul2", "mul1"]);
-        expect(getMULSourcesForSelection("mul2+mul1+custom")).toEqual(["mul2", "mul1", "custom"]);
+    it("reads any ticked lists, and the strings saved before the lists became checkboxes", () => {
+        expect(normalizeMULSourceSelection(["custom", "mul2"])).toEqual(["mul2", "custom"]);
+        expect(normalizeMULSourceSelection(["mul1"])).toEqual(["mul1"]);
+        expect(normalizeMULSourceSelection("mul2+mul1")).toEqual(["mul2", "mul1"]);
+        expect(normalizeMULSourceSelection("mul2+mul1+custom")).toEqual(["mul2", "mul1", "custom"]);
+        expect(normalizeMULSourceSelection([])).toBeNull();
+        expect(normalizeMULSourceSelection(["bogus"])).toBeNull();
     });
+
+    it("searches only the lists ticked, so customs alone leave out the MUL", async () => {
+        const customsOnly = await loadMULListItems(["custom"]);
+        expect(customsOnly.every((item) => item.MulSource === "custom")).toBe(true);
+    }, 30_000);
 });

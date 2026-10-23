@@ -3452,7 +3452,8 @@ export default class Vehicle {
         for (const family of ["IF", "LRM", "SRM", "AC"] as const) {
             const damage = this._asSum(weapons.filter((weapon) => Vehicle._asFamily(weapon, family)));
             if (family === "IF") {
-                if (damage[2] > 0) specials.push(`IF${Vehicle._asVector([damage[2]], "normalNoMinimal").replace("-", "0")}`);
+                // Under 0.5 long-range damage is minimal: the MUL prints IF0*, never IF0.
+                if (damage[2] > 0) specials.push(`IF${Vehicle._asVector([damage[2]], "normal")}`);
             } else if (Vehicle._roundUpToTenth(damage[1]) >= 1) {
                 specials.push(`${family}${Vehicle._asVector(family === "SRM" ? damage.slice(0, 2) : damage.slice(0, 3), "normalNoMinimal")}`);
             }
@@ -3513,8 +3514,10 @@ export default class Vehicle {
 
         const specials: string[] = [];
         specials.push(...this._asFamilySpecials(standardWeapons));
-        if (rearWeapons.length) {
-            specials.push(`REAR${Vehicle._asVector(this._asSum(rearWeapons).slice(0, 3), "normal")}`);
+        const rearVector = Vehicle._asVector(this._asSum(rearWeapons).slice(0, 3), "normal");
+        // Rear-mounted gear with no damage (a searchlight) gives no REAR: the MUL never prints REAR-/-/-.
+        if (rearWeapons.length && /[^-/]/.test(rearVector)) {
+            specials.push(`REAR${rearVector}`);
         }
         if (turretWeapons.length) {
             const turretSpecials = this._asFamilySpecials(turretWeapons);

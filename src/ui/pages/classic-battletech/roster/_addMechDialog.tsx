@@ -1,11 +1,19 @@
 import * as React from 'react';
 import { FaCheckCircle, FaEye, FaPlusCircle, FaTimesCircle } from 'react-icons/fa';
 import { Link } from "react-router";
+import { getMULDisplayName, IASMULUnit } from '../../../../classes/alpha-strike-unit';
 import { BattleMech } from '../../../../classes/battlemech';
 import { BattleMechGroup } from '../../../../classes/battlemech-group';
+import { searchBundledMUL } from '../../../../utils';
+import { buildClassicDesignIndex, ClassicDesignIndex, findClassicDesign, getClassicMechEntries } from '../../../../utils/classicMULMatch';
+import { IMULSearchFilters } from '../../../../utils/mulSearchFilters';
+import { getMULEraLabel } from '../../../../utils/mulUtilities';
+import { paginate } from '../../../../utils/paginate';
 import { getSSWRulesLevelLabel } from '../../../../utils/sswUtils';
 import { IAppGlobals } from '../../../app-router';
 import InputField from '../../../components/form_elements/input_field';
+import MULSearchFilters from '../../../components/mul-search-filters';
+import SearchResultsPager from '../../../components/search-results-pager';
 import SanitizedHTML from '../../../components/sanitized-html';
 import StandardModal from '../../../components/standard-modal';
 import BattleMechSVG from '../../../components/svg/battlemech-svg';
@@ -16,15 +24,76 @@ const Eye = FaEye as any;
 const PlusCircle = FaPlusCircle as any;
 const TimesCircle = FaTimesCircle as any;
 
+// Round 1 of the Classic MUL search (Ideas #84) covers 'Mechs: BattleMechs and IndustrialMechs.
+const CBT_MUL_TYPE_IDS = [18, 20];
+const MUL_RESULTS_PAGE_SIZE = 25;
+
 export default class BattleMechAddMechDialog extends React.Component<IBattleMechAddMechDialogProps, IBattleMechAddMechDialogState> {
+
+    private searchTimeout: ReturnType<typeof setTimeout> | null = null;
+    private latestSearch = 0;
+    private designIndex: { key: string; index: ClassicDesignIndex<BattleMech> } | null = null;
 
     constructor(props: IBattleMechAddMechDialogProps) {
         super(props);
         this.state = {
             viewingUnit: null,
             updated: false,
+            mulResults: [],
+            mulPage: 0,
+            mulSearching: false,
         }
 
+    }
+
+    componentDidMount() {
+        void this.updateMULResults();
+    }
+
+    componentWillUnmount() {
+        if( this.searchTimeout ) {
+            clearTimeout( this.searchTimeout );
+        }
+    }
+
+    updateMULFilters = ( filters: IMULSearchFilters, search: boolean ): void => {
+        const appSettings = this.props.appGlobals.appSettings;
+        const termChanged = filters.term !== appSettings.cbtMULSearch.term;
+        appSettings.cbtMULSearch = filters;
+        this.props.appGlobals.saveAppSettings( appSettings );
+        this.setState({ updated: true });
+        if( !search ) {
+            return;
+        }
+        if( this.searchTimeout ) {
+            clearTimeout( this.searchTimeout );
+        }
+        // Wait for the user to stop typing before searching on the name.
+        this.searchTimeout = setTimeout( () => void this.updateMULResults(), termChanged ? 500 : 0 );
+    }
+
+    updateMULResults = async (): Promise<void> => {
+        const searchId = ++this.latestSearch;
+        this.setState({ mulSearching: true });
+        const results = ( await searchBundledMUL( this.props.appGlobals.appSettings.cbtMULSearch ) )
+            .filter( (unit) => CBT_MUL_TYPE_IDS.includes( unit.Type?.Id ) )
+            .sort( (a, b) => getMULDisplayName(a).localeCompare( getMULDisplayName(b) ) );
+        if( searchId !== this.latestSearch ) {
+            return;
+        }
+        this.setState({ mulResults: results, mulPage: 0, mulSearching: false });
+    }
+
+    // Saved designs come first, so a design the user built wins over the bundled Skunk Werks copy of the same model.
+    getDesignIndex = (): ClassicDesignIndex<BattleMech> => {
+        const saves = this.props.appGlobals.battleMechSaves;
+        const bundled = this.props.appGlobals.sswMechObjects;
+        const key = JSON.stringify( saves.map( (save) => save.uuid + save.lastUpdated ) ) + bundled.length;
+        if( !this.designIndex || this.designIndex.key !== key ) {
+            const saved = saves.map( (save) => new BattleMech( JSON.stringify( save ) ) );
+            this.designIndex = { key, index: buildClassicDesignIndex( getClassicMechEntries( saved ).concat( getClassicMechEntries( bundled ) ) ) };
+        }
+        return this.designIndex.index;
     }
 
 
@@ -149,6 +218,70 @@ export default class BattleMechAddMechDialog extends React.Component<IBattleMech
 
     }
 
+    renderMULSearch = (): JSX.Element => {
+        const resultsPage = paginate( this.state.mulResults, this.state.mulPage, MUL_RESULTS_PAGE_SIZE );
+        const index = this.getDesignIndex();
+        return (
+<fieldset className="fieldset">
+    <legend>Master Unit List Search</legend>
+    <p className="small-text">
+        Search the Master Unit List copy kept in the app by name, era, faction and more, then add the matching Classic design: one you saved first, else the bundled Skunk Werks 'Mech. 'Mechs for now; the other unit types follow. Idea from Camille, Centrella-Sworn on the Star League Discord.
+    </p>
+    <MULSearchFilters
+        filters={this.props.appGlobals.appSettings.cbtMULSearch}
+        onChange={this.updateMULFilters}
+        idPrefix="cbt"
+        typeIDs={CBT_MUL_TYPE_IDS}
+    />
+    <h4 className="text-center">
+        MUL Results ({this.state.mulSearching ? "..." : this.state.mulResults.length})
+    </h4>
+    {!this.state.mulSearching ? <SearchResultsPager page={resultsPage} onGo={(page) => this.setState({ mulPage: page })} /> : null}
+    <table className="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th className="min-width no-wrap text-left">Tech</th>
+                <th className="min-width no-wrap text-left">Era</th>
+                <th className="min-width no-wrap text-center">Tonnage</th>
+                <th className="min-width no-wrap text-center">BV2</th>
+                <th className="min-width no-wrap text-center">&nbsp;</th>
+            </tr>
+        </thead>
+        <tbody>
+            {!this.state.mulSearching && this.state.mulResults.length === 0 ? (
+                <tr><td className="text-center" colSpan={6}>No units on the Master Unit List match your filters.</td></tr>
+            ) : null}
+            {resultsPage.items.map( (unit: IASMULUnit) => {
+                const design = findClassicDesign( unit, index );
+                return (
+                    <tr key={unit.MulUnitKey ?? unit.Id}>
+                        <td>{getMULDisplayName( unit )}</td>
+                        <td className="min-width no-wrap text-left">{unit.Technology?.Name}</td>
+                        <td className="min-width no-wrap text-left">{getMULEraLabel( unit.EraId )}</td>
+                        <td className="min-width no-wrap text-center">{unit.Tonnage}</td>
+                        <td className="min-width no-wrap text-center">{design ? design.getBattleValue() : unit.BattleValue}</td>
+                        <td className="min-width no-wrap text-center">
+                            {design ? (
+                                <>
+                                    <button className='btn btn-sm btn-primary' onClick={e => this.viewUnit(e, design)} title={"View " + design.getName()}><Eye /></button>
+                                    <button className='btn btn-sm btn-primary' onClick={e => this.importUnit(e, design)} title={"Add " + design.getName() + " to this group"} aria-label={"Add " + getMULDisplayName( unit )}><PlusCircle /></button>
+                                </>
+                            ) : (
+                                <span className="small-text">
+                                    No Classic design yet: <Link to={`${process.env.PUBLIC_URL}/classic-battletech/mech-creator`}>build it</Link>
+                                </span>
+                            )}
+                        </td>
+                    </tr>
+                );
+            })}
+        </tbody>
+    </table>
+</fieldset>
+        );
+    }
+
     render = (): JSX.Element => {
         return(
 <>
@@ -179,6 +312,7 @@ export default class BattleMechAddMechDialog extends React.Component<IBattleMech
 
     <div className="row">
       <div className="col">
+          {this.renderMULSearch()}
           <fieldset className="fieldset">
               <legend>Your Saved Units</legend>
               {this.props.appGlobals.battleMechSaves.length === 0 ? (
@@ -393,4 +527,7 @@ interface IBattleMechAddMechDialogProps {
 interface IBattleMechAddMechDialogState {
     viewingUnit: BattleMech | null;
     updated: boolean;
+    mulResults: IASMULUnit[];
+    mulPage: number;
+    mulSearching: boolean;
 }

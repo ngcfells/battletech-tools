@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { AlphaStrikeUnit } from "../classes/alpha-strike-unit";
 import { loadMULListItems } from "../data/mul-list-items";
-import { getMULASSearchResults } from "../utils";
+import { getMULASSearchResults, searchBundledMUL } from "../utils";
+import { newMULSearchFilters } from "./mulSearchFilters";
 
 // Bundled MUL 2.0 records (masterunitlist.battletech.com) have no Rules, BFThreshold or ImageUrl fields.
 describe("Bundled MUL 2.0 search and cards", () => {
@@ -18,6 +19,18 @@ describe("Bundled MUL 2.0 search and cards", () => {
             expect(codes).toContain("ECM");
             expect(codes.some((ability) => /^IF\s?[\d*]/.test(ability))).toBe(false);
         }
+    }, 30_000);
+
+    // Classic Roster MUL search (Ideas #84): the same filters over the bundled copy, with no live-search alert.
+    it("searches the bundled copy with name, type, era and faction filters together", async () => {
+        const ilClan = 257;
+        const mercenary = 34;
+        const results = await searchBundledMUL(newMULSearchFilters({ term: "Atlas", type: 18, era: ilClan, factions: [mercenary] }));
+        expect(results.length).toBeGreaterThan(0);
+        expect(results.every((unit) => unit.Name.includes("Atlas") && unit.Type?.Id === 18)).toBe(true);
+        expect(results.every((unit) => unit.Availability?.some((entry) => entry.EraId === ilClan))).toBe(true);
+        const sameAsAlphaStrike = await getMULASSearchResults("Atlas", "", "", "", ilClan, 18, [mercenary], true);
+        expect(results.map((unit) => unit.Id).sort()).toEqual(sameAsAlphaStrike.map((unit) => unit.Id).sort());
     }, 30_000);
 
     it("does not match an ability code inside a longer code", async () => {

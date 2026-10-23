@@ -3,12 +3,13 @@ import { BattleMech, IGATOR, ITargetToHit } from "./classes/battlemech";
 import { CONST_MUL_API_ENABLED } from "./configVars";
 import { IEquipmentItem } from "./data/data-interfaces";
 import { getEquipmentCatalogs, getEquipmentListByTech } from "./data/equipment-registry";
-import { DEFAULT_MUL_SOURCE_SELECTION, getMULRecordKey, getMULSourcesForSelection, loadMULListItems } from "./data/mul-list-items";
+import { DEFAULT_MUL_SOURCE_SELECTION, getMULRecordKey, loadMULListItems } from "./data/mul-list-items";
 import { IAppGlobals } from "./ui/app-router";
 import { replaceAll } from "./utils/replaceAll";
 import { getQuirkToHit } from "./utils/quirk-effects";
 import { unitHasAbility } from "./utils/mulAbilities";
 import { resolveMULEraFilter } from "./utils/mulUtilities";
+import { IMULSearchFilters } from "./utils/mulSearchFilters";
 
 export function getISEquipmentList(): IEquipmentItem[] {
     return getEquipmentListByTech("is");
@@ -449,6 +450,27 @@ function matchesMULSearchTokens(unit: IASMULUnit, tokens: IMULSearchTokens): boo
     return true;
 }
 
+function getMULSearchTokens(searchTerm: string, abilityFilters: string[]): IMULSearchTokens {
+    const tokens = parseMULSearchTokens(searchTerm);
+    for (const filter of abilityFilters) {
+        if (filter.startsWith("!")) {
+            tokens.abilityExclude.push(filter.substring(1));
+        } else {
+            tokens.abilitySearch.push(filter);
+        }
+    }
+    return tokens;
+}
+
+/** Searches the MUL copy bundled with the app; the Classic roster uses it, and the Alpha Strike offline path matches the same way. */
+export async function searchBundledMUL(filters: IMULSearchFilters): Promise<IASMULUnit[]> {
+    const tokens = getMULSearchTokens(filters.term, filters.abilities);
+    const era = resolveMULEraFilter(filters.era);
+    return (await loadMULListItems(filters.sources)).filter((unit) =>
+        matchesMULDropdownFilters(unit, filters.rules, filters.tech, filters.role, era, filters.type, filters.factions) &&
+        matchesMULSearchTokens(unit, tokens));
+}
+
 async function getCachedMULSearchResults(
     tokens: IMULSearchTokens,
     mechRules: string,
@@ -464,7 +486,7 @@ async function getCachedMULSearchResults(
         matchesMULSearchTokens(unit, tokens);
 
     const selection = appGlobals?.appSettings.alphaStrikeMULSources ?? DEFAULT_MUL_SOURCE_SELECTION;
-    const allowedSources = getMULSourcesForSelection(selection);
+    const allowedSources = selection;
     const bundledMatches = (await loadMULListItems(selection)).filter(matchesAllFilters);
     const sessionMatches = (appGlobals?.appSettings.alphasStrikeCachedSearchResults ?? [])
         .filter((unit) => allowedSources.includes(unit.MulSource ?? "mul2"))
@@ -590,14 +612,7 @@ export async function getMULASSearchResults(
         }
     }
 
-    const tokens = parseMULSearchTokens(searchTerm);
-    for (const filter of abilityFilters) {
-        if (filter.startsWith("!")) {
-            tokens.abilityExclude.push(filter.substring(1));
-        } else {
-            tokens.abilitySearch.push(filter);
-        }
-    }
+    const tokens = getMULSearchTokens(searchTerm, abilityFilters);
 
     console.log('Searching...');
     if( offLine === false && CONST_MUL_API_ENABLED ) {

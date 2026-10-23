@@ -1,5 +1,5 @@
 // @vitest-environment happy-dom
-import { cleanup, render } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { BattleMech } from "../../../../classes/battlemech";
@@ -8,6 +8,8 @@ import { BattleMechGroup } from "../../../../classes/battlemech-group";
 import type { IAppGlobals } from "../../../app-router";
 import BattleMechAddMechDialog from "./_addMechDialog";
 import BattleMechRosterHome from "./home";
+import { newMULSearchFilters } from "../../../../utils/mulSearchFilters";
+import { sswTestFixtures } from "../../../../data/ssw/sswTestFixtures";
 
 afterEach(cleanup);
 
@@ -17,7 +19,7 @@ const makeAppGlobals = () => {
     const favorite = new BattleMechGroup();
     favorite.members.push(new BattleMech());
     return {
-        appSettings: { developerMenu: false, uiTheme: "", mechNameFilter: "", mechRulesFilter: -1 },
+        appSettings: { developerMenu: false, uiTheme: "", mechNameFilter: "", mechRulesFilter: -1, cbtMULSearch: newMULSearchFilters({ type: 18 }) },
         currentCBTForce: force,
         favoriteCBTGroups: [favorite],
         battleMechSaves: [],
@@ -71,6 +73,41 @@ describe("Classic BattleTech roster: adding 'Mechs (issue 18)", () => {
         expect(text).not.toContain("only Introductory Mechs");
         expect(text).toContain("Battle Value and cost match");
         // The empty-list message spans all six columns.
-        expect(container.querySelector("td[colspan='6']")).toBeTruthy();
+        const emptyCells = [...container.querySelectorAll("td[colspan='6']")];
+        expect(emptyCells.some((cell) => cell.textContent?.includes("No 'mechs found for import"))).toBe(true);
     });
+});
+
+// Ideas #84 (Camille, Centrella-Sworn, Star League Discord): search the MUL from the Classic roster.
+describe("Classic roster Master Unit List search", () => {
+    it("finds a 'Mech on the MUL and adds its Skunk Werks design to the group", async () => {
+        const appGlobals = makeAppGlobals();
+        const champion = new BattleMech();
+        champion.importSSWXML(sswTestFixtures["Champion C"]);
+        (appGlobals.sswMechObjects as BattleMech[]).push(champion);
+        appGlobals.appSettings.cbtMULSearch = newMULSearchFilters({ type: 18, term: "Champion" });
+        const onChange = vi.fn();
+        render(
+            <MemoryRouter>
+                <BattleMechAddMechDialog appGlobals={appGlobals} currentForce={appGlobals.currentCBTForce!.groups[0]} currentForceIndex={0} onChange={onChange} />
+            </MemoryRouter>
+        );
+        const add = await screen.findByRole("button", { name: "Add " + champion.getChassisName() + " " + champion.getModelName() }, { timeout: 20_000 });
+        fireEvent.click(add);
+        expect(onChange).toHaveBeenCalledTimes(1);
+        const group: BattleMechGroup = onChange.mock.calls[0][0];
+        expect(group.members.map((member) => member.getName())).toContain(champion.getName());
+    }, 30_000);
+
+    it("offers the creator for a MUL 'Mech with no Classic design", async () => {
+        const appGlobals = makeAppGlobals();
+        appGlobals.appSettings.cbtMULSearch = newMULSearchFilters({ type: 18, term: "Atlas AS7-D" });
+        render(
+            <MemoryRouter>
+                <BattleMechAddMechDialog appGlobals={appGlobals} currentForce={appGlobals.currentCBTForce!.groups[0]} currentForceIndex={0} onChange={vi.fn()} />
+            </MemoryRouter>
+        );
+        await waitFor(() => expect(screen.getAllByText(/No Classic design yet/).length).toBeGreaterThan(0), { timeout: 20_000 });
+        expect(screen.getAllByRole("link", { name: "build it" })[0].getAttribute("href")).toContain("/classic-battletech/mech-creator");
+    }, 30_000);
 });

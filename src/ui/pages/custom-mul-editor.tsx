@@ -71,7 +71,7 @@ export default class CustomMULEditor extends React.Component<ICustomMULEditorPro
 
     componentDidMount(): void {
         // Used to stop canonical MUL 2.0 units from being re-entered as customs.
-        void loadMULListItems("mul2").then((units) => {
+        void loadMULListItems(["mul2"]).then((units) => {
             this.setState({
                 canonicalIdentities: new Set(units.map((unit) => mulIdentity(unit.Name, unit.Variant))),
             });
