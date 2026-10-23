@@ -51,4 +51,4 @@ export const RESOLUTION_ROLLS: Record<ResolutionOutcome, { label: string; roll: 
 export const MISFIRE_REMINDER = "Misfire: roll 1D6 for direction from the aimed hex on the Scatter Diagram (TacOps p.182), "
     + "then 3D6 for the hexes it travels. It does normal damage where it lands, friendly units included; off the playing area it is lost.";
 
-export const HIT_REMINDER = "Hit: 2 capital (20 standard) damage, applied on the target's own record sheet.";
+export const HIT_REMINDER = "Hit: 5 standard damage, applied on the target's own record sheet. Against capital armor, the standard damage is totaled, divided by 10 and rounded normally (TW p.238, errata v6.0).";

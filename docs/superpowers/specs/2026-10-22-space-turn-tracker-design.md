@@ -47,7 +47,7 @@ each anti-orbital shot. The players keep a physical map.
    | Something else moved into the hex | Normal attack roll against it |
    | Fighters or point defense try to stop it | Stopped only on a natural 12 |
 
-   The player records hit or miss. A hit reminds them of the damage: 2 capital (20 standard). The shot then leaves
+   The player records hit or miss. A hit reminds them of the damage: 5 standard (changed 2026-10-23 from 2 capital). The shot then leaves
    the list.
 
 ## Non-goals

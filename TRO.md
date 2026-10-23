@@ -18,7 +18,7 @@ Every entry is Custom (rules level 6) unless it says otherwise. The rulings behi
 | **Prototype** | 3055 (Federated Suns) |
 | **Introduced** | 3062 |
 | **Weight** | 1 ton (3 shots) |
-| **Damage** | 2 capital (the Long Tom's 25 standard is 2.5, rounded down) |
+| **Damage** | 5 standard |
 | **Cost** | 60,000 C-bills a ton |
 | **Battle Value** | 28 a ton |
 | **Explosive** | Yes |
@@ -31,11 +31,12 @@ against the Word of Blake's fleets in the Jihad.
 **Capabilities:** Each round has three stages. An overcharged propellant charge throws it clear of the tube, and a
 rocket sustainer carries it up out of the atmosphere. The last stage is a small semi-guided payload that steers onto
 the target. The round is too small for most defenses to track. The extra propellant and the guided stage take up
-room in the shell. As a result, it hits a little lighter than the high-explosive round, and a ton holds only 3
-rounds, against 5 for the standard round. Each round also costs twice as much as a Copperhead.
+room in the shell. As a result, it carries little explosive: it is made to buffet landing DropShips, not to
+wreck WarShips. A ton holds only 3 rounds, against 5 for the standard round. Each round also costs twice as much as a Copperhead.
 
 **Game rules:** The round fires a surface-to-orbit attack under the Strategic Operations rules for capital and
-sub-capital weapons (StratOps pp.91, 97-99), as a ballistic attack. A hit does 2 points of capital-scale damage.
+sub-capital weapons (StratOps pp.91, 97-99), as a ballistic attack. A hit does 5 points of standard-scale damage.
+Against capital armor, standard damage is totaled, divided by 10 and rounded normally (TW p.238, errata v6.0).
 It loads in any Long Tom. These house rules add to the StratOps rules (user rulings 2026-10-22):
 
 - **Rate of fire:** The round has a long way to travel, and a turn in space is longer than a ground turn:

@@ -86,7 +86,7 @@ describe("space resolution dialog", () => {
         fireEvent.change(screen.getByLabelText("What happened"), { target: { value: "one-hex" } });
         expect(screen.getByText("Normal attack roll at +4")).toBeTruthy();
         fireEvent.click(screen.getByRole("button", { name: "Hit" }));
-        expect(screen.getByText(/2 capital \(20 standard\)/)).toBeTruthy();
+        expect(screen.getByText(/Hit: 5 standard/)).toBeTruthy();
         expect(force.spaceTracker.shotsInFlight).toEqual([]);
     });
 });

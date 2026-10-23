@@ -5,10 +5,10 @@ import { getCompatibleAmmo, getEquipmentRulesLevel, getWeaponShotsPerTon } from 
 import { equipmentArtillery } from "./equipment-artillery";
 
 // Anti-orbital Long Tom rounds (beta feedback item 9): requested on the Star League Discord by SmilingNid, with ideas
-// from Vehrec, Arkaxe and Ryan DesCastris. User rulings 2026-10-22: Custom rules level; the Long Tom's 25 damage (TO:AUE
-// p.96) at capital scale is 2.5, rounded down (2); half the standard round's 5 shots a ton, rounded up (3); built in; tech rating E as Copperhead;
+// from Vehrec, Arkaxe and Ryan DesCastris. User rulings 2026-10-22: Custom rules level; half the standard round's 5 shots a ton, rounded up (3); built in; tech rating E as Copperhead;
 // 60,000 C-bills a ton; developed by the Federated Suns after Smoke Jaguars razed Edo from orbit (7 May 3050,
-// Era Report: 3052), prototype 3055, introduced 3062, Inner Sphere only.
+// Era Report: 3052), prototype 3055, introduced 3062, Inner Sphere only. User ruling 2026-10-23, after Vehrec: 5 standard-scale
+// damage, not 2 capital: the round is mostly propellant, made to buffet landing DropShips, not to match a sub-capital cannon.
 describe("anti-orbital Long Tom ammunition", () => {
     const round = ammoCustom.find((item) => item.tag === "ammo-is-long-tom-anti-orbital") as IEquipmentItem;
     const longTom = equipmentArtillery.find((item) => item.tag === "long-tom-artillery") as IEquipmentItem;
@@ -31,9 +31,10 @@ describe("anti-orbital Long Tom ammunition", () => {
         expect(getWeaponShotsPerTon(longTom, round)).toBe(3);
     });
 
-    it("does 2 points of capital-scale damage in a surface-to-orbit attack, and credits the people who asked for it", () => {
-        expect(round.damage).toBe(2);
-        for (const phrase of ["capital-scale", "surface-to-orbit", "Strategic Operations", "SmilingNid", "Star League Discord"]) {
+    it("does 5 points of standard-scale damage in a surface-to-orbit attack, and credits the people who asked for it", () => {
+        expect(round.damage).toBe(5);
+        expect(round.notes).not.toContain("capital-scale damage");
+        for (const phrase of ["5 points of standard-scale damage", "Vehrec", "surface-to-orbit", "Strategic Operations", "SmilingNid", "Star League Discord"]) {
             expect(round.notes).toContain(phrase);
         }
     });

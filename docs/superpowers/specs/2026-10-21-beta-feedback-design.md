@@ -45,8 +45,9 @@ own tests and commit, in this order.
    server, a BattleTech group, by SmilingNid, with ideas from Vehrec, Arkaxe and Ryan DesCastris; added by the user 2026-10-21.) Decide the
    mechanics and the rules level (Apocryphal, Custom or Munchkin) with the user before any code.
    **Decided 2026-10-22:** Custom (rules level 6), built in as Long Tom ammunition. It makes a surface-to-orbit
-   attack under the StratOps rules for capital weapons (pp.91, 97-99), as a ballistic attack, for 2 capital-scale
-   damage (the Long Tom's 25, TO:AUE p.96, at 10 to 1 is 2.5, rounded down by user ruling). 3 shots a ton (half the standard round's 5, rounded up). 60,000 C-bills a
+   attack under the StratOps rules for capital weapons (pp.91, 97-99), as a ballistic attack, for 5 standard-scale
+   damage (**changed 2026-10-23**, after Vehrec on the Star League Discord: it was 2 capital, the Long Tom's 25 at 10 to 1
+   rounded down; the round is mostly propellant, made to buffet landing DropShips). 3 shots a ton (half the standard round's 5, rounded up). 60,000 C-bills a
    ton, twice Copperhead, for its three stages, extra explosive and guided payload. Tech rating E, as Copperhead.
    Era: Inner Sphere only, a Federated Suns development after the Smoke Jaguars razed Edo on Turtle Bay from orbit
    (7 May 3050, Era Report: 3052 p.17) so that it could never happen to them; prototype 3055, introduced 3062, used

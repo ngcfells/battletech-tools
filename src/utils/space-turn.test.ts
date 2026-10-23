@@ -41,7 +41,8 @@ describe("resolution table", () => {
         expect(RESOLUTION_ROLLS["two-plus"].roll).toMatch(/miss/i);
         expect(RESOLUTION_ROLLS.bystander.roll).toMatch(/normal attack roll/i);
         expect(RESOLUTION_ROLLS.defense.roll).toMatch(/natural 12/);
-        expect(HIT_REMINDER).toContain("2 capital (20 standard)");
+        expect(HIT_REMINDER).toContain("5 standard");
+        expect(HIT_REMINDER).toContain("rounded normally");
         expect(MISFIRE_REMINDER).toContain("TacOps p.182");
         expect(MISFIRE_REMINDER).toContain("3D6");
     });
