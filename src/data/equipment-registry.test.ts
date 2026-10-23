@@ -695,3 +695,17 @@ describe("LRM aerospace damage (issue 28)", () => {
         }
     });
 });
+
+describe("rotary autocannon aerospace heat and CASE mounting (issues 29, 30)", () => {
+    const items = () => getEquipmentCatalogDefinitions().flatMap((definition) => definition.equipment);
+    it("gives the Clan Rotary AC the same aerospace heat as the Inner Sphere one (6, the rapid rate)", () => {
+        for (const size of [2, 5]) {
+            expect(items().find((item) => item.tag === `clan-autocannon-rac-${size}`)?.heatAero).toBe(items().find((item) => item.tag === `rotary-ac-${size}`)?.heatAero);
+        }
+    });
+    it("keeps CASE off Small Craft and DropShips (TM p.210: they may not carry CASE)", () => {
+        const caseItem = items().find((item) => item.tag === "case")!;
+        expect(caseItem.space.smallCraft).toBe(-1);
+        expect(caseItem.space.dropShip).toBe(-1);
+    });
+});
