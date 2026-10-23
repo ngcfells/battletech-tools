@@ -308,9 +308,10 @@ export default class MechCreatorImports extends React.Component<IHomeProps, IHom
                           <p><Link className="btn btn-primary" to={`${process.env.PUBLIC_URL}/classic-battletech/mech-creator/ssw-file-import`}>Import your own .ssw files</Link></p>
                           <div className="alert alert-info">
 
-                            <p>This is now working perfectly in a limited fashion! Be sure to only semi-trust the units with a <CheckCircle title="This import looks good to add!" className="color-green" /> beside their name</p>
+                            {/* Rewritten 2026-10-23 (issue 17): the 2022 text said only TRO 3039 loaded, for want of Clan equipment. */}
+                            <p>The list below is a sample of {this.props.appGlobals.sswMechObjects.length > 0 ? this.props.appGlobals.sswMechObjects.length : "about 500"} designs from the Solaris Skunk Werks data, most of them Inner Sphere. To bring in any other design (Clan, OmniMech or your own), use <strong>Import your own .ssw files</strong>.</p>
 
-                            <p>Since we're still short on base equipment for Clans, right now only the TRO3039 is loadable. Don't worry we'll get it taken care of as this app develops. TRO 3050/3055 is the next target!</p>
+                            <p>A <CheckCircle title="This import looks good to add!" className="color-green" /> beside a name means its Battle Value and cost match the figures in the Skunk Werks file and nothing failed to import. Hover over a <TimesCircle title="Not an accurate import" className="color-red" /> to see what differs, and check that design before you add it.</p>
 
                             <div className="text-center">
                               <a href="https://github.com/Solaris-Skunk-Werks/SSW-Master" target="_blank" rel="noopener noreferrer">Solaris Skunk Werks Master Data Repo</a>

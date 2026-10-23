@@ -82,3 +82,11 @@ describe("record sheet trademark footer (user ruling 2026-10-22: the logo goes o
         expect(markup).not.toContain("Neither Topps nor Catalyst Game Labs makes no");
     });
 });
+
+describe("the 'Mech sheet's app name (issue 16)", () => {
+    it("puts \"Created with\" on its own line and the name at 14 points, so the beta site's longer name clears the notices", () => {
+        const markup = text(renderToStaticMarkup(<BattleMechSVG mechData={new BattleMech()} />));
+        expect(markup).toMatch(/>\s*Created with\s*<\/text>/);
+        expect(markup).toMatch(/font-size="14"[^>]*>\s*Jeff's BattleTech Tools IIC\s*<\/text>/);
+    });
+});

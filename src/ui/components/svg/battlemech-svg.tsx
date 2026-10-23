@@ -1895,16 +1895,29 @@ export default class BattleMechSVG extends React.Component<IBattleMechSVGProps, 
     >
     {NOT_ENDORSED}
     </text>
+    {/* "Created with" on its own line and the name at 14 points: the beta site's longer name ("... ilClan Edition -
+        BETA") ran into the notices at x 450 (issue 16). */}
     <text
         x={20}
-        y={this.docHeight - 55}
+        y={this.docHeight - 72}
         textAnchor="start"
         fontFamily="sans-serif"
         fill={this.colorTan}
         style={{fontWeight: 700}}
-        fontSize={20}
+        fontSize={14}
     >
-    Created with Jeff's BattleTech Tools IIC
+    Created with
+    </text>
+    <text
+        x={20}
+        y={this.docHeight - 50}
+        textAnchor="start"
+        fontFamily="sans-serif"
+        fill={this.colorTan}
+        style={{fontWeight: 700}}
+        fontSize={14}
+    >
+    Jeff's BattleTech Tools IIC
     </text>
     <text
         x={20}
@@ -1913,7 +1926,7 @@ export default class BattleMechSVG extends React.Component<IBattleMechSVGProps, 
         fontFamily="sans-serif"
         fill={this.colorTan}
         style={{fontWeight: 700}}
-        fontSize={15}
+        fontSize={14}
     >
     https://heysporky.github.io/battletech-tools/
     </text>

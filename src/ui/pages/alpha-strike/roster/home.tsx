@@ -495,16 +495,19 @@ label="Quickly add a ForcePack"
   <ul className="styleless">
   {CONST_FORCE_PACKS.map( (pack, packindex) => {
     return (
-      <li key={packindex} className="overflow-hidden">
+      <li key={packindex} className="force-pack-row">
         <button
-          className="btn btn-md btn-primary pull-left margin-right"
+          className="btn btn-md btn-primary margin-right"
           aria-label={`Add the ${pack.name}`}
           onClick={(e) => this.addForcePack( e, pack)}
         >
           <PlusCircle />
         </button>
-        {pack.name}<br />
-        <div className="small-text">{joinListWithEndLabel(pack.members, "and")}</div>
+        {/* Its own column, so wrapped text stays beside the button instead of running under it (issue 19). */}
+        <div className="force-pack-text">
+          {pack.name}<br />
+          <div className="small-text">{joinListWithEndLabel(pack.members, "and")}</div>
+        </div>
       </li>
     )
   })}
