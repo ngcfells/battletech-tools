@@ -43,6 +43,8 @@ export interface ITroEquipmentCopy {
     tag: string;
     name: string;
     locationLabel: string;
+    /** False for equipment the Armament line leaves out (electronics and other miscellaneous items); weapons when absent. */
+    armament?: boolean;
 }
 
 export interface ITroSpecValues {

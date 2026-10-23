@@ -192,7 +192,7 @@ export class TechnicalReadout {
     /** Copies grouped by identical make and name, in order of first appearance; the text has no count. */
     public getArmamentGroups(copies: ITroEquipmentCopy[]): { count: number; text: string }[] {
         const groups: { count: number; text: string }[] = [];
-        for (const copy of copies) {
+        for (const copy of copies.filter((candidate) => candidate.armament !== false)) {
             const make = this.getCopyMake(copy.tag, copy.uuid);
             const makeText = [make.manufacturer, make.model].filter(Boolean).join(" ");
             const name = normalize(makeText).includes(normalize(copy.name)) ? "" : copy.name;

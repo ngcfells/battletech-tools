@@ -4,6 +4,8 @@ import { getQuirk, getQuirkIssues, getQuirkTargets } from "../data/quirk-registr
 import { findCanonEntry, resolveCanonQuirks } from "../data/quirk-canon";
 import { ICanonQuirkEntry } from "../data/quirk-canon-interfaces";
 import { QuirkList } from "./quirk-list";
+import { TechnicalReadout } from "./technical-readout";
+import { ITechnicalReadoutExport } from "../data/technical-readout-interfaces";
 import { getAlphaStrikeQuirks, getQuirkHeatGenerated, getQuirkWeaponHeat } from "../utils/quirk-effects";
 import { getEditionSkillMultipliers, getSkillMultiplier } from "../data/skill-multipliers";
 import { battlemechLocations } from "../data/battlemech-locations";
@@ -255,6 +257,7 @@ export interface IBattleMechExport {
     tonnage: number;
     uuid: string;
     quirks?: IAssignedQuirk[];
+    tro?: ITechnicalReadoutExport;
     walkSpeed: number;
 }
 
@@ -366,6 +369,8 @@ export class BattleMech {
 
     /** The design quirks assigned to this unit (quirk tables, Campaign Operations pp.228 and 232). */
     public quirks: QuirkList = new QuirkList();
+    /** The Technical Readout fields: makes and text, all optional. */
+    public tro: TechnicalReadout = new TechnicalReadout();
 
     private _mechType = mechTypeOptions[0];
     private _quadVeeMotive: "tracked" | "wheeled" = "tracked";
@@ -585,6 +590,7 @@ export class BattleMech {
         this._primitive = false;
         this._rulesEdition = DEFAULT_RULES_EDITION;
         this._printedDroid = undefined;
+        this.tro = new TechnicalReadout();
         this._rulesEditionReturn = undefined;
         this._advancedFireControl = false;
         this._patchworkArmor = {};
@@ -6400,6 +6406,11 @@ export class BattleMech {
         return clone;
     }
 
+    /** The uuid of every pod in every stored OmniMech configuration (the active one's pods are in the equipment list). */
+    public getOmniConfigurationEquipmentUuids(): string[] {
+        return this._omniConfigurations.flatMap(configuration => configuration.equipment.map(item => item.uuid).filter((uuid): uuid is string => !!uuid));
+    }
+
     private _podItems(): IEquipmentItem[] {
         return this._equipmentList.filter(item => item && !item.omniFixed);
     }
@@ -7015,6 +7026,16 @@ export class BattleMech {
         return this._tonnage;
     }
 
+    /** The chassis name, e.g. "Archer". */
+    public getChassisName(): string {
+        return this._name;
+    }
+
+    /** The model designation, e.g. "ARC-2R". */
+    public getModelName(): string {
+        return this._model;
+    }
+
     public setTonnage(tonnage: number): number {
       this._tonnage = tonnage;
     
@@ -7489,6 +7510,7 @@ export class BattleMech {
             uuid: this._uuid,
             walkSpeed: this._walkSpeed,
             quirks: this.quirks.export(),
+            tro: this.tro.export(),
         };
 
         if( !noInPlayVariables ) {
@@ -7716,6 +7738,7 @@ export class BattleMech {
     ) {
 
         this.quirks.import(importObject?.quirks);
+        this.tro.import(importObject?.tro);
 
         this.selectedMech = false;
         if( importObject && importObject.selectedMech ) {
@@ -9714,7 +9737,7 @@ export class BattleMech {
     }
 
     /** One readout line per patchwork location: "Right Arm: Ferro Fibrous, 1.5 tons". */
-    private _getPatchworkReadoutLines(): string[] {
+    public _getPatchworkReadoutLines(): string[] {
         if (!this.isPatchworkArmor()) return [];
         return this.getPatchworkLocations().map(location => {
             const weight = this.getPatchworkLocationWeight(location.key);
@@ -9993,7 +10016,7 @@ export class BattleMech {
     }
 
     /** One readout line per FrankenMech location ("Right Arm: 70-ton 'Mech (Warhammer), Standard, 11 points"), then the legs' modifier. */
-    private _getFrankenMechReadoutLines(): string[] {
+    public _getFrankenMechReadoutLines(): string[] {
         if (!this._frankenMech) return [];
         const points = this._internalStructure as unknown as Record<string, number>;
         const lines = this.getFrankenMechLocations().map(location => {
