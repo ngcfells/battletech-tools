@@ -8,6 +8,7 @@ const steps: { tag: string; path: string; title: string; subtitle?: string }[] =
     { tag: "chassis", path: "/chassis", title: "Step 1", subtitle: "Design the Chassis" },
     { tag: "armor", path: "/armor", title: "Step 2", subtitle: "Allocate Armor" },
     { tag: "equipment", path: "/equipment", title: "Step 3", subtitle: "Weapons and Equipment" },
+    { tag: "technical-readout", path: "/technical-readout", title: "Step 4", subtitle: "Technical Readout" },
     { tag: "summary", path: "/summary", title: "Summary", subtitle: "Weights and legality" },
 ];
 

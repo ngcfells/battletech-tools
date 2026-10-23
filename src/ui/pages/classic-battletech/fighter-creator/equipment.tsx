@@ -70,7 +70,7 @@ export default class FighterCreatorEquipment extends React.Component<IEquipmentP
 
                                 <div className="clear-both overflow-hidden">
                                     <hr />
-                                    <Link to={`${process.env.PUBLIC_URL}/classic-battletech/fighter-creator/summary`} className="btn btn-primary pull-right btn-sm">Next: Summary <ArrowCircleRight /></Link>
+                                    <Link to={`${process.env.PUBLIC_URL}/classic-battletech/fighter-creator/technical-readout`} className="btn btn-primary pull-right btn-sm">Next: Technical Readout <ArrowCircleRight /></Link>
                                     <div className="inline-block text-left">
                                         <Link to={`${process.env.PUBLIC_URL}/classic-battletech/fighter-creator/armor`} className="btn btn-primary btn-sm"><ArrowCircleLeft /> Previous Step</Link>
                                     </div>
