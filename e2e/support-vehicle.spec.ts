@@ -39,8 +39,8 @@ test("a Support Vehicle builds, takes a penetrating critical hit and prints", as
     await expect(panel.getByTestId("pending-roll")).toContainText("Critical Hit roll");
 
     await page.goto("classic-battletech/roster/print");
-    await expect(page.locator(".print-page").first()).toContainText("Tracked Support Vehicle");
-    await expect(page.locator(".print-page").first()).toContainText("BAR 5");
+    await expect(page.locator(".print-page").first()).toContainText("TRACKED SUPPORT VEHICLE RECORD SHEET");
+    await expect(page.locator(".print-page").first()).toContainText("BAR: 5");
 
     expect(errors).toEqual([]);
 });
