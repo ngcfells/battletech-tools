@@ -81,7 +81,16 @@ describe("TechnicalReadoutSection", () => {
         const tro = new TechnicalReadout();
         tro.setComponent("kfDrive", "X");
         section(tro);
-        expect((screen.getByLabelText("kfDrive") as HTMLInputElement).value).toBe("X");
+        expect((screen.getByLabelText("K-F Drive") as HTMLInputElement).value).toBe("X");
+    });
+
+    it("labels an imported jump jet make the way TROs do, and keeps an unknown key as it came", () => {
+        const tro = new TechnicalReadout();
+        tro.setComponent("jumpJets", "Hellespont");
+        tro.setComponent("lifeSupport", "Ceres");
+        section(tro);
+        expect((screen.getByLabelText("Jump Jets") as HTMLInputElement).value).toBe("Hellespont");
+        expect((screen.getByLabelText("lifeSupport") as HTMLInputElement).value).toBe("Ceres");
     });
 
     it("prunes makes for equipment the design no longer has", () => {

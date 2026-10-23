@@ -1,7 +1,7 @@
 import * as React from "react";
 import type { JSX } from "react";
 import { TechnicalReadout } from "../../classes/technical-readout";
-import { ITroEquipmentCopy, ITroMake, ITroUnitAdapter, TroProductionKey, TRO_TEXT_SECTIONS } from "../../data/technical-readout-interfaces";
+import { ITroEquipmentCopy, ITroMake, ITroUnitAdapter, TroProductionKey, TRO_COMPONENT_LABELS, TRO_TEXT_SECTIONS } from "../../data/technical-readout-interfaces";
 
 const PRODUCTION_FIELDS: { key: TroProductionKey; label: string }[] = [
     { key: "manufacturer", label: "Manufacturer" },
@@ -113,7 +113,7 @@ export default class TechnicalReadoutSection extends React.Component<ITechnicalR
                 <fieldset>
                     <legend>Components</legend>
                     <p className="muted">One make each.</p>
-                    {[...rows, ...extraKeys.map((key) => ({ key, label: key }))].map((row) => (
+                    {[...rows, ...extraKeys.map((key) => ({ key, label: TRO_COMPONENT_LABELS[key] ?? key }))].map((row) => (
                         <div className="tro-field" key={row.key}>
                             <label htmlFor={`tro-component-${row.key}`}>{row.label}</label>
                             <input id={`tro-component-${row.key}`} type="text" value={tro.getComponent(row.key)}

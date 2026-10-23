@@ -4,6 +4,8 @@
 /** Largest file read, in characters; unit files run to a few tens of kilobytes. */
 export const MAX_BLK_FILE_LENGTH = 400000;
 const MAX_BLOCK_LINES = 400;
+/** Text markup MegaMek writes inside fluff blocks: a line holding only one of these is text, not a block tag. */
+const TEXT_MARKUP = /^<\s*\/?\s*(p|br|b|i|u|em|strong|ul|ol|li|div|span|h[1-6])(\s[^<>]*)?\/?\s*>$/i;
 
 export interface IBlkFile {
     /** The lines of each block, by its tag in lower case; a tag that appears again adds to the same block. */
@@ -17,6 +19,10 @@ export const parseBlkFile = (text: string): IBlkFile | null => {
     for (const rawLine of text.split(/\r?\n/)) {
         const line = rawLine.trim();
         if (!line || line.startsWith("#")) continue;
+        if (TEXT_MARKUP.test(line)) {
+            if (current !== null && blocks[current].length < MAX_BLOCK_LINES) blocks[current].push(line);
+            continue;
+        }
         const close = /^<\/([^<>]{1,80})>$/.exec(line);
         if (close) {
             current = null;

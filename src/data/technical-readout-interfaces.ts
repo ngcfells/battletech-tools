@@ -11,6 +11,12 @@ export const TRO_TEXT_SECTIONS: { key: TroTextKey; label: string }[] = [
     { key: "notes", label: "Notes" },
 ];
 
+/** Labels for component keys a unit type may have no row for (an imported make), by key. */
+export const TRO_COMPONENT_LABELS: Record<string, string> = {
+    chassis: "Chassis", engine: "Engine", armor: "Armor", structure: "Internal Structure", heatSinks: "Heat Sinks",
+    jumpJets: "Jump Jets", gyro: "Gyro", cockpit: "Cockpit", myomer: "Myomer", kfDrive: "K-F Drive",
+};
+
 export type TroProductionKey = "manufacturer" | "primaryFactory" | "communications" | "targeting";
 
 export interface ITroMake {

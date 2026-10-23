@@ -534,6 +534,23 @@ describe("MegaMek battle armor file import", () => {
         expect(suit.getBattleValue()).toBe(447);
     });
 
+    it("brings the file's Technical Readout fields across (TRO round 2, #78)", () => {
+        const { suit } = importBattleArmorBlk(`${BLK}<manufacturer>
+Olivetti Weaponry
+</manufacturer>
+<systemManufacturers>
+ARMOR:Ceres Arms
+JUMP_JET:Hellespont
+</systemManufacturers>
+<history>
+<p>First fielded in 2868.</p>
+</history>
+`);
+        expect(suit!.tro.getProduction("manufacturer")).toBe("Olivetti Weaponry");
+        expect([suit!.tro.getComponent("armor"), suit!.tro.getComponent("jumpJets")]).toEqual(["Ceres Arms", "Hellespont"]);
+        expect(suit!.tro.getText("battleHistory")).toBe("First fielded in 2868.");
+    });
+
     it("brings the file's quirks across, on the weapon it names", () => {
         const { suit, issues } = importBattleArmorBlk(`${BLK}<quirks>\nlow_profile\n</quirks>\n<weaponQuirks>\naccurate:Point:0:CLBASmall Laser\nstatic_feed:Point:1:ISPPC\n</weaponQuirks>\n`);
         const laser = suit!.getItems().find((item) => item.tag === "clan-small-laser")!;

@@ -41,7 +41,12 @@ test("the TechManual's Purifier can be built, checked, saved and printed", async
     await page.getByRole("button", { name: "Remove Small Laser" }).click();
     await expect(page.getByTestId("ba-issues")).toHaveCount(0);
 
-    await page.goto("classic-battletech/battle-armor-creator/summary");
+    await page.goto("classic-battletech/battle-armor-creator/loadouts");
+    await page.getByRole("link", { name: /Next: Technical Readout/ }).click();
+    await expect(page.getByText("Step 6: Technical Readout (optional)")).toBeVisible();
+    await page.getByLabel("Manufacturer", { exact: true }).fill("Achernar BattleMechs");
+    await expect(page.getByLabel("ER Small Laser (modular mount), Left Arm manufacturer")).toBeVisible();
+    await page.getByRole("link", { name: "Summary", exact: true }).click();
     await expect(page.getByTestId("ba-legal")).toBeVisible();
     await expect(page.getByText("Summary: Purifier")).toBeVisible();
     // TM p.311: 51.78 a suit, 466 for the Level I.

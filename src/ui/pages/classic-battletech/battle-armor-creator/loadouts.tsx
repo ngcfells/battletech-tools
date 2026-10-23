@@ -148,8 +148,8 @@ export default class BattleArmorCreatorLoadouts extends React.Component<ILoadout
 
                             <div className="clear-both overflow-hidden">
                                 <hr />
-                                <Link to={`${process.env.PUBLIC_URL}/classic-battletech/battle-armor-creator/summary`} className="btn btn-primary pull-right btn-sm">
-                                    Summary <ArrowCircleRight />
+                                <Link to={`${process.env.PUBLIC_URL}/classic-battletech/battle-armor-creator/technical-readout`} className="btn btn-primary pull-right btn-sm">
+                                    Next: Technical Readout <ArrowCircleRight />
                                 </Link>
                                 <Link to={`${process.env.PUBLIC_URL}/classic-battletech/battle-armor-creator/equipment`} className="btn btn-primary btn-sm"><ArrowCircleLeft /> Previous Step</Link>
                             </div>

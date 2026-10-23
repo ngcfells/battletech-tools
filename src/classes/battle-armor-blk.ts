@@ -4,6 +4,7 @@ import { BattleArmorTechBase, BattleArmorWeightClass, battleArmorManipulators } 
 import { findBattleArmorEquipment } from "../data/battle-armor-equipment";
 import { btEraOptions } from "../data/era-options";
 import { IBlkFile, blkLines, blkValue, parseBlkFile } from "../utils/blk-file";
+import { readBlkTechnicalReadout } from "../utils/blk-technical-readout";
 import BattleArmor, { BattleArmorArm, BattleArmorLocation, IBattleArmorMountedItem } from "./battle-armor";
 
 // Reads a MegaMek battle armor ".blk" file into a suit. The file names its equipment by MegaMek's lookup names;
@@ -387,5 +388,6 @@ export const importBattleArmorBlk = (text: string): IBattleArmorBlkImport => {
 
     // MegaMek's battle armor locations are the squad and its troopers, not arms and body: weapons match by name.
     applyBlkQuirks(file, suit, placed, issues);
+    suit.tro.import(readBlkTechnicalReadout(file));
     return { suit, issues };
 };
