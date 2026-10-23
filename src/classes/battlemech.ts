@@ -7204,14 +7204,14 @@ export class BattleMech {
             return this.getChassisMaxArmor();
         }
 
-    /** True when each torso's front and rear armor are capped apart, each at twice its boxes (Battledroids, BD p.25). */
+    /** True when each torso's front and rear armor are capped apart, each at twice its boxes (BD p.25, BT2 p.40, BTM p.80). */
     public torsoArmorSectionsApart(): boolean {
         return this.usesEarlierRulesEdition() && getRulesEdition(this._rulesEdition).torsoArmorSectionsApart === true;
     }
 
         private getChassisMaxArmor(torsoSections: number = this.torsoArmorSectionsApart() ? 2 : 1): number {
       // Dynamic fallback calculation: Head maximum is 9; Torso locations carry 2x internal structure, front and
-      // rear together, or each section apart under Battledroids (BD p.25)
+      // rear together, or each section apart through the BattleTech Manual (BD p.25, BT2 p.40, BTM p.80)
       let totalMaxArmor = 9 +
         (this._internalStructure.centerTorso * 2 * torsoSections) + 
         (this._internalStructure.leftTorso * 2 * torsoSections) + 
@@ -10361,7 +10361,7 @@ export class BattleMech {
             this._calc();
             return;
         }
-        // Shares are of the shared-cap maximum; above it (Battledroids' separate rear caps) the leftovers fill in
+        // Shares are of the shared-cap maximum; above it (the earliest editions' separate rear caps) the leftovers fill in
         const sharedMax = this.getChassisMaxArmor(1);
         const percentage = Math.min(1, remaining / sharedMax);
         const sectionsApart = this.torsoArmorSectionsApart();
@@ -10477,7 +10477,7 @@ export class BattleMech {
         };
         // Conditional multi-chassis segment processing
         if (this.torsoArmorSectionsApart()) {
-            // Battledroids caps the front and the rear apart, each at twice the boxes (BD p.25)
+            // The earliest editions cap the front and the rear apart, each at twice the boxes (BD p.25, BT2 p.40, BTM p.80)
             for (const torso of ["centerTorso", "leftTorso", "rightTorso"] as const) {
                 maxAllocation[torso] = (internalStructure[torso] || 0) * 2;
                 maxAllocation[`${torso}Rear`] = (internalStructure[torso] || 0) * 2;

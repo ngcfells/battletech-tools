@@ -180,8 +180,7 @@ describe("Rules edition selector", () => {
 
     // BD p.25: "the Armor Value may not be more than twice the number of internal structure boxes at that location",
     // over the Armor Diagram's 11 locations, the torsos "divided into sections for front armor and rear armor". The
-    // Master Rules Revised adds that front and rear together stay within twice the boxes (BMR(R) p.120), as in
-    // Total Warfare. The book's own Stinger, Wasp, Phoenix Hawk, Archer and Marauder fit only the Battledroids way.
+    // Compendium adds that front and rear together stay within twice the boxes (BTC p.113), as in Total Warfare. The book's own Stinger, Wasp, Phoenix Hawk, Archer and Marauder fit only the Battledroids way.
     it("caps a torso's front and rear armor apart under Battledroids", () => {
         const [droid, mech] = [build("battledroids", 60, 4), build("total-warfare", 60, 4)];
         // 60 tons: center torso 20 boxes, side torsos 14 (BD p.24; TM p.52).
@@ -219,6 +218,14 @@ describe("Rules edition selector", () => {
             expect(rear).toBeLessThanOrEqual(2 * boxes);
         }
         expect(sane.getTotalArmor()).toBeGreaterThan(mech.getMaxArmor());
+    });
+
+    // Read from the page images: the Second Edition (BT2 p.40) and the BattleTech Manual (BTM p.80) keep the
+    // Battledroids wording; the Compendium (BTC p.113) adds the shared cap, and every edition after it keeps it
+    // (BT3 p.43, BMR p.113, BTC:RoW p.102, BT4 p.44, BMR(R) p.120).
+    it("caps torso sections apart through the BattleTech Manual and together from the Compendium on", () => {
+        const apart = getSelectableRulesEditions().filter(edition => build(edition.tag, 60, 4).torsoArmorSectionsApart()).map(edition => edition.tag);
+        expect(apart).toEqual(["battledroids", "battletech-2nd-edition", "battletech-manual"]);
     });
 
     // Internal Structure Table, BD p.24: the boxes come from the edition's own table.

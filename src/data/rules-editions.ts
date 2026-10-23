@@ -83,7 +83,8 @@ export interface IRulesEdition {
     ammoTonsFor?: "launcher" | "class";
     /**
      * Each torso's front and rear armor sections are capped apart, each at twice the location's internal structure
-     * (BD p.25). Absent: front and rear together stay within twice the boxes (BMR(R) p.120; TM p.54).
+     * (BD p.25, BT2 p.40, BTM p.80). Absent: front and rear together stay within twice the boxes, from the
+     * Compendium on (BTC p.113, BT3 p.43, BMR p.113, BTC:RoW p.102, BT4 p.44, BMR(R) p.120; TM p.54).
      */
     torsoArmorSectionsApart?: boolean;
     /** Where the edition's game rules differ from Total Warfare's in what play mode works out; absent while not reviewed. */
@@ -170,6 +171,8 @@ export const btRulesEditions: IRulesEdition[] = [
         book: "BT2",
         complete: true,
         ammoTonsFor: "launcher",
+        // The Battledroids wording: 11 locations, each at twice its boxes (BT2 p.40).
+        torsoArmorSectionsApart: true,
         noBattleValue: true,
         noPrices: true,
         // BT2 pp.36-41, the fourteen record listings, and the training 'Mech of p.1.
@@ -193,6 +196,8 @@ export const btRulesEditions: IRulesEdition[] = [
         book: "BTM",
         complete: true,
         ammoTonsFor: "launcher",
+        // The Battledroids wording: eleven locations, each at twice its boxes (BTM p.80).
+        torsoArmorSectionsApart: true,
         noBattleValue: true,
         // A rulebook only: it prints no 'Mech record listings and names designs in passing (BTM pp.41, 74).
         mechs: [],
