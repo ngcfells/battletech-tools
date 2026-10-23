@@ -73,6 +73,7 @@ export function setLocalCustomEquipment(items: IEquipmentItem[]): void {
     localCustomEquipment = items.map((item) => ({ ...item, catalog: "custom" }));
     standardAmmoBases = null;
     standardRoundsByFamily = null;
+    weaponAmmoFamilies = new Map();
 }
 
 export function getLocalCustomEquipment(): IEquipmentItem[] {
@@ -218,14 +219,23 @@ export function isArtemisCapableLauncher(tag: string, suffix: string = "-artemis
 
 export const isArtemisIVCapableLauncher = (tag: string): boolean => isArtemisCapableLauncher(tag, "-artemis-iv");
 
+/**
+ * An item's Battle Value for a unit of the given tech option ("is", "clan", "mis", "mclan"): some items (Clan
+ * artillery) list a separate Clan value (TO:AUE p.197).
+ */
+export function getItemBattleValue(item: IEquipmentItem, techTag?: string): number {
+    const clan = techTag === "clan" || techTag === "mclan";
+    return (clan && item.battleValueClan !== undefined ? item.battleValueClan : item.battleValue) || 0;
+}
+
 /** A launcher's Battle Value with its Artemis system: the plain launcher's raised by the system's multiplier. */
-export function getArtemisLauncherBattleValue(item: IEquipmentItem, catalog: () => readonly IEquipmentItem[]): number {
+export function getArtemisLauncherBattleValue(item: IEquipmentItem, catalog: () => readonly IEquipmentItem[], techTag?: string): number {
     const system = ARTEMIS_FIRE_CONTROL.find(fireControl => item.tag.endsWith(fireControl.suffix));
     if (system) {
         const plain = catalog().find(candidate => candidate.tag === item.tag.slice(0, -system.suffix.length));
-        if (plain && (plain.battleValue || 0) > 0) return (plain.battleValue || 0) * system.battleValueMultiplier;
+        if (plain && getItemBattleValue(plain, techTag) > 0) return getItemBattleValue(plain, techTag) * system.battleValueMultiplier;
     }
-    return item.battleValue || 0;
+    return getItemBattleValue(item, techTag);
 }
 
 export function isOmniFixedOnly(item: IEquipmentItem): boolean {
@@ -360,7 +370,14 @@ export function getAmmoFamily(ammo: IEquipmentItem): string {
  * plus any family containing a record tagged `ammo-<weapon tag>` (the
  * historical per-weapon ammo tags kept in `altTags`).
  */
+// Families by weapon (keyed on the fields read below): the scan covers every ammunition record, and BV, sheets and the
+// catalog checks ask for the same weapons over and over.
+let weaponAmmoFamilies = new Map<string, string[]>();
+
 export function getWeaponAmmoFamilies(weapon: IEquipmentItem): string[] {
+    const key = JSON.stringify([weapon.tag, weapon.altTags ?? [], weapon.ammoTypes ?? [], !!weapon.isOneShot]);
+    const cached = weaponAmmoFamilies.get(key);
+    if (cached) return cached;
     const families = new Set<string>();
     const weaponIdentifiers = [weapon.tag, ...(weapon.altTags ?? [])].map(tag => `ammo-${tag}`);
     // One-shot launchers carry their single volley and take no canon ammunition bins;
@@ -374,7 +391,9 @@ export function getWeaponAmmoFamilies(weapon: IEquipmentItem): string[] {
             families.add(getAmmoFamily(ammo));
         }
     }
-    return Array.from(families);
+    const result = Array.from(families);
+    weaponAmmoFamilies.set(key, result);
+    return result;
 }
 
 export function getCompatibleAmmo(weapon: IEquipmentItem, ammo: IEquipmentItem): boolean {

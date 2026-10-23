@@ -10,7 +10,7 @@ import { mechEngineTypes } from "../data/mech-engine-types";
 import { mechHeatSinkTypes } from "../data/mech-heat-sink-types";
 import { btTechOptions } from "../data/tech-options";
 import { btEraOptions, findEraByTag, getClosestEraForTech, getErasForTech } from "../data/era-options";
-import { CUSTOM_HOMEBREW_RULES_LEVEL, getArtemisLauncherBattleValue, EXPERIMENTAL_RULES_LEVEL, getAmmoBattleValuePerTon, getBattleArmorScaleListByTech, getCompatibleAmmo, getEffectiveIntroduction, getEquipmentListByTech, getEquipmentRulesLevel, getEquipmentOfferIssue, getWeaponShotsPerTon, isEquipmentOffered } from "../data/equipment-registry";
+import { CUSTOM_HOMEBREW_RULES_LEVEL, getArtemisLauncherBattleValue, getItemBattleValue, EXPERIMENTAL_RULES_LEVEL, getAmmoBattleValuePerTon, getBattleArmorScaleListByTech, getCompatibleAmmo, getEffectiveIntroduction, getEquipmentListByTech, getEquipmentRulesLevel, getEquipmentOfferIssue, getWeaponShotsPerTon, isEquipmentOffered } from "../data/equipment-registry";
 import { getFractionalAerospaceArmorTonsPerPoint, getFractionalEngineWeight, roundUpToKilogram } from "../data/fractional-accounting";
 import { AlphaStrikeUnit, IASMULUnit } from "./alpha-strike-unit";
 import Pilot, { IPilot } from "./pilot";
@@ -1774,7 +1774,7 @@ export default class AerospaceFighter {
      * record, so the plain launcher's value is looked up and raised.
      */
     private _weaponBaseBV(item: IEquipmentItem): number {
-        return getArtemisLauncherBattleValue(item, () => this._catalog());
+        return getArtemisLauncherBattleValue(item, () => this._catalog(), this._tech.tag);
     }
 
     /** The Speed Factor for a Maximum Thrust (Speed Factor Table and formula, TM p.316). */
@@ -1837,7 +1837,7 @@ export default class AerospaceFighter {
         log += "<strong>OFFENSIVE BATTLE RATING</strong><br />";
         const hasTC = this.hasTargetingComputer();
         const offensiveWeapons = this._equipmentList.filter((item) => this._isWeapon(item));
-        const arcBV = (arc: FighterArc) => offensiveWeapons.filter((item) => item.location === arc).reduce((sum, item) => sum + (item.battleValue || 0), 0);
+        const arcBV = (arc: FighterArc) => offensiveWeapons.filter((item) => item.location === arc).reduce((sum, item) => sum + getItemBattleValue(item, this._tech.tag), 0);
         const halvedArc: FighterArc = arcBV("nose") < arcBV("aft") ? "nose" : "aft";
         const modifiedBV = (item: IEquipmentItem) => this._weaponBaseBV(item)
             * (hasTC && isTargetingComputerWeapon(item) ? 1.25 : 1) * (item.location === halvedArc ? 0.5 : 1);
@@ -1845,7 +1845,7 @@ export default class AerospaceFighter {
         let rating = 0;
         // Ammunition, capped at the unmodified value of the weapons of the model it feeds.
         const weaponBVByTag: Record<string, number> = {};
-        for (const item of offensiveWeapons) weaponBVByTag[item.tag] = (weaponBVByTag[item.tag] ?? 0) + (item.battleValue || 0);
+        for (const item of offensiveWeapons) weaponBVByTag[item.tag] = (weaponBVByTag[item.tag] ?? 0) + getItemBattleValue(item, this._tech.tag);
         const ammoBVByTag: Record<string, number> = {};
         for (const ammo of this._equipmentList.filter((item) => item.isAmmo)) {
             const fed = offensiveWeapons.find((weapon) => getCompatibleAmmo(weapon, ammo));
@@ -1934,14 +1934,14 @@ export default class AerospaceFighter {
 
         const hasTC = this.hasTargetingComputer();
         const offensiveWeapons = this._equipmentList.filter((item) => this._isWeapon(item));
-        const arcBV = (arc: FighterArc) => offensiveWeapons.filter((item) => item.location === arc).reduce((sum, item) => sum + (item.battleValue || 0), 0);
+        const arcBV = (arc: FighterArc) => offensiveWeapons.filter((item) => item.location === arc).reduce((sum, item) => sum + getItemBattleValue(item, this._tech.tag), 0);
         const halvedArc: FighterArc = arcBV("nose") < arcBV("aft") ? "nose" : "aft";
         let weaponBV = 0;
         const weaponBVByTag: Record<string, number> = {};
         for (const item of offensiveWeapons) {
             const value = this._weaponBaseBV(item) * (hasTC && isTargetingComputerWeapon(item) ? 1.25 : 1) * (item.location === halvedArc ? 0.5 : 1);
             weaponBV += value;
-            weaponBVByTag[item.tag] = (weaponBVByTag[item.tag] ?? 0) + (item.battleValue || 0);
+            weaponBVByTag[item.tag] = (weaponBVByTag[item.tag] ?? 0) + getItemBattleValue(item, this._tech.tag);
             log += `+ ${escapeLogText(item.name)} = ${value.toFixed(2)}${item.location === halvedArc ? " (weaker of nose and aft x 0.5)" : ""}<br />`;
         }
         const ammoBVByTag: Record<string, number> = {};

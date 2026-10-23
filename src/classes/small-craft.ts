@@ -7,7 +7,7 @@ import { aerospaceArmorTypes, getAerospaceArmorPointsPerTon } from "../data/aero
 import { mechHeatSinkTypes } from "../data/mech-heat-sink-types";
 import { btTechOptions } from "../data/tech-options";
 import { btEraOptions, findEraByTag, getClosestEraForTech, getErasForTech } from "../data/era-options";
-import { CUSTOM_HOMEBREW_RULES_LEVEL, getArtemisLauncherBattleValue, EXPERIMENTAL_RULES_LEVEL, getAmmoBattleValuePerTon, getBattleArmorScaleListByTech, getCompatibleAmmo, getEffectiveIntroduction, getEquipmentListByTech, getEquipmentRulesLevel, getWeaponShotsPerTon, isEquipmentOffered } from "../data/equipment-registry";
+import { CUSTOM_HOMEBREW_RULES_LEVEL, getArtemisLauncherBattleValue, getItemBattleValue, EXPERIMENTAL_RULES_LEVEL, getAmmoBattleValuePerTon, getBattleArmorScaleListByTech, getCompatibleAmmo, getEffectiveIntroduction, getEquipmentListByTech, getEquipmentRulesLevel, getWeaponShotsPerTon, isEquipmentOffered } from "../data/equipment-registry";
 import { getFractionalAerospaceArmorTonsPerPoint, roundUpToKilogram } from "../data/fractional-accounting";
 import Pilot, { IPilot } from "./pilot";
 import { getSkillMultiplier } from "../data/skill-multipliers";
@@ -1300,7 +1300,7 @@ export default class SmallCraft {
 
     /** A launcher with Artemis IV counts 20 percent more than the plain launcher (TM p.312), with Artemis V 30 percent (TO:AUE p.197). */
     private _weaponBaseBV(item: IEquipmentItem): number {
-        return getArtemisLauncherBattleValue(item, () => this._catalog());
+        return getArtemisLauncherBattleValue(item, () => this._catalog(), this._tech.tag);
     }
 
     /** The Speed Factor for a Maximum Thrust (Speed Factor Table and formula, TM p.316). */
@@ -1369,7 +1369,7 @@ export default class SmallCraft {
         const rearArcs: string[] = this.isAerodyne() ? ["aft", "leftAft", "rightAft"] : ["aft"];
         const isRear = (item: IEquipmentItem) => rearArcs.includes(item.location ?? "");
         const groupBV = (rear: boolean) => offensiveWeapons.filter((item) => (rear ? isRear(item) : item.location === "nose"))
-            .reduce((sum, item) => sum + (item.battleValue || 0), 0);
+            .reduce((sum, item) => sum + getItemBattleValue(item, this._tech.tag), 0);
         const rearHalved = groupBV(false) >= groupBV(true);
         const isHalved = (item: IEquipmentItem) => (rearHalved ? isRear(item) : item.location === "nose");
         const modifiedBV = (item: IEquipmentItem) => this._weaponBaseBV(item)
@@ -1383,7 +1383,7 @@ export default class SmallCraft {
         } else {
             // Ammunition, capped at the unmodified value of the weapons of the model it feeds.
             const weaponBVByTag: Record<string, number> = {};
-            for (const item of offensiveWeapons) weaponBVByTag[item.tag] = (weaponBVByTag[item.tag] ?? 0) + (item.battleValue || 0);
+            for (const item of offensiveWeapons) weaponBVByTag[item.tag] = (weaponBVByTag[item.tag] ?? 0) + getItemBattleValue(item, this._tech.tag);
             const ammoBVByTag: Record<string, number> = {};
             for (const ammo of this._equipmentList.filter((item) => item.isAmmo)) {
                 const fed = offensiveWeapons.find((weapon) => getCompatibleAmmo(weapon, ammo));
@@ -1478,7 +1478,7 @@ export default class SmallCraft {
         }
         // Ammunition, capped at the unmodified value of the weapons of the model it feeds, then given to arcs.
         const weaponBVByTag: Record<string, number> = {};
-        for (const item of offensiveWeapons) weaponBVByTag[item.tag] = (weaponBVByTag[item.tag] ?? 0) + (item.battleValue || 0);
+        for (const item of offensiveWeapons) weaponBVByTag[item.tag] = (weaponBVByTag[item.tag] ?? 0) + getItemBattleValue(item, this._tech.tag);
         const ammoBVByTag: Record<string, number> = {};
         const ammoArcBV: Record<string, number> = {};
         for (const ammo of this._equipmentList.filter((item) => item.isAmmo)) {
@@ -1488,7 +1488,7 @@ export default class SmallCraft {
         for (const [tag, value] of Object.entries(ammoBVByTag)) {
             const capped = Math.min(value, weaponBVByTag[tag] ?? 0);
             for (const item of offensiveWeapons.filter((weapon) => weapon.tag === tag && (weapon.location ?? "") in arcBV)) {
-                const share = weaponBVByTag[tag] > 0 ? (item.battleValue || 0) / weaponBVByTag[tag] : 0;
+                const share = weaponBVByTag[tag] > 0 ? getItemBattleValue(item, this._tech.tag) / weaponBVByTag[tag] : 0;
                 ammoArcBV[item.location as string] = (ammoArcBV[item.location as string] ?? 0) + capped * share;
             }
             log += `Ammunition for ${escapeLogText(tag)} = ${capped.toFixed(2)}${capped < value ? " (capped at weapon BV)" : ""}, with the arcs of its weapons<br />`;

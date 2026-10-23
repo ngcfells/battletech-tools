@@ -11,7 +11,7 @@ import SmallCraft from "./small-craft";
 import Pilot, { IPilot } from "./pilot";
 import { getSkillMultiplier } from "../data/skill-multipliers";
 import { CAPITAL_MISSILE_CRITICAL_CHANCE, CAPITAL_SHIP_CRITICAL_NAMES, CapitalShipAttackDirection, ICapitalShipHit, getCapitalShipHitLocation } from "../data/capital-ship-hit-tables";
-import { CUSTOM_HOMEBREW_RULES_LEVEL, getArtemisLauncherBattleValue, getAmmoBattleValuePerTon, getCompatibleAmmo, getEquipmentRulesLevel, getEffectiveIntroduction, getEquipmentListByTech, getWeaponShotsPerTon, isEquipmentOffered } from "../data/equipment-registry";
+import { CUSTOM_HOMEBREW_RULES_LEVEL, getArtemisLauncherBattleValue, getItemBattleValue, getAmmoBattleValuePerTon, getCompatibleAmmo, getEquipmentRulesLevel, getEffectiveIntroduction, getEquipmentListByTech, getWeaponShotsPerTon, isEquipmentOffered } from "../data/equipment-registry";
 import { findByTag } from "../data/tag-match";
 import { sizeDroneSystems } from "../data/variable-equipment";
 import { IWeaponBay, capitalBayWeapon, groupWeaponBays, standardBayWeapon } from "../data/weapon-bays";
@@ -1202,7 +1202,7 @@ export default class CapitalShip {
 
     /** A launcher with Artemis IV counts 20 percent more than the plain launcher (TM p.312), with Artemis V 30 percent (TO:AUE p.197). */
     private _weaponBaseBV(item: IEquipmentItem): number {
-        return getArtemisLauncherBattleValue(item, () => this._catalog());
+        return getArtemisLauncherBattleValue(item, () => this._catalog(), this._tech.tag);
     }
 
     /**
@@ -1268,7 +1268,7 @@ export default class CapitalShip {
         }
         // Ammunition, capped at the unmodified BV of the weapons of its model, shared among their arcs.
         const weaponBVByTag: Record<string, number> = {};
-        for (const item of weapons) weaponBVByTag[item.tag] = (weaponBVByTag[item.tag] ?? 0) + (item.battleValue || 0);
+        for (const item of weapons) weaponBVByTag[item.tag] = (weaponBVByTag[item.tag] ?? 0) + getItemBattleValue(item, this._tech.tag);
         const ammoBVByTag: Record<string, number> = {};
         for (const ammo of this._equipmentList.filter((item) => item.isAmmo)) {
             const fed = weapons.find((weapon) => getCompatibleAmmo(weapon, ammo));
@@ -1277,7 +1277,7 @@ export default class CapitalShip {
         for (const [tag, value] of Object.entries(ammoBVByTag)) {
             const capped = Math.min(value, weaponBVByTag[tag] ?? 0);
             for (const item of weapons.filter((weapon) => weapon.tag === tag)) {
-                arcAmmoBV[item.location as string] += weaponBVByTag[tag] > 0 ? capped * (item.battleValue || 0) / weaponBVByTag[tag] : 0;
+                arcAmmoBV[item.location as string] += weaponBVByTag[tag] > 0 ? capped * getItemBattleValue(item, this._tech.tag) / weaponBVByTag[tag] : 0;
             }
             log += `Ammunition for ${escapeLogText(tag)} = ${capped.toFixed(2)}${capped < value ? " (capped at weapon BV)" : ""}, with the arcs of its weapons<br />`;
         }
