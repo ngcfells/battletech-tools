@@ -100,6 +100,9 @@ describe("Classic roster Master Unit List search", () => {
             </MemoryRouter>
         );
         const add = await screen.findByRole("button", { name: "Add " + champion.getChassisName() + " " + champion.getModelName() }, { timeout: 20_000 });
+        fireEvent.click(screen.getByRole("button", { name: "TRO " + champion.getChassisName() + " " + champion.getModelName() }));
+        expect(screen.getByRole("heading", { name: /^Technical Readout: / })).toBeTruthy();
+        fireEvent.click(screen.getAllByRole("button", { name: /^(Cancel|Close)$/ })[0]);
         fireEvent.click(add);
         expect(onChange).toHaveBeenCalledTimes(1);
         const group: BattleMechGroup = onChange.mock.calls[0][0];
@@ -158,6 +161,9 @@ describe("Classic roster Master Unit List search", () => {
             const view = (await screen.findAllByRole("button", { name: "View " + getMULDisplayName(hit) }, { timeout: 20_000 }))[0];
             fireEvent.click(view);
             expect(screen.getByRole("heading", { name: /^Viewing / })).toBeTruthy();
+            fireEvent.click(screen.getAllByRole("button", { name: /^(Cancel|Close)$/ })[0]);
+            fireEvent.click((await screen.findAllByRole("button", { name: "TRO " + getMULDisplayName(hit) }))[0]);
+            expect(screen.getByRole("heading", { name: /^Technical Readout: / })).toBeTruthy();
             fireEvent.click(screen.getAllByRole("button", { name: /^(Cancel|Close)$/ })[0]);
             const add = (await screen.findAllByRole("button", { name: "Add " + getMULDisplayName(hit) }, { timeout: 20_000 }))[0];
             fireEvent.click(add);

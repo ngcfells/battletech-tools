@@ -1,4 +1,6 @@
 import { generateUUID } from "../utils/generateUUID";
+import { TechnicalReadout } from "./technical-readout";
+import type { ITechnicalReadoutExport } from "../data/technical-readout-interfaces";
 import { IAssignedQuirk, IQuirkTargets, QuirkUnitType } from "../data/quirk-interfaces";
 import { getQuirkIssues, getQuirkTargets } from "../data/quirk-registry";
 import { QuirkList } from "./quirk-list";
@@ -214,6 +216,7 @@ export interface IAerospaceFighterExport {
     /** The rules edition it is built under (rules-editions.ts); absent means Total Warfare. */
     rulesEdition?: string;
     uuid: string;
+    tro?: ITechnicalReadoutExport;
     quirks?: IAssignedQuirk[];
     lastUpdated: Date;
     name: string;
@@ -306,6 +309,7 @@ export default class AerospaceFighter {
     public static readonly PATCHWORK_ARMOR_TAG = "patchwork";
 
     private _uuid: string = generateUUID();
+    public tro: TechnicalReadout = new TechnicalReadout();
 
     /** The design quirks assigned to this unit (quirk tables, Campaign Operations pp.228 and 232). */
     public quirks: QuirkList = new QuirkList();
@@ -2650,6 +2654,7 @@ export default class AerospaceFighter {
                 },
             }),
             uuid: this._uuid,
+            tro: this.tro.export(),
             quirks: this.quirks.export(),
             lastUpdated: this.lastUpdated,
             name: this._name,
@@ -2774,6 +2779,7 @@ export default class AerospaceFighter {
             }
             const saved = parsed as Partial<Record<keyof IAerospaceFighterExport, unknown>>;
             this._uuid = savedString(saved.uuid).slice(0, 100) || generateUUID();
+            this.tro.import(saved.tro);
             this.quirks.import(saved.quirks);
             const updated = typeof saved.lastUpdated === "string" || typeof saved.lastUpdated === "number" ? new Date(saved.lastUpdated) : new Date();
             this.lastUpdated = Number.isNaN(updated.getTime()) ? new Date() : updated;

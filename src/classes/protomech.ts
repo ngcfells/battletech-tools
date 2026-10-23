@@ -1,4 +1,6 @@
 import { generateUUID } from "../utils/generateUUID";
+import { TechnicalReadout } from "./technical-readout";
+import type { ITechnicalReadoutExport } from "../data/technical-readout-interfaces";
 import { DEFAULT_RULES_EDITION, getSelectableRulesEditionTag } from "../data/rules-editions";
 import { IEquipmentItem, IEras } from "../data/data-interfaces";
 import { btEraOptions, findEraByTag, getErasForTech } from "../data/era-options";
@@ -134,6 +136,7 @@ export interface IProtoMechExport {
     /** FrankenProto (Custom Homebrew): each location's donor; present only on a FrankenProto. */
     frankenProto?: Partial<Record<FrankenProtoLocation, IFrankenProtoDonor>>;
     uuid: string;
+    tro?: ITechnicalReadoutExport;
     name: string;
     tons: number;
     chassis: ProtoMechChassis;
@@ -257,6 +260,7 @@ export default class ProtoMech {
     public lastUpdated: Date = new Date();
 
     private _uuid: string = generateUUID();
+    public tro: TechnicalReadout = new TechnicalReadout();
     private _name: string = "";
     private _rulesEdition: string = DEFAULT_RULES_EDITION;
     private _tons: number = 5;
@@ -1427,6 +1431,7 @@ export default class ProtoMech {
         const data: IProtoMechExport = {
             version: 1,
             uuid: this._uuid,
+            tro: this.tro.export(),
             name: this._name,
             ...(this._rulesEdition !== DEFAULT_RULES_EDITION ? { rulesEdition: this._rulesEdition } : {}),
             tons: this._tons,
@@ -1457,6 +1462,7 @@ export default class ProtoMech {
         if (!data || typeof data !== "object" || typeof data.tons !== "number") return false;
         this._importIssues = [];
         this._uuid = typeof data.uuid === "string" && data.uuid ? data.uuid.slice(0, 64) : generateUUID();
+        this.tro.import(data.tro);
         this.setName(typeof data.name === "string" ? data.name : "");
         this._rulesEdition = getSelectableRulesEditionTag(data.rulesEdition, "protomech");
         this._chassis = CHASSIS_TAGS.includes(data.chassis) ? data.chassis : "biped";

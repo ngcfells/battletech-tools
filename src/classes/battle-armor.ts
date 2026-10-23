@@ -1,4 +1,6 @@
 import { generateUUID } from "../utils/generateUUID";
+import { TechnicalReadout } from "./technical-readout";
+import type { ITechnicalReadoutExport } from "../data/technical-readout-interfaces";
 import { IAssignedQuirk, IQuirkTargets, QuirkUnitType } from "../data/quirk-interfaces";
 import { getQuirkIssues, getQuirkTargets } from "../data/quirk-registry";
 import { QuirkList } from "./quirk-list";
@@ -206,6 +208,7 @@ export interface IBattleArmorExport {
     /** The rules edition it is built under (rules-editions.ts); absent means Total Warfare. */
     rulesEdition?: string;
     uuid: string;
+    tro?: ITechnicalReadoutExport;
     quirks?: IAssignedQuirk[];
     lastUpdated: string;
     name: string;
@@ -286,6 +289,7 @@ export const normalizeBattleArmorExport = (raw: unknown): { suit: IBattleArmorEx
 
 export default class BattleArmor {
     private _uuid: string = generateUUID();
+    public tro: TechnicalReadout = new TechnicalReadout();
 
     /** The design quirks assigned to this unit (quirk tables, Campaign Operations pp.228 and 232). */
     public quirks: QuirkList = new QuirkList();
@@ -1955,6 +1959,7 @@ export default class BattleArmor {
         return {
             ...(inPlay ? { inPlay } : {}),
             uuid: this._uuid,
+            tro: this.tro.export(),
             quirks: this.quirks.export(),
             lastUpdated: this.lastUpdated.toISOString(),
             name: this._name,
@@ -2003,6 +2008,7 @@ export default class BattleArmor {
 
         const uuid = savedString(raw.uuid);
         if (/^[0-9a-zA-Z-]{8,64}$/.test(uuid)) this._uuid = uuid;
+        this.tro.import(raw.tro);
         this.quirks.import(raw.quirks);
         const updated = new Date(savedString(raw.lastUpdated));
         if (!Number.isNaN(updated.getTime())) this.lastUpdated = updated;

@@ -1,4 +1,6 @@
 import { generateUUID } from "../utils/generateUUID";
+import { TechnicalReadout } from "./technical-readout";
+import type { ITechnicalReadoutExport } from "../data/technical-readout-interfaces";
 import { IAssignedQuirk, IQuirkTargets, QuirkUnitType } from "../data/quirk-interfaces";
 import { getQuirkIssues, getQuirkTargets } from "../data/quirk-registry";
 import { QuirkList } from "./quirk-list";
@@ -470,6 +472,7 @@ export interface IVehicleExport {
     /** The rules edition it is built under (rules-editions.ts); absent means Total Warfare. */
     rulesEdition?: string;
     uuid: string;
+    tro?: ITechnicalReadoutExport;
     quirks?: IAssignedQuirk[];
     lastUpdated: Date;
     name: string;
@@ -587,6 +590,7 @@ export const VEHICLE_JUMP_JET_INTRODUCED = 3083;
 
 export default class Vehicle {
     private _uuid: string = generateUUID();
+    public tro: TechnicalReadout = new TechnicalReadout();
 
     /** The design quirks assigned to this unit (quirk tables, Campaign Operations pp.228 and 232). */
     public quirks: QuirkList = new QuirkList();
@@ -4835,6 +4839,7 @@ export default class Vehicle {
     public export(noInPlayVariables: boolean = false): IVehicleExport {
         return {
             uuid: this._uuid,
+            tro: this.tro.export(),
             lastUpdated: this.lastUpdated,
             quirks: this.quirks.export(),
             name: this._name,
@@ -4962,6 +4967,7 @@ export default class Vehicle {
                 return savedString(value);
             };
             this._uuid = savedString(importObject.uuid) || generateUUID();
+            this.tro.import(importObject.tro);
             this.quirks.import(importObject.quirks);
             const updated = typeof importObject.lastUpdated === "string" || typeof importObject.lastUpdated === "number"
                 ? new Date(importObject.lastUpdated) : new Date();

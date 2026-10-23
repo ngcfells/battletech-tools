@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { FaCheckCircle, FaEye, FaPlusCircle, FaTimesCircle } from 'react-icons/fa';
+import { FaBook, FaCheckCircle, FaEye, FaPlusCircle, FaTimesCircle } from 'react-icons/fa';
 import { Link } from "react-router";
 import { getMULDisplayName, IASMULUnit } from '../../../../classes/alpha-strike-unit';
 import { BattleMech } from '../../../../classes/battlemech';
@@ -16,6 +16,11 @@ import FighterRecordSheet from '../../../components/fighter-record-sheet';
 import InfantryRecordSheet from '../../../components/infantry-record-sheet';
 import ProtoMechRecordSheet from '../../../components/protomech-record-sheet';
 import VehicleRecordSheet from '../../../components/vehicle-record-sheet';
+import TechnicalReadoutSheet from '../../../components/technical-readout-sheet';
+import { getBattleMechTroAdapter } from '../../../../classes/battlemech-tro';
+import { getUnitTroAdapter } from '../../../../classes/unit-tro';
+import type { TechnicalReadout } from '../../../../classes/technical-readout';
+import type { ITroUnitAdapter } from '../../../../data/technical-readout-interfaces';
 import { buildClassicDesignIndex, ClassicDesignIndex, findClassicDesign, getClassicMechEntries, getClassicUnitEntries } from '../../../../utils/classicMULMatch';
 import { IMULSearchFilters } from '../../../../utils/mulSearchFilters';
 import { getMULEraLabel } from '../../../../utils/mulUtilities';
@@ -32,6 +37,7 @@ import BattleMechTableGroup from './_tableGroup';
 import type { JSX } from "react";
 const CheckCircle = FaCheckCircle as any;
 const Eye = FaEye as any;
+const Book = FaBook as any;
 const PlusCircle = FaPlusCircle as any;
 const TimesCircle = FaTimesCircle as any;
 
@@ -74,6 +80,7 @@ export default class BattleMechAddMechDialog extends React.Component<IBattleMech
         this.state = {
             viewingUnit: null,
             viewingOther: null,
+            viewingTRO: null,
             updated: false,
             mulResults: [],
             mulPage: 0,
@@ -156,6 +163,12 @@ export default class BattleMechAddMechDialog extends React.Component<IBattleMech
             this.props.onChange( this.props.currentForce );
             this.setState({ viewingOther: null });
         }
+    }
+
+    viewTRO = ( e: React.FormEvent<HTMLButtonElement>, design: BattleMech | ClassicMULUnit ): void => {
+        e.preventDefault();
+        const adapter = design instanceof BattleMech ? getBattleMechTroAdapter( design ) : getUnitTroAdapter( design );
+        this.setState({ viewingTRO: { title: design.getName(), tro: design.tro, adapter } });
     }
 
     viewOtherUnit = ( e: React.FormEvent<HTMLButtonElement>, kind: IClassicMULKind, design: ClassicMULUnit ): void => {
@@ -336,6 +349,7 @@ export default class BattleMechAddMechDialog extends React.Component<IBattleMech
                             {design ? (
                                 <>
                                     <button className='btn btn-sm btn-primary' onClick={e => this.viewUnit(e, design)} title={"View " + design.getName()}><Eye /></button>
+                                    <button className='btn btn-sm btn-primary' onClick={e => this.viewTRO(e, design)} title={"Technical Readout of " + design.getName()} aria-label={"TRO " + getMULDisplayName( unit )}><Book /></button>
                                     <button className='btn btn-sm btn-primary' onClick={e => this.importUnit(e, design)} title={"Add " + design.getName() + " to this group"} aria-label={"Add " + getMULDisplayName( unit )}><PlusCircle /></button>
                                 </>
                             ) : (
@@ -366,6 +380,7 @@ export default class BattleMechAddMechDialog extends React.Component<IBattleMech
                     {design ? (
                         <>
                         <button className='btn btn-sm btn-primary' onClick={e => this.viewOtherUnit(e, kind, design)} title={"View " + design.getName()} aria-label={"View " + getMULDisplayName( unit )}><Eye /></button>
+                        <button className='btn btn-sm btn-primary' onClick={e => this.viewTRO(e, design)} title={"Technical Readout of " + design.getName()} aria-label={"TRO " + getMULDisplayName( unit )}><Book /></button>
                         <button className='btn btn-sm btn-primary' onClick={e => this.importOtherUnit(e, kind, design)} title={"Add " + design.getName() + " to this group"} aria-label={"Add " + getMULDisplayName( unit )}><PlusCircle /></button>
                         </>
                     ) : (
@@ -380,8 +395,19 @@ export default class BattleMechAddMechDialog extends React.Component<IBattleMech
 
     render = (): JSX.Element => {
         const viewingOther = this.state.viewingOther;
+        const viewingTRO = this.state.viewingTRO;
         return(
 <>
+{viewingTRO ? (
+    <StandardModal
+        show={true}
+        onClose={() => this.setState({ viewingTRO: null })}
+        className="modal modal-xl"
+    >
+        <h3 className="text-center">Technical Readout: {viewingTRO.title}</h3>
+        <TechnicalReadoutSheet tro={viewingTRO.tro} adapter={viewingTRO.adapter} />
+    </StandardModal>
+) : null}
 {viewingOther ? (
     <StandardModal
         show={true}
@@ -637,6 +663,7 @@ interface IBattleMechAddMechDialogState {
     updated: boolean;
     mulResults: IASMULUnit[];
     viewingOther: { kind: IClassicMULKind; design: ClassicMULUnit } | null;
+    viewingTRO: { title: string; tro: TechnicalReadout; adapter: ITroUnitAdapter } | null;
     mulPage: number;
     mulSearching: boolean;
 }

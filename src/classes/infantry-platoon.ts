@@ -1,4 +1,6 @@
 import { generateUUID } from "../utils/generateUUID";
+import { TechnicalReadout } from "./technical-readout";
+import type { ITechnicalReadoutExport } from "../data/technical-readout-interfaces";
 import { IInfantryWeapon, INFANTRY_MAX_PRIMARY_DAMAGE, INFANTRY_SUPPORT_PPC_TAG, findInfantryWeapon, infantryWeapons, isInfantryWeaponAvailable } from "../data/infantry-weapons";
 import { btEraOptions, findEraByTag, getErasForTech } from "../data/era-options";
 import { IEras } from "../data/data-interfaces";
@@ -174,6 +176,7 @@ export interface IInfantryPlatoonExport {
     /** The rules edition it is built under (rules-editions.ts); absent means Total Warfare. */
     rulesEdition?: string;
     uuid: string;
+    tro?: ITechnicalReadoutExport;
     lastUpdated: string;
     name: string;
     techBase: InfantryTechBase;
@@ -228,6 +231,7 @@ export const normalizeInfantryPlatoonExport = (raw: unknown): { platoon: IInfant
 
 export default class InfantryPlatoon {
     private _uuid: string = generateUUID();
+    public tro: TechnicalReadout = new TechnicalReadout();
     public lastUpdated: Date = new Date();
 
     private _name: string = "";
@@ -1036,6 +1040,7 @@ export default class InfantryPlatoon {
         return {
             ...(inPlay ? { inPlay } : {}),
             uuid: this._uuid,
+            tro: this.tro.export(),
             lastUpdated: this.lastUpdated.toISOString(),
             name: this._name,
             ...(this._rulesEdition !== DEFAULT_RULES_EDITION ? { rulesEdition: this._rulesEdition } : {}),
@@ -1074,6 +1079,7 @@ export default class InfantryPlatoon {
 
         const uuid = savedString(raw.uuid);
         if (/^[0-9a-zA-Z-]{8,64}$/.test(uuid)) this._uuid = uuid;
+        this.tro.import(raw.tro);
         const updated = new Date(savedString(raw.lastUpdated));
         if (!Number.isNaN(updated.getTime())) this.lastUpdated = updated;
         this.setName(savedString(raw.name));
