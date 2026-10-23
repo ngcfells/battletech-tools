@@ -9,16 +9,17 @@ const isObject = (value: unknown): value is Record<string, unknown> => typeof va
 
 const cleanMake = (make: ITroMake | undefined): ITroMake => {
     const result: ITroMake = {};
-    const manufacturer = make?.manufacturer?.trim();
-    const model = make?.model?.trim();
-    if (manufacturer) {
-        result.manufacturer = manufacturer;
+    // Kept as typed (a space typed between two words must survive); blank means none. Export trims.
+    if (make?.manufacturer?.trim()) {
+        result.manufacturer = make.manufacturer;
     }
-    if (model) {
-        result.model = model;
+    if (make?.model?.trim()) {
+        result.model = make.model;
     }
     return result;
 };
+
+const trimMake = (make: ITroMake): ITroMake => cleanMake({ manufacturer: make.manufacturer?.trim(), model: make.model?.trim() });
 
 const makeIsEmpty = (make: ITroMake): boolean => !make.manufacturer && !make.model;
 
@@ -194,7 +195,7 @@ export class TechnicalReadout {
         const groups: { count: number; text: string }[] = [];
         for (const copy of copies.filter((candidate) => candidate.armament !== false)) {
             const make = this.getCopyMake(copy.tag, copy.uuid);
-            const makeText = [make.manufacturer, make.model].filter(Boolean).join(" ");
+            const makeText = [make.manufacturer?.trim(), make.model?.trim()].filter(Boolean).join(" ");
             const name = normalize(makeText).includes(normalize(copy.name)) ? "" : copy.name;
             const text = [makeText, name].filter(Boolean).join(" ");
             const group = groups.find((candidate) => candidate.text === text);
@@ -226,12 +227,12 @@ export class TechnicalReadout {
         }
         const equipment: Record<string, ITroEquipmentMake> = {};
         for (const [tag, entry] of Object.entries(this._equipment)) {
-            const out: ITroEquipmentMake = cleanMake(entry);
+            const out: ITroEquipmentMake = trimMake(entry);
             if (entry.mixed) {
                 out.mixed = true;
                 const copyEntries = Object.entries(entry.copies ?? {}).filter(([, make]) => !makeIsEmpty(cleanMake(make)));
                 if (copyEntries.length) {
-                    out.copies = Object.fromEntries(copyEntries.map(([uuid, make]) => [uuid, cleanMake(make)]));
+                    out.copies = Object.fromEntries(copyEntries.map(([uuid, make]) => [uuid, trimMake(make)]));
                 }
             }
             if (Object.keys(out).length) {
