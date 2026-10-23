@@ -8,7 +8,7 @@ Be sure to join our [Discord](https://discord.gg/U539K45v8U) and talk to other d
 
 ## Development
 
-Want to contribute? The app is a Vite + React + TypeScript PWA. You need **Node.js 26** (22.22+ and 24 also work) and
+Want to contribute? The app is a Vite + React + TypeScript single-page app (SPA). You need **Node.js 26** (22.22+ and 24 also work) and
 Git. Everything else is installed by npm into the project folder. The same steps work on Windows, macOS, Linux and
 Android.
 
@@ -143,7 +143,7 @@ these jobs:
 
 ### Technology
 
-PWA application using TypeScript and React, built with Vite and tested with Vitest and Playwright.
+Single-page application (SPA) using TypeScript and React, built with Vite and tested with Vitest and Playwright.
 
 ### Current Contributors
 
