@@ -11,6 +11,11 @@ import InfantryPlatoon from '../../../../classes/infantry-platoon';
 import ProtoMech from '../../../../classes/protomech';
 import Vehicle from '../../../../classes/vehicle';
 import { ARTVEE_SAMPLES } from '../../../../data/artvee-samples';
+import BattleArmorRecordSheet from '../../../components/battle-armor-record-sheet';
+import FighterRecordSheet from '../../../components/fighter-record-sheet';
+import InfantryRecordSheet from '../../../components/infantry-record-sheet';
+import ProtoMechRecordSheet from '../../../components/protomech-record-sheet';
+import VehicleRecordSheet from '../../../components/vehicle-record-sheet';
 import { buildClassicDesignIndex, ClassicDesignIndex, findClassicDesign, getClassicMechEntries, getClassicUnitEntries } from '../../../../utils/classicMULMatch';
 import { IMULSearchFilters } from '../../../../utils/mulSearchFilters';
 import { getMULEraLabel } from '../../../../utils/mulUtilities';
@@ -39,6 +44,8 @@ interface IClassicMULKind {
     load: (json: string) => ClassicMULUnit;
     // Designs that ship with the app, matched after the user's saves (like the Skunk Werks 'Mechs).
     bundled?: () => object[];
+    // The blank record sheet the View button shows, drawn by the same components as Print Force.
+    sheet: (unit: ClassicMULUnit) => JSX.Element;
     table: "vehicles" | "fighters" | "infantry" | "battleArmor" | "protoMechs";
 }
 
@@ -46,11 +53,11 @@ interface IClassicMULKind {
 // other types match saved designs and go into their own table in the group.
 const CBT_MUL_MECH_TYPE_IDS = [18, 20];
 const CBT_MUL_KINDS: IClassicMULKind[] = [
-    { typeIDs: [19, 24], creator: "vehicle-creator", saves: (g) => g.vehicleSaves, load: (json) => new Vehicle( json ), table: "vehicles", bundled: () => ARTVEE_SAMPLES.map( (sample) => sample.save ) },
-    { typeIDs: [17], creator: "fighter-creator", saves: (g) => g.fighterSaves, load: (json) => new AerospaceFighter( json ), table: "fighters" },
-    { typeIDs: [21], creator: "infantry-creator", saves: (g) => g.infantrySaves, load: (json) => new InfantryPlatoon( json ), table: "infantry" },
-    { typeIDs: [22], creator: "battle-armor-creator", saves: (g) => g.battleArmorSaves, load: (json) => new BattleArmor( json ), table: "battleArmor" },
-    { typeIDs: [23], creator: "protomech-creator", saves: (g) => g.protoMechSaves, load: (json) => new ProtoMech( json ), table: "protoMechs" },
+    { typeIDs: [19, 24], creator: "vehicle-creator", saves: (g) => g.vehicleSaves, load: (json) => new Vehicle( json ), table: "vehicles", sheet: (unit) => <VehicleRecordSheet vehicle={unit as Vehicle} />, bundled: () => ARTVEE_SAMPLES.map( (sample) => sample.save ) },
+    { typeIDs: [17], creator: "fighter-creator", saves: (g) => g.fighterSaves, load: (json) => new AerospaceFighter( json ), table: "fighters", sheet: (unit) => <FighterRecordSheet fighter={unit as AerospaceFighter} /> },
+    { typeIDs: [21], creator: "infantry-creator", saves: (g) => g.infantrySaves, load: (json) => new InfantryPlatoon( json ), table: "infantry", sheet: (unit) => <InfantryRecordSheet platoons={[unit as InfantryPlatoon]} /> },
+    { typeIDs: [22], creator: "battle-armor-creator", saves: (g) => g.battleArmorSaves, load: (json) => new BattleArmor( json ), table: "battleArmor", sheet: (unit) => <BattleArmorRecordSheet squads={[unit as BattleArmor]} /> },
+    { typeIDs: [23], creator: "protomech-creator", saves: (g) => g.protoMechSaves, load: (json) => new ProtoMech( json ), table: "protoMechs", sheet: (unit) => <ProtoMechRecordSheet proto={unit as ProtoMech} /> },
 ];
 const CBT_MUL_TYPE_IDS = CBT_MUL_MECH_TYPE_IDS.concat( ...CBT_MUL_KINDS.map( (kind) => kind.typeIDs ) );
 const MUL_RESULTS_PAGE_SIZE = 25;
@@ -66,6 +73,7 @@ export default class BattleMechAddMechDialog extends React.Component<IBattleMech
         super(props);
         this.state = {
             viewingUnit: null,
+            viewingOther: null,
             updated: false,
             mulResults: [],
             mulPage: 0,
@@ -136,15 +144,23 @@ export default class BattleMechAddMechDialog extends React.Component<IBattleMech
         return cached.index;
     }
 
-    importOtherUnit = ( e: React.FormEvent<HTMLButtonElement>, kind: IClassicMULKind, design: ClassicMULUnit ): void => {
-        e.preventDefault();
+    importOtherUnit = ( e: React.FormEvent<HTMLButtonElement> | null, kind: IClassicMULKind, design: ClassicMULUnit ): void => {
+        if( e && e.preventDefault ) {
+            e.preventDefault();
+        }
         if( this.props.currentForce ) {
             const unit = kind.load( design.exportJSON() );
             unit.newUUID();
             unit.resetInPlay();
             ( this.props.currentForce[kind.table] as ClassicMULUnit[] ).push( unit );
             this.props.onChange( this.props.currentForce );
+            this.setState({ viewingOther: null });
         }
+    }
+
+    viewOtherUnit = ( e: React.FormEvent<HTMLButtonElement>, kind: IClassicMULKind, design: ClassicMULUnit ): void => {
+        e.preventDefault();
+        this.setState({ viewingOther: { kind, design } });
     }
 
 
@@ -348,7 +364,10 @@ export default class BattleMechAddMechDialog extends React.Component<IBattleMech
                 <td className="min-width no-wrap text-center">{design ? design.getBattleValue() : unit.BattleValue}</td>
                 <td className="min-width no-wrap text-center">
                     {design ? (
+                        <>
+                        <button className='btn btn-sm btn-primary' onClick={e => this.viewOtherUnit(e, kind, design)} title={"View " + design.getName()} aria-label={"View " + getMULDisplayName( unit )}><Eye /></button>
                         <button className='btn btn-sm btn-primary' onClick={e => this.importOtherUnit(e, kind, design)} title={"Add " + design.getName() + " to this group"} aria-label={"Add " + getMULDisplayName( unit )}><PlusCircle /></button>
+                        </>
                     ) : (
                         <span className="small-text">
                             No Classic design yet: <Link to={`${process.env.PUBLIC_URL}/classic-battletech/${kind.creator}`}>build it</Link>
@@ -360,8 +379,20 @@ export default class BattleMechAddMechDialog extends React.Component<IBattleMech
     }
 
     render = (): JSX.Element => {
+        const viewingOther = this.state.viewingOther;
         return(
 <>
+{viewingOther ? (
+    <StandardModal
+        show={true}
+        onClose={() => this.setState({ viewingOther: null })}
+        onAdd={() => this.importOtherUnit( null, viewingOther.kind, viewingOther.design )}
+        className="modal modal-xl"
+    >
+        <h3 className="text-center">Viewing {( viewingOther.design.getName() + " " + ( "getModel" in viewingOther.design ? viewingOther.design.getModel() : "" ) ).trim()}</h3>
+        {viewingOther.kind.sheet( viewingOther.design )}
+    </StandardModal>
+) : null}
 {this.state.viewingUnit ? (
     <StandardModal
         show={true}
@@ -605,6 +636,7 @@ interface IBattleMechAddMechDialogState {
     viewingUnit: BattleMech | null;
     updated: boolean;
     mulResults: IASMULUnit[];
+    viewingOther: { kind: IClassicMULKind; design: ClassicMULUnit } | null;
     mulPage: number;
     mulSearching: boolean;
 }

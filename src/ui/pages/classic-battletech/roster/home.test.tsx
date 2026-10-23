@@ -155,6 +155,10 @@ describe("Classic roster Master Unit List search", () => {
                     <BattleMechAddMechDialog appGlobals={appGlobals} currentForce={appGlobals.currentCBTForce!.groups[0]} currentForceIndex={0} onChange={onChange} />
                 </MemoryRouter>
             );
+            const view = (await screen.findAllByRole("button", { name: "View " + getMULDisplayName(hit) }, { timeout: 20_000 }))[0];
+            fireEvent.click(view);
+            expect(screen.getByRole("heading", { name: /^Viewing / })).toBeTruthy();
+            fireEvent.click(screen.getAllByRole("button", { name: /^(Cancel|Close)$/ })[0]);
             const add = (await screen.findAllByRole("button", { name: "Add " + getMULDisplayName(hit) }, { timeout: 20_000 }))[0];
             fireEvent.click(add);
             expect(onChange).toHaveBeenCalledTimes(1);
