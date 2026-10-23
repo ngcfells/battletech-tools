@@ -5,6 +5,8 @@ import { findCanonEntry, resolveCanonQuirks } from "../data/quirk-canon";
 import { ICanonQuirkEntry } from "../data/quirk-canon-interfaces";
 import { QuirkList } from "./quirk-list";
 import { TechnicalReadout } from "./technical-readout";
+import { getBattleMechTroAdapter } from "./battlemech-tro";
+import { isSSWNoMake, readSSWTechnicalReadout } from "../utils/ssw-technical-readout";
 import { ITechnicalReadoutExport } from "../data/technical-readout-interfaces";
 import { getAlphaStrikeQuirks, getQuirkHeatGenerated, getQuirkWeaponHeat } from "../utils/quirk-effects";
 import { getEditionSkillMultipliers, getSkillMultiplier } from "../data/skill-multipliers";
@@ -345,6 +347,8 @@ export class BattleMech {
     private _sswImportErrors: string[] = [];
     // Items and components an SSW import could not resolve, for the import review screen and custom drafts.
     private _sswUnresolved: ISSWUnresolvedItem[] = [];
+    /** The make SSW gave each installed item, by the uuid it was installed under; read into the Technical Readout at the end of an import. */
+    private _sswCopyMakes: { uuid: string; make: string }[] = [];
 
     private _introductoryRules: boolean = false;
 
@@ -11840,6 +11844,9 @@ export class BattleMech {
                 newItem.location = "un";
                 newItem.rear = rear;
                 newItem.split_location = [];
+                if( newItem.uuid && !isSSWNoMake( item.name["@_manufacturer"] ) ) {
+                    this._sswCopyMakes.push( { uuid: newItem.uuid, make: String( item.name["@_manufacturer"] ).trim() } );
+                }
 
 
                 if( item.splitlocation ) {
@@ -11926,6 +11933,7 @@ export class BattleMech {
 
         this._sswImportErrors = [];
         this._sswUnresolved = [];
+        this._sswCopyMakes = [];
 
 
 
@@ -12319,6 +12327,8 @@ export class BattleMech {
                 }
             }
 
+            this._importSSWTechnicalReadout( jObj.mech );
+
             this._calc();
             this.calcAlphaStrike();
 
@@ -12330,6 +12340,13 @@ export class BattleMech {
 
             }
         }
+    }
+
+    /** Replaces the TRO fields with what the SSW file holds: production, component and weapon makes, and the fluff text. */
+    private _importSSWTechnicalReadout( mech: unknown ): void {
+        this.tro.import( readSSWTechnicalReadout( mech ) );
+        const adapter = getBattleMechTroAdapter( this );
+        this.tro.applyImportedCopyMakes( this._sswCopyMakes, adapter.getEquipmentCopies(), copy => adapter.ensureEquipmentUuid( copy ) );
     }
 
     public get sswImportErrors(): string[] {

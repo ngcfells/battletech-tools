@@ -2,7 +2,7 @@ import { battlemechLocations } from "../data/battlemech-locations";
 import { IEquipmentItem } from "../data/data-interfaces";
 import { ITroComponentRow, ITroConstructionRow, ITroEquipmentCopy, ITroSpecValues, ITroUnitAdapter } from "../data/technical-readout-interfaces";
 import { generateUUID } from "../utils/generateUUID";
-import { BattleMech } from "./battlemech";
+import type { BattleMech } from "./battlemech";
 
 /** Modern TROs print speeds in kph: 10.8 kph per movement point, to the whole kph. */
 const kph = (movementPoints: number): string => `${Math.round(movementPoints * 10.8)} kph`;
