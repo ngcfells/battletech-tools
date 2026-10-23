@@ -5941,6 +5941,10 @@ export class BattleMech {
         check("Chassis type", this._mechType);
         check("Tonnage", btMechTonnages.find(option => option.tons === this._tonnage) ?? {}, `${this._tonnage} tons`);
         check("Engine", this._engineType);
+        if (this.usesEarlierRulesEdition() && this.isNonFusionBattleMech() && (rulesLevel ?? 0) < CUSTOM_HOMEBREW_RULES_LEVEL
+            && getRecordOfferIssue(this._engineType, this._rulesEdition, rulesLevel ?? 0) !== "edition") {
+            issues.push(`Engine: ${this._engineType.name} (vehicles only in ${getRulesEdition(this._rulesEdition).name})`);
+        }
         check("Gyro", this._gyro);
         check("Cockpit", this.getCockpitType());
         check("Internal structure", this._selectedInternalStructure);
@@ -6320,8 +6324,8 @@ export class BattleMech {
         if (this.isIndustrialMech() && armorTags.some(tag => BattleMech.DARK_AGE_ARMOR_TAGS.includes(tag))) level = Math.max(level, EXPERIMENTAL_RULES_LEVEL);
         // Patchwork Armor is an "advanced construction option" (TO:AUE p.189).
         if (this.isPatchworkArmor()) level = Math.max(level, 3);
-        // Non-Fusion BattleMechs are Experimental (TO:AUE p.120).
-        if (this.isNonFusionBattleMech()) level = Math.max(level, EXPERIMENTAL_RULES_LEVEL);
+        // Non-Fusion BattleMechs are Experimental (TO:AUE p.120), and Custom Homebrew before Total Warfare.
+        if (this.isNonFusionBattleMech()) level = Math.max(level, this._nonFusionBattleMechRulesLevel());
         if (this._frankenMech) level = Math.max(level, EXPERIMENTAL_RULES_LEVEL);
         // Fractional Accounting is "experimental-level unit design" (TO:AUE p.188).
         if (this.usesFractionalAccounting()) level = Math.max(level, EXPERIMENTAL_RULES_LEVEL);
@@ -9419,7 +9423,7 @@ export class BattleMech {
                 engine.available = availability.available && buildableAtRating && this.isOfferedInEdition(engine, rulesLevel)
                     && this._isSuperheavyLegalEngine(engine.tag)
                     && this._isChassisLegalEngine(engine.tag)
-                    && (!this._isNonFusionBattleMechEngine(engine.tag) || rulesLevel >= EXPERIMENTAL_RULES_LEVEL)
+                    && (!this._isNonFusionBattleMechEngine(engine.tag) || rulesLevel >= this._nonFusionBattleMechRulesLevel())
                     && (!this.isLAM() || this._isLAMLegalComponent("engine", engine.tag));
                 returnValue.push(engine);
             }
@@ -10062,11 +10066,20 @@ export class BattleMech {
     }
 
     /**
-     * An ICE, fuel cell or fission engine in a BattleMech built to the modern rules: a "low-tech 'Mech", Experimental
-     * (Non-Fusion BattleMechs, TO:AUE p.120). IndustrialMechs and Primitive 'Mechs mount these engines by their own rules.
+     * An ICE, fuel cell or fission engine in a BattleMech: a "low-tech 'Mech" (Non-Fusion BattleMechs, TO:AUE p.120).
+     * IndustrialMechs and Primitive 'Mechs mount these engines by their own rules.
      */
     private _isNonFusionBattleMechEngine(engineTag: string): boolean {
-        return !this._hasBasicChassis() && !this.usesEarlierRulesEdition() && /^(ice|cell|fission)$/.test(engineTag);
+        return !this._hasBasicChassis() && /^(ice|cell|fission)$/.test(engineTag);
+    }
+
+    /**
+     * The rules level of a Non-Fusion BattleMech: Experimental from Total Warfare on (TO:AUE p.120). The editions before
+     * it build BattleMechs with a fusion engine only ("Each BattleMech carries one fusion plant", BMR p.111) and give
+     * the ICE to vehicles and buildings (BTM pp.81-82, 84; BMR p.119), so there it is Custom Homebrew.
+     */
+    private _nonFusionBattleMechRulesLevel(): number {
+        return this.usesEarlierRulesEdition() ? CUSTOM_HOMEBREW_RULES_LEVEL : EXPERIMENTAL_RULES_LEVEL;
     }
 
     /** A BattleMech with an ICE, fuel cell or fission engine (TO:AUE p.120). */

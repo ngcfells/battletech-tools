@@ -419,3 +419,39 @@ describe("BattleMech construction options by rules edition", () => {
         expect([mech.isPrimitive(), mech.usesFractionalAccounting()]).toEqual([false, false]);
     });
 });
+
+// Issue 40. BattleMech construction in the FASA and FanPro editions takes a fusion engine only: "Each BattleMech
+// carries one fusion plant" (BMR p.111). The Internal Combustion Engine is a vehicle and building engine (BTM pp.81-82,
+// 84; BTC pp.123, 126; BTC:RoW p.107; BMR p.119; BMR(R) p.128). The Second, Third and Fourth Editions and the 2002 box
+// set do not have it at all. From Total Warfare on, a Non-Fusion BattleMech is Experimental (TO:AUE p.120).
+describe("ICE engines in BattleMechs by edition (issue 40)", () => {
+    const iceOffered = (mech: BattleMech, rulesLevel: number) => mech.getAvailableEngines(rulesLevel).find(engine => engine.tag === "ice")?.available;
+    it.each(["battletech-2nd-edition", "battletech-3rd-edition", "battletech-4th-edition", "classic-battletech-box-set"])(
+        "%s has no ICE at any rules level", (edition) => {
+        const mech = build(edition);
+        expect([iceOffered(mech, 4), iceOffered(mech, 6), iceOffered(mech, 7)]).toEqual([false, false, false]);
+    });
+
+    it.each(["battletech-manual", "battletech-compendium", "compendium-rules-of-warfare", "master-rules", "master-rules-revised"])(
+        "%s offers ICE to a BattleMech only from the Custom Homebrew level", (edition) => {
+        const mech = build(edition);
+        expect([iceOffered(mech, 4), iceOffered(mech, 5)]).toEqual([false, false]);
+        expect(iceOffered(mech, 6)).toBe(true);
+    });
+
+    it.each(["battletech-manual", "master-rules-revised"])("%s makes an ICE BattleMech Custom Homebrew and lists the engine", (edition) => {
+        const mech = build(edition);
+        mech.setEngineType("ice");
+        expect(mech.getEngineType().tag).toBe("ice");
+        expect(mech.getRequiredRulesLevel()).toBe(6);
+        expect(mech.getRulesEditionIssues(4).some(issue => issue.startsWith("Engine: Internal Combustion Engine"))).toBe(true);
+        expect(mech.getRulesEditionIssues(6).some(issue => issue.startsWith("Engine:"))).toBe(false);
+    });
+
+    it.each(["total-warfare", "battlemech-manual", "core-rulebook"])("%s keeps the Non-Fusion BattleMech at Experimental", (edition) => {
+        const mech = build(edition);
+        expect([iceOffered(mech, 3), iceOffered(mech, 4)]).toEqual([false, true]);
+        mech.setEngineType("ice");
+        expect(mech.getRequiredRulesLevel()).toBe(4);
+    });
+});
