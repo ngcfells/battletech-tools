@@ -10,6 +10,17 @@ there is done and verified, move it to the top of this file.
 
 ## Completed roadmap items
 
+### Moved from `TODO.md` on 2026-10-23 (7 items)
+
+Verified with tests on `beta`.
+
+- [x] `ammo-is-*` records no longer repeat a tag or list their own tag in `altTags`. ([#41](https://github.com/ngcfells/battletech-tools/issues/41))
+- [x] LRM `damageAero` is 3 per 5 missiles, Inner Sphere and Clan. ([#28](https://github.com/ngcfells/battletech-tools/issues/28))
+- [x] The record sheet prints a dash for a missing medium or long range bracket (Nail Gun). ([#31](https://github.com/ngcfells/battletech-tools/issues/31))
+- [x] Clan Rotary AC aerospace heat is 6, as the Inner Sphere one; CASE stays off Small Craft and DropShips (TM p.210). ([#29](https://github.com/ngcfells/battletech-tools/issues/29), [#30](https://github.com/ngcfells/battletech-tools/issues/30))
+- [x] Prototype CASE counts as CASE for Battle Value; Light and Clan XL engines survive a side torso loss. ([#26](https://github.com/ngcfells/battletech-tools/issues/26), [#27](https://github.com/ngcfells/battletech-tools/issues/27))
+- [x] Clan artillery (Long Tom 560, Sniper 96, Thumper 48) uses its own Battle Value on 'Mechs and vehicles (`battleValueClan`). ([#38](https://github.com/ngcfells/battletech-tools/issues/38))
+
 ### Moved from `TODO.md` on 2026-10-22 (9 items)
 
 Verified against the code on `beta` at 666326eb.

@@ -297,9 +297,7 @@ played first, then by dependency.
   run); the two 5-ton sample "Small Craft" (Escape Pod, Life Boat) are not buildable units. ([#61](https://github.com/ngcfells/battletech-tools/discussions/61))
 - [ ] Found while building Small Craft: the weekly Master Unit List sync files every "Aerospace Craft"
   (Small Craft, DropShips, JumpShips, WarShips, stations) as type AF and does not read their firing arcs,
-  so those bundled cards show no damage; the catalog gives the Clan Rotary AC/2 and AC/5 an aerospace heat
-  of 1 where the Inner Sphere ones have 6; CASE is marked as not mountable on Small Craft (`smallCraft: -1`),
-  to be checked against TM p.210. ([#29](https://github.com/ngcfells/battletech-tools/issues/29), [#30](https://github.com/ngcfells/battletech-tools/issues/30), [#32](https://github.com/ngcfells/battletech-tools/issues/32))
+  so those bundled cards show no damage. ([#32](https://github.com/ngcfells/battletech-tools/issues/32))
 
 ### DropShips
 
@@ -515,8 +513,6 @@ in HeySporky/battletech-tools. All of it is merged into local `master` together 
 - [ ] SSW importer PR: not opened. Rebase `feature/ssw-runtime-import` on upstream master, rerun the corpus
   audit against the full catalog and shrink `ssw-canon-pending-names.ts` first.
 - [ ] After both PR sets merge, restore the Ferro-Aluminum note dropped from `mech-armor-types.ts` in the split.
-- [ ] `ammo-is-*` records moved out of the universal catalog list the old tag twice and their own tag in
-  `altTags` (harmless; tidy up). ([#41](https://github.com/ngcfells/battletech-tools/issues/41))
 
 - [ ] Same-book conflicts: the errata were checked (IO v1.21, IO:AE v3.01; Batch 14) and rule on none
   of them, so the catalog still follows MegaMek and each is flagged in the ledger: IO:AE armor BV
@@ -532,22 +528,17 @@ in HeySporky/battletech-tools. All of it is merged into local `master` together 
   slot columns (Strategic Operations), Naval C3 and other large-craft systems; the variable-size industrial
   items (Communications Equipment, Dumper, Extended Fuel Tanks, Ladder, Pintle Mount, Power Amplifiers,
   transport bays); Primitive small and large craft armor. ([#67](https://github.com/ngcfells/battletech-tools/discussions/67))
-- [ ] Still owed before the PRs: missile `damageAero` convention, Nail Gun range dash, source search for
+- [ ] Still owed before the PRs: source search for
   the custom catalogs, Alpha Strike conversions marked unresolved, play-rule items, the import
   "ask the importer" step, review of `tools/spec-c-sources-staging.jsonl`. The equipment PRs are open
   (#98-#104); these items go in follow-up PRs.
 - [ ] Alpha Strike conversions for the pods added in Batch 9c (B-Pod, M-Pod, Chaff Pod) are marked
   unresolved. ([#60](https://github.com/ngcfells/battletech-tools/discussions/60))
 - [ ] Vehicles have no era check on engine types, so large engine dates (Batch 16) apply to 'Mechs only. ([#37](https://github.com/ngcfells/battletech-tools/issues/37))
-- [ ] Missile launcher `damageAero` holds 3 for every LRM size (the tables give 3 / 6 / 9 / 12). Check
-  how the aerospace code reads it before changing the catalog. ([#28](https://github.com/ngcfells/battletech-tools/issues/28))
-- [ ] The Nail/Rivet Gun has no medium or long range bracket (TM p.344); the record stores 0 and the
-  record sheet prints 1/0/0. Print a dash for a missing bracket. ([#31](https://github.com/ngcfells/battletech-tools/issues/31))
 - [ ] Cockpit slots (Batch 24): Tripod, superheavy and QuadVee cockpits now sit in the head only, per the
   IO:AE record sheets. The center torso slot was in upstream too: call it out in the equipment PR.
 - [ ] Battle Value (Batches 26, 27): explosive penalty by location, CASE II, floor of 1, weapon order by
-  Modified BV. Owed: prototype CASE is not counted as CASE; `hasXLEngine()` answers
-  true for Light and Clan XL engines and drives the "wrecked" check in play tracking. ([#26](https://github.com/ngcfells/battletech-tools/issues/26), [#27](https://github.com/ngcfells/battletech-tools/issues/27))
+  Modified BV. Done.
 - [ ] TM equipment limits not modeled: torso-only weapons (Heavy Gauss), one industrial item per location. ([#36](https://github.com/ngcfells/battletech-tools/issues/36))
 
 ### Cockpits
@@ -577,8 +568,6 @@ in HeySporky/battletech-tools. All of it is merged into local `master` together 
   (canon), Smoker and Buckler (*Future Wars* #32), and nine production-tech sample ArtVees in the creator.
   - [ ] Later: Superheavy ArtVees (allowed, pinned until the user has looked at superheavy vehicles). ([#69](https://github.com/ngcfells/battletech-tools/discussions/69))
   - [ ] Later: Armored Motive System in the Support Vehicle creator (separate multiplier-based chassis mods). ([#69](https://github.com/ngcfells/battletech-tools/discussions/69))
-  - [ ] Later: canon artillery records carry the IS BV only; Clan units need the Clan BV (TO:AUE p.197: Long Tom
-    560, Sniper 96, Thumper 48) — needs a per-tech-base BV field. ([#38](https://github.com/ngcfells/battletech-tools/issues/38))
   - [ ] Later: write the ArtVee TRO for the community from `docs/lore/artvee-tro-skeleton.md`. ([#69](https://github.com/ngcfells/battletech-tools/discussions/69))
 
     | Variant | Artillery | Damage | Range (mapsheets) | Artillery weight | Source's min. tonnage |
