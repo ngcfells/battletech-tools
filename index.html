@@ -94,5 +94,35 @@ li.beta-ideas a.beta-ideas-button:hover{background:#2e86c1!important}
   add();
 })();
 </script>
+<style>
+.kofi-tip{margin:1rem 0;padding:.75rem 1rem;border:1px solid #72a4f2;border-radius:.5rem;text-align:center}
+.kofi-tip p{margin:0 0 .5rem}
+</style>
+<script type='text/javascript' src='https://storage.ko-fi.com/cdn/widget/Widget_2.js'></script>
+<script>
+// Ko-fi tip button beside NGCFells in About > Current Maintainers. kofiwidget2.draw() uses document.writeln, which
+// would wipe the loaded app, so the same button HTML goes in through getHTML(). Hidden on every other route.
+(function(){
+  var ready=false;
+  function isAbout(){return /^\/battletech-tools\/about\/?$/.test(location.pathname);}
+  function place(){
+    var box=document.querySelector(".kofi-tip");
+    if(box){box.style.display=isAbout()?"":"none";}
+    if(!isAbout()||box||typeof kofiwidget2==="undefined")return;
+    var link=document.querySelector('main.content a[href="https://github.com/ngcfells"]');
+    if(!link)return;
+    if(!ready){kofiwidget2.init('Tips', '#72a4f2', 'M5K429C47U');ready=true;}
+    box=document.createElement("div");box.className="kofi-tip";
+    var note=document.createElement("p");note.textContent="If you would like to help cover costs of development please click here.";
+    var button=document.createElement("div");button.innerHTML=kofiwidget2.getHTML();
+    box.appendChild(note);box.appendChild(button);
+    link.parentNode.insertBefore(box,link.nextSibling);
+  }
+  new MutationObserver(place).observe(document.documentElement,{childList:true,subtree:true});
+  window.addEventListener("popstate",place);
+  window.addEventListener("load",place);
+  place();
+})();
+</script>
 </body>
 </html>
