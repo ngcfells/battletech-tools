@@ -170,6 +170,7 @@ export default class Home extends React.Component<IHomeProps, IHomeState> {
                     </h3>
                     <h4>Author - NGCFells</h4>
                       <ul>
+                        <li>Vehicles above engine rating 400 follow the large engine's own dates, as 'Mechs do: no Large Fusion before its 2630 prototype, and the Inner Sphere Large XL is out of reach between its loss in 2822 and its recovery in 3054.</li>
                         <li>Light and Clan XL engines survive the loss of a side torso; only the Inner Sphere XL and XXL engines are lost with one.</li>
                         <li>Battle Value counts prototype CASE as CASE, and Clan artillery (Long Tom 560, Sniper 96, Thumper 48) uses its own Battle Value on every unit that can mount it: 'Mechs, vehicles, fighters, Small Craft, DropShips and capital ships.</li>
                         <li>LRM launchers do 3 aerospace damage for every 5 missiles (LRM 20: 12), Inner Sphere and Clan, and the Clan Rotary ACs have the same aerospace heat as the Inner Sphere ones.</li>

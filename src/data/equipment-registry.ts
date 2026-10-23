@@ -287,6 +287,31 @@ export function getEffectiveIntroduction(item: Pick<IEquipmentItem, "prototype" 
 }
 
 /**
+ * Availability of a construction component in an era, shared by every unit class: in production, or
+ * (at the Experimental rules level) as a prototype. `isAvailable(introduced, extinct, reintroduced)` is the
+ * unit's own era-window check.
+ */
+export function getDatesAvailability(
+    dates: ITechDates,
+    rulesLevel: number,
+    isAvailable: (introduced: number | null, extinct: number | null, reintroduced: number | null) => boolean,
+): { available: boolean, asPrototype: boolean } {
+    // A prototype year with no production year: IO prototype only (Experimental rules).
+    const prototypeOnly = dates.introduced === null && !!dates.prototype;
+    // Lost before it reached production (extinct earlier than the production year, e.g. the
+    // Inner Sphere Large XL engine): the extinction and recovery bound the prototype phase,
+    // and production simply starts at `introduced`.
+    const lostAsPrototype = dates.introduced !== null && dates.extinct !== null && dates.extinct < dates.introduced;
+    const inProduction = !prototypeOnly && (lostAsPrototype
+        ? isAvailable(dates.introduced, null, null)
+        : isAvailable(dates.introduced, dates.extinct, dates.reintroduced));
+    const effectiveIntroduction = getEffectiveIntroduction(dates, rulesLevel);
+    const asPrototype = !inProduction && effectiveIntroduction !== dates.introduced
+        && isAvailable(effectiveIntroduction, dates.extinct, dates.reintroduced);
+    return { available: inProduction || asPrototype, asPrototype };
+}
+
+/**
  * A tech progression year typed by a user or read from an import. Blank, zero or anything that is not a
  * positive year means unknown or none: null, which the availability checks read as "no such date"
  * (`introduced: null` with a `prototype` year marks a prototype-only item).

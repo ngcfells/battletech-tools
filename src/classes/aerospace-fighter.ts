@@ -10,7 +10,7 @@ import { mechEngineTypes } from "../data/mech-engine-types";
 import { mechHeatSinkTypes } from "../data/mech-heat-sink-types";
 import { btTechOptions } from "../data/tech-options";
 import { btEraOptions, findEraByTag, getClosestEraForTech, getErasForTech } from "../data/era-options";
-import { CUSTOM_HOMEBREW_RULES_LEVEL, getArtemisLauncherBattleValue, getItemBattleValue, EXPERIMENTAL_RULES_LEVEL, getAmmoBattleValuePerTon, getBattleArmorScaleListByTech, getCompatibleAmmo, getEffectiveIntroduction, getEquipmentListByTech, getEquipmentRulesLevel, getEquipmentOfferIssue, getWeaponShotsPerTon, isEquipmentOffered } from "../data/equipment-registry";
+import { CUSTOM_HOMEBREW_RULES_LEVEL, getArtemisLauncherBattleValue, getItemBattleValue, EXPERIMENTAL_RULES_LEVEL, getAmmoBattleValuePerTon, getBattleArmorScaleListByTech, getCompatibleAmmo, getDatesAvailability, getEquipmentListByTech, getEquipmentRulesLevel, getEquipmentOfferIssue, getWeaponShotsPerTon, isEquipmentOffered } from "../data/equipment-registry";
 import { getFractionalAerospaceArmorTonsPerPoint, getFractionalEngineWeight, roundUpToKilogram } from "../data/fractional-accounting";
 import { AlphaStrikeUnit, IASMULUnit } from "./alpha-strike-unit";
 import Pilot, { IPilot } from "./pilot";
@@ -1659,12 +1659,7 @@ export default class AerospaceFighter {
 
     /** In production in the selected era, or (where the rules level allows) a prototype. */
     private _datesAvailability(dates: ITechDates, rulesLevel: number): { available: boolean; asPrototype: boolean } {
-        const prototypeOnly = dates.introduced === null && !!dates.prototype;
-        const inProduction = !prototypeOnly && this._itemIsAvailable(dates.introduced, dates.extinct, dates.reintroduced);
-        const effectiveIntroduction = getEffectiveIntroduction(dates, rulesLevel);
-        const asPrototype = !inProduction && effectiveIntroduction !== dates.introduced
-            && this._itemIsAvailable(effectiveIntroduction, dates.extinct, dates.reintroduced);
-        return { available: inProduction || asPrototype, asPrototype };
+        return getDatesAvailability(dates, rulesLevel, (introduced, extinct, reintroduced) => this._itemIsAvailable(introduced, extinct, reintroduced));
     }
 
     /** As above, reading the Clan window for a Clan chassis where the record has one. */

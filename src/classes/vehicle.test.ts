@@ -259,7 +259,9 @@ describe("Vehicle motive types", () => {
         expect(vtol.getEngineRating()).toBe(10);
         expect(build("tracked", 50).getMaxCruiseMP(2)).toBe(8);
         expect(build("hover", 50).getMaxCruiseMP(2)).toBe(Math.floor((400 + 235) / 50));
-        expect(build("tracked", 50).getMaxCruiseMP(4)).toBe(10);
+        const lateTank = build("tracked", 50);
+        lateTank.setEra("jihad");
+        expect(lateTank.getMaxCruiseMP(4)).toBe(10);
     });
 
     it("adds 5% control systems to every vehicle and 10% lift or dive equipment where needed", () => {
@@ -624,8 +626,10 @@ describe("Vehicle equipment saved before the Batch 15 tech-base splits", () => {
 });
 
 describe("Vehicle large engines (TO:AUE pp.119-120, 219)", () => {
-    const tank = (engine: string, cruise: number): Vehicle => {
+    const tank = (engine: string, cruise: number, era: string = "jihad", tech: string = "is"): Vehicle => {
         const vehicle = new Vehicle();
+        vehicle.setTech(tech);
+        vehicle.setEra(era);
         vehicle.setMotiveType("tracked");
         vehicle.setTonnage(50);
         vehicle.setEngineType(engine);
@@ -647,6 +651,36 @@ describe("Vehicle large engines (TO:AUE pp.119-120, 219)", () => {
         for (const engine of ["cell", "fission", "compact"]) {
             expect(tank(engine, 4).getMaxCruiseMP(4), engine).toBe(8);
         }
+    });
+
+    // Issue #37: the large engine's own dates (IO:AE p.38) apply to vehicles as they do to 'Mechs.
+    it("offers no rating above 400 before the large engine exists (Large Fusion prototype 2630)", () => {
+        expect(tank("standard", 4, "age-of-war").getMaxCruiseMP(4)).toBe(8);
+        expect(tank("standard", 4, "star-league").getMaxCruiseMP(4)).toBe(10);
+    });
+
+    it("marks an engine type by its large form's dates above rating 400", () => {
+        const engine = (vehicle: Vehicle, tag: string, rulesLevel: number) =>
+            vehicle.getAvailableEngineTypes(rulesLevel).find((option) => option.tag === tag);
+        // Large Fusion: prototype 2630, production 3085.
+        expect(engine(tank("standard", 10, "clan-inv"), "standard", 2)?.available).toBe(false);
+        expect(engine(tank("standard", 10, "clan-inv"), "standard", 4)?.availableAsPrototype).toBe(true);
+        expect(engine(tank("standard", 10, "early-rep"), "standard", 2)?.available).toBe(true);
+        expect(engine(tank("standard", 8, "clan-inv"), "standard", 2)?.available).toBe(true);
+        // Large Light Fusion: prototype 3064, though the Light engine's prototype dates from 3055.
+        expect(engine(tank("standard", 8, "clan-inv"), "light", 4)?.available).toBe(true);
+        expect(engine(tank("standard", 10, "clan-inv"), "light", 4)?.available).toBe(false);
+        // No large form: Compact, Fuel Cell and Fission cannot be fitted above 400.
+        expect(engine(tank("standard", 10, "ilClan"), "compact", 4)?.available).toBe(false);
+    });
+
+    it("bounds the Inner Sphere Large XL prototype by its loss in 2822 and recovery in 3054", () => {
+        const largeXL = (era: string) => tank("xl", 10, era).getAvailableEngineTypes(4).find((option) => option.tag === "xl");
+        expect(largeXL("star-league")?.availableAsPrototype).toBe(true);
+        expect(largeXL("late-sw-lt")?.available).toBe(false);
+        expect(largeXL("clan-inv")?.availableAsPrototype).toBe(true);
+        expect(largeXL("early-rep")?.availableAsPrototype).toBe(false);
+        expect(largeXL("early-rep")?.available).toBe(true);
     });
 });
 

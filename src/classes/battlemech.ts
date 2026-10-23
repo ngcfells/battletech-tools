@@ -20,7 +20,7 @@ import type { CustomComponentKind, ISSWUnresolvedItem } from "../data/custom-con
 import { getCockpitType } from "../data/mech-cockpit-types";
 import { btMechTonnages } from "../data/mech-tonnages";
 import { DEFAULT_RULES_EDITION, editionEngineHoldsHeatSinks, getEditionJumpJetWeight, getEditionPlayRules, getEditionStats, getEditionStructure, getEquipmentForEdition, getRulesEdition, isEarlierRulesEdition, isInRulesEdition, isOfferedInEdition, getRecordOfferIssue } from "../data/rules-editions";
-import { APOCRYPHAL_RULES_LEVEL, CUSTOM_HOMEBREW_RULES_LEVEL, EXPERIMENTAL_RULES_LEVEL, getItemBattleValue, equipmentMatchesIdentifier, getWeaponAmmoFamilies, getEquipmentRulesLevel, ARTEMIS_FIRE_CONTROL, isArtemisCapableLauncher, isEquipmentOffered, isOmniFixedOnly, getAlphaStrikeEquipmentDisplayAbilityCodes, getAmmoBattleValuePerTon, getAmmoFamily, getAmmoRoundsPerTon, getCompatibleAmmo, getEffectiveIntroduction, getEquipmentListByTech, getEquipmentListForChassis, getStarLeagueCarryOverDates, getWeaponShotsPerTon, getBattleArmorScaleListByTech, getEquipmentCatalogDefinitions, getEquipmentOfferIssue } from "../data/equipment-registry";
+import { APOCRYPHAL_RULES_LEVEL, CUSTOM_HOMEBREW_RULES_LEVEL, EXPERIMENTAL_RULES_LEVEL, getItemBattleValue, equipmentMatchesIdentifier, getWeaponAmmoFamilies, getEquipmentRulesLevel, ARTEMIS_FIRE_CONTROL, isArtemisCapableLauncher, isEquipmentOffered, isOmniFixedOnly, getAlphaStrikeEquipmentDisplayAbilityCodes, getAmmoBattleValuePerTon, getAmmoFamily, getAmmoRoundsPerTon, getCompatibleAmmo, getDatesAvailability, getEffectiveIntroduction, getEquipmentListByTech, getEquipmentListForChassis, getStarLeagueCarryOverDates, getWeaponShotsPerTon, getBattleArmorScaleListByTech, getEquipmentCatalogDefinitions, getEquipmentOfferIssue } from "../data/equipment-registry";
 import { getFractionalArmorTonsPerPoint, getFractionalEngineWeight, roundUpToKilogram } from "../data/fractional-accounting";
 import { isUniversalEquipment } from "../data/universal-equipment";
 import { mechEngineOptions } from "../data/mech-engine-options";
@@ -9516,19 +9516,7 @@ export class BattleMech {
      * or (at the Experimental rules level) as a prototype.
      */
     private _datesAvailability(dates: ITechDates, rulesLevel: number): { available: boolean, asPrototype: boolean } {
-        // A prototype year with no production year: IO prototype only (Experimental rules).
-        const prototypeOnly = dates.introduced === null && !!dates.prototype;
-        // Lost before it reached production (extinct earlier than the production year, e.g. the
-        // Inner Sphere Large XL engine): the extinction and recovery bound the prototype phase,
-        // and production simply starts at `introduced`.
-        const lostAsPrototype = dates.introduced !== null && dates.extinct !== null && dates.extinct < dates.introduced;
-        const inProduction = !prototypeOnly && (lostAsPrototype
-            ? this._itemIsAvailable(dates.introduced, null, null)
-            : this._itemIsAvailable(dates.introduced, dates.extinct, dates.reintroduced));
-        const effectiveIntroduction = getEffectiveIntroduction(dates, rulesLevel);
-        const asPrototype = !inProduction && effectiveIntroduction !== dates.introduced
-            && this._itemIsAvailable(effectiveIntroduction, dates.extinct, dates.reintroduced);
-        return { available: inProduction || asPrototype, asPrototype };
+        return getDatesAvailability(dates, rulesLevel, (introduced, extinct, reintroduced) => this._itemIsAvailable(introduced, extinct, reintroduced));
     }
 
     /** Availability using the Clan window for Clan designs; mixed tech may use either. */

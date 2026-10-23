@@ -44,7 +44,7 @@ import {
     MAX_VEHICLE_BAY_COUNT, MAX_VEHICLE_BAYS, MAX_VEHICLE_CARGO_TONS, normalizeVehicleBays, VEHICLE_BAY_TYPES,
 } from "../data/vehicle-transport-bays";
 import { ARTVEE_CONVERSION_EQUIPMENT } from "../data/combat-vehicle-chassis-modifications-custom";
-import { CUSTOM_HOMEBREW_RULES_LEVEL, EXPERIMENTAL_RULES_LEVEL, getItemBattleValue, equipmentMatchesIdentifier, getAmmoBattleValuePerTon, getBattleArmorScaleListByTech, getCompatibleAmmo, getEffectiveIntroduction, getEquipmentListByTech, getEquipmentRulesLevel, getStarLeagueCarryOverDates, getWeaponShotsPerTon, isEquipmentOffered } from "../data/equipment-registry";
+import { CUSTOM_HOMEBREW_RULES_LEVEL, EXPERIMENTAL_RULES_LEVEL, getItemBattleValue, equipmentMatchesIdentifier, getAmmoBattleValuePerTon, getBattleArmorScaleListByTech, getCompatibleAmmo, getDatesAvailability, getEquipmentListByTech, getEquipmentRulesLevel, getStarLeagueCarryOverDates, getWeaponShotsPerTon, isEquipmentOffered } from "../data/equipment-registry";
 import { isTargetingComputerWeapon, roundUpHalfTon, sizeVariableEquipment } from "../data/variable-equipment";
 import { getFractionalArmorTonsPerPoint, getFractionalEngineWeight, roundUpToKilogram } from "../data/fractional-accounting";
 import { getBattleArmorScaleExplosionDamage } from "../data/battle-armor-scale-equipment";
@@ -2168,7 +2168,9 @@ export default class Vehicle {
             while (mp < 30 && (getSupportVehicleEngineWeight(weightClass, engine, this._support.engineTechRating, mp + 1, this._tonnage) ?? Infinity) <= room) mp++;
             return mp;
         }
-        const largeAllowed = rulesLevel >= 4 && !!getLargeEngineType(this._engineType.tag);
+        // The large form must also exist in the selected era (IO:AE p.38).
+        const largeEngine = getLargeEngineType(this._engineType.tag);
+        const largeAllowed = rulesLevel >= 4 && !!largeEngine && this._datesAvailability(largeEngine, rulesLevel).available;
         const maxRating = largeAllowed ? MAX_LARGE_ENGINE_RATING : MAX_STANDARD_ENGINE_RATING;
         return Math.max(0, Math.floor((maxRating + this.getSuspensionFactor()) / this._tonnage));
     }
@@ -2231,9 +2233,18 @@ export default class Vehicle {
         const techTag = this.getTech().tag;
         const bases: ("is" | "clan")[] = techTag === "is" ? ["is"] : techTag === "clan" ? ["clan"] : ["is", "clan"];
         const engineTypes = mechEngineTypes.filter((engine) => bases.some((base) => engine.criticals[base])).map((engine) => ({ ...engine }));
+        const large = !this._support && this.getEngineRating() > MAX_STANDARD_ENGINE_RATING;
         for (const engine of engineTypes) {
+            // Above rating 400 the large engine's own dates apply (IO:AE p.38), as for 'Mechs; a type
+            // with no large form is not offered.
+            const largeEngine = large ? getLargeEngineType(engine.tag) : undefined;
+            if (large && !largeEngine) {
+                engine.available = false;
+                engine.availableAsPrototype = false;
+                continue;
+            }
             const availability = bases.filter((base) => engine.criticals[base])
-                .map((base) => this._datesAvailability(base === "clan" ? engine.clanDates ?? engine : engine, rulesLevel));
+                .map((base) => this._datesAvailability(largeEngine ?? (base === "clan" ? engine.clanDates ?? engine : engine), rulesLevel));
             const inProduction = availability.find((option) => option.available && !option.asPrototype);
             const chosen = inProduction ?? availability.find((option) => option.available) ?? availability[0];
             engine.available = chosen.available;
@@ -2756,13 +2767,7 @@ export default class Vehicle {
 
     /** In production in the selected era, or (at the Experimental rules level) a prototype. */
     private _datesAvailability(dates: ITechDates, rulesLevel: number): { available: boolean, asPrototype: boolean } {
-        // A prototype year with no production year: IO prototype only (Experimental rules).
-        const prototypeOnly = dates.introduced === null && !!dates.prototype;
-        const inProduction = !prototypeOnly && this._itemIsAvailable(dates.introduced, dates.extinct, dates.reintroduced);
-        const effectiveIntroduction = getEffectiveIntroduction(dates, rulesLevel);
-        const asPrototype = !inProduction && effectiveIntroduction !== dates.introduced
-            && this._itemIsAvailable(effectiveIntroduction, dates.extinct, dates.reintroduced);
-        return { available: inProduction || asPrototype, asPrototype };
+        return getDatesAvailability(dates, rulesLevel, (introduced, extinct, reintroduced) => this._itemIsAvailable(introduced, extinct, reintroduced));
     }
 
     /** Availability using the Clan window for Clan designs; mixed tech may use either (as BattleMech). */
