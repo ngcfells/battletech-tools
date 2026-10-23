@@ -63,10 +63,13 @@ test("the TechManual's Astrolux can be built, checked, saved and printed", async
     await page.goto("classic-battletech/small-craft-creator/summary");
 
     await page.getByRole("link", { name: "View Record Sheet" }).click();
-    await expect(page.getByRole("heading", { name: "Astrolux" }).first()).toBeVisible();
-    await expect(page.getByTestId("small-craft-sheet-data")).toContainText("Aerodyne Small Craft");
+    const sheet = page.getByTestId("small-craft-record-sheet-svg");
+    await expect(sheet).toContainText("AERODYNE SMALL CRAFT RECORD SHEET");
+    await expect(sheet).toContainText("Astrolux");
     await expect(page.getByTestId("armor-diagram-leftWing").first()).toContainText("Left Wing");
-    await expect(page.getByTestId("small-craft-sheet-crew")).toContainText("Passengers: 7");
+    await expect(sheet).toContainText("Passengers: 7");
+    // The creator's record sheet adds the Alpha Strike card on a page of its own.
+    await expect(page.getByTestId("small-craft-as-card")).toBeVisible();
 
     await page.goto("classic-battletech/small-craft-creator");
     await page.getByRole("button", { name: /Save as New/ }).click();

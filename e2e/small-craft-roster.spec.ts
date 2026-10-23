@@ -52,12 +52,14 @@ test("a Small Craft joins the roster, takes damage in play and prints", async ({
     await expect(page.getByText("This Small Craft is Damaged")).toBeVisible();
 
     await page.goto("classic-battletech/roster/print");
-    await expect(page.getByRole("heading", { name: "Longboat" }).first()).toBeVisible();
+    const sheet = page.getByTestId("small-craft-record-sheet-svg").first();
+    await expect(sheet).toContainText("Longboat");
     // The printed sheet carries the damage: 5 points off the nose, none off the aft.
     await expect(page.getByTestId("armor-diagram-nose").first()).toHaveAttribute("data-damage", "5");
     await expect(page.getByTestId("armor-diagram-aft").first()).toHaveAttribute("data-damage", "0");
-    await expect(page.getByText(/Gunnery 3 \/ Piloting 5/)).toBeVisible();
-    await expect(page.getByTestId("small-craft-as-card").first()).toBeVisible();
+    await expect(sheet).toContainText(/Gunnery Skill:\s*3\s*Piloting Skill:\s*5/);
+    // The Classic print is record sheets only, as for every unit type; the creator's record sheet adds the card.
+    await expect(page.getByTestId("small-craft-as-card")).toHaveCount(0);
 
     expect(errors).toEqual([]);
 });
