@@ -2554,9 +2554,13 @@ export class BattleMech {
         let final_overheat_value = 0;
 
 
-        let weapon_heat_damage_short = Math.ceil((this._alphaStrikeForceStats.damage.short * heatDissipation) / (max_heat_output - 4));
-        let weapon_heat_damage_medium = Math.ceil((this._alphaStrikeForceStats.damage.medium * heatDissipation) / (max_heat_output - 4));
-        let weapon_heat_damage_long = Math.ceil((this._alphaStrikeForceStats.damage.long * heatDissipation) / (max_heat_output - 4));
+        // Heat-modified damage (ASC p.115) only ever reduces damage: a unit whose heat (less 4) the sinks can shed keeps its damage.
+        const heatDamageScale = (damage: number | string): number => (max_heat_output - 4 <= heatDissipation
+            ? Math.ceil(+damage)
+            : Math.ceil((+damage * heatDissipation) / (max_heat_output - 4)));
+        let weapon_heat_damage_short = heatDamageScale(this._alphaStrikeForceStats.damage.short);
+        let weapon_heat_damage_medium = heatDamageScale(this._alphaStrikeForceStats.damage.medium);
+        let weapon_heat_damage_long = heatDamageScale(this._alphaStrikeForceStats.damage.long);
         // let weapon_heat_damage_extreme = Math.ceil((this._alphaStrikeForceStats.damage.extreme * heatDissipation) / (max_heat_output - 4));
 
 
