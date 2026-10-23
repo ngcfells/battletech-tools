@@ -10,6 +10,7 @@ import BattleArmor from '../../../../classes/battle-armor';
 import InfantryPlatoon from '../../../../classes/infantry-platoon';
 import ProtoMech from '../../../../classes/protomech';
 import Vehicle from '../../../../classes/vehicle';
+import { ARTVEE_SAMPLES } from '../../../../data/artvee-samples';
 import { buildClassicDesignIndex, ClassicDesignIndex, findClassicDesign, getClassicMechEntries, getClassicUnitEntries } from '../../../../utils/classicMULMatch';
 import { IMULSearchFilters } from '../../../../utils/mulSearchFilters';
 import { getMULEraLabel } from '../../../../utils/mulUtilities';
@@ -36,6 +37,8 @@ interface IClassicMULKind {
     creator: string;
     saves: (appGlobals: IAppGlobals) => { uuid?: string; lastUpdated?: unknown }[];
     load: (json: string) => ClassicMULUnit;
+    // Designs that ship with the app, matched after the user's saves (like the Skunk Werks 'Mechs).
+    bundled?: () => object[];
     table: "vehicles" | "fighters" | "infantry" | "battleArmor" | "protoMechs";
 }
 
@@ -43,7 +46,7 @@ interface IClassicMULKind {
 // other types match saved designs and go into their own table in the group.
 const CBT_MUL_MECH_TYPE_IDS = [18, 20];
 const CBT_MUL_KINDS: IClassicMULKind[] = [
-    { typeIDs: [19, 24], creator: "vehicle-creator", saves: (g) => g.vehicleSaves, load: (json) => new Vehicle( json ), table: "vehicles" },
+    { typeIDs: [19, 24], creator: "vehicle-creator", saves: (g) => g.vehicleSaves, load: (json) => new Vehicle( json ), table: "vehicles", bundled: () => ARTVEE_SAMPLES.map( (sample) => sample.save ) },
     { typeIDs: [17], creator: "fighter-creator", saves: (g) => g.fighterSaves, load: (json) => new AerospaceFighter( json ), table: "fighters" },
     { typeIDs: [21], creator: "infantry-creator", saves: (g) => g.infantrySaves, load: (json) => new InfantryPlatoon( json ), table: "infantry" },
     { typeIDs: [22], creator: "battle-armor-creator", saves: (g) => g.battleArmorSaves, load: (json) => new BattleArmor( json ), table: "battleArmor" },
@@ -126,7 +129,8 @@ export default class BattleMechAddMechDialog extends React.Component<IBattleMech
         const key = JSON.stringify( saves.map( (save) => String( save.uuid ) + String( save.lastUpdated ) ) );
         let cached = this.unitIndexes.get( kind );
         if( !cached || cached.key !== key ) {
-            cached = { key, index: buildClassicDesignIndex( getClassicUnitEntries( saves.map( (save) => kind.load( JSON.stringify( save ) ) ) ) ) };
+            const designs = ( saves as object[] ).concat( kind.bundled ? kind.bundled() : [] );
+            cached = { key, index: buildClassicDesignIndex( getClassicUnitEntries( designs.map( (save) => kind.load( JSON.stringify( save ) ) ) ) ) };
             this.unitIndexes.set( kind, cached );
         }
         return cached.index;
@@ -272,7 +276,7 @@ export default class BattleMechAddMechDialog extends React.Component<IBattleMech
 <fieldset className="fieldset">
     <legend>Master Unit List Search</legend>
     <p className="small-text">
-        Search the Master Unit List copy kept in the app by name, era, faction and more, then add the matching Classic design. A 'Mech matches one you saved first, else the bundled Skunk Werks 'Mech; vehicles, fighters, infantry, battle armor and ProtoMechs match the designs you saved, by name and model (infantry, battle armor and ProtoMechs by a name holding both). Idea from Camille, Centrella-Sworn on the Star League Discord.
+        Search the Master Unit List copy kept in the app by name, era, faction and more, then add the matching Classic design. A 'Mech matches one you saved first, else the bundled Skunk Werks 'Mech; vehicles, fighters, infantry, battle armor and ProtoMechs match the designs you saved (vehicles also the bundled ArtVees), by name and model (infantry, battle armor and ProtoMechs by a name holding both). Idea from Camille, Centrella-Sworn on the Star League Discord.
     </p>
     <MULSearchFilters
         filters={this.props.appGlobals.appSettings.cbtMULSearch}

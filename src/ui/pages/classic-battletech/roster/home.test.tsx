@@ -118,6 +118,21 @@ describe("Classic roster Master Unit List search", () => {
         expect(screen.getAllByRole("link", { name: "build it" })[0].getAttribute("href")).toContain("/classic-battletech/mech-creator");
     }, 30_000);
 
+    it("adds the bundled Classic design for an ArtVee found in the custom units, with nothing saved", async () => {
+        const appGlobals = makeAppGlobals();
+        appGlobals.appSettings.cbtMULSearch = newMULSearchFilters({ type: 19, term: "Falconet", sources: ["custom"] });
+        const onChange = vi.fn();
+        render(
+            <MemoryRouter>
+                <BattleMechAddMechDialog appGlobals={appGlobals} currentForce={appGlobals.currentCBTForce!.groups[0]} currentForceIndex={0} onChange={onChange} />
+            </MemoryRouter>
+        );
+        const add = await screen.findByRole("button", { name: /^Add Falconet ArtVee/ }, { timeout: 20_000 });
+        fireEvent.click(add);
+        const group: BattleMechGroup = onChange.mock.calls[0][0];
+        expect(group.vehicles.map((vehicle) => vehicle.getName() + " " + vehicle.getModel())).toEqual(["Falconet ArtVee FLC-1"]);
+    }, 30_000);
+
     // Round 2: each other Classic type matches a saved design by name and lands in its own table in the group.
     const otherTypes: { label: string; type: number; saves: keyof IAppGlobals; table: keyof BattleMechGroup; make: (name: string, model: string) => { exportJSON(): string } }[] = [
         { label: "combat vehicle", type: 19, saves: "vehicleSaves", table: "vehicles", make: (name, model) => { const unit = new Vehicle(); unit.setName(name); unit.setModel(model); return unit; } },
