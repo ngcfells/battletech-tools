@@ -202,7 +202,7 @@ describe("Printed Battledroids droids: the apocryphal sources", () => {
         // The figurine carries them in a turret on the center torso: mounted there as printed, nothing left over.
         expect(getPrintedTurretCriticals(mech).map(critical => critical.tag).sort()).toEqual(
             ["ammo-machine-gun-standard", "machine-gun", "machine-gun", "standard-ppc"]);
-        // The extra heat sinks wait for slots on every droid (TODO.md); no weapon or ammunition does.
+        // The extra heat sinks wait for slots on every droid (discussion #73); no weapon or ammunition does.
         expect(getUnallocatedCriticals(mech).filter(critical => critical.tag !== "heat-sink")).toEqual([]);
         expect(mech.getInstalledEquipment().filter(item => item.location === "ct").map(item => item.tag).sort()).toEqual([
             "ammo-lrm-standard", "ammo-lrm-standard", "ammo-machine-gun-standard", "machine-gun", "machine-gun", "standard-ppc",

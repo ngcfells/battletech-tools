@@ -1155,7 +1155,7 @@ export default class BattleMechSVG extends React.Component<IBattleMechSVGProps, 
         {this.props.mechData.getInternalStructure().rightLeg > 29 ? (<><DamageCircleSVG isFilled={this.props.mechData.structureDamaged("rl", 29)} xLoc={this.isBoxLeft + this.isBoxWidth / 2 + 108} yLoc={this.isBoxTop + 560} radius={10} inPlay={this.props.inPlay} clickLocation="rl" clickIndex={29} clickFunction={this.toggleISBubble} /></>) : (<></>)}
 
         {this.props.mechData.isTripod() ? (
-            // No dedicated Tripod diagram exists yet (see TODO.md) - Center Leg structure pips
+            // No dedicated Tripod diagram exists yet (issue #77) - Center Leg structure pips
             // are placed below the main legs so the location remains trackable in play.
             <>
                 {TRIPOD_CENTER_LEG_BUBBLES.slice(0, this.props.mechData.getInternalStructure().centerLeg ?? 0).map((position, index) => {

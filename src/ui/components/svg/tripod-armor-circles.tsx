@@ -8,7 +8,7 @@ import { TRIPOD_CENTER_LEG_BUBBLES } from './tripod-diagram-svg';
 * Tripod shares Biped's head/torso/arm/leg armor layout, plus a unique Center Leg
 * location neither Biped nor Quad have a slot for. Rather than duplicating the
 * entire Biped pip grid, this wraps it and adds a compact Center Leg pip block
-* below the existing legs (see TODO.md for the Tripod diagram art backlog item).
+* below the existing legs (issue #77 tracks the Tripod diagram art).
 */
 export default class TripodArmorCircles extends React.Component<ITripodArmorCirclesProps, ITripodArmorCirclesState> {
 

@@ -23,7 +23,7 @@ Not gaps (checked):
 - BAR 2-10 armor is in `support-vehicle-armor.ts`.
 - The RISC Repeating TSEMP is in the catalog.
 - B-Pod, M-Pod, Coolant and Chaff Pods, HarJel II/III, the Collapsible Command Module and Communications Equipment
-  are in the catalog, so TODO.md's older "no catalog record yet" list is out of date.
+  are in the catalog, so the retired TODO.md's (issue #80) older "no catalog record yet" list is out of date.
 - Prototype Double Heat Sinks, Freezers and Prototype Ferro-Fibrous are in the catalog.
 
 ## Batch A: weapons and fire control
