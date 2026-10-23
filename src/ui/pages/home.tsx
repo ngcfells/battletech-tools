@@ -166,6 +166,23 @@ export default class Home extends React.Component<IHomeProps, IHomeState> {
                   <ul className="news">
                   <li>
                   <h3>
+                      <strong>October 23rd, 2026</strong> - Bug fixes
+                    </h3>
+                    <h4>Author - NGCFells</h4>
+                      <ul>
+                        <li>Light and Clan XL engines survive the loss of a side torso; only the Inner Sphere XL and XXL engines are lost with one.</li>
+                        <li>Battle Value counts prototype CASE as CASE, and Clan artillery (Long Tom 560, Sniper 96, Thumper 48) uses its own Battle Value on every unit that can mount it: 'Mechs, vehicles, fighters, Small Craft, DropShips and capital ships.</li>
+                        <li>LRM launchers do 3 aerospace damage for every 5 missiles (LRM 20: 12), Inner Sphere and Clan, and the Clan Rotary ACs have the same aerospace heat as the Inner Sphere ones.</li>
+                        <li>On the 'Mech sheet, a weapon with no medium or long range bracket (the Nail and Rivet Guns) prints a dash instead of 0.</li>
+                        <li>Alpha Strike: heat only ever lowers a unit's damage, so two LRM 5s no longer show 5 short-range damage.</li>
+                        <li>Importing a design no longer keeps the previous design's quirks.</li>
+                        <li>The 'Mech Creator's Alpha Strike Role is a drop-down of the published ground roles instead of a text box.</li>
+                        <li>The Classic BattleTech roster page's issue link goes to the current project instead of Jeff's original one.</li>
+                        <li>Anti-orbital Long Tom rounds now do 5 points of standard-scale damage instead of 2 capital, after a suggestion from Vehrec on the Star League Discord: the round is mostly propellant, made to buffet landing DropShips. Against capital armor, standard damage is totaled, divided by 10 and rounded normally.</li>
+                      </ul>
+                   </li>
+                  <li>
+                  <h3>
                       <strong>October 22nd, 2026</strong> - Beta feedback and new record sheets for vehicles, fighters, Small Craft, DropShips, capital ships, battle armor, infantry, ProtoMechs, buildings, airships, satellites and <i>Battledroids</i> units
                     </h3>
                     <h4>Author - NGCFells</h4>

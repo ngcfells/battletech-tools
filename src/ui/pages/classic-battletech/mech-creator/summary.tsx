@@ -14,6 +14,7 @@ import CanonQuirksButton from '../../../components/canon-quirks-button';
 import TextSection from '../../../components/text-section';
 import InputField from '../../../components/form_elements/input_field';
 import { editionHasBattleValue, editionHasPrices, getRulesEdition } from '../../../../data/rules-editions';
+import { getMULGroundRoles } from '../../../../utils/mulUtilities';
 const ArrowCircleLeft = FaArrowCircleLeft as any;
 const ArrowCircleRight = FaArrowCircleRight as any;
 
@@ -27,7 +28,7 @@ export default class MechCreatorSummary extends React.Component<IHomeProps, IHom
         this.props.appGlobals.makeDocumentTitle("Summary | 'Mech Creator");
     }
 
-    setASRole = ( event: React.FormEvent<HTMLInputElement>): void => {
+    setASRole = ( event: React.FormEvent<HTMLSelectElement>): void => {
       if( this.props.appGlobals.currentBattleMech ) {
         this.props.appGlobals.currentBattleMech.setASRole( event.currentTarget.value );
         this.props.appGlobals.saveCurrentBattleMech( this.props.appGlobals.currentBattleMech );
@@ -162,11 +163,21 @@ export default class MechCreatorSummary extends React.Component<IHomeProps, IHom
                                       onChange={this.setASCustomName}
                                     />
 
-                                  <InputField
-                                      label="Alpha Strike Role"
+                                  <label>
+                                    Alpha Strike Role:<br />
+                                    {/* The roles published for ground units (issue 15); a role saved before the drop-down stays listed. */}
+                                    <select
+                                      aria-label="Alpha Strike Role"
                                       value={this.props.appGlobals.currentBattleMech.getASRole()}
                                       onChange={this.setASRole}
-                                    />
+                                    >
+                                      <option value="">None</option>
+                                      {getMULGroundRoles().map(role => <option key={role} value={role}>{role}</option>)}
+                                      {this.props.appGlobals.currentBattleMech.getASRole() && !getMULGroundRoles().includes(this.props.appGlobals.currentBattleMech.getASRole()) ? (
+                                        <option value={this.props.appGlobals.currentBattleMech.getASRole()}>{this.props.appGlobals.currentBattleMech.getASRole()}</option>
+                                      ) : null}
+                                    </select>
+                                  </label>
 
                                   {this.props.appGlobals.currentBattleMech.getAlphaStrikeSpecialAmmoOptions().length > 0 ? (
                                     <label>

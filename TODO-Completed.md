@@ -19,7 +19,9 @@ Verified with tests on `beta`.
 - [x] The record sheet prints a dash for a missing medium or long range bracket (Nail Gun). ([#31](https://github.com/ngcfells/battletech-tools/issues/31))
 - [x] Clan Rotary AC aerospace heat is 6, as the Inner Sphere one; CASE stays off Small Craft and DropShips (TM p.210). ([#29](https://github.com/ngcfells/battletech-tools/issues/29), [#30](https://github.com/ngcfells/battletech-tools/issues/30))
 - [x] Prototype CASE counts as CASE for Battle Value; Light and Clan XL engines survive a side torso loss. ([#26](https://github.com/ngcfells/battletech-tools/issues/26), [#27](https://github.com/ngcfells/battletech-tools/issues/27))
-- [x] Clan artillery (Long Tom 560, Sniper 96, Thumper 48) uses its own Battle Value on 'Mechs and vehicles (`battleValueClan`). ([#38](https://github.com/ngcfells/battletech-tools/issues/38))
+- [x] Clan artillery (Long Tom 560, Sniper 96, Thumper 48) uses its own Battle Value on every unit that can mount it: 'Mechs, vehicles, fighters, Small Craft, DropShips and capital ships (`battleValueClan`, shared `getItemBattleValue`). ([#38](https://github.com/ngcfells/battletech-tools/issues/38))
+- [x] 'Mech Creator: the Alpha Strike Role is a drop-down of the published ground roles. ([#15](https://github.com/ngcfells/battletech-tools/issues/15))
+- [x] Anti-orbital Long Tom round: 5 standard-scale damage, not 2 capital (user ruling 2026-10-23, after Vehrec).
 
 ### Moved from `TODO.md` on 2026-10-22 (9 items)
 
