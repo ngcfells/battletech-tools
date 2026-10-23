@@ -894,7 +894,7 @@ export class BattleMech {
         validLocations.forEach(locShorthand => {
             const longKey = BattleMech.MECH_LOCATION_MAP[locShorthand];
             const critArray: any[] = (this._criticals as any)[longKey] || [];
-            caseMap[locShorthand] = critArray.some(critical => matchesTag(critical, "case"));
+            caseMap[locShorthand] = critArray.some(critical => matchesTag(critical, "case") || matchesTag(critical, "case-prototype"));
             caseIIMap[locShorthand] = critArray.some(critical => matchesTag(critical, "case-ii") || matchesTag(critical, "clan-case-ii"));
         });
         // The next location inward on the Damage Transfer Diagram (TW p.123), legs left out: CASE II

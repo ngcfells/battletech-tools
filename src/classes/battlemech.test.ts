@@ -4820,6 +4820,10 @@ describe("Batch 26 explosive ammunition penalty by location (TM p.302, TO:AUE p.
         expect(penalised({ ammo: ["lt", "la"] }).locations).toEqual(["leftArm", "leftTorso"]);
     });
 
+    it("counts prototype CASE as CASE (issue 27)", () => {
+        expect(penalised({ ammo: ["lt", "la", "rt"], items: [["case-prototype", "lt"]] }).locations).toEqual(["rightTorso"]);
+    });
+
     it("treats a Light engine like a standard one", () => {
         expect(penalised({ engine: "light", ammo: ["lt", "la", "rt"], items: [["case", "lt"]] }).locations).toEqual(["rightTorso"]);
     });
