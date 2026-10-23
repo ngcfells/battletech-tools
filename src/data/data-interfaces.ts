@@ -329,6 +329,8 @@ export interface IEquipmentItem {
     extinct: number | null;
     reintroduced: number | null;
     battleValue?: number;
+    /** Battle Value of a Clan unit carrying this item, where it differs from `battleValue` (TO:AUE p.197 lists Clan artillery apart). */
+    battleValueClan?: number;
     battleValueDefensive?: boolean;
     battleValueOneShot?: number;
     heat: number;

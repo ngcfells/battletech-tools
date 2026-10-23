@@ -3001,7 +3001,7 @@ export default class Vehicle {
         log += "<strong>OFFENSIVE BATTLE RATING</strong><br />";
         if (this.isArtVee()) log += "ArtVee: movement from Vehicle Mode; Siege Mode (0 MP) adds nothing (blended, IO:AE p.185)<br />";
         const hasTC = this.hasTargetingComputer();
-        const baseWeaponBV = (item: IEquipmentItem) => (item.battleValue || 0) * (hasTC && isTargetingComputerWeapon(item) ? 1.25 : 1);
+        const baseWeaponBV = (item: IEquipmentItem) => ((this._tech.tag === "clan" || this._tech.tag === "mclan") && item.battleValueClan !== undefined ? item.battleValueClan : (item.battleValue || 0)) * (hasTC && isTargetingComputerWeapon(item) ? 1.25 : 1);
         const offensiveWeapons = this._equipmentList.filter((item) => this._isWeapon(item));
         const arcBV = (location: string) => offensiveWeapons.filter((item) => item.location === location).reduce((sum, item) => sum + baseWeaponBV(item), 0);
         // The weaker of the front and rear arcs counts half; side and turret weapons count in full.

@@ -17,3 +17,17 @@ describe("hasXLEngine (issue 26)", () => {
         expect(withEngine("standard", "is").hasXLEngine()).toBe(false);
     });
 });
+
+describe("Clan artillery Battle Value (issue 38)", () => {
+    const bv = (tech: "is" | "clan") => {
+        const mech = new BattleMech();
+        mech.setTech(tech);
+        mech.setTonnage(100);
+        mech.setWalkSpeed(3);
+        mech.addEquipmentFromTag("long-tom-artillery", tech, "", false, undefined, "", false, [], undefined, undefined);
+        return mech.getBattleValue();
+    };
+    it("a Clan 'Mech counts the Long Tom at 560, not 368", () => {
+        expect(bv("clan")).toBeGreaterThan(bv("is"));
+    });
+});

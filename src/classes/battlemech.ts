@@ -9452,6 +9452,12 @@ export class BattleMech {
      * A weapon's BV for the offensive rating. Machine gun arrays have no BV of their own: they are
      * worth 0.67 x the BV of the (up to four) linked machine guns in their location (TM p.228).
      */
+    /** The item's Battle Value for this unit's tech base: some items (Clan artillery) list a separate Clan value. */
+    private _itemBattleValue(item: IEquipmentItem): number {
+        const clan = this._tech.tag === "clan" || this._tech.tag === "mclan";
+        return (clan && item.battleValueClan !== undefined ? item.battleValueClan : item.battleValue) || 0;
+    }
+
     private _getWeaponBattleValue(item: IEquipmentItem): number {
         if (item.linkedWeaponTags?.length) {
             if (!item.location) return 0;
@@ -9462,9 +9468,9 @@ export class BattleMech {
         }
         // Targeting computer: direct-fire weapons x 1.25 (TM p.303).
         if (this.hasTargetingComputer() && isTargetingComputerWeapon(item)) {
-            return (item.battleValue || 0) * 1.25;
+            return (this._itemBattleValue(item)) * 1.25;
         }
-        return item.battleValue || 0;
+        return this._itemBattleValue(item);
     }
 
     /** Set the size of an installed variable item (Mechanical Jump Booster MP), within its catalog limits. */
