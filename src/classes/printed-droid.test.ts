@@ -298,14 +298,16 @@ describe("Printed Battledroids droids: the apocryphal sources", () => {
     });
 });
 
-// BD p.25: a location's armor is at most twice its internal structure boxes, the head up to 9. Read for the front
-// section of a torso: the book's own Stinger, Wasp, Phoenix Hawk, Archer and Marauder pass only that way.
+// BD p.25: a location's armor is at most twice its internal structure boxes, the head up to 9, a torso's front and
+// rear sections each apart: the book's own Stinger, Wasp, Phoenix Hawk, Archer and Marauder pass only that way.
 const overCap = (mech: BattleMech): string[] => {
     const structure = mech.getInternalStructure() as unknown as Record<string, number>;
     const a = mech.export().armor_allocation as unknown as Record<string, number>;
     const sums: [string, number, number][] = [
         ["head", a.head, 9], ["center torso", a.centerTorso, 2 * structure.centerTorso],
         ["left torso", a.leftTorso, 2 * structure.leftTorso], ["right torso", a.rightTorso, 2 * structure.rightTorso],
+        ["center torso rear", a.centerTorsoRear, 2 * structure.centerTorso],
+        ["left torso rear", a.leftTorsoRear, 2 * structure.leftTorso], ["right torso rear", a.rightTorsoRear, 2 * structure.rightTorso],
         ["left arm", a.leftArm, 2 * structure.leftArm], ["right arm", a.rightArm, 2 * structure.rightArm],
         ["left leg", a.leftLeg, 2 * structure.leftLeg], ["right leg", a.rightLeg, 2 * structure.rightLeg],
     ];

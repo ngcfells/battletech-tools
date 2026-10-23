@@ -53,7 +53,7 @@ export const mechArmorTypes: IArmorType[] = [
 		editionStats: {
 			battledroids: {
 				book: "BD", page: 24, name: "Armor", pointsPerTon: 16,
-				notes: "An Armor Value of 16 weighs 1 ton; added in .5- or 1-ton units (BD p.24). A location holds at most twice its internal structure boxes, and the head up to 9; the torsos split front and rear (BD p.25).",
+				notes: "An Armor Value of 16 weighs 1 ton; added in .5- or 1-ton units (BD p.24). A location holds at most twice its internal structure boxes, and the head up to 9; a torso's front and rear sections are capped apart, each at twice its boxes (BD p.25).",
 			},
 			"battletech-2nd-edition": null,
 			"battletech-manual": null,

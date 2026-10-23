@@ -166,8 +166,8 @@ describe("Rules edition selector", () => {
         const slow = build("battledroids", 20, 1);
         slow.setTonnage(5);
         expect([slow.getWalkSpeed(), slow.getEngine()?.rating]).toEqual([2, 10]);
-        // Head 9, every other location twice its boxes (BD p.25).
-        expect(mech.getMaxArmor()).toBe(9 + 2 * (3 + 2 + 2 + 1 + 1 + 1 + 1));
+        // Head 9, every other location twice its boxes, each torso's front and rear apart (BD p.25).
+        expect(mech.getMaxArmor()).toBe(9 + 2 * (1 + 1 + 1 + 1) + 2 * 2 * (3 + 2 + 2));
 
         const restored = new BattleMech(mech.exportJSON());
         expect([restored.getTonnage(), restored.getRulesEdition(), restored.getInternalStructure().centerTorso]).toEqual([5, "battledroids", 3]);
@@ -176,6 +176,49 @@ describe("Rules edition selector", () => {
         expect(restored.getInternalStructure().centerTorso).toBe(3);
         restored.setRulesEdition("master-rules");
         expect(restored.getRulesEditionIssues()).toContain(`Tonnage: 5 tons (not in ${getRulesEdition("master-rules").name})`);
+    });
+
+    // BD p.25: "the Armor Value may not be more than twice the number of internal structure boxes at that location",
+    // over the Armor Diagram's 11 locations, the torsos "divided into sections for front armor and rear armor". The
+    // Master Rules Revised adds that front and rear together stay within twice the boxes (BMR(R) p.120), as in
+    // Total Warfare. The book's own Stinger, Wasp, Phoenix Hawk, Archer and Marauder fit only the Battledroids way.
+    it("caps a torso's front and rear armor apart under Battledroids", () => {
+        const [droid, mech] = [build("battledroids", 60, 4), build("total-warfare", 60, 4)];
+        // 60 tons: center torso 20 boxes, side torsos 14 (BD p.24; TM p.52).
+        for (const unit of [droid, mech]) {
+            unit.setCenterTorsoArmor(30);
+            unit.setLeftTorsoArmor(20);
+            unit.setRightTorsoArmor(20);
+        }
+        expect([droid.getMaxCenterTorsoRearArmor(), droid.getMaxLeftTorsoRearArmor(), droid.getMaxRightTorsoRearArmor()]).toEqual([40, 28, 28]);
+        expect([mech.getMaxCenterTorsoRearArmor(), mech.getMaxLeftTorsoRearArmor(), mech.getMaxRightTorsoRearArmor()]).toEqual([10, 8, 8]);
+        droid.setCenterTorsoRearArmor(15);
+        mech.setCenterTorsoRearArmor(5);
+        expect([droid.getMaxCenterTorsoArmor(), mech.getMaxCenterTorsoArmor()]).toEqual([40, 35]);
+        expect(droid.getMaxArmor() - mech.getMaxArmor()).toBe(2 * (20 + 14 + 14));
+
+        droid.allocateArmorMax();
+        const max = droid.getArmorAllocation();
+        expect([max.centerTorso, max.centerTorsoRear, max.leftTorso, max.leftTorsoRear]).toEqual([40, 40, 28, 28]);
+        expect(droid.getTotalArmor()).toBe(droid.getMaxArmor());
+
+        // Best Guess spreads more than Total Warfare's maximum without passing any section's cap.
+        const sane = build("battledroids", 60, 4);
+        sane.setArmorWeight(15);
+        sane.allocateArmorSane();
+        const spread = sane.getArmorAllocation();
+        const structure = sane.getInternalStructure();
+        expect(sane.getTotalArmor()).toBe(240);
+        expect(spread.head).toBeLessThanOrEqual(9);
+        for (const [front, rear, boxes] of [
+            [spread.centerTorso, spread.centerTorsoRear, structure.centerTorso],
+            [spread.leftTorso, spread.leftTorsoRear, structure.leftTorso],
+            [spread.rightTorso, spread.rightTorsoRear, structure.rightTorso],
+        ]) {
+            expect(front).toBeLessThanOrEqual(2 * boxes);
+            expect(rear).toBeLessThanOrEqual(2 * boxes);
+        }
+        expect(sane.getTotalArmor()).toBeGreaterThan(mech.getMaxArmor());
     });
 
     // Internal Structure Table, BD p.24: the boxes come from the edition's own table.

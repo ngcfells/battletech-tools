@@ -7204,12 +7204,18 @@ export class BattleMech {
             return this.getChassisMaxArmor();
         }
 
-        private getChassisMaxArmor(): number {
-      // Dynamic fallback calculation: Head maximum is 9; Torso locations carry 2x internal structure
+    /** True when each torso's front and rear armor are capped apart, each at twice its boxes (Battledroids, BD p.25). */
+    public torsoArmorSectionsApart(): boolean {
+        return this.usesEarlierRulesEdition() && getRulesEdition(this._rulesEdition).torsoArmorSectionsApart === true;
+    }
+
+        private getChassisMaxArmor(torsoSections: number = this.torsoArmorSectionsApart() ? 2 : 1): number {
+      // Dynamic fallback calculation: Head maximum is 9; Torso locations carry 2x internal structure, front and
+      // rear together, or each section apart under Battledroids (BD p.25)
       let totalMaxArmor = 9 +
-        (this._internalStructure.centerTorso * 2) + 
-        (this._internalStructure.leftTorso * 2) + 
-        (this._internalStructure.rightTorso * 2);
+        (this._internalStructure.centerTorso * 2 * torsoSections) + 
+        (this._internalStructure.leftTorso * 2 * torsoSections) + 
+        (this._internalStructure.rightTorso * 2 * torsoSections);
 
       const typeTag = this._mechType.tag.toLowerCase();
 
@@ -10355,7 +10361,10 @@ export class BattleMech {
             this._calc();
             return;
         }
-        const percentage = remaining / chassisMax;
+        // Shares are of the shared-cap maximum; above it (Battledroids' separate rear caps) the leftovers fill in
+        const sharedMax = this.getChassisMaxArmor(1);
+        const percentage = Math.min(1, remaining / sharedMax);
+        const sectionsApart = this.torsoArmorSectionsApart();
         const internalStructure = this.getInternalStructure();
         const typeTag = this.getType().tag.toLowerCase();
         const hasArms = typeTag === "biped" || typeTag === "lam" || typeTag === "tripod";
@@ -10368,6 +10377,9 @@ export class BattleMech {
         // Room left in a location, honoring the shared front/rear torso caps
         const roomIn = (location: keyof IArmorAllocation): number => {
             const value = allocation[location] || 0;
+            if (sectionsApart && location !== "head") {
+                return structureOf(location.replace("Rear", "") as keyof IArmorAllocation) * 2 - value;
+            }
             switch (location) {
                 case "head":
                     return 9 - value;
@@ -10464,6 +10476,13 @@ export class BattleMech {
             frontRightLeg: 0
         };
         // Conditional multi-chassis segment processing
+        if (this.torsoArmorSectionsApart()) {
+            // Battledroids caps the front and the rear apart, each at twice the boxes (BD p.25)
+            for (const torso of ["centerTorso", "leftTorso", "rightTorso"] as const) {
+                maxAllocation[torso] = (internalStructure[torso] || 0) * 2;
+                maxAllocation[`${torso}Rear`] = (internalStructure[torso] || 0) * 2;
+            }
+        }
         if (hasArms) {
             maxAllocation.leftArm = (internalStructure.leftArm || 0) * 2;
             maxAllocation.rightArm = (internalStructure.rightArm || 0) * 2;
@@ -10492,24 +10511,24 @@ export class BattleMech {
     }
 
     public getMaxCenterTorsoRearArmor(): number {
-        return this.getInternalStructure().centerTorso * 2 - this.getArmorAllocation().centerTorso;
+        return this.getInternalStructure().centerTorso * 2 - (this.torsoArmorSectionsApart() ? 0 : this.getArmorAllocation().centerTorso);
     }
     public getMaxCenterTorsoArmor(): number {
-        return this.getInternalStructure().centerTorso * 2 - this.getArmorAllocation().centerTorsoRear;
+        return this.getInternalStructure().centerTorso * 2 - (this.torsoArmorSectionsApart() ? 0 : this.getArmorAllocation().centerTorsoRear);
     }
 
     public getMaxRightTorsoRearArmor(): number {
-        return this.getInternalStructure().rightTorso * 2 - this.getArmorAllocation().rightTorso;
+        return this.getInternalStructure().rightTorso * 2 - (this.torsoArmorSectionsApart() ? 0 : this.getArmorAllocation().rightTorso);
     }
     public getMaxRightTorsoArmor(): number {
-        return this.getInternalStructure().rightTorso * 2 - this.getArmorAllocation().rightTorsoRear;
+        return this.getInternalStructure().rightTorso * 2 - (this.torsoArmorSectionsApart() ? 0 : this.getArmorAllocation().rightTorsoRear);
     }
 
     public getMaxLeftTorsoRearArmor(): number {
-        return this.getInternalStructure().leftTorso * 2 - this.getArmorAllocation().leftTorso;
+        return this.getInternalStructure().leftTorso * 2 - (this.torsoArmorSectionsApart() ? 0 : this.getArmorAllocation().leftTorso);
     }
     public getMaxLeftTorsoArmor(): number {
-        return this.getInternalStructure().leftTorso * 2 - this.getArmorAllocation().leftTorsoRear;
+        return this.getInternalStructure().leftTorso * 2 - (this.torsoArmorSectionsApart() ? 0 : this.getArmorAllocation().leftTorsoRear);
     }
 
     public getAvailableEquipment(includeCustom: boolean = false, rulesLevel: number = 2): IEquipmentItem[] {

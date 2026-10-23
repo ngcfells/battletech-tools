@@ -81,6 +81,11 @@ export interface IRulesEdition {
      * BMR(R) p.120). One-shot weapons need none.
      */
     ammoTonsFor?: "launcher" | "class";
+    /**
+     * Each torso's front and rear armor sections are capped apart, each at twice the location's internal structure
+     * (BD p.25). Absent: front and rear together stay within twice the boxes (BMR(R) p.120; TM p.54).
+     */
+    torsoArmorSectionsApart?: boolean;
     /** Where the edition's game rules differ from Total Warfare's in what play mode works out; absent while not reviewed. */
     playRules?: IEditionPlayRules;
     /** The edition has no Battle Value system: the first one is in the Master Rules. */
@@ -132,6 +137,10 @@ export const btRulesEditions: IRulesEdition[] = [
             criticalHitRoll: 7,
         },
         ammoTonsFor: "launcher",
+        // "the Armor Value may not be more than twice the number of internal structure boxes at that location", over
+        // the Armor Diagram's 11 locations (BD p.25). The book's Stinger, Wasp, Phoenix Hawk, Archer and Marauder
+        // fit only this way.
+        torsoArmorSectionsApart: true,
         noBattleValue: true,
         noPrices: true,
         levels: [
