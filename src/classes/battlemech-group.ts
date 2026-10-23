@@ -205,6 +205,7 @@ export class BattleMechGroup {
             ...this.battleArmor.map( (squad) => squad.isMixedTech() ? "Mixed" : squad.isClan() ? "Clan" : "Inner Sphere" ),
             ...this.protoMechs.map( (point) => point.hasInterfaceCockpit() ? "Mixed" : "Clan" ),
             ...this.buildings.map( (building) => building.getTech().name ),
+            ...this.battledroidsUnits.map( () => "Battledroids" ),
         ];
         for( let tech of techNames ) {
             if( rv !== tech && rv !== "" ) {

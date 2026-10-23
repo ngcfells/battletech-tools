@@ -238,7 +238,7 @@ export default class BattleMechAddMechDialog extends React.Component<IBattleMech
 
         <fieldset className="fieldset">
             <legend>Solaris Skunk Werks Data Import</legend>
-            <p>Sorry, only Introductory Mechs can be trusted right now. Be sure to only semi-trust the units with a <CheckCircle title="This import looks good to add!" className="color-green" /> beside their name</p>
+            <p>'Mech designs bundled from Solaris Skunk Werks. A <CheckCircle title="This import looks good to add!" className="color-green" /> beside a name means its Battle Value and cost match the Skunk Werks file and nothing failed to import; hover over a red icon to see what differs.</p>
 
             <div className="row">
   <div className="col">
@@ -281,7 +281,7 @@ export default class BattleMechAddMechDialog extends React.Component<IBattleMech
                     {this.props.appGlobals.sswMechObjects.length === 0 ? (
                         <tbody>
                             <tr>
-                                <td className="text-center" colSpan={5}>
+                                <td className="text-center" colSpan={6}>
                                     <br />No 'mechs found for import. This should not be!
                                     <br />
                                     <br />
@@ -292,7 +292,7 @@ export default class BattleMechAddMechDialog extends React.Component<IBattleMech
                     {this.props.appGlobals.sswMechObjects.length > 0 && this.props.appGlobals.sswMechObjects.filter( this._filterSSWMechs ).length === 0 ? (
                         <tbody>
                             <tr>
-                                <td className="text-center" colSpan={5}>
+                                <td className="text-center" colSpan={6}>
                                     <br />There are no 'mechs found with your filter preferences
                                     <br />
                                     <br />

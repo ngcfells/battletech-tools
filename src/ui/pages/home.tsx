@@ -181,6 +181,7 @@ export default class Home extends React.Component<IHomeProps, IHomeState> {
                         <li>The 'Mech sheet's "Created with" footer is on three lines, so a long site name no longer runs into the trademark notices.</li>
                         <li>Alpha Strike roster: each ForcePack's name and members wrap in their own column beside the add button.</li>
                         <li>The 'Mech Creator's Skunk Werks imports page describes the importer as it is now and explains the green check.</li>
+                        <li>Classic BattleTech roster: the 2022 "In Development" banner is replaced with a description of what the roster does now, the page is titled as the Classic BattleTech roster, a one-unit favorite says "One Unit", and the printed force's tech is no longer "Mixed" because of an empty group or a group of <i>Battledroids</i> units.</li>
                         <li>Anti-orbital Long Tom rounds now do 5 points of standard-scale damage instead of 2 capital, after a suggestion from Vehrec on the Star League Discord: the round is mostly propellant, made to buffet landing DropShips. Against capital armor, standard damage is totaled, divided by 10 and rounded normally.</li>
                       </ul>
                    </li>

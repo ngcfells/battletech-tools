@@ -39,7 +39,7 @@ export default class BattleMechRosterHome extends React.Component<IHomeProps, IH
 
         }
 
-        this.props.appGlobals.makeDocumentTitle("Alpha Strike Roster");
+        this.props.appGlobals.makeDocumentTitle("Classic BattleTech Roster");
 
     }
 
@@ -204,12 +204,11 @@ export default class BattleMechRosterHome extends React.Component<IHomeProps, IH
 
         <UIPage current="classic-battletech-roster" appGlobals={this.props.appGlobals}>
 
-          <div className="alert alert-danger">
-            <h2 className="h4 text-center">In Development</h2>
-            <p>This area will be the equivalent of the Roster Maker in Alpha Strike. If anything seems to work, it likely doesn't. Use at your owm risk!</p>
-            <p><strong>Update 2022 Apr 28</strong>: The Print Force area should be working great. The Play Mode is making huge srides and getting closer! Initial tests are working for all phases, but it's still heavily under testing. I've not got to the Mechwarrior hits yet. There are quite a few interface bugs which are bothering me. </p>
-            <del><p><strong>Update 2022 Apr 3</strong>: With the exception of the Play/Print buttons this <em>MIGHT</em> work. I'll work on the Print button first, then onward to the intense Play button (since I'll have to code the electronic record sheet functions)</p></del>
-            <p className="text-center">Feel free to file an <a target="github" href="https://github.com/HeySporky/battletech-tools/issues">Issue</a> for anything here - I'll likely already be aware of it, but if you've got an idea for play-flow let me know. I've tried to make it so that everything is just a step-by-step process as you roll the dice and move your models.</p>
+          <div className="alert alert-info">
+            <h2 className="h4 text-center">Classic BattleTech Roster</h2>
+            <p>Build a force from any unit you have saved in the creators: 'Mechs, vehicles, aerospace and conventional fighters, Small Craft and DropShips, capital ships, conventional infantry, battle armor, ProtoMechs, buildings and <em>Battledroids</em> units. Add groups, name them and set each unit's skills, and the force's tonnage and Battle Value are totaled for you.</p>
+            <p><strong>Print Force</strong> prints the force list and a record sheet for every unit. <strong>Play Mode</strong> keeps electronic record sheets and walks you through each phase of the turn as you roll the dice and move your models on your own map. Play Mode is still being tested.</p>
+            <p className="text-center">Please file an <a target="github" href="https://github.com/HeySporky/battletech-tools/issues">issue</a> for anything that doesn't work, or for ideas on how play should flow.</p>
           </div>
           {this.props.appGlobals.currentCBTForce && this.props.appGlobals.currentCBTForce.getTotalUnits() > 0 ? (
             <div className="row">
@@ -582,7 +581,7 @@ export default class BattleMechRosterHome extends React.Component<IHomeProps, IH
 <td colSpan={1}>
 {favGroup.getTotalUnits() > 0 ? (
     <>
-        {favGroup.getTotalUnits() > 0 ? (
+        {favGroup.getTotalUnits() > 1 ? (
             <>{favGroup.getTotalUnits()} Units</>
         ) : (
             <>One Unit</>
@@ -608,7 +607,7 @@ export default class BattleMechRosterHome extends React.Component<IHomeProps, IH
 <TextSection
 label='Import to your CBT Favorites'
 >
-<div className="text-small">Use this uploader to restore your favorites from another device. The file will be named, unless it was renamed, "cbt-group-favorite-export-*,json"</div>
+<div className="text-small">Use this uploader to restore your favorites from another device. The file will be named, unless it was renamed, "cbt-group-favorite-export-*.json"</div>
 
 <label
 title="Click here to select a JSON file exported this page"

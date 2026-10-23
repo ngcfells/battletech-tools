@@ -282,6 +282,10 @@ export class BattleMechForce {
 
         for( let group of this.groups ) {
             let tech = group.getTech();
+            // An empty group has no tech of its own.
+            if( tech === "" ) {
+                continue;
+            }
             if( rv !== tech && rv !== "" ) {
                 rv = "Mixed";
             }  else {
