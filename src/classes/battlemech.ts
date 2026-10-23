@@ -8414,24 +8414,13 @@ export class BattleMech {
         return from[ Math.floor(Math.random() * from.length) ]
     }
 
+    /**
+     * An engine that loses 3 or more hits with a side torso: the Inner Sphere XL and the XXL. A Light or Clan XL engine
+     * (2 slots in each side torso) survives the loss of a side torso (TM p.47), so it does not count.
+     */
     public hasXLEngine(): boolean {
-        if(
-            this._engineType && this._engineType.criticals
-            && (
-                (this._engineType.criticals.clan && this._engineType.criticals.clan.lt && this._engineType.criticals.clan.lt > 0)
-                ||
-                (this._engineType.criticals.clan && this._engineType.criticals.clan.rt && this._engineType.criticals.clan.rt > 0)
-                ||
-                (this._engineType.criticals.is && this._engineType.criticals.is.lt && this._engineType.criticals.is.lt > 0)
-                ||
-                (this._engineType.criticals.is && this._engineType.criticals.is.rt && this._engineType.criticals.is.rt > 0)
-            )
-
-        ) {
-            return true;
-        }
-
-        return false;
+        const sideSlots = (this.getLargeEngineType() ?? this._engineType)?.criticals?.[this.getEngineTechBase()];
+        return (sideSlots?.lt ?? 0) >= 3 || (sideSlots?.rt ?? 0) >= 3;
     }
 
     public isWreckedBlurb(): string {
