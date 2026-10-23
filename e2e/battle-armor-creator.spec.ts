@@ -49,8 +49,8 @@ test("the TechManual's Purifier can be built, checked, saved and printed", async
     await expect(page.getByTestId("ba-cost-log")).toContainText("Structural cost: 425,000");
 
     await page.getByRole("link", { name: "View Record Sheet" }).click();
-    await expect(page.getByRole("heading", { name: "Purifier" })).toBeVisible();
-    await expect(page.getByTestId("battle-armor-sheet-troopers").getByRole("row")).toHaveCount(6);
+    await expect(page.getByTestId("ba-squad-1")).toContainText("Type:Purifier (Medium");
+    await expect(page.locator("[data-testid^='ba-squad-1-trooper-']")).toHaveCount(6);
 
     await page.goto("classic-battletech/battle-armor-creator");
     await page.getByRole("button", { name: /Save as New/ }).click();

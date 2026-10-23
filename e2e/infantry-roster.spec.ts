@@ -50,8 +50,14 @@ test("an infantry platoon joins the roster, takes damage in play and prints", as
     await expect(page.getByText("This Platoon is Under Strength")).toBeVisible();
 
     await page.goto("classic-battletech/roster/print");
-    await expect(page.getByRole("heading", { name: "Home Guard" })).toBeVisible();
-    await expect(page.getByTestId("infantry-sheet-line")).toContainText("28 troopers, 5.5 tons (10 active)");
+    const sheet = page.getByTestId("inf-platoon-1");
+    await expect(sheet).toContainText("Home Guard");
+    await expect(sheet).toContainText("Troopers:28 (");
+    await expect(sheet).toContainText("Transport Wt:5.5 tons");
+    // Ten of 28 left: troopers 11 to 28 are crossed off.
+    await expect(sheet.locator("[data-hit='filled']")).toHaveCount(18);
+    await expect(page.getByTestId("inf-platoon-1-trooper-11").locator("[data-hit='filled']")).toHaveCount(1);
+    await expect(page.getByTestId("inf-platoon-1-trooper-10").locator("[data-hit='filled']")).toHaveCount(0);
 
     expect(errors).toEqual([]);
 });

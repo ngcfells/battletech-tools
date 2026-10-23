@@ -214,6 +214,8 @@ test("Vehicle Creator: non-weapon battle armor equipment is offered at its own w
     await page.getByPlaceholder("Filter Equipment").fill("BA-Cutting Torch");
     await expect(row("BA-Cutting Torch").first()).toContainText("0.005");
     // The battle armor weapons with rules of their own are offered too; the Bomb Rack is Clan only.
+    // Ammunition is listed for mounted weapons only, unless all ammunition is shown.
+    await page.getByLabel(/Show all ammunition/).check();
     for (const name of ["BA-Taser", "BA-Pop-Up Mine", "BA-Tube Artillery", "BA-Tube Artillery Ammo"]) {
         await page.getByPlaceholder("Filter Equipment").fill(name);
         await expect(row(name).first()).toBeVisible();

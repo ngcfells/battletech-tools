@@ -34,8 +34,8 @@ test("a motorized laser rifle platoon can be built, checked, saved and printed",
     await expect(page.getByTestId("infantry-summary")).toContainText("Cost: 3,167,838 C-bills");
 
     await page.getByRole("link", { name: "View Record Sheet" }).click();
-    await expect(page.getByRole("heading", { name: "Third Crucis Lancers" })).toBeVisible();
-    await expect(page.getByTestId("infantry-sheet-line")).toHaveCount(1);
+    await expect(page.getByTestId("inf-platoon-1")).toContainText("Third Crucis Lancers");
+    await expect(page.locator("[data-testid^='inf-platoon-'][data-blank='false']")).toHaveCount(1);
 
     await page.goto("classic-battletech/infantry-creator");
     await page.getByRole("button", { name: /Save as New/ }).click();
@@ -111,7 +111,7 @@ test("infantry armor is offered at the Advanced rules level and the era limits t
     await expect(page.getByText("Infantry Armor: Ballistic Plate, Standard (damage divisor 2)")).toBeVisible();
     await expect(page.getByText(/Encumbering armor: -1 MP/)).toBeVisible();
     await page.getByRole("link", { name: "View Record Sheet" }).click();
-    await expect(page.getByText(/Damage Divisor 2E/)).toBeVisible();
+    await expect(page.getByTestId("inf-platoon-1")).toContainText("Damage Divisor:2E");
 
     expect(errors).toEqual([]);
 });
