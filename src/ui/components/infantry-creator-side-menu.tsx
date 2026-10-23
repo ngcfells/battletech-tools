@@ -7,6 +7,7 @@ const steps: { tag: string; path: string; title: string; subtitle?: string }[] =
     { tag: "home", path: "", title: "Welcome" },
     { tag: "platoon", path: "/platoon", title: "Step 1", subtitle: "Establish Platoon Type" },
     { tag: "weapons", path: "/weapons", title: "Step 2", subtitle: "Establish Platoon Weaponry" },
+    { tag: "technical-readout", path: "/technical-readout", title: "Step 3", subtitle: "Technical Readout" },
     { tag: "summary", path: "/summary", title: "Summary", subtitle: "Values and legality" },
 ];
 

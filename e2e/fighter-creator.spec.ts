@@ -29,7 +29,9 @@ test("an aerospace fighter can be built, armed, checked and saved", async ({ pag
     await page.getByRole("link", { name: /Next: Weapons and Equipment/ }).click();
     await expect(page.getByText("Nothing installed yet.")).toBeVisible();
 
-    await page.getByRole("link", { name: /Next: Summary/ }).click();
+    await page.getByRole("link", { name: /Next: Technical Readout/ }).click();
+    await expect(page.getByText("Step 4: Technical Readout (optional)")).toBeVisible();
+    await page.getByRole("link", { name: "Summary", exact: true }).click();
     await expect(page.getByText("This design is legal under the TechManual construction rules.")).toBeVisible();
     await expect(page.getByText("Summary: Testbed")).toBeVisible();
 
