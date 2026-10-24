@@ -3,7 +3,7 @@ import type { ICustomContentDraft } from '../../../../data/custom-content-types'
 import { missingFields } from '../../../../utils/sswDraftBuilder';
 import { ISSWImportResult, runSSWImportSession, sswImportLimitError } from '../../../../utils/sswImportSession';
 import { IAppGlobals } from '../../../app-router';
-import MechCreatorSideMenu from '../../../components/mech-creator-side-menu';
+import { MechCreatorSideMenu } from '../../../components/creator-side-menus';
 import TextSection from '../../../components/text-section';
 import UIPage from '../../../components/ui-page';
 

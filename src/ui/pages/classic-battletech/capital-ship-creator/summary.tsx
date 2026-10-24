@@ -3,7 +3,7 @@ import { Link } from 'react-router';
 import { FaArrowCircleLeft } from "react-icons/fa";
 import { IAppGlobals } from '../../../app-router';
 import SanitizedHTML from '../../../components/sanitized-html';
-import CapitalShipCreatorSideMenu from '../../../components/capital-ship-creator-side-menu';
+import { CapitalShipCreatorSideMenu } from '../../../components/creator-side-menus';
 import CapitalShipAlphaStrikeCard from '../../../components/capital-ship-as-card';
 import QuirkPicker from '../../../components/quirk-picker';
 import TextSection from '../../../components/text-section';

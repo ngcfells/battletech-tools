@@ -8,7 +8,7 @@ import { CUSTOM_HOMEBREW_RULES_LEVEL } from '../../../../data/equipment-registry
 import { INFANTRY_WEAPON_CATEGORIES } from '../../../../data/infantry-weapons';
 import { IAppGlobals } from '../../../app-router';
 import AvailableEquipment from '../../../components/available-equipment';
-import BuildingCreatorSideMenu from '../../../components/building-creator-side-menu';
+import { BuildingCreatorSideMenu } from '../../../components/creator-side-menus';
 import InputNumeric from "../../../components/form_elements/input_numeric";
 import TextSection from '../../../components/text-section';
 import TonnageBar from '../../../components/tonnage-bar';
@@ -196,7 +196,7 @@ export default class BuildingCreatorEquipment extends React.Component<IEquipment
 
                                 <div className="clear-both overflow-hidden">
                                     <hr />
-                                    <Link to={`${process.env.PUBLIC_URL}/classic-battletech/building-creator/summary`} className="btn btn-primary pull-right btn-sm">Next: Summary <ArrowCircleRight /></Link>
+                                    <Link to={`${process.env.PUBLIC_URL}/classic-battletech/building-creator/technical-readout`} className="btn btn-primary pull-right btn-sm">Next: Technical Readout <ArrowCircleRight /></Link>
                                     <div className="inline-block text-left">
                                         <Link to={`${process.env.PUBLIC_URL}/classic-battletech/building-creator/structure`} className="btn btn-primary btn-sm"><ArrowCircleLeft /> Previous Step</Link>
                                     </div>

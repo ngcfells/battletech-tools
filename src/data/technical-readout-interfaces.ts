@@ -56,7 +56,8 @@ export interface ITroEquipmentCopy {
 export interface ITroSpecValues {
     title: string;
     subtitle: string;
-    mass: string;
+    /** Left out for types with no mass of their own (buildings carry a weight capacity instead). */
+    mass?: string;
     cruisingSpeed?: string;
     maximumSpeed?: string;
     jumpCapacity?: string;

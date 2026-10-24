@@ -5,7 +5,7 @@ import BattleArmor, { BATTLE_ARMOR_LOCATION_NAMES, BattleArmorArm, MAX_BATTLE_AR
 import { battleArmorManipulators } from '../../../../data/battle-armor-construction';
 import { findBattleArmorEquipment } from '../../../../data/battle-armor-equipment';
 import { IAppGlobals } from '../../../app-router';
-import BattleArmorCreatorSideMenu from '../../../components/battle-armor-creator-side-menu';
+import { BattleArmorCreatorSideMenu } from '../../../components/creator-side-menus';
 import InputField from '../../../components/form_elements/input_field';
 import TextSection from '../../../components/text-section';
 import UIPage from '../../../components/ui-page';

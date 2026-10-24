@@ -8,7 +8,7 @@ import { chooseEra, getEraChoices, getTechChoices } from '../../../../data/era-c
 import { IAppGlobals } from '../../../app-router';
 import InputField from "../../../components/form_elements/input_field";
 import InputNumeric from "../../../components/form_elements/input_numeric";
-import SmallCraftCreatorSideMenu from '../../../components/small-craft-creator-side-menu';
+import { SmallCraftCreatorSideMenu } from '../../../components/creator-side-menus';
 import RulesEditionSelect from '../../../components/rules-edition-select';
 import RulesLevelSelect from '../../../components/rules-level-select';
 import TextSection from '../../../components/text-section';

@@ -10,7 +10,7 @@ import { IAppGlobals } from '../../../app-router';
 import InputField from "../../../components/form_elements/input_field";
 import InputNumeric from "../../../components/form_elements/input_numeric";
 import NumberField from "./_numberField";
-import CapitalShipCreatorSideMenu from '../../../components/capital-ship-creator-side-menu';
+import { CapitalShipCreatorSideMenu } from '../../../components/creator-side-menus';
 import RulesEditionSelect from '../../../components/rules-edition-select';
 import TextSection from '../../../components/text-section';
 import UIPage from '../../../components/ui-page';

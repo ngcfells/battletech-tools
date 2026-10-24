@@ -7,7 +7,7 @@ import { IAppGlobals } from '../../../app-router';
 import CriticalAllocationSection from '../../../components/critical-allocation-section';
 import InputCheckbox from '../../../components/form_elements/input_checkbox';
 import InputNumeric from '../../../components/form_elements/input_numeric';
-import MechCreatorSideMenu from '../../../components/mech-creator-side-menu';
+import { MechCreatorSideMenu } from '../../../components/creator-side-menus';
 import MechCreatorStatusbar from '../../../components/mech-creator-status-bar';
 import StandardModal from '../../../components/standard-modal';
 import TextSection from '../../../components/text-section';

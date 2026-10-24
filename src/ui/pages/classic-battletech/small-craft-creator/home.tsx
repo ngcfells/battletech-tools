@@ -5,7 +5,7 @@ import SmallCraft, { ISmallCraftExport } from '../../../../classes/small-craft';
 import { importSmallCraftBlk } from '../../../../classes/small-craft-blk';
 import { MAX_BLK_FILE_LENGTH } from '../../../../utils/blk-file';
 import { IAppGlobals } from '../../../app-router';
-import SmallCraftCreatorSideMenu from '../../../components/small-craft-creator-side-menu';
+import { SmallCraftCreatorSideMenu } from '../../../components/creator-side-menus';
 import TextSection from '../../../components/text-section';
 import UIPage from '../../../components/ui-page';
 import { confirmReplaceDesign, designWouldBeLost } from '../../../components/confirm-replace-design';

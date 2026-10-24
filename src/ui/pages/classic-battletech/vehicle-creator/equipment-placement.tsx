@@ -2,7 +2,7 @@ import React, { type JSX } from 'react';
 import { FaArrowCircleLeft, FaArrowCircleRight } from "react-icons/fa";
 import { Link } from 'react-router';
 import { IAppGlobals } from '../../../app-router';
-import VehicleCreatorSideMenu from '../../../components/vehicle-creator-side-menu';
+import { VehicleCreatorSideMenu } from '../../../components/creator-side-menus';
 import TextSection from '../../../components/text-section';
 import TonnageBar from '../../../components/tonnage-bar';
 import UIPage from '../../../components/ui-page';

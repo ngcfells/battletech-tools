@@ -6,7 +6,7 @@ import { GRAV_DECKS } from '../../../../data/advanced-aerospace-construction';
 import { findTransportBayType, quartersTypes, transportBayTypes } from '../../../../data/small-craft-construction';
 import { IAppGlobals } from '../../../app-router';
 import NumberField from "./_numberField";
-import CapitalShipCreatorSideMenu from '../../../components/capital-ship-creator-side-menu';
+import { CapitalShipCreatorSideMenu } from '../../../components/creator-side-menus';
 import TextSection from '../../../components/text-section';
 import UIPage from '../../../components/ui-page';
 import CapitalShipStatusBar from './_statusBar';

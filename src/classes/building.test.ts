@@ -1342,7 +1342,9 @@ describe("capital and sub-capital weapons on buildings (TO:AR pp.129-130; TO:AUE
         building.setHeatSinks(52);
         expect(building.getIssues()).toEqual([]);
         expect(building.getRequiredRulesLevel()).toBe(BUILDING_RULES_LEVEL);
-        expect(building.getWeights().map((row) => row.name)).toEqual(expect.arrayContaining(["NL35, hex 1 with 2", "Barracuda, 10 shots, hex 3", "Capital Fire Control"]));
+        expect(building.getWeights().map((row) => [row.name, row.location])).toEqual(expect.arrayContaining([
+            ["NL35", "Hex 1 with 2"], ["Barracuda, 10 shots", "Hex 3"], ["Capital Fire Control", undefined],
+        ]));
     });
 
     it("drops them when the classification changes", () => {
@@ -1451,5 +1453,41 @@ describe("custom rule: capital weapons share an ammunition bunker in a hex next 
         const damaged = new Building();
         damaged.importJSON(JSON.stringify(saved));
         expect(damaged.getCapitalWeapons().map((mount) => mount.ammoHex)).toEqual([null, null, null]);
+    });
+});
+
+describe("Technical Readout (TRO fields round 2, #78)", () => {
+    it("saves and loads the TRO record with the building", () => {
+        const building = kenyon();
+        building.tro.setProduction("manufacturer", "Kendall Fortifications");
+        building.tro.setText("overview", "A hardened gun emplacement.");
+        const copy = new Building();
+        copy.importJSON(building.exportJSON());
+        expect(copy.tro.getProduction("manufacturer")).toBe("Kendall Fortifications");
+        expect(copy.tro.getText("overview")).toBe("A hardened gun emplacement.");
+    });
+
+    it("gives every equipment weight line its hex, and the summary's hex-free name", () => {
+        const fortress = tara();
+        fortress.addEquipmentFromTag("medium-laser", 2, true);
+        const standard = new Building();
+        standard.setClassification("standard");
+        standard.setHexes(2);
+        const rifle = standard.addLightWeapon("inf-auto-rifle", 1)!;
+        const lines = [...fortress.getWeights(), ...standard.getWeights()];
+        expect(lines.find((line) => line.name.startsWith("Medium Laser"))?.location).toBe("Hex 2");
+        expect(lines.find((line) => line.name.startsWith(rifle.weapon.name))?.location).toBe("Hex 1");
+        expect(lines.filter((line) => line.name.includes(", hex"))).toEqual([]);
+        expect(lines.find((line) => line.name.startsWith("Armor"))?.location).toBeUndefined();
+    });
+
+    it("totals the weight lines without per-hex rounding: a 31-ton generator over 6 hexes weighs 31 tons, not 31.002", () => {
+        const building = tara();
+        building.setGenerator("fusion");
+        building.addEquipmentFromTag("medium-laser");
+        expect(building.getGeneratorWeight()).toBe(31);
+        const lines = building.getWeights();
+        expect(building.getTotalWeight()).toBe(Math.round(lines.reduce((sum, line) => sum + line.weight, 0) * 1000) / 1000);
+        expect(building.getTotalWeight()).toBe(54 + 31 + 1);
     });
 });

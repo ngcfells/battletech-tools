@@ -4,7 +4,7 @@ import { FaArrowCircleLeft, FaArrowCircleRight } from "react-icons/fa";
 import InfantryPlatoon, { INFANTRY_SPECIAL_FEATURES } from '../../../../classes/infantry-platoon';
 import { IInfantryWeapon, INFANTRY_WEAPON_CATEGORIES } from '../../../../data/infantry-weapons';
 import { IAppGlobals } from '../../../app-router';
-import InfantryCreatorSideMenu from '../../../components/infantry-creator-side-menu';
+import { InfantryCreatorSideMenu } from '../../../components/creator-side-menus';
 import TextSection from '../../../components/text-section';
 import UIPage from '../../../components/ui-page';
 const ArrowCircleLeft = FaArrowCircleLeft as any;

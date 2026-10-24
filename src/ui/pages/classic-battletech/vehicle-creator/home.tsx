@@ -3,7 +3,7 @@ import { Link } from 'react-router';
 import { FaArrowCircleRight, FaFile, FaFolderOpen, FaSave, FaTrash } from "react-icons/fa";
 import Vehicle, { IVehicleExport } from '../../../../classes/vehicle';
 import { IAppGlobals } from '../../../app-router';
-import VehicleCreatorSideMenu from '../../../components/vehicle-creator-side-menu';
+import { VehicleCreatorSideMenu } from '../../../components/creator-side-menus';
 import TextSection from '../../../components/text-section';
 import BlkImportSection, { IBlkImportOutcome } from '../../../components/blk-import-section';
 import { importSupportVehicleBlk } from '../../../../classes/support-vehicle-blk';

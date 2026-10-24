@@ -7,7 +7,7 @@ import { CUSTOM_HOMEBREW_RULES_LEVEL } from '../../../../data/equipment-registry
 import { IAppGlobals } from '../../../app-router';
 import AvailableEquipment from '../../../components/available-equipment';
 import { availabilityOptionLabel } from '../../../components/availability-options';
-import FighterCreatorSideMenu from '../../../components/fighter-creator-side-menu';
+import { FighterCreatorSideMenu } from '../../../components/creator-side-menus';
 import InputNumeric from "../../../components/form_elements/input_numeric";
 import TextSection from '../../../components/text-section';
 import TonnageBar from '../../../components/tonnage-bar';

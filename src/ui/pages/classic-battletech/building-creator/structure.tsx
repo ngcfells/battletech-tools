@@ -6,7 +6,7 @@ import { BUILDING_CLASSIFICATIONS } from '../../../../data/building-classificati
 import { btTechOptions } from '../../../../data/tech-options';
 import { chooseEra, getEraChoices, getTechChoices } from '../../../../data/era-choice';
 import { IAppGlobals } from '../../../app-router';
-import BuildingCreatorSideMenu from '../../../components/building-creator-side-menu';
+import { BuildingCreatorSideMenu } from '../../../components/creator-side-menus';
 import InputField from "../../../components/form_elements/input_field";
 import InputNumeric from "../../../components/form_elements/input_numeric";
 import RulesEditionSelect from '../../../components/rules-edition-select';
@@ -138,7 +138,7 @@ export default class BuildingCreatorStructure extends React.Component<IStructure
                                 </label>
                             ) : null}
                             <p data-testid="building-capacity">
-                                <strong>Size</strong>: {building.getHexes()} {building.getHexLabel(building.getHexes() !== 1)}, {building.getLevels()} {building.getLevels() === 1 ? "level" : "levels"} &nbsp;|&nbsp;
+                                <strong>Size</strong>: {building.getSizeText()} &nbsp;|&nbsp;
                                 <strong>Internal Weight Capacity</strong>: {building.getCapacityPerHex()} tons a {building.getHexLabel()}
                                 {building.getHexes() > 1 ? `, ${building.getTotalCapacity()} in all` : ""}
                             </p>

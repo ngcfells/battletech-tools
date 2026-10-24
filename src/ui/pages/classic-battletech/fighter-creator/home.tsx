@@ -3,7 +3,7 @@ import { Link } from 'react-router';
 import { FaArrowCircleRight, FaFile, FaFolderOpen, FaSave, FaTrash } from "react-icons/fa";
 import AerospaceFighter, { IAerospaceFighterExport } from '../../../../classes/aerospace-fighter';
 import { IAppGlobals } from '../../../app-router';
-import FighterCreatorSideMenu from '../../../components/fighter-creator-side-menu';
+import { FighterCreatorSideMenu } from '../../../components/creator-side-menus';
 import TextSection from '../../../components/text-section';
 import BlkImportSection, { IBlkImportOutcome } from '../../../components/blk-import-section';
 import { importFixedWingSupportBlk } from '../../../../classes/support-vehicle-blk';

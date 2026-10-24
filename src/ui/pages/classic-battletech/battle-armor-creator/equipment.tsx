@@ -5,7 +5,7 @@ import BattleArmor, { BATTLE_ARMOR_LOCATION_NAMES, BATTLE_ARMOR_WEAPON_PACK, Bat
 import { BATTLE_ARMOR_TURRET } from '../../../../data/battle-armor-construction';
 import { IBattleArmorEquipment, battleArmorMineTypes, findBattleArmorEquipment, findBattleArmorMineType } from '../../../../data/battle-armor-equipment';
 import { IAppGlobals } from '../../../app-router';
-import BattleArmorCreatorSideMenu from '../../../components/battle-armor-creator-side-menu';
+import { BattleArmorCreatorSideMenu } from '../../../components/creator-side-menus';
 import TextSection from '../../../components/text-section';
 import TonnageBar from '../../../components/tonnage-bar';
 import UIPage from '../../../components/ui-page';

@@ -6,11 +6,8 @@ import StatBar from '../../../components/stat-bar';
 const Trash = FaTrash as any;
 
 /** One line on what a building is: "Heavy Gun Emplacement, CF 80, 1 hex, 1 level". */
-export const buildingSummary = (building: Building): string => {
-    const type = building.getType();
-    return `${type.tag === "none" ? "" : type.name + " "}${building.getClassification().name}, CF ${building.getCF()}${building.isCapitalScale() ? " (capital scale)" : ""}, `
-        + `${building.getHexes()} ${building.getHexLabel(building.getHexes() !== 1)}, ${building.getLevels()} ${building.getLevels() === 1 ? "level" : "levels"}`;
-};
+export const buildingSummary = (building: Building): string =>
+    `${building.getTypeName()}, CF ${building.getCF()}${building.isCapitalScale() ? " (capital scale)" : ""}, ${building.getSizeText()}`;
 
 /**
  * The gun emplacements and other buildings in a Classic BattleTech roster group: add saved buildings from the

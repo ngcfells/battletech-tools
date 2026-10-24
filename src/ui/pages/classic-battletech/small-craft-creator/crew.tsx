@@ -5,7 +5,7 @@ import SmallCraft from '../../../../classes/small-craft';
 import { findTransportBayType, quartersTypes, transportBayTypes } from '../../../../data/small-craft-construction';
 import { IAppGlobals } from '../../../app-router';
 import InputNumeric from "../../../components/form_elements/input_numeric";
-import SmallCraftCreatorSideMenu from '../../../components/small-craft-creator-side-menu';
+import { SmallCraftCreatorSideMenu } from '../../../components/creator-side-menus';
 import TextSection from '../../../components/text-section';
 import UIPage from '../../../components/ui-page';
 import SmallCraftStatusBar from './_statusBar';

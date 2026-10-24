@@ -3,7 +3,7 @@ import { Link } from 'react-router';
 import { FaArrowCircleLeft } from "react-icons/fa";
 import { formatProtoMechASDamage } from '../../../../classes/protomech';
 import { IAppGlobals } from '../../../app-router';
-import ProtoMechCreatorSideMenu from '../../../components/protomech-creator-side-menu';
+import { ProtoMechCreatorSideMenu } from '../../../components/creator-side-menus';
 import TextSection from '../../../components/text-section';
 import UIPage from '../../../components/ui-page';
 const ArrowCircleLeft = FaArrowCircleLeft as any;

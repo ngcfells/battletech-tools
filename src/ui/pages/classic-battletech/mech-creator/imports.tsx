@@ -7,7 +7,7 @@ import { sortByMechName } from '../../../../utils/sortByMechName';
 import { getSSWRulesLevelLabel } from '../../../../utils/sswUtils';
 import { IAppGlobals } from '../../../app-router';
 import InputField from '../../../components/form_elements/input_field';
-import MechCreatorSideMenu from '../../../components/mech-creator-side-menu';
+import { MechCreatorSideMenu } from '../../../components/creator-side-menus';
 import SanitizedHTML from '../../../components/sanitized-html';
 import StandardModal from "../../../components/standard-modal";
 import BattleMechSVG from '../../../components/svg/battlemech-svg';

@@ -7,7 +7,7 @@ import {
 } from '../../../../data/protomech-construction';
 import { IAppGlobals } from '../../../app-router';
 import InputField from "../../../components/form_elements/input_field";
-import ProtoMechCreatorSideMenu from '../../../components/protomech-creator-side-menu';
+import { ProtoMechCreatorSideMenu } from '../../../components/creator-side-menus';
 import RulesEditionSelect from '../../../components/rules-edition-select';
 import RulesLevelSelect from '../../../components/rules-level-select';
 import TextSection from '../../../components/text-section';

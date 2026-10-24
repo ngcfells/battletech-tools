@@ -6,7 +6,7 @@ import {
     BATTLE_ARMOR_MAX_SQUAD, BattleArmorMotive, battleArmorFormations, battleArmorManipulators, battleArmorWeightClasses,
 } from '../../../../data/battle-armor-construction';
 import { IAppGlobals } from '../../../app-router';
-import BattleArmorCreatorSideMenu from '../../../components/battle-armor-creator-side-menu';
+import { BattleArmorCreatorSideMenu } from '../../../components/creator-side-menus';
 import InputField from "../../../components/form_elements/input_field";
 import RulesEditionSelect from '../../../components/rules-edition-select';
 import RulesLevelSelect from '../../../components/rules-level-select';

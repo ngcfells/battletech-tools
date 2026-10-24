@@ -3,7 +3,7 @@ import { Link } from 'react-router';
 import { FaArrowCircleLeft } from "react-icons/fa";
 import { FIGHTER_ARCS, FIGHTER_LOCATIONS, formatFighterASDamage } from '../../../../classes/aerospace-fighter';
 import { IAppGlobals } from '../../../app-router';
-import FighterCreatorSideMenu from '../../../components/fighter-creator-side-menu';
+import { FighterCreatorSideMenu } from '../../../components/creator-side-menus';
 import SanitizedHTML from '../../../components/sanitized-html';
 import QuirkPicker from '../../../components/quirk-picker';
 import TextSection from '../../../components/text-section';

@@ -3,7 +3,7 @@ import { Link } from 'react-router';
 import { FaArrowCircleRight, FaFile, FaFolderOpen, FaSave, FaTrash } from "react-icons/fa";
 import InfantryPlatoon, { IInfantryPlatoonExport, INFANTRY_MOTIVE_TYPES } from '../../../../classes/infantry-platoon';
 import { IAppGlobals } from '../../../app-router';
-import InfantryCreatorSideMenu from '../../../components/infantry-creator-side-menu';
+import { InfantryCreatorSideMenu } from '../../../components/creator-side-menus';
 import TextSection from '../../../components/text-section';
 import UIPage from '../../../components/ui-page';
 import { confirmReplaceDesign, designWouldBeLost } from '../../../components/confirm-replace-design';

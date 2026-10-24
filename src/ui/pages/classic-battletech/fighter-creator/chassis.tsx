@@ -7,7 +7,7 @@ import { chooseEra, getEraChoices, getTechChoices } from '../../../../data/era-c
 import { SRCS_RULES_LEVEL } from '../../../../data/robotic-control-systems';
 import { IAppGlobals } from '../../../app-router';
 import { availabilityOptionLabel, isOptionShown } from '../../../components/availability-options';
-import FighterCreatorSideMenu from '../../../components/fighter-creator-side-menu';
+import { FighterCreatorSideMenu } from '../../../components/creator-side-menus';
 import InputField from "../../../components/form_elements/input_field";
 import InputNumeric from "../../../components/form_elements/input_numeric";
 import RulesEditionSelect from '../../../components/rules-edition-select';

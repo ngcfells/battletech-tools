@@ -4,7 +4,7 @@ import { FaArrowCircleLeft, FaArrowCircleRight } from "react-icons/fa";
 import AerospaceFighter, { FIGHTER_ARCS, FighterArc } from '../../../../classes/aerospace-fighter';
 import { IAppGlobals } from '../../../app-router';
 import { availabilityOptionLabel, isOptionShown } from '../../../components/availability-options';
-import FighterCreatorSideMenu from '../../../components/fighter-creator-side-menu';
+import { FighterCreatorSideMenu } from '../../../components/creator-side-menus';
 import InputNumeric from "../../../components/form_elements/input_numeric";
 import TextSection from '../../../components/text-section';
 import UIPage from '../../../components/ui-page';

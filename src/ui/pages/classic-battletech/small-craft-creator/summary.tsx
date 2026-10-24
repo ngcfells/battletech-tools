@@ -4,7 +4,7 @@ import { FaArrowCircleLeft } from "react-icons/fa";
 import { IAppGlobals } from '../../../app-router';
 import SanitizedHTML from '../../../components/sanitized-html';
 import SmallCraftAlphaStrikeCard from '../../../components/small-craft-as-card';
-import SmallCraftCreatorSideMenu from '../../../components/small-craft-creator-side-menu';
+import { SmallCraftCreatorSideMenu } from '../../../components/creator-side-menus';
 import QuirkPicker from '../../../components/quirk-picker';
 import TextSection from '../../../components/text-section';
 import UIPage from '../../../components/ui-page';

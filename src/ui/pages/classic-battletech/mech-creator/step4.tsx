@@ -4,7 +4,7 @@ import { Link } from 'react-router';
 import { makeRange } from '../../../../utils/makeRange';
 import { IAppGlobals } from '../../../app-router';
 import InputCheckbox from '../../../components/form_elements/input_checkbox';
-import MechCreatorSideMenu from '../../../components/mech-creator-side-menu';
+import { MechCreatorSideMenu } from '../../../components/creator-side-menus';
 import MechCreatorStatusbar from '../../../components/mech-creator-status-bar';
 import SanitizedHTML from '../../../components/sanitized-html';
 import BipedArmorDiagramSVG from '../../../components/svg/biped-armor-diagram';

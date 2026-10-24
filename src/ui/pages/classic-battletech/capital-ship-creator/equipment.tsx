@@ -8,7 +8,7 @@ import { findCapitalWeapon, getCapitalAmmoTags } from '../../../../data/capital-
 import { getAdvancedAerospaceType } from '../../../../data/advanced-aerospace-construction';
 import { IAppGlobals } from '../../../app-router';
 import AvailableEquipment from '../../../components/available-equipment';
-import CapitalShipCreatorSideMenu from '../../../components/capital-ship-creator-side-menu';
+import { CapitalShipCreatorSideMenu } from '../../../components/creator-side-menus';
 import TextSection from '../../../components/text-section';
 import TonnageBar from '../../../components/tonnage-bar';
 import UIPage from '../../../components/ui-page';

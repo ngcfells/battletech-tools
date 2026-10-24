@@ -3,7 +3,7 @@ import { Link } from 'react-router';
 import { FaArrowCircleLeft } from "react-icons/fa";
 import { INFANTRY_SPECIAL_FEATURES, formatInfantryASDamage } from '../../../../classes/infantry-platoon';
 import { IAppGlobals } from '../../../app-router';
-import InfantryCreatorSideMenu from '../../../components/infantry-creator-side-menu';
+import { InfantryCreatorSideMenu } from '../../../components/creator-side-menus';
 import TextSection from '../../../components/text-section';
 import UIPage from '../../../components/ui-page';
 const ArrowCircleLeft = FaArrowCircleLeft as any;

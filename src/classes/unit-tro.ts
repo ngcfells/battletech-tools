@@ -5,6 +5,7 @@ import { SMALL_CRAFT_ARCS, SmallCraftArc } from "../data/small-craft-constructio
 import AerospaceFighter, { FIGHTER_ARCS, FIGHTER_LOCATIONS } from "./aerospace-fighter";
 import { ADVANCED_AEROSPACE_FACINGS, AdvancedAerospaceArc } from "../data/advanced-aerospace-construction";
 import BattleArmor from "./battle-armor";
+import Building from "./building";
 import CapitalShip from "./capital-ship";
 import InfantryPlatoon from "./infantry-platoon";
 import ProtoMech from "./protomech";
@@ -12,9 +13,9 @@ import SmallCraft from "./small-craft";
 import Vehicle from "./vehicle";
 
 // TRO fields round 2: the shared Technical Readout adapter for the Classic types other than 'Mechs (those have
-// battlemech-tro.ts), JumpShips, WarShips and space stations included. Each type gives its spec block, component rows, equipment and construction table.
+// battlemech-tro.ts), JumpShips, WarShips, space stations and buildings included. Each type gives its spec block, component rows, equipment and construction table.
 
-export type TroUnit = Vehicle | AerospaceFighter | InfantryPlatoon | BattleArmor | ProtoMech | SmallCraft | CapitalShip;
+export type TroUnit = Vehicle | AerospaceFighter | InfantryPlatoon | BattleArmor | ProtoMech | SmallCraft | CapitalShip | Building;
 
 /** Modern TROs print speeds in kph: 10.8 kph per movement point, to the whole kph. */
 const kph = (movementPoints: number): string => `${Math.round(movementPoints * 10.8)} kph`;
@@ -73,6 +74,10 @@ const catalogEquipment = (items: IEquipmentItem[], locationName: (location?: str
     .filter((item) => item && !item.isAmmo)
     .map((item) => ({ item, name: item.name, location: locationName(item.location?.toString()), armament: item.category !== "Miscellaneous Equipment", mass: `${item.weight}` }));
 
+/** Weapons kept as mounts with their own uuid (capital, sub-capital and a building's Light and Medium weapons). */
+const mountEquipment = <T extends { uuid: string; weapon: { tag: string; name: string } }>(mounts: T[], where: (mount: T) => string): IUnitTroParts["equipment"] =>
+    mounts.map((mount) => ({ item: { uuid: mount.uuid, tag: mount.weapon.tag }, name: mount.weapon.name, location: where(mount), armament: true }));
+
 const subtitle = (...parts: (string | undefined)[]): string => parts.filter(Boolean).join(" · ");
 
 /** A mass in tons, to the kilogram, without floating-point tails. */
@@ -88,7 +93,14 @@ const engineWithThrust = (label: string, mass: string, unit: { getSafeThrust(): 
 ];
 
 /** One construction row per weight line, in the unit's own order, so the table adds up to the unit's mass. */
-interface IWeightLine { name: string; weight: number; item?: { location?: { toString(): string } } }
+interface IWeightLine {
+    name: string;
+    weight: number;
+    /** An equipment line's item, located by its own location. */
+    item?: { location?: { toString(): string } };
+    /** An equipment line's location, for types whose lines say where they are instead of carrying the item. */
+    location?: string;
+}
 
 /**
  * Splits a weight list into the rows above "Weapons and Equipment" and the rows under it. Equipment lines carry their
@@ -105,9 +117,9 @@ function weightLineRows(
     const equipmentRows: ITroConstructionRow[] = [];
     let pastEquipment = false;
     for (const line of lines) {
-        if (line.item) {
+        if (line.item || line.location !== undefined) {
             pastEquipment = true;
-            equipmentRows.push({ label: line.name, value: locationName(line.item.location?.toString()), mass: tonsText(line.weight) });
+            equipmentRows.push({ label: line.name, value: line.location ?? locationName(line.item?.location?.toString()), mass: tonsText(line.weight) });
         } else if (pastEquipment && afterEquipment === "equipment") {
             equipmentRows.push({ label: line.name, mass: tonsText(line.weight) });
         } else {
@@ -364,7 +376,7 @@ function smallCraftParts(craft: SmallCraft): IUnitTroParts {
         equipmentRows,
         equipment: [
             ...catalogEquipment(craft.getEquipmentList(), arcName),
-            ...craft.getCapitalWeapons().map((mount) => ({ item: { uuid: mount.uuid, tag: mount.weapon.tag }, name: mount.weapon.name, location: arcName(mount.location), armament: true })),
+            ...mountEquipment(craft.getCapitalWeapons(), (mount) => arcName(mount.location)),
         ],
     };
 }
@@ -401,7 +413,57 @@ function capitalShipParts(ship: CapitalShip): IUnitTroParts {
         equipmentRows,
         equipment: [
             ...catalogEquipment(ship.getEquipmentList(), arcName),
-            ...ship.getCapitalWeapons().map((mount) => ({ item: { uuid: mount.uuid, tag: mount.weapon.tag }, name: mount.weapon.name, location: arcName(mount.location), armament: true })),
+            ...mountEquipment(ship.getCapitalWeapons(), (mount) => arcName(mount.location)),
+        ],
+    };
+}
+
+/** A building's structural modifications (TO:AR pp.134-139), as one line; its fittings are in the weight list. */
+function buildingModifications(building: Building): string {
+    const doors = building.getDoors().length;
+    const subsurface = building.getSubsurface();
+    const parts = [
+        building.isSealed() ? "environmentally sealed" : "",
+        building.isOpenSpace() ? "open-space construction" : "",
+        building.hasHeavyMetalSuperstructure() ? "heavy metal superstructure" : "",
+        building.getCeilings() !== "standard" ? `${building.getCeilings()} ceilings` : "",
+        subsurface !== "none" ? `${subsurface}, ${building.getDepth()} ${building.getDepth() === 1 ? "level" : "levels"} down` : "",
+        building.isTunnel() ? "tunnel" : "",
+        doors > 0 ? `${doors} large ${doors === 1 ? "door" : "doors"}` : "",
+    ].filter(Boolean);
+    return capitalize(parts.join(", "));
+}
+
+/** TRO-style rows: superstructure, size, capacity and modifications, then the load in the building's own order, weapons by hex. */
+function buildingParts(building: Building): IUnitTroParts {
+    const hex = capitalize(building.getHexLabel());
+    const modifications = buildingModifications(building);
+    const { construction, equipmentRows } = weightLineRows(building.getWeights(), (line) => [{ label: line.name, mass: tonsText(line.weight) }], (location) => location ?? "");
+    return {
+        spec: {
+            title: building.getDisplayName(),
+            subtitle: subtitle(building.getTypeName(), building.getTech().name, building.getSizeText()),
+            armorType: building.getArmorPoints() > 0 ? `${building.getArmorPoints()} points a ${building.getHexLabel()}` : undefined,
+        },
+        components: [
+            { key: "chassis", label: "Superstructure" },
+            ...(building.getGenerator() ? [{ key: "engine", label: `Generator (${building.getGenerator()!.name})` }] : []),
+            ...(building.canMountArmor() ? [{ key: "armor", label: "Armor" }] : []),
+        ],
+        construction: [
+            { label: `Superstructure (${building.getTypeName()})`, value: `CF ${building.getCF()}${building.isCapitalScale() ? " (capital scale)" : ""}` },
+            { label: "Size", value: building.getSizeText() },
+            ...(building.getTotalCapacity() > 0 ? [{ label: "Weight Capacity", value: `${building.getTotalWeight()} of ${building.getTotalCapacity()} tons used` }] : []),
+            ...(modifications ? [{ label: "Modifications", value: modifications }] : []),
+            ...construction,
+        ],
+        equipmentRows,
+        equipment: [
+            ...building.getEquipment().filter((mount) => !mount.item.isAmmo).map((mount) => ({
+                item: mount.item, name: mount.item.name, location: `${hex} ${mount.hex}`, armament: mount.item.category !== "Miscellaneous Equipment",
+            })),
+            ...mountEquipment(building.getLightWeapons(), (mount) => `${hex} ${mount.hex}`),
+            ...mountEquipment(building.getCapitalWeapons(), (mount) => `${hex} ${mount.hex}${mount.sharedHexes.length > 0 ? ` with ${mount.sharedHexes.join(", ")}` : ""}`),
         ],
     };
 }
@@ -414,5 +476,6 @@ export function getUnitTroAdapter(unit: TroUnit): ITroUnitAdapter {
     if (unit instanceof BattleArmor) return buildAdapter(() => battleArmorParts(unit));
     if (unit instanceof ProtoMech) return buildAdapter(() => protoMechParts(unit));
     if (unit instanceof CapitalShip) return buildAdapter(() => capitalShipParts(unit));
+    if (unit instanceof Building) return buildAdapter(() => buildingParts(unit));
     return buildAdapter(() => smallCraftParts(unit));
 }

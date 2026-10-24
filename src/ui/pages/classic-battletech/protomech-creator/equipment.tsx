@@ -4,7 +4,7 @@ import { FaArrowCircleRight, FaPlus, FaTrash } from "react-icons/fa";
 import ProtoMech, { MAX_PROTOMECH_SHOTS, formatProtoMechDamage } from '../../../../classes/protomech';
 import { ProtoMechMountLocation, getProtoMechEquipmentKg } from '../../../../data/protomech-construction';
 import { IAppGlobals } from '../../../app-router';
-import ProtoMechCreatorSideMenu from '../../../components/protomech-creator-side-menu';
+import { ProtoMechCreatorSideMenu } from '../../../components/creator-side-menus';
 import TextSection from '../../../components/text-section';
 import TonnageBar from '../../../components/tonnage-bar';
 import UIPage from '../../../components/ui-page';

@@ -6,7 +6,7 @@ import { importProtoMechBlk } from '../../../../classes/protomech-blk';
 import { PROTOMECH_CHASSIS } from '../../../../data/protomech-construction';
 import { MAX_BLK_FILE_LENGTH } from '../../../../utils/blk-file';
 import { IAppGlobals } from '../../../app-router';
-import ProtoMechCreatorSideMenu from '../../../components/protomech-creator-side-menu';
+import { ProtoMechCreatorSideMenu } from '../../../components/creator-side-menus';
 import TextSection from '../../../components/text-section';
 import UIPage from '../../../components/ui-page';
 import { confirmReplaceDesign, designWouldBeLost } from '../../../components/confirm-replace-design';

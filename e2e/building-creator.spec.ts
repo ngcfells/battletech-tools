@@ -40,7 +40,15 @@ test("a Clan gun emplacement can be built, armed, checked, saved and printed", a
     await expect(page.getByTestId("building-remaining")).toContainText("Remaining Capacity: 42.2 tons");
     await expect(page.getByTestId("building-loads")).toContainText("8 / 26");
 
-    await page.getByRole("link", { name: /Next: Summary/ }).click();
+    // Step 4, the optional Technical Readout, and its printed sheet (#78).
+    await page.getByRole("link", { name: /Next: Technical Readout/ }).click();
+    await expect(page.getByText("Step 4: Technical Readout (optional)")).toBeVisible();
+    await page.getByLabel("Manufacturer", { exact: true }).fill("Kenyon Fortifications");
+    await page.getByRole("link", { name: "Print TRO sheet" }).click();
+    await expect(page.getByText("Kenyon Fortifications").first()).toBeVisible();
+    await expect(page.getByText("Superstructure (Heavy Gun Emplacement)").first()).toBeVisible();
+    await page.goto("classic-battletech/building-creator/technical-readout");
+    await page.getByRole("link", { name: "Summary", exact: true }).click();
     await expect(page.getByText("This building is legal under the Tactical Operations construction rules.")).toBeVisible();
     await expect(page.getByText("Summary: Battery Kenyon")).toBeVisible();
     await expect(page.getByTestId("building-summary")).toContainText("Heavy Gun Emplacement");
@@ -151,7 +159,10 @@ test("a sealed fortress takes modifications, a door, an elevator and an automate
     await page.getByLabel("Elevator 1 levels reached above the ground level:").selectOption("3");
     await expect(page.getByTestId("building-elevators")).toContainText("Industrial Elevators: 1, 3 tons");
 
-    await page.getByRole("link", { name: /Next: Summary/ }).click();
+    await page.getByRole("link", { name: /Next: Technical Readout/ }).click();
+    await page.getByRole("link", { name: "Print TRO sheet" }).click();
+    await expect(page.getByText("Environmentally sealed, heavy metal superstructure, low ceilings, 1 large door").first()).toBeVisible();
+    await page.goto("classic-battletech/building-creator/summary");
     await expect(page.getByTestId("building-cost-log")).toContainText("x 2.0625 for structural modifications");
     await expect(page.getByTestId("building-cost-log")).toContainText("Large Doors (10,000 x 2 levels): 20,000");
     await expect(page.getByTestId("building-cost-log")).toContainText("Weapon Automation (1,000 x 1 t): 1,000");

@@ -16,6 +16,8 @@ import { IInfantryWeapon, INFANTRY_POWER_CELL_COST, findInfantryWeapon, getInfan
 import { capitalWeapons } from "../data/capital-weapons";
 import { subCapitalWeapons } from "../data/sub-capital-weapons";
 import { ICapitalWeapon, IEquipmentItem, IEras, IHeatSync, ITechDates, ITechOptions } from "../data/data-interfaces";
+import type { ITechnicalReadoutExport } from "../data/technical-readout-interfaces";
+import { TechnicalReadout } from "./technical-readout";
 
 /**
  * A gun emplacement or other advanced building, built under Tactical Operations: Advanced Rules pp.126-131,
@@ -233,6 +235,16 @@ export interface IBuildingExport {
     lightWeapons?: IBuildingLightWeaponExport[];
     /** Capital and sub-capital weapons; absent in older saves. */
     capitalWeapons?: IBuildingCapitalWeaponExport[];
+    /** The optional Technical Readout: makes and text for the printed TRO sheet. */
+    tro?: ITechnicalReadoutExport;
+}
+
+/** One part of a building's load. Weapon and equipment lines say where they are mounted. */
+export interface IBuildingWeightLine {
+    name: string;
+    weight: number;
+    /** "Hex 2", "Hexside 1" or "Hex 1 with 2" for a capital weapon sharing its weight; equipment lines only. */
+    location?: string;
 }
 
 export interface IBuildingHexLoad {
@@ -287,6 +299,8 @@ export const normalizeBuildingExport = (raw: unknown): { building: IBuildingExpo
 export default class Building {
     private _uuid: string = generateUUID();
     public lastUpdated: Date = new Date();
+    /** The optional Technical Readout (TRO fields round 2, #78). */
+    public tro: TechnicalReadout = new TechnicalReadout();
 
     private _name: string = "";
     private _rulesEdition: string = DEFAULT_RULES_EDITION;
@@ -1201,12 +1215,15 @@ export default class Building {
         return loads;
     }
 
-    public getTotalWeight(): number { return round3(this.getHexLoads().reduce((sum, load) => sum + load.total, 0)); }
+    /** The whole load, from the weight lines: the per-hex shares are rounded and would not add back up exactly. */
+    public getTotalWeight(): number { return round3(this.getWeights().reduce((sum, line) => sum + line.weight, 0)); }
     public getRemainingCapacity(): number { return round3(this.getTotalCapacity() - this.getTotalWeight()); }
 
     /** One line for each part of the building's load, across all hexes. */
-    public getWeights(): { name: string; weight: number }[] {
+    public getWeights(): IBuildingWeightLine[] {
         const loads = this.getHexLoads();
+        const label = this.getHexLabel();
+        const where = (hex: number, shared: number[] = []): string => `${label[0].toUpperCase()}${label.slice(1)} ${hex}${shared.length > 0 ? ` with ${shared.join(", ")}` : ""}`;
         const sum = (key: "turret" | "powerAmplifiers") => round3(loads.reduce((total, load) => total + load[key], 0));
         const pintles = round3(loads.reduce((total, load) => total + this.getPintleWeight(load.hex), 0));
         return [
@@ -1221,16 +1238,16 @@ export default class Building {
             })),
             ...(this._liquidStorage > 0 ? [{ name: `Liquid Storage (holds ${this.getLiquidCapacity()} tons)`, weight: this._liquidStorage }] : []),
             ...this._equipment.map((mount) => ({
-                name: `${mount.item.name}${mount.turret ? " (T)" : ""}${mount.automated ? " (automated)" : ""}${this._hexes > 1 ? `, hex ${mount.hex}` : ""}`, weight: mount.item.weight || 0,
+                name: `${mount.item.name}${mount.turret ? " (T)" : ""}${mount.automated ? " (automated)" : ""}`, weight: mount.item.weight || 0, location: where(mount.hex),
             })),
             ...this._lightWeapons.map((mount) => ({
-                name: `${mount.weapon.name}${mount.mount === "turret" ? " (T)" : mount.mount === "pintle" ? " (P)" : ""}${mount.clips > 0 ? `, ${mount.clips} extra ${mount.clips === 1 ? "clip" : "clips"}` : ""}${this._hexes > 1 ? `, hex ${mount.hex}` : ""}`,
-                weight: Building.getLightMountWeight(mount),
+                name: `${mount.weapon.name}${mount.mount === "turret" ? " (T)" : mount.mount === "pintle" ? " (P)" : ""}${mount.clips > 0 ? `, ${mount.clips} extra ${mount.clips === 1 ? "clip" : "clips"}` : ""}`,
+                weight: Building.getLightMountWeight(mount), location: where(mount.hex),
             })),
             ...(pintles > 0 ? [{ name: "Pintle Mounts", weight: pintles }] : []),
             ...this._capitalWeapons.map((mount) => ({
-                name: `${mount.weapon.name}${Building.getCapitalShots(mount) > 0 ? `, ${Building.getCapitalShots(mount)} ${Building.getCapitalShots(mount) === 1 ? "shot" : "shots"}${mount.ammoHex !== null ? ` in the hex ${mount.ammoHex} bunker` : ""}` : ""}${this._hexes > 1 ? `, hex ${mount.hex}${mount.sharedHexes.length > 0 ? ` with ${mount.sharedHexes.join(", ")}` : ""}` : ""}`,
-                weight: Building.getCapitalMountWeight(mount),
+                name: `${mount.weapon.name}${Building.getCapitalShots(mount) > 0 ? `, ${Building.getCapitalShots(mount)} ${Building.getCapitalShots(mount) === 1 ? "shot" : "shots"}${mount.ammoHex !== null ? ` in the hex ${mount.ammoHex} bunker` : ""}` : ""}`,
+                weight: Building.getCapitalMountWeight(mount), location: where(mount.hex, mount.sharedHexes),
             })),
             ...(this.getCapitalFireControlWeight() > 0 ? [{ name: "Capital Fire Control", weight: this.getCapitalFireControlWeight() }] : []),
         ];
@@ -1483,9 +1500,11 @@ export default class Building {
 
     // In play (TO:AR pp.115, 118-119, 124) ---------------------------------------------------------------------
 
-    public getDisplayName(): string {
-        return this._name.trim() || `${this._type.tag === "none" ? "" : this._type.name + " "}${this._classification.name}`;
-    }
+    /** "Hardened Fortress", or the classification alone when it has no types. */
+    public getTypeName(): string { return `${this._type.tag === "none" ? "" : this._type.name + " "}${this._classification.name}`; }
+    public getDisplayName(): string { return this._name.trim() || this.getTypeName(); }
+    /** "6 hexes, 5 levels". */
+    public getSizeText(): string { return `${this._hexes} ${this.getHexLabel(this._hexes !== 1)}, ${this._levels} ${this._levels === 1 ? "level" : "levels"}`; }
 
     public getGunnery(): number { return this._gunnery; }
     public setGunnery(skill: number): void { this._gunnery = Math.floor(savedNumber(skill, this._gunnery, 0, 8)); }
@@ -1962,6 +1981,7 @@ export default class Building {
             ...(inPlay ? { inPlay } : {}),
             gunnery: this._gunnery,
             uuid: this._uuid,
+            tro: this.tro.export(),
             lastUpdated: this.lastUpdated,
             name: this._name,
             ...(this._rulesEdition !== DEFAULT_RULES_EDITION ? { rulesEdition: this._rulesEdition } : {}),
@@ -2030,6 +2050,7 @@ export default class Building {
             }
             const saved = parsed as Partial<Record<keyof IBuildingExport, unknown>>;
             this._uuid = savedString(saved.uuid).slice(0, 100) || generateUUID();
+            this.tro.import(saved.tro);
             const updated = typeof saved.lastUpdated === "string" || typeof saved.lastUpdated === "number" ? new Date(saved.lastUpdated) : new Date();
             this.lastUpdated = Number.isNaN(updated.getTime()) ? new Date() : updated;
             if (saved.name !== undefined && typeof saved.name !== "string") issue("Ignored a name that is not text");

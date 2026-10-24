@@ -2,15 +2,11 @@ import type { BattleMech } from '../../../classes/battlemech';
 import { getBattleMechTroAdapter } from '../../../classes/battlemech-tro';
 import { getUnitTroAdapter } from '../../../classes/unit-tro';
 import type { ICreatorTroConfig } from '../../components/creator-tro-pages';
-import BattleArmorCreatorSideMenu from '../../components/battle-armor-creator-side-menu';
-import CapitalShipCreatorSideMenu from '../../components/capital-ship-creator-side-menu';
-import FighterCreatorSideMenu from '../../components/fighter-creator-side-menu';
-import InfantryCreatorSideMenu from '../../components/infantry-creator-side-menu';
-import MechCreatorSideMenu from '../../components/mech-creator-side-menu';
+import {
+    BattleArmorCreatorSideMenu, BuildingCreatorSideMenu, CapitalShipCreatorSideMenu, FighterCreatorSideMenu, InfantryCreatorSideMenu, MechCreatorSideMenu,
+    ProtoMechCreatorSideMenu, SmallCraftCreatorSideMenu, VehicleCreatorSideMenu,
+} from '../../components/creator-side-menus';
 import MechCreatorStatusBar from '../../components/mech-creator-status-bar';
-import ProtoMechCreatorSideMenu from '../../components/protomech-creator-side-menu';
-import SmallCraftCreatorSideMenu from '../../components/small-craft-creator-side-menu';
-import VehicleCreatorSideMenu from '../../components/vehicle-creator-side-menu';
 
 // Each creator's Technical Readout step and printed TRO sheet (shared pages in creator-tro-pages.tsx).
 
@@ -56,6 +52,11 @@ export const CAPITAL_SHIP_TRO: ICreatorTroConfig = {
     current: "currentCapitalShip", save: "saveCurrentCapitalShip", adapter: getUnitTroAdapter, SideMenu: CapitalShipCreatorSideMenu,
 };
 
+export const BUILDING_TRO: ICreatorTroConfig = {
+    creator: "building-creator", name: "Building Creator", step: 4, previous: "equipment",
+    current: "currentBuilding", save: "saveCurrentBuilding", adapter: getUnitTroAdapter, SideMenu: BuildingCreatorSideMenu,
+};
+
 export const CREATOR_TRO_CONFIGS: ICreatorTroConfig[] = [
-    MECH_TRO, VEHICLE_TRO, FIGHTER_TRO, INFANTRY_TRO, BATTLE_ARMOR_TRO, PROTOMECH_TRO, SMALL_CRAFT_TRO, CAPITAL_SHIP_TRO,
+    MECH_TRO, VEHICLE_TRO, FIGHTER_TRO, INFANTRY_TRO, BATTLE_ARMOR_TRO, PROTOMECH_TRO, SMALL_CRAFT_TRO, CAPITAL_SHIP_TRO, BUILDING_TRO,
 ];

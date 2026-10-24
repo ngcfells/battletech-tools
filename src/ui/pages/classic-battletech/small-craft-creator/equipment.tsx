@@ -8,7 +8,7 @@ import { findCapitalWeapon } from '../../../../data/capital-weapon-helpers';
 import { SMALL_CRAFT_ARCS, SMALL_CRAFT_WEAPONS_PER_ARC } from '../../../../data/small-craft-construction';
 import { IAppGlobals } from '../../../app-router';
 import AvailableEquipment from '../../../components/available-equipment';
-import SmallCraftCreatorSideMenu from '../../../components/small-craft-creator-side-menu';
+import { SmallCraftCreatorSideMenu } from '../../../components/creator-side-menus';
 import TextSection from '../../../components/text-section';
 import TonnageBar from '../../../components/tonnage-bar';
 import UIPage from '../../../components/ui-page';

@@ -5,7 +5,7 @@ import BattleArmor, { IBattleArmorExport } from '../../../../classes/battle-armo
 import { importBattleArmorBlk } from '../../../../classes/battle-armor-blk';
 import { MAX_BLK_FILE_LENGTH } from '../../../../utils/blk-file';
 import { IAppGlobals } from '../../../app-router';
-import BattleArmorCreatorSideMenu from '../../../components/battle-armor-creator-side-menu';
+import { BattleArmorCreatorSideMenu } from '../../../components/creator-side-menus';
 import TextSection from '../../../components/text-section';
 import UIPage from '../../../components/ui-page';
 import { findBattleArmorWeightClass } from '../../../../data/battle-armor-construction';

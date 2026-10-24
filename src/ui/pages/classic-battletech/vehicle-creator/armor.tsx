@@ -4,7 +4,7 @@ import { Link } from 'react-router';
 import { IVehicleArmorAllocation, VehicleLocation } from '../../../../data/data-interfaces';
 import { IAppGlobals } from '../../../app-router';
 import InputNumeric from '../../../components/form_elements/input_numeric';
-import VehicleCreatorSideMenu from '../../../components/vehicle-creator-side-menu';
+import { VehicleCreatorSideMenu } from '../../../components/creator-side-menus';
 import TextSection from '../../../components/text-section';
 import UIPage from '../../../components/ui-page';
 import { availabilityOptionLabel, isOptionShown } from '../../../components/availability-options';

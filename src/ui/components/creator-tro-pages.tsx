@@ -23,9 +23,9 @@ export interface ITroHost {
 }
 
 type CurrentUnitKey = "currentBattleMech" | "currentVehicle" | "currentFighter" | "currentInfantry" | "currentBattleArmor"
-    | "currentProtoMech" | "currentSmallCraft" | "currentCapitalShip";
+    | "currentProtoMech" | "currentSmallCraft" | "currentCapitalShip" | "currentBuilding";
 type SaveUnitKey = "saveCurrentBattleMech" | "saveCurrentVehicle" | "saveCurrentFighter" | "saveCurrentInfantry" | "saveCurrentBattleArmor"
-    | "saveCurrentProtoMech" | "saveCurrentSmallCraft" | "saveCurrentCapitalShip";
+    | "saveCurrentProtoMech" | "saveCurrentSmallCraft" | "saveCurrentCapitalShip" | "saveCurrentBuilding";
 
 export interface ICreatorTroConfig {
     /** The creator's route, e.g. "small-craft-creator". */

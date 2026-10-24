@@ -5,7 +5,7 @@ import { IEquipmentItem } from '../../../../data/data-interfaces';
 import { CUSTOM_HOMEBREW_RULES_LEVEL } from '../../../../data/equipment-registry';
 import { IAppGlobals } from '../../../app-router';
 import AvailableEquipment from '../../../components/available-equipment';
-import VehicleCreatorSideMenu from '../../../components/vehicle-creator-side-menu';
+import { VehicleCreatorSideMenu } from '../../../components/creator-side-menus';
 import TextSection from '../../../components/text-section';
 import TonnageBar from '../../../components/tonnage-bar';
 import UIPage from '../../../components/ui-page';

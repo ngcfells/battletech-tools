@@ -5,6 +5,7 @@ import { MemoryRouter } from "react-router";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import AerospaceFighter from "../../classes/aerospace-fighter";
 import BattleArmor from "../../classes/battle-armor";
+import Building from "../../classes/building";
 import { BattleMech } from "../../classes/battlemech";
 import CapitalShip from "../../classes/capital-ship";
 import InfantryPlatoon from "../../classes/infantry-platoon";
@@ -15,10 +16,12 @@ import Vehicle from "../../classes/vehicle";
 import type { IAppGlobals } from "../app-router";
 import BattleArmorCreatorLoadouts from "../pages/classic-battletech/battle-armor-creator/loadouts";
 import BattleArmorCreatorSummary from "../pages/classic-battletech/battle-armor-creator/summary";
+import BuildingCreatorEquipment from "../pages/classic-battletech/building-creator/equipment";
+import BuildingCreatorSummary from "../pages/classic-battletech/building-creator/summary";
 import CapitalShipCreatorCrew from "../pages/classic-battletech/capital-ship-creator/crew";
 import CapitalShipCreatorSummary from "../pages/classic-battletech/capital-ship-creator/summary";
 import {
-    BATTLE_ARMOR_TRO, CAPITAL_SHIP_TRO, CREATOR_TRO_CONFIGS, FIGHTER_TRO, INFANTRY_TRO, MECH_TRO, PROTOMECH_TRO, SMALL_CRAFT_TRO, VEHICLE_TRO,
+    BATTLE_ARMOR_TRO, BUILDING_TRO, CAPITAL_SHIP_TRO, CREATOR_TRO_CONFIGS, FIGHTER_TRO, INFANTRY_TRO, MECH_TRO, PROTOMECH_TRO, SMALL_CRAFT_TRO, VEHICLE_TRO,
 } from "../pages/classic-battletech/creator-tro-configs";
 import FighterCreatorEquipment from "../pages/classic-battletech/fighter-creator/equipment";
 import FighterCreatorSummary from "../pages/classic-battletech/fighter-creator/summary";
@@ -49,6 +52,7 @@ const creators: [ICreatorTroConfig, () => TroUnit, Page, Page][] = [
     [PROTOMECH_TRO, () => new ProtoMech(), ProtoMechCreatorEquipment, ProtoMechCreatorSummary],
     [SMALL_CRAFT_TRO, () => new SmallCraft(), SmallCraftCreatorCrew, SmallCraftCreatorSummary],
     [CAPITAL_SHIP_TRO, () => new CapitalShip(), CapitalShipCreatorCrew, CapitalShipCreatorSummary],
+    [BUILDING_TRO, () => new Building(), BuildingCreatorEquipment, BuildingCreatorSummary],
 ];
 
 const makeGlobals = (config: ICreatorTroConfig, unit: TroUnit) => ({
@@ -169,5 +173,17 @@ describe("Technical Readout sheet: construction tables", () => {
         expect(text).toContain("183");
         expect(text).toContain("Large Laser");
         expect(text).toContain("Nose");
+    });
+
+    it("Building: no mass line, the superstructure and size, and the weapons by hex", () => {
+        const building = new Building();
+        building.setClassification("fortress");
+        building.setHexes(2);
+        building.addEquipmentFromTag("medium-laser", 2);
+        const text = sheetText(building);
+        expect(text).not.toContain("Mass:");
+        expect(text).toContain("Superstructure (");
+        expect(text).toContain("2 hexes, 1 level");
+        expect(text).toContain("Hex 2");
     });
 });

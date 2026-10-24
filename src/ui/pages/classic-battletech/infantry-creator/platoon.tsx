@@ -4,7 +4,7 @@ import { FaArrowCircleRight } from "react-icons/fa";
 import InfantryPlatoon, { INFANTRY_MAX_SQUADS, INFANTRY_MOTIVE_TYPES } from '../../../../classes/infantry-platoon';
 import { INFANTRY_ARMOR_GROUPS, INFANTRY_ARMOR_RULES_LEVEL } from '../../../../data/infantry-armor';
 import { IAppGlobals } from '../../../app-router';
-import InfantryCreatorSideMenu from '../../../components/infantry-creator-side-menu';
+import { InfantryCreatorSideMenu } from '../../../components/creator-side-menus';
 import InputField from "../../../components/form_elements/input_field";
 import RulesEditionSelect from '../../../components/rules-edition-select';
 import RulesLevelSelect from '../../../components/rules-level-select';

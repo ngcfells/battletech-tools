@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import AerospaceFighter from "./aerospace-fighter";
 import BattleArmor from "./battle-armor";
+import Building from "./building";
 import CapitalShip from "./capital-ship";
 import InfantryPlatoon from "./infantry-platoon";
 import ProtoMech from "./protomech";
@@ -18,6 +19,7 @@ describe("Technical Readout on the other Classic unit types", () => {
         { label: "ProtoMech", make: () => new ProtoMech(), load: (json: string) => new ProtoMech(json) },
         { label: "Small Craft", make: () => new SmallCraft(), load: (json: string) => new SmallCraft(json) },
         { label: "capital ship", make: () => new CapitalShip(), load: (json: string) => new CapitalShip(json) },
+        { label: "building", make: () => new Building(), load: (json: string) => new Building(json) },
     ];
     for (const { label, make, load } of makers) {
         it("saves and loads a " + label + "'s TRO and gives the sheet a title and construction rows", () => {
@@ -349,5 +351,65 @@ describe("Capital ship Technical Readout construction table", () => {
         expect(adapter.getSpecValues().maximumSpeed).toBeUndefined();
         expect(adapter.getComponentRows().map((row) => row.key)).toEqual(["chassis", "engine", "armor"]);
         expect(totalMass(adapter.getConstructionRows())).toBe(station.getCurrentTonnage());
+    });
+});
+
+describe("Building Technical Readout construction table", () => {
+    // Tara's central fortress (TO:AR pp.127-131): Hardened, CF 150, 6 hexes, 5 levels, 9 tons of armor a hex.
+    const fortress = (): Building => {
+        const building = new Building();
+        building.setName("Tara Citadel");
+        building.setClassification("fortress");
+        building.setType("hardened");
+        building.setCF(150);
+        building.setHexes(6);
+        building.setLevels(5);
+        building.setArmorTons(9);
+        building.setGenerator("fusion");
+        building.setHeatSinks(60);
+        building.addEquipmentFromTag("medium-laser", 2, true);
+        const laser = building.addCapitalWeapon("nl35")!;
+        building.setCapitalWeaponSharedHexes(laser.uuid, [2]);
+        return building;
+    };
+
+    it("gives the superstructure, size and capacity, every ton of the load, then the weapons by hex", () => {
+        const building = fortress();
+        const rows = getUnitTroAdapter(building).getConstructionRows();
+        expect(totalMass(rows)).toBe(building.getTotalWeight());
+        expect(rows[0]).toEqual({ label: "Superstructure (Hardened Fortress)", value: "CF 150" });
+        expect(rows).toContainEqual({ label: "Size", value: "6 hexes, 5 levels" });
+        expect(rows).toContainEqual({ label: "Weight Capacity", value: `${building.getTotalWeight()} of ${building.getTotalCapacity()} tons used` });
+        expect(rows).toContainEqual({ label: "Medium Laser (T)", value: "Hex 2", mass: "1" });
+        expect(rows.some((row) => row.label.startsWith("NL35") && row.value === "Hex 1 with 2")).toBe(true);
+        const heading = rows.findIndex((row) => row.label === "Weapons and Equipment");
+        expect(rows.findIndex((row) => row.label.startsWith("Armor"))).toBeLessThan(heading);
+        expect(rows.findIndex((row) => row.label.endsWith("Generator"))).toBeLessThan(heading);
+        expect(rows.findIndex((row) => row.label === "Capital Fire Control")).toBeGreaterThan(heading);
+    });
+
+    it("gives the spec block, a generator make, and the equipment makes by hex", () => {
+        const building = fortress();
+        const adapter = getUnitTroAdapter(building);
+        const spec = adapter.getSpecValues();
+        expect(spec).toMatchObject({ title: "Tara Citadel", armorType: `${building.getArmorPoints()} points a hex` });
+        expect(spec.mass).toBeUndefined();
+        expect(spec.subtitle).toContain("Hardened Fortress");
+        expect(spec.subtitle).toContain("6 hexes, 5 levels");
+        expect(adapter.getComponentRows().map((row) => row.key)).toEqual(["chassis", "engine", "armor"]);
+        const copies = adapter.getEquipmentCopies();
+        expect(copies.map((copy) => copy.locationLabel)).toEqual(["Hex 2", "Hex 1 with 2"]);
+        expect(copies.every((copy) => copy.uuid)).toBe(true);
+    });
+
+    it("names its modifications, and gives a building on the local grid no generator make", () => {
+        const building = new Building();
+        building.setClassification("standard");
+        building.setSealed(true);
+        building.setCeilings("high");
+        const adapter = getUnitTroAdapter(building);
+        expect(adapter.getConstructionRows()).toContainEqual({ label: "Modifications", value: "Environmentally sealed, high ceilings" });
+        expect(adapter.getComponentRows().map((row) => row.key)).not.toContain("engine");
+        expect(adapter.getSpecValues().title).toBe(building.getDisplayName());
     });
 });

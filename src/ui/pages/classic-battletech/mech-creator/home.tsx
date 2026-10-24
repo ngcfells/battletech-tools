@@ -3,7 +3,7 @@ import { FaArrowCircleRight, FaFile, FaFileExport, FaFolderOpen, FaSave, FaTrash
 import { Link } from 'react-router';
 import { BattleMech, IBattleMechExport } from '../../../../classes/battlemech';
 import { IAppGlobals } from '../../../app-router';
-import MechCreatorSideMenu from '../../../components/mech-creator-side-menu';
+import { MechCreatorSideMenu } from '../../../components/creator-side-menus';
 import MechCreatorStatusbar from '../../../components/mech-creator-status-bar';
 import SanitizedHTML from '../../../components/sanitized-html';
 import TextSection from '../../../components/text-section';

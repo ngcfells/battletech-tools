@@ -3,7 +3,7 @@ import { Link } from 'react-router';
 import { FaArrowCircleLeft } from "react-icons/fa";
 import { formatBattleArmorASDamage } from '../../../../classes/battle-armor';
 import { IAppGlobals } from '../../../app-router';
-import BattleArmorCreatorSideMenu from '../../../components/battle-armor-creator-side-menu';
+import { BattleArmorCreatorSideMenu } from '../../../components/creator-side-menus';
 import QuirkPicker from '../../../components/quirk-picker';
 import TextSection from '../../../components/text-section';
 import UIPage from '../../../components/ui-page';
