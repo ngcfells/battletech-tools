@@ -41,13 +41,15 @@ export const readBlkQuirks = (file: IBlkFile, unit: {
     // Our slots are not MegaMek's: of identical weapons, each line takes the first that does not yet have its quirk.
     const placed = new Set<string>();
     const unknown = (code: string) => issues.push(`Quirk '${code.slice(0, 60)}' is not one this builder knows: left off.`);
-    for (const code of blkLines(file, "quirks")) {
+    for (const line of blkLines(file, "quirks")) {
+        // A code may carry a value after a colon: "obsolete:2740", the year it went out of production.
+        const [code, value] = line.split(":");
         const record = getQuirk(code);
         if (!record) {
-            unknown(code);
+            unknown(line);
             continue;
         }
-        quirks.push({ tag: record.tag, ...codeValue(code.toLowerCase()) });
+        quirks.push({ tag: record.tag, ...codeValue(code.toLowerCase()), ...(value && /^\d+$/.test(value) ? { parameter: Number(value) } : {}) });
     }
     for (const line of blkLines(file, "weaponQuirks")) {
         const [code, location, slot, name] = line.split(":");

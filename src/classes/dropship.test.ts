@@ -414,3 +414,30 @@ describe("DropShip Artemis launchers and their rounds", () => {
         expect(ship.getArcItems("rightAft").map((item) => item.tag)).toEqual(["ppc-capacitor"]);
     });
 });
+
+describe("DropShip bay quirks from a MegaMek file", () => {
+    // MegaMek names a weapon quirk's bay by its class: "PPC Bay", "AC Bay", "Pulse Laser Bay". Point Defense, Pulse Laser
+    // and LB-X AC are bay classes of their own (TM p.195).
+    it("puts a quirk named for a bay on that class of bay in its arc", () => {
+        const result = importSmallCraftBlk([
+            "<UnitType>", "Dropship", "</UnitType>", "<Name>", "Test Lighter", "</Name>", "<Model>", "TL-4", "</Model>", "<year>", "3145", "</year>",
+            "<type>", "IS Level 3", "</type>", "<motion_type>", "Spheroid", "</motion_type>", "<designtype>", "1", "</designtype>",
+            "<transporters>", "crewquarters:140.0:0:-1::-1:0", "cargobay:518.0:2:1::-1:0", "</transporters>",
+            "<SafeThrust>", "3", "</SafeThrust>", "<heatsinks>", "100", "</heatsinks>", "<sink_type>", "0", "</sink_type>", "<fuel>", "3000", "</fuel>",
+            "<armor_type>", "41", "</armor_type>", "<armor>", "200", "180", "180", "150", "</armor>",
+            "<Nose Equipment>", "(B) ISERPPC", "ISERPPC", "(B) ISRotaryAC5", "ISRotaryAC5 Ammo:40", "</Nose Equipment>",
+            "<Aft Equipment>", "(B) ISERLargeLaser", "(B) ISLargePulseLaser", "(B) ISAntiMissileSystem", "ISAMS Ammo:24", "</Aft Equipment>",
+            "<weaponQuirks>", "mod_weapons:NOS:1:PPC Bay", "mod_weapons:NOS:4:AC Bay", "mod_weapons:AFT:2:Pulse Laser Bay", "mod_weapons:AFT:3:AMS Bay", "</weaponQuirks>",
+            "<structural_integrity>", "10", "</structural_integrity>", "<tonnage>", "10000.0", "</tonnage>", "<crew>", "20", "</crew>",
+        ].join(String.fromCharCode(10)));
+        const ship = result.craft as SmallCraft;
+        expect(result.issues).toEqual([]);
+        const tagsOf = (uuids: string[] | undefined) => (uuids ?? []).map((uuid) => ship.getEquipmentList().find((item) => item.uuid === uuid)?.tag);
+        expect(ship.quirks.getAll().map((quirk) => [quirk.tag, tagsOf(quirk.bayUuids)])).toEqual([
+            ["quirk-modular-weapons", ["er-ppc", "er-ppc"]],
+            ["quirk-modular-weapons", ["rotary-ac-5"]],
+            ["quirk-modular-weapons", ["large-pulse-laser"]],
+            ["quirk-modular-weapons", ["is-ams"]],
+        ]);
+    });
+});

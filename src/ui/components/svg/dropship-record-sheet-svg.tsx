@@ -51,8 +51,9 @@ export const craftInventoryRows = (craft: SmallCraft, codes: Record<SmallCraftAr
             quantity: 1, name: weaponBayName(bay) + bayQuirkSuffix(quirkLines, bay.uuids, allBays) + (destroyed ? ` (${destroyed} destroyed)` : ""), location: codes[arc], heat: bay.heat, values: bay.values, capital: bay.capital,
         };
     }));
+    const inBays = new Set(allBays.flat());
     const equipment = aerospaceInventoryRows(
-        craft.getEquipmentList().filter((item) => !craft.isBayWeapon(item)),
+        craft.getEquipmentList().filter((item) => !inBays.has(item.uuid ?? "")),
         (tag) => codes[tag as SmallCraftArc | "hull"] ?? tag,
         (item) => (play && craft.isWeaponDestroyed(item.uuid ?? "") ? " (destroyed)" : "") + weaponQuirkSuffix(quirkLines, item.uuid),
     ).map((row) => (row.quantity > 1 ? { ...row, name: `${row.quantity} ${row.name}` } : row));

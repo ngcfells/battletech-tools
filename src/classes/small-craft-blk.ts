@@ -1,7 +1,7 @@
 import { getCompatibleAmmo, getEquipmentRecordsByTech } from "../data/equipment-registry";
 import { IEquipmentItem } from "../data/data-interfaces";
 import {
-    DROPSHIP_MAX_TONNAGE, DROPSHIP_MIN_TONNAGE, SMALL_CRAFT_MAX_TONNAGE, SMALL_CRAFT_MIN_TONNAGE, SmallCraftArc, findTransportBayType, quartersTypes,
+    DROPSHIP_MAX_TONNAGE, DROPSHIP_MIN_TONNAGE, SMALL_CRAFT_ARCS, SMALL_CRAFT_MAX_TONNAGE, SMALL_CRAFT_MIN_TONNAGE, SmallCraftArc, findTransportBayType, quartersTypes,
 } from "../data/small-craft-construction";
 import { IBlkFile, blkLines, blkValue, parseBlkFile } from "../utils/blk-file";
 import { readBlkTechnicalReadout } from "../utils/blk-technical-readout";
@@ -110,6 +110,13 @@ const LOCATIONS: { block: string; arc: SmallCraftArc | "hull"; rear?: SmallCraft
 
 // MegaMek's location abbreviations in a weapon quirk line, as the file's equipment blocks.
 const BLK_ARCS: Record<string, string> = { NOS: "nose", LS: "left", LWG: "left", RS: "right", RWG: "right", AFT: "aft", HULL: "hull" };
+
+/** MegaMek's names for the bays of each of our bay classes, which its weapon quirk lines use ("mod_weapons:NOS:1:PPC Bay"). */
+const MEGAMEK_BAY_NAMES: Record<string, string[]> = Object.assign(Object.create(null), {
+    "Lasers": ["Laser Bay"], "Pulse Lasers": ["Pulse Laser Bay"], "PPCs": ["PPC Bay"], "Autocannons": ["AC Bay"], "LB-X Autocannons": ["LBX AC Bay"], "Gauss": ["Gauss Bay"],
+    "LRM": ["LRM Bay"], "SRM": ["SRM Bay"], "MML": ["MML Bay"], "MRM": ["MRM Bay"], "Rocket Launchers": ["Rocket Launcher Bay"],
+    "Thunderbolt": ["Thunderbolt Bay"], "Artillery": ["Artillery Bay"], "Point Defense": ["AMS Bay", "Point Defense Bay"], "Plasma": ["Plasma Bay"],
+});
 
 const lookupName = (name: string): string => name.toLowerCase().replace(/[^a-z0-9]/g, "");
 
@@ -413,6 +420,14 @@ export const importSmallCraftBlk = (text: string): ISmallCraftBlkResult => {
     craft.setPassengers(passengers);
     craft.setLifeBoats(numberOf(file, "life_boat"));
     craft.setEscapePods(numberOf(file, "escape_pod"));
+    // A bay quirk line names the bay by its class; a side's rear half counts as the side, as for weapons.
+    for (const arc of SMALL_CRAFT_ARCS) {
+        const side = arc === "leftAft" ? "left" : arc === "rightAft" ? "right" : arc;
+        for (const bay of craft.getArcWeaponBays(arc)) {
+            const names = MEGAMEK_BAY_NAMES[bay.name] ?? [`${bay.name} Bay`];
+            if (bay.uuids[0]) for (const name of names) placed.push({ name, location: side, uuid: bay.uuids[0] });
+        }
+    }
     applyBlkQuirks(file, craft, placed, issues, (abbr) => BLK_ARCS[abbr.toUpperCase()]);
     craft.tro.import(readBlkTechnicalReadout(file));
     return { craft, issues, notes };

@@ -51,6 +51,16 @@ describe("DropShip record sheet", () => {
         expect(markup).toContain(">25<");
     });
 
+    it("lists anti-missile systems once, as a Point Defense bay, and pulse lasers in a bay of their own (TM p.195)", () => {
+        const ship = sample("aerodyne");
+        ship.addEquipmentFromTag("is-ams", "nose");
+        ship.addEquipmentFromTag("medium-pulse-laser", "nose");
+        const markup = render(ship);
+        expect(markup).toContain("Point Defense: 1 Anti-Missile System");
+        expect(markup.split("Anti-Missile System").length - 1).toBe(1);
+        expect(markup).toContain("Pulse Lasers: 1 Medium Pulse Laser");
+    });
+
     it("prints the fighters and Small Craft carried and their launch rate", () => {
         const markup = render(sample("aerodyne"));
         expect(markup).toContain("Fighters/Small Craft:");

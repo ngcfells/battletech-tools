@@ -37,6 +37,10 @@ describe("readBlkQuirks", () => {
         expect(read("<weaponQuirks>\nstable_weapon:NOS:0:MediumLaser\n</weaponQuirks>").quirks).toEqual([{ tag: "quirk-stabilized-weapon", bayUuids: ["l1", "l2"] }]);
     });
 
+    it("reads the year an Obsolete quirk gives after its colon", () => {
+        expect(read("<quirks>\nobsolete:2740\n</quirks>")).toEqual({ quirks: [{ tag: "quirk-obsolete", parameter: 2740 }], issues: [] });
+    });
+
     it("lists an unknown code in issues and keeps going", () => {
         const result = read("<quirks>\nanimalistic\nstable\n</quirks>\n<weaponQuirks>\nmisrepaired_weapon:Squad:1:CLBALightMG\nnot a line\n</weaponQuirks>");
         expect(result.quirks).toEqual([{ tag: "quirk-stable" }]);

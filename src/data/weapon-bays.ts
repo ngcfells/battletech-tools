@@ -39,9 +39,20 @@ export interface IWeaponBayWeapon {
     values: [number, number, number, number] | null;
 }
 
+/**
+ * A standard-scale weapon's bay class: its weapon family, with Pulse Lasers and LB-X Autocannons classes of their own
+ * (TM p.195).
+ */
+const standardBayClass = (item: IEquipmentItem): string => {
+    const family = getEquipmentSubtype(item) ?? item.category;
+    if (family === "Lasers" && /pulse/i.test(item.name)) return "Pulse Lasers";
+    if (family === "Autocannons" && /lb-?x|\blbx?\b/i.test(item.name)) return "LB-X Autocannons";
+    return family;
+};
+
 /** A standard-scale weapon: its class is the weapon family, its damage counted at a tenth for the bay limit. */
 export const standardBayWeapon = (item: IEquipmentItem): IWeaponBayWeapon => ({
-    bayClass: getEquipmentSubtype(item) ?? item.category,
+    bayClass: standardBayClass(item),
     capital: false,
     name: item.name,
     uuid: item.uuid,

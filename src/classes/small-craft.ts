@@ -856,10 +856,13 @@ export default class SmallCraft {
     public getHullItems(): IEquipmentItem[] {
         return this._equipmentList.filter((item) => item.location === "hull");
     }
-    /** An arc's weapon bays: its weapons of each class fired together, heat and damage summed (TM pp.194-195, p.199). */
+    /**
+     * An arc's weapon bays: its weapons of each class fired together, heat and damage summed (TM pp.194-195, p.199);
+     * anti-missile systems make Point Defense bays (TM p.195).
+     */
     public getArcWeaponBays(arc: SmallCraftArc): IWeaponBay[] {
         return groupWeaponBays([
-            ...this.getArcItems(arc).filter((item) => this._isWeapon(item)).map(standardBayWeapon),
+            ...this.getArcItems(arc).filter((item) => this._isWeapon(item) || !!item.weaponType?.includes("AMS")).map(standardBayWeapon),
             ...this.getArcCapitalWeapons(arc).map((mount) => capitalBayWeapon(mount.weapon, this.getCapitalWeaponHeat(mount), mount.uuid)),
         ]);
     }

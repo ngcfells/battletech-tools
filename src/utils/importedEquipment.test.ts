@@ -177,6 +177,7 @@ describe("MegaMek's ISCASE", () => {
             ["IS LRM-20 Primitive", "is", "primitive-prototype-lrm-20"], ["Particle Cannon Primitive", "is", "primitive-prototype-ppc"],
             ["IS Large Laser Prototype", "is", "primitive-prototype-large-laser"],
             ["ISMobileHPG", "is", "mobile-hpg"], ["ISHighResImager", "is", "hi-res-imager"], ["CLHighResImager", "clan", "hi-res-imager"],
+            ["ISNarc Pods", "is", "ammo-is-narc-standard"], ["IS Ammo Narc", "is", "ammo-is-narc-standard"], ["CLNarc Pods", "clan", "ammo-clan-narc-standard"],
         ];
         expect(expected.map(([name, faction]) => [name, findImportedEquipment(name, faction)?.item.tag])).toEqual(expected.map(([name, , tag]) => [name, tag]));
     });
