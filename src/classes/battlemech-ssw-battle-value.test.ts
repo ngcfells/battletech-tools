@@ -279,6 +279,14 @@ describe("SSW Battle Value (#46)", () => {
         expect(importFixture("rifleman-c-2").getBattleValue()).toBe(2150);
     });
 
+    it("leaves equipment with no BV and no heat out of the weapon steps (TM p.303): Amarok 3", () => {
+        // The MUL gives 2675; SSW gives 2788.
+        const mech = importFixture("amarok-3");
+        expect(mech.getBattleValue()).toBe(2675);
+        expect(mech.calcLogBV).not.toContain("Weapon CASE II");
+        expect(mech.calcLogBV).toContain("Total Weapon Heat Breakdown:</strong> 2 + 2 + 2 + 2 + 2 + 2 + 2 + 4 + 6 = 24.00");
+    });
+
     it("does not count Nail/Rivet Gun ammo as explosive (TM p.317): Jabberwocky JAW-66D", () => {
         // SSW gives 353: it counts the ammo at 1 BV a ton where TM p.317 gives 0.
         expect(importFixture("jabberwocky-jaw-66d").getBattleValue()).toBe(352);
