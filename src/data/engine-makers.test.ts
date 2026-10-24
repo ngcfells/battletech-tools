@@ -26,11 +26,39 @@ describe("Engine Table makers", () => {
         expect(getEngineTableMaker("battletech-2nd-edition", 200)).toBe("Nissan");
     });
 
-    it("names none off the table or for an edition whose table is not entered", () => {
+    // BTM p.88, BTC p.114, BT3 p.44, CRoW p.103, BT4 p.41 print one table of their own.
+    const laterEditions = ["battletech-manual", "battletech-compendium", "battletech-3rd-edition", "compendium-rules-of-warfare", "battletech-4th-edition"];
+
+    it("names a maker for all 79 ratings in the BattleTech Manual through the Fourth Edition", () => {
+        for (const edition of laterEditions) {
+            for (let rating = 10; rating <= 400; rating += 5) {
+                expect(getEngineTableMaker(edition, rating), `${edition} ${rating}`).toMatch(/^[A-Z]/);
+            }
+        }
+    });
+
+    it("follows the later table where it differs from the 1984 one: 125-155 move up a row", () => {
+        const later = [125, 130, 135, 140, 145, 150, 155].map((rating) => getEngineTableMaker("battletech-manual", rating));
+        expect(later).toEqual(["Vlar", "Magna", "Hermes", "Leenex", "Omni", "GM", "GM"]);
+        const first = [125, 130, 135, 140, 145, 150, 155].map((rating) => getEngineTableMaker("battledroids", rating));
+        expect(first).toEqual(["Nissan", "Vlar", "Magna", "Hermes", "Leenex", "Omni", "Nissan"]);
+        for (const edition of laterEditions) {
+            expect(getEngineTableMaker(edition, 130), edition).toBe("Magna");
+            // The later books print "Core Tek"; the 1984 and 1985 books "CoreTek".
+            expect(getEngineTableMaker(edition, 215), edition).toBe("Core Tek");
+            // BT3 prints VOX at 280; the others "Vox", the same maker.
+            expect(getEngineTableMaker(edition, 280), edition).toBe("VOX");
+            expect(getEngineTableMaker(edition, 240), edition).toBe("Pitban");
+        }
+        expect(getEngineTableMaker("battledroids", 215)).toBe("CoreTek");
+    });
+
+    it("names none off the table or for an edition whose table names no makers", () => {
         expect(getEngineTableMaker("battledroids", 405)).toBeUndefined();
         expect(getEngineTableMaker("battledroids", 0)).toBeUndefined();
-        // The Compendium's table names other makers (165 Vlar, 170 Magna); it is not entered, so nothing is inherited.
-        expect(getEngineTableMaker("battletech-compendium", 240)).toBeUndefined();
+        // The Master Rules tables (MR p.111, MRR p.117) give tonnages only.
+        expect(getEngineTableMaker("master-rules", 240)).toBeUndefined();
+        expect(getEngineTableMaker("master-rules-revised", 240)).toBeUndefined();
         expect(getEngineTableMaker("total-warfare", 240)).toBeUndefined();
         expect(getEngineTableMaker(undefined, 240)).toBeUndefined();
     });

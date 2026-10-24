@@ -76,6 +76,21 @@ describe("'Mech Technical Readout", () => {
         expect(engine(archer())?.suggested).toBeUndefined();
     });
 
+    it("a design built under a later edition defaults to that edition's Engine Table maker", () => {
+        const engine = (edition: string) => {
+            const mech = new BattleMech();
+            mech.setRulesEdition(edition);
+            mech.setTonnage(65);
+            mech.setWalkSpeed(2);
+            expect(mech.getEngineRating()).toBe(130);
+            return getBattleMechTroAdapter(mech).getComponentRows().find((row) => row.key === "engine")?.suggested;
+        };
+        // BT3 p.44: the 130 is a Magna (a Vlar in BD p.23); the Master Rules print no makers (MR p.111).
+        expect(engine("battletech-3rd-edition")).toBe("Magna 130");
+        expect(engine("battledroids")).toBe("Vlar 130");
+        expect(engine("master-rules")).toBeUndefined();
+    });
+
     it("component rows follow the design", () => {
         const keys = getBattleMechTroAdapter(archer()).getComponentRows().map((row) => row.key);
         expect(keys).toEqual(["chassis", "engine", "armor", "heatSinks", "gyro", "cockpit", "myomer"]);

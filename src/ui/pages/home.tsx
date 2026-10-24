@@ -211,6 +211,7 @@ export default class Home extends React.Component<IHomeProps, IHomeState> {
                         <li>Behind the scenes: the step menus beside every creator are now one shared menu instead of nine copies.</li>
                         <li><i>Battledroids</i> droids, the book's and your own Expert designs, have the same Technical Readout step and printed TRO sheet as any 'Mech (Step 7 of the 'Mech Creator). The 1984 and 1985 Engine Tables name a maker for every rating, so a droid's power plant reads as that maker until you enter another: the Merlin's 240 is a Pitban, the Griffin's 275 a CoreTek. The same holds for designs built under <i>BattleTech, Second Edition</i>.</li>
                         <li>Importing a MegaMek Support Vehicle file (ground, VTOL or Fixed-Wing) now brings its Technical Readout across too: manufacturer, factory, the makes of chassis, engine, armor, communications and targeting systems, and the overview, capabilities, deployment, history and notes text.</li>
+                        <li>The Engine Table makers now cover designs built under <i>The BattleTech Manual</i>, <i>The BattleTech Compendium</i>, <i>BattleTech, Third Edition</i>, <i>The Rules of Warfare</i> and <i>BattleTech, Fourth Edition</i>: those books print one table of their own, which differs from the 1984 one at ratings 125 to 155 (a 130 is a Magna rather than a Vlar). The <i>Master Rules</i> tables give tonnages only, so designs under them get no default maker.</li>
                       </ul>
                    </li>
                   <li>

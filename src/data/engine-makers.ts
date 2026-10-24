@@ -2,8 +2,8 @@
 // them as the power plant's make when the player has entered none.
 //
 // Kept apart from the edition stats in mech-engine-types.ts on purpose: those inherit from the edition before
-// (a null entry), but later tables rename makers (the Compendium's 165 is a Vlar, its 170 a Magna), so an
-// edition gets makers only once its own table is entered here.
+// (a null entry), but later tables rename makers (from the BattleTech Manual on, 125 is a Vlar, not a Nissan), so
+// an edition gets makers only once its own table is entered here.
 
 // Ratings 10, 15, ... 400 in order (79 entries).
 const ratings = (makers: string[]): Record<number, string> =>
@@ -23,9 +23,24 @@ const firstEngineTable = ratings([
     "Hermes", "Hermes", "Magna", "GM", "GM", "LTV", "Magna", "Hermes", "LTV", // 360-400
 ]);
 
+// Engine Table, BTM p.88; BTC p.114, BT3 p.44, CRoW p.103 and BT4 p.41 print the same makers. It differs from the
+// first table at 125-155 (the makers move up a row and 150-155 are GM) and spells "Core Tek". BTM, BTC, CRoW and BT4
+// print 280 as "Vox", BT3 as "VOX": one maker, kept as VOX like the rest of the table.
+const laterEngineTable: Record<number, string> = {
+    ...firstEngineTable,
+    125: "Vlar", 130: "Magna", 135: "Hermes", 140: "Leenex", 145: "Omni", 150: "GM", 155: "GM",
+    215: "Core Tek", 275: "Core Tek",
+};
+
+// The Master Rules tables (MR p.111, MRR p.117) give tonnages only, so those editions name no maker.
 const engineMakersByEdition: Record<string, Record<number, string>> = {
     "battledroids": firstEngineTable,
     "battletech-2nd-edition": firstEngineTable,
+    "battletech-manual": laterEngineTable,
+    "battletech-compendium": laterEngineTable,
+    "battletech-3rd-edition": laterEngineTable,
+    "compendium-rules-of-warfare": laterEngineTable,
+    "battletech-4th-edition": laterEngineTable,
 };
 
 /** The maker the edition's Engine Table names for a fusion engine rating, if the table is entered. */
