@@ -1,7 +1,7 @@
 import { generateUUID } from "../utils/generateUUID";
+import { copyCatalogRecord, findUnitCatalogRecord } from "../data/equipment-lookup";
 import { BattledroidsArmorLocation, IBattledroidsUnitDesign, IBattledroidsUnitKind, battledroidsUnitDesigns, battledroidsUnitKinds, getBattledroidsTankHitLocation } from "../data/battledroids-units";
 import { IEquipmentItem } from "../data/data-interfaces";
-import { getEquipmentRecordsByTech } from "../data/equipment-registry";
 import { getEditionStats, getEquipmentForEdition } from "../data/rules-editions";
 
 // The tanks, jeeps and infantry squads of Expert Battledroids in play (BD pp.22-23): fixed designs, their damage and their shots.
@@ -113,10 +113,10 @@ export default class BattledroidsUnit {
     // Weapons
 
     private _findWeapon(tag: string): IEquipmentItem | undefined {
-        const record = getEquipmentRecordsByTech("is", false).find((item) => item.tag === tag);
+        const record = findUnitCatalogRecord("is", tag, { otherTechBase: false, includeCustom: false });
         if (!record) return undefined;
         // The stats and the name the Battledroids Weapons Table prints (BD p.20), in a copy that shares nothing with the catalog.
-        const weapon: IEquipmentItem = JSON.parse(JSON.stringify(getEquipmentForEdition(record, "battledroids")));
+        const weapon = copyCatalogRecord(getEquipmentForEdition(record, "battledroids"));
         return { ...weapon, name: getEditionStats(record, "battledroids")?.name ?? record.name };
     }
 

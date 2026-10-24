@@ -1,4 +1,4 @@
-import { getCompatibleAmmo, getEquipmentListByTech } from "../data/equipment-registry";
+import { getCompatibleAmmo, getEquipmentRecordsByTech } from "../data/equipment-registry";
 import { IEquipmentItem } from "../data/data-interfaces";
 import {
     DROPSHIP_MAX_TONNAGE, DROPSHIP_MIN_TONNAGE, SMALL_CRAFT_MAX_TONNAGE, SMALL_CRAFT_MIN_TONNAGE, SmallCraftArc, findTransportBayType, quartersTypes,
@@ -218,7 +218,7 @@ export const importSmallCraftBlk = (text: string): ISmallCraftBlkResult => {
 
     // Equipment.
     const techCatalog = clan ? "clan" : "is";
-    const ammoCatalog: IEquipmentItem[] = [...getEquipmentListByTech("is", false), ...getEquipmentListByTech("clan", false)].filter((item) => item.isAmmo);
+    const ammoCatalog = [...getEquipmentRecordsByTech("is"), ...getEquipmentRecordsByTech("clan")].filter((item) => item.isAmmo);
     const mounted: Record<string, IEquipmentItem[]> = Object.create(null);
     // What the file placed where, by its own names, for its weapon quirk lines; a side's rear half counts as the side.
     const placed: IBlkImportedItem[] = [];

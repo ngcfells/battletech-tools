@@ -1,4 +1,5 @@
 import { AlphaStrikeStructureColumn, getAlphaStrikeMechStructure } from "../data/alpha-strike-mech-structure";
+import { findUnitCatalogRecord, getUnitCatalogRecords } from "../data/equipment-lookup";
 import { IAssignedQuirk, IQuirkTargets, QuirkUnitType } from "../data/quirk-interfaces";
 import { getQuirk, getQuirkIssues, getQuirkTargets } from "../data/quirk-registry";
 import { findCanonEntry, resolveCanonQuirks } from "../data/quirk-canon";
@@ -20,7 +21,7 @@ import type { CustomComponentKind, ISSWUnresolvedItem } from "../data/custom-con
 import { getCockpitType } from "../data/mech-cockpit-types";
 import { btMechTonnages } from "../data/mech-tonnages";
 import { DEFAULT_RULES_EDITION, editionEngineHoldsHeatSinks, getEditionJumpJetWeight, getEditionPlayRules, getEditionStats, getEditionStructure, getEquipmentForEdition, getRulesEdition, isEarlierRulesEdition, isInRulesEdition, isOfferedInEdition, getRecordOfferIssue } from "../data/rules-editions";
-import { APOCRYPHAL_RULES_LEVEL, CUSTOM_HOMEBREW_RULES_LEVEL, EXPERIMENTAL_RULES_LEVEL, getItemBattleValue, getEquipmentRecordsByTech, equipmentMatchesIdentifier, getWeaponAmmoFamilies, getEquipmentRulesLevel, ARTEMIS_FIRE_CONTROL, isArtemisCapableLauncher, isEquipmentOffered, isOmniFixedOnly, getAlphaStrikeEquipmentDisplayAbilityCodes, getAmmoBattleValuePerTon, getAmmoFamily, getAmmoRoundsPerTon, getCompatibleAmmo, getDatesAvailability, getEffectiveIntroduction, getEquipmentListByTech, getEquipmentListForChassis, getStarLeagueCarryOverDates, getWeaponShotsPerTon, getBattleArmorScaleListByTech, getEquipmentCatalogDefinitions, getEquipmentOfferIssue } from "../data/equipment-registry";
+import { APOCRYPHAL_RULES_LEVEL, CUSTOM_HOMEBREW_RULES_LEVEL, EXPERIMENTAL_RULES_LEVEL, getItemBattleValue, equipmentMatchesIdentifier, getWeaponAmmoFamilies, getEquipmentRulesLevel, ARTEMIS_FIRE_CONTROL, isArtemisCapableLauncher, isEquipmentOffered, isOmniFixedOnly, getAlphaStrikeEquipmentDisplayAbilityCodes, getAmmoBattleValuePerTon, getAmmoFamily, getAmmoRoundsPerTon, getCompatibleAmmo, getDatesAvailability, getEffectiveIntroduction, getEquipmentListByTech, getEquipmentListForChassis, getStarLeagueCarryOverDates, getWeaponShotsPerTon, getBattleArmorScaleListByTech, getEquipmentCatalogDefinitions, getEquipmentOfferIssue } from "../data/equipment-registry";
 import { getFractionalArmorTonsPerPoint, getFractionalEngineWeight, roundUpToKilogram } from "../data/fractional-accounting";
 import { isUniversalEquipment } from "../data/universal-equipment";
 import { mechEngineOptions } from "../data/mech-engine-options";
@@ -5835,7 +5836,7 @@ export class BattleMech {
         this._rulesEdition = edition.tag;
         const same = (a: unknown, b: unknown) => JSON.stringify(a) === JSON.stringify(b);
         const restat = (item: IEquipmentItem | null | undefined): void => {
-            const record = item ? getEquipmentRecordsByTech("mis", true).find(candidate => candidate.tag === item.tag) : undefined;
+            const record = item ? findUnitCatalogRecord("mis", item.tag) : undefined;
             if (!item || !record) {
                 return;
             }
@@ -6670,7 +6671,7 @@ export class BattleMech {
     }
 
     private _findBomb(tag: string): IEquipmentItem | undefined {
-        return getEquipmentListForChassis(this.getTech().tag).find(item => !!item.bombBaySlots && matchesTag(item, tag));
+        return getUnitCatalogRecords(this.getTech().tag, { otherTechBase: false, includeCustom: false }).find(item => !!item.bombBaySlots && matchesTag(item, tag));
     }
 
     public getBombLoadout(): Record<string, number> {

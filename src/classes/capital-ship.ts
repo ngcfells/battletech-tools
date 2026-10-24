@@ -1,4 +1,5 @@
 import { generateUUID } from "../utils/generateUUID";
+import { findUnitCatalogRecord, copyCatalogRecord, getUnitCatalogRecords } from "../data/equipment-lookup";
 import { IAssignedQuirk, IQuirkTargets, QuirkUnitType } from "../data/quirk-interfaces";
 import { getQuirkIssues, getQuirkTargets, quirkBayTarget } from "../data/quirk-registry";
 import { QuirkList } from "./quirk-list";
@@ -11,7 +12,7 @@ import SmallCraft from "./small-craft";
 import Pilot, { IPilot } from "./pilot";
 import { getSkillMultiplier } from "../data/skill-multipliers";
 import { CAPITAL_MISSILE_CRITICAL_CHANCE, CAPITAL_SHIP_CRITICAL_NAMES, CapitalShipAttackDirection, ICapitalShipHit, getCapitalShipHitLocation } from "../data/capital-ship-hit-tables";
-import { CUSTOM_HOMEBREW_RULES_LEVEL, getArtemisLauncherBattleValue, getEquipmentRecordsByTech, getItemBattleValue, getAmmoBattleValuePerTon, getCompatibleAmmo, getEquipmentRulesLevel, getEffectiveIntroduction, getEquipmentListByTech, getWeaponShotsPerTon, isEquipmentOffered } from "../data/equipment-registry";
+import { CUSTOM_HOMEBREW_RULES_LEVEL, getArtemisLauncherBattleValue, getItemBattleValue, getAmmoBattleValuePerTon, getCompatibleAmmo, getEquipmentRulesLevel, getEffectiveIntroduction, getEquipmentListByTech, getWeaponShotsPerTon, isEquipmentOffered } from "../data/equipment-registry";
 import { findByTag } from "../data/tag-match";
 import { sizeDroneSystems } from "../data/variable-equipment";
 import { IWeaponBay, capitalBayWeapon, groupWeaponBays, standardBayWeapon } from "../data/weapon-bays";
@@ -582,11 +583,9 @@ export default class CapitalShip {
         const offeredLevel = includeCustom ? Math.max(rulesLevel, CUSTOM_HOMEBREW_RULES_LEVEL) : rulesLevel;
         return items.filter((item) => isEquipmentOffered(item, this._rulesEdition, offeredLevel));
     }
-    /** Catalog records to look items up in; a mounted item is a copy (_newEquipment), so these are never changed. */
-    private _catalog(): readonly IEquipmentItem[] {
-        const techTag = this._tech.tag;
-        const own = getEquipmentRecordsByTech(techTag, true);
-        return techTag === "is" || techTag === "clan" ? [...own, ...getEquipmentRecordsByTech(techTag === "clan" ? "mclan" : "mis", true)] : own;
+    /** The catalog record for a tag, from the lookup every unit class shares (equipment-lookup.ts). */
+    private _findRecord(tag: unknown): IEquipmentItem | undefined {
+        return findUnitCatalogRecord(this._tech.tag, tag);
     }
     /** Weapons sit in a firing arc; ammunition and other equipment in the hull, or in an arc if given one. */
     private _validLocation(item: IEquipmentItem, location: unknown): string | undefined {
@@ -595,12 +594,12 @@ export default class CapitalShip {
     }
     private _newEquipment(catalogItem: IEquipmentItem, location?: unknown, uuid?: unknown): IEquipmentItem {
         const freshId = typeof uuid !== "string" || !uuid || this._equipmentList.some((item) => item.uuid === uuid);
-        const item: IEquipmentItem = { ...JSON.parse(JSON.stringify(catalogItem)), uuid: freshId ? generateUUID() : uuid as string };
+        const item: IEquipmentItem = { ...copyCatalogRecord(catalogItem), uuid: freshId ? generateUUID() : uuid as string };
         item.location = this._validLocation(item, location);
         return item;
     }
     public addEquipmentFromTag(tag: string, location?: string): IEquipmentItem | null {
-        const catalogItem = findByTag(this._catalog(), tag);
+        const catalogItem = this._findRecord(tag);
         if (!catalogItem || !this.isEquipmentAllowed(catalogItem) || this._equipmentList.length >= MAX_CAPITAL_SHIP_EQUIPMENT) return null;
         const item = this._newEquipment(catalogItem, location);
         this._equipmentList.push(item);
@@ -1203,7 +1202,7 @@ export default class CapitalShip {
 
     /** A launcher with Artemis IV counts 20 percent more than the plain launcher (TM p.312), with Artemis V 30 percent (TO:AUE p.197). */
     private _weaponBaseBV(item: IEquipmentItem): number {
-        return getArtemisLauncherBattleValue(item, () => this._catalog(), this._tech.tag);
+        return getArtemisLauncherBattleValue(item, () => getUnitCatalogRecords(this._tech.tag), this._tech.tag);
     }
 
     /**
@@ -1744,9 +1743,8 @@ export default class CapitalShip {
         if (saved.equipment !== undefined && !Array.isArray(saved.equipment)) issue("Ignored an equipment list that is not a list");
         const entries = Array.isArray(saved.equipment) ? saved.equipment : [];
         if (entries.length > MAX_CAPITAL_SHIP_EQUIPMENT) issue(`Kept the first ${MAX_CAPITAL_SHIP_EQUIPMENT} of ${entries.length} equipment entries`);
-        const catalog = this._catalog();
         for (const entry of entries.slice(0, MAX_CAPITAL_SHIP_EQUIPMENT)) {
-            const catalogItem = isPlainObject(entry) && typeof entry.tag === "string" ? findByTag(catalog, entry.tag) : undefined;
+            const catalogItem = isPlainObject(entry) && typeof entry.tag === "string" ? this._findRecord(entry.tag) : undefined;
             if (!isPlainObject(entry) || !catalogItem) {
                 issue(`Skipped unknown equipment${isPlainObject(entry) && typeof entry.tag === "string" ? ` "${entry.tag.slice(0, 60)}"` : ""}`);
                 continue;

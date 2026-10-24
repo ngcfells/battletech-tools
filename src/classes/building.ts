@@ -1,4 +1,5 @@
 import { generateUUID } from "../utils/generateUUID";
+import { findUnitCatalogRecord, copyCatalogRecord } from "../data/equipment-lookup";
 import { DEFAULT_RULES_EDITION, getSelectableRulesEditionTag } from "../data/rules-editions";
 import {
     BUILDING_ARMOR_COST_PER_TON, BUILDING_ARMOR_POINTS_PER_TON, BUILDING_CLASSIFICATIONS, BUILDING_GENERATORS, BUILDING_MAX_UNLIMITED_HEXES,
@@ -8,7 +9,7 @@ import {
 import { mechHeatSinkTypes } from "../data/mech-heat-sink-types";
 import { btTechOptions } from "../data/tech-options";
 import { btEraOptions, findEraByTag, getClosestEraForTech, getErasForTech } from "../data/era-options";
-import { CUSTOM_HOMEBREW_RULES_LEVEL, equipmentMatchesIdentifier, getCompatibleAmmo, getEffectiveIntroduction, getEquipmentListByTech, getEquipmentRecordsByTech, getEquipmentRulesLevel, getEquipmentOfferIssue, getWeaponShotsPerTon, isEquipmentOffered } from "../data/equipment-registry";
+import { CUSTOM_HOMEBREW_RULES_LEVEL, equipmentMatchesIdentifier, getCompatibleAmmo, getEffectiveIntroduction, getEquipmentListByTech, getEquipmentRulesLevel, getEquipmentOfferIssue, getWeaponShotsPerTon, isEquipmentOffered } from "../data/equipment-registry";
 import { findByTag, matchesTag } from "../data/tag-match";
 import { getWeaponExplosionDamage } from "../data/weapon-explosions";
 import { IInfantryWeapon, INFANTRY_POWER_CELL_COST, findInfantryWeapon, getInfantryClipCost, infantryWeapons, isInfantryWeaponAvailable } from "../data/infantry-weapons";
@@ -697,18 +698,15 @@ export default class Building {
         return items.filter((item) => isEquipmentOffered(item, this._rulesEdition, offeredLevel));
     }
 
-    /** Catalog records to look items up in; a mounted item is a copy (_newEquipment), so these are never changed. */
-    private _catalog(): readonly IEquipmentItem[] {
-        const techTag = this._tech.tag;
-        const own = getEquipmentRecordsByTech(techTag, true);
-        // A saved building keeps what it mounted, including equipment since moved to the other tech base's catalog.
-        return techTag === "is" || techTag === "clan" ? [...own, ...getEquipmentRecordsByTech(techTag === "clan" ? "mclan" : "mis", true)] : own;
+    /** The catalog record for a tag, from the lookup every unit class shares (equipment-lookup.ts). */
+    private _findRecord(tag: unknown): IEquipmentItem | undefined {
+        return findUnitCatalogRecord(this._tech.tag, tag);
     }
 
     private _newMount(catalogItem: IEquipmentItem, hex: unknown, turret: unknown, uuid?: unknown, automated?: unknown): IBuildingMount {
         const freshId = typeof uuid !== "string" || !uuid || this._equipment.some((mount) => mount.item.uuid === uuid);
         // A deep copy: mounted items never share nested data with each other or the catalog.
-        const item: IEquipmentItem = { ...JSON.parse(JSON.stringify(catalogItem)), uuid: freshId ? generateUUID() : uuid as string };
+        const item: IEquipmentItem = { ...copyCatalogRecord(catalogItem), uuid: freshId ? generateUUID() : uuid as string };
         return {
             item,
             hex: Math.floor(savedNumber(hex, 1, 1, this._hexes)),
@@ -720,7 +718,7 @@ export default class Building {
     public getEquipment(): IBuildingMount[] { return this._equipment; }
 
     public addEquipmentFromTag(tag: string, hex: number = 1, turret: boolean = false): IBuildingMount | null {
-        const catalogItem = findByTag(this._catalog(), tag);
+        const catalogItem = this._findRecord(tag);
         if (!catalogItem || !this.isEquipmentAllowed(catalogItem) || this._equipment.length >= MAX_BUILDING_EQUIPMENT) return null;
         const mount = this._newMount(catalogItem, hex, turret);
         this._equipment.push(mount);
@@ -2090,13 +2088,12 @@ export default class Building {
             if (saved.equipment !== undefined && !Array.isArray(saved.equipment)) issue("Ignored an equipment list that is not a list");
             const entries = Array.isArray(saved.equipment) ? saved.equipment : [];
             if (entries.length > MAX_BUILDING_EQUIPMENT) issue(`Kept the first ${MAX_BUILDING_EQUIPMENT} of ${entries.length} equipment entries`);
-            const catalog = this._catalog();
             for (const entry of entries.slice(0, MAX_BUILDING_EQUIPMENT)) {
                 if (!isPlainObject(entry) || typeof entry.tag !== "string") {
                     issue("Skipped an equipment entry that could not be read");
                     continue;
                 }
-                const catalogItem = findByTag(catalog, entry.tag);
+                const catalogItem = this._findRecord(entry.tag);
                 if (!catalogItem) {
                     issue(`Skipped unknown equipment "${entry.tag.slice(0, 60)}"`);
                     continue;

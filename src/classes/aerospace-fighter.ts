@@ -1,4 +1,5 @@
 import { generateUUID } from "../utils/generateUUID";
+import { findUnitCatalogRecord, copyCatalogRecord, getUnitCatalogRecords } from "../data/equipment-lookup";
 import { TechnicalReadout } from "./technical-readout";
 import type { ITechnicalReadoutExport } from "../data/technical-readout-interfaces";
 import { IAssignedQuirk, IQuirkTargets, QuirkUnitType } from "../data/quirk-interfaces";
@@ -12,7 +13,7 @@ import { mechEngineTypes } from "../data/mech-engine-types";
 import { mechHeatSinkTypes } from "../data/mech-heat-sink-types";
 import { btTechOptions } from "../data/tech-options";
 import { btEraOptions, findEraByTag, getClosestEraForTech, getErasForTech } from "../data/era-options";
-import { CUSTOM_HOMEBREW_RULES_LEVEL, getArtemisLauncherBattleValue, getItemBattleValue, EXPERIMENTAL_RULES_LEVEL, getAmmoBattleValuePerTon, getBattleArmorScaleListByTech, getBattleArmorScaleRecordsByTech, getEquipmentRecordsByTech, getCompatibleAmmo, getDatesAvailability, getEquipmentListByTech, getEquipmentRulesLevel, getEquipmentOfferIssue, getWeaponShotsPerTon, isEquipmentOffered } from "../data/equipment-registry";
+import { CUSTOM_HOMEBREW_RULES_LEVEL, getArtemisLauncherBattleValue, getItemBattleValue, EXPERIMENTAL_RULES_LEVEL, getAmmoBattleValuePerTon, getBattleArmorScaleListByTech, getCompatibleAmmo, getDatesAvailability, getEquipmentListByTech, getEquipmentRulesLevel, getEquipmentOfferIssue, getWeaponShotsPerTon, isEquipmentOffered } from "../data/equipment-registry";
 import { getFractionalAerospaceArmorTonsPerPoint, getFractionalEngineWeight, roundUpToKilogram } from "../data/fractional-accounting";
 import { AlphaStrikeUnit, IASMULUnit } from "./alpha-strike-unit";
 import Pilot, { IPilot } from "./pilot";
@@ -1328,7 +1329,7 @@ export default class AerospaceFighter {
     }
 
     private _storeRecord(tag: string): IEquipmentItem | undefined {
-        const item = findByTag(this._catalog(), tag);
+        const item = this._findRecord(tag);
         return item && item.isAmmo && item.bombBaySlots && item.bombBaySlots > 0 ? item : undefined;
     }
 
@@ -1435,20 +1436,15 @@ export default class AerospaceFighter {
         return items.filter((item) => isEquipmentOffered(item, this._rulesEdition, offeredLevel));
     }
 
-    /** Catalog records to look items up in; a mounted item is a copy (_newEquipment), so these are never changed. */
-    private _catalog(): readonly IEquipmentItem[] {
-        const techTag = this._tech.tag;
-        const own = getEquipmentRecordsByTech(techTag, true);
-        // A saved fighter keeps what it mounted, including equipment since moved to the other tech base's catalog.
-        const catalog = techTag === "is" || techTag === "clan" ? [...own, ...getEquipmentRecordsByTech(techTag === "clan" ? "mclan" : "mis", true)] : own;
-        // Battle armor scale items go last, so a catalog record always wins a lookup.
-        return [...catalog, ...getBattleArmorScaleRecordsByTech(techTag)];
+    /** The catalog record for a tag, from the lookup every unit class shares (equipment-lookup.ts). */
+    private _findRecord(tag: unknown): IEquipmentItem | undefined {
+        return findUnitCatalogRecord(this._tech.tag, tag, { battleArmorScale: true });
     }
 
     private _newEquipment(catalogItem: IEquipmentItem, location?: unknown, uuid?: unknown): IEquipmentItem {
         const freshId = typeof uuid !== "string" || !uuid || this._equipmentList.some((item) => item.uuid === uuid);
         // A deep copy: mounted items never share nested data with each other or the catalog.
-        const item: IEquipmentItem = { ...JSON.parse(JSON.stringify(catalogItem)), uuid: freshId ? generateUUID() : uuid as string };
+        const item: IEquipmentItem = { ...copyCatalogRecord(catalogItem), uuid: freshId ? generateUUID() : uuid as string };
         item.location = this._validLocation(item, location);
         return item;
     }
@@ -1468,7 +1464,7 @@ export default class AerospaceFighter {
     }
 
     public addEquipmentFromTag(tag: string, location?: string): IEquipmentItem | null {
-        const catalogItem = findByTag(this._catalog(), tag);
+        const catalogItem = this._findRecord(tag);
         if (!catalogItem || !this.isEquipmentAllowed(catalogItem) || this._equipmentList.length >= MAX_FIGHTER_EQUIPMENT) return null;
         const item = this._newEquipment(catalogItem, location);
         this._equipmentList.push(item);
@@ -1775,7 +1771,7 @@ export default class AerospaceFighter {
      * record, so the plain launcher's value is looked up and raised.
      */
     private _weaponBaseBV(item: IEquipmentItem): number {
-        return getArtemisLauncherBattleValue(item, () => this._catalog(), this._tech.tag);
+        return getArtemisLauncherBattleValue(item, () => getUnitCatalogRecords(this._tech.tag, { battleArmorScale: true }), this._tech.tag);
     }
 
     /** The Speed Factor for a Maximum Thrust (Speed Factor Table and formula, TM p.316). */
@@ -2838,14 +2834,13 @@ export default class AerospaceFighter {
             if (saved.equipment !== undefined && !Array.isArray(saved.equipment)) issue("Ignored an equipment list that is not a list");
             const entries = Array.isArray(saved.equipment) ? saved.equipment : [];
             if (entries.length > MAX_FIGHTER_EQUIPMENT) issue(`Kept the first ${MAX_FIGHTER_EQUIPMENT} of ${entries.length} equipment entries`);
-            const catalog = this._catalog();
             const pendingShots: { uuid: string | undefined; shots: number }[] = [];
             for (const entry of entries.slice(0, MAX_FIGHTER_EQUIPMENT)) {
                 if (!isPlainObject(entry) || typeof entry.tag !== "string") {
                     issue("Skipped an equipment entry that could not be read");
                     continue;
                 }
-                const catalogItem = findByTag(catalog, entry.tag);
+                const catalogItem = this._findRecord(entry.tag);
                 if (!catalogItem) {
                     issue(`Skipped unknown equipment "${entry.tag.slice(0, 60)}"`);
                     continue;

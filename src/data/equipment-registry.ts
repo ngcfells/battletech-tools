@@ -68,9 +68,16 @@ function cloneEquipment(items: IEquipmentItem[]): IEquipmentItem[] {
 // Custom drafts made in this browser (see custom-content-local.ts). They join the custom tier at runtime and
 // never appear in the catalog definitions, summaries or exports.
 let localCustomEquipment: IEquipmentItem[] = [];
+// Goes up whenever the catalogs change at runtime, so caches built from them (equipment-lookup.ts) know to rebuild.
+let catalogVersion = 0;
+
+export function getEquipmentCatalogVersion(): number {
+    return catalogVersion;
+}
 
 export function setLocalCustomEquipment(items: IEquipmentItem[]): void {
     localCustomEquipment = items.map((item) => ({ ...item, catalog: "custom" }));
+    catalogVersion++;
     standardAmmoBases = null;
     standardRoundsByFamily = null;
     weaponAmmoFamilies = new Map();

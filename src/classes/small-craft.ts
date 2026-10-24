@@ -1,4 +1,5 @@
 import { TechnicalReadout } from "./technical-readout";
+import { findUnitCatalogRecord, copyCatalogRecord, getUnitCatalogRecords } from "../data/equipment-lookup";
 import type { ITechnicalReadoutExport } from "../data/technical-readout-interfaces";
 import { generateUUID } from "../utils/generateUUID";
 import { IAssignedQuirk, IQuirkTargets, QuirkUnitType } from "../data/quirk-interfaces";
@@ -9,7 +10,7 @@ import { aerospaceArmorTypes, getAerospaceArmorPointsPerTon } from "../data/aero
 import { mechHeatSinkTypes } from "../data/mech-heat-sink-types";
 import { btTechOptions } from "../data/tech-options";
 import { btEraOptions, findEraByTag, getClosestEraForTech, getErasForTech } from "../data/era-options";
-import { CUSTOM_HOMEBREW_RULES_LEVEL, getArtemisLauncherBattleValue, getItemBattleValue, EXPERIMENTAL_RULES_LEVEL, getAmmoBattleValuePerTon, getBattleArmorScaleListByTech, getBattleArmorScaleRecordsByTech, getEquipmentRecordsByTech, getCompatibleAmmo, getEffectiveIntroduction, getEquipmentListByTech, getEquipmentRulesLevel, getWeaponShotsPerTon, isEquipmentOffered } from "../data/equipment-registry";
+import { CUSTOM_HOMEBREW_RULES_LEVEL, getArtemisLauncherBattleValue, getItemBattleValue, EXPERIMENTAL_RULES_LEVEL, getAmmoBattleValuePerTon, getBattleArmorScaleListByTech, getCompatibleAmmo, getEffectiveIntroduction, getEquipmentListByTech, getEquipmentRulesLevel, getWeaponShotsPerTon, isEquipmentOffered } from "../data/equipment-registry";
 import { getFractionalAerospaceArmorTonsPerPoint, roundUpToKilogram } from "../data/fractional-accounting";
 import Pilot, { IPilot } from "./pilot";
 import { getSkillMultiplier } from "../data/skill-multipliers";
@@ -925,14 +926,9 @@ export default class SmallCraft {
         return items.filter((item) => isEquipmentOffered(item, this._rulesEdition, offeredLevel));
     }
 
-    /** Catalog records to look items up in; a mounted item is a copy (_newEquipment), so these are never changed. */
-    private _catalog(): readonly IEquipmentItem[] {
-        const techTag = this._tech.tag;
-        const own = getEquipmentRecordsByTech(techTag, true);
-        // A saved craft keeps what it mounted, including equipment since moved to the other tech base's catalog.
-        const catalog = techTag === "is" || techTag === "clan" ? [...own, ...getEquipmentRecordsByTech(techTag === "clan" ? "mclan" : "mis", true)] : own;
-        // Battle armor scale items go last, so a catalog record always wins a lookup.
-        return [...catalog, ...getBattleArmorScaleRecordsByTech(techTag)];
+    /** The catalog record for a tag, from the lookup every unit class shares (equipment-lookup.ts). */
+    private _findRecord(tag: unknown): IEquipmentItem | undefined {
+        return findUnitCatalogRecord(this._tech.tag, tag, { battleArmorScale: true });
     }
 
     // Ammunition by the shot ----------------------------------------------------------------------------------
@@ -967,7 +963,7 @@ export default class SmallCraft {
     private _newEquipment(catalogItem: IEquipmentItem, location?: unknown, uuid?: unknown): IEquipmentItem {
         const freshId = typeof uuid !== "string" || !uuid || this._equipmentList.some((item) => item.uuid === uuid);
         // A deep copy: mounted items never share nested data with each other or the catalog.
-        const item: IEquipmentItem = { ...JSON.parse(JSON.stringify(catalogItem)), uuid: freshId ? generateUUID() : uuid as string };
+        const item: IEquipmentItem = { ...copyCatalogRecord(catalogItem), uuid: freshId ? generateUUID() : uuid as string };
         item.location = this._validLocation(item, location);
         return item;
     }
@@ -988,7 +984,7 @@ export default class SmallCraft {
     }
 
     public addEquipmentFromTag(tag: string, location?: string): IEquipmentItem | null {
-        const catalogItem = findByTag(this._catalog(), tag);
+        const catalogItem = this._findRecord(tag);
         if (!catalogItem || !this.isEquipmentAllowed(catalogItem) || this._equipmentList.length >= MAX_SMALL_CRAFT_EQUIPMENT) return null;
         const item = this._newEquipment(catalogItem, location);
         this._equipmentList.push(item);
@@ -1308,7 +1304,7 @@ export default class SmallCraft {
 
     /** A launcher with Artemis IV counts 20 percent more than the plain launcher (TM p.312), with Artemis V 30 percent (TO:AUE p.197). */
     private _weaponBaseBV(item: IEquipmentItem): number {
-        return getArtemisLauncherBattleValue(item, () => this._catalog(), this._tech.tag);
+        return getArtemisLauncherBattleValue(item, () => getUnitCatalogRecords(this._tech.tag, { battleArmorScale: true }), this._tech.tag);
     }
 
     /** The Speed Factor for a Maximum Thrust (Speed Factor Table and formula, TM p.316). */
@@ -2190,14 +2186,13 @@ export default class SmallCraft {
             if (saved.equipment !== undefined && !Array.isArray(saved.equipment)) issue("Ignored an equipment list that is not a list");
             const entries = Array.isArray(saved.equipment) ? saved.equipment : [];
             if (entries.length > MAX_SMALL_CRAFT_EQUIPMENT) issue(`Kept the first ${MAX_SMALL_CRAFT_EQUIPMENT} of ${entries.length} equipment entries`);
-            const catalog = this._catalog();
             const pendingShots: { uuid: string | undefined; shots: number }[] = [];
             for (const entry of entries.slice(0, MAX_SMALL_CRAFT_EQUIPMENT)) {
                 if (!isPlainObject(entry) || typeof entry.tag !== "string") {
                     issue("Skipped an equipment entry that could not be read");
                     continue;
                 }
-                const catalogItem = findByTag(catalog, entry.tag);
+                const catalogItem = this._findRecord(entry.tag);
                 if (!catalogItem) {
                     issue(`Skipped unknown equipment "${entry.tag.slice(0, 60)}"`);
                     continue;
