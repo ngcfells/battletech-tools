@@ -995,6 +995,16 @@ export class BattleMech {
             const logProtected = !penalised && (!isClanBase || hasCaseII(loc));
             const protection = hasCaseII(loc) ? "CASE II" : "CASE";
             critArray.forEach((item) => {
+                // Prototype improved jump jets explode when hit (IO:AE p.97): 1 BV a slot, as an explosive component.
+                if (item && !item.obj && item.tag === "jj-" + this._jumpJetType.tag && this._jumpJetType.explosive) {
+                    if (penalised) {
+                        this._calcLogBV += `Explosive Component Crit (${this._jumpJetType.name}) in ${longKey} (${techLabel}, -1)<br />`;
+                        explosiveAmmoModifiers += 1;
+                    } else if (logProtected) {
+                        this._calcLogBV += `Explosive Component (${this._jumpJetType.name}) in ${longKey} protected by ${protection}. Penalty negated (0).<br />`;
+                    }
+                    return;
+                }
                 if (!item || !item.obj) return;
                 if (BattleMech._isExplosiveAmmoSlot(item.obj)) {
                     // An Extended Fuel Tank fills several slots, each an ammunition bin (TM p.244).

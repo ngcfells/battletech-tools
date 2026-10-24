@@ -343,6 +343,12 @@ describe("SSW Battle Value (#46)", () => {
         expect(importFixture("antlion-lk-3d").getBattleValue()).toBe(854);
     });
 
+    it("counts each prototype improved jump jet slot as explosive (IO:AE p.97): Super Griffin GRF-2N-X", () => {
+        // A critical hit is a 10-point internal explosion: 1 BV a slot like other explosive components,
+        // six slots in the side torsos with no CASE. SSW and MegaMek give 1269.
+        expect(importFixture("super-griffin-grf-2n-x").getBattleValue()).toBe(1269);
+    });
+
     it("does not count Nail/Rivet Gun ammo as explosive (TM p.317): Jabberwocky JAW-66D", () => {
         // SSW gives 353: it counts the ammo at 1 BV a ton where TM p.317 gives 0.
         expect(importFixture("jabberwocky-jaw-66d").getBattleValue()).toBe(352);

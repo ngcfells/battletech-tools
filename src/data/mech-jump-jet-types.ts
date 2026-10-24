@@ -118,6 +118,7 @@ export const mechJumpJetTypes: IJumpJet[] = [
 		jumpAsRun: true,
 		heatPerHex: 2,
 		minimumHeat: 6,
+		explosive: true,
 		innerSphereOnly: true,
 		book: "IO:AE",
 		page: 97,

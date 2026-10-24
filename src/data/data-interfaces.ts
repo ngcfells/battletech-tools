@@ -721,6 +721,8 @@ export interface IJumpJet extends IEditionHistory {
     underwater?: boolean;
     /** Jump MP may reach Running MP instead of Walking MP (improved and prototype improved jump jets). */
     jumpAsRun?: boolean;
+    /** A critical hit to a jet explodes inside the 'Mech, costing Battle Value like other explosive components. */
+    explosive?: boolean;
     /** Heat per hex jumped and the least heat a jump costs, when not the standard 1 and 3. */
     heatPerHex?: number;
     minimumHeat?: number;
