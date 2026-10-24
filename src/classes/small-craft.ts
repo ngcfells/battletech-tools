@@ -44,6 +44,8 @@ import { SMALL_CRAFT_CRITICAL_NAMES, SmallCraftAttackDirection, SmallCraftCritic
 // the crew needs quarters, and what is left goes to transport bays.
 
 export const MAX_SMALL_CRAFT_EQUIPMENT = 300;
+/** The most whole tons one DropShip ammunition bin holds. */
+export const MAX_DROPSHIP_AMMO_BIN_TONS = 1000;
 export const MAX_SMALL_CRAFT_BAYS = 20;
 export const MAX_SMALL_CRAFT_PEOPLE = 200;
 /** Crew, passengers and quarters a DropShip may list; well above the largest published ships. */
@@ -568,6 +570,8 @@ export default class SmallCraft {
         this._fractionalArmorPoints = Math.min(this._fractionalArmorPoints, this.getMaxFractionalArmorPoints());
         this._crew = Math.max(this._crew, this.getMinimumCrew());
         this._officers = Math.min(this._officers, this._crew);
+        // Only a DropShip buys a bin of several tons.
+        for (const item of this._equipmentList) if (item.isAmmo && (item.weight || 0) > 1 && !this.canSetAmmoBinTons(item)) item.weight = 1;
     }
 
     // Armor ---------------------------------------------------------------------------------------------------
@@ -841,8 +845,13 @@ export default class SmallCraft {
         return Math.max(0, item.space?.smallCraft ?? 0);
     }
 
+    /** The weapons and equipment mounted in an arc; the ammunition in its bays is getArcAmmo. */
     public getArcItems(arc: SmallCraftArc): IEquipmentItem[] {
-        return this._equipmentList.filter((item) => item.location === arc);
+        return this._equipmentList.filter((item) => item.location === arc && !item.isAmmo);
+    }
+    /** Ammunition kept in an arc's weapon bays (TM p.195). */
+    public getArcAmmo(arc: SmallCraftArc): IEquipmentItem[] {
+        return this._equipmentList.filter((item) => item.location === arc && item.isAmmo);
     }
     public getHullItems(): IEquipmentItem[] {
         return this._equipmentList.filter((item) => item.location === "hull");
@@ -940,9 +949,33 @@ export default class SmallCraft {
         return weapon ? getWeaponShotsPerTon(weapon, ammo) : 0;
     }
 
+    /** A DropShip buys its ammunition by the whole ton, a bin of one or more tons in a bay (TM p.194). */
+    public canSetAmmoBinTons(bin: IEquipmentItem): boolean {
+        return !!bin.isAmmo && this.isDropShip() && !this.canSetAmmoBinShots(bin);
+    }
+
+    /** Sets a DropShip bin's whole tons; 0 when the bin cannot be set. */
+    public setAmmoBinTons(uuid: string | undefined, tons: number): number {
+        const bin = this._equipmentList.find((item) => item.uuid === uuid && item.isAmmo);
+        if (!bin || !this.canSetAmmoBinTons(bin)) return 0;
+        bin.weight = wholeNumber(tons, 1, MAX_DROPSHIP_AMMO_BIN_TONS);
+        this._calc();
+        return bin.weight;
+    }
+
     /** Shots a bin holds as bought. */
     public getAmmoBinShots(ammo: IEquipmentItem): number {
         return Math.floor(this.getAmmoBinShotsPerTon(ammo) * (ammo.weight || 0) + 1e-6);
+    }
+
+    /** The record sheet's ammunition: each kind once per bay arc, with its shots ("IS Gauss Ammo (Nose) 96"). */
+    public getAmmoSheetLines(): string[] {
+        const shots = new Map<string, number>();
+        for (const item of this._equipmentList.filter((entry) => entry.isAmmo)) {
+            const arc = item.location && item.location !== "hull" ? ` (${this.getArcName(item.location as SmallCraftArc)})` : "";
+            shots.set(item.name + arc, (shots.get(item.name + arc) ?? 0) + this.getAmmoBinShots(item));
+        }
+        return [...shots].map(([name, count]) => count > 0 ? `${name} ${count}` : name);
     }
 
     /**
@@ -974,10 +1007,13 @@ export default class SmallCraft {
     }
 
     /**
-     * Weapons sit in a firing arc. Ammunition goes with the weapons it feeds and is listed with the hull; other
+     * Weapons sit in a firing arc. Ammunition is kept in the bays of an arc or in the hull; other
      * equipment (probes, ECM and the like) may be given an arc or left in the hull.
      */
     private _validLocation(item: IEquipmentItem, location: unknown): string | undefined {
+        // "Small Craft and DropShips allocate their ammunition to the same bays as the weapons that use them" (TM
+        // p.195). Ammunition in the hull has no bay yet.
+        if (item.isAmmo) return typeof location === "string" && (SMALL_CRAFT_ARCS as string[]).includes(location) ? location : "hull";
         if (this.getItemSlots(item) === 0) return "hull";
         if (typeof location === "string" && (SMALL_CRAFT_ARCS as string[]).includes(location)) return location;
         return this.needsArc(item) ? undefined : "hull";
@@ -1446,6 +1482,7 @@ export default class SmallCraft {
      * firing the Front alone exceeds the Heat Efficiency (the heat sink capacity, with no 6 added); the other is the
      * Right Side, x 0.5, or x 0.25 if the Front and Left Side together exceed it, as the book prints step 7. The
      * three remaining arcs are the Rear, x 0.25. Then equipment with a BV. Rear-firing halving does not apply.
+     * Ammunition counts in the arc whose bays carry it (TM pp.195, 311).
      * Readings: ammunition kept in the hull goes to the arcs of the weapons it feeds, shared by their BV; a tie for
      * Front takes the first arc from the nose, a tie for Left Side the arc after the Front going around the left.
      */
@@ -1484,18 +1521,35 @@ export default class SmallCraft {
         const weaponBVByTag: Record<string, number> = {};
         for (const item of offensiveWeapons) weaponBVByTag[item.tag] = (weaponBVByTag[item.tag] ?? 0) + getItemBattleValue(item, this._tech.tag);
         const ammoBVByTag: Record<string, number> = {};
+        // The part of each model's ammunition kept in each arc; the rest is in the hull.
+        const ammoBVByTagArc: Record<string, Record<string, number>> = {};
         const ammoArcBV: Record<string, number> = {};
         for (const ammo of this._equipmentList.filter((item) => item.isAmmo)) {
             const fed = offensiveWeapons.find((weapon) => getCompatibleAmmo(weapon, ammo));
-            if (fed) ammoBVByTag[fed.tag] = (ammoBVByTag[fed.tag] ?? 0) + getAmmoBattleValuePerTon(fed, ammo) * (ammo.weight || 0);
+            if (!fed) continue;
+            const value = getAmmoBattleValuePerTon(fed, ammo) * (ammo.weight || 0);
+            ammoBVByTag[fed.tag] = (ammoBVByTag[fed.tag] ?? 0) + value;
+            if ((ammo.location ?? "") in arcBV) {
+                const byArc = ammoBVByTagArc[fed.tag] = ammoBVByTagArc[fed.tag] ?? {};
+                byArc[ammo.location as string] = (byArc[ammo.location as string] ?? 0) + value;
+            }
         }
         for (const [tag, value] of Object.entries(ammoBVByTag)) {
             const capped = Math.min(value, weaponBVByTag[tag] ?? 0);
-            for (const item of offensiveWeapons.filter((weapon) => weapon.tag === tag && (weapon.location ?? "") in arcBV)) {
-                const share = weaponBVByTag[tag] > 0 ? getItemBattleValue(item, this._tech.tag) / weaponBVByTag[tag] : 0;
-                ammoArcBV[item.location as string] = (ammoArcBV[item.location as string] ?? 0) + capped * share;
+            const scale = value > 0 ? capped / value : 0;
+            let inHull = value;
+            for (const [arc, arcValue] of Object.entries(ammoBVByTagArc[tag] ?? {})) {
+                ammoArcBV[arc] = (ammoArcBV[arc] ?? 0) + arcValue * scale;
+                inHull -= arcValue;
             }
-            log += `Ammunition for ${escapeLogText(tag)} = ${capped.toFixed(2)}${capped < value ? " (capped at weapon BV)" : ""}, with the arcs of its weapons<br />`;
+            if (inHull > 1e-9) {
+                for (const item of offensiveWeapons.filter((weapon) => weapon.tag === tag && (weapon.location ?? "") in arcBV)) {
+                    const share = weaponBVByTag[tag] > 0 ? getItemBattleValue(item, this._tech.tag) / weaponBVByTag[tag] : 0;
+                    ammoArcBV[item.location as string] = (ammoArcBV[item.location as string] ?? 0) + inHull * scale * share;
+                }
+            }
+            log += `Ammunition for ${escapeLogText(tag)} = ${capped.toFixed(2)}${capped < value ? " (capped at weapon BV)" : ""}`
+                + `${inHull > 1e-9 ? ", the hull's with the arcs of its weapons" : ", in its arcs"}<br />`;
         }
         const total = (arc: SmallCraftArc) => arcBV[arc] + (ammoArcBV[arc] ?? 0) + (capitalAmmoArcBV[arc] ?? 0);
         for (const arc of ring) log += `${escapeLogText(this.getArcName(arc))}: weapons ${arcBV[arc].toFixed(2)}, heat ${arcHeat[arc]}<br />`;
@@ -2081,6 +2135,7 @@ export default class SmallCraft {
             equipment: this._equipmentList.map((item) => ({
                 tag: item.tag, location: item.location, uuid: item.uuid,
                 ...(this.canSetAmmoBinShots(item) && (item.weight || 0) < 1 ? { shots: this.getAmmoBinShots(item) } : {}),
+                ...(this.canSetAmmoBinTons(item) && (item.weight || 0) > 1 ? { tons: item.weight } : {}),
             })),
             capitalWeapons: this._capitalWeapons.map((mount) => ({ tag: mount.weapon.tag, location: mount.location, uuid: mount.uuid, shots: { ...mount.shots } })),
         };
@@ -2187,6 +2242,7 @@ export default class SmallCraft {
             const entries = Array.isArray(saved.equipment) ? saved.equipment : [];
             if (entries.length > MAX_SMALL_CRAFT_EQUIPMENT) issue(`Kept the first ${MAX_SMALL_CRAFT_EQUIPMENT} of ${entries.length} equipment entries`);
             const pendingShots: { uuid: string | undefined; shots: number }[] = [];
+            const pendingTons: { uuid: string | undefined; tons: number }[] = [];
             for (const entry of entries.slice(0, MAX_SMALL_CRAFT_EQUIPMENT)) {
                 if (!isPlainObject(entry) || typeof entry.tag !== "string") {
                     issue("Skipped an equipment entry that could not be read");
@@ -2200,6 +2256,7 @@ export default class SmallCraft {
                 const item = this._newEquipment(catalogItem, entry.location, entry.uuid);
                 this._equipmentList.push(item);
                 if (item.isAmmo && typeof entry.shots === "number" && Number.isFinite(entry.shots)) pendingShots.push({ uuid: item.uuid, shots: entry.shots });
+                if (item.isAmmo && typeof entry.tons === "number" && Number.isFinite(entry.tons)) pendingTons.push({ uuid: item.uuid, tons: entry.tons });
             }
             this._capitalWeapons = [];
             if (saved.capitalWeapons !== undefined && !Array.isArray(saved.capitalWeapons)) issue("Ignored a capital weapon list that is not a list");
@@ -2215,6 +2272,7 @@ export default class SmallCraft {
             // A saved design keeps the accounting it was saved with, battle armor items or not.
             this._hadBattleArmorEquipment = this.defaultsToFractionalAccounting();
             for (const pending of pendingShots) this.setAmmoBinShots(pending.uuid, pending.shots);
+            for (const pending of pendingTons) this.setAmmoBinTons(pending.uuid, pending.tons);
 
             this._crew = Math.floor(savedNumber(saved.crew, this.getBaseCrew(), 0, this._maxPeople()));
             this._officers = Math.floor(savedNumber(saved.officers, 0, 0, this._maxPeople()));

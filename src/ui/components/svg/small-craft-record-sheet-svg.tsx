@@ -151,7 +151,7 @@ export default class SmallCraftRecordSheetSVG extends React.Component<ISmallCraf
         const notes: string[] = [];
         const quirkLines = this.quirkLines;
         if (quirkLines.unit.length) notes.push(`Quirks: ${quirkLines.unit.join(", ")}`);
-        const ammo = craft.getEquipmentList().filter((item) => item.isAmmo).map((item) => item.name);
+        const ammo = craft.getAmmoSheetLines();
         if (ammo.length) notes.push(`Ammo: ${ammo.join(", ")}`);
         notes.push("Engine: -1 Safe Thrust a hit, destroyed on the sixth. Thruster: +1 to turn away from that side a hit, disabled on the fourth (TW pp. 239-240).");
         return notesBox(LEFT.x, 1250, LEFT.w, 420, notes);

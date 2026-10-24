@@ -155,7 +155,7 @@ export default class SmallCraftCreatorEquipment extends React.Component<IEquipme
                                     <p className="smaller-text">
                                         Weapons go in a firing arc; the two side arcs of a pair must carry the same weapons. An arc
                                         holds 12 weapons before extra fire control is needed. Every ammunition-fed weapon needs 10
-                                        turns of fire (TM pp. 194-196).
+                                        turns of fire, and its ammunition may be kept in the bays of its arc (TM pp. 194-196).
                                     </p>
                                     <p data-testid="sc-arcs">
                                         {SMALL_CRAFT_ARCS.map((arc) => {
@@ -179,7 +179,17 @@ export default class SmallCraftCreatorEquipment extends React.Component<IEquipme
                                                 <tr key={item.uuid}>
                                                     <td>{item.name}</td>
                                                     <td>
-                                                        {item.weight}
+                                                        {craft.canSetAmmoBinTons(item) ? (
+                                                            <input
+                                                                type="number"
+                                                                min={1}
+                                                                aria-label={"Tons of " + item.name}
+                                                                data-testid="ammo-bin-tons"
+                                                                value={item.weight}
+                                                                onChange={(e) => { const value = +e.currentTarget.value; this.update((c) => c.setAmmoBinTons(item.uuid, value)); }}
+                                                                style={{ width: "5em" }}
+                                                            />
+                                                        ) : item.weight}
                                                         {craft.canSetAmmoBinShots(item) && craft.getAmmoBinShotsPerTon(item) > 0 ? (
                                                             <label className="smaller-text" data-testid="fractional-ammo-shots">
                                                                 &nbsp;shots:&nbsp;
@@ -195,9 +205,9 @@ export default class SmallCraftCreatorEquipment extends React.Component<IEquipme
                                                         ) : null}
                                                     </td>
                                                     <td>
-                                                        {craft.getItemSlots(item) === 0 ? "Hull" : (
+                                                        {craft.getItemSlots(item) === 0 && !item.isAmmo ? "Hull" : (
                                                             <select
-                                                                aria-label={"Firing arc for " + item.name}
+                                                                aria-label={(item.isAmmo ? "Bay arc for " : "Firing arc for ") + item.name}
                                                                 className={item.location ? "" : "color-red"}
                                                                 value={item.location ?? ""}
                                                                 onChange={(e) => { const value = e.currentTarget.value; this.update((c) => c.setEquipmentLocation(item.uuid ?? "", value)); }}

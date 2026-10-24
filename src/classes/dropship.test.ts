@@ -314,3 +314,62 @@ describe("K-F boom and docking collar hits (TW p.240; AeroTech 2 Revised pp.29-3
         expect(copy.getInPlay().dockingCollar).toBe("damaged");
     });
 });
+
+describe("DropShip ammunition by weapon bay (TM pp.194-195, 311)", () => {
+    // Two Gauss rifles and 12 tons in the nose, one and 5 tons aft, one rear-firing in each side with 2 tons.
+    const importGaussShip = () => importSmallCraftBlk([
+        "<UnitType>", "Dropship", "</UnitType>", "<Name>", "Test Lighter", "</Name>", "<Model>", "TL-1", "</Model>", "<year>", "3067", "</year>",
+        "<type>", "IS Level 2", "</type>", "<motion_type>", "Spheroid", "</motion_type>", "<designtype>", "1", "</designtype>",
+        "<transporters>", "crewquarters:140.0:0:-1::-1:0", "cargobay:518.0:2:1::-1:0", "</transporters>",
+        "<SafeThrust>", "3", "</SafeThrust>", "<heatsinks>", "100", "</heatsinks>", "<sink_type>", "0", "</sink_type>", "<fuel>", "3000", "</fuel>",
+        "<armor_type>", "41", "</armor_type>", "<armor>", "200", "180", "180", "150", "</armor>",
+        "<Nose Equipment>", "(B) ISGaussRifle", "ISGaussRifle", "IS Gauss Ammo:96", "</Nose Equipment>",
+        "<Left Side Equipment>", "(R) (B) ISGaussRifle", "(R) IS Gauss Ammo:16", "</Left Side Equipment>",
+        "<Right Side Equipment>", "(R) (B) ISGaussRifle", "(R) IS Gauss Ammo:16", "</Right Side Equipment>",
+        "<Aft Equipment>", "(B) ISGaussRifle", "IS Gauss Ammo:40", "</Aft Equipment>",
+        "<structural_integrity>", "10", "</structural_integrity>", "<tonnage>", "10000.0", "</tonnage>", "<crew>", "20", "</crew>",
+    ].join("\n"));
+
+    it("reads each ammunition line as one bin of whole tons in the bay's arc", () => {
+        const result = importGaussShip();
+        const ship = result.craft as SmallCraft;
+        expect(ship.getEquipmentList().filter((item) => item.isAmmo).map((item) => [item.location, item.weight, ship.getAmmoBinShots(item)])).toEqual([
+            ["nose", 12, 96], ["leftAft", 2, 16], ["rightAft", 2, 16], ["aft", 5, 40],
+        ]);
+        expect(result.issues).toEqual([]);
+        // Ammunition is not one of an arc's weapons.
+        expect(ship.getArcWeaponCount("nose")).toBe(2);
+        expect(ship.getArcItems("nose").every((item) => !item.isAmmo)).toBe(true);
+        // The sheet lists each bin with its arc and shots.
+        expect(ship.getAmmoSheetLines()).toEqual([
+            "Gauss Rifle - Standard Ammo (IS) (Nose) 96", "Gauss Rifle - Standard Ammo (IS) (Aft-Left) 16", "Gauss Rifle - Standard Ammo (IS) (Aft-Right) 16", "Gauss Rifle - Standard Ammo (IS) (Aft) 40",
+        ]);
+    });
+
+    it("adds the ammunition located in each arc to that arc's Battle Value", () => {
+        const ship = importGaussShip().craft as SmallCraft;
+        // Gauss rifles at 320 and their ammunition at 40 a ton. Front (Nose): 640 + 480; Rear: (320 + 80) x 2 + 320 + 200.
+        expect(ship.getBattleValueLog()).toContain("+ Front (Nose): 1120.00 x 1 = 1120.00");
+        expect(ship.getBattleValueLog()).toContain("+ Rear (Aft-Left, Aft, Aft-Right): 1320.00 x 0.25 = 330.00");
+    });
+
+    it("keeps whole-ton bins and their arcs through a save", () => {
+        const ship = importGaussShip().craft as SmallCraft;
+        const nose = ship.getEquipmentList().find((item) => item.isAmmo && item.location === "nose")!;
+        expect(ship.setAmmoBinTons(nose.uuid, 7.4)).toBe(7);
+        const copy = new SmallCraft(ship.exportJSON());
+        expect(copy.getEquipmentList().filter((item) => item.isAmmo).map((item) => [item.location, item.weight])).toEqual([
+            ["nose", 7], ["leftAft", 2], ["rightAft", 2], ["aft", 5],
+        ]);
+        expect(copy.getRemainingTonnage()).toBe(ship.getRemainingTonnage());
+    });
+
+    it("buys Small Craft ammunition by the one-ton bin, in the bay of its weapon", () => {
+        const craft = new SmallCraft();
+        craft.addEquipmentFromTag("standard-gauss-rifle", "nose");
+        const bin = craft.addEquipmentFromTag("ammo-is-gauss-rifle-standard", "nose")!;
+        expect(bin.location).toBe("nose");
+        expect(craft.setAmmoBinTons(bin.uuid, 4)).toBe(0);
+        expect(bin.weight).toBe(1);
+    });
+});

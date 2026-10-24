@@ -89,7 +89,7 @@ export default class DropShipRecordSheetSVG extends React.Component<IDropShipRec
         const carried = this.carried;
         const name = `${craft.getName()} ${craft.getModel()}`.trim();
         const key = [...SMALL_CRAFT_ARCS.map((arc) => `${codes[arc]} ${craft.getArcName(arc)}`), "H Hull"].join(", ");
-        const ammo = craft.getEquipmentList().filter((item) => item.isAmmo).map((item) => `${item.name} ${craft.getAmmoBinShots(item)}`);
+        const ammo = craft.getAmmoSheetLines();
         return unitDataBox(LEFT.x, TOP, LEFT.w, LOWER - 20 - TOP, {
             title: "DROPSHIP DATA",
             type: name || `${craft.getShapeName()} DropShip`,

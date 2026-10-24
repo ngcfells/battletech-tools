@@ -224,7 +224,7 @@ export const importSmallCraftBlk = (text: string): ISmallCraftBlkResult => {
     const placed: IBlkImportedItem[] = [];
     const pendingAmmo: string[] = [];
     const pendingFireControl: { name: string; arc: string; rear?: string }[] = [];
-    const pendingLineAmmo: { line: IBlkAmmoLine; raw: string }[] = [];
+    const pendingLineAmmo: { line: IBlkAmmoLine; raw: string; arc: string }[] = [];
     const pendingCapitalAmmo: { tag: string; ar10: boolean; arc: string; shots: number; raw: string }[] = [];
     for (const location of LOCATIONS) {
         for (const rawLine of blkLines(file, location.block)) {
@@ -261,14 +261,18 @@ export const importSmallCraftBlk = (text: string): ISmallCraftBlkResult => {
             }
             const ammoLine = parseBlkAmmoLine(fileName);
             if (ammoLine) {
-                pendingLineAmmo.push({ line: ammoLine, raw: rawLine.trim() });
+                pendingLineAmmo.push({ line: ammoLine, raw: rawLine.trim(), arc: rear && location.rear ? location.rear : location.arc });
                 continue;
             }
             const pair = EQUIPMENT[name];
             // Names the table does not list go to the catalog's own import names (altNames and altTags).
             const match = pair ? null : findImportedEquipment(fileName, techCatalog, mixed);
             if (match?.item.isAmmo) {
-                if (!craft.addEquipmentFromTag(match.item.tag)) issues.push(`"${rawLine.trim()}" could not be carried and was left off.`);
+                const shots = Number(rawLine.split(":")[1]);
+                const perTon = match.item.roundsPerTon || 0;
+                const bin = craft.addEquipmentFromTag(match.item.tag, rear && location.rear ? location.rear : location.arc);
+                if (!bin) issues.push(`"${rawLine.trim()}" could not be carried and was left off.`);
+                else if (dropShip && shots > 0 && perTon > 0) craft.setAmmoBinTons(bin.uuid, Math.ceil(shots / perTon - 1e-9));
                 continue;
             }
             const tag = pair ? pair[techCatalog === "clan" ? 1 : 0] ?? pair[0] ?? pair[1] : match?.item.tag ?? null;
@@ -301,7 +305,7 @@ export const importSmallCraftBlk = (text: string): ISmallCraftBlkResult => {
         }
     }
     // Ammunition the table above does not list: the line names the weapon it feeds.
-    for (const { line, raw } of pendingLineAmmo) {
+    for (const { line, raw, arc } of pendingLineAmmo) {
         const weapon = findBlkAmmoWeapon(line, craft.getEquipmentList());
         const ammo = weapon ? findBlkAmmo(line, weapon) : undefined;
         // A DropShip line gives its shots after the colon; the bins are whole tons (TM p.194).
@@ -309,7 +313,12 @@ export const importSmallCraftBlk = (text: string): ISmallCraftBlkResult => {
         const perTon = weapon?.shotsPerTon || ammo?.roundsPerTon || 0;
         const tons = dropShip && shots > 0 && perTon > 0 ? Math.ceil(shots / perTon - 1e-9) : 1;
         let added = 0;
-        for (let ton = 0; ammo && ton < tons; ton++) if (craft.addEquipmentFromTag(ammo.tag)) added++;
+        // A DropShip keeps each line as one bin in the bays of its arc (TM p.195); other craft carry a ton an item.
+        if (ammo && dropShip) {
+            const bin = craft.addEquipmentFromTag(ammo.tag, arc);
+            if (bin) added = craft.setAmmoBinTons(bin.uuid, tons) || 1;
+        }
+        else for (let ton = 0; ammo && ton < tons; ton++) if (craft.addEquipmentFromTag(ammo.tag, arc)) added++;
         if (!ammo || added === 0) issues.push(`Ammunition "${raw}" has no weapon or no match in this catalog and was left off.`);
         else if (line.half) notes.push(`"${raw}" is a half-ton bin; carried as a full ton.`);
     }
