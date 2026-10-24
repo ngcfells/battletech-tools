@@ -21,7 +21,7 @@ import type { CustomComponentKind, ISSWUnresolvedItem } from "../data/custom-con
 import { getCockpitType } from "../data/mech-cockpit-types";
 import { btMechTonnages } from "../data/mech-tonnages";
 import { DEFAULT_RULES_EDITION, editionEngineHoldsHeatSinks, getEditionJumpJetWeight, getEditionPlayRules, getEditionStats, getEditionStructure, getEquipmentForEdition, getRulesEdition, isEarlierRulesEdition, isInRulesEdition, isOfferedInEdition, getRecordOfferIssue } from "../data/rules-editions";
-import { APOCRYPHAL_RULES_LEVEL, CUSTOM_HOMEBREW_RULES_LEVEL, EXPERIMENTAL_RULES_LEVEL, getItemBattleValue, getLauncherBattleValueWithoutFireControl, equipmentMatchesIdentifier, getWeaponAmmoFamilies, getEquipmentRulesLevel, ARTEMIS_FIRE_CONTROL, isArtemisCapableLauncher, isEquipmentOffered, isOmniFixedOnly, getAlphaStrikeEquipmentDisplayAbilityCodes, getAmmoBattleValuePerTon, getAmmoFamily, getAmmoRoundsPerTon, getCompatibleAmmo, getDatesAvailability, getEffectiveIntroduction, getEquipmentListByTech, getEquipmentListForChassis, getStarLeagueCarryOverDates, getWeaponShotsPerTon, getBattleArmorScaleListByTech, getEquipmentCatalogDefinitions, getEquipmentOfferIssue } from "../data/equipment-registry";
+import { APOCRYPHAL_RULES_LEVEL, CUSTOM_HOMEBREW_RULES_LEVEL, EXPERIMENTAL_RULES_LEVEL, getItemBattleValue, getLauncherBattleValueWithoutFireControl, equipmentMatchesIdentifier, getWeaponAmmoFamilies, getEquipmentRulesLevel, ARTEMIS_FIRE_CONTROL, isArtemisCapableLauncher, isEquipmentOffered, isOmniFixedOnly, getAlphaStrikeEquipmentDisplayAbilityCodes, getAmmoBattleValuePerTon, getAmmoFamily, getAmmoRoundsPerTon, getCompatibleAmmo, getDatesAvailability, getEquipmentListByTech, getEquipmentListForChassis, getStarLeagueCarryOverDates, getWeaponShotsPerTon, getBattleArmorScaleListByTech, getEquipmentCatalogDefinitions, getEquipmentOfferIssue, getTechDatesAvailability } from "../data/equipment-registry";
 import { getFractionalArmorTonsPerPoint, getFractionalEngineWeight, roundUpToKilogram } from "../data/fractional-accounting";
 import { isUniversalEquipment } from "../data/universal-equipment";
 import { mechEngineOptions } from "../data/mech-engine-options";
@@ -10094,25 +10094,9 @@ export class BattleMech {
         return getDatesAvailability(dates, rulesLevel, (introduced, extinct, reintroduced) => this._itemIsAvailable(introduced, extinct, reintroduced));
     }
 
-    /** Availability using the Clan window for Clan designs; mixed tech may use either. */
+    /** Availability using the Clan window for Clan designs; mixed tech may use either (getTechDatesAvailability). */
     private _techDatesAvailability(item: ITechDates & { clanDates?: ITechDates }, rulesLevel: number): { available: boolean, asPrototype: boolean } {
-        const techTag = this.getTech().tag;
-        const innerSphere = this._datesAvailability(item, rulesLevel);
-        const clan = this._clanDatesAvailability(item, rulesLevel);
-        if (techTag === "clan") return clan;
-        if (techTag === "is") return innerSphere;
-        if (innerSphere.available && !innerSphere.asPrototype) return innerSphere;
-        if (clan.available && !clan.asPrototype) return clan;
-        return innerSphere.available ? innerSphere : clan;
-    }
-
-    /** Clan availability, including the Star League version before the Clan version replaces it. */
-    private _clanDatesAvailability(item: ITechDates & { clanDates?: ITechDates }, rulesLevel: number): { available: boolean, asPrototype: boolean } {
-        const clan = this._datesAvailability(item.clanDates ?? item, rulesLevel);
-        const starLeague = getStarLeagueCarryOverDates(item);
-        if ((clan.available && !clan.asPrototype) || !starLeague) return clan;
-        const carried = this._datesAvailability(starLeague, rulesLevel);
-        return carried.available ? carried : clan;
+        return getTechDatesAvailability(item, this.getTech().tag, rulesLevel, (introduced, extinct, reintroduced) => this._itemIsAvailable(introduced, extinct, reintroduced));
     }
 
     /**
@@ -11137,18 +11121,13 @@ export class BattleMech {
             }
             item.catalog = isUniversalEquipment(item) ? "universal" : item.catalog ?? catalog;
             item.criticals = this.getCriticalSlots(item.space.battlemech);
-            // Equipment records carry side-specific IS or Clan dates, so extinction always applies.
-            // A prototype year with no production year marks an IO prototype-only item (Experimental).
-            const prototypeOnly = item.introduced === null && !!item.prototype;
-            const inProduction = !prototypeOnly && this._itemIsAvailable(item.introduced, item.extinct, item.reintroduced);
-            const effectiveIntroduction = getEffectiveIntroduction(item, rulesLevel);
-            const asPrototype = !inProduction && effectiveIntroduction !== item.introduced
-                && this._itemIsAvailable(effectiveIntroduction, item.extinct, item.reintroduced);
+            // The record's own dates, or its Clan dates on a Clan design (an IO prototype at Experimental).
+            const { available: inEra, asPrototype } = this._techDatesAvailability(item, rulesLevel);
             item.availableAsPrototype = asPrototype;
             const limitKey = item.maxPerUnitGroup ?? item.tag;
             const underUnitLimit = !item.maxPerUnit
                 || this._equipmentList.filter(installed => (installed?.maxPerUnitGroup ?? installed?.tag) === limitKey).length < item.maxPerUnit;
-            item.available = (inProduction || asPrototype) && this._isEquipmentAllowedForChassis(item) && underUnitLimit;
+            item.available = inEra && this._isEquipmentAllowedForChassis(item) && underUnitLimit;
             addedTags.add(item.tag);
             returnItems.push(item);
         };

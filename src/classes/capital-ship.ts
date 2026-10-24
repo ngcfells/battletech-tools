@@ -14,7 +14,7 @@ import SmallCraft from "./small-craft";
 import Pilot, { IPilot } from "./pilot";
 import { getSkillMultiplier } from "../data/skill-multipliers";
 import { CAPITAL_MISSILE_CRITICAL_CHANCE, CAPITAL_SHIP_CRITICAL_NAMES, CapitalShipAttackDirection, ICapitalShipHit, getCapitalShipHitLocation } from "../data/capital-ship-hit-tables";
-import { CUSTOM_HOMEBREW_RULES_LEVEL, getArtemisLauncherBattleValue, getItemBattleValue, getAmmoBattleValuePerTon, getCompatibleAmmo, getEquipmentRulesLevel, getEffectiveIntroduction, getEquipmentListByTech, getWeaponShotsPerTon, isEquipmentOffered } from "../data/equipment-registry";
+import { CUSTOM_HOMEBREW_RULES_LEVEL, getArtemisLauncherBattleValue, getItemBattleValue, getAmmoBattleValuePerTon, getCompatibleAmmo, getEquipmentRulesLevel, getEffectiveIntroduction, getEquipmentListByTech, getWeaponShotsPerTon, isEquipmentOffered, getTechDatesAvailability } from "../data/equipment-registry";
 import { findByTag } from "../data/tag-match";
 import { sizeDroneSystems } from "../data/variable-equipment";
 import { IWeaponBay, capitalBayWeapon, groupWeaponBays, standardBayWeapon } from "../data/weapon-bays";
@@ -579,7 +579,7 @@ export default class CapitalShip {
             for (const item of getEquipmentListByTech(list, includeCustom && (list === "is" || lists.length === 1))) {
                 if (!this.isEquipmentAllowed(item)) continue;
                 item.catalog = item.catalog ?? (item.category === "Custom Equipment" ? "custom" : list);
-                const availability = this._datesAvailability(item, rulesLevel);
+                const availability = this._techDatesAvailability(item, rulesLevel);
                 item.availableAsPrototype = availability.asPrototype;
                 item.available = availability.available;
                 items.push(item);
@@ -1197,6 +1197,11 @@ export default class CapitalShip {
         const asPrototype = !inProduction && effectiveIntroduction !== dates.introduced
             && this._itemIsAvailable(effectiveIntroduction, dates.extinct, dates.reintroduced);
         return { available: inProduction || asPrototype, asPrototype };
+    }
+
+    /** Availability using the Clan window for Clan designs; mixed tech may use either (getTechDatesAvailability). */
+    private _techDatesAvailability(item: ITechDates & { clanDates?: ITechDates }, rulesLevel: number): { available: boolean; asPrototype: boolean } {
+        return getTechDatesAvailability(item, this._tech.tag, rulesLevel, (introduced, extinct, reintroduced) => this._itemIsAvailable(introduced, extinct, reintroduced));
     }
 
     // Cost (SO:AA p.146) --------------------------------------------------------------------------------------

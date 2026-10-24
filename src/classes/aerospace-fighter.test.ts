@@ -148,3 +148,16 @@ describe("Aerospace fighter ammunition", () => {
         expect(fighter.getBattleValueLog()).toContain("Ammunition for clan-lrm-20-artemis-iv = 220.00 (capped at weapon BV)");
     });
 });
+
+describe("Aerospace fighter tech dates (design 2026-10-24-catalog-consolidation §2)", () => {
+    it("mixed tech takes the production window over a prototype", () => {
+        const fighter = new AerospaceFighter();
+        fighter.setTech("mis");
+        fighter.setEra("clan-inv");
+        // Inner Sphere prototype only in 3050-3061; Clan production from 3055.
+        const item = { prototype: 3040, introduced: 3070, extinct: null, reintroduced: null, clanDates: { introduced: 3055, extinct: null, reintroduced: null } };
+        const availability = (fighter as unknown as { _techDatesAvailability: (item: object, level: number) => { available: boolean; asPrototype: boolean } })
+            ._techDatesAvailability(item, 4);
+        expect(availability).toEqual({ available: true, asPrototype: false });
+    });
+});

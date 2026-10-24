@@ -47,7 +47,7 @@ import {
     MAX_VEHICLE_BAY_COUNT, MAX_VEHICLE_BAYS, MAX_VEHICLE_CARGO_TONS, normalizeVehicleBays, VEHICLE_BAY_TYPES,
 } from "../data/vehicle-transport-bays";
 import { ARTVEE_CONVERSION_EQUIPMENT } from "../data/combat-vehicle-chassis-modifications-custom";
-import { CUSTOM_HOMEBREW_RULES_LEVEL, EXPERIMENTAL_RULES_LEVEL, getItemBattleValue, getLauncherBattleValueWithoutFireControl, equipmentMatchesIdentifier, getAmmoBattleValuePerTon, getBattleArmorScaleListByTech, getCompatibleAmmo, getDatesAvailability, getEquipmentListByTech, getEquipmentRulesLevel, getStarLeagueCarryOverDates, getWeaponShotsPerTon, isEquipmentOffered } from "../data/equipment-registry";
+import { CUSTOM_HOMEBREW_RULES_LEVEL, EXPERIMENTAL_RULES_LEVEL, getItemBattleValue, getLauncherBattleValueWithoutFireControl, equipmentMatchesIdentifier, getAmmoBattleValuePerTon, getBattleArmorScaleListByTech, getCompatibleAmmo, getDatesAvailability, getEquipmentListByTech, getEquipmentRulesLevel, getStarLeagueCarryOverDates, getWeaponShotsPerTon, isEquipmentOffered, getTechDatesAvailability } from "../data/equipment-registry";
 import { isTargetingComputerWeapon, roundUpHalfTon, sizeTargetingComputers, sizeVariableEquipment } from "../data/variable-equipment";
 import { getFractionalArmorTonsPerPoint, getFractionalEngineWeight, roundUpToKilogram } from "../data/fractional-accounting";
 import { getBattleArmorScaleExplosionDamage } from "../data/battle-armor-scale-equipment";
@@ -2768,25 +2768,9 @@ export default class Vehicle {
         return getDatesAvailability(dates, rulesLevel, (introduced, extinct, reintroduced) => this._itemIsAvailable(introduced, extinct, reintroduced));
     }
 
-    /** Availability using the Clan window for Clan designs; mixed tech may use either (as BattleMech). */
+    /** Availability using the Clan window for Clan designs; mixed tech may use either (getTechDatesAvailability). */
     private _techDatesAvailability(item: ITechDates & { clanDates?: ITechDates }, rulesLevel: number): { available: boolean, asPrototype: boolean } {
-        const techTag = this._tech.tag;
-        const innerSphere = this._datesAvailability(item, rulesLevel);
-        const clan = this._clanDatesAvailability(item, rulesLevel);
-        if (techTag === "clan") return clan;
-        if (techTag === "is") return innerSphere;
-        if (innerSphere.available && !innerSphere.asPrototype) return innerSphere;
-        if (clan.available && !clan.asPrototype) return clan;
-        return innerSphere.available ? innerSphere : clan;
-    }
-
-    /** Clan availability, including the Star League version before the Clan version replaces it (as BattleMech). */
-    private _clanDatesAvailability(item: ITechDates & { clanDates?: ITechDates }, rulesLevel: number): { available: boolean, asPrototype: boolean } {
-        const clan = this._datesAvailability(item.clanDates ?? item, rulesLevel);
-        const starLeague = getStarLeagueCarryOverDates(item);
-        if ((clan.available && !clan.asPrototype) || !starLeague) return clan;
-        const carried = this._datesAvailability(starLeague, rulesLevel);
-        return carried.available ? carried : clan;
+        return getTechDatesAvailability(item, this._tech.tag, rulesLevel, (introduced, extinct, reintroduced) => this._itemIsAvailable(introduced, extinct, reintroduced));
     }
 
     /** Whether this Clan vehicle fields the Star League version of a component (Inner Sphere armor factor). */
@@ -2800,8 +2784,8 @@ export default class Vehicle {
     }
 
     private _setAvailability(item: IEquipmentItem, rulesLevel: number): void {
-        // Equipment records carry side-specific IS or Clan dates, so extinction always applies.
-        const availability = this._datesAvailability(item, rulesLevel);
+        // The record's own dates, or its Clan dates on a Clan vehicle.
+        const availability = this._techDatesAvailability(item, rulesLevel);
         item.availableAsPrototype = availability.asPrototype;
         // One unit carries at most `maxPerUnit` of an item, or of its group (one RISC Viral Jammer of any type).
         const limitKey = item.maxPerUnitGroup ?? item.tag;

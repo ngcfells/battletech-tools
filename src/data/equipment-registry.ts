@@ -372,6 +372,42 @@ export function getStarLeagueCarryOverDates(item: ITechDates & { clanDates?: ITe
     return { prototype: item.prototype, introduced: item.introduced, extinct: clanProduction ?? null, reintroduced: null };
 }
 
+/** A unit's tech tag from tech-options.ts: "is", "clan", or a mixed base ("mis", "mclan"). */
+export type UnitTechBase = string;
+
+/**
+ * Availability of a record for a unit of `unitTech` in an era: the Clan dates (`clanDates`, else the record's own)
+ * for Clan units, with the Star League carry-over; the record's own dates for Inner Sphere units; for mixed tech,
+ * whichever is in production, else whichever is a prototype.
+ */
+export function getTechDatesAvailability(
+    item: ITechDates & { clanDates?: ITechDates },
+    unitTech: UnitTechBase,
+    rulesLevel: number,
+    isAvailable: (introduced: number | null, extinct: number | null, reintroduced: number | null) => boolean,
+): { available: boolean, asPrototype: boolean } {
+    const innerSphere = getDatesAvailability(item, rulesLevel, isAvailable);
+    const clan = getClanDatesAvailability(item, rulesLevel, isAvailable);
+    if (unitTech === "clan") return clan;
+    if (unitTech === "is") return innerSphere;
+    if (innerSphere.available && !innerSphere.asPrototype) return innerSphere;
+    if (clan.available && !clan.asPrototype) return clan;
+    return innerSphere.available ? innerSphere : clan;
+}
+
+/** Clan availability, including the Star League version before the Clan version replaces it. */
+function getClanDatesAvailability(
+    item: ITechDates & { clanDates?: ITechDates },
+    rulesLevel: number,
+    isAvailable: (introduced: number | null, extinct: number | null, reintroduced: number | null) => boolean,
+): { available: boolean, asPrototype: boolean } {
+    const clan = getDatesAvailability(item.clanDates ?? item, rulesLevel, isAvailable);
+    const starLeague = getStarLeagueCarryOverDates(item);
+    if ((clan.available && !clan.asPrototype) || !starLeague) return clan;
+    const carried = getDatesAvailability(starLeague, rulesLevel, isAvailable);
+    return carried.available ? carried : clan;
+}
+
 export function getAmmoRoundsPerTon(ammo: IEquipmentItem): number {
     return ammo.roundsPerTon ?? ammo.ammoPerTon ?? 0;
 }

@@ -10,7 +10,7 @@ import { aerospaceArmorTypes, getAerospaceArmorPointsPerTon } from "../data/aero
 import { mechHeatSinkTypes } from "../data/mech-heat-sink-types";
 import { btTechOptions } from "../data/tech-options";
 import { btEraOptions, findEraByTag, getClosestEraForTech, getErasForTech } from "../data/era-options";
-import { CUSTOM_HOMEBREW_RULES_LEVEL, getArtemisLauncherBattleValue, getLauncherBattleValueWithoutFireControl, EXPERIMENTAL_RULES_LEVEL, getAmmoBattleValuePerTon, getBattleArmorScaleListByTech, getCompatibleAmmo, getEffectiveIntroduction, getEquipmentListByTech, getEquipmentRulesLevel, getWeaponShotsPerTon, isEquipmentOffered } from "../data/equipment-registry";
+import { CUSTOM_HOMEBREW_RULES_LEVEL, getArtemisLauncherBattleValue, getLauncherBattleValueWithoutFireControl, EXPERIMENTAL_RULES_LEVEL, getAmmoBattleValuePerTon, getBattleArmorScaleListByTech, getCompatibleAmmo, getEquipmentListByTech, getEquipmentRulesLevel, getWeaponShotsPerTon, isEquipmentOffered, getDatesAvailability, getTechDatesAvailability } from "../data/equipment-registry";
 import { getFractionalAerospaceArmorTonsPerPoint, roundUpToKilogram } from "../data/fractional-accounting";
 import Pilot, { IPilot } from "./pilot";
 import { getSkillMultiplier } from "../data/skill-multipliers";
@@ -915,7 +915,7 @@ export default class SmallCraft {
                 if (!this.isEquipmentAllowed(item)) continue;
                 item.catalog = item.catalog ?? (item.category === "Custom Equipment" ? "custom" : list);
                 item.criticals = this.getItemSlots(item);
-                const availability = this._datesAvailability(item, rulesLevel);
+                const availability = this._techDatesAvailability(item, rulesLevel);
                 item.availableAsPrototype = availability.asPrototype;
                 item.available = availability.available;
                 items.push(item);
@@ -929,7 +929,7 @@ export default class SmallCraft {
             for (const item of battleArmorScale) {
                 if (energyTags.includes(item.feedsWeaponTag ?? "")) continue;
                 item.criticals = this.getItemSlots(item);
-                const availability = this._datesAvailability(item, rulesLevel);
+                const availability = this._techDatesAvailability(item, rulesLevel);
                 item.availableAsPrototype = availability.asPrototype;
                 item.available = availability.available;
                 items.push(item);
@@ -1257,21 +1257,12 @@ export default class SmallCraft {
 
     /** In production in the selected era, or (where the rules level allows) a prototype. */
     private _datesAvailability(dates: ITechDates, rulesLevel: number): { available: boolean; asPrototype: boolean } {
-        const prototypeOnly = dates.introduced === null && !!dates.prototype;
-        const inProduction = !prototypeOnly && this._itemIsAvailable(dates.introduced, dates.extinct, dates.reintroduced);
-        const effectiveIntroduction = getEffectiveIntroduction(dates, rulesLevel);
-        const asPrototype = !inProduction && effectiveIntroduction !== dates.introduced
-            && this._itemIsAvailable(effectiveIntroduction, dates.extinct, dates.reintroduced);
-        return { available: inProduction || asPrototype, asPrototype };
+        return getDatesAvailability(dates, rulesLevel, (introduced, extinct, reintroduced) => this._itemIsAvailable(introduced, extinct, reintroduced));
     }
 
-    /** As above, reading the Clan window for a Clan chassis where the record has one. */
+    /** Availability using the Clan window for Clan designs; mixed tech may use either (getTechDatesAvailability). */
     private _techDatesAvailability(item: ITechDates & { clanDates?: ITechDates }, rulesLevel: number): { available: boolean; asPrototype: boolean } {
-        const innerSphere = this._datesAvailability(item, rulesLevel);
-        const clan = this._datesAvailability(item.clanDates ?? item, rulesLevel);
-        if (this._tech.tag === "clan") return clan;
-        if (this._tech.tag === "is") return innerSphere;
-        return innerSphere.available ? innerSphere : clan;
+        return getTechDatesAvailability(item, this._tech.tag, rulesLevel, (introduced, extinct, reintroduced) => this._itemIsAvailable(introduced, extinct, reintroduced));
     }
 
     private _calc(): void {
