@@ -1264,7 +1264,7 @@ export class BattleMech {
         // forward-firing weapons in those locations, the forward-firing ones are halved instead (TM p.303).
         const isRearDominant = this.getTotalBVFrontWeapons() < this.getTotalBVRearWeapons();
         const arcMultiplier = (item: IEquipmentItem): number => {
-            if (this.isNotOnTorsoHeadOrLegs(item.location)) return 1;
+            if (this.isNotOnTorsoHeadOrLegs(this._firingArcLocation(item))) return 1;
             return !!item.rear === isRearDominant ? 1 : 0.5;
         };
         // The heat steps take the weapon with the highest Modified BV first and, between equals, the one
@@ -1282,7 +1282,7 @@ export class BattleMech {
             let finalWeaponMultiplier = 1.0;
 
             // Resolve explicit firing arc boundaries
-            const isFlexibleLimb = this.isNotOnTorsoHeadOrLegs(currentItem.location);
+            const isFlexibleLimb = this.isNotOnTorsoHeadOrLegs(this._firingArcLocation(currentItem));
             const waiveRearPenalty = isRearDominant || isFlexibleLimb;
 
             const logName = this._escapeLogText(currentItem.name);
@@ -13325,33 +13325,32 @@ export class BattleMech {
 
 
     public getTotalBVFrontWeapons(): number {
+        return this._totalTorsoHeadLegWeaponBV(false);
+    }
 
-
+    /**
+     * Unmodified BV of the torso-, leg- and head-mounted weapons firing forward or to the rear (TM p.303), each
+     * in its firing arc location.
+     */
+    private _totalTorsoHeadLegWeaponBV(rear: boolean): number {
         let rv = 0;
-        for( let eq of this._equipmentList ) {
-            if(
-                eq.location &&
-                (
-                    eq.location === "ct"
-                    ||
-                    eq.location === "lt"
-                    ||
-                    eq.location === "rt"
-                    ||
-                    eq.location === "rl"
-                    ||
-                    eq.location === "ll"
-                    ||
-                    eq.location === "hd"
-                )
-                &&
-                !eq.rear
-            ) {
-                rv += eq.battleValue && !eq.isAmmo && !this._isDefensiveBVEquipment(eq) ? eq.battleValue : 0
-            }
+        for( const eq of this._equipmentList ) {
+            if( !!eq.rear !== rear || this.isNotOnTorsoHeadOrLegs(this._firingArcLocation(eq)) ) continue;
+            rv += eq.battleValue && !eq.isAmmo && !this._isDefensiveBVEquipment(eq) ? eq.battleValue : 0;
         }
-
         return rv;
+    }
+
+    /**
+     * Where a weapon fires from. One split between two locations "receives the more restrictive firing arc of the
+     * two": an AC/20 in a torso and an arm "uses the torso arc, not the arm arc" (TM p.57).
+     */
+    private _firingArcLocation(item: IEquipmentItem): string | undefined {
+        if( !item.uuid || !item.location ) return item.location;
+        for( const loc of ["lt", "rt", "ct"] ) {
+            if( loc !== item.location && this.getCriticalsForLocation(loc).some(slot => slot && slot.uuid === item.uuid) ) return loc;
+        }
+        return item.location;
     }
 
     public isNotOnTorsoHeadOrLegs(
@@ -13386,38 +13385,7 @@ export class BattleMech {
         return true;
     }
     public getTotalBVRearWeapons(): number {
-
-        let rv = 0;
-        for( let eq of this._equipmentList ) {
-            if(
-                eq.location
-                &&
-                (
-                    eq.location === "ct"
-                    ||
-                    eq.location === "lt"
-                    ||
-                    eq.location === "rt"
-                    ||
-                    eq.location === "rl"
-                    ||
-                    eq.location === "ll"
-                    ||
-                    eq.location === "hd"
-                    ||
-                    eq.location === "frl"
-                    ||
-                    eq.location === "fll"
-                    ||
-                    eq.location === "cl"
-                )
-                && eq.rear
-            ) {
-                rv += eq.battleValue && !eq.isAmmo && !this._isDefensiveBVEquipment(eq) ? eq.battleValue : 0
-            }
-        }
-
-        return rv;
+        return this._totalTorsoHeadLegWeaponBV(true);
     }
 
     private _getToLocationFromTag(

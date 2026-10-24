@@ -303,6 +303,23 @@ describe("SSW Battle Value (#46)", () => {
         expect(importFixture("charger-c").getBattleValue()).toBe(2756);
     });
 
+    it("gives a weapon split between torso and arm the torso arc for rear-firing BV (TM pp.57, 303): Hercules HRC-LS-9000 (Julius)", () => {
+        // The LB 20-X AC, 7 right torso + 4 right arm slots, is a forward torso weapon: it outweighs the two
+        // rear Small Pulse Lasers, which count half. SSW and the MUL give 1644.
+        expect(importFixture("hercules-hrc-ls-9000-julius").getBattleValue()).toBe(1644);
+    });
+
+    it("counts a quad's front leg weapons as forward-firing leg weapons (TM p.303)", () => {
+        const mech = new BattleMech();
+        mech.setTech("is");
+        mech.setMechType("quad");
+        mech.setTonnage(50);
+        mech.addEquipmentFromTag("large-laser", "is", "frl", false, undefined, "", false, [], undefined, undefined);
+        mech.addEquipmentFromTag("medium-laser", "is", "ct", true, undefined, "", false, [], undefined, undefined);
+        expect(mech.getTotalBVFrontWeapons()).toBe(123);
+        expect(mech.getTotalBVRearWeapons()).toBe(46);
+    });
+
     it("does not count Nail/Rivet Gun ammo as explosive (TM p.317): Jabberwocky JAW-66D", () => {
         // SSW gives 353: it counts the ammo at 1 BV a ton where TM p.317 gives 0.
         expect(importFixture("jabberwocky-jaw-66d").getBattleValue()).toBe(352);
