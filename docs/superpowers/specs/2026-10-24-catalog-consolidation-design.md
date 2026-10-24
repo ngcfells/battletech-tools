@@ -46,6 +46,9 @@ apocryphal, without a second copy of the record anywhere. Today:
    1986-2005 would be lost. A sourcebook item for those unit types goes in the expansion current at its publication.
 10. **Personal gear is in scope where it can logically be given to a unit** (weapons, for example), with conversions
     where needed. Its standing: see §5.
+11. **BV1 and BV2 by edition** (2026-10-24). The tool computes BV2. An edition that uses BV1 shows BV1: the items'
+    BV1 values and the BV1 unit formula, so a game under that edition shows the total its own rulebook gives, not a
+    BV2 number that differs for no visible reason. See §7.
 
 ## Goals
 
@@ -162,6 +165,23 @@ records. Fields: `tag`, `name`, `techBase` (`"is" | "clan" | "universal"`), `edi
 - `<category>-custom.ts` and `<category>-munchkin.ts` for each category. The seven `mech-custom-*-types.ts` files
   fold into them. Munchkin files are created only where Munchkin content exists or the user adds some.
 
+### 7. BV1 for the editions that use it
+
+- Each edition says which Battle Value system it uses (`battleValueVersion: 1 | 2` on `IRulesEdition`, absent where
+  `noBattleValue`). From the code today: the Master Rules (1998), Master Rules Revised (2001) and the Classic
+  BattleTech box set (2002) have Battle Value and predate the TechManual's BV2 (2007, under Total Warfare by ruling 7),
+  so they are BV1; Total Warfare on is BV2. Each edition's version is confirmed from its rulebook's page before it is
+  set.
+- Item values: `battleValue` (with `battleValueDefensive` where the BV1 tables split it) goes on `IEditionStats`, so
+  an item's BV1 lives in its `editionStats` entry for the BV1 editions, entered from those editions' tables.
+- Unit formula: the BV1 calculation from the Master Rules (and the BV1 rules for the other unit types where those
+  editions or their expansions print them), as its own module beside the BV2 code, chosen by the selected edition's
+  `battleValueVersion`. BV2 code is untouched.
+- Sheets, lists, Alpha Strike conversion and exports label which BV they show. Under a BV1 edition the sheet shows the
+  BV1 total; MegaMek/SSW export keeps BV2 (their format's).
+- Sources: the BV1 editions' own pages (Master Rules BV section and tables, `render_page.py`), MegaMek as a
+  cross-check only.
+
 ## Order of work (one round per item, each committed, pushed and deployed)
 
 1. Standing core, `clanDates` review and shared date filter, expansions as edition tags, and the catalog-wide test
@@ -175,6 +195,8 @@ records. Fields: `tag`, `name`, `techBase` (`"is" | "clan" | "universal"`), `edi
 8. Actuator catalog.
 9. Personal gear catalog.
 10. Custom / Munchkin file layout.
+11. BV1 (§7): edition versions, item BV1 values, the BV1 unit formula, labels. It needs only round 1, so it may run
+    after round 2 if the user prefers.
 
 ## Constraints
 
