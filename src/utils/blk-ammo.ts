@@ -6,11 +6,22 @@ import { IEquipmentItem } from "../data/data-interfaces";
 // weapon the line means and the catalog round for it; they never guess past a weapon that is actually mounted.
 
 const squash = (value: string): string => value.toLowerCase().replace(/[^a-z0-9]/g, "");
-const unprefixed = (value: string): string => squash(value).replace(/^(is|cl|clan)(?=[a-z0-9])/, "");
+const unprefixed = (value: string): string => squash(value).replace(/^(clan|is|cl)(?=[a-z0-9])/, "");
 /** Short weapon names ammunition lines use where the catalog spells the weapon out. */
 const WEAPON_ALIASES: Record<string, string> = Object.assign(Object.create(null), {
     mg: "machinegun", lightmg: "machinegunlight", heavymg: "machinegunheavy", lmg: "machinegunlight", hmg: "machinegunheavy",
 });
+
+/** The kind of round a line names: an MML's LRM or SRM rounds, an ATM's ER or HE, Artemis IV or V, cluster or homing. */
+const lineKind = (name: string): RegExp | undefined => {
+    const artemis = /artemis\s*v\b/i.test(name) ? "artemis-v" : /artemis/i.test(name) ? "artemis-iv" : "";
+    const mml = /\bmml/i.test(name) ? /\b(lrm|srm)\b/i.exec(name)?.[1].toLowerCase() : undefined;
+    if (mml) return new RegExp(`-${mml}-${artemis || "standard"}$`);
+    if (artemis) return new RegExp(`${artemis}$`);
+    const atm = /\batm/i.test(name) ? /\b(er|he)\b/i.exec(name)?.[1].toLowerCase() : undefined;
+    if (atm) return new RegExp(`-atm-${atm}$`);
+    return /cluster/i.test(name) ? /cluster/ : /homing/i.test(name) ? /homing/ : undefined;
+};
 
 export interface IBlkAmmoLine {
     /** The weapon part of the line, squashed: "ac10", "gauss", "lb10x". */
@@ -24,14 +35,18 @@ export interface IBlkAmmoLine {
 /** Reads an ammunition line; null when the line is not ammunition. */
 export const parseBlkAmmoLine = (name: string): IBlkAmmoLine | null => {
     if (!/ammo/i.test(name)) return null;
-    const kind = /artemis/i.test(name) ? /artemis/ : /cluster/i.test(name) ? /cluster/ : /homing/i.test(name) ? /homing/ : undefined;
-    const weapon = name
+    const kind = lineKind(name);
+    let weapon = name
         .replace(/\((clan|is)\)/ig, "")
         .replace(/\b(IS|Clan|CL)\b/g, "")
         .replace(/ammo/ig, "")
         .replace(/-\s*(half|full)\b/ig, "")
-        .replace(/\b(cluster|slug|artemis-capable|artemis capable|homing|standard)\b/ig, "");
-    const weaponKey = unprefixed(weapon);
+        .replace(/\bartemis(\s*v)?[- ]capable\b/ig, "")
+        .replace(/\b(cluster|slug|homing|standard)\b/ig, "");
+    if (/\bmml/i.test(name)) weapon = weapon.replace(/\b(lrm|srm)\b/ig, "");
+    if (/\batm/i.test(name)) weapon = weapon.replace(/\b(er|he)\b/ig, "");
+    // "Hyper-Assault Gauss Rifle/20 Ammo" feeds the "Hyper-Assault Gauss 20", "AC/10 Primitive" the "Primitive Prototype AC/10".
+    const weaponKey = unprefixed(weapon).replace(/^hyperassaultgaussrifle/, "hyperassaultgauss").replace(/^(.+)primitive$/, "primitiveprototype$1");
     return { weaponKey: WEAPON_ALIASES[weaponKey] ?? weaponKey, half: /-\s*half/i.test(name), kind };
 };
 

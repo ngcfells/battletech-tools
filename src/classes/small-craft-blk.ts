@@ -22,6 +22,7 @@ const EQUIPMENT: Record<string, [string | null, string | null]> = {
     mediumlaser: ["medium-laser", "medium-laser-clan"],
     largelaser: ["large-laser", "clan-large-laser"],
     ppc: ["standard-ppc", "clan-standard-ppc"],
+    isppc: ["standard-ppc", null],
     heavyppc: ["heavy-ppc", null],
     isheavyppc: ["heavy-ppc", null],
     isersmalllaser: ["er-small-laser", null],
@@ -60,7 +61,12 @@ const EQUIPMENT: Record<string, [string | null, string | null]> = {
 };
 
 /** Launchers that the file fits with a fire control system listed on its own line. */
-const FIRE_CONTROL: Record<string, string> = { isartemisiv: "-artemis-iv", clartemisiv: "-artemis-iv", clartemisv: "-artemis-v", isapollo: "-apollo" };
+// Fire control systems and PPC Capacitors: lines of their own that upgrade a weapon in the arc to the catalog's record
+// with them fitted. For aerospace units a capacitor is integral to its PPC (TO:AUE p.131).
+const FIRE_CONTROL: Record<string, string> = {
+    isartemisiv: "-artemis-iv", clartemisiv: "-artemis-iv", clartemisv: "-artemis-v", isapollo: "-apollo",
+    ppccapacitor: "-capacitor", isppccapacitor: "-capacitor",
+};
 
 // Ammunition lines: the weapon lookup name the round belongs to, and the kind of round where it is not the standard one.
 const AMMO: Record<string, { weapon: string; kind?: RegExp }> = {
@@ -286,13 +292,19 @@ export const importSmallCraftBlk = (text: string): ISmallCraftBlkResult => {
             if (item.uuid) placed.push({ name: fileName, location: location.arc, uuid: item.uuid });
         }
     }
-    // A fire control system upgrades one launcher in its arc to the catalog's record for the fitted launcher. The
-    // file does not mark the system "(R)" when its launcher faces the rear, so the arc's rear half is searched too.
+    // A fire control system upgrades one launcher in its arc to the catalog's record for the fitted launcher: any
+    // standard LRM, SRM, MML (TM p.207) or MRM the catalog has with the system; a capacitor one PPC. The file does not
+    // mark the system "(R)" when its weapon faces the rear, so the arc's rear half is searched too.
+    const catalogTags = new Set([...getEquipmentRecordsByTech("is"), ...getEquipmentRecordsByTech("clan")].map((item) => item.tag));
+    // The record with the system fitted: "lrm-20" to "lrm-20-artemis-iv", "standard-ppc" to "ppc-capacitor".
+    const fitted = (tag: string, suffix: string): string | undefined => /-(artemis|apollo|capacitor)/.test(tag) ? undefined
+        : [tag + suffix, tag.replace(/^standard-/, "") + suffix].find((candidate) => catalogTags.has(candidate));
     for (const fireControl of pendingFireControl) {
         const suffix = FIRE_CONTROL[fireControl.name];
         const launcher = craft.getEquipmentList().find((item) => (item.location === fireControl.arc || (!!fireControl.rear && item.location === fireControl.rear)) && !item.isAmmo
-            && /^(clan-)?(lrm|srm|mrm)-\d+$/.test(item.tag));
-        const upgraded = launcher ? craft.addEquipmentFromTag(launcher.tag + suffix, launcher.location) : null;
+            && !!fitted(item.tag, suffix));
+        const upgradedTag = launcher ? fitted(launcher.tag, suffix) : undefined;
+        const upgraded = launcher && upgradedTag ? craft.addEquipmentFromTag(upgradedTag, launcher.location) : null;
         if (launcher && upgraded) {
             craft.removeEquipment(launcher.uuid ?? "");
             for (const list of Object.values(mounted)) {
@@ -301,7 +313,7 @@ export const importSmallCraftBlk = (text: string): ISmallCraftBlkResult => {
             }
             for (const entry of placed) if (entry.uuid === launcher.uuid && upgraded.uuid) entry.uuid = upgraded.uuid;
         } else {
-            issues.push(`A fire control system (${fireControl.name}) had no launcher to fit and was left off.`);
+            issues.push(`A fire control system or capacitor (${fireControl.name}) had no weapon to fit and was left off.`);
         }
     }
     // Ammunition the table above does not list: the line names the weapon it feeds.

@@ -172,6 +172,11 @@ describe("MegaMek's ISCASE", () => {
             ["CLGaussRifle", "clan", "clan-gauss-rifle"], ["CLHeavyLargeLaser", "clan", "large-heavy-laser"],
             ["CLLaserAntiMissileSystem", "clan", "clan-laser-ams"], ["CLSRM2", "clan", "clan-srm-2"],
             ["CLStreakSRM6", "clan", "clan-streak-srm-6"], ["CLATM9", "clan", "atm-9"], ["CLMG", "clan", "clan-machine-gun"],
+            // Primitive prototypes (IO:AE p.112).
+            ["Autocannon/10 Primitive", "is", "primitive-prototype-ac-10"], ["Autocannon/2p", "is", "primitive-prototype-ac-2"],
+            ["IS LRM-20 Primitive", "is", "primitive-prototype-lrm-20"], ["Particle Cannon Primitive", "is", "primitive-prototype-ppc"],
+            ["IS Large Laser Prototype", "is", "primitive-prototype-large-laser"],
+            ["ISMobileHPG", "is", "mobile-hpg"], ["ISHighResImager", "is", "hi-res-imager"], ["CLHighResImager", "clan", "hi-res-imager"],
         ];
         expect(expected.map(([name, faction]) => [name, findImportedEquipment(name, faction)?.item.tag])).toEqual(expected.map(([name, , tag]) => [name, tag]));
     });

@@ -373,3 +373,44 @@ describe("DropShip ammunition by weapon bay (TM pp.194-195, 311)", () => {
         expect(bin.weight).toBe(1);
     });
 });
+
+describe("DropShip Artemis launchers and their rounds", () => {
+    // The file lists the fire control before its launchers, and an MML line names its LRM or SRM rounds.
+    it("fits Artemis IV to MMLs and Clan LRMs and reads their Artemis-capable ammunition (TM p.207)", () => {
+        const result = importSmallCraftBlk([
+            "<UnitType>", "Dropship", "</UnitType>", "<Name>", "Test Lighter", "</Name>", "<Model>", "TL-2", "</Model>", "<year>", "3067", "</year>",
+            "<type>", "Mixed (IS Chassis)", "</type>", "<motion_type>", "Spheroid", "</motion_type>", "<designtype>", "1", "</designtype>",
+            "<transporters>", "crewquarters:140.0:0:-1::-1:0", "cargobay:518.0:2:1::-1:0", "</transporters>",
+            "<SafeThrust>", "3", "</SafeThrust>", "<heatsinks>", "100", "</heatsinks>", "<sink_type>", "0", "</sink_type>", "<fuel>", "3000", "</fuel>",
+            "<armor_type>", "41", "</armor_type>", "<armor>", "200", "180", "180", "150", "</armor>",
+            "<Nose Equipment>", "ISArtemisIV", "(B) ISMML9", "IS Ammo MML-9 LRM Artemis-capable:13", "IS Ammo MML-9 SRM Artemis-capable:11", "</Nose Equipment>",
+            "<Aft Equipment>", "(B) CLLRM20", "Clan Ammo LRM-20 (Clan) Artemis-capable:12", "CLArtemisIV", "</Aft Equipment>",
+            "<structural_integrity>", "10", "</structural_integrity>", "<tonnage>", "10000.0", "</tonnage>", "<crew>", "20", "</crew>",
+        ].join(String.fromCharCode(10)));
+        const ship = result.craft as SmallCraft;
+        expect(result.issues).toEqual([]);
+        expect(ship.getEquipmentList().map((item) => [item.tag, item.location, item.weight])).toEqual([
+            ["mml-9-artemis-iv", "nose", expect.any(Number)], ["clan-lrm-20-artemis-iv", "aft", expect.any(Number)],
+            ["ammo-is-lrm-artemis-iv", "nose", 1], ["ammo-is-srm-artemis-iv", "nose", 1], ["ammo-clan-lrm-artemis-iv", "aft", 2],
+        ]);
+    });
+
+    // The file lists a capacitor apart from its PPC and does not mark it "(R)" for a rear-facing one.
+    it("fits each PPC Capacitor to a PPC in its arc (TO:AUE p.131)", () => {
+        const result = importSmallCraftBlk([
+            "<UnitType>", "Dropship", "</UnitType>", "<Name>", "Test Lighter", "</Name>", "<Model>", "TL-3", "</Model>", "<year>", "3067", "</year>",
+            "<type>", "IS Level 3", "</type>", "<motion_type>", "Spheroid", "</motion_type>", "<designtype>", "1", "</designtype>",
+            "<transporters>", "crewquarters:140.0:0:-1::-1:0", "cargobay:518.0:2:1::-1:0", "</transporters>",
+            "<SafeThrust>", "3", "</SafeThrust>", "<heatsinks>", "100", "</heatsinks>", "<sink_type>", "0", "</sink_type>", "<fuel>", "3000", "</fuel>",
+            "<armor_type>", "41", "</armor_type>", "<armor>", "200", "180", "180", "150", "</armor>",
+            "<Left Side Equipment>", "(B) ISERPPC", "ISERPPC", "(R) (B) PPC", "PPC Capacitor", "PPC Capacitor", "PPC Capacitor", "</Left Side Equipment>",
+            "<Right Side Equipment>", "(B) ISERPPC", "ISERPPC", "(R) (B) ISPPC", "PPC Capacitor", "PPC Capacitor", "PPC Capacitor", "</Right Side Equipment>",
+            "<structural_integrity>", "10", "</structural_integrity>", "<tonnage>", "10000.0", "</tonnage>", "<crew>", "20", "</crew>",
+        ].join(String.fromCharCode(10)));
+        const ship = result.craft as SmallCraft;
+        expect(result.issues).toEqual([]);
+        expect(ship.getArcItems("left").map((item) => item.tag)).toEqual(["er-ppc-capacitor", "er-ppc-capacitor"]);
+        expect(ship.getArcItems("leftAft").map((item) => item.tag)).toEqual(["ppc-capacitor"]);
+        expect(ship.getArcItems("rightAft").map((item) => item.tag)).toEqual(["ppc-capacitor"]);
+    });
+});
