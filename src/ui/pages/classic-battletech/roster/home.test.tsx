@@ -245,8 +245,9 @@ describe("Classic roster Master Unit List search", () => {
         fireEvent.click((await screen.findAllByRole("button", { name: "View " + getMULDisplayName(hit) }, { timeout: 20_000 }))[0]);
         expect(screen.getByRole("heading", { name: /^Viewing Essex Destroyer/ })).toBeTruthy();
         fireEvent.click(screen.getAllByRole("button", { name: /^(Cancel|Close)$/ })[0]);
-        // Capital ships have no Technical Readout yet (#78), so there is no TRO button for them.
-        expect(screen.queryAllByRole("button", { name: "TRO " + getMULDisplayName(hit) }).length).toBe(0);
+        fireEvent.click((await screen.findAllByRole("button", { name: "TRO " + getMULDisplayName(hit) }))[0]);
+        expect(screen.getByRole("heading", { name: /^Technical Readout: Essex Destroyer/ })).toBeTruthy();
+        fireEvent.click(screen.getAllByRole("button", { name: /^(Cancel|Close)$/ })[0]);
         fireEvent.click((await screen.findAllByRole("button", { name: "Add " + getMULDisplayName(hit) }))[0]);
         const group: BattleMechGroup = onChange.mock.calls[0][0];
         expect(group.capitalShips.map((unit) => unit.getName() + " " + unit.getModel())).toEqual([hit.Name + " " + hit.Variant]);

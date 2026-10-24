@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import AerospaceFighter from "./aerospace-fighter";
 import BattleArmor from "./battle-armor";
+import CapitalShip from "./capital-ship";
 import InfantryPlatoon from "./infantry-platoon";
 import ProtoMech from "./protomech";
 import SmallCraft from "./small-craft";
@@ -16,6 +17,7 @@ describe("Technical Readout on the other Classic unit types", () => {
         { label: "battle armor", make: () => new BattleArmor(), load: (json: string) => new BattleArmor(json) },
         { label: "ProtoMech", make: () => new ProtoMech(), load: (json: string) => new ProtoMech(json) },
         { label: "Small Craft", make: () => new SmallCraft(), load: (json: string) => new SmallCraft(json) },
+        { label: "capital ship", make: () => new CapitalShip(), load: (json: string) => new CapitalShip(json) },
     ];
     for (const { label, make, load } of makers) {
         it("saves and loads a " + label + "'s TRO and gives the sheet a title and construction rows", () => {
@@ -280,5 +282,72 @@ describe("Small Craft Technical Readout construction table", () => {
         expect(adapter.getEquipmentCopies()).toEqual([expect.objectContaining({ uuid: mount!.uuid, name: "Barracuda", locationLabel: "Nose" })]);
         expect(adapter.getConstructionRows().some((row) => row.label.startsWith("Barracuda") && row.value === "Nose")).toBe(true);
         expect(totalMass(adapter.getConstructionRows())).toBe(ship.getCurrentTonnage());
+    });
+});
+
+describe("Capital ship Technical Readout construction table", () => {
+    // A WarShip on the Vincent Mk 39's lines (SO:AA p.132): NAC/10s and large lasers in the fore and broadside arcs.
+    const warShip = (): CapitalShip => {
+        const ship = new CapitalShip();
+        ship.setName("Vincent");
+        ship.setModel("Mk 39");
+        ship.setShipType("warShip");
+        ship.setTonnage(420000);
+        ship.setSafeThrust(4);
+        ship.setStructuralIntegrity(40);
+        ship.setArmorTons(104);
+        ship.setArmorAllocation("nose", 12);
+        const nac = ship.addCapitalWeapon("nac-10", "foreLeft");
+        ship.setCapitalWeaponShots(nac!.uuid, "nac-10", 50);
+        ship.addEquipmentFromTag("large-laser", "leftBroadside");
+        ship.setQuarters("crew", 20);
+        ship.addBay("cargo", 1000);
+        ship.setDockingCollars(2);
+        return ship;
+    };
+
+    it("lists every ton, with thrust under the engine, armor by facing, then the weapons", () => {
+        const ship = warShip();
+        const rows = getUnitTroAdapter(ship).getConstructionRows();
+        expect(totalMass(rows)).toBe(ship.getCurrentTonnage());
+        const engine = rows.findIndex((row) => row.label.startsWith("Engine"));
+        expect(rows.slice(engine + 1, engine + 3)).toEqual([
+            { label: "Safe Thrust", value: "4", indent: true },
+            { label: "Maximum Thrust", value: "6", indent: true },
+        ]);
+        expect(rows).toContainEqual({ label: "Armor by location", heading: true });
+        expect(rows).toContainEqual({ label: "Nose", value: `${12 + ship.getFreeArmorPerFacing()}`, indent: true });
+        expect(rows).toContainEqual({ label: "Aft-Right", value: `${ship.getFreeArmorPerFacing()}`, indent: true });
+        expect(rows).toContainEqual({ label: "Large Laser", value: "Left Broadside", mass: "5" });
+        expect(rows.some((row) => row.label.startsWith("NAC/10 (50 shots)") && row.value === "Fore-Left")).toBe(true);
+        // Quarters, bays and docking collars belong with the hull, above the weapons.
+        const heading = rows.findIndex((row) => row.label === "Weapons and Equipment");
+        for (const label of ["Cargo", "Docking Collars", "Quarters"]) {
+            const index = rows.findIndex((row) => row.label.startsWith(label));
+            expect(index, label).toBeGreaterThan(-1);
+            expect(index, label).toBeLessThan(heading);
+        }
+    });
+
+    it("gives the spec block, a K-F drive make, and the equipment makes by arc, capital weapons included", () => {
+        const ship = warShip();
+        const adapter = getUnitTroAdapter(ship);
+        expect(adapter.getSpecValues()).toMatchObject({ title: "Vincent", mass: "420,000 tons", cruisingSpeed: "Safe Thrust 4", maximumSpeed: "Maximum Thrust 6" });
+        expect(adapter.getSpecValues().subtitle).toContain("WarShip");
+        expect(adapter.getComponentRows().map((row) => row.key)).toEqual(["chassis", "engine", "kfDrive", "armor"]);
+        const copies = adapter.getEquipmentCopies();
+        expect(copies.map((copy) => copy.locationLabel)).toEqual(["Left Broadside", "Fore-Left"]);
+        expect(copies.every((copy) => copy.uuid)).toBe(true);
+    });
+
+    it("gives a space station a station-keeping drive and no K-F drive make", () => {
+        const station = new CapitalShip();
+        station.setShipType("spaceStation");
+        station.setTonnage(100000);
+        const adapter = getUnitTroAdapter(station);
+        expect(adapter.getSpecValues().cruisingSpeed).toBe("Station-keeping");
+        expect(adapter.getSpecValues().maximumSpeed).toBeUndefined();
+        expect(adapter.getComponentRows().map((row) => row.key)).toEqual(["chassis", "engine", "armor"]);
+        expect(totalMass(adapter.getConstructionRows())).toBe(station.getCurrentTonnage());
     });
 });

@@ -13,7 +13,7 @@ test("the roster's design quirks switch is off by default and is saved with the 
     await page.getByTitle("Click here to save a a new 'mech row").click();
 
     await page.goto("classic-battletech/roster");
-    await page.getByTitle("Click here to open the add 'mech dialog").first().click();
+    await page.getByTitle("Add 'Mechs, or search the Master Unit List for any unit type").first().click();
     await page.locator(".modal button.btn-xs.btn-primary").nth(1).click();
     await page.goto("classic-battletech/roster");
 
@@ -47,7 +47,7 @@ test("with the switch on, play shows the side's quirk Initiative and the unit's 
     await page.getByTitle("Click here to save a a new 'mech row").click();
 
     await page.goto("classic-battletech/roster");
-    await page.getByTitle("Click here to open the add 'mech dialog").first().click();
+    await page.getByTitle("Add 'Mechs, or search the Master Unit List for any unit type").first().click();
     await page.locator(".modal button.btn-xs.btn-primary").nth(1).click();
 
     await page.goto("classic-battletech/roster/play");
@@ -77,7 +77,7 @@ test("with the switch on, the roster takes a game year and saves it with the for
     await page.getByTitle("Click here to save a a new 'mech row").click();
 
     await page.goto("classic-battletech/roster");
-    await page.getByTitle("Click here to open the add 'mech dialog").first().click();
+    await page.getByTitle("Add 'Mechs, or search the Master Unit List for any unit type").first().click();
     await page.locator(".modal button.btn-xs.btn-primary").nth(1).click();
     await page.goto("classic-battletech/roster");
 

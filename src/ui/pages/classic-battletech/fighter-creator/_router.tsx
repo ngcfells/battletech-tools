@@ -6,8 +6,8 @@ import Home from './home';
 import FighterCreatorChassis from './chassis';
 import FighterCreatorArmor from './armor';
 import FighterCreatorEquipment from './equipment';
-import FighterCreatorTechnicalReadout from './technical-readout';
-import FighterCreatorPrintTRO from './print-tro';
+import { CreatorPrintTRO, CreatorTechnicalReadoutStep } from '../../../components/creator-tro-pages';
+import { FIGHTER_TRO } from '../creator-tro-configs';
 import FighterCreatorSummary from './summary';
 import FighterCreatorRecordSheet from './record-sheet';
 import FighterCreatorPrintAS from './print-as';
@@ -36,11 +36,11 @@ export default class FighterCreatorRouter extends React.Component<IFighterCreato
                 }/>
 
                 <Route path={`technical-readout`} element={
-                    <FighterCreatorTechnicalReadout appGlobals={this.props.appGlobals} />
+                    <CreatorTechnicalReadoutStep appGlobals={this.props.appGlobals} config={FIGHTER_TRO} />
                 }/>
 
                 <Route path={`print-tro`} element={
-                    <FighterCreatorPrintTRO appGlobals={this.props.appGlobals} />
+                    <CreatorPrintTRO appGlobals={this.props.appGlobals} config={FIGHTER_TRO} />
                 }/>
 
                 <Route path={`summary`} element={

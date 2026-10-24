@@ -183,7 +183,7 @@ export default class CapitalShipCreatorCrew extends React.Component<ICrewProps> 
 
                             <div className="clear-both overflow-hidden">
                                 <hr />
-                                <Link to={`${process.env.PUBLIC_URL}/classic-battletech/capital-ship-creator/summary`} className="btn btn-primary pull-right btn-sm">Next: Summary <ArrowCircleRight /></Link>
+                                <Link to={`${process.env.PUBLIC_URL}/classic-battletech/capital-ship-creator/technical-readout`} className="btn btn-primary pull-right btn-sm">Next: Technical Readout <ArrowCircleRight /></Link>
                                 <Link to={`${process.env.PUBLIC_URL}/classic-battletech/capital-ship-creator/equipment`} className="btn btn-primary btn-sm"><ArrowCircleLeft /> Previous Step</Link>
                             </div>
                         </TextSection>

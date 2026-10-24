@@ -93,7 +93,7 @@ test("a battledroid in play mode shows the Battledroids helpers", async ({ page 
     await page.getByTitle("Click here to save a a new 'mech row").click();
 
     await page.goto("classic-battletech/roster");
-    await page.getByTitle("Click here to open the add 'mech dialog").first().click();
+    await page.getByTitle("Add 'Mechs, or search the Master Unit List for any unit type").first().click();
     await page.locator(".modal button.btn-xs.btn-primary").nth(1).click();
     await page.goto("classic-battletech/roster/play");
     const helper = page.getByTestId("battledroids-droid-helper");

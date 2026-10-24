@@ -110,7 +110,8 @@ export default class CapitalShipCreatorSummary extends React.Component<ISummaryP
                                 <hr />
                                 <Link to={`${process.env.PUBLIC_URL}/classic-battletech/capital-ship-creator/record-sheet`} className="btn btn-primary pull-right btn-sm">View Record Sheet</Link>
                                 <Link to={`${process.env.PUBLIC_URL}/classic-battletech/capital-ship-creator/print-as`} className="btn btn-primary pull-right btn-sm">View Alpha Strike Card</Link>
-                                <Link to={`${process.env.PUBLIC_URL}/classic-battletech/capital-ship-creator/crew`} className="btn btn-primary btn-sm"><ArrowCircleLeft /> Previous Step</Link>
+                                <Link to={`${process.env.PUBLIC_URL}/classic-battletech/capital-ship-creator/print-tro`} className="btn btn-primary pull-right btn-sm">Print the TRO sheet</Link>
+                                <Link to={`${process.env.PUBLIC_URL}/classic-battletech/capital-ship-creator/technical-readout`} className="btn btn-primary btn-sm"><ArrowCircleLeft /> Previous Step</Link>
                             </div>
                         </TextSection>
                     </div>

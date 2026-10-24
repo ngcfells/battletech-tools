@@ -173,7 +173,7 @@ export default class BattleMechAddMechDialog extends React.Component<IBattleMech
         }
     }
 
-    viewTRO = ( e: React.FormEvent<HTMLButtonElement>, design: BattleMech | Exclude<ClassicMULUnit, CapitalShip> ): void => {
+    viewTRO = ( e: React.FormEvent<HTMLButtonElement>, design: BattleMech | ClassicMULUnit ): void => {
         e.preventDefault();
         const adapter = design instanceof BattleMech ? getBattleMechTroAdapter( design ) : getUnitTroAdapter( design );
         this.setState({ viewingTRO: { title: design.getName(), tro: design.tro, adapter } });
@@ -388,10 +388,7 @@ export default class BattleMechAddMechDialog extends React.Component<IBattleMech
                     {design ? (
                         <>
                         <button className='btn btn-sm btn-primary' onClick={e => this.viewOtherUnit(e, kind, design)} title={"View " + design.getName()} aria-label={"View " + getMULDisplayName( unit )}><Eye /></button>
-                        {/* Capital ships have no Technical Readout yet (#78). */}
-                        {!( design instanceof CapitalShip ) ? (
-                            <button className='btn btn-sm btn-primary' onClick={e => this.viewTRO(e, design)} title={"Technical Readout of " + design.getName()} aria-label={"TRO " + getMULDisplayName( unit )}><Book /></button>
-                        ) : null}
+                        <button className='btn btn-sm btn-primary' onClick={e => this.viewTRO(e, design)} title={"Technical Readout of " + design.getName()} aria-label={"TRO " + getMULDisplayName( unit )}><Book /></button>
                         <button className='btn btn-sm btn-primary' onClick={e => this.importOtherUnit(e, kind, design)} title={"Add " + design.getName() + " to this group"} aria-label={"Add " + getMULDisplayName( unit )}><PlusCircle /></button>
                         </>
                     ) : (

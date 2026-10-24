@@ -3,16 +3,18 @@ import { ITroComponentRow, ITroConstructionRow, ITroEquipmentCopy, ITroSpecValue
 import { generateUUID } from "../utils/generateUUID";
 import { SMALL_CRAFT_ARCS, SmallCraftArc } from "../data/small-craft-construction";
 import AerospaceFighter, { FIGHTER_ARCS, FIGHTER_LOCATIONS } from "./aerospace-fighter";
+import { ADVANCED_AEROSPACE_FACINGS, AdvancedAerospaceArc } from "../data/advanced-aerospace-construction";
 import BattleArmor from "./battle-armor";
+import CapitalShip from "./capital-ship";
 import InfantryPlatoon from "./infantry-platoon";
 import ProtoMech from "./protomech";
 import SmallCraft from "./small-craft";
 import Vehicle from "./vehicle";
 
 // TRO fields round 2: the shared Technical Readout adapter for the Classic types other than 'Mechs (those have
-// battlemech-tro.ts). Each type gives its spec block, component rows, equipment and construction table.
+// battlemech-tro.ts), JumpShips, WarShips and space stations included. Each type gives its spec block, component rows, equipment and construction table.
 
-export type TroUnit = Vehicle | AerospaceFighter | InfantryPlatoon | BattleArmor | ProtoMech | SmallCraft;
+export type TroUnit = Vehicle | AerospaceFighter | InfantryPlatoon | BattleArmor | ProtoMech | SmallCraft | CapitalShip;
 
 /** Modern TROs print speeds in kph: 10.8 kph per movement point, to the whole kph. */
 const kph = (movementPoints: number): string => `${Math.round(movementPoints * 10.8)} kph`;
@@ -77,6 +79,13 @@ const subtitle = (...parts: (string | undefined)[]): string => parts.filter(Bool
 const tonsText = (tons: number): string => `${Math.round(tons * 1000) / 1000}`;
 
 const capitalize = (text: string): string => text.charAt(0).toUpperCase() + text.slice(1);
+
+/** An aerospace engine's construction row with its thrust indented under it. */
+const engineWithThrust = (label: string, mass: string, unit: { getSafeThrust(): number; getMaxThrust(): number }): ITroConstructionRow[] => [
+    { label, mass },
+    { label: "Safe Thrust", value: `${unit.getSafeThrust()}`, indent: true },
+    { label: "Maximum Thrust", value: `${unit.getMaxThrust()}`, indent: true },
+];
 
 /** One construction row per weight line, in the unit's own order, so the table adds up to the unit's mass. */
 interface IWeightLine { name: string; weight: number; item?: { location?: { toString(): string } } }
@@ -197,9 +206,7 @@ function fighterConstruction(fighter: AerospaceFighter): { construction: ITroCon
         }
         if (line.name.startsWith("Engine (") || (support && line.name.endsWith(" Engine"))) {
             return [
-                { label: line.name, mass },
-                { label: "Safe Thrust", value: `${fighter.getSafeThrust()}`, indent: true },
-                { label: "Maximum Thrust", value: `${fighter.getMaxThrust()}`, indent: true },
+                ...engineWithThrust(line.name, mass, fighter),
                 // An aerospace fighter's structural integrity weighs nothing; a support vehicle's is its chassis.
                 ...(support ? [] : [{ label: "Structural Integrity", value: integrity, mass: "0" }]),
             ];
@@ -329,11 +336,7 @@ function smallCraftParts(craft: SmallCraft): IUnitTroParts {
     const chassisRow = (line: IWeightLine): ITroConstructionRow[] => {
         const mass = tonsText(line.weight);
         if (line.name.startsWith("Engine (")) {
-            return [
-                { label: line.name, mass },
-                { label: "Safe Thrust", value: `${craft.getSafeThrust()}`, indent: true },
-                { label: "Maximum Thrust", value: `${craft.getMaxThrust()}`, indent: true },
-            ];
+            return engineWithThrust(line.name, mass, craft);
         }
         return [{ label: line.name, mass }];
     };
@@ -366,6 +369,43 @@ function smallCraftParts(craft: SmallCraft): IUnitTroParts {
     };
 }
 
+/** TRO-style rows: the vessel's weight list with thrust under a WarShip's engine, then armor by facing (free armor included). */
+function capitalShipParts(ship: CapitalShip): IUnitTroParts {
+    const tons = `${ship.getTonnage().toLocaleString("en-US")} tons`;
+    const arcName = (location?: string): string => ship.getArcs().includes(location as AdvancedAerospaceArc) ? ship.getArcName(location as AdvancedAerospaceArc) : "Hull";
+    const chassisRow = (line: IWeightLine): ITroConstructionRow[] => {
+        const mass = tonsText(line.weight);
+        return ship.isWarShip() && line.name.startsWith("Engine (") ? engineWithThrust(line.name, mass, ship) : [{ label: line.name, mass }];
+    };
+    const { construction, equipmentRows } = weightLineRows(ship.getWeights(), chassisRow, arcName, "construction");
+    construction.push(
+        { label: "Armor by location", heading: true },
+        ...ADVANCED_AEROSPACE_FACINGS.map((facing) => ({ label: ship.getFacingName(facing), value: `${ship.getFacingArmor(facing)}`, indent: true })),
+    );
+    return {
+        spec: {
+            title: ship.getName(),
+            subtitle: subtitle(ship.getModel(), ship.getTech().name, ship.getShipTypeName(), tons),
+            mass: tons,
+            cruisingSpeed: ship.isWarShip() ? `Safe Thrust ${ship.getSafeThrust()}` : "Station-keeping",
+            maximumSpeed: ship.isWarShip() ? `Maximum Thrust ${ship.getMaxThrust()}` : undefined,
+            armorType: ship.getArmorType().name,
+        },
+        components: [
+            { key: "chassis", label: "Hull" },
+            { key: "engine", label: ship.isWarShip() ? "Engine" : "Station-Keeping Drive" },
+            ...(ship.hasKFDrive() ? [{ key: "kfDrive", label: "K-F Drive" }] : []),
+            { key: "armor", label: `Armor (${ship.getArmorType().name})` },
+        ],
+        construction,
+        equipmentRows,
+        equipment: [
+            ...catalogEquipment(ship.getEquipmentList(), arcName),
+            ...ship.getCapitalWeapons().map((mount) => ({ item: { uuid: mount.uuid, tag: mount.weapon.tag }, name: mount.weapon.name, location: arcName(mount.location), armament: true })),
+        ],
+    };
+}
+
 /** What the shared Technical Readout section and sheet need to know about any non-'Mech Classic unit. */
 export function getUnitTroAdapter(unit: TroUnit): ITroUnitAdapter {
     if (unit instanceof Vehicle) return buildAdapter(() => vehicleParts(unit));
@@ -373,5 +413,6 @@ export function getUnitTroAdapter(unit: TroUnit): ITroUnitAdapter {
     if (unit instanceof InfantryPlatoon) return buildAdapter(() => infantryParts(unit));
     if (unit instanceof BattleArmor) return buildAdapter(() => battleArmorParts(unit));
     if (unit instanceof ProtoMech) return buildAdapter(() => protoMechParts(unit));
+    if (unit instanceof CapitalShip) return buildAdapter(() => capitalShipParts(unit));
     return buildAdapter(() => smallCraftParts(unit));
 }

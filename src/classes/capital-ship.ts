@@ -3,6 +3,8 @@ import { findUnitCatalogRecord, copyCatalogRecord, getUnitCatalogRecords } from 
 import { IAssignedQuirk, IQuirkTargets, QuirkUnitType } from "../data/quirk-interfaces";
 import { getQuirkIssues, getQuirkTargets, quirkBayTarget } from "../data/quirk-registry";
 import { QuirkList } from "./quirk-list";
+import { TechnicalReadout } from "./technical-readout";
+import type { ITechnicalReadoutExport } from "../data/technical-readout-interfaces";
 import { DEFAULT_RULES_EDITION, getSelectableRulesEditionTag } from "../data/rules-editions";
 import { aerospaceArmorTypes, getAerospaceArmorPointsPerTon } from "../data/aerospace-armor-types";
 import { mechHeatSinkTypes } from "../data/mech-heat-sink-types";
@@ -160,6 +162,8 @@ export interface ICapitalShipExport {
     version: number;
     uuid: string;
     quirks?: IAssignedQuirk[];
+    /** The optional Technical Readout: makes and text for the printed TRO sheet. */
+    tro?: ITechnicalReadoutExport;
     lastUpdated: Date;
     name: string;
     model: string;
@@ -230,6 +234,8 @@ export default class CapitalShip {
 
     /** The design quirks assigned to this unit (quirk tables, Campaign Operations pp.228 and 232). */
     public quirks: QuirkList = new QuirkList();
+    /** The optional Technical Readout (TRO fields round 2, #78). */
+    public tro: TechnicalReadout = new TechnicalReadout();
     /** The force's "Game year", set by `BattleMechForce.syncQuirkPlayYear`; not saved with the unit. */
     public quirkPlayYear: number | null = null;
     public lastUpdated: Date = new Date();
@@ -268,7 +274,7 @@ export default class CapitalShip {
     private _pilot: Pilot = new Pilot();
     private _inPlay: ICapitalShipInPlay = newCapitalShipInPlay();
 
-    private _weights: { name: string; weight: number }[] = [];
+    private _weights: { name: string; weight: number; item?: IEquipmentItem | ICapitalShipMount }[] = [];
     private _currentTonnage: number = 0;
     private _cost: number = 0;
     private _calcLogCost: string = "";
@@ -876,7 +882,8 @@ export default class CapitalShip {
         if (!this.isSpaceStation()) this._gravDecks.large = 0;
     }
 
-    public getWeights(): { name: string; weight: number }[] { return this._weights; }
+    /** Every weight line; equipment and capital weapon lines carry their item. */
+    public getWeights(): { name: string; weight: number; item?: IEquipmentItem | ICapitalShipMount }[] { return this._weights; }
     public getCurrentTonnage(): number { return this._currentTonnage; }
     public getRemainingTonnage(): number { return Math.round((this._tonnage - this._currentTonnage) * 1000) / 1000; }
 
@@ -907,10 +914,10 @@ export default class CapitalShip {
             { name: `Armor (${this._armorType.name}, ${this.getPurchasedArmorPoints()} points + ${this.getFreeArmorPerFacing()} free a facing)`, weight: this._armorTons },
             { name: `Heat Sinks (${this.getTotalHeatSinks()} ${this._heatSinkType.name}, ${this.getFreeHeatSinks()} free)`, weight: this._additionalHeatSinks },
             ...(this.getFireControlWeight() > 0 ? [{ name: "Expanded Fire Control", weight: this.getFireControlWeight() }] : []),
-            ...this._equipmentList.map((item) => ({ name: item.name, weight: item.weight || 0 })),
+            ...this._equipmentList.map((item) => ({ name: item.name, weight: item.weight || 0, item })),
             ...this._capitalWeapons.map((mount) => {
                 const shots = this.getCapitalShots(mount);
-                return { name: `${mount.weapon.name}${getCapitalAmmoTags(mount.weapon).length ? ` (${shots} shot${shots === 1 ? "" : "s"})` : ""}`, weight: this.getCapitalWeaponWeight(mount) };
+                return { name: `${mount.weapon.name}${getCapitalAmmoTags(mount.weapon).length ? ` (${shots} shot${shots === 1 ? "" : "s"})` : ""}`, weight: this.getCapitalWeaponWeight(mount), item: mount };
             }),
             ...(this._dockingCollars > 0 ? [{ name: `Docking Collars (${this._dockingCollars})`, weight: this._dockingCollars * DOCKING_COLLAR_TONS }] : []),
             ...gravDecks,
@@ -1656,6 +1663,7 @@ export default class CapitalShip {
             version: 1,
             uuid: this._uuid,
             quirks: this.quirks.export(),
+            tro: this.tro.export(),
             lastUpdated: this.lastUpdated,
             name: this._name,
             ...(this._rulesEdition !== DEFAULT_RULES_EDITION ? { rulesEdition: this._rulesEdition } : {}),
@@ -1713,6 +1721,7 @@ export default class CapitalShip {
         const saved = parsed as Partial<Record<keyof ICapitalShipExport, unknown>>;
         this._uuid = savedString(saved.uuid).slice(0, 100) || generateUUID();
         this.quirks.import(saved.quirks);
+        this.tro.import(saved.tro);
         const updated = typeof saved.lastUpdated === "string" || typeof saved.lastUpdated === "number" ? new Date(saved.lastUpdated) : new Date();
         this.lastUpdated = Number.isNaN(updated.getTime()) ? new Date() : updated;
         this.setName(savedString(saved.name));

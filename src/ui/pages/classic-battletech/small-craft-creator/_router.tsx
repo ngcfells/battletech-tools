@@ -10,8 +10,8 @@ import SmallCraftCreatorCrew from './crew';
 import SmallCraftCreatorSummary from './summary';
 import SmallCraftCreatorRecordSheet from './record-sheet';
 import SmallCraftCreatorPrintAS from './print-as';
-import SmallCraftCreatorTechnicalReadout from './technical-readout';
-import SmallCraftCreatorPrintTRO from './print-tro';
+import { CreatorPrintTRO, CreatorTechnicalReadoutStep } from '../../../components/creator-tro-pages';
+import { SMALL_CRAFT_TRO } from '../creator-tro-configs';
 
 import type { JSX } from "react";
 
@@ -41,11 +41,11 @@ export default class SmallCraftCreatorRouter extends React.Component<ISmallCraft
                 }/>
 
                 <Route path={`technical-readout`} element={
-                    <SmallCraftCreatorTechnicalReadout appGlobals={this.props.appGlobals} />
+                    <CreatorTechnicalReadoutStep appGlobals={this.props.appGlobals} config={SMALL_CRAFT_TRO} />
                 }/>
 
                 <Route path={`print-tro`} element={
-                    <SmallCraftCreatorPrintTRO appGlobals={this.props.appGlobals} />
+                    <CreatorPrintTRO appGlobals={this.props.appGlobals} config={SMALL_CRAFT_TRO} />
                 }/>
 
                 <Route path={`print-as`} element={

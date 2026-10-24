@@ -5,8 +5,8 @@ import Error404 from "../../error404";
 import Home from './home';
 import InfantryCreatorPlatoon from './platoon';
 import InfantryCreatorWeapons from './weapons';
-import InfantryCreatorTechnicalReadout from './technical-readout';
-import InfantryCreatorPrintTRO from './print-tro';
+import { CreatorPrintTRO, CreatorTechnicalReadoutStep } from '../../../components/creator-tro-pages';
+import { INFANTRY_TRO } from '../creator-tro-configs';
 import InfantryCreatorSummary from './summary';
 import InfantryCreatorRecordSheet from './record-sheet';
 import InfantryCreatorPrintAS from './print-as';
@@ -31,11 +31,11 @@ export default class InfantryCreatorRouter extends React.Component<IInfantryCrea
                 }/>
 
                 <Route path={`technical-readout`} element={
-                    <InfantryCreatorTechnicalReadout appGlobals={this.props.appGlobals} />
+                    <CreatorTechnicalReadoutStep appGlobals={this.props.appGlobals} config={INFANTRY_TRO} />
                 }/>
 
                 <Route path={`print-tro`} element={
-                    <InfantryCreatorPrintTRO appGlobals={this.props.appGlobals} />
+                    <CreatorPrintTRO appGlobals={this.props.appGlobals} config={INFANTRY_TRO} />
                 }/>
 
                 <Route path={`summary`} element={
