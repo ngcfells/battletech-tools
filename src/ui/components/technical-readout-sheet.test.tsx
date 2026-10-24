@@ -32,6 +32,16 @@ describe("TechnicalReadoutSheet", () => {
         expect(markup).toContain("2 Diverse Optics Medium Laser");
     });
 
+    it("prints the suggested make when none is entered, and the entered one over it", () => {
+        const suggesting: ITroUnitAdapter = { ...adapter, getComponentRows: () => [{ key: "engine", label: "Engine", suggested: "Pitban 240" }] };
+        const tro = new TechnicalReadout();
+        expect(renderToStaticMarkup(<TechnicalReadoutSheet tro={tro} adapter={suggesting} />)).toContain("Pitban 240");
+        tro.setComponent("engine", "VOX 240");
+        const markup = renderToStaticMarkup(<TechnicalReadoutSheet tro={tro} adapter={suggesting} />);
+        expect(markup).toContain("VOX 240");
+        expect(markup).not.toContain("Pitban");
+    });
+
     it("leaves out empty lines and sections but keeps the mass and the construction table", () => {
         const markup = sheet(new TechnicalReadout());
         expect(markup).not.toContain("Manufacturer:");

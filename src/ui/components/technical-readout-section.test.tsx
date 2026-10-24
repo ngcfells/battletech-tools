@@ -77,6 +77,16 @@ describe("TechnicalReadoutSection", () => {
         }
     });
 
+    it("shows the edition's suggested make as a placeholder without entering it", () => {
+        const tro = new TechnicalReadout();
+        const suggesting = { ...adapter(), getComponentRows: () => [{ key: "engine", label: "Engine (Fusion 240)", suggested: "Pitban 240" }] };
+        render(<TechnicalReadoutSection tro={tro} adapter={suggesting} onChange={vi.fn()} />);
+        const input = screen.getByLabelText("Engine (Fusion 240)") as HTMLInputElement;
+        expect(input.placeholder).toBe("Pitban 240");
+        expect(input.value).toBe("");
+        expect(tro.export()).toBeUndefined();
+    });
+
     it("shows an imported component make that has no row of its own", () => {
         const tro = new TechnicalReadout();
         tro.setComponent("kfDrive", "X");

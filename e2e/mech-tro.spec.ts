@@ -40,3 +40,49 @@ test("Step 7 keeps the Technical Readout fields, prints them, and the TRO text i
 
     expect(errors).toEqual([]);
 });
+
+// Battledroids droids, the book's and the player's own, take the same Technical Readout; the Engine Table's maker
+// (BD p.23) is the power plant until the player enters another.
+test("a Battledroids droid has a Technical Readout with the Engine Table's maker as its power plant", async ({ page }) => {
+    const errors: string[] = [];
+    page.on("pageerror", (error) => errors.push(error.stack ?? error.message));
+
+    await page.goto("classic-battletech/mech-creator/step1");
+    await page.getByLabel("Rules Edition").selectOption("battledroids");
+    // Basic plays the printed droid as it stands; its readout can still be written.
+    await page.getByLabel("Rules Level").selectOption("0");
+    await page.getByRole("combobox", { name: /^Droid/ }).selectOption("grf-1n");
+
+    await page.goto("classic-battletech/mech-creator/step7");
+    const engine = page.getByLabel(/^Engine \(/);
+    await expect(engine).toHaveAttribute("placeholder", "CoreTek 275");
+    await expect(engine).toHaveValue("");
+    await page.getByLabel("Overview").fill("Griffin overview");
+
+    await page.getByRole("link", { name: /Print TRO sheet/ }).click();
+    const sheet = page.locator(".tro-sheet");
+    await expect(sheet).toContainText("Power Plant: CoreTek 275");
+    await expect(sheet).toContainText("Griffin overview");
+
+    expect(errors).toEqual([]);
+});
+
+test("a player's own Battledroids droid takes the Engine Table's maker until another is entered", async ({ page }) => {
+    const errors: string[] = [];
+    page.on("pageerror", (error) => errors.push(error.stack ?? error.message));
+
+    // Expert Battledroids designs droids; a 60-ton, 4 MP design is the book's Merlin, with its Pitban 240 (BD p.23).
+    await page.goto("classic-battletech/mech-creator/step1");
+    await page.getByLabel("Rules Edition").selectOption("battledroids");
+    await expect(page.getByLabel("Rules Level")).toHaveValue("2");
+    await page.getByLabel("Mech Tonnage").selectOption("60");
+    await page.goto("classic-battletech/mech-creator/step2");
+    await page.getByLabel("Walking Movement Points").selectOption("4");
+    await page.goto("classic-battletech/mech-creator/step7");
+    await expect(page.getByLabel(/^Engine \(/)).toHaveAttribute("placeholder", "Pitban 240");
+    await page.getByLabel(/^Engine \(/).fill("Vlar 240");
+    await page.getByRole("link", { name: /Print TRO sheet/ }).click();
+    await expect(page.locator(".tro-sheet")).toContainText("Power Plant: Vlar 240");
+
+    expect(errors).toEqual([]);
+});

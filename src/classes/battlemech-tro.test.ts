@@ -2,6 +2,8 @@ import { describe, expect, it } from "vitest";
 import { sswMechs } from "../data/ssw/sswMechs";
 import { BattleMech } from "./battlemech";
 import { getBattleMechTroAdapter } from "./battlemech-tro";
+import { getPrintedDroid } from "../data/battledroids-mechs";
+import { buildPrintedDroid } from "./printed-droid";
 
 const archer = (): BattleMech => {
     const mech = new BattleMech();
@@ -63,6 +65,15 @@ describe("'Mech Technical Readout", () => {
         expect(engine?.value).toBe("280");
         expect(engine?.mass).toBe("16");
         expect(mech.makeTROHTML()).toContain(">280<");
+    });
+
+    it("a Battledroids droid's power plant defaults to the Engine Table's maker", () => {
+        const engine = (mech: BattleMech) => getBattleMechTroAdapter(mech).getComponentRows().find((row) => row.key === "engine");
+        // BD p.23: the 270 is a GM, the 275 a CoreTek.
+        expect(engine(buildPrintedDroid(getPrintedDroid("pxh-1k")!))?.suggested).toBe("GM 270");
+        expect(engine(buildPrintedDroid(getPrintedDroid("grf-1n")!))?.suggested).toBe("CoreTek 275");
+        // Total Warfare prints no makers.
+        expect(engine(archer())?.suggested).toBeUndefined();
     });
 
     it("component rows follow the design", () => {

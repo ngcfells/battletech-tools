@@ -18,15 +18,18 @@ export default function TechnicalReadoutSheet(props: { tro: TechnicalReadout; ad
     const { tro, adapter } = props;
     const spec = adapter.getSpecValues();
     const armament = tro.getArmamentLine(adapter.getEquipmentCopies());
+    const componentRows = adapter.getComponentRows();
+    /** The entered make, else the one the rules edition suggests. */
+    const make = (key: string): string => tro.getComponent(key) || componentRows.find((row) => row.key === key)?.suggested || "";
     const lines: [string, string | undefined][] = [
         ["Mass", spec.mass],
-        ["Chassis", tro.getComponent("chassis")],
-        ["Power Plant", tro.getComponent("engine")],
+        ["Chassis", make("chassis")],
+        ["Power Plant", make("engine")],
         ["Cruising Speed", spec.cruisingSpeed],
         ["Maximum Speed", spec.maximumSpeed],
-        ["Jump Jets", tro.getComponent("jumpJets")],
+        ["Jump Jets", make("jumpJets")],
         ["Jump Capacity", spec.jumpCapacity],
-        ["Armor", tro.getComponent("armor") || spec.armorType],
+        ["Armor", make("armor") || spec.armorType],
         ["Armament", armament],
         ["Manufacturer", tro.getProduction("manufacturer")],
         ["Primary Factory", tro.getProduction("primaryFactory")],

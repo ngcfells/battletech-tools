@@ -1,5 +1,6 @@
 import { battlemechLocations } from "../data/battlemech-locations";
 import { IEquipmentItem } from "../data/data-interfaces";
+import { getEngineTableMaker } from "../data/engine-makers";
 import { ITroComponentRow, ITroConstructionRow, ITroEquipmentCopy, ITroSpecValues, ITroUnitAdapter } from "../data/technical-readout-interfaces";
 import { generateUUID } from "../utils/generateUUID";
 import type { BattleMech } from "./battlemech";
@@ -22,12 +23,20 @@ const isTroEquipment = (item: IEquipmentItem | undefined): item is IEquipmentIte
 /** What the shared Technical Readout section and sheet need to know about a 'Mech. */
 export function getBattleMechTroAdapter(mech: BattleMech): ITroUnitAdapter {
     const installed = (): IEquipmentItem[] => mech.getInstalledEquipment().filter(isTroEquipment);
+    // The early Engine Tables name a maker per rating, for the standard fusion engine they list ("Pitban 240").
+    const engineTableMake = (): string | undefined => {
+        if (mech.getEngineType().tag !== "standard") {
+            return undefined;
+        }
+        const maker = getEngineTableMaker(mech.getRulesEdition(), mech.getEngineRating());
+        return maker ? `${maker} ${mech.getEngineRating()}` : undefined;
+    };
 
     return {
         getComponentRows(): ITroComponentRow[] {
             const rows: ITroComponentRow[] = [
                 { key: "chassis", label: `Chassis (${mech.getInternalStructureLabel()})` },
-                { key: "engine", label: `Engine (${mech.getEngineName()} ${mech.getEngineRating()})` },
+                { key: "engine", label: `Engine (${mech.getEngineName()} ${mech.getEngineRating()})`, suggested: engineTableMake() },
                 { key: "armor", label: `Armor (${mech.getArmorObj().name})` },
                 { key: "heatSinks", label: `Heat Sinks (${mech.getHeatSinks()} ${mech.getHeatSinksObj().name})` },
             ];

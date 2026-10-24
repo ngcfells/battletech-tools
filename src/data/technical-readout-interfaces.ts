@@ -42,6 +42,8 @@ export interface ITechnicalReadoutExport {
 export interface ITroComponentRow {
     key: string;
     label: string;
+    /** A make the rules edition's own tables name (a Battledroids engine's maker): shown as a hint, printed when none is entered. */
+    suggested?: string;
 }
 
 export interface ITroEquipmentCopy {
