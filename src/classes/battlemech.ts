@@ -12883,14 +12883,12 @@ export class BattleMech {
                 } else if( jObj.mech.techbase["#text"].toLowerCase().indexOf("clan") > -1) {
                     this.setTech("clan");
                 } else if( jObj.mech.techbase["#text"].toLowerCase().indexOf("mixed") > -1) {
-                    // SSW has no chassis field for a Mixed design, but each component carries a techbase
-                    // (0 Inner Sphere, 1 Clan, 2 either). The engine decides, then the internal structure.
+                    // SSW keeps no chassis tech base: its Mixed designs follow the Inner Sphere rules, with Clan
+                    // CASE a choice of their own (<clancase>), and a Clan engine does not make a Clan chassis.
+                    this.setTech( "mis" );
+                    // Each component carries a techbase (0 Inner Sphere, 1 Clan, 2 either) that sets its slots
+                    // (Clan Endo-Steel and Ferro-Fibrous 7, Clan double heat sinks 2, a Clan XL engine 2 per side torso) (#43).
                     const componentTech = ( component: any ): string => String( component?.["@_techbase"] ?? "2" );
-                    const chassisTech = [ componentTech( jObj.mech.engine ), componentTech( jObj.mech.structure ) ]
-                        .find( ( tech ) => tech !== "2" );
-                    this.setTech( chassisTech === "1" ? "mclan" : "mis" );
-                    // Each component's own tech base sets its slots (Clan Endo-Steel and Ferro-Fibrous 7, Clan
-                    // double heat sinks 2, a Clan XL engine 2 per side torso) (#43).
                     const ownTechBase = ( component: any ): "is" | "clan" | undefined =>
                         componentTech( component ) === "1" ? "clan" : componentTech( component ) === "0" ? "is" : undefined;
                     const engineTechBase = ownTechBase( jObj.mech.engine );

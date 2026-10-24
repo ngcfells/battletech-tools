@@ -320,6 +320,17 @@ describe("SSW Battle Value (#46)", () => {
         expect(mech.getTotalBVRearWeapons()).toBe(46);
     });
 
+    it("imports an SSW Mixed design on an Inner Sphere chassis, Clan CASE only when chosen (TM p.302): Banshee BNC-11X, Vision Quest VQ-1NC", () => {
+        // A Clan XL engine had made the Banshee a Clan chassis, with Clan CASE in every location; its Silver
+        // Bullet Gauss Rifle's 7 left torso slots now cost 7 BV. SSW and the MUL give 2030.
+        const banshee = importFixture("banshee-bnc-11x");
+        expect(banshee.getTech().tag).toBe("mis");
+        expect(banshee.hasClanCASE()).toBe(false);
+        expect(banshee.getBattleValue()).toBe(2030);
+        // SSW gives 2401.
+        expect(importFixture("vision-quest-vq-1nc").getBattleValue()).toBe(2401);
+    });
+
     it("does not count Nail/Rivet Gun ammo as explosive (TM p.317): Jabberwocky JAW-66D", () => {
         // SSW gives 353: it counts the ammo at 1 BV a ton where TM p.317 gives 0.
         expect(importFixture("jabberwocky-jaw-66d").getBattleValue()).toBe(352);
