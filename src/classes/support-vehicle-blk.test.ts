@@ -39,6 +39,14 @@ describe("MegaMek Support Vehicle import", () => {
         expect(issues).toEqual(["\"No Such Gun\" has no match in this catalog and was left off."]);
     });
 
+    it("brings the file's Technical Readout fields across (TRO fields, #78)", () => {
+        const { vehicle } = importSupportVehicleBlk(`${tank}\n<manufacturer>\nAgromotive\n</manufacturer>\n<systemManufacturers>\nENGINE:Nissan\nCHASSIS:Hauler\n</systemManufacturers>\n<overview>\n<p>A farm hauler.</p>\n</overview>`);
+        expect(vehicle!.tro.getProduction("manufacturer")).toBe("Agromotive");
+        expect(vehicle!.tro.getComponent("engine")).toBe("Nissan");
+        expect(vehicle!.tro.getComponent("chassis")).toBe("Hauler");
+        expect(vehicle!.tro.getText("overview")).toBe("A farm hauler.");
+    });
+
     it("refuses files that are not ground or VTOL Support Vehicles", () => {
         expect(importSupportVehicleBlk(tank.replace("SupportTank", "Tank")).vehicle).toBeNull();
         expect(importSupportVehicleBlk("not a unit file").vehicle).toBeNull();
@@ -77,6 +85,13 @@ describe("MegaMek Fixed-Wing Support Vehicle import", () => {
     it("brings the file's quirks across", () => {
         const { fighter } = importFixedWingSupportBlk(`${plane}\n<quirks>\nlow_profile\n</quirks>`);
         expect(fighter!.quirks.getAll()).toEqual([{ tag: "quirk-narrow-low-profile" }]);
+    });
+
+    it("brings the file's Technical Readout fields across (TRO fields, #78)", () => {
+        const { fighter } = importFixedWingSupportBlk(`${plane}\n<primaryFactory>\nNew Avalon\n</primaryFactory>\n<systemManufacturers>\nENGINE:Rawlings\n</systemManufacturers>\n<history>\n<p>Flew border patrols.</p>\n</history>`);
+        expect(fighter!.tro.getProduction("primaryFactory")).toBe("New Avalon");
+        expect(fighter!.tro.getComponent("engine")).toBe("Rawlings");
+        expect(fighter!.tro.getText("battleHistory")).toBe("Flew border patrols.");
     });
 
     it("refuses other unit types", () => {

@@ -210,6 +210,7 @@ export default class Home extends React.Component<IHomeProps, IHomeState> {
                         <li>Building Creator Summary: the total weight now matches the weight lines above it; a generator spread over several hexes could add a few kilograms of rounding (31.002 tons for a 31-ton generator).</li>
                         <li>Behind the scenes: the step menus beside every creator are now one shared menu instead of nine copies.</li>
                         <li><i>Battledroids</i> droids, the book's and your own Expert designs, have the same Technical Readout step and printed TRO sheet as any 'Mech (Step 7 of the 'Mech Creator). The 1984 and 1985 Engine Tables name a maker for every rating, so a droid's power plant reads as that maker until you enter another: the Merlin's 240 is a Pitban, the Griffin's 275 a CoreTek. The same holds for designs built under <i>BattleTech, Second Edition</i>.</li>
+                        <li>Importing a MegaMek Support Vehicle file (ground, VTOL or Fixed-Wing) now brings its Technical Readout across too: manufacturer, factory, the makes of chassis, engine, armor, communications and targeting systems, and the overview, capabilities, deployment, history and notes text.</li>
                       </ul>
                    </li>
                   <li>

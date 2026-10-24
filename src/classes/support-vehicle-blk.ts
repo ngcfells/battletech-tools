@@ -4,6 +4,7 @@ import { IBlkAmmoLine, findBlkAmmo, findBlkAmmoWeapon, parseBlkAmmoLine } from "
 import { findImportedEquipment } from "../utils/importedEquipment";
 import { infantryWeapons } from "../data/infantry-weapons";
 import { applyBlkQuirks, IBlkImportedItem } from "../utils/blk-quirks";
+import { readBlkTechnicalReadout } from "../utils/blk-technical-readout";
 import Vehicle from "./vehicle";
 import AerospaceFighter, { FighterArc, FighterLocation } from "./aerospace-fighter";
 
@@ -235,6 +236,7 @@ export const importSupportVehicleBlk = (text: string): ISupportVehicleBlkResult 
     const fuel = numberOf(file, "fuel", -1);
     if (fuel >= 0) vehicle.setSupportVehicleFuel(fuel);
     applyBlkQuirks(file, vehicle, placed, issues, (abbr) => BLK_VEHICLE_LOCATIONS[abbr.toUpperCase()]);
+    vehicle.tro.import(readBlkTechnicalReadout(file));
     return { vehicle, issues, notes };
 };
 
@@ -372,5 +374,6 @@ export const importFixedWingSupportBlk = (text: string): IFixedWingSupportBlkRes
         }
     }
     applyBlkQuirks(file, fighter, placed, issues, (abbr) => BLK_FIXED_WING_LOCATIONS[abbr.toUpperCase()]);
+    fighter.tro.import(readBlkTechnicalReadout(file));
     return { fighter, issues, notes };
 };
