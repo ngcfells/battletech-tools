@@ -331,6 +331,12 @@ describe("SSW Battle Value (#46)", () => {
         expect(importFixture("vision-quest-vq-1nc").getBattleValue()).toBe(2401);
     });
 
+    it("compares forward and rear weapons by BV before Artemis (TM p.303): Quickdraw QKD-5Mr", () => {
+        // The two rear Medium Lasers (92) outweigh the LRM 10 (90; 108 with Artemis IV), so the LRM counts half
+        // and the lasers in full. SSW and the MUL give 1471.
+        expect(importFixture("quickdraw-qkd-5mr").getBattleValue()).toBe(1471);
+    });
+
     it("does not count Nail/Rivet Gun ammo as explosive (TM p.317): Jabberwocky JAW-66D", () => {
         // SSW gives 353: it counts the ammo at 1 BV a ton where TM p.317 gives 0.
         expect(importFixture("jabberwocky-jaw-66d").getBattleValue()).toBe(352);

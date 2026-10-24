@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { calculateShotsPerTon, equipmentMatchesIdentifier, getAlphaStrikeEquipmentAbilityCodes, getAlphaStrikeEquipmentDisplayAbilityCodes, getAmmoBattleValuePerTon, getAmmoFamily, getCompatibleAmmo, getEquipmentCatalogDefinitions, getEquipmentCatalogSummaries, getEquipmentTier, getEquipmentListByTech, getEquipmentListForChassis, getEquipmentMaximumRangeInHexes, getWeaponShotsPerTon, getWeaponAmmoFamilies } from "./equipment-registry";
+import { calculateShotsPerTon, equipmentMatchesIdentifier, getAlphaStrikeEquipmentAbilityCodes, getAlphaStrikeEquipmentDisplayAbilityCodes, getAmmoBattleValuePerTon, getAmmoFamily, getCompatibleAmmo, getEquipmentCatalogDefinitions, getEquipmentCatalogSummaries, getEquipmentTier, getEquipmentListByTech, getEquipmentListForChassis, getEquipmentMaximumRangeInHexes, getLauncherBattleValueWithoutFireControl, getWeaponShotsPerTon, getWeaponAmmoFamilies } from "./equipment-registry";
 import { equipmentArtillery } from "./equipment-artillery";
 import { ammoCustom } from "./ammo-custom";
 import { ammoCatalog } from "./ammo";
@@ -592,6 +592,18 @@ describe("equipment catalog provenance", () => {
             expect(isItems.find(item => item.tag === "nail-gun")?.space.battlemech).toBe(1);
         });
 });
+describe("launcher Battle Value without fire control (TM p.303)", () => {
+    const catalog = () => getEquipmentCatalogDefinitions().flatMap((definition) => definition.equipment);
+    const record = (tag: string) => catalog().find((item) => item.tag === tag)!;
+
+    it("gives the plain launcher's BV for Artemis IV, Artemis V and Apollo launchers", () => {
+        expect(getLauncherBattleValueWithoutFireControl(record("lrm-10-artemis-iv"), catalog, "is")).toBe(90);
+        expect(getLauncherBattleValueWithoutFireControl(record("clan-lrm-20-artemis-v"), catalog, "clan")).toBe(220);
+        expect(getLauncherBattleValueWithoutFireControl(record("mrm-10-apollo"), catalog, "is")).toBe(56);
+        expect(getLauncherBattleValueWithoutFireControl(record("medium-laser"), catalog, "is")).toBe(46);
+    });
+});
+
 describe("ammunition Battle Value", () => {
     const isItems = getEquipmentListByTech("is");
     const weapon = (tag: string) => isItems.find(item => item.tag === tag)!;

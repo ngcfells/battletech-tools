@@ -250,6 +250,22 @@ export function getArtemisLauncherBattleValue(item: IEquipmentItem, catalog: () 
     return getItemBattleValue(item, techTag);
 }
 
+/** Fire control the catalog folds into launcher records: Artemis, and the MRM Apollo FCS (BV x1.15, TO:AUE p.197). */
+const FIRE_CONTROL_SUFFIXES: readonly string[] = [...ARTEMIS_FIRE_CONTROL.map(system => system.suffix), "-apollo"];
+
+/**
+ * A launcher's Battle Value without its fire control: the plain launcher's. Fire control is a modifier, so it stays
+ * out of the "unmodified BV" that decides whether forward- or rear-firing weapons count half (TM p.303).
+ */
+export function getLauncherBattleValueWithoutFireControl(item: IEquipmentItem, catalog: () => readonly IEquipmentItem[], techTag?: string): number {
+    const suffix = FIRE_CONTROL_SUFFIXES.find(fireControl => item.tag.endsWith(fireControl));
+    if (suffix) {
+        const plain = catalog().find(candidate => candidate.tag === item.tag.slice(0, -suffix.length));
+        if (plain) return getItemBattleValue(plain, techTag);
+    }
+    return getItemBattleValue(item, techTag);
+}
+
 export function isOmniFixedOnly(item: IEquipmentItem): boolean {
     return OMNI_FIXED_ONLY_TAGS.some((tag) => matchesTag(item, tag));
 }
