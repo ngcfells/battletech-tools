@@ -88,7 +88,10 @@ aerospace armor, support vehicle armor, motive types, chassis modifications, and
 records. Fields: `tag`, `name`, `techBase` (`"is" | "clan" | "universal"`), `editions`, `editionStats`,
 `apocryphalIn`, `rulesLevel` / `editionLevels`, `book`, `page`, `altTags`.
 
-- One catalog-wide test lists every catalog through a single registry and checks: unique tags across all catalogs,
+- Tags are unique within each tech base (my call, round 1): an IS and a Clan twin may share an old tag, because
+  lookups search the unit's own tech base first. Different catalogs may share a tag (`standard` armor and engine), so
+  the check is per catalog plus across all equipment catalogs together.
+- One catalog-wide test lists every catalog through a single registry and checks: unique tags as above,
   every retired tag still resolves, `editions` present and made of known edition tags, `editionStats` keys in
   `editions`, `techBase` present.
 - The "what a builder offers" filter of the 2026-10-21 design reads this core, so it works the same for a laser, an

@@ -1057,13 +1057,13 @@ export default class SmallCraft {
     private _capitalTechAllowed(weapon: ICapitalWeapon): boolean {
         return weapon.techBase === "both" || this.isMixedTech() || weapon.techBase === this.getChassisTechBase();
     }
-    private _capitalDates(weapon: ICapitalWeapon): ITechDates {
-        return { introduced: weapon.introduced, extinct: weapon.extinct, reintroduced: weapon.reintroduced, prototype: weapon.prototype ?? undefined } as ITechDates;
+    private _capitalDates(weapon: ICapitalWeapon): ITechDates & { clanDates?: ITechDates } {
+        return { introduced: weapon.introduced, extinct: weapon.extinct, reintroduced: weapon.reintroduced, prototype: weapon.prototype ?? undefined, clanDates: weapon.clanDates } as ITechDates & { clanDates?: ITechDates };
     }
     /** Capital and sub-capital weapons the craft type, technology base, era and rules level offer. */
     public getAvailableCapitalWeapons(rulesLevel: number = 2): ICapitalWeapon[] {
         return CAPITAL_WEAPON_CATALOG.filter((weapon) => this.isCapitalWeaponAllowed(weapon) && this._capitalTechAllowed(weapon)
-            && weapon.rulesLevel <= rulesLevel && this._datesAvailability(this._capitalDates(weapon), rulesLevel).available);
+            && weapon.rulesLevel <= rulesLevel && this._techDatesAvailability(this._capitalDates(weapon), rulesLevel).available);
     }
     public getCapitalWeapons(): ISmallCraftCapitalMount[] { return this._capitalWeapons; }
     public getArcCapitalWeapons(arc: SmallCraftArc): ISmallCraftCapitalMount[] {
@@ -1194,7 +1194,7 @@ export default class SmallCraft {
                 issues.push(`${mount.weapon.name} cannot be mounted on a ${this.getCraftTypeName()}${mount.weapon.category === "Capital Missile" ? "; only DropShips mount capital missile launchers (TM p.210)" : ""}.`);
             } else if (mount.weapon.rulesLevel > rulesLevel) {
                 issues.push(`${mount.weapon.name} needs a higher rules level (${mount.weapon.book}).`);
-            } else if (!this._capitalTechAllowed(mount.weapon) || !this._datesAvailability(this._capitalDates(mount.weapon), rulesLevel).available) {
+            } else if (!this._capitalTechAllowed(mount.weapon) || !this._techDatesAvailability(this._capitalDates(mount.weapon), rulesLevel).available) {
                 issues.push(`${mount.weapon.name} is not available to this tech base in the selected era.`);
             }
             if (getCapitalAmmoTags(mount.weapon).length > 0 && this.getCapitalShots(mount) < MIN_CAPITAL_SHOTS) {

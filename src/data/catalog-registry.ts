@@ -2,6 +2,7 @@ import { aerospaceArmorTypes } from "./aerospace-armor-types";
 import { battleArmorArmorTypes } from "./battle-armor-armor-types";
 import { battleArmorEquipment } from "./battle-armor-equipment";
 import { getBattleArmorScaleEquipment } from "./battle-armor-scale-equipment";
+import { capitalWeapons } from "./capital-weapons";
 import { COMBAT_VEHICLE_CHASSIS_MODIFICATIONS } from "./combat-vehicle-chassis-modifications";
 import type { ICatalogStanding } from "./data-interfaces";
 import { getEquipmentCatalogDefinitions } from "./equipment-registry";
@@ -26,6 +27,8 @@ export interface ICatalogEntry {
     id: string;
     records: ICatalogStanding[];
     custom: boolean;
+    /** One of the equipment catalogs (equipment-registry.ts), whose tags are looked up together. */
+    equipment?: boolean;
     /** Rounds 3-5 move the catalog onto the full core; until then its records may lack editions or techBase (the 'Mech components lack techBase). */
     pendingStanding?: boolean;
 }
@@ -38,7 +41,7 @@ export interface ICatalogEntry {
 export function getAllCatalogs(): ICatalogEntry[] {
     const both = (records: unknown[]) => records as ICatalogStanding[];
     return [
-        ...getEquipmentCatalogDefinitions().map((definition) => ({ id: definition.id, records: definition.equipment, custom: !!definition.custom })),
+        ...getEquipmentCatalogDefinitions().map((definition) => ({ id: definition.id, records: definition.equipment, custom: !!definition.custom, equipment: true })),
         { id: "mech-engine", records: [...mechEngineTypes, ...mechLargeEngineTypes], custom: false, pendingStanding: true },
         { id: "mech-gyro", records: mechGyroTypes, custom: false, pendingStanding: true },
         { id: "mech-cockpit", records: mechCockpitTypes, custom: false, pendingStanding: true },
@@ -59,6 +62,7 @@ export function getAllCatalogs(): ICatalogEntry[] {
         { id: "combat-vehicle-chassis-modifications", records: COMBAT_VEHICLE_CHASSIS_MODIFICATIONS, custom: false, pendingStanding: true },
         { id: "protomech-components", records: both(protoMechComponents), custom: false, pendingStanding: true },
         { id: "protomech-equipment", records: both(protoMechEquipment), custom: false, pendingStanding: true },
+        { id: "capital-weapons", records: both(capitalWeapons), custom: false, pendingStanding: true },
         { id: "sub-capital-weapons", records: both(subCapitalWeapons), custom: false, pendingStanding: true },
     ];
 }

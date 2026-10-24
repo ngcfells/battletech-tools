@@ -387,3 +387,14 @@ describe("capital ship quirk targets: weapon bays (CO p.225)", () => {
         expect(bays[0].maxDamage).toBe(4);
     });
 });
+
+describe("capital weapon dates (design 2026-10-24-catalog-consolidation §2)", () => {
+    it("offers a Clan WarShip the Light SCC on its Clan dates, not the Inner Sphere's", () => {
+        const ship = build("warship", 500000, "clan");
+        ship.setEra("jihad");
+        // Light SCC: Inner Sphere 3073, Clan 3091 (TO:AUE p.155).
+        expect(ship.getAvailableCapitalWeapons(3).some((weapon) => weapon.tag === "light-scc")).toBe(false);
+        ship.setTech("is");
+        expect(ship.getAvailableCapitalWeapons(3).some((weapon) => weapon.tag === "light-scc")).toBe(true);
+    });
+});

@@ -9,7 +9,7 @@ import {
 import { mechHeatSinkTypes } from "../data/mech-heat-sink-types";
 import { btTechOptions } from "../data/tech-options";
 import { btEraOptions, findEraByTag, getClosestEraForTech, getErasForTech } from "../data/era-options";
-import { CUSTOM_HOMEBREW_RULES_LEVEL, equipmentMatchesIdentifier, getCompatibleAmmo, getEffectiveIntroduction, getEquipmentListByTech, getEquipmentRulesLevel, getEquipmentOfferIssue, getWeaponShotsPerTon, isEquipmentOffered } from "../data/equipment-registry";
+import { CUSTOM_HOMEBREW_RULES_LEVEL, equipmentMatchesIdentifier, getCompatibleAmmo, getDatesAvailability, getEquipmentListByTech, getEquipmentRulesLevel, getEquipmentOfferIssue, getWeaponShotsPerTon, isEquipmentOffered, getTechDatesAvailability } from "../data/equipment-registry";
 import { findByTag, matchesTag } from "../data/tag-match";
 import { getWeaponExplosionDamage } from "../data/weapon-explosions";
 import { IInfantryWeapon, INFANTRY_POWER_CELL_COST, findInfantryWeapon, getInfantryClipCost, infantryWeapons, isInfantryWeaponAvailable } from "../data/infantry-weapons";
@@ -701,7 +701,7 @@ export default class Building {
             for (const item of getEquipmentListByTech(list, includeCustom && (list === "is" || lists.length === 1))) {
                 if (!this.isEquipmentAllowed(item)) continue;
                 item.catalog = item.catalog ?? (item.category === "Custom Equipment" ? "custom" : list);
-                const availability = this._datesAvailability(item, rulesLevel);
+                const availability = this._techDatesAvailability(item, rulesLevel);
                 item.availableAsPrototype = availability.asPrototype;
                 item.available = availability.available;
                 items.push(item);
@@ -1295,12 +1295,12 @@ export default class Building {
 
     /** In production in the selected era, or (where the rules level allows) a prototype. */
     private _datesAvailability(dates: ITechDates, rulesLevel: number): { available: boolean; asPrototype: boolean } {
-        const prototypeOnly = dates.introduced === null && !!dates.prototype;
-        const inProduction = !prototypeOnly && this._itemIsAvailable(dates.introduced, dates.extinct, dates.reintroduced);
-        const effectiveIntroduction = getEffectiveIntroduction(dates, rulesLevel);
-        const asPrototype = !inProduction && effectiveIntroduction !== dates.introduced
-            && this._itemIsAvailable(effectiveIntroduction, dates.extinct, dates.reintroduced);
-        return { available: inProduction || asPrototype, asPrototype };
+        return getDatesAvailability(dates, rulesLevel, (introduced, extinct, reintroduced) => this._itemIsAvailable(introduced, extinct, reintroduced));
+    }
+
+    /** Availability using the Clan window for a Clan building; mixed tech may use either (getTechDatesAvailability). */
+    private _techDatesAvailability(item: ITechDates & { clanDates?: ITechDates }, rulesLevel: number): { available: boolean; asPrototype: boolean } {
+        return getTechDatesAvailability(item, this._tech.tag, rulesLevel, (introduced, extinct, reintroduced) => this._itemIsAvailable(introduced, extinct, reintroduced));
     }
 
     /** The lowest rules level that allows everything on the design. */
@@ -1362,14 +1362,14 @@ export default class Building {
         if (this._generator?.noRooftopEquipment && this.hasTurret()) issues.push(`A ${this._generator.name.toLowerCase()} generator leaves no room on the roof for turrets (TO:AR p.132).`);
         for (const mount of this._equipment) {
             if (!this.isEquipmentAllowed(mount.item)) issues.push(`${mount.item.name} cannot be mounted on a ${this._classification.name.toLowerCase()}.`);
-            else if (!this._datesAvailability(mount.item, rulesLevel).available) issues.push(`${mount.item.name} is not available in the selected era.`);
+            else if (!this._techDatesAvailability(mount.item, rulesLevel).available) issues.push(`${mount.item.name} is not available in the selected era.`);
             else {
                 const issue = getEquipmentOfferIssue(mount.item, this._rulesEdition, Math.max(rulesLevel, BUILDING_RULES_LEVEL));
                 if (issue === "edition") issues.push(`${mount.item.name} is not in the selected rules edition.`);
                 else if (issue === "level") issues.push(`${mount.item.name} is above the selected rules level.`);
             }
         }
-        if (this._heatSinkType.tag !== "single" && this._heatSinks > 0 && !this._datesAvailability(this._heatSinkType, rulesLevel).available) {
+        if (this._heatSinkType.tag !== "single" && this._heatSinks > 0 && !this._techDatesAvailability(this._heatSinkType, rulesLevel).available) {
             issues.push(`${this._heatSinkType.name} heat sinks are not available in the selected era.`);
         }
         if (this._subsurface === "underground" && this.hasTurret()) issues.push("An underground building mounts no rooftop equipment or turrets (TO:AR p.138).");

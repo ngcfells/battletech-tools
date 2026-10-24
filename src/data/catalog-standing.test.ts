@@ -10,7 +10,7 @@ const label = (id: string, record: ICatalogStanding) => `${id}: ${record.tag}`;
 const tagsOf = (record: ICatalogStanding) => [record.tag, ...(record.altTags ?? [])].map((tag) => `${record.techBase ?? ""}:${tag}`);
 const duplicates = (tags: string[]) => tags.filter((tag, index) => tags.indexOf(tag) !== index);
 
-// Rounds 3-5 move these onto the full core; the count only goes down.
+// Rounds 3-5 move these onto the full core; lower the count as each one moves.
 const PENDING_CATALOGS = 22;
 
 describe("catalog standing", () => {
@@ -27,8 +27,7 @@ describe("catalog standing", () => {
     });
 
     it("tags are unique across the equipment catalogs within each tech base, counting altTags", () => {
-        const equipmentIds = new Set(catalogs.filter(({ records }) => records.some((record) => "isAmmo" in record)).map(({ id }) => id));
-        const tags = catalogs.filter(({ id }) => equipmentIds.has(id) && !id.startsWith("battle-armor-scale")).flatMap(({ records }) => records.flatMap(tagsOf));
+        const tags = catalogs.filter(({ equipment }) => equipment).flatMap(({ records }) => records.flatMap(tagsOf));
         expect(duplicates(tags)).toEqual([]);
     });
 
@@ -57,6 +56,6 @@ describe("catalog standing", () => {
     });
 
     it("the pending list only shrinks", () => {
-        expect(catalogs.filter(({ pendingStanding }) => pendingStanding).length).toBeLessThanOrEqual(PENDING_CATALOGS);
+        expect(catalogs.filter(({ pendingStanding }) => pendingStanding).length).toBe(PENDING_CATALOGS);
     });
 });

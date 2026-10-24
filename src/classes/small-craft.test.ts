@@ -427,3 +427,16 @@ describe("Small Craft quirk targets: weapon bays (CO p.225)", () => {
         expect(targets.unitMaxDamage).toBe(13);
     });
 });
+
+describe("Small Craft capital weapon dates (design 2026-10-24-catalog-consolidation §2)", () => {
+    it("offers a Clan DropShip the Light SCC on its Clan dates, not the Inner Sphere's", () => {
+        const ship = new SmallCraft();
+        ship.setCraftType("dropShip");
+        ship.setTech("clan");
+        ship.setEra("jihad");
+        // Light SCC: Inner Sphere 3073, Clan 3091 (TO:AUE p.155).
+        expect(ship.getAvailableCapitalWeapons(3).some((weapon) => weapon.tag === "light-scc")).toBe(false);
+        ship.setTech("is");
+        expect(ship.getAvailableCapitalWeapons(3).some((weapon) => weapon.tag === "light-scc")).toBe(true);
+    });
+});

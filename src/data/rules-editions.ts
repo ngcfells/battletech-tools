@@ -747,6 +747,10 @@ export interface IEditionTimelineEntry {
 
 /** Editions and expansions in publication order: year, then month where known, then editions before expansions. */
 export function getEditionTimeline(): IEditionTimelineEntry[] {
+    return editionTimeline.map(entry => ({ ...entry }));
+}
+
+function buildEditionTimeline(): IEditionTimelineEntry[] {
     const entries: IEditionTimelineEntry[] = [
         ...btRulesEditions.map(edition => ({ tag: edition.tag, year: edition.year, month: edition.month, unitTypes: edition.unitTypes ?? ["mech" as RulesEditionUnitType], expansion: false })),
         ...btRulesExpansions.map(expansion => ({ tag: expansion.tag, year: expansion.year, month: expansion.month, unitTypes: expansion.unitTypes, expansion: true })),
@@ -754,7 +758,9 @@ export function getEditionTimeline(): IEditionTimelineEntry[] {
     return entries.sort((a, b) => a.year - b.year || (a.month ?? 0) - (b.month ?? 0) || Number(a.expansion) - Number(b.expansion));
 }
 
-const timelineOrder = (tag: string) => getEditionTimeline().findIndex(entry => entry.tag === tag);
+const editionTimeline = buildEditionTimeline();
+const timelineIndex = new Map(editionTimeline.map((entry, index) => [entry.tag, index]));
+const timelineOrder = (tag: string) => timelineIndex.get(tag) ?? -1;
 
 /** Is `tag` an edition or expansion tag a record's `editions` may name? */
 export function isKnownEditionTag(tag: string): boolean {
@@ -768,7 +774,7 @@ export function isKnownEditionTag(tag: string): boolean {
  */
 export function getEditionAtPublication(year: number, month: number | undefined, unitType: RulesEditionUnitType): string | undefined {
     const published = year * 12 + (month ?? 1);
-    return getEditionTimeline()
+    return editionTimeline
         .filter(entry => entry.unitTypes.includes(unitType) && entry.year * 12 + (entry.month ?? 1) <= published)
         .pop()?.tag;
 }

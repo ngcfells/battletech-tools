@@ -527,7 +527,7 @@ export default class CapitalShip {
     public getHeatSinkType(): IHeatSync { return this._heatSinkType; }
     public getAvailableHeatSinkTypes(rulesLevel: number = 2): (IHeatSync & { available: boolean })[] {
         return mechHeatSinkTypes.filter((type) => type.tag === "single" || type.tag === "double")
-            .map((type) => ({ ...type, available: type.tag === "single" || this._datesAvailability(type, rulesLevel).available }));
+            .map((type) => ({ ...type, available: type.tag === "single" || this._techDatesAvailability(type, rulesLevel).available }));
     }
     public setHeatSinkType(tag: string): IHeatSync {
         this._heatSinkType = this.getAvailableHeatSinkTypes().some((type) => type.tag === tag)
@@ -637,12 +637,12 @@ export default class CapitalShip {
     private _capitalTechAllowed(weapon: ICapitalWeapon): boolean {
         return weapon.techBase === "both" || this.isMixedTech() || weapon.techBase === this.getChassisTechBase();
     }
-    private _capitalDates(weapon: ICapitalWeapon): ITechDates {
-        return { introduced: weapon.introduced, extinct: weapon.extinct, reintroduced: weapon.reintroduced, prototype: weapon.prototype ?? undefined } as ITechDates;
+    private _capitalDates(weapon: ICapitalWeapon): ITechDates & { clanDates?: ITechDates } {
+        return { introduced: weapon.introduced, extinct: weapon.extinct, reintroduced: weapon.reintroduced, prototype: weapon.prototype ?? undefined, clanDates: weapon.clanDates } as ITechDates & { clanDates?: ITechDates };
     }
     public getAvailableCapitalWeapons(rulesLevel: number = 2): ICapitalWeapon[] {
         return CAPITAL_WEAPON_CATALOG.filter((weapon) => this.isCapitalWeaponAllowed(weapon) && this._capitalTechAllowed(weapon)
-            && weapon.rulesLevel <= rulesLevel && this._datesAvailability(this._capitalDates(weapon), rulesLevel).available);
+            && weapon.rulesLevel <= rulesLevel && this._techDatesAvailability(this._capitalDates(weapon), rulesLevel).available);
     }
     public getCapitalShots(mount: ICapitalShipMount): number { return Object.values(mount.shots).reduce((sum, shots) => sum + shots, 0); }
     public getCapitalAmmoWeight(mount: ICapitalShipMount): number {
@@ -1126,7 +1126,7 @@ export default class CapitalShip {
         for (const mount of this._capitalWeapons) {
             if (!this.isCapitalWeaponAllowed(mount.weapon)) issues.push(`${mount.weapon.name} cannot be mounted on a ${this.getShipTypeName()}.`);
             else if (mount.weapon.rulesLevel > rulesLevel) issues.push(`${mount.weapon.name} needs a higher rules level (${mount.weapon.book}).`);
-            else if (!this._capitalTechAllowed(mount.weapon) || !this._datesAvailability(this._capitalDates(mount.weapon), rulesLevel).available) {
+            else if (!this._capitalTechAllowed(mount.weapon) || !this._techDatesAvailability(this._capitalDates(mount.weapon), rulesLevel).available) {
                 issues.push(`${mount.weapon.name} is not available to this tech base in the selected era.`);
             }
             if (getCapitalAmmoTags(mount.weapon).length > 0 && this.getCapitalShots(mount) < CAPITAL_SHIP_MIN_SHOTS) {
