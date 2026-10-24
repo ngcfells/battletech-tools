@@ -120,6 +120,10 @@ export default class CritAllocationTableSVG extends React.Component<ICritAllocat
             }
 
             critTable.push( <text key={critC.toString() + "h"}  x={this.props.xLoc - 40} y={this.props.yLoc + lineCount * (fontSize + lineBuffer)} textAnchor="start" fontFamily="sans-serif" fill={strokeColor} style={{fontWeight: 500}} fontSize={fontSize}>{dieNumber}.</text> );
+            // An armored component's slot numbers are circled (TO:AUE p.95).
+            if( this.props.mechData.isCriticalSlotArmored( this.props.location, critC ) ) {
+                critTable.push( <circle key={critC.toString() + "armored"} data-testid="armored-slot" cx={this.props.xLoc - 30} cy={this.props.yLoc + lineCount * (fontSize + lineBuffer) - fontSize / 2.8} r={fontSize * 0.62} stroke={strokeColor} strokeWidth={2} fill="none" /> );
+            }
 
             lineCount++;
             dieNumber++;

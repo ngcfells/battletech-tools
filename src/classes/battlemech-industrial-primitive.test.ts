@@ -332,10 +332,10 @@ describe("Dark Age armors on IndustrialMechs (IO:AE p.82)", () => {
     it("refuses one on an Inner Sphere IndustrialMech", () => {
         const mech = build({ structure: "industrial", era: "ilClan" });
         expect(mech.setArmorType("ballistic-reinforced").tag).toBe("standard");
-        // Ferro-Fibrous and Stealth stay barred whatever the rules level (TM p.72).
+        // TM p.72 bars Ferro-Fibrous below Experimental; there "all other BattleMech-legal armor types" are open (TO:AUE p.92).
         const mixed = build({ structure: "industrial", era: "ilClan", tech: "mis" });
-        expect(mixed.setArmorType("ferro-fibrous").tag).toBe("standard");
-        expect(offered(mixed.getAvailableArmorTypes(4))).not.toContain("ferro-fibrous");
+        expect(offered(mixed.getAvailableArmorTypes(3))).not.toContain("ferro-fibrous");
+        expect(offered(mixed.getAvailableArmorTypes(4))).toContain("ferro-fibrous");
     });
 });
 

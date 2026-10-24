@@ -3436,7 +3436,9 @@ describe("Batch 11 jump jet catalog", () => {
     });
 
     it("cites a book and page for every jump jet and uses null for unknown dates", () => {
-        const pages: Record<string, [string, number]> = { standard: ["TM", 225], improved: ["TM", 225], umu: ["TO:AUE", 107], "prototype-improved": ["IO:AE", 97] };
+        const pages: Record<string, [string, number]> = {
+            standard: ["TM", 225], improved: ["TM", 225], umu: ["TO:AUE", 107], "prototype-improved": ["IO:AE", 97], "primitive-prototype": ["IO:AE", 114],
+        };
         for (const item of mechJumpJetTypes) {
             expect([item.book, item.page], item.tag).toEqual(pages[item.tag]);
             // The recovered prototype ends when the improved jump jet enters production (Batch 40).
@@ -6249,22 +6251,27 @@ describe("Batch 50 IndustrialMech armor (TM pp.72, 205, 278, 315)", () => {
         expect(mechArmorTypes.some(armor => armor.tag === "heavy-industrial")).toBe(false);
     });
 
-    it("offers an IndustrialMech Commercial, Industrial and Standard (Heavy Industrial) armor only", () => {
+    it("offers an IndustrialMech Commercial, Industrial and Standard (Heavy Industrial) armor only, below Experimental", () => {
         // Patchwork Armor mixes these by location (TO:AUE p.189).
-        expect(armors(build("industrial")).sort()).toEqual(["commercial", "industrial", "patchwork", "standard"]);
-        expect(armors(build("industrial", "clan")).sort()).toEqual(["commercial", "industrial", "patchwork", "standard"]);
+        const advanced = (mech: BattleMech) => mech.getAvailableArmorTypes(3).filter(armor => armor.available).map(armor => armor.tag);
+        expect(advanced(build("industrial")).sort()).toEqual(["commercial", "industrial", "patchwork", "standard"]);
+        expect(advanced(build("industrial", "clan")).sort()).toEqual(["commercial", "industrial", "patchwork", "standard"]);
+        // "Experimental-rules IndustrialMechs may also make use of all other BattleMech-legal armor types" (TO:AUE p.92).
+        expect(armors(build("industrial"))).toEqual(expect.arrayContaining(["commercial", "industrial", "standard", "ferro-fibrous", "laser-reflective"]));
         const battlemech = armors(build());
         expect(battlemech).toEqual(expect.arrayContaining(["standard", "ferro-fibrous", "light-ferro-fibrous"]));
         expect(battlemech).not.toContain("industrial");
         expect(battlemech).not.toContain("commercial");
     });
 
-    it("refuses a BattleMech the industrial grades and an IndustrialMech ferro-fibrous", () => {
+    it("refuses a BattleMech the industrial grades; an IndustrialMech with ferro-fibrous is Experimental", () => {
         const battlemech = build();
         expect(battlemech.setArmorType("industrial").tag).toBe("standard");
         expect(battlemech.setArmorType("commercial").tag).toBe("standard");
         const industrial = build("industrial");
-        expect(industrial.setArmorType("ferro-fibrous").tag).toBe("standard");
+        expect(industrial.getRequiredRulesLevel()).toBeLessThan(4);
+        expect(industrial.setArmorType("ferro-fibrous").tag).toBe("ferro-fibrous");
+        expect(industrial.getRequiredRulesLevel()).toBe(4);
         expect(industrial.setArmorType("industrial").tag).toBe("industrial");
         expect(industrial.setArmorType("commercial").tag).toBe("commercial");
     });
@@ -6288,10 +6295,12 @@ describe("Batch 50 IndustrialMech armor (TM pp.72, 205, 278, 315)", () => {
         expect(mech.getChassisEquipmentViolations()).toEqual([]);
         mech.setInternalStructureType("standard");
         expect(mech.getChassisEquipmentViolations()).toEqual(["Commercial Armor can only be mounted on an IndustrialMech."]);
-        const other = build();
-        other.setArmorType("ferro-fibrous");
+        // A Dark Age armor needs a mixed tech base on an IndustrialMech (IO:AE p.82).
+        const other = build(undefined, "mis");
+        other.setArmorType("ballistic-reinforced");
+        other.setTech("is");
         other.setInternalStructureType("industrial");
-        expect(other.getChassisEquipmentViolations()).toEqual(["IndustrialMechs may mount only Commercial, Industrial or Standard (Heavy Industrial) armor."]);
+        expect(other.getChassisEquipmentViolations()).toEqual(["IndustrialMechs mount Ballistic-Reinforced Armor only under Experimental Mixed-Tech rules (IO:AE p.82)."]);
     });
 });
 

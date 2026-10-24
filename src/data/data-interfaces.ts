@@ -448,6 +448,8 @@ export interface IEquipmentItem {
     rulesLevel?: number;
     /** OmniMech base-chassis (fixed) equipment; everything else on an OmniMech is pod-mounted. */
     omniFixed?: boolean;
+    /** An armored component: each slot ignores its first critical hit (TO:AUE p.95). */
+    armored?: boolean;
     /** 'Mech chassis types (mech-type tags) this item may be mounted on, e.g. ["lam"]; unset = any. */
     chassisTypes?: string[];
     /** Most copies of this item one unit may mount (e.g. LAM Bomb Bays, 20). */

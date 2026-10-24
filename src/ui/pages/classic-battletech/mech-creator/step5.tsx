@@ -2,7 +2,7 @@ import React, { type JSX } from 'react';
 import { FaArrowCircleLeft, FaArrowCircleRight, FaPlus, FaTrash } from "react-icons/fa";
 import { Link } from 'react-router';
 import { IEquipmentItem } from '../../../../data/data-interfaces';
-import { CUSTOM_HOMEBREW_RULES_LEVEL, isOmniFixedOnly } from '../../../../data/equipment-registry';
+import { CUSTOM_HOMEBREW_RULES_LEVEL, EXPERIMENTAL_RULES_LEVEL, isOmniFixedOnly } from '../../../../data/equipment-registry';
 import { sortEquipment } from '../../../../utils';
 import { IAppGlobals } from '../../../app-router';
 import AvailableEquipment from '../../../components/available-equipment';
@@ -67,6 +67,20 @@ export default class MechCreatorStep5 extends React.Component<IHomeProps, IHomeS
     setFixed = ( itemUUID: string | undefined, fixed: boolean ): void => {
       if( this.props.appGlobals.currentBattleMech ) {
         this.props.appGlobals.currentBattleMech.setEquipmentFixed( itemUUID, fixed );
+        this.props.appGlobals.saveCurrentBattleMech( this.props.appGlobals.currentBattleMech );
+      }
+    }
+
+    setArmored = ( itemUUID: string | undefined, armored: boolean ): void => {
+      if( this.props.appGlobals.currentBattleMech ) {
+        this.props.appGlobals.currentBattleMech.setEquipmentArmored( itemUUID, armored );
+        this.props.appGlobals.saveCurrentBattleMech( this.props.appGlobals.currentBattleMech );
+      }
+    }
+
+    setComponentArmored = ( componentKey: string, armored: boolean ): void => {
+      if( this.props.appGlobals.currentBattleMech ) {
+        this.props.appGlobals.currentBattleMech.setComponentArmored( componentKey, armored );
         this.props.appGlobals.saveCurrentBattleMech( this.props.appGlobals.currentBattleMech );
       }
     }
@@ -202,6 +216,9 @@ export default class MechCreatorStep5 extends React.Component<IHomeProps, IHomeS
       // The level the edition shows: a stored level the edition does not list acts as the next one it does.
       const shownLevel = getShownRulesLevel(currentMech.getRulesEdition(), this.props.appGlobals.appSettings.mechRulesFilter);
       const includeCustom = shownLevel >= CUSTOM_HOMEBREW_RULES_LEVEL;
+      // Armored components are Experimental (TO:AUE p.95); a design that has them always shows them.
+      // Superheavy 'Mechs may not use them (IO:AE p.156).
+      const showArmored = !currentMech.isSuperheavy() && (shownLevel >= EXPERIMENTAL_RULES_LEVEL || currentMech.hasArmoredComponents());
       return (
         <>
             <StandardModal
@@ -400,6 +417,7 @@ export default class MechCreatorStep5 extends React.Component<IHomeProps, IHomeS
                                     <th>Weight</th>
                                     <th>Rear</th>
                                     {this.props.appGlobals.currentBattleMech.isOmnimech ? <th>Fixed</th> : null}
+                                    {showArmored ? <th>Armored</th> : null}
                                     <th><span className="visually-hidden">Actions</span></th>
                                   </tr>
                                 </thead>
@@ -472,6 +490,17 @@ export default class MechCreatorStep5 extends React.Component<IHomeProps, IHomeS
                                           />
                                         </td>
                                       ) : null}
+                                      {showArmored ? (
+                                        <td>
+                                          {currentMech.canArmorEquipment(item) ? (
+                                            <InputCheckbox
+                                              label=""
+                                              checked={item.armored ? true : false}
+                                              onChange={( event: React.FormEvent<HTMLInputElement>) => this.setArmored( item.uuid, event.currentTarget.checked)}
+                                            />
+                                          ) : null}
+                                        </td>
+                                      ) : null}
                                       <td className="text-right">
                                         <button
                                           className="btn-sm btn btn-danger"
@@ -510,6 +539,28 @@ export default class MechCreatorStep5 extends React.Component<IHomeProps, IHomeS
                             to the top left to install equipment.</p>
                             </>
                           )}
+                          {showArmored ? (
+                            <fieldset className="fieldset clear-both" data-testid="armored-components">
+                              <legend>Armored Components</legend>
+                              <p className="smaller-text">
+                                Each slot of an armored component ignores its first critical hit. 0.5 tons and 150,000 C-bills
+                                a slot; an armored cockpit adds 1 ton. Ammunition bins, CASE and roll-again slots cannot be
+                                armored (TO:AUE pp.94-95). Tick <strong>Armored</strong> above for equipment.
+                              </p>
+                              {currentMech.getArmorableComponents().map( (component) => (
+                                <InputCheckbox
+                                  key={component.key}
+                                  label={component.name}
+                                  checked={component.armored}
+                                  onChange={( event: React.FormEvent<HTMLInputElement>) => this.setComponentArmored( component.key, event.currentTarget.checked)}
+                                />
+                              ))}
+                              <p>
+                                Armored: <strong>{currentMech.getArmoredComponentSlots()}</strong> slots,
+                                &nbsp;<strong>{currentMech.getArmoredComponentWeight()}</strong> tons
+                              </p>
+                            </fieldset>
+                          ) : null}
                           <div className="clear-both overflow-hidden">
                             <hr />
                             <Link to={`${process.env.PUBLIC_URL}/classic-battletech/mech-creator/step6`} className="btn btn-primary pull-right btn-sm">Next Step <ArrowCircleRight /></Link>

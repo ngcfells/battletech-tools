@@ -125,5 +125,30 @@ export const mechJumpJetTypes: IJumpJet[] = [
 		introduced: null,
 		extinct: 3069,
 		reintroduced: null
+	},
+
+	// Primitive prototype jump jets (IO:AE p.114): the mass, slots, mounting rules and heat of standard jump
+	// jets. A 'Mech that jumps with them makes a Piloting Skill Roll at +3 to avoid falling when it lands.
+	// No cost is printed; the standard jump jet rate is used.
+	{
+		name: "Primitive Prototype Jump Jets",
+		tag: "primitive-prototype",
+		altNames: ["Primitive Prototype Jump Jet"],
+		editions: ["total-warfare", "battlemech-manual", "core-rulebook"],
+		weight_multiplier: {
+			light: 0.5,
+			medium: 1,
+			heavy: 2,
+			superheavy: 4
+		},
+		criticals: 1,
+		costMultiplier: 200,
+		innerSphereOnly: true,
+		book: "IO:AE",
+		page: 114,
+		prototype: 2464,
+		introduced: null,
+		extinct: null,
+		reintroduced: null
 	}
 ];

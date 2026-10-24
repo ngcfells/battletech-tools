@@ -89,7 +89,115 @@ describe("SSW Battle Value (#46)", () => {
     it("takes 0.8 of a drone's weapon BV and 0.95 of its total, with no cockpit modifier (TO:AUE p.192): Celerity CLR-04-R", () => {
         const mech = importFixture("celerity-clr-04-r");
         expect(mech.hasDroneOperatingSystem()).toBe(true);
-        // Defensive 75 + Offensive (TSEMP One-Shot 98 x 0.8 + 15 tons) x 3.44 = 396.30; x 0.95, the Small Cockpit's 0.95 not applied.
-        expect(mech.getBattleValue()).toBe(376);
+        // Defensive 82.50 (the front legs' armor included) + Offensive (TSEMP One-Shot 98 x 0.8 + 15 tons) x 3.44 = 403.80;
+        // x 0.95, the Small Cockpit's 0.95 not applied.
+        expect(mech.getBattleValue()).toBe(384);
+    });
+
+    it("adds 5 per slot for an armored cockpit, and 1 ton (TO:AUE pp.94, 192): Violator VT-U1", () => {
+        const mech = importFixture("violator-vt-u1");
+        expect(mech.getArmoredComponentRecords().map((armored) => armored.record.tag)).toEqual(["cockpit"]);
+        expect(mech.getArmoredComponentWeight()).toBe(1);
+        expect(mech.isCriticalSlotArmored("hd", 2)).toBe(true);
+        expect(mech.isCriticalSlotArmored("hd", 1)).toBe(false);
+        expect(mech.getRequiredRulesLevel()).toBeGreaterThanOrEqual(4);
+        expect(mech.getBattleValue()).toBe(928);
+
+        const copy = new BattleMech();
+        copy.importJSON(mech.exportJSON());
+        expect(copy.getArmoredComponentSlots()).toBe(1);
+        expect(copy.getBattleValue()).toBe(928);
+
+        mech.setComponentArmored("cockpit", false);
+        expect(mech.hasArmoredComponents()).toBe(false);
+        expect(mech.getBattleValue()).toBe(921);
+    });
+
+    it("adds 5 per slot for an armored engine, 0.5 tons and 150,000 C-bills a slot: Zeus X ZEU-X2", () => {
+        const mech = importFixture("zeus-x-zeu-x2");
+        expect(mech.getArmoredComponentSlots()).toBe(18);
+        expect(mech.getArmoredComponentWeight()).toBe(9);
+        expect(mech.getArmorableComponents().find((component) => component.key === "engine")?.armored).toBe(true);
+        expect(mech.getBattleValue()).toBe(2120);
+    });
+
+    it("counts 5% of the gyro's BV for each armored gyro slot: Hunchback HBK-7X-4", () => {
+        const mech = importFixture("hunchback-hbk-7x-4");
+        // 50 tons x 0.5 = 25 gyro points; 4 slots x 5% = 5.
+        expect(mech.getArmoredComponentSlots()).toBe(4);
+        expect(mech.getBattleValue()).toBe(1208);
+    });
+
+    it("installs SSW's cockpit systems: Full-Head Ejection System (Phoenix Hawk PXH-4L Sante), ejection seat (Rock Hound)", () => {
+        const hawk = importFixture("phoenix-hawk-pxh-4l-sante");
+        expect(tags(hawk)).toContain("full-head-ejection-system");
+        expect(hawk.sswImportErrors).toEqual([]);
+        expect(hawk.getBattleValue()).toBe(1442);
+
+        const hound = importFixture("rock-hound-am-prm-rh7");
+        const seat = hound.getInstalledEquipment().find((item) => item.tag === "industrialmech-ejection-seat");
+        expect(seat?.location).toBe("hd");
+        expect(hound.getUnallocatedCriticals()).toEqual([]);
+        expect(hound.sswImportErrors).toEqual([]);
+    });
+
+    it("reports a Cockpit Command Console it cannot build yet: Hatamoto-Godai HTM-30Z", () => {
+        const mech = importFixture("hatamoto-godai-htm-30z");
+        expect(mech.sswImportErrors.some((error) => error.includes("Command Console"))).toBe(true);
+    });
+
+    it("imports IndustrialMech and Primitive files, which were skipped: Harvester Ant KIC-3, Commando COM-1A", () => {
+        const ant = importFixture("harvester-ant-kic-3");
+        expect(ant.isIndustrialMech()).toBe(true);
+        // A quad's front legs keep SSW's la/ra armor.
+        expect(ant.getTotalArmor()).toBe(48);
+        expect(ant.sswImportErrors).toEqual([]);
+        expect(ant.getBattleValue()).toBe(143);
+
+        const commando = importFixture("commando-com-1a");
+        expect(commando.sswImportErrors).toEqual([]);
+        expect(commando.getBattleValue()).toBe(475);
+    });
+
+    it("places a jump jet listed in a single location: Space Hound AM-PRM-SH1", () => {
+        const mech = importFixture("space-hound-am-prm-sh1");
+        expect(mech.getJumpSpeed()).toBe(1);
+        expect(mech.getUnallocatedCriticals()).toEqual([]);
+        expect(mech.getBattleValue()).toBe(465);
+    });
+
+    it("lets an Experimental IndustrialMech mount BattleMech armor (TO:AUE p.92): Spindrift SDT-1", () => {
+        const mech = importFixture("spindrift-sdt-1");
+        expect(mech.sswImportErrors).toEqual([]);
+        expect(mech.getRequiredRulesLevel()).toBeGreaterThanOrEqual(4);
+        expect(mech.getBattleValue()).toBe(441);
+    });
+
+    it("reports a Torso-Mounted Cockpit on an IndustrialMech: Crosscut ED-XX", () => {
+        const mech = importFixture("crosscut-ed-xx");
+        expect(mech.sswImportErrors).toContain("Cannot mount a Torso-Mounted Cockpit on an IndustrialMech (TM p.69)");
+    });
+
+    it("imports an arm AES, x 1.25 for the arm's weapons and +10% tonnage (TO:AUE p.192), and reports the turret: Dig Lord RCL-Z1", () => {
+        const mech = importFixture("dig-lord-rcl-z1");
+        expect(mech.getInstalledEquipment().find((item) => item.tag === "aes-arm")?.location).toBe("ra");
+        expect(mech.sswImportErrors.some((error) => error.includes("left torso turret"))).toBe(true);
+        expect(mech.getBattleValue()).toBe(681);
+    });
+
+    it("loads an MML (LRM) ton for the MML, not the LRM 15 beside it: HawkWolf HWK-3F", () => {
+        const mech = importFixture("hawkwolf-hwk-3f");
+        const bins = mech.getInstalledEquipment().filter((item) => item.tag === "ammo-lrm-standard");
+        expect(bins.map((bin) => mech.getAmmoBinWeapon(bin)?.tag).sort()).toEqual(["lrm-15", "lrm-15", "lrm-15", "mml-5"]);
+        expect(mech.getBattleValue()).toBe(1349);
+    });
+
+    it("adds the PPC Capacitor's 5 heat to its PPC for BV (TO:AUE p.194): Rook-X NH-1B", () => {
+        expect(importFixture("rook-x-nh-1b").getBattleValue()).toBe(1187);
+    });
+
+    it("does not count Nail/Rivet Gun ammo as explosive (TM p.317): Jabberwocky JAW-66D", () => {
+        // SSW gives 353: it counts the ammo at 1 BV a ton where TM p.317 gives 0.
+        expect(importFixture("jabberwocky-jaw-66d").getBattleValue()).toBe(352);
     });
 });
