@@ -374,6 +374,27 @@ describe("DropShip ammunition by weapon bay (TM pp.194-195, 311)", () => {
     });
 });
 
+describe("DropShip ammunition feeds the launchers of its own bays", () => {
+    // One kind of LRM round feeds every size of launcher; its BV a ton is that of the launcher it feeds (TM p.311).
+    it("counts LRM rounds at the rate of the launcher in their arc", () => {
+        const result = importSmallCraftBlk([
+            "<UnitType>", "Dropship", "</UnitType>", "<Name>", "Test Lighter", "</Name>", "<Model>", "TL-5", "</Model>", "<year>", "3067", "</year>",
+            "<type>", "IS Level 2", "</type>", "<motion_type>", "Spheroid", "</motion_type>", "<designtype>", "1", "</designtype>",
+            "<transporters>", "crewquarters:140.0:0:-1::-1:0", "cargobay:518.0:2:1::-1:0", "</transporters>",
+            "<SafeThrust>", "3", "</SafeThrust>", "<heatsinks>", "100", "</heatsinks>", "<sink_type>", "0", "</sink_type>", "<fuel>", "3000", "</fuel>",
+            "<armor_type>", "41", "</armor_type>", "<armor>", "200", "180", "180", "150", "</armor>",
+            "<Nose Equipment>", "(B) ISLRM20", "IS Ammo LRM-20:24", "</Nose Equipment>",
+            "<Aft Equipment>", "(B) ISLRM10", "IS Ammo LRM-10:24", "</Aft Equipment>",
+            "<structural_integrity>", "10", "</structural_integrity>", "<tonnage>", "10000.0", "</tonnage>", "<crew>", "20", "</crew>",
+        ].join(String.fromCharCode(10)));
+        expect(result.issues).toEqual([]);
+        const ship = result.craft as SmallCraft;
+        const log = ship.getBattleValueLog();
+        expect(log).toContain("Ammunition for lrm-20 = 92.00");
+        expect(log).toContain("Ammunition for lrm-10 = 22.00");
+    });
+});
+
 describe("DropShip Artemis launchers and their rounds", () => {
     // The file lists the fire control before its launchers, and an MML line names its LRM or SRM rounds.
     it("fits Artemis IV to MMLs and Clan LRMs and reads their Artemis-capable ammunition (TM p.207)", () => {

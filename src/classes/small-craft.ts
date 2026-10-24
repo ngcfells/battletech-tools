@@ -1528,7 +1528,10 @@ export default class SmallCraft {
         const ammoBVByTagArc: Record<string, Record<string, number>> = {};
         const ammoArcBV: Record<string, number> = {};
         for (const ammo of this._equipmentList.filter((item) => item.isAmmo)) {
-            const fed = offensiveWeapons.find((weapon) => getCompatibleAmmo(weapon, ammo));
+            // A bay's ammunition feeds the launchers of that bay first: one kind of round may feed launchers of
+            // several sizes, each counting its own BV a ton.
+            const fed = offensiveWeapons.find((weapon) => weapon.location === ammo.location && getCompatibleAmmo(weapon, ammo))
+                ?? offensiveWeapons.find((weapon) => getCompatibleAmmo(weapon, ammo));
             if (!fed) continue;
             const value = getAmmoBattleValuePerTon(fed, ammo) * (ammo.weight || 0);
             ammoBVByTag[fed.tag] = (ammoBVByTag[fed.tag] ?? 0) + value;

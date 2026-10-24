@@ -17,7 +17,7 @@ import { IEquipmentItem } from "./data-interfaces";
 export const equipmentMissile: IEquipmentItem[] = [
     {
         name: "LRM 5",
-        altNames: [],
+        altNames: ["ISLRM5", "IS LRM-5", "IS LRM 5"],
         tag: "lrm-5",
         editions: ["battledroids", "battletech-2nd-edition", "battletech-manual", "battletech-compendium", "battletech-3rd-edition", "compendium-rules-of-warfare", "battletech-4th-edition", "master-rules", "master-rules-revised", "total-warfare", "battlemech-manual", "core-rulebook"],
         techBase: "is",
@@ -154,7 +154,7 @@ export const equipmentMissile: IEquipmentItem[] = [
     },
     {
         name: "LRM 10",
-        altNames: [],
+        altNames: ["ISLRM10", "IS LRM-10", "IS LRM 10"],
         tag: "lrm-10",
         editions: ["battledroids", "battletech-2nd-edition", "battletech-manual", "battletech-compendium", "battletech-3rd-edition", "compendium-rules-of-warfare", "battletech-4th-edition", "master-rules", "master-rules-revised", "total-warfare", "battlemech-manual", "core-rulebook"],
         techBase: "is",
@@ -291,7 +291,7 @@ export const equipmentMissile: IEquipmentItem[] = [
     },
     {
         name: "LRM 15",
-        altNames: [],
+        altNames: ["ISLRM15", "IS LRM-15", "IS LRM 15"],
         tag: "lrm-15",
         editions: ["battledroids", "battletech-2nd-edition", "battletech-manual", "battletech-compendium", "battletech-3rd-edition", "compendium-rules-of-warfare", "battletech-4th-edition", "master-rules", "master-rules-revised", "total-warfare", "battlemech-manual", "core-rulebook"],
         techBase: "is",
@@ -428,7 +428,7 @@ export const equipmentMissile: IEquipmentItem[] = [
     },
     {
         name: "LRM 20",
-        altNames: [],
+        altNames: ["ISLRM20", "IS LRM-20", "IS LRM 20"],
         tag: "lrm-20",
         editions: ["battledroids", "battletech-2nd-edition", "battletech-manual", "battletech-compendium", "battletech-3rd-edition", "compendium-rules-of-warfare", "battletech-4th-edition", "master-rules", "master-rules-revised", "total-warfare", "battlemech-manual", "core-rulebook"],
         techBase: "is",
@@ -565,7 +565,7 @@ export const equipmentMissile: IEquipmentItem[] = [
     },
     {
         name: "SRM 2",
-        altNames: [],
+        altNames: ["ISSRM2", "IS SRM-2", "IS SRM 2"],
         tag: "srm-2",
         editions: ["battledroids", "battletech-2nd-edition", "battletech-manual", "battletech-compendium", "battletech-3rd-edition", "compendium-rules-of-warfare", "battletech-4th-edition", "master-rules", "master-rules-revised", "total-warfare", "battlemech-manual", "core-rulebook"],
         techBase: "is",
@@ -700,7 +700,7 @@ export const equipmentMissile: IEquipmentItem[] = [
     },
     {
         name: "SRM 4",
-        altNames: [],
+        altNames: ["ISSRM4", "IS SRM-4", "IS SRM 4"],
         tag: "srm-4",
         editions: ["battledroids", "battletech-2nd-edition", "battletech-manual", "battletech-compendium", "battletech-3rd-edition", "compendium-rules-of-warfare", "battletech-4th-edition", "master-rules", "master-rules-revised", "total-warfare", "battlemech-manual", "core-rulebook"],
         techBase: "is",
@@ -835,7 +835,7 @@ export const equipmentMissile: IEquipmentItem[] = [
     },
     {
         name: "SRM 6",
-        altNames: [],
+        altNames: ["ISSRM6", "IS SRM-6", "IS SRM 6"],
         tag: "srm-6",
         editions: ["battledroids", "battletech-2nd-edition", "battletech-manual", "battletech-compendium", "battletech-3rd-edition", "compendium-rules-of-warfare", "battletech-4th-edition", "master-rules", "master-rules-revised", "total-warfare", "battlemech-manual", "core-rulebook"],
         techBase: "is",
