@@ -425,8 +425,14 @@ export interface IEquipmentItem {
     sizeLabel?: string;
     /** Largest size the picker offers. */
     sizeMax?: number;
+    /** Steps the picker offers, from one step up to sizeMax (cargo bays: 0.5 tons); 1 when unset. */
+    sizeStep?: number;
     /** Size chosen for this installed item (see sizeLabel). */
     size?: number;
+    /** Heat it dissipates beside the unit's heat sinks (Double Heat Sinks (Freezers): 2, IO:AE p.65). */
+    heatDissipation?: number;
+    /** Set on an installed laser mated to a Laser Insulator in its location (TO:AUE p.134); see laser-insulator.ts. */
+    insulated?: boolean;
     isMelee?: boolean;
     costPerItemTon?: number;
     location?: string;

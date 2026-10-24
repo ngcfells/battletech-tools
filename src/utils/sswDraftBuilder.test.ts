@@ -93,7 +93,7 @@ describe("SSW draft builder", () => {
     });
 
     it("never drafts a canon item that only lacks a catalog record", () => {
-        expect(buildDrafts([{ item: item({ name: "Coolant Pod", sswType: "equipment" }), slots: 1, design: "A", source: source("a.ssw") }], [], newId)).toEqual([]);
+        expect(buildDrafts([{ item: item({ kind: "gyro", name: "No Gyro", sswType: "gyro" }), slots: 1, design: "A", source: source("a.ssw") }], [], newId)).toEqual([]);
     });
 });
 

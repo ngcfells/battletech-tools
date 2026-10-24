@@ -839,6 +839,7 @@ export const mechArmorTypes: IArmorType[] = [
 	{
 		name: "Anti-Penetrative Ablation Armor",
 		tag: "anti-penetrative-ablation",
+		altNames: ["Ablation Armor"],
 		editions: ["total-warfare", "battlemech-manual", "core-rulebook"],
 		patchwork: { slots: { is: 1 }, vehicleSlots: { is: 1 }, tonsPerPoint: { is: 0.0833 } },
 		combatVehicleSlots: { is: 1 },

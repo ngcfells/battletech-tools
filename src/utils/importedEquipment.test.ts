@@ -147,6 +147,11 @@ describe("SSW import", () => {
         expect(raised).toBe(true);
         vi.restoreAllMocks();
     });
+
+    // Every canon item the bundled designs use has a record (#44); the list stays empty.
+    it("knows of no missing canon items", () => {
+        expect(SSW_KNOWN_MISSING_ITEMS).toEqual([]);
+    });
 });
 
 describe("MegaMek's ISCASE", () => {

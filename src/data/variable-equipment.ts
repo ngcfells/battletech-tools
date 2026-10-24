@@ -37,7 +37,10 @@ export type VariableEquipmentFormula =
     | "aes-leg"
     | "talons"
     | "drone-operating-system"
-    | "drone-carrier-control";
+    | "drone-carrier-control"
+    | "cargo-standard"
+    | "cargo-liquid"
+    | "cargo-insulated";
 
 export interface IVariableEquipmentContext {
     /** Unit tonnage. */
@@ -52,7 +55,7 @@ export interface IVariableEquipmentContext {
     hasTSM?: boolean;
     /** Four-legged chassis (Quad, QuadVee): leg-mounted gear fills more legs. */
     isQuad?: boolean;
-    /** Size chosen for the installed item (Mechanical Jump Booster: jump MP). */
+    /** Size chosen for the installed item (Mechanical Jump Booster: jump MP; cargo bay: tons). */
     size?: number;
     /** Drones a Drone Carrier Control System controls (TO:AUE p.117). */
     drones?: number;
@@ -237,6 +240,15 @@ export function sizeVariableEquipment(
         case "drone-carrier-control": {
             const weight = 2 + 0.5 * Math.max(1, Math.floor(ctx.drones ?? 1));
             return { weight, slots: 1, cbills: 10000 * weight, battleValue: 0 };
+        }
+        // TM p.239: a 'Mech cargo bay weighs what it is built to carry, 1 slot a ton or fraction; per ton it costs
+        // nothing (standard), 100 (liquid) or 250 (insulated) C-bills (TM p.293).
+        case "cargo-standard":
+        case "cargo-liquid":
+        case "cargo-insulated": {
+            const weight = Math.max(0.5, roundUpHalfTon(ctx.size ?? 1));
+            const perTon = formula === "cargo-liquid" ? 100 : formula === "cargo-insulated" ? 250 : 0;
+            return { weight, slots: Math.ceil(weight - 1e-9), cbills: perTon * weight, battleValue: 0 };
         }
     }
     return null;

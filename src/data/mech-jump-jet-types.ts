@@ -105,6 +105,7 @@ export const mechJumpJetTypes: IJumpJet[] = [
 	{
 		name: "Prototype Improved Jump Jets",
 		tag: "prototype-improved",
+		altNames: ["Prototype Improved Jump Jet"],
 		editions: ["total-warfare", "battlemech-manual", "core-rulebook"],
 		weight_multiplier: {
 			light: 0.5,

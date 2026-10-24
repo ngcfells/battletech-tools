@@ -10,9 +10,7 @@ export const SSW_CORPUS_SHARDS = 4;
  * Import errors the corpus may still raise. New spellings go in the records' altNames; this list only shrinks as
  * missing canon records are added (importedEquipment.test.ts checks each entry still happens).
  */
-export const SSW_KNOWN_MISSING_ITEMS = [
-    "Cannot find any equipment named: 'Electronic Warfare Equipment'",
-];
+export const SSW_KNOWN_MISSING_ITEMS: string[] = [];
 
 // SSW's names for chassis components ("XL Engine", "Extra-Light Gyro", "Endo-Steel"). SSW's engine techbase
 // attribute (0 Inner Sphere, 1 Clan) picks the Inner Sphere or Clan XL/XXL engine.

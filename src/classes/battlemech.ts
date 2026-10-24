@@ -41,6 +41,7 @@ import { isAlphaStrikeAbilityCode } from "../data/alpha-strike-special-abilities
 import { generateUUID } from "../utils/generateUUID";
 import { ISSWBasicInfo, parseSSWXML } from "../utils/getSSWXMLBasicInfo";
 import { findImportedEquipment, ImportFaction } from "../utils/importedEquipment";
+import { getMountedHeat, mateLaserInsulators } from "../data/laser-insulator";
 import {
     ICanonicalBattleMechRecord,
     ICanonicalSourceMetadata,
@@ -490,7 +491,6 @@ export class BattleMech {
     private _cockpitWeight: number = 3;
     private _totalInternalStructurePoints = 0;
     private _maxMoveHeat: number = 2;
-    private _maxWeaponHeat: number = 0;
     private _heatDissipation: number = 0;
     private _additionalHeatSinks: number = 0;
     private _armorWeight: number = 0;
@@ -761,6 +761,8 @@ export class BattleMech {
 
     private _calcBattleValue(): void {
         this._battleValueStale = false;
+        // Insulators follow their lasers' locations, which can change without a full recalculation.
+        mateLaserInsulators(this._equipmentList);
         let hasCamo = false;
         let hasBasicStealth = this._armorType.tag === "stealth-basic" && !this.hasActiveModularArmor();
         let hasPrototypeStealth = false;
@@ -1134,6 +1136,8 @@ export class BattleMech {
         
         // Total Heat Dissipation Capacity = 6 + Total Dissipation Points - Max Movement Heat
         mechHeatEfficiency += (this.getHeatSinks() * sinkEfficiencyMultiplier) - this.getMaxMovementHeat();
+        // Double Heat Sinks (Freezers) beside single heat sinks (IO:AE p.65).
+        mechHeatEfficiency += this.getEquipmentHeatDissipation();
         // Partial wing: +3 heat capacity in a standard atmosphere (TO:AUE p.105).
         mechHeatEfficiency += this.getPartialWingHeatBonus();
         // LAMs add 9 instead of 6 to heat capacity (IO:AE p.186). The +3 matches AirMech mode's
@@ -1166,7 +1170,8 @@ export class BattleMech {
             const currentItem = this._equipmentList[eqC];
             if (currentItem.isAmmo || currentItem.tag.startsWith("ammo-") || this._isDefensiveBVEquipment(currentItem)) continue;
 
-            let baseHeat = currentItem.heat || 0;
+            // An insulated laser counts 1 less heat (TO:AUE p.194).
+            let baseHeat = getMountedHeat(currentItem);
 
             // Apply specific ruleset multipliers for alternative fire modes
             if (currentItem.isOneShot) {
@@ -2170,6 +2175,14 @@ export class BattleMech {
         if (fullHeadEjection && this.getCockpitType().tag === "torso-mounted") {
             violations.push(`${fullHeadEjection.name} cannot be combined with a Torso-Mounted Cockpit (TO:AUE p.116).`);
         }
+        // An insulator is mated to a laser in its own location (TO:AUE p.134).
+        for (const insulator of mateLaserInsulators(this._equipmentList)) {
+            violations.push(`${insulator.name} in the ${getLocationName(insulator.location ?? "", this._hasFrontLegs()).toLowerCase()} has no laser of its own to insulate (TO:AUE p.134).`);
+        }
+        // Prototype double heat sinks combine only with single heat sinks (IO:AE p.65).
+        if (this._heatSinkType.tag !== "single" && this._equipmentList.some(item => (item?.heatDissipation ?? 0) > 0)) {
+            violations.push("Double Heat Sinks (Freezers) combine only with single heat sinks (IO:AE p.65).");
+        }
         if (vss && !ecm) violations.push(`${vss.name} needs an ECM suite (TO:AUE p.161).`);
         if (stealth && !ecm) violations.push("Stealth Armor needs an ECM suite (TM p.213).");
         return violations;
@@ -2271,6 +2284,7 @@ export class BattleMech {
     }
 
     public calcAlphaStrike(): AlphaStrikeUnit {
+        mateLaserInsulators(this._equipmentList);
 
         this._alphaStrikeForceStats.name = this.getName();
         this._alphaStrikeForceStats.move = this.getWalkSpeed() * 2;
@@ -2452,7 +2466,7 @@ export class BattleMech {
             }
             if (this._equipmentList[weapon_counter].alphaStrike && !this._equipmentList[weapon_counter].isAmmo ) {
                 if (this._equipmentList[weapon_counter].alphaStrike.rangeLong > 0) {
-                    total_weapon_heat_long += +this._equipmentList[weapon_counter].alphaStrike.heat;
+                    total_weapon_heat_long += getMountedHeat(this._equipmentList[weapon_counter], +this._equipmentList[weapon_counter].alphaStrike.heat);
                 }
                 // if (this._equipmentList[weapon_counter].alphaStrike.rangeExtreme > 0) {
                 //     total_weapon_heat_extreme += +this._equipmentList[weapon_counter].alphaStrike.heat;
@@ -2484,9 +2498,9 @@ export class BattleMech {
                     this._calcLogAS += this._equipmentList[weapon_counter].alphaStrike.rangeExtreme + " )<br />\n";
 
                     if( this._equipmentList[weapon_counter].alphaStrike.rangeMedium > 0 )
-                        total_weapon_heat_medium += +this._equipmentList[weapon_counter].alphaStrike.heat;
+                        total_weapon_heat_medium += getMountedHeat(this._equipmentList[weapon_counter], +this._equipmentList[weapon_counter].alphaStrike.heat);
                     if( this._equipmentList[weapon_counter].alphaStrike.rangeShort > 0 )
-                        total_weapon_heat_short += +this._equipmentList[weapon_counter].alphaStrike.heat;
+                        total_weapon_heat_short += getMountedHeat(this._equipmentList[weapon_counter], +this._equipmentList[weapon_counter].alphaStrike.heat);
 
                 }
 
@@ -2601,7 +2615,7 @@ export class BattleMech {
 
         let heatDissipation = 0;
 
-        heatDissipation += this.getHeatSinks() * this._heatSinkType.dissipation;
+        heatDissipation += this.getHeatSinks() * this._heatSinkType.dissipation + this.getEquipmentHeatDissipation();
 
         let max_short_overheat_value =  move_heat + total_weapon_heat_short ;
         let max_medium_overheat_value =  move_heat + total_weapon_heat_medium ;
@@ -3643,7 +3657,6 @@ export class BattleMech {
         }
         this._unallocatedArmor = this._maxArmor - this._totalArmor;
 
-        this._maxWeaponHeat = 0;
         if( this._additionalHeatSinks > 0)
             this._weights.push({
                 name: "Additional Heat Sinks",
@@ -3656,6 +3669,7 @@ export class BattleMech {
             });
 
         this._calcVariableEquipment();
+        mateLaserInsulators(this._equipmentList);
         for( let countEQ = 0; countEQ < this._equipmentList.length; countEQ++) {
             if( this._equipmentList[countEQ].rear) {
                 this._weights.push({
@@ -3668,8 +3682,6 @@ export class BattleMech {
                     weight: this._equipmentList[countEQ].weight
                 });
             }
-            if( this._equipmentList[countEQ])
-                this._maxWeaponHeat += this._equipmentList[countEQ].heat;
         }
 
         this._currentTonnage = 0;
@@ -3691,7 +3703,8 @@ export class BattleMech {
             number: 0,
         };
         
-        this._heatDissipation = this.getHeatSinks() * this._heatSinkType.dissipation + this.getPartialWingHeatBonus();
+        this._heatDissipation = this.getHeatSinks() * this._heatSinkType.dissipation + this.getPartialWingHeatBonus()
+            + this.getEquipmentHeatDissipation();
         if( this.getHeatSinkTechBase() === "clan" ) {
             this._heatSinkCriticals.slotsEach = this._heatSinkType.crits.clan;
         } else {
@@ -5074,8 +5087,11 @@ export class BattleMech {
         return +this._maxMoveHeat;
     }
 
+    /** Heat of every installed item fired at once; an insulated laser makes 1 less (TO:AUE p.134). */
     public getWeaponHeat(): number {
-        return +this._maxWeaponHeat;
+        // Worked out when read: a moved critical can mate an insulator with a laser without a full recalculation.
+        mateLaserInsulators(this._equipmentList);
+        return this._equipmentList.reduce((sum, item) => sum + (item ? getMountedHeat(item) : 0), 0);
     }
 
     public getActiveWeaponHeat(
@@ -5092,8 +5108,8 @@ export class BattleMech {
             if( eq.target ) {
                 // A cooling jacket quirk changes the weapon's heat when fired (CO pp.227, 234).
                 rv += quirksInPlay && eq.uuid
-                    ? getQuirkWeaponHeat(this.quirks, installedUuids, this.getQuirkPlayYear(), eq.uuid, +eq.heat)
-                    : +eq.heat;
+                    ? getQuirkWeaponHeat(this.quirks, installedUuids, this.getQuirkPlayYear(), eq.uuid, getMountedHeat(eq))
+                    : getMountedHeat(eq);
             }
         }
         return rv;
@@ -5179,6 +5195,11 @@ export class BattleMech {
 
     public getHeatDissipation(): number {
         return this._heatDissipation;
+    }
+
+    /** Heat dissipated by equipment beside the heat sinks: Double Heat Sinks (Freezers), 2 each (IO:AE p.65). */
+    public getEquipmentHeatDissipation(): number {
+        return this._equipmentList.reduce((sum, item) => sum + (item?.heatDissipation ?? 0), 0);
     }
 
     public getHeatSummary(): number {
@@ -9701,7 +9722,8 @@ export class BattleMech {
     public setEquipmentSize(itemUUID: string | undefined, size: number): IEquipmentItem | null {
         const item = this._equipmentList.find(eq => eq?.uuid === itemUUID);
         if (!item || !item.sizeLabel) return null;
-        item.size = Math.max(1, Math.min(item.sizeMax ?? size, Math.round(size)));
+        const step = item.sizeStep ?? 1;
+        item.size = Math.max(step, Math.min(item.sizeMax ?? size, Math.round(size / step) * step));
         this._calc();
         return item;
     }
@@ -12134,10 +12156,29 @@ export class BattleMech {
         }
 
 
+        // SSW lists a laser mated to a Laser Insulator as one item, "<laser> (Insulated)": install the laser, then its
+        // insulator in the next slot of the same location (TO:AUE p.134).
+        let insulated = false;
+        if( / \(Insulated\)$/.test( itemName ) ) {
+            itemName = itemName.replace( / \(Insulated\)$/, "" );
+            insulated = true;
+        }
+
         if( itemName ) {
 
             // SSW's names are listed on the catalog records (altNames); see findImportedEquipment.
-            const match = findImportedEquipment( itemName, listTag, techTag === "mis" || techTag === "mclan" );
+            const mixedTech = techTag === "mis" || techTag === "mclan";
+            let match = findImportedEquipment( itemName, listTag, mixedTech );
+            // SSW puts a few items of the other tech base on single-tech designs (Clan Enhanced PPCs and Streak SRM-6
+            // CPs on Inner Sphere 'Mechs). Install them as SSW does and say the design needs Mixed Tech.
+            if( !match && !mixedTech ) {
+                const other = findImportedEquipment( itemName, listTag, true );
+                if( other && other.catalog !== "custom" && other.catalog !== "universal" && other.catalog !== listTag ) {
+                    match = other;
+                    this._sswImportErrors.push( "'" + item.name["#text"] + "' is " + ( other.catalog === "clan" ? "Clan" : "Inner Sphere" )
+                        + " equipment (" + other.item.name + ") on " + ( listTag === "clan" ? "a Clan" : "an Inner Sphere" ) + " design; the design needs Mixed Tech" );
+                }
+            }
             let newItem = match ? this._installEquipmentRecord(
                 match.item,
                 location,
@@ -12176,6 +12217,23 @@ export class BattleMech {
                 newItem.location = "un";
                 newItem.rear = rear;
                 newItem.split_location = [];
+                // Cargo bays and other sized items: SSW gives the size in tons.
+                if( newItem.sizeLabel === "Tons" && item.tons !== undefined && +item.tons > 0 ) {
+                    newItem.size = +item.tons;
+                }
+                const insulatorRecord = insulated
+                    ? findImportedEquipment( listTag === "clan" ? "Laser Insulator (Clan)" : "Laser Insulator", listTag, mixedTech )?.item
+                    : undefined;
+                if( insulatorRecord ) {
+                    const insulator = this._installEquipmentRecord( insulatorRecord, location, rear, generateUUID(), undefined, [] );
+                    if( insulator ) {
+                        insulator.allocationIndex = allocationIndex < 0 ? -1 : allocationIndex + ( newItem.space?.battlemech ?? 1 );
+                        insulator.allocationLocation = location;
+                        insulator.location = "un";
+                        insulator.rear = rear;
+                        insulator.split_location = [];
+                    }
+                }
                 if( newItem.uuid && !isSSWNoMake( item.name["@_manufacturer"] ) ) {
                     this._sswCopyMakes.push( { uuid: newItem.uuid, make: String( item.name["@_manufacturer"] ).trim() } );
                 }

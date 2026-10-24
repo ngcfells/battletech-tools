@@ -418,7 +418,7 @@ export default class MechCreatorStep5 extends React.Component<IHomeProps, IHomeS
                                               onChange={( event: React.FormEvent<HTMLSelectElement>) => this.setSize( item.uuid, +event.currentTarget.value)}
                                               className="width-auto"
                                             >
-                                              {Array.from({ length: item.sizeMax ?? 1 }, (_value, index) => index + 1).map( (option) => (
+                                              {Array.from({ length: Math.floor((item.sizeMax ?? 1) / (item.sizeStep ?? 1)) }, (_value, index) => (index + 1) * (item.sizeStep ?? 1)).map( (option) => (
                                                 <option key={option} value={option}>{option}</option>
                                               ))}
                                             </select>
