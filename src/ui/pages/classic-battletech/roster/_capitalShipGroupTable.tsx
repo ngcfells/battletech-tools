@@ -4,6 +4,7 @@ import CapitalShip from '../../../../classes/capital-ship';
 import Pilot from '../../../../classes/pilot';
 import { IAppGlobals } from '../../../app-router';
 import StatBar from '../../../components/stat-bar';
+import MULSearchButton from './_mulSearchButton';
 const Trash = FaTrash as any;
 
 /**
@@ -210,6 +211,7 @@ export default class CapitalShipGroupTable extends React.Component<ICapitalShipG
                                 ) : (
                                     <span className="small-text">Save vessels in the JumpShip and WarShip Creator to add them to this group.</span>
                                 )}
+                                <MULSearchButton unitLabel="JumpShips, WarShips and space stations" onClick={this.props.onSearchMUL} />
                             </td>
                         </tr>
                     </tfoot>
@@ -234,6 +236,7 @@ interface ICapitalShipGroupTableProps {
     bmGroupIndex: number;
     showAdd: boolean;
     showEdit: boolean;
+    onSearchMUL?: ( e: React.FormEvent<HTMLButtonElement> ) => void;
 }
 
 interface ICapitalShipGroupTableState {

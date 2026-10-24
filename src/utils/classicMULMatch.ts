@@ -105,3 +105,38 @@ export function isMULLargeAerospaceCraft(unit: Pick<IASMULUnit, "Type" | "Tonnag
     }
     return /small craft|dropship|jumpship|warship|station/i.test(unitType) || +unit.Tonnage > 100;
 }
+
+/** DropShips weigh 100,000 tons at most (TM p.180); anything heavier is a JumpShip, WarShip or station. */
+const DROPSHIP_MAX_TONS = 100000;
+const CAPITAL_SHIP_NAME = /jump ?ship|warship|station|battleship|cruiser|destroyer|frigate|corvette|carrier|yard|habitat|factory|facility|colony ship|monitor|leviathan|auto scout/i;
+// Capital ships whose MUL names give no class (astech ruling, 2026-10-23): the stat-less "Scout" and "League" can only
+// be the Scout JumpShip and the League Destroyer. Monitor (XTRO: Boondoggles p.19), Leviathan (The Wars of Reaving
+// p.40) and the Bright Star Auto Scout (Boondoggles p.16) are matched above. Words like "monitor" and "carrier" also
+// name DropShips, which is safe only because those have a move and never reach the name test.
+const CAPITAL_SHIP_WHOLE_NAME = /^(scout|league)$/i;
+
+/**
+ * Of the MUL's large aerospace craft, the JumpShips, WarShips and space stations, which the Capital Ship Creator
+ * builds (the rest are Small Craft and DropShips). The MUL gives them all the same type and Alpha Strike type, so the
+ * Alpha Strike move tells (AS:CE p.93): Small Craft and DropShips move as spheroids ("3p") or aerodynes ("4a"),
+ * WarShips have a bare thrust ("3"), JumpShips and stations only keep station ("0.2k"). Where the MUL has no Alpha
+ * Strike stats (it sends a dash) the name and variant, then the DropShip tonnage limit, decide.
+ */
+export function isMULCapitalShip(unit: Pick<IASMULUnit, "Type" | "Tonnage" | "Name"> & { BFMove?: string | null; Variant?: string | null }): boolean {
+    if (!isMULLargeAerospaceCraft(unit)) {
+        return false;
+    }
+    const move = (unit.BFMove ?? "").trim();
+    if (/^\d+(\.\d+)?[pa]$/i.test(move)) {
+        return false;
+    }
+    if (/^\d+(\.\d+)?k$/i.test(move) || /^\d+$/.test(move)) {
+        return true;
+    }
+    const name = (unit.Name ?? "").trim();
+    const fullName = name + " " + (unit.Variant ?? "");
+    if (/pocket warship/i.test(fullName)) {
+        return false;
+    }
+    return CAPITAL_SHIP_NAME.test(fullName) || CAPITAL_SHIP_WHOLE_NAME.test(name) || +unit.Tonnage > DROPSHIP_MAX_TONS;
+}

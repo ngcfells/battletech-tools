@@ -17,6 +17,7 @@ import InfantryPlatoon from "../../../../classes/infantry-platoon";
 import BattleArmor from "../../../../classes/battle-armor";
 import ProtoMech from "../../../../classes/protomech";
 import SmallCraft from "../../../../classes/small-craft";
+import CapitalShip from "../../../../classes/capital-ship";
 import { searchBundledMUL } from "../../../../utils";
 
 afterEach(cleanup);
@@ -217,5 +218,52 @@ describe("Classic roster Master Unit List search", () => {
         const links = Array.from(container.querySelectorAll("a")).map((link) => link.getAttribute("href") ?? "");
         expect(links.some((href) => href.endsWith("/small-craft-creator"))).toBe(true);
         expect(links.some((href) => href.endsWith("/fighter-creator"))).toBe(false);
+    }, 30_000);
+
+    // JumpShips, WarShips and stations are type 17 "Aerospace Craft" too; they go to the capital ship table.
+    const capitalShipHit = async () => (await searchBundledMUL(newMULSearchFilters({ type: 17, term: "Essex Destroyer" })))
+        .find((unit) => (unit.Variant ?? "").trim() !== "")!;
+    it("finds a saved WarShip on the MUL and adds it to the group's capital ship table, not the Small Craft", async () => {
+        const appGlobals = makeAppGlobals();
+        const hit = await capitalShipHit();
+        const ship = new CapitalShip();
+        ship.setName(hit.Name);
+        ship.setModel(hit.Variant ?? "");
+        (appGlobals.capitalShipSaves as unknown[]).push(JSON.parse(ship.exportJSON()));
+        // A Small Craft saved under the same name must not be the match.
+        const lookalike = new SmallCraft();
+        lookalike.setName(hit.Name);
+        lookalike.setModel(hit.Variant ?? "");
+        (appGlobals.smallCraftSaves as unknown[]).push(JSON.parse(lookalike.exportJSON()));
+        appGlobals.appSettings.cbtMULSearch = newMULSearchFilters({ type: 17, term: hit.Name + " " + hit.Variant });
+        const onChange = vi.fn();
+        render(
+            <MemoryRouter>
+                <BattleMechAddMechDialog appGlobals={appGlobals} currentForce={appGlobals.currentCBTForce!.groups[0]} currentForceIndex={0} onChange={onChange} />
+            </MemoryRouter>
+        );
+        fireEvent.click((await screen.findAllByRole("button", { name: "View " + getMULDisplayName(hit) }, { timeout: 20_000 }))[0]);
+        expect(screen.getByRole("heading", { name: /^Viewing Essex Destroyer/ })).toBeTruthy();
+        fireEvent.click(screen.getAllByRole("button", { name: /^(Cancel|Close)$/ })[0]);
+        // Capital ships have no Technical Readout yet (#78), so there is no TRO button for them.
+        expect(screen.queryAllByRole("button", { name: "TRO " + getMULDisplayName(hit) }).length).toBe(0);
+        fireEvent.click((await screen.findAllByRole("button", { name: "Add " + getMULDisplayName(hit) }))[0]);
+        const group: BattleMechGroup = onChange.mock.calls[0][0];
+        expect(group.capitalShips.map((unit) => unit.getName() + " " + unit.getModel())).toEqual([hit.Name + " " + hit.Variant]);
+        expect(group.smallCraft.length).toBe(0);
+    }, 30_000);
+
+    it("sends a MUL JumpShip with no Classic design to the Capital Ship Creator", async () => {
+        const appGlobals = makeAppGlobals();
+        appGlobals.appSettings.cbtMULSearch = newMULSearchFilters({ type: 17, term: "Magellan JumpShip" });
+        const { container } = render(
+            <MemoryRouter>
+                <BattleMechAddMechDialog appGlobals={appGlobals} currentForce={appGlobals.currentCBTForce!.groups[0]} currentForceIndex={0} onChange={vi.fn()} />
+            </MemoryRouter>
+        );
+        await screen.findAllByText(/No Classic design yet/, undefined, { timeout: 20_000 });
+        const links = Array.from(container.querySelectorAll("a")).map((link) => link.getAttribute("href") ?? "");
+        expect(links.some((href) => href.endsWith("/capital-ship-creator"))).toBe(true);
+        expect(links.some((href) => href.endsWith("/small-craft-creator"))).toBe(false);
     }, 30_000);
 });

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildClassicDesignIndex, findClassicDesign, getMULMatchKeys, isMULLargeAerospaceCraft } from "./classicMULMatch";
+import { buildClassicDesignIndex, findClassicDesign, getMULMatchKeys, isMULCapitalShip, isMULLargeAerospaceCraft } from "./classicMULMatch";
 
 describe("getMULMatchKeys", () => {
     it("drops quotes, parentheses and HTML entities so MUL and Skunk Werks spellings meet", () => {
@@ -58,5 +58,53 @@ describe("isMULLargeAerospaceCraft", () => {
     });
     it("is never true outside type 17", () => {
         expect(isMULLargeAerospaceCraft(unit({ Id: 18, Name: "BattleMech" }, 200))).toBe(false);
+    });
+});
+
+// The MUL gives every large craft the same type and Alpha Strike type (AF), so the JumpShips, WarShips and stations
+// are told from the Small Craft and DropShips by their Alpha Strike move, else by name and tonnage.
+describe("isMULCapitalShip", () => {
+    const craft = (name: string, tonnage: number, move?: string, typeName = "Aerospace Craft") => ({
+        Name: name, Tonnage: tonnage, BFMove: move, Type: { Id: 17, Name: typeName, Image: null, SortOrder: 0 },
+    }) as unknown as Parameters<typeof isMULCapitalShip>[0];
+    it("reads a spheroid or aerodyne move as a Small Craft or DropShip", () => {
+        expect(isMULCapitalShip(craft("Union", 3600, "3p"))).toBe(false);
+        expect(isMULCapitalShip(craft("Leopard", 1900, "4a"))).toBe(false);
+        expect(isMULCapitalShip(craft("Mammoth", 52000, "3p"))).toBe(false);
+        expect(isMULCapitalShip(craft("Castrum Pocket Warship", 100000, "3p"))).toBe(false);
+    });
+    it("reads station-keeping or a bare thrust as a capital ship", () => {
+        expect(isMULCapitalShip(craft("Magellan JumpShip", 175000, "0.2k"))).toBe(true);
+        expect(isMULCapitalShip(craft("BattleSat System Defense Station", 2000, "0.2k"))).toBe(true);
+        expect(isMULCapitalShip(craft("Essex Destroyer", 620000, "3"))).toBe(true);
+        expect(isMULCapitalShip(craft("Tatsumaki Destroyer", 0, "4"))).toBe(true);
+    });
+    it("falls back on the name, then a tonnage over the 100,000-ton DropShip limit", () => {
+        expect(isMULCapitalShip(craft("Clipper JumpShip", 0, "�"))).toBe(true);
+        expect(isMULCapitalShip(craft("Small Pressurized Yard", 2500, "�"))).toBe(true);
+        expect(isMULCapitalShip(craft("Yamato Battleship", 0))).toBe(true);
+        expect(isMULCapitalShip(craft("Capital Drone", 480000, "�"))).toBe(true);
+        expect(isMULCapitalShip(craft("Landing Craft", 150, "�"))).toBe(false);
+        expect(isMULCapitalShip(craft("Overlord", 11600, "�"))).toBe(false);
+    });
+    it("knows the capital ships whose names give no class (astech ruling, 2026-10-23)", () => {
+        // Bug-Eye: the smallest WarShip class built (IE:ISP3); its bare thrust already says so.
+        expect(isMULCapitalShip(craft("Bug-Eye Surveillance Ship", 6100, "5"))).toBe(true);
+        expect(isMULCapitalShip(craft("Monitor", 0, "—"))).toBe(true); // XTRO: Boondoggles p.19
+        expect(isMULCapitalShip(craft("Leviathan Prime", 0, "—"))).toBe(true); // The Wars of Reaving p.40
+        expect(isMULCapitalShip(craft("Bright Star Auto Scout", 60000, "—"))).toBe(true); // XTRO: Boondoggles p.16
+        expect(isMULCapitalShip({ ...craft("Spider", 0, "—"), Variant: "Construction Station" } as never)).toBe(true);
+        // Stat-less records: the only canon craft of these names are the Scout JumpShip and the League Destroyer.
+        expect(isMULCapitalShip(craft("Scout", 0, "—"))).toBe(true);
+        expect(isMULCapitalShip(craft("League", 0, "—"))).toBe(true);
+        // DropShips and Small Craft with like names stay put.
+        expect(isMULCapitalShip(craft("Stork", 0, "—"))).toBe(false); // Handbook: House Marik p.134
+        expect(isMULCapitalShip(craft("Argo", 97000, "—"))).toBe(false);
+        expect(isMULCapitalShip(craft("Titan Monitor", 15000, "5a"))).toBe(false);
+        expect(isMULCapitalShip(craft("Scout Shuttle", 150, "—"))).toBe(false);
+    });
+    it("is never true for fighters or other types", () => {
+        expect(isMULCapitalShip(craft("Goth", 60, "5", "Fighter Craft"))).toBe(false);
+        expect(isMULCapitalShip({ ...craft("Atlas", 100, "3"), Type: { Id: 18, Name: "BattleMech" } } as never)).toBe(false);
     });
 });

@@ -4,6 +4,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { BattleMechForce } from "../../../../classes/battlemech-force";
 import type { IAppGlobals } from "../../../app-router";
 import BattleArmorGroupTable from "./_battleArmorGroupTable";
+import CapitalShipGroupTable from "./_capitalShipGroupTable";
 import FighterGroupTable from "./_fighterGroupTable";
 import InfantryGroupTable from "./_infantryGroupTable";
 import ProtoMechGroupTable from "./_protoMechGroupTable";
@@ -21,6 +22,7 @@ describe("Classic roster group tables open the Master Unit List search", () => {
         { label: "battle armor", Table: BattleArmorGroupTable },
         { label: "ProtoMechs", Table: ProtoMechGroupTable },
         { label: "Small Craft", Table: SmallCraftGroupTable },
+        { label: "capital ships", Table: CapitalShipGroupTable },
     ];
     for (const { label, Table } of tables) {
         it("shows a Search MUL button on the " + label + " table, even with nothing saved", () => {
@@ -28,7 +30,7 @@ describe("Classic roster group tables open the Master Unit List search", () => {
             force.newGroup();
             const appGlobals = {
                 currentCBTForce: force,
-                vehicleSaves: [], fighterSaves: [], infantrySaves: [], battleArmorSaves: [], protoMechSaves: [], smallCraftSaves: [],
+                vehicleSaves: [], fighterSaves: [], infantrySaves: [], battleArmorSaves: [], protoMechSaves: [], smallCraftSaves: [], capitalShipSaves: [],
             } as unknown as IAppGlobals;
             const onSearchMUL = vi.fn();
             render(<Table appGlobals={appGlobals} bmGroupIndex={0} showAdd={true} showEdit={true} onSearchMUL={onSearchMUL} />);
