@@ -217,6 +217,17 @@ describe("DropShip capital weapons (TM pp.194, 210, 342)", () => {
         expect(ship.getBattleValueLog()).toContain("Ammunition for Killer Whale = 769.00 (capped at weapon BV)");
     });
 
+    // MegaMek caps a DropShip's ammunition arc by arc, against the weapons in the arc that use it.
+    it("caps each arc's capital missiles at the value of that arc's launchers (TM p.311)", () => {
+        const ship = buildShip();
+        const nose = ship.addCapitalWeapon("killer-whale", "nose");
+        const left = ship.addCapitalWeapon("killer-whale", "left");
+        ship.setCapitalWeaponShots(left?.uuid ?? "", "killer-whale", 2);
+        // The nose's 10 missiles at 96 cap at its launcher's 769; the left's 2 count 192.
+        expect(nose && left).toBeTruthy();
+        expect(ship.getBattleValueLog()).toContain("Ammunition for Killer Whale = 961.00 (capped at weapon BV)");
+    });
+
     it("saves and loads its capital weapons", () => {
         const ship = buildShip();
         const mount = ship.addCapitalWeapon("ar-10-launcher", "aft");
@@ -392,6 +403,22 @@ describe("DropShip ammunition feeds the launchers of its own bays", () => {
         const log = ship.getBattleValueLog();
         expect(log).toContain("Ammunition for lrm-20 = 92.00");
         expect(log).toContain("Ammunition for lrm-10 = 22.00");
+    });
+
+    it("caps each arc's rounds at the value of that arc's launchers (TM p.311)", () => {
+        const result = importSmallCraftBlk([
+            "<UnitType>", "Dropship", "</UnitType>", "<Name>", "Test Lighter", "</Name>", "<Model>", "TL-6", "</Model>", "<year>", "3067", "</year>",
+            "<type>", "IS Level 2", "</type>", "<motion_type>", "Spheroid", "</motion_type>", "<designtype>", "1", "</designtype>",
+            "<transporters>", "crewquarters:140.0:0:-1::-1:0", "cargobay:518.0:2:1::-1:0", "</transporters>",
+            "<SafeThrust>", "3", "</SafeThrust>", "<heatsinks>", "100", "</heatsinks>", "<sink_type>", "0", "</sink_type>", "<fuel>", "3000", "</fuel>",
+            "<armor_type>", "41", "</armor_type>", "<armor>", "200", "180", "180", "150", "</armor>",
+            "<Nose Equipment>", "(B) LRM 20", "IS Ammo LRM-20:120", "</Nose Equipment>",
+            "<Aft Equipment>", "(B) LRM 20", "IS Ammo LRM-20:6", "</Aft Equipment>",
+            "<structural_integrity>", "10", "</structural_integrity>", "<tonnage>", "10000.0", "</tonnage>", "<crew>", "20", "</crew>",
+        ].join(String.fromCharCode(10)));
+        expect(result.issues).toEqual([]);
+        // 20 tons at 23 in the nose cap at its launcher's 181; the aft's ton counts 23.
+        expect((result.craft as SmallCraft).getBattleValueLog()).toContain("Ammunition for lrm-20 = 204.00 (capped at weapon BV)");
     });
 });
 

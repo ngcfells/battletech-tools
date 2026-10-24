@@ -1501,8 +1501,8 @@ export default class SmallCraft {
             arcHeat[arc] += SmallCraft.bvHeat(item);
         }
         let log = "";
-        // Capital and sub-capital weapons count in their arcs as other weapons do. Their ammunition is capped at the
-        // value of the launchers of the model and shared among those launchers' arcs by the ammunition each carries.
+        // Capital and sub-capital weapons count in their arcs as other weapons do. Each arc's ammunition is capped at the
+        // value of that arc's launchers of the model.
         const capital = this._capitalWeapons.filter((mount) => !mount.weapon.battleValueDefensive && (mount.location ?? "") in arcBV);
         const capitalAmmoArcBV: Record<string, number> = {};
         for (const mount of capital) {
@@ -1514,13 +1514,18 @@ export default class SmallCraft {
             const ammoBV = mounts.map((mount) => Object.keys(mount.shots).reduce((sum, ammoTag) => sum + getCapitalAmmoBattleValue(ammoTag, mount.shots[ammoTag]), 0));
             const value = ammoBV.reduce((sum, entry) => sum + entry, 0);
             if (value <= 0) continue;
-            const capped = Math.min(value, mounts.reduce((sum, mount) => sum + mount.weapon.battleValue, 0));
-            mounts.forEach((mount, index) => {
-                capitalAmmoArcBV[mount.location as string] = (capitalAmmoArcBV[mount.location as string] ?? 0) + capped * ammoBV[index] / value;
-            });
-            log += `Ammunition for ${escapeLogText(mounts[0].weapon.name)} = ${capped.toFixed(2)}${capped < value ? " (capped at weapon BV)" : ""}, with the arcs of its weapons<br />`;
+            let capped = 0;
+            for (const arc of new Set(mounts.map((mount) => mount.location as string))) {
+                const inArc = mounts.map((mount, index) => ({ mount, ammo: ammoBV[index] })).filter((entry) => entry.mount.location === arc);
+                const arcCapped = Math.min(inArc.reduce((sum, entry) => sum + entry.ammo, 0), inArc.reduce((sum, entry) => sum + entry.mount.weapon.battleValue, 0));
+                capitalAmmoArcBV[arc] = (capitalAmmoArcBV[arc] ?? 0) + arcCapped;
+                capped += arcCapped;
+            }
+            log += `Ammunition for ${escapeLogText(mounts[0].weapon.name)} = ${capped.toFixed(2)}${capped < value - 1e-9 ? " (capped at weapon BV)" : ""}, in the arcs of its weapons<br />`;
         }
-        // Ammunition, capped at the unmodified value of the weapons of the model it feeds, then given to arcs.
+        // Ammunition, capped arc by arc at the unmodified value of that arc's weapons of the model it feeds (MegaMek
+        // keys excess ammunition by arc). Ammunition in the hull, or in an arc without such a weapon, is shared among
+        // the model's weapons by their value, capped at what the arcs left.
         const weaponBVByTag: Record<string, number> = {};
         for (const item of offensiveWeapons) weaponBVByTag[item.tag] = (weaponBVByTag[item.tag] ?? 0) + getItemBattleValue(item, this._tech.tag);
         const ammoBVByTag: Record<string, number> = {};
@@ -1541,20 +1546,26 @@ export default class SmallCraft {
             }
         }
         for (const [tag, value] of Object.entries(ammoBVByTag)) {
-            const capped = Math.min(value, weaponBVByTag[tag] ?? 0);
-            const scale = value > 0 ? capped / value : 0;
+            const weapons = offensiveWeapons.filter((weapon) => weapon.tag === tag);
+            let capped = 0;
             let inHull = value;
             for (const [arc, arcValue] of Object.entries(ammoBVByTagArc[tag] ?? {})) {
-                ammoArcBV[arc] = (ammoArcBV[arc] ?? 0) + arcValue * scale;
+                const arcWeaponBV = weapons.filter((weapon) => weapon.location === arc).reduce((sum, weapon) => sum + getItemBattleValue(weapon, this._tech.tag), 0);
+                if (arcWeaponBV <= 0) continue;
+                const arcCapped = Math.min(arcValue, arcWeaponBV);
+                ammoArcBV[arc] = (ammoArcBV[arc] ?? 0) + arcCapped;
+                capped += arcCapped;
                 inHull -= arcValue;
             }
             if (inHull > 1e-9) {
-                for (const item of offensiveWeapons.filter((weapon) => weapon.tag === tag && (weapon.location ?? "") in arcBV)) {
+                const hullCapped = Math.max(0, Math.min(inHull, (weaponBVByTag[tag] ?? 0) - capped));
+                for (const item of weapons.filter((weapon) => (weapon.location ?? "") in arcBV)) {
                     const share = weaponBVByTag[tag] > 0 ? getItemBattleValue(item, this._tech.tag) / weaponBVByTag[tag] : 0;
-                    ammoArcBV[item.location as string] = (ammoArcBV[item.location as string] ?? 0) + inHull * scale * share;
+                    ammoArcBV[item.location as string] = (ammoArcBV[item.location as string] ?? 0) + hullCapped * share;
                 }
+                capped += hullCapped;
             }
-            log += `Ammunition for ${escapeLogText(tag)} = ${capped.toFixed(2)}${capped < value ? " (capped at weapon BV)" : ""}`
+            log += `Ammunition for ${escapeLogText(tag)} = ${capped.toFixed(2)}${capped < value - 1e-9 ? " (capped at weapon BV)" : ""}`
                 + `${inHull > 1e-9 ? ", the hull's with the arcs of its weapons" : ", in its arcs"}<br />`;
         }
         const total = (arc: SmallCraftArc) => arcBV[arc] + (ammoArcBV[arc] ?? 0) + (capitalAmmoArcBV[arc] ?? 0);
