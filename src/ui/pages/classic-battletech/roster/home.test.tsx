@@ -61,6 +61,21 @@ describe("Classic BattleTech roster page (issue 18)", () => {
         }
     });
 
+    // #34: the force totals counted only 'Mechs. Both total lines, above and below the groups, count every unit and show the same figures.
+    it("counts a vehicle-only force in both force total lines, tons included", () => {
+        const appGlobals = makeAppGlobals();
+        appGlobals.currentCBTForce!.groups[0].vehicles.push(new Vehicle());
+        const { container } = render(<MemoryRouter><BattleMechRosterHome appGlobals={appGlobals} /></MemoryRouter>);
+        const totals = Array.from(container.querySelectorAll("p.text-center"))
+            .map((line) => line.textContent ?? "").filter((text) => text.includes("Total Units"));
+        expect(totals).toHaveLength(2);
+        const tons = appGlobals.currentCBTForce!.getTotalTons();
+        for (const line of totals) {
+            expect(line).toContain("Total Units: 1");
+            expect(line).toContain("Total Tons: " + tons);
+        }
+    });
+
     it("counts a one-unit favorite as One Unit and names the export file correctly", () => {
         const { container } = render(<MemoryRouter><BattleMechRosterHome appGlobals={makeAppGlobals()} /></MemoryRouter>);
         const text = container.textContent ?? "";

@@ -346,6 +346,7 @@ export default class BattleMechRosterHome extends React.Component<IHomeProps, IH
                   <p className="text-center">
                   <strong>Total Groups</strong>: {this.props.appGlobals.currentCBTForce.getTotalGroups()}&nbsp;|&nbsp;
                   <strong>Total Units</strong>: {this.props.appGlobals.currentCBTForce.getTotalUnits()}&nbsp;|&nbsp;
+                  <strong>Total Tons</strong>: {this.props.appGlobals.currentCBTForce.getTotalTons()}&nbsp;|&nbsp;
                   <strong>Total BV2</strong>: {this.props.appGlobals.currentCBTForce.getTotalBV2()}
 
                 </p>
