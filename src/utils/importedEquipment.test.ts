@@ -1,7 +1,8 @@
 import { describe, expect, it, vi } from "vitest";
 import { BattleMech } from "../classes/battlemech";
 import { SSW_KNOWN_MISSING_ITEMS } from "../classes/ssw-corpus-checks";
-import { getEquipmentCatalogDefinitions } from "../data/equipment-registry";
+import { IEquipmentItem } from "../data/data-interfaces";
+import { getEquipmentCatalogDefinitions, getEquipmentTier } from "../data/equipment-registry";
 import { sswMechs } from "../data/ssw/sswMechs";
 import { findCatalogMatches, findImportedEquipment } from "./importedEquipment";
 
@@ -66,6 +67,66 @@ describe("equipment catalogs", () => {
             }
         }
         expect(duplicates).toEqual([]);
+    });
+
+    // An alias naming another record (the Clan Rotary AC/5 once answered to "CLUltraAC2", MegaMek's Clan Ultra
+    // AC/2) can only mislead: the own-name pass finds that record first, so the alias is wrong or dead.
+    // IS and Clan records share a file but sit in separate lookup tiers, where a Clan record may answer to the IS name.
+    it("never lists another record's name or tag in the same tier as an alias", () => {
+        const misleading: string[] = [];
+        for (const definition of getEquipmentCatalogDefinitions()) {
+            const primary = new Map<string, string>();
+            const tierKey = (item: IEquipmentItem, identifier: string) => `${getEquipmentTier(definition, item)}|${identifier.toLowerCase()}`;
+            for (const item of definition.equipment) {
+                primary.set(tierKey(item, item.name), item.tag);
+                primary.set(tierKey(item, item.tag), item.tag);
+            }
+            for (const item of definition.equipment) {
+                for (const alias of item.altNames ?? []) {
+                    const owner = primary.get(tierKey(item, alias));
+                    if (owner !== undefined && owner !== item.tag) {
+                        misleading.push(`${definition.id}: ${item.tag} lists "${alias}", the ${owner} record's own name`);
+                    }
+                }
+            }
+        }
+        expect(misleading).toEqual([]);
+    });
+
+    it("never gives two records in the same tier the same alias", () => {
+        const shared: string[] = [];
+        for (const definition of getEquipmentCatalogDefinitions()) {
+            const owners = new Map<string, string>();
+            for (const item of definition.equipment) {
+                for (const alias of new Set((item.altNames ?? []).map((name) => name.toLowerCase()))) {
+                    const key = `${getEquipmentTier(definition, item)}|${alias}`;
+                    const other = owners.get(key);
+                    if (other !== undefined && other !== item.tag) {
+                        shared.push(`${definition.id}: "${alias}" (${other}, ${item.tag})`);
+                    }
+                    owners.set(key, item.tag);
+                }
+            }
+        }
+        expect(shared).toEqual([]);
+    });
+
+    it("finds MegaMek's Clan Ultra AC/2 as the Clan Ultra AC/2", () => {
+        expect(findImportedEquipment("CLUltraAC2", "clan")?.item.tag).toBe("clan-autocannon-uac-2");
+        expect(findImportedEquipment("CLRotaryAC5", "clan")?.item.tag).toBe("clan-autocannon-rac-5");
+        expect(findImportedEquipment("CLRotaryAC2", "clan")?.item.tag).toBe("clan-autocannon-rac-2");
+        // The Clan LB-X, Ultra AC and HAG rows each answered to the next size up's MegaMek name.
+        for (const [name, tag] of [
+            ["CLLBXAC2", "clan-autocannon-lbx-2"], ["CLLBXAC5", "clan-autocannon-lbx-5"],
+            ["CLLBXAC10", "clan-autocannon-lbx-10"], ["CLLBXAC20", "clan-autocannon-lbx-20"],
+            ["CLUltraAC5", "clan-autocannon-uac-5"], ["CLUltraAC10", "clan-autocannon-uac-10"],
+            ["CLUltraAC20", "clan-autocannon-uac-20"],
+        ]) {
+            expect(findImportedEquipment(name, "clan")?.item.tag, name).toBe(tag);
+        }
+        for (const size of [20, 30, 40]) {
+            expect(findImportedEquipment(`CLHAG${size}`, "clan")?.item.name, `CLHAG${size}`).toBe(`Hyper-Assault Gauss (HAG) ${size}`);
+        }
     });
 });
 
