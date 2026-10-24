@@ -12201,7 +12201,9 @@ export class BattleMech {
     public getAmmoBinWeapon( bin: IEquipmentItem ): IEquipmentItem | null {
         const weapons = this._equipmentList.filter(eq => !eq.isAmmo && !eq.isEquipment);
         if( bin.feedsWeaponTag ) {
-            const bound = weapons.find(eq => matchesTag(eq, bin.feedsWeaponTag));
+            // The launcher may be mounted with its fire control system: a bin for "lrm-20" feeds "lrm-20-artemis-iv".
+            const bound = weapons.find(eq => matchesTag(eq, bin.feedsWeaponTag))
+                ?? weapons.find(eq => eq.tag.startsWith(bin.feedsWeaponTag + "-") && getCompatibleAmmo(eq, bin));
             if( bound ) {
                 return bound;
             }

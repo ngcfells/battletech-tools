@@ -243,6 +243,26 @@ describe("SSW Battle Value (#46)", () => {
         expect(mech.getBattleValue()).toBe(2355);
     });
 
+    it("counts 5 heat for an LRM 15 + Artemis IV (TM p.206): Griffin GRF-6S", () => {
+        const mech = importFixture("griffin-grf-6s");
+        expect(mech.getInstalledEquipment().find((item) => item.tag === "lrm-15-artemis-iv")?.heat).toBe(5);
+        expect(mech.getBattleValue()).toBe(1781);
+    });
+
+    it("loads an \"@ LRM-20\" ton for an LRM 20 mounted with Artemis IV, not the LRM 15 beside it: Longbow LGB-12C", () => {
+        const mech = importFixture("longbow-lgb-12c");
+        const bins = mech.getInstalledEquipment().filter((item) => item.tag === "ammo-is-lrm-artemis-iv");
+        expect(bins.map((bin) => mech.getAmmoBinWeapon(bin)?.tag).filter((tag) => tag === "lrm-20-artemis-iv")).toHaveLength(5);
+        expect(mech.getBattleValue()).toBe(1686);
+    });
+
+    it("reads SSW's \"@ ELRM-15\" ammo for the Extended LRM 15: Salamander PPR-7T", () => {
+        const mech = importFixture("salamander-ppr-7t");
+        const bins = mech.getInstalledEquipment().filter((item) => item.tag === "ammo-is-extended-lrm-standard");
+        expect(bins.map((bin) => mech.getAmmoBinWeapon(bin)?.tag).filter((tag) => tag === "extended-lrm-15")).toHaveLength(6);
+        expect(mech.getBattleValue()).toBe(1647);
+    });
+
     it("does not count Nail/Rivet Gun ammo as explosive (TM p.317): Jabberwocky JAW-66D", () => {
         // SSW gives 353: it counts the ammo at 1 BV a ton where TM p.317 gives 0.
         expect(importFixture("jabberwocky-jaw-66d").getBattleValue()).toBe(352);
