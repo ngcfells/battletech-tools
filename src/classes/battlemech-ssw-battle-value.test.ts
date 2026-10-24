@@ -337,6 +337,12 @@ describe("SSW Battle Value (#46)", () => {
         expect(importFixture("quickdraw-qkd-5mr").getBattleValue()).toBe(1471);
     });
 
+    it("counts 'Mech Mortar/4 ammunition at 3 BV a ton (TO:AUE pp.194, 197): Antlion LK-3D", () => {
+        // Both addendum tables give 3, and Armor-Piercing (Shaped-Charge) rounds take x1 (TO:AUE p.229).
+        // SSW, MegaMek and the MUL give 859 from 3.6 a ton.
+        expect(importFixture("antlion-lk-3d").getBattleValue()).toBe(854);
+    });
+
     it("does not count Nail/Rivet Gun ammo as explosive (TM p.317): Jabberwocky JAW-66D", () => {
         // SSW gives 353: it counts the ammo at 1 BV a ton where TM p.317 gives 0.
         expect(importFixture("jabberwocky-jaw-66d").getBattleValue()).toBe(352);
