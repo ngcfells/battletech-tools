@@ -956,19 +956,15 @@ export class BattleMech {
         const engineSideSlots = (this.getLargeEngineType() ?? this._engineType).criticals?.[this.getEngineTechBase()]?.lt ?? 0;
         const isClanBase = this._tech.tag === "clan" || this._tech.tag === "mclan";
         // Does an explosive slot in this location cost Battle Value (TM p.302)?
-        //  Inner Sphere XL engine: every location.
-        //  Clan: center torso, legs and head; with an XXL engine, "as for Inner Sphere XL Engines"
-        //  (TO:AUE p.193), the side torsos too. Its arms keep their Clan CASE, as the MUL, SSW and MegaMek count it.
-        //  Inner Sphere standard or light engine: center torso, legs and head; a side torso without CASE;
-        //  an arm with CASE neither in it nor in the torso inward.
+        //  Center torso, legs and head: always.
+        //  A side torso: without CASE (a Clan 'Mech's is built in), or with an Inner Sphere XL engine, or a Clan
+        //  'Mech's XXL engine "as for Inner Sphere XL Engines" (TO:AUE p.193).
+        //  An arm: without CASE of its own, when the torso inward costs BV. CASE in the arm still saves an XL
+        //  engine 'Mech, as the MUL, SSW and MegaMek count it, though TM p.302 says "any location".
         const isPenalisedLocation = (loc: string): boolean => {
             if (hasCaseII(loc)) return false;
-            const isSideTorso = loc === "lt" || loc === "rt";
-            const isArm = loc === "la" || loc === "ra";
-            if (isClanBase) return isArm ? false : !isSideTorso || engineSideSlots >= 3;
-            if (engineSideSlots >= 3) return true;
-            if (isSideTorso) return !caseMap[loc];
-            if (isArm) return !caseMap[loc] && !caseMap[inward[loc]];
+            if (loc === "lt" || loc === "rt") return !caseMap[loc] || engineSideSlots >= 3;
+            if (loc === "la" || loc === "ra") return !caseMap[loc] && isPenalisedLocation(inward[loc]);
             return true;
         };
         // An explosive component loses 1 BV for each critical slot it fills (TM p.302). Only the first

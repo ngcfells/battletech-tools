@@ -296,6 +296,13 @@ describe("SSW Battle Value (#46)", () => {
         expect(mech.getBattleValue()).toBe(2001);
     });
 
+    it("leaves ammunition behind CASE in an arm free of the XL engine penalty (TM p.302): Conjurer (Hellhound) 8, Charger C", () => {
+        // Inner Sphere XL engine and Clan CASE: the side torso bins cost 15 a slot, the right arm's two do not.
+        // SSW and the MUL give 2197 and 2756.
+        expect(importFixture("conjurer-hellhound-8").getBattleValue()).toBe(2197);
+        expect(importFixture("charger-c").getBattleValue()).toBe(2756);
+    });
+
     it("does not count Nail/Rivet Gun ammo as explosive (TM p.317): Jabberwocky JAW-66D", () => {
         // SSW gives 353: it counts the ammo at 1 BV a ton where TM p.317 gives 0.
         expect(importFixture("jabberwocky-jaw-66d").getBattleValue()).toBe(352);
