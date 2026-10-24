@@ -196,6 +196,53 @@ describe("SSW Battle Value (#46)", () => {
         expect(importFixture("rook-x-nh-1b").getBattleValue()).toBe(1187);
     });
 
+    it("places SSW's multislot Blue Shield in each listed slot; +0.2 armor and structure modifiers, explosive in every location but the head (TO:AUE p.194): Zeus-X ZEU-9WD (Stacy)", () => {
+        const mech = importFixture("zeus-x-zeu-9wd-stacy");
+        const criticals = mech.getCriticals() as unknown as Record<string, ({ tag: string } | null)[]>;
+        expect(criticals.leftTorso[2]?.tag).toBe("blue-shield");
+        expect(criticals.rightArm[3]?.tag).toBe("blue-shield");
+        expect(criticals.centerTorso[10]?.tag).toBe("blue-shield");
+        expect(mech.getUnallocatedCriticals()).toEqual([]);
+        expect(mech.sswImportErrors).toEqual([]);
+        expect(mech.getBattleValue()).toBe(1921);
+    });
+
+    it("reports a multislot system it does not know", () => {
+        vi.spyOn(console, "error").mockImplementation(() => undefined);
+        vi.spyOn(console, "warn").mockImplementation(() => undefined);
+        const mech = new BattleMech();
+        mech.importSSWXML(readFileSync("src/utils/__fixtures__/zeus-x-zeu-9wd-stacy.ssw", "utf8").replace("Blue Shield PFD", "Mystery Field"));
+        expect(mech.sswImportErrors).toContain("Cannot import the Mystery Field");
+    });
+
+    it("takes the Null Signature System's 10 heat and the Chameleon LPS's 6 off the heat pool: Exterminator EXT-4C", () => {
+        const mech = importFixture("exterminator-ext-4c");
+        const criticals = mech.getCriticals() as unknown as Record<string, ({ tag: string } | null)[]>;
+        expect(criticals.leftTorso[9]?.tag).toBe("null-signature-system");
+        expect(criticals.leftLeg[4]?.tag).toBe("chameleon-lps");
+        expect(mech.sswImportErrors).toEqual([]);
+        expect(mech.getBattleValue()).toBe(1420);
+    });
+
+    it("counts the Void Signature System: Raptor II RPT-5X", () => {
+        const mech = importFixture("raptor-ii-rpt-5x");
+        expect(tags(mech)).toContain("void-signature-system");
+        expect(mech.getBattleValue()).toBe(1124);
+    });
+
+    it("adds 0.4 heat sink capacity per heat sink, rounded up, for a Radical Heat Sink System (IO:AE p.185): Lament LMT-4RC, LMT-3C", () => {
+        // 15 double heat sinks: 30 + 6 = 36, as the rule's own example gives.
+        expect(importFixture("lament-lmt-4rc").getBattleValue()).toBe(2474);
+        expect(importFixture("lament-lmt-3c").getBattleValue()).toBe(1874);
+    });
+
+    it("doubles the center torso armor and takes 0.95 for a Torso-Mounted Cockpit (TO:AUE p.193): Great Turtle GTR-2", () => {
+        const mech = importFixture("great-turtle-gtr-2");
+        expect(mech.getCockpitType().tag).toBe("torso-mounted");
+        expect(mech.sswImportErrors).toEqual([]);
+        expect(mech.getBattleValue()).toBe(2355);
+    });
+
     it("does not count Nail/Rivet Gun ammo as explosive (TM p.317): Jabberwocky JAW-66D", () => {
         // SSW gives 353: it counts the ammo at 1 BV a ton where TM p.317 gives 0.
         expect(importFixture("jabberwocky-jaw-66d").getBattleValue()).toBe(352);

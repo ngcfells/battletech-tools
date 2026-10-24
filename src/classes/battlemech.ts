@@ -303,6 +303,7 @@ export interface IGATOR {
 }
 
 export class BattleMech {
+    private static readonly SIGNATURE_SYSTEM_TAGS = ["null-signature-system", "void-signature-system", "chameleon-lps"];
     private static readonly MECH_LOCATION_MAP: Record<string, string> = {
         // Shared location mapper for all front, rear, and advanced chassis locations
         hd: "head",
@@ -795,7 +796,10 @@ export class BattleMech {
             ? (this._armorAllocation.centerTorso ?? 0) + (this._armorAllocation.centerTorsoRear ?? 0) : 0;
         let totalArmorFactor = 2.5 * (this.getTotalArmor() + doubledCenterTorsoArmor);
         // Armor type BV modifier (Commercial 0.5, Hardened 2, Reactive/Reflective/Ballistic-Reinforced 1.5, ...).
-        const armorBVMultiplier = BattleMech._armorBVMultiplier(this._armorType);
+        // A Blue Shield PFD adds 0.2 to the Armor Type and Internal Structure Type Modifiers (TO:AUE p.194).
+        const blueShieldBonus = this._equipmentList.some(item => matchesTag(item, "blue-shield")) ? 0.2 : 0;
+        const armorTypeMultiplier = (armor: IArmorType): number => BattleMech._armorBVMultiplier(armor) + blueShieldBonus;
+        const armorBVMultiplier = armorTypeMultiplier(this._armorType);
         const isPatchwork = this.isPatchworkArmor();
         if (isPatchwork) {
             // Patchwork: "Calculate the modified Defensive Battle Rating on a location-by-location basis, and
@@ -804,7 +808,7 @@ export class BattleMech {
             for (const location of this.getPatchworkLocations()) {
                 const locationArmor = this.getPatchworkArmorType(location.key);
                 const points = this._getPatchworkLocationPoints(location.key) * (doubledCenterTorsoArmor > 0 && location.key === "centerTorso" ? 2 : 1);
-                const multiplier = BattleMech._armorBVMultiplier(locationArmor);
+                const multiplier = armorTypeMultiplier(locationArmor);
                 modifiedArmorPoints += points * multiplier;
                 this._calcLogBV += `${location.label}: ${points} x ${multiplier} (${this._escapeLogText(locationArmor.name)}) = ${points * multiplier}<br />`;
             }
@@ -821,7 +825,7 @@ export class BattleMech {
             const longKey = pack.location ? BattleMech.MECH_LOCATION_MAP[pack.location] : undefined;
             const points = pack.additionalArmor ?? 0;
             if (!longKey || points <= 0) continue;
-            const multiplier = isPatchwork ? BattleMech._armorBVMultiplier(this.getPatchworkArmorType(longKey)) : armorBVMultiplier;
+            const multiplier = isPatchwork ? armorTypeMultiplier(this.getPatchworkArmorType(longKey)) : armorBVMultiplier;
             totalArmorFactor += 2.5 * points * multiplier;
             this._calcLogBV += `${this._escapeLogText(pack.name)} (${pack.location}): ${points} points x 2.5 x ${multiplier} = +${2.5 * points * multiplier} -> Total Armor Factor: ${totalArmorFactor}<br />`;
         }
@@ -837,7 +841,7 @@ export class BattleMech {
             repairedLocations.add(longKey);
             const allocation = this._armorAllocation as unknown as Record<string, number>;
             const locationArmor = (allocation[longKey] ?? 0) + (allocation[`${longKey}Rear`] ?? 0);
-            const locationBVMultiplier = isPatchwork ? BattleMech._armorBVMultiplier(this.getPatchworkArmorType(longKey)) : armorBVMultiplier;
+            const locationBVMultiplier = isPatchwork ? armorTypeMultiplier(this.getPatchworkArmorType(longKey)) : armorBVMultiplier;
             const bonus = 2.5 * locationArmor * locationBVMultiplier * (item.armorRepairBVMultiplier - 1);
             totalArmorFactor += bonus;
             this._calcLogBV += `${this._escapeLogText(item.name)} in ${longKey}: armor x ${item.armorRepairBVMultiplier} on ${locationArmor} points = +${bonus.toFixed(2)} -> Total Armor Factor: ${totalArmorFactor.toFixed(2)}<br />`;
@@ -852,13 +856,13 @@ export class BattleMech {
             totalInternalStructurePoints = 0;
             for (const location of this.getFrankenMechLocations()) {
                 const structure = this.getFrankenMechLocationStructure(location.key);
-                const locationPoints = 1.5 * (points[location.key] ?? 0) * (structure.bvMultiplier ?? 1);
+                const locationPoints = 1.5 * (points[location.key] ?? 0) * ((structure.bvMultiplier ?? 1) + blueShieldBonus);
                 totalInternalStructurePoints += locationPoints;
-                this._calcLogBV += `Internal Structure (${location.label}): ${points[location.key] ?? 0} points x 1.5 x ${structure.bvMultiplier ?? 1} (${this._escapeLogText(structure.name)}) = ${locationPoints.toFixed(2)}<br />`;
+                this._calcLogBV += `Internal Structure (${location.label}): ${points[location.key] ?? 0} points x 1.5 x ${(structure.bvMultiplier ?? 1) + blueShieldBonus} (${this._escapeLogText(structure.name)}) = ${locationPoints.toFixed(2)}<br />`;
             }
             this._calcLogBV += `Total Internal Structure BV: ${totalInternalStructurePoints}<br />`;
         } else {
-            const structureBVMultiplier = this._selectedInternalStructure?.bvMultiplier ?? 1;
+            const structureBVMultiplier = (this._selectedInternalStructure?.bvMultiplier ?? 1) + blueShieldBonus;
             totalInternalStructurePoints *= structureBVMultiplier;
             this._calcLogBV += `Total Internal Structure BV = ${structureBVMultiplier} x ${this._selectedInternalStructure?.name ?? "Standard"} Modifier: ${totalInternalStructurePoints}<br />`;
         }
@@ -1167,10 +1171,25 @@ export class BattleMech {
         let mechHeatEfficiency = 6; // Baseline structural buffer
         const sinkEfficiencyMultiplier = this._heatSinkType.dissipation;
         
-        // Total Heat Dissipation Capacity = 6 + Total Dissipation Points - Max Movement Heat
-        mechHeatEfficiency += (this.getHeatSinks() * sinkEfficiencyMultiplier) - this.getMaxMovementHeat();
+        // Total Heat Dissipation Capacity = 6 + Total Dissipation Points - Max Movement Heat.
         // Double Heat Sinks (Freezers) beside single heat sinks (IO:AE p.65).
-        mechHeatEfficiency += this.getEquipmentHeatDissipation();
+        let heatSinkCapacity = this.getHeatSinks() * sinkEfficiencyMultiplier + this.getEquipmentHeatDissipation();
+        // Radical Heat Sink System: IO:AE p.185 says "multiply the unit's normal heat sink capacity by 1.4", but its
+        // example gives 15 double heat sinks a capacity of 36 (30 + 15 x 0.4), as MegaMek, SSW and the MUL count it.
+        if (this._equipmentList.some(item => matchesTag(item, "radical-heat-sink-system"))) {
+            const radical = heatSinkCapacity + Math.ceil(this.getHeatSinks() * 0.4);
+            this._calcLogBV += `Radical Heat Sink System: heat sink capacity ${heatSinkCapacity} + ${this.getHeatSinks()} heat sinks x 0.4 = ${radical} (IO:AE p.185)<br />`;
+            heatSinkCapacity = radical;
+        }
+        mechHeatEfficiency += heatSinkCapacity - this.getMaxMovementHeat();
+        // Signature systems run hot whenever they are on: their heat comes off the pool like Stealth Armor's 10
+        // (TM p.303), not after the weapons (Null and Void Signature 10, Chameleon LPS 6; TO:AUE pp.112, 148, 161),
+        // as MegaMek, SSW and the MUL count it.
+        const isSignatureSystem = (item: IEquipmentItem): boolean => BattleMech.SIGNATURE_SYSTEM_TAGS.some(tag => matchesTag(item, tag));
+        for (const item of this._equipmentList.filter(isSignatureSystem)) {
+            mechHeatEfficiency -= item.heat || 0;
+            this._calcLogBV += `${this._escapeLogText(item.name)}: -${item.heat || 0} heat efficiency<br />`;
+        }
         // Partial wing: +3 heat capacity in a standard atmosphere (TO:AUE p.105).
         mechHeatEfficiency += this.getPartialWingHeatBonus();
         // LAMs add 9 instead of 6 to heat capacity (IO:AE p.186). The +3 matches AirMech mode's
@@ -1202,6 +1221,10 @@ export class BattleMech {
         for (let eqC = 0; eqC < this._equipmentList.length; eqC++) {
             const currentItem = this._equipmentList[eqC];
             if (currentItem.isAmmo || currentItem.tag.startsWith("ammo-") || this._isDefensiveBVEquipment(currentItem)) continue;
+            if (isSignatureSystem(currentItem)) {
+                currentItem.bvHeat = 0;
+                continue;
+            }
 
             // An insulated laser counts 1 less heat (TO:AUE p.194).
             let baseHeat = getMountedHeat(currentItem);
@@ -12469,6 +12492,33 @@ export class BattleMech {
             const piece = this._unallocatedCriticals.findIndex( ( record ) => record && record.uuid === item.uuid );
             if( piece < 0 || !this.moveCritical( "un", piece, location, Number( slot.index ) ) ) {
                 this._sswImportErrors.push( "Cannot place the Actuator Enhancement System in the " + location );
+            }
+        }
+        // Systems with a slot in several locations come as <multislot name> with a <location index> per slot, outside
+        // the equipment list, and were dropped (#46).
+        const multislotTags: Record<string, string> = {
+            "Blue Shield PFD": "blue-shield",
+            "Chameleon LPS": "chameleon-lps",
+            "Environmental Sealing": "environmental-sealing",
+            "Null Signature System": "null-signature-system",
+            "Tracks": "tracks",
+            "Void Signature System": "void-signature-system",
+        };
+        for( const multislot of ( [] as any[] ).concat( baseloadout?.multislot ?? [] ) ) {
+            const name = String( multislot?.["@_name"] ?? "" ).trim();
+            const tag = multislotTags[ name ];
+            const item = tag ? add( tag ) : null;
+            if( !item ) {
+                this._sswImportErrors.push( "Cannot import the " + name );
+                continue;
+            }
+            for( const slot of ( [] as any[] ).concat( multislot?.location ?? [] ) ) {
+                const location = BattleMech._sswCriticalLocation( String( slot?.["#text"] ?? slot ?? "" ) );
+                this._calcCriticals();
+                const piece = this._unallocatedCriticals.findIndex( ( record ) => record && record.tag === item.tag );
+                if( piece < 0 || !this.moveCritical( "un", piece, location, Number( slot?.["@_index"] ) ) ) {
+                    this._sswImportErrors.push( "Cannot place the " + name + " in the " + location );
+                }
             }
         }
     }
