@@ -93,10 +93,10 @@ export const mechHeatSinkTypes: IHeatSync[] = [
 		book: "TO:AUE",
 		page: 129,
 		notes: "Clan laser heat sinks: double heat sinks that do not boil water and reduce the heat of their own vent.",
+		prototype: 3040,
 		introduced: 3051,
 		extinct: null,
-		reintroduced: null,
-		clanDates: { prototype: 3040, introduced: 3051, extinct: null, reintroduced: null }
+		reintroduced: null
 	},
 	{
 		name: "Double (Prototype)",

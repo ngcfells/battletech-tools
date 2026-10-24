@@ -2571,7 +2571,9 @@ describe("Batch 7 heat sink catalog", () => {
         expect(sink("single")?.introduced).toBe(2022);
         expect([sink("double")?.prototype, sink("double")?.introduced, sink("double")?.extinct, sink("double")?.reintroduced]).toEqual([2559, 2567, 2865, 3040]);
         expect(sink("double")?.clanDates).toEqual({ prototype: 2825, introduced: 2827, extinct: null, reintroduced: null });
-        expect(sink("laser")?.clanDates).toEqual({ prototype: 3040, introduced: 3051, extinct: null, reintroduced: null });
+        // A Clan record's own dates are its Clan dates (design 2026-10-24-catalog-consolidation §2).
+        expect(sink("laser")).toMatchObject({ prototype: 3040, introduced: 3051, extinct: null, reintroduced: null });
+        expect(sink("laser")?.clanDates).toBeUndefined();
         expect([sink("compact")?.prototype, sink("compact")?.introduced]).toEqual([3058, 3079]);
     });
 

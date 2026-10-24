@@ -77,7 +77,8 @@ export const ammoApocryphal: IEquipmentItem[] = ammoCatalog
         tag: toHailstorm(item.tag),
         editions: [],
         techBase: item.techBase,
-        altTags: (item.altTags ?? []).map(toHailstorm),
+        // Only the tags the rename changes: the Long Tom's untouched old tags ("ammo-lt") stay the Long Tom's.
+        altTags: (item.altTags ?? []).filter((tag) => toHailstorm(tag) !== tag).map(toHailstorm),
         sort: item.sort.replace("long tom", "hailstorm"),
         category: item.category,
         cbills: Math.round(item.cbills * PER_TON),

@@ -59,6 +59,12 @@ describe("Hailstorm artillery (Apocryphal)", () => {
         expect(standard).toMatchObject({ rulesLevel: 5, battleValue: 52, cbills: 11200, roundsPerTon: 4, explosive: true });
     });
 
+    it("takes none of the Long Tom's tags that its rename leaves unchanged", () => {
+        const longTomTags = new Set(ammoCatalog.flatMap((item) => [item.tag, ...(item.altTags ?? [])]));
+        const shared = ammoApocryphal.flatMap((item) => [item.tag, ...(item.altTags ?? [])]).filter((tag) => longTomTags.has(tag));
+        expect(shared).toEqual([]);
+    });
+
     it("joins both tech lists", () => {
         expect(getEquipmentListByTech("is").some((item) => item.tag === "hailstorm-artillery")).toBe(true);
         expect(getEquipmentListByTech("clan").some((item) => item.tag === "ammo-clan-hailstorm-copperhead")).toBe(true);
