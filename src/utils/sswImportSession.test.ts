@@ -7,7 +7,12 @@ import { MAX_SSW_IMPORT_FILE_BYTES, MAX_SSW_IMPORT_FILES, runSSWImportSession, s
 const griffin = sswMechs.find((xml) => /name="Griffin" model="GRF-1N"/.test(xml))!;
 const withWidget = griffin.replace(/\(IS\) PPC</, "(IS) Widget Cannon<");
 let saved: ICustomContentDraft[] = [];
-const options = () => ({ existingDrafts: [] as ICustomContentDraft[], save: (drafts: ICustomContentDraft[]) => { saved = drafts; registerLocalCustomContent(drafts); return true; } });
+let evidence: Record<string, string> = {};
+const options = () => ({
+    existingDrafts: [] as ICustomContentDraft[],
+    save: (drafts: ICustomContentDraft[]) => { saved = drafts; registerLocalCustomContent(drafts); return true; },
+    saveEvidence: (files: Record<string, string>) => { evidence = files; return true; },
+});
 
 describe("SSW import session", () => {
     beforeEach(() => registerLocalCustomContent([]));
@@ -50,7 +55,7 @@ describe("SSW import session", () => {
         expect(drafts[0].slotsEstimated).toBe(true);
         expect(results.map((r) => r.status)).toEqual(["unresolved", "unresolved"]);
         expect(results[0].draftIds).toEqual([drafts[0].id]);
-        expect(drafts[0].sourceXml?.["a.ssw"]).toBe(withWidget);
+        expect(evidence[drafts[0].sourceFiles[0].sha256]).toBe(withWidget);
         expect(JSON.stringify(results[0].mech!.export(true))).toContain(drafts[0].record.tag as string);
         expect(saved).toHaveLength(1);
         // Review finding: SSW files don't give an item's tons, so the placeholder weighs 0; say so.

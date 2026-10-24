@@ -1,9 +1,10 @@
 import { BattleMech } from "../classes/battlemech";
-import { getLocalCustomContentDrafts, saveLocalCustomContentDrafts } from "../data/custom-content-local";
+import { getLocalCustomContentDrafts, saveLocalCustomContentDrafts, saveLocalCustomContentEvidence } from "../data/custom-content-local";
 import type { ICustomContentDraft, ISSWUnresolvedItem } from "../data/custom-content-types";
 import { isSSWCanonPending } from "../data/ssw/ssw-canon-pending-names";
 import { getSSWXMLBasicInfo } from "./getSSWXMLBasicInfo";
-import { buildDrafts, draftMatches, estimateSlots, IDraftSourceEntry } from "./sswDraftBuilder";
+import { buildDrafts, draftMatches, estimateItemSlots, IDraftSourceEntry } from "./sswDraftBuilder";
+import { sha256HexSync } from "./sha256";
 
 // Imports a batch of .ssw files: one result per file, the unresolved items turned into custom drafts (one per
 // name across the batch), and the affected designs imported again with the drafts registered so they carry
@@ -44,8 +45,12 @@ export function sswImportLimitError(files: { name: string; size: number }[]): st
     return null;
 }
 
+/** SHA-256 of the text as hex. crypto.subtle only exists on a secure origin (https or localhost); elsewhere, such as
+ * LAN dev over http, the hash is computed in script. */
 export async function sha256Hex(text: string): Promise<string> {
-    const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
+    const subtle = globalThis.crypto?.subtle;
+    if (!subtle) return sha256HexSync(text);
+    const digest = await subtle.digest("SHA-256", new TextEncoder().encode(text));
     return [...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, "0")).join("");
 }
 
@@ -75,10 +80,17 @@ const draftsInUse = (mech: BattleMech, drafts: ICustomContentDraft[]): ISSWUnres
 
 export async function runSSWImportSession(
     files: ISSWImportFile[],
-    options: { existingDrafts?: ICustomContentDraft[]; save?: (drafts: ICustomContentDraft[]) => boolean; newId?: () => string } = {},
-): Promise<{ results: ISSWImportResult[]; drafts: ICustomContentDraft[]; saved: boolean }> {
+    options: {
+        existingDrafts?: ICustomContentDraft[];
+        save?: (drafts: ICustomContentDraft[]) => boolean;
+        /** Stores the source text of the files that made drafts, by SHA-256 (the evidence store). */
+        saveEvidence?: (evidence: Record<string, string>, drafts: ICustomContentDraft[]) => boolean;
+        newId?: () => string;
+    } = {},
+): Promise<{ results: ISSWImportResult[]; drafts: ICustomContentDraft[]; saved: boolean; evidenceSaved: boolean }> {
     const results: ISSWImportResult[] = [];
     const entries: IDraftSourceEntry[] = [];
+    const evidence: Record<string, string> = {};
     const existingDrafts = options.existingDrafts ?? getLocalCustomContentDrafts();
 
     for (const file of files) {
@@ -97,8 +109,9 @@ export async function runSSWImportSession(
             const designName = `${mech.name} ${mech.model}`.trim();
             const unresolved = [...mech.getSSWUnresolved(), ...draftsInUse(mech, existingDrafts)];
             for (const item of unresolved) {
-                const slots = estimateSlots(item.slotIndex, mech.getCriticalOccupancy(item.location));
-                entries.push({ item, slots, design: designName, source: { fileName: file.fileName, designs: [designName], sha256: base.sha256 }, xml: file.xml });
+                const { slots, exact } = estimateItemSlots(item, (location) => mech.getCriticalOccupancy(location));
+                entries.push({ item, slots, slotsExact: exact, design: designName, source: { fileName: file.fileName, designs: [designName], sha256: base.sha256 } });
+                evidence[base.sha256] = file.xml;
             }
             results.push({
                 ...base, designName, mech, status: "clean", sswBV2: info.bv2 > 0 ? info.bv2 : null, ourBV: mech.getBattleValue(),
@@ -113,6 +126,7 @@ export async function runSSWImportSession(
 
     const drafts = buildDrafts(entries, existingDrafts, options.newId);
     const saved = (options.save ?? saveLocalCustomContentDrafts)(drafts);
+    const evidenceSaved = Object.keys(evidence).length === 0 || (options.saveEvidence ?? saveLocalCustomContentEvidence)(evidence, drafts);
 
     for (const result of results) {
         if (result.status === "failed") continue;
@@ -131,5 +145,5 @@ export async function runSSWImportSession(
             : result.canonPending.length > 0 ? "canonPending"
                 : result.warnings.length > 0 || result.unresolved.length > 0 ? "warnings" : "clean";
     }
-    return { results, drafts, saved };
+    return { results, drafts, saved, evidenceSaved };
 }

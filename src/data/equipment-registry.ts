@@ -364,16 +364,17 @@ function stripAmmoFaction(tag: string): string {
     return tag.toLowerCase().replace(/^ammo-(is|clan)-/, "ammo-");
 }
 
+// Both include the ammo drafts made in this browser, so an ammo draft can feed a weapon (draft or not).
 function getAllAmmo(): IEquipmentItem[] {
-    return equipmentCatalogDefinitions
+    return [...equipmentCatalogDefinitions
         .filter(catalog => catalog.category === "ammunition")
-        .flatMap(catalog => catalog.equipment);
+        .flatMap(catalog => catalog.equipment), ...localCustomEquipment.filter(item => item.isAmmo)];
 }
 
 function getCustomAmmo(): IEquipmentItem[] {
-    return equipmentCatalogDefinitions
+    return [...equipmentCatalogDefinitions
         .filter(catalog => catalog.category === "ammunition" && catalog.custom)
-        .flatMap(catalog => catalog.equipment);
+        .flatMap(catalog => catalog.equipment), ...localCustomEquipment.filter(item => item.isAmmo)];
 }
 
 let standardAmmoBases: { base: string; tag: string }[] | null = null;

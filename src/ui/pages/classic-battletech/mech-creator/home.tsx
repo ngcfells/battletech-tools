@@ -221,10 +221,16 @@ export default class MechCreatorHome extends React.Component<IHomeProps, IHomeSt
                         <>
                         {this.props.appGlobals.battleMechSaves.map( (mech, mechIndex) => {
                           let mechObj = new BattleMech(JSON.stringify(mech));
+                          const incomplete = mechObj.getIncompleteCustomStats();
                           return (
                             <tbody key={mechIndex}>
                             <tr>
-                              <td title={"UUD: " + mech.uuid}>{mechObj.getName()}</td>
+                              <td title={"UUD: " + mech.uuid}>
+                                {mechObj.getName()}
+                                {incomplete.length > 0 ? (
+                                  <> <span className="badge bg-warning text-dark" title={"Incomplete custom stats (" + incomplete.join(", ") + "): BV, heat and cost are not reliable until the placeholders' stats are entered."}>Incomplete custom stats</span></>
+                                ) : null}
+                              </td>
                               <td>{mech.tech}</td>
                               <td className="min-width">{mech.tonnage}</td>
                               <td className="min-width">{mech.battle_value}</td>

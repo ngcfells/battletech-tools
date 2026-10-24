@@ -1,6 +1,6 @@
 import React, { type JSX } from 'react';
+import { isIncompleteDraft } from '../../../../data/custom-content-local';
 import type { ICustomContentDraft } from '../../../../data/custom-content-types';
-import { missingFields } from '../../../../utils/sswDraftBuilder';
 import { ISSWImportResult, runSSWImportSession, sswImportLimitError } from '../../../../utils/sswImportSession';
 import { IAppGlobals } from '../../../app-router';
 import { MechCreatorSideMenu } from '../../../components/creator-side-menus';
@@ -20,7 +20,7 @@ const STATUS_LABELS: Record<ISSWImportResult["status"], { label: string; classNa
 export default class MechCreatorSSWFileImport extends React.Component<ISSWFileImportProps, ISSWFileImportState> {
     constructor(props: ISSWFileImportProps) {
         super(props);
-        this.state = { busy: false, results: [], drafts: [], selected: {}, openRow: -1, message: "", error: "", storageWarning: false };
+        this.state = { busy: false, results: [], drafts: [], selected: {}, openRow: -1, message: "", error: "", storageWarning: false, evidenceWarning: false };
         this.props.appGlobals.makeDocumentTitle("Import .ssw Files | 'Mech Creator");
     }
 
@@ -34,11 +34,11 @@ export default class MechCreatorSSWFileImport extends React.Component<ISSWFileIm
         this.setState({ busy: true, message: "", error: "" });
         try {
             const files = await Promise.all([...fileList].map(async (file) => ({ fileName: file.name, xml: await file.text() })));
-            const { results, drafts, saved } = await runSSWImportSession(files);
+            const { results, drafts, saved, evidenceSaved } = await runSSWImportSession(files);
             const selected: Record<number, boolean> = {};
             // A design missing a canon item has understated weight, BV and cost: the user ticks it knowingly.
             results.forEach((result, index) => { selected[index] = result.status !== "failed" && result.status !== "canonPending"; });
-            this.setState({ results, drafts, selected, openRow: -1, storageWarning: !saved });
+            this.setState({ results, drafts, selected, openRow: -1, storageWarning: !saved, evidenceWarning: saved && !evidenceSaved });
         } catch (error) {
             this.setState({ error: `The import stopped: ${String(error)}` });
         } finally {
@@ -54,7 +54,7 @@ export default class MechCreatorSSWFileImport extends React.Component<ISSWFileIm
         this.state.drafts.filter((draft) => result.draftIds.includes(draft.id));
 
     incompleteCustomStats = (result: ISSWImportResult): boolean =>
-        this.draftsFor(result).some((draft) => draft.status !== "complete" || missingFields(draft).length > 0);
+        this.draftsFor(result).some(isIncompleteDraft);
 
     saveSelected = (): void => {
         const saves = this.props.appGlobals.battleMechSaves ?? [];
@@ -82,6 +82,7 @@ export default class MechCreatorSSWFileImport extends React.Component<ISSWFileIm
                             </div>
                             {this.state.busy ? <div className="alert alert-info">Importing…</div> : null}
                             {this.state.storageWarning ? <div className="alert alert-warning">This browser would not save the custom content drafts (private mode or storage full). They work until you close this tab.</div> : null}
+                            {this.state.evidenceWarning ? <div className="alert alert-warning">The drafts are saved, but this browser's storage is full, so the source .ssw files were not kept with them. Import the files again before proposing the drafts.</div> : null}
                             {this.state.error ? <div className="alert alert-danger">{this.state.error}</div> : null}
                             {this.state.message ? <div className="alert alert-success">{this.state.message}</div> : null}
                             {this.state.results.length > 0 ? (
@@ -143,4 +144,5 @@ interface ISSWFileImportState {
     message: string;
     error: string;
     storageWarning: boolean;
+    evidenceWarning: boolean;
 }

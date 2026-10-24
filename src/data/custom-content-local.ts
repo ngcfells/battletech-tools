@@ -6,11 +6,16 @@ import type { IQuirk, QuirkAttach, QuirkUnitType } from "./quirk-interfaces";
 import { setLocalCustomQuirks } from "./quirk-registry";
 import { CUSTOM_HOMEBREW_RULES_LEVEL } from "./rules-level-options";
 import { resetImportedEquipmentIndex } from "../utils/importedEquipment";
+import { missingFields } from "../utils/sswDraftBuilder";
+import { setIncompleteCustomContent } from "./custom-content-incomplete";
 
 // Custom content drafts saved in this browser only, made from imported designs. They are registered with the
 // equipment (and component) registries so designs that use them load; they can later be proposed for the
 // shared custom catalogs.
 const LOCAL_CUSTOM_CONTENT_STORAGE_KEY = "localCustomContent";
+// The source .ssw text of the drafts, by SHA-256, for the evidence branch of a submission. Stored once per file,
+// apart from the drafts: a file that makes several drafts would otherwise be stored once in each.
+const LOCAL_CUSTOM_CONTENT_EVIDENCE_KEY = "localCustomContentEvidence";
 const DATE_FIELDS = new Set(["introduced", "extinct", "reintroduced", "prototype"]);
 
 const DRAFT_KINDS = new Set<string>(["equipment", "ammunition", "quirk", ...CUSTOM_COMPONENT_KINDS]);
@@ -94,15 +99,59 @@ export function getLocalCustomContentDrafts(): ICustomContentDraft[] {
 }
 
 // Returns false when storage is unavailable (private mode, quota), so callers can warn the user. The drafts are
-// registered either way, so the current session can use them.
+// registered either way, so the current session can use them. Source text a draft carries from before the
+// evidence store (sourceXml) moves there.
 export function saveLocalCustomContentDrafts(drafts: ICustomContentDraft[]): boolean {
     registerLocalCustomContent(drafts);
+    const legacy: Record<string, string> = {};
+    const stored = drafts.map((draft) => {
+        if (!draft.sourceXml) return draft;
+        for (const source of draft.sourceFiles) {
+            const xml = draft.sourceXml[source.fileName];
+            if (xml !== undefined && source.sha256) legacy[source.sha256] = xml;
+        }
+        const rest = { ...draft };
+        delete rest.sourceXml;
+        return rest;
+    });
+    if (Object.keys(legacy).length > 0) saveLocalCustomContentEvidence(legacy, stored);
     try {
-        localStorage.setItem(LOCAL_CUSTOM_CONTENT_STORAGE_KEY, JSON.stringify(drafts));
+        localStorage.setItem(LOCAL_CUSTOM_CONTENT_STORAGE_KEY, JSON.stringify(stored));
         return true;
     } catch {
         return false;
     }
+}
+
+export function getLocalCustomContentEvidence(): Record<string, string> {
+    try {
+        if (typeof localStorage === "undefined") return {};
+        const parsed: unknown = JSON.parse(localStorage.getItem(LOCAL_CUSTOM_CONTENT_EVIDENCE_KEY) ?? "{}");
+        if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return {};
+        return Object.fromEntries(Object.entries(parsed as Record<string, unknown>).filter(([, xml]) => typeof xml === "string")) as Record<string, string>;
+    } catch {
+        return {};
+    }
+}
+
+/**
+ * Adds source text by SHA-256 to the evidence store, keeping only files some draft still names. Returns false
+ * when storage refuses it (private mode, quota); the drafts themselves are unaffected.
+ */
+export function saveLocalCustomContentEvidence(evidence: Record<string, string>, drafts: ICustomContentDraft[]): boolean {
+    const used = new Set(drafts.flatMap((draft) => draft.sourceFiles.map((source) => source.sha256)));
+    const merged = Object.fromEntries(Object.entries({ ...getLocalCustomContentEvidence(), ...evidence }).filter(([sha]) => used.has(sha)));
+    try {
+        localStorage.setItem(LOCAL_CUSTOM_CONTENT_EVIDENCE_KEY, JSON.stringify(merged));
+        return true;
+    } catch {
+        return false;
+    }
+}
+
+/** A draft whose stats are not all entered: BV, heat and cost of a design using it are not reliable. */
+export function isIncompleteDraft(draft: ICustomContentDraft): boolean {
+    return draft.kind !== "quirk" && (draft.status !== "complete" || missingFields(draft).length > 0);
 }
 
 /** A copy the construction code can use: unknown (null) stats become 0; unknown dates stay null. */
@@ -128,5 +177,6 @@ export function registerLocalCustomContent(drafts: ICustomContentDraft[] = getLo
             .map((draft) => toRuntimeRecord(draft.record)));
     }
     setLocalCustomQuirks(drafts.filter((draft) => draft.kind === "quirk").map((draft) => draft.record as unknown as IQuirk));
+    setIncompleteCustomContent(drafts.filter(isIncompleteDraft).map((draft) => ({ tag: String(draft.record.tag), name: String(draft.record.name) })));
     resetImportedEquipmentIndex();
 }

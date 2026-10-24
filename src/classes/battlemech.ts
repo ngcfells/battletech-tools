@@ -42,6 +42,7 @@ import { generateUUID } from "../utils/generateUUID";
 import { ISSWBasicInfo, parseSSWXML } from "../utils/getSSWXMLBasicInfo";
 import { findImportedEquipment, ImportFaction } from "../utils/importedEquipment";
 import { getMountedHeat, mateLaserInsulators } from "../data/laser-insulator";
+import { findIncompleteCustomContent, hasIncompleteCustomContent } from "../data/custom-content-incomplete";
 import {
     ICanonicalBattleMechRecord,
     ICanonicalSourceMetadata,
@@ -12201,7 +12202,11 @@ export class BattleMech {
                     sswType: String( item.type ?? "" ).toLowerCase().trim(),
                     location,
                     slotIndex: allocationIndex,
-                    splitLocations: splits.map( ( split: any ) => ( { location: String( split["#text"] ?? "" ).toLowerCase().trim(), index: +( split["@_index"] ?? -1 ) } ) ),
+                    splitLocations: splits.map( ( split: any ) => ( {
+                        location: String( split["#text"] ?? "" ).toLowerCase().trim(),
+                        index: +( split["@_index"] ?? -1 ),
+                        number: Number.isFinite( +split["@_number"] ) ? +split["@_number"] : 0,
+                    } ) ),
                     tons: item.tons !== undefined && Number.isFinite( +item.tons ) ? +item.tons : null,
                 } );
             } else {
@@ -12759,6 +12764,20 @@ export class BattleMech {
     }
 
     /** Which slots of a location (SSW code: "hd", "ct", "lt", ...) hold something; [] for an unknown location. */
+    /**
+     * Custom drafts this design uses whose stats are not all entered yet, by name: its BV, heat and cost are not
+     * reliable until they are (unknown stats count as 0).
+     */
+    public getIncompleteCustomStats(): string[] {
+        if( !hasIncompleteCustomContent() ) return [];
+        // The installed items and components, without export(): this runs on every status-bar render.
+        return findIncompleteCustomContent( JSON.stringify( [
+            this._equipmentList.map( ( item ) => item?.tag ),
+            this.getArmorType(), this.getArmorObj(), this.getInternalStructureType(), this.getGyro(), this.getEngine(),
+            this.getJumpJetType(), this.getMyomerType(), this.getHeatSinksType(), this.getHeatSinksObj(),
+        ] ) );
+    }
+
     public getCriticalOccupancy( sswLocation: string ): boolean[] {
         const keys: Record<string, string> = {
             hd: "head", ct: "centerTorso", lt: "leftTorso", rt: "rightTorso", la: "leftArm", ra: "rightArm",

@@ -10,7 +10,9 @@ export default class MechCreatorStatusBar extends React.Component<IMechCreatorSt
         if(!this.props.appGlobals.currentBattleMech) {
             return <></>
         }
+      const incomplete = this.props.appGlobals.currentBattleMech.getIncompleteCustomStats();
       return (
+          <>
           <aside className="mech-creator-status-bar" aria-label="Design status">
             <span className={`no-wrap inline-block${this.props.appGlobals.currentBattleMech.getRemainingTonnage() < 0 ? " color-red" : ""}`}><strong>Remaining Tons</strong>: {this.props.appGlobals.currentBattleMech.getRemainingTonnage()}</span>&nbsp;|&nbsp;
             <span className="no-wrap inline-block"><strong>Unallocated Armor</strong>: {this.props.appGlobals.currentBattleMech.getUnallocatedArmor()}</span>&nbsp;|&nbsp;
@@ -26,6 +28,12 @@ export default class MechCreatorStatusBar extends React.Component<IMechCreatorSt
             )}
 
           </aside>
+          {incomplete.length > 0 ? (
+            <div className="alert alert-warning" role="status">
+              Incomplete custom stats ({incomplete.join(", ")}): BV, heat and cost are not reliable until the placeholders' stats are entered.
+            </div>
+          ) : null}
+          </>
       );
     }
 }

@@ -3,7 +3,10 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { BattleMech } from "../classes/battlemech";
 import { findImportedEquipment } from "../utils/importedEquipment";
 import type { ICustomContentDraft } from "./custom-content-types";
-import { buildCustomQuirkDraft, getLocalCustomContentDrafts, registerLocalCustomContent, saveLocalCustomContentDrafts, toRuntimeRecord } from "./custom-content-local";
+import {
+    buildCustomQuirkDraft, getLocalCustomContentDrafts, getLocalCustomContentEvidence, registerLocalCustomContent,
+    saveLocalCustomContentDrafts, saveLocalCustomContentEvidence, toRuntimeRecord,
+} from "./custom-content-local";
 import { getEquipmentListByTech } from "./equipment-registry";
 import { miscCustom } from "./misc-custom";
 import { getOfferedQuirks, getQuirk } from "./quirk-registry";
@@ -34,6 +37,22 @@ describe("local custom content", () => {
     it("round-trips drafts through localStorage", () => {
         expect(saveLocalCustomContentDrafts([draft()])).toBe(true);
         expect(getLocalCustomContentDrafts().map((d) => d.id)).toEqual(["d1"]);
+    });
+
+    // #45: the source text is kept once per file, by hash, apart from the drafts.
+    it("keeps evidence by hash only while a draft names the file", () => {
+        const a = draft({ sourceFiles: [{ fileName: "a.ssw", designs: ["A"], sha256: "aaa" }] });
+        expect(saveLocalCustomContentEvidence({ aaa: "<mech a/>", bbb: "<mech b/>" }, [a])).toBe(true);
+        expect(getLocalCustomContentEvidence()).toEqual({ aaa: "<mech a/>" });
+        expect(saveLocalCustomContentEvidence({}, [])).toBe(true);
+        expect(getLocalCustomContentEvidence()).toEqual({});
+    });
+
+    it("moves the source text of an older draft into the evidence store", () => {
+        const old = draft({ sourceFiles: [{ fileName: "a.ssw", designs: ["A"], sha256: "aaa" }], sourceXml: { "a.ssw": "<mech a/>" } });
+        expect(saveLocalCustomContentDrafts([old])).toBe(true);
+        expect(getLocalCustomContentDrafts()[0].sourceXml).toBeUndefined();
+        expect(getLocalCustomContentEvidence()).toEqual({ aaa: "<mech a/>" });
     });
 
     it("save returns false when storage throws", () => {
