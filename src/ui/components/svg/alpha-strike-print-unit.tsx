@@ -5,6 +5,7 @@ import { IASSpecialAbility } from '../../../data/alpha-strike-special-abilities'
 import { IAppGlobals } from '../../app-router';
 import { safeImageURL } from '../../../utils/safeImageURL';
 import BattleTechLogo from '../battletech-logo';
+import AlphaStrikeArcsSVG from './alpha-strike-arcs-svg';
 import { CARD_NOTICE } from './record-sheet-svg-kit';
 import './alpha-strike-card-svg.scss';
 
@@ -190,6 +191,10 @@ export default class AlphaStrikePrintUnitSVG extends React.Component<IAlphaStrik
                 <g transform={showHeat ? "translate(36, 286)" : "translate(36, 324)"}>
                     <rect x="0" y="0" width="540" height="90" fill="rgb(209,210,212)" stroke='rgb(0,0,0)' strokeWidth={3} rx="20" ry="20"></rect>
                     <text x="-45" y="25" className='vertical-text' textAnchor="middle" >DAMAGE</text>
+                    {this.props.asUnit.hasArcs() ? (
+                    <text x="270" y="55" textAnchor="middle" fontSize="24" fontFamily="sans-serif" data-testid="as-card-damage-by-arc">BY FIRING ARC: SEE CARD BACK</text>
+                    ) : (
+                    <>
 
                     <g transform={'translate(' + shortDamageX +',24)'} className="damage-column">
                         <text x="0" y="0">S (0)</text>
@@ -216,7 +221,8 @@ export default class AlphaStrikePrintUnitSVG extends React.Component<IAlphaStrik
                         <text x="0" y="56" className='range'>{this.props.measurementsInHexes ? ">22⬣" : '>42'}</text>
                     </g>
                     ) : null}
-
+                    </>
+                    )}
                 </g>
 
                 {/* Heat Scale Box */}
@@ -572,6 +578,7 @@ export default class AlphaStrikePrintUnitSVG extends React.Component<IAlphaStrik
                 <text x="-450" y="1020" transform="rotate(-90)" fontSize="15" fill="rgb(0,0,0)">{CARD_NOTICE( new Date().getFullYear() )}</text>
 
                 </svg>
+                {this.props.asUnit.hasArcs() ? <AlphaStrikeArcsSVG asUnit={this.props.asUnit} className={this.props.className} width={1050} height={750} /> : null}
             </>
         )
     }

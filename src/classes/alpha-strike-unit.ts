@@ -24,6 +24,39 @@ export interface IMoveNumber {
     type: string;
 };
 
+/** A large craft's firing arcs: DropShips and Small Craft call front and rear "Nose" and "Aft". */
+export type ASArcName = "front" | "rear" | "left" | "right";
+export const AS_ARC_NAMES: ASArcName[] = ["front", "rear", "left", "right"];
+/** An arc's attack classes (standard, capital, sub-capital, capital missile), S/M/L/E as printed ("4", "0*", ""). */
+export type ASArcAttackClass = "std" | "cap" | "scap" | "msl";
+export const AS_ARC_ATTACK_CLASSES: ASArcAttackClass[] = ["std", "cap", "scap", "msl"];
+export type IASArcDamage = Partial<Record<ASArcAttackClass, string[]>> & { spe?: string };
+export type IASArcs = Partial<Record<ASArcName, IASArcDamage>>;
+
+const ARC_VALUE = /^[0-9]{0,4}\*?$|^-$/;
+const ARC_ABILITIES = /^[A-Za-z0-9 ,/*().+-]{1,160}$/;
+
+/** The arcs in saved or MUL data, keeping only well-formed values; null when there are none. */
+export function sanitizeASArcs(raw: unknown): IASArcs | null {
+    if (!raw || typeof raw !== "object") return null;
+    const arcs: IASArcs = {};
+    for (const arcName of AS_ARC_NAMES) {
+        const arc = (raw as Record<string, unknown>)[arcName];
+        if (!arc || typeof arc !== "object") continue;
+        const kept: IASArcDamage = {};
+        for (const attackClass of AS_ARC_ATTACK_CLASSES) {
+            const values = (arc as Record<string, unknown>)[attackClass];
+            if (Array.isArray(values) && values.length === 4 && values.every((value) => typeof value === "string" && ARC_VALUE.test(value))) {
+                kept[attackClass] = [...values];
+            }
+        }
+        const spe = (arc as Record<string, unknown>).spe;
+        if (typeof spe === "string" && ARC_ABILITIES.test(spe)) kept.spe = spe;
+        if (Object.keys(kept).length > 0) arcs[arcName] = kept;
+    }
+    return Object.keys(arcs).length > 0 ? arcs : null;
+}
+
 export interface ASMULType {
     Id: number;
     Image: string | null;
@@ -60,6 +93,8 @@ export interface IASMULUnit {
     BFTMM: number;
     BFThreshold: number;
     BFType: string | null;
+    /** Large craft only: damage by firing arc, read off the MUL card back. */
+    BFArcs?: IASArcs;
     BattleValue: number;
     Class: string;
 
@@ -180,6 +215,7 @@ export interface IAlphaStrikeUnitExport {
     threshold: number;
     pilot: IPilot;
     imageURL: string;
+    arcs?: IASArcs | null;
 
     move: IMoveNumber[];
     jumpMove: number;
@@ -252,6 +288,8 @@ export class AlphaStrikeUnit {
     public structure: number = 1;
 
     public threshold: number = 0;
+    /** Large craft from the MUL: damage by firing arc. */
+    public arcs: IASArcs | null = null;
 
     public currentToHitShort: number = 0;
     public currentToHitMedium: number = 0;
@@ -364,6 +402,7 @@ export class AlphaStrikeUnit {
 
             // MUL 2.0 records have no BFThreshold; only aerospace units have an armor threshold.
             this.threshold = Number(incomingMechData.BFThreshold) || 0;
+            this.arcs = sanitizeASArcs(incomingMechData.BFArcs);
 
             if( incomingMechData.Role && incomingMechData.Role.Name ) {
                 this.role = incomingMechData.Role.Name;
@@ -505,6 +544,7 @@ export class AlphaStrikeUnit {
             this.tonnage = incomingMechData.tonnage / 1;
 
             this.threshold = incomingMechData.threshold / 1;
+            this.arcs = sanitizeASArcs(incomingMechData.arcs);
 
             this.type = incomingMechData.type;
             this.size = incomingMechData.size / 1;
@@ -1675,6 +1715,11 @@ export class AlphaStrikeUnit {
         }
         return [damage, minimal ? true : false];
     }
+    /** True for a large craft whose damage is given by firing arc. */
+    public hasArcs(): boolean {
+        return this.arcs !== null;
+    }
+
     /**
     * Returns a boolean if the unit is a ground unit. This is used for
     * calculating whether or not the unit can sprint
@@ -1945,6 +1990,7 @@ export class AlphaStrikeUnit {
             quirkEraStart:  this.quirkEraStart,
             role:  this.role,
             threshold:  this.threshold,
+            arcs:  this.arcs,
             pilot:  this._pilot,
             imageURL:  this.imageURL,
             move:  this.move,

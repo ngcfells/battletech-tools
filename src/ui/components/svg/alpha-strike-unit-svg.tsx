@@ -5,6 +5,7 @@ import { IASSpecialAbility } from '../../../data/alpha-strike-special-abilities'
 import { IAppGlobals } from '../../app-router';
 import { safeImageURL } from '../../../utils/safeImageURL';
 import BattleTechLogo from '../battletech-logo';
+import AlphaStrikeArcsSVG from './alpha-strike-arcs-svg';
 
 export default class AlphaStrikeUnitSVG extends React.Component<IAlphaStrikeUnitSVGProps, IAlphaStrikeUnitSVGState> {
     height: string = "100%";
@@ -378,6 +379,10 @@ export default class AlphaStrikeUnitSVG extends React.Component<IAlphaStrikeUnit
                 <rect x="20" y="210" width="550" height="100" fill="rgb(0,0,0)" rx="18" ry="18"></rect>
                 <rect x="25" y="215" width="540" height="90" fill="rgba( 255,255,255,.8)" rx="15" ry="15"></rect>
                 <text x="55" y="250" fontFamily="sans-serif" textAnchor="middle" fontSize="15" transform="rotate(270, 58, 250)">DAMAGE</text>
+                {this.props.asUnit.hasArcs() ? (
+                    <text x="310" y="270" fontFamily="sans-serif" textAnchor="middle" fontSize="24" data-testid="as-card-damage-by-arc">BY FIRING ARC: SEE CARD BACK</text>
+                ) : (
+                <>
                 {this.props.forPrint ? (
                     <text x={damageLabelColWidth+(damageColWidth*0)} y="245" fontFamily="sans-serif" textAnchor="middle" fontSize="20">S (0)</text>
                 ) : (
@@ -434,6 +439,8 @@ export default class AlphaStrikeUnitSVG extends React.Component<IAlphaStrikeUnit
                     )}
                 </>
                 ) : null}
+                </>
+                )}
 
                 <rect x="20" y="315" width="550" height="80" fill="rgb(0,0,0)" rx="18" ry="18"></rect>
 
@@ -905,6 +912,7 @@ export default class AlphaStrikeUnitSVG extends React.Component<IAlphaStrikeUnit
                 />
                 </g>
                 </svg>
+                {this.props.asUnit.hasArcs() ? <AlphaStrikeArcsSVG asUnit={this.props.asUnit} className={this.props.className} /> : null}
             </>
         )
     }

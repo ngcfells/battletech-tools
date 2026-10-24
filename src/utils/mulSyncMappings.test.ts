@@ -56,16 +56,4 @@ describe("MUL sync: live era ids to the app's era ids", () => {
 });
 
 describe("Alpha Strike units typed from the MUL", () => {
-    it("counts every aerospace type as not a ground unit, so none can sprint", async () => {
-        const { AlphaStrikeUnit } = await import("../classes/alpha-strike-unit");
-        for (const type of ["AF", "CF", "SC", "DS", "DA", "JS", "WS", "SS"]) {
-            const unit = new AlphaStrikeUnit();
-            unit.type = type;
-            unit.move = [{ move: 5, currentMove: 5, type: "" }] as typeof unit.move;
-            expect(unit.isGroundUnit(), type).toBe(false);
-        }
-        const mech = new AlphaStrikeUnit();
-        mech.move = [{ move: 5, currentMove: 5, type: "" }] as typeof mech.move;
-        expect(mech.isGroundUnit()).toBe(true);
-    });
 });

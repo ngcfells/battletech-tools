@@ -52,6 +52,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { bfTypeOf, legacyEraIdOf, subTypeIdOfSummaryHash } from "./mul-mappings.mjs";
+import { arcCardGlyphs, bitmapOfPng, compactArcs, readArcCard } from "./arc-card-reader.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(__dirname, "..", "..");
@@ -409,8 +410,36 @@ async function scrapeUnitDetail(page, opaqueId) {
             return clone.textContent.trim();
         });
 
-        return { stats, chips };
+        // Large craft: the card back, the only place the site gives the per-arc damage.
+        const backCardUrl = document.querySelector('img[src*="side=back"]')?.src ?? null;
+
+        return { stats, chips, backCardUrl };
     });
+}
+
+const LARGE_CRAFT_TYPES = new Set(["SC", "DS", "DA", "JS", "WS", "SS"]);
+
+/** Reads a large craft's per-arc damage off its card back; null (and a warning) if the card can't be read. */
+async function scrapeArcs(page, backCardUrl, label) {
+    const result = await page.evaluate(async (u) => {
+        const res = await fetch(u);
+        const contentType = res.headers.get("content-type") ?? "";
+        if (!res.ok || !contentType.startsWith("image/png")) return { ok: false, status: res.status, contentType };
+        const bytes = new Uint8Array(await res.arrayBuffer());
+        let binary = "";
+        for (let i = 0; i < bytes.length; i += 0x8000) binary += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
+        return { ok: true, base64: btoa(binary) };
+    }, backCardUrl);
+    if (!result.ok) {
+        console.warn(`Card back for ${label} not fetched (${result.status} ${result.contentType}).`);
+        return null;
+    }
+    const card = readArcCard(bitmapOfPng(Buffer.from(result.base64, "base64")), arcCardGlyphs);
+    if (card.unknown) {
+        console.warn(`Card back for ${label} has ${card.unknown.length} glyph(s) not in arc-card-glyphs.json; arcs left as they were.`);
+        return null;
+    }
+    return compactArcs(card.arcs);
 }
 
 function parseDetailIntoRecord(detail, roleName) {
@@ -637,7 +666,9 @@ async function main() {
                 record,
             };
 
-            if (changed || !existing?.detailScrapedAt) {
+            // Large craft scraped before the card-back reader existed still need their arcs.
+            const missingArcs = LARGE_CRAFT_TYPES.has(record.BFType) && !record.BFArcs;
+            if (changed || !existing?.detailScrapedAt || missingArcs) {
                 needsDetail.push(opaqueId);
             }
         }
@@ -665,6 +696,11 @@ async function main() {
                 // The role's name, not the { Id, Name } object: the parser compares it with each chip.
                 const detailFields = parseDetailIntoRecord(detail, entry.record.Role?.Name ?? "");
                 Object.assign(entry.record, detailFields);
+                if (detail.backCardUrl) {
+                    await page.waitForTimeout(jitter(CRAWL_DELAY_MS));
+                    const arcs = await scrapeArcs(page, detail.backCardUrl, `${entry.record.Name} ${entry.record.Variant ?? ""}`.trim());
+                    if (arcs) entry.record.BFArcs = arcs;
+                }
                 entry.detailScrapedAt = new Date().toISOString();
                 consecutiveCloudflareBlocks = 0;
                 detailScrapedThisRun += 1;
