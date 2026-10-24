@@ -550,6 +550,8 @@ export interface ICockpitType extends IEditionHistory {
     cost: number;
     /** Multiplier on the final BV (Small: TM p.304; Torso-Mounted: TO:AUE p.193). */
     bvMultiplier?: number;
+    /** Lowest rules level that mounts it, when above Standard (Torso-Mounted: Experimental, TO:AUE p.112). */
+    rulesLevel?: number;
     /** Only this technology base builds it. */
     techBase?: "is" | "clan";
     /** Mounted alongside another cockpit instead of replacing it. */

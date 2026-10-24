@@ -2267,10 +2267,10 @@ describe("SSW unresolved items", () => {
     });
 
     it("reports an unknown cockpit", () => {
-        const xml = griffin().replace(">Standard Cockpit</type>", ">Torso-Mounted Cockpit</type>");
+        const xml = griffin().replace(">Standard Cockpit</type>", ">Interface Cockpit</type>");
         const mech = new BattleMech();
         mech.importSSWXML(xml);
-        expect(mech.getSSWUnresolved()).toEqual([expect.objectContaining({ kind: "cockpit", name: "Torso-Mounted Cockpit" })]);
+        expect(mech.getSSWUnresolved()).toEqual([expect.objectContaining({ kind: "cockpit", name: "Interface Cockpit" })]);
     });
 
     it("a clean import has no unresolved items, and occupancy marks the PPC's three slots", () => {
@@ -2693,7 +2693,7 @@ describe("Batch 8 cockpit catalog", () => {
             expect([item.book, item.page], item.tag).toEqual(pages[item.tag]);
         }
         expect(mechCockpitTypes.filter(item => item.constructionStatus === "implemented").map(item => item.tag).sort())
-            .toEqual(["industrial", "industrial-advanced-fire-control", "primitive", "primitive-industrial", "primitive-industrial-advanced-fire-control", "quadvee", "small", "standard", "superheavy", "superheavy-industrial", "superheavy-tripod", "tripod"]);
+            .toEqual(["industrial", "industrial-advanced-fire-control", "primitive", "primitive-industrial", "primitive-industrial-advanced-fire-control", "quadvee", "small", "standard", "superheavy", "superheavy-industrial", "superheavy-tripod", "torso-mounted", "tripod"]);
         // Small (TM p.304) and Torso-Mounted (TO:AUE p.193) cockpits multiply the final BV by 0.95.
         expect(cockpit("small")?.bvMultiplier).toBe(0.95);
         expect(cockpit("torso-mounted")?.bvMultiplier).toBe(0.95);
@@ -5666,9 +5666,9 @@ describe("Batch 41 cockpit selection and IndustrialMech fire control (TM pp.69, 
     const add = (mech: BattleMech, tag: string) => mech.addEquipmentFromTag(tag, "is", "", false, undefined, "", false, [], undefined, undefined);
 
     it("offers the cockpits the chassis may mount", () => {
-        expect(choices(build())).toEqual(["standard", "small"]);
+        expect(choices(build())).toEqual(["standard", "small", "torso-mounted"]);
         // The Small Cockpit is a 3060 prototype, in production from 3067 (Inner Sphere).
-        expect(choices(build({ era: "late-sw-rn" }))).toEqual(["standard", "small (no)"]);
+        expect(choices(build({ era: "late-sw-rn" }))).toEqual(["standard", "small (no)", "torso-mounted (no)"]);
         expect(choices(build({ structure: "industrial" }))).toEqual(["industrial", "industrial-advanced-fire-control"]);
         expect(choices(build({ type: "tripod" }))).toEqual(["tripod"]);
         expect(choices(build({ type: "quadvee", tech: "clan" }))).toEqual(["quadvee"]);

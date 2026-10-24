@@ -481,6 +481,8 @@ export class BattleMech {
     private _no_left_arm_lower_actuator: boolean = false;
 
     private _smallCockpit: boolean = false;
+    /** Torso-Mounted Cockpit (TO:AUE p.112). */
+    private _torsoMountedCockpit: boolean = false;
     // IndustrialMechs: the Advanced Fire Control cockpit enhancement (TM p.69). An option, off by default.
     private _advancedFireControl: boolean = false;
     // Built under the Primitive 'Mech rules (IO:AE pp.116-118). With later equipment it is a RetroTech unit.
@@ -628,6 +630,7 @@ export class BattleMech {
         this.setEngineType( "standard" );
         this.setJumpJetType( "standard" );
         this._smallCockpit = false;
+        this._torsoMountedCockpit = false;
         this._criticalAllocationTable = [];
         this._calc();
     }
@@ -770,8 +773,11 @@ export class BattleMech {
         * STEP 1: CALCULATE DEFENSIVE BATTLE RATING - TechManual p. 302
         * *********************************************************************** */
         this._calcLogBV += "<strong>STEP 1: CALCULATE DEFENSIVE BATTLE RATING - TM p302</strong><br />";
-        // 1A. Total Armor Factor Valuation (TM p. 302)
-        let totalArmorFactor = 2.5 * this.getTotalArmor();
+        // 1A. Total Armor Factor Valuation (TM p. 302). A Torso-Mounted Cockpit doubles the center torso armor, front
+        // and rear, before any armor type modifier (TO:AUE p.193).
+        const doubledCenterTorsoArmor = this.getCockpitType().tag === "torso-mounted"
+            ? (this._armorAllocation.centerTorso ?? 0) + (this._armorAllocation.centerTorsoRear ?? 0) : 0;
+        let totalArmorFactor = 2.5 * (this.getTotalArmor() + doubledCenterTorsoArmor);
         // Armor type BV modifier (Commercial 0.5, Hardened 2, Reactive/Reflective/Ballistic-Reinforced 1.5, ...).
         const armorBVMultiplier = BattleMech._armorBVMultiplier(this._armorType);
         const isPatchwork = this.isPatchworkArmor();
@@ -781,7 +787,7 @@ export class BattleMech {
             let modifiedArmorPoints = 0;
             for (const location of this.getPatchworkLocations()) {
                 const locationArmor = this.getPatchworkArmorType(location.key);
-                const points = this._getPatchworkLocationPoints(location.key);
+                const points = this._getPatchworkLocationPoints(location.key) * (doubledCenterTorsoArmor > 0 && location.key === "centerTorso" ? 2 : 1);
                 const multiplier = BattleMech._armorBVMultiplier(locationArmor);
                 modifiedArmorPoints += points * multiplier;
                 this._calcLogBV += `${location.label}: ${points} x ${multiplier} (${this._escapeLogText(locationArmor.name)}) = ${points * multiplier}<br />`;
@@ -789,7 +795,7 @@ export class BattleMech {
             totalArmorFactor = 2.5 * modifiedArmorPoints;
             this._calcLogBV += `Total Armor Factor = Armor Factor x 2.5: ${totalArmorFactor} = 2.5 x ${modifiedArmorPoints}<br />`;
         } else {
-            this._calcLogBV += `Total Armor Factor = Armor Factor x 2.5: ${totalArmorFactor} = 2.5 x ${this.getTotalArmor()}<br />`;
+            this._calcLogBV += `Total Armor Factor = Armor Factor x 2.5: ${totalArmorFactor} = 2.5 x ${this.getTotalArmor() + doubledCenterTorsoArmor}${doubledCenterTorsoArmor ? " (center torso armor counted twice, TO:AUE p.193)" : ""}<br />`;
             totalArmorFactor *= armorBVMultiplier;
             this._calcLogBV += `Total Armor Factor = ${armorBVMultiplier} x Modifier for ${this._armorType.name}: ${totalArmorFactor}<br />`;
         }
@@ -1298,10 +1304,11 @@ export class BattleMech {
         let finalBattleValue = currentDBR + currentOBR;
         this._calcLogBV += `Unmodified Combined BV = Defensive Rating + Offensive Rating: ${finalBattleValue.toFixed(2)} = ${currentDBR.toFixed(2)} + ${currentOBR.toFixed(2)}<br />`;
 
-        // Apply cockpit sizing penalty rules (TM p. 304)
-        if (this.getCockpitType().tag === "small") {
-            finalBattleValue *= 0.95;
-            this._calcLogBV += `Small Cockpit Penalty Applied: Total multiplied by 0.95 -> Intermediate BV: ${finalBattleValue.toFixed(2)}<br />`;
+        // Small (TM p.304) and Torso-Mounted (TO:AUE p.193) cockpits multiply the BV by 0.95.
+        const cockpitBVMultiplier = this.getCockpitType().bvMultiplier ?? 1;
+        if (cockpitBVMultiplier !== 1) {
+            finalBattleValue *= cockpitBVMultiplier;
+            this._calcLogBV += `${this.getCockpitType().name} Penalty Applied: Total multiplied by ${cockpitBVMultiplier} -> Intermediate BV: ${finalBattleValue.toFixed(2)}<br />`;
         }
 
         // Equipment that multiplies the final BV, once per kind (RISC Heat Sink Override Kit x1.01, IO:AE p.190).
@@ -2006,7 +2013,7 @@ export class BattleMech {
         // A superheavy IndustrialMech takes the superheavy BattleMech cockpit when it has Advanced Fire Control.
         if (superheavy) return getCockpitType(this.isIndustrialMech() && !this._advancedFireControl ? "superheavy-industrial" : "superheavy");
         if (this.isIndustrialMech()) return getCockpitType(this._advancedFireControl ? "industrial-advanced-fire-control" : "industrial");
-        return getCockpitType(this._smallCockpit ? "small" : "standard");
+        return getCockpitType(this._torsoMountedCockpit ? "torso-mounted" : this._smallCockpit ? "small" : "standard");
     }
 
     /** An IndustrialMech: a 'Mech built on industrial internal structure (TM p.66). */
@@ -2022,7 +2029,7 @@ export class BattleMech {
     /**
      * Cockpits this chassis may mount. Tripods, QuadVees and superheavy 'Mechs have one mandatory
      * cockpit; an IndustrialMech chooses whether to add Advanced Fire Control (TM p.69); any other
-     * 'Mech chooses between the Standard and Small cockpits (TM p.52).
+     * 'Mech chooses between the Standard, Small (TM p.52) and Torso-Mounted (TO:AUE p.112) cockpits.
      */
     public getAvailableCockpits(rulesLevel: number = 2): ICockpitType[] {
         const current = this.getCockpitType();
@@ -2034,14 +2041,15 @@ export class BattleMech {
             : mandatory ? [current.tag]
             : superheavyIndustrial ? ["superheavy-industrial", "superheavy"]
             : this.isIndustrialMech() ? ["industrial", "industrial-advanced-fire-control"]
-            : ["standard", "small"];
+            : ["standard", "small", "torso-mounted"];
         return tags.map(tag => {
             // Copies: the availability marks are this 'Mech's, not the shared table's (issue 35).
             const cockpit = { ...getCockpitType(tag) };
             const availability = this._techDatesAvailability(cockpit, rulesLevel);
             cockpit.availableAsPrototype = availability.asPrototype;
             // The cockpit a chassis must mount is never withheld.
-            cockpit.available = mandatory || (availability.available && this.isOfferedInEdition(cockpit, rulesLevel));
+            cockpit.available = mandatory || (availability.available && this.isOfferedInEdition(cockpit, rulesLevel)
+                && rulesLevel >= (cockpit.rulesLevel ?? 0));
             return cockpit;
         });
     }
@@ -2049,7 +2057,10 @@ export class BattleMech {
     /** Choose one of the cockpits offered by getAvailableCockpits(); anything else is ignored. */
     public setCockpitType(tag: string): ICockpitType {
         if (this.getAvailableCockpits().some(cockpit => cockpit.tag === tag)) {
-            if (tag === "standard" || tag === "small") this._smallCockpit = tag === "small";
+            if (tag === "standard" || tag === "small" || tag === "torso-mounted") {
+                this._smallCockpit = tag === "small";
+                this._torsoMountedCockpit = tag === "torso-mounted";
+            }
             if (tag === "industrial" || tag === "industrial-advanced-fire-control") this._advancedFireControl = tag !== "industrial";
             if (tag === "primitive-industrial" || tag === "primitive-industrial-advanced-fire-control") this._advancedFireControl = tag !== "primitive-industrial";
             if (this.isIndustrialMech() && (tag === "superheavy" || tag === "superheavy-industrial")) this._advancedFireControl = tag === "superheavy";
@@ -2155,6 +2166,10 @@ export class BattleMech {
         conflict(nss, [computer, c3, stealth], "TO:AUE p.148");
         conflict(vss, [computer, c3, stealth, chameleon, nss], "TO:AUE p.161");
         conflict(chameleon, [stealth], "TO:AUE p.112");
+        const fullHeadEjection = find(item => item.tag === "full-head-ejection-system" || item.tag === "clan-full-head-ejection-system");
+        if (fullHeadEjection && this.getCockpitType().tag === "torso-mounted") {
+            violations.push(`${fullHeadEjection.name} cannot be combined with a Torso-Mounted Cockpit (TO:AUE p.116).`);
+        }
         if (vss && !ecm) violations.push(`${vss.name} needs an ECM suite (TO:AUE p.161).`);
         if (stealth && !ecm) violations.push("Stealth Armor needs an ECM suite (TM p.213).");
         return violations;
@@ -2934,8 +2949,8 @@ export class BattleMech {
         html += "" + this.getHeatSyncName().padEnd(col1Padding, " " ) + "" + this.getHeatSinks().toString().padEnd(col2Padding, " " ) + "" + this.getHeatSinksWeight() + "\n";
         html += "" + this.getGyroName().padEnd(col1Padding + col2Padding, " " ) + "" + this.getGyroWeight() + "\n";
 
-        if( this._smallCockpit) {
-            html += "Small Cockpit".padEnd(col1Padding + col2Padding, " " ) + "" + this.getCockpitWeight() + "\n";
+        if( this._smallCockpit || this._torsoMountedCockpit ) {
+            html += this.getCockpitType().name.padEnd(col1Padding + col2Padding, " " ) + "" + this.getCockpitWeight() + "\n";
         } else {
             html += "Cockpit".padEnd(col1Padding + col2Padding, " " ) + "" + this.getCockpitWeight() + "\n";
         }
@@ -3232,8 +3247,8 @@ export class BattleMech {
         html += "<tr><td colspan=\"1\">" + esc(this.getHeatSyncName()) + "</td><td class=\"text-center\" colspan=\"2\">" + this.getHeatSinks() + "</td><td class=\"text-center\" colspan=\"1\">" + this.getHeatSinksWeight() + "</td></tr>";
         html += "<tr><td colspan=\"3\">" + esc(this.getGyroName()) + "</td><td class=\"text-center\" colspan=\"1\">" + this.getGyroWeight() + "</td></tr>";
 
-        if( this._smallCockpit) {
-            html += "<tr><td colspan=\"3\">Small Cockpit</td><td class=\"text-center\" colspan=\"1\">" + this.getCockpitWeight() + "</td></tr>";
+        if( this._smallCockpit || this._torsoMountedCockpit ) {
+            html += "<tr><td colspan=\"3\">" + esc(this.getCockpitType().name) + "</td><td class=\"text-center\" colspan=\"1\">" + this.getCockpitWeight() + "</td></tr>";
         } else {
             html += "<tr><td colspan=\"3\">Cockpit</td><td class=\"text-center\" colspan=\"1\">" + this.getCockpitWeight() + "</td></tr>";
         }
@@ -3505,10 +3520,10 @@ export class BattleMech {
                 name: this.getCockpitType().name,
                 weight: this.getCockpitWeight()
             });
-        } else if( this._smallCockpit) {
+        } else if( this._smallCockpit || this._torsoMountedCockpit ) {
             this._cockpitWeight = this.getCockpitType().weight;
             this._weights.push({
-                name: "Small Cockpit",
+                name: this.getCockpitType().name,
                 weight: this.getCockpitWeight()
             });
         } else {
@@ -4006,7 +4021,13 @@ export class BattleMech {
         const cockpitName = typeTag === "quadvee" ? "Cockpit (Pilot)"
             : typeTag === "tripod" ? (this._tonnage > 100 ? "Superheavy Tripod Cockpit" : "Tripod Cockpit")
             : isSuperheavyCockpit ? "Superheavy Cockpit" : "Cockpit";
-        if( this._smallCockpit) {
+        const torsoMountedCockpit = this.getCockpitType().tag === "torso-mounted";
+        if( torsoMountedCockpit ) {
+            // The head keeps its 2 sensor slots; cockpit and sensors go in the center torso, and Life Support in
+            // each side torso, after the engine and gyro below (TO:AUE p.112).
+            this._addCriticalItem( "sensors", "Sensors", 1, "hd", 0);
+            this._addCriticalItem( "sensors", "Sensors", 1, "hd", 1);
+        } else if( this._smallCockpit) {
             this._addCriticalItem( "life-support", "Life Support", 1, "hd", 0);
             this._addCriticalItem( "sensors", "Sensors", 1, "hd", 1);
             this._addCriticalItem(
@@ -4164,6 +4185,12 @@ export class BattleMech {
         }
         if (engineCrits.lt) {
             this._addCriticalItem("engine", engineName, this.getCriticalSlots(engineCrits.lt), "lt");
+        }
+        if (torsoMountedCockpit) {
+            this._addCriticalItem(cockpitTag, cockpitName, 1, "ct", null);
+            this._addCriticalItem("sensors", "Sensors", 1, "ct", null);
+            this._addCriticalItem("life-support", "Life Support", 1, "lt", null);
+            this._addCriticalItem("life-support", "Life Support", 1, "rt", null);
         }
         if (typeTag === "lam") {
             this._addCriticalItem("lam-avionics", "LAM Avionics", 1, "lt");
@@ -6451,6 +6478,7 @@ export class BattleMech {
         }
         // Primitive 'Mech construction is Advanced (IO:AE p.116).
         if (this._primitive) level = Math.max(level, 3);
+        level = Math.max(level, this.getCockpitType().rulesLevel ?? 0);
         // IndustrialMechs mount the Dark Age armors "only under Experimental Mixed-Tech rules" (IO:AE p.82).
         const armorTags = this.isPatchworkArmor()
             ? this.getPatchworkLocations().map(location => this.getPatchworkArmorType(location.key).tag)
@@ -7753,6 +7781,8 @@ export class BattleMech {
             exportObject.features.push( "no_raha" );
         if( this._smallCockpit)
             exportObject.features.push( "sm_cockpit" );
+        if( this._torsoMountedCockpit)
+            exportObject.features.push( "torso_cockpit" );
         // IndustrialMech cockpit with the Advanced Fire Control enhancement (TM p.69).
         if( this._advancedFireControl)
             exportObject.features.push( "afc" );
@@ -8166,6 +8196,8 @@ export class BattleMech {
                 // Small Cockpit
                 if( importObject.features.indexOf( "sm_cockpit" ) > -1)
                     this._smallCockpit = true;
+                if( importObject.features.indexOf( "torso_cockpit" ) > -1)
+                    this._torsoMountedCockpit = true;
 
                 // IndustrialMech cockpit with Advanced Fire Control
                 if( importObject.features.indexOf( "afc" ) > -1)
@@ -10345,6 +10377,7 @@ export class BattleMech {
             this._myomerType = standard(mechMyomerTypes, this._myomerType, myomer => myomer.tag === "standard");
             this._heatSinkType = findByTag(mechHeatSinkTypes, "single") ?? this._heatSinkType;
             this._smallCockpit = false;
+            this._torsoMountedCockpit = false;
             // The structure setter sizes the internal structure for the tonnage.
             this.setInternalStructureType(this._selectedInternalStructure.tag);
         }
@@ -12336,6 +12369,8 @@ export class BattleMech {
                 const cockpitType = String( jObj.mech.cockpit.type["#text"] ?? jObj.mech.cockpit.type ).trim();
                 if( cockpitType === "Small Cockpit" ) {
                     this._smallCockpit = true;
+                } else if( cockpitType === "Torso-Mounted Cockpit" ) {
+                    this._torsoMountedCockpit = true;
                 } else if( cockpitType !== "Standard Cockpit" ) {
                     this._sswImportErrors.push( "Cannot import the cockpit type: '" + cockpitType + "'" );
                     this._addSSWUnresolvedComponent( "cockpit", cockpitType );
