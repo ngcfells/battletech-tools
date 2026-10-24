@@ -185,6 +185,13 @@ describe("equipment catalog provenance", () => {
         expect(getWeaponShotsPerTon(isItems.find(item => item.tag === "lrm-10")!, lrmAmmo)).toBe(12);
     });
 
+    it("gives a Clan weapon its published shots from its own Clan round", () => {
+        const all = [...getEquipmentListByTech("is", false), ...getEquipmentListByTech("clan", false)];
+        // Clan AMS ammunition packs 24 rounds a ton against the Inner Sphere's 12: still 24 shots, not 48 (TM p.343).
+        const clanAms = all.find(item => item.tag === "clan-ams")!;
+        expect(getWeaponShotsPerTon(clanAms, all.find(item => item.tag === "ammo-clan-ams-standard")!)).toBe(24);
+    });
+
     it("gives dual-mode MML launchers per-family shots from LRM and SRM ammunition", () => {
         const mml7 = getEquipmentListByTech("is").find(item => item.tag === "mml-7")!;
         const lrmAmmo = universalAmmoList.find(item => item.tag === "ammo-lrm-standard")!;

@@ -950,7 +950,8 @@ export default class SmallCraft {
     /** Shots in one full ton of a bin's ammunition, for the weapon it feeds; 0 with no such weapon aboard. */
     public getAmmoBinShotsPerTon(ammo: IEquipmentItem): number {
         if (!ammo.isAmmo) return 0;
-        const weapon = this._equipmentList.find((item) => !item.isAmmo && getCompatibleAmmo(item, ammo));
+        const weapons = this._equipmentList.filter((item) => !item.isAmmo && getCompatibleAmmo(item, ammo));
+        const weapon = weapons.find((item) => item.tag === ammo.feedsWeaponTag) ?? weapons[0];
         return weapon ? getWeaponShotsPerTon(weapon, ammo) : 0;
     }
 

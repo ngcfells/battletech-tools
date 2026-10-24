@@ -1,4 +1,4 @@
-import { getCompatibleAmmo, getEquipmentRecordsByTech } from "../data/equipment-registry";
+import { getCompatibleAmmo, getEquipmentRecordsByTech, getWeaponShotsPerTon } from "../data/equipment-registry";
 import { IEquipmentItem } from "../data/data-interfaces";
 import {
     DROPSHIP_MAX_TONNAGE, DROPSHIP_MIN_TONNAGE, SMALL_CRAFT_ARCS, SMALL_CRAFT_MAX_TONNAGE, SMALL_CRAFT_MIN_TONNAGE, SmallCraftArc, findTransportBayType, quartersTypes,
@@ -329,7 +329,8 @@ export const importSmallCraftBlk = (text: string): ISmallCraftBlkResult => {
         const ammo = weapon ? findBlkAmmo(line, weapon) : undefined;
         // A DropShip line gives its shots after the colon; the bins are whole tons (TM p.194).
         const shots = Number(raw.split(":")[1]);
-        const perTon = weapon?.shotsPerTon || ammo?.roundsPerTon || 0;
+        // An MML's LRM and SRM rounds pack differently: the shots a ton are the weapon's for that round.
+        const perTon = (weapon && ammo ? getWeaponShotsPerTon(weapon, ammo) : 0) || weapon?.shotsPerTon || ammo?.roundsPerTon || 0;
         const tons = dropShip && shots > 0 && perTon > 0 ? Math.ceil(shots / perTon - 1e-9) : 1;
         let added = 0;
         // A DropShip keeps each line as one bin in the bays of its arc (TM p.195); other craft carry a ton an item.

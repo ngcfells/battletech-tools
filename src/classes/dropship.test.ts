@@ -425,6 +425,23 @@ describe("DropShip ammunition feeds the launchers of its own bays", () => {
         expect(new SmallCraft(ship.exportJSON()).getBattleValueLog()).toContain("Ammunition for lrm-15-artemis-iv = 34.00");
     });
 
+    it("reads an MML line's shots at the rate of its own kind of round", () => {
+        const result = importSmallCraftBlk([
+            "<UnitType>", "Dropship", "</UnitType>", "<Name>", "Test Lighter", "</Name>", "<Model>", "TL-9", "</Model>", "<year>", "3080", "</year>",
+            "<type>", "IS Level 2", "</type>", "<motion_type>", "Spheroid", "</motion_type>", "<designtype>", "1", "</designtype>",
+            "<transporters>", "crewquarters:140.0:0:-1::-1:0", "cargobay:518.0:2:1::-1:0", "</transporters>",
+            "<SafeThrust>", "3", "</SafeThrust>", "<heatsinks>", "100", "</heatsinks>", "<sink_type>", "0", "</sink_type>", "<fuel>", "3000", "</fuel>",
+            "<armor_type>", "41", "</armor_type>", "<armor>", "200", "180", "180", "150", "</armor>",
+            "<Nose Equipment>", "(B) ISMML9", "IS Ammo MML-9 LRM Artemis-capable:52", "IS Ammo MML-9 SRM Artemis-capable:176", "ISArtemisIV", "</Nose Equipment>",
+            "<structural_integrity>", "10", "</structural_integrity>", "<tonnage>", "10000.0", "</tonnage>", "<crew>", "20", "</crew>",
+        ].join(String.fromCharCode(10)));
+        expect(result.issues).toEqual([]);
+        // An MML-9 fires 13 LRM or 11 SRM salvos a ton (TM p.207): 52 LRM shots are 4 tons, 176 SRM shots 16.
+        const bins = (result.craft as SmallCraft).getEquipmentList().filter((item) => item.isAmmo);
+        expect(bins.map((bin) => bin.weight)).toEqual([4, 16]);
+        expect(bins.map((bin) => (result.craft as SmallCraft).getAmmoBinShots(bin))).toEqual([52, 176]);
+    });
+
     it("caps each arc's rounds at the value of that arc's launchers (TM p.311)", () => {
         const result = importSmallCraftBlk([
             "<UnitType>", "Dropship", "</UnitType>", "<Name>", "Test Lighter", "</Name>", "<Model>", "TL-6", "</Model>", "<year>", "3067", "</year>",

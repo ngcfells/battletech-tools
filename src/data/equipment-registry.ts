@@ -470,18 +470,26 @@ export function getCompatibleAmmo(weapon: IEquipmentItem, ammo: IEquipmentItem):
  */
 let standardRoundsByFamily: Map<string, number> | null = null;
 
-/** Rounds per ton of a family's standard round (cached: shot counts are read on every render). */
-function getStandardRoundsPerTon(family: string): number {
+/** The faction an ammunition tag names ("ammo-clan-ams-standard" is Clan), "" for one both share. */
+const ammoFaction = (tag: string): string => /^ammo-(is|clan)-/.exec(tag.toLowerCase())?.[1] ?? "";
+
+/**
+ * Rounds per ton of the standard round of an ammunition's family, its own faction's first (cached: shot counts are
+ * read on every render). Clan AMS rounds pack 24 a ton against the Inner Sphere's 12 (TM pp.342-343).
+ */
+function getStandardRoundsPerTon(ammo: IEquipmentItem): number {
     if (!standardRoundsByFamily) {
         standardRoundsByFamily = new Map();
-        for (const ammo of getAllAmmo()) {
-            if (!ammo.isSpecialAmmo && ammo.tag.endsWith("-standard")) {
-                const key = stripAmmoFaction(ammo.tag);
-                if (!standardRoundsByFamily.has(key)) standardRoundsByFamily.set(key, getAmmoRoundsPerTon(ammo));
+        for (const round of getAllAmmo()) {
+            if (!round.isSpecialAmmo && round.tag.endsWith("-standard")) {
+                for (const key of [`${ammoFaction(round.tag)}|${stripAmmoFaction(round.tag)}`, stripAmmoFaction(round.tag)]) {
+                    if (!standardRoundsByFamily.has(key)) standardRoundsByFamily.set(key, getAmmoRoundsPerTon(round));
+                }
             }
         }
     }
-    return standardRoundsByFamily.get(family) ?? 0;
+    const family = getAmmoFamily(ammo);
+    return standardRoundsByFamily.get(`${ammoFaction(ammo.tag)}|${family}`) ?? standardRoundsByFamily.get(family) ?? 0;
 }
 
 export function getWeaponShotsPerTon(weapon: IEquipmentItem, ammo?: IEquipmentItem): number {
@@ -502,7 +510,7 @@ export function getWeaponShotsPerTon(weapon: IEquipmentItem, ammo?: IEquipmentIt
     if (published && published > 0) {
         // Munitions packing fewer rounds per ton than the family's standard round (e.g. Thunder-Augmented,
         // 60 LRM missiles per ton against 120) give proportionally fewer shots.
-        const standardRounds = ammo ? getStandardRoundsPerTon(getAmmoFamily(ammo)) : 0;
+        const standardRounds = ammo ? getStandardRoundsPerTon(ammo) : 0;
         const ammoRounds = ammo ? getAmmoRoundsPerTon(ammo) : 0;
         if (standardRounds > 0 && ammoRounds > 0 && ammoRounds !== standardRounds) {
             return Math.max(1, Math.floor(published * ammoRounds / standardRounds));
