@@ -167,7 +167,34 @@
     "BFThreshold": 2,
     "Rules": "Advanced",
     "TRO": "TR:3075",
-    "ImageUrl": "https://i.ibb.co/bB0Wj9S/aquarius-escort-3075.jpg"
+    "ImageUrl": "https://i.ibb.co/bB0Wj9S/aquarius-escort-3075.jpg",
+    "BFArcs": {
+      "rear": {
+        "std": [
+          "1",
+          "1",
+          "",
+          ""
+        ],
+        "spe": "ENE"
+      },
+      "left": {
+        "std": [
+          "0*",
+          "0*",
+          "",
+          ""
+        ]
+      },
+      "right": {
+        "std": [
+          "0*",
+          "0*",
+          "",
+          ""
+        ]
+      }
+    }
   },
   {
     "Id": 105403,
@@ -3397,7 +3424,8 @@
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
     "SubTypeId": 14,
-    "BFThreshold": 0
+    "BFThreshold": 0,
+    "BFArcs": {}
   },
   {
     "Id": 105432,
@@ -4058,7 +4086,45 @@
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
     "SubTypeId": 46,
-    "BFThreshold": 3
+    "BFThreshold": 3,
+    "BFArcs": {
+      "front": {
+        "std": [
+          "5",
+          "6",
+          "3",
+          ""
+        ],
+        "spe": "PNT1"
+      },
+      "rear": {
+        "std": [
+          "4",
+          "4",
+          "2",
+          ""
+        ],
+        "spe": "PNT1"
+      },
+      "left": {
+        "std": [
+          "2",
+          "3",
+          "2",
+          ""
+        ],
+        "spe": "PNT1"
+      },
+      "right": {
+        "std": [
+          "2",
+          "3",
+          "2",
+          ""
+        ],
+        "spe": "PNT1"
+      }
+    }
   },
   {
     "Id": 105438,
@@ -4870,7 +4936,65 @@
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
     "SubTypeId": 29,
-    "BFThreshold": 16
+    "BFThreshold": 16,
+    "BFArcs": {
+      "front": {
+        "cap": [
+          "170",
+          "170",
+          "",
+          ""
+        ],
+        "msl": [
+          "15",
+          "15",
+          "15",
+          "15"
+        ]
+      },
+      "rear": {
+        "cap": [
+          "128",
+          "128",
+          "15",
+          "15"
+        ],
+        "msl": [
+          "5",
+          "5",
+          "5",
+          "5"
+        ]
+      },
+      "left": {
+        "cap": [
+          "335",
+          "335",
+          "221",
+          "27"
+        ],
+        "msl": [
+          "4",
+          "4",
+          "4",
+          "4"
+        ]
+      },
+      "right": {
+        "cap": [
+          "335",
+          "335",
+          "221",
+          "27"
+        ],
+        "msl": [
+          "4",
+          "4",
+          "4",
+          "4"
+        ]
+      }
+    }
   },
   {
     "Id": 105443,
@@ -7107,7 +7231,69 @@
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
     "SubTypeId": 29,
-    "BFThreshold": 10
+    "BFThreshold": 10,
+    "BFArcs": {
+      "front": {
+        "std": [
+          "9",
+          "4",
+          "",
+          ""
+        ],
+        "cap": [
+          "96",
+          "96",
+          "96",
+          "89"
+        ],
+        "spe": "PNT6"
+      },
+      "rear": {
+        "std": [
+          "5",
+          "4",
+          "",
+          ""
+        ],
+        "cap": [
+          "40",
+          "40",
+          "40",
+          "40"
+        ],
+        "spe": "PNT2"
+      },
+      "left": {
+        "std": [
+          "7",
+          "4",
+          "",
+          ""
+        ],
+        "cap": [
+          "53",
+          "53",
+          "53",
+          "50"
+        ],
+        "spe": "PNT4"
+      },
+      "right": {
+        "std": [
+          "7",
+          "4",
+          "",
+          ""
+        ],
+        "cap": [
+          "53",
+          "53",
+          "53",
+          "50"
+        ],
+        "spe": "PNT4"
+      }
+    }
   },
   {
     "Id": 105461,
@@ -9280,7 +9466,42 @@
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
     "SubTypeId": 29,
-    "BFThreshold": 5
+    "BFThreshold": 5,
+    "BFArcs": {
+      "front": {
+        "cap": [
+          "57",
+          "57",
+          "57",
+          "15"
+        ]
+      },
+      "rear": {
+        "cap": [
+          "10",
+          "10",
+          "10",
+          "10"
+        ],
+        "spe": "ENE"
+      },
+      "left": {
+        "cap": [
+          "26",
+          "26",
+          "26",
+          ""
+        ]
+      },
+      "right": {
+        "cap": [
+          "26",
+          "26",
+          "26",
+          ""
+        ]
+      }
+    }
   },
   {
     "Id": 105481,

@@ -1021,7 +1021,65 @@
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
     "SubTypeId": 29,
-    "BFThreshold": 6
+    "BFThreshold": 6,
+    "BFArcs": {
+      "front": {
+        "std": [
+          "4",
+          "5",
+          "5",
+          ""
+        ],
+        "cap": [
+          "98",
+          "98",
+          "98",
+          "31"
+        ]
+      },
+      "rear": {
+        "std": [
+          "2",
+          "3",
+          "3",
+          ""
+        ],
+        "cap": [
+          "71",
+          "71",
+          "",
+          ""
+        ]
+      },
+      "left": {
+        "std": [
+          "4",
+          "4",
+          "",
+          ""
+        ],
+        "cap": [
+          "17",
+          "17",
+          "17",
+          "13"
+        ]
+      },
+      "right": {
+        "std": [
+          "4",
+          "4",
+          "",
+          ""
+        ],
+        "cap": [
+          "17",
+          "17",
+          "17",
+          "13"
+        ]
+      }
+    }
   },
   {
     "Id": 100813,
@@ -5756,7 +5814,65 @@
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
     "SubTypeId": 29,
-    "BFThreshold": 8
+    "BFThreshold": 8,
+    "BFArcs": {
+      "front": {
+        "cap": [
+          "68",
+          "68",
+          "68",
+          "36"
+        ],
+        "msl": [
+          "2",
+          "2",
+          "2",
+          "2"
+        ]
+      },
+      "rear": {
+        "cap": [
+          "18",
+          "18",
+          "18",
+          "18"
+        ],
+        "msl": [
+          "2",
+          "2",
+          "2",
+          "2"
+        ]
+      },
+      "left": {
+        "cap": [
+          "61",
+          "61",
+          "61",
+          "13"
+        ],
+        "msl": [
+          "4",
+          "4",
+          "4",
+          "4"
+        ]
+      },
+      "right": {
+        "cap": [
+          "61",
+          "61",
+          "61",
+          "13"
+        ],
+        "msl": [
+          "4",
+          "4",
+          "4",
+          "4"
+        ]
+      }
+    }
   },
   {
     "Id": 100855,
@@ -6286,7 +6402,41 @@
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
     "SubTypeId": 46,
-    "BFThreshold": 4
+    "BFThreshold": 4,
+    "BFArcs": {
+      "front": {
+        "std": [
+          "20",
+          "20",
+          "13",
+          "2"
+        ]
+      },
+      "rear": {
+        "std": [
+          "8",
+          "8",
+          "6",
+          ""
+        ]
+      },
+      "left": {
+        "std": [
+          "6",
+          "6",
+          "3",
+          "1"
+        ]
+      },
+      "right": {
+        "std": [
+          "6",
+          "6",
+          "3",
+          "1"
+        ]
+      }
+    }
   },
   {
     "Id": 100859,
@@ -8896,7 +9046,21 @@
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
     "SubTypeId": 33,
-    "BFThreshold": 2
+    "BFThreshold": 2,
+    "BFArcs": {
+      "front": {
+        "spe": "ENE"
+      },
+      "rear": {
+        "spe": "ENE"
+      },
+      "left": {
+        "spe": "ENE"
+      },
+      "right": {
+        "spe": "ENE"
+      }
+    }
   },
   {
     "Id": 100885,
@@ -10642,7 +10806,43 @@
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
     "SubTypeId": 46,
-    "BFThreshold": 1
+    "BFThreshold": 1,
+    "BFArcs": {
+      "front": {
+        "std": [
+          "4",
+          "3",
+          "1",
+          ""
+        ],
+        "spe": "PNT1"
+      },
+      "rear": {
+        "std": [
+          "3",
+          "3",
+          "",
+          ""
+        ],
+        "spe": "ENE"
+      },
+      "left": {
+        "std": [
+          "2",
+          "2",
+          "",
+          ""
+        ]
+      },
+      "right": {
+        "std": [
+          "2",
+          "2",
+          "",
+          ""
+        ]
+      }
+    }
   },
   {
     "Id": 100900,
@@ -12725,7 +12925,87 @@
     "SubTypeId": 29,
     "BFThreshold": 51,
     "TRO": "TR:3067",
-    "ImageUrl": "https://i.ibb.co/tYL79NL/avalon-3067.png"
+    "ImageUrl": "https://i.ibb.co/tYL79NL/avalon-3067.png",
+    "BFArcs": {
+      "front": {
+        "std": [
+          "15",
+          "19",
+          "10",
+          ""
+        ],
+        "cap": [
+          "176",
+          "176",
+          "105",
+          "69"
+        ],
+        "msl": [
+          "27",
+          "27",
+          "27",
+          "27"
+        ],
+        "spe": "PNT2"
+      },
+      "rear": {
+        "std": [
+          "3",
+          "5",
+          "4",
+          ""
+        ],
+        "cap": [
+          "46",
+          "46",
+          "10",
+          "10"
+        ],
+        "spe": "PNT2"
+      },
+      "left": {
+        "std": [
+          "9",
+          "13",
+          "9",
+          ""
+        ],
+        "cap": [
+          "103",
+          "103",
+          "103",
+          "67"
+        ],
+        "msl": [
+          "6",
+          "6",
+          "6",
+          "6"
+        ],
+        "spe": "PNT2, FLK1/1/1/-"
+      },
+      "right": {
+        "std": [
+          "9",
+          "13",
+          "9",
+          ""
+        ],
+        "cap": [
+          "103",
+          "103",
+          "103",
+          "67"
+        ],
+        "msl": [
+          "6",
+          "6",
+          "6",
+          "6"
+        ],
+        "spe": "PNT2, FLK1/1/1/-"
+      }
+    }
   },
   {
     "Id": 100918,
@@ -14714,7 +14994,45 @@
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
     "SubTypeId": 46,
-    "BFThreshold": 4
+    "BFThreshold": 4,
+    "BFArcs": {
+      "front": {
+        "std": [
+          "20",
+          "20",
+          "11",
+          "7"
+        ],
+        "spe": "PNT2, FLK4/4/4/-"
+      },
+      "rear": {
+        "std": [
+          "14",
+          "13",
+          "8",
+          "4"
+        ],
+        "spe": "PNT2, FLK4/4/4/-"
+      },
+      "left": {
+        "std": [
+          "8",
+          "8",
+          "5",
+          "3"
+        ],
+        "spe": "PNT1, FLK2/2/2/-"
+      },
+      "right": {
+        "std": [
+          "8",
+          "8",
+          "5",
+          "3"
+        ],
+        "spe": "PNT1, FLK2/2/2/-"
+      }
+    }
   },
   {
     "Id": 100938,
@@ -20208,7 +20526,42 @@
     "SubTypeId": 29,
     "BFThreshold": 18,
     "TRO": "FR:2765-Periphery",
-    "ImageUrl": "https://i.ibb.co/tLcn1pt/riga-3057.png"
+    "ImageUrl": "https://i.ibb.co/tLcn1pt/riga-3057.png",
+    "BFArcs": {
+      "front": {
+        "cap": [
+          "71",
+          "71",
+          "33",
+          "26"
+        ]
+      },
+      "rear": {
+        "cap": [
+          "8",
+          "8",
+          "8",
+          "5"
+        ],
+        "spe": "ENE"
+      },
+      "left": {
+        "cap": [
+          "37",
+          "37",
+          "37",
+          "5"
+        ]
+      },
+      "right": {
+        "cap": [
+          "37",
+          "37",
+          "37",
+          "5"
+        ]
+      }
+    }
   },
   {
     "Id": 100984,

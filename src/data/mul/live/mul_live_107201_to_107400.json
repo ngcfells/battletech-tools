@@ -428,7 +428,39 @@
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
     "SubTypeId": 33,
-    "BFThreshold": 1
+    "BFThreshold": 1,
+    "BFArcs": {
+      "front": {
+        "std": [
+          "1",
+          "1",
+          "1",
+          "1"
+        ],
+        "spe": "ENE"
+      },
+      "rear": {
+        "spe": "ENE"
+      },
+      "left": {
+        "std": [
+          "1",
+          "1",
+          "1",
+          "1"
+        ],
+        "spe": "ENE"
+      },
+      "right": {
+        "std": [
+          "1",
+          "1",
+          "1",
+          "1"
+        ],
+        "spe": "ENE"
+      }
+    }
   },
   {
     "Id": 107204,
@@ -1181,7 +1213,55 @@
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
     "SubTypeId": 29,
-    "BFThreshold": 37
+    "BFThreshold": 37,
+    "BFArcs": {
+      "front": {
+        "cap": [
+          "340",
+          "340",
+          "42",
+          "42"
+        ],
+        "msl": [
+          "12",
+          "12",
+          "12",
+          "12"
+        ]
+      },
+      "rear": {
+        "cap": [
+          "170",
+          "170",
+          "21",
+          "21"
+        ],
+        "msl": [
+          "6",
+          "6",
+          "6",
+          "6"
+        ]
+      },
+      "left": {
+        "cap": [
+          "336",
+          "336",
+          "336",
+          "336"
+        ],
+        "spe": "ENE"
+      },
+      "right": {
+        "cap": [
+          "336",
+          "336",
+          "336",
+          "336"
+        ],
+        "spe": "ENE"
+      }
+    }
   },
   {
     "Id": 107211,
@@ -3884,7 +3964,8 @@
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
     "SubTypeId": 26,
-    "BFThreshold": 0
+    "BFThreshold": 0,
+    "BFArcs": {}
   },
   {
     "Id": 107235,
@@ -7506,7 +7587,8 @@
     "SubTypeId": 26,
     "BFThreshold": 0,
     "TRO": "TR:3057r",
-    "ImageUrl": "https://i.ibb.co/yNRpdH2/close-assault-landing-craft-dj.png"
+    "ImageUrl": "https://i.ibb.co/yNRpdH2/close-assault-landing-craft-dj.png",
+    "BFArcs": {}
   },
   {
     "Id": 107269,
@@ -8991,7 +9073,42 @@
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
     "SubTypeId": 33,
-    "BFThreshold": 1
+    "BFThreshold": 1,
+    "BFArcs": {
+      "front": {
+        "std": [
+          "5",
+          "5",
+          "4",
+          ""
+        ],
+        "spe": "PNT1"
+      },
+      "rear": {
+        "std": [
+          "2",
+          "2",
+          "",
+          ""
+        ]
+      },
+      "left": {
+        "std": [
+          "2",
+          "2",
+          "2",
+          ""
+        ]
+      },
+      "right": {
+        "std": [
+          "2",
+          "2",
+          "2",
+          ""
+        ]
+      }
+    }
   },
   {
     "Id": 107282,
@@ -10102,7 +10219,61 @@
     "BFThreshold": 6,
     "Rules": "Standard",
     "TRO": "TR:3067",
-    "ImageUrl": "https://i.ibb.co/sFw9GKS/overlord-3057.png"
+    "ImageUrl": "https://i.ibb.co/sFw9GKS/overlord-3057.png",
+    "BFArcs": {
+      "front": {
+        "std": [
+          "16",
+          "18",
+          "15",
+          ""
+        ],
+        "msl": [
+          "6",
+          "6",
+          "6",
+          "6"
+        ],
+        "spe": "PNT1"
+      },
+      "rear": {
+        "std": [
+          "16",
+          "18",
+          "13",
+          ""
+        ],
+        "spe": "PNT1"
+      },
+      "left": {
+        "std": [
+          "8",
+          "8",
+          "5",
+          ""
+        ],
+        "msl": [
+          "2",
+          "2",
+          "2",
+          "2"
+        ]
+      },
+      "right": {
+        "std": [
+          "8",
+          "8",
+          "5",
+          ""
+        ],
+        "msl": [
+          "2",
+          "2",
+          "2",
+          "2"
+        ]
+      }
+    }
   },
   {
     "Id": 107292,
@@ -10580,7 +10751,21 @@
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
     "SubTypeId": 33,
-    "BFThreshold": 1
+    "BFThreshold": 1,
+    "BFArcs": {
+      "front": {
+        "spe": "ENE"
+      },
+      "rear": {
+        "spe": "ENE"
+      },
+      "left": {
+        "spe": "ENE"
+      },
+      "right": {
+        "spe": "ENE"
+      }
+    }
   },
   {
     "Id": 107297,
@@ -10812,7 +10997,43 @@
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
     "SubTypeId": 14,
-    "BFThreshold": 3
+    "BFThreshold": 3,
+    "BFArcs": {
+      "front": {
+        "std": [
+          "12",
+          "15",
+          "15",
+          ""
+        ]
+      },
+      "rear": {
+        "std": [
+          "4",
+          "6",
+          "3",
+          ""
+        ]
+      },
+      "left": {
+        "std": [
+          "6",
+          "5",
+          "5",
+          ""
+        ],
+        "spe": "PNT1, FLK1/1/1/-"
+      },
+      "right": {
+        "std": [
+          "6",
+          "5",
+          "5",
+          ""
+        ],
+        "spe": "PNT1, FLK1/1/1/-"
+      }
+    }
   },
   {
     "Id": 107300,
@@ -10899,7 +11120,45 @@
     "BFThreshold": 2,
     "Rules": "Advanced",
     "TRO": "TR:3145",
-    "ImageUrl": "https://i.ibb.co/x7VrZYZ/wurger-3145.png"
+    "ImageUrl": "https://i.ibb.co/x7VrZYZ/wurger-3145.png",
+    "BFArcs": {
+      "front": {
+        "std": [
+          "1",
+          "1",
+          "",
+          ""
+        ],
+        "spe": "PNT1"
+      },
+      "rear": {
+        "std": [
+          "1",
+          "1",
+          "",
+          ""
+        ],
+        "spe": "ENE"
+      },
+      "left": {
+        "std": [
+          "1",
+          "1",
+          "",
+          ""
+        ],
+        "spe": "PNT1"
+      },
+      "right": {
+        "std": [
+          "1",
+          "1",
+          "",
+          ""
+        ],
+        "spe": "PNT1"
+      }
+    }
   },
   {
     "Id": 107301,
@@ -12412,7 +12671,45 @@
     "SubTypeId": 14,
     "BFThreshold": 3,
     "TRO": "TR:3057r",
-    "ImageUrl": "https://i.ibb.co/ScvxJtV/claymore-3057.png"
+    "ImageUrl": "https://i.ibb.co/ScvxJtV/claymore-3057.png",
+    "BFArcs": {
+      "front": {
+        "std": [
+          "5",
+          "5",
+          "3",
+          ""
+        ],
+        "spe": "FLK1/1/1/-"
+      },
+      "rear": {
+        "std": [
+          "5",
+          "5",
+          "2",
+          ""
+        ],
+        "spe": "PNT1, FLK1/1/1/-"
+      },
+      "left": {
+        "std": [
+          "2",
+          "2",
+          "1",
+          ""
+        ],
+        "spe": "FLK1/1/1/-"
+      },
+      "right": {
+        "std": [
+          "2",
+          "2",
+          "1",
+          ""
+        ],
+        "spe": "FLK1/1/1/-"
+      }
+    }
   },
   {
     "Id": 107315,
@@ -15186,7 +15483,60 @@
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
     "SubTypeId": 29,
-    "BFThreshold": 3
+    "BFThreshold": 3,
+    "BFArcs": {
+      "front": {
+        "std": [
+          "4",
+          "4",
+          "4",
+          "4"
+        ],
+        "cap": [
+          "20",
+          "20",
+          "20",
+          ""
+        ],
+        "msl": [
+          "4",
+          "4",
+          "4",
+          "4"
+        ]
+      },
+      "rear": {
+        "spe": "ENE"
+      },
+      "left": {
+        "std": [
+          "2",
+          "2",
+          "2",
+          "2"
+        ],
+        "cap": [
+          "10",
+          "10",
+          "10",
+          ""
+        ]
+      },
+      "right": {
+        "std": [
+          "2",
+          "2",
+          "2",
+          "2"
+        ],
+        "cap": [
+          "10",
+          "10",
+          "10",
+          ""
+        ]
+      }
+    }
   },
   {
     "Id": 107336,
@@ -16722,7 +17072,43 @@
     "BFThreshold": 1,
     "Rules": "Advanced",
     "TRO": "XTR:Primitives II",
-    "ImageUrl": "https://i.ibb.co/yNRpdH2/close-assault-landing-craft-dj.png"
+    "ImageUrl": "https://i.ibb.co/yNRpdH2/close-assault-landing-craft-dj.png",
+    "BFArcs": {
+      "front": {
+        "std": [
+          "1",
+          "1",
+          "",
+          ""
+        ],
+        "spe": "ENE"
+      },
+      "rear": {
+        "std": [
+          "1",
+          "1",
+          "",
+          ""
+        ],
+        "spe": "ENE"
+      },
+      "left": {
+        "std": [
+          "0*",
+          "1",
+          "1",
+          ""
+        ]
+      },
+      "right": {
+        "std": [
+          "0*",
+          "1",
+          "1",
+          ""
+        ]
+      }
+    }
   },
   {
     "Id": 107352,
@@ -18567,7 +18953,43 @@
     "BFThreshold": 2,
     "Rules": "Standard",
     "TRO": "TR:3075",
-    "ImageUrl": "https://i.ibb.co/DMXYc5T/aurora-3075.png"
+    "ImageUrl": "https://i.ibb.co/DMXYc5T/aurora-3075.png",
+    "BFArcs": {
+      "front": {
+        "std": [
+          "4",
+          "4",
+          "3",
+          ""
+        ]
+      },
+      "rear": {
+        "std": [
+          "5",
+          "5",
+          "3",
+          ""
+        ]
+      },
+      "left": {
+        "std": [
+          "2",
+          "2",
+          "2",
+          ""
+        ],
+        "spe": "ENE"
+      },
+      "right": {
+        "std": [
+          "2",
+          "2",
+          "2",
+          ""
+        ],
+        "spe": "ENE"
+      }
+    }
   },
   {
     "Id": 107368,
@@ -20489,7 +20911,21 @@
     "SubTypeId": 26,
     "BFThreshold": 0,
     "TRO": "TR:3057r",
-    "ImageUrl": "https://i.ibb.co/xD1xMsr/escape-pod-3057.png"
+    "ImageUrl": "https://i.ibb.co/xD1xMsr/escape-pod-3057.png",
+    "BFArcs": {
+      "front": {
+        "spe": "ENE"
+      },
+      "rear": {
+        "spe": "ENE"
+      },
+      "left": {
+        "spe": "ENE"
+      },
+      "right": {
+        "spe": "ENE"
+      }
+    }
   },
   {
     "Id": 107381,

@@ -1858,7 +1858,21 @@
     "SubTypeId": 26,
     "BFThreshold": 1,
     "TRO": "TR:3057r",
-    "ImageUrl": "https://i.ibb.co/5TTNrsj/long-range-shuttlecraft-3057.png"
+    "ImageUrl": "https://i.ibb.co/5TTNrsj/long-range-shuttlecraft-3057.png",
+    "BFArcs": {
+      "front": {
+        "spe": "ENE"
+      },
+      "rear": {
+        "spe": "ENE"
+      },
+      "left": {
+        "spe": "ENE"
+      },
+      "right": {
+        "spe": "ENE"
+      }
+    }
   },
   {
     "Id": 103415,
@@ -2283,7 +2297,54 @@
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
     "SubTypeId": 29,
-    "BFThreshold": 14
+    "BFThreshold": 14,
+    "BFArcs": {
+      "front": {
+        "cap": [
+          "26",
+          "26",
+          "26",
+          "26"
+        ],
+        "msl": [
+          "12",
+          "12",
+          "12",
+          "12"
+        ]
+      },
+      "rear": {
+        "spe": "ENE"
+      },
+      "left": {
+        "cap": [
+          "147",
+          "147",
+          "147",
+          "34"
+        ],
+        "msl": [
+          "2",
+          "2",
+          "2",
+          "2"
+        ]
+      },
+      "right": {
+        "cap": [
+          "147",
+          "147",
+          "147",
+          "34"
+        ],
+        "msl": [
+          "2",
+          "2",
+          "2",
+          "2"
+        ]
+      }
+    }
   },
   {
     "Id": 103419,
@@ -2688,7 +2749,39 @@
     "SubTypeId": 26,
     "BFThreshold": 2,
     "TRO": "TR:3057r",
-    "ImageUrl": "https://i.ibb.co/j9YBM43/battle-taxi-3057.png"
+    "ImageUrl": "https://i.ibb.co/j9YBM43/battle-taxi-3057.png",
+    "BFArcs": {
+      "front": {
+        "std": [
+          "1",
+          "1",
+          "0*",
+          ""
+        ],
+        "spe": "ENE"
+      },
+      "rear": {
+        "spe": "ENE"
+      },
+      "left": {
+        "std": [
+          "1",
+          "1",
+          "0*",
+          ""
+        ],
+        "spe": "ENE"
+      },
+      "right": {
+        "std": [
+          "1",
+          "1",
+          "0*",
+          ""
+        ],
+        "spe": "ENE"
+      }
+    }
   },
   {
     "Id": 103422,
@@ -3360,7 +3453,41 @@
     "SubTypeId": 14,
     "BFThreshold": 2,
     "TRO": "TR:3057r",
-    "ImageUrl": "https://i.ibb.co/xz7jFxN/triumph-3057.png"
+    "ImageUrl": "https://i.ibb.co/xz7jFxN/triumph-3057.png",
+    "BFArcs": {
+      "front": {
+        "std": [
+          "4",
+          "5",
+          "3",
+          ""
+        ]
+      },
+      "rear": {
+        "std": [
+          "2",
+          "2",
+          "1",
+          ""
+        ]
+      },
+      "left": {
+        "std": [
+          "3",
+          "4",
+          "2",
+          ""
+        ]
+      },
+      "right": {
+        "std": [
+          "3",
+          "4",
+          "2",
+          ""
+        ]
+      }
+    }
   },
   {
     "Id": 103426,
@@ -4824,7 +4951,43 @@
     "BFThreshold": 2,
     "Rules": "Standard",
     "TRO": "TR:3075",
-    "ImageUrl": "https://i.ibb.co/DMXYc5T/aurora-3075.png"
+    "ImageUrl": "https://i.ibb.co/DMXYc5T/aurora-3075.png",
+    "BFArcs": {
+      "front": {
+        "std": [
+          "4",
+          "4",
+          "3",
+          ""
+        ]
+      },
+      "rear": {
+        "std": [
+          "5",
+          "5",
+          "3",
+          ""
+        ]
+      },
+      "left": {
+        "std": [
+          "2",
+          "2",
+          "2",
+          ""
+        ],
+        "spe": "ENE"
+      },
+      "right": {
+        "std": [
+          "2",
+          "2",
+          "2",
+          ""
+        ],
+        "spe": "ENE"
+      }
+    }
   },
   {
     "Id": 103438,
@@ -5357,7 +5520,43 @@
     "BFThreshold": 2,
     "Rules": "Standard",
     "TRO": "TR:3075",
-    "ImageUrl": "https://i.ibb.co/DMXYc5T/aurora-3075.png"
+    "ImageUrl": "https://i.ibb.co/DMXYc5T/aurora-3075.png",
+    "BFArcs": {
+      "front": {
+        "std": [
+          "4",
+          "4",
+          "3",
+          ""
+        ]
+      },
+      "rear": {
+        "std": [
+          "5",
+          "5",
+          "3",
+          ""
+        ]
+      },
+      "left": {
+        "std": [
+          "2",
+          "2",
+          "2",
+          ""
+        ],
+        "spe": "ENE"
+      },
+      "right": {
+        "std": [
+          "2",
+          "2",
+          "2",
+          ""
+        ],
+        "spe": "ENE"
+      }
+    }
   },
   {
     "Id": 103444,
@@ -7601,7 +7800,87 @@
     "BFThreshold": 13,
     "Rules": "Advanced",
     "TRO": "His:RW",
-    "ImageUrl": "https://i.ibb.co/JyD86V8/new-syrtis-hrw.png"
+    "ImageUrl": "https://i.ibb.co/JyD86V8/new-syrtis-hrw.png",
+    "BFArcs": {
+      "front": {
+        "std": [
+          "19",
+          "22",
+          "11",
+          ""
+        ],
+        "cap": [
+          "117",
+          "117",
+          "117",
+          "17"
+        ],
+        "msl": [
+          "8",
+          "8",
+          "8",
+          "8"
+        ],
+        "spe": "PNT3"
+      },
+      "rear": {
+        "std": [
+          "7",
+          "8",
+          "4",
+          ""
+        ],
+        "cap": [
+          "20",
+          "20",
+          "20",
+          ""
+        ],
+        "spe": "PNT1"
+      },
+      "left": {
+        "std": [
+          "13",
+          "15",
+          "8",
+          ""
+        ],
+        "cap": [
+          "110",
+          "110",
+          "110",
+          "30"
+        ],
+        "msl": [
+          "4",
+          "4",
+          "4",
+          "4"
+        ],
+        "spe": "PNT2"
+      },
+      "right": {
+        "std": [
+          "13",
+          "15",
+          "8",
+          ""
+        ],
+        "cap": [
+          "110",
+          "110",
+          "110",
+          "30"
+        ],
+        "msl": [
+          "4",
+          "4",
+          "4",
+          "4"
+        ],
+        "spe": "PNT2"
+      }
+    }
   },
   {
     "Id": 103465,
@@ -7833,7 +8112,44 @@
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
     "SubTypeId": 14,
-    "BFThreshold": 1
+    "BFThreshold": 1,
+    "BFArcs": {
+      "front": {
+        "std": [
+          "2",
+          "3",
+          "2",
+          ""
+        ]
+      },
+      "rear": {
+        "std": [
+          "1",
+          "1",
+          "",
+          ""
+        ],
+        "spe": "ENE"
+      },
+      "left": {
+        "std": [
+          "2",
+          "2",
+          "",
+          ""
+        ],
+        "spe": "ENE"
+      },
+      "right": {
+        "std": [
+          "2",
+          "2",
+          "",
+          ""
+        ],
+        "spe": "ENE"
+      }
+    }
   },
   {
     "Id": 103468,
@@ -9083,7 +9399,45 @@
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
     "SubTypeId": 33,
-    "BFThreshold": 1
+    "BFThreshold": 1,
+    "BFArcs": {
+      "front": {
+        "std": [
+          "3",
+          "3",
+          "2",
+          ""
+        ],
+        "spe": "ENE"
+      },
+      "rear": {
+        "std": [
+          "3",
+          "3",
+          "2",
+          ""
+        ],
+        "spe": "ENE"
+      },
+      "left": {
+        "std": [
+          "1",
+          "1",
+          "",
+          ""
+        ],
+        "spe": "ENE"
+      },
+      "right": {
+        "std": [
+          "1",
+          "1",
+          "",
+          ""
+        ],
+        "spe": "ENE"
+      }
+    }
   },
   {
     "Id": 103481,
@@ -15161,7 +15515,43 @@
     "BFThreshold": 1,
     "Rules": "Advanced",
     "TRO": "XTR:Primitives II",
-    "ImageUrl": "https://i.ibb.co/yNRpdH2/close-assault-landing-craft-dj.png"
+    "ImageUrl": "https://i.ibb.co/yNRpdH2/close-assault-landing-craft-dj.png",
+    "BFArcs": {
+      "front": {
+        "std": [
+          "2",
+          "2",
+          "",
+          ""
+        ],
+        "spe": "ENE"
+      },
+      "rear": {
+        "std": [
+          "1",
+          "1",
+          "",
+          ""
+        ],
+        "spe": "ENE"
+      },
+      "left": {
+        "std": [
+          "2",
+          "2",
+          "1",
+          ""
+        ]
+      },
+      "right": {
+        "std": [
+          "2",
+          "2",
+          "1",
+          ""
+        ]
+      }
+    }
   },
   {
     "Id": 103536,
@@ -15315,7 +15705,54 @@
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
     "SubTypeId": 29,
-    "BFThreshold": 51
+    "BFThreshold": 51,
+    "BFArcs": {
+      "front": {
+        "cap": [
+          "152",
+          "152",
+          "91",
+          "91"
+        ],
+        "msl": [
+          "13",
+          "13",
+          "13",
+          "13"
+        ]
+      },
+      "rear": {
+        "spe": "ENE"
+      },
+      "left": {
+        "cap": [
+          "128",
+          "128",
+          "128",
+          "128"
+        ],
+        "msl": [
+          "10",
+          "10",
+          "10",
+          "10"
+        ]
+      },
+      "right": {
+        "cap": [
+          "128",
+          "128",
+          "128",
+          "128"
+        ],
+        "msl": [
+          "10",
+          "10",
+          "10",
+          "10"
+        ]
+      }
+    }
   },
   {
     "Id": 103538,
@@ -15685,7 +16122,87 @@
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
     "SubTypeId": 46,
-    "BFThreshold": 9
+    "BFThreshold": 9,
+    "BFArcs": {
+      "front": {
+        "std": [
+          "17",
+          "18",
+          "14",
+          ""
+        ],
+        "scap": [
+          "47",
+          "47",
+          "",
+          ""
+        ],
+        "msl": [
+          "11",
+          "11",
+          "11",
+          "11"
+        ],
+        "spe": "PNT2"
+      },
+      "rear": {
+        "std": [
+          "12",
+          "9",
+          "3",
+          ""
+        ],
+        "msl": [
+          "5",
+          "5",
+          "5",
+          ""
+        ],
+        "spe": "PNT2"
+      },
+      "left": {
+        "std": [
+          "7",
+          "7",
+          "5",
+          ""
+        ],
+        "scap": [
+          "7",
+          "7",
+          "",
+          ""
+        ],
+        "msl": [
+          "3",
+          "3",
+          "3",
+          "3"
+        ],
+        "spe": "PNT1"
+      },
+      "right": {
+        "std": [
+          "7",
+          "7",
+          "5",
+          ""
+        ],
+        "scap": [
+          "7",
+          "7",
+          "",
+          ""
+        ],
+        "msl": [
+          "3",
+          "3",
+          "3",
+          "3"
+        ],
+        "spe": "PNT1"
+      }
+    }
   },
   {
     "Id": 103542,
@@ -18070,7 +18587,8 @@
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
     "SubTypeId": 33,
-    "BFThreshold": 0
+    "BFThreshold": 0,
+    "BFArcs": {}
   },
   {
     "Id": 103564,
@@ -21740,7 +22258,87 @@
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
     "SubTypeId": 46,
-    "BFThreshold": 9
+    "BFThreshold": 9,
+    "BFArcs": {
+      "front": {
+        "std": [
+          "17",
+          "18",
+          "14",
+          ""
+        ],
+        "scap": [
+          "48",
+          "48",
+          "",
+          ""
+        ],
+        "msl": [
+          "5",
+          "5",
+          "5",
+          "5"
+        ],
+        "spe": "PNT2"
+      },
+      "rear": {
+        "std": [
+          "13",
+          "9",
+          "4",
+          ""
+        ],
+        "msl": [
+          "5",
+          "5",
+          "5",
+          ""
+        ],
+        "spe": "PNT2"
+      },
+      "left": {
+        "std": [
+          "7",
+          "7",
+          "5",
+          ""
+        ],
+        "scap": [
+          "7",
+          "7",
+          "",
+          ""
+        ],
+        "msl": [
+          "3",
+          "3",
+          "3",
+          "3"
+        ],
+        "spe": "PNT1"
+      },
+      "right": {
+        "std": [
+          "7",
+          "7",
+          "5",
+          ""
+        ],
+        "scap": [
+          "7",
+          "7",
+          "",
+          ""
+        ],
+        "msl": [
+          "3",
+          "3",
+          "3",
+          "3"
+        ],
+        "spe": "PNT1"
+      }
+    }
   },
   {
     "Id": 103595,
@@ -22335,7 +22933,21 @@
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
     "SubTypeId": 33,
-    "BFThreshold": 1
+    "BFThreshold": 1,
+    "BFArcs": {
+      "front": {
+        "spe": "ENE"
+      },
+      "rear": {
+        "spe": "ENE"
+      },
+      "left": {
+        "spe": "ENE"
+      },
+      "right": {
+        "spe": "ENE"
+      }
+    }
   },
   {
     "Id": 103599,

@@ -6912,7 +6912,41 @@
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
     "SubTypeId": 14,
-    "BFThreshold": 3
+    "BFThreshold": 3,
+    "BFArcs": {
+      "front": {
+        "std": [
+          "25",
+          "25",
+          "17",
+          ""
+        ]
+      },
+      "rear": {
+        "std": [
+          "6",
+          "6",
+          "2",
+          ""
+        ]
+      },
+      "left": {
+        "std": [
+          "16",
+          "16",
+          "7",
+          ""
+        ]
+      },
+      "right": {
+        "std": [
+          "16",
+          "16",
+          "7",
+          ""
+        ]
+      }
+    }
   },
   {
     "Id": 103069,
@@ -11133,7 +11167,59 @@
     "SubTypeId": 29,
     "BFThreshold": 27,
     "TRO": "TR:3057r",
-    "ImageUrl": "https://i.ibb.co/9YtmHr8/black-lion-2750.png"
+    "ImageUrl": "https://i.ibb.co/9YtmHr8/black-lion-2750.png",
+    "BFArcs": {
+      "front": {
+        "cap": [
+          "340",
+          "340",
+          "340",
+          ""
+        ],
+        "msl": [
+          "27",
+          "27",
+          "27",
+          "27"
+        ]
+      },
+      "rear": {
+        "cap": [
+          "170",
+          "170",
+          "170",
+          ""
+        ]
+      },
+      "left": {
+        "cap": [
+          "302",
+          "302",
+          "302",
+          ""
+        ],
+        "msl": [
+          "4",
+          "4",
+          "4",
+          "4"
+        ]
+      },
+      "right": {
+        "cap": [
+          "302",
+          "302",
+          "302",
+          ""
+        ],
+        "msl": [
+          "4",
+          "4",
+          "4",
+          "4"
+        ]
+      }
+    }
   },
   {
     "Id": 103108,
@@ -13439,7 +13525,45 @@
     "SubTypeId": 31,
     "BFThreshold": 4,
     "TRO": "TR:3057r",
-    "ImageUrl": "https://i.ibb.co/PwNPfKG/bastion-3057.png"
+    "ImageUrl": "https://i.ibb.co/PwNPfKG/bastion-3057.png",
+    "BFArcs": {
+      "front": {
+        "std": [
+          "31",
+          "29",
+          "13",
+          ""
+        ],
+        "spe": "PNT8"
+      },
+      "rear": {
+        "std": [
+          "31",
+          "29",
+          "13",
+          ""
+        ],
+        "spe": "PNT8"
+      },
+      "left": {
+        "std": [
+          "16",
+          "15",
+          "7",
+          ""
+        ],
+        "spe": "PNT4"
+      },
+      "right": {
+        "std": [
+          "16",
+          "15",
+          "7",
+          ""
+        ],
+        "spe": "PNT4"
+      }
+    }
   },
   {
     "Id": 103126,
@@ -13593,7 +13717,8 @@
     "SubTypeId": 14,
     "BFThreshold": 0,
     "TRO": "HB:HM",
-    "ImageUrl": "https://i.ibb.co/5TGJ8px/mul-blank.png"
+    "ImageUrl": "https://i.ibb.co/5TGJ8px/mul-blank.png",
+    "BFArcs": {}
   },
   {
     "Id": 103128,
@@ -16149,7 +16274,41 @@
     "BFThreshold": 3,
     "Rules": "Advanced",
     "TRO": "TR:3075",
-    "ImageUrl": "https://i.ibb.co/3NRcZ76/colossus-3075.png"
+    "ImageUrl": "https://i.ibb.co/3NRcZ76/colossus-3075.png",
+    "BFArcs": {
+      "front": {
+        "std": [
+          "11",
+          "13",
+          "9",
+          ""
+        ]
+      },
+      "rear": {
+        "std": [
+          "8",
+          "9",
+          "5",
+          ""
+        ]
+      },
+      "left": {
+        "std": [
+          "5",
+          "6",
+          "4",
+          ""
+        ]
+      },
+      "right": {
+        "std": [
+          "5",
+          "6",
+          "4",
+          ""
+        ]
+      }
+    }
   },
   {
     "Id": 103147,
@@ -16590,7 +16749,45 @@
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
     "SubTypeId": 46,
-    "BFThreshold": 2
+    "BFThreshold": 2,
+    "BFArcs": {
+      "front": {
+        "std": [
+          "5",
+          "5",
+          "",
+          ""
+        ],
+        "spe": "ENE"
+      },
+      "rear": {
+        "std": [
+          "4",
+          "4",
+          "",
+          ""
+        ],
+        "spe": "ENE"
+      },
+      "left": {
+        "std": [
+          "3",
+          "3",
+          "",
+          ""
+        ],
+        "spe": "ENE"
+      },
+      "right": {
+        "std": [
+          "3",
+          "3",
+          "",
+          ""
+        ],
+        "spe": "ENE"
+      }
+    }
   },
   {
     "Id": 103150,
@@ -18004,7 +18201,69 @@
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
     "SubTypeId": 46,
-    "BFThreshold": 6
+    "BFThreshold": 6,
+    "BFArcs": {
+      "front": {
+        "std": [
+          "30",
+          "26",
+          "22",
+          "10"
+        ],
+        "msl": [
+          "6",
+          "6",
+          "6",
+          ""
+        ],
+        "spe": "PNT3, FLK5/5/5/-"
+      },
+      "rear": {
+        "std": [
+          "27",
+          "23",
+          "19",
+          "7"
+        ],
+        "msl": [
+          "6",
+          "6",
+          "6",
+          ""
+        ],
+        "spe": "PNT3, FLK5/5/5/-"
+      },
+      "left": {
+        "std": [
+          "15",
+          "13",
+          "11",
+          "5"
+        ],
+        "msl": [
+          "6",
+          "6",
+          "6",
+          ""
+        ],
+        "spe": "PNT2, FLK3/2/2/-"
+      },
+      "right": {
+        "std": [
+          "15",
+          "13",
+          "11",
+          "5"
+        ],
+        "msl": [
+          "6",
+          "6",
+          "6",
+          ""
+        ],
+        "spe": "PNT2, FLK3/2/2/-"
+      }
+    }
   },
   {
     "Id": 103163,

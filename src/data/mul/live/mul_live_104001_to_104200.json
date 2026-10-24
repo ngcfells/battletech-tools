@@ -918,7 +918,8 @@
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
     "SubTypeId": 31,
-    "BFThreshold": 0
+    "BFThreshold": 0,
+    "BFArcs": {}
   },
   {
     "Id": 104009,
@@ -5453,7 +5454,63 @@
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
     "SubTypeId": 29,
-    "BFThreshold": 14
+    "BFThreshold": 14,
+    "BFArcs": {
+      "front": {
+        "std": [
+          "14",
+          "15",
+          "9",
+          ""
+        ],
+        "cap": [
+          "88",
+          "88",
+          "88",
+          ""
+        ],
+        "spe": "PNT5"
+      },
+      "rear": {
+        "std": [
+          "5",
+          "6",
+          "4",
+          ""
+        ],
+        "spe": "PNT2"
+      },
+      "left": {
+        "std": [
+          "10",
+          "11",
+          "7",
+          ""
+        ],
+        "cap": [
+          "93",
+          "93",
+          "59",
+          ""
+        ],
+        "spe": "PNT3"
+      },
+      "right": {
+        "std": [
+          "10",
+          "11",
+          "7",
+          ""
+        ],
+        "cap": [
+          "93",
+          "93",
+          "59",
+          ""
+        ],
+        "spe": "PNT3"
+      }
+    }
   },
   {
     "Id": 104050,
@@ -5621,7 +5678,65 @@
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
     "SubTypeId": 29,
-    "BFThreshold": 18
+    "BFThreshold": 18,
+    "BFArcs": {
+      "front": {
+        "std": [
+          "10",
+          "10",
+          "5",
+          ""
+        ],
+        "cap": [
+          "87",
+          "87",
+          "87",
+          "7"
+        ]
+      },
+      "rear": {
+        "std": [
+          "4",
+          "4",
+          "2",
+          ""
+        ],
+        "cap": [
+          "20",
+          "20",
+          "20",
+          ""
+        ]
+      },
+      "left": {
+        "std": [
+          "7",
+          "8",
+          "4",
+          ""
+        ],
+        "cap": [
+          "23",
+          "23",
+          "23",
+          "20"
+        ]
+      },
+      "right": {
+        "std": [
+          "7",
+          "8",
+          "4",
+          ""
+        ],
+        "cap": [
+          "23",
+          "23",
+          "23",
+          "20"
+        ]
+      }
+    }
   },
   {
     "Id": 104052,
@@ -7017,7 +7132,69 @@
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
     "SubTypeId": 29,
-    "BFThreshold": 25
+    "BFThreshold": 25,
+    "BFArcs": {
+      "front": {
+        "std": [
+          "8",
+          "8",
+          "6",
+          "2"
+        ],
+        "cap": [
+          "37",
+          "37",
+          "37",
+          "20"
+        ],
+        "spe": "PNT1"
+      },
+      "rear": {
+        "std": [
+          "4",
+          "4",
+          "3",
+          "2"
+        ],
+        "cap": [
+          "8",
+          "8",
+          "8",
+          "8"
+        ],
+        "spe": "PNT1"
+      },
+      "left": {
+        "std": [
+          "5",
+          "5",
+          "3",
+          "2"
+        ],
+        "cap": [
+          "61",
+          "61",
+          "61",
+          "35"
+        ],
+        "spe": "PNT1, FLK1/1/-/-"
+      },
+      "right": {
+        "std": [
+          "5",
+          "5",
+          "3",
+          "2"
+        ],
+        "cap": [
+          "61",
+          "61",
+          "61",
+          "35"
+        ],
+        "spe": "PNT1, FLK1/1/-/-"
+      }
+    }
   },
   {
     "Id": 104062,
@@ -8416,7 +8593,21 @@
     "SubTypeId": 26,
     "BFThreshold": 0,
     "TRO": "TR:3057r",
-    "ImageUrl": "https://i.ibb.co/gSch9CR/life-boat-3057.png"
+    "ImageUrl": "https://i.ibb.co/gSch9CR/life-boat-3057.png",
+    "BFArcs": {
+      "front": {
+        "spe": "ENE"
+      },
+      "rear": {
+        "spe": "ENE"
+      },
+      "left": {
+        "spe": "ENE"
+      },
+      "right": {
+        "spe": "ENE"
+      }
+    }
   },
   {
     "Id": 104073,
@@ -9673,7 +9864,45 @@
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
     "SubTypeId": 46,
-    "BFThreshold": 3
+    "BFThreshold": 3,
+    "BFArcs": {
+      "front": {
+        "std": [
+          "7",
+          "7",
+          "5",
+          "2"
+        ],
+        "spe": "PNT1"
+      },
+      "rear": {
+        "std": [
+          "5",
+          "5",
+          "3",
+          "1"
+        ],
+        "spe": "PNT1"
+      },
+      "left": {
+        "std": [
+          "3",
+          "3",
+          "2",
+          "0*"
+        ],
+        "spe": "PNT1"
+      },
+      "right": {
+        "std": [
+          "3",
+          "3",
+          "2",
+          "0*"
+        ],
+        "spe": "PNT1"
+      }
+    }
   },
   {
     "Id": 104081,
@@ -9937,7 +10166,59 @@
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
     "SubTypeId": 29,
-    "BFThreshold": 27
+    "BFThreshold": 27,
+    "BFArcs": {
+      "front": {
+        "cap": [
+          "340",
+          "340",
+          "340",
+          ""
+        ],
+        "msl": [
+          "27",
+          "27",
+          "27",
+          "27"
+        ]
+      },
+      "rear": {
+        "cap": [
+          "170",
+          "170",
+          "170",
+          ""
+        ]
+      },
+      "left": {
+        "cap": [
+          "302",
+          "302",
+          "302",
+          ""
+        ],
+        "msl": [
+          "4",
+          "4",
+          "4",
+          "4"
+        ]
+      },
+      "right": {
+        "cap": [
+          "302",
+          "302",
+          "302",
+          ""
+        ],
+        "msl": [
+          "4",
+          "4",
+          "4",
+          "4"
+        ]
+      }
+    }
   },
   {
     "Id": 104083,
@@ -10832,7 +11113,33 @@
     "BFThreshold": 2,
     "Rules": "Standard",
     "TRO": "TR:3150",
-    "ImageUrl": "https://i.ibb.co/1273HmM/nl-45-gunboat-3150.png"
+    "ImageUrl": "https://i.ibb.co/1273HmM/nl-45-gunboat-3150.png",
+    "BFArcs": {
+      "front": {
+        "std": [
+          "5",
+          "5",
+          "5",
+          ""
+        ],
+        "spe": "PNT1"
+      },
+      "rear": {
+        "std": [
+          "2",
+          "2",
+          "2",
+          "2"
+        ],
+        "spe": "ENE"
+      },
+      "left": {
+        "spe": "PNT1"
+      },
+      "right": {
+        "spe": "PNT1"
+      }
+    }
   },
   {
     "Id": 104091,
@@ -16591,7 +16898,41 @@
     "SubTypeId": 46,
     "BFThreshold": 1,
     "TRO": "TR:3026r",
-    "ImageUrl": "https://i.ibb.co/KWbcPr6/cargoking-3026r.png"
+    "ImageUrl": "https://i.ibb.co/KWbcPr6/cargoking-3026r.png",
+    "BFArcs": {
+      "front": {
+        "std": [
+          "5",
+          "6",
+          "5",
+          ""
+        ]
+      },
+      "rear": {
+        "std": [
+          "5",
+          "6",
+          "4",
+          ""
+        ]
+      },
+      "left": {
+        "std": [
+          "3",
+          "4",
+          "3",
+          ""
+        ]
+      },
+      "right": {
+        "std": [
+          "3",
+          "4",
+          "3",
+          ""
+        ]
+      }
+    }
   },
   {
     "Id": 104142,
@@ -22789,7 +23130,55 @@
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
     "SubTypeId": 29,
-    "BFThreshold": 6
+    "BFThreshold": 6,
+    "BFArcs": {
+      "front": {
+        "cap": [
+          "107",
+          "107",
+          "107",
+          ""
+        ],
+        "msl": [
+          "3",
+          "3",
+          "3",
+          "3"
+        ]
+      },
+      "rear": {
+        "cap": [
+          "54",
+          "54",
+          "54",
+          ""
+        ],
+        "msl": [
+          "2",
+          "2",
+          "2",
+          "2"
+        ]
+      },
+      "left": {
+        "cap": [
+          "34",
+          "34",
+          "34",
+          "24"
+        ],
+        "spe": "ENE"
+      },
+      "right": {
+        "cap": [
+          "34",
+          "34",
+          "34",
+          "24"
+        ],
+        "spe": "ENE"
+      }
+    }
   },
   {
     "Id": 104197,
@@ -23065,7 +23454,54 @@
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
     "SubTypeId": 29,
-    "BFThreshold": 51
+    "BFThreshold": 51,
+    "BFArcs": {
+      "front": {
+        "cap": [
+          "152",
+          "152",
+          "91",
+          "91"
+        ],
+        "msl": [
+          "13",
+          "13",
+          "13",
+          "13"
+        ]
+      },
+      "rear": {
+        "spe": "ENE"
+      },
+      "left": {
+        "cap": [
+          "128",
+          "128",
+          "128",
+          "128"
+        ],
+        "msl": [
+          "10",
+          "10",
+          "10",
+          "10"
+        ]
+      },
+      "right": {
+        "cap": [
+          "128",
+          "128",
+          "128",
+          "128"
+        ],
+        "msl": [
+          "10",
+          "10",
+          "10",
+          "10"
+        ]
+      }
+    }
   },
   {
     "Id": 104199,

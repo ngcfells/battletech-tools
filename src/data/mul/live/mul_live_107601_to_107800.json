@@ -5962,7 +5962,21 @@
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
     "SubTypeId": 33,
-    "BFThreshold": 1
+    "BFThreshold": 1,
+    "BFArcs": {
+      "front": {
+        "spe": "ENE"
+      },
+      "rear": {
+        "spe": "ENE"
+      },
+      "left": {
+        "spe": "ENE"
+      },
+      "right": {
+        "spe": "ENE"
+      }
+    }
   },
   {
     "Id": 107654,
@@ -7329,7 +7343,65 @@
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
     "SubTypeId": 29,
-    "BFThreshold": 16
+    "BFThreshold": 16,
+    "BFArcs": {
+      "front": {
+        "cap": [
+          "170",
+          "170",
+          "",
+          ""
+        ],
+        "msl": [
+          "15",
+          "15",
+          "15",
+          "15"
+        ]
+      },
+      "rear": {
+        "cap": [
+          "128",
+          "128",
+          "15",
+          "15"
+        ],
+        "msl": [
+          "5",
+          "5",
+          "5",
+          "5"
+        ]
+      },
+      "left": {
+        "cap": [
+          "335",
+          "335",
+          "221",
+          "27"
+        ],
+        "msl": [
+          "4",
+          "4",
+          "4",
+          "4"
+        ]
+      },
+      "right": {
+        "cap": [
+          "335",
+          "335",
+          "221",
+          "27"
+        ],
+        "msl": [
+          "4",
+          "4",
+          "4",
+          "4"
+        ]
+      }
+    }
   },
   {
     "Id": 107667,
@@ -12324,7 +12396,27 @@
     "BFThreshold": 1,
     "Rules": "Advanced",
     "TRO": "TR:3150",
-    "ImageUrl": "https://i.ibb.co/hWx7W8Z/zhen-niao-3150.png"
+    "ImageUrl": "https://i.ibb.co/hWx7W8Z/zhen-niao-3150.png",
+    "BFArcs": {
+      "front": {
+        "spe": "ENE"
+      },
+      "rear": {
+        "std": [
+          "1",
+          "1",
+          "",
+          ""
+        ],
+        "spe": "ENE"
+      },
+      "left": {
+        "spe": "ENE"
+      },
+      "right": {
+        "spe": "ENE"
+      }
+    }
   },
   {
     "Id": 107711,
@@ -13076,7 +13168,42 @@
     "BFThreshold": 2,
     "Rules": "Standard",
     "TRO": "TR:3057r",
-    "ImageUrl": "https://i.ibb.co/KK4Rvyc/union-3057.png"
+    "ImageUrl": "https://i.ibb.co/KK4Rvyc/union-3057.png",
+    "BFArcs": {
+      "front": {
+        "std": [
+          "6",
+          "8",
+          "6",
+          ""
+        ]
+      },
+      "rear": {
+        "std": [
+          "3",
+          "3",
+          "",
+          ""
+        ],
+        "spe": "ENE"
+      },
+      "left": {
+        "std": [
+          "2",
+          "3",
+          "2",
+          ""
+        ]
+      },
+      "right": {
+        "std": [
+          "2",
+          "3",
+          "2",
+          ""
+        ]
+      }
+    }
   },
   {
     "Id": 107717,
@@ -13372,7 +13499,8 @@
     "SubTypeId": 26,
     "BFThreshold": 0,
     "TRO": "D&J",
-    "ImageUrl": "https://i.ibb.co/yNRpdH2/close-assault-landing-craft-dj.png"
+    "ImageUrl": "https://i.ibb.co/yNRpdH2/close-assault-landing-craft-dj.png",
+    "BFArcs": {}
   },
   {
     "Id": 107721,
@@ -14861,7 +14989,87 @@
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
     "SubTypeId": 14,
-    "BFThreshold": 13
+    "BFThreshold": 13,
+    "BFArcs": {
+      "front": {
+        "std": [
+          "20",
+          "27",
+          "27",
+          ""
+        ],
+        "scap": [
+          "44",
+          "44",
+          "24",
+          ""
+        ],
+        "msl": [
+          "24",
+          "24",
+          "24",
+          "24"
+        ],
+        "spe": "PNT2"
+      },
+      "rear": {
+        "std": [
+          "20",
+          "27",
+          "27",
+          ""
+        ],
+        "scap": [
+          "24",
+          "24",
+          "24",
+          ""
+        ],
+        "spe": "PNT2"
+      },
+      "left": {
+        "std": [
+          "10",
+          "14",
+          "14",
+          ""
+        ],
+        "scap": [
+          "22",
+          "22",
+          "12",
+          ""
+        ],
+        "msl": [
+          "12",
+          "12",
+          "12",
+          "12"
+        ],
+        "spe": "PNT1"
+      },
+      "right": {
+        "std": [
+          "10",
+          "14",
+          "14",
+          ""
+        ],
+        "scap": [
+          "22",
+          "22",
+          "12",
+          ""
+        ],
+        "msl": [
+          "12",
+          "12",
+          "12",
+          "12"
+        ],
+        "spe": "PNT1"
+      }
+    }
   },
   {
     "Id": 107734,
@@ -17465,7 +17673,21 @@
     "BFThreshold": 1,
     "Rules": "Standard",
     "TRO": "HB:HL",
-    "ImageUrl": "https://i.ibb.co/zmRyCxR/mowang-courier-hbhl.png"
+    "ImageUrl": "https://i.ibb.co/zmRyCxR/mowang-courier-hbhl.png",
+    "BFArcs": {
+      "front": {
+        "spe": "ENE"
+      },
+      "rear": {
+        "spe": "ENE"
+      },
+      "left": {
+        "spe": "ENE"
+      },
+      "right": {
+        "spe": "ENE"
+      }
+    }
   },
   {
     "Id": 107758,
@@ -20347,7 +20569,8 @@
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
     "SubTypeId": 46,
-    "BFThreshold": 0
+    "BFThreshold": 0,
+    "BFArcs": {}
   },
   {
     "Id": 107782,

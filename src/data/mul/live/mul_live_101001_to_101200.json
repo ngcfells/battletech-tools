@@ -2039,7 +2039,41 @@
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
     "SubTypeId": 46,
-    "BFThreshold": 4
+    "BFThreshold": 4,
+    "BFArcs": {
+      "front": {
+        "std": [
+          "14",
+          "18",
+          "16",
+          ""
+        ]
+      },
+      "rear": {
+        "std": [
+          "12",
+          "13",
+          "11",
+          ""
+        ]
+      },
+      "left": {
+        "std": [
+          "7",
+          "8",
+          "7",
+          ""
+        ]
+      },
+      "right": {
+        "std": [
+          "7",
+          "8",
+          "7",
+          ""
+        ]
+      }
+    }
   },
   {
     "Id": 101022,
@@ -3477,7 +3511,65 @@
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
     "SubTypeId": 29,
-    "BFThreshold": 23
+    "BFThreshold": 23,
+    "BFArcs": {
+      "front": {
+        "std": [
+          "6",
+          "6",
+          "",
+          ""
+        ],
+        "cap": [
+          "344",
+          "344",
+          "344",
+          "204"
+        ],
+        "msl": [
+          "23",
+          "23",
+          "23",
+          "23"
+        ]
+      },
+      "rear": {
+        "cap": [
+          "83",
+          "83",
+          "83",
+          "45"
+        ]
+      },
+      "left": {
+        "std": [
+          "13",
+          "21",
+          "16",
+          ""
+        ],
+        "cap": [
+          "254",
+          "254",
+          "188",
+          "88"
+        ]
+      },
+      "right": {
+        "std": [
+          "13",
+          "21",
+          "16",
+          ""
+        ],
+        "cap": [
+          "254",
+          "254",
+          "188",
+          "88"
+        ]
+      }
+    }
   },
   {
     "Id": 101037,
@@ -11690,7 +11782,21 @@
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
     "SubTypeId": 33,
-    "BFThreshold": 1
+    "BFThreshold": 1,
+    "BFArcs": {
+      "front": {
+        "spe": "ENE"
+      },
+      "rear": {
+        "spe": "ENE"
+      },
+      "left": {
+        "spe": "ENE"
+      },
+      "right": {
+        "spe": "ENE"
+      }
+    }
   },
   {
     "Id": 101109,
@@ -13035,7 +13141,45 @@
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
     "SubTypeId": 46,
-    "BFThreshold": 1
+    "BFThreshold": 1,
+    "BFArcs": {
+      "front": {
+        "std": [
+          "3",
+          "2",
+          "",
+          ""
+        ],
+        "spe": "PNT1"
+      },
+      "rear": {
+        "std": [
+          "2",
+          "1",
+          "",
+          ""
+        ],
+        "spe": "PNT1"
+      },
+      "left": {
+        "std": [
+          "1",
+          "1",
+          "",
+          ""
+        ],
+        "spe": "PNT1"
+      },
+      "right": {
+        "std": [
+          "1",
+          "1",
+          "",
+          ""
+        ],
+        "spe": "PNT1"
+      }
+    }
   },
   {
     "Id": 101120,
@@ -16865,7 +17009,8 @@
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
     "SubTypeId": 31,
-    "BFThreshold": 0
+    "BFThreshold": 0,
+    "BFArcs": {}
   },
   {
     "Id": 101154,
@@ -18721,7 +18866,32 @@
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
     "SubTypeId": 29,
-    "BFThreshold": 1
+    "BFThreshold": 1,
+    "BFArcs": {
+      "front": {
+        "std": [
+          "3",
+          "3",
+          "1",
+          ""
+        ],
+        "spe": "ENE"
+      },
+      "rear": {
+        "std": [
+          "2",
+          "2",
+          "",
+          ""
+        ]
+      },
+      "left": {
+        "spe": "ENE"
+      },
+      "right": {
+        "spe": "ENE"
+      }
+    }
   },
   {
     "Id": 101171,
@@ -20173,7 +20343,8 @@
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
     "SubTypeId": 31,
-    "BFThreshold": 0
+    "BFThreshold": 0,
+    "BFArcs": {}
   },
   {
     "Id": 101179,
@@ -21046,7 +21217,48 @@
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
     "SubTypeId": 46,
-    "BFThreshold": 4
+    "BFThreshold": 4,
+    "BFArcs": {
+      "front": {
+        "std": [
+          "11",
+          "12",
+          "12",
+          ""
+        ],
+        "msl": [
+          "3",
+          "3",
+          "3",
+          "3"
+        ]
+      },
+      "rear": {
+        "std": [
+          "8",
+          "8",
+          "4",
+          ""
+        ],
+        "spe": "ENE"
+      },
+      "left": {
+        "std": [
+          "5",
+          "5",
+          "4",
+          ""
+        ]
+      },
+      "right": {
+        "std": [
+          "5",
+          "5",
+          "4",
+          ""
+        ]
+      }
+    }
   },
   {
     "Id": 101188,

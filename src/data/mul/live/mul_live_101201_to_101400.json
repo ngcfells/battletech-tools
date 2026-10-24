@@ -4688,7 +4688,45 @@
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
     "SubTypeId": 31,
-    "BFThreshold": 2
+    "BFThreshold": 2,
+    "BFArcs": {
+      "front": {
+        "std": [
+          "10",
+          "8",
+          "5",
+          ""
+        ],
+        "spe": "PNT2"
+      },
+      "rear": {
+        "std": [
+          "10",
+          "8",
+          "5",
+          ""
+        ],
+        "spe": "PNT2"
+      },
+      "left": {
+        "std": [
+          "5",
+          "4",
+          "3",
+          ""
+        ],
+        "spe": "PNT1"
+      },
+      "right": {
+        "std": [
+          "5",
+          "4",
+          "3",
+          ""
+        ],
+        "spe": "PNT1"
+      }
+    }
   },
   {
     "Id": 101242,
@@ -4966,7 +5004,27 @@
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
     "SubTypeId": 31,
-    "BFThreshold": 1
+    "BFThreshold": 1,
+    "BFArcs": {
+      "front": {
+        "spe": "ENE"
+      },
+      "rear": {
+        "cap": [
+          "6",
+          "6",
+          "6",
+          "6"
+        ],
+        "spe": "ENE"
+      },
+      "left": {
+        "spe": "ENE"
+      },
+      "right": {
+        "spe": "ENE"
+      }
+    }
   },
   {
     "Id": 101245,
@@ -16930,7 +16988,51 @@
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
     "SubTypeId": 46,
-    "BFThreshold": 3
+    "BFThreshold": 3,
+    "BFArcs": {
+      "front": {
+        "std": [
+          "5",
+          "7",
+          "4",
+          "2"
+        ],
+        "msl": [
+          "3",
+          "3",
+          "3",
+          ""
+        ],
+        "spe": "PNT1"
+      },
+      "rear": {
+        "std": [
+          "4",
+          "4",
+          "1",
+          ""
+        ],
+        "spe": "ENE, PNT1"
+      },
+      "left": {
+        "std": [
+          "2",
+          "2",
+          "0*",
+          "0*"
+        ],
+        "spe": "PNT1"
+      },
+      "right": {
+        "std": [
+          "2",
+          "2",
+          "0*",
+          "0*"
+        ],
+        "spe": "PNT1"
+      }
+    }
   },
   {
     "Id": 101348,
@@ -17951,7 +18053,49 @@
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
     "SubTypeId": 31,
-    "BFThreshold": 3
+    "BFThreshold": 3,
+    "BFArcs": {
+      "front": {
+        "std": [
+          "11",
+          "10",
+          "4",
+          ""
+        ],
+        "msl": [
+          "3",
+          "",
+          "",
+          ""
+        ],
+        "spe": "PNT1"
+      },
+      "rear": {
+        "std": [
+          "11",
+          "10",
+          "4",
+          ""
+        ],
+        "spe": "PNT1"
+      },
+      "left": {
+        "std": [
+          "6",
+          "5",
+          "2",
+          ""
+        ]
+      },
+      "right": {
+        "std": [
+          "6",
+          "5",
+          "2",
+          ""
+        ]
+      }
+    }
   },
   {
     "Id": 101360,
@@ -20212,7 +20356,21 @@
     "SubTypeId": 26,
     "BFThreshold": 1,
     "TRO": "TR:3057r",
-    "ImageUrl": "https://i.ibb.co/NxnVcMv/bus-3057.png"
+    "ImageUrl": "https://i.ibb.co/NxnVcMv/bus-3057.png",
+    "BFArcs": {
+      "front": {
+        "spe": "ENE"
+      },
+      "rear": {
+        "spe": "ENE"
+      },
+      "left": {
+        "spe": "ENE"
+      },
+      "right": {
+        "spe": "ENE"
+      }
+    }
   },
   {
     "Id": 101378,
@@ -20286,7 +20444,41 @@
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
     "SubTypeId": 46,
-    "BFThreshold": 4
+    "BFThreshold": 4,
+    "BFArcs": {
+      "front": {
+        "std": [
+          "14",
+          "18",
+          "14",
+          ""
+        ]
+      },
+      "rear": {
+        "std": [
+          "12",
+          "13",
+          "6",
+          ""
+        ]
+      },
+      "left": {
+        "std": [
+          "7",
+          "8",
+          "6",
+          ""
+        ]
+      },
+      "right": {
+        "std": [
+          "7",
+          "8",
+          "6",
+          ""
+        ]
+      }
+    }
   },
   {
     "Id": 101379,

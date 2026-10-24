@@ -331,7 +331,41 @@
     "SubTypeId": 46,
     "BFThreshold": 3,
     "TRO": "TR:3057r",
-    "ImageUrl": "https://i.ibb.co/sFw9GKS/overlord-3057.png"
+    "ImageUrl": "https://i.ibb.co/sFw9GKS/overlord-3057.png",
+    "BFArcs": {
+      "front": {
+        "std": [
+          "8",
+          "9",
+          "4",
+          ""
+        ]
+      },
+      "rear": {
+        "std": [
+          "5",
+          "6",
+          "3",
+          ""
+        ]
+      },
+      "left": {
+        "std": [
+          "3",
+          "3",
+          "2",
+          ""
+        ]
+      },
+      "right": {
+        "std": [
+          "3",
+          "3",
+          "2",
+          ""
+        ]
+      }
+    }
   },
   {
     "Id": 100202,
@@ -415,7 +449,21 @@
       "SortOrder": 7
     },
     "SubTypeId": 33,
-    "BFThreshold": 2
+    "BFThreshold": 2,
+    "BFArcs": {
+      "front": {
+        "spe": "ENE"
+      },
+      "rear": {
+        "spe": "ENE"
+      },
+      "left": {
+        "spe": "ENE"
+      },
+      "right": {
+        "spe": "ENE"
+      }
+    }
   },
   {
     "Id": 100203,
@@ -2694,7 +2742,63 @@
       "SortOrder": 7
     },
     "SubTypeId": 14,
-    "BFThreshold": 4
+    "BFThreshold": 4,
+    "BFArcs": {
+      "front": {
+        "std": [
+          "5",
+          "10",
+          "10",
+          ""
+        ],
+        "msl": [
+          "12",
+          "12",
+          "12",
+          ""
+        ],
+        "spe": "PNT1"
+      },
+      "rear": {
+        "std": [
+          "5",
+          "7",
+          "5",
+          ""
+        ],
+        "spe": "PNT1"
+      },
+      "left": {
+        "std": [
+          "7",
+          "11",
+          "10",
+          ""
+        ],
+        "msl": [
+          "6",
+          "6",
+          "6",
+          ""
+        ],
+        "spe": "PNT1"
+      },
+      "right": {
+        "std": [
+          "7",
+          "11",
+          "10",
+          ""
+        ],
+        "msl": [
+          "6",
+          "6",
+          "6",
+          ""
+        ],
+        "spe": "PNT1"
+      }
+    }
   },
   {
     "Id": 100224,
@@ -5784,7 +5888,87 @@
       "SortOrder": 7
     },
     "SubTypeId": 29,
-    "BFThreshold": 14
+    "BFThreshold": 14,
+    "BFArcs": {
+      "front": {
+        "std": [
+          "6",
+          "7",
+          "7",
+          ""
+        ],
+        "cap": [
+          "132",
+          "132",
+          "132",
+          "17"
+        ],
+        "msl": [
+          "4",
+          "4",
+          "4",
+          "4"
+        ],
+        "spe": "PNT5"
+      },
+      "rear": {
+        "std": [
+          "3",
+          "3",
+          "3",
+          ""
+        ],
+        "msl": [
+          "4",
+          "4",
+          "4",
+          "4"
+        ],
+        "spe": "PNT2"
+      },
+      "left": {
+        "std": [
+          "5",
+          "5",
+          "5",
+          ""
+        ],
+        "cap": [
+          "29",
+          "29",
+          "29",
+          "29"
+        ],
+        "msl": [
+          "4",
+          "4",
+          "4",
+          "4"
+        ],
+        "spe": "PNT3"
+      },
+      "right": {
+        "std": [
+          "5",
+          "5",
+          "5",
+          ""
+        ],
+        "cap": [
+          "29",
+          "29",
+          "29",
+          "29"
+        ],
+        "msl": [
+          "4",
+          "4",
+          "4",
+          "4"
+        ],
+        "spe": "PNT3"
+      }
+    }
   },
   {
     "Id": 100258,
@@ -8256,7 +8440,37 @@
     "BFThreshold": 1,
     "Rules": "Advanced",
     "TRO": "TR:Proto",
-    "ImageUrl": "https://i.ibb.co/rFxknDY/foxhound-proto.png"
+    "ImageUrl": "https://i.ibb.co/rFxknDY/foxhound-proto.png",
+    "BFArcs": {
+      "front": {
+        "std": [
+          "4",
+          "4",
+          "4",
+          ""
+        ],
+        "spe": "PNT1"
+      },
+      "rear": {
+        "spe": "ENE, PNT1"
+      },
+      "left": {
+        "std": [
+          "1",
+          "2",
+          "2",
+          ""
+        ]
+      },
+      "right": {
+        "std": [
+          "1",
+          "2",
+          "2",
+          ""
+        ]
+      }
+    }
   },
   {
     "Id": 100281,
@@ -10621,7 +10835,44 @@
       "SortOrder": 7
     },
     "SubTypeId": 14,
-    "BFThreshold": 2
+    "BFThreshold": 2,
+    "BFArcs": {
+      "front": {
+        "std": [
+          "8",
+          "8",
+          "7",
+          "2"
+        ],
+        "spe": "PNT1"
+      },
+      "rear": {
+        "std": [
+          "4",
+          "4",
+          "",
+          ""
+        ]
+      },
+      "left": {
+        "std": [
+          "6",
+          "6",
+          "4",
+          ""
+        ],
+        "spe": "PNT1"
+      },
+      "right": {
+        "std": [
+          "6",
+          "6",
+          "4",
+          ""
+        ],
+        "spe": "PNT1"
+      }
+    }
   },
   {
     "Id": 100302,
@@ -11295,7 +11546,41 @@
       "SortOrder": 7
     },
     "SubTypeId": 46,
-    "BFThreshold": 1
+    "BFThreshold": 1,
+    "BFArcs": {
+      "front": {
+        "std": [
+          "3",
+          "4",
+          "3",
+          ""
+        ]
+      },
+      "rear": {
+        "std": [
+          "2",
+          "3",
+          "2",
+          ""
+        ]
+      },
+      "left": {
+        "std": [
+          "1",
+          "1",
+          "1",
+          ""
+        ]
+      },
+      "right": {
+        "std": [
+          "1",
+          "1",
+          "1",
+          ""
+        ]
+      }
+    }
   },
   {
     "Id": 100310,
@@ -11496,7 +11781,45 @@
       "SortOrder": 7
     },
     "SubTypeId": 33,
-    "BFThreshold": 2
+    "BFThreshold": 2,
+    "BFArcs": {
+      "front": {
+        "std": [
+          "8",
+          "8",
+          "",
+          ""
+        ],
+        "spe": "ENE"
+      },
+      "rear": {
+        "std": [
+          "2",
+          "2",
+          "",
+          ""
+        ],
+        "spe": "ENE"
+      },
+      "left": {
+        "std": [
+          "5",
+          "5",
+          "",
+          ""
+        ],
+        "spe": "ENE"
+      },
+      "right": {
+        "std": [
+          "5",
+          "5",
+          "",
+          ""
+        ],
+        "spe": "ENE"
+      }
+    }
   },
   {
     "Id": 100313,
@@ -11614,7 +11937,43 @@
     "BFThreshold": 2,
     "Rules": "Standard",
     "TRO": "TR:3075",
-    "ImageUrl": "https://i.ibb.co/DMXYc5T/aurora-3075.png"
+    "ImageUrl": "https://i.ibb.co/DMXYc5T/aurora-3075.png",
+    "BFArcs": {
+      "front": {
+        "std": [
+          "4",
+          "4",
+          "3",
+          ""
+        ]
+      },
+      "rear": {
+        "std": [
+          "5",
+          "5",
+          "3",
+          ""
+        ]
+      },
+      "left": {
+        "std": [
+          "2",
+          "2",
+          "2",
+          ""
+        ],
+        "spe": "ENE"
+      },
+      "right": {
+        "std": [
+          "2",
+          "2",
+          "2",
+          ""
+        ],
+        "spe": "ENE"
+      }
+    }
   },
   {
     "Id": 100314,
@@ -14388,7 +14747,45 @@
       "SortOrder": 7
     },
     "SubTypeId": 46,
-    "BFThreshold": 2
+    "BFThreshold": 2,
+    "BFArcs": {
+      "front": {
+        "std": [
+          "5",
+          "5",
+          "",
+          ""
+        ],
+        "spe": "ENE"
+      },
+      "rear": {
+        "std": [
+          "4",
+          "4",
+          "",
+          ""
+        ],
+        "spe": "ENE"
+      },
+      "left": {
+        "std": [
+          "3",
+          "3",
+          "",
+          ""
+        ],
+        "spe": "ENE"
+      },
+      "right": {
+        "std": [
+          "3",
+          "3",
+          "",
+          ""
+        ],
+        "spe": "ENE"
+      }
+    }
   },
   {
     "Id": 100336,
@@ -15309,7 +15706,8 @@
       "SortOrder": 7
     },
     "SubTypeId": 31,
-    "BFThreshold": 0
+    "BFThreshold": 0,
+    "BFArcs": {}
   },
   {
     "Id": 100347,
@@ -16345,7 +16743,47 @@
       "SortOrder": 7
     },
     "SubTypeId": 29,
-    "BFThreshold": 28
+    "BFThreshold": 28,
+    "BFArcs": {
+      "front": {
+        "cap": [
+          "240",
+          "240",
+          "240",
+          "90"
+        ],
+        "msl": [
+          "9",
+          "9",
+          "9",
+          "9"
+        ]
+      },
+      "rear": {
+        "cap": [
+          "66",
+          "66",
+          "66",
+          "36"
+        ]
+      },
+      "left": {
+        "cap": [
+          "267",
+          "267",
+          "57",
+          "27"
+        ]
+      },
+      "right": {
+        "cap": [
+          "267",
+          "267",
+          "57",
+          "27"
+        ]
+      }
+    }
   },
   {
     "Id": 100357,
@@ -18476,7 +18914,8 @@
     "SubTypeId": 26,
     "BFThreshold": 0,
     "TRO": "XTR:Primitives II",
-    "ImageUrl": "https://i.ibb.co/yNRpdH2/close-assault-landing-craft-dj.png"
+    "ImageUrl": "https://i.ibb.co/yNRpdH2/close-assault-landing-craft-dj.png",
+    "BFArcs": {}
   },
   {
     "Id": 100380,

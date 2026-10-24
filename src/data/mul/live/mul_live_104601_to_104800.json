@@ -305,7 +305,63 @@
     "SubTypeId": 14,
     "BFThreshold": 6,
     "TRO": "TR:3085",
-    "ImageUrl": "https://i.ibb.co/FkQvTXM/interdictor-3085.png"
+    "ImageUrl": "https://i.ibb.co/FkQvTXM/interdictor-3085.png",
+    "BFArcs": {
+      "front": {
+        "std": [
+          "9",
+          "8",
+          "6",
+          ""
+        ],
+        "scap": [
+          "8",
+          "8",
+          "",
+          ""
+        ],
+        "spe": "PNT1"
+      },
+      "rear": {
+        "std": [
+          "18",
+          "15",
+          "7",
+          ""
+        ],
+        "spe": "PNT1"
+      },
+      "left": {
+        "std": [
+          "11",
+          "10",
+          "7",
+          ""
+        ],
+        "scap": [
+          "1",
+          "1",
+          "1",
+          ""
+        ],
+        "spe": "PNT1"
+      },
+      "right": {
+        "std": [
+          "11",
+          "10",
+          "7",
+          ""
+        ],
+        "scap": [
+          "1",
+          "1",
+          "1",
+          ""
+        ],
+        "spe": "PNT1"
+      }
+    }
   },
   {
     "Id": 104605,
@@ -7180,7 +7236,45 @@
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
     "SubTypeId": 46,
-    "BFThreshold": 3
+    "BFThreshold": 3,
+    "BFArcs": {
+      "front": {
+        "std": [
+          "17",
+          "17",
+          "12",
+          "4"
+        ],
+        "spe": "PNT2, ARTCM54"
+      },
+      "rear": {
+        "std": [
+          "9",
+          "10",
+          "10",
+          ""
+        ],
+        "spe": "PNT2"
+      },
+      "left": {
+        "std": [
+          "5",
+          "6",
+          "6",
+          ""
+        ],
+        "spe": "PNT1"
+      },
+      "right": {
+        "std": [
+          "5",
+          "6",
+          "6",
+          ""
+        ],
+        "spe": "PNT1"
+      }
+    }
   },
   {
     "Id": 104665,
@@ -9135,7 +9229,61 @@
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
     "SubTypeId": 46,
-    "BFThreshold": 2
+    "BFThreshold": 2,
+    "BFArcs": {
+      "front": {
+        "std": [
+          "4",
+          "3",
+          "1",
+          ""
+        ],
+        "msl": [
+          "12",
+          "12",
+          "12",
+          "12"
+        ],
+        "spe": "PNT1"
+      },
+      "rear": {
+        "std": [
+          "3",
+          "3",
+          "",
+          ""
+        ],
+        "spe": "ENE"
+      },
+      "left": {
+        "std": [
+          "2",
+          "2",
+          "",
+          ""
+        ],
+        "msl": [
+          "6",
+          "6",
+          "6",
+          "6"
+        ]
+      },
+      "right": {
+        "std": [
+          "2",
+          "2",
+          "",
+          ""
+        ],
+        "msl": [
+          "6",
+          "6",
+          "6",
+          "6"
+        ]
+      }
+    }
   },
   {
     "Id": 104684,
@@ -9226,7 +9374,44 @@
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
     "SubTypeId": 14,
-    "BFThreshold": 7
+    "BFThreshold": 7,
+    "BFArcs": {
+      "front": {
+        "std": [
+          "15",
+          "15",
+          "7",
+          ""
+        ]
+      },
+      "rear": {
+        "std": [
+          "6",
+          "6",
+          "6",
+          "3"
+        ],
+        "spe": "ENE, PNT2"
+      },
+      "left": {
+        "std": [
+          "7",
+          "7",
+          "7",
+          "4"
+        ],
+        "spe": "PNT2"
+      },
+      "right": {
+        "std": [
+          "7",
+          "7",
+          "7",
+          "4"
+        ],
+        "spe": "PNT2"
+      }
+    }
   },
   {
     "Id": 104685,
@@ -12136,7 +12321,48 @@
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
     "SubTypeId": 14,
-    "BFThreshold": 3
+    "BFThreshold": 3,
+    "BFArcs": {
+      "front": {
+        "std": [
+          "5",
+          "6",
+          "4",
+          ""
+        ],
+        "msl": [
+          "4",
+          "4",
+          "4",
+          "4"
+        ]
+      },
+      "rear": {
+        "std": [
+          "2",
+          "2",
+          "1",
+          ""
+        ],
+        "spe": "ENE"
+      },
+      "left": {
+        "std": [
+          "3",
+          "4",
+          "3",
+          ""
+        ]
+      },
+      "right": {
+        "std": [
+          "3",
+          "4",
+          "3",
+          ""
+        ]
+      }
+    }
   },
   {
     "Id": 104710,
@@ -12345,7 +12571,8 @@
     "SubTypeId": 26,
     "BFThreshold": 0,
     "TRO": "D&J",
-    "ImageUrl": "https://i.ibb.co/yNRpdH2/close-assault-landing-craft-dj.png"
+    "ImageUrl": "https://i.ibb.co/yNRpdH2/close-assault-landing-craft-dj.png",
+    "BFArcs": {}
   },
   {
     "Id": 104712,
@@ -14913,7 +15140,39 @@
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
     "SubTypeId": 33,
-    "BFThreshold": 1
+    "BFThreshold": 1,
+    "BFArcs": {
+      "front": {
+        "std": [
+          "1",
+          "1",
+          "",
+          ""
+        ],
+        "spe": "ENE"
+      },
+      "rear": {
+        "spe": "ENE"
+      },
+      "left": {
+        "std": [
+          "0*",
+          "0*",
+          "",
+          ""
+        ],
+        "spe": "ENE"
+      },
+      "right": {
+        "std": [
+          "0*",
+          "0*",
+          "",
+          ""
+        ],
+        "spe": "ENE"
+      }
+    }
   },
   {
     "Id": 104733,
@@ -18491,7 +18750,69 @@
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
     "SubTypeId": 29,
-    "BFThreshold": 25
+    "BFThreshold": 25,
+    "BFArcs": {
+      "front": {
+        "std": [
+          "11",
+          "7",
+          "7",
+          ""
+        ],
+        "cap": [
+          "84",
+          "84",
+          "84",
+          "84"
+        ],
+        "spe": "PNT4, FLK5/5/5/-"
+      },
+      "rear": {
+        "std": [
+          "8",
+          "7",
+          "4",
+          ""
+        ],
+        "cap": [
+          "13",
+          "13",
+          "13",
+          ""
+        ],
+        "spe": "PNT2"
+      },
+      "left": {
+        "std": [
+          "5",
+          "3",
+          "3",
+          ""
+        ],
+        "cap": [
+          "118",
+          "118",
+          "118",
+          "118"
+        ],
+        "spe": "PNT3, FLK2/2/2/-"
+      },
+      "right": {
+        "std": [
+          "5",
+          "3",
+          "3",
+          ""
+        ],
+        "cap": [
+          "118",
+          "118",
+          "118",
+          "118"
+        ],
+        "spe": "PNT3, FLK2/2/2/-"
+      }
+    }
   },
   {
     "Id": 104767,
@@ -20199,7 +20520,41 @@
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
     "SubTypeId": 46,
-    "BFThreshold": 4
+    "BFThreshold": 4,
+    "BFArcs": {
+      "front": {
+        "std": [
+          "7",
+          "8",
+          "5",
+          ""
+        ]
+      },
+      "rear": {
+        "std": [
+          "10",
+          "11",
+          "6",
+          ""
+        ]
+      },
+      "left": {
+        "std": [
+          "5",
+          "6",
+          "3",
+          ""
+        ]
+      },
+      "right": {
+        "std": [
+          "5",
+          "6",
+          "3",
+          ""
+        ]
+      }
+    }
   },
   {
     "Id": 104780,
@@ -20543,7 +20898,8 @@
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
     "SubTypeId": 29,
-    "BFThreshold": 0
+    "BFThreshold": 0,
+    "BFArcs": {}
   },
   {
     "Id": 104784,
@@ -20976,7 +21332,41 @@
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
     "SubTypeId": 14,
-    "BFThreshold": 3
+    "BFThreshold": 3,
+    "BFArcs": {
+      "front": {
+        "std": [
+          "11",
+          "13",
+          "7",
+          ""
+        ]
+      },
+      "rear": {
+        "std": [
+          "4",
+          "4",
+          "2",
+          ""
+        ]
+      },
+      "left": {
+        "std": [
+          "2",
+          "2",
+          "1",
+          ""
+        ]
+      },
+      "right": {
+        "std": [
+          "2",
+          "2",
+          "1",
+          ""
+        ]
+      }
+    }
   },
   {
     "Id": 104789,

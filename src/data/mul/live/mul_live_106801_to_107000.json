@@ -1470,7 +1470,68 @@
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
     "SubTypeId": 29,
-    "BFThreshold": 7
+    "BFThreshold": 7,
+    "BFArcs": {
+      "front": {
+        "std": [
+          "11",
+          "17",
+          "11",
+          ""
+        ],
+        "cap": [
+          "29",
+          "29",
+          "29",
+          "9"
+        ]
+      },
+      "rear": {
+        "std": [
+          "3",
+          "1",
+          "",
+          ""
+        ],
+        "cap": [
+          "9",
+          "9",
+          "9",
+          "9"
+        ],
+        "spe": "PNT2"
+      },
+      "left": {
+        "std": [
+          "6",
+          "3",
+          "",
+          ""
+        ],
+        "cap": [
+          "14",
+          "14",
+          "14",
+          ""
+        ],
+        "spe": "PNT4"
+      },
+      "right": {
+        "std": [
+          "6",
+          "3",
+          "",
+          ""
+        ],
+        "cap": [
+          "14",
+          "14",
+          "14",
+          ""
+        ],
+        "spe": "PNT4"
+      }
+    }
   },
   {
     "Id": 106812,
@@ -2633,7 +2694,8 @@
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
     "SubTypeId": 46,
-    "BFThreshold": 0
+    "BFThreshold": 0,
+    "BFArcs": {}
   },
   {
     "Id": 106825,
@@ -4559,7 +4621,41 @@
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
     "SubTypeId": 46,
-    "BFThreshold": 4
+    "BFThreshold": 4,
+    "BFArcs": {
+      "front": {
+        "std": [
+          "21",
+          "28",
+          "28",
+          ""
+        ]
+      },
+      "rear": {
+        "std": [
+          "9",
+          "10",
+          "6",
+          ""
+        ]
+      },
+      "left": {
+        "std": [
+          "6",
+          "8",
+          "7",
+          ""
+        ]
+      },
+      "right": {
+        "std": [
+          "6",
+          "8",
+          "7",
+          ""
+        ]
+      }
+    }
   },
   {
     "Id": 106844,
@@ -6071,7 +6167,45 @@
     "BFThreshold": 1,
     "Rules": "Standard",
     "TRO": "HB:HK",
-    "ImageUrl": "https://i.ibb.co/tYLD777/dragonstar-hbhk.png"
+    "ImageUrl": "https://i.ibb.co/tYLD777/dragonstar-hbhk.png",
+    "BFArcs": {
+      "front": {
+        "std": [
+          "2",
+          "2",
+          "",
+          ""
+        ],
+        "spe": "ENE"
+      },
+      "rear": {
+        "std": [
+          "1",
+          "1",
+          "",
+          ""
+        ],
+        "spe": "ENE"
+      },
+      "left": {
+        "std": [
+          "0*",
+          "0*",
+          "",
+          ""
+        ],
+        "spe": "ENE"
+      },
+      "right": {
+        "std": [
+          "0*",
+          "0*",
+          "",
+          ""
+        ],
+        "spe": "ENE"
+      }
+    }
   },
   {
     "Id": 106857,
@@ -8544,7 +8678,43 @@
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
     "SubTypeId": 14,
-    "BFThreshold": 4
+    "BFThreshold": 4,
+    "BFArcs": {
+      "front": {
+        "std": [
+          "9",
+          "12",
+          "10",
+          ""
+        ],
+        "spe": "PNT2"
+      },
+      "rear": {
+        "std": [
+          "7",
+          "5",
+          "",
+          ""
+        ],
+        "spe": "PNT1"
+      },
+      "left": {
+        "std": [
+          "5",
+          "6",
+          "4",
+          ""
+        ]
+      },
+      "right": {
+        "std": [
+          "5",
+          "6",
+          "4",
+          ""
+        ]
+      }
+    }
   },
   {
     "Id": 106882,
@@ -8761,7 +8931,45 @@
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
     "SubTypeId": 46,
-    "BFThreshold": 3
+    "BFThreshold": 3,
+    "BFArcs": {
+      "front": {
+        "std": [
+          "7",
+          "7",
+          "5",
+          "2"
+        ],
+        "spe": "PNT1"
+      },
+      "rear": {
+        "std": [
+          "6",
+          "6",
+          "3",
+          ""
+        ],
+        "spe": "PNT1"
+      },
+      "left": {
+        "std": [
+          "3",
+          "3",
+          "2",
+          "0*"
+        ],
+        "spe": "PNT1"
+      },
+      "right": {
+        "std": [
+          "3",
+          "3",
+          "2",
+          "0*"
+        ],
+        "spe": "PNT1"
+      }
+    }
   },
   {
     "Id": 106885,
@@ -8881,7 +9089,41 @@
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
     "SubTypeId": 14,
-    "BFThreshold": 2
+    "BFThreshold": 2,
+    "BFArcs": {
+      "front": {
+        "std": [
+          "3",
+          "4",
+          "4",
+          ""
+        ]
+      },
+      "rear": {
+        "std": [
+          "3",
+          "5",
+          "4",
+          ""
+        ]
+      },
+      "left": {
+        "std": [
+          "4",
+          "4",
+          "3",
+          ""
+        ]
+      },
+      "right": {
+        "std": [
+          "4",
+          "4",
+          "3",
+          ""
+        ]
+      }
+    }
   },
   {
     "Id": 106886,
@@ -14339,7 +14581,89 @@
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
     "SubTypeId": 29,
-    "BFThreshold": 80
+    "BFThreshold": 80,
+    "BFArcs": {
+      "front": {
+        "std": [
+          "9",
+          "11",
+          "8",
+          ""
+        ],
+        "cap": [
+          "163",
+          "163",
+          "75",
+          "51"
+        ],
+        "msl": [
+          "8",
+          "8",
+          "8",
+          "8"
+        ]
+      },
+      "rear": {
+        "std": [
+          "3",
+          "4",
+          "3",
+          ""
+        ],
+        "cap": [
+          "61",
+          "61",
+          "61",
+          "37"
+        ],
+        "msl": [
+          "3",
+          "3",
+          "3",
+          "3"
+        ]
+      },
+      "left": {
+        "std": [
+          "6",
+          "7",
+          "6",
+          ""
+        ],
+        "cap": [
+          "120",
+          "120",
+          "44",
+          "20"
+        ],
+        "msl": [
+          "3",
+          "3",
+          "3",
+          "3"
+        ]
+      },
+      "right": {
+        "std": [
+          "6",
+          "7",
+          "6",
+          ""
+        ],
+        "cap": [
+          "120",
+          "120",
+          "44",
+          "20"
+        ],
+        "msl": [
+          "3",
+          "3",
+          "3",
+          "3"
+        ]
+      }
+    }
   },
   {
     "Id": 106935,
@@ -20005,7 +20329,43 @@
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
     "SubTypeId": 46,
-    "BFThreshold": 4
+    "BFThreshold": 4,
+    "BFArcs": {
+      "front": {
+        "std": [
+          "22",
+          "22",
+          "17",
+          "5"
+        ]
+      },
+      "rear": {
+        "std": [
+          "12",
+          "12",
+          "9",
+          "3"
+        ]
+      },
+      "left": {
+        "std": [
+          "6",
+          "6",
+          "3",
+          "1"
+        ],
+        "spe": "ENE"
+      },
+      "right": {
+        "std": [
+          "6",
+          "6",
+          "3",
+          "1"
+        ],
+        "spe": "ENE"
+      }
+    }
   },
   {
     "Id": 106982,
@@ -20179,7 +20539,54 @@
     "SubTypeId": 29,
     "BFThreshold": 14,
     "TRO": "TR:3057r",
-    "ImageUrl": "https://i.ibb.co/2Zk9j2D/sovetskii-soyuz-2750.png"
+    "ImageUrl": "https://i.ibb.co/2Zk9j2D/sovetskii-soyuz-2750.png",
+    "BFArcs": {
+      "front": {
+        "cap": [
+          "66",
+          "66",
+          "66",
+          "66"
+        ],
+        "msl": [
+          "8",
+          "8",
+          "8",
+          "8"
+        ]
+      },
+      "rear": {
+        "spe": "ENE"
+      },
+      "left": {
+        "cap": [
+          "95",
+          "95",
+          "95",
+          "22"
+        ],
+        "msl": [
+          "2",
+          "2",
+          "2",
+          "2"
+        ]
+      },
+      "right": {
+        "cap": [
+          "95",
+          "95",
+          "95",
+          "22"
+        ],
+        "msl": [
+          "2",
+          "2",
+          "2",
+          "2"
+        ]
+      }
+    }
   },
   {
     "Id": 106984,
@@ -20825,7 +21232,69 @@
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
     "SubTypeId": 29,
-    "BFThreshold": 2
+    "BFThreshold": 2,
+    "BFArcs": {
+      "front": {
+        "std": [
+          "15",
+          "15",
+          "5",
+          ""
+        ],
+        "cap": [
+          "54",
+          "54",
+          "54",
+          ""
+        ],
+        "spe": "PNT6"
+      },
+      "rear": {
+        "std": [
+          "5",
+          "5",
+          "2",
+          ""
+        ],
+        "cap": [
+          "15",
+          "15",
+          "15",
+          ""
+        ],
+        "spe": "PNT2"
+      },
+      "left": {
+        "std": [
+          "10",
+          "10",
+          "3",
+          ""
+        ],
+        "cap": [
+          "39",
+          "39",
+          "39",
+          ""
+        ],
+        "spe": "PNT3"
+      },
+      "right": {
+        "std": [
+          "10",
+          "10",
+          "3",
+          ""
+        ],
+        "cap": [
+          "39",
+          "39",
+          "39",
+          ""
+        ],
+        "spe": "PNT3"
+      }
+    }
   },
   {
     "Id": 106989,

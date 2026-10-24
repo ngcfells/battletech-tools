@@ -3212,7 +3212,87 @@
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
     "SubTypeId": 29,
-    "BFThreshold": 8
+    "BFThreshold": 8,
+    "BFArcs": {
+      "front": {
+        "std": [
+          "25",
+          "25",
+          "18",
+          "10"
+        ],
+        "cap": [
+          "16",
+          "16",
+          "16",
+          ""
+        ],
+        "msl": [
+          "14",
+          "14",
+          "14",
+          "14"
+        ],
+        "spe": "PNT4"
+      },
+      "rear": {
+        "std": [
+          "9",
+          "9",
+          "6",
+          "4"
+        ],
+        "cap": [
+          "16",
+          "16",
+          "16",
+          ""
+        ],
+        "spe": "PNT2"
+      },
+      "left": {
+        "std": [
+          "9",
+          "9",
+          "6",
+          "4"
+        ],
+        "cap": [
+          "16",
+          "16",
+          "16",
+          ""
+        ],
+        "msl": [
+          "7",
+          "7",
+          "7",
+          "7"
+        ],
+        "spe": "PNT2"
+      },
+      "right": {
+        "std": [
+          "9",
+          "9",
+          "6",
+          "4"
+        ],
+        "cap": [
+          "16",
+          "16",
+          "16",
+          ""
+        ],
+        "msl": [
+          "7",
+          "7",
+          "7",
+          "7"
+        ],
+        "spe": "PNT2"
+      }
+    }
   },
   {
     "Id": 106630,
@@ -7286,7 +7366,41 @@
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
     "SubTypeId": 46,
-    "BFThreshold": 2
+    "BFThreshold": 2,
+    "BFArcs": {
+      "front": {
+        "std": [
+          "9",
+          "10",
+          "6",
+          ""
+        ]
+      },
+      "rear": {
+        "std": [
+          "4",
+          "6",
+          "5",
+          ""
+        ]
+      },
+      "left": {
+        "std": [
+          "3",
+          "3",
+          "2",
+          ""
+        ]
+      },
+      "right": {
+        "std": [
+          "3",
+          "3",
+          "2",
+          ""
+        ]
+      }
+    }
   },
   {
     "Id": 106665,
@@ -9862,7 +9976,8 @@
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
     "SubTypeId": 46,
-    "BFThreshold": 0
+    "BFThreshold": 0,
+    "BFArcs": {}
   },
   {
     "Id": 106694,
@@ -10857,7 +10972,41 @@
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
     "SubTypeId": 46,
-    "BFThreshold": 5
+    "BFThreshold": 5,
+    "BFArcs": {
+      "front": {
+        "std": [
+          "19",
+          "23",
+          "18",
+          ""
+        ]
+      },
+      "rear": {
+        "std": [
+          "17",
+          "21",
+          "13",
+          ""
+        ]
+      },
+      "left": {
+        "std": [
+          "10",
+          "11",
+          "8",
+          ""
+        ]
+      },
+      "right": {
+        "std": [
+          "10",
+          "11",
+          "8",
+          ""
+        ]
+      }
+    }
   },
   {
     "Id": 106702,
@@ -14107,7 +14256,41 @@
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
     "SubTypeId": 14,
-    "BFThreshold": 5
+    "BFThreshold": 5,
+    "BFArcs": {
+      "front": {
+        "std": [
+          "6",
+          "8",
+          "7",
+          ""
+        ]
+      },
+      "rear": {
+        "std": [
+          "9",
+          "10",
+          "9",
+          ""
+        ]
+      },
+      "left": {
+        "std": [
+          "7",
+          "10",
+          "7",
+          ""
+        ]
+      },
+      "right": {
+        "std": [
+          "7",
+          "10",
+          "7",
+          ""
+        ]
+      }
+    }
   },
   {
     "Id": 106736,
@@ -16442,7 +16625,42 @@
     "SubTypeId": 46,
     "BFThreshold": 2,
     "TRO": "TR:3057r",
-    "ImageUrl": "https://i.ibb.co/nQvQkZ2/seeker-3057.png"
+    "ImageUrl": "https://i.ibb.co/nQvQkZ2/seeker-3057.png",
+    "BFArcs": {
+      "front": {
+        "std": [
+          "1",
+          "1",
+          "1",
+          ""
+        ],
+        "spe": "ENE"
+      },
+      "rear": {
+        "std": [
+          "4",
+          "5",
+          "3",
+          ""
+        ]
+      },
+      "left": {
+        "std": [
+          "2",
+          "2",
+          "2",
+          ""
+        ]
+      },
+      "right": {
+        "std": [
+          "2",
+          "2",
+          "2",
+          ""
+        ]
+      }
+    }
   },
   {
     "Id": 106756,
@@ -18570,7 +18788,8 @@
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
     "SubTypeId": 33,
-    "BFThreshold": 0
+    "BFThreshold": 0,
+    "BFArcs": {}
   },
   {
     "Id": 106774,
@@ -18959,7 +19178,44 @@
     "BFThreshold": 2,
     "Rules": "Standard",
     "TRO": "TR:3075",
-    "ImageUrl": "https://i.ibb.co/kyfTChj/lyonesse-escort-3075.png"
+    "ImageUrl": "https://i.ibb.co/kyfTChj/lyonesse-escort-3075.png",
+    "BFArcs": {
+      "front": {
+        "std": [
+          "2",
+          "2",
+          "1",
+          ""
+        ]
+      },
+      "rear": {
+        "std": [
+          "2",
+          "2",
+          "",
+          ""
+        ],
+        "spe": "ENE, PNT1"
+      },
+      "left": {
+        "std": [
+          "2",
+          "2",
+          "",
+          ""
+        ],
+        "spe": "ENE"
+      },
+      "right": {
+        "std": [
+          "2",
+          "2",
+          "",
+          ""
+        ],
+        "spe": "ENE"
+      }
+    }
   },
   {
     "Id": 106778,
@@ -21019,7 +21275,45 @@
     "BFThreshold": 1,
     "Rules": "Standard",
     "TRO": "XTR:Primitives IV",
-    "ImageUrl": "https://i.ibb.co/N3LfDdM/tigress-hbmps.png"
+    "ImageUrl": "https://i.ibb.co/N3LfDdM/tigress-hbmps.png",
+    "BFArcs": {
+      "front": {
+        "std": [
+          "2",
+          "2",
+          "",
+          ""
+        ],
+        "spe": "ENE"
+      },
+      "rear": {
+        "std": [
+          "0*",
+          "0*",
+          "",
+          ""
+        ],
+        "spe": "ENE"
+      },
+      "left": {
+        "std": [
+          "1",
+          "1",
+          "",
+          ""
+        ],
+        "spe": "ENE"
+      },
+      "right": {
+        "std": [
+          "1",
+          "1",
+          "",
+          ""
+        ],
+        "spe": "ENE"
+      }
+    }
   },
   {
     "Id": 106799,

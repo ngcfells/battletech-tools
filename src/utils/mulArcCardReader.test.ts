@@ -38,6 +38,20 @@ describe("reading a large craft's MUL card back", () => {
         expect(card.arcs.left.std).toEqual(["1", "2", "2", ""]);
     });
 
+    it("keeps a two-digit ability value whole, and spaces only after commas: Thera Carrier", () => {
+        const card = read("thera-carrier");
+        expect(card.arcs.front.spe).toBe("PNT12, FLK4/4/4/-");
+        expect(card.arcs.front.cap).toEqual(["187", "187", "187", "17"]);
+        expect(card.arcs.front.msl).toEqual(["4", "4", "4", "4"]);
+        expect(card.arcs.rear.spe).toBe("PNT4, FLK1/1/1/-");
+    });
+
+    it("reads a minimal-damage asterisk, drawn in two pieces: Sassanid", () => {
+        const card = read("sassanid");
+        expect(card.arcs.front).toEqual({ std: ["19", "19", "10", "3"], scap: empty, msl: empty, spe: "FLK1/1/1/-" });
+        expect(card.arcs.left.spe).toBe("FLK0*/0*/0*/-");
+    });
+
     it("refuses a card with a glyph it has never been taught, instead of guessing", () => {
         const card = read("overlord-vehicle", {});
         expect(card.arcs).toBeUndefined();
@@ -52,5 +66,11 @@ describe("reading a large craft's MUL card back", () => {
             left: { std: ["1", "2", "2", ""] },
             right: { std: ["1", "2", "2", ""] },
         });
+    });
+
+    it("stores an unarmed craft's blank card back as no arcs at all: Hephaestus Station", () => {
+        const card = read("hephaestus-station");
+        expect(card.unknown).toBeUndefined();
+        expect(compactArcs(card.arcs)).toEqual({});
     });
 });

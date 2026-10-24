@@ -2386,7 +2386,41 @@
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
     "SubTypeId": 14,
-    "BFThreshold": 2
+    "BFThreshold": 2,
+    "BFArcs": {
+      "front": {
+        "std": [
+          "5",
+          "6",
+          "5",
+          ""
+        ]
+      },
+      "rear": {
+        "std": [
+          "2",
+          "3",
+          "1",
+          ""
+        ]
+      },
+      "left": {
+        "std": [
+          "3",
+          "4",
+          "3",
+          ""
+        ]
+      },
+      "right": {
+        "std": [
+          "3",
+          "4",
+          "3",
+          ""
+        ]
+      }
+    }
   },
   {
     "Id": 106226,
@@ -2872,7 +2906,45 @@
     "BFThreshold": 2,
     "Rules": "Experimental",
     "TRO": "XTR:Phantoms",
-    "ImageUrl": "https://i.ibb.co/253p5wv/vampire-3075.png"
+    "ImageUrl": "https://i.ibb.co/253p5wv/vampire-3075.png",
+    "BFArcs": {
+      "front": {
+        "std": [
+          "5",
+          "6",
+          "6",
+          ""
+        ],
+        "spe": "ENE"
+      },
+      "rear": {
+        "std": [
+          "2",
+          "2",
+          "2",
+          ""
+        ],
+        "spe": "ENE"
+      },
+      "left": {
+        "std": [
+          "2",
+          "2",
+          "",
+          ""
+        ],
+        "spe": "ENE, PNT1"
+      },
+      "right": {
+        "std": [
+          "2",
+          "2",
+          "",
+          ""
+        ],
+        "spe": "ENE, PNT1"
+      }
+    }
   },
   {
     "Id": 106230,
@@ -7256,7 +7328,8 @@
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
     "SubTypeId": 31,
-    "BFThreshold": 0
+    "BFThreshold": 0,
+    "BFArcs": {}
   },
   {
     "Id": 106266,
@@ -7914,7 +7987,44 @@
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
     "SubTypeId": 14,
-    "BFThreshold": 3
+    "BFThreshold": 3,
+    "BFArcs": {
+      "front": {
+        "std": [
+          "7",
+          "8",
+          "8",
+          ""
+        ]
+      },
+      "rear": {
+        "std": [
+          "4",
+          "5",
+          "3",
+          ""
+        ],
+        "spe": "PNT1"
+      },
+      "left": {
+        "std": [
+          "3",
+          "4",
+          "4",
+          ""
+        ],
+        "spe": "PNT1"
+      },
+      "right": {
+        "std": [
+          "3",
+          "4",
+          "4",
+          ""
+        ],
+        "spe": "PNT1"
+      }
+    }
   },
   {
     "Id": 106274,
@@ -11551,7 +11661,8 @@
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
     "SubTypeId": 33,
-    "BFThreshold": 0
+    "BFThreshold": 0,
+    "BFArcs": {}
   },
   {
     "Id": 106310,
@@ -12987,7 +13098,87 @@
     "SubTypeId": 46,
     "BFThreshold": 4,
     "TRO": "TR:3085",
-    "ImageUrl": "https://i.ibb.co/7mzKq4s/arondight-3085.png"
+    "ImageUrl": "https://i.ibb.co/7mzKq4s/arondight-3085.png",
+    "BFArcs": {
+      "front": {
+        "std": [
+          "9",
+          "10",
+          "3",
+          ""
+        ],
+        "scap": [
+          "15",
+          "15",
+          "8",
+          ""
+        ],
+        "msl": [
+          "16",
+          "16",
+          "16",
+          "10"
+        ],
+        "spe": "PNT2"
+      },
+      "rear": {
+        "std": [
+          "10",
+          "10",
+          "3",
+          ""
+        ],
+        "msl": [
+          "6",
+          "6",
+          "6",
+          ""
+        ],
+        "spe": "PNT2"
+      },
+      "left": {
+        "std": [
+          "5",
+          "5",
+          "",
+          ""
+        ],
+        "scap": [
+          "4",
+          "4",
+          "4",
+          ""
+        ],
+        "msl": [
+          "6",
+          "6",
+          "6",
+          ""
+        ],
+        "spe": "PNT1"
+      },
+      "right": {
+        "std": [
+          "5",
+          "5",
+          "",
+          ""
+        ],
+        "scap": [
+          "4",
+          "4",
+          "4",
+          ""
+        ],
+        "msl": [
+          "6",
+          "6",
+          "6",
+          ""
+        ],
+        "spe": "PNT1"
+      }
+    }
   },
   {
     "Id": 106319,
@@ -15102,7 +15293,50 @@
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
     "SubTypeId": 14,
-    "BFThreshold": 6
+    "BFThreshold": 6,
+    "BFArcs": {
+      "front": {
+        "std": [
+          "8",
+          "8",
+          "8",
+          ""
+        ],
+        "msl": [
+          "23",
+          "9",
+          "9",
+          ""
+        ]
+      },
+      "rear": {
+        "std": [
+          "24",
+          "20",
+          "17",
+          "3"
+        ],
+        "spe": "PNT2, FLK8/7/7/-"
+      },
+      "left": {
+        "std": [
+          "19",
+          "16",
+          "13",
+          "3"
+        ],
+        "spe": "PNT1, FLK8/7/7/-"
+      },
+      "right": {
+        "std": [
+          "19",
+          "16",
+          "13",
+          "3"
+        ],
+        "spe": "PNT1, FLK8/7/7/-"
+      }
+    }
   },
   {
     "Id": 106339,
@@ -16399,7 +16633,77 @@
     "SubTypeId": 29,
     "BFThreshold": 3,
     "TRO": "TR:3057r",
-    "ImageUrl": "https://i.ibb.co/ph6vNHr/vigilant-3057.png"
+    "ImageUrl": "https://i.ibb.co/ph6vNHr/vigilant-3057.png",
+    "BFArcs": {
+      "front": {
+        "cap": [
+          "20",
+          "20",
+          "20",
+          ""
+        ],
+        "msl": [
+          "3",
+          "3",
+          "3",
+          "3"
+        ]
+      },
+      "rear": {
+        "std": [
+          "3",
+          "3",
+          "",
+          ""
+        ],
+        "cap": [
+          "10",
+          "10",
+          "10",
+          ""
+        ]
+      },
+      "left": {
+        "std": [
+          "4",
+          "4",
+          "2",
+          ""
+        ],
+        "cap": [
+          "10",
+          "10",
+          "10",
+          ""
+        ],
+        "msl": [
+          "3",
+          "3",
+          "3",
+          "3"
+        ]
+      },
+      "right": {
+        "std": [
+          "4",
+          "4",
+          "2",
+          ""
+        ],
+        "cap": [
+          "10",
+          "10",
+          "10",
+          ""
+        ],
+        "msl": [
+          "3",
+          "3",
+          "3",
+          "3"
+        ]
+      }
+    }
   },
   {
     "Id": 106352,

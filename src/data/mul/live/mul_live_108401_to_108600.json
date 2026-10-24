@@ -217,7 +217,8 @@
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
     "SubTypeId": 33,
-    "BFThreshold": 0
+    "BFThreshold": 0,
+    "BFArcs": {}
   },
   {
     "Id": 108404,
@@ -4092,7 +4093,42 @@
     "SubTypeId": 14,
     "BFThreshold": 2,
     "TRO": "TR:3057r",
-    "ImageUrl": "https://i.ibb.co/VH5mx4R/leopard-3057.png"
+    "ImageUrl": "https://i.ibb.co/VH5mx4R/leopard-3057.png",
+    "BFArcs": {
+      "front": {
+        "std": [
+          "5",
+          "6",
+          "4",
+          ""
+        ]
+      },
+      "rear": {
+        "std": [
+          "3",
+          "3",
+          "1",
+          ""
+        ],
+        "spe": "ENE"
+      },
+      "left": {
+        "std": [
+          "4",
+          "4",
+          "4",
+          ""
+        ]
+      },
+      "right": {
+        "std": [
+          "4",
+          "4",
+          "4",
+          ""
+        ]
+      }
+    }
   },
   {
     "Id": 108443,
@@ -12061,7 +12097,41 @@
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
     "SubTypeId": 29,
-    "BFThreshold": 25
+    "BFThreshold": 25,
+    "BFArcs": {
+      "front": {
+        "cap": [
+          "337",
+          "337",
+          "337",
+          "192"
+        ]
+      },
+      "rear": {
+        "cap": [
+          "96",
+          "96",
+          "96",
+          "48"
+        ]
+      },
+      "left": {
+        "cap": [
+          "295",
+          "295",
+          "295",
+          "131"
+        ]
+      },
+      "right": {
+        "cap": [
+          "295",
+          "295",
+          "295",
+          "131"
+        ]
+      }
+    }
   },
   {
     "Id": 108512,
@@ -13462,7 +13532,43 @@
     "BFThreshold": 2,
     "Rules": "Standard",
     "TRO": "TR:3075",
-    "ImageUrl": "https://i.ibb.co/DMXYc5T/aurora-3075.png"
+    "ImageUrl": "https://i.ibb.co/DMXYc5T/aurora-3075.png",
+    "BFArcs": {
+      "front": {
+        "std": [
+          "2",
+          "3",
+          "2",
+          ""
+        ]
+      },
+      "rear": {
+        "std": [
+          "3",
+          "3",
+          "2",
+          ""
+        ]
+      },
+      "left": {
+        "std": [
+          "5",
+          "7",
+          "6",
+          ""
+        ],
+        "spe": "PNT1"
+      },
+      "right": {
+        "std": [
+          "5",
+          "7",
+          "6",
+          ""
+        ],
+        "spe": "PNT1"
+      }
+    }
   },
   {
     "Id": 108528,
@@ -18026,7 +18132,8 @@
     "SubTypeId": 14,
     "BFThreshold": 0,
     "TRO": "Price of Glory",
-    "ImageUrl": "https://i.ibb.co/5TGJ8px/mul-blank.png"
+    "ImageUrl": "https://i.ibb.co/5TGJ8px/mul-blank.png",
+    "BFArcs": {}
   },
   {
     "Id": 108573,
@@ -18089,7 +18196,77 @@
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
     "SubTypeId": 29,
-    "BFThreshold": 8
+    "BFThreshold": 8,
+    "BFArcs": {
+      "front": {
+        "std": [
+          "7",
+          "8",
+          "3",
+          ""
+        ],
+        "cap": [
+          "39",
+          "39",
+          "39",
+          "32"
+        ],
+        "msl": [
+          "18",
+          "18",
+          "18",
+          "18"
+        ]
+      },
+      "rear": {
+        "cap": [
+          "27",
+          "27",
+          "27",
+          ""
+        ]
+      },
+      "left": {
+        "std": [
+          "6",
+          "6",
+          "3",
+          ""
+        ],
+        "cap": [
+          "140",
+          "140",
+          "",
+          ""
+        ],
+        "msl": [
+          "9",
+          "9",
+          "9",
+          "9"
+        ]
+      },
+      "right": {
+        "std": [
+          "6",
+          "6",
+          "3",
+          ""
+        ],
+        "cap": [
+          "140",
+          "140",
+          "",
+          ""
+        ],
+        "msl": [
+          "9",
+          "9",
+          "9",
+          "9"
+        ]
+      }
+    }
   },
   {
     "Id": 108574,
@@ -19652,7 +19829,8 @@
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
     "SubTypeId": 31,
-    "BFThreshold": 0
+    "BFThreshold": 0,
+    "BFArcs": {}
   },
   {
     "Id": 108588,
@@ -20098,7 +20276,21 @@
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
     "SubTypeId": 33,
-    "BFThreshold": 1
+    "BFThreshold": 1,
+    "BFArcs": {
+      "front": {
+        "spe": "ENE"
+      },
+      "rear": {
+        "spe": "ENE"
+      },
+      "left": {
+        "spe": "ENE"
+      },
+      "right": {
+        "spe": "ENE"
+      }
+    }
   },
   {
     "Id": 108591,

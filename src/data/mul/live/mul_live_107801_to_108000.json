@@ -3930,7 +3930,63 @@
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
     "SubTypeId": 14,
-    "BFThreshold": 6
+    "BFThreshold": 6,
+    "BFArcs": {
+      "front": {
+        "std": [
+          "10",
+          "10",
+          "6",
+          ""
+        ],
+        "msl": [
+          "6",
+          "6",
+          "6",
+          "6"
+        ],
+        "spe": "PNT1"
+      },
+      "rear": {
+        "std": [
+          "20",
+          "17",
+          "7",
+          ""
+        ],
+        "spe": "PNT1"
+      },
+      "left": {
+        "std": [
+          "10",
+          "8",
+          "4",
+          ""
+        ],
+        "scap": [
+          "2",
+          "2",
+          "2",
+          ""
+        ],
+        "spe": "PNT1"
+      },
+      "right": {
+        "std": [
+          "10",
+          "8",
+          "4",
+          ""
+        ],
+        "scap": [
+          "2",
+          "2",
+          "2",
+          ""
+        ],
+        "spe": "PNT1"
+      }
+    }
   },
   {
     "Id": 107836,
@@ -5279,7 +5335,53 @@
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
     "SubTypeId": 29,
-    "BFThreshold": 5
+    "BFThreshold": 5,
+    "BFArcs": {
+      "front": {
+        "cap": [
+          "37",
+          "37",
+          "37",
+          ""
+        ],
+        "msl": [
+          "8",
+          "8",
+          "8",
+          "8"
+        ]
+      },
+      "rear": {
+        "cap": [
+          "7",
+          "7",
+          "7",
+          ""
+        ],
+        "msl": [
+          "4",
+          "4",
+          "4",
+          "4"
+        ]
+      },
+      "left": {
+        "cap": [
+          "33",
+          "33",
+          "33",
+          ""
+        ]
+      },
+      "right": {
+        "cap": [
+          "33",
+          "33",
+          "33",
+          ""
+        ]
+      }
+    }
   },
   {
     "Id": 107850,
@@ -7380,7 +7482,61 @@
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
     "SubTypeId": 46,
-    "BFThreshold": 2
+    "BFThreshold": 2,
+    "BFArcs": {
+      "front": {
+        "std": [
+          "4",
+          "3",
+          "1",
+          ""
+        ],
+        "msl": [
+          "15",
+          "15",
+          "15",
+          "15"
+        ],
+        "spe": "PNT1"
+      },
+      "rear": {
+        "std": [
+          "3",
+          "3",
+          "",
+          ""
+        ],
+        "spe": "ENE"
+      },
+      "left": {
+        "std": [
+          "2",
+          "2",
+          "",
+          ""
+        ],
+        "msl": [
+          "8",
+          "8",
+          "8",
+          "8"
+        ]
+      },
+      "right": {
+        "std": [
+          "2",
+          "2",
+          "",
+          ""
+        ],
+        "msl": [
+          "8",
+          "8",
+          "8",
+          "8"
+        ]
+      }
+    }
   },
   {
     "Id": 107873,
@@ -8918,7 +9074,42 @@
     "SubTypeId": 46,
     "BFThreshold": 2,
     "TRO": "TR:3057r",
-    "ImageUrl": "https://i.ibb.co/tp17zxr/excalibur-3057.png"
+    "ImageUrl": "https://i.ibb.co/tp17zxr/excalibur-3057.png",
+    "BFArcs": {
+      "front": {
+        "std": [
+          "5",
+          "6",
+          "4",
+          ""
+        ]
+      },
+      "rear": {
+        "std": [
+          "5",
+          "5",
+          "2",
+          ""
+        ],
+        "spe": "ENE"
+      },
+      "left": {
+        "std": [
+          "3",
+          "4",
+          "2",
+          ""
+        ]
+      },
+      "right": {
+        "std": [
+          "3",
+          "4",
+          "2",
+          ""
+        ]
+      }
+    }
   },
   {
     "Id": 107886,
@@ -9856,7 +10047,8 @@
     "SubTypeId": 26,
     "BFThreshold": 0,
     "TRO": "HB:HK",
-    "ImageUrl": "https://i.ibb.co/5TGJ8px/mul-blank.png"
+    "ImageUrl": "https://i.ibb.co/5TGJ8px/mul-blank.png",
+    "BFArcs": {}
   },
   {
     "Id": 107894,
@@ -13757,7 +13949,45 @@
     "SubTypeId": 26,
     "BFThreshold": 1,
     "TRO": "TR:3085",
-    "ImageUrl": "https://i.ibb.co/yNRpdH2/close-assault-landing-craft-dj.png"
+    "ImageUrl": "https://i.ibb.co/yNRpdH2/close-assault-landing-craft-dj.png",
+    "BFArcs": {
+      "front": {
+        "std": [
+          "0*",
+          "",
+          "",
+          ""
+        ],
+        "spe": "ENE, PNT1"
+      },
+      "rear": {
+        "std": [
+          "1",
+          "1",
+          "",
+          ""
+        ],
+        "spe": "ENE"
+      },
+      "left": {
+        "std": [
+          "1",
+          "1",
+          "",
+          ""
+        ],
+        "spe": "ENE"
+      },
+      "right": {
+        "std": [
+          "1",
+          "1",
+          "",
+          ""
+        ],
+        "spe": "ENE"
+      }
+    }
   },
   {
     "Id": 107922,
@@ -18396,7 +18626,93 @@
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
     "SubTypeId": 29,
-    "BFThreshold": 165
+    "BFThreshold": 165,
+    "BFArcs": {
+      "front": {
+        "std": [
+          "145",
+          "125",
+          "70",
+          "32"
+        ],
+        "cap": [
+          "618",
+          "618",
+          "618",
+          "438"
+        ],
+        "msl": [
+          "18",
+          "18",
+          "18",
+          "18"
+        ],
+        "spe": "PNT9"
+      },
+      "rear": {
+        "std": [
+          "52",
+          "49",
+          "40",
+          "15"
+        ],
+        "cap": [
+          "60",
+          "60",
+          "60",
+          "60"
+        ],
+        "msl": [
+          "6",
+          "6",
+          "6",
+          "6"
+        ],
+        "spe": "PNT3"
+      },
+      "left": {
+        "std": [
+          "93",
+          "78",
+          "41",
+          "15"
+        ],
+        "cap": [
+          "318",
+          "318",
+          "318",
+          "258"
+        ],
+        "msl": [
+          "27",
+          "27",
+          "6",
+          "6"
+        ],
+        "spe": "PNT3"
+      },
+      "right": {
+        "std": [
+          "93",
+          "78",
+          "41",
+          "15"
+        ],
+        "cap": [
+          "318",
+          "318",
+          "318",
+          "258"
+        ],
+        "msl": [
+          "27",
+          "27",
+          "6",
+          "6"
+        ],
+        "spe": "PNT3"
+      }
+    }
   },
   {
     "Id": 107964,

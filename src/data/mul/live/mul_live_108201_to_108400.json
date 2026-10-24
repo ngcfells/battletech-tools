@@ -236,7 +236,65 @@
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
     "SubTypeId": 29,
-    "BFThreshold": 8
+    "BFThreshold": 8,
+    "BFArcs": {
+      "front": {
+        "cap": [
+          "143",
+          "143",
+          "143",
+          "55"
+        ],
+        "msl": [
+          "8",
+          "8",
+          "8",
+          "8"
+        ]
+      },
+      "rear": {
+        "cap": [
+          "10",
+          "10",
+          "10",
+          "10"
+        ],
+        "msl": [
+          "3",
+          "3",
+          "3",
+          "3"
+        ]
+      },
+      "left": {
+        "cap": [
+          "130",
+          "130",
+          "130",
+          "13"
+        ],
+        "msl": [
+          "5",
+          "5",
+          "5",
+          "5"
+        ]
+      },
+      "right": {
+        "cap": [
+          "130",
+          "130",
+          "130",
+          "13"
+        ],
+        "msl": [
+          "5",
+          "5",
+          "5",
+          "5"
+        ]
+      }
+    }
   },
   {
     "Id": 108203,
@@ -454,7 +512,41 @@
     "SubTypeId": 46,
     "BFThreshold": 1,
     "TRO": "TR:3026r",
-    "ImageUrl": "https://i.ibb.co/qBcLbqr/cargomaster-3026r.png"
+    "ImageUrl": "https://i.ibb.co/qBcLbqr/cargomaster-3026r.png",
+    "BFArcs": {
+      "front": {
+        "std": [
+          "9",
+          "10",
+          "9",
+          ""
+        ]
+      },
+      "rear": {
+        "std": [
+          "6",
+          "7",
+          "5",
+          ""
+        ]
+      },
+      "left": {
+        "std": [
+          "4",
+          "5",
+          "4",
+          ""
+        ]
+      },
+      "right": {
+        "std": [
+          "4",
+          "5",
+          "4",
+          ""
+        ]
+      }
+    }
   },
   {
     "Id": 108206,
@@ -1177,7 +1269,8 @@
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
     "SubTypeId": 31,
-    "BFThreshold": 0
+    "BFThreshold": 0,
+    "BFArcs": {}
   },
   {
     "Id": 108210,
@@ -8973,7 +9066,47 @@
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
     "SubTypeId": 29,
-    "BFThreshold": 4
+    "BFThreshold": 4,
+    "BFArcs": {
+      "front": {
+        "std": [
+          "3",
+          "4",
+          "2",
+          ""
+        ],
+        "cap": [
+          "7",
+          "7",
+          "7",
+          ""
+        ]
+      },
+      "rear": {
+        "std": [
+          "1",
+          "2",
+          "2",
+          ""
+        ]
+      },
+      "left": {
+        "std": [
+          "3",
+          "3",
+          "",
+          ""
+        ]
+      },
+      "right": {
+        "std": [
+          "3",
+          "3",
+          "",
+          ""
+        ]
+      }
+    }
   },
   {
     "Id": 108280,
@@ -10107,7 +10240,43 @@
     "BFThreshold": 1,
     "Rules": "Advanced",
     "TRO": "XTR:Primitives II",
-    "ImageUrl": "https://i.ibb.co/yNRpdH2/close-assault-landing-craft-dj.png"
+    "ImageUrl": "https://i.ibb.co/yNRpdH2/close-assault-landing-craft-dj.png",
+    "BFArcs": {
+      "front": {
+        "std": [
+          "2",
+          "2",
+          "",
+          ""
+        ],
+        "spe": "ENE"
+      },
+      "rear": {
+        "std": [
+          "1",
+          "1",
+          "",
+          ""
+        ],
+        "spe": "ENE"
+      },
+      "left": {
+        "std": [
+          "0*",
+          "1",
+          "1",
+          ""
+        ]
+      },
+      "right": {
+        "std": [
+          "0*",
+          "1",
+          "1",
+          ""
+        ]
+      }
+    }
   },
   {
     "Id": 108292,
@@ -14209,7 +14378,8 @@
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
     "SubTypeId": 46,
-    "BFThreshold": 0
+    "BFThreshold": 0,
+    "BFArcs": {}
   },
   {
     "Id": 108327,
@@ -14785,7 +14955,43 @@
     "SubTypeId": 14,
     "BFThreshold": 2,
     "TRO": "TR:3057r",
-    "ImageUrl": "https://i.ibb.co/7CJtpKB/vengeance-3057.png"
+    "ImageUrl": "https://i.ibb.co/7CJtpKB/vengeance-3057.png",
+    "BFArcs": {
+      "front": {
+        "std": [
+          "3",
+          "3",
+          "3",
+          ""
+        ]
+      },
+      "rear": {
+        "std": [
+          "12",
+          "15",
+          "11",
+          ""
+        ]
+      },
+      "left": {
+        "std": [
+          "2",
+          "2",
+          "1",
+          ""
+        ],
+        "spe": "ENE"
+      },
+      "right": {
+        "std": [
+          "2",
+          "2",
+          "1",
+          ""
+        ],
+        "spe": "ENE"
+      }
+    }
   },
   {
     "Id": 108333,
@@ -15158,7 +15364,93 @@
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
     "SubTypeId": 31,
-    "BFThreshold": 91
+    "BFThreshold": 91,
+    "BFArcs": {
+      "front": {
+        "std": [
+          "46",
+          "48",
+          "31",
+          ""
+        ],
+        "cap": [
+          "594",
+          "594",
+          "426",
+          "367"
+        ],
+        "msl": [
+          "15",
+          "15",
+          "15",
+          "15"
+        ],
+        "spe": "PNT5, FLK3/3/3/-"
+      },
+      "rear": {
+        "std": [
+          "46",
+          "48",
+          "31",
+          ""
+        ],
+        "cap": [
+          "594",
+          "594",
+          "426",
+          "367"
+        ],
+        "msl": [
+          "15",
+          "15",
+          "15",
+          "15"
+        ],
+        "spe": "PNT5, FLK3/3/3/-"
+      },
+      "left": {
+        "std": [
+          "23",
+          "24",
+          "16",
+          ""
+        ],
+        "cap": [
+          "297",
+          "297",
+          "213",
+          "184"
+        ],
+        "msl": [
+          "8",
+          "8",
+          "8",
+          "8"
+        ],
+        "spe": "PNT3, FLK2/2/2/-"
+      },
+      "right": {
+        "std": [
+          "23",
+          "24",
+          "16",
+          ""
+        ],
+        "cap": [
+          "297",
+          "297",
+          "213",
+          "184"
+        ],
+        "msl": [
+          "8",
+          "8",
+          "8",
+          "8"
+        ],
+        "spe": "PNT3, FLK2/2/2/-"
+      }
+    }
   },
   {
     "Id": 108336,
@@ -18894,7 +19186,41 @@
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
     "SubTypeId": 31,
-    "BFThreshold": 2
+    "BFThreshold": 2,
+    "BFArcs": {
+      "front": {
+        "std": [
+          "3",
+          "4",
+          "3",
+          ""
+        ]
+      },
+      "rear": {
+        "std": [
+          "3",
+          "4",
+          "3",
+          ""
+        ]
+      },
+      "left": {
+        "std": [
+          "2",
+          "2",
+          "2",
+          ""
+        ]
+      },
+      "right": {
+        "std": [
+          "2",
+          "2",
+          "2",
+          ""
+        ]
+      }
+    }
   },
   {
     "Id": 108367,

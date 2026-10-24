@@ -24,7 +24,6 @@ const VALUE_LEFT = 168;
 const VALUE_RIGHT = 488;
 const RANGES = ["s", "m", "l", "e"];
 const TOKEN_GAP = 20; // wider than this between glyphs: a new value
-const SPACE_GAP = 6; // in the SPE row, wider than this between glyphs: a space
 
 /** A black-and-white view of a PNG: dark(x, y) is true for ink. */
 export function bitmapOfPng(buffer) {
@@ -80,16 +79,13 @@ function glyphKey(bitmap, top, bottom, left, right) {
 }
 
 /** Reads the text in a band; unknown glyphs are collected in `unknown` and read as "?". */
-function readText(bitmap, top, bottom, left, right, glyphs, unknown, spaceGap) {
+function readText(bitmap, top, bottom, left, right, glyphs, unknown) {
     let text = "";
-    let previousRight = null;
     for (const [glyphLeft, glyphRight] of inkRuns(bitmap, top, bottom, left, right, 0)) {
-        if (previousRight !== null && spaceGap !== undefined && glyphLeft - previousRight - 1 > spaceGap) text += " ";
         const key = glyphKey(bitmap, top, bottom, glyphLeft, glyphRight);
         const label = glyphs[key];
         if (label === undefined) unknown.push(key);
         text += label ?? "?";
-        previousRight = glyphRight;
     }
     return text;
 }
@@ -125,7 +121,10 @@ export function readArcCard(bitmap, glyphs) {
             }
         });
         const speTop = FIRST_ROW_TOP + RANGES.length * ROW_PITCH + panel.dy;
-        arc.spe = readText(bitmap, speTop, speTop + ROW_HEIGHT, VALUE_LEFT + panel.dx, VALUE_RIGHT + panel.dx, glyphs, unknown, SPACE_GAP);
+        // Abilities are written without spaces ("PNT12", "FLK1/1/1/-") and listed ", " apart. Glyph gaps can't tell
+        // a space: the gap after a "1" is as wide as one.
+        arc.spe = readText(bitmap, speTop, speTop + ROW_HEIGHT, VALUE_LEFT + panel.dx, VALUE_RIGHT + panel.dx, glyphs, unknown)
+            .replace(/,/g, ", ");
         arcs[panel.arc] = arc;
     }
     if (unknown.length > 0) return { unknown };
@@ -134,7 +133,8 @@ export function readArcCard(bitmap, glyphs) {
 
 /**
  * The arcs as stored on a MUL record (BFArcs): each arc keeps only the columns with a value and its abilities if
- * any, e.g. { front: { std: ["8", "9", "4", ""] }, rear: { std: [...], spe: "PNT1" }, ... }.
+ * any, e.g. { front: { std: ["8", "9", "4", ""] }, rear: { std: [...], spe: "PNT1" }, ... }. An arc with nothing
+ * printed is left out, so an unarmed craft's blank card back is {}: read, with no arc damage.
  */
 export function compactArcs(arcs) {
     const compact = {};
@@ -147,7 +147,7 @@ export function compactArcs(arcs) {
                 kept[column] = values;
             }
         }
-        compact[arcName] = kept;
+        if (Object.keys(kept).length > 0) compact[arcName] = kept;
     }
     return compact;
 }
