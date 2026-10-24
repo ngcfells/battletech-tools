@@ -267,8 +267,11 @@ export function restoreFullBackup(
         message: "Overwrite your Settings",
     })
 
-    if( io.favoriteASGroups ) {
-        for( let item of io.favoriteASGroups ) {
+    if( Array.isArray(io.favoriteASGroups) ) {
+        if( io.favoriteASGroups.length > MAX_RESTORE_GROUPS ) {
+            restoreMessages.push(warning("Only the first " + MAX_RESTORE_GROUPS + " of " + io.favoriteASGroups.length + " Alpha Strike Favorite Groups are restored"));
+        }
+        for( let item of io.favoriteASGroups.slice(0, MAX_RESTORE_GROUPS) ) {
             let foundItem: IASGroupExport | null = null;
             let itemName = "(nameless)";
             if( item.name ) {
@@ -857,6 +860,8 @@ export function restoreFullBackup(
     }
 
     if( performActions ) {
+        appGlobals.saveFavoriteASGroups( appGlobals.favoriteASGroups );
+        appGlobals.saveFavoriteCBTGroups( appGlobals.favoriteCBTGroups );
         appGlobals.saveCurrentBattleMech( appGlobals.currentBattleMech );
         appGlobals.saveCurrentASForce( appGlobals.currentASForce );
         if( appGlobals.currentCBTForce )

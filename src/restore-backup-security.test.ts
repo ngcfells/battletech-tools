@@ -1,6 +1,6 @@
 // @vitest-environment happy-dom
 import { describe, expect, it } from "vitest";
-import { MAX_ACES_CAMPAIGNS, MAX_VEHICLE_SAVES, restoreFullBackup, IFullBackup } from "./dataSaves";
+import { MAX_ACES_CAMPAIGNS, MAX_RESTORE_GROUPS, MAX_VEHICLE_SAVES, restoreFullBackup, IFullBackup } from "./dataSaves";
 import SmallCraft from "./classes/small-craft";
 import Vehicle from "./classes/vehicle";
 import { BattleMechForce, MAX_FORCE_GROUPS } from "./classes/battlemech-force";
@@ -63,6 +63,36 @@ describe("Restoring a backup", () => {
             .filter((msg) => msg.severity === "warning").map((msg) => msg.message);
         expect(preview.length).toBeGreaterThan(0);
         expect(preview.every((msg) => msg.startsWith("If you overwrite your current Small Craft: "))).toBe(true);
+    });
+
+    // #34: restored favourite groups only lived in memory and were gone on the next page load.
+    it("saves the restored favourite groups", () => {
+        const saved: Record<string, unknown[]> = {};
+        const globals = {
+            favoriteASGroups: [], favoriteCBTGroups: [], battleMechSaves: [], vehicleSaves: [], fighterSaves: [],
+            infantrySaves: [], battleArmorSaves: [], protoMechSaves: [], smallCraftSaves: [], capitalShipSaves: [], buildingSaves: [],
+            appSettings: {},
+        } as Record<string, unknown>;
+        // Every appGlobals.saveX(...) records what it was given.
+        const appGlobals = new Proxy(globals, {
+            get: (target, key: string) => key in target ? target[key]
+                : key.startsWith("save") ? (value: unknown[]) => { saved[key] = value; } : undefined,
+        });
+        const io = backup({
+            favoriteASGroups: [{ uuid: "as1", name: "AS favourites", members: [], groups: [] }],
+            favoriteCBTGroups: [{ uuid: "cbt1", name: "CBT favourites", units: [] }],
+        });
+        restoreFullBackup(io, appGlobals as never, false, false, false, true);
+        expect(saved.saveFavoriteASGroups).toHaveLength(1);
+        expect(saved.saveFavoriteCBTGroups).toHaveLength(1);
+    });
+
+    it("caps the Alpha Strike favourite groups it reads, as it does the Classic ones, and says so", () => {
+        const favoriteASGroups = Array.from({ length: MAX_RESTORE_GROUPS + 5 }, (_, i) => ({ uuid: "a" + i, name: "g" + i, members: [], groups: [] }));
+        const messages = restoreFullBackup(backup({ favoriteASGroups }), appGlobals());
+        expect(messages.filter((msg) => msg.severity === "add")).toHaveLength(MAX_RESTORE_GROUPS);
+        expect(messages.some((msg) => msg.severity === "warning" && msg.message.includes(String(MAX_RESTORE_GROUPS)))).toBe(true);
+        expect(() => restoreFullBackup(backup({ favoriteASGroups: { uuid: "x" } }), appGlobals())).not.toThrow();
     });
 
     it("caps the Aces campaigns it reads and skips entries that are not campaigns", () => {
