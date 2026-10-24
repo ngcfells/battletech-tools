@@ -853,3 +853,14 @@ describe("Combat Vehicle chassis modifications (TO:AUE pp.114-115, 193, 219)", (
         expect(restored.getChassisModifications()).toEqual([]);
     });
 });
+
+describe("Loading saved vehicles (#86)", () => {
+    it("loads a saved vehicle without copying the whole equipment catalog", () => {
+        const saved = new Vehicle().exportJSON();
+        expect(new Vehicle(saved).getImportIssues()).toEqual([]);
+        const start = performance.now();
+        for (let i = 0; i < 100; i++) new Vehicle(saved);
+        // A backup restore loads up to a thousand saves; each load copied the catalog and took about 25 ms.
+        expect(performance.now() - start).toBeLessThan(1000);
+    });
+});

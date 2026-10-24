@@ -11,7 +11,7 @@ import SmallCraft from "./small-craft";
 import Pilot, { IPilot } from "./pilot";
 import { getSkillMultiplier } from "../data/skill-multipliers";
 import { CAPITAL_MISSILE_CRITICAL_CHANCE, CAPITAL_SHIP_CRITICAL_NAMES, CapitalShipAttackDirection, ICapitalShipHit, getCapitalShipHitLocation } from "../data/capital-ship-hit-tables";
-import { CUSTOM_HOMEBREW_RULES_LEVEL, getArtemisLauncherBattleValue, getItemBattleValue, getAmmoBattleValuePerTon, getCompatibleAmmo, getEquipmentRulesLevel, getEffectiveIntroduction, getEquipmentListByTech, getWeaponShotsPerTon, isEquipmentOffered } from "../data/equipment-registry";
+import { CUSTOM_HOMEBREW_RULES_LEVEL, getArtemisLauncherBattleValue, getEquipmentRecordsByTech, getItemBattleValue, getAmmoBattleValuePerTon, getCompatibleAmmo, getEquipmentRulesLevel, getEffectiveIntroduction, getEquipmentListByTech, getWeaponShotsPerTon, isEquipmentOffered } from "../data/equipment-registry";
 import { findByTag } from "../data/tag-match";
 import { sizeDroneSystems } from "../data/variable-equipment";
 import { IWeaponBay, capitalBayWeapon, groupWeaponBays, standardBayWeapon } from "../data/weapon-bays";
@@ -582,10 +582,11 @@ export default class CapitalShip {
         const offeredLevel = includeCustom ? Math.max(rulesLevel, CUSTOM_HOMEBREW_RULES_LEVEL) : rulesLevel;
         return items.filter((item) => isEquipmentOffered(item, this._rulesEdition, offeredLevel));
     }
-    private _catalog(): IEquipmentItem[] {
+    /** Catalog records to look items up in; a mounted item is a copy (_newEquipment), so these are never changed. */
+    private _catalog(): readonly IEquipmentItem[] {
         const techTag = this._tech.tag;
-        const own = getEquipmentListByTech(techTag, true);
-        return techTag === "is" || techTag === "clan" ? [...own, ...getEquipmentListByTech(techTag === "clan" ? "mclan" : "mis", true)] : own;
+        const own = getEquipmentRecordsByTech(techTag, true);
+        return techTag === "is" || techTag === "clan" ? [...own, ...getEquipmentRecordsByTech(techTag === "clan" ? "mclan" : "mis", true)] : own;
     }
     /** Weapons sit in a firing arc; ammunition and other equipment in the hull, or in an arc if given one. */
     private _validLocation(item: IEquipmentItem, location: unknown): string | undefined {

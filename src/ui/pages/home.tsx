@@ -179,6 +179,7 @@ export default class Home extends React.Component<IHomeProps, IHomeState> {
                         <li>On the 'Mech sheet, a weapon with no medium or long range bracket (the Nail and Rivet Guns) prints a dash instead of 0.</li>
                         <li>Alpha Strike: heat only ever lowers a unit's damage, so two LRM 5s no longer show 5 short-range damage.</li>
                         <li>Importing a design no longer keeps the previous design's quirks.</li>
+                        <li>Faster: importing a Small Craft or DropShip <i>.blk</i> file takes a fraction of a second instead of 5 to 15, every change in the Small Craft, fighter and capital ship creators is quicker on designs with Artemis launchers, and restoring a backup full of saved vehicles takes under a second.</li>
                         <li>The 'Mech Creator's Alpha Strike Role is a drop-down of the published ground roles instead of a text box.</li>
                         <li>The Classic BattleTech roster page's issue link goes to the current project instead of Jeff's original one.</li>
                         <li>The 'Mech sheet's "Created with" footer is on three lines, so a long site name no longer runs into the trademark notices.</li>

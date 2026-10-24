@@ -26,11 +26,11 @@ describe("Restoring a backup", () => {
         const saves = Array.from({ length: MAX_VEHICLE_SAVES + 50 }, (_, i) => ({ ...vehicleSave("v" + i), uuid: "u" + i }));
         const started = Date.now();
         const messages = restoreFullBackup(backup({ vehicleSaves: saves }), appGlobals());
-        expect(Date.now() - started).toBeLessThan(20000);
+        expect(Date.now() - started).toBeLessThan(4000);
         expect(messages.filter((msg) => msg.severity === "add")).toHaveLength(MAX_VEHICLE_SAVES);
         expect(messages.some((msg) => msg.severity === "warning" && msg.message.includes(String(MAX_VEHICLE_SAVES)))).toBe(true);
-    // The 20-second bound above is the test; the runner's 5-second default sits below it (about 4 s on a slow machine).
-    }, 30_000);
+    // About 0.3 s since vehicles stopped copying the whole equipment catalog on load (#86).
+    });
 
     it("reports cleaned vehicles in favorite groups and vehicles over the per-group limit (P4)", () => {
         const bad = { ...vehicleSave("bad"), equipment: [null] };

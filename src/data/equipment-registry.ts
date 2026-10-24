@@ -98,17 +98,22 @@ function getCatalogByTech(techBase: EquipmentCatalog): IEquipmentItem[] {
  * after the catalogs, so no catalog record is ever reached through them.
  */
 export function getBattleArmorScaleListByTech(techTag: string): IEquipmentItem[] {
+    return cloneEquipment([...getBattleArmorScaleRecordsByTech(techTag)]);
+}
+
+/** The records getBattleArmorScaleListByTech copies, shared with the catalog: only for looking items up, never to change. */
+export function getBattleArmorScaleRecordsByTech(techTag: string): readonly IEquipmentItem[] {
     switch (techTag.toLowerCase()) {
         case "clan":
-            return cloneEquipment(getBattleArmorScaleEquipment("clan"));
+            return getBattleArmorScaleEquipment("clan");
         case "mis":
-            return cloneEquipment([...getBattleArmorScaleEquipment("is"), ...getBattleArmorScaleEquipment("clan")]);
+            return [...getBattleArmorScaleEquipment("is"), ...getBattleArmorScaleEquipment("clan")];
         case "mclan":
-            return cloneEquipment([...getBattleArmorScaleEquipment("clan"), ...getBattleArmorScaleEquipment("is")]);
+            return [...getBattleArmorScaleEquipment("clan"), ...getBattleArmorScaleEquipment("is")];
         case "custom":
             return [];
         default:
-            return cloneEquipment(getBattleArmorScaleEquipment("is"));
+            return getBattleArmorScaleEquipment("is");
     }
 }
 
@@ -564,22 +569,30 @@ export function getEquipmentCatalogs(): Record<string, IEquipmentItem[]> {
 }
 
 export function getEquipmentListByTech(techTag: string, includeCustom: boolean = false): IEquipmentItem[] {
+    return cloneEquipment([...getEquipmentRecordsByTech(techTag, includeCustom)]);
+}
+
+/**
+ * The records getEquipmentListByTech copies, shared with the catalog: only for looking items up, never to change.
+ * A unit copies a record when it mounts it, so its lookups use these and skip copying the whole catalog (#86).
+ */
+export function getEquipmentRecordsByTech(techTag: string, includeCustom: boolean = false): readonly IEquipmentItem[] {
     const normalizedTech = techTag.toLowerCase();
     const universalEquipment = getCatalogByTech("universal");
     const customEquipment = includeCustom ? getCatalogByTech("custom") : [];
 
     switch (normalizedTech) {
         case "clan":
-            return cloneEquipment([...getCatalogByTech("clan"), ...customEquipment, ...universalEquipment]);
+            return [...getCatalogByTech("clan"), ...customEquipment, ...universalEquipment];
         case "mis":
-            return cloneEquipment([...getCatalogByTech("is"), ...getCatalogByTech("clan"), ...customEquipment, ...universalEquipment]);
+            return [...getCatalogByTech("is"), ...getCatalogByTech("clan"), ...customEquipment, ...universalEquipment];
         case "mclan":
-            return cloneEquipment([...getCatalogByTech("clan"), ...getCatalogByTech("is"), ...customEquipment, ...universalEquipment]);
+            return [...getCatalogByTech("clan"), ...getCatalogByTech("is"), ...customEquipment, ...universalEquipment];
         case "custom":
-            return cloneEquipment([...getCatalogByTech("custom"), ...universalEquipment]);
+            return [...getCatalogByTech("custom"), ...universalEquipment];
         case "is":
         default:
-            return cloneEquipment([...getCatalogByTech("is"), ...customEquipment, ...universalEquipment]);
+            return [...getCatalogByTech("is"), ...customEquipment, ...universalEquipment];
     }
 }
 

@@ -357,7 +357,25 @@ describe("Small Craft saves and imports", () => {
         expect(troCraft.tro.getProduction("manufacturer")).toBe("Wangker Aerospace");
         expect(troCraft.tro.getComponent("engine")).toBe("Rawlings");
         expect(troCraft.tro.getText("battleHistory")).toBe("Built for the Periphery trade.");
-    }, 20000);
+    });
+
+    it("reads a small BLK file in well under a second (#86)", () => {
+        const blk = [
+            "<UnitType>", "SmallCraft", "</UnitType>", "<Name>", "Test Shuttle", "</Name>", "<type>", "IS Level 2", "</type>",
+            "<transporters>", "steeragequarters:20.0:0:-1::-1:0", "cargobay:10.0:1:1::-1:0", "</transporters>",
+            "<SafeThrust>", "5", "</SafeThrust>", "<heatsinks>", "12", "</heatsinks>", "<fuel>", "800", "</fuel>", "<armor>", "100", "80", "80", "60", "</armor>",
+            "<Nose Equipment>", "LRM 15", "LRM 15", "ISArtemisIV", "ISArtemisIV", "IS Ammo LRM-15", "</Nose Equipment>",
+            "<Left Side Equipment>", "LRM 10", "ISArtemisIV", "(R) Medium Laser", "</Left Side Equipment>",
+            "<structural_integrity>", "8", "</structural_integrity>", "<tonnage>", "200.0", "</tonnage>", "<crew>", "10", "</crew>",
+        ].join("\n");
+        importSmallCraftBlk(blk);
+        const start = performance.now();
+        const result = importSmallCraftBlk(blk);
+        const elapsed = performance.now() - start;
+        expect(result.craft?.getEquipmentList().filter((item) => item.tag.endsWith("-artemis-iv"))).toHaveLength(3);
+        // Every setter recalculates Battle Value; it took about 5 s here while each Artemis launcher copied the whole catalog.
+        expect(elapsed).toBeLessThan(1000);
+    });
 });
 
 describe("Small Craft in a roster group", () => {

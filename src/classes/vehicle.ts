@@ -46,7 +46,7 @@ import {
     MAX_VEHICLE_BAY_COUNT, MAX_VEHICLE_BAYS, MAX_VEHICLE_CARGO_TONS, normalizeVehicleBays, VEHICLE_BAY_TYPES,
 } from "../data/vehicle-transport-bays";
 import { ARTVEE_CONVERSION_EQUIPMENT } from "../data/combat-vehicle-chassis-modifications-custom";
-import { CUSTOM_HOMEBREW_RULES_LEVEL, EXPERIMENTAL_RULES_LEVEL, getItemBattleValue, equipmentMatchesIdentifier, getAmmoBattleValuePerTon, getBattleArmorScaleListByTech, getCompatibleAmmo, getDatesAvailability, getEquipmentListByTech, getEquipmentRulesLevel, getStarLeagueCarryOverDates, getWeaponShotsPerTon, isEquipmentOffered } from "../data/equipment-registry";
+import { CUSTOM_HOMEBREW_RULES_LEVEL, EXPERIMENTAL_RULES_LEVEL, getItemBattleValue, equipmentMatchesIdentifier, getAmmoBattleValuePerTon, getBattleArmorScaleListByTech, getBattleArmorScaleRecordsByTech, getEquipmentRecordsByTech, getCompatibleAmmo, getDatesAvailability, getEquipmentListByTech, getEquipmentRulesLevel, getStarLeagueCarryOverDates, getWeaponShotsPerTon, isEquipmentOffered } from "../data/equipment-registry";
 import { isTargetingComputerWeapon, roundUpHalfTon, sizeVariableEquipment } from "../data/variable-equipment";
 import { getFractionalArmorTonsPerPoint, getFractionalEngineWeight, roundUpToKilogram } from "../data/fractional-accounting";
 import { getBattleArmorScaleExplosionDamage } from "../data/battle-armor-scale-equipment";
@@ -1764,7 +1764,7 @@ export default class Vehicle {
     public setHalfTonBin(uuid: string, halfTon: boolean): void {
         const item = this._equipmentList.find((entry) => entry.uuid === uuid);
         const catalogItem = item && this.canBeHalfTonBin(item)
-            ? findByTag(getEquipmentListByTech(this._tech.tag, true), item.tag) ?? findByTag(this._otherTechBaseEquipment(), item.tag)
+            ? findByTag(getEquipmentRecordsByTech(this._tech.tag, true), item.tag) ?? findByTag(this._otherTechBaseEquipment(), item.tag)
             : undefined;
         if (!item || !catalogItem) return;
         item.weight = halfTon ? catalogItem.weight / 2 : catalogItem.weight;
@@ -2612,9 +2612,9 @@ export default class Vehicle {
     }
 
     /** The mixed-tech catalog (both tech bases) for an Inner Sphere or Clan vehicle; empty for mixed tech, which already sees both. */
-    private _otherTechBaseEquipment(): IEquipmentItem[] {
+    private _otherTechBaseEquipment(): readonly IEquipmentItem[] {
         const techTag = this._tech.tag;
-        return techTag === "clan" || techTag === "is" ? getEquipmentListByTech(techTag === "clan" ? "mclan" : "mis", true) : [];
+        return techTag === "clan" || techTag === "is" ? getEquipmentRecordsByTech(techTag === "clan" ? "mclan" : "mis", true) : [];
     }
 
     /**
@@ -2622,9 +2622,10 @@ export default class Vehicle {
      * that has since moved to the other tech base's catalog.
      */
     public addEquipmentFromTag(tag: string, location?: string, rear?: boolean, uuid?: string, anyTechBase: boolean = false): IEquipmentItem[] {
-        const catalogItem = findByTag(getEquipmentListByTech(this._tech.tag, true), tag)
+        // Catalog records are only read here: the vehicle mounts a deep copy (_newEquipment).
+        const catalogItem = findByTag(getEquipmentRecordsByTech(this._tech.tag, true), tag)
             ?? (anyTechBase ? findByTag(this._otherTechBaseEquipment(), tag) : undefined)
-            ?? findByTag(getBattleArmorScaleListByTech(this._tech.tag), tag);
+            ?? findByTag(getBattleArmorScaleRecordsByTech(this._tech.tag), tag);
         if (catalogItem) {
             this._equipmentList.push(this._newEquipment(catalogItem, location, rear, uuid));
             this._calc();
@@ -5037,7 +5038,7 @@ export default class Vehicle {
             const saved = Array.isArray(importObject.equipment) ? importObject.equipment : [];
             if (importObject.equipment !== undefined && !Array.isArray(importObject.equipment)) issue("Ignored an equipment list that is not a list");
             if (saved.length > MAX_VEHICLE_EQUIPMENT) issue(`Kept the first ${MAX_VEHICLE_EQUIPMENT} of ${saved.length} equipment entries`);
-            const catalog = getEquipmentListByTech(this._tech.tag, true);
+            const catalog = getEquipmentRecordsByTech(this._tech.tag, true);
             const restored: [IEquipmentItem, Record<string, unknown>][] = [];
             for (const entry of saved.slice(0, MAX_VEHICLE_EQUIPMENT)) {
                 if (!isPlainObject(entry) || typeof entry.tag !== "string") {
@@ -5050,7 +5051,7 @@ export default class Vehicle {
                 const catalogItem = lightWeapon
                     ? buildSupportVehicleLightWeapon(lightWeapon, typeof entry.size === "number" ? entry.size : 0)
                     : findByTag(catalog, entry.tag) ?? findByTag(this._otherTechBaseEquipment(), entry.tag)
-                        ?? findByTag(getBattleArmorScaleListByTech(this._tech.tag), entry.tag);
+                        ?? findByTag(getBattleArmorScaleRecordsByTech(this._tech.tag), entry.tag);
                 if (!catalogItem) {
                     issue(`Skipped unknown equipment "${entry.tag.slice(0, 60)}"`);
                     continue;

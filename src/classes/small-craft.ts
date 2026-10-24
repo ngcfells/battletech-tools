@@ -9,7 +9,7 @@ import { aerospaceArmorTypes, getAerospaceArmorPointsPerTon } from "../data/aero
 import { mechHeatSinkTypes } from "../data/mech-heat-sink-types";
 import { btTechOptions } from "../data/tech-options";
 import { btEraOptions, findEraByTag, getClosestEraForTech, getErasForTech } from "../data/era-options";
-import { CUSTOM_HOMEBREW_RULES_LEVEL, getArtemisLauncherBattleValue, getItemBattleValue, EXPERIMENTAL_RULES_LEVEL, getAmmoBattleValuePerTon, getBattleArmorScaleListByTech, getCompatibleAmmo, getEffectiveIntroduction, getEquipmentListByTech, getEquipmentRulesLevel, getWeaponShotsPerTon, isEquipmentOffered } from "../data/equipment-registry";
+import { CUSTOM_HOMEBREW_RULES_LEVEL, getArtemisLauncherBattleValue, getItemBattleValue, EXPERIMENTAL_RULES_LEVEL, getAmmoBattleValuePerTon, getBattleArmorScaleListByTech, getBattleArmorScaleRecordsByTech, getEquipmentRecordsByTech, getCompatibleAmmo, getEffectiveIntroduction, getEquipmentListByTech, getEquipmentRulesLevel, getWeaponShotsPerTon, isEquipmentOffered } from "../data/equipment-registry";
 import { getFractionalAerospaceArmorTonsPerPoint, roundUpToKilogram } from "../data/fractional-accounting";
 import Pilot, { IPilot } from "./pilot";
 import { getSkillMultiplier } from "../data/skill-multipliers";
@@ -925,13 +925,14 @@ export default class SmallCraft {
         return items.filter((item) => isEquipmentOffered(item, this._rulesEdition, offeredLevel));
     }
 
-    private _catalog(): IEquipmentItem[] {
+    /** Catalog records to look items up in; a mounted item is a copy (_newEquipment), so these are never changed. */
+    private _catalog(): readonly IEquipmentItem[] {
         const techTag = this._tech.tag;
-        const own = getEquipmentListByTech(techTag, true);
+        const own = getEquipmentRecordsByTech(techTag, true);
         // A saved craft keeps what it mounted, including equipment since moved to the other tech base's catalog.
-        const catalog = techTag === "is" || techTag === "clan" ? [...own, ...getEquipmentListByTech(techTag === "clan" ? "mclan" : "mis", true)] : own;
+        const catalog = techTag === "is" || techTag === "clan" ? [...own, ...getEquipmentRecordsByTech(techTag === "clan" ? "mclan" : "mis", true)] : own;
         // Battle armor scale items go last, so a catalog record always wins a lookup.
-        return [...catalog, ...getBattleArmorScaleListByTech(techTag)];
+        return [...catalog, ...getBattleArmorScaleRecordsByTech(techTag)];
     }
 
     // Ammunition by the shot ----------------------------------------------------------------------------------
