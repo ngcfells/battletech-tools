@@ -375,7 +375,9 @@ export interface IEquipmentItem {
     gauss?: boolean;
     /**
      * Slots that take the -1 explosive component BV penalty, when not all of them:
-     * an HVAC counts as a Gauss weapon "with one critical slot" (TO:AUE p.195, footnote Q).
+     * an HVAC counts as a Gauss weapon "with one critical slot" (TO:AUE p.195, footnote Q). 0 for an item that
+     * explodes in play but that the BV rules don't count: the B-Pod (TM p.302 counts explosive ammo and Gauss
+     * weapons; the TO:AUE table's "treat as Gauss" mark (‡) covers M-Pods and Chaff Pods, not B-Pods).
      */
     explosiveBattleValueSlots?: number;
     weaponType?: string[];

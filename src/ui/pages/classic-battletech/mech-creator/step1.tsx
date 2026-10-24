@@ -73,6 +73,16 @@ export default class MechCreatorStep1 extends React.Component<IHomeProps, IHomeS
       }
     }
 
+    toggleClanCASE = ( e: React.FormEvent<HTMLInputElement>): void => {
+      if( e && e.preventDefault ) e.preventDefault();
+
+      if( this.props.appGlobals.currentBattleMech ) {
+        let currentMech = this.props.appGlobals.currentBattleMech;
+        currentMech.setClanCASE( !currentMech.hasClanCASE() );
+        this.props.appGlobals.saveCurrentBattleMech( currentMech );
+      }
+    }
+
     toggleFrankenMech = ( e: React.FormEvent<HTMLInputElement>): void => {
       if( e && e.preventDefault ) e.preventDefault();
 
@@ -431,6 +441,20 @@ export default class MechCreatorStep1 extends React.Component<IHomeProps, IHomeS
                             </>
                           ) : null}
 
+
+                          {this.props.appGlobals.currentBattleMech.canChooseClanCASE() ? (
+                            <div data-testid="clan-case-option">
+                              <InputCheckbox
+                                label="Clan CASE"
+                                checked={this.props.appGlobals.currentBattleMech.hasClanCASE()}
+                                onChange={this.toggleClanCASE}
+                              />
+                              <p className="smaller-text">
+                                Clan CASE is weightless and takes no critical slots, and protects every location (TM p.210).
+                                Battle Value counts it as CASE in each side torso and arm; with an Inner Sphere XL engine it saves nothing (TM pp.302-303).
+                              </p>
+                            </div>
+                          ) : null}
 
                           {this.props.appGlobals.currentBattleMech.canUseFractionalAccounting( this.props.appGlobals.appSettings.mechRulesFilter )
                             || this.props.appGlobals.currentBattleMech.usesFractionalAccounting() ? (

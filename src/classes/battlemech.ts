@@ -489,6 +489,9 @@ export class BattleMech {
     private _advancedFireControl: boolean = false;
     // Built under the Primitive 'Mech rules (IO:AE pp.116-118). With later equipment it is a RetroTech unit.
     private _primitive: boolean = false;
+    // Mixed Tech on an Inner Sphere base: Clan CASE, "seamless and weightless", in every location (TM p.210).
+    // Clan-base designs always have it (TM p.303 note *).
+    private _clanCASE: boolean = false;
     private _cockpitWeight: number = 3;
     private _totalInternalStructurePoints = 0;
     private _maxMoveHeat: number = 2;
@@ -600,6 +603,7 @@ export class BattleMech {
     public reset() {
         this.lastUpdated = new Date();
         this._primitive = false;
+        this._clanCASE = false;
         this._rulesEdition = DEFAULT_RULES_EDITION;
         this._printedDroid = undefined;
         this.tro = new TechnicalReadout();
@@ -765,7 +769,8 @@ export class BattleMech {
         // Insulators follow their lasers' locations, which can change without a full recalculation.
         mateLaserInsulators(this._equipmentList);
         let hasCamo = false;
-        let hasBasicStealth = this._armorType.tag === "stealth-basic" && !this.hasActiveModularArmor();
+        // Stealth Armor counts at full effect even when Modular Armor negates it in play (TO:AUE p.192).
+        let hasBasicStealth = this._armorType.tag === "stealth-basic";
         let hasPrototypeStealth = false;
         let hasStandardStealth = false;
         let hasImprovedStealth = false;
@@ -801,6 +806,16 @@ export class BattleMech {
             this._calcLogBV += `Total Armor Factor = Armor Factor x 2.5: ${totalArmorFactor} = 2.5 x ${this.getTotalArmor() + doubledCenterTorsoArmor}${doubledCenterTorsoArmor ? " (center torso armor counted twice, TO:AUE p.193)" : ""}<br />`;
             totalArmorFactor *= armorBVMultiplier;
             this._calcLogBV += `Total Armor Factor = ${armorBVMultiplier} x Modifier for ${this._armorType.name}: ${totalArmorFactor}<br />`;
+        }
+        // Modular Armor: its points count "using the Armor Type Modifier for the armor fitted in the same location"
+        // (TO:AUE p.192).
+        for (const pack of this.getModularArmorPacks()) {
+            const longKey = pack.location ? BattleMech.MECH_LOCATION_MAP[pack.location] : undefined;
+            const points = pack.additionalArmor ?? 0;
+            if (!longKey || points <= 0) continue;
+            const multiplier = isPatchwork ? BattleMech._armorBVMultiplier(this.getPatchworkArmorType(longKey)) : armorBVMultiplier;
+            totalArmorFactor += 2.5 * points * multiplier;
+            this._calcLogBV += `${this._escapeLogText(pack.name)} (${pack.location}): ${points} points x 2.5 x ${multiplier} = +${2.5 * points * multiplier} -> Total Armor Factor: ${totalArmorFactor}<br />`;
         }
         // HarJel repair systems: an armor multiplier "only for body sections where a HarJel system is located",
         // stacking with the armor type's own; "every critical slot ... will add -1 to the unit's Defensive BV" (IO:AE p.185).
@@ -908,7 +923,8 @@ export class BattleMech {
         validLocations.forEach(locShorthand => {
             const longKey = BattleMech.MECH_LOCATION_MAP[locShorthand];
             const critArray: any[] = (this._criticals as any)[longKey] || [];
-            caseMap[locShorthand] = critArray.some(critical => matchesTag(critical, "case") || matchesTag(critical, "case-prototype"));
+            caseMap[locShorthand] = this.hasClanCASE()
+                || critArray.some(critical => matchesTag(critical, "case") || matchesTag(critical, "case-prototype"));
             caseIIMap[locShorthand] = critArray.some(critical => matchesTag(critical, "case-ii") || matchesTag(critical, "clan-case-ii"));
         });
         // The next location inward on the Damage Transfer Diagram (TW p.123), legs left out: CASE II
@@ -1310,8 +1326,9 @@ export class BattleMech {
         let finalBattleValue = currentDBR + currentOBR;
         this._calcLogBV += `Unmodified Combined BV = Defensive Rating + Offensive Rating: ${finalBattleValue.toFixed(2)} = ${currentDBR.toFixed(2)} + ${currentOBR.toFixed(2)}<br />`;
 
-        // Small (TM p.304) and Torso-Mounted (TO:AUE p.193) cockpits multiply the BV by 0.95.
-        const cockpitBVMultiplier = this.getCockpitType().bvMultiplier ?? 1;
+        // Small (TM p.304) and Torso-Mounted (TO:AUE p.193) cockpits multiply the BV by 0.95; a drone takes no
+        // cockpit modifier (TO:AUE p.192).
+        const cockpitBVMultiplier = this.hasDroneOperatingSystem() ? 1 : this.getCockpitType().bvMultiplier ?? 1;
         if (cockpitBVMultiplier !== 1) {
             finalBattleValue *= cockpitBVMultiplier;
             this._calcLogBV += `${this.getCockpitType().name} Penalty Applied: Total multiplied by ${cockpitBVMultiplier} -> Intermediate BV: ${finalBattleValue.toFixed(2)}<br />`;
@@ -4704,7 +4721,7 @@ export class BattleMech {
     /** Highest jump MP the jump jet type allows: walking MP, or running MP for Improved jump jets. */
     public getMaxJumpSpeed(): number {
         if (this.isSuperheavy() || !this._hasFusionOrFissionEngine()) return 0;
-        return this._jumpJetType.tag === "improved" || this._jumpJetType.jumpAsRun ? this.getRunSpeed() : this.getWalkSpeed();
+        return this._jumpJetType.tag === "improved" || this._jumpJetType.jumpAsRun ? this.getRunSpeed() + this._hardenedArmorRunPenalty() : this.getWalkSpeed();
     }
 
     public getJumpJetType(): IJumpJet {
@@ -5225,7 +5242,7 @@ export class BattleMech {
         const legAdjustedSpeed = Math.floor(this._walkSpeed * Math.max(0, 1 - destroyedLegs * 0.25));
         // Medium and large shields each cost 1 walking MP (TO:AUE p.103).
         const shieldPenalty = this._countShields("medium") + this._countShields("large");
-        return Math.max(0, legAdjustedSpeed - (this.hasActiveModularArmor() ? 1 : 0) - shieldPenalty);
+        return Math.max(0, legAdjustedSpeed - this._modularArmorMPPenalty() - shieldPenalty);
     }
 
     public setWalkSpeed(
@@ -5251,27 +5268,61 @@ export class BattleMech {
     }
 
     public getRunSpeed() {
-        return Math.ceil(this.getEffectiveWalkSpeed() * 1.5);
+        return Math.max(0, Math.ceil(this.getEffectiveWalkSpeed() * 1.5) - this._hardenedArmorRunPenalty());
+    }
+
+    /**
+     * Hardened Armor costs a 'Mech 1 Running MP, unless patchwork armor leaves it off every leg
+     * (TO:AUE pp.93, 189 note **). The Improved Jump Jet limit ignores it (TO:AUE p.93).
+     */
+    private _hardenedArmorRunPenalty(): number {
+        // Combat Vehicles lose no MP to it, so neither does a QuadVee in vehicle mode.
+        if (this.isQuadVee() && this._transformationMode === "vehicle") return 0;
+        if (!this.isPatchworkArmor()) return this._armorType?.tag === "hardened" ? 1 : 0;
+        return this.getPatchworkLocations()
+            .some(location => location.key.endsWith("Leg") && this.getPatchworkArmorType(location.key)?.tag === "hardened") ? 1 : 0;
     }
 
     /** Running MP with MASC and/or a Supercharger engaged: walk x 2, or x 2.5 with both (TM p.225; TO:AUE p.157). */
-    public getBoostedRunSpeed(): number {
-        const walk = this.getEffectiveWalkSpeed();
+    public getBoostedRunSpeed(walk: number = this.getEffectiveWalkSpeed()): number {
         const masc = this._equipmentList.some(item => item?.variableFormula === "masc-is" || item?.variableFormula === "masc-clan");
         const supercharger = this._equipmentList.some(item => item?.variableFormula === "supercharger");
-        if (masc && supercharger) return Math.ceil(walk * 2.5);
-        if (masc || supercharger) return walk * 2;
-        return this.getRunSpeed();
+        const run = masc && supercharger ? Math.ceil(walk * 2.5) : masc || supercharger ? walk * 2 : Math.ceil(walk * 1.5);
+        return Math.max(0, run - this._hardenedArmorRunPenalty());
     }
 
-    /** Running MP for Battle Value: MASC and Superchargers count as engaged (TM Battle Value rules). */
+    /**
+     * Running MP for Battle Value, the most the 'Mech can legally generate: MASC and Superchargers count as engaged,
+     * and Triple-Strength Myomer (not Industrial TSM) as active, 1 more Walking MP (TM pp.302-304, 316).
+     */
     public getBVRunSpeed(): number {
-        return this.getBoostedRunSpeed();
+        return this._withoutModularArmorMPPenalty(() => {
+            const walk = this.getEffectiveWalkSpeed();
+            return this.getBoostedRunSpeed(this.hasTripleStrengthMyomer() && walk > 0 ? walk + 1 : walk);
+        });
     }
 
     /** Jumping MP for Battle Value: the better of jump jets and Mechanical Jump Boosters. */
     public getBVJumpSpeed(): number {
-        return Math.max(this.getJumpSpeed(), this.getMechanicalJumpBoosterSpeed());
+        return this._withoutModularArmorMPPenalty(() => Math.max(this.getJumpSpeed(), this.getMechanicalJumpBoosterSpeed()));
+    }
+
+    /** Set while Battle Value reads movement: "Modular Armor's speed penalty is not taken into account" (TO:AUE p.192). */
+    private _ignoreModularArmorMPPenalty = false;
+
+    private _withoutModularArmorMPPenalty<T>(read: () => T): T {
+        const previous = this._ignoreModularArmorMPPenalty;
+        this._ignoreModularArmorMPPenalty = true;
+        try {
+            return read();
+        } finally {
+            this._ignoreModularArmorMPPenalty = previous;
+        }
+    }
+
+    /** Working Modular Armor costs 1 Walking/Cruising and Jumping MP (TO:AUE p.93). */
+    private _modularArmorMPPenalty(): number {
+        return !this._ignoreModularArmorMPPenalty && this.hasActiveModularArmor() ? 1 : 0;
     }
 
     /** Jump MP from jump jets: shields and modular armor reduce it; a partial wing adds to it (TO:AUE pp.103, 105). */
@@ -5317,7 +5368,7 @@ export class BattleMech {
     /** Underwater MP from UMUs (TO:AUE p.107); UMUs replace jump jets. */
     public getUMUSpeed(): number {
         if (!this._jumpJetType.underwater || this._countShields("large") > 0) return 0;
-        return Math.max(0, this._jumpSpeed - (this.hasActiveModularArmor() ? 1 : 0));
+        return Math.max(0, this._jumpSpeed - this._modularArmorMPPenalty());
     }
 
     /** Jump MP from Mechanical Jump Boosters (TO:AUE p.105): the booster's rated MP, modified like jump jets. */
@@ -5328,7 +5379,7 @@ export class BattleMech {
 
     private _applyJumpModifiers(baseMP: number): number {
         if (baseMP <= 0 || this._countShields("large") > 0) return 0;
-        const mp = baseMP - (this.hasActiveModularArmor() ? 1 : 0) - this._countShields("medium");
+        const mp = baseMP - this._modularArmorMPPenalty() - this._countShields("medium");
         return Math.max(0, mp > 0 ? mp + this.getPartialWingJumpBonus() : mp);
     }
 
@@ -7494,7 +7545,7 @@ export class BattleMech {
                 return 0;
             }
             const cruiseMP = this._walkSpeed + (this._quadVeeMotive === "wheeled" ? 1 : 0);
-            return Math.max(0, cruiseMP - (this.hasActiveModularArmor() ? 1 : 0));
+            return Math.max(0, cruiseMP - this._modularArmorMPPenalty());
         }
 
         public getTransformationMode(): "mech" | "airmech" | "aerospace" | "vehicle" {
@@ -7811,6 +7862,9 @@ export class BattleMech {
         // Built under the Primitive 'Mech rules (IO:AE pp.116-118).
         if( this._primitive)
             exportObject.features.push( "primitive" );
+        // Clan CASE on an Inner Sphere-base Mixed Tech design.
+        if( this._clanCASE && this.canChooseClanCASE() )
+            exportObject.features.push( "clan_case" );
 
 
             return exportObject;
@@ -8054,6 +8108,7 @@ export class BattleMech {
                 this.setMechType(importObject.mechType);
             // Before the tonnage and Walking MP: a Primitive 'Mech's engine rating depends on it.
             this._primitive = Array.isArray(importObject.features) && importObject.features.indexOf( "primitive" ) > -1;
+            this._clanCASE = Array.isArray(importObject.features) && importObject.features.indexOf( "clan_case" ) > -1;
             if (importObject.lamType) {
                 this.setLAMType(importObject.lamType);
             }
@@ -9705,18 +9760,25 @@ export class BattleMech {
      * worth 0.67 x the BV of the (up to four) linked machine guns in their location (TM p.228).
      */
     private _getWeaponBattleValue(item: IEquipmentItem): number {
+        // "All weapons on a unit equipped with a Drone Remote Operating System multiply their BVs by 0.8" (TO:AUE p.192).
+        const droneMultiplier = this.hasDroneOperatingSystem() ? 0.8 : 1;
         if (item.linkedWeaponTags?.length) {
             if (!item.location) return 0;
             const linked = this._equipmentList
                 .filter(eq => eq !== item && eq.location === item.location && item.linkedWeaponTags!.includes(eq.tag))
                 .slice(0, 4);
-            return linked.reduce((sum, eq) => sum + (eq.battleValue || 0), 0) * 0.67;
+            return linked.reduce((sum, eq) => sum + (eq.battleValue || 0), 0) * 0.67 * droneMultiplier;
         }
         // Targeting computer: direct-fire weapons x 1.25 (TM p.303).
         if (this.hasTargetingComputer() && isTargetingComputerWeapon(item)) {
-            return getItemBattleValue(item, this._tech.tag) * 1.25;
+            return getItemBattleValue(item, this._tech.tag) * 1.25 * droneMultiplier;
         }
-        return getItemBattleValue(item, this._tech.tag);
+        return getItemBattleValue(item, this._tech.tag) * droneMultiplier;
+    }
+
+    /** Is a Drone (Remote) Operating System fitted (TO:AUE p.117)? */
+    public hasDroneOperatingSystem(): boolean {
+        return this._equipmentList.some(item => item?.variableFormula === "drone-operating-system");
     }
 
     /** Set the size of an installed variable item (Mechanical Jump Booster MP), within its catalog limits. */
@@ -10388,6 +10450,22 @@ export class BattleMech {
     }
 
     /** Switch the Primitive 'Mech rules on or off. Switching on replaces the components a Primitive 'Mech cannot use. */
+    /** Does Clan CASE protect every location? Always on a Clan base; by choice on Inner Sphere-base Mixed Tech. */
+    public hasClanCASE(): boolean {
+        return this._tech.tag === "clan" || this._tech.tag === "mclan" || (this._clanCASE && this._tech.tag === "mis");
+    }
+
+    /** Can Clan CASE be chosen: an Inner Sphere-base Mixed Tech design. */
+    public canChooseClanCASE(): boolean {
+        return this._tech.tag === "mis";
+    }
+
+    public setClanCASE(clanCASE: boolean): boolean {
+        this._clanCASE = clanCASE;
+        this._calc();
+        return this._clanCASE;
+    }
+
     public setPrimitive(primitive: boolean): boolean {
         if (primitive && !this.canBePrimitive()) return this._primitive;
         this._primitive = primitive;
@@ -12006,6 +12084,25 @@ export class BattleMech {
         }
     }
 
+    /** SSW Patchwork Armor: each location element names its armor type and tech base (TO:AUE p.189). */
+    private _importSSWPatchworkTypes( sswArmor: Record<string, unknown> ) {
+        const quad = this.isQuad() || this.isQuadVee();
+        const keys: Record<string, string> = {
+            hd: "head", ct: "centerTorso", lt: "leftTorso", rt: "rightTorso",
+            la: quad ? "frontLeftLeg" : "leftArm", ra: quad ? "frontRightLeg" : "rightArm", ll: "leftLeg", rl: "rightLeg", cl: "centerLeg",
+        };
+        for( const [ sswKey, locationKey ] of Object.entries( keys ) ) {
+            const element = sswArmor[sswKey];
+            if( !element || typeof element !== "object" ) continue;
+            const typeName = ( element as Record<string, unknown> )["@_type"];
+            if( !typeName ) continue;
+            const armor = this._findSSWComponent( "armor", "armor", typeName, ( element as Record<string, unknown> )["@_techbase"] );
+            if( armor && this.setPatchworkArmorType( locationKey, armor.tag ).tag !== armor.tag ) {
+                this._sswImportErrors.push( "Cannot use '" + String( typeName ) + "' as patchwork armor in the " + locationKey );
+            }
+        }
+    }
+
     /**
      * Armor with fixed slots in each location (Stealth: 2 in each arm, leg and side torso) is placed in the first free
      * slots, which can be ones the file gives a weapon. Moves each location's block to the file's first slot for it
@@ -12239,6 +12336,23 @@ export class BattleMech {
                         insulator.split_location = [];
                     }
                 }
+                // SSW lists a machine gun array with its guns as one item, "MG Array (<count> <gun>)": install the
+                // guns too, in the slots after the array (TM p.228).
+                const arrayGuns = /^MG Array \(([2-4]) (.+)\)$/.exec( itemName.trim() );
+                const gunRecord = arrayGuns ? findImportedEquipment( arrayGuns[2], listTag, mixedTech )?.item : undefined;
+                if( arrayGuns && gunRecord ) {
+                    for( let gun = 0; gun < +arrayGuns[1]; gun++ ) {
+                        const installed = this._installEquipmentRecord( gunRecord, location, rear, generateUUID(), undefined, [] );
+                        if( !installed ) continue;
+                        installed.allocationIndex = allocationIndex < 0 ? -1 : allocationIndex + ( newItem.space?.battlemech ?? 1 ) + gun;
+                        installed.allocationLocation = location;
+                        installed.location = "un";
+                        installed.rear = rear;
+                        installed.split_location = [];
+                    }
+                } else if( arrayGuns ) {
+                    this._sswImportErrors.push( "Cannot find the machine guns of '" + item.name["#text"] + "'" );
+                }
                 if( newItem.uuid && !isSSWNoMake( item.name["@_manufacturer"] ) ) {
                     this._sswCopyMakes.push( { uuid: newItem.uuid, make: String( item.name["@_manufacturer"] ).trim() } );
                 }
@@ -12470,49 +12584,22 @@ export class BattleMech {
             if( jObj.mech.armor ) {
                 let totalArmor = 0;
                 // It sure would be nice for SSW to have the armor weight in XML file 🙄
-                if( jObj.mech.armor.ct ) {
-                    this._armorAllocation.centerTorso = jObj.mech.armor.ct;
-                    totalArmor += this._armorAllocation.centerTorso;
-                }
-                if( jObj.mech.armor.ctr ) {
-                    this._armorAllocation.centerTorsoRear = jObj.mech.armor.ctr;
-                    totalArmor += this._armorAllocation.centerTorsoRear;
-                }
-                if( jObj.mech.armor.hd ) {
-                    this._armorAllocation.head = jObj.mech.armor.hd;
-                    totalArmor += this._armorAllocation.head;
-                }
-                if( jObj.mech.armor.la ) {
-                    this._armorAllocation.leftArm = jObj.mech.armor.la;
-                    totalArmor += this._armorAllocation.leftArm;
-                }
-                if( jObj.mech.armor.ll ) {
-                    this._armorAllocation.leftLeg = jObj.mech.armor.ll;
-                    totalArmor += this._armorAllocation.leftLeg;
-                }
-                if( jObj.mech.armor.lt ) {
-                    this._armorAllocation.leftTorso = jObj.mech.armor.lt;
-                    totalArmor += this._armorAllocation.leftTorso;
-                }
-                if( jObj.mech.armor.ltr ) {
-                    this._armorAllocation.leftTorsoRear = jObj.mech.armor.ltr;
-                    totalArmor += this._armorAllocation.leftTorsoRear;
-                }
-                if( jObj.mech.armor.ra ) {
-                    this._armorAllocation.rightArm = jObj.mech.armor.ra;
-                    totalArmor += this._armorAllocation.rightArm;
-                }
-                if( jObj.mech.armor.rl ) {
-                    this._armorAllocation.rightLeg = jObj.mech.armor.rl;
-                    totalArmor += this._armorAllocation.rightLeg;
-                }
-                if( jObj.mech.armor.rt ) {
-                    this._armorAllocation.rightTorso = jObj.mech.armor.rt;
-                    totalArmor += this._armorAllocation.rightTorso;
-                }
-                if( jObj.mech.armor.rtr ) {
-                    this._armorAllocation.rightTorsoRear = jObj.mech.armor.rtr;
-                    totalArmor += this._armorAllocation.rightTorsoRear;
+                // Patchwork locations carry their armor type as attributes, so the points are the element's text.
+                const sswArmor = jObj.mech.armor;
+                const armorPoints = ( value: unknown ): number => {
+                    const points = Number( value && typeof value === "object" ? ( value as Record<string, unknown> )["#text"] : value );
+                    return Number.isFinite( points ) ? points : 0;
+                };
+                const sswArmorLocations: [ string, keyof typeof this._armorAllocation ][] = [
+                    [ "ct", "centerTorso" ], [ "ctr", "centerTorsoRear" ], [ "hd", "head" ], [ "la", "leftArm" ], [ "ll", "leftLeg" ],
+                    [ "lt", "leftTorso" ], [ "ltr", "leftTorsoRear" ], [ "ra", "rightArm" ], [ "rl", "rightLeg" ], [ "rt", "rightTorso" ],
+                    [ "rtr", "rightTorsoRear" ],
+                ];
+                for( const [ sswKey, allocationKey ] of sswArmorLocations ) {
+                    if( !sswArmor[sswKey] ) continue;
+                    const points = armorPoints( sswArmor[sswKey] );
+                    ( this._armorAllocation as unknown as Record<string, number> )[allocationKey] = points;
+                    totalArmor += points;
                 }
                 if( jObj.mech.armor.type ) {
                     const armorType = this._findSSWComponent( "armor", "armor", jObj.mech.armor.type );
@@ -12528,12 +12615,39 @@ export class BattleMech {
                 }
             }
 
+            // SSW writes MASC and TSM as the 'Mech's enhancement, beside the cockpit, not in the equipment list (#46).
+            // TSM is the myomer, placed like structure; MASC joins the equipment below at the file's slot.
+            const enhancement = jObj.mech.enhancement;
+            if( enhancement && enhancement.type ) {
+                const enhancementType = String( enhancement.type["#text"] ?? enhancement.type ).trim();
+                const enhancementLocations: any[] = Array.isArray( enhancement.location ) ? enhancement.location : enhancement.location ? [ enhancement.location ] : [];
+                if( enhancementType.toUpperCase() === "MASC" ) {
+                    if( !jObj.mech.baseloadout ) jObj.mech.baseloadout = {};
+                    const listed = jObj.mech.baseloadout.equipment;
+                    jObj.mech.baseloadout.equipment = [
+                        ...( Array.isArray( listed ) ? listed : listed ? [ listed ] : [] ),
+                        {
+                            name: { "#text": ( String( enhancement["@_techbase"] ) === "1" ? "(CL) " : "(IS) " ) + "MASC" },
+                            type: "equipment",
+                            location: enhancementLocations[0],
+                        },
+                    ];
+                } else {
+                    const myomer = this._findSSWComponent( "myomer", "myomer", enhancementType, enhancement["@_techbase"] );
+                    if( myomer && this.setMyomerType( myomer.tag ).tag === myomer.tag ) {
+                        this._placeSSWCriticals( enhancementLocations, myomer.tag );
+                    }
+                    if( myomer ) {
+                        this._checkSSWComponentUsed( "myomer", myomer, this.getMyomerType().tag );
+                    }
+                }
+            }
+
             if( jObj.mech.baseloadout ) {
 
 
-                if( jObj.mech.baseloadout.clancase ) {
-
-                }
+                // SSW marks Clan CASE on the base loadout; it matters on Inner Sphere-base Mixed Tech designs.
+                this._clanCASE = String( jObj.mech.baseloadout.clancase ?? "" ).trim().toUpperCase() === "TRUE";
 
                 if( jObj.mech.baseloadout.equipment && jObj.mech.baseloadout.equipment.length > 0 ) {
 
@@ -12731,6 +12845,9 @@ export class BattleMech {
 
                 }
             }
+
+            // Patchwork slots take the slots the placed equipment leaves free, so their types come last.
+            if( this.isPatchworkArmor() && jObj.mech.armor ) this._importSSWPatchworkTypes( jObj.mech.armor );
 
             this._importSSWTechnicalReadout( jObj.mech );
 

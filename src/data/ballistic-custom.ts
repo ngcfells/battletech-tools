@@ -161,7 +161,7 @@ export const ballisticCustom: IEquipmentItem[] = [
         isAmmo: false,
         name: "Ultra AC/15",
         altNames: ["Ultra Autocannon/15", "UAC/15"],
-        tag: "custom-ultra-ac-15",
+        tag: "custom-ultra-ac-15", isUltra: true,
         techBase: "universal",
         sort: "ac, 15 ultra",
         category: "Custom Equipment",
