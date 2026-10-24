@@ -116,3 +116,64 @@ describe("Vehicle Technical Readout construction table", () => {
         expect(rows.some((row) => row.label.startsWith("Items weighed in kilograms"))).toBe(true);
     });
 });
+
+// TechManual's TRB-D36 Thunderbird (TM p.313): 100 tons, Safe Thrust 5, SI 10, 224 points of armor, 25 heat sinks.
+const thunderbird = (): AerospaceFighter => {
+    const fighter = new AerospaceFighter();
+    fighter.setTonnage(100);
+    fighter.setSafeThrust(5);
+    fighter.setFuelTons(5);
+    fighter.setArmorAllocation("nose", 70);
+    fighter.setArmorAllocation("leftWing", 52);
+    fighter.setArmorAllocation("rightWing", 52);
+    fighter.setArmorAllocation("aft", 50);
+    fighter.setAdditionalHeatSinks(15);
+    for (const arc of ["nose", "leftWing", "rightWing"]) fighter.addEquipmentFromTag("large-laser", arc);
+    fighter.addEquipmentFromTag("lrm-20", "leftWing");
+    fighter.addEquipmentFromTag("lrm-20", "rightWing");
+    for (const arc of ["nose", "nose", "nose", "aft", "aft"]) fighter.addEquipmentFromTag("medium-laser", arc);
+    for (let ton = 0; ton < 4; ton++) fighter.addEquipmentFromTag("ammo-lrm-standard");
+    return fighter;
+};
+
+describe("Fighter Technical Readout construction table", () => {
+    it("lists every ton of the Thunderbird, with thrust, structural integrity and armor by arc", () => {
+        const fighter = thunderbird();
+        const rows = getUnitTroAdapter(fighter).getConstructionRows();
+        expect(totalMass(rows)).toBe(fighter.getCurrentTonnage());
+        expect(rows[0].label).toMatch(/^Engine \(/);
+        expect(rows.slice(1, 4)).toEqual([
+            { label: "Safe Thrust", value: "5", indent: true },
+            { label: "Maximum Thrust", value: "8", indent: true },
+            { label: "Structural Integrity", value: "10", mass: "0" },
+        ]);
+        expect(rows.some((row) => row.label === "Cockpit and Controls" && row.mass === "3")).toBe(true);
+        expect(rows.some((row) => row.label.startsWith("Fuel (") && row.mass === "5")).toBe(true);
+        expect(rows.some((row) => row.label.startsWith("Heat Sinks (25") && row.mass === "15")).toBe(true);
+        expect(rows).toContainEqual({ label: "Armor by location", heading: true });
+        expect(rows).toContainEqual({ label: "Nose", value: "70", indent: true });
+        expect(rows).toContainEqual({ label: "Aft", value: "50", indent: true });
+        expect(rows).toContainEqual({ label: "Large Laser", value: "Left Wing", mass: "5" });
+        expect(rows.filter((row) => row.label === fighter.getEquipmentList().at(-1)!.name)).toHaveLength(4);
+    });
+
+    it("names arcs for the equipment makes, and leaves ammunition out of them", () => {
+        const copies = getUnitTroAdapter(thunderbird()).getEquipmentCopies();
+        expect(copies).toHaveLength(10);
+        expect(copies[0].locationLabel).toBe("Nose");
+        expect(copies.at(-1)!.locationLabel).toBe("Aft");
+    });
+
+    it("adds up to a support aircraft's mass and gives its structural integrity", () => {
+        const fighter = new AerospaceFighter();
+        fighter.setFighterType("support");
+        fighter.setSupportMotive("fixed-wing");
+        fighter.setTonnage(35);
+        fighter.setSafeThrust(4);
+        fighter.setFuelTons(8.5);
+        fighter.addEquipmentFromTag("quarters-officer", "fuselage");
+        const rows = getUnitTroAdapter(fighter).getConstructionRows();
+        expect(totalMass(rows)).toBe(fighter.getCurrentTonnage());
+        expect(rows[0]).toEqual({ label: "Chassis (Structural Integrity)", value: `${fighter.getStructuralIntegrity()}`, mass: `${fighter.getStructureWeight()}` });
+    });
+});

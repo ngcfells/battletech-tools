@@ -355,7 +355,7 @@ export default class AerospaceFighter {
     // Whether battle armor items were mounted at the last recalculation: only the first one turns Fractional Accounting on.
     private _hadBattleArmorEquipment = false;
 
-    private _weights: { name: string; weight: number }[] = [];
+    private _weights: { name: string; weight: number; item?: IEquipmentItem }[] = [];
     private _currentTonnage: number = 0;
 
     constructor(importJSON: string = "") {
@@ -1525,7 +1525,8 @@ export default class AerospaceFighter {
 
     // Totals --------------------------------------------------------------------------------------------------
 
-    public getWeights(): { name: string; weight: number }[] { return this._weights; }
+    /** The tonnage breakdown; equipment lines carry their item (the TRO construction table reads it). */
+    public getWeights(): { name: string; weight: number; item?: IEquipmentItem }[] { return this._weights; }
     public getCurrentTonnage(): number { return this._currentTonnage; }
     public getRemainingTonnage(): number { return Math.round((this._tonnage - this._currentTonnage) * 1e6) / 1e6; }
 
@@ -1698,7 +1699,7 @@ export default class AerospaceFighter {
             { name: `Armor (${this._armorType.name}, ${this.getTotalArmorPoints()} points)`, weight: this.getArmorWeight() },
             { name: `Heat Sinks (${this.getTotalHeatSinks()} ${this._heatSinkType.name}, ${this.getFreeHeatSinks()} free)`, weight: this._additionalHeatSinks },
             ...(this.getPowerAmplifierWeight() > 0 ? [{ name: "Power Amplifiers", weight: this.getPowerAmplifierWeight() }] : []),
-            ...this._equipmentList.map((item) => ({ name: item.name, weight: item.weight || 0 })),
+            ...this._equipmentList.map((item) => ({ name: item.name, weight: item.weight || 0, item })),
         ];
         this._currentTonnage = Math.round(this._weights.reduce((sum, entry) => sum + entry.weight, 0) * 1000) / 1000;
         this._calcBattleValue();
@@ -1731,7 +1732,7 @@ export default class AerospaceFighter {
         }
         for (const item of this._equipmentList) {
             if (!this._isSmallSupport() && ((item.weight || 0) * 2) % 1 !== 0) smallItems += item.weight || 0;
-            else this._weights.push({ name: item.name, weight: item.weight || 0 });
+            else this._weights.push({ name: item.name, weight: item.weight || 0, item });
         }
         if (smallItems > 0) this._weights.push({ name: `Items and cargo weighed in kilograms (${Math.round(smallItems * 1000)} kg)`, weight: roundSupportVehicleWeight(smallItems, false) });
         this._currentTonnage = Math.round(this._weights.reduce((sum, entry) => sum + entry.weight, 0) * 1e6) / 1e6;

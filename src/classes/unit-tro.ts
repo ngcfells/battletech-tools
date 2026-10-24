@@ -1,7 +1,7 @@
 import { IEquipmentItem } from "../data/data-interfaces";
 import { ITroComponentRow, ITroConstructionRow, ITroEquipmentCopy, ITroSpecValues, ITroUnitAdapter } from "../data/technical-readout-interfaces";
 import { generateUUID } from "../utils/generateUUID";
-import AerospaceFighter from "./aerospace-fighter";
+import AerospaceFighter, { FIGHTER_ARCS, FIGHTER_LOCATIONS } from "./aerospace-fighter";
 import BattleArmor from "./battle-armor";
 import InfantryPlatoon from "./infantry-platoon";
 import ProtoMech from "./protomech";
@@ -178,8 +178,46 @@ function vehicleParts(vehicle: Vehicle): IUnitTroParts {
     };
 }
 
+function fighterLocationName(location?: string): string {
+    return FIGHTER_LOCATIONS.find((entry) => entry.tag === location)?.name ?? (location ? capitalize(location) : "Fuselage");
+}
+
+/** TRO-style rows: the fighter's weight list with thrust and structural integrity under the engine, then armor by arc. */
+function fighterConstruction(fighter: AerospaceFighter): { construction: ITroConstructionRow[]; equipmentRows: ITroConstructionRow[] } {
+    const support = fighter.isSupportVehicle();
+    const integrity = `${fighter.getStructuralIntegrity()}`;
+    const chassisRow = (line: IWeightLine): ITroConstructionRow[] => {
+        const mass = tonsText(line.weight);
+        if (line.name === "Chassis (Structural Integrity)") {
+            return [{ label: line.name, value: integrity, mass }];
+        }
+        if (line.name.startsWith("Engine (") || (support && line.name.endsWith(" Engine"))) {
+            return [
+                { label: line.name, mass },
+                { label: "Safe Thrust", value: `${fighter.getSafeThrust()}`, indent: true },
+                { label: "Maximum Thrust", value: `${fighter.getMaxThrust()}`, indent: true },
+                // An aerospace fighter's structural integrity weighs nothing; a support vehicle's is its chassis.
+                ...(support ? [] : [{ label: "Structural Integrity", value: integrity, mass: "0" }]),
+            ];
+        }
+        return [{ label: line.name, mass }];
+    };
+    const { construction, equipmentRows } = weightLineRows(fighter.getWeights(), chassisRow, fighterLocationName);
+    const armor = fighter.getArmorAllocation();
+    construction.push(
+        { label: "Armor by location", heading: true },
+        ...FIGHTER_ARCS.map((arc) => ({
+            label: arc.name,
+            value: fighter.isPatchworkArmor() ? `${armor[arc.tag]} (${fighter.getPatchworkArmorType(arc.tag).name})` : `${armor[arc.tag]}`,
+            indent: true,
+        })),
+    );
+    return { construction, equipmentRows };
+}
+
 function fighterParts(fighter: AerospaceFighter): IUnitTroParts {
     const tons = fighter.getTonnage();
+    const { construction, equipmentRows } = fighterConstruction(fighter);
     return {
         spec: {
             title: fighter.getName(),
@@ -194,14 +232,9 @@ function fighterParts(fighter: AerospaceFighter): IUnitTroParts {
             { key: "engine", label: `Engine (${fighter.getEngineType().name} ${fighter.getEngineRating()})` },
             { key: "armor", label: `Armor (${fighter.getArmorType().name})` },
         ],
-        construction: [
-            { label: "Structural Integrity", mass: `${fighter.getStructureWeight()}` },
-            { label: fighter.getEngineType().name, value: `${fighter.getEngineRating()}`, mass: `${fighter.getEngineWeight()}` },
-            { label: "Safe Thrust", value: `${fighter.getSafeThrust()}`, indent: true },
-            { label: "Maximum Thrust", value: `${fighter.getMaxThrust()}`, indent: true },
-            { label: `Armor (${fighter.getArmorType().name})`, mass: `${fighter.getArmorWeight()}` },
-        ],
-        equipment: catalogEquipment(fighter.getEquipmentList(), (location) => location ?? ""),
+        construction,
+        equipmentRows,
+        equipment: catalogEquipment(fighter.getEquipmentList(), (location) => fighterLocationName(location)),
     };
 }
 

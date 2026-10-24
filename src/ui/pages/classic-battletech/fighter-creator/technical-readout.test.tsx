@@ -57,3 +57,23 @@ describe("Fighter Creator: Technical Readout step (TRO round 2, #78)", () => {
         expect(hrefs().some((href) => href.endsWith("/fighter-creator/print-tro"))).toBe(true);
     });
 });
+
+describe("Fighter Technical Readout sheet: construction table", () => {
+    it("prints the cockpit, fuel, heat sinks, armor by arc and ammunition", async () => {
+        const { getUnitTroAdapter } = await import("../../../../classes/unit-tro");
+        const { default: TechnicalReadoutSheet } = await import("../../../components/technical-readout-sheet");
+        const fighter = new AerospaceFighter();
+        fighter.setTonnage(50);
+        fighter.setSafeThrust(5);
+        fighter.setArmorAllocation("nose", 30);
+        fighter.addEquipmentFromTag("lrm-10", "nose");
+        fighter.addEquipmentFromTag("ammo-lrm-standard");
+        const { container } = render(<TechnicalReadoutSheet tro={fighter.tro} adapter={getUnitTroAdapter(fighter)} />);
+        const text = container.textContent ?? "";
+        expect(text).toContain("Cockpit and Controls");
+        expect(text).toContain("Fuel (");
+        expect(text).toContain("Heat Sinks (");
+        expect(text).toContain("Armor by location");
+        expect(text).toContain("Fuselage");
+    });
+});
