@@ -59,7 +59,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "AC 1/1/-,CASE,PRB,RCN"
+    "BFAbilities": "AC 1/1/-,CASE,PRB,RCN",
+    "SubTypeId": 4
   },
   {
     "Id": 106002,
@@ -179,7 +180,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "FC,IF 1,SRCH,TUR (2/1/1,IF1)"
+    "BFAbilities": "FC,IF 1,SRCH,TUR (2/1/1,IF1)",
+    "SubTypeId": 16
   },
   {
     "Id": 106003,
@@ -269,7 +271,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": true,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "CASE,IF 0*"
+    "BFAbilities": "CASE,IF 0*",
+    "SubTypeId": 4
   },
   {
     "Id": 106004,
@@ -371,7 +374,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "PRB,RCN"
+    "BFAbilities": "PRB,RCN",
+    "SubTypeId": 4
   },
   {
     "Id": 106005,
@@ -470,7 +474,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "CASE,IF 1,LRM 1/1/1"
+    "BFAbilities": "CASE,IF 1,LRM 1/1/1",
+    "SubTypeId": 4
   },
   {
     "Id": 106006,
@@ -525,7 +530,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "TH 1,BOMB 1,ENE,FUEL 12,REAR 0*/-/-,SPC,VSTOL"
+    "BFAbilities": "TH 1,BOMB 1,ENE,FUEL 12,REAR 0*/-/-,SPC,VSTOL",
+    "SubTypeId": 1
   },
   {
     "Id": 106007,
@@ -664,7 +670,8 @@
     "BFDamageMediumMin": true,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "CAR 20"
+    "BFAbilities": "CAR 20",
+    "SubTypeId": 8
   },
   {
     "Id": 106008,
@@ -798,7 +805,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "ENE"
+    "BFAbilities": "ENE",
+    "SubTypeId": 4
   },
   {
     "Id": 106009,
@@ -1260,7 +1268,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "ENE,MASH 5,SRCH,TUR (1/-/-)"
+    "BFAbilities": "ENE,MASH 5,SRCH,TUR (1/-/-)",
+    "SubTypeId": 24
   },
   {
     "Id": 106010,
@@ -1308,7 +1317,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "CAR 6"
+    "BFAbilities": "CAR 6",
+    "SubTypeId": 3
   },
   {
     "Id": 106011,
@@ -1388,7 +1398,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "MEL,SRM 1/1,TSM"
+    "BFAbilities": "MEL,SRM 1/1,TSM",
+    "SubTypeId": 4
   },
   {
     "Id": 106012,
@@ -1542,7 +1553,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "AM,CAR 4"
+    "BFAbilities": "AM,CAR 4",
+    "SubTypeId": 9
   },
   {
     "Id": 106013,
@@ -1685,7 +1697,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "CASE,IF 1,LRM 1/1/1,OMNI"
+    "BFAbilities": "CASE,IF 1,LRM 1/1/1,OMNI",
+    "SubTypeId": 19
   },
   {
     "Id": 106014,
@@ -1923,7 +1936,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "ATMO,ENE,IT 7,REAR 1/1/-,SRCH"
+    "BFAbilities": "ATMO,ENE,IT 7,REAR 1/1/-,SRCH",
+    "SubTypeId": 23
   },
   {
     "Id": 106015,
@@ -1971,7 +1985,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "AM,CAR 5,LTAG,MEC,STL"
+    "BFAbilities": "AM,CAR 5,LTAG,MEC,STL",
+    "SubTypeId": 3
   },
   {
     "Id": 106016,
@@ -2112,7 +2127,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "TH 3,BOMB 3,ENE,FUEL 28,SPC,VSTOL"
+    "BFAbilities": "TH 3,BOMB 3,ENE,FUEL 28,SPC,VSTOL",
+    "SubTypeId": 1
   },
   {
     "Id": 106017,
@@ -2238,7 +2254,8 @@
     "BFDamageMediumMin": true,
     "BFDamageLongMin": true,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "CASE,IF 0*"
+    "BFAbilities": "CASE,IF 0*",
+    "SubTypeId": 4
   },
   {
     "Id": 106018,
@@ -2329,7 +2346,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "AM,CAR 4"
+    "BFAbilities": "AM,CAR 4",
+    "SubTypeId": 9
   },
   {
     "Id": 106019,
@@ -2423,7 +2441,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "CAR 20"
+    "BFAbilities": "CAR 20",
+    "SubTypeId": 8
   },
   {
     "Id": 106020,
@@ -2499,7 +2518,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "ENE"
+    "BFAbilities": "ENE",
+    "SubTypeId": 4
   },
   {
     "Id": 106021,
@@ -2595,7 +2615,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "AM,CAR 3"
+    "BFAbilities": "AM,CAR 3",
+    "SubTypeId": 7
   },
   {
     "Id": 106022,
@@ -2650,7 +2671,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": ""
+    "BFAbilities": "",
+    "SubTypeId": 20
   },
   {
     "Id": 106023,
@@ -2716,7 +2738,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "AM,CAR 5,MEC"
+    "BFAbilities": "AM,CAR 5,MEC",
+    "SubTypeId": 3
   },
   {
     "Id": 106024,
@@ -2798,7 +2821,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": ""
+    "BFAbilities": "",
+    "SubTypeId": 4
   },
   {
     "Id": 106025,
@@ -2913,7 +2937,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "CASE,FLK 1/1/1"
+    "BFAbilities": "CASE,FLK 1/1/1",
+    "SubTypeId": 4
   },
   {
     "Id": 106026,
@@ -2961,7 +2986,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "AM,CAR 4,MEC"
+    "BFAbilities": "AM,CAR 4,MEC",
+    "SubTypeId": 3
   },
   {
     "Id": 106027,
@@ -3069,7 +3095,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "CAR 28,HT 1/-/-"
+    "BFAbilities": "CAR 28,HT 1/-/-",
+    "SubTypeId": 11
   },
   {
     "Id": 106028,
@@ -3178,7 +3205,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "ARTAIS -1,SRCH,TUR (1/1/-,ARTAIS-1)"
+    "BFAbilities": "ARTAIS -1,SRCH,TUR (1/1/-,ARTAIS-1)",
+    "SubTypeId": 24
   },
   {
     "Id": 106029,
@@ -3233,7 +3261,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "CASE,JMPS 1"
+    "BFAbilities": "CASE,JMPS 1",
+    "SubTypeId": 4
   },
   {
     "Id": 106030,
@@ -3312,7 +3341,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "AM,CAR 5,MEC,RCN"
+    "BFAbilities": "AM,CAR 5,MEC,RCN",
+    "SubTypeId": 3
   },
   {
     "Id": 106031,
@@ -3415,7 +3445,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": ""
+    "BFAbilities": "",
+    "SubTypeId": 15
   },
   {
     "Id": 106032,
@@ -3479,7 +3510,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "CASE"
+    "BFAbilities": "CASE",
+    "SubTypeId": 4
   },
   {
     "Id": 106033,
@@ -3570,7 +3602,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": ""
+    "BFAbilities": "",
+    "SubTypeId": 51
   },
   {
     "Id": 106034,
@@ -3641,7 +3674,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "ATMO,CASE,FLK 1/1/-,OMNI,RFA,SRCH"
+    "BFAbilities": "ATMO,CASE,FLK 1/1/-,OMNI,RFA,SRCH",
+    "SubTypeId": 45
   },
   {
     "Id": 106035,
@@ -3742,7 +3776,8 @@
     "BFDamageMediumMin": true,
     "BFDamageLongMin": true,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "IF 0*"
+    "BFAbilities": "IF 0*",
+    "SubTypeId": 20
   },
   {
     "Id": 106036,
@@ -3799,7 +3834,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "CASE,ECM,HT 2/2/2,MHQ 1,NOVA,OMNI,PRB,RCN"
+    "BFAbilities": "CASE,ECM,HT 2/2/2,MHQ 1,NOVA,OMNI,PRB,RCN",
+    "SubTypeId": 19
   },
   {
     "Id": 106037,
@@ -3823,7 +3859,7 @@
       "Image": null,
       "SortOrder": 0
     },
-    "BFType": "AF",
+    "BFType": "WS",
     "EraId": 255,
     "EraStart": 2901,
     "Availability": [
@@ -3902,7 +3938,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "TH 14"
+    "BFAbilities": "TH 14",
+    "SubTypeId": 29
   },
   {
     "Id": 106038,
@@ -3969,7 +4006,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "ENE,TUR (3/3/-)"
+    "BFAbilities": "ENE,TUR (3/3/-)",
+    "SubTypeId": 4
   },
   {
     "Id": 106039,
@@ -4017,7 +4055,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "AM,CAR 6,LTAG,MEC"
+    "BFAbilities": "AM,CAR 6,LTAG,MEC",
+    "SubTypeId": 3
   },
   {
     "Id": 106040,
@@ -4113,7 +4152,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "AC 1/1/-,IF 1"
+    "BFAbilities": "AC 1/1/-,IF 1",
+    "SubTypeId": 4
   },
   {
     "Id": 106041,
@@ -4199,7 +4239,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "CASEII,OMNI,SRM 1/1"
+    "BFAbilities": "CASEII,OMNI,SRM 1/1",
+    "SubTypeId": 19
   },
   {
     "Id": 106042,
@@ -4285,7 +4326,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "AECM,ENE"
+    "BFAbilities": "AECM,ENE",
+    "SubTypeId": 4
   },
   {
     "Id": 106043,
@@ -4361,7 +4403,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "CASE,OMNI"
+    "BFAbilities": "CASE,OMNI",
+    "SubTypeId": 19
   },
   {
     "Id": 106044,
@@ -4385,7 +4428,7 @@
       "Image": null,
       "SortOrder": 0
     },
-    "BFType": "AF",
+    "BFType": "DS",
     "EraId": 11,
     "EraStart": 2781,
     "Availability": [
@@ -4470,7 +4513,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "TH 1"
+    "BFAbilities": "TH 1",
+    "SubTypeId": 46
   },
   {
     "Id": 106045,
@@ -4563,7 +4607,8 @@
     "BFDamageMediumMin": true,
     "BFDamageLongMin": true,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "FLK 0*/0*/0*"
+    "BFAbilities": "FLK 0*/0*/0*",
+    "SubTypeId": 20
   },
   {
     "Id": 106046,
@@ -4626,7 +4671,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "ENE,JMPS 1,OMNI"
+    "BFAbilities": "ENE,JMPS 1,OMNI",
+    "SubTypeId": 19
   },
   {
     "Id": 106047,
@@ -4687,7 +4733,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "JMPW 1,SNARC"
+    "BFAbilities": "JMPW 1,SNARC",
+    "SubTypeId": 4
   },
   {
     "Id": 106048,
@@ -4735,7 +4782,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "CAR 6,MEC"
+    "BFAbilities": "CAR 6,MEC",
+    "SubTypeId": 3
   },
   {
     "Id": 106049,
@@ -4964,7 +5012,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "CASE,IF 3,REAR 1/1/-"
+    "BFAbilities": "CASE,IF 3,REAR 1/1/-",
+    "SubTypeId": 4
   },
   {
     "Id": 106050,
@@ -5052,7 +5101,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": true,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "CASE,JMPS 1"
+    "BFAbilities": "CASE,JMPS 1",
+    "SubTypeId": 4
   },
   {
     "Id": 106051,
@@ -5107,7 +5157,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "AM,CAR 5,LMAS,MEC,STL"
+    "BFAbilities": "AM,CAR 5,LMAS,MEC,STL",
+    "SubTypeId": 3
   },
   {
     "Id": 106052,
@@ -5189,7 +5240,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "C3S,MHQ 1,SRCH,TUR (2/2/2)"
+    "BFAbilities": "C3S,MHQ 1,SRCH,TUR (2/2/2)",
+    "SubTypeId": 22
   },
   {
     "Id": 106053,
@@ -5262,7 +5314,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "CASE,MEL"
+    "BFAbilities": "CASE,MEL",
+    "SubTypeId": 4
   },
   {
     "Id": 106054,
@@ -5370,7 +5423,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "CAR 20"
+    "BFAbilities": "CAR 20",
+    "SubTypeId": 8
   },
   {
     "Id": 106055,
@@ -5545,7 +5599,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "MHQ 1,REAR 1/1/-"
+    "BFAbilities": "MHQ 1,REAR 1/1/-",
+    "SubTypeId": 4
   },
   {
     "Id": 106056,
@@ -5635,7 +5690,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "AMS,FLK 1/1/1,IF 0*,REAR 0*/-/-,SEAL,SRCH,TOR 1/1/-,TUR (3/3/2,AMS,FLK1/1/1,IF0*)"
+    "BFAbilities": "AMS,FLK 1/1/1,IF 0*,REAR 0*/-/-,SEAL,SRCH,TOR 1/1/-,TUR (3/3/2,AMS,FLK1/1/1,IF0*)",
+    "SubTypeId": 22
   },
   {
     "Id": 106057,
@@ -5783,7 +5839,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "ENE,OMNI"
+    "BFAbilities": "ENE,OMNI",
+    "SubTypeId": 19
   },
   {
     "Id": 106058,
@@ -5856,7 +5913,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "ENE,MEL,TAG"
+    "BFAbilities": "ENE,MEL,TAG",
+    "SubTypeId": 4
   },
   {
     "Id": 106059,
@@ -6045,7 +6103,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "EE,IF 1,SRCH,TUR (1/2/1,IF1)"
+    "BFAbilities": "EE,IF 1,SRCH,TUR (1/2/1,IF1)",
+    "SubTypeId": 16
   },
   {
     "Id": 106060,
@@ -6093,7 +6152,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "CAR 5"
+    "BFAbilities": "CAR 5",
+    "SubTypeId": 3
   },
   {
     "Id": 106061,
@@ -6117,7 +6177,7 @@
       "Image": null,
       "SortOrder": 0
     },
-    "BFType": "AF",
+    "BFType": "WS",
     "EraId": 1,
     "EraStart": 2005,
     "Availability": [
@@ -6190,7 +6250,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "TH 16"
+    "BFAbilities": "TH 16",
+    "SubTypeId": 29
   },
   {
     "Id": 106062,
@@ -6298,7 +6359,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "ENE"
+    "BFAbilities": "ENE",
+    "SubTypeId": 4
   },
   {
     "Id": 106063,
@@ -6322,7 +6384,7 @@
       "Image": null,
       "SortOrder": 0
     },
-    "BFType": "AF",
+    "BFType": "WS",
     "EraId": 1,
     "EraStart": 2005,
     "Availability": [
@@ -6366,7 +6428,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "TH 7"
+    "BFAbilities": "TH 7",
+    "SubTypeId": 29
   },
   {
     "Id": 106064,
@@ -6414,7 +6477,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "AM,CAR 5,MEC"
+    "BFAbilities": "AM,CAR 5,MEC",
+    "SubTypeId": 3
   },
   {
     "Id": 106065,
@@ -6475,7 +6539,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "AM,CAR 5,HT 1/-/-,MEC"
+    "BFAbilities": "AM,CAR 5,HT 1/-/-,MEC",
+    "SubTypeId": 3
   },
   {
     "Id": 106066,
@@ -6523,7 +6588,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "CAR 5,MAS,MDS 1"
+    "BFAbilities": "CAR 5,MAS,MDS 1",
+    "SubTypeId": 3
   },
   {
     "Id": 106067,
@@ -6590,7 +6656,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "C3M,CASE,FLK 1/1/1,MHQ 5,TAG"
+    "BFAbilities": "C3M,CASE,FLK 1/1/1,MHQ 5,TAG",
+    "SubTypeId": 4
   },
   {
     "Id": 106068,
@@ -6842,7 +6909,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "CASE,JMPW 1,OMNI,SRM 2/2"
+    "BFAbilities": "CASE,JMPW 1,OMNI,SRM 2/2",
+    "SubTypeId": 19
   },
   {
     "Id": 106069,
@@ -6897,7 +6965,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "C3I,ENE,MEL,MHQ 2,SAW,TSM"
+    "BFAbilities": "C3I,ENE,MEL,MHQ 2,SAW,TSM",
+    "SubTypeId": 4
   },
   {
     "Id": 106070,
@@ -6988,7 +7057,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "CASE,LPRB,OMNI,RCN"
+    "BFAbilities": "CASE,LPRB,OMNI,RCN",
+    "SubTypeId": 19
   },
   {
     "Id": 106071,
@@ -7126,7 +7196,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "ENE,SRCH,TUR (1/1/1)"
+    "BFAbilities": "ENE,SRCH,TUR (1/1/1)",
+    "SubTypeId": 16
   },
   {
     "Id": 106072,
@@ -7208,7 +7279,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "IT 4,OMNI,SRCH,SRM 1/1,TUR (2/2/-,SRM1/1)"
+    "BFAbilities": "IT 4,OMNI,SRCH,SRM 1/1,TUR (2/2/-,SRM1/1)",
+    "SubTypeId": 42
   },
   {
     "Id": 106073,
@@ -7269,7 +7341,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "SRM 1/1"
+    "BFAbilities": "SRM 1/1",
+    "SubTypeId": 4
   },
   {
     "Id": 106074,
@@ -7490,7 +7563,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "TH 1,BOMB 1,FUEL 12,PNT 1,SPC,VSTOL"
+    "BFAbilities": "TH 1,BOMB 1,FUEL 12,PNT 1,SPC,VSTOL",
+    "SubTypeId": 18
   },
   {
     "Id": 106075,
@@ -7578,7 +7652,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "AM,CAR 4,MEC,SOA,STL"
+    "BFAbilities": "AM,CAR 4,MEC,SOA,STL",
+    "SubTypeId": 3
   },
   {
     "Id": 106076,
@@ -7640,7 +7715,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "AMS,CASEII,IF 1,JMPW 1,LRM 1/1/1,OMNI,RCA,TAG"
+    "BFAbilities": "AMS,CASEII,IF 1,JMPW 1,LRM 1/1/1,OMNI,RCA,TAG",
+    "SubTypeId": 19
   },
   {
     "Id": 106077,
@@ -7664,7 +7740,7 @@
       "Image": null,
       "SortOrder": 0
     },
-    "BFType": "AF",
+    "BFType": "WS",
     "EraId": 1,
     "EraStart": 2005,
     "Availability": [
@@ -7715,7 +7791,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "TH 8"
+    "BFAbilities": "TH 8",
+    "SubTypeId": 29
   },
   {
     "Id": 106078,
@@ -7770,7 +7847,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "RFA"
+    "BFAbilities": "RFA",
+    "SubTypeId": 4
   },
   {
     "Id": 106079,
@@ -7849,7 +7927,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "ENE,OMNI,REAR 1/1/1"
+    "BFAbilities": "ENE,OMNI,REAR 1/1/1",
+    "SubTypeId": 19
   },
   {
     "Id": 106080,
@@ -7926,7 +8005,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "CAR 5"
+    "BFAbilities": "CAR 5",
+    "SubTypeId": 3
   },
   {
     "Id": 106081,
@@ -8107,7 +8187,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "OMNI"
+    "BFAbilities": "OMNI",
+    "SubTypeId": 19
   },
   {
     "Id": 106082,
@@ -8181,7 +8262,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "IF 1,SRCH,TUR (0*/1/1,IF1)"
+    "BFAbilities": "IF 1,SRCH,TUR (0*/1/1,IF1)",
+    "SubTypeId": 36
   },
   {
     "Id": 106083,
@@ -8236,7 +8318,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "AC 2/2/-,AFC,EE"
+    "BFAbilities": "AC 2/2/-,AFC,EE",
+    "SubTypeId": 52
   },
   {
     "Id": 106084,
@@ -8305,7 +8388,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "OMNI,RFA,SRCH,TUR (2/2/-)"
+    "BFAbilities": "OMNI,RFA,SRCH,TUR (2/2/-)",
+    "SubTypeId": 42
   },
   {
     "Id": 106085,
@@ -8411,7 +8495,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "ENE"
+    "BFAbilities": "ENE",
+    "SubTypeId": 4
   },
   {
     "Id": 106086,
@@ -8466,7 +8551,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "C3I,ENE,MHQ 2,OMNI"
+    "BFAbilities": "C3I,ENE,MHQ 2,OMNI",
+    "SubTypeId": 19
   },
   {
     "Id": 106087,
@@ -8548,7 +8634,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "AC 2/2/-,CASEII,MHQ 1,REAR 1/1/-"
+    "BFAbilities": "AC 2/2/-,CASEII,MHQ 1,REAR 1/1/-",
+    "SubTypeId": 4
   },
   {
     "Id": 106088,
@@ -8686,7 +8773,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "CASE"
+    "BFAbilities": "CASE",
+    "SubTypeId": 4
   },
   {
     "Id": 106089,
@@ -8734,7 +8822,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "AM,CAR 6,MEC"
+    "BFAbilities": "AM,CAR 6,MEC",
+    "SubTypeId": 3
   },
   {
     "Id": 106090,
@@ -8818,7 +8907,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "ENE"
+    "BFAbilities": "ENE",
+    "SubTypeId": 4
   },
   {
     "Id": 106091,
@@ -8866,7 +8956,8 @@
     "BFDamageMediumMin": true,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "AM,C3I,CAR 5,MEC,MHQ 2"
+    "BFAbilities": "AM,C3I,CAR 5,MEC,MHQ 2",
+    "SubTypeId": 3
   },
   {
     "Id": 106092,
@@ -8927,7 +9018,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "ARS,ENE,SRCH,TUR (2/2/2)"
+    "BFAbilities": "ARS,ENE,SRCH,TUR (2/2/2)",
+    "SubTypeId": 22
   },
   {
     "Id": 106093,
@@ -8989,7 +9081,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "CAR 4,IF 1,STL"
+    "BFAbilities": "CAR 4,IF 1,STL",
+    "SubTypeId": 3
   },
   {
     "Id": 106094,
@@ -9056,7 +9149,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "CASE"
+    "BFAbilities": "CASE",
+    "SubTypeId": 4
   },
   {
     "Id": 106095,
@@ -9120,7 +9214,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "CASEII,OMNI"
+    "BFAbilities": "CASEII,OMNI",
+    "SubTypeId": 19
   },
   {
     "Id": 106096,
@@ -9175,7 +9270,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "BIM (4a),BOMB 1,FUEL 4,IF 0*"
+    "BFAbilities": "BIM (4a),BOMB 1,FUEL 4,IF 0*",
+    "SubTypeId": 34
   },
   {
     "Id": 106097,
@@ -9254,7 +9350,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "C3S,ENE,MHQ 1"
+    "BFAbilities": "C3S,ENE,MHQ 1",
+    "SubTypeId": 4
   },
   {
     "Id": 106098,
@@ -9340,7 +9437,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "ENE,SRCH"
+    "BFAbilities": "ENE,SRCH",
+    "SubTypeId": 16
   },
   {
     "Id": 106099,
@@ -9401,7 +9499,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "TH 2,BOMB 2,FUEL 20,SPC,VSTOL"
+    "BFAbilities": "TH 2,BOMB 2,FUEL 20,SPC,VSTOL",
+    "SubTypeId": 1
   },
   {
     "Id": 106100,
@@ -9524,7 +9623,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "TH 3,BOMB 2,FUEL 20,SPC,VSTOL"
+    "BFAbilities": "TH 3,BOMB 2,FUEL 20,SPC,VSTOL",
+    "SubTypeId": 18
   },
   {
     "Id": 106101,
@@ -9607,7 +9707,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "CASEII,OMNI"
+    "BFAbilities": "CASEII,OMNI",
+    "SubTypeId": 19
   },
   {
     "Id": 106102,
@@ -9662,7 +9763,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "IF 1,REAR 1/1/-"
+    "BFAbilities": "IF 1,REAR 1/1/-",
+    "SubTypeId": 4
   },
   {
     "Id": 106103,
@@ -9710,7 +9812,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "CAR 6"
+    "BFAbilities": "CAR 6",
+    "SubTypeId": 3
   },
   {
     "Id": 106104,
@@ -9766,7 +9869,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": true,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "AMS,CASE,ECM,LTAG,MHQ 1,NOVA,OMNI,PRB,RCN"
+    "BFAbilities": "AMS,CASE,ECM,LTAG,MHQ 1,NOVA,OMNI,PRB,RCN",
+    "SubTypeId": 19
   },
   {
     "Id": 106105,
@@ -9814,7 +9918,8 @@
     "BFDamageMediumMin": true,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "AM,C3S,CAR 5,MEC,MHQ 1"
+    "BFAbilities": "AM,C3S,CAR 5,MEC,MHQ 1",
+    "SubTypeId": 3
   },
   {
     "Id": 106106,
@@ -9838,7 +9943,7 @@
       "Image": null,
       "SortOrder": 0
     },
-    "BFType": "AF",
+    "BFType": "DA",
     "EraId": 254,
     "EraStart": 3101,
     "Availability": [
@@ -9883,7 +9988,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "TH 6"
+    "BFAbilities": "TH 6",
+    "SubTypeId": 14
   },
   {
     "Id": 106107,
@@ -9946,7 +10052,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "CASE,JMPS 1,MEL,OMNI,SRM 1/1"
+    "BFAbilities": "CASE,JMPS 1,MEL,OMNI,SRM 1/1",
+    "SubTypeId": 19
   },
   {
     "Id": 106108,
@@ -10007,7 +10114,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": ""
+    "BFAbilities": "",
+    "SubTypeId": 4
   },
   {
     "Id": 106109,
@@ -10228,7 +10336,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "TH 3,BOMB 2,FUEL 20,REAR 1/1/-,SPC,VSTOL"
+    "BFAbilities": "TH 3,BOMB 2,FUEL 20,REAR 1/1/-,SPC,VSTOL",
+    "SubTypeId": 18
   },
   {
     "Id": 106110,
@@ -10285,7 +10394,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "AM,CAR 5,MEC,SRCH"
+    "BFAbilities": "AM,CAR 5,MEC,SRCH",
+    "SubTypeId": 3
   },
   {
     "Id": 106111,
@@ -10333,7 +10443,8 @@
     "BFDamageMediumMin": true,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "AM,CAR 6,MEC"
+    "BFAbilities": "AM,CAR 6,MEC",
+    "SubTypeId": 3
   },
   {
     "Id": 106112,
@@ -10437,7 +10548,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "CAR 4,HT 1/-/-"
+    "BFAbilities": "CAR 4,HT 1/-/-",
+    "SubTypeId": 3
   },
   {
     "Id": 106113,
@@ -10506,7 +10618,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "CASE,FLK 1/1/1,MEL"
+    "BFAbilities": "CASE,FLK 1/1/1,MEL",
+    "SubTypeId": 4
   },
   {
     "Id": 106114,
@@ -10641,7 +10754,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "ECM,ENE"
+    "BFAbilities": "ECM,ENE",
+    "SubTypeId": 4
   },
   {
     "Id": 106115,
@@ -10736,7 +10850,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "AM,ATMO,CAR 5,MEC,SRCH"
+    "BFAbilities": "AM,ATMO,CAR 5,MEC,SRCH",
+    "SubTypeId": 3
   },
   {
     "Id": 106116,
@@ -10812,7 +10927,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "CASE,OMNI"
+    "BFAbilities": "CASE,OMNI",
+    "SubTypeId": 19
   },
   {
     "Id": 106117,
@@ -10836,7 +10952,7 @@
       "Image": null,
       "SortOrder": 0
     },
-    "BFType": "AF",
+    "BFType": "SC",
     "EraId": 255,
     "EraStart": 2901,
     "Availability": [
@@ -11028,7 +11144,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "TH 2"
+    "BFAbilities": "TH 2",
+    "SubTypeId": 26
   },
   {
     "Id": 106118,
@@ -11095,7 +11212,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "AMS,C3I,ECM,IT 6,MHQ 2,OMNI,SRCH,STL,TUR (1/1/1,AMS)"
+    "BFAbilities": "AMS,C3I,ECM,IT 6,MHQ 2,OMNI,SRCH,STL,TUR (1/1/1,AMS)",
+    "SubTypeId": 44
   },
   {
     "Id": 106119,
@@ -11201,7 +11319,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "CASE,IF 1,SRCH,TUR (3/3/2,IF1)"
+    "BFAbilities": "CASE,IF 1,SRCH,TUR (3/3/2,IF1)",
+    "SubTypeId": 22
   },
   {
     "Id": 106120,
@@ -11328,7 +11447,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "SRCH"
+    "BFAbilities": "SRCH",
+    "SubTypeId": 24
   },
   {
     "Id": 106121,
@@ -11383,7 +11503,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "ARTT -1,CASE,PRB,RCN,REAR 0*/-/-,SRCH,TUR (1/1/-)"
+    "BFAbilities": "ARTT -1,CASE,PRB,RCN,REAR 0*/-/-,SRCH,TUR (1/1/-)",
+    "SubTypeId": 24
   },
   {
     "Id": 106122,
@@ -11580,7 +11701,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": ""
+    "BFAbilities": "",
+    "SubTypeId": 28
   },
   {
     "Id": 106123,
@@ -11826,7 +11948,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "AM,CAR 4,HT 1/-/-"
+    "BFAbilities": "AM,CAR 4,HT 1/-/-",
+    "SubTypeId": 9
   },
   {
     "Id": 106124,
@@ -11850,7 +11973,7 @@
       "Image": null,
       "SortOrder": 0
     },
-    "BFType": "AF",
+    "BFType": "JS",
     "EraId": 255,
     "EraStart": 2901,
     "Availability": [
@@ -11934,7 +12057,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "TH 2"
+    "BFAbilities": "TH 2",
+    "SubTypeId": 33
   },
   {
     "Id": 106125,
@@ -12038,7 +12162,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "CASE,OMNI"
+    "BFAbilities": "CASE,OMNI",
+    "SubTypeId": 19
   },
   {
     "Id": 106126,
@@ -12347,7 +12472,8 @@
     "BFDamageMediumMin": true,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "AFC,EE,ORO"
+    "BFAbilities": "AFC,EE,ORO",
+    "SubTypeId": 51
   },
   {
     "Id": 106127,
@@ -12408,7 +12534,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "BRA,CASEII,JMPW 1"
+    "BFAbilities": "BRA,CASEII,JMPW 1",
+    "SubTypeId": 4
   },
   {
     "Id": 106128,
@@ -12496,7 +12623,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "MASH 2,SRCH,TUR (0*/-/-)"
+    "BFAbilities": "MASH 2,SRCH,TUR (0*/-/-)",
+    "SubTypeId": 16
   },
   {
     "Id": 106129,
@@ -12569,7 +12697,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": ""
+    "BFAbilities": "",
+    "SubTypeId": 4
   },
   {
     "Id": 106130,
@@ -12742,7 +12871,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": ""
+    "BFAbilities": "",
+    "SubTypeId": 53
   },
   {
     "Id": 106131,
@@ -12790,7 +12920,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "CAR 6"
+    "BFAbilities": "CAR 6",
+    "SubTypeId": 3
   },
   {
     "Id": 106132,
@@ -12852,7 +12983,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": ""
+    "BFAbilities": "",
+    "SubTypeId": 20
   },
   {
     "Id": 106133,
@@ -12957,7 +13089,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": ""
+    "BFAbilities": "",
+    "SubTypeId": 51
   },
   {
     "Id": 106134,
@@ -13107,7 +13240,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": ""
+    "BFAbilities": "",
+    "SubTypeId": 4
   },
   {
     "Id": 106135,
@@ -13243,7 +13377,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "ARTAIS -2,CASE"
+    "BFAbilities": "ARTAIS -2,CASE",
+    "SubTypeId": 4
   },
   {
     "Id": 106136,
@@ -13357,7 +13492,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "AFC,BAR,FC,TUR (4/4/-)"
+    "BFAbilities": "AFC,BAR,FC,TUR (4/4/-)",
+    "SubTypeId": 51
   },
   {
     "Id": 106137,
@@ -13437,7 +13573,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "AMS,CASE,ECM,IF 2,SRCH,TUR (4/4/4,IF2,AMS)"
+    "BFAbilities": "AMS,CASE,ECM,IF 2,SRCH,TUR (4/4/4,IF2,AMS)",
+    "SubTypeId": 22
   },
   {
     "Id": 106138,
@@ -13535,7 +13672,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "CASE,OMNI"
+    "BFAbilities": "CASE,OMNI",
+    "SubTypeId": 19
   },
   {
     "Id": 106139,
@@ -13698,7 +13836,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "ENE,IT 5,OMNI,SRCH,TUR (3/3/-)"
+    "BFAbilities": "ENE,IT 5,OMNI,SRCH,TUR (3/3/-)",
+    "SubTypeId": 42
   },
   {
     "Id": 106140,
@@ -13868,7 +14007,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "TH 1,BOMB 1,ENE,FUEL 12,SPC,VSTOL"
+    "BFAbilities": "TH 1,BOMB 1,ENE,FUEL 12,SPC,VSTOL",
+    "SubTypeId": 1
   },
   {
     "Id": 106141,
@@ -13938,7 +14078,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "CASEII,IF 2,RFA"
+    "BFAbilities": "CASEII,IF 2,RFA",
+    "SubTypeId": 4
   },
   {
     "Id": 106142,
@@ -14029,7 +14170,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "ENE,MEL"
+    "BFAbilities": "ENE,MEL",
+    "SubTypeId": 4
   },
   {
     "Id": 106143,
@@ -14136,7 +14278,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "AM,CAR 4,MEC"
+    "BFAbilities": "AM,CAR 4,MEC",
+    "SubTypeId": 3
   },
   {
     "Id": 106144,
@@ -14391,7 +14534,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "BFC,CT 1,MEL,SAW"
+    "BFAbilities": "BFC,CT 1,MEL,SAW",
+    "SubTypeId": 17
   },
   {
     "Id": 106145,
@@ -14477,7 +14621,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "CASE,IF 1"
+    "BFAbilities": "CASE,IF 1",
+    "SubTypeId": 4
   },
   {
     "Id": 106146,
@@ -14556,7 +14701,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "CASE,ECM,JMPS 1,STL"
+    "BFAbilities": "CASE,ECM,JMPS 1,STL",
+    "SubTypeId": 4
   },
   {
     "Id": 106147,
@@ -14580,7 +14726,7 @@
       "Image": null,
       "SortOrder": 0
     },
-    "BFType": "AF",
+    "BFType": "DS",
     "EraId": 10,
     "EraStart": 2571,
     "Availability": [
@@ -14685,7 +14831,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "TH 2"
+    "BFAbilities": "TH 2",
+    "SubTypeId": 46
   },
   {
     "Id": 106148,
@@ -14768,7 +14915,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "CASE"
+    "BFAbilities": "CASE",
+    "SubTypeId": 4
   },
   {
     "Id": 106149,
@@ -14892,7 +15040,8 @@
     "BFDamageMediumMin": true,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "ATMO,EE,IT 3,SRCH"
+    "BFAbilities": "ATMO,EE,IT 3,SRCH",
+    "SubTypeId": 23
   },
   {
     "Id": 106150,
@@ -14977,7 +15126,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "ENE,MEL,RCA"
+    "BFAbilities": "ENE,MEL,RCA",
+    "SubTypeId": 4
   },
   {
     "Id": 106151,
@@ -15175,7 +15325,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "ENE"
+    "BFAbilities": "ENE",
+    "SubTypeId": 4
   },
   {
     "Id": 106152,
@@ -15555,7 +15706,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "CT 3,HTC,SRCH,TUR (0*/-/-)"
+    "BFAbilities": "CT 3,HTC,SRCH,TUR (0*/-/-)",
+    "SubTypeId": 22
   },
   {
     "Id": 106153,
@@ -15668,7 +15820,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "IF 1,IT 4,OMNI,SRCH,TUR (0*/0*/0*)"
+    "BFAbilities": "IF 1,IT 4,OMNI,SRCH,TUR (0*/0*/0*)",
+    "SubTypeId": 43
   },
   {
     "Id": 106154,
@@ -15729,7 +15882,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "AM,CAR 4,FR,LECM,MEC"
+    "BFAbilities": "AM,CAR 4,FR,LECM,MEC",
+    "SubTypeId": 3
   },
   {
     "Id": 106155,
@@ -15922,7 +16076,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "EE,SRCH,TUR (1/1/1)"
+    "BFAbilities": "EE,SRCH,TUR (1/1/1)",
+    "SubTypeId": 16
   },
   {
     "Id": 106156,
@@ -16026,7 +16181,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "IF 2,LRM 0/2/2,SRCH,SRM 4/2,TUR (5/3/2,SRM3/1,LRM0/1/2,IF2)"
+    "BFAbilities": "IF 2,LRM 0/2/2,SRCH,SRM 4/2,TUR (5/3/2,SRM3/1,LRM0/1/2,IF2)",
+    "SubTypeId": 22
   },
   {
     "Id": 106157,
@@ -16179,7 +16335,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "BAR,CT 11.5,ENE,FC,HTC,OMNI,SRCH"
+    "BFAbilities": "BAR,CT 11.5,ENE,FC,HTC,OMNI,SRCH",
+    "SubTypeId": 51
   },
   {
     "Id": 106158,
@@ -16241,7 +16398,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "TH 2,BOMB 3,FUEL 20,SPC,VSTOL"
+    "BFAbilities": "TH 2,BOMB 3,FUEL 20,SPC,VSTOL",
+    "SubTypeId": 1
   },
   {
     "Id": 106159,
@@ -16304,7 +16462,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "CR,ENE,JMPW 1,MEL,TSM"
+    "BFAbilities": "CR,ENE,JMPW 1,MEL,TSM",
+    "SubTypeId": 4
   },
   {
     "Id": 106160,
@@ -16378,7 +16537,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "CASE,IF 2,JMPW 1,LRM 2/2/2,OMNI,OVL"
+    "BFAbilities": "CASE,IF 2,JMPW 1,LRM 2/2/2,OMNI,OVL",
+    "SubTypeId": 19
   },
   {
     "Id": 106161,
@@ -16468,7 +16628,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "TH 2,BOMB 1,FUEL 24,SPC,VSTOL"
+    "BFAbilities": "TH 2,BOMB 1,FUEL 24,SPC,VSTOL",
+    "SubTypeId": 1
   },
   {
     "Id": 106162,
@@ -16525,7 +16686,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "CASE,CR,ECM,IF 2,MHQ 1,NOVA,OMNI,PRB,RCN"
+    "BFAbilities": "CASE,CR,ECM,IF 2,MHQ 1,NOVA,OMNI,PRB,RCN",
+    "SubTypeId": 19
   },
   {
     "Id": 106163,
@@ -16581,7 +16743,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "CASEII,ECM,FLK 1/1/1,IATM 5/4/2,MHQ 1,NOVA,OMNI,PRB,RCN"
+    "BFAbilities": "CASEII,ECM,FLK 1/1/1,IATM 5/4/2,MHQ 1,NOVA,OMNI,PRB,RCN",
+    "SubTypeId": 19
   },
   {
     "Id": 106164,
@@ -16722,7 +16885,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": ""
+    "BFAbilities": "",
+    "SubTypeId": 51
   },
   {
     "Id": 106165,
@@ -16824,7 +16988,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "IF 1"
+    "BFAbilities": "IF 1",
+    "SubTypeId": 4
   },
   {
     "Id": 106166,
@@ -16903,7 +17068,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "C3S,ECM,ENE,MHQ 1"
+    "BFAbilities": "C3S,ECM,ENE,MHQ 1",
+    "SubTypeId": 4
   },
   {
     "Id": 106167,
@@ -16927,7 +17093,7 @@
       "Image": null,
       "SortOrder": 0
     },
-    "BFType": "AF",
+    "BFType": "DS",
     "EraId": 13,
     "EraStart": 3050,
     "Availability": [
@@ -16994,7 +17160,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "TH 2"
+    "BFAbilities": "TH 2",
+    "SubTypeId": 46
   },
   {
     "Id": 106168,
@@ -17228,7 +17395,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "TH 5,BOMB 3,FUEL 16,REAR 2/2/-,SPC,VSTOL"
+    "BFAbilities": "TH 5,BOMB 3,FUEL 16,REAR 2/2/-,SPC,VSTOL",
+    "SubTypeId": 1
   },
   {
     "Id": 106169,
@@ -17305,7 +17473,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "ECM,IF 1,JMPW 1,MAS,OVL"
+    "BFAbilities": "ECM,IF 1,JMPW 1,MAS,OVL",
+    "SubTypeId": 4
   },
   {
     "Id": 106170,
@@ -17372,7 +17541,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "CASE,JMPS 1"
+    "BFAbilities": "CASE,JMPS 1",
+    "SubTypeId": 4
   },
   {
     "Id": 106171,
@@ -17427,7 +17597,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": ""
+    "BFAbilities": "",
+    "SubTypeId": 15
   },
   {
     "Id": 106172,
@@ -17475,7 +17646,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "AM,CAR 6,MEC,SRCH"
+    "BFAbilities": "AM,CAR 6,MEC,SRCH",
+    "SubTypeId": 3
   },
   {
     "Id": 106173,
@@ -17530,7 +17702,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "IF 1"
+    "BFAbilities": "IF 1",
+    "SubTypeId": 4
   },
   {
     "Id": 106174,
@@ -17628,7 +17801,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "ATMO,IT 4,SRCH,SRM 1/1"
+    "BFAbilities": "ATMO,IT 4,SRCH,SRM 1/1",
+    "SubTypeId": 23
   },
   {
     "Id": 106175,
@@ -17779,7 +17953,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "FC,SRCH"
+    "BFAbilities": "FC,SRCH",
+    "SubTypeId": 24
   },
   {
     "Id": 106176,
@@ -18030,7 +18205,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "AM,CAR 3"
+    "BFAbilities": "AM,CAR 3",
+    "SubTypeId": 7
   },
   {
     "Id": 106177,
@@ -18271,7 +18447,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "CASE,IF 1,IT 3,SRCH,TUR (2/2/-)"
+    "BFAbilities": "CASE,IF 1,IT 3,SRCH,TUR (2/2/-)",
+    "SubTypeId": 16
   },
   {
     "Id": 106178,
@@ -18349,7 +18526,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "ENE"
+    "BFAbilities": "ENE",
+    "SubTypeId": 20
   },
   {
     "Id": 106179,
@@ -18373,7 +18551,7 @@
       "Image": null,
       "SortOrder": 0
     },
-    "BFType": "AF",
+    "BFType": "WS",
     "EraId": 10,
     "EraStart": 2571,
     "Availability": [
@@ -18412,7 +18590,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "TH 23"
+    "BFAbilities": "TH 23",
+    "SubTypeId": 29
   },
   {
     "Id": 106180,
@@ -18460,7 +18639,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "CAR 4,FR,XMEC"
+    "BFAbilities": "CAR 4,FR,XMEC",
+    "SubTypeId": 3
   },
   {
     "Id": 106181,
@@ -18524,7 +18704,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "CASE,JMPS 2,OMNI"
+    "BFAbilities": "CASE,JMPS 2,OMNI",
+    "SubTypeId": 19
   },
   {
     "Id": 106182,
@@ -18583,7 +18764,8 @@
     "BFDamageMediumMin": true,
     "BFDamageLongMin": true,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "AFC,BOMB 1"
+    "BFAbilities": "AFC,BOMB 1",
+    "SubTypeId": 15
   },
   {
     "Id": 106183,
@@ -18631,7 +18813,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "CAR 6"
+    "BFAbilities": "CAR 6",
+    "SubTypeId": 3
   },
   {
     "Id": 106184,
@@ -18655,7 +18838,7 @@
       "Image": null,
       "SortOrder": 0
     },
-    "BFType": "AF",
+    "BFType": "DS",
     "EraId": 1,
     "EraStart": 2005,
     "Availability": [
@@ -18686,7 +18869,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "TH 1"
+    "BFAbilities": "TH 1",
+    "SubTypeId": 46
   },
   {
     "Id": 106185,
@@ -18741,7 +18925,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "TH 1,BOMB 1,ENE,FUEL 12,SPC,VSTOL"
+    "BFAbilities": "TH 1,BOMB 1,ENE,FUEL 12,SPC,VSTOL",
+    "SubTypeId": 1
   },
   {
     "Id": 106186,
@@ -18789,7 +18974,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": ""
+    "BFAbilities": "",
+    "SubTypeId": 4
   },
   {
     "Id": 106187,
@@ -18882,7 +19068,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "CASE,ECM,REAR 0*/0*/-"
+    "BFAbilities": "CASE,ECM,REAR 0*/0*/-",
+    "SubTypeId": 4
   },
   {
     "Id": 106188,
@@ -18937,7 +19124,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "EE,SRCH,SRM 2/2,TUR (1/1/1)"
+    "BFAbilities": "EE,SRCH,SRM 2/2,TUR (1/1/1)",
+    "SubTypeId": 52
   },
   {
     "Id": 106189,
@@ -19022,7 +19210,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "CASE,ECM,IF 2,LRM 1/1/2,STL"
+    "BFAbilities": "CASE,ECM,IF 2,LRM 1/1/2,STL",
+    "SubTypeId": 4
   },
   {
     "Id": 106190,
@@ -19279,7 +19468,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "SRCH,TAG"
+    "BFAbilities": "SRCH,TAG",
+    "SubTypeId": 16
   },
   {
     "Id": 106191,
@@ -19327,7 +19517,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "CAR 6,LMAS,MEC,STL"
+    "BFAbilities": "CAR 6,LMAS,MEC,STL",
+    "SubTypeId": 3
   },
   {
     "Id": 106192,
@@ -19605,7 +19796,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "AM,CAR 4,HT 1/-/-"
+    "BFAbilities": "AM,CAR 4,HT 1/-/-",
+    "SubTypeId": 9
   },
   {
     "Id": 106193,
@@ -19733,7 +19925,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "IF 1,MHQ 1"
+    "BFAbilities": "IF 1,MHQ 1",
+    "SubTypeId": 4
   },
   {
     "Id": 106194,
@@ -19922,7 +20115,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "ATMO,EE,IF 1,SRCH"
+    "BFAbilities": "ATMO,EE,IF 1,SRCH",
+    "SubTypeId": 23
   },
   {
     "Id": 106195,
@@ -20059,7 +20253,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "AM,CAR 5,MEC"
+    "BFAbilities": "AM,CAR 5,MEC",
+    "SubTypeId": 3
   },
   {
     "Id": 106196,
@@ -20182,7 +20377,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": ""
+    "BFAbilities": "",
+    "SubTypeId": 4
   },
   {
     "Id": 106197,
@@ -20299,7 +20495,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "CAR 28"
+    "BFAbilities": "CAR 28",
+    "SubTypeId": 11
   },
   {
     "Id": 106198,
@@ -20384,7 +20581,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": ""
+    "BFAbilities": "",
+    "SubTypeId": 50
   },
   {
     "Id": 106199,
@@ -20480,7 +20678,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "IF 0*"
+    "BFAbilities": "IF 0*",
+    "SubTypeId": 4
   },
   {
     "Id": 106200,
@@ -20583,6 +20782,7 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "CAR 20"
+    "BFAbilities": "CAR 20",
+    "SubTypeId": 11
   }
 ]

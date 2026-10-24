@@ -21,7 +21,7 @@
       "Image": null,
       "SortOrder": 0
     },
-    "BFType": "AF",
+    "BFType": "DS",
     "EraId": 10,
     "EraStart": 2571,
     "Availability": [
@@ -327,7 +327,8 @@
       "Name": "Aerospace Craft",
       "Image": null,
       "SortOrder": 7
-    }
+    },
+    "SubTypeId": 46
   },
   {
     "Id": 100202,
@@ -351,7 +352,7 @@
       "Image": null,
       "SortOrder": 0
     },
-    "BFType": "AF",
+    "BFType": "JS",
     "EraId": 1,
     "EraStart": 2005,
     "Availability": [
@@ -409,7 +410,8 @@
       "Name": "Aerospace Craft",
       "Image": null,
       "SortOrder": 7
-    }
+    },
+    "SubTypeId": 33
   },
   {
     "Id": 100203,
@@ -496,7 +498,8 @@
       "Name": "BattleMech",
       "Image": null,
       "SortOrder": 0
-    }
+    },
+    "SubTypeId": 4
   },
   {
     "Id": 100204,
@@ -570,7 +573,8 @@
       "Name": "BattleMech",
       "Image": null,
       "SortOrder": 0
-    }
+    },
+    "SubTypeId": 4
   },
   {
     "Id": 100205,
@@ -816,7 +820,8 @@
       "Name": "Infantry",
       "Image": null,
       "SortOrder": 5
-    }
+    },
+    "SubTypeId": 7
   },
   {
     "Id": 100206,
@@ -1296,7 +1301,8 @@
       "Name": "Combat Vehicle",
       "Image": null,
       "SortOrder": 1
-    }
+    },
+    "SubTypeId": 24
   },
   {
     "Id": 100207,
@@ -1364,7 +1370,8 @@
       "Name": "IndustrialMech",
       "Image": null,
       "SortOrder": 9
-    }
+    },
+    "SubTypeId": 17
   },
   {
     "Id": 100208,
@@ -1433,7 +1440,8 @@
       "Name": "BattleMech",
       "Image": null,
       "SortOrder": 0
-    }
+    },
+    "SubTypeId": 4
   },
   {
     "Id": 100209,
@@ -1497,7 +1505,8 @@
       "Name": "BattleMech",
       "Image": null,
       "SortOrder": 0
-    }
+    },
+    "SubTypeId": 19
   },
   {
     "Id": 100210,
@@ -1658,7 +1667,8 @@
       "Name": "Combat Vehicle",
       "Image": null,
       "SortOrder": 1
-    }
+    },
+    "SubTypeId": 16
   },
   {
     "Id": 100211,
@@ -1706,7 +1716,8 @@
       "Name": "Battle Armor",
       "Image": null,
       "SortOrder": 4
-    }
+    },
+    "SubTypeId": 3
   },
   {
     "Id": 100212,
@@ -1769,7 +1780,8 @@
       "Name": "Combat Vehicle",
       "Image": null,
       "SortOrder": 1
-    }
+    },
+    "SubTypeId": 24
   },
   {
     "Id": 100213,
@@ -1817,7 +1829,8 @@
       "Name": "Battle Armor",
       "Image": null,
       "SortOrder": 4
-    }
+    },
+    "SubTypeId": 3
   },
   {
     "Id": 100214,
@@ -1865,7 +1878,8 @@
       "Name": "Advanced Support",
       "Image": null,
       "SortOrder": 10
-    }
+    },
+    "SubTypeId": 49
   },
   {
     "Id": 100215,
@@ -1920,7 +1934,8 @@
       "Name": "Battle Armor",
       "Image": null,
       "SortOrder": 4
-    }
+    },
+    "SubTypeId": 3
   },
   {
     "Id": 100216,
@@ -2012,7 +2027,8 @@
       "Name": "BattleMech",
       "Image": null,
       "SortOrder": 0
-    }
+    },
+    "SubTypeId": 4
   },
   {
     "Id": 100217,
@@ -2145,7 +2161,8 @@
       "Name": "BattleMech",
       "Image": null,
       "SortOrder": 0
-    }
+    },
+    "SubTypeId": 4
   },
   {
     "Id": 100218,
@@ -2212,7 +2229,8 @@
       "Name": "BattleMech",
       "Image": null,
       "SortOrder": 0
-    }
+    },
+    "SubTypeId": 4
   },
   {
     "Id": 100219,
@@ -2282,7 +2300,8 @@
       "Name": "BattleMech",
       "Image": null,
       "SortOrder": 0
-    }
+    },
+    "SubTypeId": 4
   },
   {
     "Id": 100220,
@@ -2337,7 +2356,8 @@
       "Name": "BattleMech",
       "Image": null,
       "SortOrder": 0
-    }
+    },
+    "SubTypeId": 4
   },
   {
     "Id": 100221,
@@ -2432,7 +2452,8 @@
       "Name": "BattleMech",
       "Image": null,
       "SortOrder": 0
-    }
+    },
+    "SubTypeId": 4
   },
   {
     "Id": 100222,
@@ -2519,7 +2540,8 @@
       "Name": "BattleMech",
       "Image": null,
       "SortOrder": 0
-    }
+    },
+    "SubTypeId": 4
   },
   {
     "Id": 100223,
@@ -2543,7 +2565,7 @@
       "Image": null,
       "SortOrder": 0
     },
-    "BFType": "AF",
+    "BFType": "DA",
     "EraId": 15,
     "EraStart": 3081,
     "Availability": [
@@ -2596,7 +2618,8 @@
       "Name": "Aerospace Craft",
       "Image": null,
       "SortOrder": 7
-    }
+    },
+    "SubTypeId": 14
   },
   {
     "Id": 100224,
@@ -2644,7 +2667,8 @@
       "Name": "Battle Armor",
       "Image": null,
       "SortOrder": 4
-    }
+    },
+    "SubTypeId": 3
   },
   {
     "Id": 100225,
@@ -2744,7 +2768,8 @@
       "Name": "BattleMech",
       "Image": null,
       "SortOrder": 0
-    }
+    },
+    "SubTypeId": 4
   },
   {
     "Id": 100226,
@@ -2823,7 +2848,8 @@
       "Name": "BattleMech",
       "Image": null,
       "SortOrder": 0
-    }
+    },
+    "SubTypeId": 19
   },
   {
     "Id": 100227,
@@ -2902,7 +2928,8 @@
       "Name": "BattleMech",
       "Image": null,
       "SortOrder": 0
-    }
+    },
+    "SubTypeId": 4
   },
   {
     "Id": 100228,
@@ -2957,7 +2984,8 @@
       "Name": "BattleMech",
       "Image": null,
       "SortOrder": 0
-    }
+    },
+    "SubTypeId": 4
   },
   {
     "Id": 100229,
@@ -3036,7 +3064,8 @@
       "Name": "Combat Vehicle",
       "Image": null,
       "SortOrder": 1
-    }
+    },
+    "SubTypeId": 24
   },
   {
     "Id": 100230,
@@ -3184,7 +3213,8 @@
       "Name": "BattleMech",
       "Image": null,
       "SortOrder": 0
-    }
+    },
+    "SubTypeId": 19
   },
   {
     "Id": 100231,
@@ -3361,7 +3391,8 @@
       "Name": "Infantry",
       "Image": null,
       "SortOrder": 5
-    }
+    },
+    "SubTypeId": 10
   },
   {
     "Id": 100232,
@@ -3416,7 +3447,8 @@
       "Name": "BattleMech",
       "Image": null,
       "SortOrder": 0
-    }
+    },
+    "SubTypeId": 4
   },
   {
     "Id": 100233,
@@ -3523,7 +3555,8 @@
       "Name": "BattleMech",
       "Image": null,
       "SortOrder": 0
-    }
+    },
+    "SubTypeId": 4
   },
   {
     "Id": 100234,
@@ -3597,7 +3630,8 @@
       "Name": "BattleMech",
       "Image": null,
       "SortOrder": 0
-    }
+    },
+    "SubTypeId": 19
   },
   {
     "Id": 100235,
@@ -3700,7 +3734,8 @@
       "Name": "Combat Vehicle",
       "Image": null,
       "SortOrder": 1
-    }
+    },
+    "SubTypeId": 22
   },
   {
     "Id": 100236,
@@ -3806,7 +3841,8 @@
       "Name": "BattleMech",
       "Image": null,
       "SortOrder": 0
-    }
+    },
+    "SubTypeId": 4
   },
   {
     "Id": 100237,
@@ -3873,7 +3909,8 @@
       "Name": "BattleMech",
       "Image": null,
       "SortOrder": 0
-    }
+    },
+    "SubTypeId": 4
   },
   {
     "Id": 100238,
@@ -3950,7 +3987,8 @@
       "Name": "BattleMech",
       "Image": null,
       "SortOrder": 0
-    }
+    },
+    "SubTypeId": 4
   },
   {
     "Id": 100239,
@@ -4047,7 +4085,8 @@
       "Name": "BattleMech",
       "Image": null,
       "SortOrder": 0
-    }
+    },
+    "SubTypeId": 4
   },
   {
     "Id": 100240,
@@ -4152,7 +4191,8 @@
       "Name": "Infantry",
       "Image": null,
       "SortOrder": 5
-    }
+    },
+    "SubTypeId": 7
   },
   {
     "Id": 100241,
@@ -4200,7 +4240,8 @@
       "Name": "Battle Armor",
       "Image": null,
       "SortOrder": 4
-    }
+    },
+    "SubTypeId": 3
   },
   {
     "Id": 100242,
@@ -4255,7 +4296,8 @@
       "Name": "BattleMech",
       "Image": null,
       "SortOrder": 0
-    }
+    },
+    "SubTypeId": 4
   },
   {
     "Id": 100243,
@@ -4379,7 +4421,8 @@
       "Name": "BattleMech",
       "Image": null,
       "SortOrder": 0
-    }
+    },
+    "SubTypeId": 4
   },
   {
     "Id": 100244,
@@ -4495,7 +4538,8 @@
       "Name": "BattleMech",
       "Image": null,
       "SortOrder": 0
-    }
+    },
+    "SubTypeId": 4
   },
   {
     "Id": 100245,
@@ -4589,7 +4633,8 @@
       "Name": "BattleMech",
       "Image": null,
       "SortOrder": 0
-    }
+    },
+    "SubTypeId": 4
   },
   {
     "Id": 100246,
@@ -4709,7 +4754,8 @@
       "Name": "Support Vehicle",
       "Image": null,
       "SortOrder": 8
-    }
+    },
+    "SubTypeId": 52
   },
   {
     "Id": 100247,
@@ -4764,7 +4810,8 @@
       "Name": "Battle Armor",
       "Image": null,
       "SortOrder": 4
-    }
+    },
+    "SubTypeId": 3
   },
   {
     "Id": 100248,
@@ -4812,7 +4859,8 @@
       "Name": "Battle Armor",
       "Image": null,
       "SortOrder": 4
-    }
+    },
+    "SubTypeId": 3
   },
   {
     "Id": 100249,
@@ -4918,7 +4966,8 @@
       "Name": "BattleMech",
       "Image": null,
       "SortOrder": 0
-    }
+    },
+    "SubTypeId": 19
   },
   {
     "Id": 100250,
@@ -4979,7 +5028,8 @@
       "Name": "Battle Armor",
       "Image": null,
       "SortOrder": 4
-    }
+    },
+    "SubTypeId": 3
   },
   {
     "Id": 100251,
@@ -5099,7 +5149,8 @@
       "Name": "BattleMech",
       "Image": null,
       "SortOrder": 0
-    }
+    },
+    "SubTypeId": 4
   },
   {
     "Id": 100252,
@@ -5173,7 +5224,8 @@
       "Name": "IndustrialMech",
       "Image": null,
       "SortOrder": 9
-    }
+    },
+    "SubTypeId": 17
   },
   {
     "Id": 100253,
@@ -5261,7 +5313,8 @@
       "Name": "BattleMech",
       "Image": null,
       "SortOrder": 0
-    }
+    },
+    "SubTypeId": 4
   },
   {
     "Id": 100254,
@@ -5335,7 +5388,8 @@
       "Name": "BattleMech",
       "Image": null,
       "SortOrder": 0
-    }
+    },
+    "SubTypeId": 4
   },
   {
     "Id": 100255,
@@ -5383,7 +5437,8 @@
       "Name": "Battle Armor",
       "Image": null,
       "SortOrder": 4
-    }
+    },
+    "SubTypeId": 3
   },
   {
     "Id": 100256,
@@ -5480,7 +5535,8 @@
       "Name": "Battle Armor",
       "Image": null,
       "SortOrder": 4
-    }
+    },
+    "SubTypeId": 3
   },
   {
     "Id": 100257,
@@ -5504,7 +5560,7 @@
       "Image": null,
       "SortOrder": 0
     },
-    "BFType": "AF",
+    "BFType": "WS",
     "EraId": 247,
     "EraStart": 3062,
     "Availability": [
@@ -5535,7 +5591,8 @@
       "Name": "Aerospace Craft",
       "Image": null,
       "SortOrder": 7
-    }
+    },
+    "SubTypeId": 29
   },
   {
     "Id": 100258,
@@ -5669,7 +5726,8 @@
       "Name": "OmniVehicle",
       "Image": null,
       "SortOrder": 2
-    }
+    },
+    "SubTypeId": 44
   },
   {
     "Id": 100259,
@@ -5724,7 +5782,8 @@
       "Name": "BattleMech",
       "Image": null,
       "SortOrder": 0
-    }
+    },
+    "SubTypeId": 4
   },
   {
     "Id": 100260,
@@ -5788,7 +5847,8 @@
       "Name": "BattleMech",
       "Image": null,
       "SortOrder": 0
-    }
+    },
+    "SubTypeId": 4
   },
   {
     "Id": 100261,
@@ -6013,7 +6073,8 @@
       "Name": "Infantry",
       "Image": null,
       "SortOrder": 5
-    }
+    },
+    "SubTypeId": 7
   },
   {
     "Id": 100262,
@@ -6078,7 +6139,8 @@
       "Name": "IndustrialMech",
       "Image": null,
       "SortOrder": 9
-    }
+    },
+    "SubTypeId": 17
   },
   {
     "Id": 100263,
@@ -6139,7 +6201,8 @@
       "Name": "BattleMech",
       "Image": null,
       "SortOrder": 0
-    }
+    },
+    "SubTypeId": 4
   },
   {
     "Id": 100264,
@@ -6244,7 +6307,8 @@
       "Name": "BattleMech",
       "Image": null,
       "SortOrder": 0
-    }
+    },
+    "SubTypeId": 19
   },
   {
     "Id": 100265,
@@ -6348,7 +6412,8 @@
       "Name": "Battle Armor",
       "Image": null,
       "SortOrder": 4
-    }
+    },
+    "SubTypeId": 3
   },
   {
     "Id": 100266,
@@ -6428,7 +6493,8 @@
       "Name": "Combat Vehicle",
       "Image": null,
       "SortOrder": 1
-    }
+    },
+    "SubTypeId": 16
   },
   {
     "Id": 100267,
@@ -6638,7 +6704,8 @@
       "Name": "BattleMech",
       "Image": null,
       "SortOrder": 0
-    }
+    },
+    "SubTypeId": 19
   },
   {
     "Id": 100268,
@@ -6714,7 +6781,8 @@
       "Name": "BattleMech",
       "Image": null,
       "SortOrder": 0
-    }
+    },
+    "SubTypeId": 19
   },
   {
     "Id": 100269,
@@ -6804,7 +6872,8 @@
       "Name": "BattleMech",
       "Image": null,
       "SortOrder": 0
-    }
+    },
+    "SubTypeId": 4
   },
   {
     "Id": 100270,
@@ -6977,7 +7046,8 @@
       "Name": "Support Vehicle",
       "Image": null,
       "SortOrder": 8
-    }
+    },
+    "SubTypeId": 53
   },
   {
     "Id": 100271,
@@ -7045,7 +7115,8 @@
       "Name": "BattleMech",
       "Image": null,
       "SortOrder": 0
-    }
+    },
+    "SubTypeId": 4
   },
   {
     "Id": 100272,
@@ -7139,7 +7210,8 @@
       "Name": "Fighter Craft",
       "Image": null,
       "SortOrder": 3
-    }
+    },
+    "SubTypeId": 18
   },
   {
     "Id": 100273,
@@ -7343,7 +7415,8 @@
       "Name": "BattleMech",
       "Image": null,
       "SortOrder": 0
-    }
+    },
+    "SubTypeId": 19
   },
   {
     "Id": 100274,
@@ -7391,7 +7464,8 @@
       "Name": "Battle Armor",
       "Image": null,
       "SortOrder": 4
-    }
+    },
+    "SubTypeId": 3
   },
   {
     "Id": 100275,
@@ -7517,7 +7591,8 @@
       "Name": "Infantry",
       "Image": null,
       "SortOrder": 5
-    }
+    },
+    "SubTypeId": 7
   },
   {
     "Id": 100276,
@@ -7614,7 +7689,8 @@
       "Name": "BattleMech",
       "Image": null,
       "SortOrder": 0
-    }
+    },
+    "SubTypeId": 4
   },
   {
     "Id": 100277,
@@ -7697,7 +7773,8 @@
       "Name": "BattleMech",
       "Image": null,
       "SortOrder": 0
-    }
+    },
+    "SubTypeId": 4
   },
   {
     "Id": 100278,
@@ -7758,7 +7835,8 @@
       "Name": "BattleMech",
       "Image": null,
       "SortOrder": 0
-    }
+    },
+    "SubTypeId": 4
   },
   {
     "Id": 100279,
@@ -7824,7 +7902,8 @@
       "Name": "BattleMech",
       "Image": null,
       "SortOrder": 0
-    }
+    },
+    "SubTypeId": 4
   },
   {
     "Id": 100280,
@@ -7848,7 +7927,7 @@
       "Image": null,
       "SortOrder": 0
     },
-    "BFType": "AF",
+    "BFType": "SC",
     "EraId": 15,
     "EraStart": 3081,
     "Availability": [
@@ -7897,7 +7976,8 @@
       "Name": "Aerospace Craft",
       "Image": null,
       "SortOrder": 7
-    }
+    },
+    "SubTypeId": 26
   },
   {
     "Id": 100281,
@@ -7972,7 +8052,8 @@
       "Name": "Battle Armor",
       "Image": null,
       "SortOrder": 4
-    }
+    },
+    "SubTypeId": 3
   },
   {
     "Id": 100282,
@@ -8020,7 +8101,8 @@
       "Name": "Battle Armor",
       "Image": null,
       "SortOrder": 4
-    }
+    },
+    "SubTypeId": 3
   },
   {
     "Id": 100283,
@@ -8068,7 +8150,8 @@
       "Name": "Battle Armor",
       "Image": null,
       "SortOrder": 4
-    }
+    },
+    "SubTypeId": 3
   },
   {
     "Id": 100284,
@@ -8156,7 +8239,8 @@
       "Name": "BattleMech",
       "Image": null,
       "SortOrder": 0
-    }
+    },
+    "SubTypeId": 19
   },
   {
     "Id": 100285,
@@ -8402,7 +8486,8 @@
       "Name": "Infantry",
       "Image": null,
       "SortOrder": 5
-    }
+    },
+    "SubTypeId": 8
   },
   {
     "Id": 100286,
@@ -8603,7 +8688,8 @@
       "Name": "Combat Vehicle",
       "Image": null,
       "SortOrder": 1
-    }
+    },
+    "SubTypeId": 23
   },
   {
     "Id": 100287,
@@ -8683,7 +8769,8 @@
       "Name": "Combat Vehicle",
       "Image": null,
       "SortOrder": 1
-    }
+    },
+    "SubTypeId": 25
   },
   {
     "Id": 100288,
@@ -8783,7 +8870,8 @@
       "Name": "BattleMech",
       "Image": null,
       "SortOrder": 0
-    }
+    },
+    "SubTypeId": 4
   },
   {
     "Id": 100289,
@@ -8865,7 +8953,8 @@
       "Name": "BattleMech",
       "Image": null,
       "SortOrder": 0
-    }
+    },
+    "SubTypeId": 4
   },
   {
     "Id": 100290,
@@ -8942,7 +9031,8 @@
       "Name": "BattleMech",
       "Image": null,
       "SortOrder": 0
-    }
+    },
+    "SubTypeId": 19
   },
   {
     "Id": 100291,
@@ -9172,7 +9262,8 @@
       "Name": "Advanced Support",
       "Image": null,
       "SortOrder": 10
-    }
+    },
+    "SubTypeId": 49
   },
   {
     "Id": 100292,
@@ -9287,7 +9378,8 @@
       "Name": "BattleMech",
       "Image": null,
       "SortOrder": 0
-    }
+    },
+    "SubTypeId": 4
   },
   {
     "Id": 100293,
@@ -9335,7 +9427,8 @@
       "Name": "Battle Armor",
       "Image": null,
       "SortOrder": 4
-    }
+    },
+    "SubTypeId": 3
   },
   {
     "Id": 100294,
@@ -9420,7 +9513,8 @@
       "Name": "Infantry",
       "Image": null,
       "SortOrder": 5
-    }
+    },
+    "SubTypeId": 11
   },
   {
     "Id": 100295,
@@ -9572,7 +9666,8 @@
       "Name": "Fighter Craft",
       "Image": null,
       "SortOrder": 3
-    }
+    },
+    "SubTypeId": 1
   },
   {
     "Id": 100296,
@@ -9657,7 +9752,8 @@
       "Name": "Infantry",
       "Image": null,
       "SortOrder": 5
-    }
+    },
+    "SubTypeId": 7
   },
   {
     "Id": 100297,
@@ -9740,7 +9836,8 @@
       "Name": "Fighter Craft",
       "Image": null,
       "SortOrder": 3
-    }
+    },
+    "SubTypeId": 18
   },
   {
     "Id": 100298,
@@ -9820,7 +9917,8 @@
       "Name": "BattleMech",
       "Image": null,
       "SortOrder": 0
-    }
+    },
+    "SubTypeId": 4
   },
   {
     "Id": 100299,
@@ -9868,7 +9966,8 @@
       "Name": "Battle Armor",
       "Image": null,
       "SortOrder": 4
-    }
+    },
+    "SubTypeId": 3
   },
   {
     "Id": 100300,
@@ -9949,7 +10048,8 @@
       "Name": "BattleMech",
       "Image": null,
       "SortOrder": 0
-    }
+    },
+    "SubTypeId": 34
   },
   {
     "Id": 100301,
@@ -9973,7 +10073,7 @@
       "Image": null,
       "SortOrder": 0
     },
-    "BFType": "AF",
+    "BFType": "DA",
     "EraId": 255,
     "EraStart": 2901,
     "Availability": [
@@ -10171,7 +10271,8 @@
       "Name": "Aerospace Craft",
       "Image": null,
       "SortOrder": 7
-    }
+    },
+    "SubTypeId": 14
   },
   {
     "Id": 100302,
@@ -10240,7 +10341,8 @@
       "Name": "Battle Armor",
       "Image": null,
       "SortOrder": 4
-    }
+    },
+    "SubTypeId": 3
   },
   {
     "Id": 100303,
@@ -10288,7 +10390,8 @@
       "Name": "Battle Armor",
       "Image": null,
       "SortOrder": 4
-    }
+    },
+    "SubTypeId": 3
   },
   {
     "Id": 100304,
@@ -10368,7 +10471,8 @@
       "Name": "BattleMech",
       "Image": null,
       "SortOrder": 0
-    }
+    },
+    "SubTypeId": 4
   },
   {
     "Id": 100305,
@@ -10416,7 +10520,8 @@
       "Name": "Battle Armor",
       "Image": null,
       "SortOrder": 4
-    }
+    },
+    "SubTypeId": 3
   },
   {
     "Id": 100306,
@@ -10544,7 +10649,8 @@
       "Name": "BattleMech",
       "Image": null,
       "SortOrder": 0
-    }
+    },
+    "SubTypeId": 4
   },
   {
     "Id": 100307,
@@ -10644,7 +10750,8 @@
       "Name": "BattleMech",
       "Image": null,
       "SortOrder": 0
-    }
+    },
+    "SubTypeId": 4
   },
   {
     "Id": 100308,
@@ -10759,7 +10866,8 @@
       "Name": "Infantry",
       "Image": null,
       "SortOrder": 5
-    }
+    },
+    "SubTypeId": 13
   },
   {
     "Id": 100309,
@@ -10783,7 +10891,7 @@
       "Image": null,
       "SortOrder": 0
     },
-    "BFType": "AF",
+    "BFType": "DS",
     "EraId": 1,
     "EraStart": 2005,
     "Availability": [
@@ -10815,7 +10923,8 @@
       "Name": "Aerospace Craft",
       "Image": null,
       "SortOrder": 7
-    }
+    },
+    "SubTypeId": 46
   },
   {
     "Id": 100310,
@@ -10863,7 +10972,8 @@
       "Name": "Battle Armor",
       "Image": null,
       "SortOrder": 4
-    }
+    },
+    "SubTypeId": 3
   },
   {
     "Id": 100311,
@@ -10951,7 +11061,8 @@
       "Name": "Combat Vehicle",
       "Image": null,
       "SortOrder": 1
-    }
+    },
+    "SubTypeId": 22
   },
   {
     "Id": 100312,
@@ -10975,7 +11086,7 @@
       "Image": null,
       "SortOrder": 0
     },
-    "BFType": "AF",
+    "BFType": "JS",
     "EraId": 1,
     "EraStart": 2005,
     "Availability": [
@@ -11006,7 +11117,8 @@
       "Name": "Aerospace Craft",
       "Image": null,
       "SortOrder": 7
-    }
+    },
+    "SubTypeId": 33
   },
   {
     "Id": 100313,
@@ -11030,7 +11142,7 @@
       "Image": null,
       "SortOrder": 0
     },
-    "BFType": "AF",
+    "BFType": "DA",
     "EraId": 247,
     "EraStart": 3062,
     "Availability": [
@@ -11119,7 +11231,8 @@
       "Name": "Aerospace Craft",
       "Image": null,
       "SortOrder": 7
-    }
+    },
+    "SubTypeId": 14
   },
   {
     "Id": 100314,
@@ -11207,7 +11320,8 @@
       "Name": "BattleMech",
       "Image": null,
       "SortOrder": 0
-    }
+    },
+    "SubTypeId": 4
   },
   {
     "Id": 100315,
@@ -11231,7 +11345,7 @@
       "Image": null,
       "SortOrder": 0
     },
-    "BFType": "AF",
+    "BFType": "CF",
     "EraId": 1,
     "EraStart": 2005,
     "Availability": [],
@@ -11255,7 +11369,8 @@
       "Name": "Fighter Craft",
       "Image": null,
       "SortOrder": 3
-    }
+    },
+    "SubTypeId": 5
   },
   {
     "Id": 100316,
@@ -11595,7 +11710,8 @@
       "Name": "Fighter Craft",
       "Image": null,
       "SortOrder": 3
-    }
+    },
+    "SubTypeId": 1
   },
   {
     "Id": 100317,
@@ -11681,7 +11797,8 @@
       "Name": "Fighter Craft",
       "Image": null,
       "SortOrder": 3
-    }
+    },
+    "SubTypeId": 1
   },
   {
     "Id": 100318,
@@ -11908,7 +12025,8 @@
       "Name": "BattleMech",
       "Image": null,
       "SortOrder": 0
-    }
+    },
+    "SubTypeId": 4
   },
   {
     "Id": 100319,
@@ -11987,7 +12105,8 @@
       "Name": "IndustrialMech",
       "Image": null,
       "SortOrder": 9
-    }
+    },
+    "SubTypeId": 17
   },
   {
     "Id": 100320,
@@ -12063,7 +12182,8 @@
       "Name": "BattleMech",
       "Image": null,
       "SortOrder": 0
-    }
+    },
+    "SubTypeId": 19
   },
   {
     "Id": 100321,
@@ -12197,7 +12317,8 @@
       "Name": "BattleMech",
       "Image": null,
       "SortOrder": 0
-    }
+    },
+    "SubTypeId": 4
   },
   {
     "Id": 100322,
@@ -12245,7 +12366,8 @@
       "Name": "Battle Armor",
       "Image": null,
       "SortOrder": 4
-    }
+    },
+    "SubTypeId": 3
   },
   {
     "Id": 100323,
@@ -12315,7 +12437,8 @@
       "Name": "BattleMech",
       "Image": null,
       "SortOrder": 0
-    }
+    },
+    "SubTypeId": 19
   },
   {
     "Id": 100324,
@@ -12377,7 +12500,8 @@
       "Name": "BattleMech",
       "Image": null,
       "SortOrder": 0
-    }
+    },
+    "SubTypeId": 4
   },
   {
     "Id": 100325,
@@ -12460,7 +12584,8 @@
       "Name": "BattleMech",
       "Image": null,
       "SortOrder": 0
-    }
+    },
+    "SubTypeId": 4
   },
   {
     "Id": 100326,
@@ -12521,7 +12646,8 @@
       "Name": "BattleMech",
       "Image": null,
       "SortOrder": 0
-    }
+    },
+    "SubTypeId": 4
   },
   {
     "Id": 100327,
@@ -12707,7 +12833,8 @@
       "Name": "IndustrialMech",
       "Image": null,
       "SortOrder": 9
-    }
+    },
+    "SubTypeId": 17
   },
   {
     "Id": 100328,
@@ -12786,7 +12913,8 @@
       "Name": "BattleMech",
       "Image": null,
       "SortOrder": 0
-    }
+    },
+    "SubTypeId": 4
   },
   {
     "Id": 100329,
@@ -13105,7 +13233,8 @@
       "Name": "Support Vehicle",
       "Image": null,
       "SortOrder": 8
-    }
+    },
+    "SubTypeId": 52
   },
   {
     "Id": 100330,
@@ -13180,7 +13309,8 @@
       "Name": "BattleMech",
       "Image": null,
       "SortOrder": 0
-    }
+    },
+    "SubTypeId": 4
   },
   {
     "Id": 100331,
@@ -13241,7 +13371,8 @@
       "Name": "BattleMech",
       "Image": null,
       "SortOrder": 0
-    }
+    },
+    "SubTypeId": 19
   },
   {
     "Id": 100332,
@@ -13328,7 +13459,8 @@
       "Name": "BattleMech",
       "Image": null,
       "SortOrder": 0
-    }
+    },
+    "SubTypeId": 4
   },
   {
     "Id": 100333,
@@ -13666,7 +13798,8 @@
       "Name": "Combat Vehicle",
       "Image": null,
       "SortOrder": 1
-    }
+    },
+    "SubTypeId": 24
   },
   {
     "Id": 100334,
@@ -13721,7 +13854,8 @@
       "Name": "BattleMech",
       "Image": null,
       "SortOrder": 0
-    }
+    },
+    "SubTypeId": 4
   },
   {
     "Id": 100335,
@@ -13745,7 +13879,7 @@
       "Image": null,
       "SortOrder": 0
     },
-    "BFType": "AF",
+    "BFType": "DS",
     "EraId": 10,
     "EraStart": 2571,
     "Availability": [
@@ -13790,7 +13924,8 @@
       "Name": "Aerospace Craft",
       "Image": null,
       "SortOrder": 7
-    }
+    },
+    "SubTypeId": 46
   },
   {
     "Id": 100336,
@@ -13838,7 +13973,8 @@
       "Name": "Battle Armor",
       "Image": null,
       "SortOrder": 4
-    }
+    },
+    "SubTypeId": 3
   },
   {
     "Id": 100337,
@@ -13904,7 +14040,8 @@
       "Name": "Combat Vehicle",
       "Image": null,
       "SortOrder": 1
-    }
+    },
+    "SubTypeId": 22
   },
   {
     "Id": 100338,
@@ -13975,7 +14112,8 @@
       "Name": "OmniVehicle",
       "Image": null,
       "SortOrder": 2
-    }
+    },
+    "SubTypeId": 45
   },
   {
     "Id": 100339,
@@ -14037,7 +14175,8 @@
       "Name": "Battle Armor",
       "Image": null,
       "SortOrder": 4
-    }
+    },
+    "SubTypeId": 3
   },
   {
     "Id": 100340,
@@ -14196,7 +14335,8 @@
       "Name": "Support Vehicle",
       "Image": null,
       "SortOrder": 8
-    }
+    },
+    "SubTypeId": 51
   },
   {
     "Id": 100341,
@@ -14284,7 +14424,8 @@
       "Name": "IndustrialMech",
       "Image": null,
       "SortOrder": 9
-    }
+    },
+    "SubTypeId": 17
   },
   {
     "Id": 100342,
@@ -14370,7 +14511,8 @@
       "Name": "Battle Armor",
       "Image": null,
       "SortOrder": 4
-    }
+    },
+    "SubTypeId": 3
   },
   {
     "Id": 100343,
@@ -14472,7 +14614,8 @@
       "Name": "BattleMech",
       "Image": null,
       "SortOrder": 0
-    }
+    },
+    "SubTypeId": 4
   },
   {
     "Id": 100344,
@@ -14527,7 +14670,8 @@
       "Name": "Infantry",
       "Image": null,
       "SortOrder": 5
-    }
+    },
+    "SubTypeId": 7
   },
   {
     "Id": 100345,
@@ -14606,7 +14750,8 @@
       "Name": "Combat Vehicle",
       "Image": null,
       "SortOrder": 1
-    }
+    },
+    "SubTypeId": 24
   },
   {
     "Id": 100346,
@@ -14630,7 +14775,7 @@
       "Image": null,
       "SortOrder": 0
     },
-    "BFType": "AF",
+    "BFType": "SS",
     "EraId": 255,
     "EraStart": 2901,
     "Availability": [
@@ -14667,7 +14812,8 @@
       "Name": "Aerospace Craft",
       "Image": null,
       "SortOrder": 7
-    }
+    },
+    "SubTypeId": 31
   },
   {
     "Id": 100347,
@@ -14715,7 +14861,8 @@
       "Name": "Battle Armor",
       "Image": null,
       "SortOrder": 4
-    }
+    },
+    "SubTypeId": 3
   },
   {
     "Id": 100348,
@@ -14804,7 +14951,8 @@
       "Name": "Fighter Craft",
       "Image": null,
       "SortOrder": 3
-    }
+    },
+    "SubTypeId": 1
   },
   {
     "Id": 100349,
@@ -14921,7 +15069,8 @@
       "Name": "BattleMech",
       "Image": null,
       "SortOrder": 0
-    }
+    },
+    "SubTypeId": 4
   },
   {
     "Id": 100350,
@@ -15233,7 +15382,8 @@
       "Name": "Infantry",
       "Image": null,
       "SortOrder": 5
-    }
+    },
+    "SubTypeId": 8
   },
   {
     "Id": 100351,
@@ -15288,7 +15438,8 @@
       "Name": "Battle Armor",
       "Image": null,
       "SortOrder": 4
-    }
+    },
+    "SubTypeId": 3
   },
   {
     "Id": 100352,
@@ -15343,7 +15494,8 @@
       "Name": "Combat Vehicle",
       "Image": null,
       "SortOrder": 1
-    }
+    },
+    "SubTypeId": 24
   },
   {
     "Id": 100353,
@@ -15475,7 +15627,8 @@
       "Name": "BattleMech",
       "Image": null,
       "SortOrder": 0
-    }
+    },
+    "SubTypeId": 4
   },
   {
     "Id": 100354,
@@ -15537,7 +15690,8 @@
       "Name": "Battle Armor",
       "Image": null,
       "SortOrder": 4
-    }
+    },
+    "SubTypeId": 3
   },
   {
     "Id": 100355,
@@ -15600,7 +15754,8 @@
       "Name": "BattleMech",
       "Image": null,
       "SortOrder": 0
-    }
+    },
+    "SubTypeId": 19
   },
   {
     "Id": 100356,
@@ -15624,7 +15779,7 @@
       "Image": null,
       "SortOrder": 0
     },
-    "BFType": "AF",
+    "BFType": "WS",
     "EraId": 1,
     "EraStart": 2005,
     "Availability": [
@@ -15662,7 +15817,8 @@
       "Name": "Aerospace Craft",
       "Image": null,
       "SortOrder": 7
-    }
+    },
+    "SubTypeId": 29
   },
   {
     "Id": 100357,
@@ -15790,7 +15946,8 @@
       "Name": "BattleMech",
       "Image": null,
       "SortOrder": 0
-    }
+    },
+    "SubTypeId": 19
   },
   {
     "Id": 100358,
@@ -15928,7 +16085,8 @@
       "Name": "Support Vehicle",
       "Image": null,
       "SortOrder": 8
-    }
+    },
+    "SubTypeId": 50
   },
   {
     "Id": 100359,
@@ -15990,7 +16148,8 @@
       "Name": "Combat Vehicle",
       "Image": null,
       "SortOrder": 1
-    }
+    },
+    "SubTypeId": 22
   },
   {
     "Id": 100360,
@@ -16090,7 +16249,8 @@
       "Name": "BattleMech",
       "Image": null,
       "SortOrder": 0
-    }
+    },
+    "SubTypeId": 19
   },
   {
     "Id": 100361,
@@ -16153,7 +16313,8 @@
       "Name": "BattleMech",
       "Image": null,
       "SortOrder": 0
-    }
+    },
+    "SubTypeId": 4
   },
   {
     "Id": 100362,
@@ -16374,7 +16535,8 @@
       "Name": "Infantry",
       "Image": null,
       "SortOrder": 5
-    }
+    },
+    "SubTypeId": 9
   },
   {
     "Id": 100363,
@@ -16429,7 +16591,8 @@
       "Name": "Fighter Craft",
       "Image": null,
       "SortOrder": 3
-    }
+    },
+    "SubTypeId": 1
   },
   {
     "Id": 100364,
@@ -16535,7 +16698,8 @@
       "Name": "BattleMech",
       "Image": null,
       "SortOrder": 0
-    }
+    },
+    "SubTypeId": 4
   },
   {
     "Id": 100365,
@@ -16677,7 +16841,8 @@
       "Name": "Fighter Craft",
       "Image": null,
       "SortOrder": 3
-    }
+    },
+    "SubTypeId": 1
   },
   {
     "Id": 100366,
@@ -16725,7 +16890,8 @@
       "Name": "Battle Armor",
       "Image": null,
       "SortOrder": 4
-    }
+    },
+    "SubTypeId": 3
   },
   {
     "Id": 100367,
@@ -16811,7 +16977,8 @@
       "Name": "Advanced Support",
       "Image": null,
       "SortOrder": 10
-    }
+    },
+    "SubTypeId": 28
   },
   {
     "Id": 100368,
@@ -16882,7 +17049,8 @@
       "Name": "BattleMech",
       "Image": null,
       "SortOrder": 0
-    }
+    },
+    "SubTypeId": 19
   },
   {
     "Id": 100369,
@@ -16930,7 +17098,8 @@
       "Name": "Battle Armor",
       "Image": null,
       "SortOrder": 4
-    }
+    },
+    "SubTypeId": 3
   },
   {
     "Id": 100370,
@@ -17070,7 +17239,8 @@
       "Name": "Combat Vehicle",
       "Image": null,
       "SortOrder": 1
-    }
+    },
+    "SubTypeId": 16
   },
   {
     "Id": 100371,
@@ -17135,7 +17305,8 @@
       "Name": "Combat Vehicle",
       "Image": null,
       "SortOrder": 1
-    }
+    },
+    "SubTypeId": 25
   },
   {
     "Id": 100372,
@@ -17229,7 +17400,8 @@
       "Name": "Battle Armor",
       "Image": null,
       "SortOrder": 4
-    }
+    },
+    "SubTypeId": 3
   },
   {
     "Id": 100373,
@@ -17299,7 +17471,8 @@
       "Name": "Battle Armor",
       "Image": null,
       "SortOrder": 4
-    }
+    },
+    "SubTypeId": 3
   },
   {
     "Id": 100374,
@@ -17354,7 +17527,8 @@
       "Name": "Fighter Craft",
       "Image": null,
       "SortOrder": 3
-    }
+    },
+    "SubTypeId": 18
   },
   {
     "Id": 100375,
@@ -17402,7 +17576,8 @@
       "Name": "Battle Armor",
       "Image": null,
       "SortOrder": 4
-    }
+    },
+    "SubTypeId": 3
   },
   {
     "Id": 100376,
@@ -17494,7 +17669,8 @@
       "Name": "BattleMech",
       "Image": null,
       "SortOrder": 0
-    }
+    },
+    "SubTypeId": 4
   },
   {
     "Id": 100377,
@@ -17551,7 +17727,8 @@
       "Name": "Combat Vehicle",
       "Image": null,
       "SortOrder": 1
-    }
+    },
+    "SubTypeId": 22
   },
   {
     "Id": 100378,
@@ -17606,7 +17783,8 @@
       "Name": "BattleMech",
       "Image": null,
       "SortOrder": 0
-    }
+    },
+    "SubTypeId": 4
   },
   {
     "Id": 100379,
@@ -17630,7 +17808,7 @@
       "Image": null,
       "SortOrder": 0
     },
-    "BFType": "AF",
+    "BFType": "SC",
     "EraId": 1,
     "EraStart": 2005,
     "Availability": [
@@ -17691,7 +17869,8 @@
       "Name": "Aerospace Craft",
       "Image": null,
       "SortOrder": 7
-    }
+    },
+    "SubTypeId": 26
   },
   {
     "Id": 100380,
@@ -17816,7 +17995,8 @@
       "Name": "BattleMech",
       "Image": null,
       "SortOrder": 0
-    }
+    },
+    "SubTypeId": 4
   },
   {
     "Id": 100381,
@@ -17905,7 +18085,8 @@
       "Name": "BattleMech",
       "Image": null,
       "SortOrder": 0
-    }
+    },
+    "SubTypeId": 4
   },
   {
     "Id": 100382,
@@ -18047,7 +18228,8 @@
       "Name": "Fighter Craft",
       "Image": null,
       "SortOrder": 3
-    }
+    },
+    "SubTypeId": 1
   },
   {
     "Id": 100383,
@@ -18263,7 +18445,8 @@
       "Name": "Fighter Craft",
       "Image": null,
       "SortOrder": 3
-    }
+    },
+    "SubTypeId": 18
   },
   {
     "Id": 100384,
@@ -18311,7 +18494,8 @@
       "Name": "Battle Armor",
       "Image": null,
       "SortOrder": 4
-    }
+    },
+    "SubTypeId": 3
   },
   {
     "Id": 100385,
@@ -18520,7 +18704,8 @@
       "Name": "Combat Vehicle",
       "Image": null,
       "SortOrder": 1
-    }
+    },
+    "SubTypeId": 22
   },
   {
     "Id": 100386,
@@ -18568,7 +18753,8 @@
       "Name": "Battle Armor",
       "Image": null,
       "SortOrder": 4
-    }
+    },
+    "SubTypeId": 3
   },
   {
     "Id": 100387,
@@ -18723,7 +18909,8 @@
       "Name": "BattleMech",
       "Image": null,
       "SortOrder": 0
-    }
+    },
+    "SubTypeId": 4
   },
   {
     "Id": 100388,
@@ -18786,7 +18973,8 @@
       "Name": "BattleMech",
       "Image": null,
       "SortOrder": 0
-    }
+    },
+    "SubTypeId": 4
   },
   {
     "Id": 100389,
@@ -18912,7 +19100,8 @@
       "Name": "Support Vehicle",
       "Image": null,
       "SortOrder": 8
-    }
+    },
+    "SubTypeId": 52
   },
   {
     "Id": 100390,
@@ -18973,7 +19162,8 @@
       "Name": "BattleMech",
       "Image": null,
       "SortOrder": 0
-    }
+    },
+    "SubTypeId": 4
   },
   {
     "Id": 100391,
@@ -19041,7 +19231,8 @@
       "Name": "BattleMech",
       "Image": null,
       "SortOrder": 0
-    }
+    },
+    "SubTypeId": 19
   },
   {
     "Id": 100392,
@@ -19118,7 +19309,8 @@
       "Name": "BattleMech",
       "Image": null,
       "SortOrder": 0
-    }
+    },
+    "SubTypeId": 4
   },
   {
     "Id": 100393,
@@ -19209,7 +19401,8 @@
       "Name": "Infantry",
       "Image": null,
       "SortOrder": 5
-    }
+    },
+    "SubTypeId": 7
   },
   {
     "Id": 100394,
@@ -19282,7 +19475,8 @@
       "Name": "BattleMech",
       "Image": null,
       "SortOrder": 0
-    }
+    },
+    "SubTypeId": 4
   },
   {
     "Id": 100395,
@@ -19348,7 +19542,8 @@
       "Name": "Combat Vehicle",
       "Image": null,
       "SortOrder": 1
-    }
+    },
+    "SubTypeId": 22
   },
   {
     "Id": 100396,
@@ -19418,7 +19613,8 @@
       "Name": "Fighter Craft",
       "Image": null,
       "SortOrder": 3
-    }
+    },
+    "SubTypeId": 1
   },
   {
     "Id": 100397,
@@ -19491,7 +19687,8 @@
       "Name": "Battle Armor",
       "Image": null,
       "SortOrder": 4
-    }
+    },
+    "SubTypeId": 3
   },
   {
     "Id": 100398,
@@ -19552,7 +19749,8 @@
       "Name": "BattleMech",
       "Image": null,
       "SortOrder": 0
-    }
+    },
+    "SubTypeId": 4
   },
   {
     "Id": 100399,
@@ -19631,7 +19829,8 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "AC 2/2/-,CASE"
+    "BFAbilities": "AC 2/2/-,CASE",
+    "SubTypeId": 4
   },
   {
     "Id": 100400,
@@ -19725,6 +19924,7 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": ""
+    "BFAbilities": "",
+    "SubTypeId": 32
   }
 ]

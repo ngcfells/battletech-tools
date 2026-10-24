@@ -51,6 +51,7 @@ import { chromium } from "playwright";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { bfTypeOf, legacyEraIdOf, subTypeIdOfSummaryHash } from "./mul-mappings.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(__dirname, "..", "..");
@@ -106,24 +107,6 @@ async function captureFailureScreenshot(page, label) {
     }
 }
 
-// Standard Alpha Strike movement-type abbreviations (not present in the live site's data — this is
-// fixed rules knowledge, keyed off the site's unit_types.json `name`).
-const BF_TYPE_BY_UNIT_TYPE_NAME = {
-    BattleMech: "BM",
-    OmniMech: "BM",
-    "Combat Vehicle": "CV",
-    OmniVehicle: "CV",
-    "Support Vehicle": "SV",
-    "Fighter Craft": "AF",
-    "Aerospace Craft": "AF",
-    "Battle Armor": "BA",
-    Infantry: "CI",
-    ProtoMech: "PM",
-    IndustrialMech: "IM",
-    "Advanced Support": "SV",
-    Buildings: "CF",
-};
-
 const LEGACY_TYPE_ID_BY_NAME = {
     BattleMech: 18,
     "Combat Vehicle": 19,
@@ -138,19 +121,30 @@ const LEGACY_TYPE_ID_BY_NAME = {
     "Advanced Support": 24,
 };
 
-const LEGACY_ERA_ID_BY_LIVE_ID = {
-    2: 10,
-    3: 11,
-    4: 13,
-    5: 14,
-    6: 15,
-    7: 16,
-    8: 247,
-    10: 254,
-    11: 255,
-    12: 256,
-    13: 257,
-};
+// Live era ids the era table doesn't know; reported once each so the table gets the new era.
+const unknownLiveEraIds = new Set();
+function eraIdOf(liveEraId) {
+    const eraId = legacyEraIdOf(liveEraId);
+    if (eraId === undefined && liveEraId !== undefined && liveEraId !== null && !unknownLiveEraIds.has(liveEraId)) {
+        unknownLiveEraIds.add(liveEraId);
+        console.warn(`Unknown live era id ${liveEraId}: add it to tools/mul-sync/mul-mappings.mjs.`);
+    }
+    return eraId;
+}
+
+/** Sets a stored record's Alpha Strike type from its sub-type; true when that changed it. */
+function fixBFType(entry) {
+    const record = entry.record;
+    if (!record) return false;
+    if (record.SubTypeId === undefined) {
+        const subTypeId = subTypeIdOfSummaryHash(entry.summaryHash);
+        if (subTypeId !== undefined) record.SubTypeId = subTypeId;
+    }
+    const bfType = bfTypeOf(record.Class, record.SubTypeId);
+    if (bfType === record.BFType) return false;
+    record.BFType = bfType;
+    return true;
+}
 
 function normalizeIdentityPart(value) {
     return String(value ?? "").trim().replace(/\s+/g, " ").toLowerCase();
@@ -289,10 +283,12 @@ function buildLookup(records, keyField = "id") {
 function decodeAvailability(availability, opaqueId) {
     const entries = availability?.u?.[opaqueId];
     if (!entries) return [];
-    return entries.map(([eraId, dictIndex]) => ({
-        EraId: LEGACY_ERA_ID_BY_LIVE_ID[eraId] ?? eraId,
-        FactionIds: availability.d[dictIndex] ?? [],
-    }));
+    return entries
+        .filter(([eraId]) => eraIdOf(eraId) !== undefined)
+        .map(([eraId, dictIndex]) => ({
+            EraId: eraIdOf(eraId),
+            FactionIds: availability.d[dictIndex] ?? [],
+        }));
 }
 
 function summaryHashOf(unit) {
@@ -513,7 +509,8 @@ async function main() {
     // MUL_SYNC_OFFLINE=1: no browser and no network. Clean the store and rewrite the chunk files from it.
     if (process.env.MUL_SYNC_OFFLINE === "1") {
         const cleaned = Object.values(store.units).filter((unit) => unit.record && stripRoleFromAbilities(unit.record)).length;
-        console.log(`Offline rebuild: removed the role from the abilities of ${cleaned} record(s).`);
+        const retyped = Object.values(store.units).filter(fixBFType).length;
+        console.log(`Offline rebuild: removed the role from the abilities of ${cleaned} record(s); fixed the Alpha Strike type of ${retyped}.`);
         await saveJson(storePath, store);
         await writeLiveChunks(store);
         return;
@@ -627,8 +624,9 @@ async function main() {
                     Image: null,
                     SortOrder: unitTypeById.get(unit.t)?.sort ?? 0,
                 },
-                BFType: BF_TYPE_BY_UNIT_TYPE_NAME[unitTypeName] ?? null,
-                EraId: LEGACY_ERA_ID_BY_LIVE_ID[unit.ie] ?? unit.ie ?? 0,
+                SubTypeId: unit.st,
+                BFType: bfTypeOf(unitTypeName, unit.st),
+                EraId: eraIdOf(unit.ie) ?? 0,
                 EraStart: eraById.get(unit.ie)?.ys ?? 0,
                 Availability: decodeAvailability(availability, opaqueId),
             };
@@ -711,6 +709,7 @@ async function main() {
 
     for (const unit of Object.values(store.units)) {
         if (unit.record) stripRoleFromAbilities(unit.record);
+        fixBFType(unit);
     }
     await saveJson(storePath, store);
     await saveJson(dupeReportPath, dupeCandidates);

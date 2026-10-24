@@ -1682,15 +1682,8 @@ export class AlphaStrikeUnit {
     * @beta
     */
     public isGroundUnit(): boolean {
-        if(
-            this.type === "AF"
-            ||
-            this.type === "DA"
-            ||
-            this.type === "DS"
-            ||
-            this.type === "SC"
-        ) {
+        // Fighters, Small Craft, DropShips and capital ships (ASC unit type codes).
+        if( ["AF", "CF", "SC", "DS", "DA", "JS", "WS", "SS"].includes(this.type) ) {
             return false;
         }
         for( let moveC = 0; moveC < this.move.length; moveC++  ){
