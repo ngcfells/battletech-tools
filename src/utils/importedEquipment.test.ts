@@ -148,3 +148,10 @@ describe("SSW import", () => {
         vi.restoreAllMocks();
     });
 });
+
+describe("MegaMek's ISCASE", () => {
+    // It was listed on the Guardian ECM Suite (#43).
+    it("names CASE, not the Guardian ECM Suite", () => {
+        expect(findImportedEquipment("ISCASE", "is")?.item.tag).toBe("case");
+    });
+});

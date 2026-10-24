@@ -32,7 +32,7 @@ import { mechInternalStructureTypes } from "../data/mech-internal-structure-type
 import { mechJumpJetTypes } from "../data/mech-jump-jet-types";
 import { mechMyomerTypes } from "../data/mech-myomer-types";
 import { mechTypeOptions } from "../data/mech-type-options";
-import { IVariableEquipmentContext, isTargetingComputerWeapon, sizeVariableEquipment } from "../data/variable-equipment";
+import { getTargetingComputerWeaponWeight, IVariableEquipmentContext, isTargetingComputerWeapon, sizeVariableEquipment } from "../data/variable-equipment";
 import { btTechOptions } from "../data/tech-options";
 import { getHexDistanceFromModifier, getLocationName, getMovementModifier } from "../utils";
 import { addCommas } from "../utils/addCommas";
@@ -202,6 +202,8 @@ export interface IBattleMechExport {
     as_custom_nickname?: string;
     as_special_ammo_tag?: string;
     engineTechBase?: "is" | "clan";
+    // Mixed Tech only, when set (#43).
+    mixedTechBases?: { structure?: "is" | "clan"; armor?: "is" | "clan"; heatSink?: "is" | "clan" };
 
     // basic properties
     omnimech: boolean;
@@ -510,6 +512,9 @@ export class BattleMech {
     private _engine: IEngineOption | null = null;
     private _engineType = mechEngineTypes[0];
     private _engineTechBase: "is" | "clan" = "is";
+    // A Mixed Tech 'Mech's structure, armor and heat sinks may each be the Inner Sphere or the Clan version, with
+    // that version's slots (#43). Unset, they follow the chassis as before.
+    private _mixedTechBases: { structure?: "is" | "clan"; armor?: "is" | "clan"; heatSink?: "is" | "clan" } = {};
     private _jumpJetType = mechJumpJetTypes[0];
     // Movement Speeeds
     private _walkSpeed = 0;
@@ -3672,7 +3677,7 @@ export class BattleMech {
         };
         
         this._heatDissipation = this.getHeatSinks() * this._heatSinkType.dissipation + this.getPartialWingHeatBonus();
-        if( this.getTech().tag === "clan" && !this._usesStarLeagueVersion(this._heatSinkType) ) {
+        if( this.getHeatSinkTechBase() === "clan" ) {
             this._heatSinkCriticals.slotsEach = this._heatSinkType.crits.clan;
         } else {
             this._heatSinkCriticals.slotsEach = this._heatSinkType.crits.is;
@@ -4226,11 +4231,8 @@ export class BattleMech {
                 if (this.getPatchworkLocationSlots(location.key) > 0) patchworkArmorTags.add(this.getPatchworkArmorType(location.key).tag);
             }
         } else if (armorCriticalLocations) {
-            for (const [location, criticalCount] of Object.entries(armorCriticalLocations)) {
-                if (criticalCount && criticalCount > 0) {
-                    this._addCriticalItem(armorObj.tag, armorObj.name, this.getCriticalSlots(criticalCount), location, null, true);
-                }
-            }
+            // Armor with fixed slots in each location (Stealth) is placed after the saved allocations below, so it
+            // takes the slots it was saved in and never ones the equipment was saved in (#43).
         } else {
             for (let armorCritical = 0; armorCritical < this.getCriticalSlots(armorObj.crits[armorTechBase]); armorCritical++) {
                 this._unallocatedCriticals.push({
@@ -4254,7 +4256,7 @@ export class BattleMech {
             : []);
         if( this._frankenMech ) {
             // Placed below.
-        } else if( this.getTech().tag === "clan" && !this._usesStarLeagueVersion(this._selectedInternalStructure) ) {
+        } else if( this.getStructureTechBase() === "clan" ) {
             for( let aCounter = 0; aCounter < this.getCriticalSlots(this._selectedInternalStructure.crits.clan); aCounter++) {
                 this._unallocatedCriticals.push({
                     uuid: generateUUID(),
@@ -4384,8 +4386,7 @@ export class BattleMech {
         let criticalTally: Record<string, number> = {};
         this._sortCriticalAllocationTableByTagThenUUID();
         for( let item of this._criticalAllocationTable) {
-            // Armor with fixed critical locations (Stealth, ...) was already placed above; saved/imported allocation
-            // entries for it would only fail to find it in the unallocated list.
+            // Armor with fixed critical locations (Stealth, ...) is placed after this loop, at its saved slots.
             if( armorCriticalLocations && item.tag === armorObj.tag ) {
                 continue;
             }
@@ -4418,6 +4419,23 @@ export class BattleMech {
                 item.size,
                 item.uuid,
             )
+        }
+
+        if (armorCriticalLocations && !this.isPatchworkArmor()) {
+            for (const [location, criticalCount] of Object.entries(armorCriticalLocations)) {
+                if (!criticalCount || criticalCount <= 0) continue;
+                const slots = this.getCriticalSlots(criticalCount);
+                const saved = this._criticalAllocationTable.find((item) => item.tag === armorObj.tag && item.loc === location);
+                const placed = (typeof saved?.slot === "number" && saved.slot > 0
+                        && this._addCriticalItem(armorObj.tag, armorObj.name, slots, location, saved.slot, true))
+                    || this._addCriticalItem(armorObj.tag, armorObj.name, slots, location, null, true);
+                if (!placed) {
+                    this._unallocatedCriticals.push({
+                        uuid: generateUUID(), name: armorObj.name, tag: armorObj.tag, rear: false,
+                        movable: true, crits: slots, obj: null,
+                    } as ICriticalSlot);
+                }
+            }
         }
 
         // Patchwork: each location takes the slots of its own armor type, and they stay there. "If slot space
@@ -5006,7 +5024,7 @@ export class BattleMech {
      */
     private _getHeatSinksPerSlot(): number {
         const perSlot = this._heatSinkType.perSlot ?? 1;
-        const standardSlots = this.getTech().tag === "clan" ? this._heatSinkType.crits.clan : this._heatSinkType.crits.is;
+        const standardSlots = this._heatSinkType.crits[this.getHeatSinkTechBase()];
         return this.isSuperheavy() && standardSlots === 1 ? perSlot * 2 : perSlot;
     }
 
@@ -5314,6 +5332,7 @@ export class BattleMech {
             return this._armorType.armorMultiplier.is > 0 && this._usesStarLeagueVersion(this._armorType) ? "is" : "clan";
         }
         if (techTag === "is") return "is";
+        if (this._mixedTechBases.armor && this._armorType.armorMultiplier[this._mixedTechBases.armor] > 0) return this._mixedTechBases.armor;
         const preferredBase = techTag === "mclan" ? "clan" : "is";
         if (this._armorType.armorMultiplier[preferredBase] > 0) return preferredBase;
         return preferredBase === "clan" ? "is" : "clan";
@@ -6076,6 +6095,7 @@ export class BattleMech {
             if( matchesTag(technology, techTag)) {
                 this._tech = technology;
                 this._engineTechBase = technology.tag === "clan" || technology.tag === "mclan" ? "clan" : "is";
+                this._mixedTechBases = {};
                 // Clan-only eras are closed to the Inner Sphere, and Mixed Tech starts at the Clan Invasion.
                 this._era = getClosestEraForTech(this._era, technology.tag);
                 this._calc();
@@ -6252,6 +6272,41 @@ export class BattleMech {
             this._calc();
         }
         return this.getEngineTechBase();
+    }
+
+    /** Whose structure slots the 'Mech uses: a Clan 'Mech's, unless the structure is the Star League version. */
+    public getStructureTechBase(): "is" | "clan" {
+        if (this._isMixedTechBase()) return this._mixedTechBases.structure ?? "is";
+        return this._defaultStructureTechBase(this._selectedInternalStructure);
+    }
+
+    /** Whose heat sink slots the 'Mech uses (Clan double heat sinks take 2, the Inner Sphere's 3). */
+    public getHeatSinkTechBase(): "is" | "clan" {
+        if (this._isMixedTechBase()) return this._mixedTechBases.heatSink ?? "is";
+        return this.getTech().tag === "clan" && !this._usesStarLeagueVersion(this._heatSinkType) ? "clan" : "is";
+    }
+
+    /** On a Mixed Tech 'Mech: the Inner Sphere or Clan version of its structure, armor or heat sinks. */
+    private _setMixedTechBase(component: "structure" | "armor" | "heatSink", techBase: "is" | "clan") {
+        if (this._isMixedTechBase()) {
+            this._mixedTechBases[component] = techBase;
+            this._calc();
+        }
+    }
+
+    public setStructureTechBase(techBase: "is" | "clan"): "is" | "clan" {
+        this._setMixedTechBase("structure", techBase);
+        return this.getStructureTechBase();
+    }
+
+    public setArmorTechBase(techBase: "is" | "clan"): "is" | "clan" {
+        this._setMixedTechBase("armor", techBase);
+        return this.getArmorTechBase();
+    }
+
+    public setHeatSinkTechBase(techBase: "is" | "clan"): "is" | "clan" {
+        this._setMixedTechBase("heatSink", techBase);
+        return this.getHeatSinkTechBase();
     }
 
     /** The engine's name; above rating 400, the large engine's (e.g. "Large XL Fusion"). */
@@ -7630,6 +7685,7 @@ export class BattleMech {
             fractional_armor_points: this.usesFractionalAccounting() ? this._fractionalArmorPoints : undefined,
             engineType: this.getEngineType().tag,
             engineTechBase: this.getEngineTechBase(),
+            mixedTechBases: this._isMixedTechBase() && Object.keys(this._mixedTechBases).length > 0 ? { ...this._mixedTechBases } : undefined,
             equipment: [],
             era: this._era.tag,
             rulesEdition: this._rulesEdition === DEFAULT_RULES_EDITION ? undefined : this._rulesEdition,
@@ -7987,6 +8043,10 @@ export class BattleMech {
 
             if (importObject.engineTechBase) {
                 this.setEngineTechBase(importObject.engineTechBase);
+            }
+            for (const component of ["structure", "armor", "heatSink"] as const) {
+                const techBase = importObject.mixedTechBases?.[component];
+                if (techBase === "is" || techBase === "clan") this._setMixedTechBase(component, techBase);
             }
 
             if( importObject.pilot)
@@ -9448,9 +9508,7 @@ export class BattleMech {
 
     /** Unit values that variable-size equipment is sized from. */
     private _variableEquipmentContext(): IVariableEquipmentContext {
-        const directFireWeaponWeight = this._equipmentList
-            .filter(item => item && isTargetingComputerWeapon(item))
-            .reduce((sum, item) => sum + (item.weight || 0), 0);
+        const directFireWeaponWeight = getTargetingComputerWeaponWeight(this._equipmentList);
         return {
             tonnage: this.getTonnage(),
             engineRating: this.getEngine()?.rating ?? 0,
@@ -11892,6 +11950,92 @@ export class BattleMech {
         }
     }
 
+    /**
+     * Armor with fixed slots in each location (Stealth: 2 in each arm, leg and side torso) is placed in the first free
+     * slots, which can be ones the file gives a weapon. Moves each location's block to the file's first slot for it
+     * (SSW always lists a location's armor slots together) (#43).
+     */
+    private _placeSSWFixedArmor( sswLocations: unknown, tag: string ) {
+        if( !sswLocations || typeof sswLocations !== "object" ) {
+            return;
+        }
+        const firstSlot = new Map<string, number>();
+        for( const loc of Array.isArray( sswLocations ) ? sswLocations : [ sswLocations ] ) {
+            const location = String( loc?.["#text"] ?? "" ).toLowerCase().trim();
+            const index = Number( loc?.["@_index"] );
+            if( location && Number.isInteger( index ) ) firstSlot.set( location, Math.min( index, firstSlot.get( location ) ?? index ) );
+        }
+        const slotsOf: Record<string, ICriticalSlot[] | undefined> = {
+            hd: this._criticals.head, ct: this._criticals.centerTorso, lt: this._criticals.leftTorso, rt: this._criticals.rightTorso,
+            la: this._criticals.leftArm, ra: this._criticals.rightArm, ll: this._criticals.leftLeg, rl: this._criticals.rightLeg,
+        };
+        for( const [ location, target ] of firstSlot ) {
+            const slots = slotsOf[ location ];
+            const current = slots?.findIndex( ( slot ) => slot && slot.tag === tag && !slot.placeholder ) ?? -1;
+            if( current >= 0 && current !== target ) {
+                this.moveCritical( location, current, location, target );
+            }
+        }
+    }
+
+    /**
+     * SSW lists an item spread over several locations (Talons: every leg) at one location only. Its other slots go in
+     * the first free slots of its other locations, shared out evenly (#43).
+     */
+    private _placeSSWSpreadRemainder( item: IEquipmentItem, startSlots: Record<string, number> = {} ) {
+        const locations = this._getSpreadLocations( item );
+        if( !locations || !item.spreadSlots ) {
+            return;
+        }
+        const perLocation = this._getSpreadSlotsPerLocation( item );
+        const slotsOf: Record<string, ICriticalSlot[] | undefined> = {
+            hd: this._criticals.head, ct: this._criticals.centerTorso, lt: this._criticals.leftTorso, rt: this._criticals.rightTorso,
+            la: this._criticals.leftArm, ra: this._criticals.rightArm, ll: this._criticals.leftLeg, rl: this._criticals.rightLeg,
+            cl: this._criticals.centerLeg, fll: this._criticals.frontLeftLeg, frl: this._criticals.frontRightLeg,
+        };
+        for( const location of locations ) {
+            const slots = slotsOf[ location ];
+            if( !slots ) continue;
+            const held = () => slots.filter( ( slot ) => slot && !slot.placeholder && slot.tag === item.tag ).length;
+            while( held() < perLocation ) {
+                const piece = this._unallocatedCriticals.findIndex( ( slot ) => slot && slot.tag === item.tag );
+                let free = -1;
+                for( let index = Math.max( 0, startSlots[ location ] ?? 0 ); index < slots.length; index++ ) {
+                    if( !slots[ index ] ) { free = index; break; }
+                }
+                if( piece < 0 || free < 0 || !this.moveCritical( "un", piece, location, free ) ) break;
+            }
+        }
+    }
+
+    /**
+     * SSW gives a partial wing as <partialwing tech lsstart rsstart> and Mechanical Jump Boosters as <jumpbooster mp>,
+     * outside the equipment list, and both were dropped (#43). The wing's slots start at lsstart and rsstart in the
+     * side torsos; the boosters take the first free slots in the legs.
+     */
+    private _installSSWLocatedSystems( baseloadout: any ) {
+        const add = ( tag: string ) => this.addEquipmentFromTag( tag, "", "", false, null, undefined, undefined, undefined, undefined, undefined );
+        const wing = baseloadout?.partialwing;
+        if( wing ) {
+            const item = add( String( wing["@_tech"] ) === "1" ? "clan-partial-wing" : "partial-wing" );
+            if( item ) {
+                this._placeSSWSpreadRemainder( item, { lt: Number( wing["@_lsstart"] ) || 0, rt: Number( wing["@_rsstart"] ) || 0 } );
+            } else {
+                this._sswImportErrors.push( "Cannot import the partial wing" );
+            }
+        }
+        const boosterMP = Number( baseloadout?.jumpbooster?.["@_mp"] );
+        if( boosterMP > 0 ) {
+            const item = add( "mechanical-jump-booster" );
+            if( item?.uuid ) {
+                this.setEquipmentSize( item.uuid, boosterMP );
+                this._placeSSWSpreadRemainder( item );
+            } else {
+                this._sswImportErrors.push( "Cannot import the Mechanical Jump Boosters" );
+            }
+        }
+    }
+
     private _installSSWEquipment(
         item: any
     ) {
@@ -11910,6 +12054,9 @@ export class BattleMech {
             listTag = techPrefix[1] === "IS" ? "is" : "clan";
         } else {
             itemName = item.name["#text"];
+            // SSW names the Inner Sphere suite "Guardian ECM Suite"; its unprefixed "ECM Suite" is the Clan one, on
+            // Mixed Tech designs too (#43).
+            if( String( itemName ).trim() === "ECM Suite" ) listTag = "clan";
         }
 
         // "(T) " marks a turret mount; 'Mech turrets are not modeled yet, so the item is installed unturreted.
@@ -12134,6 +12281,18 @@ export class BattleMech {
                     const chassisTech = [ componentTech( jObj.mech.engine ), componentTech( jObj.mech.structure ) ]
                         .find( ( tech ) => tech !== "2" );
                     this.setTech( chassisTech === "1" ? "mclan" : "mis" );
+                    // Each component's own tech base sets its slots (Clan Endo-Steel and Ferro-Fibrous 7, Clan
+                    // double heat sinks 2, a Clan XL engine 2 per side torso) (#43).
+                    const ownTechBase = ( component: any ): "is" | "clan" | undefined =>
+                        componentTech( component ) === "1" ? "clan" : componentTech( component ) === "0" ? "is" : undefined;
+                    const engineTechBase = ownTechBase( jObj.mech.engine );
+                    if( engineTechBase ) this.setEngineTechBase( engineTechBase );
+                    const structureTechBase = ownTechBase( jObj.mech.structure );
+                    if( structureTechBase ) this.setStructureTechBase( structureTechBase );
+                    const armorTechBase = ownTechBase( jObj.mech.armor );
+                    if( armorTechBase ) this.setArmorTechBase( armorTechBase );
+                    const heatSinkTechBase = ownTechBase( jObj.mech.baseloadout?.heatsinks );
+                    if( heatSinkTechBase ) this.setHeatSinkTechBase( heatSinkTechBase );
                 }
             }
             // The design year sets the era, so era-dependent rules (such as a Clan design's Star League
@@ -12267,6 +12426,7 @@ export class BattleMech {
                     this.setArmorCount( totalArmor );
 
                     this._placeSSWCriticals( jObj.mech.armor.location, this.getArmorType() );
+                    this._placeSSWFixedArmor( jObj.mech.armor.location, this.getArmorType() );
                 }
             }
 
@@ -12323,6 +12483,7 @@ export class BattleMech {
                                 */
                         }
                         item.location = item.allocationLocation;
+                        this._placeSSWSpreadRemainder( item );
                     }
 
                 } else {
@@ -12355,6 +12516,8 @@ export class BattleMech {
                         }
                     }
                 }
+
+                this._installSSWLocatedSystems( jObj.mech.baseloadout );
 
                 if( jObj.mech.baseloadout.heatsinks ) {
 

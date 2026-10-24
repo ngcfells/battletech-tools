@@ -48,7 +48,7 @@ import {
 } from "../data/vehicle-transport-bays";
 import { ARTVEE_CONVERSION_EQUIPMENT } from "../data/combat-vehicle-chassis-modifications-custom";
 import { CUSTOM_HOMEBREW_RULES_LEVEL, EXPERIMENTAL_RULES_LEVEL, getItemBattleValue, equipmentMatchesIdentifier, getAmmoBattleValuePerTon, getBattleArmorScaleListByTech, getCompatibleAmmo, getDatesAvailability, getEquipmentListByTech, getEquipmentRulesLevel, getStarLeagueCarryOverDates, getWeaponShotsPerTon, isEquipmentOffered } from "../data/equipment-registry";
-import { isTargetingComputerWeapon, roundUpHalfTon, sizeVariableEquipment } from "../data/variable-equipment";
+import { isTargetingComputerWeapon, roundUpHalfTon, sizeTargetingComputers, sizeVariableEquipment } from "../data/variable-equipment";
 import { getFractionalArmorTonsPerPoint, getFractionalEngineWeight, roundUpToKilogram } from "../data/fractional-accounting";
 import { getBattleArmorScaleExplosionDamage } from "../data/battle-armor-scale-equipment";
 import { getWeaponExplosionDamage } from "../data/weapon-explosions";
@@ -3258,6 +3258,7 @@ export default class Vehicle {
                 item.cbills = size.cbills;
             }
         }
+        sizeTargetingComputers(this._equipmentList, this._tonnage);
     }
 
     private _calc() {

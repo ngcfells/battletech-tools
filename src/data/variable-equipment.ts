@@ -91,6 +91,29 @@ export function isTargetingComputerWeapon(item: IEquipmentItem): boolean {
 }
 
 /**
+ * Tons of direct-fire weapons a Targeting Computer is sized from (TM p.238). A "w/ Capacitor" record carries its
+ * PPC Capacitor's ton, whose weight "has no effect on the computer's size or tonnage" (TO:AUE p.194).
+ */
+export function getTargetingComputerWeaponWeight(items: readonly (IEquipmentItem | null | undefined)[]): number {
+    return items
+        .filter((item): item is IEquipmentItem => !!item && isTargetingComputerWeapon(item))
+        .reduce((sum, item) => sum + (item.weight || 0) - (/(^|-)ppc-capacitor$/.test(item.tag) ? 1 : 0), 0);
+}
+
+/** Sizes the Targeting Computers on a vehicle or fighter from its direct-fire weapons (TM p.238). */
+export function sizeTargetingComputers(items: IEquipmentItem[], tonnage: number): void {
+    const directFireWeaponWeight = getTargetingComputerWeaponWeight(items);
+    for (const item of items) {
+        if (item.variableFormula !== "targeting-computer-is" && item.variableFormula !== "targeting-computer-clan") continue;
+        const size = sizeVariableEquipment(item.variableFormula, { tonnage, engineRating: 0, engineWeight: 0, directFireWeaponWeight });
+        if (size) {
+            item.weight = size.weight;
+            item.cbills = size.cbills;
+        }
+    }
+}
+
+/**
  * Sizes the drone operating and carrier control systems on a unit (TO:AUE p.117), for the builders that size no
  * other variable equipment (fighters, Small Craft, DropShips and capital ships).
  */

@@ -23,7 +23,7 @@ import {
     IRoboticControlSystem, RoboticControlTag, RoboticUnitType, SRCS_BATTLE_VALUE_MULTIPLIER, SRCS_RULES_LEVEL,
 } from "../data/robotic-control-systems";
 import { FIGHTER_CRITICAL_NAMES, FighterAttackDirection, FighterCritical, getFighterHitLocation } from "../data/fighter-hit-tables";
-import { isTargetingComputerWeapon, sizeDroneSystems } from "../data/variable-equipment";
+import { isTargetingComputerWeapon, sizeDroneSystems, sizeTargetingComputers } from "../data/variable-equipment";
 import { findByTag } from "../data/tag-match";
 import {
     getSupportVehicleBaseCrew, getSupportVehicleChassisModification, getSupportVehicleEngine, getSupportVehicleEngineWeight,
@@ -1676,6 +1676,7 @@ export default class AerospaceFighter {
     private _calc(): void {
         // A drone operating system weighs 10 percent of the fighter plus its sensors (TO:AUE p.117).
         sizeDroneSystems(this._equipmentList, this._tonnage);
+        sizeTargetingComputers(this._equipmentList, this._tonnage);
         if (this._support) {
             this._calcSupportWeights();
             this._calcBattleValue();
