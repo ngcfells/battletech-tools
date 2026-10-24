@@ -199,6 +199,7 @@ export default class Home extends React.Component<IHomeProps, IHomeState> {
                         <li>The ProtoMech Creator has its Technical Readout step: Step 6, between Weapons and Equipment and Summary, with the same printable TRO sheet. Importing a MegaMek ProtoMech file brings its TRO fields across too. The sheet now gives a ProtoMech's mass in tons (it printed the kilogram total as tons).</li>
                         <li>The vehicle TRO sheet's construction table now lists every ton, the way the printed TROs do: control systems, lift equipment, turrets, heat sinks, movement, armor factor, internal structure and armor by location, and ammunition, with locations by name.</li>
                         <li>The fighter TRO sheet's construction table does the same: engine with Safe and Maximum Thrust, structural integrity, cockpit, fuel, heat sinks, armor by arc and ammunition, adding up to the fighter's tonnage.</li>
+                        <li>The infantry TRO sheet's table now gives transport weight, tech base, movement, formation, platoon make-up, armor kit and damage divisor, anti-'Mech training and special features, with each weapon's trooper count.</li>
                       </ul>
                    </li>
                   <li>

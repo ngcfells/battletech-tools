@@ -245,7 +245,7 @@ function infantryParts(platoon: InfantryPlatoon): IUnitTroParts {
         { item: platoon.getPrimaryWeapon(), name: platoon.getPrimaryWeapon().name, location: `${platoon.getPrimaryCount()} troopers`, armament: true },
     ];
     if (secondary) {
-        equipment.push({ item: secondary, name: secondary.name, location: `${platoon.getSecondaryCount()} troopers`, armament: true });
+        equipment.push({ item: secondary, name: secondary.name, location: `${platoon.getSecondaryCount()} troopers (${platoon.getSecondaryPerSquad()} per squad)`, armament: true });
     }
     return {
         spec: {
@@ -256,9 +256,14 @@ function infantryParts(platoon: InfantryPlatoon): IUnitTroParts {
         },
         components: [{ key: "armor", label: `Armor (${armor?.name ?? "none"})` }],
         construction: [
-            { label: "Motive", value: platoon.getMotive().name },
-            { label: "Squads", value: `${platoon.getSquads()} × ${platoon.getSquadSize()}` },
-            { label: "Armor Kit", value: armor?.name ?? "None" },
+            { label: "Transport Weight", mass: `${platoon.getWeight()}` },
+            { label: "Tech Base", value: platoon.getTechName() },
+            { label: `Motive (${platoon.getMotive().name})`, value: platoon.getMovementText() },
+            { label: "Formation", value: platoon.getFormation().name },
+            { label: "Platoon", value: `${platoon.getSquads()} squads of ${platoon.getSquadSize()} (${platoon.getTroopers()} troopers)` },
+            { label: `Armor Kit (${armor?.name ?? "None"})`, value: `Damage Divisor ${platoon.getDamageDivisor()}` },
+            ...(platoon.hasAntiMechKit() ? [{ label: "Anti-'Mech Training", value: `Skill ${platoon.getAntiMechSkill()}` }] : []),
+            ...(platoon.getSpecialFeatures().length > 0 ? [{ label: "Special Features", value: platoon.getSpecialFeatures().join(", ") }] : []),
         ],
         equipment,
     };

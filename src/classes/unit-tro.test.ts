@@ -177,3 +177,37 @@ describe("Fighter Technical Readout construction table", () => {
         expect(rows[0]).toEqual({ label: "Chassis (Structural Integrity)", value: `${fighter.getStructuralIntegrity()}`, mass: `${fighter.getStructureWeight()}` });
     });
 });
+
+describe("Infantry Technical Readout construction table", () => {
+    // TechManual's worked example: Eberhard's Marian Hegemony foot platoon, auto-rifles and 2 support machine guns a squad.
+    const eberhard = (): InfantryPlatoon => {
+        const platoon = new InfantryPlatoon();
+        expect(platoon.setFormation("marian-hegemony")).toBe(true);
+        expect(platoon.setPrimaryWeapon("inf-auto-rifle")).toBe(true);
+        expect(platoon.setSecondaryWeapon("inf-machine-gun-support")).toBe(true);
+        platoon.setSecondaryPerSquad(2);
+        return platoon;
+    };
+
+    it("prints transport weight, tech base, movement, formation, platoon make-up and armor, then the weapons", () => {
+        const platoon = eberhard();
+        const rows = getUnitTroAdapter(platoon).getConstructionRows();
+        expect(rows[0]).toEqual({ label: "Transport Weight", mass: `${platoon.getWeight()}` });
+        expect(rows).toContainEqual({ label: "Tech Base", value: "Inner Sphere" });
+        expect(rows).toContainEqual({ label: `Motive (${platoon.getMotive().name})`, value: platoon.getMovementText() });
+        expect(rows).toContainEqual({ label: "Formation", value: platoon.getFormation().name });
+        expect(rows).toContainEqual({ label: "Platoon", value: `${platoon.getSquads()} squads of ${platoon.getSquadSize()} (${platoon.getTroopers()} troopers)` });
+        expect(rows).toContainEqual({ label: "Armor Kit (None)", value: "Damage Divisor 1" });
+        expect(rows).toContainEqual({ label: "Weapons and Equipment", value: "Location", mass: "Mass", heading: true });
+        expect(rows).toContainEqual({ label: platoon.getSecondaryWeapon()!.name, value: `${platoon.getSecondaryCount()} troopers (2 per squad)`, mass: undefined });
+    });
+
+    it("names the special features and the anti-'Mech training", () => {
+        const platoon = eberhard();
+        platoon.setAntiMechKit(true);
+        const rows = getUnitTroAdapter(platoon).getConstructionRows();
+        expect(rows).toContainEqual({ label: "Anti-'Mech Training", value: `Skill ${platoon.getAntiMechSkill()}` });
+        // Two support machine guns a squad give heavy burst (TM p.150).
+        expect(rows).toContainEqual({ label: "Special Features", value: "B" });
+    });
+});
