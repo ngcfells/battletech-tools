@@ -1,3 +1,4 @@
+import type { ICatalogStanding } from "./data-interfaces";
 /*
  * DISCLAIMER: This file processes gameplay data derived from the BattleTech universe.
  * All official lore, trademarks, and intellectual property belong strictly to
@@ -20,7 +21,7 @@ import { BattleArmorTechBase } from "./battle-armor-construction";
 
 export type BattleArmorEquipmentKind = "weapon" | "missile" | "equipment";
 
-export interface IBattleArmorEquipment {
+export interface IBattleArmorEquipment extends ICatalogStanding {
     tag: string;
     name: string;
     techBase: BattleArmorTechBase;

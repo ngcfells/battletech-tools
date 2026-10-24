@@ -1,3 +1,4 @@
+import type { ICatalogStanding } from "./data-interfaces";
 // Conventional infantry weapons: statistics from the Conventional Infantry Weapons table (TechManual pp.349-352),
 // Battle Values from the Conventional Infantry Weapons BV Table (TM p.319) and prices from the Conventional
 // Infantry Weapons cost table (TM pp.298-301). One record per table row; a weapon with inferno ammunition has a
@@ -34,7 +35,8 @@ export const INFANTRY_WEAPON_CATEGORIES: { tag: InfantryWeaponCategory; name: st
     { tag: "support", name: "Support Weapons" },
 ];
 
-export interface IInfantryWeapon {
+/* Spells the shared tech base "both"; takes `techBase` from the core when that becomes "universal" (rounds 3-5). */
+export interface IInfantryWeapon extends Omit<ICatalogStanding, "techBase"> {
     tag: string;
     name: string;
     category: InfantryWeaponCategory;

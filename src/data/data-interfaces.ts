@@ -91,7 +91,22 @@ export interface IEditionHistory {
     editionLevels?: { [editionTag: string]: number };
 }
 
-export interface IArmorType extends IEditionHistory {
+export type CatalogTechBase = "is" | "clan" | "universal";
+
+/** The standing every catalog record carries (design 2026-10-24-catalog-consolidation §1). */
+export interface ICatalogStanding extends IEditionHistory {
+    tag: string;
+    name: string;
+    /** Earlier tags for this record, so old saves still resolve (see tag-match.ts). */
+    altTags?: string[];
+    techBase?: CatalogTechBase;
+    /** Clan dates where they differ from the record's own (Inner Sphere or universal) dates. */
+    clanDates?: ITechDates;
+    rulesLevel?: number;
+    book?: string;
+}
+
+export interface IArmorType extends ICatalogStanding {
 	tag: string;
 	/** Earlier tags for this record, so old saves still resolve (see tag-match.ts). */
 	altTags?: string[];
@@ -177,7 +192,7 @@ export interface ICriticalLocations {
     frl?: number,
 }
 
-export interface IEngineType extends IEditionHistory {
+export interface IEngineType extends ICatalogStanding {
 	tag: string;
 	/** Earlier tags for this record, so old saves still resolve (see tag-match.ts). */
 	altTags?: string[];
@@ -255,7 +270,7 @@ export type EngineRequirement = "fusion" | "fusion-or-fission" | "ice-or-fuel-ce
 /** The 'Mech locations a spread item's slots go in (see IEquipmentItem.spreadLocations). */
 export type SpreadLocations = "all" | "all-but-head" | "limbs-and-side-torsos" | "legs" | "side-torsos";
 
-export interface IEquipmentItem {
+export interface IEquipmentItem extends ICatalogStanding {
     catalog?: "is" | "clan" | "custom" | "universal";
     /**
      * Tech base of the record itself: Inner Sphere, Clan, or universal (identical for both). Stated on every bundled
@@ -517,7 +532,7 @@ export interface ICriticalSpace {
     dropShip: number;
 }
 
-export interface IGyro extends IEditionHistory {
+export interface IGyro extends ICatalogStanding {
     name: string;
     alternateName?: string;
     tag: string;
@@ -552,7 +567,7 @@ export interface ITechDates {
     editionStats?: IEditionStatsTable;
 }
 
-export interface ICockpitType extends IEditionHistory {
+export interface ICockpitType extends ICatalogStanding {
     name: string;
     tag: string;
     /** Tons. For an add-on (Command Console) this is the weight added to the base cockpit. */
@@ -584,7 +599,7 @@ export interface ICockpitType extends IEditionHistory {
     availableAsPrototype?: boolean;
 }
 
-export interface IHeatSync extends IEditionHistory {
+export interface IHeatSync extends ICatalogStanding {
     name: string;
     tag: string;
     /** Earlier tags for this record, so old saves still resolve (see tag-match.ts). */
@@ -660,7 +675,7 @@ export interface IMechTonnage extends IEditionHistory {
     type: string;
 }
 
-export interface IInternalStructure extends IEditionHistory {
+export interface IInternalStructure extends ICatalogStanding {
     name: string;
     tag: string;
     /** Earlier tags for this record, so old saves still resolve (see tag-match.ts). */
@@ -700,7 +715,7 @@ export interface IInternalStructure extends IEditionHistory {
     availableAsPrototype?: boolean;
 }
 
-export interface IJumpJet extends IEditionHistory {
+export interface IJumpJet extends ICatalogStanding {
     name: string;
     tag: string;
     /** Earlier tags for this record, so old saves still resolve (see tag-match.ts). */
@@ -739,7 +754,7 @@ export interface IJumpJet extends IEditionHistory {
     availableAsPrototype?: boolean;
 }
 
-export interface IMyomerType extends IEditionHistory {
+export interface IMyomerType extends ICatalogStanding {
     name: string;
     tag: string;
     /** Earlier tags for this record, so old saves still resolve (see tag-match.ts). */
@@ -811,7 +826,7 @@ export interface IRulesLevelOption {
 }
 
 // Combat Vehicle domain (Phase 2) - shared with BattleMech via the same engine/armor/heat sink/equipment catalogs.
-export interface IVehicleMotiveType {
+export interface IVehicleMotiveType extends ICatalogStanding {
     id: number;
     tag: string;
     /** Earlier tags for this record, so old saves still resolve (see tag-match.ts). */
@@ -893,7 +908,8 @@ export type VehicleLocation = "front" | "left" | "right" | "rear" | "frontLeft" 
  * A capital-scale or sub-capital weapon for large craft (capital-weapons.ts, sub-capital-weapons.ts).
  * Kept apart from IEquipmentItem: these are never mounted on a 'Mech or offered by the equipment registry.
  */
-export interface ICapitalWeapon extends IEditionHistory {
+/* Spells the shared tech base "both"; takes `techBase` from the core when that becomes "universal" (rounds 3-5). */
+export interface ICapitalWeapon extends Omit<ICatalogStanding, "techBase"> {
     name: string;
     altNames: string[];
     tag: string;
@@ -956,7 +972,7 @@ export interface ICapitalWeapon extends IEditionHistory {
 }
 
 /** Support Vehicle armor of one Barrier Armor Rating (support-vehicle-armor.ts). */
-export interface ISupportVehicleArmor {
+export interface ISupportVehicleArmor extends ICatalogStanding {
     name: string;
     tag: string;
     /** Barrier Armor Rating, 2 to 10. */
@@ -984,7 +1000,8 @@ export interface ISupportVehicleArmor {
 }
 
 /** Armor for fighters, small craft, DropShips and larger craft (aerospace-armor-types.ts). */
-export interface IAerospaceArmorType {
+/* Spells the shared tech base "both"; takes `techBase` from the core when that becomes "universal" (rounds 3-5). */
+export interface IAerospaceArmorType extends Omit<ICatalogStanding, "techBase"> {
     name: string;
     tag: string;
     techBase: "is" | "clan" | "both";
@@ -1025,7 +1042,8 @@ export interface IAerospaceArmorType {
 }
 
 /** A ProtoMech cockpit, heat sink, jump jet system or internal structure (protomech-components.ts). */
-export interface IProtoMechComponent {
+/* Spells the shared tech base "both"; takes `techBase` from the core when that becomes "universal" (rounds 3-5). */
+export interface IProtoMechComponent extends Omit<ICatalogStanding, "techBase"> {
     name: string;
     tag: string;
     kind: "cockpit" | "heat-sink" | "jump-jet" | "structure";
@@ -1058,7 +1076,8 @@ export interface IProtoMechComponent {
 }
 
 /** Battle armor armor (battle-armor-armor-types.ts). */
-export interface IBattleArmorArmorType {
+/* Spells the shared tech base "both"; takes `techBase` from the core when that becomes "universal" (rounds 3-5). */
+export interface IBattleArmorArmorType extends Omit<ICatalogStanding, "techBase"> {
     name: string;
     tag: string;
     techBase: "is" | "clan" | "both";

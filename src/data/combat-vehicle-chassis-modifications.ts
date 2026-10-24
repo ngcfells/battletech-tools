@@ -12,7 +12,7 @@
  * excluded from the software's underlying license (GNU GPLv3).
  */
 
-import { ITechDates } from "./data-interfaces";
+import { ITechDates, ICatalogStanding } from "./data-interfaces";
 import { roundUpHalfTon } from "./variable-equipment";
 
 /**
@@ -22,7 +22,7 @@ import { roundUpHalfTon } from "./variable-equipment";
  */
 export type CombatVehicleChassisModificationTag = "flotation-hull" | "limited-amphibious" | "fully-amphibious" | "dune-buggy" | "environmental-sealing" | "armored-motive";
 
-export interface ICombatVehicleChassisModification {
+export interface ICombatVehicleChassisModification extends ICatalogStanding {
     tag: CombatVehicleChassisModificationTag;
     name: string;
     /** Motive types that may take it. */

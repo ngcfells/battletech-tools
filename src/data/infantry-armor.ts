@@ -1,3 +1,4 @@
+import type { ICatalogStanding } from "./data-interfaces";
 // Conventional infantry armor: the Conventional Infantry Armor Table (Tactical Operations: Advanced Units &
 // Equipment pp.129-130) and the Infantry Stealth Modifiers Table (p.130). Advanced rules. One record per table
 // row, except Sneak Suits: the table prices them by the number of stealth systems (one, two or three), and each
@@ -23,7 +24,8 @@ export const INFANTRY_ARMOR_GROUPS: { tag: InfantryArmorGroup; name: string }[] 
     { tag: "sneak", name: "Sneak Suits" },
 ];
 
-export interface IInfantryArmor {
+/* Spells the shared tech base "both"; takes `techBase` from the core when that becomes "universal" (rounds 3-5). */
+export interface IInfantryArmor extends Omit<ICatalogStanding, "techBase"> {
     tag: string;
     name: string;
     group: InfantryArmorGroup;
