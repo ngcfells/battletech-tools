@@ -39,7 +39,7 @@ import { addCommas } from "../utils/addCommas";
 import { adjustAlphaStrikeDamage, calculateAlphaStrikeValue, IAlphaStrikeExport, isAlphaStrikeConversionKeyword } from "../utils/calculateAlphaStrikeValue";
 import { isAlphaStrikeAbilityCode } from "../data/alpha-strike-special-abilities";
 import { generateUUID } from "../utils/generateUUID";
-import { ISSWBasicInfo } from "../utils/getSSWXMLBasicInfo";
+import { ISSWBasicInfo, parseSSWXML } from "../utils/getSSWXMLBasicInfo";
 import { findImportedEquipment, ImportFaction } from "../utils/importedEquipment";
 import {
     ICanonicalBattleMechRecord,
@@ -47,7 +47,6 @@ import {
     parseBattleMechRecordJSON,
     toCanonicalBattleMechRecord,
 } from "../data/canonical-record";
-import { XMLParser } from "fast-xml-parser";
 import { AlphaStrikeUnit, IAlphaStrikeDamage, IASMULUnit } from "./alpha-strike-unit";
 import Pilot, { IPilot } from "./pilot";
 
@@ -12090,15 +12089,7 @@ export class BattleMech {
 
 
 
-        const options = {
-            ignoreAttributes : false,
-            // Security note: fast-xml-parser rejects external and parameter entities and
-            // caps internal-entity expansion, so XXE / billion-laughs are not exploitable.
-            // Do NOT disable processEntities — SSW files use standard XML entities in
-            // attribute values (see getSSWXMLBasicInfo for the same rationale).
-        };
-        const parser = new XMLParser(options);
-        let jObj = parser.parse(ssw_xml);
+        let jObj = parseSSWXML(ssw_xml);
 
         // console.log( "battlemech.importSSWXML() jObj", jObj)
         if( jObj && jObj.mech && jObj.mech.mech_type === "BattleMech") {
