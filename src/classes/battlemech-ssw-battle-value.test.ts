@@ -287,6 +287,15 @@ describe("SSW Battle Value (#46)", () => {
         expect(mech.calcLogBV).toContain("Total Weapon Heat Breakdown:</strong> 2 + 2 + 2 + 2 + 2 + 2 + 2 + 4 + 6 = 24.00");
     });
 
+    it("fits the design's Artemis IV to an Improved LRM (IO:AE p.91): Excalibur EXC-B2b-EC", () => {
+        const mech = importFixture("excalibur-exc-b2b-ec");
+        const launcher = mech.getInstalledEquipment().find((item) => item.tag.startsWith("clan-improved-lrm-20"));
+        expect(launcher?.tag).toBe("clan-improved-lrm-20-artemis-iv");
+        expect((mech.getCriticals() as unknown as Record<string, ({ tag: string, crits?: number } | null)[]>).leftTorso[3]).toMatchObject({ tag: "clan-improved-lrm-20-artemis-iv", crits: 5 });
+        // 181 x 1.2 for the launcher. SSW gives 2001; the MUL gives 2008.
+        expect(mech.getBattleValue()).toBe(2001);
+    });
+
     it("does not count Nail/Rivet Gun ammo as explosive (TM p.317): Jabberwocky JAW-66D", () => {
         // SSW gives 353: it counts the ammo at 1 BV a ton where TM p.317 gives 0.
         expect(importFixture("jabberwocky-jaw-66d").getBattleValue()).toBe(352);
