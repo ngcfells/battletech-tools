@@ -230,7 +230,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "CASE,OMNI",
-    "SubTypeId": 19
+    "SubTypeId": 19,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:CI",
+    "ImageUrl": "https://i.ibb.co/TKRRrbQ/dragonfly-viper-rg.png"
   },
   {
     "Id": 106602,
@@ -299,7 +303,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "ATMO,ENE,IT 3,SRCH",
-    "SubTypeId": 23
+    "SubTypeId": 23,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "His:LoT2",
+    "ImageUrl": "https://i.ibb.co/r3dYv73/vector-hlot2.png"
   },
   {
     "Id": 106603,
@@ -381,7 +389,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "CASE",
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:J",
+    "ImageUrl": "https://i.ibb.co/znvFdTJ/fafnir-3067.png"
   },
   {
     "Id": 106604,
@@ -473,7 +485,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "C3M,ENE,MHQ 5,TAG",
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:3050U",
+    "ImageUrl": "https://i.ibb.co/BKPsfV6/hatamoto-rg.png"
   },
   {
     "Id": 106605,
@@ -547,7 +563,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "AECM,DCC 5,FLK 1/1/1,MHQ 3,RCA,SRCH,TUR (1/1/1,FLK1/1/1)",
-    "SubTypeId": 22
+    "SubTypeId": 22,
+    "BFThreshold": 0,
+    "Rules": "Experimental",
+    "TRO": "XTR:Comstar",
+    "ImageUrl": "https://i.ibb.co/9NkgG4c/fury-3050u.png"
   },
   {
     "Id": 106606,
@@ -656,7 +676,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "CASE,OMNI",
-    "SubTypeId": 19
+    "SubTypeId": 19,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:J",
+    "ImageUrl": "https://i.ibb.co/nRGYQgq/night-gyr-rg.png"
   },
   {
     "Id": 106607,
@@ -712,7 +736,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "ENE,HT 1/-/-",
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Introductory",
+    "TRO": "TR:SW",
+    "ImageUrl": "https://i.ibb.co/pyTwkmx/blackjack-rg.png"
   },
   {
     "Id": 106608,
@@ -851,7 +879,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "C3M,ECM,ENE,MHQ 5,OMNI,SRCH,TAG,TUR (4/4/-)",
-    "SubTypeId": 44
+    "SubTypeId": 44,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:3060",
+    "ImageUrl": "https://i.ibb.co/5RNHpBX/schiltron-3060.png"
   },
   {
     "Id": 106609,
@@ -1099,7 +1131,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "CASE,IF 2,REAR 1/1/-",
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "RGv1",
+    "ImageUrl": "https://i.ibb.co/j5VhJJF/archer-rg.png"
   },
   {
     "Id": 106610,
@@ -1172,8 +1208,12 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "TH 2,CASE",
-    "SubTypeId": 4
+    "BFAbilities": "CASE",
+    "SubTypeId": 4,
+    "BFThreshold": 2,
+    "Rules": "Standard",
+    "TRO": "TR:Proto",
+    "ImageUrl": "https://i.ibb.co/fxnCtbX/stinger-iic-proto.png"
   },
   {
     "Id": 106611,
@@ -1420,7 +1460,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "CAR 20",
-    "SubTypeId": 13
+    "SubTypeId": 13,
+    "BFThreshold": 0,
+    "Rules": "Advanced",
+    "TRO": "TR:3085",
+    "ImageUrl": "https://i.ibb.co/2SydFVg/clan-anti-infantry-gc.png"
   },
   {
     "Id": 106612,
@@ -1488,7 +1532,9 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "CAR 5,LTAG,XMEC",
-    "SubTypeId": 3
+    "SubTypeId": 3,
+    "BFThreshold": 0,
+    "Rules": "Standard"
   },
   {
     "Id": 106613,
@@ -1637,7 +1683,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "CASE,OMNI",
-    "SubTypeId": 19
+    "SubTypeId": 19,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:J",
+    "ImageUrl": "https://i.ibb.co/tCQWN5r/pouncer-rg.png"
   },
   {
     "Id": 106614,
@@ -1699,7 +1749,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "C3I,ENE,MHQ 2,OMNI",
-    "SubTypeId": 19
+    "SubTypeId": 19,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "Shrap11",
+    "ImageUrl": "https://i.ibb.co/7jxXnQV/battle-cobra-rg.png"
   },
   {
     "Id": 106615,
@@ -1811,7 +1865,10 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
-    "SubTypeId": 52
+    "SubTypeId": 52,
+    "BFThreshold": 0,
+    "TRO": "TR:VAr",
+    "ImageUrl": "https://i.ibb.co/5TGJ8px/mul-blank.png"
   },
   {
     "Id": 106616,
@@ -1883,7 +1940,9 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "CAR 4,RCA",
-    "SubTypeId": 3
+    "SubTypeId": 3,
+    "BFThreshold": 0,
+    "Rules": "Standard"
   },
   {
     "Id": 106617,
@@ -1945,7 +2004,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "CASEII,TSM",
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Advanced",
+    "TRO": "Shrap15",
+    "ImageUrl": "https://i.ibb.co/9tVBGTM/gladiator-pc.png"
   },
   {
     "Id": 106618,
@@ -2037,7 +2100,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
-    "SubTypeId": 2
+    "SubTypeId": 2,
+    "BFThreshold": 0,
+    "Rules": "Advanced",
+    "TRO": "HB:HK",
+    "ImageUrl": "https://i.ibb.co/F0MhxVQ/gossamer-drone-hbhk.png"
   },
   {
     "Id": 106619,
@@ -2129,7 +2196,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "IF 0*",
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Introductory",
+    "TRO": "TR:SW",
+    "ImageUrl": "https://i.ibb.co/W0mJgCj/vindicator-rg.png"
   },
   {
     "Id": 106620,
@@ -2186,7 +2257,9 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "ARTBA -1,CAR 5,RCA,XMEC",
-    "SubTypeId": 3
+    "SubTypeId": 3,
+    "BFThreshold": 0,
+    "Rules": "Experimental"
   },
   {
     "Id": 106621,
@@ -2286,7 +2359,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "ENE,OMNI",
-    "SubTypeId": 19
+    "SubTypeId": 19,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "RG19",
+    "ImageUrl": "https://i.ibb.co/XVtkQPK/iron-cheetah-rg.png"
   },
   {
     "Id": 106622,
@@ -2335,7 +2412,9 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "AM,CAR 5,MEC,SOA,STL",
-    "SubTypeId": 3
+    "SubTypeId": 3,
+    "BFThreshold": 0,
+    "Rules": "Standard"
   },
   {
     "Id": 106623,
@@ -2494,7 +2573,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "FLK 1/1/1,OMNI,REAR 0*/-/-",
-    "SubTypeId": 19
+    "SubTypeId": 19,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:CI",
+    "ImageUrl": "https://i.ibb.co/R4yS5bd/firestarter-omni-3058u.png"
   },
   {
     "Id": 106624,
@@ -2556,7 +2639,9 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "AM,CAR 4,FR,LECM,MEC",
-    "SubTypeId": 3
+    "SubTypeId": 3,
+    "BFThreshold": 0,
+    "Rules": "Advanced"
   },
   {
     "Id": 106625,
@@ -2763,7 +2848,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "ATMO,CASE,SRCH",
-    "SubTypeId": 23
+    "SubTypeId": 23,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:3060",
+    "ImageUrl": "https://i.ibb.co/p3wGr0C/donar-3060.png"
   },
   {
     "Id": 106626,
@@ -2900,7 +2989,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "AMS,C3M,ECM,MHQ 5,SRCH,TAG,TUR (2/3/3)",
-    "SubTypeId": 22
+    "SubTypeId": 22,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:3085",
+    "ImageUrl": "https://i.ibb.co/VCFNWGc/schrek-ppc-carrier-rg.png"
   },
   {
     "Id": 106627,
@@ -2974,7 +3067,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "CASE,ECM,IT 5,SRCH,TUR (4/3/1)",
-    "SubTypeId": 16
+    "SubTypeId": 16,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:3085",
+    "ImageUrl": "https://i.ibb.co/WVD8R8P/eldingar-3085.png"
   },
   {
     "Id": 106628,
@@ -3056,7 +3153,9 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "AM,CAR 4,LTAG,MEC",
-    "SubTypeId": 3
+    "SubTypeId": 3,
+    "BFThreshold": 0,
+    "Rules": "Standard"
   },
   {
     "Id": 106629,
@@ -3111,8 +3210,9 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "TH 8",
-    "SubTypeId": 29
+    "BFAbilities": "",
+    "SubTypeId": 29,
+    "BFThreshold": 8
   },
   {
     "Id": 106630,
@@ -3191,7 +3291,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "AMS,SRCH",
-    "SubTypeId": 16
+    "SubTypeId": 16,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:3150",
+    "ImageUrl": "https://i.ibb.co/XkLBQCn/sortek-3150.png"
   },
   {
     "Id": 106631,
@@ -3331,7 +3435,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "ENE",
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:DA",
+    "ImageUrl": "https://i.ibb.co/tLhdXjH/black-hawk-3145.png"
   },
   {
     "Id": 106632,
@@ -3448,7 +3556,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "ENE",
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:3050U",
+    "ImageUrl": "https://i.ibb.co/w7RvDYD/spider-rg.png"
   },
   {
     "Id": 106633,
@@ -3524,7 +3636,9 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "AM,CAR 6,MEC",
-    "SubTypeId": 3
+    "SubTypeId": 3,
+    "BFThreshold": 0,
+    "Rules": "Standard"
   },
   {
     "Id": 106634,
@@ -3573,7 +3687,9 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "AM,CAR 5,HT 1/-/-,MEC",
-    "SubTypeId": 3
+    "SubTypeId": 3,
+    "BFThreshold": 0,
+    "Rules": "Standard"
   },
   {
     "Id": 106635,
@@ -3671,7 +3787,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "IF 1,SRCH,TUR (1/2/1,IF1)",
-    "SubTypeId": 22
+    "SubTypeId": 22,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "RG28",
+    "ImageUrl": "https://i.ibb.co/WPQN1Cn/sturmfeur-heavy-tank-rg.png"
   },
   {
     "Id": 106636,
@@ -4150,7 +4270,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "EE,IT 3,SRCH",
-    "SubTypeId": 24
+    "SubTypeId": 24,
+    "BFThreshold": 0,
+    "Rules": "Introductory",
+    "TRO": "TR3060",
+    "ImageUrl": "https://i.ibb.co/3MsvW43/heavy-wheeled-apc-3060.png"
   },
   {
     "Id": 106637,
@@ -4224,7 +4348,11 @@
     "BFDamageLongMin": true,
     "BFDamageExtremeMin": false,
     "BFAbilities": "IF 0*,JMPW 1",
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Introductory",
+    "TRO": "TR:SW",
+    "ImageUrl": "https://i.ibb.co/Zdv8xTB/firefly-rg.png"
   },
   {
     "Id": 106638,
@@ -4351,7 +4479,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "CAR 20",
-    "SubTypeId": 11
+    "SubTypeId": 11,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TW",
+    "ImageUrl": "https://i.ibb.co/5TGJ8px/mul-blank.png"
   },
   {
     "Id": 106639,
@@ -4473,7 +4605,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "CASE,IF 1,IT 5,OMNI,SRCH,TUR (2/2/1,IF1)",
-    "SubTypeId": 43
+    "SubTypeId": 43,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:3058U",
+    "ImageUrl": "https://i.ibb.co/ph0x85y/badger-3058u.png"
   },
   {
     "Id": 106640,
@@ -4522,7 +4658,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "ARTT -1,ATMO,SRCH",
-    "SubTypeId": 23
+    "SubTypeId": 23,
+    "BFThreshold": 0,
+    "Rules": "Advanced",
+    "TRO": "TR:3039",
+    "ImageUrl": "https://i.ibb.co/w0GJvrG/karnov-ur-transport-rg.png"
   },
   {
     "Id": 106641,
@@ -4587,7 +4727,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "CASEII,OMNI",
-    "SubTypeId": 19
+    "SubTypeId": 19,
+    "BFThreshold": 0,
+    "Rules": "Advanced",
+    "TRO": "RG03",
+    "ImageUrl": "https://i.ibb.co/xzSh9m2/hierofalcon-rg.png"
   },
   {
     "Id": 106642,
@@ -4824,7 +4968,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "AMS,CASE,IF 1,OMNI",
-    "SubTypeId": 19
+    "SubTypeId": 19,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:CI",
+    "ImageUrl": "https://i.ibb.co/NVCWgzM/dasher-fire-moth-rg.png"
   },
   {
     "Id": 106643,
@@ -4895,7 +5043,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "CASE,LPRB,OMNI,RCN",
-    "SubTypeId": 19
+    "SubTypeId": 19,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "RG15",
+    "ImageUrl": "https://i.ibb.co/WVHNwq1/black-lanner-rg.png"
   },
   {
     "Id": 106644,
@@ -5111,7 +5263,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "CASE,FLK 1/1/1,OMNI",
-    "SubTypeId": 19
+    "SubTypeId": 19,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:CI",
+    "ImageUrl": "https://i.ibb.co/9ZFfGVK/thor-summoner-rg.png"
   },
   {
     "Id": 106645,
@@ -5209,7 +5365,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "RGv1",
+    "ImageUrl": "https://i.ibb.co/0KwFP6Y/stinger-rg.png"
   },
   {
     "Id": 106646,
@@ -5399,7 +5559,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "IF 1,REAR 0*/-/-,SRCH",
-    "SubTypeId": 22
+    "SubTypeId": 22,
+    "BFThreshold": 0,
+    "Rules": "Introductory",
+    "TRO": "TR:3039",
+    "ImageUrl": "https://i.ibb.co/qsdbpG2/hunter-light-support-tank-rg.png"
   },
   {
     "Id": 106647,
@@ -5462,7 +5626,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "CR,DN,ENE,OMNI",
-    "SubTypeId": 19
+    "SubTypeId": 19,
+    "BFThreshold": 0,
+    "Rules": "Experimental",
+    "TRO": "RG24",
+    "ImageUrl": "https://i.ibb.co/hKYpwZH/ryoken-iii-skinwalker-rg.png"
   },
   {
     "Id": 106648,
@@ -5525,7 +5693,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "CASE,CR,ECM,EE,SRCH,TUR (3/3/-)",
-    "SubTypeId": 22
+    "SubTypeId": 22,
+    "BFThreshold": 0,
+    "Rules": "Advanced",
+    "TRO": "TR:3150",
+    "ImageUrl": "https://i.ibb.co/f8qh4XD/huitzilopochtli-3060.png"
   },
   {
     "Id": 106649,
@@ -5607,7 +5779,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "AC 4/4/-,SRCH,TUR (5/5/-,AC4/4/-)",
-    "SubTypeId": 22
+    "SubTypeId": 22,
+    "BFThreshold": 0,
+    "Rules": "Introductory",
+    "TRO": "TR:3039",
+    "ImageUrl": "https://i.ibb.co/ZgtkBW5/von-luckner-heavy-tank-rg.png"
   },
   {
     "Id": 106650,
@@ -5705,7 +5881,8 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
-    "SubTypeId": 30
+    "SubTypeId": 30,
+    "BFThreshold": 0
   },
   {
     "Id": 106651,
@@ -5767,7 +5944,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "CASE,CR,FLK 1/1/1,OMNI",
-    "SubTypeId": 19
+    "SubTypeId": 19,
+    "BFThreshold": 0,
+    "Rules": "Advanced",
+    "TRO": "RG12",
+    "ImageUrl": "https://i.ibb.co/JjZFcpy/carrion-crow-rg.png"
   },
   {
     "Id": 106652,
@@ -5843,7 +6024,9 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "CAR 4,LMAS,RCN,RSD 1,STL",
-    "SubTypeId": 3
+    "SubTypeId": 3,
+    "BFThreshold": 0,
+    "Rules": "Standard"
   },
   {
     "Id": 106653,
@@ -5918,7 +6101,9 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "AM,CAR 4,MEC",
-    "SubTypeId": 3
+    "SubTypeId": 3,
+    "BFThreshold": 0,
+    "Rules": "Standard"
   },
   {
     "Id": 106654,
@@ -6013,7 +6198,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "CASE,FC,FLK 1/1/1,SRCH,TUR (1/1/1,FLK1/1/1)",
-    "SubTypeId": 22
+    "SubTypeId": 22,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "RG30",
+    "ImageUrl": "https://i.ibb.co/dGsgsdJ/pike-support-vehicle-rg.png"
   },
   {
     "Id": 106655,
@@ -6110,7 +6299,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "CAR 20",
-    "SubTypeId": 13
+    "SubTypeId": 13,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TW",
+    "ImageUrl": "https://i.ibb.co/5TGJ8px/mul-blank.png"
   },
   {
     "Id": 106656,
@@ -6357,7 +6550,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "CAR 20,HT 1/-/-",
-    "SubTypeId": 11
+    "SubTypeId": 11,
+    "BFThreshold": 0,
+    "Rules": "Advanced",
+    "TRO": "TO:AUE",
+    "ImageUrl": "https://i.ibb.co/5TGJ8px/mul-blank.png"
   },
   {
     "Id": 106657,
@@ -6470,7 +6667,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "FLK 1/1/1,OMNI,PRB,RCN,TAG",
-    "SubTypeId": 19
+    "SubTypeId": 19,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:J",
+    "ImageUrl": "https://i.ibb.co/Z8XXfM3/men-shen-3060.png"
   },
   {
     "Id": 106658,
@@ -6526,7 +6727,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
-    "SubTypeId": 16
+    "SubTypeId": 16,
+    "BFThreshold": 0,
+    "Rules": "Introductory",
+    "TRO": "His:RW",
+    "ImageUrl": "https://i.ibb.co/jHCg9B2/hipparch-hrw.png"
   },
   {
     "Id": 106659,
@@ -6635,7 +6840,11 @@
     "BFDamageLongMin": true,
     "BFDamageExtremeMin": false,
     "BFAbilities": "ECM,MHQ 5,RCN,SRCH",
-    "SubTypeId": 22
+    "SubTypeId": 22,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "XTR:RotS 1",
+    "ImageUrl": "https://i.ibb.co/zbx2jxX/praetorian-edda.png"
   },
   {
     "Id": 106660,
@@ -6702,8 +6911,12 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "TH 1,BOMB 1,CT 1,ENE,SPC,VSTOL",
-    "SubTypeId": 1
+    "BFAbilities": "BOMB 1,CT 1,ENE,SPC,VSTOL",
+    "SubTypeId": 1,
+    "BFThreshold": 1,
+    "Rules": "Standard",
+    "TRO": "RS:UF",
+    "ImageUrl": "https://i.ibb.co/8smtQ8j/thrush-3039.png"
   },
   {
     "Id": 106661,
@@ -6783,7 +6996,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "CASE,JMPW 1",
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Experimental",
+    "TRO": "TR:3085",
+    "ImageUrl": "https://i.ibb.co/ZJYsZMD/brahma-3085.png"
   },
   {
     "Id": 106662,
@@ -6912,7 +7129,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "CASE",
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:J",
+    "ImageUrl": "https://i.ibb.co/8McfLYD/phoenix-hawk-iic-4-pp.png"
   },
   {
     "Id": 106663,
@@ -6980,7 +7201,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "ENE,MEL,TSM",
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "BD:JZ",
+    "ImageUrl": "https://i.ibb.co/n1nLcjY/ti-ts-ang-3060.png"
   },
   {
     "Id": 106664,
@@ -7059,8 +7284,9 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "TH 2",
-    "SubTypeId": 46
+    "BFAbilities": "",
+    "SubTypeId": 46,
+    "BFThreshold": 2
   },
   {
     "Id": 106665,
@@ -7135,7 +7361,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "CASE,OMNI,SRM 2/2",
-    "SubTypeId": 19
+    "SubTypeId": 19,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:DA",
+    "ImageUrl": "https://i.ibb.co/9VxHM6Q/vulture-mk-iii-mad-dog-mk-iii-3145.png"
   },
   {
     "Id": 106666,
@@ -7263,7 +7493,10 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
-    "SubTypeId": 54
+    "SubTypeId": 54,
+    "BFThreshold": 0,
+    "TRO": "TR:VAr",
+    "ImageUrl": "https://i.ibb.co/4g8VRnF/cormorant-trva.png"
   },
   {
     "Id": 106667,
@@ -7355,7 +7588,8 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "AM,CAR 4",
-    "SubTypeId": 9
+    "SubTypeId": 9,
+    "BFThreshold": 0
   },
   {
     "Id": 106668,
@@ -7492,7 +7726,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "CASE,OMNI,REAR 1/1/-",
-    "SubTypeId": 19
+    "SubTypeId": 19,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:J",
+    "ImageUrl": "https://i.ibb.co/tQMGwwY/linebacker-rg.png"
   },
   {
     "Id": 106669,
@@ -7568,7 +7806,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "CASE",
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:GC",
+    "ImageUrl": "https://i.ibb.co/F6g02Vy/vision-quest.png"
   },
   {
     "Id": 106670,
@@ -7646,7 +7888,9 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "CAR 4,RCN",
-    "SubTypeId": 3
+    "SubTypeId": 3,
+    "BFThreshold": 0,
+    "Rules": "Standard"
   },
   {
     "Id": 106671,
@@ -7750,7 +7994,11 @@
     "BFDamageLongMin": true,
     "BFDamageExtremeMin": false,
     "BFAbilities": "CASE",
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:3055U",
+    "ImageUrl": "https://i.ibb.co/vHfbH9P/jenner-iic-pp.png"
   },
   {
     "Id": 106672,
@@ -7812,7 +8060,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "C3I,ENE,JMPW 1,MHQ 2",
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "RGv1",
+    "ImageUrl": "https://i.ibb.co/fvHNC6b/nexus-rg.png"
   },
   {
     "Id": 106673,
@@ -7880,7 +8132,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "REAR 1/1/-",
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:3050U",
+    "ImageUrl": "https://i.ibb.co/GT7VY78/banshee-rg.png"
   },
   {
     "Id": 106674,
@@ -7937,7 +8193,10 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
-    "SubTypeId": 1
+    "SubTypeId": 1,
+    "BFThreshold": 0,
+    "TRO": "His:LoT1",
+    "ImageUrl": "https://i.ibb.co/5TGJ8px/mul-blank.png"
   },
   {
     "Id": 106675,
@@ -8025,7 +8284,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "CASEII",
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "Shrap10",
+    "ImageUrl": "https://i.ibb.co/SvTMCmP/hel-shrap.png"
   },
   {
     "Id": 106676,
@@ -8114,7 +8377,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "ENE,LPRB,RCN",
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:CI",
+    "ImageUrl": "https://i.ibb.co/bdG1GbP/piranha-rg.png"
   },
   {
     "Id": 106677,
@@ -8194,7 +8461,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "ENE",
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:3145",
+    "ImageUrl": "https://i.ibb.co/pJyRVyV/locust-5m-pp.png"
   },
   {
     "Id": 106678,
@@ -8264,7 +8535,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "CASEII,IF 1,PRB,RCN,REAR 1/1/-",
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "RG02",
+    "ImageUrl": "https://i.ibb.co/GRNM37R/zeus-rg.png"
   },
   {
     "Id": 106679,
@@ -8375,7 +8650,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "CASE,ECM,IF 2,OMNI,TAG",
-    "SubTypeId": 19
+    "SubTypeId": 19,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:J",
+    "ImageUrl": "https://i.ibb.co/CJYv9mn/perseus-3067.png"
   },
   {
     "Id": 106680,
@@ -8437,7 +8716,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "AC 3/3/-,CASE",
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "RS:UM",
+    "ImageUrl": "https://i.ibb.co/pr5yzsV/bandersnatch-3055u.png"
   },
   {
     "Id": 106681,
@@ -8520,7 +8803,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "CASE,JMPW 1,LTAG,OMNI,SRM 2/2",
-    "SubTypeId": 19
+    "SubTypeId": 19,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:3067",
+    "ImageUrl": "https://i.ibb.co/RDgXgYt/crimson-langur-3067.png"
   },
   {
     "Id": 106682,
@@ -8622,7 +8909,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "MEL",
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:3050U",
+    "ImageUrl": "https://i.ibb.co/sKrQj5m/hatchetman-rg.png"
   },
   {
     "Id": 106683,
@@ -8706,7 +8997,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "AECM,ENE,HT 1/1/-,MEL,SHLD",
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Advanced",
+    "TRO": "TR:DA",
+    "ImageUrl": "https://i.ibb.co/cgLd4pB/black-knight-3145.png"
   },
   {
     "Id": 106684,
@@ -8764,7 +9059,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "CASE,CR,ECM,MHQ 1,NOVA,OMNI,PRB,RCN,STL,SUBW 1,TOR 0*/0*/0*,UMU",
-    "SubTypeId": 19
+    "SubTypeId": 19,
+    "BFThreshold": 0,
+    "Rules": "Experimental",
+    "TRO": "WoR",
+    "ImageUrl": "https://i.ibb.co/NSMq1gL/cephalus-wor.png"
   },
   {
     "Id": 106685,
@@ -8838,7 +9137,9 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "CAR 4,FR,HT 2/-/-,MEC",
-    "SubTypeId": 3
+    "SubTypeId": 3,
+    "BFThreshold": 0,
+    "Rules": "Standard"
   },
   {
     "Id": 106686,
@@ -8954,7 +9255,10 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
-    "SubTypeId": 10
+    "SubTypeId": 10,
+    "BFThreshold": 0,
+    "TRO": "HB:HL",
+    "ImageUrl": "https://i.ibb.co/5TGJ8px/mul-blank.png"
   },
   {
     "Id": 106687,
@@ -9062,7 +9366,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "CASE,SRCH,TUR (4/3/3)",
-    "SubTypeId": 22
+    "SubTypeId": 22,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:3150",
+    "ImageUrl": "https://i.ibb.co/J73n1Py/kelswa-3150.png"
   },
   {
     "Id": 106688,
@@ -9111,7 +9419,9 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "CAR 6,FR,LTAG",
-    "SubTypeId": 3
+    "SubTypeId": 3,
+    "BFThreshold": 0,
+    "Rules": "Standard"
   },
   {
     "Id": 106689,
@@ -9260,7 +9570,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "CASE,OMNI",
-    "SubTypeId": 19
+    "SubTypeId": 19,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:CI",
+    "ImageUrl": "https://i.ibb.co/bK0jHqK/hellion-rg.png"
   },
   {
     "Id": 106690,
@@ -9328,7 +9642,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
-    "SubTypeId": 1
+    "SubTypeId": 1,
+    "BFThreshold": 0,
+    "Rules": "Experimental",
+    "TRO": "JHS:Terra",
+    "ImageUrl": "https://i.ibb.co/ZVbmBT4/aeshena-jhst.png"
   },
   {
     "Id": 106691,
@@ -9377,7 +9695,9 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "CAR 5,STL",
-    "SubTypeId": 3
+    "SubTypeId": 3,
+    "BFThreshold": 0,
+    "Rules": "Standard"
   },
   {
     "Id": 106692,
@@ -9451,7 +9771,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:SW",
+    "ImageUrl": "https://i.ibb.co/gT50xFk/catapult-rg.png"
   },
   {
     "Id": 106693,
@@ -9537,7 +9861,8 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
-    "SubTypeId": 46
+    "SubTypeId": 46,
+    "BFThreshold": 0
   },
   {
     "Id": 106694,
@@ -9618,7 +9943,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "CR,FC,IF 3,LRM 3/3/3,SRCH,TUR (3/3/3,IF3,LRM2/3/3)",
-    "SubTypeId": 22
+    "SubTypeId": 22,
+    "BFThreshold": 0,
+    "Rules": "Advanced",
+    "TRO": "TR:Proto",
+    "ImageUrl": "https://i.ibb.co/YRTXTRs/heavy-nlrm-carrier-proto.png"
   },
   {
     "Id": 106695,
@@ -9702,7 +10031,11 @@
     "BFDamageLongMin": true,
     "BFDamageExtremeMin": false,
     "BFAbilities": "FC,IF 0*,IT 8,SRCH,TAG,TUR (2/1/0*,IF0*,TAG)",
-    "SubTypeId": 24
+    "SubTypeId": 24,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:3150",
+    "ImageUrl": "https://i.ibb.co/98CggC4/zahn-3150.png"
   },
   {
     "Id": 106696,
@@ -9993,7 +10326,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "ENE",
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Introductory",
+    "TRO": "TR:SW",
+    "ImageUrl": "https://i.ibb.co/LR026VX/awesome-rg.png"
   },
   {
     "Id": 106697,
@@ -10064,7 +10401,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "CASEII,FLK 1/1/-,RCA",
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Experimental",
+    "TRO": "TR:DA",
+    "ImageUrl": "https://i.ibb.co/4MBTYdJ/zeus-x-3145.png"
   },
   {
     "Id": 106698,
@@ -10113,7 +10454,9 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "CAR 5",
-    "SubTypeId": 3
+    "SubTypeId": 3,
+    "BFThreshold": 0,
+    "Rules": "Standard"
   },
   {
     "Id": 106699,
@@ -10386,7 +10729,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "BFC,CT 2,EE,MEL,SAW",
-    "SubTypeId": 17
+    "SubTypeId": 17,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:VAr",
+    "ImageUrl": "https://i.ibb.co/vqvQDTM/crosscut-trva.png"
   },
   {
     "Id": 106700,
@@ -10443,7 +10790,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "CASE,IF 2,LRM 2/2/2,OMNI,SNARC",
-    "SubTypeId": 19
+    "SubTypeId": 19,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:GC",
+    "ImageUrl": "https://i.ibb.co/qg3xMBB/corvis-3060.png"
   },
   {
     "Id": 106701,
@@ -10504,8 +10855,9 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "TH 5",
-    "SubTypeId": 46
+    "BFAbilities": "",
+    "SubTypeId": 46,
+    "BFThreshold": 5
   },
   {
     "Id": 106702,
@@ -10585,7 +10937,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "ARTLTC -1,IF 1,SRCH,TUR (0*/1/1,ARTLTC-1,IF1)",
-    "SubTypeId": 22
+    "SubTypeId": 22,
+    "BFThreshold": 0,
+    "Rules": "Advanced",
+    "TRO": "TR:Proto",
+    "ImageUrl": "https://i.ibb.co/DRj24cL/rommel-howitzer-proto.png"
   },
   {
     "Id": 106703,
@@ -10663,7 +11019,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "CASE,FLK 1/1/1",
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:DA",
+    "ImageUrl": "https://i.ibb.co/bzCCp7Y/blade-3085.png"
   },
   {
     "Id": 106704,
@@ -10739,7 +11099,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "IF 0*,INARC,MDS 2,RCA,SRCH,TUR (2/2/1,INARC)",
-    "SubTypeId": 24
+    "SubTypeId": 24,
+    "BFThreshold": 0,
+    "Rules": "Advanced",
+    "TRO": "TR:3150",
+    "ImageUrl": "https://i.ibb.co/7vXsNrq/bardiche-3150.jpg"
   },
   {
     "Id": 106705,
@@ -10884,7 +11248,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "ENE",
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:3050U",
+    "ImageUrl": "https://i.ibb.co/K02WmGs/clint-rg.png"
   },
   {
     "Id": 106706,
@@ -10974,7 +11342,11 @@
     "BFDamageLongMin": true,
     "BFDamageExtremeMin": false,
     "BFAbilities": "CASE,IT 4,OMNI,PRB,RCN,SRCH,TUR (2/1/0*)",
-    "SubTypeId": 42
+    "SubTypeId": 42,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:3067",
+    "ImageUrl": "https://i.ibb.co/rdTHWmw/hephaestus-3067.png"
   },
   {
     "Id": 106707,
@@ -11023,7 +11395,9 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "AM,CAR 5,XMEC",
-    "SubTypeId": 3
+    "SubTypeId": 3,
+    "BFThreshold": 0,
+    "Rules": "Advanced"
   },
   {
     "Id": 106708,
@@ -11109,7 +11483,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "ENE,TAG",
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:3145",
+    "ImageUrl": "https://i.ibb.co/41xs7X1/gambit-3145.png"
   },
   {
     "Id": 106709,
@@ -11222,7 +11600,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "ENE",
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:3050U",
+    "ImageUrl": "https://i.ibb.co/gT50xFk/catapult-rg.png"
   },
   {
     "Id": 106710,
@@ -11290,7 +11672,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "ENE,OMNI",
-    "SubTypeId": 19
+    "SubTypeId": 19,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "RG08",
+    "ImageUrl": "https://i.ibb.co/TKRRrbQ/dragonfly-viper-rg.png"
   },
   {
     "Id": 106711,
@@ -11346,7 +11732,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "C3I,ENE,JMPS 1,MHQ 2,OMNI,OVL,TSM",
-    "SubTypeId": 19
+    "SubTypeId": 19,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:J",
+    "ImageUrl": "https://i.ibb.co/CB6LYYV/seraph-invictus-3075.png"
   },
   {
     "Id": 106712,
@@ -11593,7 +11983,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "CAR 20",
-    "SubTypeId": 13
+    "SubTypeId": 13,
+    "BFThreshold": 0,
+    "Rules": "Advanced",
+    "TRO": "TO:AUE",
+    "ImageUrl": "https://i.ibb.co/5TGJ8px/mul-blank.png"
   },
   {
     "Id": 106713,
@@ -11661,7 +12055,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "C3S,IF 1,MHQ 1,SRCH,TUR (2/2/2,IF1)",
-    "SubTypeId": 24
+    "SubTypeId": 24,
+    "BFThreshold": 0,
+    "Rules": "Experimental",
+    "TRO": "XTR:Kurita",
+    "ImageUrl": "https://i.ibb.co/tQHtdrk/tokugawa-3058u.png"
   },
   {
     "Id": 106714,
@@ -11710,7 +12108,9 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "CAR 4,MAS",
-    "SubTypeId": 3
+    "SubTypeId": 3,
+    "BFThreshold": 0,
+    "Rules": "Standard"
   },
   {
     "Id": 106715,
@@ -11759,7 +12159,9 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "CAR 5,HT 1/-/-,RCN,STL",
-    "SubTypeId": 3
+    "SubTypeId": 3,
+    "BFThreshold": 0,
+    "Rules": "Standard"
   },
   {
     "Id": 106716,
@@ -11815,7 +12217,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "C3I,CASE,ECM,MHQ 2,OMNI,REAR 0*/0*/-",
-    "SubTypeId": 19
+    "SubTypeId": 19,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:J",
+    "ImageUrl": "https://i.ibb.co/nBrmzGh/deva-3075.png"
   },
   {
     "Id": 106717,
@@ -11890,7 +12296,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "CASE,MEL,MTAS,TSM",
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Advanced",
+    "TRO": "TR:Proto",
+    "ImageUrl": "https://i.ibb.co/RcbZxDN/trebuchet-xtr.png"
   },
   {
     "Id": 106718,
@@ -11980,7 +12390,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "CASE,IF 1,TSM",
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:DA",
+    "ImageUrl": "https://i.ibb.co/VtHKQ7Q/atlas-rg.png"
   },
   {
     "Id": 106719,
@@ -12029,7 +12443,9 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "AM,CAR 5,HT 1/-/-,MEC,RFA",
-    "SubTypeId": 3
+    "SubTypeId": 3,
+    "BFThreshold": 0,
+    "Rules": "Experimental"
   },
   {
     "Id": 106720,
@@ -12091,7 +12507,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "AMS,BHJ 3,CASE,FLK 1/1/1",
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Advanced",
+    "TRO": "TR:3145",
+    "ImageUrl": "https://i.ibb.co/Q8R1s1L/omen-3085.png"
   },
   {
     "Id": 106721,
@@ -12140,7 +12560,9 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "CAR 4,MEC",
-    "SubTypeId": 3
+    "SubTypeId": 3,
+    "BFThreshold": 0,
+    "Rules": "Standard"
   },
   {
     "Id": 106722,
@@ -12280,7 +12702,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "CAR 20",
-    "SubTypeId": 13
+    "SubTypeId": 13,
+    "BFThreshold": 0,
+    "Rules": "Advanced",
+    "TRO": "TO:AUE",
+    "ImageUrl": "https://i.ibb.co/5TGJ8px/mul-blank.png"
   },
   {
     "Id": 106723,
@@ -12345,7 +12771,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "AMS,CASE,ECM,IF 1,SRCH,STL",
-    "SubTypeId": 25
+    "SubTypeId": 25,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:3150",
+    "ImageUrl": "https://i.ibb.co/kyx3q8C/fensalir-3085.png"
   },
   {
     "Id": 106724,
@@ -12458,7 +12888,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "CASE,OMNI",
-    "SubTypeId": 19
+    "SubTypeId": 19,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:3145",
+    "ImageUrl": "https://i.ibb.co/SyCXFP4/strider-3058u.png"
   },
   {
     "Id": 106725,
@@ -12720,7 +13154,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "ENE,SRCH,TUR (1/1/-)",
-    "SubTypeId": 16
+    "SubTypeId": 16,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:3050U",
+    "ImageUrl": "https://i.ibb.co/1Lm0tJw/gabriel-3050u.png"
   },
   {
     "Id": 106726,
@@ -12782,7 +13220,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Introductory",
+    "TRO": "TR:SW",
+    "ImageUrl": "https://i.ibb.co/fr8FY6w/sentinel-rg.png"
   },
   {
     "Id": 106727,
@@ -12858,7 +13300,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "FC,RFA,SRCH,TUR (2/2/2)",
-    "SubTypeId": 22
+    "SubTypeId": 22,
+    "BFThreshold": 0,
+    "Rules": "Advanced",
+    "TRO": "TR:3145",
+    "ImageUrl": "https://i.ibb.co/Kqm9HDJ/vedette-proto.png"
   },
   {
     "Id": 106728,
@@ -12949,8 +13395,12 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "TH 2,BOMB 2,FLK 1/1/-,FUEL 20,SPC,VSTOL",
-    "SubTypeId": 1
+    "BFAbilities": "BOMB 2,FLK 1/1/-,FUEL 20,SPC,VSTOL",
+    "SubTypeId": 1,
+    "BFThreshold": 2,
+    "Rules": "Standard",
+    "TRO": "TR:3039",
+    "ImageUrl": "https://i.ibb.co/9yRBWJ5/transit-3039.png"
   },
   {
     "Id": 106729,
@@ -13024,7 +13474,9 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "CAR 5,LMAS,MEC,STL",
-    "SubTypeId": 3
+    "SubTypeId": 3,
+    "BFThreshold": 0,
+    "Rules": "Advanced"
   },
   {
     "Id": 106730,
@@ -13087,7 +13539,9 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "CAR 4,HT 1/-/-,MEC,STL",
-    "SubTypeId": 3
+    "SubTypeId": 3,
+    "BFThreshold": 0,
+    "Rules": "Standard"
   },
   {
     "Id": 106731,
@@ -13333,7 +13787,8 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
-    "SubTypeId": 32
+    "SubTypeId": 32,
+    "BFThreshold": 0
   },
   {
     "Id": 106732,
@@ -13401,7 +13856,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "CASE",
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Experimental",
+    "TRO": "JTP:Luthien",
+    "ImageUrl": "https://i.ibb.co/SVxL8n8/thresher-3058u.png"
   },
   {
     "Id": 106733,
@@ -13477,8 +13936,12 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "TH 3,BOMB 2,FUEL 20,RFA,SPC,VSTOL",
-    "SubTypeId": 1
+    "BFAbilities": "BOMB 2,FUEL 20,RFA,SPC,VSTOL",
+    "SubTypeId": 1,
+    "BFThreshold": 3,
+    "Rules": "Advanced",
+    "TRO": "TR:3150",
+    "ImageUrl": "https://i.ibb.co/vjT0fGj/rondel-3150.png"
   },
   {
     "Id": 106734,
@@ -13565,7 +14028,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "SRCH,TUR (2/2/1)",
-    "SubTypeId": 22
+    "SubTypeId": 22,
+    "BFThreshold": 0,
+    "Rules": "Advanced",
+    "TRO": "TR:Proto",
+    "ImageUrl": "https://i.ibb.co/zrBYnyC/myrmidon-proto.png"
   },
   {
     "Id": 106735,
@@ -13638,8 +14105,9 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "TH 5",
-    "SubTypeId": 14
+    "BFAbilities": "",
+    "SubTypeId": 14,
+    "BFThreshold": 5
   },
   {
     "Id": 106736,
@@ -13719,7 +14187,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "C3S,CASE,IF 1,LRM 1/1/1,MHQ 1,OVL",
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:CI",
+    "ImageUrl": "https://i.ibb.co/NLrqZX1/mauler-rg.png"
   },
   {
     "Id": 106737,
@@ -14090,7 +14562,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "EE,IF 3,LRM 1/3/3,SRCH",
-    "SubTypeId": 22
+    "SubTypeId": 22,
+    "BFThreshold": 0,
+    "Rules": "Introductory",
+    "TRO": "TR:3039",
+    "ImageUrl": "https://i.ibb.co/VHjpQzD/lrm-carrier-rg.png"
   },
   {
     "Id": 106738,
@@ -14185,8 +14661,11 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "TH 1,ATMO,BAR,CT76D 1,ENE,FC,LG,VSTOL",
-    "SubTypeId": 15
+    "BFAbilities": "ATMO,BAR,CT76D 1,ENE,FC,LG,VSTOL",
+    "SubTypeId": 15,
+    "BFThreshold": 1,
+    "TRO": "TR:VAr",
+    "ImageUrl": "https://i.ibb.co/3Bj0MjV/king-karnov-transport-va.png"
   },
   {
     "Id": 106739,
@@ -14297,7 +14776,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "CASE,JMPW 1",
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:SW",
+    "ImageUrl": "https://i.ibb.co/2cQmRWW/jenner-rg.png"
   },
   {
     "Id": 106740,
@@ -14426,7 +14909,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "IF 1,SRCH,TUR (7/7/3)",
-    "SubTypeId": 22
+    "SubTypeId": 22,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "RG31",
+    "ImageUrl": "https://i.ibb.co/ZJQYF3N/behemoth-heavy-tank-rg.png"
   },
   {
     "Id": 106741,
@@ -14509,7 +14996,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "C3S,IF 4,LRM 2/4/4,MHQ 1,SRCH,TUR (2/4/4,IF4,LRM2/4/4)",
-    "SubTypeId": 24
+    "SubTypeId": 24,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:3145",
+    "ImageUrl": "https://i.ibb.co/thWpVF2/jes-iii-3085.jpg"
   },
   {
     "Id": 106742,
@@ -14571,7 +15062,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "CASE,IF 2,LRM 1/1/2",
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "ER:2750",
+    "ImageUrl": "https://i.ibb.co/12SMh4n/dervish-rg.png"
   },
   {
     "Id": 106743,
@@ -14663,7 +15158,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "CASE,FC,FLK 1/1/1,SRCH,SRM 1/1,TUR (2/2/1,FLK1/1/1,SRM1/1)",
-    "SubTypeId": 22
+    "SubTypeId": 22,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "RG25",
+    "ImageUrl": "https://i.ibb.co/NVVBJXY/bulldog-rg.png"
   },
   {
     "Id": 106744,
@@ -14743,7 +15242,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "AC 1/1/-,SRCH,TUR (3/3/-,AC1/1/-)",
-    "SubTypeId": 16
+    "SubTypeId": 16,
+    "BFThreshold": 0,
+    "Rules": "Introductory",
+    "TRO": "RG26",
+    "ImageUrl": "https://i.ibb.co/pQ5zVFv/condor-rg.png"
   },
   {
     "Id": 106745,
@@ -14799,7 +15302,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "ENE,JMPS 1",
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Experimental",
+    "TRO": "XTR:Davion",
+    "ImageUrl": "https://i.ibb.co/pRHSSR2/enforcer-xtr.png"
   },
   {
     "Id": 106746,
@@ -14881,7 +15388,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "CASE,SRCH,TUR (2/2/2)",
-    "SubTypeId": 22
+    "SubTypeId": 22,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:3060",
+    "ImageUrl": "https://i.ibb.co/pd2sdrL/mithras-3060.png"
   },
   {
     "Id": 106747,
@@ -14991,7 +15502,9 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "AM,CAR 4,MEC,RCN",
-    "SubTypeId": 3
+    "SubTypeId": 3,
+    "BFThreshold": 0,
+    "Rules": "Standard"
   },
   {
     "Id": 106748,
@@ -15174,7 +15687,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "BFC,CT 0.5,EE,ENE",
-    "SubTypeId": 17
+    "SubTypeId": 17,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:I",
+    "ImageUrl": "https://i.ibb.co/b33mt9Q/strongarm.png"
   },
   {
     "Id": 106749,
@@ -15303,7 +15820,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "CASE,IF 2,LRM 2/2/2,OMNI",
-    "SubTypeId": 19
+    "SubTypeId": 19,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:CI",
+    "ImageUrl": "https://i.ibb.co/P6QWXGt/turkina-rg.png"
   },
   {
     "Id": 106750,
@@ -15392,7 +15913,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "CASE",
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:CI",
+    "ImageUrl": "https://i.ibb.co/0tfStdH/kodiak-rg.png"
   },
   {
     "Id": 106751,
@@ -15491,8 +16016,12 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "TH 3,BOMB 3,ENE,FUEL 20,REAR 1/1/-,SPC,VSTOL",
-    "SubTypeId": 1
+    "BFAbilities": "BOMB 3,ENE,FUEL 20,REAR 1/1/-,SPC,VSTOL",
+    "SubTypeId": 1,
+    "BFThreshold": 3,
+    "Rules": "Standard",
+    "TRO": "His:OK",
+    "ImageUrl": "https://i.ibb.co/SvfcDTT/eagle-3075.png"
   },
   {
     "Id": 106752,
@@ -15549,7 +16078,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "CASE,ECM,PRB,RCN",
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:3067",
+    "ImageUrl": "https://i.ibb.co/t8CjrSS/rabid-coyote-3067.png"
   },
   {
     "Id": 106753,
@@ -15650,7 +16183,9 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "AM,CAR 5,MEC",
-    "SubTypeId": 3
+    "SubTypeId": 3,
+    "BFThreshold": 0,
+    "Rules": "Standard"
   },
   {
     "Id": 106754,
@@ -15758,7 +16293,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "CASE",
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "RGv1",
+    "ImageUrl": "https://i.ibb.co/F8jQ7xL/wolverine-rg.png"
   },
   {
     "Id": 106755,
@@ -15899,8 +16438,11 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "TH 2",
-    "SubTypeId": 46
+    "BFAbilities": "",
+    "SubTypeId": 46,
+    "BFThreshold": 2,
+    "TRO": "TR:3057r",
+    "ImageUrl": "https://i.ibb.co/nQvQkZ2/seeker-3057.png"
   },
   {
     "Id": 106756,
@@ -16093,7 +16635,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "C3S,ECM,IF 5,LRM 2/4/5,MHQ 1,SRCH",
-    "SubTypeId": 22
+    "SubTypeId": 22,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:3085",
+    "ImageUrl": "https://i.ibb.co/5h7Mhkj/jes-ii-3085.png"
   },
   {
     "Id": 106757,
@@ -16173,7 +16719,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "ECM,ENE,PRB,RCN,SRCH,TAG,TUR (TAG)",
-    "SubTypeId": 16
+    "SubTypeId": 16,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:3050U",
+    "ImageUrl": "https://i.ibb.co/z6FcFnY/beagle-3050u.png"
   },
   {
     "Id": 106758,
@@ -16267,8 +16817,12 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "TH 3,BOMB 3,FUEL 40,REAR 1/1/-,SPC,VSTOL",
-    "SubTypeId": 1
+    "BFAbilities": "BOMB 3,FUEL 40,REAR 1/1/-,SPC,VSTOL",
+    "SubTypeId": 1,
+    "BFThreshold": 3,
+    "Rules": "Introductory",
+    "TRO": "TR:3039",
+    "ImageUrl": "https://i.ibb.co/NxYWYnr/slayer-3039.png"
   },
   {
     "Id": 106759,
@@ -16581,7 +17135,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "CAR 20,HT 1/-/-",
-    "SubTypeId": 8
+    "SubTypeId": 8,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TW",
+    "ImageUrl": "https://i.ibb.co/5TGJ8px/mul-blank.png"
   },
   {
     "Id": 106760,
@@ -16655,7 +17213,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
-    "SubTypeId": 51
+    "SubTypeId": 51,
+    "BFThreshold": 0,
+    "Rules": "Advanced",
+    "TRO": "IE:ISP3",
+    "ImageUrl": "https://i.ibb.co/cT7t4cL/shackleton-isp3.png"
   },
   {
     "Id": 106761,
@@ -16902,7 +17464,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "CAR 20",
-    "SubTypeId": 8
+    "SubTypeId": 8,
+    "BFThreshold": 0,
+    "Rules": "Advanced",
+    "TRO": "TO:AUE",
+    "ImageUrl": "https://i.ibb.co/5TGJ8px/mul-blank.png"
   },
   {
     "Id": 106762,
@@ -16982,7 +17548,9 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "CAR 5,SRCH",
-    "SubTypeId": 3
+    "SubTypeId": 3,
+    "BFThreshold": 0,
+    "Rules": "Standard"
   },
   {
     "Id": 106763,
@@ -17090,7 +17658,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "CASE,OMNI",
-    "SubTypeId": 19
+    "SubTypeId": 19,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "RG14",
+    "ImageUrl": "https://i.ibb.co/TMw8bG6/black-hawk-nova-rg.png"
   },
   {
     "Id": 106764,
@@ -17170,7 +17742,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "C3BSM 2,ENE,MHQ 12,OMNI,TAG",
-    "SubTypeId": 19
+    "SubTypeId": 19,
+    "BFThreshold": 0,
+    "Rules": "Advanced",
+    "TRO": "TR:3145",
+    "ImageUrl": "https://i.ibb.co/SyCXFP4/strider-3058u.png"
   },
   {
     "Id": 106765,
@@ -17249,8 +17825,12 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "TH 3,BOMB 2,ENE,FUEL 20,PNT 1,REAR 1/-/-,SPC,VSTOL",
-    "SubTypeId": 1
+    "BFAbilities": "BOMB 2,ENE,FUEL 20,PNT 1,REAR 1/-/-,SPC,VSTOL",
+    "SubTypeId": 1,
+    "BFThreshold": 3,
+    "Rules": "Introductory",
+    "TRO": "TR:3039",
+    "ImageUrl": "https://i.ibb.co/tHtHqTJ/corsair-3039.png"
   },
   {
     "Id": 106766,
@@ -17358,7 +17938,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "CASE,OMNI",
-    "SubTypeId": 19
+    "SubTypeId": 19,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "RG14",
+    "ImageUrl": "https://i.ibb.co/TMw8bG6/black-hawk-nova-rg.png"
   },
   {
     "Id": 106767,
@@ -17478,7 +18062,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "CASE,IF 1,OVL",
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:3060",
+    "ImageUrl": "https://i.ibb.co/MPV9nFF/orion-iic-3060.png"
   },
   {
     "Id": 106768,
@@ -17573,7 +18161,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "AM,CAR 4",
-    "SubTypeId": 10
+    "SubTypeId": 10,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TW",
+    "ImageUrl": "https://i.ibb.co/5TGJ8px/mul-blank.png"
   },
   {
     "Id": 106769,
@@ -17663,7 +18255,10 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
-    "SubTypeId": 32
+    "SubTypeId": 32,
+    "BFThreshold": 0,
+    "TRO": "TR:VAr",
+    "ImageUrl": "https://i.ibb.co/BtZnY7v/doering-nashan-trva.png"
   },
   {
     "Id": 106770,
@@ -17774,7 +18369,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "FLK 1/1/1",
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:SW",
+    "ImageUrl": "https://i.ibb.co/crGmZpC/icarus-ii-pc.png"
   },
   {
     "Id": 106771,
@@ -17843,7 +18442,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "C3I,MHQ 2,SRCH,TUR (3/3/3)",
-    "SubTypeId": 22
+    "SubTypeId": 22,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:3050U",
+    "ImageUrl": "https://i.ibb.co/5WQV2Wb/burke-3050u.png"
   },
   {
     "Id": 106772,
@@ -17906,7 +18509,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "BAR,EE,IT 3,MHQ 7,ORO,RCN",
-    "SubTypeId": 51
+    "SubTypeId": 51,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "XTR:Primitives V",
+    "ImageUrl": "https://i.ibb.co/mBFChRp/mobile-hq-rg.png"
   },
   {
     "Id": 106773,
@@ -17962,7 +18569,8 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
-    "SubTypeId": 33
+    "SubTypeId": 33,
+    "BFThreshold": 0
   },
   {
     "Id": 106774,
@@ -18024,7 +18632,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "ENE,REAR 1/1/-",
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:3050U",
+    "ImageUrl": "https://i.ibb.co/V9qnp94/wolfhound-rg.png"
   },
   {
     "Id": 106775,
@@ -18119,7 +18731,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "AM,CAR 2,HT 1/-/-",
-    "SubTypeId": 7
+    "SubTypeId": 7,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TW",
+    "ImageUrl": "https://i.ibb.co/5TGJ8px/mul-blank.png"
   },
   {
     "Id": 106776,
@@ -18192,7 +18808,8 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
-    "SubTypeId": 2
+    "SubTypeId": 2,
+    "BFThreshold": 0
   },
   {
     "Id": 106777,
@@ -18337,8 +18954,12 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "TH 2",
-    "SubTypeId": 26
+    "BFAbilities": "",
+    "SubTypeId": 26,
+    "BFThreshold": 2,
+    "Rules": "Standard",
+    "TRO": "TR:3075",
+    "ImageUrl": "https://i.ibb.co/kyfTChj/lyonesse-escort-3075.png"
   },
   {
     "Id": 106778,
@@ -18400,7 +19021,9 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "AM,CAR 6,LECM,MEC,RCN,STL",
-    "SubTypeId": 3
+    "SubTypeId": 3,
+    "BFThreshold": 0,
+    "Rules": "Standard"
   },
   {
     "Id": 106779,
@@ -18575,7 +19198,10 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
-    "SubTypeId": 16
+    "SubTypeId": 16,
+    "BFThreshold": 0,
+    "TRO": "MW1e",
+    "ImageUrl": "https://i.ibb.co/2WTzJ8y/pegasus-rg.png"
   },
   {
     "Id": 106780,
@@ -18633,7 +19259,10 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "TRO": "TR:3050U",
+    "ImageUrl": "https://i.ibb.co/6wHfbL7/hoplite-rg.png"
   },
   {
     "Id": 106781,
@@ -18779,7 +19408,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "CASE,IF 1,JMPW 1,OMNI",
-    "SubTypeId": 19
+    "SubTypeId": 19,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:CI",
+    "ImageUrl": "https://i.ibb.co/2WxYScC/shadow-cat-rg.png"
   },
   {
     "Id": 106782,
@@ -18870,7 +19503,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "ENE,SRCH,TUR (1/1/-)",
-    "SubTypeId": 16
+    "SubTypeId": 16,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:3050U",
+    "ImageUrl": "https://i.ibb.co/1Lm0tJw/gabriel-3050u.png"
   },
   {
     "Id": 106783,
@@ -18955,8 +19592,12 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "TH 3,BOMB 3,FUEL 20,REAR 1/1/-,SPC,VSTOL",
-    "SubTypeId": 1
+    "BFAbilities": "BOMB 3,FUEL 20,REAR 1/1/-,SPC,VSTOL",
+    "SubTypeId": 1,
+    "BFThreshold": 3,
+    "Rules": "Standard",
+    "TRO": "TR:3039",
+    "ImageUrl": "https://i.ibb.co/C1LSWd3/transgressor-3039.png"
   },
   {
     "Id": 106784,
@@ -19096,7 +19737,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "CAR 20",
-    "SubTypeId": 11
+    "SubTypeId": 11,
+    "BFThreshold": 0,
+    "Rules": "Advanced",
+    "TRO": "TO:AUE",
+    "ImageUrl": "https://i.ibb.co/5TGJ8px/mul-blank.png"
   },
   {
     "Id": 106785,
@@ -19184,7 +19829,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "JMPS 1",
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:3085",
+    "ImageUrl": "https://i.ibb.co/F3d6WmT/panther-3085.png"
   },
   {
     "Id": 106786,
@@ -19240,7 +19889,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "C3I,CASE,ECM,MHQ 2,OMNI",
-    "SubTypeId": 19
+    "SubTypeId": 19,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:J",
+    "ImageUrl": "https://i.ibb.co/cT1t26T/grigori-3075.png"
   },
   {
     "Id": 106787,
@@ -19318,7 +19971,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:3050U",
+    "ImageUrl": "https://i.ibb.co/GJLV05M/hermes-ii-rg.png"
   },
   {
     "Id": 106788,
@@ -19398,7 +20055,9 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "AM,CAR 5,MEC,STL",
-    "SubTypeId": 3
+    "SubTypeId": 3,
+    "BFThreshold": 0,
+    "Rules": "Standard"
   },
   {
     "Id": 106789,
@@ -19467,7 +20126,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "IF 2,LRM 2/2/2,OMNI,TSM,TUR (3/3/3,IF2,LRM2/2/2)",
-    "SubTypeId": 19
+    "SubTypeId": 19,
+    "BFThreshold": 0,
+    "Rules": "Advanced",
+    "TRO": "TR:DA",
+    "ImageUrl": "https://i.ibb.co/nfzpBHR/sarath-a-3145.png"
   },
   {
     "Id": 106790,
@@ -19743,7 +20406,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "ARTT -1,CAR 40",
-    "SubTypeId": 13
+    "SubTypeId": 13,
+    "BFThreshold": 0,
+    "Rules": "Advanced",
+    "TRO": "TR:3085",
+    "ImageUrl": "https://i.ibb.co/9tCytBC/mechanized-field-artillery-dcms.png"
   },
   {
     "Id": 106791,
@@ -19837,7 +20504,10 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
-    "SubTypeId": 17
+    "SubTypeId": 17,
+    "BFThreshold": 0,
+    "TRO": "BC:\"Pirates of Penance\"",
+    "ImageUrl": "https://i.ibb.co/5TGJ8px/mul-blank.png"
   },
   {
     "Id": 106792,
@@ -19894,7 +20564,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "AMS,JMPW 1",
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Experimental",
+    "TRO": "XTR:Gunslingers",
+    "ImageUrl": "https://i.ibb.co/vzFhnHy/exterminator-4dx-xtr.png"
   },
   {
     "Id": 106793,
@@ -19950,7 +20624,9 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "CAR 6,CNARC,MAS",
-    "SubTypeId": 3
+    "SubTypeId": 3,
+    "BFThreshold": 0,
+    "Rules": "Advanced"
   },
   {
     "Id": 106794,
@@ -20065,7 +20741,8 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
-    "SubTypeId": 30
+    "SubTypeId": 30,
+    "BFThreshold": 0
   },
   {
     "Id": 106795,
@@ -20155,7 +20832,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "ECM,ENE,STL",
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "RG26",
+    "ImageUrl": "https://i.ibb.co/1QgVGj3/flea-rg.png"
   },
   {
     "Id": 106796,
@@ -20211,7 +20892,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "AC 6/6/-,SRCH,TUR (6/6/-,AC6/6/-)",
-    "SubTypeId": 22
+    "SubTypeId": 22,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:3058U",
+    "ImageUrl": "https://i.ibb.co/n1wCrB1/alacorn-3058u.png"
   },
   {
     "Id": 106797,
@@ -20267,7 +20952,8 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
-    "SubTypeId": 28
+    "SubTypeId": 28,
+    "BFThreshold": 0
   },
   {
     "Id": 106798,
@@ -20328,8 +21014,12 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "TH 1",
-    "SubTypeId": 26
+    "BFAbilities": "",
+    "SubTypeId": 26,
+    "BFThreshold": 1,
+    "Rules": "Standard",
+    "TRO": "XTR:Primitives IV",
+    "ImageUrl": "https://i.ibb.co/N3LfDdM/tigress-hbmps.png"
   },
   {
     "Id": 106799,
@@ -20427,7 +21117,11 @@
     "BFDamageLongMin": true,
     "BFDamageExtremeMin": false,
     "BFAbilities": "AFC,FC,IF 0*",
-    "SubTypeId": 17
+    "SubTypeId": 17,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:I",
+    "ImageUrl": "https://i.ibb.co/FYFpXWN/pacifier-irreg.png"
   },
   {
     "Id": 106800,
@@ -20523,6 +21217,10 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "ECM,ENE,JMPS 1,STL,TAG",
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:3075",
+    "ImageUrl": "https://i.ibb.co/f1PxcN2/eyleuka-3075.png"
   }
 ]

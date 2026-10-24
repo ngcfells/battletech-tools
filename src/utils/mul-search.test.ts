@@ -4,11 +4,13 @@ import { loadMULListItems } from "../data/mul-list-items";
 import { getMULASSearchResults, searchBundledMUL } from "../utils";
 import { newMULSearchFilters } from "./mulSearchFilters";
 
-// Bundled MUL 2.0 records (masterunitlist.battletech.com) have no Rules, BFThreshold or ImageUrl fields.
+// Bundled MUL 2.0 records (masterunitlist.battletech.com) take their Rules level from the legacy record they
+// replaced (#48).
 describe("Bundled MUL 2.0 search and cards", () => {
-    it("finds a 'Mech by name and model with a Rules level selected", async () => {
-        const results = await getMULASSearchResults("Atlas AS7-D", "standard", "", "", 0, 0, [], true);
-        expect(results.some((unit) => unit.Name === "Atlas" && unit.Variant === "AS7-D")).toBe(true);
+    it("finds a 'Mech by name and model at its Rules level, and not at another", async () => {
+        const isAtlas = (unit: { Name: string; Variant: string | null }) => unit.Name === "Atlas" && unit.Variant === "AS7-D";
+        expect((await getMULASSearchResults("Atlas AS7-D", "intro+standard", "", "", 0, 0, [], true)).some(isAtlas)).toBe(true);
+        expect((await getMULASSearchResults("Atlas AS7-D", "advanced", "", "", 0, 0, [], true)).some(isAtlas)).toBe(false);
     }, 30_000);
 
     it("filters by special ability code, with exclusions", async () => {

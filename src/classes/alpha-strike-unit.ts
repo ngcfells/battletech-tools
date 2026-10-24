@@ -400,7 +400,7 @@ export class AlphaStrikeUnit {
 
             this.tonnage = +incomingMechData.Tonnage;
 
-            // MUL 2.0 records have no BFThreshold; only aerospace units have an armor threshold.
+            // Only aerospace units have an armor threshold. The MUL sync moves the live site's "TH n" ability here (#48).
             this.threshold = Number(incomingMechData.BFThreshold) || 0;
             this.arcs = sanitizeASArcs(incomingMechData.BFArcs);
 

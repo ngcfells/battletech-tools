@@ -69,3 +69,56 @@ const LEGACY_ERA_ID_BY_LIVE_ID = {
 export function legacyEraIdOf(liveEraId) {
     return LEGACY_ERA_ID_BY_LIVE_ID[liveEraId];
 }
+
+const THRESHOLD_ABILITY = /^TH\s*(\d+)$/i;
+
+/**
+ * Moves the armor threshold out of the abilities into BFThreshold (0 when there is none), as the old MUL stored
+ * it. The live site lists it as a "TH 3" ability. Returns true if the record changed.
+ */
+export function takeThreshold(record) {
+    const abilities = typeof record.BFAbilities === "string" && record.BFAbilities !== "" ? record.BFAbilities.split(",") : [];
+    const index = abilities.findIndex((ability) => THRESHOLD_ABILITY.test(ability.trim()));
+    if (index < 0) {
+        if (record.BFThreshold !== undefined) return false;
+        record.BFThreshold = 0;
+        return true;
+    }
+    record.BFThreshold = Number(abilities[index].trim().match(THRESHOLD_ABILITY)[1]);
+    abilities.splice(index, 1);
+    record.BFAbilities = abilities.join(",");
+    return true;
+}
+
+const LEGACY_FILL_FIELDS = ["Rules", "TRO", "ImageUrl"];
+const usableLegacyValue = (field, value) =>
+    typeof value === "string" && value.trim() !== "" && !(field === "Rules" && value.trim() === "Unknown");
+
+/**
+ * From the archive of legacy records the live ones replaced: live key -> { Rules, TRO, ImageUrl }, the live site
+ * having none of them. Each field comes from the first legacy copy that has it; "Unknown" is not a rules level.
+ */
+export function legacyFillByLiveKey(archiveItems) {
+    const fills = new Map();
+    for (const item of archiveItems) {
+        if (!item?.replacedBy || !item.record) continue;
+        const fill = fills.get(item.replacedBy) ?? {};
+        for (const field of LEGACY_FILL_FIELDS) {
+            if (fill[field] === undefined && usableLegacyValue(field, item.record[field])) fill[field] = item.record[field].trim();
+        }
+        fills.set(item.replacedBy, fill);
+    }
+    for (const [key, fill] of fills) if (Object.keys(fill).length === 0) fills.delete(key);
+    return fills;
+}
+
+/** Sets the legacy fields a live record lacks; the live site's own values win. Returns true if it changed. */
+export function fillFromLegacy(record, fill) {
+    let changed = false;
+    for (const [field, value] of Object.entries(fill ?? {})) {
+        if (usableLegacyValue(field, record[field])) continue;
+        record[field] = value;
+        changed = true;
+    }
+    return changed;
+}

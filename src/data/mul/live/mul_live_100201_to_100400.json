@@ -321,14 +321,17 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "TH 3",
+    "BFAbilities": "",
     "Type": {
       "Id": 17,
       "Name": "Aerospace Craft",
       "Image": null,
       "SortOrder": 7
     },
-    "SubTypeId": 46
+    "SubTypeId": 46,
+    "BFThreshold": 3,
+    "TRO": "TR:3057r",
+    "ImageUrl": "https://i.ibb.co/sFw9GKS/overlord-3057.png"
   },
   {
     "Id": 100202,
@@ -404,14 +407,15 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "TH 2,CK 1.2,DT 8,KF,ST4D 2",
+    "BFAbilities": "CK 1.2,DT 8,KF,ST4D 2",
     "Type": {
       "Id": 17,
       "Name": "Aerospace Craft",
       "Image": null,
       "SortOrder": 7
     },
-    "SubTypeId": 33
+    "SubTypeId": 33,
+    "BFThreshold": 2
   },
   {
     "Id": 100203,
@@ -499,7 +503,11 @@
       "Image": null,
       "SortOrder": 0
     },
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:3055U",
+    "ImageUrl": "https://i.ibb.co/RzkcrSN/baboon-howler-pp.png"
   },
   {
     "Id": 100204,
@@ -574,7 +582,11 @@
       "Image": null,
       "SortOrder": 0
     },
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:DA",
+    "ImageUrl": "https://i.ibb.co/qnWwMV2/raider-3150.png"
   },
   {
     "Id": 100205,
@@ -821,7 +833,11 @@
       "Image": null,
       "SortOrder": 5
     },
-    "SubTypeId": 7
+    "SubTypeId": 7,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TW",
+    "ImageUrl": "https://i.ibb.co/5TGJ8px/mul-blank.png"
   },
   {
     "Id": 100206,
@@ -1302,7 +1318,11 @@
       "Image": null,
       "SortOrder": 1
     },
-    "SubTypeId": 24
+    "SubTypeId": 24,
+    "BFThreshold": 0,
+    "Rules": "Introductory",
+    "TRO": "TR:3060",
+    "ImageUrl": "https://i.ibb.co/Qpp93wb/flatbed-truck-3060.png"
   },
   {
     "Id": 100207,
@@ -1371,7 +1391,11 @@
       "Image": null,
       "SortOrder": 9
     },
-    "SubTypeId": 17
+    "SubTypeId": 17,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:I",
+    "ImageUrl": "https://i.ibb.co/LhSmWKh/opossum-irreg.png"
   },
   {
     "Id": 100208,
@@ -1441,7 +1465,11 @@
       "Image": null,
       "SortOrder": 0
     },
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "Shrap13",
+    "ImageUrl": "https://i.ibb.co/hgJtyYB/albatross-3055u.png"
   },
   {
     "Id": 100209,
@@ -1506,7 +1534,11 @@
       "Image": null,
       "SortOrder": 0
     },
-    "SubTypeId": 19
+    "SubTypeId": 19,
+    "BFThreshold": 0,
+    "Rules": "Advanced",
+    "TRO": "TR:DA",
+    "ImageUrl": "https://i.ibb.co/bBQp8R8/wulfen-3145.png"
   },
   {
     "Id": 100210,
@@ -1668,7 +1700,11 @@
       "Image": null,
       "SortOrder": 1
     },
-    "SubTypeId": 16
+    "SubTypeId": 16,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:3039",
+    "ImageUrl": "https://i.ibb.co/FK64sx2/saladin-3039.png"
   },
   {
     "Id": 100211,
@@ -1717,7 +1753,9 @@
       "Image": null,
       "SortOrder": 4
     },
-    "SubTypeId": 3
+    "SubTypeId": 3,
+    "BFThreshold": 0,
+    "Rules": "Standard"
   },
   {
     "Id": 100212,
@@ -1781,7 +1819,11 @@
       "Image": null,
       "SortOrder": 1
     },
-    "SubTypeId": 24
+    "SubTypeId": 24,
+    "BFThreshold": 0,
+    "Rules": "Advanced",
+    "TRO": "XTR:RotS 3",
+    "ImageUrl": "https://i.ibb.co/sWzQyR8/padilla-3085.png"
   },
   {
     "Id": 100213,
@@ -1830,7 +1872,9 @@
       "Image": null,
       "SortOrder": 4
     },
-    "SubTypeId": 3
+    "SubTypeId": 3,
+    "BFThreshold": 0,
+    "Rules": "Standard"
   },
   {
     "Id": 100214,
@@ -1879,7 +1923,8 @@
       "Image": null,
       "SortOrder": 10
     },
-    "SubTypeId": 49
+    "SubTypeId": 49,
+    "BFThreshold": 0
   },
   {
     "Id": 100215,
@@ -1935,7 +1980,9 @@
       "Image": null,
       "SortOrder": 4
     },
-    "SubTypeId": 3
+    "SubTypeId": 3,
+    "BFThreshold": 0,
+    "Rules": "Standard"
   },
   {
     "Id": 100216,
@@ -2028,7 +2075,11 @@
       "Image": null,
       "SortOrder": 0
     },
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:CI",
+    "ImageUrl": "https://i.ibb.co/RSz3gBS/marauder-ii-4h-pp.png"
   },
   {
     "Id": 100217,
@@ -2162,7 +2213,11 @@
       "Image": null,
       "SortOrder": 0
     },
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "RGv1",
+    "ImageUrl": "https://i.ibb.co/rps20YY/marauder-rg.png"
   },
   {
     "Id": 100218,
@@ -2230,7 +2285,11 @@
       "Image": null,
       "SortOrder": 0
     },
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Advanced",
+    "TRO": "TR:3145",
+    "ImageUrl": "https://i.ibb.co/n1nLcjY/ti-ts-ang-3060.png"
   },
   {
     "Id": 100219,
@@ -2301,7 +2360,11 @@
       "Image": null,
       "SortOrder": 0
     },
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Introductory",
+    "TRO": "TR:SW",
+    "ImageUrl": "https://i.ibb.co/0qWznjB/mackie-pc.png"
   },
   {
     "Id": 100220,
@@ -2357,7 +2420,11 @@
       "Image": null,
       "SortOrder": 0
     },
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "2SW",
+    "ImageUrl": "https://i.ibb.co/YQRy8Kf/thunderbolt-rg.png"
   },
   {
     "Id": 100221,
@@ -2453,7 +2520,11 @@
       "Image": null,
       "SortOrder": 0
     },
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Advanced",
+    "TRO": "XTR:Primitives V",
+    "ImageUrl": "https://i.ibb.co/M2PvWgc/phoenix-3075.png"
   },
   {
     "Id": 100222,
@@ -2541,7 +2612,10 @@
       "Image": null,
       "SortOrder": 0
     },
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "TRO": "MWC",
+    "ImageUrl": "https://i.ibb.co/GRNM37R/zeus-rg.png"
   },
   {
     "Id": 100223,
@@ -2612,14 +2686,15 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "TH 4",
+    "BFAbilities": "",
     "Type": {
       "Id": 17,
       "Name": "Aerospace Craft",
       "Image": null,
       "SortOrder": 7
     },
-    "SubTypeId": 14
+    "SubTypeId": 14,
+    "BFThreshold": 4
   },
   {
     "Id": 100224,
@@ -2668,7 +2743,9 @@
       "Image": null,
       "SortOrder": 4
     },
-    "SubTypeId": 3
+    "SubTypeId": 3,
+    "BFThreshold": 0,
+    "Rules": "Advanced"
   },
   {
     "Id": 100225,
@@ -2769,7 +2846,11 @@
       "Image": null,
       "SortOrder": 0
     },
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Advanced",
+    "TRO": "XTR:Primitives I",
+    "ImageUrl": "https://i.ibb.co/9t5C24S/ostwar-prim.png"
   },
   {
     "Id": 100226,
@@ -2849,7 +2930,11 @@
       "Image": null,
       "SortOrder": 0
     },
-    "SubTypeId": 19
+    "SubTypeId": 19,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:3145",
+    "ImageUrl": "https://i.ibb.co/mT0WnbK/tomahawk-3145.png"
   },
   {
     "Id": 100227,
@@ -2929,7 +3014,11 @@
       "Image": null,
       "SortOrder": 0
     },
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:CI",
+    "ImageUrl": "https://i.ibb.co/HFF5vm1/argus-3067.png"
   },
   {
     "Id": 100228,
@@ -2985,7 +3074,11 @@
       "Image": null,
       "SortOrder": 0
     },
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Experimental",
+    "TRO": "XTR:Caveat",
+    "ImageUrl": "https://i.ibb.co/8bqsTX7/wasp-alt-rg.png"
   },
   {
     "Id": 100229,
@@ -3065,7 +3158,11 @@
       "Image": null,
       "SortOrder": 1
     },
-    "SubTypeId": 24
+    "SubTypeId": 24,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "RG29",
+    "ImageUrl": "https://i.ibb.co/swtfpWQ/hetzer-wheeled-assault-gun-rg.png"
   },
   {
     "Id": 100230,
@@ -3214,7 +3311,11 @@
       "Image": null,
       "SortOrder": 0
     },
-    "SubTypeId": 19
+    "SubTypeId": 19,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:CI",
+    "ImageUrl": "https://i.ibb.co/bK0jHqK/hellion-rg.png"
   },
   {
     "Id": 100231,
@@ -3392,7 +3493,11 @@
       "Image": null,
       "SortOrder": 5
     },
-    "SubTypeId": 10
+    "SubTypeId": 10,
+    "BFThreshold": 0,
+    "Rules": "Advanced",
+    "TRO": "TR:3085",
+    "ImageUrl": "https://i.ibb.co/bBWnHhq/heavy-support-infantry-corp.png"
   },
   {
     "Id": 100232,
@@ -3448,7 +3553,11 @@
       "Image": null,
       "SortOrder": 0
     },
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Advanced",
+    "TRO": "XTR:Caveat",
+    "ImageUrl": "https://i.ibb.co/gd6mGpm/volkh-68-xtr.png"
   },
   {
     "Id": 100233,
@@ -3556,7 +3665,11 @@
       "Image": null,
       "SortOrder": 0
     },
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:3050U",
+    "ImageUrl": "https://i.ibb.co/QYqFYmz/hermes-3050u.png"
   },
   {
     "Id": 100234,
@@ -3631,7 +3744,11 @@
       "Image": null,
       "SortOrder": 0
     },
-    "SubTypeId": 19
+    "SubTypeId": 19,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:DA",
+    "ImageUrl": "https://i.ibb.co/9VxHM6Q/vulture-mk-iii-mad-dog-mk-iii-3145.png"
   },
   {
     "Id": 100235,
@@ -3735,7 +3852,11 @@
       "Image": null,
       "SortOrder": 1
     },
-    "SubTypeId": 22
+    "SubTypeId": 22,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "RG30",
+    "ImageUrl": "https://i.ibb.co/dGsgsdJ/pike-support-vehicle-rg.png"
   },
   {
     "Id": 100236,
@@ -3842,7 +3963,11 @@
       "Image": null,
       "SortOrder": 0
     },
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:3050U",
+    "ImageUrl": "https://i.ibb.co/W0mJgCj/vindicator-rg.png"
   },
   {
     "Id": 100237,
@@ -3910,7 +4035,11 @@
       "Image": null,
       "SortOrder": 0
     },
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:DA",
+    "ImageUrl": "https://i.ibb.co/swhD7MF/gravedigger-3150.png"
   },
   {
     "Id": 100238,
@@ -3988,7 +4117,11 @@
       "Image": null,
       "SortOrder": 0
     },
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:DA",
+    "ImageUrl": "https://i.ibb.co/zHDrrng/thunder-fox-3085.png"
   },
   {
     "Id": 100239,
@@ -4086,7 +4219,11 @@
       "Image": null,
       "SortOrder": 0
     },
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:3050U",
+    "ImageUrl": "https://i.ibb.co/2KvPD39/raven-rg.png"
   },
   {
     "Id": 100240,
@@ -4192,7 +4329,10 @@
       "Image": null,
       "SortOrder": 5
     },
-    "SubTypeId": 7
+    "SubTypeId": 7,
+    "BFThreshold": 0,
+    "TRO": "HB:HM",
+    "ImageUrl": "https://i.ibb.co/5TGJ8px/mul-blank.png"
   },
   {
     "Id": 100241,
@@ -4241,7 +4381,9 @@
       "Image": null,
       "SortOrder": 4
     },
-    "SubTypeId": 3
+    "SubTypeId": 3,
+    "BFThreshold": 0,
+    "Rules": "Standard"
   },
   {
     "Id": 100242,
@@ -4297,7 +4439,11 @@
       "Image": null,
       "SortOrder": 0
     },
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:J",
+    "ImageUrl": "https://i.ibb.co/8xncQ3x/osprey-3085.png"
   },
   {
     "Id": 100243,
@@ -4422,7 +4568,11 @@
       "Image": null,
       "SortOrder": 0
     },
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:3060",
+    "ImageUrl": "https://i.ibb.co/W6Cymxw/marshal-3060.png"
   },
   {
     "Id": 100244,
@@ -4539,7 +4689,11 @@
       "Image": null,
       "SortOrder": 0
     },
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:3050U",
+    "ImageUrl": "https://i.ibb.co/MM4ZZHL/victor-rg.png"
   },
   {
     "Id": 100245,
@@ -4634,7 +4788,11 @@
       "Image": null,
       "SortOrder": 0
     },
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:PP",
+    "ImageUrl": "https://i.ibb.co/0jYJ0bb/crusader-5k-pp.png"
   },
   {
     "Id": 100246,
@@ -4755,7 +4913,10 @@
       "Image": null,
       "SortOrder": 8
     },
-    "SubTypeId": 52
+    "SubTypeId": 52,
+    "BFThreshold": 0,
+    "TRO": "TR:VAr",
+    "ImageUrl": "https://i.ibb.co/GdV39RN/kallon-ul-series-trva.png"
   },
   {
     "Id": 100247,
@@ -4811,7 +4972,9 @@
       "Image": null,
       "SortOrder": 4
     },
-    "SubTypeId": 3
+    "SubTypeId": 3,
+    "BFThreshold": 0,
+    "Rules": "Standard"
   },
   {
     "Id": 100248,
@@ -4860,7 +5023,9 @@
       "Image": null,
       "SortOrder": 4
     },
-    "SubTypeId": 3
+    "SubTypeId": 3,
+    "BFThreshold": 0,
+    "Rules": "Standard"
   },
   {
     "Id": 100249,
@@ -4967,7 +5132,11 @@
       "Image": null,
       "SortOrder": 0
     },
-    "SubTypeId": 19
+    "SubTypeId": 19,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "RG05",
+    "ImageUrl": "https://i.ibb.co/WtNS1pR/mad-cat-timber-wolf-rg.png"
   },
   {
     "Id": 100250,
@@ -5029,7 +5198,9 @@
       "Image": null,
       "SortOrder": 4
     },
-    "SubTypeId": 3
+    "SubTypeId": 3,
+    "BFThreshold": 0,
+    "Rules": "Standard"
   },
   {
     "Id": 100251,
@@ -5150,7 +5321,11 @@
       "Image": null,
       "SortOrder": 0
     },
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Introductory",
+    "TRO": "TR:3039",
+    "ImageUrl": "https://i.ibb.co/zbwpRDV/phoenix-hawk-rg2.png"
   },
   {
     "Id": 100252,
@@ -5225,7 +5400,11 @@
       "Image": null,
       "SortOrder": 9
     },
-    "SubTypeId": 17
+    "SubTypeId": 17,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:I",
+    "ImageUrl": "https://i.ibb.co/LhSmWKh/opossum-irreg.png"
   },
   {
     "Id": 100253,
@@ -5314,7 +5493,11 @@
       "Image": null,
       "SortOrder": 0
     },
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:CI",
+    "ImageUrl": "https://i.ibb.co/NxdLVWC/wolverine-8d-pp.png"
   },
   {
     "Id": 100254,
@@ -5389,7 +5572,11 @@
       "Image": null,
       "SortOrder": 0
     },
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Experimental",
+    "TRO": "TR:3085",
+    "ImageUrl": "https://i.ibb.co/GT2wh7v/rifleman-3085.png"
   },
   {
     "Id": 100255,
@@ -5438,7 +5625,9 @@
       "Image": null,
       "SortOrder": 4
     },
-    "SubTypeId": 3
+    "SubTypeId": 3,
+    "BFThreshold": 0,
+    "Rules": "Advanced"
   },
   {
     "Id": 100256,
@@ -5536,7 +5725,9 @@
       "Image": null,
       "SortOrder": 4
     },
-    "SubTypeId": 3
+    "SubTypeId": 3,
+    "BFThreshold": 0,
+    "Rules": "Standard"
   },
   {
     "Id": 100257,
@@ -5585,14 +5776,15 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "TH 14",
+    "BFAbilities": "",
     "Type": {
       "Id": 17,
       "Name": "Aerospace Craft",
       "Image": null,
       "SortOrder": 7
     },
-    "SubTypeId": 29
+    "SubTypeId": 29,
+    "BFThreshold": 14
   },
   {
     "Id": 100258,
@@ -5727,7 +5919,11 @@
       "Image": null,
       "SortOrder": 2
     },
-    "SubTypeId": 44
+    "SubTypeId": 44,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:3145",
+    "ImageUrl": "https://i.ibb.co/NxYbBsT/r10-3085.jpg"
   },
   {
     "Id": 100259,
@@ -5783,7 +5979,11 @@
       "Image": null,
       "SortOrder": 0
     },
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "His:OK",
+    "ImageUrl": "https://i.ibb.co/Zdv8xTB/firefly-rg.png"
   },
   {
     "Id": 100260,
@@ -5848,7 +6048,11 @@
       "Image": null,
       "SortOrder": 0
     },
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Advanced",
+    "TRO": "TR:3145",
+    "ImageUrl": "https://i.ibb.co/6BKyJ1p/cuirass-3085.png"
   },
   {
     "Id": 100261,
@@ -6074,7 +6278,11 @@
       "Image": null,
       "SortOrder": 5
     },
-    "SubTypeId": 7
+    "SubTypeId": 7,
+    "BFThreshold": 0,
+    "Rules": "Introductory",
+    "TRO": "TW",
+    "ImageUrl": "https://i.ibb.co/5TGJ8px/mul-blank.png"
   },
   {
     "Id": 100262,
@@ -6140,7 +6348,11 @@
       "Image": null,
       "SortOrder": 9
     },
-    "SubTypeId": 17
+    "SubTypeId": 17,
+    "BFThreshold": 0,
+    "Rules": "Experimental",
+    "TRO": "TR:I",
+    "ImageUrl": "https://i.ibb.co/74nKGys/centurion-prim.png"
   },
   {
     "Id": 100263,
@@ -6202,7 +6414,11 @@
       "Image": null,
       "SortOrder": 0
     },
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:J",
+    "ImageUrl": "https://i.ibb.co/qyRyKgZ/gurkha-3067.png"
   },
   {
     "Id": 100264,
@@ -6308,7 +6524,11 @@
       "Image": null,
       "SortOrder": 0
     },
-    "SubTypeId": 19
+    "SubTypeId": 19,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "RG32",
+    "ImageUrl": "https://i.ibb.co/GTqJWz4/blood-asp-rg.png"
   },
   {
     "Id": 100265,
@@ -6413,7 +6633,9 @@
       "Image": null,
       "SortOrder": 4
     },
-    "SubTypeId": 3
+    "SubTypeId": 3,
+    "BFThreshold": 0,
+    "Rules": "Standard"
   },
   {
     "Id": 100266,
@@ -6494,7 +6716,11 @@
       "Image": null,
       "SortOrder": 1
     },
-    "SubTypeId": 16
+    "SubTypeId": 16,
+    "BFThreshold": 0,
+    "Rules": "Advanced",
+    "TRO": "TR:3060",
+    "ImageUrl": "https://i.ibb.co/gSd9Gg9/shamash-3060.png"
   },
   {
     "Id": 100267,
@@ -6705,7 +6931,11 @@
       "Image": null,
       "SortOrder": 0
     },
-    "SubTypeId": 19
+    "SubTypeId": 19,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "RG01",
+    "ImageUrl": "https://i.ibb.co/TP1Xph3/loki-hellbringer-rg.png"
   },
   {
     "Id": 100268,
@@ -6782,7 +7012,11 @@
       "Image": null,
       "SortOrder": 0
     },
-    "SubTypeId": 19
+    "SubTypeId": 19,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:GC",
+    "ImageUrl": "https://i.ibb.co/2ZrK9NQ/coyotl-pc.png"
   },
   {
     "Id": 100269,
@@ -6873,7 +7107,11 @@
       "Image": null,
       "SortOrder": 0
     },
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Experimental",
+    "TRO": "RGv1",
+    "ImageUrl": "https://i.ibb.co/RQVffPB/hellcat-hellhound-ii-rg.png"
   },
   {
     "Id": 100270,
@@ -7047,7 +7285,10 @@
       "Image": null,
       "SortOrder": 8
     },
-    "SubTypeId": 53
+    "SubTypeId": 53,
+    "BFThreshold": 0,
+    "TRO": "TR:VAr",
+    "ImageUrl": "https://i.ibb.co/Fbj785g/lexan-series-vi-trva.png"
   },
   {
     "Id": 100271,
@@ -7116,7 +7357,11 @@
       "Image": null,
       "SortOrder": 0
     },
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Introductory",
+    "TRO": "TR:SW",
+    "ImageUrl": "https://i.ibb.co/fr8FY6w/sentinel-rg.png"
   },
   {
     "Id": 100272,
@@ -7204,14 +7449,18 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "TH 3,BOMB 2,ENE,FUEL 20,SPC,VSTOL",
+    "BFAbilities": "BOMB 2,ENE,FUEL 20,SPC,VSTOL",
     "Type": {
       "Id": 17,
       "Name": "Fighter Craft",
       "Image": null,
       "SortOrder": 3
     },
-    "SubTypeId": 18
+    "SubTypeId": 18,
+    "BFThreshold": 3,
+    "Rules": "Standard",
+    "TRO": "TR:3067",
+    "ImageUrl": "https://i.ibb.co/M7tkmXT/tatsu-3067.png"
   },
   {
     "Id": 100273,
@@ -7416,7 +7665,11 @@
       "Image": null,
       "SortOrder": 0
     },
-    "SubTypeId": 19
+    "SubTypeId": 19,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:CI",
+    "ImageUrl": "https://i.ibb.co/48LhXBQ/hankyu-arctic-cheetah-rg.png"
   },
   {
     "Id": 100274,
@@ -7465,7 +7718,9 @@
       "Image": null,
       "SortOrder": 4
     },
-    "SubTypeId": 3
+    "SubTypeId": 3,
+    "BFThreshold": 0,
+    "Rules": "Advanced"
   },
   {
     "Id": 100275,
@@ -7592,7 +7847,11 @@
       "Image": null,
       "SortOrder": 5
     },
-    "SubTypeId": 7
+    "SubTypeId": 7,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TW",
+    "ImageUrl": "https://i.ibb.co/5TGJ8px/mul-blank.png"
   },
   {
     "Id": 100276,
@@ -7690,7 +7949,11 @@
       "Image": null,
       "SortOrder": 0
     },
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "RGv1",
+    "ImageUrl": "https://i.ibb.co/0KwFP6Y/stinger-rg.png"
   },
   {
     "Id": 100277,
@@ -7774,7 +8037,11 @@
       "Image": null,
       "SortOrder": 0
     },
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Introductory",
+    "TRO": "TR:SW",
+    "ImageUrl": "https://i.ibb.co/CsRjY19/whitworth-rg.png"
   },
   {
     "Id": 100278,
@@ -7836,7 +8103,11 @@
       "Image": null,
       "SortOrder": 0
     },
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "RGv1",
+    "ImageUrl": "https://i.ibb.co/DV7SW6C/griffin-iic-rg.png"
   },
   {
     "Id": 100279,
@@ -7903,7 +8174,11 @@
       "Image": null,
       "SortOrder": 0
     },
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:GC",
+    "ImageUrl": "https://i.ibb.co/WvKsqBs/mongoose-rg.png"
   },
   {
     "Id": 100280,
@@ -7970,14 +8245,18 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "TH 1",
+    "BFAbilities": "",
     "Type": {
       "Id": 17,
       "Name": "Aerospace Craft",
       "Image": null,
       "SortOrder": 7
     },
-    "SubTypeId": 26
+    "SubTypeId": 26,
+    "BFThreshold": 1,
+    "Rules": "Advanced",
+    "TRO": "TR:Proto",
+    "ImageUrl": "https://i.ibb.co/rFxknDY/foxhound-proto.png"
   },
   {
     "Id": 100281,
@@ -8053,7 +8332,9 @@
       "Image": null,
       "SortOrder": 4
     },
-    "SubTypeId": 3
+    "SubTypeId": 3,
+    "BFThreshold": 0,
+    "Rules": "Standard"
   },
   {
     "Id": 100282,
@@ -8102,7 +8383,9 @@
       "Image": null,
       "SortOrder": 4
     },
-    "SubTypeId": 3
+    "SubTypeId": 3,
+    "BFThreshold": 0,
+    "Rules": "Standard"
   },
   {
     "Id": 100283,
@@ -8151,7 +8434,9 @@
       "Image": null,
       "SortOrder": 4
     },
-    "SubTypeId": 3
+    "SubTypeId": 3,
+    "BFThreshold": 0,
+    "Rules": "Standard"
   },
   {
     "Id": 100284,
@@ -8240,7 +8525,11 @@
       "Image": null,
       "SortOrder": 0
     },
-    "SubTypeId": 19
+    "SubTypeId": 19,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "RG03",
+    "ImageUrl": "https://i.ibb.co/Dg4Q4Qq/puma-adder-rg.png"
   },
   {
     "Id": 100285,
@@ -8487,7 +8776,11 @@
       "Image": null,
       "SortOrder": 5
     },
-    "SubTypeId": 8
+    "SubTypeId": 8,
+    "BFThreshold": 0,
+    "Rules": "Advanced",
+    "TRO": "TO:AUE",
+    "ImageUrl": "https://i.ibb.co/5TGJ8px/mul-blank.png"
   },
   {
     "Id": 100286,
@@ -8689,7 +8982,11 @@
       "Image": null,
       "SortOrder": 1
     },
-    "SubTypeId": 23
+    "SubTypeId": 23,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:3058U",
+    "ImageUrl": "https://i.ibb.co/VSTTWqN/sprint-3058u.png"
   },
   {
     "Id": 100287,
@@ -8770,7 +9067,11 @@
       "Image": null,
       "SortOrder": 1
     },
-    "SubTypeId": 25
+    "SubTypeId": 25,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:3085",
+    "ImageUrl": "https://i.ibb.co/kyx3q8C/fensalir-3085.png"
   },
   {
     "Id": 100288,
@@ -8871,7 +9172,11 @@
       "Image": null,
       "SortOrder": 0
     },
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "RG10",
+    "ImageUrl": "https://i.ibb.co/f1ddYwr/hermit-crab-rg.png"
   },
   {
     "Id": 100289,
@@ -8954,7 +9259,11 @@
       "Image": null,
       "SortOrder": 0
     },
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:J",
+    "ImageUrl": "https://i.ibb.co/Lt2R2tZ/ocelot-3075.png"
   },
   {
     "Id": 100290,
@@ -9032,7 +9341,11 @@
       "Image": null,
       "SortOrder": 0
     },
-    "SubTypeId": 19
+    "SubTypeId": 19,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "Shrap11",
+    "ImageUrl": "https://i.ibb.co/7jxXnQV/battle-cobra-rg.png"
   },
   {
     "Id": 100291,
@@ -9263,7 +9576,10 @@
       "Image": null,
       "SortOrder": 10
     },
-    "SubTypeId": 49
+    "SubTypeId": 49,
+    "BFThreshold": 0,
+    "TRO": "TR:VAr",
+    "ImageUrl": "https://i.ibb.co/MRT3sFJ/seahorse-verne-sub-trva.png"
   },
   {
     "Id": 100292,
@@ -9379,7 +9695,11 @@
       "Image": null,
       "SortOrder": 0
     },
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "RGv1",
+    "ImageUrl": "https://i.ibb.co/VtHKQ7Q/atlas-rg.png"
   },
   {
     "Id": 100293,
@@ -9428,7 +9748,9 @@
       "Image": null,
       "SortOrder": 4
     },
-    "SubTypeId": 3
+    "SubTypeId": 3,
+    "BFThreshold": 0,
+    "Rules": "Standard"
   },
   {
     "Id": 100294,
@@ -9514,7 +9836,11 @@
       "Image": null,
       "SortOrder": 5
     },
-    "SubTypeId": 11
+    "SubTypeId": 11,
+    "BFThreshold": 0,
+    "Rules": "Advanced",
+    "TRO": "TR:3085",
+    "ImageUrl": "https://i.ibb.co/2vW226M/minelayer-infantry-ccaf.png"
   },
   {
     "Id": 100295,
@@ -9660,14 +9986,18 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "TH 2,BOMB 1,ENE,FUEL 20,PNT 1,SPC,VSTOL",
+    "BFAbilities": "BOMB 1,ENE,FUEL 20,PNT 1,SPC,VSTOL",
     "Type": {
       "Id": 17,
       "Name": "Fighter Craft",
       "Image": null,
       "SortOrder": 3
     },
-    "SubTypeId": 1
+    "SubTypeId": 1,
+    "BFThreshold": 2,
+    "Rules": "Standard",
+    "TRO": "TR:3050U",
+    "ImageUrl": "https://i.ibb.co/dL4MmVh/tomahawk-3050u.png"
   },
   {
     "Id": 100296,
@@ -9753,7 +10083,11 @@
       "Image": null,
       "SortOrder": 5
     },
-    "SubTypeId": 7
+    "SubTypeId": 7,
+    "BFThreshold": 0,
+    "Rules": "Advanced",
+    "TRO": "TO:AUE",
+    "ImageUrl": "https://i.ibb.co/5TGJ8px/mul-blank.png"
   },
   {
     "Id": 100297,
@@ -9830,14 +10164,18 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "TH 3,BOMB 3,ECM,FUEL 20,REAR 1/1/-,SPC,VSTOL",
+    "BFAbilities": "BOMB 3,ECM,FUEL 20,REAR 1/1/-,SPC,VSTOL",
     "Type": {
       "Id": 17,
       "Name": "Fighter Craft",
       "Image": null,
       "SortOrder": 3
     },
-    "SubTypeId": 18
+    "SubTypeId": 18,
+    "BFThreshold": 3,
+    "Rules": "Standard",
+    "TRO": "TR:3085",
+    "ImageUrl": "https://i.ibb.co/VMbKc7L/ostrogoth-3085.png"
   },
   {
     "Id": 100298,
@@ -9918,7 +10256,11 @@
       "Image": null,
       "SortOrder": 0
     },
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:3085",
+    "ImageUrl": "https://i.ibb.co/LkmqNxV/parash-3085.png"
   },
   {
     "Id": 100299,
@@ -9967,7 +10309,9 @@
       "Image": null,
       "SortOrder": 4
     },
-    "SubTypeId": 3
+    "SubTypeId": 3,
+    "BFThreshold": 0,
+    "Rules": "Standard"
   },
   {
     "Id": 100300,
@@ -10049,7 +10393,11 @@
       "Image": null,
       "SortOrder": 0
     },
-    "SubTypeId": 34
+    "SubTypeId": 34,
+    "BFThreshold": 0,
+    "Rules": "Experimental",
+    "TRO": "TR:3085",
+    "ImageUrl": "https://i.ibb.co/5hM7QYv/stinger-lam-3025.png"
   },
   {
     "Id": 100301,
@@ -10265,14 +10613,15 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "TH 2",
+    "BFAbilities": "",
     "Type": {
       "Id": 17,
       "Name": "Aerospace Craft",
       "Image": null,
       "SortOrder": 7
     },
-    "SubTypeId": 14
+    "SubTypeId": 14,
+    "BFThreshold": 2
   },
   {
     "Id": 100302,
@@ -10342,7 +10691,9 @@
       "Image": null,
       "SortOrder": 4
     },
-    "SubTypeId": 3
+    "SubTypeId": 3,
+    "BFThreshold": 0,
+    "Rules": "Standard"
   },
   {
     "Id": 100303,
@@ -10391,7 +10742,9 @@
       "Image": null,
       "SortOrder": 4
     },
-    "SubTypeId": 3
+    "SubTypeId": 3,
+    "BFThreshold": 0,
+    "Rules": "Standard"
   },
   {
     "Id": 100304,
@@ -10472,7 +10825,11 @@
       "Image": null,
       "SortOrder": 0
     },
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Advanced",
+    "TRO": "TR:CI",
+    "ImageUrl": "https://i.ibb.co/0mkW74B/highlander-iic.png"
   },
   {
     "Id": 100305,
@@ -10521,7 +10878,9 @@
       "Image": null,
       "SortOrder": 4
     },
-    "SubTypeId": 3
+    "SubTypeId": 3,
+    "BFThreshold": 0,
+    "Rules": "Advanced"
   },
   {
     "Id": 100306,
@@ -10650,7 +11009,11 @@
       "Image": null,
       "SortOrder": 0
     },
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "RGv1",
+    "ImageUrl": "https://i.ibb.co/0XxvcQF/wasp-rg.png"
   },
   {
     "Id": 100307,
@@ -10751,7 +11114,11 @@
       "Image": null,
       "SortOrder": 0
     },
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:J",
+    "ImageUrl": "https://i.ibb.co/N9vKXxS/snake-3055u.png"
   },
   {
     "Id": 100308,
@@ -10867,7 +11234,10 @@
       "Image": null,
       "SortOrder": 5
     },
-    "SubTypeId": 13
+    "SubTypeId": 13,
+    "BFThreshold": 0,
+    "TRO": "HB:HL",
+    "ImageUrl": "https://i.ibb.co/5TGJ8px/mul-blank.png"
   },
   {
     "Id": 100309,
@@ -10917,14 +11287,15 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "TH 1",
+    "BFAbilities": "",
     "Type": {
       "Id": 17,
       "Name": "Aerospace Craft",
       "Image": null,
       "SortOrder": 7
     },
-    "SubTypeId": 46
+    "SubTypeId": 46,
+    "BFThreshold": 1
   },
   {
     "Id": 100310,
@@ -10973,7 +11344,9 @@
       "Image": null,
       "SortOrder": 4
     },
-    "SubTypeId": 3
+    "SubTypeId": 3,
+    "BFThreshold": 0,
+    "Rules": "Standard"
   },
   {
     "Id": 100311,
@@ -11062,7 +11435,11 @@
       "Image": null,
       "SortOrder": 1
     },
-    "SubTypeId": 22
+    "SubTypeId": 22,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:3060",
+    "ImageUrl": "https://i.ibb.co/st8GNNT/oro-3060.png"
   },
   {
     "Id": 100312,
@@ -11111,14 +11488,15 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "TH 2",
+    "BFAbilities": "",
     "Type": {
       "Id": 17,
       "Name": "Aerospace Craft",
       "Image": null,
       "SortOrder": 7
     },
-    "SubTypeId": 33
+    "SubTypeId": 33,
+    "BFThreshold": 2
   },
   {
     "Id": 100313,
@@ -11225,14 +11603,18 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "TH 2",
+    "BFAbilities": "",
     "Type": {
       "Id": 17,
       "Name": "Aerospace Craft",
       "Image": null,
       "SortOrder": 7
     },
-    "SubTypeId": 14
+    "SubTypeId": 14,
+    "BFThreshold": 2,
+    "Rules": "Standard",
+    "TRO": "TR:3075",
+    "ImageUrl": "https://i.ibb.co/DMXYc5T/aurora-3075.png"
   },
   {
     "Id": 100314,
@@ -11321,7 +11703,11 @@
       "Image": null,
       "SortOrder": 0
     },
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "RG04",
+    "ImageUrl": "https://i.ibb.co/pyTwkmx/blackjack-rg.png"
   },
   {
     "Id": 100315,
@@ -11370,7 +11756,11 @@
       "Image": null,
       "SortOrder": 3
     },
-    "SubTypeId": 5
+    "SubTypeId": 5,
+    "BFThreshold": 0,
+    "Rules": "Introductory",
+    "TRO": "ED:AoW",
+    "ImageUrl": "https://i.ibb.co/5TGJ8px/mul-blank.png"
   },
   {
     "Id": 100316,
@@ -11704,14 +12094,18 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "TH 3,BOMB 3,ENE,FUEL 20,REAR 1/1/-,SPC,VSTOL",
+    "BFAbilities": "BOMB 3,ENE,FUEL 20,REAR 1/1/-,SPC,VSTOL",
     "Type": {
       "Id": 17,
       "Name": "Fighter Craft",
       "Image": null,
       "SortOrder": 3
     },
-    "SubTypeId": 1
+    "SubTypeId": 1,
+    "BFThreshold": 3,
+    "Rules": "Introductory",
+    "TRO": "TR:3075",
+    "ImageUrl": "https://i.ibb.co/SvfcDTT/eagle-3075.png"
   },
   {
     "Id": 100317,
@@ -11791,14 +12185,18 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "TH 3,BOMB 2,ENE,FUEL 20,REAR 1/1/-,SPC,VSTOL",
+    "BFAbilities": "BOMB 2,ENE,FUEL 20,REAR 1/1/-,SPC,VSTOL",
     "Type": {
       "Id": 17,
       "Name": "Fighter Craft",
       "Image": null,
       "SortOrder": 3
     },
-    "SubTypeId": 1
+    "SubTypeId": 1,
+    "BFThreshold": 3,
+    "Rules": "Standard",
+    "TRO": "TR:3039",
+    "ImageUrl": "https://i.ibb.co/tHtHqTJ/corsair-3039.png"
   },
   {
     "Id": 100318,
@@ -12026,7 +12424,11 @@
       "Image": null,
       "SortOrder": 0
     },
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:3075",
+    "ImageUrl": "https://i.ibb.co/WvKsqBs/mongoose-rg.png"
   },
   {
     "Id": 100319,
@@ -12106,7 +12508,11 @@
       "Image": null,
       "SortOrder": 9
     },
-    "SubTypeId": 17
+    "SubTypeId": 17,
+    "BFThreshold": 0,
+    "Rules": "Advanced",
+    "TRO": "TR:3075",
+    "ImageUrl": "https://i.ibb.co/HVQ0Jfc/patron-3075.png"
   },
   {
     "Id": 100320,
@@ -12183,7 +12589,11 @@
       "Image": null,
       "SortOrder": 0
     },
-    "SubTypeId": 19
+    "SubTypeId": 19,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "RG04",
+    "ImageUrl": "https://i.ibb.co/gd4g4Dv/fenris-ice-ferret-rg.png"
   },
   {
     "Id": 100321,
@@ -12318,7 +12728,11 @@
       "Image": null,
       "SortOrder": 0
     },
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "RGv1",
+    "ImageUrl": "https://i.ibb.co/zPghpK6/viper-black-python-rg.png"
   },
   {
     "Id": 100322,
@@ -12367,7 +12781,9 @@
       "Image": null,
       "SortOrder": 4
     },
-    "SubTypeId": 3
+    "SubTypeId": 3,
+    "BFThreshold": 0,
+    "Rules": "Standard"
   },
   {
     "Id": 100323,
@@ -12438,7 +12854,11 @@
       "Image": null,
       "SortOrder": 0
     },
-    "SubTypeId": 19
+    "SubTypeId": 19,
+    "BFThreshold": 0,
+    "Rules": "Advanced",
+    "TRO": "RG33",
+    "ImageUrl": "https://i.ibb.co/S08DwtJ/naga-rg.png"
   },
   {
     "Id": 100324,
@@ -12501,7 +12921,11 @@
       "Image": null,
       "SortOrder": 0
     },
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Advanced",
+    "TRO": "TR:3145",
+    "ImageUrl": "https://i.ibb.co/44LrsTb/uraeus-3145.png"
   },
   {
     "Id": 100325,
@@ -12585,7 +13009,11 @@
       "Image": null,
       "SortOrder": 0
     },
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:3085",
+    "ImageUrl": "https://i.ibb.co/KbVFqcX/tessen-3067.png"
   },
   {
     "Id": 100326,
@@ -12647,7 +13075,11 @@
       "Image": null,
       "SortOrder": 0
     },
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:J",
+    "ImageUrl": "https://i.ibb.co/pQqCXGX/red-shift-3067.png"
   },
   {
     "Id": 100327,
@@ -12834,7 +13266,11 @@
       "Image": null,
       "SortOrder": 9
     },
-    "SubTypeId": 17
+    "SubTypeId": 17,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:I",
+    "ImageUrl": "https://i.ibb.co/r7f04sz/exo-haulermech-irreg.png"
   },
   {
     "Id": 100328,
@@ -12914,7 +13350,11 @@
       "Image": null,
       "SortOrder": 0
     },
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "RGv1",
+    "ImageUrl": "https://i.ibb.co/j5VhJJF/archer-rg.png"
   },
   {
     "Id": 100329,
@@ -13234,7 +13674,10 @@
       "Image": null,
       "SortOrder": 8
     },
-    "SubTypeId": 52
+    "SubTypeId": 52,
+    "BFThreshold": 0,
+    "TRO": "TR:VAr",
+    "ImageUrl": "https://i.ibb.co/BBzR4nC/rrv-rock-rover-trva.png"
   },
   {
     "Id": 100330,
@@ -13310,7 +13753,11 @@
       "Image": null,
       "SortOrder": 0
     },
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Introductory",
+    "TRO": "TR:3039",
+    "ImageUrl": "https://i.ibb.co/gvYpr3f/rifleman-rg.png"
   },
   {
     "Id": 100331,
@@ -13372,7 +13819,11 @@
       "Image": null,
       "SortOrder": 0
     },
-    "SubTypeId": 19
+    "SubTypeId": 19,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "RG19",
+    "ImageUrl": "https://i.ibb.co/3pCxbh7/rime-otter-rg.png"
   },
   {
     "Id": 100332,
@@ -13460,7 +13911,11 @@
       "Image": null,
       "SortOrder": 0
     },
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Introductory",
+    "TRO": "TR3039",
+    "ImageUrl": "https://i.ibb.co/J3gKZPh/marauder-ii-rg.png"
   },
   {
     "Id": 100333,
@@ -13799,7 +14254,10 @@
       "Image": null,
       "SortOrder": 1
     },
-    "SubTypeId": 24
+    "SubTypeId": 24,
+    "BFThreshold": 0,
+    "TRO": "MW1e",
+    "ImageUrl": "https://i.ibb.co/5TGJ8px/mul-blank.png"
   },
   {
     "Id": 100334,
@@ -13855,7 +14313,11 @@
       "Image": null,
       "SortOrder": 0
     },
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "BattleCorps",
+    "ImageUrl": "https://i.ibb.co/WpYWTmP/goliath-3085.png"
   },
   {
     "Id": 100335,
@@ -13918,14 +14380,15 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "TH 2",
+    "BFAbilities": "",
     "Type": {
       "Id": 17,
       "Name": "Aerospace Craft",
       "Image": null,
       "SortOrder": 7
     },
-    "SubTypeId": 46
+    "SubTypeId": 46,
+    "BFThreshold": 2
   },
   {
     "Id": 100336,
@@ -13974,7 +14437,9 @@
       "Image": null,
       "SortOrder": 4
     },
-    "SubTypeId": 3
+    "SubTypeId": 3,
+    "BFThreshold": 0,
+    "Rules": "Standard"
   },
   {
     "Id": 100337,
@@ -14041,7 +14506,10 @@
       "Image": null,
       "SortOrder": 1
     },
-    "SubTypeId": 22
+    "SubTypeId": 22,
+    "BFThreshold": 0,
+    "TRO": "MW1e",
+    "ImageUrl": "https://i.ibb.co/5TGJ8px/mul-blank.png"
   },
   {
     "Id": 100338,
@@ -14113,7 +14581,11 @@
       "Image": null,
       "SortOrder": 2
     },
-    "SubTypeId": 45
+    "SubTypeId": 45,
+    "BFThreshold": 0,
+    "Rules": "Advanced",
+    "TRO": "RG30",
+    "ImageUrl": "https://i.ibb.co/nbQRkYW/onuris-attack-vtol-rg.png"
   },
   {
     "Id": 100339,
@@ -14176,7 +14648,9 @@
       "Image": null,
       "SortOrder": 4
     },
-    "SubTypeId": 3
+    "SubTypeId": 3,
+    "BFThreshold": 0,
+    "Rules": "Standard"
   },
   {
     "Id": 100340,
@@ -14336,7 +14810,11 @@
       "Image": null,
       "SortOrder": 8
     },
-    "SubTypeId": 51
+    "SubTypeId": 51,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "HB:HD",
+    "ImageUrl": "https://i.ibb.co/1sDqRL4/Generic-Expandable-Services-Vehicle-Trailer.png"
   },
   {
     "Id": 100341,
@@ -14425,7 +14903,11 @@
       "Image": null,
       "SortOrder": 9
     },
-    "SubTypeId": 17
+    "SubTypeId": 17,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:I",
+    "ImageUrl": "https://i.ibb.co/Pz4FbnP/deep-lord-irreg.png"
   },
   {
     "Id": 100342,
@@ -14512,7 +14994,9 @@
       "Image": null,
       "SortOrder": 4
     },
-    "SubTypeId": 3
+    "SubTypeId": 3,
+    "BFThreshold": 0,
+    "Rules": "Standard"
   },
   {
     "Id": 100343,
@@ -14615,7 +15099,10 @@
       "Image": null,
       "SortOrder": 0
     },
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "TRO": "TR:CI",
+    "ImageUrl": "https://i.ibb.co/F5JkgRk/no-dachi-3067.png"
   },
   {
     "Id": 100344,
@@ -14671,7 +15158,11 @@
       "Image": null,
       "SortOrder": 5
     },
-    "SubTypeId": 7
+    "SubTypeId": 7,
+    "BFThreshold": 0,
+    "Rules": "Advanced",
+    "TRO": "TR:3085",
+    "ImageUrl": "https://i.ibb.co/xjfyKLq/assassin-gp.png"
   },
   {
     "Id": 100345,
@@ -14751,7 +15242,11 @@
       "Image": null,
       "SortOrder": 1
     },
-    "SubTypeId": 24
+    "SubTypeId": 24,
+    "BFThreshold": 0,
+    "Rules": "Advanced",
+    "TRO": "TR:3060",
+    "ImageUrl": "https://i.ibb.co/pJGQWdQ/odin-3060.png"
   },
   {
     "Id": 100346,
@@ -14813,7 +15308,8 @@
       "Image": null,
       "SortOrder": 7
     },
-    "SubTypeId": 31
+    "SubTypeId": 31,
+    "BFThreshold": 0
   },
   {
     "Id": 100347,
@@ -14862,7 +15358,9 @@
       "Image": null,
       "SortOrder": 4
     },
-    "SubTypeId": 3
+    "SubTypeId": 3,
+    "BFThreshold": 0,
+    "Rules": "Standard"
   },
   {
     "Id": 100348,
@@ -14945,14 +15443,18 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "TH 2,BOMB 2,ENE,FUEL 32,PNT 1,REAR 1/1/-,SPC,VSTOL",
+    "BFAbilities": "BOMB 2,ENE,FUEL 32,PNT 1,REAR 1/1/-,SPC,VSTOL",
     "Type": {
       "Id": 17,
       "Name": "Fighter Craft",
       "Image": null,
       "SortOrder": 3
     },
-    "SubTypeId": 1
+    "SubTypeId": 1,
+    "BFThreshold": 2,
+    "Rules": "Standard",
+    "TRO": "TR:3039",
+    "ImageUrl": "https://i.ibb.co/tMFgZmz/samurai-3039.png"
   },
   {
     "Id": 100349,
@@ -15070,7 +15572,11 @@
       "Image": null,
       "SortOrder": 0
     },
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Advanced",
+    "TRO": "RGv1",
+    "ImageUrl": "https://i.ibb.co/Mgn3hRd/warhammer-rg.png"
   },
   {
     "Id": 100350,
@@ -15383,7 +15889,11 @@
       "Image": null,
       "SortOrder": 5
     },
-    "SubTypeId": 8
+    "SubTypeId": 8,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TW",
+    "ImageUrl": "https://i.ibb.co/5TGJ8px/mul-blank.png"
   },
   {
     "Id": 100351,
@@ -15439,7 +15949,9 @@
       "Image": null,
       "SortOrder": 4
     },
-    "SubTypeId": 3
+    "SubTypeId": 3,
+    "BFThreshold": 0,
+    "Rules": "Experimental"
   },
   {
     "Id": 100352,
@@ -15495,7 +16007,11 @@
       "Image": null,
       "SortOrder": 1
     },
-    "SubTypeId": 24
+    "SubTypeId": 24,
+    "BFThreshold": 0,
+    "Rules": "Advanced",
+    "TRO": "His:OK",
+    "ImageUrl": "https://i.ibb.co/GMF5bWs/rotunda-3050u.png"
   },
   {
     "Id": 100353,
@@ -15628,7 +16144,11 @@
       "Image": null,
       "SortOrder": 0
     },
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Introductory",
+    "TRO": "TR:SW",
+    "ImageUrl": "https://i.ibb.co/V9qnp94/wolfhound-rg.png"
   },
   {
     "Id": 100354,
@@ -15691,7 +16211,9 @@
       "Image": null,
       "SortOrder": 4
     },
-    "SubTypeId": 3
+    "SubTypeId": 3,
+    "BFThreshold": 0,
+    "Rules": "Advanced"
   },
   {
     "Id": 100355,
@@ -15755,7 +16277,11 @@
       "Image": null,
       "SortOrder": 0
     },
-    "SubTypeId": 19
+    "SubTypeId": 19,
+    "BFThreshold": 0,
+    "Rules": "Advanced",
+    "TRO": "RG22",
+    "ImageUrl": "https://i.ibb.co/3hmJFhd/jade-phoenix-rg.png"
   },
   {
     "Id": 100356,
@@ -15811,14 +16337,15 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "TH 28",
+    "BFAbilities": "",
     "Type": {
       "Id": 17,
       "Name": "Aerospace Craft",
       "Image": null,
       "SortOrder": 7
     },
-    "SubTypeId": 29
+    "SubTypeId": 29,
+    "BFThreshold": 28
   },
   {
     "Id": 100357,
@@ -15947,7 +16474,11 @@
       "Image": null,
       "SortOrder": 0
     },
-    "SubTypeId": 19
+    "SubTypeId": 19,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:CI",
+    "ImageUrl": "https://i.ibb.co/P6QWXGt/turkina-rg.png"
   },
   {
     "Id": 100358,
@@ -16086,7 +16617,11 @@
       "Image": null,
       "SortOrder": 8
     },
-    "SubTypeId": 50
+    "SubTypeId": 50,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:VAr",
+    "ImageUrl": "https://i.ibb.co/fnCdMd5/champion-hoversports-crimson-streak-trva.png"
   },
   {
     "Id": 100359,
@@ -16149,7 +16684,11 @@
       "Image": null,
       "SortOrder": 1
     },
-    "SubTypeId": 22
+    "SubTypeId": 22,
+    "BFThreshold": 0,
+    "Rules": "Advanced",
+    "TRO": "TR:3150",
+    "ImageUrl": "https://i.ibb.co/f8qh4XD/huitzilopochtli-3060.png"
   },
   {
     "Id": 100360,
@@ -16250,7 +16789,11 @@
       "Image": null,
       "SortOrder": 0
     },
-    "SubTypeId": 19
+    "SubTypeId": 19,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:DA",
+    "ImageUrl": "https://i.ibb.co/s2RF40x/thor-ii-grand-summoner-3150.png"
   },
   {
     "Id": 100361,
@@ -16314,7 +16857,11 @@
       "Image": null,
       "SortOrder": 0
     },
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Advanced",
+    "TRO": "TR:DA",
+    "ImageUrl": "https://i.ibb.co/7bqbkBs/vulpes-3145.png"
   },
   {
     "Id": 100362,
@@ -16536,7 +17083,11 @@
       "Image": null,
       "SortOrder": 5
     },
-    "SubTypeId": 9
+    "SubTypeId": 9,
+    "BFThreshold": 0,
+    "Rules": "Advanced",
+    "TRO": "TR:3085",
+    "ImageUrl": "https://i.ibb.co/NrMx7SL/clan-assault-infantry-gbd.png"
   },
   {
     "Id": 100363,
@@ -16585,14 +17136,18 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "TH 2,BOMB 2,FUEL 16,SPC,VSTOL",
+    "BFAbilities": "BOMB 2,FUEL 16,SPC,VSTOL",
     "Type": {
       "Id": 17,
       "Name": "Fighter Craft",
       "Image": null,
       "SortOrder": 3
     },
-    "SubTypeId": 1
+    "SubTypeId": 1,
+    "BFThreshold": 2,
+    "Rules": "Experimental",
+    "TRO": "XTR:Kurita",
+    "ImageUrl": "https://i.ibb.co/TMQWsHW/shilone-rg.png"
   },
   {
     "Id": 100364,
@@ -16699,7 +17254,11 @@
       "Image": null,
       "SortOrder": 0
     },
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Introductory",
+    "TRO": "TR:SW",
+    "ImageUrl": "https://i.ibb.co/GT7VY78/banshee-rg.png"
   },
   {
     "Id": 100365,
@@ -16835,14 +17394,18 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "TH 1,BOMB 1,ENE,FUEL 12,SPC,VSTOL",
+    "BFAbilities": "BOMB 1,ENE,FUEL 12,SPC,VSTOL",
     "Type": {
       "Id": 17,
       "Name": "Fighter Craft",
       "Image": null,
       "SortOrder": 3
     },
-    "SubTypeId": 1
+    "SubTypeId": 1,
+    "BFThreshold": 1,
+    "Rules": "Standard",
+    "TRO": "TR:3050U",
+    "ImageUrl": "https://i.ibb.co/S0Mznmg/swift-3050u.png"
   },
   {
     "Id": 100366,
@@ -16891,7 +17454,9 @@
       "Image": null,
       "SortOrder": 4
     },
-    "SubTypeId": 3
+    "SubTypeId": 3,
+    "BFThreshold": 0,
+    "Rules": "Standard"
   },
   {
     "Id": 100367,
@@ -16978,7 +17543,10 @@
       "Image": null,
       "SortOrder": 10
     },
-    "SubTypeId": 28
+    "SubTypeId": 28,
+    "BFThreshold": 0,
+    "TRO": "TR:VAr",
+    "ImageUrl": "https://i.ibb.co/0Mh6spK/adelante-tgv-omnicar-trva.png"
   },
   {
     "Id": 100368,
@@ -17050,7 +17618,11 @@
       "Image": null,
       "SortOrder": 0
     },
-    "SubTypeId": 19
+    "SubTypeId": 19,
+    "BFThreshold": 0,
+    "Rules": "Advanced",
+    "TRO": "TR:DA",
+    "ImageUrl": "https://i.ibb.co/9gMZ8Cq/doloire-3145.png"
   },
   {
     "Id": 100369,
@@ -17099,7 +17671,9 @@
       "Image": null,
       "SortOrder": 4
     },
-    "SubTypeId": 3
+    "SubTypeId": 3,
+    "BFThreshold": 0,
+    "Rules": "Standard"
   },
   {
     "Id": 100370,
@@ -17240,7 +17814,11 @@
       "Image": null,
       "SortOrder": 1
     },
-    "SubTypeId": 16
+    "SubTypeId": 16,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "RG26",
+    "ImageUrl": "https://i.ibb.co/pQ5zVFv/condor-rg.png"
   },
   {
     "Id": 100371,
@@ -17306,7 +17884,11 @@
       "Image": null,
       "SortOrder": 1
     },
-    "SubTypeId": 25
+    "SubTypeId": 25,
+    "BFThreshold": 0,
+    "Rules": "Experimental",
+    "TRO": "TR:3150",
+    "ImageUrl": "https://i.ibb.co/9W8gLMm/pandion-3085.png"
   },
   {
     "Id": 100372,
@@ -17401,7 +17983,9 @@
       "Image": null,
       "SortOrder": 4
     },
-    "SubTypeId": 3
+    "SubTypeId": 3,
+    "BFThreshold": 0,
+    "Rules": "Standard"
   },
   {
     "Id": 100373,
@@ -17472,7 +18056,9 @@
       "Image": null,
       "SortOrder": 4
     },
-    "SubTypeId": 3
+    "SubTypeId": 3,
+    "BFThreshold": 0,
+    "Rules": "Standard"
   },
   {
     "Id": 100374,
@@ -17521,14 +18107,18 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "TH 4,BOMB 3,FUEL 20,REAR 1/1/-,SPC,VSTOL",
+    "BFAbilities": "BOMB 3,FUEL 20,REAR 1/1/-,SPC,VSTOL",
     "Type": {
       "Id": 17,
       "Name": "Fighter Craft",
       "Image": null,
       "SortOrder": 3
     },
-    "SubTypeId": 18
+    "SubTypeId": 18,
+    "BFThreshold": 4,
+    "Rules": "Advanced",
+    "TRO": "TR:3075",
+    "ImageUrl": "https://i.ibb.co/VJbf1KM/striga-3075.png"
   },
   {
     "Id": 100375,
@@ -17577,7 +18167,9 @@
       "Image": null,
       "SortOrder": 4
     },
-    "SubTypeId": 3
+    "SubTypeId": 3,
+    "BFThreshold": 0,
+    "Rules": "Standard"
   },
   {
     "Id": 100376,
@@ -17670,7 +18262,11 @@
       "Image": null,
       "SortOrder": 0
     },
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:CI",
+    "ImageUrl": "https://i.ibb.co/Pgc3Nvz/battle-hawk-3055u.png"
   },
   {
     "Id": 100377,
@@ -17728,7 +18324,10 @@
       "Image": null,
       "SortOrder": 1
     },
-    "SubTypeId": 22
+    "SubTypeId": 22,
+    "BFThreshold": 0,
+    "TRO": "TR:2750",
+    "ImageUrl": "https://i.ibb.co/PZy9x6p/puma-3050u.png"
   },
   {
     "Id": 100378,
@@ -17784,7 +18383,11 @@
       "Image": null,
       "SortOrder": 0
     },
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Experimental",
+    "TRO": "LethalLessons",
+    "ImageUrl": "https://i.ibb.co/M83fwSQ/warhammer-10ct-3085.png"
   },
   {
     "Id": 100379,
@@ -17870,7 +18473,10 @@
       "Image": null,
       "SortOrder": 7
     },
-    "SubTypeId": 26
+    "SubTypeId": 26,
+    "BFThreshold": 0,
+    "TRO": "XTR:Primitives II",
+    "ImageUrl": "https://i.ibb.co/yNRpdH2/close-assault-landing-craft-dj.png"
   },
   {
     "Id": 100380,
@@ -17996,7 +18602,11 @@
       "Image": null,
       "SortOrder": 0
     },
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:3050U",
+    "ImageUrl": "https://i.ibb.co/WWrgL7c/cicada-rg.png"
   },
   {
     "Id": 100381,
@@ -18086,7 +18696,11 @@
       "Image": null,
       "SortOrder": 0
     },
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:3050U",
+    "ImageUrl": "https://i.ibb.co/rxbVqhK/thug-rg.png"
   },
   {
     "Id": 100382,
@@ -18222,14 +18836,18 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "TH 2,BOMB 2,FUEL 20,SPC,VSTOL",
+    "BFAbilities": "BOMB 2,FUEL 20,SPC,VSTOL",
     "Type": {
       "Id": 17,
       "Name": "Fighter Craft",
       "Image": null,
       "SortOrder": 3
     },
-    "SubTypeId": 1
+    "SubTypeId": 1,
+    "BFThreshold": 2,
+    "Rules": "Standard",
+    "TRO": "TR:3067",
+    "ImageUrl": "https://i.ibb.co/cCxW8KX/lancer-3067.png"
   },
   {
     "Id": 100383,
@@ -18439,14 +19057,18 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "TH 1,BOMB 1,ENE,FUEL 12,SPC,VSTOL",
+    "BFAbilities": "BOMB 1,ENE,FUEL 12,SPC,VSTOL",
     "Type": {
       "Id": 17,
       "Name": "Fighter Craft",
       "Image": null,
       "SortOrder": 3
     },
-    "SubTypeId": 18
+    "SubTypeId": 18,
+    "BFThreshold": 1,
+    "Rules": "Standard",
+    "TRO": "TR:3055U",
+    "ImageUrl": "https://i.ibb.co/VqHnyGG/vandal-3055u.png"
   },
   {
     "Id": 100384,
@@ -18495,7 +19117,9 @@
       "Image": null,
       "SortOrder": 4
     },
-    "SubTypeId": 3
+    "SubTypeId": 3,
+    "BFThreshold": 0,
+    "Rules": "Advanced"
   },
   {
     "Id": 100385,
@@ -18705,7 +19329,11 @@
       "Image": null,
       "SortOrder": 1
     },
-    "SubTypeId": 22
+    "SubTypeId": 22,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "RG25",
+    "ImageUrl": "https://i.ibb.co/gPsf6Gt/demolisher-rg.png"
   },
   {
     "Id": 100386,
@@ -18754,7 +19382,9 @@
       "Image": null,
       "SortOrder": 4
     },
-    "SubTypeId": 3
+    "SubTypeId": 3,
+    "BFThreshold": 0,
+    "Rules": "Advanced"
   },
   {
     "Id": 100387,
@@ -18910,7 +19540,11 @@
       "Image": null,
       "SortOrder": 0
     },
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:3050U",
+    "ImageUrl": "https://i.ibb.co/GRNM37R/zeus-rg.png"
   },
   {
     "Id": 100388,
@@ -18974,7 +19608,11 @@
       "Image": null,
       "SortOrder": 0
     },
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Advanced",
+    "TRO": "TR:DA",
+    "ImageUrl": "https://i.ibb.co/s6HdhJ9/shiro-3145.png"
   },
   {
     "Id": 100389,
@@ -19101,7 +19739,10 @@
       "Image": null,
       "SortOrder": 8
     },
-    "SubTypeId": 52
+    "SubTypeId": 52,
+    "BFThreshold": 0,
+    "TRO": "TR:VAr",
+    "ImageUrl": "https://i.ibb.co/5TGJ8px/mul-blank.png"
   },
   {
     "Id": 100390,
@@ -19163,7 +19804,11 @@
       "Image": null,
       "SortOrder": 0
     },
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "ER:2750",
+    "ImageUrl": "https://i.ibb.co/zbwpRDV/phoenix-hawk-rg2.png"
   },
   {
     "Id": 100391,
@@ -19232,7 +19877,11 @@
       "Image": null,
       "SortOrder": 0
     },
-    "SubTypeId": 19
+    "SubTypeId": 19,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "RG22",
+    "ImageUrl": "https://i.ibb.co/nRGYQgq/night-gyr-rg.png"
   },
   {
     "Id": 100392,
@@ -19310,7 +19959,11 @@
       "Image": null,
       "SortOrder": 0
     },
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "BattleCorps",
+    "ImageUrl": "https://i.ibb.co/MRqHk4J/rifleman-6x-pp.png"
   },
   {
     "Id": 100393,
@@ -19402,7 +20055,11 @@
       "Image": null,
       "SortOrder": 5
     },
-    "SubTypeId": 7
+    "SubTypeId": 7,
+    "BFThreshold": 0,
+    "Rules": "Advanced",
+    "TRO": "TO:AUE",
+    "ImageUrl": "https://i.ibb.co/5TGJ8px/mul-blank.png"
   },
   {
     "Id": 100394,
@@ -19476,7 +20133,11 @@
       "Image": null,
       "SortOrder": 0
     },
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Advanced",
+    "TRO": "HTP:Tortuga",
+    "ImageUrl": "https://i.ibb.co/TR6710f/brigand-3067.png"
   },
   {
     "Id": 100395,
@@ -19543,7 +20204,11 @@
       "Image": null,
       "SortOrder": 1
     },
-    "SubTypeId": 22
+    "SubTypeId": 22,
+    "BFThreshold": 0,
+    "Rules": "Introductory",
+    "TRO": "TR:3075",
+    "ImageUrl": "https://i.ibb.co/YjJ3tCm/ignis-3075.png"
   },
   {
     "Id": 100396,
@@ -19607,14 +20272,18 @@
     "BFDamageMediumMin": false,
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
-    "BFAbilities": "TH 3,BOMB 2,ECM,FUEL 20,PRB,RCN,RFA,SPC,VSTOL",
+    "BFAbilities": "BOMB 2,ECM,FUEL 20,PRB,RCN,RFA,SPC,VSTOL",
     "Type": {
       "Id": 17,
       "Name": "Fighter Craft",
       "Image": null,
       "SortOrder": 3
     },
-    "SubTypeId": 1
+    "SubTypeId": 1,
+    "BFThreshold": 3,
+    "Rules": "Advanced",
+    "TRO": "TR:3145",
+    "ImageUrl": "https://i.ibb.co/TgLzf2Q/cutlass-3145.png"
   },
   {
     "Id": 100397,
@@ -19688,7 +20357,9 @@
       "Image": null,
       "SortOrder": 4
     },
-    "SubTypeId": 3
+    "SubTypeId": 3,
+    "BFThreshold": 0,
+    "Rules": "Standard"
   },
   {
     "Id": 100398,
@@ -19750,7 +20421,11 @@
       "Image": null,
       "SortOrder": 0
     },
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "TR:J",
+    "ImageUrl": "https://i.ibb.co/ygDkyVG/legacy-3067.png"
   },
   {
     "Id": 100399,
@@ -19830,7 +20505,11 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "AC 2/2/-,CASE",
-    "SubTypeId": 4
+    "SubTypeId": 4,
+    "BFThreshold": 0,
+    "Rules": "Standard",
+    "TRO": "RGv1",
+    "ImageUrl": "https://i.ibb.co/gvYpr3f/rifleman-rg.png"
   },
   {
     "Id": 100400,
@@ -19925,6 +20604,7 @@
     "BFDamageLongMin": false,
     "BFDamageExtremeMin": false,
     "BFAbilities": "",
-    "SubTypeId": 32
+    "SubTypeId": 32,
+    "BFThreshold": 0
   }
 ]

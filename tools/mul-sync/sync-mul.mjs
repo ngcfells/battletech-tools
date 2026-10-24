@@ -51,7 +51,7 @@ import { chromium } from "playwright";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { bfTypeOf, legacyEraIdOf, subTypeIdOfSummaryHash } from "./mul-mappings.mjs";
+import { bfTypeOf, fillFromLegacy, legacyEraIdOf, legacyFillByLiveKey, subTypeIdOfSummaryHash, takeThreshold } from "./mul-mappings.mjs";
 import { arcCardGlyphs, bitmapOfPng, compactArcs, readArcCard } from "./arc-card-reader.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -145,6 +145,24 @@ function fixBFType(entry) {
     if (bfType === record.BFType) return false;
     record.BFType = bfType;
     return true;
+}
+
+/**
+ * The clean-ups every stored record gets, offline or after a run: the role out of its abilities, its Alpha Strike
+ * type from its sub-type, its armor threshold out of its abilities, and the rules level, TRO and image of the
+ * legacy record it replaced (#48). Returns how many records each one changed.
+ */
+async function fixStoredRecords(store) {
+    const fills = legacyFillByLiveKey(await loadJson(legacyArchivePath, []));
+    const counts = { roles: 0, types: 0, thresholds: 0, legacyFields: 0 };
+    for (const [key, entry] of Object.entries(store.units)) {
+        if (!entry.record) continue;
+        if (stripRoleFromAbilities(entry.record)) counts.roles += 1;
+        if (fixBFType(entry)) counts.types += 1;
+        if (isFullyDetailed(entry.record) && takeThreshold(entry.record)) counts.thresholds += 1;
+        if (fillFromLegacy(entry.record, fills.get(key))) counts.legacyFields += 1;
+    }
+    return counts;
 }
 
 function normalizeIdentityPart(value) {
@@ -412,8 +430,10 @@ async function scrapeUnitDetail(page, opaqueId) {
 
         // Large craft: the card back, the only place the site gives the per-arc damage.
         const backCardUrl = document.querySelector('img[src*="side=back"]')?.src ?? null;
+        // The unit's art (#48); the legacy record's image fills in where the live site has none.
+        const unitArtUrl = document.querySelector('img[src*="/unit-art/"]')?.src ?? null;
 
-        return { stats, chips, backCardUrl };
+        return { stats, chips, backCardUrl, unitArtUrl };
     });
 }
 
@@ -496,6 +516,8 @@ function parseDetailIntoRecord(detail, roleName) {
     }
 
     record.BFAbilities = abilities.join(",");
+    takeThreshold(record);
+    if (detail.unitArtUrl) record.ImageUrl = detail.unitArtUrl;
     return record;
 }
 
@@ -537,9 +559,8 @@ async function main() {
 
     // MUL_SYNC_OFFLINE=1: no browser and no network. Clean the store and rewrite the chunk files from it.
     if (process.env.MUL_SYNC_OFFLINE === "1") {
-        const cleaned = Object.values(store.units).filter((unit) => unit.record && stripRoleFromAbilities(unit.record)).length;
-        const retyped = Object.values(store.units).filter(fixBFType).length;
-        console.log(`Offline rebuild: removed the role from the abilities of ${cleaned} record(s); fixed the Alpha Strike type of ${retyped}.`);
+        const counts = await fixStoredRecords(store);
+        console.log(`Offline rebuild: role taken out of the abilities of ${counts.roles} record(s), Alpha Strike type fixed on ${counts.types}, threshold set on ${counts.thresholds}, legacy rules/TRO/image filled on ${counts.legacyFields}.`);
         await saveJson(storePath, store);
         await writeLiveChunks(store);
         return;
@@ -743,10 +764,7 @@ async function main() {
         await browser.close();
     }
 
-    for (const unit of Object.values(store.units)) {
-        if (unit.record) stripRoleFromAbilities(unit.record);
-        fixBFType(unit);
-    }
+    await fixStoredRecords(store);
     await saveJson(storePath, store);
     await saveJson(dupeReportPath, dupeCandidates);
     await appendGithubStepSummary(

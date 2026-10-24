@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 // The weekly MUL sync's lookup tables (#32, #33), kept apart from the script so they can be tested.
-import { bfTypeOf, legacyEraIdOf, subTypeIdOfSummaryHash } from "../../tools/mul-sync/mul-mappings.mjs";
+import { bfTypeOf, fillFromLegacy, legacyFillByLiveKey, legacyEraIdOf, subTypeIdOfSummaryHash, takeThreshold } from "../../tools/mul-sync/mul-mappings.mjs";
 
 describe("MUL sync: Alpha Strike unit type from the live type and sub-type", () => {
     it("gives each large aerospace craft its own type, not the fighter's AF", () => {
@@ -55,5 +55,46 @@ describe("MUL sync: live era ids to the app's era ids", () => {
     });
 });
 
-describe("Alpha Strike units typed from the MUL", () => {
+// MUL 2.0 records arrived without BFThreshold, Rules or ImageUrl (#48).
+describe("MUL sync: armor threshold", () => {
+    it("moves the live site's TH ability into BFThreshold, as the old MUL stored it", () => {
+        const record: Record<string, unknown> = { BFAbilities: "TH 3,BOMB 2,FUEL 20,REAR 2/2/-,SPC,VSTOL" };
+        expect(takeThreshold(record)).toBe(true);
+        expect(record).toEqual({ BFAbilities: "BOMB 2,FUEL 20,REAR 2/2/-,SPC,VSTOL", BFThreshold: 3 });
+    });
+
+    it("gives a unit with no TH a threshold of 0, and leaves a done record alone", () => {
+        const mech: Record<string, unknown> = { BFAbilities: "ENE" };
+        expect(takeThreshold(mech)).toBe(true);
+        expect(mech).toEqual({ BFAbilities: "ENE", BFThreshold: 0 });
+        expect(takeThreshold(mech)).toBe(false);
+        const onlyThreshold: Record<string, unknown> = { BFAbilities: "TH 1" };
+        takeThreshold(onlyThreshold);
+        expect(onlyThreshold).toEqual({ BFAbilities: "", BFThreshold: 1 });
+    });
+});
+
+describe("MUL sync: rules level, TRO and image from the replaced legacy record", () => {
+    const archive = [
+        { replacedBy: "KEY1", record: { Rules: null, TRO: "", ImageUrl: "" } },
+        { replacedBy: "KEY1", record: { Rules: "Unknown", TRO: "TR:3039", ImageUrl: "https://i.ibb.co/x/a.png" } },
+        { replacedBy: "KEY1", record: { Rules: "Advanced", TRO: "TR:3050", ImageUrl: "https://i.ibb.co/x/b.png" } },
+        { replacedBy: "KEY2", record: { Rules: "Standard" } },
+        { record: { Rules: "Standard" } },
+    ];
+
+    it("takes each field from the first legacy copy that has it, skipping an Unknown rules level", () => {
+        const fills = legacyFillByLiveKey(archive);
+        expect(fills.get("KEY1")).toEqual({ Rules: "Advanced", TRO: "TR:3039", ImageUrl: "https://i.ibb.co/x/a.png" });
+        expect(fills.get("KEY2")).toEqual({ Rules: "Standard" });
+        expect(fills.size).toBe(2);
+    });
+
+    it("fills only what the live record lacks", () => {
+        const record: Record<string, unknown> = { ImageUrl: "https://masterunitlist.battletech.com/point-backs/unit-art/x.webp" };
+        expect(fillFromLegacy(record, { Rules: "Advanced", TRO: "TR:3039", ImageUrl: "https://i.ibb.co/x/a.png" })).toBe(true);
+        expect(record).toEqual({ Rules: "Advanced", TRO: "TR:3039", ImageUrl: "https://masterunitlist.battletech.com/point-backs/unit-art/x.webp" });
+        expect(fillFromLegacy(record, { Rules: "Standard" })).toBe(false);
+        expect(fillFromLegacy(record, undefined)).toBe(false);
+    });
 });
