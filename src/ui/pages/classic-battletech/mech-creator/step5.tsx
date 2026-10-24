@@ -425,7 +425,7 @@ export default class MechCreatorStep5 extends React.Component<IHomeProps, IHomeS
                                           </label>
                                         ) : null}
                                         {item.spreadSlots ? (
-                                          <div className="smaller-text">{this.props.appGlobals.currentBattleMech?.getCriticalSlots(item.space.battlemech) ?? item.space.battlemech} slots, placed one at a time</div>
+                                          <div className="smaller-text">{this.props.appGlobals.currentBattleMech?.getSpreadSlotCount(item) ?? item.space.battlemech} slots, placed one at a time</div>
                                         ) : null}
                                       </td>
                                       <td>

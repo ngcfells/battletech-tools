@@ -6357,7 +6357,7 @@ describe("Batch 55 placement limits (TM pp.207, 210, 219, 220, 237, 241-249; TO:
         }
     });
 
-    it("mounts hatchets, swords and retractable blades in the arms, one hatchet or sword to an arm", () => {
+    it("mounts hatchets, swords and retractable blades in the arms, one physical weapon to an arm", () => {
         const mech = build();
         const first = add(mech, "melee-hatchet");
         const second = add(mech, "melee-hatchet");
@@ -6366,7 +6366,7 @@ describe("Batch 55 placement limits (TM pp.207, 210, 219, 220, 237, 241-249; TO:
         expect(place(mech, second, "la", "leftArm")).toBe(false);
         expect(place(mech, second, "ra", "rightArm")).toBe(true);
         const sword = add(build(), "melee-sword");
-        expect(isBallisticList.find(item => item.tag === "melee-sword")).toMatchObject({ allowedLocations: ["la", "ra"], onePerLocationGroup: "sword" });
+        expect(isBallisticList.find(item => item.tag === "melee-sword")).toMatchObject({ allowedLocations: ["la", "ra"], onePerLocationGroup: "physical-weapon" });
         expect(sword).toBeTruthy();
         const other = build();
         const blade = add(other, "melee-retractable-blade");

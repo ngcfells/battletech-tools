@@ -2064,9 +2064,51 @@ export class BattleMech {
         "industrial-tool": "industrial tool",
         "spot-welder": "spot welder",
         "bridgelayer": "bridgelayer",
-        "hatchet": "hatchet",
-        "sword": "sword",
+        "physical-weapon": "physical attack weapon",
+        "shield": "shield",
+        "spikes": "spike cluster",
+        "aes": "Actuator Enhancement System",
     };
+
+    /** The leg locations of this chassis. */
+    private _legLocations(): string[] {
+        return this._hasFrontLegs() ? ["fll", "frl", "ll", "rl"] : this.isTripod() ? ["ll", "rl", "cl"] : ["ll", "rl"];
+    }
+
+    /** Locations a spread item's slots go in on this chassis, or null when the item has no such rule. */
+    private _getSpreadLocations(item: IEquipmentItem | null | undefined): string[] | null {
+        if (!item?.spreadLocations) return null;
+        const arms = this._hasFrontLegs() ? [] : ["la", "ra"];
+        const legs = this._legLocations();
+        switch (item.spreadLocations) {
+            case "all": return ["hd", "ct", "lt", "rt", ...arms, ...legs];
+            case "all-but-head": return ["ct", "lt", "rt", ...arms, ...legs];
+            case "limbs-and-side-torsos": return ["lt", "rt", ...arms, ...legs];
+            case "legs": return legs;
+            case "side-torsos": return ["lt", "rt"];
+        }
+        return null;
+    }
+
+    /**
+     * Critical slots a spread item takes. The catalog (and its sizing formula) gives a two- or four-legged 'Mech's count;
+     * a Tripod adds the third leg's share (IO:AE p.159).
+     */
+    public getSpreadSlotCount(item: IEquipmentItem): number {
+        let slots = item.space.battlemech;
+        const spreadLocations = this._getSpreadLocations(item);
+        if (this.isTripod() && spreadLocations?.includes("cl")) {
+            // A biped has one location fewer: the third leg.
+            slots = slots / (spreadLocations.length - 1) * spreadLocations.length;
+        }
+        return this.getCriticalSlots(slots);
+    }
+
+    /** Most slots of a spread item one location may hold: its slots shared out evenly. */
+    private _getSpreadSlotsPerLocation(item: IEquipmentItem): number {
+        const spreadLocations = this._getSpreadLocations(item);
+        return spreadLocations ? Math.ceil(this.getSpreadSlotCount(item) / spreadLocations.length) : Infinity;
+    }
 
     /**
      * 'Mech locations an item must be placed in, or null for anywhere. Industrial tools go in the arms of a
@@ -2077,6 +2119,41 @@ export class BattleMech {
         if (!item.allowedLocations) return null;
         // A four-legged 'Mech has no arm locations.
         return this._hasFrontLegs() ? item.allowedLocations.filter(location => location !== "la" && location !== "ra") : item.allowedLocations;
+    }
+
+    /** ECM suites, including the CEWS that work as one. */
+    private static readonly ECM_TAGS: readonly string[] = [
+        "ecm-suite", "guardian-ecm-prototype", "angel-ecm", "clan-angel-ecm", "clan-ecm-system", "clan-watchdog-cews", "clan-nova-cews",
+    ];
+
+    /**
+     * Systems that may not share a 'Mech, or need another: AES (TO:AUE p.91), the Chameleon shield (p.112), the
+     * Null-Signature (p.148) and Void-Signature (p.161) systems, and Stealth Armor's ECM suite (TM p.213).
+     */
+    private _systemConflictViolations(mounted: IEquipmentItem[]): string[] {
+        const violations: string[] = [];
+        const find = (test: (item: IEquipmentItem) => boolean): { name: string } | undefined => mounted.find(test);
+        const computer = find(item => !!item.variableFormula?.startsWith("targeting-computer"));
+        const c3 = find(item => /^c3i?-/.test(item.tag) && item.tag !== BattleMech.C3_REMOTE_SENSOR_TAG);
+        const masc = find(item => item.variableFormula === "masc-is" || item.variableFormula === "masc-clan");
+        const tsm = BattleMech._isTripleStrengthMyomer(this._myomerType) ? this._myomerType : undefined;
+        const stealth = this._armorType.tag === "stealth-basic" ? { name: "Stealth Armor" } : undefined;
+        const ecm = find(item => BattleMech.ECM_TAGS.includes(item.tag));
+        const aes = find(item => item.variableFormula === "aes-arm" || item.variableFormula === "aes-leg");
+        const nss = find(item => item.tag === "null-signature-system");
+        const vss = find(item => item.tag === "void-signature-system");
+        const chameleon = find(item => item.tag === "chameleon-lps");
+        const conflict = (system: { name: string } | undefined, others: ({ name: string } | undefined)[], cite: string) => {
+            const names = others.filter((other): other is { name: string } => !!other).map(other => other.name);
+            if (system && names.length > 0) violations.push(`${system.name} cannot be combined with ${names.join(", ")} (${cite}).`);
+        };
+        conflict(aes, [masc, tsm, computer], "TO:AUE p.91");
+        conflict(nss, [computer, c3, stealth], "TO:AUE p.148");
+        conflict(vss, [computer, c3, stealth, chameleon, nss], "TO:AUE p.161");
+        conflict(chameleon, [stealth], "TO:AUE p.112");
+        if (vss && !ecm) violations.push(`${vss.name} needs an ECM suite (TO:AUE p.161).`);
+        if (stealth && !ecm) violations.push("Stealth Armor needs an ECM suite (TM p.213).");
+        return violations;
     }
 
     /** "The C3 Remote Sensor system is incompatible with C3i-based systems" (TO:AUE p.110). */
@@ -4236,7 +4313,8 @@ export class BattleMech {
             // Spread equipment (signature systems, sealing, tracks...) places each slot on its own.
             if( this._equipmentList[elc].spreadSlots ) {
                 const baseUUID = this._equipmentList[elc].uuid ?? generateUUID();
-                for( let slotIndex = 0; slotIndex < this.getCriticalSlots(this._equipmentList[elc].space.battlemech); slotIndex++) {
+                const spreadSlotCount = this.getSpreadSlotCount(this._equipmentList[elc]);
+                for( let slotIndex = 0; slotIndex < spreadSlotCount; slotIndex++) {
                     this._unallocatedCriticals.push({
                         uuid: baseUUID + ":" + slotIndex,
                         name: this._equipmentList[elc].name,
@@ -6852,6 +6930,19 @@ export class BattleMech {
                     ? `${item.name} must be placed in: ${allowedLocations.join(", ").toUpperCase()}.`
                     : `${item.name} cannot be mounted on this chassis.`);
             }
+            // Arm weapons and their actuators (TM pp.220, 237; TO:AUE p.100).
+            if ((item.location === "la" || item.location === "ra") && !this._hasFrontLegs()) {
+                const arm = item.location.toUpperCase();
+                const lowerArm = this.hasLowerArmActuator(item.location);
+                const hand = lowerArm && this.hasHandActuator(item.location);
+                if (item.requiresHandActuator && !hand) {
+                    violations.push(`${item.name} needs lower arm and hand actuators in the ${arm}.`);
+                } else if ((item.requiresLowerArmActuator || item.replacesHandActuator) && !lowerArm) {
+                    violations.push(`${item.name} needs a lower arm actuator in the ${arm}.`);
+                } else if (item.replacesHandActuator && hand) {
+                    violations.push(`${item.name} replaces the hand actuator: remove the ${arm} hand actuator.`);
+                }
+            }
             if (item.armorRepairBVMultiplier) {
                 // HarJel II / III: BattleMechs only, and only some armor types (IO:AE pp.82-83).
                 if (this.isIndustrialMech()) {
@@ -6886,6 +6977,36 @@ export class BattleMech {
             }
         });
         const mounted = this._equipmentList.filter(item => !!item);
+        // "Leg-mounted AES components require that all of the unit's legs receive this equipment" (TO:AUE p.91).
+        const legAES = mounted.filter(item => item.variableFormula === "aes-leg").length;
+        const legCount = this._legLocations().length;
+        if (legAES > 0 && legAES !== legCount) {
+            violations.push(`Leg Actuator Enhancement Systems must be mounted in every leg (${legAES} of ${legCount}).`);
+        }
+        violations.push(...this._systemConflictViolations(mounted));
+        // Spread equipment: only in its locations, shared out evenly.
+        const spreadCounts = new Map<string, { item: IEquipmentItem; byLocation: Map<string, number> }>();
+        for (const [location, area] of Object.entries(BattleMech.MECH_LOCATION_MAP)) {
+            for (const slot of ((this._criticals as any)[area] ?? []) as (ICriticalSlot | null)[]) {
+                const obj = slot?.obj as IEquipmentItem | null | undefined;
+                if (!slot || slot.placeholder || !obj?.spreadLocations) continue;
+                const entry = spreadCounts.get(obj.tag) ?? { item: obj, byLocation: new Map<string, number>() };
+                entry.byLocation.set(location, (entry.byLocation.get(location) ?? 0) + 1);
+                spreadCounts.set(obj.tag, entry);
+            }
+        }
+        spreadCounts.forEach(({ item, byLocation }) => {
+            const allowed = this._getSpreadLocations(item) ?? [];
+            const perLocation = this._getSpreadSlotsPerLocation(item);
+            const outside = Array.from(byLocation.keys()).filter(location => !allowed.includes(location));
+            const crowded = Array.from(byLocation.entries()).filter(([, count]) => count > perLocation).map(([location]) => location);
+            if (outside.length > 0) {
+                violations.push(`${item.name}: only in ${allowed.join(", ").toUpperCase()} (not ${outside.join(", ").toUpperCase()}).`);
+            }
+            if (crowded.length > 0) {
+                violations.push(`${item.name}: at most ${perLocation} slot${perLocation === 1 ? "" : "s"} in a location (${crowded.join(", ").toUpperCase()}).`);
+            }
+        });
         if (mounted.some(item => item.tag === BattleMech.C3_REMOTE_SENSOR_TAG) && mounted.some(item => BattleMech._isC3iSystem(item))) {
             violations.push("C3 Remote Sensor Launcher is incompatible with C3i-based systems.");
         }
@@ -8990,6 +9111,14 @@ export class BattleMech {
             && item.allocationLocation === destLoc
         )) {
             return false;
+        }
+        // Spread equipment goes only in its locations, shared out evenly among them.
+        const spreadItem = fromItem.obj as IEquipmentItem | null | undefined;
+        const spreadLocations = this._getSpreadLocations(spreadItem);
+        if (spreadItem && spreadLocations && destLoc !== "un" && destLoc !== srcLoc) {
+            if (!spreadLocations.includes(destLoc)) return false;
+            const held = (getCriticalArray(destLoc) ?? []).filter(slot => slot?.obj && !slot.placeholder && (slot.obj as IEquipmentItem).tag === spreadItem.tag).length;
+            if (held >= this._getSpreadSlotsPerLocation(spreadItem)) return false;
         }
         // PATHWAY A: ADVANCED ITEM SPLIT ALLOCATION PROCESSING (e.g., Critical Item splits across multiple parts)
         if (split_location && split_location.length > 0) {

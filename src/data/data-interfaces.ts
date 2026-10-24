@@ -252,6 +252,9 @@ export interface IAmmoProfile {
 /** An engine an item needs (`IEquipmentItem.requiresEngine`). */
 export type EngineRequirement = "fusion" | "fusion-or-fission" | "ice-or-fuel-cell";
 
+/** The 'Mech locations a spread item's slots go in (see IEquipmentItem.spreadLocations). */
+export type SpreadLocations = "all" | "all-but-head" | "limbs-and-side-torsos" | "legs" | "side-torsos";
+
 export interface IEquipmentItem {
     catalog?: "is" | "clan" | "custom" | "universal";
     /**
@@ -395,7 +398,12 @@ export interface IEquipmentItem {
         notes: string[];
     };
     battleValuePerItemDamage?: number;
+    /** 'Mech arm weapons: the arm needs lower arm and hand actuators (TM pp.220, 237; TO:AUE p.100). */
     requiresHandActuator?: boolean;
+    /** 'Mech arm weapons: the arm needs a lower arm actuator, with or without a hand (Lance, Retractable Blade). */
+    requiresLowerArmActuator?: boolean;
+    /** 'Mech arm weapons that take the hand actuator's place: the arm has a lower arm actuator and no hand (Claws, Flail). */
+    replacesHandActuator?: boolean;
 
     weightDivisor?: number;
     damageDivisor?: number;
@@ -408,6 +416,11 @@ export interface IEquipmentItem {
     controlledDrones?: number;
     /** Each critical slot is placed on its own (spread across locations), e.g. Null Signature System. */
     spreadSlots?: boolean;
+    /**
+     * Where a spread item's slots go on a 'Mech, shared out evenly among those locations: every location, every one but
+     * the head, the limbs and side torsos, the legs, or the side torsos. A Tripod adds its third leg's share (IO:AE p.159).
+     */
+    spreadLocations?: SpreadLocations;
     /** Label for a user-chosen size on the installed item (e.g. "Jump MP"); its value is `size`. */
     sizeLabel?: string;
     /** Largest size the picker offers. */
