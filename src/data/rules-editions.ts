@@ -71,6 +71,8 @@ export interface IRulesEdition {
     name: string;
     /** First publication year of the edition's core rulebook. */
     year: number;
+    /** Publication month (1-12), where the credits page prints one. */
+    month?: number;
     /** The core rulebook, by the abbreviation used in record citations. */
     book: string;
     /** True once every item the edition's rulebook includes has its `editionStats` entry. */
@@ -548,10 +550,10 @@ export function getRecordLevelInEdition(record: IEditionRecord, editionTag: stri
  * edition on; both appear from the Apocryphal rules level up.
  */
 export function getRecordOfferIssue(record: IEditionRecord, editionTag: string, rulesLevel: number): "edition" | "level" | null {
-    const selected = editionOrder(editionTag);
-    if (selected < 0) {
+    if (editionOrder(editionTag) < 0) {
         return "edition";
     }
+    const selected = timelineOrder(editionTag);
     const editions = getRecordEditions(record);
     if (editions.includes(editionTag)) {
         return getRecordLevelInEdition(record, editionTag) <= rulesLevel ? null : "level";
@@ -566,9 +568,9 @@ export function getRecordOfferIssue(record: IEditionRecord, editionTag: string, 
         if (record.apocryphalIn) {
             return "edition";
         }
-        return selected >= editionOrder(DEFAULT_RULES_EDITION) ? null : "edition";
+        return selected >= timelineOrder(DEFAULT_RULES_EDITION) ? null : "edition";
     }
-    return selected > editionOrder(editions[editions.length - 1]) ? null : "edition";
+    return selected > Math.max(...editions.map(timelineOrder)) ? null : "edition";
 }
 
 /** Does the rules of `editionTag` at `rulesLevel` offer this record? */
@@ -710,6 +712,8 @@ export interface IRulesExpansion {
     tag: string;
     name: string;
     year: number;
+    /** Publication month (1-12), where the credits page prints one. */
+    month?: number;
     book: string;
     /** The unit types the expansion gives rules (or construction rules) for. */
     unitTypes: RulesEditionUnitType[];
@@ -732,6 +736,42 @@ export const btRulesExpansions: IRulesExpansion[] = [
     // AeroTech 2, Revised Edition (FanPro 35011): "© 2004 WizKids". Adds JumpShips and WarShips.
     { tag: "aerotech-2-revised", name: "AeroTech 2, Revised Edition", year: 2004, book: "AT2R", unitTypes: ["fighter", "small-craft", "capital-ship"] },
 ];
+
+export interface IEditionTimelineEntry {
+    tag: string;
+    year: number;
+    month?: number;
+    unitTypes: RulesEditionUnitType[];
+    expansion: boolean;
+}
+
+/** Editions and expansions in publication order: year, then month where known, then editions before expansions. */
+export function getEditionTimeline(): IEditionTimelineEntry[] {
+    const entries: IEditionTimelineEntry[] = [
+        ...btRulesEditions.map(edition => ({ tag: edition.tag, year: edition.year, month: edition.month, unitTypes: edition.unitTypes ?? ["mech" as RulesEditionUnitType], expansion: false })),
+        ...btRulesExpansions.map(expansion => ({ tag: expansion.tag, year: expansion.year, month: expansion.month, unitTypes: expansion.unitTypes, expansion: true })),
+    ];
+    return entries.sort((a, b) => a.year - b.year || (a.month ?? 0) - (b.month ?? 0) || Number(a.expansion) - Number(b.expansion));
+}
+
+const timelineOrder = (tag: string) => getEditionTimeline().findIndex(entry => entry.tag === tag);
+
+/** Is `tag` an edition or expansion tag a record's `editions` may name? */
+export function isKnownEditionTag(tag: string): boolean {
+    return timelineOrder(tag) >= 0;
+}
+
+/**
+ * The edition or expansion current for `unitType` when a book was published (design 2026-10-24-catalog-consolidation,
+ * ruling 7): the latest on the timeline that covers `unitType` and was published no later than `year`/`month`. An
+ * entry with no month counts as published at the start of its year. Undefined before the first.
+ */
+export function getEditionAtPublication(year: number, month: number | undefined, unitType: RulesEditionUnitType): string | undefined {
+    const published = year * 12 + (month ?? 1);
+    return getEditionTimeline()
+        .filter(entry => entry.unitTypes.includes(unitType) && entry.year * 12 + (entry.month ?? 1) <= published)
+        .pop()?.tag;
+}
 
 /** Expansions that have been entered whole and give rules for `unitType`. */
 export function getSelectableRulesExpansions(unitType: RulesEditionUnitType): IRulesExpansion[] {

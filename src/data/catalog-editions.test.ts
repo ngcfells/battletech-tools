@@ -11,7 +11,7 @@ import { mechJumpJetTypes } from "./mech-jump-jet-types";
 import { mechMyomerTypes } from "./mech-myomer-types";
 import { btMechTonnages } from "./mech-tonnages";
 import { mechTypeOptions } from "./mech-type-options";
-import { DEFAULT_RULES_EDITION, btRulesEditions } from "./rules-editions";
+import { DEFAULT_RULES_EDITION, getEditionTimeline } from "./rules-editions";
 
 // Every official record says which editions it is canon in (design 2026-10-21-catalogs-editions §2).
 type Record = IEditionHistory & { tag?: string; tons?: number };
@@ -26,7 +26,9 @@ const records: Record[] = [
     ...mechJumpJetTypes, ...mechArmorTypes, ...mechInternalStructureTypes, ...mechMyomerTypes, ...btMechTonnages,
     ...mechTypeOptions,
 ];
-const order = (tag: string) => btRulesEditions.findIndex((edition) => edition.tag === tag);
+// Editions and the pre-Total Warfare expansions, in publication order (design 2026-10-24 ruling 9).
+const timeline = getEditionTimeline();
+const order = (tag: string) => timeline.findIndex((entry) => entry.tag === tag);
 const label = (record: Record) => `${record.tag ?? `${record.tons} tons`}`;
 
 describe("catalog editions", () => {

@@ -16,6 +16,7 @@ import {
     DEFAULT_ALPHA_STRIKE_EDITION, DEFAULT_RULES_EDITION, FANPRO_FIRST_EDITION, asRulesEditions, btRulesExpansions, editionAllowsConstruction, editionEditsPrintedUnitsAfterWarning,
     getEditionStats, getIntroducedInEdition, getRulesEditions, getRulesLevelOptionsForEdition, getSelectableAlphaStrikeEditions, getSelectableRulesEditions,
     getSelectableRulesExpansions, getShownRulesLevel, isInRulesEdition,
+    getEditionAtPublication, getEditionTimeline, getRecordOfferIssue, isKnownEditionTag,
 } from "./rules-editions";
 import { getRulesLevelOptions } from "./rules-level-options";
 
@@ -1560,5 +1561,33 @@ describe("records an edition allows only at the Apocryphal level", () => {
         expect(quad.apocryphalIn!.battledroids.source).toBe("TCI kit back, GOL-1H Goliath (FASA 1984)");
         expect(quad.apocryphalIn!.battledroids.notes).toContain("Treat All Arm and Arm Critical Hits As Leg Hits");
         expect(isInRulesEdition(quad, "battletech-2nd-edition", 5)).toBe(false);
+    });
+});
+
+describe("the edition timeline (design 2026-10-24-catalog-consolidation, ruling 9 and §3)", () => {
+    it("puts CityTech between the 1985 and 1987 editions", () => {
+        const tags = getEditionTimeline().map((entry) => entry.tag);
+        expect(tags.indexOf("citytech")).toBeGreaterThan(tags.indexOf("battletech-2nd-edition"));
+        expect(tags.indexOf("citytech")).toBeLessThan(tags.indexOf("battletech-manual"));
+    });
+
+    it("counts the expansions as known edition tags", () => {
+        expect(isKnownEditionTag("citytech")).toBe(true);
+        expect(isKnownEditionTag("aerotech-2-revised")).toBe(true);
+        expect(isKnownEditionTag("total-warfare")).toBe(true);
+        expect(isKnownEditionTag("nope")).toBe(false);
+    });
+
+    it("gives a book the edition current for its unit type at publication", () => {
+        expect(getEditionAtPublication(1995, undefined, "vehicle")).toBe("citytech-2nd-edition");
+        expect(getEditionAtPublication(2021, 6, "vehicle")).toBe("total-warfare");
+        expect(getEditionAtPublication(2021, 6, "mech")).toBe("battlemech-manual");
+        expect(getEditionAtPublication(1983, undefined, "mech")).toBeUndefined();
+    });
+
+    it("makes a record dropped after an expansion apocryphal in the later editions", () => {
+        const record = { editions: ["citytech"] };
+        expect(getRecordOfferIssue(record, "total-warfare", 5)).toBeNull();
+        expect(getRecordOfferIssue(record, "total-warfare", 2)).toBe("edition");
     });
 });
