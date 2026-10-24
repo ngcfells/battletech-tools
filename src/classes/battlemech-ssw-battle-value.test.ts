@@ -271,6 +271,14 @@ describe("SSW Battle Value (#46)", () => {
         expect(importFixture("highlander-hgn-694").getBattleValue()).toBe(2369);
     });
 
+    it("takes the explosive ammo penalty in a Clan XXL 'Mech's side torsos but not its arms (TO:AUE p.193): Warhammer IIC 9, Locust IIC 9, Rifleman C 2", () => {
+        // Seven tons of side torso ammunition, -105 before the 1.3 defensive factor. SSW and the MUL give 2819.
+        expect(importFixture("warhammer-iic-9").getBattleValue()).toBe(2819);
+        // A Clan Gauss Rifle in an arm stays behind the arm's Clan CASE. SSW and the MUL give 1133 and 2150.
+        expect(importFixture("locust-iic-9").getBattleValue()).toBe(1133);
+        expect(importFixture("rifleman-c-2").getBattleValue()).toBe(2150);
+    });
+
     it("does not count Nail/Rivet Gun ammo as explosive (TM p.317): Jabberwocky JAW-66D", () => {
         // SSW gives 353: it counts the ammo at 1 BV a ton where TM p.317 gives 0.
         expect(importFixture("jabberwocky-jaw-66d").getBattleValue()).toBe(352);

@@ -956,15 +956,16 @@ export class BattleMech {
         const engineSideSlots = (this.getLargeEngineType() ?? this._engineType).criticals?.[this.getEngineTechBase()]?.lt ?? 0;
         const isClanBase = this._tech.tag === "clan" || this._tech.tag === "mclan";
         // Does an explosive slot in this location cost Battle Value (TM p.302)?
-        //  Clan: center torso, legs and head.
         //  Inner Sphere XL engine: every location.
+        //  Clan: center torso, legs and head; with an XXL engine, "as for Inner Sphere XL Engines"
+        //  (TO:AUE p.193), the side torsos too. Its arms keep their Clan CASE, as the MUL, SSW and MegaMek count it.
         //  Inner Sphere standard or light engine: center torso, legs and head; a side torso without CASE;
         //  an arm with CASE neither in it nor in the torso inward.
         const isPenalisedLocation = (loc: string): boolean => {
             if (hasCaseII(loc)) return false;
             const isSideTorso = loc === "lt" || loc === "rt";
             const isArm = loc === "la" || loc === "ra";
-            if (isClanBase) return !isSideTorso && !isArm;
+            if (isClanBase) return isArm ? false : !isSideTorso || engineSideSlots >= 3;
             if (engineSideSlots >= 3) return true;
             if (isSideTorso) return !caseMap[loc];
             if (isArm) return !caseMap[loc] && !caseMap[inward[loc]];
