@@ -57,3 +57,25 @@ describe("Vehicle Creator: Technical Readout step (TRO round 2, #78)", () => {
         expect(hrefs().some((href) => href.endsWith("/vehicle-creator/print-tro"))).toBe(true);
     });
 });
+
+describe("Vehicle Technical Readout sheet: construction table", () => {
+    it("prints the control systems, turret, armor by location and ammunition", async () => {
+        const { getUnitTroAdapter } = await import("../../../../classes/unit-tro");
+        const { default: TechnicalReadoutSheet } = await import("../../../components/technical-readout-sheet");
+        const vehicle = new Vehicle();
+        vehicle.setTonnage(25);
+        vehicle.setEngineType("ice");
+        vehicle.setCruiseMP(4);
+        vehicle.setArmorAllocation("front", 16);
+        vehicle.addEquipmentFromTag("autocannon-standard-b");
+        vehicle.setEquipmentLocation(vehicle.getEquipmentList().at(-1)!.uuid!, "turret");
+        vehicle.addEquipmentFromTag("ammo-is-ac-5-standard");
+        const { container } = render(<TechnicalReadoutSheet tro={vehicle.tro} adapter={getUnitTroAdapter(vehicle)} />);
+        const text = container.textContent ?? "";
+        expect(text).toContain("Control Systems");
+        expect(text).toContain("Internal Structure / Armor by location");
+        expect(text).toContain("3 / 16");
+        expect(text).toContain("AC/5 - Standard Ammo (IS)");
+        expect(text).toContain("Body");
+    });
+});

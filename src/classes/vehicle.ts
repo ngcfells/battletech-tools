@@ -651,7 +651,8 @@ export default class Vehicle {
     private _equipmentList: IEquipmentItem[] = [];
     private _pilot: Pilot = new Pilot();
 
-    private _weights: { name: string; weight: number }[] = [];
+    /** The tonnage breakdown; equipment lines carry their item (the TRO construction table reads it). */
+    private _weights: { name: string; weight: number; item?: IEquipmentItem }[] = [];
     private _battleValue: number = 0;
     private _calcLogBV: string = "";
     private _cost: number = 0;
@@ -2871,7 +2872,7 @@ export default class Vehicle {
         return this._pilot;
     }
 
-    public getWeights(): { name: string; weight: number }[] {
+    public getWeights(): { name: string; weight: number; item?: IEquipmentItem }[] {
         return this._weights;
     }
 
@@ -3244,7 +3245,7 @@ export default class Vehicle {
         }
         for (const item of this._equipmentList) {
             if (!this._isSmallSupportVehicle() && (item.weight * 2) % 1 !== 0) smallItems += item.weight;
-            else this._weights.push({ name: item.name, weight: item.weight });
+            else this._weights.push({ name: item.name, weight: item.weight, item });
         }
         if (smallItems > 0) {
             this._weights.push({ name: `Items weighed in kilograms (${Math.round(smallItems * 1000)} kg)`, weight: roundSupportVehicleWeight(smallItems, false) });
@@ -3327,7 +3328,7 @@ export default class Vehicle {
         }
 
         for (const item of this._equipmentList) {
-            this._weights.push({ name: item.name, weight: item.weight });
+            this._weights.push({ name: item.name, weight: item.weight, item });
         }
 
         this._currentTonnage = this._weights.reduce((sum, w) => sum + w.weight, 0);

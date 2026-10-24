@@ -19,6 +19,8 @@ interface IUnitTroParts {
     spec: ITroSpecValues;
     components: ITroComponentRow[];
     construction: ITroConstructionRow[];
+    /** The construction table's rows under "Weapons and Equipment", ammunition included; built from `equipment` when left out. */
+    equipmentRows?: ITroConstructionRow[];
     /** Weapons and equipment, each with a uuid where the type keeps one. */
     equipment: { item: { uuid?: string; tag: string }; name: string; location: string; armament: boolean; mass?: string }[];
 }
@@ -49,28 +51,112 @@ function buildAdapter(parts: () => IUnitTroParts): ITroUnitAdapter {
         },
         getSpecValues: () => parts().spec,
         getConstructionRows(): ITroConstructionRow[] {
-            const { construction, equipment } = parts();
-            if (equipment.length === 0) {
+            const { construction, equipment, equipmentRows } = parts();
+            const rows = equipmentRows ?? equipment.map((entry) => ({ label: entry.name, value: entry.location, mass: entry.mass }));
+            if (rows.length === 0) {
                 return construction;
             }
             return [
                 ...construction,
                 { label: "Weapons and Equipment", value: "Location", mass: "Mass", heading: true },
-                ...equipment.map((entry) => ({ label: entry.name, value: entry.location, mass: entry.mass })),
+                ...rows,
             ];
         },
     };
 }
 
-const catalogEquipment = (items: IEquipmentItem[]): IUnitTroParts["equipment"] => items
+const catalogEquipment = (items: IEquipmentItem[], locationName: (location?: string) => string): IUnitTroParts["equipment"] => items
     .filter((item) => item && !item.isAmmo)
-    .map((item) => ({ item, name: item.name, location: (item.location ?? "").toString(), armament: item.category !== "Miscellaneous Equipment", mass: `${item.weight}` }));
+    .map((item) => ({ item, name: item.name, location: locationName(item.location?.toString()), armament: item.category !== "Miscellaneous Equipment", mass: `${item.weight}` }));
 
 const subtitle = (...parts: (string | undefined)[]): string => parts.filter(Boolean).join(" · ");
+
+/** A mass in tons, to the kilogram, without floating-point tails. */
+const tonsText = (tons: number): string => `${Math.round(tons * 1000) / 1000}`;
+
+const capitalize = (text: string): string => text.charAt(0).toUpperCase() + text.slice(1);
+
+/** One construction row per weight line, in the unit's own order, so the table adds up to the unit's mass. */
+interface IWeightLine { name: string; weight: number; item?: IEquipmentItem }
+
+/**
+ * Splits a weight list into the rows above "Weapons and Equipment" and the rows under it. Equipment lines carry their
+ * item; a line after the equipment (a support vehicle's kilogram items, rounded up together) stays with the equipment.
+ */
+function weightLineRows(
+    lines: IWeightLine[],
+    chassisRow: (line: IWeightLine) => ITroConstructionRow[],
+    locationName: (location?: string) => string,
+): { construction: ITroConstructionRow[]; equipmentRows: ITroConstructionRow[] } {
+    const construction: ITroConstructionRow[] = [];
+    const equipmentRows: ITroConstructionRow[] = [];
+    let pastEquipment = false;
+    for (const line of lines) {
+        if (line.item) {
+            pastEquipment = true;
+            equipmentRows.push({ label: line.name, value: locationName(line.item.location?.toString()), mass: tonsText(line.weight) });
+        } else if (pastEquipment) {
+            equipmentRows.push({ label: line.name, mass: tonsText(line.weight) });
+        } else {
+            construction.push(...chassisRow(line));
+        }
+    }
+    return { construction, equipmentRows };
+}
+
+function vehicleLocationName(vehicle: Vehicle, location?: string): string {
+    if (!location || location === "body") {
+        return "Body";
+    }
+    return vehicle.getLocations().find((entry) => entry.tag === location)?.name ?? capitalize(location);
+}
+
+/** TRO-style rows: the vehicle's weight list with engine rating, movement, heat sinks and armor factor, then armor by location. */
+function vehicleConstruction(vehicle: Vehicle): { construction: ITroConstructionRow[]; equipmentRows: ITroConstructionRow[] } {
+    const support = vehicle.isSupportVehicle();
+    const lines: IWeightLine[] = vehicle.getWeights();
+    const weightedHeatSinks = lines.some((line) => !line.item && line.name.includes("Heat Sinks"));
+    const movement = (): ITroConstructionRow[] => [
+        { label: "Cruising MP", value: `${vehicle.getCruiseMP()}`, indent: true },
+        { label: "Flank MP", value: `${vehicle.getFlankMP()}`, indent: true },
+        ...(vehicle.getJumpMP() > 0 ? [{ label: "Jumping MP", value: `${vehicle.getJumpMP()}`, indent: true }] : []),
+    ];
+    const chassisRow = (line: IWeightLine): ITroConstructionRow[] => {
+        const mass = tonsText(line.weight);
+        if (line.name === "Internal Structure") {
+            const type = vehicle.getStructureType();
+            return [{ label: type === "standard" ? "Internal Structure" : `Internal Structure (${capitalize(type)})`, mass }];
+        }
+        if (line.name === vehicle.getEngineType().name || (support && line.name.endsWith(" Engine"))) {
+            const heatSinks: ITroConstructionRow[] = weightedHeatSinks || support ? [] : [{ label: "Heat Sinks", value: `${vehicle.getTotalHeatSinks()}`, mass: "0" }];
+            return [{ label: line.name, value: `${vehicle.getEngineRating()}`, mass }, ...movement(), ...heatSinks];
+        }
+        if (line.name.includes("Heat Sinks")) {
+            return [{ label: line.name, value: `${vehicle.getTotalHeatSinks()}`, mass }];
+        }
+        if (line.name === "Armor" || line.name.startsWith("Armor (BAR")) {
+            const type = line.name === "Armor" ? vehicle.getArmorType().name : line.name.slice("Armor (".length, -1);
+            return [{ label: `Armor Factor (${type})`, value: `${vehicle.getArmorPoints()}`, mass }];
+        }
+        if (line.name === "Jump Jets") {
+            return [{ label: line.name, value: `${vehicle.getJumpMP()}`, mass }];
+        }
+        return [{ label: line.name, mass }];
+    };
+    const { construction, equipmentRows } = weightLineRows(lines, chassisRow, (location) => vehicleLocationName(vehicle, location));
+    const structure = vehicle.getStructureAllocation();
+    const armor = vehicle.getArmorAllocation();
+    construction.push(
+        { label: "Internal Structure / Armor by location", heading: true },
+        ...vehicle.getLocations().map((location) => ({ label: location.name, value: `${structure[location.tag] ?? 0} / ${armor[location.tag] ?? 0}`, indent: true })),
+    );
+    return { construction, equipmentRows };
+}
 
 function vehicleParts(vehicle: Vehicle): IUnitTroParts {
     const tons = vehicle.getTonnage();
     const jump = vehicle.getJumpMP();
+    const { construction, equipmentRows } = vehicleConstruction(vehicle);
     return {
         spec: {
             title: vehicle.getName(),
@@ -82,18 +168,13 @@ function vehicleParts(vehicle: Vehicle): IUnitTroParts {
             armorType: vehicle.getArmorType().name,
         },
         components: [
-            { key: "chassis", label: `Chassis (${vehicle.getStructureType()})` },
+            { key: "chassis", label: `Chassis (${capitalize(vehicle.getStructureType())})` },
             { key: "engine", label: `Engine (${vehicle.getEngineType().name} ${vehicle.getEngineRating()})` },
             { key: "armor", label: `Armor (${vehicle.getArmorType().name})` },
         ],
-        construction: [
-            { label: `Internal Structure (${vehicle.getStructureType()})`, mass: `${vehicle.getStructureWeight()}` },
-            { label: vehicle.getEngineType().name, value: `${vehicle.getEngineRating()}`, mass: `${vehicle.getEngineWeight()}` },
-            { label: "Cruising MP", value: `${vehicle.getCruiseMP()}`, indent: true },
-            { label: "Flank MP", value: `${vehicle.getFlankMP()}`, indent: true },
-            { label: `Armor Factor (${vehicle.getArmorType().name})`, value: `${vehicle.getArmorPoints()}`, mass: `${vehicle.getArmorWeight()}` },
-        ],
-        equipment: catalogEquipment(vehicle.getEquipmentList()),
+        construction,
+        equipmentRows,
+        equipment: catalogEquipment(vehicle.getEquipmentList(), (location) => vehicleLocationName(vehicle, location)),
     };
 }
 
@@ -120,7 +201,7 @@ function fighterParts(fighter: AerospaceFighter): IUnitTroParts {
             { label: "Maximum Thrust", value: `${fighter.getMaxThrust()}`, indent: true },
             { label: `Armor (${fighter.getArmorType().name})`, mass: `${fighter.getArmorWeight()}` },
         ],
-        equipment: catalogEquipment(fighter.getEquipmentList()),
+        equipment: catalogEquipment(fighter.getEquipmentList(), (location) => location ?? ""),
     };
 }
 
