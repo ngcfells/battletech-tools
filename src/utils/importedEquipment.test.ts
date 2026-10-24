@@ -159,4 +159,20 @@ describe("MegaMek's ISCASE", () => {
     it("names CASE, not the Guardian ECM Suite", () => {
         expect(findImportedEquipment("ISCASE", "is")?.item.tag).toBe("case");
     });
+
+    // Each sat one record off, as ISCASE did; MegaMek gives the weapon each internal name stands for (#47).
+    it("names the weapon each MegaMek internal name stands for", () => {
+        const expected: [string, "is" | "clan", string][] = [
+            ["ISUltraAC2", "is", "autocannon-ultra-a"], ["ISUltraAC5", "is", "autocannon-ultra-b"],
+            ["ISUltraAC10", "is", "autocannon-ultra-c"], ["ISUltraAC20", "is", "autocannon-ultra-d"],
+            ["ISHeavyGaussRifle", "is", "gauss-rifle-heavy"], ["ISLBXAC20", "is", "autocannon-lbx-20"],
+            ["ISLargeVSPLaser", "is", "large-vspl"], ["ISMediumVSPLaser", "is", "medium-vspl"], ["ISSmallVSPLaser", "is", "small-vspl"],
+            ["ISLargeXPulseLaser", "is", "large-x-pulse-laser"], ["ISMediumXPulseLaser", "is", "medium-x-pulse-laser"],
+            ["ISSmallXPulseLaser", "is", "small-x-pulse-laser"], ["RL15", "is", "rocket-launcher-15"],
+            ["CLGaussRifle", "clan", "clan-gauss-rifle"], ["CLHeavyLargeLaser", "clan", "large-heavy-laser"],
+            ["CLLaserAntiMissileSystem", "clan", "clan-laser-ams"], ["CLSRM2", "clan", "clan-srm-2"],
+            ["CLStreakSRM6", "clan", "clan-streak-srm-6"], ["CLATM9", "clan", "atm-9"], ["CLMG", "clan", "clan-machine-gun"],
+        ];
+        expect(expected.map(([name, faction]) => [name, findImportedEquipment(name, faction)?.item.tag])).toEqual(expected.map(([name, , tag]) => [name, tag]));
+    });
 });
