@@ -336,6 +336,8 @@ export const importSmallCraftBlk = (text: string): ISmallCraftBlkResult => {
         if (ammo && dropShip) {
             const bin = craft.addEquipmentFromTag(ammo.tag, arc);
             if (bin) added = craft.setAmmoBinTons(bin.uuid, tons) || 1;
+            // One kind of round may feed launchers of several sizes in a bay: the bin keeps the one its line names.
+            if (bin && weapon) bin.feedsWeaponTag = weapon.tag;
         }
         else for (let ton = 0; ammo && ton < tons; ton++) if (craft.addEquipmentFromTag(ammo.tag, arc)) added++;
         if (!ammo || added === 0) issues.push(`Ammunition "${raw}" has no weapon or no match in this catalog and was left off.`);

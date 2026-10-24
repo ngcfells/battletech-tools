@@ -405,6 +405,26 @@ describe("DropShip ammunition feeds the launchers of its own bays", () => {
         expect(log).toContain("Ammunition for lrm-10 = 22.00");
     });
 
+    it("counts each line's rounds at the rate of the launcher the line feeds (TM p.311)", () => {
+        const result = importSmallCraftBlk([
+            "<UnitType>", "Dropship", "</UnitType>", "<Name>", "Test Lighter", "</Name>", "<Model>", "TL-8", "</Model>", "<year>", "3067", "</year>",
+            "<type>", "IS Level 2", "</type>", "<motion_type>", "Spheroid", "</motion_type>", "<designtype>", "1", "</designtype>",
+            "<transporters>", "crewquarters:140.0:0:-1::-1:0", "cargobay:518.0:2:1::-1:0", "</transporters>",
+            "<SafeThrust>", "3", "</SafeThrust>", "<heatsinks>", "100", "</heatsinks>", "<sink_type>", "0", "</sink_type>", "<fuel>", "3000", "</fuel>",
+            "<armor_type>", "41", "</armor_type>", "<armor>", "200", "180", "180", "150", "</armor>",
+            "<Nose Equipment>", "(B) LRM 20", "LRM 15", "IS Ammo LRM-20 Artemis-capable:12", "IS Ammo LRM-15 Artemis-capable:16",
+            "ISArtemisIV", "ISArtemisIV", "</Nose Equipment>",
+            "<structural_integrity>", "10", "</structural_integrity>", "<tonnage>", "10000.0", "</tonnage>", "<crew>", "20", "</crew>",
+        ].join(String.fromCharCode(10)));
+        expect(result.issues).toEqual([]);
+        // One kind of Artemis LRM round in one bay: the LRM-15's 2 tons count 17 a ton, not the LRM-20's 23.
+        const ship = result.craft as SmallCraft;
+        expect(ship.getBattleValueLog()).toContain("Ammunition for lrm-15-artemis-iv = 34.00");
+        expect(ship.getBattleValueLog()).toContain("Ammunition for lrm-20-artemis-iv = 46.00");
+        // The bins keep the launcher they feed through a save.
+        expect(new SmallCraft(ship.exportJSON()).getBattleValueLog()).toContain("Ammunition for lrm-15-artemis-iv = 34.00");
+    });
+
     it("caps each arc's rounds at the value of that arc's launchers (TM p.311)", () => {
         const result = importSmallCraftBlk([
             "<UnitType>", "Dropship", "</UnitType>", "<Name>", "Test Lighter", "</Name>", "<Model>", "TL-6", "</Model>", "<year>", "3067", "</year>",
@@ -487,5 +507,21 @@ describe("DropShip bay quirks from a MegaMek file", () => {
             ["quirk-modular-weapons", ["large-pulse-laser"]],
             ["quirk-modular-weapons", ["is-ams"]],
         ]);
+    });
+});
+
+describe("DropShip cruise missiles", () => {
+    it("count their heat against the DropShip's Heat Efficiency (TO:AUE p.216)", () => {
+        const result = importSmallCraftBlk([
+            "<UnitType>", "Dropship", "</UnitType>", "<Name>", "Test Lighter", "</Name>", "<Model>", "TL-7", "</Model>", "<year>", "3100", "</year>",
+            "<type>", "IS Level 4", "</type>", "<motion_type>", "Spheroid", "</motion_type>", "<designtype>", "1", "</designtype>",
+            "<transporters>", "crewquarters:140.0:0:-1::-1:0", "cargobay:518.0:2:1::-1:0", "</transporters>",
+            "<SafeThrust>", "3", "</SafeThrust>", "<heatsinks>", "100", "</heatsinks>", "<sink_type>", "0", "</sink_type>", "<fuel>", "3000", "</fuel>",
+            "<armor_type>", "41", "</armor_type>", "<armor>", "200", "180", "180", "150", "</armor>",
+            "<Nose Equipment>", "(B) ISCruiseMissile50", "ISCruiseMissile50Ammo:10", "</Nose Equipment>",
+            "<structural_integrity>", "10", "</structural_integrity>", "<tonnage>", "10000.0", "</tonnage>", "<crew>", "20", "</crew>",
+        ].join(String.fromCharCode(10)));
+        // The table gives a Cruise Missile/50 no separate Aero heat: its 50 counts for aerospace units too.
+        expect((result.craft as SmallCraft).getBattleValueLog()).toContain("Nose: weapons 601.00, heat 50");
     });
 });

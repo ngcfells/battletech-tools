@@ -184,6 +184,8 @@ export interface ISmallCraftEquipmentExport {
     tag: string;
     location?: string;
     uuid?: string;
+    /** An ammunition bin: the tag of the launcher it is loaded for. */
+    feedsWeaponTag?: string;
 }
 
 export interface ISmallCraftExport {
@@ -1533,9 +1535,10 @@ export default class SmallCraft {
         const ammoBVByTagArc: Record<string, Record<string, number>> = {};
         const ammoArcBV: Record<string, number> = {};
         for (const ammo of this._equipmentList.filter((item) => item.isAmmo)) {
-            // A bay's ammunition feeds the launchers of that bay first: one kind of round may feed launchers of
-            // several sizes, each counting its own BV a ton.
-            const fed = offensiveWeapons.find((weapon) => weapon.location === ammo.location && getCompatibleAmmo(weapon, ammo))
+            // A bay's ammunition feeds the launchers of that bay first, the one it is loaded for before the rest:
+            // one kind of round may feed launchers of several sizes, each counting its own BV a ton.
+            const inBay = offensiveWeapons.filter((weapon) => weapon.location === ammo.location && getCompatibleAmmo(weapon, ammo));
+            const fed = inBay.find((weapon) => weapon.tag === ammo.feedsWeaponTag) ?? inBay[0]
                 ?? offensiveWeapons.find((weapon) => getCompatibleAmmo(weapon, ammo));
             if (!fed) continue;
             const value = getAmmoBattleValuePerTon(fed, ammo) * (ammo.weight || 0);
@@ -2153,6 +2156,7 @@ export default class SmallCraft {
                 tag: item.tag, location: item.location, uuid: item.uuid,
                 ...(this.canSetAmmoBinShots(item) && (item.weight || 0) < 1 ? { shots: this.getAmmoBinShots(item) } : {}),
                 ...(this.canSetAmmoBinTons(item) && (item.weight || 0) > 1 ? { tons: item.weight } : {}),
+                ...(item.isAmmo && item.feedsWeaponTag ? { feedsWeaponTag: item.feedsWeaponTag } : {}),
             })),
             capitalWeapons: this._capitalWeapons.map((mount) => ({ tag: mount.weapon.tag, location: mount.location, uuid: mount.uuid, shots: { ...mount.shots } })),
         };
@@ -2274,6 +2278,7 @@ export default class SmallCraft {
                 this._equipmentList.push(item);
                 if (item.isAmmo && typeof entry.shots === "number" && Number.isFinite(entry.shots)) pendingShots.push({ uuid: item.uuid, shots: entry.shots });
                 if (item.isAmmo && typeof entry.tons === "number" && Number.isFinite(entry.tons)) pendingTons.push({ uuid: item.uuid, tons: entry.tons });
+                if (item.isAmmo && typeof entry.feedsWeaponTag === "string") item.feedsWeaponTag = entry.feedsWeaponTag.slice(0, 80);
             }
             this._capitalWeapons = [];
             if (saved.capitalWeapons !== undefined && !Array.isArray(saved.capitalWeapons)) issue("Ignored a capital weapon list that is not a list");
