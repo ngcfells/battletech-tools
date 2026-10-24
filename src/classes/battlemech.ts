@@ -974,10 +974,12 @@ export class BattleMech {
         // slot of an item carries the item itself; its `crits` is the number of slots in this location.
         // A record can cap the slots counted: an HVAC counts as one slot (TO:AUE p.195).
         const explosiveSlotsCounted = new Map<string, number>();
-        const explosiveComponentSlots = (critical: { obj: IEquipmentItem, crits?: number }): number => {
+        // A weapon split between locations (a Heavy Gauss Rifle 9 + 2) counts only its slots in each one.
+        const explosiveComponentSlots = (critical: { obj: IEquipmentItem, crits?: number, uuid?: string }, critArray: any[]): number => {
             const item = critical.obj;
             if (!BattleMech._isExplosiveComponent(item)) return 0;
-            const slots = Math.max(1, critical.crits ?? 1);
+            const inLocation = critical.uuid ? critArray.filter(slot => slot && slot.uuid === critical.uuid).length : 0;
+            const slots = Math.max(1, inLocation || (critical.crits ?? 1));
             if (item.explosiveBattleValueSlots === undefined) return slots;
             const key = item.uuid ?? item.tag;
             const counted = explosiveSlotsCounted.get(key) ?? 0;
@@ -999,7 +1001,8 @@ export class BattleMech {
                 if (!item || !item.obj) return;
                 if (BattleMech._isExplosiveAmmoSlot(item.obj)) {
                     // An Extended Fuel Tank fills several slots, each an ammunition bin (TM p.244).
-                    const ammoSlots = item.obj.explosiveAsAmmo ? Math.max(1, item.crits ?? 1) : 1;
+                    const slotsHere = item.uuid ? critArray.filter(slot => slot && slot.uuid === item.uuid).length : 0;
+                    const ammoSlots = item.obj.explosiveAsAmmo ? Math.max(1, slotsHere || (item.crits ?? 1)) : 1;
                     if (penalised) {
                         for (let slot = 0; slot < ammoSlots; slot++) {
                             this._calcLogBV += `Explosive Ammo Crit in ${longKey} (${techLabel}, -15)<br />`;
@@ -1009,7 +1012,7 @@ export class BattleMech {
                         this._calcLogBV += `Explosive Ammo in ${longKey} protected by ${protection}. Penalty negated (0).<br />`;
                     }
                 }
-                const componentSlots = explosiveComponentSlots(item);
+                const componentSlots = explosiveComponentSlots(item, critArray);
                 if (componentSlots > 0) {
                     if (penalised) {
                         this._calcLogBV += `Explosive Component Crit (${item.obj.name}) in ${longKey} (${techLabel}, -${componentSlots})<br />`;

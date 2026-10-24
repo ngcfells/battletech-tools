@@ -263,6 +263,14 @@ describe("SSW Battle Value (#46)", () => {
         expect(mech.getBattleValue()).toBe(1647);
     });
 
+    it("counts a split Heavy Gauss Rifle's explosive slots once, each in its own location (TM p.302): Barghest BGS-3T, Highlander HGN-694", () => {
+        // XL engine: 9 right torso + 2 center torso slots, -11 in all.
+        expect(importFixture("barghest-bgs-3t").getBattleValue()).toBe(1900);
+        // The 9 left torso slots are behind CASE; only the 2 center torso slots cost BV. The MUL gives 2369;
+        // SSW gives 2358, counting all 11.
+        expect(importFixture("highlander-hgn-694").getBattleValue()).toBe(2369);
+    });
+
     it("does not count Nail/Rivet Gun ammo as explosive (TM p.317): Jabberwocky JAW-66D", () => {
         // SSW gives 353: it counts the ammo at 1 BV a ton where TM p.317 gives 0.
         expect(importFixture("jabberwocky-jaw-66d").getBattleValue()).toBe(352);
