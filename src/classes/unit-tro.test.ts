@@ -3,6 +3,7 @@ import AerospaceFighter from "./aerospace-fighter";
 import BattleArmor from "./battle-armor";
 import InfantryPlatoon from "./infantry-platoon";
 import ProtoMech from "./protomech";
+import SmallCraft from "./small-craft";
 import Vehicle from "./vehicle";
 import { getUnitTroAdapter } from "./unit-tro";
 
@@ -14,6 +15,7 @@ describe("Technical Readout on the other Classic unit types", () => {
         { label: "infantry platoon", make: () => new InfantryPlatoon(), load: (json: string) => new InfantryPlatoon(json) },
         { label: "battle armor", make: () => new BattleArmor(), load: (json: string) => new BattleArmor(json) },
         { label: "ProtoMech", make: () => new ProtoMech(), load: (json: string) => new ProtoMech(json) },
+        { label: "Small Craft", make: () => new SmallCraft(), load: (json: string) => new SmallCraft(json) },
     ];
     for (const { label, make, load } of makers) {
         it("saves and loads a " + label + "'s TRO and gives the sheet a title and construction rows", () => {
@@ -209,5 +211,74 @@ describe("Infantry Technical Readout construction table", () => {
         expect(rows).toContainEqual({ label: "Anti-'Mech Training", value: `Skill ${platoon.getAntiMechSkill()}` });
         // Two support machine guns a squad give heavy burst (TM p.150).
         expect(rows).toContainEqual({ label: "Special Features", value: "B" });
+    });
+});
+
+describe("Small Craft Technical Readout construction table", () => {
+    // The Aquarius Escort (TRO:3075): 200 tons, aerodyne, two large lasers in the nose, LRM/SRM pairs in the wings.
+    const aquarius = (): SmallCraft => {
+        const craft = new SmallCraft();
+        craft.setName("Aquarius Escort");
+        craft.setTonnage(200);
+        craft.setSafeThrust(4);
+        craft.setFuelTons(6);
+        craft.setStructuralIntegrity(8);
+        craft.setArmorTons(36);
+        craft.setArmorAllocation("nose", 183);
+        craft.setArmorAllocation("left", 162);
+        craft.setArmorAllocation("right", 162);
+        craft.setArmorAllocation("aft", 101);
+        craft.setAdditionalHeatSinks(32);
+        craft.addEquipmentFromTag("large-laser", "nose");
+        craft.addEquipmentFromTag("lrm-10", "left");
+        craft.addEquipmentFromTag("medium-laser", "rightAft");
+        craft.setQuarters("crew", 3);
+        craft.addBay("cargo", 9);
+        return craft;
+    };
+
+    it("lists every ton, with thrust under the engine, armor by side, then the weapons", () => {
+        const craft = aquarius();
+        const rows = getUnitTroAdapter(craft).getConstructionRows();
+        expect(totalMass(rows)).toBe(craft.getCurrentTonnage());
+        expect(rows[0].label).toMatch(/^Engine \(/);
+        expect(rows.slice(1, 3)).toEqual([
+            { label: "Safe Thrust", value: "4", indent: true },
+            { label: "Maximum Thrust", value: "6", indent: true },
+        ]);
+        expect(rows).toContainEqual({ label: "Armor by location", heading: true });
+        expect(rows).toContainEqual({ label: "Nose", value: "183", indent: true });
+        expect(rows).toContainEqual({ label: "Left Wing", value: "162", indent: true });
+        expect(rows).toContainEqual({ label: "Large Laser", value: "Nose", mass: "5" });
+        expect(rows).toContainEqual({ label: "Medium Laser", value: "Right Wing (Rear)", mass: "1" });
+        // Quarters and bays belong with the hull, above the weapons.
+        const heading = rows.findIndex((row) => row.label === "Weapons and Equipment");
+        const cargo = rows.findIndex((row) => row.label.startsWith("Cargo"));
+        expect(cargo).toBeGreaterThan(-1);
+        expect(cargo).toBeLessThan(heading);
+    });
+
+    it("gives the spec block and the equipment makes by arc, capital weapons included", () => {
+        const craft = aquarius();
+        const adapter = getUnitTroAdapter(craft);
+        expect(adapter.getSpecValues()).toMatchObject({ title: "Aquarius Escort", mass: "200 tons", cruisingSpeed: "Safe Thrust 4", maximumSpeed: "Maximum Thrust 6" });
+        expect(adapter.getSpecValues().subtitle).toContain("Small Craft");
+        const copies = adapter.getEquipmentCopies();
+        expect(copies.map((copy) => copy.locationLabel)).toEqual(["Nose", "Left Wing", "Right Wing (Rear)"]);
+        expect(copies.every((copy) => copy.uuid)).toBe(true);
+    });
+
+    it("gives a DropShip's capital weapons a make and a construction row", () => {
+        const ship = new SmallCraft();
+        ship.setCraftType("dropShip");
+        ship.setTonnage(3000);
+        ship.setSafeThrust(3);
+        const mount = ship.addCapitalWeapon("barracuda", "nose");
+        expect(mount).not.toBeNull();
+        const adapter = getUnitTroAdapter(ship);
+        expect(adapter.getSpecValues().subtitle).toContain("DropShip");
+        expect(adapter.getEquipmentCopies()).toEqual([expect.objectContaining({ uuid: mount!.uuid, name: "Barracuda", locationLabel: "Nose" })]);
+        expect(adapter.getConstructionRows().some((row) => row.label.startsWith("Barracuda") && row.value === "Nose")).toBe(true);
+        expect(totalMass(adapter.getConstructionRows())).toBe(ship.getCurrentTonnage());
     });
 });

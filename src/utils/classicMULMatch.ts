@@ -83,3 +83,25 @@ export function getClassicMechEntries(mechs: BattleMech[]): IClassicDesignEntry<
     }
     return entries;
 }
+
+/**
+ * The MUL files fighters and the larger aerospace craft (Small Craft, DropShips, capital ships) under the same type,
+ * 17. The live MUL names the larger ones "Aerospace Craft" (fighters are "Fighter Craft"); the older MUL calls both
+ * "Aerospace" and gives the kind in its page's Unit Type, else the tonnage tells (a fighter is 100 tons at most).
+ */
+export function isMULLargeAerospaceCraft(unit: Pick<IASMULUnit, "Type" | "Tonnage">): boolean {
+    if (unit.Type?.Id !== 17) {
+        return false;
+    }
+    if (unit.Type.Name === "Aerospace Craft") {
+        return true;
+    }
+    if (unit.Type.Name === "Fighter Craft") {
+        return false;
+    }
+    const unitType = (unit as { Mul1Page?: { Fields?: Record<string, string> } }).Mul1Page?.Fields?.["Unit Type"] ?? "";
+    if (/fighter/i.test(unitType)) {
+        return false;
+    }
+    return /small craft|dropship|jumpship|warship|station/i.test(unitType) || +unit.Tonnage > 100;
+}

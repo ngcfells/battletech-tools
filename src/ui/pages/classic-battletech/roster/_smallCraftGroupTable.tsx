@@ -4,6 +4,7 @@ import SmallCraft from '../../../../classes/small-craft';
 import Pilot from '../../../../classes/pilot';
 import { IAppGlobals } from '../../../app-router';
 import StatBar from '../../../components/stat-bar';
+import MULSearchButton from './_mulSearchButton';
 const Trash = FaTrash as any;
 
 /**
@@ -210,6 +211,7 @@ export default class SmallCraftGroupTable extends React.Component<ISmallCraftGro
                                 ) : (
                                     <span className="small-text">Save Small Craft in the Small Craft Creator to add them to this group.</span>
                                 )}
+                                <MULSearchButton unitLabel="Small Craft and DropShips" onClick={this.props.onSearchMUL} />
                             </td>
                         </tr>
                     </tfoot>
@@ -234,6 +236,7 @@ interface ISmallCraftGroupTableProps {
     bmGroupIndex: number;
     showAdd: boolean;
     showEdit: boolean;
+    onSearchMUL?: ( e: React.FormEvent<HTMLButtonElement> ) => void;
 }
 
 interface ISmallCraftGroupTableState {

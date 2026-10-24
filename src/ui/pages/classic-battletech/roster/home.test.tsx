@@ -16,6 +16,7 @@ import AerospaceFighter from "../../../../classes/aerospace-fighter";
 import InfantryPlatoon from "../../../../classes/infantry-platoon";
 import BattleArmor from "../../../../classes/battle-armor";
 import ProtoMech from "../../../../classes/protomech";
+import SmallCraft from "../../../../classes/small-craft";
 import { searchBundledMUL } from "../../../../utils";
 
 afterEach(cleanup);
@@ -173,4 +174,48 @@ describe("Classic roster Master Unit List search", () => {
             expect(group.members.length).toBe(0);
         }, 30_000);
     }
+
+    // The MUL files Small Craft and DropShips under type 17 with the fighters, as "Aerospace Craft".
+    const largeCraftHit = async () => (await searchBundledMUL(newMULSearchFilters({ type: 17, term: "Foxhound Gunboat TIG-40" })))
+        .find((unit) => unit.Name === "Foxhound Gunboat")!;
+    it("finds a saved Small Craft on the MUL and adds it to the group's Small Craft table, not the fighters", async () => {
+        const appGlobals = makeAppGlobals();
+        const hit = await largeCraftHit();
+        expect(hit.Class).toBe("Aerospace Craft");
+        const craft = new SmallCraft();
+        craft.setName(hit.Name);
+        craft.setModel(hit.Variant ?? "");
+        (appGlobals.smallCraftSaves as unknown[]).push(JSON.parse(craft.exportJSON()));
+        appGlobals.appSettings.cbtMULSearch = newMULSearchFilters({ type: 17, term: hit.Name + " " + hit.Variant });
+        const onChange = vi.fn();
+        render(
+            <MemoryRouter>
+                <BattleMechAddMechDialog appGlobals={appGlobals} currentForce={appGlobals.currentCBTForce!.groups[0]} currentForceIndex={0} onChange={onChange} />
+            </MemoryRouter>
+        );
+        fireEvent.click((await screen.findAllByRole("button", { name: "View " + getMULDisplayName(hit) }, { timeout: 20_000 }))[0]);
+        expect(screen.getByRole("heading", { name: /^Viewing Foxhound Gunboat/ })).toBeTruthy();
+        fireEvent.click(screen.getAllByRole("button", { name: /^(Cancel|Close)$/ })[0]);
+        fireEvent.click((await screen.findAllByRole("button", { name: "TRO " + getMULDisplayName(hit) }))[0]);
+        expect(screen.getByRole("heading", { name: /^Technical Readout: / })).toBeTruthy();
+        fireEvent.click(screen.getAllByRole("button", { name: /^(Cancel|Close)$/ })[0]);
+        fireEvent.click((await screen.findAllByRole("button", { name: "Add " + getMULDisplayName(hit) }))[0]);
+        const group: BattleMechGroup = onChange.mock.calls[0][0];
+        expect(group.smallCraft.map((unit) => unit.getName() + " " + unit.getModel())).toEqual(["Foxhound Gunboat TIG-40"]);
+        expect(group.fighters.length).toBe(0);
+    }, 30_000);
+
+    it("sends a MUL Small Craft with no Classic design to the Small Craft Creator", async () => {
+        const appGlobals = makeAppGlobals();
+        appGlobals.appSettings.cbtMULSearch = newMULSearchFilters({ type: 17, term: "Foxhound Gunboat TIG-40" });
+        const { container } = render(
+            <MemoryRouter>
+                <BattleMechAddMechDialog appGlobals={appGlobals} currentForce={appGlobals.currentCBTForce!.groups[0]} currentForceIndex={0} onChange={vi.fn()} />
+            </MemoryRouter>
+        );
+        await screen.findAllByText(/No Classic design yet/, undefined, { timeout: 20_000 });
+        const links = Array.from(container.querySelectorAll("a")).map((link) => link.getAttribute("href") ?? "");
+        expect(links.some((href) => href.endsWith("/small-craft-creator"))).toBe(true);
+        expect(links.some((href) => href.endsWith("/fighter-creator"))).toBe(false);
+    }, 30_000);
 });

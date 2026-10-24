@@ -9,19 +9,21 @@ import AerospaceFighter from '../../../../classes/aerospace-fighter';
 import BattleArmor from '../../../../classes/battle-armor';
 import InfantryPlatoon from '../../../../classes/infantry-platoon';
 import ProtoMech from '../../../../classes/protomech';
+import SmallCraft from '../../../../classes/small-craft';
 import Vehicle from '../../../../classes/vehicle';
 import { ARTVEE_SAMPLES } from '../../../../data/artvee-samples';
 import BattleArmorRecordSheet from '../../../components/battle-armor-record-sheet';
 import FighterRecordSheet from '../../../components/fighter-record-sheet';
 import InfantryRecordSheet from '../../../components/infantry-record-sheet';
 import ProtoMechRecordSheet from '../../../components/protomech-record-sheet';
+import SmallCraftRecordSheet from '../../../components/small-craft-record-sheet';
 import VehicleRecordSheet from '../../../components/vehicle-record-sheet';
 import TechnicalReadoutSheet from '../../../components/technical-readout-sheet';
 import { getBattleMechTroAdapter } from '../../../../classes/battlemech-tro';
 import { getUnitTroAdapter } from '../../../../classes/unit-tro';
 import type { TechnicalReadout } from '../../../../classes/technical-readout';
 import type { ITroUnitAdapter } from '../../../../data/technical-readout-interfaces';
-import { buildClassicDesignIndex, ClassicDesignIndex, findClassicDesign, getClassicMechEntries, getClassicUnitEntries } from '../../../../utils/classicMULMatch';
+import { buildClassicDesignIndex, ClassicDesignIndex, findClassicDesign, getClassicMechEntries, getClassicUnitEntries, isMULLargeAerospaceCraft } from '../../../../utils/classicMULMatch';
 import { IMULSearchFilters } from '../../../../utils/mulSearchFilters';
 import { getMULEraLabel } from '../../../../utils/mulUtilities';
 import { paginate } from '../../../../utils/paginate';
@@ -41,10 +43,12 @@ const Book = FaBook as any;
 const PlusCircle = FaPlusCircle as any;
 const TimesCircle = FaTimesCircle as any;
 
-type ClassicMULUnit = Vehicle | AerospaceFighter | InfantryPlatoon | BattleArmor | ProtoMech;
+type ClassicMULUnit = Vehicle | AerospaceFighter | InfantryPlatoon | BattleArmor | ProtoMech | SmallCraft;
 
 interface IClassicMULKind {
     typeIDs: number[];
+    // Narrows a shared MUL type: fighters and the larger aerospace craft are both type 17.
+    matches?: (unit: IASMULUnit) => boolean;
     creator: string;
     saves: (appGlobals: IAppGlobals) => { uuid?: string; lastUpdated?: unknown }[];
     load: (json: string) => ClassicMULUnit;
@@ -52,7 +56,7 @@ interface IClassicMULKind {
     bundled?: () => object[];
     // The blank record sheet the View button shows, drawn by the same components as Print Force.
     sheet: (unit: ClassicMULUnit) => JSX.Element;
-    table: "vehicles" | "fighters" | "infantry" | "battleArmor" | "protoMechs";
+    table: "vehicles" | "fighters" | "infantry" | "battleArmor" | "protoMechs" | "smallCraft";
 }
 
 // The Classic MUL search (Ideas #84): 'Mechs (BattleMechs and IndustrialMechs) match saved and bundled designs; the
@@ -60,10 +64,11 @@ interface IClassicMULKind {
 const CBT_MUL_MECH_TYPE_IDS = [18, 20];
 const CBT_MUL_KINDS: IClassicMULKind[] = [
     { typeIDs: [19, 24], creator: "vehicle-creator", saves: (g) => g.vehicleSaves, load: (json) => new Vehicle( json ), table: "vehicles", sheet: (unit) => <VehicleRecordSheet vehicle={unit as Vehicle} />, bundled: () => ARTVEE_SAMPLES.map( (sample) => sample.save ) },
-    { typeIDs: [17], creator: "fighter-creator", saves: (g) => g.fighterSaves, load: (json) => new AerospaceFighter( json ), table: "fighters", sheet: (unit) => <FighterRecordSheet fighter={unit as AerospaceFighter} /> },
+    { typeIDs: [17], matches: (unit) => !isMULLargeAerospaceCraft( unit ), creator: "fighter-creator", saves: (g) => g.fighterSaves, load: (json) => new AerospaceFighter( json ), table: "fighters", sheet: (unit) => <FighterRecordSheet fighter={unit as AerospaceFighter} /> },
     { typeIDs: [21], creator: "infantry-creator", saves: (g) => g.infantrySaves, load: (json) => new InfantryPlatoon( json ), table: "infantry", sheet: (unit) => <InfantryRecordSheet platoons={[unit as InfantryPlatoon]} /> },
     { typeIDs: [22], creator: "battle-armor-creator", saves: (g) => g.battleArmorSaves, load: (json) => new BattleArmor( json ), table: "battleArmor", sheet: (unit) => <BattleArmorRecordSheet squads={[unit as BattleArmor]} /> },
     { typeIDs: [23], creator: "protomech-creator", saves: (g) => g.protoMechSaves, load: (json) => new ProtoMech( json ), table: "protoMechs", sheet: (unit) => <ProtoMechRecordSheet proto={unit as ProtoMech} /> },
+    { typeIDs: [17], matches: isMULLargeAerospaceCraft, creator: "small-craft-creator", saves: (g) => g.smallCraftSaves, load: (json) => new SmallCraft( json ), table: "smallCraft", sheet: (unit) => <SmallCraftRecordSheet craft={unit as SmallCraft} /> },
 ];
 const CBT_MUL_TYPE_IDS = CBT_MUL_MECH_TYPE_IDS.concat( ...CBT_MUL_KINDS.map( (kind) => kind.typeIDs ) );
 const MUL_RESULTS_PAGE_SIZE = 25;
@@ -305,7 +310,7 @@ export default class BattleMechAddMechDialog extends React.Component<IBattleMech
 <fieldset className="fieldset">
     <legend>Master Unit List Search</legend>
     <p className="small-text">
-        Search the Master Unit List copy kept in the app by name, era, faction and more, then add the matching Classic design. A 'Mech matches one you saved first, else the bundled Skunk Werks 'Mech; vehicles, fighters, infantry, battle armor and ProtoMechs match the designs you saved (vehicles also the bundled ArtVees), by name and model (infantry, battle armor and ProtoMechs by a name holding both). Idea from Camille, Centrella-Sworn on the Star League Discord.
+        Search the Master Unit List copy kept in the app by name, era, faction and more, then add the matching Classic design. A 'Mech matches one you saved first, else the bundled Skunk Werks 'Mech; vehicles, fighters, Small Craft and DropShips, infantry, battle armor and ProtoMechs match the designs you saved (vehicles also the bundled ArtVees), by name and model (infantry, battle armor and ProtoMechs by a name holding both). Idea from Camille, Centrella-Sworn on the Star League Discord.
     </p>
     <MULSearchFilters
         filters={this.props.appGlobals.appSettings.cbtMULSearch}
@@ -333,7 +338,7 @@ export default class BattleMechAddMechDialog extends React.Component<IBattleMech
                 <tr><td className="text-center" colSpan={6}>No units on the Master Unit List match your filters.</td></tr>
             ) : null}
             {resultsPage.items.map( (unit: IASMULUnit) => {
-                const kind = CBT_MUL_KINDS.find( (item) => item.typeIDs.includes( unit.Type?.Id ) );
+                const kind = CBT_MUL_KINDS.find( (item) => item.typeIDs.includes( unit.Type?.Id ) && ( !item.matches || item.matches( unit ) ) );
                 if( kind ) {
                     return this.renderOtherMULRow( unit, kind );
                 }

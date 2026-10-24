@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildClassicDesignIndex, findClassicDesign, getMULMatchKeys } from "./classicMULMatch";
+import { buildClassicDesignIndex, findClassicDesign, getMULMatchKeys, isMULLargeAerospaceCraft } from "./classicMULMatch";
 
 describe("getMULMatchKeys", () => {
     it("drops quotes, parentheses and HTML entities so MUL and Skunk Werks spellings meet", () => {
@@ -36,5 +36,27 @@ describe("findClassicDesign", () => {
     it("returns null when no design matches", () => {
         const index = buildClassicDesignIndex([{ chassis: "Atlas", model: "AS7-D", design: "a" }]);
         expect(findClassicDesign(unit("Atlas", "AS7-K"), index)).toBeNull();
+    });
+});
+
+describe("isMULLargeAerospaceCraft", () => {
+    const unit = (type: { Id: number; Name: string }, tonnage: number, unitType?: string) => ({
+        Type: { ...type, Image: null, SortOrder: 0 },
+        Tonnage: tonnage,
+        ...(unitType ? { Mul1Page: { Fields: { "Unit Type": unitType } } } : {}),
+    }) as unknown as Parameters<typeof isMULLargeAerospaceCraft>[0];
+    it("tells the live MUL's Aerospace Craft from its Fighter Craft", () => {
+        expect(isMULLargeAerospaceCraft(unit({ Id: 17, Name: "Aerospace Craft" }, 200))).toBe(true);
+        expect(isMULLargeAerospaceCraft(unit({ Id: 17, Name: "Aerospace Craft" }, 0))).toBe(true);
+        expect(isMULLargeAerospaceCraft(unit({ Id: 17, Name: "Fighter Craft" }, 100))).toBe(false);
+    });
+    it("reads the older MUL's Unit Type, else the tonnage", () => {
+        expect(isMULLargeAerospaceCraft(unit({ Id: 17, Name: "Aerospace" }, 0, "Aerospace - Small Craft"))).toBe(true);
+        expect(isMULLargeAerospaceCraft(unit({ Id: 17, Name: "Aerospace" }, 50, "Aerospace - Aerospace Fighter"))).toBe(false);
+        expect(isMULLargeAerospaceCraft(unit({ Id: 17, Name: "Aerospace" }, 3500))).toBe(true);
+        expect(isMULLargeAerospaceCraft(unit({ Id: 17, Name: "Aerospace" }, 75))).toBe(false);
+    });
+    it("is never true outside type 17", () => {
+        expect(isMULLargeAerospaceCraft(unit({ Id: 18, Name: "BattleMech" }, 200))).toBe(false);
     });
 });

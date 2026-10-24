@@ -1,3 +1,5 @@
+import { TechnicalReadout } from "./technical-readout";
+import type { ITechnicalReadoutExport } from "../data/technical-readout-interfaces";
 import { generateUUID } from "../utils/generateUUID";
 import { IAssignedQuirk, IQuirkTargets, QuirkUnitType } from "../data/quirk-interfaces";
 import { getQuirkIssues, getQuirkTargets, quirkBayTarget } from "../data/quirk-registry";
@@ -187,6 +189,8 @@ export interface ISmallCraftExport {
     version: number;
     uuid: string;
     quirks?: IAssignedQuirk[];
+    /** The optional Technical Readout: makes, production and text (TRO fields). */
+    tro?: ITechnicalReadoutExport;
     lastUpdated: Date;
     name: string;
     model: string;
@@ -259,6 +263,8 @@ export default class SmallCraft {
 
     /** The design quirks assigned to this unit (quirk tables, Campaign Operations pp.228 and 232). */
     public quirks: QuirkList = new QuirkList();
+    /** The optional Technical Readout: makes, production and text; no effect on the design (TRO fields). */
+    public tro: TechnicalReadout = new TechnicalReadout();
     /** The force's "Game year", set by `BattleMechForce.syncQuirkPlayYear`; not saved with the unit. */
     public quirkPlayYear: number | null = null;
     public lastUpdated: Date = new Date();
@@ -304,7 +310,8 @@ export default class SmallCraft {
     private _capitalWeapons: ISmallCraftCapitalMount[] = [];
     private _importIssues: string[] = [];
 
-    private _weights: { name: string; weight: number }[] = [];
+    /** The tonnage breakdown; equipment and capital weapon lines carry their item (the TRO construction table reads it). */
+    private _weights: { name: string; weight: number; item?: IEquipmentItem | ISmallCraftCapitalMount }[] = [];
     private _currentTonnage: number = 0;
 
     constructor(importJSON: string = "") {
@@ -1115,7 +1122,7 @@ export default class SmallCraft {
 
     // Totals --------------------------------------------------------------------------------------------------
 
-    public getWeights(): { name: string; weight: number }[] { return this._weights; }
+    public getWeights(): { name: string; weight: number; item?: IEquipmentItem | ISmallCraftCapitalMount }[] { return this._weights; }
     public getCurrentTonnage(): number { return this._currentTonnage; }
     public getRemainingTonnage(): number { return Math.round((this._tonnage - this._currentTonnage) * 1000) / 1000; }
 
@@ -1251,10 +1258,10 @@ export default class SmallCraft {
             { name: `Armor (${this._armorType.name}, ${this.getPurchasedArmorPoints()} + ${this.getBonusArmorPoints()} points)`, weight: this.getArmorTons() },
             { name: `Heat Sinks (${this.getTotalHeatSinks()} ${this._heatSinkType.name}, ${this.getFreeHeatSinks()} free)`, weight: this._additionalHeatSinks },
             ...(this.getFireControlWeight() > 0 ? [{ name: "Extra Fire Control", weight: this.getFireControlWeight() }] : []),
-            ...this._equipmentList.map((item) => ({ name: item.name, weight: item.weight || 0 })),
+            ...this._equipmentList.map((item) => ({ name: item.name, weight: item.weight || 0, item })),
             ...this._capitalWeapons.map((mount) => {
                 const shots = this.getCapitalShots(mount);
-                return { name: `${mount.weapon.name}${getCapitalAmmoTags(mount.weapon).length ? ` (${shots} shot${shots === 1 ? "" : "s"})` : ""}`, weight: this.getCapitalWeaponWeight(mount) };
+                return { name: `${mount.weapon.name}${getCapitalAmmoTags(mount.weapon).length ? ` (${shots} shot${shots === 1 ? "" : "s"})` : ""}`, weight: this.getCapitalWeaponWeight(mount), item: mount };
             }),
             ...quarters,
             ...bays,
@@ -2046,6 +2053,7 @@ export default class SmallCraft {
             version: 1,
             uuid: this._uuid,
             quirks: this.quirks.export(),
+            tro: this.tro.export(),
             lastUpdated: this.lastUpdated,
             name: this._name,
             ...(this._rulesEdition !== DEFAULT_RULES_EDITION ? { rulesEdition: this._rulesEdition } : {}),
@@ -2140,6 +2148,7 @@ export default class SmallCraft {
             const saved = parsed as Partial<Record<keyof ISmallCraftExport, unknown>>;
             this._uuid = savedString(saved.uuid).slice(0, 100) || generateUUID();
             this.quirks.import(saved.quirks);
+            this.tro.import(saved.tro);
             const updated = typeof saved.lastUpdated === "string" || typeof saved.lastUpdated === "number" ? new Date(saved.lastUpdated) : new Date();
             this.lastUpdated = Number.isNaN(updated.getTime()) ? new Date() : updated;
             for (const key of ["name", "model"] as const) {

@@ -200,6 +200,8 @@ export default class Home extends React.Component<IHomeProps, IHomeState> {
                         <li>The vehicle TRO sheet's construction table now lists every ton, the way the printed TROs do: control systems, lift equipment, turrets, heat sinks, movement, armor factor, internal structure and armor by location, and ammunition, with locations by name.</li>
                         <li>The fighter TRO sheet's construction table does the same: engine with Safe and Maximum Thrust, structural integrity, cockpit, fuel, heat sinks, armor by arc and ammunition, adding up to the fighter's tonnage.</li>
                         <li>The infantry TRO sheet's table now gives transport weight, tech base, movement, formation, platoon make-up, armor kit and damage divisor, anti-'Mech training and special features, with each weapon's trooper count.</li>
+                        <li>The Small Craft Creator has its Technical Readout step: Step 7, between Crew, Quarters and Bays and Summary, with the same printable TRO sheet. Its table lists every ton: engine with Safe and Maximum Thrust, structural integrity, fuel, heat sinks, quarters and bays, armor by side and the weapons by arc, capital weapons included for DropShips. Importing a MegaMek Small Craft or DropShip file brings its TRO fields across too.</li>
+                        <li>The Classic Roster's Master Unit List search now finds Small Craft and DropShips too: the Small Craft table has its own Search MUL button, and each result has View, TRO and Add, landing in the group's Small Craft table. Before, the MUL's Small Craft and DropShips were taken for fighters and sent to the Fighter Creator.</li>
                       </ul>
                    </li>
                   <li>

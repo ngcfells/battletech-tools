@@ -4,6 +4,7 @@ import {
     DROPSHIP_MAX_TONNAGE, DROPSHIP_MIN_TONNAGE, SMALL_CRAFT_MAX_TONNAGE, SMALL_CRAFT_MIN_TONNAGE, SmallCraftArc, findTransportBayType, quartersTypes,
 } from "../data/small-craft-construction";
 import { IBlkFile, blkLines, blkValue, parseBlkFile } from "../utils/blk-file";
+import { readBlkTechnicalReadout } from "../utils/blk-technical-readout";
 import SmallCraft from "./small-craft";
 import { findImportedEquipment } from "../utils/importedEquipment";
 import { IBlkAmmoLine, findBlkAmmo, findBlkAmmoWeapon, parseBlkAmmoLine } from "../utils/blk-ammo";
@@ -392,5 +393,6 @@ export const importSmallCraftBlk = (text: string): ISmallCraftBlkResult => {
     craft.setLifeBoats(numberOf(file, "life_boat"));
     craft.setEscapePods(numberOf(file, "escape_pod"));
     applyBlkQuirks(file, craft, placed, issues, (abbr) => BLK_ARCS[abbr.toUpperCase()]);
+    craft.tro.import(readBlkTechnicalReadout(file));
     return { craft, issues, notes };
 };

@@ -45,7 +45,14 @@ test("the TechManual's Astrolux can be built, checked, saved and printed", async
     await expect(page.getByTestId("sc-weight")).toHaveText("200");
     await expect(page.getByTestId("sc-bays")).toContainText("Cargo, Standard");
 
-    await page.goto("classic-battletech/small-craft-creator/summary");
+    await page.getByRole("link", { name: /Next: Technical Readout/ }).click();
+    await expect(page.getByText("Step 7: Technical Readout (optional)")).toBeVisible();
+    await page.getByLabel("Manufacturer", { exact: true }).fill("Wangker Aerospace");
+    await page.getByRole("link", { name: "Print TRO sheet" }).click();
+    await expect(page.getByText("Wangker Aerospace").first()).toBeVisible();
+    await expect(page.getByText("200 tons").first()).toBeVisible();
+    await page.goto("classic-battletech/small-craft-creator/technical-readout");
+    await page.getByRole("link", { name: "Summary", exact: true }).click();
     await expect(page.getByTestId("sc-legal")).toBeVisible();
     await expect(page.getByText("Summary: Astrolux")).toBeVisible();
     // 112 armor x 2.5 + Structural Integrity 8 x 2; TM p.283 structure costs x 5 for 200 tons.

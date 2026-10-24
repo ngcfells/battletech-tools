@@ -546,6 +546,7 @@ export default class BattleMechTableGroup extends React.Component<IBattleMechTab
 />
 <SmallCraftGroupTable
     appGlobals={this.props.appGlobals}
+    onSearchMUL={(e) => this.openAddingUnits( e, this.props.bmGroupIndex, 17 )}
     bmGroupIndex={this.props.bmGroupIndex}
     showAdd={this.props.showAdd}
     showEdit={this.props.showEdit}

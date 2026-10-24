@@ -1,16 +1,18 @@
 import { IEquipmentItem } from "../data/data-interfaces";
 import { ITroComponentRow, ITroConstructionRow, ITroEquipmentCopy, ITroSpecValues, ITroUnitAdapter } from "../data/technical-readout-interfaces";
 import { generateUUID } from "../utils/generateUUID";
+import { SMALL_CRAFT_ARCS, SmallCraftArc } from "../data/small-craft-construction";
 import AerospaceFighter, { FIGHTER_ARCS, FIGHTER_LOCATIONS } from "./aerospace-fighter";
 import BattleArmor from "./battle-armor";
 import InfantryPlatoon from "./infantry-platoon";
 import ProtoMech from "./protomech";
+import SmallCraft from "./small-craft";
 import Vehicle from "./vehicle";
 
 // TRO fields round 2: the shared Technical Readout adapter for the Classic types other than 'Mechs (those have
 // battlemech-tro.ts). Each type gives its spec block, component rows, equipment and construction table.
 
-export type TroUnit = Vehicle | AerospaceFighter | InfantryPlatoon | BattleArmor | ProtoMech;
+export type TroUnit = Vehicle | AerospaceFighter | InfantryPlatoon | BattleArmor | ProtoMech | SmallCraft;
 
 /** Modern TROs print speeds in kph: 10.8 kph per movement point, to the whole kph. */
 const kph = (movementPoints: number): string => `${Math.round(movementPoints * 10.8)} kph`;
@@ -77,16 +79,18 @@ const tonsText = (tons: number): string => `${Math.round(tons * 1000) / 1000}`;
 const capitalize = (text: string): string => text.charAt(0).toUpperCase() + text.slice(1);
 
 /** One construction row per weight line, in the unit's own order, so the table adds up to the unit's mass. */
-interface IWeightLine { name: string; weight: number; item?: IEquipmentItem }
+interface IWeightLine { name: string; weight: number; item?: { location?: { toString(): string } } }
 
 /**
  * Splits a weight list into the rows above "Weapons and Equipment" and the rows under it. Equipment lines carry their
- * item; a line after the equipment (a support vehicle's kilogram items, rounded up together) stays with the equipment.
+ * item. A line after the equipment stays with the equipment (a support vehicle's kilogram items, rounded up together)
+ * unless `afterEquipment` is "construction" (a Small Craft's quarters, bays and escape pods).
  */
 function weightLineRows(
     lines: IWeightLine[],
     chassisRow: (line: IWeightLine) => ITroConstructionRow[],
     locationName: (location?: string) => string,
+    afterEquipment: "equipment" | "construction" = "equipment",
 ): { construction: ITroConstructionRow[]; equipmentRows: ITroConstructionRow[] } {
     const construction: ITroConstructionRow[] = [];
     const equipmentRows: ITroConstructionRow[] = [];
@@ -95,7 +99,7 @@ function weightLineRows(
         if (line.item) {
             pastEquipment = true;
             equipmentRows.push({ label: line.name, value: locationName(line.item.location?.toString()), mass: tonsText(line.weight) });
-        } else if (pastEquipment) {
+        } else if (pastEquipment && afterEquipment === "equipment") {
             equipmentRows.push({ label: line.name, mass: tonsText(line.weight) });
         } else {
             construction.push(...chassisRow(line));
@@ -311,11 +315,63 @@ function protoMechParts(proto: ProtoMech): IUnitTroParts {
     };
 }
 
+/** Armor facings: a spheroid's sides are its sides, an aerodyne's its wings. */
+function smallCraftFacingName(craft: SmallCraft, facing: "nose" | "left" | "right" | "aft"): string {
+    if (facing === "left" || facing === "right") {
+        return `${capitalize(facing)} ${craft.getShape() === "spheroid" ? "Side" : "Wing"}`;
+    }
+    return capitalize(facing);
+}
+
+function smallCraftParts(craft: SmallCraft): IUnitTroParts {
+    const tons = craft.getTonnage();
+    const arcName = (location?: string): string => (SMALL_CRAFT_ARCS as string[]).includes(location ?? "") ? craft.getArcName(location as SmallCraftArc) : "Hull";
+    const chassisRow = (line: IWeightLine): ITroConstructionRow[] => {
+        const mass = tonsText(line.weight);
+        if (line.name.startsWith("Engine (")) {
+            return [
+                { label: line.name, mass },
+                { label: "Safe Thrust", value: `${craft.getSafeThrust()}`, indent: true },
+                { label: "Maximum Thrust", value: `${craft.getMaxThrust()}`, indent: true },
+            ];
+        }
+        return [{ label: line.name, mass }];
+    };
+    const { construction, equipmentRows } = weightLineRows(craft.getWeights(), chassisRow, arcName, "construction");
+    const armor = craft.getArmorAllocation();
+    construction.push(
+        { label: "Armor by location", heading: true },
+        ...(["nose", "left", "right", "aft"] as const).map((facing) => ({ label: smallCraftFacingName(craft, facing), value: `${armor[facing]}`, indent: true })),
+    );
+    return {
+        spec: {
+            title: craft.getName(),
+            subtitle: subtitle(craft.getModel(), craft.getTech().name, `${craft.getShapeName()} ${craft.getCraftTypeName()}`, `${tons} tons`),
+            mass: `${tons} tons`,
+            cruisingSpeed: `Safe Thrust ${craft.getSafeThrust()}`,
+            maximumSpeed: `Maximum Thrust ${craft.getMaxThrust()}`,
+            armorType: craft.getArmorType().name,
+        },
+        components: [
+            { key: "chassis", label: "Hull" },
+            { key: "engine", label: "Engine" },
+            { key: "armor", label: `Armor (${craft.getArmorType().name})` },
+        ],
+        construction,
+        equipmentRows,
+        equipment: [
+            ...catalogEquipment(craft.getEquipmentList(), arcName),
+            ...craft.getCapitalWeapons().map((mount) => ({ item: { uuid: mount.uuid, tag: mount.weapon.tag }, name: mount.weapon.name, location: arcName(mount.location), armament: true })),
+        ],
+    };
+}
+
 /** What the shared Technical Readout section and sheet need to know about any non-'Mech Classic unit. */
 export function getUnitTroAdapter(unit: TroUnit): ITroUnitAdapter {
     if (unit instanceof Vehicle) return buildAdapter(() => vehicleParts(unit));
     if (unit instanceof AerospaceFighter) return buildAdapter(() => fighterParts(unit));
     if (unit instanceof InfantryPlatoon) return buildAdapter(() => infantryParts(unit));
     if (unit instanceof BattleArmor) return buildAdapter(() => battleArmorParts(unit));
-    return buildAdapter(() => protoMechParts(unit));
+    if (unit instanceof ProtoMech) return buildAdapter(() => protoMechParts(unit));
+    return buildAdapter(() => smallCraftParts(unit));
 }

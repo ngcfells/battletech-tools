@@ -10,6 +10,8 @@ import SmallCraftCreatorCrew from './crew';
 import SmallCraftCreatorSummary from './summary';
 import SmallCraftCreatorRecordSheet from './record-sheet';
 import SmallCraftCreatorPrintAS from './print-as';
+import SmallCraftCreatorTechnicalReadout from './technical-readout';
+import SmallCraftCreatorPrintTRO from './print-tro';
 
 import type { JSX } from "react";
 
@@ -36,6 +38,14 @@ export default class SmallCraftCreatorRouter extends React.Component<ISmallCraft
 
                 <Route path={`crew`} element={
                     <SmallCraftCreatorCrew appGlobals={this.props.appGlobals} />
+                }/>
+
+                <Route path={`technical-readout`} element={
+                    <SmallCraftCreatorTechnicalReadout appGlobals={this.props.appGlobals} />
+                }/>
+
+                <Route path={`print-tro`} element={
+                    <SmallCraftCreatorPrintTRO appGlobals={this.props.appGlobals} />
                 }/>
 
                 <Route path={`print-as`} element={

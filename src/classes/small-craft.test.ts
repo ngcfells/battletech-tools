@@ -351,6 +351,12 @@ describe("Small Craft saves and imports", () => {
         expect((quirked.craft as SmallCraft).quirks.getAll()).toEqual([{ tag: "quirk-narrow-low-profile" }]);
         // A DropShip weighs 200 tons or more (TM p.184).
         expect(importSmallCraftBlk(blk.replace("SmallCraft", "Dropship").replace("200.0", "150.0")).craft).toBeNull();
+        // The file's Technical Readout fields come across too (TRO fields, #78).
+        const fluffed = importSmallCraftBlk(`${blk}\n<manufacturer>\nWangker Aerospace\n</manufacturer>\n<systemManufacturers>\nENGINE:Rawlings\n</systemManufacturers>\n<history>\n<p>Built for the Periphery trade.</p>\n</history>`);
+        const troCraft = fluffed.craft as SmallCraft;
+        expect(troCraft.tro.getProduction("manufacturer")).toBe("Wangker Aerospace");
+        expect(troCraft.tro.getComponent("engine")).toBe("Rawlings");
+        expect(troCraft.tro.getText("battleHistory")).toBe("Built for the Periphery trade.");
     }, 20000);
 });
 
