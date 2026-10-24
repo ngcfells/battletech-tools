@@ -13,7 +13,7 @@ import { mechEngineTypes } from "../data/mech-engine-types";
 import { mechHeatSinkTypes } from "../data/mech-heat-sink-types";
 import { btTechOptions } from "../data/tech-options";
 import { btEraOptions, findEraByTag, getClosestEraForTech, getErasForTech } from "../data/era-options";
-import { CUSTOM_HOMEBREW_RULES_LEVEL, getArtemisLauncherBattleValue, getItemBattleValue, EXPERIMENTAL_RULES_LEVEL, getAmmoBattleValuePerTon, getBattleArmorScaleListByTech, getCompatibleAmmo, getDatesAvailability, getEquipmentListByTech, getEquipmentRulesLevel, getEquipmentOfferIssue, getWeaponShotsPerTon, isEquipmentOffered } from "../data/equipment-registry";
+import { CUSTOM_HOMEBREW_RULES_LEVEL, getArtemisLauncherBattleValue, getLauncherBattleValueWithoutFireControl, EXPERIMENTAL_RULES_LEVEL, getAmmoBattleValuePerTon, getBattleArmorScaleListByTech, getCompatibleAmmo, getDatesAvailability, getEquipmentListByTech, getEquipmentRulesLevel, getEquipmentOfferIssue, getWeaponShotsPerTon, isEquipmentOffered } from "../data/equipment-registry";
 import { getFractionalAerospaceArmorTonsPerPoint, getFractionalEngineWeight, roundUpToKilogram } from "../data/fractional-accounting";
 import { AlphaStrikeUnit, IASMULUnit } from "./alpha-strike-unit";
 import Pilot, { IPilot } from "./pilot";
@@ -1775,6 +1775,11 @@ export default class AerospaceFighter {
         return getArtemisLauncherBattleValue(item, () => getUnitCatalogRecords(this._tech.tag, { battleArmorScale: true }), this._tech.tag);
     }
 
+    /** A weapon's value without its fire control (Artemis): the unmodified BV that caps its ammunition (TM p.312). */
+    private _weaponUnmodifiedBV(item: IEquipmentItem): number {
+        return getLauncherBattleValueWithoutFireControl(item, () => getUnitCatalogRecords(this._tech.tag, { battleArmorScale: true }), this._tech.tag);
+    }
+
     /** The Speed Factor for a Maximum Thrust (Speed Factor Table and formula, TM p.316). */
     public static speedFactor(maxThrust: number): number {
         return Math.round(Math.pow(1 + (maxThrust - 5) / 10, 1.2) * 100) / 100;
@@ -1835,7 +1840,7 @@ export default class AerospaceFighter {
         log += "<strong>OFFENSIVE BATTLE RATING</strong><br />";
         const hasTC = this.hasTargetingComputer();
         const offensiveWeapons = this._equipmentList.filter((item) => this._isWeapon(item));
-        const arcBV = (arc: FighterArc) => offensiveWeapons.filter((item) => item.location === arc).reduce((sum, item) => sum + getItemBattleValue(item, this._tech.tag), 0);
+        const arcBV = (arc: FighterArc) => offensiveWeapons.filter((item) => item.location === arc).reduce((sum, item) => sum + this._weaponUnmodifiedBV(item), 0);
         const halvedArc: FighterArc = arcBV("nose") < arcBV("aft") ? "nose" : "aft";
         const modifiedBV = (item: IEquipmentItem) => this._weaponBaseBV(item)
             * (hasTC && isTargetingComputerWeapon(item) ? 1.25 : 1) * (item.location === halvedArc ? 0.5 : 1);
@@ -1843,7 +1848,7 @@ export default class AerospaceFighter {
         let rating = 0;
         // Ammunition, capped at the unmodified value of the weapons of the model it feeds.
         const weaponBVByTag: Record<string, number> = {};
-        for (const item of offensiveWeapons) weaponBVByTag[item.tag] = (weaponBVByTag[item.tag] ?? 0) + getItemBattleValue(item, this._tech.tag);
+        for (const item of offensiveWeapons) weaponBVByTag[item.tag] = (weaponBVByTag[item.tag] ?? 0) + this._weaponUnmodifiedBV(item);
         const ammoBVByTag: Record<string, number> = {};
         for (const ammo of this._equipmentList.filter((item) => item.isAmmo)) {
             const fed = offensiveWeapons.find((weapon) => getCompatibleAmmo(weapon, ammo));
@@ -1932,14 +1937,14 @@ export default class AerospaceFighter {
 
         const hasTC = this.hasTargetingComputer();
         const offensiveWeapons = this._equipmentList.filter((item) => this._isWeapon(item));
-        const arcBV = (arc: FighterArc) => offensiveWeapons.filter((item) => item.location === arc).reduce((sum, item) => sum + getItemBattleValue(item, this._tech.tag), 0);
+        const arcBV = (arc: FighterArc) => offensiveWeapons.filter((item) => item.location === arc).reduce((sum, item) => sum + this._weaponUnmodifiedBV(item), 0);
         const halvedArc: FighterArc = arcBV("nose") < arcBV("aft") ? "nose" : "aft";
         let weaponBV = 0;
         const weaponBVByTag: Record<string, number> = {};
         for (const item of offensiveWeapons) {
             const value = this._weaponBaseBV(item) * (hasTC && isTargetingComputerWeapon(item) ? 1.25 : 1) * (item.location === halvedArc ? 0.5 : 1);
             weaponBV += value;
-            weaponBVByTag[item.tag] = (weaponBVByTag[item.tag] ?? 0) + getItemBattleValue(item, this._tech.tag);
+            weaponBVByTag[item.tag] = (weaponBVByTag[item.tag] ?? 0) + this._weaponUnmodifiedBV(item);
             log += `+ ${escapeLogText(item.name)} = ${value.toFixed(2)}${item.location === halvedArc ? " (weaker of nose and aft x 0.5)" : ""}<br />`;
         }
         const ammoBVByTag: Record<string, number> = {};

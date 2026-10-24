@@ -1,5 +1,5 @@
 import { generateUUID } from "../utils/generateUUID";
-import { copyCatalogRecord, findUnitCatalogRecord } from "../data/equipment-lookup";
+import { copyCatalogRecord, findUnitCatalogRecord, getUnitCatalogRecords } from "../data/equipment-lookup";
 import { TechnicalReadout } from "./technical-readout";
 import type { ITechnicalReadoutExport } from "../data/technical-readout-interfaces";
 import { IAssignedQuirk, IQuirkTargets, QuirkUnitType } from "../data/quirk-interfaces";
@@ -47,7 +47,7 @@ import {
     MAX_VEHICLE_BAY_COUNT, MAX_VEHICLE_BAYS, MAX_VEHICLE_CARGO_TONS, normalizeVehicleBays, VEHICLE_BAY_TYPES,
 } from "../data/vehicle-transport-bays";
 import { ARTVEE_CONVERSION_EQUIPMENT } from "../data/combat-vehicle-chassis-modifications-custom";
-import { CUSTOM_HOMEBREW_RULES_LEVEL, EXPERIMENTAL_RULES_LEVEL, getItemBattleValue, equipmentMatchesIdentifier, getAmmoBattleValuePerTon, getBattleArmorScaleListByTech, getCompatibleAmmo, getDatesAvailability, getEquipmentListByTech, getEquipmentRulesLevel, getStarLeagueCarryOverDates, getWeaponShotsPerTon, isEquipmentOffered } from "../data/equipment-registry";
+import { CUSTOM_HOMEBREW_RULES_LEVEL, EXPERIMENTAL_RULES_LEVEL, getItemBattleValue, getLauncherBattleValueWithoutFireControl, equipmentMatchesIdentifier, getAmmoBattleValuePerTon, getBattleArmorScaleListByTech, getCompatibleAmmo, getDatesAvailability, getEquipmentListByTech, getEquipmentRulesLevel, getStarLeagueCarryOverDates, getWeaponShotsPerTon, isEquipmentOffered } from "../data/equipment-registry";
 import { isTargetingComputerWeapon, roundUpHalfTon, sizeTargetingComputers, sizeVariableEquipment } from "../data/variable-equipment";
 import { getFractionalArmorTonsPerPoint, getFractionalEngineWeight, roundUpToKilogram } from "../data/fractional-accounting";
 import { getBattleArmorScaleExplosionDamage } from "../data/battle-armor-scale-equipment";
@@ -3017,7 +3017,9 @@ export default class Vehicle {
         for (const item of offensiveWeapons) {
             const value = baseWeaponBV(item) * (isHalved(item) ? 0.5 : 1);
             weaponBV += value;
-            weaponBVByTag[item.tag] = (weaponBVByTag[item.tag] ?? 0) + value;
+            // Ammunition caps at the unmodified value of its weapons: no fire control, computer or arc (TM p.307).
+            weaponBVByTag[item.tag] = (weaponBVByTag[item.tag] ?? 0)
+                + getLauncherBattleValueWithoutFireControl(item, () => getUnitCatalogRecords(this._tech.tag, { battleArmorScale: true }), this._tech.tag);
             log += `+ ${escapeLogText(item.name)} (${escapeLogText(item.location || "unallocated")}) = ${value.toFixed(2)}${isHalved(item) ? " (rear arc x 0.5)" : ""}<br />`;
         }
 

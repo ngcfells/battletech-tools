@@ -138,3 +138,13 @@ describe("Aerospace fighter construction (TechManual)", () => {
         expect(normalizeAerospaceFighterExport(fighter.export()).fighter!.tonnage).toBe(75);
     });
 });
+
+describe("Aerospace fighter ammunition", () => {
+    it("caps an Artemis launcher's rounds at the launcher's unmodified value (TM p.312)", () => {
+        const fighter = sabutai();
+        fighter.addEquipmentFromTag("clan-lrm-20-artemis-iv", "nose");
+        for (let ton = 0; ton < 9; ton++) fighter.addEquipmentFromTag("ammo-clan-lrm-artemis-iv", "nose");
+        // 9 tons of Clan LRM rounds: over the LRM-20's 220, under the 264 it counts with Artemis IV.
+        expect(fighter.getBattleValueLog()).toContain("Ammunition for clan-lrm-20-artemis-iv = 220.00 (capped at weapon BV)");
+    });
+});

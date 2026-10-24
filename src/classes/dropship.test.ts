@@ -218,7 +218,7 @@ describe("DropShip capital weapons (TM pp.194, 210, 342)", () => {
     });
 
     // MegaMek caps a DropShip's ammunition arc by arc, against the weapons in the arc that use it.
-    it("caps each arc's capital missiles at the value of that arc's launchers (TM p.311)", () => {
+    it("caps each arc's capital missiles at the value of that arc's launchers (TM p.312)", () => {
         const ship = buildShip();
         const nose = ship.addCapitalWeapon("killer-whale", "nose");
         const left = ship.addCapitalWeapon("killer-whale", "left");
@@ -226,6 +226,15 @@ describe("DropShip capital weapons (TM pp.194, 210, 342)", () => {
         // The nose's 10 missiles at 96 cap at its launcher's 769; the left's 2 count 192.
         expect(nose && left).toBeTruthy();
         expect(ship.getBattleValueLog()).toContain("Ammunition for Killer Whale = 961.00 (capped at weapon BV)");
+    });
+
+    it("caps an Artemis launcher's rounds at the launcher's unmodified value (TM p.312)", () => {
+        const ship = buildShip();
+        ship.addEquipmentFromTag("lrm-20-artemis-iv", "nose");
+        const bin = ship.addEquipmentFromTag("ammo-is-lrm-artemis-iv", "nose");
+        ship.setAmmoBinTons(bin?.uuid, 8);
+        // 8 tons at 23 is 184: over the LRM-20's 181, under the 217.2 it counts with Artemis IV.
+        expect(ship.getBattleValueLog()).toContain("Ammunition for lrm-20-artemis-iv = 181.00 (capped at weapon BV)");
     });
 
     it("saves and loads its capital weapons", () => {
@@ -326,7 +335,7 @@ describe("K-F boom and docking collar hits (TW p.240; AeroTech 2 Revised pp.29-3
     });
 });
 
-describe("DropShip ammunition by weapon bay (TM pp.194-195, 311)", () => {
+describe("DropShip ammunition by weapon bay (TM pp.194-195, 312)", () => {
     // Two Gauss rifles and 12 tons in the nose, one and 5 tons aft, one rear-firing in each side with 2 tons.
     const importGaussShip = () => importSmallCraftBlk([
         "<UnitType>", "Dropship", "</UnitType>", "<Name>", "Test Lighter", "</Name>", "<Model>", "TL-1", "</Model>", "<year>", "3067", "</year>",
@@ -386,7 +395,7 @@ describe("DropShip ammunition by weapon bay (TM pp.194-195, 311)", () => {
 });
 
 describe("DropShip ammunition feeds the launchers of its own bays", () => {
-    // One kind of LRM round feeds every size of launcher; its BV a ton is that of the launcher it feeds (TM p.311).
+    // One kind of LRM round feeds every size of launcher; its BV a ton is that of the launcher it feeds (TM p.312).
     it("counts LRM rounds at the rate of the launcher in their arc", () => {
         const result = importSmallCraftBlk([
             "<UnitType>", "Dropship", "</UnitType>", "<Name>", "Test Lighter", "</Name>", "<Model>", "TL-5", "</Model>", "<year>", "3067", "</year>",
@@ -405,7 +414,7 @@ describe("DropShip ammunition feeds the launchers of its own bays", () => {
         expect(log).toContain("Ammunition for lrm-10 = 22.00");
     });
 
-    it("counts each line's rounds at the rate of the launcher the line feeds (TM p.311)", () => {
+    it("counts each line's rounds at the rate of the launcher the line feeds (TM p.312)", () => {
         const result = importSmallCraftBlk([
             "<UnitType>", "Dropship", "</UnitType>", "<Name>", "Test Lighter", "</Name>", "<Model>", "TL-8", "</Model>", "<year>", "3067", "</year>",
             "<type>", "IS Level 2", "</type>", "<motion_type>", "Spheroid", "</motion_type>", "<designtype>", "1", "</designtype>",
@@ -442,7 +451,7 @@ describe("DropShip ammunition feeds the launchers of its own bays", () => {
         expect(bins.map((bin) => (result.craft as SmallCraft).getAmmoBinShots(bin))).toEqual([52, 176]);
     });
 
-    it("caps each arc's rounds at the value of that arc's launchers (TM p.311)", () => {
+    it("caps each arc's rounds at the value of that arc's launchers (TM p.312)", () => {
         const result = importSmallCraftBlk([
             "<UnitType>", "Dropship", "</UnitType>", "<Name>", "Test Lighter", "</Name>", "<Model>", "TL-6", "</Model>", "<year>", "3067", "</year>",
             "<type>", "IS Level 2", "</type>", "<motion_type>", "Spheroid", "</motion_type>", "<designtype>", "1", "</designtype>",

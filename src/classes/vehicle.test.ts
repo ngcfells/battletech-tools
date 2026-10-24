@@ -453,6 +453,14 @@ describe("Vehicle construction details", () => {
         expect(tank.getUsedItemSlots()).toBe(4);
     });
 
+    it("caps an Artemis launcher's rounds at the launcher's unmodified value (TM p.307)", () => {
+        const tank = build("tracked", 100);
+        place(tank, "lrm-20-artemis-iv", "front");
+        for (let ton = 0; ton < 8; ton++) tank.addEquipmentFromTag("ammo-is-lrm-artemis-iv");
+        // 8 tons at 23 is 184: over the LRM-20's 181, under the 217.2 it counts with Artemis IV.
+        expect(tank.getBattleValueLog()).toContain("Ammunition for lrm-20-artemis-iv = 181.00 (capped at weapon BV)");
+    });
+
     it("loads a Cruise Missile one 25-ton missile at a time (TO:AUE pp.97, 216)", () => {
         const tank = build("tracked", 100);
         place(tank, "cruise-missile-50", "body");
