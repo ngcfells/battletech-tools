@@ -280,3 +280,34 @@ Tree Club	not equipment	A club a 'Mech picks up in play (TW p.146), not built in
 Variable-Pulse Laser Rifle	round 9	AToW Companion p.195: RPG stats only; converted with the personal gear
 Vibro Lock Pick Set	round 9	A Time of War personal gear
 Vibro-Shovel	no source	MegaMek item with no rules reference; no book in the library has it
+AR10 Peacemaker Ammo	capital	WMD, IO:AE pp.169-170: nuclear capital missiles go with the Alamo Missile row
+AR10 Santa Anna Ammo	capital	WMD, IO:AE pp.169-170: nuclear capital missiles go with the Alamo Missile row
+Alamo Ammo	capital	WMD, IO:AE pp.169-170: nuclear capital missiles go with the Alamo Missile row
+Peacemaker Ammo	capital	WMD, IO:AE pp.169-170: nuclear capital missiles go with the Alamo Missile row
+Santa Anna Ammo	capital	WMD, IO:AE pp.169-170: nuclear capital missiles go with the Alamo Missile row
+Std. Nuclear Weapon (Type II/Alamo)	capital	WMD, IO:AE pp.169-170: nuclear capital missiles go with the Alamo Missile row
+Enhanced LRM 5 Listen-Kill Ammo	not canon	Listen-Kill missiles fit standard LRM and SRM launchers only (IO:AE p.99)
+Enhanced LRM 5 Listen-Kill w/ Incendiary Ammo	not canon	Listen-Kill missiles fit standard LRM and SRM launchers only (IO:AE p.99), as do incendiary LRMs (TO:AUE p.181)
+Enhanced LRM 10 Listen-Kill Ammo	not canon	Listen-Kill missiles fit standard LRM and SRM launchers only (IO:AE p.99)
+Enhanced LRM 10 Listen-Kill w/ Incendiary Ammo	not canon	Listen-Kill missiles fit standard LRM and SRM launchers only (IO:AE p.99), as do incendiary LRMs (TO:AUE p.181)
+Enhanced LRM 15 Listen-Kill Ammo	not canon	Listen-Kill missiles fit standard LRM and SRM launchers only (IO:AE p.99)
+Enhanced LRM 15 Listen-Kill w/ Incendiary Ammo	not canon	Listen-Kill missiles fit standard LRM and SRM launchers only (IO:AE p.99), as do incendiary LRMs (TO:AUE p.181)
+Enhanced LRM 20 Listen-Kill Ammo	not canon	Listen-Kill missiles fit standard LRM and SRM launchers only (IO:AE p.99)
+Enhanced LRM 20 Listen-Kill w/ Incendiary Ammo	not canon	Listen-Kill missiles fit standard LRM and SRM launchers only (IO:AE p.99), as do incendiary LRMs (TO:AUE p.181)
+Chaff Grenades [VGL]	builder gap	VGL munition, chosen per launcher before play (TO:AUE p.175); fragmentation is the default load, and no builder offers a munition choice on a VGL
+Fragmentation Grenades [VGL]	builder gap	VGL munition, chosen per launcher before play (TO:AUE p.175); fragmentation is the default load, and no builder offers a munition choice on a VGL
+Incendiary Grenades [VGL]	builder gap	VGL munition, chosen per launcher before play (TO:AUE p.175); fragmentation is the default load, and no builder offers a munition choice on a VGL
+Smoke Grenades [VGL]	builder gap	VGL munition, chosen per launcher before play (TO:AUE p.175); fragmentation is the default load, and no builder offers a munition choice on a VGL
+BA Taser Ammo	catalog	battle-armor-equipment: is-taser, a one-shot weapon carrying its shot (TO:AUE p.157)
+Micro Bomb Ammo	catalog	battle-armor-equipment: clan-bomb-rack, a one-shot rack carrying its bomb (TM p.253)
+MPod Ammo	catalog	equipment-misc: m-pod, a one-shot weapon (TO:AUE p.142)
+Smoke BA Tube Artillery Ammo	catalog	battle armor tube artillery: Smoke (battleArmorMunitions; TO:AUE p.96, TO errata ordnance table)
+Torpedo/LRM 5 Ammo	no source	MegaMek item with no rules reference; torpedoes are their own launchers (TW p.230)
+RL 1 Ammo	catalog	battle-armor-equipment: is-rocket-launcher-1, a one-shot launcher (TM p.261)
+RL 2 Ammo	catalog	battle-armor-equipment: is-rocket-launcher-2, a one-shot launcher (TM p.261)
+RL 3 Ammo	catalog	battle-armor-equipment: is-rocket-launcher-3, a one-shot launcher (TM p.261)
+RL 4 Ammo	catalog	battle-armor-equipment: is-rocket-launcher-4, a one-shot launcher (TM p.261)
+RL 5 Ammo	catalog	battle-armor-equipment: is-rocket-launcher-5, a one-shot launcher (TM p.261)
+RL 10 Ammo	not a record	rocket launchers are one-shot: the launcher is its load and takes no ammunition (TM p.229)
+RL 15 Ammo	not a record	rocket launchers are one-shot: the launcher is its load and takes no ammunition (TM p.229)
+RL 20 Ammo	not a record	rocket launchers are one-shot: the launcher is its load and takes no ammunition (TM p.229)

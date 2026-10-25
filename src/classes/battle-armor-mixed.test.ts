@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import BattleArmor from "./battle-armor";
 import { importBattleArmorBlk } from "./battle-armor-blk";
 import { getBattleArmorCarrierLoad, isCarrierWeaponBlocked } from "./battle-armor-transport";
-import { battleArmorMineTypes, findBattleArmorEquipment } from "../data/battle-armor-equipment";
+import { battleArmorMineTypes, findBattleArmorEquipment, findBattleArmorMunition, getBattleArmorMunitionLabel, getBattleArmorMunitionsFor } from "../data/battle-armor-equipment";
 
 const CARRIER = "11111111-aaaa";
 
@@ -243,6 +243,52 @@ describe("Battle armor mine dispenser (TO:AUE pp.137, 195, 197)", () => {
         expect(suit.getIssues()).toEqual([]);
         // One dispenser to a suit in the Alpha Strike conversion (ASC p.127).
         expect(suit.getAlphaStrikeStats().specialAbilities).toContain("MDS1");
+    });
+});
+
+describe("Battle armor missile munitions (TM pp.261, 297; TW p.229)", () => {
+    const munitions = (tag: string): string[] => getBattleArmorMunitionsFor(findBattleArmorEquipment(tag)!).map((munition) => munition.tag);
+
+    it("offers infernos to standard SRMs, torpedoes to standard LRMs and SRMs, and multi-purpose missiles to Clan ones", () => {
+        expect(munitions("is-srm-2")).toEqual(["standard", "inferno", "torpedo"]);
+        expect(munitions("is-lrm-3")).toEqual(["standard", "torpedo"]);
+        expect(munitions("clan-srm-4")).toEqual(["standard", "inferno", "torpedo", "multi-purpose"]);
+        expect(munitions("clan-lrm-5")).toEqual(["standard", "torpedo", "multi-purpose"]);
+        expect(munitions("is-mrm-2")).toEqual(["standard"]);
+        expect(munitions("clan-advanced-srm-2")).toEqual(["standard"]);
+    });
+
+    it("offers smoke rounds to tube artillery (TO:AUE p.96; TO errata, Artillery Ordnance Table)", () => {
+        expect(munitions("is-tube-artillery")).toEqual(["standard", "smoke"]);
+        expect(getBattleArmorMunitionLabel(findBattleArmorMunition("smoke"))).toBe("Smoke rounds");
+        expect(getBattleArmorMunitionLabel(findBattleArmorMunition("inferno"))).toBe("Inferno missiles");
+    });
+
+    it("keeps the munition on the launcher, labels it, and leaves weight and Battle Value alone", () => {
+        const suit = kage();
+        suit.addItem("is-srm-2", "body");
+        suit.updateItem(0, { shots: 2 });
+        const weight = suit.getWeightLog().map((line) => line.kg);
+        const bv = suit.getBattleValueLog().join("\n");
+        suit.updateItem(0, { munition: "inferno" });
+        expect(suit.getItemLabel(suit.getItems()[0])).toBe("SRM 2 (2 shots, Inferno missiles), Body");
+        expect(suit.getWeightLog().map((line) => line.kg)).toEqual(weight);
+        expect(suit.getBattleValueLog().join("\n")).toBe(bv);
+        expect(new BattleArmor(suit.exportJSON()).getItems()[0].munition).toBe("inferno");
+        // Standard missiles are the default and are not saved; a munition the launcher cannot fire falls back to them.
+        suit.updateItem(0, { munition: "multi-purpose" });
+        expect(suit.getItems()[0].munition).toBeUndefined();
+    });
+
+    it("dates multi-purpose missiles to 3060", () => {
+        const suit = kage();
+        suit.setTechBase("clan");
+        suit.setEra("clan-inv");
+        suit.addItem("clan-lrm-2", "body");
+        suit.updateItem(0, { shots: 2, munition: "multi-purpose" });
+        expect(suit.getEraIssues().join("\n")).not.toContain("Multi-Purpose");
+        expect(suit.setEra("clan-golden-years")).toBe(true);
+        expect(suit.getEraIssues().join("\n")).toContain("Multi-Purpose missiles is not available to Clan battle armor");
     });
 });
 

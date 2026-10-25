@@ -330,6 +330,11 @@ export interface IEquipmentItem extends ICatalogStanding {
     ammoPerShot?: number;
     ammoTypes?: string[];
     /**
+     * Ammunition families whose special munitions, but not whose standard round, the weapon also fires: improved
+     * launchers and autocannon take every special munition of their standard counterpart (IO:AE p.90).
+     */
+    munitionTypes?: string[];
+    /**
      * ArtVee combo guns: the tag of the canon artillery piece the weapon fires as in Siege Mode. The record's
      * own stats are the Vehicle Mode (autocannon) profile.
      */

@@ -9,7 +9,7 @@ Rows ruled by hand (`tools/coverage-triage.tsv`) show the ruling as their status
 | Family | MegaMek items | In a catalog | In src only | Ruled | Missing |
 |---|---|---|---|---|---|
 | Actuator | 8 | 0 | 5 | 3 | 0 |
-| Ammunition | 2261 | 1719 | 30 | 0 | 512 |
+| Ammunition | 2261 | 2035 | 52 | 174 | 0 |
 | Armor | 32 | 20 | 11 | 1 | 0 |
 | Battle armor | 43 | 20 | 23 | 0 | 0 |
 | Capital / bay | 72 | 41 | 16 | 15 | 0 |
@@ -43,548 +43,232 @@ Rows ruled by hand (`tools/coverage-triage.tsv`) show the ruling as their status
 
 | Item | Tech | MegaMek level | Rules reference | Status | Note |
 |---|---|---|---|---|---|
+| Chaff Grenades [VGL] | Clan | Standard | 175, TO:AUE | builder gap | VGL munition, chosen per launcher before play (TO:AUE p.175); fragmentation is the default load, and no builder offers a munition choice on a VGL |
+| Chaff Grenades [VGL] | Inner Sphere | Standard | 175, TO:AUE | builder gap | VGL munition, chosen per launcher before play (TO:AUE p.175); fragmentation is the default load, and no builder offers a munition choice on a VGL |
+| Fragmentation Grenades [VGL] | Inner Sphere | Standard | 127, TO:AUE | builder gap | VGL munition, chosen per launcher before play (TO:AUE p.175); fragmentation is the default load, and no builder offers a munition choice on a VGL |
+| Fragmentation Grenades [VGL] | Inner Sphere | Standard | 127, TO:AUE | builder gap | VGL munition, chosen per launcher before play (TO:AUE p.175); fragmentation is the default load, and no builder offers a munition choice on a VGL |
+| Incendiary Grenades [VGL] | Clan | Standard | 176, TO:AUE | builder gap | VGL munition, chosen per launcher before play (TO:AUE p.175); fragmentation is the default load, and no builder offers a munition choice on a VGL |
+| Incendiary Grenades [VGL] | Inner Sphere | Standard | 176, TO:AUE | builder gap | VGL munition, chosen per launcher before play (TO:AUE p.175); fragmentation is the default load, and no builder offers a munition choice on a VGL |
+| Smoke Grenades [VGL] | Clan | Standard | 176, TO:AUE | builder gap | VGL munition, chosen per launcher before play (TO:AUE p.175); fragmentation is the default load, and no builder offers a munition choice on a VGL |
+| Smoke Grenades [VGL] | Inner Sphere | Standard | 176, TO:AUE | builder gap | VGL munition, chosen per launcher before play (TO:AUE p.175); fragmentation is the default load, and no builder offers a munition choice on a VGL |
+| AR10 Peacemaker Ammo | Inner Sphere | Experimental | 170, IO:AE | capital | WMD, IO:AE pp.169-170: nuclear capital missiles go with the Alamo Missile row |
+| AR10 Santa Anna Ammo | Inner Sphere | Experimental | 169, IO:AE | capital | WMD, IO:AE pp.169-170: nuclear capital missiles go with the Alamo Missile row |
+| Alamo Ammo | Inner Sphere | Experimental | 169, IO:AE | capital | WMD, IO:AE pp.169-170: nuclear capital missiles go with the Alamo Missile row |
+| Peacemaker Ammo | Inner Sphere | Experimental | 170, IO:AE | capital | WMD, IO:AE pp.169-170: nuclear capital missiles go with the Alamo Missile row |
+| Santa Anna Ammo | Inner Sphere | Experimental | 169, IO:AE | capital | WMD, IO:AE pp.169-170: nuclear capital missiles go with the Alamo Missile row |
+| Std. Nuclear Weapon (Type II/Alamo) | Inner Sphere | Experimental |  | capital | WMD, IO:AE pp.169-170: nuclear capital missiles go with the Alamo Missile row |
+| AA Weapon (Mk. 2, Man-Portable) Ammo | Inner Sphere | Standard | 273, TM | in src |  |
+| AR10 Killer Whale Ammo | Inner Sphere | Standard | 210, TM | in src |  |
 | FASCAM Sniper Ammo | Inner Sphere | Advanced | 169, TO:AUE | in src |  |
+| Flamer (Heavy) Ammo | Inner Sphere | Standard | 273, TM | in src |  |
 | Gauss Rifle (Magshot) Ammo | Inner Sphere | Standard | 273, TM | in src |  |
-| Gauss Rifle Ammo [IS] | Inner Sphere | Standard | 219, TM; 99, BMM; 184, Core; 303, TW | in src |  |
+| Heavy Machine Gun Ammo [Full] | Clan | Standard | 228, TM; 101, BMM; 185, Core; 304, TW | in src |  |
+| Inferno Ammo | Inner Sphere | Standard |  | in src |  |
+| Killer Whale Ammo | Inner Sphere | Standard | 210, TM; 304, TW | in src |  |
+| Kraken (Tele-Operated) Ammo | Inner Sphere | Standard | 251, TM; 251, TW | in src |  |
 | LB 10-X AC Ammo | Inner Sphere | Standard | 207, TM; 98, BMM; 183, Core; 303, TW | in src |  |
 | LB 10-X AC Ammo | Clan | Standard | 207, TM; 98, BMM; 183, Core; 304, TW | in src |  |
+| LB 10-X Cluster Ammo | Inner Sphere | Standard | 207, TM; 106, BMM; 192, Core; 141, TW | in src |  |
+| LB 10-X Cluster Ammo | Clan | Standard | 207, TM; 106, BMM; 192, Core; 141, TW | in src |  |
 | LB 2-X AC Ammo | Inner Sphere | Standard | 207, TM; 98, BMM; 183, Core; 303, TW | in src |  |
 | LB 2-X AC Ammo | Clan | Standard | 207, TM; 98, BMM; 183, Core; 304, TW | in src |  |
+| LB 2-X Cluster Ammo | Inner Sphere | Standard | 207, TM; 106, BMM; 192, Core; 141, TW | in src |  |
+| LB 2-X Cluster Ammo | Clan | Standard | 207, TM; 106, BMM; 192, Core; 141, TW | in src |  |
 | LB 20-X AC Ammo | Inner Sphere | Standard | 207, TM; 98, BMM; 183, Core; 303, TW | in src |  |
 | LB 20-X AC Ammo | Clan | Standard | 207, TM; 98, BMM; 183, Core; 304, TW | in src |  |
+| LB 20-X Cluster Ammo | Inner Sphere | Standard | 207, TM; 106, BMM; 192, Core; 141, TW | in src |  |
+| LB 20-X Cluster Ammo | Clan | Standard | 207, TM; 106, BMM; 192, Core; 141, TW | in src |  |
 | LB 5-X AC Ammo | Inner Sphere | Standard | 207, TM; 98, BMM; 183, Core; 303, TW | in src |  |
 | LB 5-X AC Ammo | Clan | Standard | 207, TM; 98, BMM; 183, Core; 304, TW | in src |  |
-| LRM 10 (Clan) Narc-capable Ammo | Clan | Standard | 142, TW; 107, BMM; 193, Core | in src |  |
-| LRM 10 Narc-capable Ammo | Inner Sphere | Standard | 142, TW; 107, BMM; 193, Core | in src |  |
-| LRM 15 (Clan) Narc-capable Ammo | Clan | Standard | 142, TW; 107, BMM; 193, Core | in src |  |
-| LRM 15 Narc-capable Ammo | Inner Sphere | Standard | 142, TW; 107, BMM; 193, Core | in src |  |
-| LRM 5 (Clan) Narc-capable Ammo | Clan | Standard | 142, TW; 107, BMM; 193, Core | in src |  |
-| LRM 5 Narc-capable Ammo | Inner Sphere | Standard | 142, TW; 107, BMM; 193, Core | in src |  |
+| LB 5-X Cluster Ammo | Inner Sphere | Standard | 207, TM; 106, BMM; 192, Core; 141, TW | in src |  |
+| LB 5-X Cluster Ammo | Clan | Standard | 207, TM; 106, BMM; 192, Core; 141, TW | in src |  |
+| Laser Rifle (Mauser IIC IAS) Ammo | Clan | Standard | 273, TM | in src | weapon's row:  |
+| Light Machine Gun Ammo [Full] | Clan | Standard | 228, TM; 102, BMM; 185, Core; 304, TW | in src |  |
+| Machine Gun Ammo [Full] | Inner Sphere | Introductory | 228, TM; 101, BMM; 185, Core; 303, TW; 304, TW | in src |  |
+| Machine Gun Ammo [Full] | Clan | Standard | 228, TM; 101, BMM; 185, Core; 304, TW | in src |  |
+| Machine Gun Ammo [Half] | Inner Sphere | Introductory | 228, TM; 101, BMM; 185, Core; 303, TW; 304, TW | in src |  |
+| Machine Gun Ammo [Half] | Clan | Standard | 228, TM; 101, BMM; 185, Core; 304, TW | in src |  |
 | Mortar (Heavy) Ammo | Inner Sphere | Standard | 273, TM | in src |  |
 | Mortar (Light) Ammo | Inner Sphere | Standard | 273, TM | in src |  |
+| Needler, Support (Firedrake) Ammo | Inner Sphere | Standard | 273, TM | in src |  |
+| Pistol (TK Enforcer Semi-Auto) Ammo | Inner Sphere | Standard | 273, TM | in src | weapon's row:  |
 | SMG (Houwei) Ammo | Inner Sphere | Standard | Shrap05 | in src |  |
+| SMG (KA-23 Submachine Gun) Ammo | Inner Sphere | Standard | 273, TM | in src | weapon's row:  |
 | SMG (Rugan) Ammo | Inner Sphere | Standard | 273, TM | in src |  |
 | SMG (Supekuta) Ammo | Inner Sphere | Standard | Shrap05 | in src |  |
 | SMG (Tiberius) Ammo | Inner Sphere | Standard | Shrap05 | in src |  |
 | SMG (WC-2) Ammo | Inner Sphere | Standard | Shrap05 | in src |  |
 | SMG (WC-6) Ammo | Clan | Standard | Shrap05 | in src |  |
-| SRM 2 (Clan) Narc-capable Ammo | Clan | Standard | 142, TW; 107, BMM; 193, Core | in src |  |
-| SRM 2 Narc-capable Ammo | Inner Sphere | Standard | 142, TW; 107, BMM; 193, Core | in src |  |
-| SRM 4 (Clan) Narc-capable Ammo | Clan | Standard | 142, TW; 107, BMM; 193, Core | in src |  |
-| SRM 4 Narc-capable Ammo | Inner Sphere | Standard | 142, TW; 107, BMM; 193, Core | in src |  |
+| SRM Launcher (Std, Two-Shot) - Inferno Ammo (Inferno) | Inner Sphere | Standard | 273, TM | in src | weapon's row:  |
+| SRM Launcher (Std, Two-Shot) Ammo | Inner Sphere | Standard | 273, TM | in src | weapon's row:  |
+| Screen Launcher Ammo | Inner Sphere | Standard | 237, TM; 251, TW | in src |  |
+| Standard Ammo | Inner Sphere | Standard |  | in src |  |
+| Support Laser (ER Heavy, Clan) Ammo | Clan | Standard | 273, TM | in src |  |
+| Support Laser (ER Heavy, IS) Ammo | Inner Sphere | Standard | 273, TM | in src |  |
+| Support Laser (ER, Clan) Ammo | Clan | Standard | 273, TM | in src |  |
+| Support Laser (ER, IS) Ammo | Inner Sphere | Standard | 273, TM | in src |  |
+| Support Laser (ER, Semi-Portable) Ammo | Clan | Standard | 273, TM | in src |  |
 | iNarc Pods | Inner Sphere | Standard | 141, TW; 108, BMM; 193, Core | in src |  |
-| Advanced SRM 2 Ammo | Clan | Standard | 261, TM; 305, TW | missing |  |
-| Advanced SRM 4 Ammo | Clan | Standard | 261, TM; 305, TW | missing |  |
-| Advanced SRM 6 Ammo | Clan | Standard | 261, TM; 305, TW | missing |  |
-| Airburst Mortar 1 Ammo | Inner Sphere | Advanced | 185, TO:AUE | missing |  |
-| Airburst Mortar 1 Ammo | Clan | Advanced | 185, TO:AUE | missing |  |
-| Airburst Mortar 2 Ammo | Inner Sphere | Advanced | 185, TO:AUE | missing |  |
-| Airburst Mortar 2 Ammo | Clan | Advanced | 185, TO:AUE | missing |  |
-| Airburst Mortar 4 Ammo | Inner Sphere | Advanced | 185, TO:AUE | missing |  |
-| Airburst Mortar 4 Ammo | Clan | Advanced | 185, TO:AUE | missing |  |
-| Airburst Mortar 8 Ammo | Inner Sphere | Advanced | 185, TO:AUE | missing |  |
-| Airburst Mortar 8 Ammo | Clan | Advanced | 185, TO:AUE | missing |  |
-| Anti-personnel Mortar 1 Ammo | Inner Sphere | Advanced | 186, TO:AUE | missing |  |
-| Anti-personnel Mortar 1 Ammo | Clan | Advanced | 186, TO:AUE | missing |  |
-| Anti-personnel Mortar 2 Ammo | Inner Sphere | Advanced | 186, TO:AUE | missing |  |
-| Anti-personnel Mortar 2 Ammo | Clan | Advanced | 186, TO:AUE | missing |  |
-| Anti-personnel Mortar 4 Ammo | Inner Sphere | Advanced | 186, TO:AUE | missing |  |
-| Anti-personnel Mortar 4 Ammo | Clan | Advanced | 186, TO:AUE | missing |  |
-| Anti-personnel Mortar 8 Ammo | Inner Sphere | Advanced | 186, TO:AUE | missing |  |
-| Anti-personnel Mortar 8 Ammo | Clan | Advanced | 186, TO:AUE | missing |  |
-| Armor-Piercing ProtoMech AC/2 Ammo | Clan | Standard | 190, Core; 106, BMM; 140, TW | missing |  |
-| Armor-Piercing ProtoMech AC/4 Ammo | Clan | Standard | 190, Core; 106, BMM; 140, TW | missing |  |
-| Armor-Piercing ProtoMech AC/8 Ammo | Clan | Standard | 190, Core; 106, BMM; 140, TW | missing |  |
-| Arrow IV Air-Defense Arrow (ADA) Missiles Ammo | Inner Sphere | Advanced | 165, TO:AUE | missing |  |
-| Arrow IV Air-Defense Arrow (ADA) Missiles Ammo | Clan | Advanced | 165, TO:AUE | missing |  |
-| Arrow IV Thunder (FASCAM) Ammo | Inner Sphere | Advanced | 169, TO:AUE; 190, Core | missing |  |
-| Arrow IV Thunder (FASCAM) Ammo | Clan | Advanced | 169, TO:AUE; 190, Core | missing |  |
-| Arrow IV Thunder Vibrabomb Ammo | Inner Sphere | Advanced | 169, TO:AUE | missing |  |
-| Auto-Pistol (M&G) Ammo | Inner Sphere | Standard | 273, TM | missing |  |
-| BA LRM 1 (Clan) Multi-Purpose Ammo | Clan | Standard | 229, TW | missing |  |
-| BA LRM 1 (Clan) Multi-Purpose w/ Incendiary Ammo | Clan | Advanced | 181, TO:AUE | missing |  |
-| BA LRM 1 (Clan) Torpedo Ammo | Clan | Standard | 230, TM; 229, TW | missing |  |
-| BA LRM 1 (Clan) Torpedo w/ Incendiary Ammo | Clan | Advanced | 181, TO:AUE | missing |  |
-| BA LRM 1 Ammo | Inner Sphere | Standard | 261, TM; 305, TW | missing |  |
-| BA LRM 1 Ammo | Clan | Standard | 261, TM; 305, TW | missing |  |
-| BA LRM 1 Torpedo Ammo | Inner Sphere | Standard | 230, TM; 229, TW | missing |  |
-| BA LRM 1 Torpedo w/ Incendiary Ammo | Inner Sphere | Advanced | 181, TO:AUE | missing |  |
-| BA LRM 1 w/ Incendiary Ammo | Inner Sphere | Advanced | 181, TO:AUE | missing |  |
-| BA LRM 1 w/ Incendiary Ammo | Clan | Advanced | 181, TO:AUE | missing |  |
-| BA LRM 2 (Clan) Multi-Purpose Ammo | Clan | Standard | 229, TW | missing |  |
-| BA LRM 2 (Clan) Multi-Purpose w/ Incendiary Ammo | Clan | Advanced | 181, TO:AUE | missing |  |
-| BA LRM 2 (Clan) Torpedo Ammo | Clan | Standard | 230, TM; 229, TW | missing |  |
-| BA LRM 2 (Clan) Torpedo w/ Incendiary Ammo | Clan | Advanced | 181, TO:AUE | missing |  |
-| BA LRM 2 Ammo | Inner Sphere | Standard | 261, TM; 305, TW | missing |  |
-| BA LRM 2 Ammo | Clan | Standard | 261, TM; 305, TW | missing |  |
-| BA LRM 2 Torpedo Ammo | Inner Sphere | Standard | 230, TM; 229, TW | missing |  |
-| BA LRM 2 Torpedo w/ Incendiary Ammo | Inner Sphere | Advanced | 181, TO:AUE | missing |  |
-| BA LRM 2 w/ Incendiary Ammo | Inner Sphere | Advanced | 181, TO:AUE | missing |  |
-| BA LRM 2 w/ Incendiary Ammo | Clan | Advanced | 181, TO:AUE | missing |  |
-| BA LRM 3 (Clan) Multi-Purpose Ammo | Clan | Standard | 229, TW | missing |  |
-| BA LRM 3 (Clan) Multi-Purpose w/ Incendiary Ammo | Clan | Advanced | 181, TO:AUE | missing |  |
-| BA LRM 3 (Clan) Torpedo Ammo | Clan | Standard | 230, TM; 229, TW | missing |  |
-| BA LRM 3 (Clan) Torpedo w/ Incendiary Ammo | Clan | Advanced | 181, TO:AUE | missing |  |
-| BA LRM 3 Ammo | Inner Sphere | Standard | 261, TM; 305, TW | missing |  |
-| BA LRM 3 Ammo | Clan | Standard | 261, TM; 305, TW | missing |  |
-| BA LRM 3 Torpedo Ammo | Inner Sphere | Standard | 230, TM; 229, TW | missing |  |
-| BA LRM 3 Torpedo w/ Incendiary Ammo | Inner Sphere | Advanced | 181, TO:AUE | missing |  |
-| BA LRM 3 w/ Incendiary Ammo | Inner Sphere | Advanced | 181, TO:AUE | missing |  |
-| BA LRM 3 w/ Incendiary Ammo | Clan | Advanced | 181, TO:AUE | missing |  |
-| BA LRM 4 (Clan) Multi-Purpose Ammo | Clan | Standard | 229, TW | missing |  |
-| BA LRM 4 (Clan) Multi-Purpose w/ Incendiary Ammo | Clan | Advanced | 181, TO:AUE | missing |  |
-| BA LRM 4 (Clan) Torpedo Ammo | Clan | Standard | 230, TM; 229, TW | missing |  |
-| BA LRM 4 (Clan) Torpedo w/ Incendiary Ammo | Clan | Advanced | 181, TO:AUE | missing |  |
-| BA LRM 4 Ammo | Inner Sphere | Standard | 261, TM; 305, TW | missing |  |
-| BA LRM 4 Ammo | Clan | Standard | 261, TM; 305, TW | missing |  |
-| BA LRM 4 Torpedo Ammo | Inner Sphere | Standard | 230, TM; 229, TW | missing |  |
-| BA LRM 4 Torpedo w/ Incendiary Ammo | Inner Sphere | Advanced | 181, TO:AUE | missing |  |
-| BA LRM 4 w/ Incendiary Ammo | Inner Sphere | Advanced | 181, TO:AUE | missing |  |
-| BA LRM 4 w/ Incendiary Ammo | Clan | Advanced | 181, TO:AUE | missing |  |
-| BA LRM 5 (Clan) Multi-Purpose Ammo | Clan | Standard | 229, TW | missing |  |
-| BA LRM 5 (Clan) Multi-Purpose w/ Incendiary Ammo | Clan | Advanced | 181, TO:AUE | missing |  |
-| BA LRM 5 (Clan) Torpedo Ammo | Clan | Standard | 230, TM; 229, TW | missing |  |
-| BA LRM 5 (Clan) Torpedo w/ Incendiary Ammo | Clan | Advanced | 181, TO:AUE | missing |  |
-| BA LRM 5 Ammo | Inner Sphere | Standard | 261, TM; 305, TW | missing |  |
-| BA LRM 5 Ammo | Clan | Standard | 261, TM; 305, TW | missing |  |
-| BA LRM 5 Torpedo Ammo | Inner Sphere | Standard | 230, TM; 229, TW | missing |  |
-| BA LRM 5 Torpedo w/ Incendiary Ammo | Inner Sphere | Advanced | 181, TO:AUE | missing |  |
-| BA LRM 5 w/ Incendiary Ammo | Inner Sphere | Advanced | 181, TO:AUE | missing |  |
-| BA LRM 5 w/ Incendiary Ammo | Clan | Advanced | 181, TO:AUE | missing |  |
-| BA SRM 1 (Clan) Inferno Ammo | Clan | Standard | 231, TM; 229, TW | missing |  |
-| BA SRM 1 (Clan) Multi-Purpose Ammo | Clan | Standard | 229, TW | missing |  |
-| BA SRM 1 (Clan) Torpedo Ammo | Clan | Standard | 230, TM; 229, TW | missing |  |
-| BA SRM 1 Ammo | Inner Sphere | Standard | 261, TM; 305, TW | missing |  |
-| BA SRM 1 Inferno Ammo | Inner Sphere | Standard | 231, TM; 229, TW | missing |  |
-| BA SRM 1 Torpedo Ammo | Inner Sphere | Standard | 230, TM; 229, TW | missing |  |
-| BA SRM 2 (Clan) Inferno Ammo | Clan | Standard | 231, TM; 229, TW | missing |  |
-| BA SRM 2 (Clan) Multi-Purpose Ammo | Clan | Standard | 229, TW | missing |  |
-| BA SRM 2 (Clan) Torpedo Ammo | Clan | Standard | 230, TM; 229, TW | missing |  |
-| BA SRM 2 Ammo | Inner Sphere | Standard | 261, TM; 305, TW | missing |  |
-| BA SRM 2 Inferno Ammo | Inner Sphere | Standard | 231, TM; 229, TW | missing |  |
-| BA SRM 2 Torpedo Ammo | Inner Sphere | Standard | 230, TM; 229, TW | missing |  |
-| BA SRM 3 (Clan) Inferno Ammo | Clan | Standard | 231, TM; 229, TW | missing |  |
-| BA SRM 3 (Clan) Multi-Purpose Ammo | Clan | Standard | 229, TW | missing |  |
-| BA SRM 3 (Clan) Torpedo Ammo | Clan | Standard | 230, TM; 229, TW | missing |  |
-| BA SRM 3 Ammo | Inner Sphere | Standard | 261, TM; 305, TW | missing |  |
-| BA SRM 3 Inferno Ammo | Inner Sphere | Standard | 231, TM; 229, TW | missing |  |
-| BA SRM 3 Torpedo Ammo | Inner Sphere | Standard | 230, TM; 229, TW | missing |  |
-| BA SRM 4 (Clan) Inferno Ammo | Clan | Standard | 231, TM; 229, TW | missing |  |
-| BA SRM 4 (Clan) Multi-Purpose Ammo | Clan | Standard | 229, TW | missing |  |
-| BA SRM 4 (Clan) Torpedo Ammo | Clan | Standard | 230, TM; 229, TW | missing |  |
-| BA SRM 4 Ammo | Inner Sphere | Standard | 261, TM; 305, TW | missing |  |
-| BA SRM 4 Inferno Ammo | Inner Sphere | Standard | 231, TM; 229, TW | missing |  |
-| BA SRM 4 Torpedo Ammo | Inner Sphere | Standard | 230, TM; 229, TW | missing |  |
-| BA SRM 5 (Clan) Inferno Ammo | Clan | Standard | 231, TM; 229, TW | missing |  |
-| BA SRM 5 (Clan) Multi-Purpose Ammo | Clan | Standard | 229, TW | missing |  |
-| BA SRM 5 (Clan) Torpedo Ammo | Clan | Standard | 230, TM; 229, TW | missing |  |
-| BA SRM 5 Ammo | Inner Sphere | Standard | 261, TM; 305, TW | missing |  |
-| BA SRM 5 Inferno Ammo | Inner Sphere | Standard | 231, TM; 229, TW | missing |  |
-| BA SRM 5 Torpedo Ammo | Inner Sphere | Standard | 230, TM; 229, TW | missing |  |
-| BA SRM 6 (Clan) Inferno Ammo | Clan | Standard | 231, TM; 229, TW | missing |  |
-| BA SRM 6 (Clan) Multi-Purpose Ammo | Clan | Standard | 229, TW | missing |  |
-| BA SRM 6 (Clan) Torpedo Ammo | Clan | Standard | 230, TM; 229, TW | missing |  |
-| BA SRM 6 Ammo | Inner Sphere | Standard | 261, TM; 305, TW | missing |  |
-| BA SRM 6 Inferno Ammo | Inner Sphere | Standard | 231, TM; 229, TW | missing |  |
-| BA SRM 6 Torpedo Ammo | Inner Sphere | Standard | 230, TM; 229, TW | missing |  |
-| Compact Narc Ammo | Inner Sphere | Standard | 263, TM; 229, TW | missing |  |
-| Enhanced LRM 10 Listen-Kill Ammo | Inner Sphere | Experimental | 99, IO:AE | missing |  |
-| Enhanced LRM 10 Listen-Kill w/ Incendiary Ammo | Inner Sphere | Experimental | 181, TO:AUE | missing |  |
-| Enhanced LRM 15 Listen-Kill Ammo | Inner Sphere | Experimental | 99, IO:AE | missing |  |
-| Enhanced LRM 15 Listen-Kill w/ Incendiary Ammo | Inner Sphere | Experimental | 181, TO:AUE | missing |  |
-| Enhanced LRM 20 Listen-Kill Ammo | Inner Sphere | Experimental | 99, IO:AE | missing |  |
-| Enhanced LRM 20 Listen-Kill w/ Incendiary Ammo | Inner Sphere | Experimental | 181, TO:AUE | missing |  |
-| Enhanced LRM 5 Listen-Kill Ammo | Inner Sphere | Experimental | 99, IO:AE | missing |  |
-| Enhanced LRM 5 Listen-Kill w/ Incendiary Ammo | Inner Sphere | Experimental | 181, TO:AUE | missing |  |
-| Enhanced LRT 10 Artemis-capable Ammo | Inner Sphere | Standard | 230, TM; 107, BMM; 192, Core; 140, TW | missing |  |
-| Enhanced LRT 15 Artemis-capable Ammo | Inner Sphere | Standard | 230, TM; 107, BMM; 192, Core; 140, TW | missing |  |
-| Enhanced LRT 20 Artemis-capable Ammo | Inner Sphere | Standard | 230, TM; 107, BMM; 192, Core; 140, TW | missing |  |
-| Enhanced LRT 5 Artemis-capable Ammo | Inner Sphere | Standard | 230, TM; 107, BMM; 192, Core; 140, TW | missing |  |
-| Extended-Range iATM/12 Ammo | Clan | Standard | 59, IO:AE | missing |  |
-| Extended-Range iATM/3 Ammo | Clan | Standard | 59, IO:AE | missing |  |
-| Extended-Range iATM/6 Ammo | Clan | Standard | 59, IO:AE | missing |  |
-| Extended-Range iATM/9 Ammo | Clan | Standard | 59, IO:AE | missing |  |
-| Flare Mortar 1 Ammo | Inner Sphere | Advanced | 186, TO:AUE | missing |  |
-| Flare Mortar 1 Ammo | Clan | Advanced | 186, TO:AUE | missing |  |
-| Flare Mortar 2 Ammo | Inner Sphere | Advanced | 186, TO:AUE | missing |  |
-| Flare Mortar 2 Ammo | Clan | Advanced | 186, TO:AUE | missing |  |
-| Flare Mortar 4 Ammo | Inner Sphere | Advanced | 186, TO:AUE | missing |  |
-| Flare Mortar 4 Ammo | Clan | Advanced | 186, TO:AUE | missing |  |
-| Flare Mortar 8 Ammo | Inner Sphere | Advanced | 186, TO:AUE | missing |  |
-| Flare Mortar 8 Ammo | Clan | Advanced | 186, TO:AUE | missing |  |
-| Flechette ProtoMech AC/2 Ammo | Clan | Standard | 208, TM; 107, BMM | missing |  |
-| Flechette ProtoMech AC/4 Ammo | Clan | Standard | 208, TM; 107, BMM | missing |  |
-| Flechette ProtoMech AC/8 Ammo | Clan | Standard | 208, TM; 107, BMM | missing |  |
-| Fuel-Air Long Tom Cannon Ammo | Inner Sphere | Advanced | 159, IO:AE | missing |  |
-| Gauss Rifle (Gungnir Heavy Support) Ammo | Inner Sphere | Standard | 176, AToW Companion | missing |  |
-| Gauss Rifle (Thunderstroke II) Ammo | Inner Sphere | Standard | 273, TM | missing |  |
-| Gauss Rifle (Thunderstroke) Ammo | Inner Sphere | Standard | 273, TM | missing |  |
-| Gauss Rifle (Tsunami Heavy) Ammo | Inner Sphere | Standard | 273, TM | missing |  |
-| Gauss Rifle Ammo [Clan] | Clan | Standard | 219, TM; 99, BMM; 184, Core; 304, TW | missing |  |
-| High-Explosive iATM/12 Ammo | Clan | Standard | 59, IO:AE | missing |  |
-| High-Explosive iATM/3 Ammo | Clan | Standard | 59, IO:AE | missing |  |
-| High-Explosive iATM/6 Ammo | Clan | Standard | 59, IO:AE | missing |  |
-| High-Explosive iATM/9 Ammo | Clan | Standard | 59, IO:AE | missing |  |
-| Improved LRM 10 (Clan) Anti-Radiation Ammo | Clan | Experimental | 180, TO:AUE | missing |  |
-| Improved LRM 10 (Clan) Anti-Radiation w/ Incendiary Ammo | Clan | Experimental | 181, TO:AUE | missing |  |
-| Improved LRM 10 (Clan) Artemis V-capable Ammo | Clan | Advanced | 95, TO:AUE | missing |  |
-| Improved LRM 10 (Clan) Artemis V-capable w/ Incendiary Ammo | Clan | Advanced | 181, TO:AUE | missing |  |
-| Improved LRM 10 (Clan) Artemis-capable Ammo | Clan | Standard | 207, TM | missing |  |
-| Improved LRM 10 (Clan) Artemis-capable w/ Incendiary Ammo | Clan | Advanced | 181, TO:AUE | missing |  |
-| Improved LRM 10 (Clan) Follow The Leader Ammo | Clan | Experimental | 180, TO:AUE | missing |  |
-| Improved LRM 10 (Clan) Follow The Leader w/ Incendiary Ammo | Clan | Experimental | 181, TO:AUE | missing |  |
-| Improved LRM 10 (Clan) Fragmentation Ammo | Clan | Standard | 230, TM | missing |  |
-| Improved LRM 10 (Clan) Fragmentation w/ Incendiary Ammo | Clan | Advanced | 181, TO:AUE | missing |  |
-| Improved LRM 10 (Clan) Heat-Seeking Ammo | Clan | Advanced | 181, TO:AUE | missing |  |
-| Improved LRM 10 (Clan) Heat-Seeking w/ Incendiary Ammo | Clan | Advanced | 181, TO:AUE | missing |  |
-| Improved LRM 10 (Clan) Narc-capable Ammo | Clan | Standard | 142, TW | missing |  |
-| Improved LRM 10 (Clan) Narc-capable w/ Incendiary Ammo | Clan | Advanced | 181, TO:AUE | missing |  |
-| Improved LRM 10 (Clan) Smoke Ammo | Clan | Standard | 183, TO:AUE | missing |  |
-| Improved LRM 10 (Clan) Smoke w/ Incendiary Ammo | Clan | Advanced | 181, TO:AUE | missing |  |
-| Improved LRM 10 (Clan) Swarm Ammo | Clan | Advanced | 183, TO:AUE | missing |  |
-| Improved LRM 10 (Clan) Swarm w/ Incendiary Ammo | Clan | Advanced | 181, TO:AUE | missing |  |
-| Improved LRM 10 (Clan) Thunder Ammo | Clan | Advanced | 185, TO:AUE | missing |  |
-| Improved LRM 10 (Clan) Thunder w/ Incendiary Ammo | Clan | Advanced | 181, TO:AUE | missing |  |
-| Improved LRM 15 (Clan) Anti-Radiation Ammo | Clan | Experimental | 180, TO:AUE | missing |  |
-| Improved LRM 15 (Clan) Anti-Radiation w/ Incendiary Ammo | Clan | Experimental | 181, TO:AUE | missing |  |
-| Improved LRM 15 (Clan) Artemis V-capable Ammo | Clan | Advanced | 95, TO:AUE | missing |  |
-| Improved LRM 15 (Clan) Artemis V-capable w/ Incendiary Ammo | Clan | Advanced | 181, TO:AUE | missing |  |
-| Improved LRM 15 (Clan) Artemis-capable Ammo | Clan | Standard | 207, TM | missing |  |
-| Improved LRM 15 (Clan) Artemis-capable w/ Incendiary Ammo | Clan | Advanced | 181, TO:AUE | missing |  |
-| Improved LRM 15 (Clan) Follow The Leader Ammo | Clan | Experimental | 180, TO:AUE | missing |  |
-| Improved LRM 15 (Clan) Follow The Leader w/ Incendiary Ammo | Clan | Experimental | 181, TO:AUE | missing |  |
-| Improved LRM 15 (Clan) Fragmentation Ammo | Clan | Standard | 230, TM | missing |  |
-| Improved LRM 15 (Clan) Fragmentation w/ Incendiary Ammo | Clan | Advanced | 181, TO:AUE | missing |  |
-| Improved LRM 15 (Clan) Heat-Seeking Ammo | Clan | Advanced | 181, TO:AUE | missing |  |
-| Improved LRM 15 (Clan) Heat-Seeking w/ Incendiary Ammo | Clan | Advanced | 181, TO:AUE | missing |  |
-| Improved LRM 15 (Clan) Narc-capable Ammo | Clan | Standard | 142, TW | missing |  |
-| Improved LRM 15 (Clan) Narc-capable w/ Incendiary Ammo | Clan | Advanced | 181, TO:AUE | missing |  |
-| Improved LRM 15 (Clan) Smoke Ammo | Clan | Standard | 183, TO:AUE | missing |  |
-| Improved LRM 15 (Clan) Smoke w/ Incendiary Ammo | Clan | Advanced | 181, TO:AUE | missing |  |
-| Improved LRM 15 (Clan) Swarm Ammo | Clan | Advanced | 183, TO:AUE | missing |  |
-| Improved LRM 15 (Clan) Swarm w/ Incendiary Ammo | Clan | Advanced | 181, TO:AUE | missing |  |
-| Improved LRM 15 (Clan) Thunder Ammo | Clan | Advanced | 185, TO:AUE | missing |  |
-| Improved LRM 15 (Clan) Thunder w/ Incendiary Ammo | Clan | Advanced | 181, TO:AUE | missing |  |
-| Improved LRM 20 (Clan) Anti-Radiation Ammo | Clan | Experimental | 180, TO:AUE | missing |  |
-| Improved LRM 20 (Clan) Anti-Radiation w/ Incendiary Ammo | Clan | Experimental | 181, TO:AUE | missing |  |
-| Improved LRM 20 (Clan) Artemis V-capable Ammo | Clan | Advanced | 95, TO:AUE | missing |  |
-| Improved LRM 20 (Clan) Artemis V-capable w/ Incendiary Ammo | Clan | Advanced | 181, TO:AUE | missing |  |
-| Improved LRM 20 (Clan) Artemis-capable Ammo | Clan | Standard | 207, TM | missing |  |
-| Improved LRM 20 (Clan) Artemis-capable w/ Incendiary Ammo | Clan | Advanced | 181, TO:AUE | missing |  |
-| Improved LRM 20 (Clan) Follow The Leader Ammo | Clan | Experimental | 180, TO:AUE | missing |  |
-| Improved LRM 20 (Clan) Follow The Leader w/ Incendiary Ammo | Clan | Experimental | 181, TO:AUE | missing |  |
-| Improved LRM 20 (Clan) Fragmentation Ammo | Clan | Standard | 230, TM | missing |  |
-| Improved LRM 20 (Clan) Fragmentation w/ Incendiary Ammo | Clan | Advanced | 181, TO:AUE | missing |  |
-| Improved LRM 20 (Clan) Heat-Seeking Ammo | Clan | Advanced | 181, TO:AUE | missing |  |
-| Improved LRM 20 (Clan) Heat-Seeking w/ Incendiary Ammo | Clan | Advanced | 181, TO:AUE | missing |  |
-| Improved LRM 20 (Clan) Narc-capable Ammo | Clan | Standard | 142, TW | missing |  |
-| Improved LRM 20 (Clan) Narc-capable w/ Incendiary Ammo | Clan | Advanced | 181, TO:AUE | missing |  |
-| Improved LRM 20 (Clan) Smoke Ammo | Clan | Standard | 183, TO:AUE | missing |  |
-| Improved LRM 20 (Clan) Smoke w/ Incendiary Ammo | Clan | Advanced | 181, TO:AUE | missing |  |
-| Improved LRM 20 (Clan) Swarm Ammo | Clan | Advanced | 183, TO:AUE | missing |  |
-| Improved LRM 20 (Clan) Swarm w/ Incendiary Ammo | Clan | Advanced | 181, TO:AUE | missing |  |
-| Improved LRM 20 (Clan) Thunder Ammo | Clan | Advanced | 185, TO:AUE | missing |  |
-| Improved LRM 20 (Clan) Thunder w/ Incendiary Ammo | Clan | Advanced | 181, TO:AUE | missing |  |
-| Improved LRM 5 (Clan) Anti-Radiation Ammo | Clan | Experimental | 180, TO:AUE | missing |  |
-| Improved LRM 5 (Clan) Anti-Radiation w/ Incendiary Ammo | Clan | Experimental | 181, TO:AUE | missing |  |
-| Improved LRM 5 (Clan) Artemis V-capable Ammo | Clan | Advanced | 95, TO:AUE | missing |  |
-| Improved LRM 5 (Clan) Artemis V-capable w/ Incendiary Ammo | Clan | Advanced | 181, TO:AUE | missing |  |
-| Improved LRM 5 (Clan) Artemis-capable Ammo | Clan | Standard | 207, TM | missing |  |
-| Improved LRM 5 (Clan) Artemis-capable w/ Incendiary Ammo | Clan | Advanced | 181, TO:AUE | missing |  |
-| Improved LRM 5 (Clan) Follow The Leader Ammo | Clan | Experimental | 180, TO:AUE | missing |  |
-| Improved LRM 5 (Clan) Follow The Leader w/ Incendiary Ammo | Clan | Experimental | 181, TO:AUE | missing |  |
-| Improved LRM 5 (Clan) Fragmentation Ammo | Clan | Standard | 230, TM | missing |  |
-| Improved LRM 5 (Clan) Fragmentation w/ Incendiary Ammo | Clan | Advanced | 181, TO:AUE | missing |  |
-| Improved LRM 5 (Clan) Heat-Seeking Ammo | Clan | Advanced | 181, TO:AUE | missing |  |
-| Improved LRM 5 (Clan) Heat-Seeking w/ Incendiary Ammo | Clan | Advanced | 181, TO:AUE | missing |  |
-| Improved LRM 5 (Clan) Narc-capable Ammo | Clan | Standard | 142, TW | missing |  |
-| Improved LRM 5 (Clan) Narc-capable w/ Incendiary Ammo | Clan | Advanced | 181, TO:AUE | missing |  |
-| Improved LRM 5 (Clan) Smoke Ammo | Clan | Standard | 183, TO:AUE | missing |  |
-| Improved LRM 5 (Clan) Smoke w/ Incendiary Ammo | Clan | Advanced | 181, TO:AUE | missing |  |
-| Improved LRM 5 (Clan) Swarm Ammo | Clan | Advanced | 183, TO:AUE | missing |  |
-| Improved LRM 5 (Clan) Swarm w/ Incendiary Ammo | Clan | Advanced | 181, TO:AUE | missing |  |
-| Improved LRM 5 (Clan) Thunder Ammo | Clan | Advanced | 185, TO:AUE | missing |  |
-| Improved LRM 5 (Clan) Thunder w/ Incendiary Ammo | Clan | Advanced | 181, TO:AUE | missing |  |
-| Improved SRM 2 (Clan) Anti-Radiation Ammo | Clan | Experimental | 180, TO:AUE | missing |  |
-| Improved SRM 2 (Clan) Artemis V-capable Ammo | Clan | Experimental | 95, TO:AUE | missing |  |
-| Improved SRM 2 (Clan) Artemis-capable Ammo | Clan | Experimental | 207, TM | missing |  |
-| Improved SRM 2 (Clan) Fragmentation Ammo | Clan | Experimental | 230, TM | missing |  |
-| Improved SRM 2 (Clan) Heat-Seeking Ammo | Clan | Experimental | 181, TO:AUE | missing |  |
-| Improved SRM 2 (Clan) Inferno Ammo | Clan | Experimental | 231, TM | missing |  |
-| Improved SRM 2 (Clan) Narc-capable Ammo | Clan | Experimental | 142, TW | missing |  |
-| Improved SRM 2 (Clan) Smoke Ammo | Clan | Experimental | 183, TO:AUE | missing |  |
-| Improved SRM 4 (Clan) Anti-Radiation Ammo | Clan | Experimental | 180, TO:AUE | missing |  |
-| Improved SRM 4 (Clan) Artemis V-capable Ammo | Clan | Experimental | 95, TO:AUE | missing |  |
-| Improved SRM 4 (Clan) Artemis-capable Ammo | Clan | Experimental | 207, TM | missing |  |
-| Improved SRM 4 (Clan) Fragmentation Ammo | Clan | Experimental | 230, TM | missing |  |
-| Improved SRM 4 (Clan) Heat-Seeking Ammo | Clan | Experimental | 181, TO:AUE | missing |  |
-| Improved SRM 4 (Clan) Inferno Ammo | Clan | Experimental | 231, TM | missing |  |
-| Improved SRM 4 (Clan) Narc-capable Ammo | Clan | Experimental | 142, TW | missing |  |
-| Improved SRM 4 (Clan) Smoke Ammo | Clan | Experimental | 183, TO:AUE | missing |  |
-| Improved SRM 6 (Clan) Anti-Radiation Ammo | Clan | Experimental | 180, TO:AUE | missing |  |
-| Improved SRM 6 (Clan) Artemis V-capable Ammo | Clan | Experimental | 95, TO:AUE | missing |  |
-| Improved SRM 6 (Clan) Artemis-capable Ammo | Clan | Experimental | 207, TM | missing |  |
-| Improved SRM 6 (Clan) Fragmentation Ammo | Clan | Experimental | 230, TM | missing |  |
-| Improved SRM 6 (Clan) Heat-Seeking Ammo | Clan | Experimental | 181, TO:AUE | missing |  |
-| Improved SRM 6 (Clan) Inferno Ammo | Clan | Experimental | 231, TM | missing |  |
-| Improved SRM 6 (Clan) Narc-capable Ammo | Clan | Experimental | 142, TW | missing |  |
-| Improved SRM 6 (Clan) Smoke Ammo | Clan | Experimental | 183, TO:AUE | missing |  |
-| LAC/2 Ammo | Inner Sphere | Standard | 207, TM; 98, BMM; 183, Core; 303, TW | missing |  |
-| LAC/5 Ammo | Inner Sphere | Standard | 207, TM; 98, BMM; 183, Core; 303, TW | missing |  |
-| LRM 10 (Clan) Artemis V-capable Ammo | Clan | Advanced | 95, TO:AUE; 107, BMM; 192, Core | missing |  |
-| LRM 10 (Clan) Artemis V-capable w/ Incendiary Ammo | Clan | Advanced | 181, TO:AUE | missing |  |
-| LRM 10 (Clan) Narc-capable w/ Incendiary Ammo | Clan | Advanced | 181, TO:AUE | missing |  |
-| LRM 10 Narc-capable w/ Incendiary Ammo | Inner Sphere | Advanced | 181, TO:AUE | missing |  |
-| LRM 10 Thunder-Vibrabomb Ammo | Inner Sphere | Advanced | 185, TO:AUE | missing |  |
-| LRM 10 Thunder-Vibrabomb w/ Incendiary Ammo | Inner Sphere | Advanced | 181, TO:AUE | missing |  |
-| LRM 15 (Clan) Artemis V-capable Ammo | Clan | Advanced | 95, TO:AUE; 107, BMM; 192, Core | missing |  |
-| LRM 15 (Clan) Artemis V-capable w/ Incendiary Ammo | Clan | Advanced | 181, TO:AUE | missing |  |
-| LRM 15 (Clan) Narc-capable w/ Incendiary Ammo | Clan | Advanced | 181, TO:AUE | missing |  |
-| LRM 15 Narc-capable w/ Incendiary Ammo | Inner Sphere | Advanced | 181, TO:AUE | missing |  |
-| LRM 15 Thunder-Vibrabomb Ammo | Inner Sphere | Advanced | 185, TO:AUE | missing |  |
-| LRM 15 Thunder-Vibrabomb w/ Incendiary Ammo | Inner Sphere | Advanced | 181, TO:AUE | missing |  |
-| LRM 20 (Clan) Artemis V-capable Ammo | Clan | Advanced | 95, TO:AUE; 107, BMM; 192, Core | missing |  |
-| LRM 20 (Clan) Artemis V-capable w/ Incendiary Ammo | Clan | Advanced | 181, TO:AUE | missing |  |
-| LRM 20 (Clan) Narc-capable Ammo | Clan | Standard | 142, TW; 107, BMM; 193, Core | missing |  |
-| LRM 20 (Clan) Narc-capable w/ Incendiary Ammo | Clan | Advanced | 181, TO:AUE | missing |  |
-| LRM 20 Narc-capable Ammo | Inner Sphere | Standard | 142, TW; 107, BMM; 193, Core | missing |  |
-| LRM 20 Narc-capable w/ Incendiary Ammo | Inner Sphere | Advanced | 181, TO:AUE | missing |  |
-| LRM 20 Thunder-Vibrabomb Ammo | Inner Sphere | Advanced | 185, TO:AUE | missing |  |
-| LRM 20 Thunder-Vibrabomb w/ Incendiary Ammo | Inner Sphere | Advanced | 181, TO:AUE | missing |  |
-| LRM 5 (Clan) Artemis V-capable Ammo | Clan | Advanced | 95, TO:AUE; 107, BMM; 192, Core | missing |  |
-| LRM 5 (Clan) Artemis V-capable w/ Incendiary Ammo | Clan | Advanced | 181, TO:AUE | missing |  |
-| LRM 5 (Clan) Narc-capable w/ Incendiary Ammo | Clan | Advanced | 181, TO:AUE | missing |  |
-| LRM 5 Narc-capable w/ Incendiary Ammo | Inner Sphere | Advanced | 181, TO:AUE | missing |  |
-| LRM 5 Thunder-Vibrabomb Ammo | Inner Sphere | Advanced | 185, TO:AUE | missing |  |
-| LRM 5 Thunder-Vibrabomb w/ Incendiary Ammo | Inner Sphere | Advanced | 181, TO:AUE | missing |  |
-| LRM Launcher (Corean Farshot) Ammo | Inner Sphere | Standard | 273, TM | missing |  |
-| LRM Launcher (Corean Farshot) w/Incendiary Ammo (Inferno) | Inner Sphere | Standard | 273, TM | missing |  |
-| LRT 10 (Clan) Artemis V-capable Ammo | Clan | Advanced | 95, TO:AUE; 107, BMM; 192, Core | missing |  |
-| LRT 15 (Clan) Artemis V-capable Ammo | Clan | Advanced | 95, TO:AUE; 107, BMM; 192, Core | missing |  |
-| LRT 20 (Clan) Artemis V-capable Ammo | Clan | Advanced | 95, TO:AUE; 107, BMM; 192, Core | missing |  |
-| LRT 5 (Clan) Artemis V-capable Ammo | Clan | Advanced | 95, TO:AUE; 107, BMM; 192, Core | missing |  |
-| Laser Rifle (ER [Sunbeam Starfire]) Ammo | Inner Sphere | Standard | 273, TM | missing |  |
-| MRM Launcher Ammo | Inner Sphere | Standard | 273, TM | missing |  |
-| MRM Launcher w/Incendiary Ammo (Inferno) | Inner Sphere | Standard | 273, TM | missing |  |
-| Machine Gun (Boone MGL 14A) Ammo | Inner Sphere | Standard | Shrap22 | missing |  |
-| Machine Gun (Boone MGL 14D) Ammo | Inner Sphere | Standard | Shrap22 | missing |  |
-| Machine Gun (HCK M-2MG) Ammo | Inner Sphere | Standard | Shrap22 | missing |  |
-| Machine Gun (Sarcot MG-19) Ammo | Inner Sphere | Standard | Shrap22 | missing |  |
-| Micro Bomb Ammo | Clan | Standard | 253, TM | missing |  |
-| Mortar (Heavy) - Incendiary Ammo (Inferno) | Inner Sphere | Standard | 273, TM | missing |  |
-| Mortar (Light) - Incendiary Ammo (Inferno) | Inner Sphere | Standard | 273, TM | missing |  |
-| NAC/10 Ammo | Inner Sphere | Standard | 143, TO:AUE | missing |  |
-| NAC/20 Ammo | Inner Sphere | Standard | 143, TO:AUE | missing |  |
-| NAC/25 Ammo | Inner Sphere | Standard | 143, TO:AUE | missing |  |
-| Needler Pistol (M&G Flechette) Ammo | Inner Sphere | Standard | 273, TM | missing |  |
-| Needler Rifle (M&G Flechette) Ammo | Inner Sphere | Standard | 273, TM | missing |  |
-| Plasma Rifle (Man-Portable) Ammo | Inner Sphere | Standard | 273, TM | missing |  |
-| Primitive Prototype LRM 10 Ammo | Inner Sphere | Standard | 112, IO:AE | missing |  |
-| Primitive Prototype LRM 10 Anti-Radiation Ammo | Inner Sphere | Experimental | 180, TO:AUE | missing |  |
-| Primitive Prototype LRM 10 Anti-TSM Ammo | Inner Sphere | Experimental | 98, IO:AE | missing |  |
-| Primitive Prototype LRM 10 Artemis-capable Ammo | Inner Sphere | Standard | 230, TM | missing |  |
-| Primitive Prototype LRM 10 Dead-Fire Ammo | Inner Sphere | Experimental | 125, IO:AE | missing |  |
-| Primitive Prototype LRM 10 Follow The Leader Ammo | Inner Sphere | Experimental | 180, TO:AUE | missing |  |
-| Primitive Prototype LRM 10 Fragmentation Ammo | Inner Sphere | Standard | 230, TM | missing |  |
-| Primitive Prototype LRM 10 Heat-Seeking Ammo | Inner Sphere | Advanced | 181, TO:AUE | missing |  |
-| Primitive Prototype LRM 10 Listen-Kill Ammo | Inner Sphere | Experimental | 99, IO:AE | missing |  |
-| Primitive Prototype LRM 10 Magnetic Pulse Ammo | Inner Sphere | Experimental | 182, TO:AUE | missing |  |
-| Primitive Prototype LRM 10 Mine Clearance Ammo | Inner Sphere | Advanced | 182, TO:AUE | missing |  |
-| Primitive Prototype LRM 10 Narc-capable Ammo | Inner Sphere | Standard | 142, TW | missing |  |
-| Primitive Prototype LRM 10 Semi-Guided Ammo | Inner Sphere | Standard | 231, TM | missing |  |
-| Primitive Prototype LRM 10 Smoke Ammo | Inner Sphere | Advanced | 183, TO:AUE | missing |  |
-| Primitive Prototype LRM 10 Swarm Ammo | Inner Sphere | Advanced | 183, TO:AUE | missing |  |
-| Primitive Prototype LRM 10 Swarm-I Ammo | Inner Sphere | Advanced | 183, TO:AUE | missing |  |
-| Primitive Prototype LRM 10 Thunder Ammo | Inner Sphere | Advanced | 185, TO:AUE | missing |  |
-| Primitive Prototype LRM 10 Thunder-Active Ammo | Inner Sphere | Advanced | 185, TO:AUE | missing |  |
-| Primitive Prototype LRM 10 Thunder-Augmented Ammo | Inner Sphere | Advanced | 185, TO:AUE | missing |  |
-| Primitive Prototype LRM 10 Thunder-Inferno Ammo | Inner Sphere | Advanced | 185, TO:AUE | missing |  |
-| Primitive Prototype LRM 10 Thunder-Vibrabomb Ammo | Inner Sphere | Advanced | 185, TO:AUE | missing |  |
-| Primitive Prototype LRM 15 Ammo | Inner Sphere | Standard | 112, IO:AE | missing |  |
-| Primitive Prototype LRM 15 Anti-Radiation Ammo | Inner Sphere | Experimental | 180, TO:AUE | missing |  |
-| Primitive Prototype LRM 15 Anti-TSM Ammo | Inner Sphere | Experimental | 98, IO:AE | missing |  |
-| Primitive Prototype LRM 15 Artemis-capable Ammo | Inner Sphere | Standard | 230, TM | missing |  |
-| Primitive Prototype LRM 15 Dead-Fire Ammo | Inner Sphere | Experimental | 125, IO:AE | missing |  |
-| Primitive Prototype LRM 15 Follow The Leader Ammo | Inner Sphere | Experimental | 180, TO:AUE | missing |  |
-| Primitive Prototype LRM 15 Fragmentation Ammo | Inner Sphere | Standard | 230, TM | missing |  |
-| Primitive Prototype LRM 15 Heat-Seeking Ammo | Inner Sphere | Advanced | 181, TO:AUE | missing |  |
-| Primitive Prototype LRM 15 Listen-Kill Ammo | Inner Sphere | Experimental | 99, IO:AE | missing |  |
-| Primitive Prototype LRM 15 Magnetic Pulse Ammo | Inner Sphere | Experimental | 182, TO:AUE | missing |  |
-| Primitive Prototype LRM 15 Mine Clearance Ammo | Inner Sphere | Advanced | 182, TO:AUE | missing |  |
-| Primitive Prototype LRM 15 Narc-capable Ammo | Inner Sphere | Standard | 142, TW | missing |  |
-| Primitive Prototype LRM 15 Semi-Guided Ammo | Inner Sphere | Standard | 231, TM | missing |  |
-| Primitive Prototype LRM 15 Smoke Ammo | Inner Sphere | Advanced | 183, TO:AUE | missing |  |
-| Primitive Prototype LRM 15 Swarm Ammo | Inner Sphere | Advanced | 183, TO:AUE | missing |  |
-| Primitive Prototype LRM 15 Swarm-I Ammo | Inner Sphere | Advanced | 183, TO:AUE | missing |  |
-| Primitive Prototype LRM 15 Thunder Ammo | Inner Sphere | Advanced | 185, TO:AUE | missing |  |
-| Primitive Prototype LRM 15 Thunder-Active Ammo | Inner Sphere | Advanced | 185, TO:AUE | missing |  |
-| Primitive Prototype LRM 15 Thunder-Augmented Ammo | Inner Sphere | Advanced | 185, TO:AUE | missing |  |
-| Primitive Prototype LRM 15 Thunder-Inferno Ammo | Inner Sphere | Advanced | 185, TO:AUE | missing |  |
-| Primitive Prototype LRM 15 Thunder-Vibrabomb Ammo | Inner Sphere | Advanced | 185, TO:AUE | missing |  |
-| Primitive Prototype LRM 20 Ammo | Inner Sphere | Standard | 112, IO:AE | missing |  |
-| Primitive Prototype LRM 20 Anti-Radiation Ammo | Inner Sphere | Experimental | 180, TO:AUE | missing |  |
-| Primitive Prototype LRM 20 Anti-TSM Ammo | Inner Sphere | Experimental | 98, IO:AE | missing |  |
-| Primitive Prototype LRM 20 Artemis-capable Ammo | Inner Sphere | Standard | 230, TM | missing |  |
-| Primitive Prototype LRM 20 Dead-Fire Ammo | Inner Sphere | Experimental | 125, IO:AE | missing |  |
-| Primitive Prototype LRM 20 Follow The Leader Ammo | Inner Sphere | Experimental | 180, TO:AUE | missing |  |
-| Primitive Prototype LRM 20 Fragmentation Ammo | Inner Sphere | Standard | 230, TM | missing |  |
-| Primitive Prototype LRM 20 Heat-Seeking Ammo | Inner Sphere | Advanced | 181, TO:AUE | missing |  |
-| Primitive Prototype LRM 20 Listen-Kill Ammo | Inner Sphere | Experimental | 99, IO:AE | missing |  |
-| Primitive Prototype LRM 20 Magnetic Pulse Ammo | Inner Sphere | Experimental | 182, TO:AUE | missing |  |
-| Primitive Prototype LRM 20 Mine Clearance Ammo | Inner Sphere | Advanced | 182, TO:AUE | missing |  |
-| Primitive Prototype LRM 20 Narc-capable Ammo | Inner Sphere | Standard | 142, TW | missing |  |
-| Primitive Prototype LRM 20 Semi-Guided Ammo | Inner Sphere | Standard | 231, TM | missing |  |
-| Primitive Prototype LRM 20 Smoke Ammo | Inner Sphere | Advanced | 183, TO:AUE | missing |  |
-| Primitive Prototype LRM 20 Swarm Ammo | Inner Sphere | Advanced | 183, TO:AUE | missing |  |
-| Primitive Prototype LRM 20 Swarm-I Ammo | Inner Sphere | Advanced | 183, TO:AUE | missing |  |
-| Primitive Prototype LRM 20 Thunder Ammo | Inner Sphere | Advanced | 185, TO:AUE | missing |  |
-| Primitive Prototype LRM 20 Thunder-Active Ammo | Inner Sphere | Advanced | 185, TO:AUE | missing |  |
-| Primitive Prototype LRM 20 Thunder-Augmented Ammo | Inner Sphere | Advanced | 185, TO:AUE | missing |  |
-| Primitive Prototype LRM 20 Thunder-Inferno Ammo | Inner Sphere | Advanced | 185, TO:AUE | missing |  |
-| Primitive Prototype LRM 20 Thunder-Vibrabomb Ammo | Inner Sphere | Advanced | 185, TO:AUE | missing |  |
-| Primitive Prototype LRM 5 Ammo | Inner Sphere | Standard | 112, IO:AE | missing |  |
-| Primitive Prototype LRM 5 Anti-Radiation Ammo | Inner Sphere | Experimental | 180, TO:AUE | missing |  |
-| Primitive Prototype LRM 5 Anti-TSM Ammo | Inner Sphere | Experimental | 98, IO:AE | missing |  |
-| Primitive Prototype LRM 5 Artemis-capable Ammo | Inner Sphere | Standard | 230, TM | missing |  |
-| Primitive Prototype LRM 5 Dead-Fire Ammo | Inner Sphere | Experimental | 125, IO:AE | missing |  |
-| Primitive Prototype LRM 5 Follow The Leader Ammo | Inner Sphere | Experimental | 180, TO:AUE | missing |  |
-| Primitive Prototype LRM 5 Fragmentation Ammo | Inner Sphere | Standard | 230, TM | missing |  |
-| Primitive Prototype LRM 5 Heat-Seeking Ammo | Inner Sphere | Advanced | 181, TO:AUE | missing |  |
-| Primitive Prototype LRM 5 Listen-Kill Ammo | Inner Sphere | Experimental | 99, IO:AE | missing |  |
-| Primitive Prototype LRM 5 Magnetic Pulse Ammo | Inner Sphere | Experimental | 182, TO:AUE | missing |  |
-| Primitive Prototype LRM 5 Mine Clearance Ammo | Inner Sphere | Advanced | 182, TO:AUE | missing |  |
-| Primitive Prototype LRM 5 Narc-capable Ammo | Inner Sphere | Standard | 142, TW | missing |  |
-| Primitive Prototype LRM 5 Semi-Guided Ammo | Inner Sphere | Standard | 231, TM | missing |  |
-| Primitive Prototype LRM 5 Smoke Ammo | Inner Sphere | Advanced | 183, TO:AUE | missing |  |
-| Primitive Prototype LRM 5 Swarm Ammo | Inner Sphere | Advanced | 183, TO:AUE | missing |  |
-| Primitive Prototype LRM 5 Swarm-I Ammo | Inner Sphere | Advanced | 183, TO:AUE | missing |  |
-| Primitive Prototype LRM 5 Thunder Ammo | Inner Sphere | Advanced | 185, TO:AUE | missing |  |
-| Primitive Prototype LRM 5 Thunder-Active Ammo | Inner Sphere | Advanced | 185, TO:AUE | missing |  |
-| Primitive Prototype LRM 5 Thunder-Augmented Ammo | Inner Sphere | Advanced | 185, TO:AUE | missing |  |
-| Primitive Prototype LRM 5 Thunder-Inferno Ammo | Inner Sphere | Advanced | 185, TO:AUE | missing |  |
-| Primitive Prototype LRM 5 Thunder-Vibrabomb Ammo | Inner Sphere | Advanced | 185, TO:AUE | missing |  |
-| Primitive Prototype Long Tom Artillery Ammo | Inner Sphere | Standard | 112, IO:AE | missing |  |
-| Primitive Prototype SRM 2 Acid Ammo | Inner Sphere | Experimental | 179, TO:AUE | missing |  |
-| Primitive Prototype SRM 2 Ammo | Inner Sphere | Standard | 112, IO:AE | missing |  |
-| Primitive Prototype SRM 2 Anti-Radiation Ammo | Inner Sphere | Experimental | 180, TO:AUE | missing |  |
-| Primitive Prototype SRM 2 Anti-TSM Ammo | Inner Sphere | Experimental | 98, IO:AE | missing |  |
-| Primitive Prototype SRM 2 Artemis-capable Ammo | Inner Sphere | Standard | 230, TM | missing |  |
-| Primitive Prototype SRM 2 Dead-Fire Ammo | Inner Sphere | Experimental | 125, IO:AE | missing |  |
-| Primitive Prototype SRM 2 Fragmentation Ammo | Inner Sphere | Standard | 230, TM | missing |  |
-| Primitive Prototype SRM 2 Heat-Seeking Ammo | Inner Sphere | Advanced | 181, TO:AUE | missing |  |
-| Primitive Prototype SRM 2 Inferno Ammo | Inner Sphere | Standard | 231, TM | missing |  |
-| Primitive Prototype SRM 2 Listen-Kill Ammo | Inner Sphere | Experimental | 99, IO:AE | missing |  |
-| Primitive Prototype SRM 2 Magnetic Pulse Ammo | Inner Sphere | Experimental | 182, TO:AUE | missing |  |
-| Primitive Prototype SRM 2 Mine Clearance Ammo | Inner Sphere | Advanced | 182, TO:AUE | missing |  |
-| Primitive Prototype SRM 2 Narc-capable Ammo | Inner Sphere | Standard | 142, TW | missing |  |
-| Primitive Prototype SRM 2 Smoke Ammo | Inner Sphere | Advanced | 183, TO:AUE | missing |  |
-| Primitive Prototype SRM 2 Tandem-Charge Ammo | Inner Sphere | Experimental | 184, TO:AUE | missing |  |
-| Primitive Prototype SRM 4 Acid Ammo | Inner Sphere | Experimental | 179, TO:AUE | missing |  |
-| Primitive Prototype SRM 4 Ammo | Inner Sphere | Standard | 112, IO:AE | missing |  |
-| Primitive Prototype SRM 4 Anti-Radiation Ammo | Inner Sphere | Experimental | 180, TO:AUE | missing |  |
-| Primitive Prototype SRM 4 Anti-TSM Ammo | Inner Sphere | Experimental | 98, IO:AE | missing |  |
-| Primitive Prototype SRM 4 Artemis-capable Ammo | Inner Sphere | Standard | 230, TM | missing |  |
-| Primitive Prototype SRM 4 Dead-Fire Ammo | Inner Sphere | Experimental | 125, IO:AE | missing |  |
-| Primitive Prototype SRM 4 Fragmentation Ammo | Inner Sphere | Standard | 230, TM | missing |  |
-| Primitive Prototype SRM 4 Heat-Seeking Ammo | Inner Sphere | Advanced | 181, TO:AUE | missing |  |
-| Primitive Prototype SRM 4 Inferno Ammo | Inner Sphere | Standard | 231, TM | missing |  |
-| Primitive Prototype SRM 4 Listen-Kill Ammo | Inner Sphere | Experimental | 99, IO:AE | missing |  |
-| Primitive Prototype SRM 4 Magnetic Pulse Ammo | Inner Sphere | Experimental | 182, TO:AUE | missing |  |
-| Primitive Prototype SRM 4 Mine Clearance Ammo | Inner Sphere | Advanced | 182, TO:AUE | missing |  |
-| Primitive Prototype SRM 4 Narc-capable Ammo | Inner Sphere | Standard | 142, TW | missing |  |
-| Primitive Prototype SRM 4 Smoke Ammo | Inner Sphere | Advanced | 183, TO:AUE | missing |  |
-| Primitive Prototype SRM 4 Tandem-Charge Ammo | Inner Sphere | Experimental | 184, TO:AUE | missing |  |
-| Primitive Prototype SRM 6 Acid Ammo | Inner Sphere | Experimental | 179, TO:AUE | missing |  |
-| Primitive Prototype SRM 6 Ammo | Inner Sphere | Standard | 112, IO:AE | missing |  |
-| Primitive Prototype SRM 6 Anti-Radiation Ammo | Inner Sphere | Experimental | 180, TO:AUE | missing |  |
-| Primitive Prototype SRM 6 Anti-TSM Ammo | Inner Sphere | Experimental | 98, IO:AE | missing |  |
-| Primitive Prototype SRM 6 Artemis-capable Ammo | Inner Sphere | Standard | 230, TM | missing |  |
-| Primitive Prototype SRM 6 Dead-Fire Ammo | Inner Sphere | Experimental | 125, IO:AE | missing |  |
-| Primitive Prototype SRM 6 Fragmentation Ammo | Inner Sphere | Standard | 230, TM | missing |  |
-| Primitive Prototype SRM 6 Heat-Seeking Ammo | Inner Sphere | Advanced | 181, TO:AUE | missing |  |
-| Primitive Prototype SRM 6 Inferno Ammo | Inner Sphere | Standard | 231, TM | missing |  |
-| Primitive Prototype SRM 6 Listen-Kill Ammo | Inner Sphere | Experimental | 99, IO:AE | missing |  |
-| Primitive Prototype SRM 6 Magnetic Pulse Ammo | Inner Sphere | Experimental | 182, TO:AUE | missing |  |
-| Primitive Prototype SRM 6 Mine Clearance Ammo | Inner Sphere | Advanced | 182, TO:AUE | missing |  |
-| Primitive Prototype SRM 6 Narc-capable Ammo | Inner Sphere | Standard | 142, TW | missing |  |
-| Primitive Prototype SRM 6 Smoke Ammo | Inner Sphere | Advanced | 183, TO:AUE | missing |  |
-| Primitive Prototype SRM 6 Tandem-Charge Ammo | Inner Sphere | Experimental | 184, TO:AUE | missing |  |
-| Prototype Arrow IV Air-Defense Arrow (ADA) Missiles Ammo | Inner Sphere | Advanced | 165, TO:AUE | missing |  |
-| Prototype Arrow IV Ammo | Inner Sphere | Standard | 64, IO:AE | missing |  |
-| Prototype Arrow IV Cluster Ammo | Inner Sphere | Advanced | 166, TO:AUE | missing |  |
-| Prototype Arrow IV Davy Crockett-M Ammo | Inner Sphere | Experimental | 168, IO:AE | missing |  |
-| Prototype Arrow IV Fuel-Air Ammo | Inner Sphere | Advanced | 159, IO:AE | missing |  |
-| Prototype Arrow IV Homing Ammo | Inner Sphere | Advanced | 166, TO:AUE | missing |  |
-| Prototype Arrow IV Illumination Ammo | Inner Sphere | Advanced | 167, TO:AUE | missing |  |
-| Prototype Arrow IV Inferno Ammo | Inner Sphere | Advanced | 168, TO:AUE | missing |  |
-| Prototype Arrow IV Laser Inhibiting Ammo | Inner Sphere | Advanced | 168, TO:AUE | missing |  |
-| Prototype Arrow IV Smoke Ammo | Inner Sphere | Advanced | 168, TO:AUE | missing |  |
-| Prototype Arrow IV Thunder (FASCAM) Ammo | Inner Sphere | Advanced | 169, TO:AUE | missing |  |
-| Prototype Arrow IV Thunder Vibrabomb Ammo | Inner Sphere | Advanced | 169, TO:AUE | missing |  |
-| Rifle (M&G G-150) Ammo | Inner Sphere | Standard | 273, TM | missing |  |
-| SMG (AWA Starling Mk7) Ammo | Inner Sphere | Standard | Shrap05 | missing |  |
-| SMG (AWA Starling Mk7-LB) Ammo | Inner Sphere | Standard | Shrap05 | missing |  |
-| SMG (AWA Starling Mk7-SF) Ammo | Inner Sphere | Standard | Shrap05 | missing |  |
-| SMG (Blackfield Scorpion Mk 65) Ammo | Inner Sphere | Standard | Shrap05 | missing |  |
-| SMG (Boudicca-4) Ammo | Inner Sphere | Standard | Shrap05 | missing |  |
-| SMG (Boudicca-5) Ammo | Inner Sphere | Standard | Shrap05 | missing |  |
-| SMG (Boudicca-7) Ammo | Inner Sphere | Standard | Shrap05 | missing |  |
-| SMG (DSK Largo SGA) Ammo | Inner Sphere | Standard | Shrap05 | missing |  |
-| SMG (DSK Largo SGB) Ammo | Inner Sphere | Standard | Shrap05 | missing |  |
-| SMG (Gunther MP-20) Ammo | Inner Sphere | Standard | 273, TM | missing |  |
-| SMG (Hunkle V) Ammo | Inner Sphere | Standard | Shrap05 | missing |  |
-| SMG (Imperator 2894A1) Ammo | Inner Sphere | Standard | 273, TM | missing |  |
-| SMG (J-15 Hagel) Ammo | Inner Sphere | Standard | Shrap05 | missing |  |
-| SMG (J-17 Hagel) Ammo | Inner Sphere | Standard | Shrap05 | missing |  |
-| SMG (Jinse Yanjingshe (AP Rounds)) Ammo | Inner Sphere | Standard | Shrap05 | missing |  |
-| SMG (Jinse Yanjingshe (Standard)) Ammo | Inner Sphere | Standard | Shrap05 | missing |  |
-| SMG (KA-23 Submachine Gun) Ammo | Inner Sphere | Standard | 273, TM | missing |  |
-| SMG (Nambu Type S-124) Ammo | Inner Sphere | Standard | Shrap05 | missing |  |
-| SMG (RFW Bedivere) Ammo | Inner Sphere | Standard | Shrap05 | missing |  |
-| SMG (Rorynex RM-3/XXI) Ammo | Inner Sphere | Standard | 273, TM | missing |  |
-| SMG (Spartacus) Ammo | Inner Sphere | Standard | Shrap05 | missing |  |
-| SMG (Sturm Hornet Mk III) Ammo | Inner Sphere | Standard | Shrap05 | missing |  |
-| SMG (Wolf-Barron A7) Ammo | Inner Sphere | Standard | Shrap05 | missing |  |
-| SRM 2 (Clan) Artemis V-capable Ammo | Clan | Standard | 95, TO:AUE; 107, BMM; 192, Core | missing |  |
-| SRM 4 (Clan) Artemis V-capable Ammo | Clan | Standard | 95, TO:AUE; 107, BMM; 192, Core | missing |  |
-| SRM 6 (Clan) Artemis V-capable Ammo | Clan | Standard | 95, TO:AUE; 107, BMM; 192, Core | missing |  |
-| SRM 6 (Clan) Narc-capable Ammo | Clan | Standard | 142, TW; 107, BMM; 193, Core | missing |  |
-| SRM 6 Narc-capable Ammo | Inner Sphere | Standard | 142, TW; 107, BMM; 193, Core | missing |  |
-| SRM Launcher (Heavy) Ammo | Inner Sphere | Standard | 273, TM | missing |  |
-| SRM Launcher (Light) Ammo | Inner Sphere | Standard | 273, TM | missing |  |
-| SRM Launcher (Std, Two-Shot) - Inferno Ammo (Inferno) | Inner Sphere | Standard | 273, TM | missing |  |
-| SRM Launcher (Std, Two-Shot) Ammo | Inner Sphere | Standard | 273, TM | missing |  |
-| SRT 2 (Clan) Artemis V-capable Ammo | Clan | Advanced | 95, TO:AUE; 107, BMM; 192, Core | missing |  |
-| SRT 4 (Clan) Artemis V-capable Ammo | Clan | Advanced | 95, TO:AUE; 107, BMM; 192, Core | missing |  |
-| SRT 6 (Clan) Artemis V-capable Ammo | Clan | Advanced | 95, TO:AUE; 107, BMM; 192, Core | missing |  |
-| Semi-Guided Mortar 1 Ammo | Inner Sphere | Advanced | 186, TO:AUE | missing |  |
-| Semi-Guided Mortar 2 Ammo | Inner Sphere | Advanced | 186, TO:AUE | missing |  |
-| Semi-Guided Mortar 4 Ammo | Inner Sphere | Advanced | 186, TO:AUE | missing |  |
-| Semi-Guided Mortar 8 Ammo | Inner Sphere | Advanced | 186, TO:AUE | missing |  |
-| Shaped Charge Mortar 1 Ammo | Inner Sphere | Standard | 136, TO:AUE | missing |  |
-| Shaped Charge Mortar 1 Ammo | Clan | Standard | 136, TO:AUE | missing |  |
-| Shaped Charge Mortar 2 Ammo | Inner Sphere | Standard | 136, TO:AUE | missing |  |
-| Shaped Charge Mortar 2 Ammo | Clan | Standard | 136, TO:AUE | missing |  |
-| Shaped Charge Mortar 4 Ammo | Inner Sphere | Standard | 136, TO:AUE | missing |  |
-| Shaped Charge Mortar 4 Ammo | Clan | Standard | 136, TO:AUE | missing |  |
-| Shaped Charge Mortar 8 Ammo | Inner Sphere | Standard | 136, TO:AUE | missing |  |
-| Shaped Charge Mortar 8 Ammo | Clan | Standard | 136, TO:AUE | missing |  |
-| Smoke Mortar 1 Ammo | Inner Sphere | Advanced | 187, TO:AUE | missing |  |
-| Smoke Mortar 1 Ammo | Clan | Advanced | 187, TO:AUE | missing |  |
-| Smoke Mortar 2 Ammo | Inner Sphere | Advanced | 187, TO:AUE | missing |  |
-| Smoke Mortar 2 Ammo | Clan | Advanced | 187, TO:AUE | missing |  |
-| Smoke Mortar 4 Ammo | Inner Sphere | Advanced | 187, TO:AUE | missing |  |
-| Smoke Mortar 4 Ammo | Clan | Advanced | 187, TO:AUE | missing |  |
-| Smoke Mortar 8 Ammo | Inner Sphere | Advanced | 187, TO:AUE | missing |  |
-| Smoke Mortar 8 Ammo | Clan | Advanced | 187, TO:AUE | missing |  |
-| Standard iATM/12 Ammo | Clan | Standard | 59, IO:AE | missing |  |
-| Standard iATM/3 Ammo | Clan | Standard | 59, IO:AE | missing |  |
-| Standard iATM/6 Ammo | Clan | Standard | 59, IO:AE | missing |  |
-| Standard iATM/9 Ammo | Clan | Standard | 59, IO:AE | missing |  |
-| Torpedo/LRM 5 Ammo | Clan | Standard |  | missing |  |
-| Tracer ProtoMech AC/2 Ammo | Clan | Advanced | 165, TO:AUE | missing |  |
-| Tracer ProtoMech AC/4 Ammo | Clan | Advanced | 165, TO:AUE | missing |  |
-| Tracer ProtoMech AC/8 Ammo | Clan | Advanced | 165, TO:AUE | missing |  |
+| Torpedo/LRM 5 Ammo | Clan | Standard |  | no source | MegaMek item with no rules reference; torpedoes are their own launchers (TW p.230) |
+| RL 10 Ammo | Inner Sphere | Standard | 229, TM | not a record | rocket launchers are one-shot: the launcher is its load and takes no ammunition (TM p.229) |
+| RL 15 Ammo | Inner Sphere | Standard | 229, TM | not a record | rocket launchers are one-shot: the launcher is its load and takes no ammunition (TM p.229) |
+| RL 20 Ammo | Inner Sphere | Standard | 229, TM | not a record | rocket launchers are one-shot: the launcher is its load and takes no ammunition (TM p.229) |
+| Rocket Launcher (Prototype) Pod | Inner Sphere | Experimental | 67, IO:AE | not a record | IO:AE p.67 one-shot mounting of the prototype RL (ledger Batch A) |
+| BA LRM 1 (Clan) Multi-Purpose w/ Incendiary Ammo | Clan | Advanced | 181, TO:AUE | not canon | Incendiary LRMs are for standard LRMs and MMLs only (TO:AUE p.181) |
+| BA LRM 1 (Clan) Torpedo w/ Incendiary Ammo | Clan | Advanced | 181, TO:AUE | not canon | Incendiary LRMs are for standard LRMs and MMLs only (TO:AUE p.181) |
+| BA LRM 1 Torpedo w/ Incendiary Ammo | Inner Sphere | Advanced | 181, TO:AUE | not canon | Incendiary LRMs are for standard LRMs and MMLs only (TO:AUE p.181) |
+| BA LRM 1 w/ Incendiary Ammo | Inner Sphere | Advanced | 181, TO:AUE | not canon | Incendiary LRMs are for standard LRMs and MMLs only (TO:AUE p.181) |
+| BA LRM 1 w/ Incendiary Ammo | Clan | Advanced | 181, TO:AUE | not canon | Incendiary LRMs are for standard LRMs and MMLs only (TO:AUE p.181) |
+| BA LRM 2 (Clan) Multi-Purpose w/ Incendiary Ammo | Clan | Advanced | 181, TO:AUE | not canon | Incendiary LRMs are for standard LRMs and MMLs only (TO:AUE p.181) |
+| BA LRM 2 (Clan) Torpedo w/ Incendiary Ammo | Clan | Advanced | 181, TO:AUE | not canon | Incendiary LRMs are for standard LRMs and MMLs only (TO:AUE p.181) |
+| BA LRM 2 Torpedo w/ Incendiary Ammo | Inner Sphere | Advanced | 181, TO:AUE | not canon | Incendiary LRMs are for standard LRMs and MMLs only (TO:AUE p.181) |
+| BA LRM 2 w/ Incendiary Ammo | Inner Sphere | Advanced | 181, TO:AUE | not canon | Incendiary LRMs are for standard LRMs and MMLs only (TO:AUE p.181) |
+| BA LRM 2 w/ Incendiary Ammo | Clan | Advanced | 181, TO:AUE | not canon | Incendiary LRMs are for standard LRMs and MMLs only (TO:AUE p.181) |
+| BA LRM 3 (Clan) Multi-Purpose w/ Incendiary Ammo | Clan | Advanced | 181, TO:AUE | not canon | Incendiary LRMs are for standard LRMs and MMLs only (TO:AUE p.181) |
+| BA LRM 3 (Clan) Torpedo w/ Incendiary Ammo | Clan | Advanced | 181, TO:AUE | not canon | Incendiary LRMs are for standard LRMs and MMLs only (TO:AUE p.181) |
+| BA LRM 3 Torpedo w/ Incendiary Ammo | Inner Sphere | Advanced | 181, TO:AUE | not canon | Incendiary LRMs are for standard LRMs and MMLs only (TO:AUE p.181) |
+| BA LRM 3 w/ Incendiary Ammo | Inner Sphere | Advanced | 181, TO:AUE | not canon | Incendiary LRMs are for standard LRMs and MMLs only (TO:AUE p.181) |
+| BA LRM 3 w/ Incendiary Ammo | Clan | Advanced | 181, TO:AUE | not canon | Incendiary LRMs are for standard LRMs and MMLs only (TO:AUE p.181) |
+| BA LRM 4 (Clan) Multi-Purpose w/ Incendiary Ammo | Clan | Advanced | 181, TO:AUE | not canon | Incendiary LRMs are for standard LRMs and MMLs only (TO:AUE p.181) |
+| BA LRM 4 (Clan) Torpedo w/ Incendiary Ammo | Clan | Advanced | 181, TO:AUE | not canon | Incendiary LRMs are for standard LRMs and MMLs only (TO:AUE p.181) |
+| BA LRM 4 Torpedo w/ Incendiary Ammo | Inner Sphere | Advanced | 181, TO:AUE | not canon | Incendiary LRMs are for standard LRMs and MMLs only (TO:AUE p.181) |
+| BA LRM 4 w/ Incendiary Ammo | Inner Sphere | Advanced | 181, TO:AUE | not canon | Incendiary LRMs are for standard LRMs and MMLs only (TO:AUE p.181) |
+| BA LRM 4 w/ Incendiary Ammo | Clan | Advanced | 181, TO:AUE | not canon | Incendiary LRMs are for standard LRMs and MMLs only (TO:AUE p.181) |
+| BA LRM 5 (Clan) Multi-Purpose w/ Incendiary Ammo | Clan | Advanced | 181, TO:AUE | not canon | Incendiary LRMs are for standard LRMs and MMLs only (TO:AUE p.181) |
+| BA LRM 5 (Clan) Torpedo w/ Incendiary Ammo | Clan | Advanced | 181, TO:AUE | not canon | Incendiary LRMs are for standard LRMs and MMLs only (TO:AUE p.181) |
+| BA LRM 5 Torpedo w/ Incendiary Ammo | Inner Sphere | Advanced | 181, TO:AUE | not canon | Incendiary LRMs are for standard LRMs and MMLs only (TO:AUE p.181) |
+| BA LRM 5 w/ Incendiary Ammo | Inner Sphere | Advanced | 181, TO:AUE | not canon | Incendiary LRMs are for standard LRMs and MMLs only (TO:AUE p.181) |
+| BA LRM 5 w/ Incendiary Ammo | Clan | Advanced | 181, TO:AUE | not canon | Incendiary LRMs are for standard LRMs and MMLs only (TO:AUE p.181) |
+| Enhanced LRM 10 Listen-Kill Ammo | Inner Sphere | Experimental | 99, IO:AE | not canon | Listen-Kill missiles fit standard LRM and SRM launchers only (IO:AE p.99) |
+| Enhanced LRM 10 Listen-Kill w/ Incendiary Ammo | Inner Sphere | Experimental | 181, TO:AUE | not canon | Listen-Kill missiles fit standard LRM and SRM launchers only (IO:AE p.99), as do incendiary LRMs (TO:AUE p.181) |
+| Enhanced LRM 15 Listen-Kill Ammo | Inner Sphere | Experimental | 99, IO:AE | not canon | Listen-Kill missiles fit standard LRM and SRM launchers only (IO:AE p.99) |
+| Enhanced LRM 15 Listen-Kill w/ Incendiary Ammo | Inner Sphere | Experimental | 181, TO:AUE | not canon | Listen-Kill missiles fit standard LRM and SRM launchers only (IO:AE p.99), as do incendiary LRMs (TO:AUE p.181) |
+| Enhanced LRM 20 Listen-Kill Ammo | Inner Sphere | Experimental | 99, IO:AE | not canon | Listen-Kill missiles fit standard LRM and SRM launchers only (IO:AE p.99) |
+| Enhanced LRM 20 Listen-Kill w/ Incendiary Ammo | Inner Sphere | Experimental | 181, TO:AUE | not canon | Listen-Kill missiles fit standard LRM and SRM launchers only (IO:AE p.99), as do incendiary LRMs (TO:AUE p.181) |
+| Enhanced LRM 5 Listen-Kill Ammo | Inner Sphere | Experimental | 99, IO:AE | not canon | Listen-Kill missiles fit standard LRM and SRM launchers only (IO:AE p.99) |
+| Enhanced LRM 5 Listen-Kill w/ Incendiary Ammo | Inner Sphere | Experimental | 181, TO:AUE | not canon | Listen-Kill missiles fit standard LRM and SRM launchers only (IO:AE p.99), as do incendiary LRMs (TO:AUE p.181) |
+| Auto-Pistol (Nissan SG-12) Ammo | Inner Sphere | Standard | 176, HB:HK | round 9 | weapon's row: HB:HK p.176 prints tabletop stats (canon, though MegaMek marks the yumi unofficial) without BV, cost or dates; BV and cost come from the conversion rules |
+| Gauss Rifle (Gungnir Heavy Support) Ammo | Inner Sphere | Standard | 176, AToW Companion | round 9 | weapon's row: AToW Companion p.176: RPG stats only; converted with the personal gear |
+| Laser Carbine (Brightstar L-15) Ammo | Clan | Standard | Shrap09 | round 9 | weapon's row: infantry / personal weapon (TM p.273, Shrapnel, AToW Companion) |
+| Laser Pistol (AWA Wiliby Mk4 Laser Pistol) Ammo | Inner Sphere | Standard | Shrap09 | round 9 | weapon's row: Shrapnel #9: A Time of War stats only; converted with the personal gear |
+| Laser Pistol (Brightstar L-12) Ammo | Clan | Standard | Shrap09 | round 9 | weapon's row: Shrapnel #9: A Time of War stats only; converted with the personal gear |
+| Laser Pistol (Brightstar L-15) Ammo | Clan | Standard | Shrap09 | round 9 | weapon's row: Shrapnel #9: A Time of War stats only; converted with the personal gear |
+| Laser Pistol (Brightstar L-7) Ammo | Inner Sphere | Standard | Shrap09 | round 9 | weapon's row: Shrapnel #9: A Time of War stats only; converted with the personal gear |
+| Laser Pistol (Darklight IV Laser Pistol) Ammo | Inner Sphere | Standard | Shrap09 | round 9 | weapon's row: Shrapnel #9: A Time of War stats only; converted with the personal gear |
+| Laser Pistol (Kelvin 000 Lancer 3-mm) Ammo | Inner Sphere | Standard | Shrap09 | round 9 | weapon's row: Shrapnel #9: A Time of War stats only; converted with the personal gear |
+| Laser Pistol (Xing Shan ER) Ammo | Inner Sphere | Standard | Shrap09 | round 9 | weapon's row: Shrapnel #9: A Time of War stats only; converted with the personal gear |
+| Laser Pistol (Xing Shan) Ammo | Inner Sphere | Standard | Shrap09 | round 9 | weapon's row: Shrapnel #9: A Time of War stats only; converted with the personal gear |
+| Laser Rifle (DWS L5S) Ammo | Inner Sphere | Standard | Shrap09 | round 9 | weapon's row: Shrapnel #9: A Time of War stats only; converted with the personal gear |
+| Laser Rifle (Darklight-CL Light Laser Rifle) Ammo | Inner Sphere | Standard | Shrap09 | round 9 | weapon's row: Shrapnel #9: A Time of War stats only; converted with the personal gear |
+| Laser Rifle (Scorcher VI Blazer Rifle) Ammo | Inner Sphere | Standard | Shrap09 | round 9 | weapon's row: Shrapnel #9: A Time of War stats only; converted with the personal gear |
+| Laser Rifle (Syrtis Firebolt-12) (Repaired) Ammo | Inner Sphere | Standard | Shrap09 | round 9 | weapon's row: Shrapnel #9: A Time of War stats only; converted with the personal gear |
+| Laser Rifle (Syrtis Firebolt-12) (Unrepaired) Ammo | Inner Sphere | Standard | Shrap09 | round 9 | weapon's row: Shrapnel #9: A Time of War stats only; converted with the personal gear |
+| Laser Rifle (Wolf-Barron Sunraker) Ammo | Inner Sphere | Standard | Shrap09 | round 9 | weapon's row: Shrapnel #9: A Time of War stats only; converted with the personal gear |
+| Laser Rifle (Yang Lie) Ammo | Inner Sphere | Standard | Shrap09 | round 9 | weapon's row: Shrapnel #9: A Time of War stats only; converted with the personal gear |
+| Laser Sniper Rifle (DWS L5L) Ammo | Inner Sphere | Standard | Shrap09 | round 9 | weapon's row: Shrapnel #9: A Time of War stats only; converted with the personal gear |
+| Machine Gun (Akai Ryu) Ammo | Inner Sphere | Standard | Shrap22 | round 9 | weapon's row: infantry / personal weapon (TM p.273, Shrapnel, AToW Companion) |
+| Machine Gun (Boone MGL 14A) Ammo | Inner Sphere | Standard | Shrap22 | round 9 | weapon's row: infantry / personal weapon (TM p.273, Shrapnel, AToW Companion) |
+| Machine Gun (Boone MGL 14D) Ammo | Inner Sphere | Standard | Shrap22 | round 9 | weapon's row: infantry / personal weapon (TM p.273, Shrapnel, AToW Companion) |
+| Machine Gun (Fogue Defender) Ammo | Inner Sphere | Standard | Shrap22 | round 9 | weapon's row: infantry / personal weapon (TM p.273, Shrapnel, AToW Companion) |
+| Machine Gun (HCK M-2MG) Ammo | Inner Sphere | Standard | Shrap22 | round 9 | weapon's row: infantry / personal weapon (TM p.273, Shrapnel, AToW Companion) |
+| Machine Gun (Huo Dushe) Ammo | Inner Sphere | Standard | Shrap22 | round 9 | weapon's row: infantry / personal weapon (TM p.273, Shrapnel, AToW Companion) |
+| Machine Gun (Nambu M-12) Ammo | Inner Sphere | Standard | Shrap22 | round 9 | weapon's row: infantry / personal weapon (TM p.273, Shrapnel, AToW Companion) |
+| Machine Gun (Peacekeeper-LB) Ammo | Inner Sphere | Standard | Shrap22 | round 9 | weapon's row: infantry / personal weapon (TM p.273, Shrapnel, AToW Companion) |
+| Machine Gun (Peacekeeper-LLB) Ammo | Inner Sphere | Standard | Shrap22 | round 9 | weapon's row: infantry / personal weapon (TM p.273, Shrapnel, AToW Companion) |
+| Machine Gun (Peacekeeper-LSB) Ammo | Inner Sphere | Standard | Shrap22 | round 9 | weapon's row: infantry / personal weapon (TM p.273, Shrapnel, AToW Companion) |
+| Machine Gun (Peacekeeper-SB) Ammo | Inner Sphere | Standard | Shrap22 | round 9 | weapon's row: infantry / personal weapon (TM p.273, Shrapnel, AToW Companion) |
+| Machine Gun (Sarcot MG-19) Ammo | Inner Sphere | Standard | Shrap22 | round 9 | weapon's row: infantry / personal weapon (TM p.273, Shrapnel, AToW Companion) |
+| Machine Gun (Tharwep Nachtgewitter) Ammo | Inner Sphere | Standard | Shrap22 | round 9 | weapon's row: infantry / personal weapon (TM p.273, Shrapnel, AToW Companion) |
+| Machine Gun (Type 17) Ammo | Inner Sphere | Standard | Shrap22 | round 9 | weapon's row: infantry / personal weapon (TM p.273, Shrapnel, AToW Companion) |
+| Machine Pistol (H-T Spec-7a) Ammo | Inner Sphere | Standard | 176, HB:HK | round 9 | weapon's row: HB:HK p.176 prints tabletop stats (canon, though MegaMek marks the yumi unofficial) without BV, cost or dates; BV and cost come from the conversion rules |
+| Mag-Pulse Harpoon Gun Ammo | Inner Sphere | Standard | 176, AToW Companion | round 9 | weapon's row: infantry / personal weapon (TM p.273, Shrapnel, AToW Companion) |
+| Pistol (AA Gemini) Ammo | Inner Sphere | Standard | Shrap03 | round 9 | weapon's row: Shrapnel #3: A Time of War stats only; converted with the personal gear |
+| Pistol (Camden HR-7) Ammo | Inner Sphere | Standard | Shrap03 | round 9 | weapon's row: Shrapnel #3: A Time of War stats only; converted with the personal gear |
+| Pistol (Dreamel J-4 Derringer) Ammo | Inner Sphere | Standard | Shrap03 | round 9 | weapon's row: Shrapnel #3: A Time of War stats only; converted with the personal gear |
+| Pistol (HCK P-14) Ammo | Inner Sphere | Standard | Shrap03 | round 9 | weapon's row: Shrapnel #3: A Time of War stats only; converted with the personal gear |
+| Pistol (Lemison Combat Revolver) Ammo | Inner Sphere | Standard | Shrap03 | round 9 | weapon's row: Shrapnel #3: A Time of War stats only; converted with the personal gear |
+| Pistol (Momo De Baoying (Special)) Ammo | Inner Sphere | Standard | Shrap03 | round 9 | weapon's row: Shrapnel #3: A Time of War stats only; converted with the personal gear |
+| Pistol (Momo De Baoying (Standard)) Ammo | Inner Sphere | Standard | Shrap03 | round 9 | weapon's row: Shrapnel #3: A Time of War stats only; converted with the personal gear |
+| Pistol (Nambu 380) Ammo | Inner Sphere | Standard | Shrap03 | round 9 | weapon's row: Shrapnel #3: A Time of War stats only; converted with the personal gear |
+| Pistol (Nambu 480) Ammo | Inner Sphere | Standard | Shrap03 | round 9 | weapon's row: Shrapnel #3: A Time of War stats only; converted with the personal gear |
+| Pistol (RFW Galahad) Ammo | Inner Sphere | Standard | Shrap03 | round 9 | weapon's row: Shrapnel #3: A Time of War stats only; converted with the personal gear |
+| Pistol (Serrek 7994 SF) Ammo | Inner Sphere | Standard | Shrap03 | round 9 | weapon's row: Shrapnel #3: A Time of War stats only; converted with the personal gear |
+| Pistol (Serrek 7994) Ammo | Inner Sphere | Standard | Shrap03 | round 9 | weapon's row: Shrapnel #3: A Time of War stats only; converted with the personal gear |
+| Pistol (Sturm Eagle Mk4M) Ammo | Inner Sphere | Standard | Shrap03 | round 9 | weapon's row: Shrapnel #3: A Time of War stats only; converted with the personal gear |
+| Pistol (Sturm Eagle Mk4P) Ammo | Inner Sphere | Standard | Shrap03 | round 9 | weapon's row: Shrapnel #3: A Time of War stats only; converted with the personal gear |
+| Pistol (Type 74D Pistol) Ammo | Inner Sphere | Standard | Shrap03 | round 9 | weapon's row: Shrapnel #3: A Time of War stats only; converted with the personal gear |
+| Pistol (Type 74P Pistol) Ammo | Inner Sphere | Standard | Shrap03 | round 9 | weapon's row: Shrapnel #3: A Time of War stats only; converted with the personal gear |
+| Pistol (Whisper-4 (Standard Rounds)) Ammo | Inner Sphere | Standard | Shrap03 | round 9 | weapon's row: Shrapnel #3: A Time of War stats only; converted with the personal gear |
+| Pistol (Whisper-4 (Sub-Sonic)) Ammo | Inner Sphere | Standard | Shrap03 | round 9 | weapon's row: Shrapnel #3: A Time of War stats only; converted with the personal gear |
+| Pistol (Wolf M30) Ammo | Inner Sphere | Standard | Shrap03 | round 9 | weapon's row: Shrapnel #3: A Time of War stats only; converted with the personal gear |
+| Pistol (Ya Njingshe) Ammo | Inner Sphere | Standard | Shrap03 | round 9 | weapon's row: Shrapnel #3: A Time of War stats only; converted with the personal gear |
+| Pulse Laser Pistol (Medusa III) Ammo | Inner Sphere | Standard | Shrap09 | round 9 | weapon's row: Shrapnel #9: A Time of War stats only; converted with the personal gear |
+| Pulse Laser Pistol (Medusa IV) Ammo | Inner Sphere | Standard | Shrap09 | round 9 | weapon's row: Shrapnel #9: A Time of War stats only; converted with the personal gear |
+| Pulse Laser Pistol (RDI Sunswarm Pulsar) Ammo | Inner Sphere | Standard | Shrap09 | round 9 | weapon's row: Shrapnel #9: A Time of War stats only; converted with the personal gear |
+| Pulse Laser Rifle (DWS L5C) Ammo | Inner Sphere | Standard | Shrap09 | round 9 | weapon's row: Shrapnel #9: A Time of War stats only; converted with the personal gear |
+| Rifle (Vintage Assault) Ammo | Inner Sphere | Standard | 195, AToW Companion | round 9 | weapon's row: AToW Companion p.195: RPG stats only; converted with the personal gear |
+| SMG (AWA Starling Mk7) Ammo | Inner Sphere | Standard | Shrap05 | round 9 | weapon's row: Shrapnel #5: A Time of War stats only; converted with the personal gear |
+| SMG (AWA Starling Mk7-LB) Ammo | Inner Sphere | Standard | Shrap05 | round 9 | weapon's row: Shrapnel #5: A Time of War stats only; converted with the personal gear |
+| SMG (AWA Starling Mk7-SF) Ammo | Inner Sphere | Standard | Shrap05 | round 9 | weapon's row: Shrapnel #5: A Time of War stats only; converted with the personal gear |
+| SMG (Blackfield Scorpion Mk 65) Ammo | Inner Sphere | Standard | Shrap05 | round 9 | weapon's row: Shrapnel #5: A Time of War stats only; converted with the personal gear |
+| SMG (Boudicca-4) Ammo | Inner Sphere | Standard | Shrap05 | round 9 | weapon's row: Shrapnel #5: A Time of War stats only; converted with the personal gear |
+| SMG (Boudicca-5) Ammo | Inner Sphere | Standard | Shrap05 | round 9 | weapon's row: Shrapnel #5: A Time of War stats only; converted with the personal gear |
+| SMG (Boudicca-7) Ammo | Inner Sphere | Standard | Shrap05 | round 9 | weapon's row: Shrapnel #5: A Time of War stats only; converted with the personal gear |
+| SMG (DSK Largo SGA) Ammo | Inner Sphere | Standard | Shrap05 | round 9 | weapon's row: Shrapnel #5: A Time of War stats only; converted with the personal gear |
+| SMG (DSK Largo SGB) Ammo | Inner Sphere | Standard | Shrap05 | round 9 | weapon's row: Shrapnel #5: A Time of War stats only; converted with the personal gear |
+| SMG (Hunkle V) Ammo | Inner Sphere | Standard | Shrap05 | round 9 | weapon's row: Shrapnel #5: A Time of War stats only; converted with the personal gear |
+| SMG (J-15 Hagel) Ammo | Inner Sphere | Standard | Shrap05 | round 9 | weapon's row: Shrapnel #5: A Time of War stats only; converted with the personal gear |
+| SMG (J-17 Hagel) Ammo | Inner Sphere | Standard | Shrap05 | round 9 | weapon's row: Shrapnel #5: A Time of War stats only; converted with the personal gear |
+| SMG (Jinse Yanjingshe (AP Rounds)) Ammo | Inner Sphere | Standard | Shrap05 | round 9 | weapon's row: Shrapnel #5: A Time of War stats only; converted with the personal gear |
+| SMG (Jinse Yanjingshe (Standard)) Ammo | Inner Sphere | Standard | Shrap05 | round 9 | weapon's row: Shrapnel #5: A Time of War stats only; converted with the personal gear |
+| SMG (Nambu Type S-124) Ammo | Inner Sphere | Standard | Shrap05 | round 9 | weapon's row: Shrapnel #5: A Time of War stats only; converted with the personal gear |
+| SMG (RFW Bedivere) Ammo | Inner Sphere | Standard | Shrap05 | round 9 | weapon's row: Shrapnel #5: A Time of War stats only; converted with the personal gear |
+| SMG (Spartacus) Ammo | Inner Sphere | Standard | Shrap05 | round 9 | weapon's row: Shrapnel #5: A Time of War stats only; converted with the personal gear |
+| SMG (Sturm Hornet Mk III) Ammo | Inner Sphere | Standard | Shrap05 | round 9 | weapon's row: Shrapnel #5: A Time of War stats only; converted with the personal gear |
+| SMG (Wolf-Barron A7) Ammo | Inner Sphere | Standard | Shrap05 | round 9 | weapon's row: Shrapnel #5: A Time of War stats only; converted with the personal gear |
+| Shotgun (AMI Keymaster-15) Ammo | Inner Sphere | Standard | Shrap07 | round 9 | weapon's row: Shrapnel #7: A Time of War stats only; converted with the personal gear |
+| Shotgun (AWA AS-105) Ammo | Inner Sphere | Standard | Shrap07 | round 9 | weapon's row: Shrapnel #7: A Time of War stats only; converted with the personal gear |
+| Shotgun (AWA SS-112) Ammo | Inner Sphere | Standard | Shrap07 | round 9 | weapon's row: Shrapnel #7: A Time of War stats only; converted with the personal gear |
+| Shotgun (Byron 15S) Ammo | Inner Sphere | Standard | Shrap07 | round 9 | weapon's row: Shrapnel #7: A Time of War stats only; converted with the personal gear |
+| Shotgun (CWI Jianhuren) Ammo | Inner Sphere | Standard | Shrap07 | round 9 | weapon's row: Shrapnel #7: A Time of War stats only; converted with the personal gear |
+| Shotgun (Daystar I (C)) Ammo | Inner Sphere | Standard | Shrap07 | round 9 | weapon's row: Shrapnel #7: A Time of War stats only; converted with the personal gear |
+| Shotgun (Daystar I (M)) Ammo | Inner Sphere | Standard | Shrap07 | round 9 | weapon's row: Shrapnel #7: A Time of War stats only; converted with the personal gear |
+| Shotgun (Daystar II (C)) Ammo | Inner Sphere | Standard | Shrap07 | round 9 | weapon's row: Shrapnel #7: A Time of War stats only; converted with the personal gear |
+| Shotgun (Daystar II (M)) Ammo | Inner Sphere | Standard | Shrap07 | round 9 | weapon's row: Shrapnel #7: A Time of War stats only; converted with the personal gear |
+| Shotgun (Daystar III (C)) Ammo | Inner Sphere | Standard | Shrap07 | round 9 | weapon's row: Shrapnel #7: A Time of War stats only; converted with the personal gear |
+| Shotgun (Daystar III (M)) Ammo | Inner Sphere | Standard | Shrap07 | round 9 | weapon's row: Shrapnel #7: A Time of War stats only; converted with the personal gear |
+| Shotgun (Daystar IV (C)) Ammo | Inner Sphere | Standard | Shrap07 | round 9 | weapon's row: Shrapnel #7: A Time of War stats only; converted with the personal gear |
+| Shotgun (Daystar IV (M)) Ammo | Inner Sphere | Standard | Shrap07 | round 9 | weapon's row: Shrapnel #7: A Time of War stats only; converted with the personal gear |
+| Shotgun (Daystar V (C)) Ammo | Inner Sphere | Standard | Shrap07 | round 9 | weapon's row: Shrapnel #7: A Time of War stats only; converted with the personal gear |
+| Shotgun (Daystar V (M)) Ammo | Inner Sphere | Standard | Shrap07 | round 9 | weapon's row: Shrapnel #7: A Time of War stats only; converted with the personal gear |
+| Shotgun (Duckett A-5) Ammo | Inner Sphere | Standard | Shrap07 | round 9 | weapon's row: Shrapnel #7: A Time of War stats only; converted with the personal gear |
+| Shotgun (Hastari III) Ammo | Inner Sphere | Standard | Shrap07 | round 9 | weapon's row: Shrapnel #7: A Time of War stats only; converted with the personal gear |
+| Shotgun (Marburg-20) Ammo | Inner Sphere | Standard | Shrap07 | round 9 | weapon's row: Shrapnel #7: A Time of War stats only; converted with the personal gear |
+| Shotgun (Marburg-20M) Ammo | Inner Sphere | Standard | Shrap07 | round 9 | weapon's row: Shrapnel #7: A Time of War stats only; converted with the personal gear |
+| Shotgun (Morrigan Stormsweeper) Ammo | Inner Sphere | Standard | Shrap07 | round 9 | weapon's row: Shrapnel #7: A Time of War stats only; converted with the personal gear |
+| Shotgun (SD Type-31) Ammo | Inner Sphere | Standard | Shrap07 | round 9 | weapon's row: Shrapnel #7: A Time of War stats only; converted with the personal gear |
+| Shotgun (Wakazashi O-12) Ammo | Inner Sphere | Standard | 176, HB:HK | round 9 | weapon's row: HB:HK p.176 prints tabletop stats (canon, though MegaMek marks the yumi unofficial) without BV, cost or dates; BV and cost come from the conversion rules |
+| Shotgun (Wrangleman Tri-Barrel) Ammo | Inner Sphere | Standard | Shrap07 | round 9 | weapon's row: Shrapnel #7: A Time of War stats only; converted with the personal gear |
+| Sniper Rifle (Barton AMR (Anti-Armor)) Ammo | Inner Sphere | Standard | Shrap01 | round 9 | weapon's row: Shrapnel #1: A Time of War stats only; converted with the personal gear |
+| Sniper Rifle (Barton AMR (Standard)) Ammo | Inner Sphere | Standard | Shrap01 | round 9 | weapon's row: Shrapnel #1: A Time of War stats only; converted with the personal gear |
+| Sniper Rifle (FNF-J12 (Dark Caste)) Ammo | Clan | Standard | Shrap01 | round 9 | weapon's row: Shrapnel #1: A Time of War stats only; converted with the personal gear |
+| Sniper Rifle (FNF-J12 (SLDF)) Ammo | Inner Sphere | Standard | Shrap01 | round 9 | weapon's row: Shrapnel #1: A Time of War stats only; converted with the personal gear |
+| Sniper Rifle (Hammel Marksman) Ammo | Inner Sphere | Standard | Shrap01 | round 9 | weapon's row: Shrapnel #1: A Time of War stats only; converted with the personal gear |
+| Sniper Rifle (LRS-53 Sniper Rifle) Ammo | Inner Sphere | Standard | Shrap01 | round 9 | weapon's row: Shrapnel #1: A Time of War stats only; converted with the personal gear |
+| Sniper Rifle (Lancelot Mk V) Ammo | Inner Sphere | Standard | Shrap01 | round 9 | weapon's row: Shrapnel #1: A Time of War stats only; converted with the personal gear |
+| Sniper Rifle (Praetorian S-3) Ammo | Inner Sphere | Standard | Shrap01 | round 9 | weapon's row: Shrapnel #1: A Time of War stats only; converted with the personal gear |
+| Sniper Rifle (Praetorian S-5) Ammo | Inner Sphere | Standard | Shrap01 | round 9 | weapon's row: Shrapnel #1: A Time of War stats only; converted with the personal gear |
+| Sniper Rifle (SR-17 Suns Killer) Ammo | Inner Sphere | Standard | Shrap01 | round 9 | weapon's row: Shrapnel #1: A Time of War stats only; converted with the personal gear |
+| Sniper Rifle (Sairentosutomu) Ammo | Inner Sphere | Standard | Shrap01 | round 9 | weapon's row: Shrapnel #1: A Time of War stats only; converted with the personal gear |
+| Sniper Rifle (Thorshammer) Ammo | Inner Sphere | Standard | Shrap01 | round 9 | weapon's row: Shrapnel #1: A Time of War stats only; converted with the personal gear |
+| Sniper Rifle (Wilimton RS-14) Ammo | Inner Sphere | Standard | Shrap01 | round 9 | weapon's row: Shrapnel #1: A Time of War stats only; converted with the personal gear |
+| Sniper Rifle (Wilimton RS-17 (Stripped)) Ammo | Inner Sphere | Standard | Shrap01 | round 9 | weapon's row: Shrapnel #1: A Time of War stats only; converted with the personal gear |
+| Sniper Rifle (Yuan Ling) Ammo | Inner Sphere | Standard | Shrap01 | round 9 | weapon's row: Shrapnel #1: A Time of War stats only; converted with the personal gear |
+| Support PPC (Snub-Nose) Ammo | Inner Sphere | Standard | 176, AToW Companion | round 9 | weapon's row: infantry / personal weapon (TM p.273, Shrapnel, AToW Companion) |
+| Variable-Pulse Laser Rifle Ammo | Inner Sphere | Standard | 195, AToW Companion | round 9 | weapon's row: AToW Companion p.195: RPG stats only; converted with the personal gear |
+| Vintage Gatling Gun Ammo | Inner Sphere | Standard | 195, AToW Companion | round 9 | weapon's row: infantry / personal weapon (TM p.273, Shrapnel, AToW Companion) |
+| Vintage MiniGun Ammo | Inner Sphere | Standard | 195, AToW Companion | round 9 | weapon's row: infantry / personal weapon (TM p.273, Shrapnel, AToW Companion) |
+| Wire-Guided Missile Launcher Ammo | Inner Sphere | Standard | 195, AToW Companion | round 9 | weapon's row: infantry / personal weapon (TM p.273, Shrapnel, AToW Companion) |
 
 ## Armor
 

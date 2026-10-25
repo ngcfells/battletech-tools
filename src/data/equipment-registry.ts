@@ -506,7 +506,9 @@ export function getCompatibleAmmo(weapon: IEquipmentItem, ammo: IEquipmentItem):
         return !!ammo.battleArmorScale && !!weapon.battleArmorScale && matchesTag(weapon, ammo.feedsWeaponTag);
     }
 
-    return getWeaponAmmoFamilies(weapon).includes(getAmmoFamily(ammo));
+    const family = getAmmoFamily(ammo);
+    return getWeaponAmmoFamilies(weapon).includes(family)
+        || (!!ammo.isSpecialAmmo && (weapon.munitionTypes ?? []).some(type => stripAmmoFaction(type) === family));
 }
 
 /**

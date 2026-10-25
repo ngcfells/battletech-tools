@@ -1,6 +1,6 @@
 import React, { type JSX } from 'react';
 import BattleArmor from '../../../classes/battle-armor';
-import { findBattleArmorEquipment, findBattleArmorMineType } from '../../../data/battle-armor-equipment';
+import { findBattleArmorEquipment, findBattleArmorMineType, findBattleArmorMunition } from '../../../data/battle-armor-equipment';
 import {
     BA_LEG_ATTACKS, BA_SWARM_ATTACKS, BA_SWARM_ATTACK_MODIFIERS, BA_SWARM_EQUIPMENT_MODIFIERS, BA_SWARM_HIT_LOCATIONS,
     BA_SWARM_SITUATION_MODIFIERS, BA_TRANSPORT_POSITIONS,
@@ -73,6 +73,7 @@ export default class BattleArmorRecordSheetSVG extends React.Component<IBattleAr
             const name = (suit.isMixedTech() ? (equipment.techBase === "clan" ? "Clan " : "IS ") : "") + equipment.name
                 + (entry.squadSupport ? " (squad support)" : "") + (entry.modular ? " (modular)" : "") + (entry.detachable ? " (detachable)" : "")
                 + (entry.trooper ? ` (trooper ${entry.trooper})` : "") + (equipment.mineDispenser ? ` (${findBattleArmorMineType(entry.mine).name} mines)` : "")
+                + (entry.munition ? ` (${findBattleArmorMunition(entry.munition).name})` : "")
                 + (shots > 0 ? ` (${shots} shot${shots === 1 ? "" : "s"})` : "") + weaponQuirkSuffix(quirks, entry.uuid);
             lines.push({ name, damage: equipment.damage, bands: (range.length === 4 ? range : ["", "", "", equipment.range]).map((band) => band === "-" ? "—" : band) });
         }

@@ -525,6 +525,43 @@ export const battleArmorMineTypes: IBattleArmorMineType[] = [
 export const findBattleArmorMineType = (tag: string | undefined): IBattleArmorMineType =>
     battleArmorMineTypes.find((entry) => entry.tag === tag) ?? battleArmorMineTypes[0];
 
+/**
+ * Battle armor missile munitions (TM p.261; TW p.229; Additional Battle Armor Weapons and Equipment, TM p.297): standard
+ * LRM and SRM launchers only, one-shot versions included. They weigh what a standard missile does and change neither
+ * Battle Value nor the launcher's price (the table's multiplier is on the ammunition, which the suit's price leaves out).
+ */
+export interface IBattleArmorMunition {
+    tag: string;
+    name: string;
+    /** The launcher families that may fire it: standard LRM or SRM launchers, or BA tube artillery. */
+    families: ("LRM" | "SRM" | "TUBE")[];
+    /** By the launcher's tech base; absent where that tech base has none. */
+    dates: Partial<Record<BattleArmorTechBase, IBattleArmorDates>>;
+    notes: string;
+}
+export const battleArmorMunitions: IBattleArmorMunition[] = [
+    { tag: "standard", name: "Standard", families: ["LRM", "SRM", "TUBE"], dates: { is: { introduced: "PS" }, clan: { introduced: "PS" } }, notes: "" },
+    { tag: "inferno", name: "Inferno", families: ["SRM"], dates: { is: { introduced: 2380 }, clan: { introduced: 2380 } },
+        notes: "Standard inferno rules (TW p.141); a trooper without fire-resistant armor who is eliminated while carrying infernos sets them off on 8+ on 2D6, striking every unit in the hex with that many inferno rounds (TW p.229). Availability D-D-D." },
+    { tag: "torpedo", name: "Torpedo", families: ["LRM", "SRM"], dates: { is: { introduced: 2380 }, clan: { introduced: 2380 } },
+        notes: "The launcher's own statistics; fired only from or into water of Depth 1 or more, with LOS traced through such water (TW p.229). Availability C-C-C." },
+    { tag: "multi-purpose", name: "Multi-Purpose", families: ["LRM", "SRM"], dates: { clan: { introduced: 3060 } },
+        notes: "Clan only (Goliath Scorpion, 3060). Fired as a torpedo, or as a standard attack from a Depth 1 water hex at a non-submerged unit, LOS traced as though one level above the surface; only submerged units with LOS may attack the suit in return (TW p.229). Availability X-X-E." },
+    { tag: "smoke", name: "Smoke", families: ["TUBE"], dates: { is: { introduced: "PS" } },
+        notes: "Artillery smoke (TO:AUE p.168): BA tube artillery fires high-explosive or smoke rounds, smoke filling a radius of 1 (TO errata, Artillery Ordnance Table BA Tube column). The game-rules text also names anti-personnel and Thunder/FASCAM, but the table gives the tube no values for them, so they are not offered. Shots are tracked like battle armor missile ammunition (TO:AUE p.96)." },
+];
+/** "Inferno missiles", or "Smoke rounds" for tube artillery. */
+export const getBattleArmorMunitionLabel = (munition: IBattleArmorMunition): string =>
+    `${munition.name} ${munition.families.includes("TUBE") ? "rounds" : "missiles"}`;
+export const findBattleArmorMunition = (tag: string | undefined): IBattleArmorMunition =>
+    battleArmorMunitions.find((entry) => entry.tag === tag) ?? battleArmorMunitions[0];
+/** The munitions a launcher may fire, standard first: those of its family (standard LRM or SRM, tube artillery) and tech base. */
+export const getBattleArmorMunitionsFor = (equipment: IBattleArmorEquipment): IBattleArmorMunition[] => {
+    const family = (/^(?:is|clan)-(lrm|srm)-\d+$/.exec(equipment.tag)?.[1].toUpperCase()
+        ?? (/^(?:is|clan)-tube-artillery$/.test(equipment.tag) ? "TUBE" : undefined)) as "LRM" | "SRM" | "TUBE" | undefined;
+    return family ? battleArmorMunitions.filter((munition) => munition.families.includes(family) && !!munition.dates[equipment.techBase]) : [battleArmorMunitions[0]];
+};
+
 export const findBattleArmorEquipment = (tag: string): IBattleArmorEquipment | null =>
     battleArmorEquipment.find((entry) => entry.tag === tag) ?? null;
 

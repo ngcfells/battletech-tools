@@ -3,7 +3,7 @@ import { Link } from 'react-router';
 import { FaArrowCircleLeft, FaArrowCircleRight, FaPlus, FaTrash } from "react-icons/fa";
 import BattleArmor, { BATTLE_ARMOR_LOCATION_NAMES, BATTLE_ARMOR_WEAPON_PACK, BattleArmorLocation, IBattleArmorMountedItem } from '../../../../classes/battle-armor';
 import { BATTLE_ARMOR_TURRET } from '../../../../data/battle-armor-construction';
-import { IBattleArmorEquipment, battleArmorMineTypes, findBattleArmorEquipment, findBattleArmorMineType } from '../../../../data/battle-armor-equipment';
+import { IBattleArmorEquipment, battleArmorMineTypes, findBattleArmorEquipment, findBattleArmorMineType, getBattleArmorMunitionsFor } from '../../../../data/battle-armor-equipment';
 import { IAppGlobals } from '../../../app-router';
 import { BattleArmorCreatorSideMenu } from '../../../components/creator-side-menus';
 import TextSection from '../../../components/text-section';
@@ -104,6 +104,14 @@ export default class BattleArmorCreatorEquipment extends React.Component<IEquipm
                             Mines:
                             <select data-testid="ba-item-mine" value={findBattleArmorMineType(entry.mine).tag} onChange={(e) => { const value = e.currentTarget.value; this.update((s) => s.updateItem(index, { mine: value })); }}>
                                 {battleArmorMineTypes.map((mine) => <option key={mine.tag} value={mine.tag}>{mine.name} (BV {mine.bv})</option>)}
+                            </select>
+                        </label>
+                    ) : null}
+                    {getBattleArmorMunitionsFor(equipment).length > 1 ? (
+                        <label>
+                            Munition:
+                            <select data-testid="ba-item-munition" value={entry.munition ?? "standard"} onChange={(e) => { const value = e.currentTarget.value; this.update((s) => s.updateItem(index, { munition: value })); }}>
+                                {getBattleArmorMunitionsFor(equipment).map((munition) => <option key={munition.tag} value={munition.tag} title={munition.notes}>{munition.name}</option>)}
                             </select>
                         </label>
                     ) : null}

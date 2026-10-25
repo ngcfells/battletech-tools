@@ -97,21 +97,39 @@ def ammo_key(name: str, families: list[str]) -> str | None:
     """(weapon family, munition) of an ammunition name, sizes and tech marks dropped, so MegaMek's one bin per
     launcher size meets our one record per munition."""
     text = TECH_MARK.sub("", name)
-    text = re.sub(r"\b(?:Ammo|Ammunition|Pods?|Shells?)\b|\[Half\]", " ", text, flags=re.I)
+    text = re.sub(r"\b(?:Ammo|Ammunition|Pods?|Shells?|Missiles?)\b|\[(?:Full|Half)\]", " ", text, flags=re.I)
     text = re.sub(r"^MML \d+ ", "", text)  # MMLs fire LRM and SRM ammunition (TM p.229)
     text = re.sub(r"(ATM)/\d+", r"\1", text)
     low = norm(text)
-    for theirs, ours in (("artemisvcapable", "artemisv"), ("artemiscapable", "artemisiv"), ("longtom", "longtomartillery"),
-                         ("mortar", "mechmortar")):
-        if ours not in low:
+    # "Long Tom", "Sniper" and "Thumper" alone are the artillery pieces; the cannons say so (TO:AUE pp.96-97).
+    low = re.sub(r"(longtom|sniper|thumper)(?!artillery|cannon)", r"\1artillery", low)
+    for theirs, ours in (("artemisvcapable", "artemisv"), ("artemiscapable", "artemisiv"), ("mortar", "mechmortar")):
+        if theirs not in ours or ours not in low:
             low = low.replace(theirs, ours)
-    for family in families:
-        at = low.find(family)
+    # The weapon family is the one named first (and then the longest): "vibrabomb" and "Narc-capable" are munitions.
+    found = [(low.find(family), -len(family), family) for family in families if family in low]
+    for at, _, family in sorted(found)[:1]:
         if at >= 0:
-            rest = low[:at] + low[at + len(family):]
-            rest = re.sub(r"^\d+", "", rest) if not family[-1].isdigit() else rest
-            return family + "|" + (rest or "standard")
+            after = low[at + len(family):]
+            # The launcher size follows the family ("Airburst Mortar 4"); a family ending in a digit has none.
+            after = re.sub(r"^\d+", "", after) if not family[-1].isdigit() else after
+            return family + "|" + (low[:at] + after or "standard")
     return None
+
+
+# Battle armor launchers carry their shots and fire inferno, torpedo or multi-purpose missiles (TM pp.261, 297).
+AR10_MISSILES = ("killer-whale", "white-shark", "barracuda")  # TM p.342
+BA_AMMO = re.compile(r"^(?:BA (?:LRM|SRM|MRM) \d+|Advanced SRM \d+)(?: \((?:Clan|IS)\))?\s*(?P<munition>.*?)\s*Ammo$")
+
+
+def ammo_keys(name: str, families: list[str]) -> set[str]:
+    """The ammo_key of a name as written, without its abbreviation and with the abbreviation for the word before it:
+    MegaMek's "Air-Defense Arrow (ADA)" and "Thunder (FASCAM)" are our "ADA" and "FASCAM". A model name in
+    parentheses ("Gauss Rifle (Magshot)") stays."""
+    abbreviation = r"\(([A-Z0-9/-]{2,8})\)"
+    keys = {ammo_key(name, families), ammo_key(re.sub(r"\s*" + abbreviation + r"|\s*\[[^\]]*\]", "", name), families),
+            ammo_key(re.sub(r"[\w-]+\s*" + abbreviation, r"\1", name), families)}
+    return {key for key in keys if key}
 
 
 def read_megamek(path: Path) -> list[dict]:
@@ -150,6 +168,7 @@ def main() -> None:
     families = sorted({norm(n.split(" - ")[0]) for n in ammo_names}, key=len, reverse=True)
     ammo_known = {ammo_key(n.split(" - ")[0] + " " + n.split(" - ", 1)[1], families) for n in ammo_names}
     ammo_known |= {k.replace("|standard", "|") for k in ammo_known if k}
+    ammo_known.discard(None)
     corpus = norm(" ".join(p.read_text(encoding="utf-8", errors="replace") for p in args.src.rglob("*.ts*")
                            if ".test." not in p.name))
 
@@ -174,8 +193,21 @@ def main() -> None:
         if not hit and item["kind"] == "A":
             base = re.sub(r"\s*w/\s*Incendiary", "", item["name"], flags=re.I)
             # Incendiary combines with another LRM munition (BMR p.130; TO:AUE p.181): covered by the two records.
-            if ammo_key(base, families) in ammo_known or tube_model(TECH_MARK.sub("", base)):
+            if ammo_keys(base, families) & ammo_known or tube_model(TECH_MARK.sub("", base)):
                 hit = "munition record"
+            # Primitive prototype launchers are standard launchers that carry less a ton (IO:AE p.112), and improved
+            # launchers and autocannon fire their standard counterpart's special munitions (IO:AE p.90); the prototype
+            # Arrow IV uses the Inner Sphere Arrow IV's rules (IO:AE p.64).
+            shared = re.sub(r"\b(?:Primitive Prototype|Prototype|Improved) ", "", base).replace("Autocannon/", "AC/")
+            if not hit and shared != base and ammo_keys(shared, families) & ammo_known:
+                hit = "munition record"
+        ba = BA_AMMO.match(item["name"]) if item["kind"] == "A" else None
+        if not hit and ba:
+            munition = ba.group("munition")
+            if "Incendiary" in munition:
+                ba_ruling = ("not canon", "Incendiary LRMs are for standard LRMs and MMLs only (TO:AUE p.181)")
+            elif munition in ("", "Torpedo", "Inferno", "Multi-Purpose"):
+                hit = "battle armor launcher" + (f": {munition} (battleArmorMunitions)" if munition else " shots")
         if not hit and item["kind"] == "W" and tube_model(TECH_MARK.sub("", item["name"]).replace(" (OS)", "")):
             hit = "tube model"
         if hit:
@@ -184,9 +216,32 @@ def main() -> None:
             status, hit = "in src", ""
         else:
             status, hit = "missing", ""
+        if status != "catalog" and ba and not hit and "Incendiary" in ba.group("munition"):
+            status, hit = ba_ruling
         if status != "catalog" and item["name"] in triage:
             status, hit = triage[item["name"]]
         by_family[item.get("family") or family(item["kind"], item["name"])].append((item, status, hit or ""))
+
+    # A clip or bin named for one weapon ("Shotgun (AWA AS-105) Ammo", "Barracuda Ammo") goes with that weapon's row.
+    # Infantry inferno clips (TM p.273) go with their weapon too, and capital and battle armor weapon records carry their
+    # own shots (capital-weapon-helpers.ts; TM p.261).
+    weapons = {i["name"]: (s, n) for rows in by_family.values() for i, s, n in rows if i["kind"] != "A"}
+    carriers = ("capital-weapons", "sub-capital-weapons", "battle-armor-equipment")
+    for rows in by_family.values():
+        for at, (item, status, note) in enumerate(rows):
+            if item["kind"] != "A" or status != "missing":
+                continue
+            weapon = re.sub(r"\s*(?:-\s*\w+ Ammo \(Inferno\)|w/\s*Incendiary Ammo \(Inferno\)|\(Incendiary Grenades\) Ammo "
+                            r"\(Inferno\)|Ammo(?:\s*\[(?:Full|Half)\])?)$", "", item["name"])
+            if weapon in weapons:
+                status, note = weapons[weapon]
+                rows[at] = (item, status, f"weapon's row: {note}" if status != "catalog" else f"weapon {note}")
+                continue
+            ar10 = weapon.startswith("AR10 ")
+            weapon = re.sub(r"^(\w[\w ]*?) \(Tele-Operated\)$", r"\1-T", weapon.removeprefix("AR10 "))
+            carrier = next((h for h in known.get(norm(weapon), []) if h.split(":")[0] in carriers), None)
+            if carrier and (not ar10 or carrier.split(": ")[1] in AR10_MISSILES):
+                rows[at] = (item, "catalog", f"{carrier} carries its shots" + (" (AR-10, TM p.342)" if ar10 else ""))
 
     out = ["# Coverage checklist", "",
            "Generated by `tools/coverage_checklist.py` (design 2026-10-24-catalog-consolidation §4). MegaMek is the",

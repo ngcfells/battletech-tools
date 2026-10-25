@@ -17,7 +17,7 @@ import {
 } from "../data/battle-armor-construction";
 import { battleArmorChassisDates, battleArmorFeatureDates, battleArmorManipulatorDates } from "../data/battle-armor-dates";
 import {
-    IBattleArmorDates, IBattleArmorEquipment, battleArmorEquipment, battleArmorMineTypes, findBattleArmorEquipment, findBattleArmorMineType,
+    IBattleArmorDates, IBattleArmorEquipment, battleArmorEquipment, battleArmorMineTypes, findBattleArmorEquipment, findBattleArmorMineType, findBattleArmorMunition, getBattleArmorMunitionLabel, getBattleArmorMunitionsFor,
     formatBattleArmorDates, getBattleArmorEquipmentFor, isBattleArmorDateAvailable,
 } from "../data/battle-armor-equipment";
 import { IBattleArmorArmorType, IEras } from "../data/data-interfaces";
@@ -125,6 +125,8 @@ export interface IBattleArmorMountedItem {
     trooper?: number;
     /** The mines a mine dispenser carries; absent for standard mines. */
     mine?: string;
+    /** The munition a standard LRM or SRM launcher (TM p.261; TW p.229) or tube artillery (TO:AUE p.96) fires; absent for standard. */
+    munition?: string;
 }
 
 export type BattleArmorCarrierKind = "mech" | "vehicle";
@@ -457,6 +459,9 @@ export default class BattleArmor {
             const equipment = findBattleArmorEquipment(entry.tag);
             if (equipment && !seenItems.has(equipment.tag)) check(equipment.name, equipment.dates, equipment.techBase);
             seenItems.add(entry.tag);
+            const munition = entry.munition && equipment ? findBattleArmorMunition(entry.munition) : null;
+            if (munition && equipment && !seenItems.has(`munition:${munition.tag}`)) check(getBattleArmorMunitionLabel(munition), munition.dates[equipment.techBase], equipment.techBase);
+            if (munition) seenItems.add(`munition:${munition.tag}`);
         }
         if (this._apMounts.length > 0) check("The anti-personnel weapon mount", battleArmorFeatureDates.apMount[this._techBase]);
         if (this._items.some((entry) => entry.squadSupport)) check("The squad support weapon mount", battleArmorFeatureDates.squadSupport[this._techBase]);
@@ -981,6 +986,7 @@ export default class BattleArmor {
         // Every suit carries its share of the squad support weapon, so it is never one trooper's own.
         next.trooper = !next.squadSupport && typeof next.trooper === "number" && Number.isInteger(next.trooper) && next.trooper >= 1 && next.trooper <= BATTLE_ARMOR_MAX_SQUAD ? next.trooper : undefined;
         next.mine = equipment.mineDispenser && next.mine !== battleArmorMineTypes[0].tag && battleArmorMineTypes.some((mine) => mine.tag === next.mine) ? next.mine : undefined;
+        next.munition = next.munition !== "standard" && getBattleArmorMunitionsFor(equipment).some((munition) => munition.tag === next.munition) ? next.munition : undefined;
         // One squad support weapon to a suit (TM p.270).
         if (next.squadSupport) this._baseItems.forEach((other, otherIndex) => { if (otherIndex !== index) delete other.squadSupport; });
         this._baseItems[index] = next;
@@ -1058,6 +1064,7 @@ export default class BattleArmor {
         if (entry.dwp) parts.push("detachable weapon pack");
         if (entry.squadSupport) parts.push("squad support weapon");
         if (equipment.mineDispenser) parts.push(`${findBattleArmorMineType(entry.mine).name} mines`);
+        if (entry.munition) parts.push(getBattleArmorMunitionLabel(findBattleArmorMunition(entry.munition)));
         if (entry.trooper) parts.push(`trooper ${entry.trooper} only`);
         return `${this._mixedTech ? `${equipment.techBase === "clan" ? "Clan" : "IS"} ` : ""}${equipment.name}${parts.length ? ` (${parts.join(", ")})` : ""}, ${BATTLE_ARMOR_LOCATION_NAMES[entry.location]}`;
     }
@@ -2080,6 +2087,7 @@ export default class BattleArmor {
                 dwp: saved.dwp === true,
                 trooper: typeof saved.trooper === "number" ? saved.trooper : undefined,
                 mine: typeof saved.mine === "string" ? saved.mine : undefined,
+                munition: typeof saved.munition === "string" ? saved.munition : undefined,
             });
             const savedUuid = savedString(saved.uuid);
             if (/^[0-9a-zA-Z-]{8,64}$/.test(savedUuid) && !this._baseItems.some((entry) => entry.uuid === savedUuid)) {
