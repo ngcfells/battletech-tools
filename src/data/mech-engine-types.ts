@@ -348,6 +348,7 @@ export const mechLargeEngineTypes: IEngineType[] = [
 	},
 	{
 		name: "Large Light Fusion",
+		altNames: ["Large Light Engine"],
 		alternateName: "LLF",
 		tag: "large-light",
 		techBase: "universal",
@@ -367,6 +368,7 @@ export const mechLargeEngineTypes: IEngineType[] = [
 	},
 	{
 		name: "Large XXL Fusion",
+		altNames: ["Large XXL Engine"],
 		alternateName: "LXXL",
 		tag: "large-xxl",
 		techBase: "universal",
@@ -405,6 +407,7 @@ export const mechLargeEngineTypes: IEngineType[] = [
 	},
 	{
 		name: "Large Internal Combustion Engine",
+		altNames: ["Large ICE Engine"],
 		alternateName: "LIC",
 		tag: "large-ice",
 		techBase: "universal",

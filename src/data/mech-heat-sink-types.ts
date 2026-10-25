@@ -144,7 +144,7 @@ export const mechHeatSinkTypes: IHeatSync[] = [
 		name: "Compact",
 		tag: "compact",
 		editions: ["total-warfare", "battlemech-manual", "core-rulebook"],
-		altNames: ["Compact Heat Sink"],
+		altNames: ["Compact Heat Sink", "1 Compact Heat Sink", "2 Compact Heat Sinks"],
 		dissipation: 1,
 		crits: {
 			clan: 0,

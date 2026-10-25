@@ -332,6 +332,7 @@ export const mechCockpitTypes: ICockpitType[] = [
 	},
 	{
 		name: "Superheavy IndustrialMech Cockpit",
+		altNames: ["Superheavy Industrial Cockpit"],
 		tag: "superheavy-industrial",
 		editions: ["total-warfare", "battlemech-manual", "core-rulebook"],
 		weight: 4,

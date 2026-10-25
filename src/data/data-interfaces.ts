@@ -569,6 +569,8 @@ export interface ITechDates {
 
 export interface ICockpitType extends ICatalogStanding {
     name: string;
+    /** Other printings of the name, MegaMek's among them. */
+    altNames?: string[];
     tag: string;
     /** Tons. For an add-on (Command Console) this is the weight added to the base cockpit. */
     weight: number;
@@ -1075,6 +1077,8 @@ export interface IProtoMechComponent extends ICatalogStanding {
 /** Battle armor armor (battle-armor-armor-types.ts). */
 export interface IBattleArmorArmorType extends ICatalogStanding {
     name: string;
+    /** Other printings of the name, MegaMek's among them. */
+    altNames?: string[];
     tag: string;
     techBase: CatalogTechBase;
     /** Kilograms per armor point by tech base; null where that tech base cannot use the armor. */
