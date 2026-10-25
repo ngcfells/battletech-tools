@@ -21,7 +21,7 @@ import type { CustomComponentKind, ISSWUnresolvedItem } from "../data/custom-con
 import { getCockpitType } from "../data/mech-cockpit-types";
 import { btMechTonnages } from "../data/mech-tonnages";
 import { DEFAULT_RULES_EDITION, editionEngineHoldsHeatSinks, getEditionJumpJetWeight, getEditionPlayRules, getEditionStats, getEditionStructure, getEquipmentForEdition, getRulesEdition, isEarlierRulesEdition, isInRulesEdition, isOfferedInEdition, getRecordOfferIssue } from "../data/rules-editions";
-import { APOCRYPHAL_RULES_LEVEL, CUSTOM_HOMEBREW_RULES_LEVEL, EXPERIMENTAL_RULES_LEVEL, getItemBattleValue, getLauncherBattleValueWithoutFireControl, equipmentMatchesIdentifier, getWeaponAmmoFamilies, getEquipmentRulesLevel, ARTEMIS_FIRE_CONTROL, isArtemisCapableLauncher, isEquipmentOffered, isOmniFixedOnly, getAlphaStrikeEquipmentDisplayAbilityCodes, getAmmoBattleValuePerTon, getAmmoFamily, getAmmoRoundsPerTon, getCompatibleAmmo, getDatesAvailability, getEquipmentListByTech, getEquipmentListForChassis, getStarLeagueCarryOverDates, getWeaponShotsPerTon, getBattleArmorScaleListByTech, getEquipmentCatalogDefinitions, getEquipmentOfferIssue, getTechDatesAvailability, servesTechBase } from "../data/equipment-registry";
+import { APOCRYPHAL_RULES_LEVEL, CUSTOM_HOMEBREW_RULES_LEVEL, EXPERIMENTAL_RULES_LEVEL, getItemBattleValue, getLauncherBattleValueWithoutFireControl, equipmentMatchesIdentifier, getWeaponAmmoFamilies, getEquipmentRulesLevel, ARTEMIS_FIRE_CONTROL, isArtemisCapableLauncher, isEquipmentOffered, isOmniFixedOnly, getAlphaStrikeEquipmentDisplayAbilityCodes, getAmmoBattleValuePerTon, getAmmoFamily, getAmmoRoundsPerTon, getCompatibleAmmo, getDatesAvailability, getEquipmentListByTech, getEquipmentListForChassis, getStarLeagueCarryOverDates, getWeaponShotsPerTon, getBattleArmorScaleListByTech, getEquipmentCatalogDefinitions, getEquipmentOfferIssue, getTechDatesAvailability, isPostPrimitiveTechnology, servesTechBase } from "../data/equipment-registry";
 import { getFractionalArmorTonsPerPoint, getFractionalEngineWeight, roundUpToKilogram } from "../data/fractional-accounting";
 import { isUniversalEquipment } from "../data/universal-equipment";
 import { mechEngineOptions } from "../data/mech-engine-options";
@@ -10659,9 +10659,6 @@ export class BattleMech {
         return this._primitive;
     }
 
-    /** Primitive technology is what was introduced by 2500 (IO:AE p.116). */
-    private static readonly PRIMITIVE_TECHNOLOGY_YEAR = 2500;
-
     /**
      * RetroTech: "RetroTech rules apply any time a unit built with the Primitive Tech Base is designed to employ any
      * non-Primitive weapons or equipment" (IO:AE p.116). Here that is anything first introduced after 2500, or jump
@@ -10670,13 +10667,7 @@ export class BattleMech {
     public isRetroTech(): boolean {
         if (!this._primitive) return false;
         if (this._jumpSpeed > 0 && this._jumpJetType.tag !== "standard") return true;
-        return this._equipmentList.some(item => item && BattleMech._isPostPrimitiveTechnology(item));
-    }
-
-    /** First introduced, as a prototype or in production, after 2500. */
-    private static _isPostPrimitiveTechnology(item: IEquipmentItem): boolean {
-        const years = [item.prototype, item.introduced].filter((year): year is number => typeof year === "number" && year > 0);
-        return years.length > 0 && Math.min(...years) > BattleMech.PRIMITIVE_TECHNOLOGY_YEAR;
+        return this._equipmentList.some(item => item && isPostPrimitiveTechnology(item));
     }
 
     /** "Primitive BattleMech", "RetroTech IndustrialMech" and so on; null for a 'Mech built to the modern rules. */
@@ -10708,7 +10699,6 @@ export class BattleMech {
             && (this._tech.tag === "is" || this._tech.tag === "mis");
     }
 
-    /** Switch the Primitive 'Mech rules on or off. Switching on replaces the components a Primitive 'Mech cannot use. */
     /** Does Clan CASE protect every location? Always on a Clan base; by choice on Inner Sphere-base Mixed Tech. */
     public hasClanCASE(): boolean {
         return this._tech.tag === "clan" || this._tech.tag === "mclan" || (this._clanCASE && this._tech.tag === "mis");
@@ -10725,6 +10715,7 @@ export class BattleMech {
         return this._clanCASE;
     }
 
+    /** Switch the Primitive 'Mech rules on or off. Switching on replaces the components a Primitive 'Mech cannot use. */
     public setPrimitive(primitive: boolean): boolean {
         if (primitive && !this.canBePrimitive()) return this._primitive;
         this._primitive = primitive;

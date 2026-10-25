@@ -2,6 +2,7 @@ import { getCompatibleAmmo, getEquipmentRecordsByTech, getWeaponShotsPerTon } fr
 import { IEquipmentItem } from "../data/data-interfaces";
 import {
     DROPSHIP_MAX_TONNAGE, DROPSHIP_MIN_TONNAGE, SMALL_CRAFT_ARCS, SMALL_CRAFT_MAX_TONNAGE, SMALL_CRAFT_MIN_TONNAGE, SmallCraftArc, findTransportBayType, quartersTypes,
+    PRIMITIVE_ARMOR_FACTOR,
 } from "../data/small-craft-construction";
 import { IBlkFile, blkLines, blkValue, parseBlkFile } from "../utils/blk-file";
 import { readBlkTechnicalReadout } from "../utils/blk-technical-readout";
@@ -92,6 +93,8 @@ const AMMO: Record<string, { weapon: string; kind?: RegExp }> = {
 
 const ARMOR: Record<string, [string, string]> = {
     "41": ["aerospace-standard", "aerospace-standard"],
+    // MegaMek's primitive aerospace armor: standard armor on a craft built to the Primitive rules (IO:AE pp.120-121).
+    "40": ["aerospace-standard", "aerospace-standard"],
     "19": ["ferro-aluminum", "clan-ferro-aluminum"],
     "20": ["heavy-ferro-aluminum", "heavy-ferro-aluminum"],
     "21": ["light-ferro-aluminum", "light-ferro-aluminum"],
@@ -200,6 +203,13 @@ export const importSmallCraftBlk = (text: string): ISmallCraftBlkResult => {
         const era = craft.getAvailableEras().find((item) => item.yearStart <= year && (item.yearEnd ?? Infinity) >= year);
         if (era) craft.setEra(era.tag);
     }
+    // MegaMek marks a Primitive craft by its armor type and builds it to the rules of its year (IO:AE pp.119-121).
+    if (blkValue(file, "armor_type") === "40") {
+        if (craft.setPrimitiveYear(year > 0 ? year : null) === null) issues.push("The file's primitive armor needs an Inner Sphere craft with a year of introduction; built to the modern rules.");
+    }
+    // MegaMek's collar type: 0 K-F boom, 1 prototype boom, 2 no boom (IO:AE p.113).
+    const boom = ({ "1": "prototype", "2": "none" } as Record<string, string>)[blkValue(file, "collartype")];
+    if (boom) craft.setKFBoom(boom);
     craft.setTonnage(fileTons);
     if (craft.getTonnage() !== fileTons) issues.push(`The file's weight of ${fileTons} tons is not a ${craft.getCraftTypeName()} weight; ${craft.getTonnage()} tons used.`);
     // A value the file does not give is never filled in silently: say what was used in its place.
@@ -224,8 +234,8 @@ export const importSmallCraftBlk = (text: string): ISmallCraftBlkResult => {
     if (armor.length < 4) issues.push(`The file lists armor for ${armor.length} of the 4 facings; the rest carry none.`);
     const facings = ["nose", "left", "right", "aft"] as const;
     const total = armor.slice(0, 4).reduce((sum, value) => sum + value, 0);
-    // The file lists the points on each facing, the structure's free points among them.
-    const bought = Math.max(0, total - craft.getBonusArmorPoints());
+    // The file lists the points on each facing, the structure's free points among them; on a Primitive craft after the x 0.66.
+    const bought = Math.max(0, (craft.isPrimitive() ? Math.ceil(total / PRIMITIVE_ARMOR_FACTOR - 1e-9) : total) - craft.getBonusArmorPoints());
     craft.setArmorTons(Math.ceil(bought / (craft.getArmorPointsPerTon() ?? 16) * 2 - 1e-9) / 2);
     facings.forEach((facing, index) => craft.setArmorAllocation(facing, armor[index] ?? 0));
 

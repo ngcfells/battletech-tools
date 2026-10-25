@@ -205,11 +205,52 @@ export const getDropShipFreeHeatSinks = (engineTons: number, shape: SmallCraftSh
         ? Math.floor((shape === "aerodyne" ? engineTons / 20 : Math.sqrt(engineTons * 6.8)) + 1e-9)
         : getSmallCraftFreeHeatSinks(engineTons, shape);
 
+// Primitive Small Craft and DropShips (IO:AE pp.119-121): Inner Sphere craft built from 2100 to 2499.
+export const PRIMITIVE_FIRST_YEAR = 2100;
+export const PRIMITIVE_LAST_YEAR = 2499;
+/** Armor, the free points too, is multiplied by this and rounded down (IO:AE pp.120-121). */
+export const PRIMITIVE_ARMOR_FACTOR = 0.66;
+/** Engine/Controls Weight Tables, by year of introduction: [last year, engine factor, fuel factor, controls factor]. */
+const PRIMITIVE_FACTORS: Record<CraftType, [number, number, number, number][]> = {
+    smallCraft: [[2150, 0.143, 2.2, 0.01575], [2200, 0.1235, 1.9, 0.01425], [2250, 0.1105, 1.7, 0.01275], [2299, 0.0975, 1.5, 0.01125], [2399, 0.091, 1.4, 0.00975], [2499, 0.078, 1.2, 0.00825]],
+    dropShip: [[2150, 0.13, 2, 0.015], [2200, 0.117, 1.8, 0.0135], [2250, 0.104, 1.6, 0.012], [2299, 0.091, 1.4, 0.0105], [2350, 0.0845, 1.3, 0.00975], [2499, 0.0715, 1.1, 0.009]],
+};
+/** Engine weight = Base Movement Factor (tonnage x Safe Thrust) x engine; controls = tonnage x controls; fuel points a ton / fuel. */
+export const getPrimitiveFactors = (craftType: CraftType, year: number): { engine: number; fuel: number; controls: number } => {
+    const rows = PRIMITIVE_FACTORS[craftType];
+    const [, engine, fuel, controls] = rows.find(([last]) => year <= last) ?? rows[rows.length - 1];
+    return { engine, fuel, controls };
+};
+/** Primitive DropShip Maximum Weight Limit Table (IO:AE p.120): [last year, spheroid, aerodyne]. */
+const PRIMITIVE_DROPSHIP_MAX_TONNAGE: [number, number, number][] = [
+    [2129, 3000, 1000], [2149, 4000, 1500], [2164, 7000, 2500], [2174, 10000, 3500], [2199, 14000, 5000],
+    [2249, 15000, 6000], [2299, 19000, 7000], [2349, 23000, 8000], [2424, 30000, 10000], [2499, 50000, 20000],
+];
+export const getPrimitiveDropShipMaxTonnage = (year: number, shape: SmallCraftShape): number => {
+    const [, spheroid, aerodyne] = PRIMITIVE_DROPSHIP_MAX_TONNAGE.find(([last]) => year <= last) ?? PRIMITIVE_DROPSHIP_MAX_TONNAGE[PRIMITIVE_DROPSHIP_MAX_TONNAGE.length - 1];
+    return shape === "spheroid" ? spheroid : aerodyne;
+};
+/** Primitive DropShip Heat Sinks Table (IO:AE p.121): engine tons / 75 (aerodyne) or the square root of engine tons x 1.3, rounded down. */
+export const getPrimitiveDropShipFreeHeatSinks = (engineTons: number, shape: SmallCraftShape): number =>
+    Math.floor((shape === "aerodyne" ? engineTons / 75 : Math.sqrt(engineTons * 1.3)) + 1e-9);
+/** A Primitive DropShip over 5,000 tons cannot ride a Primitive JumpShip: it is interplanetary only (IO:AE p.120). */
+export const PRIMITIVE_DROPSHIP_JUMP_TONNAGE = 5000;
+
 /** Bay doors: 7 plus the weight / 50,000, rounded up (TM p.196). */
 export const getDropShipMaxBayDoors = (tonnage: number): number => 7 + Math.ceil(tonnage / 50000 - 1e-9);
 
 /** A DropShip's docking collar (TM p.284). */
 export const DOCKING_COLLAR_COST = 10000;
+/**
+ * The K-F boom in a DropShip's docking collar (IO:AE p.113). A prototype boom (2458-2469) prices the collar at
+ * 1,010,000 C-bills and adds +2 to the docking Control Roll; a DropShip with no boom cannot jump while docked.
+ */
+export type KFBoomType = "standard" | "prototype" | "none";
+export const KF_BOOM_TYPES: { tag: KFBoomType; name: string; cost: number }[] = [
+    { tag: "standard", name: "K-F Boom", cost: DOCKING_COLLAR_COST },
+    { tag: "prototype", name: "Prototype K-F Boom", cost: 1010000 },
+    { tag: "none", name: "No K-F Boom (pre-boom collar)", cost: DOCKING_COLLAR_COST },
+];
 /** Gunnery control systems, for each arc with weapons (Aerospace Units Structural Costs Table, TM p.284). */
 export const GUNNERY_CONTROL_COST_PER_ARC = 10000;
 /** Final cost multiplier (TM p.285). */

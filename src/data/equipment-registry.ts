@@ -386,6 +386,14 @@ export function servesTechBase(techBase: CatalogTechBase | undefined, unitTech: 
     return !techBase || techBase === "universal" || (unitTech !== "is" && unitTech !== "clan") || techBase === unitTech;
 }
 
+/** Primitive technology is what was introduced by 2500 (IO:AE p.116). */
+export const PRIMITIVE_TECHNOLOGY_YEAR = 2500;
+/** First introduced, as a prototype or in production, after 2500: it makes a Primitive unit RetroTech (IO:AE p.116). */
+export const isPostPrimitiveTechnology = (item: { prototype?: number | null; introduced?: number | null }): boolean => {
+    const years = [item.prototype, item.introduced].filter((year): year is number => typeof year === "number" && year > 0);
+    return years.length > 0 && Math.min(...years) > PRIMITIVE_TECHNOLOGY_YEAR;
+};
+
 /**
  * Availability of a record for a unit of `unitTech` in an era: the Clan dates (`clanDates`, else the record's own)
  * for Clan units, with the Star League carry-over; the record's own dates for Inner Sphere units; for mixed tech,

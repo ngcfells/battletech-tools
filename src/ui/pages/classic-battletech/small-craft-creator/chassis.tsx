@@ -2,7 +2,7 @@ import React, { type JSX } from 'react';
 import { Link } from 'react-router';
 import { FaArrowCircleRight } from "react-icons/fa";
 import SmallCraft from '../../../../classes/small-craft';
-import { SMALL_CRAFT_MAX_TONNAGE, SMALL_CRAFT_MIN_TONNAGE, SMALL_CRAFT_SHAPES, SMALL_CRAFT_TONNAGE_STEP } from '../../../../data/small-craft-construction';
+import { KF_BOOM_TYPES, PRIMITIVE_FIRST_YEAR, PRIMITIVE_LAST_YEAR, SMALL_CRAFT_MAX_TONNAGE, SMALL_CRAFT_MIN_TONNAGE, SMALL_CRAFT_SHAPES, SMALL_CRAFT_TONNAGE_STEP } from '../../../../data/small-craft-construction';
 import { btTechOptions } from '../../../../data/tech-options';
 import { chooseEra, getEraChoices, getTechChoices } from '../../../../data/era-choice';
 import { IAppGlobals } from '../../../app-router';
@@ -97,6 +97,46 @@ export default class SmallCraftCreatorChassis extends React.Component<IChassisPr
                                 />
                                 {" "}Military design (a DropShip's crew, free heat sinks and fuel use depend on it, TM pp. 186-193)
                             </label>
+                            {craft.isPrimitive() || craft.canBePrimitive() ? (
+                                <>
+                                    <label>
+                                        <input
+                                            type="checkbox"
+                                            data-testid="sc-primitive"
+                                            checked={craft.isPrimitive()}
+                                            onChange={(e) => { const value = e.currentTarget.checked; this.update((c) => c.setPrimitiveYear(value ? Math.max(PRIMITIVE_FIRST_YEAR, Math.min(PRIMITIVE_LAST_YEAR, c.getEra().yearStart)) : null)); }}
+                                        />
+                                        {" "}Primitive {craft.getCraftTypeName()} (IO:AE pp. 119-121)
+                                    </label>
+                                    {craft.isPrimitive() ? (
+                                        <>
+                                            <InputNumeric
+                                                label="Year of introduction"
+                                                value={craft.getPrimitiveYear() ?? PRIMITIVE_FIRST_YEAR}
+                                                min={PRIMITIVE_FIRST_YEAR}
+                                                max={PRIMITIVE_LAST_YEAR}
+                                                setValue={(year) => this.update((c) => c.setPrimitiveYear(year))}
+                                            />
+                                            <p className="smaller-text">
+                                                Built to the rules of its year: heavier engine and controls, less fuel efficiency, all armor
+                                                x 0.66 rounded down and single heat sinks only.
+                                                {craft.isDropShip()
+                                                    ? " A Primitive DropShip follows the civilian rules, with its weight limit set by year and shape and fewer free heat sinks."
+                                                    : " Its controls add +1 to-hit at Long and Extreme range."}
+                                                {" "}Equipment introduced after 2500 makes it a RetroTech craft.
+                                            </p>
+                                        </>
+                                    ) : null}
+                                </>
+                            ) : null}
+                            {craft.isDropShip() ? (
+                                <label>
+                                    Docking collar:
+                                    <select data-testid="sc-kf-boom" value={craft.getKFBoom()} onChange={(e) => { const value = e.currentTarget.value; this.update((c) => c.setKFBoom(value)); }}>
+                                        {KF_BOOM_TYPES.map((boom) => <option key={boom.tag} value={boom.tag}>{boom.name}</option>)}
+                                    </select>
+                                </label>
+                            ) : null}
 
                             <label>
                                 Shape:
@@ -191,7 +231,7 @@ export default class SmallCraftCreatorChassis extends React.Component<IChassisPr
                             </p>
                             <p className="smaller-text">
                                 Engine weight = tonnage x Safe Thrust x 0.065, or 0.061 for a Clan craft, rounded up to the half ton
-                                (TM p. 185). Controls weigh tonnage x 0.0075 (TM p. 189).
+                                (TM p. 185). Controls weigh tonnage x 0.0075 (TM p. 189). A Primitive craft uses the factors of its year (IO:AE pp. 119-121).
                             </p>
 
                             <InputNumeric

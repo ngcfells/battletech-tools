@@ -5,12 +5,13 @@ import { generateUUID } from "../utils/generateUUID";
 import { IAssignedQuirk, IQuirkTargets, QuirkUnitType } from "../data/quirk-interfaces";
 import { getQuirkIssues, getQuirkTargets, quirkBayTarget } from "../data/quirk-registry";
 import { QuirkList } from "./quirk-list";
-import { DEFAULT_RULES_EDITION, getSelectableRulesEditionTag } from "../data/rules-editions";
+import { DEFAULT_RULES_EDITION, getSelectableRulesEditionTag, isEarlierRulesEdition } from "../data/rules-editions";
+import { ADVANCED_RULES_LEVEL } from "../data/rules-level-options";
 import { aerospaceArmorTypes, getAerospaceArmorPointsPerTon } from "../data/aerospace-armor-types";
 import { mechHeatSinkTypes } from "../data/mech-heat-sink-types";
 import { btTechOptions } from "../data/tech-options";
 import { btEraOptions, findEraByTag, getClosestEraForTech, getErasForTech } from "../data/era-options";
-import { CUSTOM_HOMEBREW_RULES_LEVEL, getArtemisLauncherBattleValue, getLauncherBattleValueWithoutFireControl, EXPERIMENTAL_RULES_LEVEL, getAmmoBattleValuePerTon, getBattleArmorScaleListByTech, getCompatibleAmmo, getEquipmentListByTech, getEquipmentRulesLevel, getWeaponShotsPerTon, isEquipmentOffered, isUnderUnitLimit, getDatesAvailability, getTechDatesAvailability } from "../data/equipment-registry";
+import { CUSTOM_HOMEBREW_RULES_LEVEL, getArtemisLauncherBattleValue, getLauncherBattleValueWithoutFireControl, EXPERIMENTAL_RULES_LEVEL, getAmmoBattleValuePerTon, getBattleArmorScaleListByTech, getCompatibleAmmo, getEquipmentListByTech, getEquipmentRulesLevel, getWeaponShotsPerTon, isEquipmentOffered, isUnderUnitLimit, getDatesAvailability, getTechDatesAvailability, isPostPrimitiveTechnology } from "../data/equipment-registry";
 import { getFractionalAerospaceArmorTonsPerPoint, roundUpToKilogram } from "../data/fractional-accounting";
 import Pilot, { IPilot } from "./pilot";
 import { getSkillMultiplier } from "../data/skill-multipliers";
@@ -31,7 +32,9 @@ import {
     quartersTypes, roundUpToHalfTon,
     CraftType, DROPSHIP_MIN_TONNAGE, DROPSHIP_MAX_TONNAGE, DROPSHIP_TONNAGE_STEP, getDropShipFuelPointsPerTon,
     getDropShipStrategicFuelPerDay, getDropShipControlsWeight, getDropShipBaseCrew, getDropShipFreeHeatSinks,
-    getDropShipMaxBayDoors, DOCKING_COLLAR_COST, GUNNERY_CONTROL_COST_PER_ARC, DROPSHIP_COST_MULTIPLIER,
+    getDropShipMaxBayDoors, GUNNERY_CONTROL_COST_PER_ARC, DROPSHIP_COST_MULTIPLIER,
+    KFBoomType, KF_BOOM_TYPES, PRIMITIVE_ARMOR_FACTOR, PRIMITIVE_DROPSHIP_JUMP_TONNAGE, PRIMITIVE_FIRST_YEAR, PRIMITIVE_LAST_YEAR,
+    getPrimitiveDropShipFreeHeatSinks, getPrimitiveDropShipMaxTonnage, getPrimitiveFactors,
 } from "../data/small-craft-construction";
 import {
     LARGE_CRAFT_AS_DEFENSIVE_ABILITY_FACTORS, getLargeCraftASHeat, getLargeCraftASPointDefense, getLargeCraftMovementFactor, roundUpToTenth, toLargeCraftASDamage,
@@ -203,6 +206,10 @@ export interface ISmallCraftExport {
     /** Absent in saves from before DropShips: a Small Craft. */
     craftType?: CraftType;
     military?: boolean;
+    /** Built to the Primitive rules (IO:AE pp.119-121) in this year of introduction; absent for a modern craft. */
+    primitiveYear?: number;
+    /** A DropShip's K-F boom (IO:AE p.113); absent = standard. */
+    kfBoom?: KFBoomType;
     tonnage: number;
     tech: string;
     /** The engine's tech base; a Mixed Tech craft may use either. */
@@ -280,6 +287,9 @@ export default class SmallCraft {
     private _shape: SmallCraftShape = "aerodyne";
     private _craftType: CraftType = "smallCraft";
     private _military: boolean = false;
+    /** Year of introduction of a craft built to the Primitive rules (IO:AE pp.119-121); null for a modern craft. */
+    private _primitiveYear: number | null = null;
+    private _kfBoom: KFBoomType = "standard";
     private _pilot: Pilot = new Pilot();
     private _inPlay: ISmallCraftInPlay = newInPlay();
     private _battleValue: number = 0;
@@ -381,8 +391,11 @@ export default class SmallCraft {
         return this._craftType;
     }
 
-    /** Military or civilian construction: a DropShip's crew, free heat sinks and fuel use depend on it (TM pp.186-193). */
-    public isMilitary(): boolean { return this._military; }
+    /**
+     * Military or civilian construction: a DropShip's crew, free heat sinks and fuel use depend on it (TM pp.186-193).
+     * A Primitive DropShip is built to the civilian rules (IO:AE p.120).
+     */
+    public isMilitary(): boolean { return this._military && !(this.isDropShip() && this.isPrimitive()); }
     public setMilitary(military: boolean): boolean {
         this._military = !!military;
         this._clampToRules();
@@ -390,8 +403,40 @@ export default class SmallCraft {
         return this._military;
     }
 
+    // Primitive construction (IO:AE pp.119-121) ------------------------------------------------------------------
+
+    public isPrimitive(): boolean { return this._primitiveYear !== null; }
+    public getPrimitiveYear(): number | null { return this._primitiveYear; }
+    /** Primitive craft "can only be built using Inner Sphere technology"; a Mixed Tech one is the RetroTech case (IO:AE pp.115, 119-120). */
+    public canBePrimitive(): boolean { return !isEarlierRulesEdition(this._rulesEdition) && (this._tech.tag === "is" || this._tech.tag === "mis"); }
+    /** A year from 2100 to 2499 builds to the Primitive rules of that year of introduction; null to the modern ones. */
+    public setPrimitiveYear(year: number | null): number | null {
+        if (year === null || !Number.isFinite(year)) this._primitiveYear = null;
+        else if (this.canBePrimitive()) this._primitiveYear = wholeNumber(year, PRIMITIVE_FIRST_YEAR, PRIMITIVE_LAST_YEAR);
+        // "Primitive ... can only mount standard (single) heat sinks" (IO:AE pp.119-121).
+        if (this.isPrimitive()) this._heatSinkType = mechHeatSinkTypes.find((sink) => sink.tag === "single") ?? this._heatSinkType;
+        // Before the prototype K-F boom of 2458 a DropShip has a pre-boom collar (IO:AE p.113).
+        if (this._primitiveYear !== null && this._primitiveYear < 2470 && this._kfBoom === "standard") this._kfBoom = "none";
+        this._tonnage = this._steppedTonnage(this._tonnage);
+        this._clampToRules();
+        this._calc();
+        return this._primitiveYear;
+    }
+    private _primitiveFactors() { return this._primitiveYear === null ? null : getPrimitiveFactors(this._craftType, this._primitiveYear); }
+
+    public getKFBoom(): KFBoomType { return this._kfBoom; }
+    public setKFBoom(tag: string): KFBoomType {
+        this._kfBoom = KF_BOOM_TYPES.find((boom) => boom.tag === tag)?.tag ?? this._kfBoom;
+        this._calc();
+        return this._kfBoom;
+    }
+
     public getMinTonnage(): number { return this.isDropShip() ? DROPSHIP_MIN_TONNAGE : SMALL_CRAFT_MIN_TONNAGE; }
-    public getMaxTonnage(): number { return this.isDropShip() ? DROPSHIP_MAX_TONNAGE[this._shape] : SMALL_CRAFT_MAX_TONNAGE; }
+    /** A Primitive DropShip's limit follows its year and shape (IO:AE p.120). */
+    public getMaxTonnage(): number {
+        if (!this.isDropShip()) return SMALL_CRAFT_MAX_TONNAGE;
+        return this._primitiveYear !== null ? getPrimitiveDropShipMaxTonnage(this._primitiveYear, this._shape) : DROPSHIP_MAX_TONNAGE[this._shape];
+    }
     public getTonnageStep(): number { return this.isDropShip() ? DROPSHIP_TONNAGE_STEP : SMALL_CRAFT_TONNAGE_STEP; }
     private _steppedTonnage(tonnage: number): number {
         const step = this.getTonnageStep();
@@ -423,6 +468,7 @@ export default class SmallCraft {
     public setTech(tag: string): ITechOptions {
         this._tech = findByTag(btTechOptions, tag) ?? this._tech;
         this._era = getClosestEraForTech(this._era, this._tech.tag);
+        if (!this.canBePrimitive()) this._primitiveYear = null;
         if (!this.isMixedTech()) this._engineTech = this.getChassisTechBase();
         if (this.getArmorPointsPerTon() === null) this._armorType = aerospaceArmorTypes[0];
         this._clampToRules();
@@ -471,8 +517,11 @@ export default class SmallCraft {
         return this._safeThrust;
     }
 
-    /** Tonnage x Safe Thrust x 0.065 (0.061 for a Clan engine), rounded up to the half ton (TM p.185). */
-    public getEngineWeight(): number { return getSmallCraftEngineWeight(this._tonnage, this._safeThrust, this._engineTech, this._round); }
+    /** Tonnage x Safe Thrust x 0.065 (0.061 for a Clan engine), or the Primitive factor of its year, rounded up to the half ton (TM p.185; IO:AE pp.119-121). */
+    public getEngineWeight(): number {
+        const primitive = this._primitiveFactors();
+        return primitive ? this._round(this._tonnage * this._safeThrust * primitive.engine) : getSmallCraftEngineWeight(this._tonnage, this._safeThrust, this._engineTech, this._round);
+    }
 
     public getFuelTons(): number { return this._fuelTons; }
 
@@ -487,14 +536,18 @@ export default class SmallCraft {
         return this._fuelTons;
     }
 
-    /** 80 points a ton for a Small Craft; a DropShip's points fall with its weight (TM p.186). */
-    public getFuelPointsPerTon(): number { return this.isDropShip() ? getDropShipFuelPointsPerTon(this._tonnage) : SMALL_CRAFT_FUEL_POINTS_PER_TON; }
+    /** 80 points a ton for a Small Craft; a DropShip's points fall with its weight (TM p.186). A Primitive craft divides them by its fuel factor, unrounded (IO:AE pp.119-120). */
+    public getFuelPointsPerTon(): number {
+        return (this.isDropShip() ? getDropShipFuelPointsPerTon(this._tonnage) : SMALL_CRAFT_FUEL_POINTS_PER_TON) / (this._primitiveFactors()?.fuel ?? 1);
+    }
     public getFuelPoints(): number { return Math.floor(this._fuelTons * this.getFuelPointsPerTon()); }
     /** Tanks and pumps: 2 percent of the fuel, rounded up to the half ton (TM p.186). */
     public getFuelPumpWeight(): number { return this._round(this._fuelTons * SMALL_CRAFT_FUEL_PUMP_FACTOR); }
-    /** Tons of fuel a day at 1 G: 1.84, or more for a large civilian DropShip (TM p.186). */
+    /** Tons of fuel a day at 1 G: 1.84, or more for a large civilian DropShip (TM p.186); x the Primitive fuel factor, rounded up to 0.01 (IO:AE pp.119-120). */
     public getStrategicFuelPerDay(): number {
-        return this.isDropShip() ? getDropShipStrategicFuelPerDay(this._tonnage, this._military) : SMALL_CRAFT_STRATEGIC_FUEL_TONS_PER_DAY;
+        const perDay = this.isDropShip() ? getDropShipStrategicFuelPerDay(this._tonnage, this.isMilitary()) : SMALL_CRAFT_STRATEGIC_FUEL_TONS_PER_DAY;
+        const primitive = this._primitiveFactors();
+        return primitive ? Math.ceil(perDay * primitive.fuel * 100 - 1e-6) / 100 : perDay;
     }
     public getBurnDays(): number { return Math.round(this._fuelTons / this.getStrategicFuelPerDay() * 100) / 100; }
 
@@ -516,6 +569,9 @@ export default class SmallCraft {
     /** Tonnage x 0.0075, rounded up to the half ton (the kilogram under Fractional Accounting), or to the whole ton for a
      * DropShip (TM p.189). */
     public getControlsWeight(): number {
+        // Primitive controls: tonnage x the factor of the year, rounded up to the half ton for both (IO:AE pp.119-121).
+        const primitive = this._primitiveFactors();
+        if (primitive) return this._round(this._tonnage * primitive.controls);
         return this.isDropShip() ? getDropShipControlsWeight(this._tonnage) : this._round(this._tonnage * SMALL_CRAFT_CONTROLS_FACTOR);
     }
 
@@ -645,7 +701,11 @@ export default class SmallCraft {
     }
     /** Free points from the structure: the Structural Integrity for each of the four facings (TM p.191). */
     public getBonusArmorPoints(): number { return this._structuralIntegrity * SMALL_CRAFT_FACINGS.length; }
-    public getAvailableArmorPoints(): number { return this.getPurchasedArmorPoints() + this.getBonusArmorPoints(); }
+    /** On a Primitive craft all the armor, the free points too, is x 0.66, rounded down (IO:AE pp.120-121). */
+    public getAvailableArmorPoints(): number {
+        const points = this.getPurchasedArmorPoints() + this.getBonusArmorPoints();
+        return this.isPrimitive() ? Math.floor(points * PRIMITIVE_ARMOR_FACTOR + 1e-9) : points;
+    }
 
     public getArmorAllocation(): ISmallCraftArmorAllocation { return this._armorAllocation; }
 
@@ -692,11 +752,11 @@ export default class SmallCraft {
     /** Single or double heat sinks (TM p.193); doubles follow the era. */
     public getAvailableHeatSinkTypes(rulesLevel: number = 2): (IHeatSync & { available: boolean })[] {
         return mechHeatSinkTypes.filter((sink) => sink.tag === "single" || sink.tag === "double")
-            .map((sink) => ({ ...sink, available: sink.tag === "single" || this._techDatesAvailability(sink, rulesLevel).available }));
+            .map((sink) => ({ ...sink, available: sink.tag === "single" || (!this.isPrimitive() && this._techDatesAvailability(sink, rulesLevel).available) }));
     }
 
     public setHeatSinkType(tag: string): IHeatSync {
-        this._heatSinkType = mechHeatSinkTypes.find((sink) => sink.tag === tag && (tag === "single" || tag === "double")) ?? this._heatSinkType;
+        this._heatSinkType = mechHeatSinkTypes.find((sink) => sink.tag === tag && (tag === "single" || (tag === "double" && !this.isPrimitive()))) ?? this._heatSinkType;
         this._calc();
         return this._heatSinkType;
     }
@@ -709,11 +769,14 @@ export default class SmallCraft {
         return this._additionalHeatSinks;
     }
 
-    /** Engine tons / 60 on an aerodyne craft, the square root of engine tons x 1.6 on a spheroid; / 20 and x 6.8 for a military DropShip (TM p.193). */
+    /**
+     * Engine tons / 60 on an aerodyne craft, the square root of engine tons x 1.6 on a spheroid; / 20 and x 6.8 for a
+     * military DropShip (TM p.193); / 75 and x 1.3 for a Primitive DropShip (IO:AE p.121).
+     */
     public getFreeHeatSinks(): number {
-        return this.isDropShip()
-            ? getDropShipFreeHeatSinks(this.getEngineWeight(), this._shape, this._military)
-            : getSmallCraftFreeHeatSinks(this.getEngineWeight(), this._shape);
+        if (!this.isDropShip()) return getSmallCraftFreeHeatSinks(this.getEngineWeight(), this._shape);
+        return this.isPrimitive() ? getPrimitiveDropShipFreeHeatSinks(this.getEngineWeight(), this._shape)
+            : getDropShipFreeHeatSinks(this.getEngineWeight(), this._shape, this.isMilitary());
     }
     public getTotalHeatSinks(): number { return this.getFreeHeatSinks() + this._additionalHeatSinks; }
     public getHeatDissipation(): number { return this.getTotalHeatSinks() * (this._heatSinkType.dissipation ?? 1); }
@@ -740,7 +803,7 @@ export default class SmallCraft {
         return Math.ceil(this.getGunneryWeaponCount() / SMALL_CRAFT_WEAPONS_PER_GUNNER) + this.getCapitalMissileLauncherCount();
     }
     /** Three for a Small Craft; for a DropShip 3 (civilian) or 4 (military) and 1 for every 5,000 tons (TM p.189). */
-    public getBaseCrew(): number { return this.isDropShip() ? getDropShipBaseCrew(this._tonnage, this._military) : SMALL_CRAFT_BASE_CREW; }
+    public getBaseCrew(): number { return this.isDropShip() ? getDropShipBaseCrew(this._tonnage, this.isMilitary()) : SMALL_CRAFT_BASE_CREW; }
     /** The base crew and the gunners (TM p.189). */
     public getMinimumCrew(): number { return this.getBaseCrew() + this.getMinimumGunners(); }
     /** One crew member in five, rounded up, is an officer (TM p.189). */
@@ -1229,6 +1292,14 @@ export default class SmallCraft {
             if (type && !type.infantry && !type.cargoFactor && type.tonsEach !== null && bay.doors < 1) issues.push(`${type.name}: a bay for units other than infantry needs a door (TM p.196).`);
         }
         if (this._fuelTons <= 0) issues.push("The craft carries no fuel.");
+        if (this.isPrimitive() && !this.canBePrimitive()) issues.push("Primitive craft are built with Inner Sphere technology only (IO:AE pp.119-120).");
+        if (this.isDropShip()) {
+            const boom = this._kfBoom;
+            const year = this._primitiveYear ?? Number.POSITIVE_INFINITY;
+            if (boom === "prototype" && rulesLevel < ADVANCED_RULES_LEVEL) issues.push(`A Prototype K-F Boom needs the Advanced rules level (IO:AE p.113).`);
+            if (boom === "standard" && year < 2470) issues.push("The production K-F boom arrived in 2470; choose a prototype boom (2458) or none (IO:AE p.113).");
+            if (boom === "prototype" && year < 2458) issues.push("The prototype K-F boom arrived in 2458; a DropShip built before it has none (IO:AE p.113).");
+        }
         return issues;
     }
 
@@ -1241,6 +1312,13 @@ export default class SmallCraft {
         if (remaining > 0) notes.push(`${remaining} tons are unspent: cargo if a bay is added for them, wasted otherwise (TM p.184).`);
         if (this.getWeaponHeat() > this.getHeatDissipation()) notes.push(`Firing everything makes ${this.getWeaponHeat()} heat against ${this.getHeatDissipation()} dissipated; a Small Craft tracks heat as a fighter does (TM p.193).`);
         if (this._capitalWeapons.length > 0) notes.push("Capital and sub-capital weapons are not yet counted in the Alpha Strike conversion or in play.");
+        if (this.isPrimitive()) {
+            if (!this.isDropShip()) notes.push("Primitive Small Craft controls add +1 to-hit at Long and Extreme range (IO:AE p.120).");
+            if (this.isDropShip() && this._tonnage > PRIMITIVE_DROPSHIP_JUMP_TONNAGE) notes.push(`Over ${PRIMITIVE_DROPSHIP_JUMP_TONNAGE.toLocaleString("en-US")} tons, a Primitive DropShip cannot ride a Primitive JumpShip: it is interplanetary only (IO:AE p.120).`);
+            const modern = [...this._equipmentList.filter((item) => !item.isAmmo && isPostPrimitiveTechnology(item)).map((item) => item.name),
+                ...this._capitalWeapons.filter((mount) => isPostPrimitiveTechnology(this._capitalDates(mount.weapon))).map((mount) => mount.weapon.name)];
+            if (modern.length > 0) notes.push(`${[...new Set(modern)].join(", ")}: introduced after 2500, so this is a RetroTech craft (IO:AE pp.115-116, 120-121).`);
+        }
         for (const arc of SMALL_CRAFT_ARCS) {
             const count = this.getArcWeaponCount(arc);
             if (count > SMALL_CRAFT_WEAPONS_PER_ARC) notes.push(`${this.getArcName(arc)}: ${count} weapons, over the 12 an arc holds; ${this.getArcFireControlWeight(arc)} tons of extra fire control added (TM p.196).`);
@@ -1633,7 +1711,8 @@ export default class SmallCraft {
         if (this.isDropShip()) {
             const arcs = SMALL_CRAFT_ARCS.filter((arc) => this.getArcWeaponCount(arc) > 0).length;
             if (arcs > 0) rows.push([`Gunnery Control Systems (10,000 x ${arcs} arcs)`, GUNNERY_CONTROL_COST_PER_ARC * arcs]);
-            rows.push(["Docking Collar", DOCKING_COLLAR_COST]);
+            const boom = KF_BOOM_TYPES.find((type) => type.tag === this._kfBoom) ?? KF_BOOM_TYPES[0];
+            rows.push([`Docking Collar (${boom.name})`, boom.cost]);
         }
         if (this.getTotalHeatSinks() > 0) rows.push([`Heat Sinks (${this.getTotalHeatSinks()} ${this._heatSinkType.name})`, this.getTotalHeatSinks() * (this._heatSinkType.cost || 2000)]);
         const equipment = this._equipmentList.reduce((sum, item) => sum + (item.isAmmo ? (item.cbills || 0) * (item.weight || 0) : item.cbills || 0), 0);
@@ -2132,6 +2211,8 @@ export default class SmallCraft {
             shape: this._shape,
             craftType: this._craftType,
             military: this._military,
+            ...(this._primitiveYear !== null ? { primitiveYear: this._primitiveYear } : {}),
+            ...(this._kfBoom !== "standard" ? { kfBoom: this._kfBoom } : {}),
             tonnage: this._tonnage,
             tech: this._tech.tag,
             engineTech: this._engineTech,
@@ -2238,6 +2319,9 @@ export default class SmallCraft {
             this.setTech(savedString(saved.tech));
             this.setEngineTechBase(savedString(saved.engineTech));
             this.setEra(savedString(saved.era));
+            this.setPrimitiveYear(typeof saved.primitiveYear === "number" ? saved.primitiveYear : null);
+            if (saved.primitiveYear !== undefined && this._primitiveYear === null) issue("Ignored a Primitive year this craft cannot use");
+            this.setKFBoom(savedString(saved.kfBoom) || "standard");
             if (saved.tonnage !== undefined && typeof saved.tonnage !== "number") issue("Ignored a tonnage that is not a number");
             this.setTonnage(savedNumber(saved.tonnage, this.getMaxTonnage(), this.getMinTonnage(), this.getMaxTonnage()));
             this.setSafeThrust(savedNumber(saved.safeThrust, 4, 1, 20));

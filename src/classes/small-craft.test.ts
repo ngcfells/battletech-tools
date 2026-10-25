@@ -440,3 +440,88 @@ describe("Small Craft capital weapon dates (design 2026-10-24-catalog-consolidat
         expect(ship.getAvailableCapitalWeapons(3).some((weapon) => weapon.tag === "light-scc")).toBe(true);
     });
 });
+
+describe("Primitive Small Craft and DropShips (IO:AE pp.119-121)", () => {
+    it("builds a Primitive DropShip to the rules of its year", () => {
+        const ship = new SmallCraft();
+        ship.setCraftType("dropShip");
+        ship.setShape("spheroid");
+        ship.setMilitary(true);
+        ship.setHeatSinkType("double");
+        expect(ship.setPrimitiveYear(2243)).toBe(2243);
+        ship.setTonnage(1200);
+        ship.setSafeThrust(5);
+        // 1,200 x 5 x 0.104 = 624; 1,200 x 0.012 = 14.4, to the half ton; the square root of 624 x 1.3, rounded down.
+        expect(ship.getEngineWeight()).toBe(624);
+        expect(ship.getControlsWeight()).toBe(14.5);
+        expect(ship.getFreeHeatSinks()).toBe(28);
+        expect(ship.getHeatSinkType().tag).toBe("single");
+        expect(ship.getAvailableHeatSinkTypes(4).find((sink) => sink.tag === "double")?.available).toBe(false);
+        // Civilian rules: 50 points a ton / 1.6; 2.82 tons a day x 1.6 = 4.512, rounded up to 0.01.
+        expect(ship.isMilitary()).toBe(false);
+        expect(ship.getFuelPointsPerTon()).toBe(31.25);
+        expect(ship.getStrategicFuelPerDay()).toBe(4.52);
+        // 15,000 tons for a spheroid of 2200-2249; 6,000 for an aerodyne.
+        expect(ship.getMaxTonnage()).toBe(15000);
+        ship.setShape("aerodyne");
+        expect(ship.getMaxTonnage()).toBe(6000);
+        expect(ship.getKFBoom()).toBe("none");
+        ship.setStructuralIntegrity(15);
+        ship.setArmorTons(10);
+        expect(ship.getAvailableArmorPoints()).toBe(Math.floor((ship.getPurchasedArmorPoints() + 60) * 0.66));
+        ship.setPrimitiveYear(null);
+        expect(ship.isMilitary()).toBe(true);
+        expect(ship.getMaxTonnage()).toBe(35000);
+    });
+
+    it("builds a Primitive Small Craft, Inner Sphere only", () => {
+        const craft = new SmallCraft();
+        craft.setTonnage(200);
+        craft.setSafeThrust(5);
+        craft.setPrimitiveYear(2120);
+        // 1,000 x 0.143 = 143; 200 x 0.01575 = 3.15 → 3.5; 80 / 2.2 points a ton; 1.84 x 2.2 = 4.048 → 4.05.
+        expect(craft.getEngineWeight()).toBe(143);
+        expect(craft.getControlsWeight()).toBe(3.5);
+        expect(craft.getFuelPointsPerTon()).toBeCloseTo(36.36, 2);
+        expect(craft.getStrategicFuelPerDay()).toBe(4.05);
+        expect(craft.getNotes().some((note) => note.includes("+1 to-hit"))).toBe(true);
+        expect(craft.setPrimitiveYear(1900)).toBe(2100);
+        craft.setTech("clan");
+        expect(craft.isPrimitive()).toBe(false);
+        expect(craft.setPrimitiveYear(2200)).toBeNull();
+    });
+
+    it("keeps the Primitive year and the K-F boom in a save", () => {
+        const ship = new SmallCraft();
+        ship.setCraftType("dropShip");
+        ship.setPrimitiveYear(2460);
+        ship.setKFBoom("prototype");
+        expect(ship.getIssues(2).some((issue) => issue.includes("Advanced"))).toBe(true);
+        expect(ship.getIssues(3).some((issue) => issue.includes("K-F"))).toBe(false);
+        expect(ship.getCBillCostLog()).toContain("Docking Collar (Prototype K-F Boom): 1,010,000");
+        const copy = new SmallCraft(ship.exportJSON());
+        expect(copy.getPrimitiveYear()).toBe(2460);
+        expect(copy.getKFBoom()).toBe("prototype");
+        ship.setKFBoom("standard");
+        expect(ship.getIssues(3).some((issue) => issue.includes("2470"))).toBe(true);
+    });
+
+    it("imports MegaMek primitive armor as a Primitive DropShip (the Saturn Patrol Ship)", () => {
+        const blk = [
+            "<UnitType>", "Dropship", "</UnitType>", "<Name>", "Saturn Patrol Ship", "</Name>", "<year>", "2243", "</year>",
+            "<type>", "IS Level 4", "</type>", "<motion_type>", "Spheroid", "</motion_type>", "<collartype>", "2", "</collartype>",
+            "<SafeThrust>", "5", "</SafeThrust>", "<heatsinks>", "29", "</heatsinks>", "<sink_type>", "0", "</sink_type>", "<fuel>", "4687", "</fuel>",
+            "<armor_type>", "40", "</armor_type>", "<armor>", "110", "95", "95", "82", "</armor>",
+            "<structural_integrity>", "15", "</structural_integrity>", "<tonnage>", "1200.0", "</tonnage>", "<designtype>", "1", "</designtype>",
+        ].join("\n");
+        const result = importSmallCraftBlk(blk);
+        const ship = result.craft as SmallCraft;
+        expect(result.issues).toEqual([]);
+        expect(ship.getPrimitiveYear()).toBe(2243);
+        expect(ship.getKFBoom()).toBe("none");
+        expect(ship.getFreeHeatSinks() + ship.getAdditionalHeatSinks()).toBe(29);
+        expect(ship.getFuelPoints()).toBe(4687);
+        expect(ship.getTotalArmorPoints()).toBe(382);
+        expect(ship.getUnallocatedArmorPoints()).toBeGreaterThanOrEqual(0);
+    });
+});
