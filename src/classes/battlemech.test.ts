@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 import { sswMechs } from "../data/ssw/sswMechs";
 import { sswTestFixtures } from "../data/ssw/sswTestFixtures";
 import { BattleMech } from "./battlemech";
+import { getVTOLAMSamples } from "../data/vtolam-samples";
 import { mechInternalStructureTypes, validateChassisCombination } from "../data/mech-internal-structure-types";
 import { getTargetToHitFromWeapon } from "../utils";
 import { mechArmorTypes } from "../data/mech-armor-types";
@@ -1689,6 +1690,67 @@ describe("Bimodal LAM", () => {
         expect(restored.getLAMType()).toBe("bimodal");
         restored.setType("biped");
         expect(restored.getLAMType()).toBe("standard");
+    });
+});
+
+// The VTOLAM (Custom Homebrew; BishopSteiner, deviantart.com/bishopsteiner/art/LOCUST-VTOLAM-concept-899660337).
+describe("VTOLAM", () => {
+    const makeVTOLAM = (tonnage = 25) => {
+        const lam = new BattleMech();
+        lam.setEra("ilClan");
+        lam.setType("lam");
+        lam.setTonnage(tonnage);
+        lam.setLAMType("vtolam");
+        return lam;
+    };
+
+    it("is a Mech / VTOL bimodal LAM at the Custom Homebrew level, at most 30 tons", () => {
+        const lam = makeVTOLAM(40);
+        expect(lam.getTonnage()).toBe(30);
+        expect(lam.hasAirMechMode()).toBe(false);
+        expect(lam.setTransformationMode("aerospace")).toBe("mech");
+        expect(lam.setTransformationMode("vehicle")).toBe("vehicle");
+        expect(lam.getRequiredRulesLevel()).toBe(CUSTOM_HOMEBREW_RULES_LEVEL);
+        expect(lam.isBattleValueProvisional()).toBe(true);
+        lam.setTonnage(35);
+        expect(lam.getChassisEquipmentViolations()).toContain("VTOLAMs weigh at most 30 tons, the VTOL limit.");
+    });
+
+    it("takes 20% conversion weight, needs no jump jets or fuel, and allows any fusion engine and gyro", () => {
+        const lam = makeVTOLAM();
+        expect(lam.getWeightBreakdown().find(entry => /Conversion/.test(entry.name))).toEqual({ name: "VTOLAM Conversion Equipment", weight: 5 });
+        expect(lam.setJumpSpeed(0)).toBe(0);
+        expect(lam.getLAMFuelPoints()).toBe(0);
+        lam.setEngineType("xl");
+        lam.setGyroType("xl");
+        expect(lam.getEngineType().tag).toBe("xl");
+        expect(lam.getGyro().tag).toBe("xl");
+        expect(lam.getCBillCalcHTML()).toContain("0.65 x (Structure");
+        lam.setLAMType("standard");
+        expect(lam.getEngineType().tag).toBe("standard");
+        expect(lam.getGyro().tag).toBe("standard");
+        expect(lam.getJumpSpeed()).toBe(BattleMech.LAM_MIN_JUMP_MP);
+    });
+
+    it("puts its landing skids in the side torsos only and moves as a VTOL", () => {
+        const lam = makeVTOLAM();
+        lam.setWalkSpeed(8);
+        const skids = (key: "centerTorso" | "leftTorso" | "rightTorso") => lam.getCriticals()[key].filter(slot => slot?.tag === "lam-landing-gear").length;
+        expect([skids("centerTorso"), skids("leftTorso"), skids("rightTorso")]).toEqual([0, 1, 1]);
+        // The author's figures: a 200 engine at 25 tons rounds down to 13 / 20.
+        expect([lam.getVTOLAMCruiseMP(), lam.getVTOLAMFlankMP()]).toEqual([13, 20]);
+    });
+
+    it("loads the Locust VTOLAM sample as built, credited to its author", () => {
+        expect(getVTOLAMSamples(CUSTOM_HOMEBREW_RULES_LEVEL - 1)).toEqual([]);
+        const [sample] = getVTOLAMSamples(CUSTOM_HOMEBREW_RULES_LEVEL);
+        const locust = new BattleMech(JSON.stringify(sample.save));
+        expect(locust.isVTOLAM()).toBe(true);
+        expect(locust.getCurrentTonnage()).toBe(25);
+        expect([locust.getWalkSpeed(), locust.getRunSpeed()]).toEqual([8, 12]);
+        expect(locust.getChassisEquipmentViolations()).toEqual([]);
+        expect(locust.unallocatedCriticals.filter(Boolean)).toEqual([]);
+        expect(JSON.stringify(sample.save)).toContain("BishopSteiner");
     });
 });
 

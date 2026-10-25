@@ -349,7 +349,7 @@ export default class MechCreatorStep5 extends React.Component<IHomeProps, IHomeS
                             </fieldset>
                           ) : null}
 
-                          {currentMech.isLAM() ? (
+                          {currentMech.isLAM() && !currentMech.isVTOLAM() ? (
                             <fieldset className="fieldset">
                               <legend>LAM Fuel and Bombs</legend>
                               <p>

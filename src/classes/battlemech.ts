@@ -43,6 +43,7 @@ import { ISSWBasicInfo, parseSSWXML } from "../utils/getSSWXMLBasicInfo";
 import { findImportedEquipment, ImportFaction } from "../utils/importedEquipment";
 import { getMountedHeat, mateLaserInsulators } from "../data/laser-insulator";
 import { findIncompleteCustomContent, hasIncompleteCustomContent } from "../data/custom-content-incomplete";
+import { getVehicleSuspensionFactor } from "../data/vehicle-motive-types";
 import {
     ICanonicalBattleMechRecord,
     ICanonicalSourceMetadata,
@@ -179,6 +180,8 @@ export interface IFrankenMechDonor {
 
 /** Jump jets a FrankenMech kept from a lighter 'Mech, named by the weight class they were built for (TM p.51). */
 export type FrankenMechJumpJetClass = "light" | "medium" | "heavy";
+/** Standard, Bimodal (IO:AE p.100), or the Custom Homebrew VTOLAM (a Bimodal LAM with a VTOL mode). */
+export type LAMType = "standard" | "bimodal" | "vtolam";
 
 export interface IFrankenMechExport {
     donors: Record<string, IFrankenMechDonor>;
@@ -250,7 +253,7 @@ export interface IBattleMechExport {
     location?: string;
     mechType: string;
     quadVeeMotive?: "tracked" | "wheeled";
-    lamType?: "standard" | "bimodal";
+    lamType?: LAMType;
     /** LAM bombs loaded into Bomb Bays, keyed by bomb ammunition tag. */
     bombLoadout?: Record<string, number>;
     /** OmniMech configurations sharing this base chassis; `equipment` holds the active one. */
@@ -388,7 +391,7 @@ export class BattleMech {
     private _mechType = mechTypeOptions[0];
     private _quadVeeMotive: "tracked" | "wheeled" = "tracked";
     // Standard LAMs have Mech/AirMech/Fighter modes; Bimodal LAMs have no AirMech mode (IO).
-    private _lamType: "standard" | "bimodal" = "standard";
+    private _lamType: LAMType = "standard";
     /** LAM bombs loaded into the Bomb Bays, keyed by bomb ammunition tag. */
     private _bombLoadout: Record<string, number> = {};
     /** Stored OmniMech configurations; the active one is live in _equipmentList. */
@@ -1848,9 +1851,9 @@ export class BattleMech {
             cbillDryTotal += armoredComponentSlots * 150000;
         }
 
-        // Conversion equipment: LAM 75% (Bimodal 65%) and QuadVee 50% of internal structure
-        // plus equipment cost (IO, as implemented by MegaMek; provisional).
-        const conversionRate = this.isLAM() ? (this.isBimodalLAM() ? 0.65 : 0.75) : this.isQuadVee() ? 0.5 : 0;
+        // Conversion equipment: LAM 75% (Bimodal 65%, and the VTOLAM, a form of Bimodal LAM) and QuadVee 50% of
+        // internal structure plus equipment cost (IO, as implemented by MegaMek; provisional).
+        const conversionRate = this.isLAM() ? (this._lamType === "standard" ? 0.75 : 0.65) : this.isQuadVee() ? 0.5 : 0;
         if (conversionRate > 0) {
             const conversionCost = (structureCost + equipmentCost) * conversionRate;
             this._calcLogCBill += "<tr><td><strong>Conversion Equipment</strong><br /><span class=\"smaller-text\">" + conversionRate + " x (Structure [" + addCommas(structureCost) + "] + Equipment [" + addCommas(equipmentCost) + "]) - provisional</span></td><td>" + addCommas(conversionCost) + "</td></tr>\n";
@@ -3528,10 +3531,10 @@ export class BattleMech {
         const typeTag = this._mechType.tag.toLowerCase();
 
         if (typeTag === "lam") {
-            if (!BattleMech.LAM_GYRO_TAGS.includes(this._gyro.tag)) {
+            if (!this._isLAMLegalGyro(this._gyro.tag)) {
                 this._gyro = findByTag(mechGyroTypes, "standard") ?? mechGyroTypes[0];
             }
-            this._jumpSpeed = Math.max(BattleMech.LAM_MIN_JUMP_MP, this._jumpSpeed);
+            this._jumpSpeed = Math.max(this._getLAMMinJumpMP(), this._jumpSpeed);
             // Canon LAMs cannot be OmniMechs; the Custom Homebrew Omni-LAM is Inner Sphere only
             // and keeps every arm actuator (fan rule restriction 3).
             if (this._omnimech && !this._hasOmniLAMTechBase()) {
@@ -3639,10 +3642,10 @@ export class BattleMech {
                 weight: Math.ceil(this._tonnage * 0.1)
             });
         } else if (typeTag === "lam") {
-            // Bimodal LAMs: 15% (IO:AE p.108).
+            // Bimodal LAMs: 15% (IO:AE p.108); the fan-made VTOLAM: 20% (BishopSteiner).
             this._weights.push({
-                name: this._lamType === "bimodal" ? "Bimodal LAM Conversion Equipment" : "LAM Conversion Equipment",
-                weight: Math.ceil(this._tonnage * (this._lamType === "bimodal" ? 0.15 : 0.1))
+                name: { standard: "LAM", bimodal: "Bimodal LAM", vtolam: "VTOLAM" }[this._lamType] + " Conversion Equipment",
+                weight: Math.ceil(this._tonnage * { standard: 0.1, bimodal: 0.15, vtolam: 0.2 }[this._lamType])
             });
         }
 
@@ -4298,9 +4301,11 @@ export class BattleMech {
         if (typeTag === "lam") {
             this._addCriticalItem("lam-avionics", "LAM Avionics", 1, "lt");
             this._addCriticalItem("lam-avionics", "LAM Avionics", 1, "rt");
-            this._addCriticalItem("lam-landing-gear", "LAM Landing Gear", 1, "ct");
-            this._addCriticalItem("lam-landing-gear", "LAM Landing Gear", 1, "lt");
-            this._addCriticalItem("lam-landing-gear", "LAM Landing Gear", 1, "rt");
+            // A VTOLAM's landing gear is retractable skids, one slot in each side torso and none in the center.
+            const gearName = this.isVTOLAM() ? "VTOLAM Landing Skids" : "LAM Landing Gear";
+            if (!this.isVTOLAM()) this._addCriticalItem("lam-landing-gear", gearName, 1, "ct");
+            this._addCriticalItem("lam-landing-gear", gearName, 1, "lt");
+            this._addCriticalItem("lam-landing-gear", gearName, 1, "rt");
         }
 
         // STANDARD & REAR LEGS: Track Left Leg (ll) and Right Leg (rl) structural presence. Am I standing?
@@ -5479,7 +5484,7 @@ export class BattleMech {
     ) {
         const requestedSpeed = Math.max(0, +jumpSpeed);
         this._jumpSpeed = this.isLAM()
-            ? Math.max(BattleMech.LAM_MIN_JUMP_MP, requestedSpeed)
+            ? Math.max(this._getLAMMinJumpMP(), requestedSpeed)
             : requestedSpeed;
         this._calc();
         return this._jumpSpeed;
@@ -6405,7 +6410,7 @@ export class BattleMech {
     setGyroType(
         gyroType: string,
     ) {
-        if (this.isLAM() && !BattleMech.LAM_GYRO_TAGS.includes(gyroType.toLowerCase())) {
+        if (this.isLAM() && !this._isLAMLegalGyro(gyroType.toLowerCase())) {
             gyroType = "standard";
         }
         for( let gyro of getComponentRecords("gyro")) {
@@ -6564,9 +6569,9 @@ export class BattleMech {
         this._calc();
     }
 
-    /** Standard LAMs have an AirMech mode; Bimodal LAMs and other chassis do not. */
+    /** Standard LAMs have an AirMech mode; Bimodal LAMs, VTOLAMs and other chassis do not. */
     public hasAirMechMode(): boolean {
-        return this.isLAM() && this._lamType !== "bimodal";
+        return this.isLAM() && this._lamType === "standard";
     }
 
     /** AirMech Cruise MP: 'Mech-mode Jump MP x 3 (IO:AE p.102). */
@@ -6585,7 +6590,7 @@ export class BattleMech {
      * The LAM movement and heat adjustments themselves follow IO:AE p.186.
      */
     public isBattleValueProvisional(): boolean {
-        return this.isOmniLAM() || (this.isLAM() && this.getBombLoadoutSlots() > 0);
+        return this.isOmniLAM() || this.isVTOLAM() || (this.isLAM() && this.getBombLoadoutSlots() > 0);
     }
 
     /**
@@ -6611,7 +6616,7 @@ export class BattleMech {
             const bomb = this._findBomb(tag);
             if (bomb) level = Math.max(level, getEquipmentRulesLevel(bomb));
         }
-        if (this.isOmniLAM()) level = Math.max(level, CUSTOM_HOMEBREW_RULES_LEVEL);
+        if (this.isOmniLAM() || this.isVTOLAM()) level = Math.max(level, CUSTOM_HOMEBREW_RULES_LEVEL);
         // A custom or draft chassis component (custom-component-registry.ts) is homebrew.
         const components: [CustomComponentKind, { tag: string } | null | undefined][] = [
             ["armor", this._armorType], ["structure", this._selectedInternalStructure], ["engine", this._engineType],
@@ -6939,6 +6944,30 @@ export class BattleMech {
     public static readonly SUPERHEAVY_STRUCTURE_TAGS: readonly string[] = ["standard", "endo-steel", "endo-composite", "industrial"];
     /** Gyros a LAM may use: Standard, Compact, Heavy-Duty (IO:AE p.108). */
     public static readonly LAM_GYRO_TAGS: readonly string[] = ["standard", "compact", "heavy-duty"];
+    /**
+     * The VTOLAM (Custom Homebrew; BishopSteiner's fan rules, deviantart.com/bishopsteiner/art/LOCUST-VTOLAM-concept-899660337):
+     * a Bimodal LAM whose second mode is a VTOL. At most 30 tons (the VTOL limit), no jump jets required, any fusion
+     * engine and any gyro, and no fuel: it flies on its rotors.
+     */
+    public static readonly VTOLAM_MAX_TONNAGE = 30;
+    public static readonly VTOLAM_ENGINE_TAGS: readonly string[] = ["standard", "compact", "light", "xl", "clan_xl", "xxl", "clan_xxl"];
+
+    private _getLAMMinJumpMP(): number {
+        return this.isVTOLAM() ? 0 : BattleMech.LAM_MIN_JUMP_MP;
+    }
+
+    private _isLAMLegalGyro(tag: string): boolean {
+        return this.isVTOLAM() ? mechGyroTypes.some(gyro => gyro.tag === tag) : BattleMech.LAM_GYRO_TAGS.includes(tag);
+    }
+
+    /** VTOL-mode Cruise MP: the VTOL formula, (engine rating + VTOL suspension factor) / tonnage rounded down (TM p.100). */
+    public getVTOLAMCruiseMP(): number {
+        return this.isVTOLAM() ? Math.floor((this.getEngineRating() + getVehicleSuspensionFactor("vtol", this._tonnage)) / this._tonnage) : 0;
+    }
+
+    public getVTOLAMFlankMP(): number {
+        return Math.ceil(this.getVTOLAMCruiseMP() * 1.5);
+    }
     public static readonly LAM_BOMB_BAY_TAG = "lam-bomb-bay";
     public static readonly LAM_FUEL_TANK_TAG = "lam-fuel-tank";
     public static readonly LAM_MAX_BOMB_BAYS = 20;
@@ -6962,7 +6991,7 @@ export class BattleMech {
 
     /** LAM fuel points: 80 from the conversion equipment plus 80 per Fuel Tank (via MegaMekLab). */
     public getLAMFuelPoints(): number {
-        if (!this.isLAM()) return 0;
+        if (!this.isLAM() || this.isVTOLAM()) return 0;
         const tanks = this._equipmentList.filter(item => matchesTag(item, BattleMech.LAM_FUEL_TANK_TAG)).length;
         return BattleMech.LAM_FUEL_POINTS_PER_TON * (1 + tanks);
     }
@@ -7437,7 +7466,10 @@ export class BattleMech {
         }
         if (fitted.length > 1 && fitted.some(system => system.suffix === "-artemis-v")) violations.push("Artemis V cannot be mounted alongside Artemis IV (TO:AUE p.94).");
         if (this.isLAM()) {
-            if (this.getJumpSpeed() > this.getMaxJumpSpeed()) {
+            if (this.isVTOLAM() && this._tonnage > BattleMech.VTOLAM_MAX_TONNAGE) {
+                violations.push(`VTOLAMs weigh at most ${BattleMech.VTOLAM_MAX_TONNAGE} tons, the VTOL limit.`);
+            }
+            if (!this.isVTOLAM() && this.getJumpSpeed() > this.getMaxJumpSpeed()) {
                 violations.push(`LAMs need at least ${BattleMech.LAM_MIN_JUMP_MP} Jump MP, but Jump MP ${this.getJumpSpeed()} exceeds Walk MP ${this.getWalkSpeed()}; raise the engine rating.`);
             }
             // No equipment split across locations; spreadable equipment stays in one location
@@ -7801,7 +7833,7 @@ export class BattleMech {
         public setTransformationMode(mode: string): "mech" | "airmech" | "aerospace" | "vehicle" {
             const requestedMode = mode.toLowerCase();
             const allowedModes = this.isLAM()
-                ? (this.isBimodalLAM() ? ["mech", "aerospace"] : ["mech", "airmech", "aerospace"])
+                ? { standard: ["mech", "airmech", "aerospace"], bimodal: ["mech", "aerospace"], vtolam: ["mech", "vehicle"] }[this._lamType]
                 : this.isQuadVee()
                         ? ["mech", "vehicle"]
                         : ["mech"];
@@ -7864,19 +7896,23 @@ export class BattleMech {
             );
         }
 
-        public getLAMType(): "standard" | "bimodal" {
+        public getLAMType(): LAMType {
             return this._lamType;
+        }
+
+        public isVTOLAM(): boolean {
+            return this.isLAM() && this._lamType === "vtolam";
         }
 
         public isBimodalLAM(): boolean {
             return this.isLAM() && this._lamType === "bimodal";
         }
 
-        public setLAMType(lamType: string): "standard" | "bimodal" {
-            this._lamType = lamType.toLowerCase() === "bimodal" ? "bimodal" : "standard";
-            if (this.isBimodalLAM() && this._transformationMode === "airmech") {
-                this._transformationMode = "mech";
-            }
+        public setLAMType(lamType: string): LAMType {
+            const requested = lamType.toLowerCase();
+            this._lamType = requested === "bimodal" || requested === "vtolam" ? requested : "standard";
+            this.setTransformationMode(this._transformationMode);
+            if (this.isVTOLAM() && this._tonnage > BattleMech.VTOLAM_MAX_TONNAGE) this.setTonnage(BattleMech.VTOLAM_MAX_TONNAGE);
             this._calc();
             return this._lamType;
         }
@@ -10119,7 +10155,7 @@ export class BattleMech {
             const availability = this._datesAvailability(gyro, rulesLevel);
             gyro.availableAsPrototype = availability.asPrototype;
             gyro.available = availability.available && this.isOfferedInEdition(gyro, rulesLevel) && !(gyro.innerSphereOnly && this.getTech().tag === "clan")
-                && (!this.isLAM() || BattleMech.LAM_GYRO_TAGS.includes(gyro.tag))
+                && (!this.isLAM() || this._isLAMLegalGyro(gyro.tag))
                 // IndustrialMechs and Primitive 'Mechs take the standard gyro only (TM p.69; IO:AE p.116).
                 && (!this._hasBasicChassis() || gyro.tag === "standard");
 
@@ -10795,7 +10831,7 @@ export class BattleMech {
      */
     private _isLAMLegalComponent(kind: "armor" | "structure" | "engine", tag: string): boolean {
         if (kind === "engine") {
-            return tag === "standard" || tag === "compact";
+            return this.isVTOLAM() ? BattleMech.VTOLAM_ENGINE_TAGS.includes(tag) : tag === "standard" || tag === "compact";
         }
         const component = kind === "armor"
             ? findByTag(mechArmorTypes, tag)
@@ -10853,6 +10889,8 @@ export class BattleMech {
         const tag = item.tag.toLowerCase();
         const name = item.name.toLowerCase();
         if (this.isLAM()) {
+            // A VTOLAM has no fighter mode, so no fuel tanks or bomb bays.
+            if (this.isVTOLAM() && (tag === BattleMech.LAM_FUEL_TANK_TAG || tag === BattleMech.LAM_BOMB_BAY_TAG)) return false;
             // IO:AE p.108, Prohibited Technologies and construction notes: no artillery, no weapon
             // that needs a Piloting skill except physical attack weapons (heavy Gauss), no
             // supercharger, and none of the listed conversion-blocking equipment. Items split
