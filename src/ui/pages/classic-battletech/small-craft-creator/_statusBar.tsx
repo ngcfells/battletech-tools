@@ -16,7 +16,7 @@ export default class SmallCraftStatusBar extends React.Component<ISmallCraftStat
                     <strong>Thrust</strong>: {craft.getSafeThrust()}/{craft.getMaxThrust()} &nbsp;|&nbsp;
                     <strong>SI</strong>: {craft.getStructuralIntegrity()} &nbsp;|&nbsp;
                     <strong>Armor</strong>: {craft.getTotalArmorPoints()} of {craft.getAvailableArmorPoints()} points &nbsp;|&nbsp;
-                    <strong>Heat</strong>: {craft.getWeaponHeat()} of {craft.getHeatDissipation()} dissipated &nbsp;|&nbsp;
+                    <strong>Heat</strong>: {craft.getHeatDissipation()} dissipated of {craft.getWeaponHeat()} generated &nbsp;|&nbsp;
                     <strong>BV</strong>: {craft.getBattleValue()}
                     {issues.length > 0 ? (
                         <ul className="color-red" data-testid="sc-issues">

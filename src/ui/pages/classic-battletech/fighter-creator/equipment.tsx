@@ -58,7 +58,7 @@ export default class FighterCreatorEquipment extends React.Component<IEquipmentP
                             <TextSection label="Step 3: Weapons and Equipment">
                                 <p className={remaining < 0 ? "color-red" : ""}>
                                     <strong>Remaining Tonnage</strong>: {remaining} &nbsp;|&nbsp;
-                                    <strong>{fighter.isConventional() ? "Energy Weapon Heat" : "Weapon Heat"}</strong>: {fighter.getWeaponHeat()} of {fighter.getHeatDissipation()} dissipated
+                                    <strong>{fighter.isConventional() ? "Energy Weapon Heat" : "Weapon Heat"}</strong>: {fighter.getHeatDissipation()} dissipated of {fighter.getWeaponHeat()} generated
                                     {fighter.getPowerAmplifierWeight() > 0 ? <> &nbsp;|&nbsp; <strong>Power Amplifiers</strong>: {fighter.getPowerAmplifierWeight()} tons (TM p. 195)</> : null}
                                 </p>
                                 <AvailableEquipment
