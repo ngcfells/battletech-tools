@@ -2,7 +2,7 @@ import { FaDice, FaDownload, FaFileImport, FaPlusCircle, FaPrint, FaTrash, FaChe
 import React, { type JSX } from 'react';
 import { Link } from 'react-router';
 import AlphaStrikeGroup, { IASGroupExport } from '../../../../classes/alpha-strike-group';
-import { AlphaStrikeUnit, IASMULUnit } from '../../../../classes/alpha-strike-unit';
+import { AlphaStrikeUnit, getMULDisplayName } from '../../../../classes/alpha-strike-unit';
 import { makeURLSlug } from '../../../../utils/makeURLSlug';
 import { IAppGlobals } from '../../../app-router';
 import StandardModal from '../../../components/standard-modal';
@@ -15,8 +15,8 @@ import AlphaStrikeAddUnitsView from './_AddUnitsPage';
 import CurrentForceList from './_CurrentForceList';
 import AlphaStrikeUnitEditViewModal from './_showAlphaStrikeUnit';
 import { CONST_FORCE_PACKS, IForcePack } from "../../../../data/force-packs-mechs";
+import { loadMULListItems } from "../../../../data/mul-list-items";
 import { joinListWithEndLabel } from "../../../../utils/joinListWithEndLabel";
-import { getMULASSearchResults } from "../../../../utils";
 import { formationBonuses } from '../../../..//data/formation-bonuses';
 const Dice = FaDice as any;
 const Download = FaDownload as any;
@@ -70,84 +70,20 @@ export default class AlphaStrikeRosterHome extends React.Component<IHomeProps, I
 
         newGroup.customName = pack.name;
 
-        for( let member of pack.members ) {
-          // we are searching for an explicit name match, nothing more.
-          let data: IASMULUnit[] = await getMULASSearchResults  (
-            member,
-            "", // Rules
-            "", // Tech
-            "", // Role
-            0, // FIXME? clan invasion
-            0, // Type Filter
-            [], //Faction Filter
-            !navigator.onLine,
-            false,
-            this.props.appGlobals,
-          );
-
-
-          data.sort( (
-            a: IASMULUnit,
-            b: IASMULUnit
-          ): number => {
-
-              if(
-                a.Name && b.Name &&
-                a.Name.toLowerCase().indexOf(" prime") > -1
-                &&
-                b.Name.toLowerCase().indexOf(" prime") === -1
-              ) {
-                return -1;
-              }if(
-                a.Name && b.Name &&
-                a.Name.toLowerCase().indexOf(" prime") === -1
-                &&
-                b.Name.toLowerCase().indexOf(" prime") > -1
-              ) {
-                return 1;
-              } if(
-                a.Name && b.Name &&
-                a.Name.toLowerCase().indexOf(" (standard)") > -1
-                &&
-                b.Name.toLowerCase().indexOf(" (standard)") === -1
-              ) {
-                return -1;
-              }if(
-                a.Name && b.Name &&
-                a.Name.toLowerCase().indexOf(" (standard)") === -1
-                &&
-                b.Name.toLowerCase().indexOf(" (standard)") > -1
-              ) {
-                return 1;
-              } else {
-                if( a.Name && b.Name && a.Name.toLowerCase().trim() > b.Name.toLowerCase().trim() ) {
-                  return 1;
-                } else if(a.Name && b.Name && a.Name.toLowerCase().trim() < b.Name.toLowerCase().trim() ) {
-                  return -1;
-                } else {
-                  return 0
-                }
-              }
-            }
-          )
-
-          // console.log( "data", data)
-          // looking for an exact name match only
-          let foundAUnit = false;
-          for( let item of data ) {
-            if( item.Name.toLowerCase().trim() === member.toLowerCase() ) {
-              let newUnit = new AlphaStrikeUnit();
-              newUnit.importMUL( item );
-              if( pack.tech === "clan" ) newUnit.setSkill(3);
-              newGroup.members.push(newUnit);
-              foundAUnit = true;
-              break;
-            }
+        // Members are looked up in the bundled MUL by full name (Name and Variant, e.g. "Locust IIC 4").
+        const units = await loadMULListItems();
+        pack.members.forEach((member, index) => {
+          const item = units.find((unit) => getMULDisplayName(unit).toLowerCase() === member.trim().toLowerCase());
+          if( !item ) {
+            console.log("No match found for '" + member + "'");
+            return;
           }
-          if ( !foundAUnit ) {
-            console.log("No match found for '" + member +"' data", data);
-          }
-        }
+          let newUnit = new AlphaStrikeUnit();
+          newUnit.importMUL( item );
+          const skill = pack.skills?.[index] ?? (pack.tech === "clan" ? 3 : undefined);
+          if( skill !== undefined ) newUnit.setSkill(skill);
+          newGroup.members.push(newUnit);
+        });
 
         if( newGroup.members.length > 0 ) {
           newGroup.setAvailableFormationBonuses(formationBonuses.filter(x=>x.IsValid(newGroup, currentASForce?.groups ?? [])))
@@ -491,8 +427,7 @@ export default class AlphaStrikeRosterHome extends React.Component<IHomeProps, I
 <TextSection
 label="Quickly add a ForcePack"
 >
-{navigator && navigator.onLine ? (
-  <ul className="styleless">
+<ul className="styleless">
   {CONST_FORCE_PACKS.map( (pack, packindex) => {
     return (
       <li key={packindex} className="force-pack-row">
@@ -507,16 +442,12 @@ label="Quickly add a ForcePack"
         <div className="force-pack-text">
           {pack.name}<br />
           <div className="small-text">{joinListWithEndLabel(pack.members, "and")}</div>
+          {pack.note ? <div className="small-text" data-testid="force-pack-note">{pack.note}</div> : null}
         </div>
       </li>
     )
   })}
   </ul>
-) : (
-  <div className="alert alert-warning">
-    We're sorry, adding a Force Pack needs access to the Master Unit List for unit stats and requires an Internet connection, please connect to the Internet.
-  </div>
-)}
 </TextSection>
 
 <TextSection
