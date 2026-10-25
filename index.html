@@ -86,7 +86,7 @@ li.beta-ideas a.beta-ideas-button:hover{background:#2e86c1!important}
   function add(){
     var logo=document.querySelector("header.topmenu ul.main-menu > li.logo");
     if(!logo||logo.parentNode.querySelector("li.beta-issues"))return;
-    var ideas=button("beta-ideas","https://github.com/ngcfells/battletech-tools/discussions","We are the beta test: share an idea or suggestion on GitHub","Beta: Ideas/Suggestions");
+    var ideas=button("beta-ideas","https://github.com/ngcfells/battletech-tools/issues?q=is%3Aissue%20state%3Aopen%20label%3Aenhancement","We are the beta test: see the ideas and suggest one on GitHub","Beta: Ideas/Suggestions");
     var issues=button("beta-issues","https://github.com/NGCFells/battletech-tools/issues","We are the beta test: report a problem on GitHub","Beta: Report an Issue");
     logo.parentNode.insertBefore(ideas,logo);logo.parentNode.insertBefore(issues,ideas);
   }
