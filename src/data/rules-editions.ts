@@ -36,7 +36,8 @@ export const ALL_RULES_EDITION_UNIT_TYPES: RulesEditionUnitType[] = ["mech", "ve
  *
  * The core rulebooks replaced one another: the Core Rulebook's designer's notes (CRB p.247) give that line and
  * its years for 1987 to 2001 and date the Second Edition box set to 1985. The other years are the copyright
- * dates on the books' own credits pages. The Third Edition (1992) and Fourth Edition (1996) box sets were the
+ * dates on the books' own credits pages. No book in the library prints a release month, so the months are
+ * sarna.net's release dates (user ruling 2026-10-24; tools/book-editions-reviewed.tsv). The Third Edition (1992) and Fourth Edition (1996) box sets were the
  * introductory game sold beside the reference rulebook of the day (Master Rules, introduction: "The introductory
  * game in the BattleTech line is the BattleTech, Fourth Edition boxed set"), so each holds less than the
  * rulebook before it in this list. That is why an edition's contents come from each record's `editions` and
@@ -129,6 +130,7 @@ export const btRulesEditions: IRulesEdition[] = [
         noOmniMechs: true,
         name: "Battledroids",
         year: 1984,
+        month: 8,
         book: "BD",
         complete: true,
         // Heat Point Table, BD p.12; Movement Modifiers Table, BD p.5; Determining Critical Hits, BD p.18. The
@@ -170,6 +172,7 @@ export const btRulesEditions: IRulesEdition[] = [
         noOmniMechs: true,
         name: "BattleTech, Second Edition",
         year: 1985,
+        month: 6,
         book: "BT2",
         complete: true,
         ammoTonsFor: "launcher",
@@ -195,6 +198,7 @@ export const btRulesEditions: IRulesEdition[] = [
         noOmniMechs: true,
         name: "The BattleTech Manual",
         year: 1987,
+        month: 8,
         book: "BTM",
         complete: true,
         ammoTonsFor: "launcher",
@@ -225,6 +229,7 @@ export const btRulesEditions: IRulesEdition[] = [
         tag: "battletech-compendium",
         name: "The BattleTech Compendium",
         year: 1990,
+        month: 7,
         book: "BTC",
         complete: true,
         ammoTonsFor: "launcher",
@@ -284,6 +289,7 @@ export const btRulesEditions: IRulesEdition[] = [
         tag: "compendium-rules-of-warfare",
         name: "BattleTech Compendium: The Rules of Warfare",
         year: 1994,
+        month: 7,
         book: "BTC:RoW",
         complete: true,
         ammoTonsFor: "class",
@@ -458,6 +464,7 @@ export const btRulesEditions: IRulesEdition[] = [
         tag: "battlemech-manual",
         name: "BattleMech Manual",
         year: 2017,
+        month: 10,
         book: "BMM",
         unitTypes: ["mech"],
     },
@@ -467,6 +474,7 @@ export const btRulesEditions: IRulesEdition[] = [
         tag: "core-rulebook",
         name: "BattleTech Core Rulebook",
         year: 2026,
+        month: 7,
         book: "CRB",
         // 'Mechs, and buildings in its urban combat rules (CRB pp.130-137). Vehicles, infantry and aerospace units
         // are Battlefield Support Assets there (CRB p.140), not units built or played on their own.
@@ -722,15 +730,15 @@ export interface IRulesExpansion {
 
 export const btRulesExpansions: IRulesExpansion[] = [
     // CityTech (FASA 1608): "Copyright 1986". Buildings, vehicles with their design rules, and infantry.
-    { tag: "citytech", name: "CityTech", year: 1986, book: "CT", unitTypes: ["vehicle", "infantry", "building"] },
+    { tag: "citytech", name: "CityTech", year: 1986, month: 8, book: "CT", unitTypes: ["vehicle", "infantry", "building"] },
     // AeroTech (FASA 1609): "Copyright 1986". Aerospace fighters with their design rules, and DropShips.
-    { tag: "aerotech", name: "AeroTech", year: 1986, book: "AT", unitTypes: ["fighter", "small-craft"] },
+    { tag: "aerotech", name: "AeroTech", year: 1986, month: 8, book: "AT", unitTypes: ["fighter", "small-craft"] },
     // BattleTroops (FASA 1637): "Copyright © 1989". Infantry, with vehicles and buildings in its tactical game.
-    { tag: "battletroops", name: "BattleTroops", year: 1989, book: "BTr", unitTypes: ["infantry"] },
+    { tag: "battletroops", name: "BattleTroops", year: 1989, month: 8, book: "BTr", unitTypes: ["infantry"] },
     // ClanTroops (FASA 1664): "Copyright © 1991". Clan battle armor (Elementals), supplementing BattleTroops.
-    { tag: "clantroops", name: "ClanTroops", year: 1991, book: "CTr", unitTypes: ["battle-armor"] },
+    { tag: "clantroops", name: "ClanTroops", year: 1991, month: 12, book: "CTr", unitTypes: ["battle-armor"] },
     // CityTech, Second Edition (FASA 1608R): "Copyright © 1994".
-    { tag: "citytech-2nd-edition", name: "CityTech, Second Edition", year: 1994, book: "CT2", unitTypes: ["vehicle", "infantry", "building"] },
+    { tag: "citytech-2nd-edition", name: "CityTech, Second Edition", year: 1994, month: 12, book: "CT2", unitTypes: ["vehicle", "infantry", "building"] },
     // AeroTech 2 (FASA 1718): "Copyright © 2000". Aerospace and conventional fighters, Small Craft, DropShips.
     { tag: "aerotech-2", name: "AeroTech 2", year: 2000, book: "AT2", unitTypes: ["fighter", "small-craft"] },
     // AeroTech 2, Revised Edition (FanPro 35011): "© 2004 WizKids". Adds JumpShips and WarShips.

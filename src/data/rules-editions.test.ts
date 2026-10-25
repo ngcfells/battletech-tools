@@ -1587,6 +1587,16 @@ describe("the edition timeline (design 2026-10-24-catalog-consolidation, ruling 
         expect(getEditionAtPublication(1983, undefined, "mech")).toBeUndefined();
     });
 
+    it("reads the release month: a book out the month before an edition belongs to the one before it", () => {
+        // BattleMech Manual: 4 October 2017; CityTech: August 1986 (sarna.net, user ruling 2026-10-24).
+        expect(getEditionAtPublication(2017, 9, "mech")).toBe("total-warfare");
+        expect(getEditionAtPublication(2017, 10, "mech")).toBe("battlemech-manual");
+        expect(getEditionAtPublication(1986, 7, "vehicle")).toBeUndefined();
+        expect(getEditionAtPublication(1986, 8, "vehicle")).toBe("citytech");
+        // A book with only a year counts from January.
+        expect(getEditionAtPublication(2017, undefined, "mech")).toBe("total-warfare");
+    });
+
     it("makes a record dropped after an expansion apocryphal in the later editions", () => {
         const record = { editions: ["citytech"] };
         expect(getRecordOfferIssue(record, "total-warfare", 5)).toBeNull();
