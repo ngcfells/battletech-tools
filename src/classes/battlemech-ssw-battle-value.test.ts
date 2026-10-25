@@ -178,10 +178,11 @@ describe("SSW Battle Value (#46)", () => {
         expect(mech.sswImportErrors).toContain("Cannot mount a Torso-Mounted Cockpit on an IndustrialMech (TM p.69)");
     });
 
-    it("imports an arm AES, x 1.25 for the arm's weapons and +10% tonnage (TO:AUE p.192), and reports the turret: Dig Lord RCL-Z1", () => {
+    it("imports an arm AES, x 1.25 for the arm's weapons and +10% tonnage (TO:AUE p.192), and the shoulder turret: Dig Lord RCL-Z1", () => {
         const mech = importFixture("dig-lord-rcl-z1");
         expect(mech.getInstalledEquipment().find((item) => item.tag === "aes-arm")?.location).toBe("ra");
-        expect(mech.sswImportErrors.some((error) => error.includes("left torso turret"))).toBe(true);
+        expect(mech.getInstalledEquipment().find((item) => item.tag === "mech-turret-shoulder")?.location).toBe("lt");
+        expect(mech.getCurrentTonnage()).toBe(65);
         expect(mech.getBattleValue()).toBe(681);
     });
 

@@ -156,6 +156,8 @@ interface IBMEquipmentExport {
     omniFixed?: boolean | undefined;
     /** An armored component (TO:AUE p.94). */
     armored?: boolean | undefined;
+    /** Mounted in a BattleMech Turret (TO:AUE p.159). */
+    turret?: boolean | undefined;
 }
 
 /** One OmniMech configuration (Prime, A, B...): its pod-mounted items and their critical slots. */
@@ -1307,10 +1309,17 @@ export class BattleMech {
 
         // Rear-firing torso, leg and head weapons count half; when they are worth more than the
         // forward-firing weapons in those locations, the forward-firing ones are halved instead (TM p.303).
-        const isRearDominant = this.getTotalBVFrontWeapons() < this.getTotalBVRearWeapons();
+        // Turret-mounted items count in the front arc when the forward non-turret weapons are worth more than the
+        // rear ones, otherwise in the rear (TO:AUE p.194), and then weigh in that arc.
+        const frontBV = this.getTotalBVFrontWeapons();
+        const rearBV = this.getTotalBVRearWeapons();
+        const turretRear = !(frontBV > rearBV);
+        const turretBV = this._totalTorsoHeadLegWeaponBV("turret");
+        const isRearDominant = frontBV + (turretRear ? 0 : turretBV) < rearBV + (turretRear ? turretBV : 0);
+        const firesRear = (item: IEquipmentItem): boolean => this.isTurretMounted(item) ? turretRear : !!item.rear;
         const arcMultiplier = (item: IEquipmentItem): number => {
             if (this.isNotOnTorsoHeadOrLegs(this._firingArcLocation(item))) return 1;
-            return !!item.rear === isRearDominant ? 1 : 0.5;
+            return firesRear(item) === isRearDominant ? 1 : 0.5;
         };
         // The heat steps take the weapon with the highest Modified BV first and, between equals, the one
         // that generates the least heat (TM p.303). A copy is sorted: the installed list keeps its order.
@@ -1331,8 +1340,8 @@ export class BattleMech {
             const waiveRearPenalty = isRearDominant || isFlexibleLimb;
 
             const logName = this._escapeLogText(currentItem.name);
-            const logLoc = this._escapeLogText(currentItem.location || "no location");
-            if (currentItem.rear) {
+            const logLoc = this._escapeLogText((currentItem.location || "no location") + (this.isTurretMounted(currentItem) ? ", turret" : ""));
+            if (firesRear(currentItem)) {
                 if (waiveRearPenalty) {
                     this._calcLogBV += `+ Adding Rear Weapon ${logName} (${logLoc}) - Base BV: ${baseBV} (Rear penalty waived), Heat: ${weaponHeat}<br />`;
                 } else {
@@ -3274,6 +3283,8 @@ export class BattleMech {
 
             if( currentItem.rear)
                 item_location += " (R)"
+            else if( this.isTurretMounted(currentItem) )
+                item_location += " (T)"
 
             if( currentItem.isAmmo && this.getAmmoBinCapacity(currentItem) > 0) {
                 html += "" + (currentItem.name + " " + this.getAmmoBinCapacity(currentItem)).padEnd(col1Padding, " " ) + "" + item_location.toUpperCase().toString().padEnd(col2Padding, " " ) + "" + this.getCriticalSlots(currentItem.space.battlemech).toString().padEnd(col3Padding, " " ) + "" + currentItem.weight.toString().padEnd(col4Padding, " " ) + "\n";
@@ -3485,6 +3496,8 @@ export class BattleMech {
 
             if( currentItem.rear)
                 item_location += " (R)"
+            else if( this.isTurretMounted(currentItem) )
+                item_location += " (T)"
 
             const eqName = esc(currentItem.name);
             const eqLocAbbr = esc(item_location.toUpperCase());
@@ -3789,9 +3802,9 @@ export class BattleMech {
         this._calcVariableEquipment();
         mateLaserInsulators(this._equipmentList);
         for( let countEQ = 0; countEQ < this._equipmentList.length; countEQ++) {
-            if( this._equipmentList[countEQ].rear) {
+            if( this._equipmentList[countEQ].rear || this.isTurretMounted(this._equipmentList[countEQ]) ) {
                 this._weights.push({
-                    name: this._equipmentList[countEQ].name + " (rear)",
+                    name: this._equipmentList[countEQ].name + (this._equipmentList[countEQ].rear ? " (rear)" : " (turret)"),
                     weight: this._equipmentList[countEQ].weight
                 });
             } else {
@@ -4479,6 +4492,8 @@ export class BattleMech {
             if( this._equipmentList[elc].rear) {
                 rearTag = " (rear)";
                 isRear = true;
+            } else if( this.isTurretMounted(this._equipmentList[elc]) ) {
+                rearTag = " (turret)";
             }
 
 
@@ -7198,6 +7213,46 @@ export class BattleMech {
     }
 
     /**
+     * The BattleMech Turret that can carry an item (TO:AUE p.158): a shoulder or quad turret carries items in its own
+     * side torso, a head turret (its slot in the center torso) the head's. Ammunition and heat sinks ride along
+     * uncounted, so they are not marked.
+     */
+    public getTurretFor(item: IEquipmentItem): IEquipmentItem | undefined {
+        if (!this.canTurretEquipment(item)) return undefined;
+        const location = item.location === "un" ? item.allocationLocation : item.location;
+        return this._equipmentList.find(turret => turret?.variableFormula === "mech-turret" && (location === "hd"
+            ? turret.tag === "mech-turret-head"
+            : turret.tag !== "mech-turret-head" && (turret.location === "un" ? turret.allocationLocation : turret.location) === location));
+    }
+
+    /** Can this item be marked turret-mounted? Not ammunition, heat sinks or a turret itself. */
+    public canTurretEquipment(item: IEquipmentItem): boolean {
+        return item.variableFormula !== "mech-turret" && !item.isAmmo && !item.tag.startsWith("ammo-") && !item.tag.includes("heat-sink");
+    }
+
+    /** Is this item marked turret-mounted, with a turret in place to carry it? */
+    public isTurretMounted(item: IEquipmentItem): boolean {
+        return !!item.turret && !!this.getTurretFor(item);
+    }
+
+    /** Marks an item turret-mounted (no longer rear-firing), or not; it is carried once placed in a turret's location. */
+    public setEquipmentTurret(itemUUID: string | undefined, turret: boolean): IEquipmentItem | null {
+        const item = this._equipmentList.find(eq => eq?.uuid === itemUUID);
+        if (!item) return null;
+        item.turret = turret && this.canTurretEquipment(item) ? true : undefined;
+        if (item.turret && item.rear) this.setRear(itemUUID, false);
+        this._calc();
+        return item;
+    }
+
+    /** Tons a turret carries: its items' weights, not counting ammunition and heat sinks (TO:AUE p.158). */
+    private _getTurretCarriedWeight(turret: IEquipmentItem): number {
+        return this._equipmentList
+            .filter(item => item?.turret && this.getTurretFor(item) === turret)
+            .reduce((sum, item) => sum + (item.weight || 0), 0);
+    }
+
+    /**
      * Every armored critical record, placed or not: its location ("un" when unplaced), first slot, slot count
      * and the item it belongs to (null for chassis systems, heat sinks and jump jets).
      */
@@ -7384,6 +7439,9 @@ export class BattleMech {
             }
             if (this.isSuperheavy() && BattleMech.SUPERHEAVY_PROHIBITED_TAGS.includes(item.tag.toLowerCase())) {
                 violations.push(`${item.name} cannot be mounted on a superheavy 'Mech.`);
+            }
+            if (item.tag === "mech-turret-head" && !this._torsoMountedCockpit) {
+                violations.push(`${item.name} needs a Torso-Mounted Cockpit (TO:AUE p.158).`);
             }
             if (!this.isSuperheavy() && BattleMech.SUPERHEAVY_ONLY_TAGS.includes(item.tag.toLowerCase())) {
                 violations.push(`${item.name} can only be mounted on a superheavy 'Mech.`);
@@ -8222,6 +8280,7 @@ export class BattleMech {
             size: item.size,
             omniFixed: item.omniFixed || undefined,
             armored: item.armored || undefined,
+            turret: item.turret || undefined,
         };
         if( !noInPlayVariables ) {
             exported.target = item.target;
@@ -8275,6 +8334,9 @@ export class BattleMech {
         }
         if (restoredEquipment && importItem.armored) {
             restoredEquipment.armored = true;
+        }
+        if (restoredEquipment && importItem.turret) {
+            restoredEquipment.turret = true;
         }
         if (restoredEquipment && importItem.feedsWeaponTag) {
             restoredEquipment.feedsWeaponTag = importItem.feedsWeaponTag;
@@ -9465,6 +9527,7 @@ export class BattleMech {
                 if( item.uuid && item.uuid === itemUUID) {
 
                     item.rear = newValue;
+                    if( newValue ) item.turret = undefined;
 
                     for( let critAllItem of this._criticalAllocationTable ) {
                         if( critAllItem.obj && critAllItem.uuid === itemUUID ) {
@@ -10001,7 +10064,8 @@ export class BattleMech {
         for( let eqC = 0; eqC < this._equipmentList.length; eqC++) {
             const formula = this._equipmentList[ eqC ]?.variableFormula;
             if( formula ) {
-                const size = sizeVariableEquipment(formula, { ...context, size: this._equipmentList[ eqC ].size });
+                const turretWeight = formula === "mech-turret" ? this._getTurretCarriedWeight(this._equipmentList[ eqC ]) : undefined;
+                const size = sizeVariableEquipment(formula, { ...context, size: this._equipmentList[ eqC ].size, turretWeight });
                 if( size ) {
                     const currentItem = this._equipmentList[ eqC ];
                     currentItem.weight = size.weight;
@@ -12551,9 +12615,21 @@ export class BattleMech {
                 this._sswImportErrors.push( "Cannot import the Mechanical Jump Boosters" );
             }
         }
-        // 'Mech turrets are not modeled yet: the "(T)" items are installed unturreted, without the turret's slot and weight.
+        // <turret type="left torso|right torso|head" index>: the turret mechanism's slot; a head turret's is in the
+        // center torso (TO:AUE p.158). A side-torso turret is a shoulder turret on a biped and a quad turret on a quad.
         for( const turret of ( [] as any[] ).concat( baseloadout?.turret ?? [] ) ) {
-            this._sswImportErrors.push( "Cannot import the " + String( turret?.["@_type"] ?? "" ) + " turret yet (TO:AUE pp.158-159); its weapons are mounted without it" );
+            const type = String( turret?.["@_type"] ?? "" ).toLowerCase().trim();
+            const location = type === "head" ? "ct" : type === "left torso" ? "lt" : type === "right torso" ? "rt" : "";
+            const item = location ? add( type === "head" ? "mech-turret-head" : this.isQuad() || this.isQuadVee() ? "mech-turret-quad" : "mech-turret-shoulder" ) : null;
+            if( !item ) {
+                this._sswImportErrors.push( "Cannot import the " + type + " turret" );
+                continue;
+            }
+            this._calcCriticals();
+            const piece = this._unallocatedCriticals.findIndex( ( record ) => record && record.uuid === item.uuid );
+            if( piece < 0 || !this.moveCritical( "un", piece, location, Number( turret?.["@_index"] ) ) ) {
+                this._sswImportErrors.push( "Cannot place the " + item.name + " in the " + location );
+            }
         }
         // Actuator Enhancement Systems (TO:AUE p.91): <arm_aes location index> per arm, <leg_aes> with a location per leg (#46).
         const clan = this._tech.tag === "clan" || this._tech.tag === "mclan";
@@ -12659,10 +12735,11 @@ export class BattleMech {
             if( String( itemName ).trim() === "ECM Suite" ) listTag = "clan";
         }
 
-        // "(T) " marks a turret mount; 'Mech turrets are not modeled yet, so the item is installed unturreted
-        // (the turret itself is reported by _installSSWLocatedSystems).
+        // "(T) " marks a turret mount (the turret itself comes from _installSSWLocatedSystems).
+        let turret = false;
         if( itemName.startsWith("(T) ") ) {
             itemName = itemName.slice( 4 );
+            turret = true;
         }
 
         if( itemName.indexOf("(R) ") > -1 ) {
@@ -12768,6 +12845,7 @@ export class BattleMech {
                 newItem.allocationLocation = location;
                 newItem.location = "un";
                 newItem.rear = rear;
+                if( turret ) newItem.turret = true;
                 newItem.split_location = [];
                 if( newItem.isAmmo && sswAmmoWeapon ) {
                     // Drop trailing qualifiers ("MML-5 (LRM)" -> "MML-5") until the name finds a weapon that fires the bin.
@@ -13399,14 +13477,15 @@ export class BattleMech {
     }
 
     /**
-     * Unmodified BV of the torso-, leg- and head-mounted weapons firing forward or to the rear (TM p.303), each
+     * Unmodified BV of the torso-, leg- and head-mounted weapons firing forward or to the rear (TM p.303), or in a turret, each
      * in its firing arc location: no fire control, targeting computer or other modifier.
      */
-    private _totalTorsoHeadLegWeaponBV(rear: boolean): number {
+    private _totalTorsoHeadLegWeaponBV(arc: boolean | "turret"): number {
         const catalog = () => getEquipmentCatalogDefinitions().flatMap(definition => definition.equipment);
         let rv = 0;
         for( const eq of this._equipmentList ) {
-            if( !!eq.rear !== rear || this.isNotOnTorsoHeadOrLegs(this._firingArcLocation(eq)) ) continue;
+            const inArc = arc === "turret" ? this.isTurretMounted(eq) : !!eq.rear === arc && !this.isTurretMounted(eq);
+            if( !inArc || this.isNotOnTorsoHeadOrLegs(this._firingArcLocation(eq)) ) continue;
             if( eq.isAmmo || this._isDefensiveBVEquipment(eq) ) continue;
             rv += getLauncherBattleValueWithoutFireControl(eq, catalog, this._tech.tag);
         }

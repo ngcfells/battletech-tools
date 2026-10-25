@@ -201,6 +201,8 @@ export const OMNI_FIXED_ONLY_TAGS: readonly string[] = [
     "tracks",
     "environmental-sealing",
     "clan-harjel-ii", "clan-harjel-iii",
+    // BattleMech Turrets "may not be pod-mounted" (TO:AUE p.87).
+    "mech-turret-shoulder", "mech-turret-head", "mech-turret-quad",
 ];
 
 /** Artemis fire control, which the catalog holds as launcher records with a tag suffix: the suffix and its BV multiplier. */

@@ -30,3 +30,24 @@ test("imports two .ssw files, saves one with its placeholder, and it survives a 
     await expect(page.getByText("Widget Cannon").first()).toBeVisible();
     expect(errors).toEqual([]);
 });
+
+test("an SSW 'Mech with a head turret keeps it: the Quickdraw QKD-8X's PPC is marked in the turret (#88)", async ({ page }) => {
+    const errors: string[] = [];
+    page.on("pageerror", (error) => errors.push(error.message));
+
+    await page.goto("classic-battletech/mech-creator/ssw-file-import");
+    await page.getByLabel("Choose .ssw files").setInputFiles([path.join(__dirname, "fixtures/quickdraw-qkd-8x.ssw")]);
+    await page.getByRole("button", { name: "Save selected to my 'Mechs" }).click();
+    await expect(page.getByText("1 design added")).toBeVisible();
+
+    await page.goto("classic-battletech/mech-creator");
+    await page.getByRole("row", { name: /Quickdraw/ }).getByTitle(/Click here to load/).click();
+    await page.goto("classic-battletech/mech-creator/step5");
+    await expect(page.getByRole("columnheader", { name: "Turret" })).toBeVisible();
+    // The checkbox is an icon: green when ticked.
+    const turret = page.getByRole("row", { name: /^PPC/ }).first().getByTestId("turret-mount");
+    await expect(turret.locator(".color-green")).toBeVisible();
+    await turret.getByTitle("Click here to toggle this value").click();
+    await expect(turret.locator(".color-black")).toBeVisible();
+    expect(errors).toEqual([]);
+});

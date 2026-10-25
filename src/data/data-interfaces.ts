@@ -470,6 +470,8 @@ export interface IEquipmentItem extends ICatalogStanding {
     omniFixed?: boolean;
     /** An armored component: each slot ignores its first critical hit (TO:AUE p.95). */
     armored?: boolean;
+    /** On a 'Mech: mounted in its location's BattleMech Turret (TO:AUE p.159). */
+    turret?: boolean;
     /** 'Mech chassis types (mech-type tags) this item may be mounted on, e.g. ["lam"]; unset = any. */
     chassisTypes?: string[];
     /**

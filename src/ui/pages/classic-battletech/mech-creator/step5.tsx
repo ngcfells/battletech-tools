@@ -78,6 +78,13 @@ export default class MechCreatorStep5 extends React.Component<IHomeProps, IHomeS
       }
     }
 
+    setTurret = ( itemUUID: string | undefined, turret: boolean ): void => {
+      if( this.props.appGlobals.currentBattleMech ) {
+        this.props.appGlobals.currentBattleMech.setEquipmentTurret( itemUUID, turret );
+        this.props.appGlobals.saveCurrentBattleMech( this.props.appGlobals.currentBattleMech );
+      }
+    }
+
     setComponentArmored = ( componentKey: string, armored: boolean ): void => {
       if( this.props.appGlobals.currentBattleMech ) {
         this.props.appGlobals.currentBattleMech.setComponentArmored( componentKey, armored );
@@ -218,6 +225,8 @@ export default class MechCreatorStep5 extends React.Component<IHomeProps, IHomeS
       const includeCustom = shownLevel >= CUSTOM_HOMEBREW_RULES_LEVEL;
       // Armored components are Experimental (TO:AUE p.95); a design that has them always shows them.
       // Superheavy 'Mechs may not use them (IO:AE p.156).
+      // A 'Mech with a BattleMech Turret marks what it carries (TO:AUE p.158).
+      const showTurret = currentMech.getInstalledEquipment().some((item) => item?.variableFormula === "mech-turret");
       const showArmored = !currentMech.isSuperheavy() && (shownLevel >= EXPERIMENTAL_RULES_LEVEL || currentMech.hasArmoredComponents());
       return (
         <>
@@ -416,6 +425,7 @@ export default class MechCreatorStep5 extends React.Component<IHomeProps, IHomeS
                                     {/* <th>Sort</th> */}
                                     <th>Weight</th>
                                     <th>Rear</th>
+                                    {showTurret ? <th>Turret</th> : null}
                                     {this.props.appGlobals.currentBattleMech.isOmnimech ? <th>Fixed</th> : null}
                                     {showArmored ? <th>Armored</th> : null}
                                     <th><span className="visually-hidden">Actions</span></th>
@@ -480,6 +490,20 @@ export default class MechCreatorStep5 extends React.Component<IHomeProps, IHomeS
                                           onChange={( event: React.FormEvent<HTMLInputElement>) => this.setRear( item.uuid, event.currentTarget.checked)}
                                         />
                                       </td>
+                                      {showTurret ? (
+                                        <td data-testid="turret-mount">
+                                          {currentMech.canTurretEquipment(item) ? (
+                                            <InputCheckbox
+                                              label=""
+                                              checked={!!item.turret}
+                                              onChange={( event: React.FormEvent<HTMLInputElement>) => this.setTurret( item.uuid, event.currentTarget.checked)}
+                                            />
+                                          ) : null}
+                                          {item.turret && !currentMech.isTurretMounted(item) ? (
+                                            <div className="smaller-text">Place it in a turret's location</div>
+                                          ) : null}
+                                        </td>
+                                      ) : null}
                                       {this.props.appGlobals.currentBattleMech?.isOmnimech ? (
                                         <td>
                                           <InputCheckbox

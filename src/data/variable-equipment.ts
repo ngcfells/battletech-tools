@@ -44,7 +44,8 @@ export type VariableEquipmentFormula =
     | "ram-plate"
     | "naval-c3"
     | "naval-tug-adaptor"
-    | "light-sail";
+    | "light-sail"
+    | "mech-turret";
 
 export interface IVariableEquipmentContext {
     /** Unit tonnage. */
@@ -63,6 +64,8 @@ export interface IVariableEquipmentContext {
     size?: number;
     /** Drones a Drone Carrier Control System controls (TO:AUE p.117). */
     drones?: number;
+    /** Tons of weapons and equipment in a BattleMech Turret, not counting ammunition and heat sinks (TO:AUE p.158). */
+    turretWeight?: number;
 }
 
 /** Weight class index: 1 light (<= 35 t), 2 medium (<= 55), 3 heavy (<= 75), 4 assault and heavier. */
@@ -240,6 +243,11 @@ export function sizeVariableEquipment(
         case "light-sail": {
             const weight = t < 5 ? Math.ceil(t * 100 - 1e-9) / 1000 : Math.ceil(t / 10 - 1e-9);
             return { weight, slots: 1, cbills: Math.round(100000 * weight), battleValue: 0 };
+        }
+        // TO:AUE p.158: 10 percent of what the turret carries, half ton; one slot. 10,000 C-bills a ton, as MegaMek has it.
+        case "mech-turret": {
+            const weight = ctx.turretWeight ? roundUpHalfTon(ctx.turretWeight / 10) : 0;
+            return { weight, slots: 1, cbills: weight * 10000, battleValue: 0 };
         }
         // TO:AUE p.91: one per limb; tonnage / 35 (biped) or / 50 (quad), half ton; slots by weight class.
         case "aes-arm":

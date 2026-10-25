@@ -204,6 +204,8 @@ export default class RecordSheetEquipmentTable extends React.Component<IRecordSh
             rearDesignation = "";
             if(  this.props.mechData.equipmentList[ eq_count].rear )
                 rearDesignation = " [R]"
+            else if( this.props.mechData.isTurretMounted( this.props.mechData.equipmentList[ eq_count] ) )
+                rearDesignation = " [T]"
 
             if( ammoPerTon && isAmmo )
                 equipmentList.push( <text className={this.props.inPlay ? "cursor-pointer": ""} onClick={this.openSetTargetDialog} key={ eq_count.toString() + "c"} x={wacCol2 } y={weapAndEqpTop + 120 + eqLineHeight * row } textAnchor="start" fontFamily="sans-serif" fill={strokeColor} style={{fontWeight: 100}} fontSize={30}>{this.props.mechData.equipmentList[eq_count].name + rearDesignation} {currentAmmo}/{ammoPerTon} </text> );
