@@ -1713,7 +1713,7 @@ describe("VTOLAM", () => {
         expect(lam.getRequiredRulesLevel()).toBe(CUSTOM_HOMEBREW_RULES_LEVEL);
         expect(lam.isBattleValueProvisional()).toBe(true);
         lam.setTonnage(35);
-        expect(lam.getChassisEquipmentViolations()).toContain("VTOLAMs weigh at most 30 tons, the VTOL limit.");
+        expect(lam.getChassisEquipmentViolations()).toContain("VTOLAMs weigh at most 30 tons under these rules.");
     });
 
     it("takes 20% conversion weight, needs no jump jets or fuel, and allows any fusion engine and gyro", () => {
@@ -1741,16 +1741,72 @@ describe("VTOLAM", () => {
         expect([lam.getVTOLAMCruiseMP(), lam.getVTOLAMFlankMP()]).toEqual([13, 20]);
     });
 
-    it("loads the Locust VTOLAM sample as built, credited to its author", () => {
+    it("loads every sample as built, credited to its author", () => {
         expect(getVTOLAMSamples(CUSTOM_HOMEBREW_RULES_LEVEL - 1)).toEqual([]);
-        const [sample] = getVTOLAMSamples(CUSTOM_HOMEBREW_RULES_LEVEL);
-        const locust = new BattleMech(JSON.stringify(sample.save));
-        expect(locust.isVTOLAM()).toBe(true);
-        expect(locust.getCurrentTonnage()).toBe(25);
+        const samples = getVTOLAMSamples(CUSTOM_HOMEBREW_RULES_LEVEL);
+        expect(samples).toHaveLength(8);
+        for (const sample of samples) {
+            const mech = new BattleMech(JSON.stringify(sample.save));
+            expect(mech.isVTOLAM()).toBe(true);
+            expect(mech.getCurrentTonnage()).toBe(mech.getTonnage());
+            expect(mech.getChassisEquipmentViolations()).toEqual([]);
+            expect(mech.unallocatedCriticals.filter(Boolean)).toEqual([]);
+            expect(JSON.stringify(sample.save)).toMatch(mech.getLAMType() === "vtolam" ? /BishopSteiner/ : /professorheyteen/);
+        }
+        const locust = new BattleMech(JSON.stringify(samples[0].save));
         expect([locust.getWalkSpeed(), locust.getRunSpeed()]).toEqual([8, 12]);
-        expect(locust.getChassisEquipmentViolations()).toEqual([]);
-        expect(locust.unallocatedCriticals.filter(Boolean)).toEqual([]);
-        expect(JSON.stringify(sample.save)).toContain("BishopSteiner");
+    });
+});
+
+// professorheyteen's VTOLAM (Battletech Into The Future, battletechfuture.com/2024/05/28/the-vtolam/).
+describe("Battletech Into The Future VTOLAM", () => {
+    const makeVTOLAM = (tonnage = 25) => {
+        const lam = new BattleMech();
+        lam.setEra("ilClan");
+        lam.setType("lam");
+        lam.setTonnage(tonnage);
+        lam.setLAMType("vtolam-btitf");
+        lam.setWalkSpeed(6);
+        return lam;
+    };
+
+    it("takes 10% conversion to the half ton, up to 35 tons, and no OmniMech", () => {
+        expect(makeVTOLAM(40).getTonnage()).toBe(35);
+        const lam = makeVTOLAM();
+        expect(lam.getWeightBreakdown().find(entry => /Conversion/.test(entry.name))).toEqual({ name: "VTOLAM Conversion Equipment", weight: 2.5 });
+        expect(lam.canBeOmniMech(CUSTOM_HOMEBREW_RULES_LEVEL)).toBe(false);
+        expect(lam.getRequiredRulesLevel()).toBe(CUSTOM_HOMEBREW_RULES_LEVEL);
+        expect(lam.getLAMFuelPoints()).toBe(0);
+    });
+
+    it("puts rotor equipment in the side torsos and conversion equipment in the legs, with no avionics or landing gear", () => {
+        const lam = makeVTOLAM();
+        const count = (key: "head" | "leftTorso" | "rightTorso" | "leftLeg" | "rightLeg" | "centerTorso", tag: string) => lam.getCriticals()[key].filter(slot => slot?.tag === tag).length;
+        expect([count("leftTorso", "lam-rotor"), count("rightTorso", "lam-rotor"), count("leftLeg", "lam-conversion"), count("rightLeg", "lam-conversion")]).toEqual([1, 1, 1, 1]);
+        expect(count("head", "lam-avionics") + count("centerTorso", "lam-landing-gear")).toBe(0);
+    });
+
+    it("flies on its Jump MP and may use any BattleMech equipment", () => {
+        const lam = makeVTOLAM();
+        expect(lam.setJumpSpeed(0)).toBe(1);
+        lam.setJumpSpeed(6);
+        expect([lam.getVTOLAMCruiseMP(), lam.getVTOLAMFlankMP()]).toEqual([6, 9]);
+        lam.setEngineType("light");
+        lam.setInternalStructureType("endo-steel");
+        lam.removeLowerArmActuator("la");
+        expect(lam.getEngineType().tag).toBe("light");
+        expect(lam.getInternalStructureType()).toBe("endo-steel");
+        expect(lam.hasLowerArmActuator("la")).toBe(false);
+    });
+
+    it("matches the published Battle Values", () => {
+        const published: Record<string, number> = {
+            "locust-vtolam-hh": 751, "locust-vtolam-lcaf": 643, "firefly-vtolam": 984, "icestorm-vtolam": 909,
+            "flea-vtolam": 592, "spider-vtolam": 898, "valkyrie-vtolam": 989,
+        };
+        for (const sample of getVTOLAMSamples(CUSTOM_HOMEBREW_RULES_LEVEL).filter(entry => entry.id in published)) {
+            expect([sample.id, new BattleMech(JSON.stringify(sample.save)).getBattleValue()]).toEqual([sample.id, published[sample.id]]);
+        }
     });
 });
 

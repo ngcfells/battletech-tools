@@ -189,8 +189,9 @@ export default class MechCreatorStep1 extends React.Component<IHomeProps, IHomeS
       }
       const { min, max } = getTonnageBoundsForMechType( currentMech.getType().tag, rulesLevel, currentMech.getTech().tag, currentMech.getRulesEdition() );
       const tonnage = currentMech.getTonnage();
-      if( currentMech.isVTOLAM() && tonnage > BattleMech.VTOLAM_MAX_TONNAGE ) {
-        currentMech.setTonnage( BattleMech.VTOLAM_MAX_TONNAGE );
+      const lamMax = currentMech.getLAMMaxTonnage();
+      if( lamMax !== null && tonnage > lamMax ) {
+        currentMech.setTonnage( lamMax );
       } else if( tonnage < min ) {
         currentMech.setTonnage( min );
       } else if( tonnage > max ) {
@@ -400,18 +401,17 @@ export default class MechCreatorStep1 extends React.Component<IHomeProps, IHomeS
                                 <option value="standard">Standard (Mech / AirMech / Fighter)</option>
                                 <option value="bimodal">Bimodal (Mech / Fighter)</option>
                                 {this.props.appGlobals.appSettings.mechRulesFilter >= CUSTOM_HOMEBREW_RULES_LEVEL || this.props.appGlobals.currentBattleMech.isVTOLAM() ? (
-                                  <option value="vtolam">VTOLAM (Mech / VTOL; Custom Homebrew)</option>
+                                  <>
+                                    <option value="vtolam">VTOLAM, BishopSteiner rules (Mech / VTOL; Custom Homebrew)</option>
+                                    <option value="vtolam-btitf">VTOLAM, Battletech Into The Future rules (Mech / VTOL; Custom Homebrew)</option>
+                                  </>
                                 ) : null}
                               </select>
                             </label>
                           ) : null}
                           {this.props.appGlobals.currentBattleMech.isVTOLAM() ? (
                             <p className="smaller-text" data-testid="vtolam-notes">
-                              VTOLAM (Custom Homebrew; fan rules by BishopSteiner on DeviantArt): a Bimodal LAM whose second mode is a VTOL.
-                              Conversion equipment is 20% of tonnage, at most {BattleMech.VTOLAM_MAX_TONNAGE} tons, no jump jets required,
-                              any fusion engine and any gyro, no fuel, and landing skids in each side torso. In 'Mech mode the rotor
-                              armor is the rear center torso: 2 points of damage there destroy the rotors, and the unit can no longer
-                              convert. VTOL mode moves as a VTOL, Cruise / Flank {this.props.appGlobals.currentBattleMech.getVTOLAMCruiseMP()} / {this.props.appGlobals.currentBattleMech.getVTOLAMFlankMP()}.
+                              {this.props.appGlobals.currentBattleMech.getLAMTypeNotes()} VTOL mode Cruise / Flank MP: {this.props.appGlobals.currentBattleMech.getVTOLAMCruiseMP()} / {this.props.appGlobals.currentBattleMech.getVTOLAMFlankMP()}.
                             </p>
                           ) : null}
                           {getVTOLAMSamples( this.props.appGlobals.appSettings.mechRulesFilter ).length > 0 ? (
@@ -526,7 +526,7 @@ export default class MechCreatorStep1 extends React.Component<IHomeProps, IHomeS
                               this.props.appGlobals.appSettings.mechRulesFilter,
                               this.props.appGlobals.currentBattleMech.getTech().tag,
                               this.props.appGlobals.currentBattleMech.getRulesEdition()
-                            ).filter( (option) => !this.props.appGlobals.currentBattleMech?.isVTOLAM() || option.tons <= BattleMech.VTOLAM_MAX_TONNAGE ).map( (option) => {
+                            ).filter( (option) => option.tons <= ( this.props.appGlobals.currentBattleMech?.getLAMMaxTonnage() ?? Infinity ) ).map( (option) => {
                               return (
                                 <option key={option.tons} value={option.tons}>{option.tons} ({option.type})</option>
                               )

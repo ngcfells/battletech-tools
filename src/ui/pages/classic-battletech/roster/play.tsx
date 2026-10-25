@@ -1893,7 +1893,7 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
               <button className={this.state.setMovementDialog.getTransformationMode() === "vehicle" ? "btn btn-primary" : "btn"} onClick={() => this.state.setMovementDialog?.setTransformationMode("vehicle")}>Vehicle</button>
             </>
           )}
-          {this.state.setMovementDialog.isVTOLAM() ? <div className="small-text">VTOL Cruise / Flank MP: {this.state.setMovementDialog.getVTOLAMCruiseMP()} / {this.state.setMovementDialog.getVTOLAMFlankMP()}. Two points of damage to the rear center torso (the rotor) end conversion.</div> : null}
+          {this.state.setMovementDialog.isVTOLAM() ? <div className="small-text">VTOL Cruise / Flank MP: {this.state.setMovementDialog.getVTOLAMCruiseMP()} / {this.state.setMovementDialog.getVTOLAMFlankMP()}. {this.state.setMovementDialog.getLAMTypeNotes()}</div> : null}
           {this.state.setMovementDialog.isQuadVee() ? <div className="small-text">Motive: {this.state.setMovementDialog.getQuadVeeMotive()} Vehicle Cruise MP: {this.state.setMovementDialog.getQuadVeeVehicleCruiseMP()}</div> : null}
         </>
       ) : null}

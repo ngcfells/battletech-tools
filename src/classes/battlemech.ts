@@ -180,8 +180,40 @@ export interface IFrankenMechDonor {
 
 /** Jump jets a FrankenMech kept from a lighter 'Mech, named by the weight class they were built for (TM p.51). */
 export type FrankenMechJumpJetClass = "light" | "medium" | "heavy";
-/** Standard, Bimodal (IO:AE p.100), or the Custom Homebrew VTOLAM (a Bimodal LAM with a VTOL mode). */
-export type LAMType = "standard" | "bimodal" | "vtolam";
+/** Standard, Bimodal (IO:AE p.100), or a Custom Homebrew VTOLAM, a LAM whose second mode is a VTOL, under one of two fan rule sets. */
+export type LAMType = "standard" | "bimodal" | "vtolam" | "vtolam-btitf";
+
+interface ILAMTypeRules {
+    name: string;
+    /** Conversion equipment: share of tonnage, rounded up to the ton (or the half ton). */
+    conversion: number;
+    halfTon?: boolean;
+    costRate: number;
+    modes: string[];
+    minJumpMP: number;
+    maxTonnage?: number;
+    /** The VTOL-mode Cruise MP: the VTOL engine formula, or the 'Mech's Jump MP. */
+    vtolCruise?: "engine" | "jump";
+    /** The IO:AE p.108 LAM limits on engines, armor, structure, actuators and equipment. */
+    lamLimits: boolean;
+    notes?: string;
+}
+
+export const LAM_TYPE_RULES: Record<LAMType, ILAMTypeRules> = {
+    // Conversion weight: 10%, Bimodal 15% (IO:AE p.108); cost: x0.75, Bimodal x0.65 (IO, as implemented by MegaMek).
+    standard: { name: "LAM", conversion: 0.1, costRate: 0.75, modes: ["mech", "airmech", "aerospace"], minJumpMP: 3, lamLimits: true },
+    bimodal: { name: "Bimodal LAM", conversion: 0.15, costRate: 0.65, modes: ["mech", "aerospace"], minJumpMP: 3, lamLimits: true },
+    // BishopSteiner's VTOLAM, "a form of Bimodal LAM" (deviantart.com/bishopsteiner/art/LOCUST-VTOLAM-concept-899660337).
+    vtolam: {
+        name: "VTOLAM", conversion: 0.2, costRate: 0.65, modes: ["mech", "vehicle"], minJumpMP: 0, maxTonnage: 30, vtolCruise: "engine", lamLimits: true,
+        notes: "VTOLAM (Custom Homebrew; fan rules by BishopSteiner on DeviantArt): a Bimodal LAM whose second mode is a VTOL. Conversion equipment is 20% of tonnage, at most 30 tons, no jump jets required, any fusion engine and any gyro, no fuel, and landing skids in each side torso. In 'Mech mode the rotor armor is the rear center torso: 2 points of damage there destroy the rotors, and the unit can no longer convert.",
+    },
+    // professorheyteen's VTOLAM (Battletech Into The Future, battletechfuture.com/2024/05/28/the-vtolam/).
+    "vtolam-btitf": {
+        name: "VTOLAM", conversion: 0.1, halfTon: true, costRate: 0, modes: ["mech", "vehicle"], minJumpMP: 1, maxTonnage: 35, vtolCruise: "jump", lamLimits: false,
+        notes: "VTOLAM (Custom Homebrew; fan rules by professorheyteen, Battletech Into The Future): conversion equipment is 10% of tonnage, at most 35 tons, with rotor equipment in each side torso and conversion equipment in each leg; any equipment a BattleMech can use. It takes 'Mech hit locations in both modes, but a hit roll of 2 is a rotor hit: the first gives +3 to every Piloting roll in VTOL mode, the second destroys the rotor and the VTOLAM crashes, taking falling damage for its flight level (1 level with a successful Piloting roll). A critical hit on the rotor or conversion equipment ends transformation (in VTOL mode it reverts to 'Mech mode). It converts during the Movement Phase while jumping or at cruising speed, and may convert without its arms.",
+    },
+};
 
 export interface IFrankenMechExport {
     donors: Record<string, IFrankenMechDonor>;
@@ -1851,9 +1883,9 @@ export class BattleMech {
             cbillDryTotal += armoredComponentSlots * 150000;
         }
 
-        // Conversion equipment: LAM 75% (Bimodal 65%, and the VTOLAM, a form of Bimodal LAM) and QuadVee 50% of
-        // internal structure plus equipment cost (IO, as implemented by MegaMek; provisional).
-        const conversionRate = this.isLAM() ? (this._lamType === "standard" ? 0.75 : 0.65) : this.isQuadVee() ? 0.5 : 0;
+        // Conversion equipment: LAM_TYPE_RULES, and QuadVee 50% of internal structure plus equipment cost (IO, as implemented
+        // by MegaMek; provisional).
+        const conversionRate = this.isLAM() ? LAM_TYPE_RULES[this._lamType].costRate : this.isQuadVee() ? 0.5 : 0;
         if (conversionRate > 0) {
             const conversionCost = (structureCost + equipmentCost) * conversionRate;
             this._calcLogCBill += "<tr><td><strong>Conversion Equipment</strong><br /><span class=\"smaller-text\">" + conversionRate + " x (Structure [" + addCommas(structureCost) + "] + Equipment [" + addCommas(equipmentCost) + "]) - provisional</span></td><td>" + addCommas(conversionCost) + "</td></tr>\n";
@@ -3542,8 +3574,10 @@ export class BattleMech {
             }
             // Every LAM needs upper and lower arm actuators in both arms (IO, as implemented by
             // MegaMek's TestMek); the Omni-LAM also keeps its hands.
-            this._no_left_arm_lower_actuator = false;
-            this._no_right_arm_lower_actuator = false;
+            if (this._hasLAMLimits()) {
+                this._no_left_arm_lower_actuator = false;
+                this._no_right_arm_lower_actuator = false;
+            }
             if (this._omnimech) {
                 this._no_left_arm_hand_actuator = false;
                 this._no_right_arm_hand_actuator = false;
@@ -3642,11 +3676,9 @@ export class BattleMech {
                 weight: Math.ceil(this._tonnage * 0.1)
             });
         } else if (typeTag === "lam") {
-            // Bimodal LAMs: 15% (IO:AE p.108); the fan-made VTOLAM: 20% (BishopSteiner).
-            this._weights.push({
-                name: { standard: "LAM", bimodal: "Bimodal LAM", vtolam: "VTOLAM" }[this._lamType] + " Conversion Equipment",
-                weight: Math.ceil(this._tonnage * { standard: 0.1, bimodal: 0.15, vtolam: 0.2 }[this._lamType])
-            });
+            const rules = LAM_TYPE_RULES[this._lamType];
+            const step = rules.halfTon ? 2 : 1;
+            this._weights.push({ name: rules.name + " Conversion Equipment", weight: Math.ceil(this._tonnage * rules.conversion * step) / step });
         }
 
         this._runSpeed = Math.ceil(this._walkSpeed * 1.5);
@@ -4157,7 +4189,7 @@ export class BattleMech {
             this._addCriticalItem( "sensors", "Sensors", 1, "hd", 4);
             this._addCriticalItem( "life-support", "Life Support", 1, "hd", 5);
         }
-        if (typeTag === "lam") {
+        if (typeTag === "lam" && this._hasLAMLimits()) {
             this._addCriticalItem("lam-avionics", "LAM Avionics", 1, "hd", 3);
         }
         if (typeTag === "quadvee") {
@@ -4298,7 +4330,11 @@ export class BattleMech {
             this._addCriticalItem("life-support", "Life Support", 1, "lt", null);
             this._addCriticalItem("life-support", "Life Support", 1, "rt", null);
         }
-        if (typeTag === "lam") {
+        if (typeTag === "lam" && !this._hasLAMLimits()) {
+            // Battletech Into The Future's VTOLAM: rotor equipment in each side torso, conversion equipment in each leg.
+            for (const location of ["lt", "rt"]) this._addCriticalItem("lam-rotor", "VTOLAM Rotor Equipment", 1, location);
+            for (const location of ["ll", "rl"]) this._addCriticalItem("lam-conversion", "VTOLAM Conversion Equipment", 1, location);
+        } else if (typeTag === "lam") {
             this._addCriticalItem("lam-avionics", "LAM Avionics", 1, "lt");
             this._addCriticalItem("lam-avionics", "LAM Avionics", 1, "rt");
             // A VTOLAM's landing gear is retractable skids, one slot in each side torso and none in the center.
@@ -6551,7 +6587,8 @@ export class BattleMech {
         if (this._primitive) return false;
         // OmniMech parts on a FrankenMech lose their Omni abilities, and "cannot be reconfigured" (CO p.213).
         if (this._frankenMech) return false;
-        if (this.isLAM()) return rulesLevel >= CUSTOM_HOMEBREW_RULES_LEVEL && this._hasOmniLAMTechBase();
+        // Battletech Into The Future has "no options for omniVTOL" yet.
+        if (this.isLAM()) return rulesLevel >= CUSTOM_HOMEBREW_RULES_LEVEL && this._hasOmniLAMTechBase() && this._hasLAMLimits();
         return true;
     }
 
@@ -6944,25 +6981,38 @@ export class BattleMech {
     public static readonly SUPERHEAVY_STRUCTURE_TAGS: readonly string[] = ["standard", "endo-steel", "endo-composite", "industrial"];
     /** Gyros a LAM may use: Standard, Compact, Heavy-Duty (IO:AE p.108). */
     public static readonly LAM_GYRO_TAGS: readonly string[] = ["standard", "compact", "heavy-duty"];
-    /**
-     * The VTOLAM (Custom Homebrew; BishopSteiner's fan rules, deviantart.com/bishopsteiner/art/LOCUST-VTOLAM-concept-899660337):
-     * a Bimodal LAM whose second mode is a VTOL. At most 30 tons (the VTOL limit), no jump jets required, any fusion
-     * engine and any gyro, and no fuel: it flies on its rotors.
-     */
-    public static readonly VTOLAM_MAX_TONNAGE = 30;
+    /** BishopSteiner's VTOLAM may use any fusion engine (and any gyro); it needs no fuel, as it flies on its rotors. */
     public static readonly VTOLAM_ENGINE_TAGS: readonly string[] = ["standard", "compact", "light", "xl", "clan_xl", "xxl", "clan_xxl"];
 
     private _getLAMMinJumpMP(): number {
-        return this.isVTOLAM() ? 0 : BattleMech.LAM_MIN_JUMP_MP;
+        return LAM_TYPE_RULES[this._lamType].minJumpMP;
+    }
+
+    private _hasLAMLimits(): boolean {
+        return LAM_TYPE_RULES[this._lamType].lamLimits;
+    }
+
+    /** The heaviest LAM of this type, when its rules set one. */
+    public getLAMMaxTonnage(): number | null {
+        return this.isLAM() ? LAM_TYPE_RULES[this._lamType].maxTonnage ?? null : null;
     }
 
     private _isLAMLegalGyro(tag: string): boolean {
         return this.isVTOLAM() ? mechGyroTypes.some(gyro => gyro.tag === tag) : BattleMech.LAM_GYRO_TAGS.includes(tag);
     }
 
-    /** VTOL-mode Cruise MP: the VTOL formula, (engine rating + VTOL suspension factor) / tonnage rounded down (TM p.100). */
+    /**
+     * VTOL-mode Cruise MP: BishopSteiner's VTOL formula, (engine rating + VTOL suspension factor) / tonnage rounded down
+     * (TM p.100), or Battletech Into The Future's Jump MP.
+     */
     public getVTOLAMCruiseMP(): number {
-        return this.isVTOLAM() ? Math.floor((this.getEngineRating() + getVehicleSuspensionFactor("vtol", this._tonnage)) / this._tonnage) : 0;
+        if (!this.isVTOLAM()) return 0;
+        return LAM_TYPE_RULES[this._lamType].vtolCruise === "jump" ? this.getJumpSpeed()
+            : Math.floor((this.getEngineRating() + getVehicleSuspensionFactor("vtol", this._tonnage)) / this._tonnage);
+    }
+
+    public getLAMTypeNotes(): string {
+        return this.isLAM() ? LAM_TYPE_RULES[this._lamType].notes ?? "" : "";
     }
 
     public getVTOLAMFlankMP(): number {
@@ -7466,11 +7516,12 @@ export class BattleMech {
         }
         if (fitted.length > 1 && fitted.some(system => system.suffix === "-artemis-v")) violations.push("Artemis V cannot be mounted alongside Artemis IV (TO:AUE p.94).");
         if (this.isLAM()) {
-            if (this.isVTOLAM() && this._tonnage > BattleMech.VTOLAM_MAX_TONNAGE) {
-                violations.push(`VTOLAMs weigh at most ${BattleMech.VTOLAM_MAX_TONNAGE} tons, the VTOL limit.`);
+            const maxTonnage = this.getLAMMaxTonnage();
+            if (maxTonnage !== null && this._tonnage > maxTonnage) {
+                violations.push(`VTOLAMs weigh at most ${maxTonnage} tons under these rules.`);
             }
-            if (!this.isVTOLAM() && this.getJumpSpeed() > this.getMaxJumpSpeed()) {
-                violations.push(`LAMs need at least ${BattleMech.LAM_MIN_JUMP_MP} Jump MP, but Jump MP ${this.getJumpSpeed()} exceeds Walk MP ${this.getWalkSpeed()}; raise the engine rating.`);
+            if (this._getLAMMinJumpMP() > 0 && this.getJumpSpeed() > this.getMaxJumpSpeed()) {
+                violations.push(`${LAM_TYPE_RULES[this._lamType].name}s need at least ${this._getLAMMinJumpMP()} Jump MP, but Jump MP ${this.getJumpSpeed()} exceeds Walk MP ${this.getWalkSpeed()}; raise the engine rating.`);
             }
             // No equipment split across locations; spreadable equipment stays in one location
             // (IO:AE p.108, Extra-Large Weapons and Other Items).
@@ -7486,7 +7537,7 @@ export class BattleMech {
                 }
             }
             locationsByKey.forEach(({ name, locations }) => {
-                if (locations.size > 1) violations.push(`${name} must be allocated to a single location on a LAM.`);
+                if (locations.size > 1 && this._hasLAMLimits()) violations.push(`${name} must be allocated to a single location on a LAM.`);
             });
             const torsoBays = Object.values(this.getBombBaysByLocation()).reduce((sum, bays) => sum + bays, 0);
             const placedBays = this._equipmentList.filter(item => matchesTag(item, BattleMech.LAM_BOMB_BAY_TAG) && item.location).length;
@@ -7833,7 +7884,7 @@ export class BattleMech {
         public setTransformationMode(mode: string): "mech" | "airmech" | "aerospace" | "vehicle" {
             const requestedMode = mode.toLowerCase();
             const allowedModes = this.isLAM()
-                ? { standard: ["mech", "airmech", "aerospace"], bimodal: ["mech", "aerospace"], vtolam: ["mech", "vehicle"] }[this._lamType]
+                ? LAM_TYPE_RULES[this._lamType].modes
                 : this.isQuadVee()
                         ? ["mech", "vehicle"]
                         : ["mech"];
@@ -7901,7 +7952,7 @@ export class BattleMech {
         }
 
         public isVTOLAM(): boolean {
-            return this.isLAM() && this._lamType === "vtolam";
+            return this.isLAM() && !!LAM_TYPE_RULES[this._lamType].vtolCruise;
         }
 
         public isBimodalLAM(): boolean {
@@ -7910,9 +7961,11 @@ export class BattleMech {
 
         public setLAMType(lamType: string): LAMType {
             const requested = lamType.toLowerCase();
-            this._lamType = requested === "bimodal" || requested === "vtolam" ? requested : "standard";
+            this._lamType = requested in LAM_TYPE_RULES ? requested as LAMType : "standard";
+            if (!this._hasLAMLimits()) this._omnimech = false;
             this.setTransformationMode(this._transformationMode);
-            if (this.isVTOLAM() && this._tonnage > BattleMech.VTOLAM_MAX_TONNAGE) this.setTonnage(BattleMech.VTOLAM_MAX_TONNAGE);
+            const maxTonnage = this.getLAMMaxTonnage();
+            if (maxTonnage !== null && this._tonnage > maxTonnage) this.setTonnage(maxTonnage);
             this._calc();
             return this._lamType;
         }
@@ -10830,6 +10883,7 @@ export class BattleMech {
      * no Hardened armor, and only Standard or Compact fusion engines (IO:AE p.108).
      */
     private _isLAMLegalComponent(kind: "armor" | "structure" | "engine", tag: string): boolean {
+        if (!this._hasLAMLimits()) return true;
         if (kind === "engine") {
             return this.isVTOLAM() ? BattleMech.VTOLAM_ENGINE_TAGS.includes(tag) : tag === "standard" || tag === "compact";
         }
@@ -10891,6 +10945,8 @@ export class BattleMech {
         if (this.isLAM()) {
             // A VTOLAM has no fighter mode, so no fuel tanks or bomb bays.
             if (this.isVTOLAM() && (tag === BattleMech.LAM_FUEL_TANK_TAG || tag === BattleMech.LAM_BOMB_BAY_TAG)) return false;
+            // Battletech Into The Future: "A VTOLAM can use any equipment a normal battlemech can use".
+            if (!this._hasLAMLimits()) return true;
             // IO:AE p.108, Prohibited Technologies and construction notes: no artillery, no weapon
             // that needs a Piloting skill except physical attack weapons (heavy Gauss), no
             // supercharger, and none of the listed conversion-blocking equipment. Items split
