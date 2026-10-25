@@ -7,6 +7,7 @@ import { breakLines } from '../../../utils/breakLines';
 import BattleTechLogo from '../battletech-logo';
 import { NOT_ENDORSED, TRADEMARK_NOTICE } from './record-sheet-svg-kit';
 import BattleMechHeatEffectsBoxSVG from './battlemech-heat-effects-box-svg';
+import BattledroidsMechRecordSheetSVG from './battledroids-mech-record-sheet-svg';
 import BipedArmorCircles from './biped-armor-circles';
 import BipedArmorDiagramSVG from './biped-armor-diagram';
 import BipedDamageTransferDiagramSVG from './biped-damage-transfer-diagram-svg';
@@ -69,6 +70,11 @@ export default class BattleMechSVG extends React.Component<IBattleMechSVGProps, 
     }
 
     render = (): JSX.Element => {
+        const mech = this.props.mechData;
+        // A Battledroids biped prints on the book's own droid record sheet; play mode keeps this sheet's trackers.
+        if( !this.props.inPlay && mech.getRulesEdition() === "battledroids" && !mech.isQuad() && !mech.isTripod() && !mech.isLAM() && !mech.isQuadVee() ) {
+            return <BattledroidsMechRecordSheetSVG mechData={mech} />;
+        }
 
         // Biped/LAM use the Biped anatomy; Tripod extends that base with a Center Leg overlay.
         // QuadVee correctly reuses the Quad diagram (same 4-leg, no-arm anatomy).
