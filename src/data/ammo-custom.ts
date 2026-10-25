@@ -15,7 +15,7 @@ import { ammoCatalog } from "./ammo";
  * excluded from the software's underlying license (GNU GPLv3).
  *
  * Custom Homebrew ammunition: fuel for the Smoker (Future Wars #32, see misc-custom.ts), the Clan ArtVee breech rounds,
- * then the other homebrew rounds.
+ * the EMP missiles, then the other homebrew rounds.
  */
 
 const isAmmoList = ammoCatalog.filter((item) => item.techBase !== "clan");
@@ -59,6 +59,50 @@ const clanBreechAmmo = (ac: "5" | "10" | "20"): IEquipmentItem => {
     };
 };
 
+/**
+ * EMP Missiles (Ideas #92): VoiceOfAN's police equipment submission, posted on Battletech Into The Future (professorheyteen,
+ * 2024-04-27). A special munition for any non-Streak missile launcher at twice the standard round's cost and 2.5 times its
+ * BV; every other stat is the canon standard round's. The Word of Blake's, available 3136 (no prototype date given).
+ */
+const empMissiles = (standardTag: string): IEquipmentItem => {
+    const canon = isAmmoList.find((item) => item.tag === standardTag);
+    if (!canon) throw new Error(`EMP missiles: canon record ${standardTag} not found`);
+    const launcher = canon.name.replace(/ - Standard Ammo.*$/, "");
+    return {
+        isAmmo: true,
+        isSpecialAmmo: true,
+        name: `${launcher} - EMP Ammo (IS)`,
+        altNames: [`${launcher} EMP Missiles`],
+        tag: `ammo-is-${standardTag.replace(/^ammo-(is-)?/, "").replace(/-standard$/, "")}-emp`,
+        techBase: "is",
+        altTags: [],
+        sort: canon.sort.replace("standard", "emp").replace(/(, is)?$/, ", is"),
+        category: "Ammunition",
+        cbills: canon.cbills * 2,
+        introduced: 3136,
+        extinct: null,
+        reintroduced: null,
+        battleValue: canon.battleValue,
+        heat: 0,
+        heatAero: 0,
+        weight: canon.weight,
+        range: { ...canon.range },
+        space: { ...canon.space },
+        roundsPerTon: canon.roundsPerTon,
+        explosive: canon.explosive,
+        techRating: "e",
+        book: "https://battletechfuture.com/2024/04/27/more-police-equipment-for-battletech/",
+        page: 0,
+        alphaStrike: { specialAbility: [], heat: 0, rangeShort: 0, rangeMedium: 0, rangeLong: 0, rangeExtreme: 0, tc: false, notes: ["Custom equipment: no Alpha Strike effect"] },
+        battleValueMultiplier: 2.5,
+        catalog: "custom",
+        rulesLevel: 6,
+        notes: `Custom Homebrew by VoiceOfAN, Battletech Into The Future (2024-04-27). On a hit, roll 2D6 for each hit location: on 11+ the target shuts down. `
+            + `Twice the standard ${launcher} round's cost and 2.5 times its Battle Value; otherwise as the standard round. Word of Blake, available 3136; `
+            + "tech rating E is ours (the PDF gives none)."
+    };
+};
+
 export const ammoCustom: IEquipmentItem[] = [
     {
         isAmmo: true,
@@ -95,6 +139,9 @@ export const ammoCustom: IEquipmentItem[] = [
     clanBreechAmmo("5"),
     clanBreechAmmo("10"),
     clanBreechAmmo("20"),
+    ...["ammo-lrm-standard", "ammo-srm-standard", "ammo-is-mrm-standard", "ammo-is-enhanced-lrm-standard", "ammo-is-extended-lrm-standard",
+        "ammo-lrt-standard", "ammo-srt-standard", "ammo-is-enhanced-lrt-standard",
+        "ammo-is-thunderbolt-5-standard", "ammo-is-thunderbolt-10-standard", "ammo-is-thunderbolt-15-standard", "ammo-is-thunderbolt-20-standard"].map(empMissiles),
     {
         // Beta feedback item 9: requested on the Star League Discord by SmilingNid, with ideas from Vehrec, Arkaxe and
         // Ryan DesCastris. User rulings 2026-10-22: Custom; half the standard round's 5 shots a ton, rounded up. User ruling
