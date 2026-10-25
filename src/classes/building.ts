@@ -688,6 +688,8 @@ export default class Building {
                 && ((item.space?.battlemech ?? -1) >= 0 || (item.space?.combatVehicle ?? -1) >= 0);
         }
         if (item.isAmmo) return this.canMountHeavyWeapons();
+        // Equipment for named aerospace units only (TO:AUE pp.135-146).
+        if (item.aerospaceUnitTypes) return false;
         return (item.space?.dropShip ?? -1) >= 0 || (item.space?.supportVehicle ?? -1) >= 0;
     }
 

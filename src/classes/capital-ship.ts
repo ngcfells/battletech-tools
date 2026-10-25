@@ -14,9 +14,9 @@ import SmallCraft from "./small-craft";
 import Pilot, { IPilot } from "./pilot";
 import { getSkillMultiplier } from "../data/skill-multipliers";
 import { CAPITAL_MISSILE_CRITICAL_CHANCE, CAPITAL_SHIP_CRITICAL_NAMES, CapitalShipAttackDirection, ICapitalShipHit, getCapitalShipHitLocation } from "../data/capital-ship-hit-tables";
-import { CUSTOM_HOMEBREW_RULES_LEVEL, getArtemisLauncherBattleValue, getItemBattleValue, getAmmoBattleValuePerTon, getCompatibleAmmo, getEquipmentRulesLevel, getEffectiveIntroduction, getEquipmentListByTech, getWeaponShotsPerTon, isEquipmentOffered, getTechDatesAvailability } from "../data/equipment-registry";
+import { CUSTOM_HOMEBREW_RULES_LEVEL, getArtemisLauncherBattleValue, getItemBattleValue, getAmmoBattleValuePerTon, getCompatibleAmmo, getEquipmentRulesLevel, getEffectiveIntroduction, getEquipmentListByTech, getWeaponShotsPerTon, isEquipmentOffered, isUnderUnitLimit, getTechDatesAvailability } from "../data/equipment-registry";
 import { findByTag } from "../data/tag-match";
-import { sizeDroneSystems } from "../data/variable-equipment";
+import { sizeTonnageScaledEquipment } from "../data/variable-equipment";
 import { IWeaponBay, capitalBayWeapon, groupWeaponBays, standardBayWeapon } from "../data/weapon-bays";
 import { ADVANCED_RULES_LEVEL } from "../data/rules-level-options";
 import {
@@ -560,7 +560,9 @@ export default class CapitalShip {
      * Standard-scale equipment: whatever a DropShip may mount. SO:AA allows standard weapons on advanced aerospace
      * units (p.141) and the catalogs have no column of their own for them, so the DropShip one is read.
      */
-    public isEquipmentAllowed(item: IEquipmentItem): boolean { return (item.space?.dropShip ?? -1) >= 0; }
+    public isEquipmentAllowed(item: IEquipmentItem): boolean {
+        return (item.space?.dropShip ?? -1) >= 0 && (!item.aerospaceUnitTypes || item.aerospaceUnitTypes.includes(this._shipType));
+    }
     private _isWeapon(item: IEquipmentItem): boolean {
         return !item.isAmmo && !item.isEquipment && !item.battleValueDefensive && (item.battleValue || 0) > 0;
     }
@@ -581,7 +583,7 @@ export default class CapitalShip {
                 item.catalog = item.catalog ?? (item.category === "Custom Equipment" ? "custom" : list);
                 const availability = this._techDatesAvailability(item, rulesLevel);
                 item.availableAsPrototype = availability.asPrototype;
-                item.available = availability.available;
+                item.available = availability.available && isUnderUnitLimit(item, this._equipmentList);
                 items.push(item);
             }
         }
@@ -606,7 +608,7 @@ export default class CapitalShip {
     }
     public addEquipmentFromTag(tag: string, location?: string): IEquipmentItem | null {
         const catalogItem = this._findRecord(tag);
-        if (!catalogItem || !this.isEquipmentAllowed(catalogItem) || this._equipmentList.length >= MAX_CAPITAL_SHIP_EQUIPMENT) return null;
+        if (!catalogItem || !this.isEquipmentAllowed(catalogItem) || !isUnderUnitLimit(catalogItem, this._equipmentList) || this._equipmentList.length >= MAX_CAPITAL_SHIP_EQUIPMENT) return null;
         const item = this._newEquipment(catalogItem, location);
         this._equipmentList.push(item);
         this._clampToRules();
@@ -710,8 +712,10 @@ export default class CapitalShip {
     public getArcFireControlWeight(arc: AdvancedAerospaceArc): number {
         const weapons = this.getArcItems(arc).filter((item) => this.needsArc(item));
         const tons = weapons.reduce((sum, item) => sum + (item.weight || 0), 0) + this.getArcCapitalWeapons(arc).reduce((sum, mount) => sum + mount.weapon.weight, 0);
-        return getAdvancedAerospaceFireControlWeight(this._shipType, this.getArcWeaponCount(arc), tons);
+        return getAdvancedAerospaceFireControlWeight(this._shipType, this.getArcWeaponCount(arc), tons) * this._fireControlMultiplier();
     }
+    /** A naval C3 network doubles the weight of the fire control systems (TO:AUE p.144). */
+    private _fireControlMultiplier(): number { return this._equipmentList.some((item) => item.variableFormula === "naval-c3") ? 2 : 1; }
     public getFireControlWeight(): number { return this.getArcs().reduce((sum, arc) => sum + this.getArcFireControlWeight(arc), 0); }
 
     /**
@@ -888,8 +892,8 @@ export default class CapitalShip {
     public getRemainingTonnage(): number { return Math.round((this._tonnage - this._currentTonnage) * 1000) / 1000; }
 
     private _calc(): void {
-        // Drone carrier control systems: 2 tons plus 0.5 per drone (TO:AUE p.117).
-        sizeDroneSystems(this._equipmentList, this._tonnage);
+        // Drone systems, naval C3 and tug adaptor scale with the vessel (TO:AUE pp.117, 144-146).
+        sizeTonnageScaledEquipment(this._equipmentList, this._tonnage);
         const quarters = quartersTypes.filter((type) => this._quarters[type.tag] > 0)
             .map((type) => ({ name: `Quarters, ${type.name} (${this._quarters[type.tag]})`, weight: this._quarters[type.tag] * type.tons }));
         const bays = this._bays.map((bay) => {

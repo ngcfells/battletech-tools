@@ -47,7 +47,7 @@ import {
     MAX_VEHICLE_BAY_COUNT, MAX_VEHICLE_BAYS, MAX_VEHICLE_CARGO_TONS, normalizeVehicleBays, VEHICLE_BAY_TYPES,
 } from "../data/vehicle-transport-bays";
 import { ARTVEE_CONVERSION_EQUIPMENT } from "../data/combat-vehicle-chassis-modifications-custom";
-import { CUSTOM_HOMEBREW_RULES_LEVEL, EXPERIMENTAL_RULES_LEVEL, getItemBattleValue, getLauncherBattleValueWithoutFireControl, equipmentMatchesIdentifier, getAmmoBattleValuePerTon, getBattleArmorScaleListByTech, getCompatibleAmmo, getDatesAvailability, getEquipmentListByTech, getEquipmentRulesLevel, getStarLeagueCarryOverDates, getWeaponShotsPerTon, isEquipmentOffered, getTechDatesAvailability } from "../data/equipment-registry";
+import { CUSTOM_HOMEBREW_RULES_LEVEL, EXPERIMENTAL_RULES_LEVEL, getItemBattleValue, getLauncherBattleValueWithoutFireControl, equipmentMatchesIdentifier, getAmmoBattleValuePerTon, getBattleArmorScaleListByTech, getCompatibleAmmo, getDatesAvailability, getEquipmentListByTech, getEquipmentRulesLevel, getStarLeagueCarryOverDates, getWeaponShotsPerTon, isEquipmentOffered, isUnderUnitLimit, getTechDatesAvailability } from "../data/equipment-registry";
 import { isTargetingComputerWeapon, roundUpHalfTon, sizeTargetingComputers, sizeVariableEquipment } from "../data/variable-equipment";
 import { getFractionalArmorTonsPerPoint, getFractionalEngineWeight, roundUpToKilogram } from "../data/fractional-accounting";
 import { getBattleArmorScaleExplosionDamage } from "../data/battle-armor-scale-equipment";
@@ -2731,6 +2731,8 @@ export default class Vehicle {
         if (item.trailerOnly && !this.isTrailer()) return false;
         if (item.excludedMotives?.includes(this._motiveType.tag)) return false;
         if (item.metadata?.domains && !item.metadata.domains.includes("vehicle")) return false;
+        // Only for the aerospace units it names, none of them a ground vehicle (TO:AUE pp.135-146).
+        if (item.aerospaceUnitTypes) return false;
         // No combat vehicle slot value in the equipment tables: not vehicle equipment (TM pp.341-345, TO:AUE pp.217-223).
         // Support Vehicles read their own column.
         if (((this._support ? item.space?.supportVehicle : item.space?.combatVehicle) ?? 0) < 0) return false;
@@ -2787,11 +2789,7 @@ export default class Vehicle {
         // The record's own dates, or its Clan dates on a Clan vehicle.
         const availability = this._techDatesAvailability(item, rulesLevel);
         item.availableAsPrototype = availability.asPrototype;
-        // One unit carries at most `maxPerUnit` of an item, or of its group (one RISC Viral Jammer of any type).
-        const limitKey = item.maxPerUnitGroup ?? item.tag;
-        const underUnitLimit = !item.maxPerUnit
-            || this._equipmentList.filter(installed => (installed?.maxPerUnitGroup ?? installed?.tag) === limitKey).length < item.maxPerUnit;
-        item.available = availability.available && this._isEquipmentAllowedForVehicle(item) && underUnitLimit;
+        item.available = availability.available && this._isEquipmentAllowedForVehicle(item) && isUnderUnitLimit(item, this._equipmentList);
     }
 
     public getAvailableEquipment(includeCustom: boolean = false, rulesLevel: number = 2): IEquipmentItem[] {

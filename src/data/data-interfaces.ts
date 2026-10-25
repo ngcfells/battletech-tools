@@ -467,6 +467,11 @@ export interface IEquipmentItem extends ICatalogStanding {
     armored?: boolean;
     /** 'Mech chassis types (mech-type tags) this item may be mounted on, e.g. ["lam"]; unset = any. */
     chassisTypes?: string[];
+    /**
+     * Aerospace units this item may be mounted on, the book's "Available To" line where the space columns cannot say
+     * it (capital ships share the DropShip column; a satellite is one kind of Support Vehicle); unset = any.
+     */
+    aerospaceUnitTypes?: ("satellite" | "smallCraft" | "dropShip" | "jumpShip" | "warShip" | "spaceStation")[];
     /** Most copies of this item one unit may mount (e.g. LAM Bomb Bays, 20). */
     maxPerUnit?: number;
     /** Items sharing a group count together against `maxPerUnit` (the two RISC Viral Jammers: one of any type). */

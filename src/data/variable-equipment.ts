@@ -41,7 +41,10 @@ export type VariableEquipmentFormula =
     | "cargo-standard"
     | "cargo-liquid"
     | "cargo-insulated"
-    | "ram-plate";
+    | "ram-plate"
+    | "naval-c3"
+    | "naval-tug-adaptor"
+    | "light-sail";
 
 export interface IVariableEquipmentContext {
     /** Unit tonnage. */
@@ -117,13 +120,16 @@ export function sizeTargetingComputers(items: IEquipmentItem[], tonnage: number)
     }
 }
 
+const TONNAGE_SCALED_FORMULAS: VariableEquipmentFormula[] = ["drone-operating-system", "drone-carrier-control", "naval-c3", "naval-tug-adaptor", "light-sail"];
+
 /**
- * Sizes the drone operating and carrier control systems on a unit (TO:AUE p.117), for the builders that size no
- * other variable equipment (fighters, Small Craft, DropShips and capital ships).
+ * Sizes the equipment that scales with the unit's tonnage alone (drone systems, TO:AUE p.117; naval C3, tug adaptor
+ * and light sail, pp.135-146), for the builders that size no other variable equipment (fighters and aerospace
+ * Support Vehicles, Small Craft, DropShips and capital ships).
  */
-export function sizeDroneSystems(items: IEquipmentItem[], tonnage: number): void {
+export function sizeTonnageScaledEquipment(items: IEquipmentItem[], tonnage: number): void {
     for (const item of items) {
-        if (item.variableFormula !== "drone-operating-system" && item.variableFormula !== "drone-carrier-control") continue;
+        if (!item.variableFormula || !TONNAGE_SCALED_FORMULAS.includes(item.variableFormula)) continue;
         const size = sizeVariableEquipment(item.variableFormula, { tonnage, engineRating: 0, engineWeight: 0, directFireWeaponWeight: 0, drones: item.controlledDrones });
         if (size) {
             item.weight = size.weight;
@@ -218,10 +224,24 @@ export function sizeVariableEquipment(
             const weight = roundUpHalfTon(ctx.engineWeight / 10);
             return { weight, slots: Math.ceil(weight), cbills: 500 * weight, battleValue: 0 };
         }
-        // TO:AUE p.91: one per limb; tonnage / 35 (biped) or / 50 (quad), half ton; slots by weight class.
         // OTP: Hanseatic Crusade p.30: 1 ton per 10 tons of the unit, 1 slot in each torso; no cost printed.
         case "ram-plate":
             return { weight: roundUpHalfTon(t / 10), slots: 3, cbills: 0, battleValue: 0 };
+        // TO:AUE p.144: 1% of the vessel (half ton); 100,000 x item tons C-bills (p.221).
+        case "naval-c3": {
+            const weight = roundUpHalfTon(t / 100);
+            return { weight, slots: 1, cbills: 100000 * weight, battleValue: 0 };
+        }
+        // TO:AUE p.146: 100 tons plus reinforcement of 10% of the vessel (half ton); 100,000 C-bills (p.221).
+        case "naval-tug-adaptor":
+            return { weight: 100 + roundUpHalfTon(t / 10), slots: 1, cbills: 100000, battleValue: 0 };
+        // TO:AUE p.135: 10% of the satellite, to the kilogram under 5 tons and the ton from 5 tons; one rear slot;
+        // 100,000 x item tons C-bills (p.221).
+        case "light-sail": {
+            const weight = t < 5 ? Math.ceil(t * 100 - 1e-9) / 1000 : Math.ceil(t / 10 - 1e-9);
+            return { weight, slots: 1, cbills: Math.round(100000 * weight), battleValue: 0 };
+        }
+        // TO:AUE p.91: one per limb; tonnage / 35 (biped) or / 50 (quad), half ton; slots by weight class.
         case "aes-arm":
         case "aes-leg": {
             const weight = roundUpHalfTon(t / (ctx.isQuad ? 50 : 35));

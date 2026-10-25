@@ -13,6 +13,15 @@ describe("variable equipment sizing", () => {
         expect(sizeVariableEquipment("drone-carrier-control", ctx)?.weight).toBe(2.5);
     });
 
+    it("sizes the naval C3, tug adaptor and light sail from the vessel (TO:AUE pp.135, 144, 146, 221)", () => {
+        expect(sizeVariableEquipment("naval-c3", { ...ctx, tonnage: 420000 })).toEqual({ weight: 4200, slots: 1, cbills: 420000000, battleValue: 0 });
+        expect(sizeVariableEquipment("naval-c3", { ...ctx, tonnage: 1250 })?.weight).toBe(12.5);
+        expect(sizeVariableEquipment("naval-tug-adaptor", { ...ctx, tonnage: 3500 })).toEqual({ weight: 450, slots: 1, cbills: 100000, battleValue: 0 });
+        // To the ton from 5 tons, to the kilogram below.
+        expect(sizeVariableEquipment("light-sail", { ...ctx, tonnage: 42 })).toEqual({ weight: 5, slots: 1, cbills: 500000, battleValue: 0 });
+        expect(sizeVariableEquipment("light-sail", { ...ctx, tonnage: 2.345 })?.weight).toBe(0.235);
+    });
+
     it("rounds up to the half ton", () => {
         expect(roundUpHalfTon(2.75)).toBe(3);
         expect(roundUpHalfTon(2.5)).toBe(2.5);

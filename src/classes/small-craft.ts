@@ -10,11 +10,11 @@ import { aerospaceArmorTypes, getAerospaceArmorPointsPerTon } from "../data/aero
 import { mechHeatSinkTypes } from "../data/mech-heat-sink-types";
 import { btTechOptions } from "../data/tech-options";
 import { btEraOptions, findEraByTag, getClosestEraForTech, getErasForTech } from "../data/era-options";
-import { CUSTOM_HOMEBREW_RULES_LEVEL, getArtemisLauncherBattleValue, getLauncherBattleValueWithoutFireControl, EXPERIMENTAL_RULES_LEVEL, getAmmoBattleValuePerTon, getBattleArmorScaleListByTech, getCompatibleAmmo, getEquipmentListByTech, getEquipmentRulesLevel, getWeaponShotsPerTon, isEquipmentOffered, getDatesAvailability, getTechDatesAvailability } from "../data/equipment-registry";
+import { CUSTOM_HOMEBREW_RULES_LEVEL, getArtemisLauncherBattleValue, getLauncherBattleValueWithoutFireControl, EXPERIMENTAL_RULES_LEVEL, getAmmoBattleValuePerTon, getBattleArmorScaleListByTech, getCompatibleAmmo, getEquipmentListByTech, getEquipmentRulesLevel, getWeaponShotsPerTon, isEquipmentOffered, isUnderUnitLimit, getDatesAvailability, getTechDatesAvailability } from "../data/equipment-registry";
 import { getFractionalAerospaceArmorTonsPerPoint, roundUpToKilogram } from "../data/fractional-accounting";
 import Pilot, { IPilot } from "./pilot";
 import { getSkillMultiplier } from "../data/skill-multipliers";
-import { isTargetingComputerWeapon, sizeDroneSystems } from "../data/variable-equipment";
+import { isTargetingComputerWeapon, sizeTonnageScaledEquipment } from "../data/variable-equipment";
 import { findByTag } from "../data/tag-match";
 import { IWeaponBay, capitalBayWeapon, groupWeaponBays, standardBayWeapon } from "../data/weapon-bays";
 import { IAerospaceArmorType, ICapitalWeapon, IEquipmentItem, IEras, IHeatSync, ITechDates, ITechOptions } from "../data/data-interfaces";
@@ -892,8 +892,10 @@ export default class SmallCraft {
         const items = this.getArcItems(arc);
         const capital = this.getArcCapitalWeapons(arc);
         return getSmallCraftFireControlWeight(items.length + capital.length,
-            items.reduce((sum, item) => sum + (item.weight || 0), 0) + capital.reduce((sum, mount) => sum + mount.weapon.weight, 0), this._round);
+            items.reduce((sum, item) => sum + (item.weight || 0), 0) + capital.reduce((sum, mount) => sum + mount.weapon.weight, 0), this._round) * this._fireControlMultiplier();
     }
+    /** A naval C3 network doubles the weight of the fire control systems (TO:AUE p.144). */
+    private _fireControlMultiplier(): number { return this._equipmentList.some((item) => item.variableFormula === "naval-c3") ? 2 : 1; }
     public getFireControlWeight(): number {
         return SMALL_CRAFT_ARCS.reduce((sum, arc) => sum + this.getArcFireControlWeight(arc), 0);
     }
@@ -901,7 +903,8 @@ export default class SmallCraft {
     public getEquipmentList(): IEquipmentItem[] { return this._equipmentList; }
 
     public isEquipmentAllowed(item: IEquipmentItem): boolean {
-        return ((this.isDropShip() ? item.space?.dropShip : item.space?.smallCraft) ?? -1) >= 0;
+        return ((this.isDropShip() ? item.space?.dropShip : item.space?.smallCraft) ?? -1) >= 0
+            && (!item.aerospaceUnitTypes || item.aerospaceUnitTypes.includes(this._craftType));
     }
 
     public getAvailableEquipment(includeCustom: boolean = false, rulesLevel: number = 2): IEquipmentItem[] {
@@ -917,7 +920,7 @@ export default class SmallCraft {
                 item.criticals = this.getItemSlots(item);
                 const availability = this._techDatesAvailability(item, rulesLevel);
                 item.availableAsPrototype = availability.asPrototype;
-                item.available = availability.available;
+                item.available = availability.available && isUnderUnitLimit(item, this._equipmentList);
                 items.push(item);
             }
         }
@@ -931,7 +934,7 @@ export default class SmallCraft {
                 item.criticals = this.getItemSlots(item);
                 const availability = this._techDatesAvailability(item, rulesLevel);
                 item.availableAsPrototype = availability.asPrototype;
-                item.available = availability.available;
+                item.available = availability.available && isUnderUnitLimit(item, this._equipmentList);
                 items.push(item);
             }
         }
@@ -1027,7 +1030,7 @@ export default class SmallCraft {
 
     public addEquipmentFromTag(tag: string, location?: string): IEquipmentItem | null {
         const catalogItem = this._findRecord(tag);
-        if (!catalogItem || !this.isEquipmentAllowed(catalogItem) || this._equipmentList.length >= MAX_SMALL_CRAFT_EQUIPMENT) return null;
+        if (!catalogItem || !this.isEquipmentAllowed(catalogItem) || !isUnderUnitLimit(catalogItem, this._equipmentList) || this._equipmentList.length >= MAX_SMALL_CRAFT_EQUIPMENT) return null;
         const item = this._newEquipment(catalogItem, location);
         this._equipmentList.push(item);
         this._clampToRules();
@@ -1266,8 +1269,8 @@ export default class SmallCraft {
     }
 
     private _calc(): void {
-        // Drone carrier control systems: 2 tons plus 0.5 per drone (TO:AUE p.117).
-        sizeDroneSystems(this._equipmentList, this._tonnage);
+        // Drone systems, naval C3 and tug adaptor scale with the vessel (TO:AUE pp.117, 144-146).
+        sizeTonnageScaledEquipment(this._equipmentList, this._tonnage);
         // Mounting the first battle armor item turns Fractional Accounting on (Ghosts of Obeedah p.54).
         const hasBattleArmorEquipment = this.defaultsToFractionalAccounting();
         if (hasBattleArmorEquipment && !this._hadBattleArmorEquipment) this._weightAccounting = "fractional";

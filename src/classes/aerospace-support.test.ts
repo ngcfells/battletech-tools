@@ -232,3 +232,15 @@ describe("Large Airships and Satellites (TO:AUE pp.56-71)", () => {
         expect(supportAircraft("airship", 50).getAvailableSupportChassisModifications()).not.toContain("armored");
     });
 });
+
+describe("satellite-only equipment (TO:AUE pp.135, 138, 144)", () => {
+    it("a light sail is 10% of a satellite, and only satellites take it or the space mine dispenser", () => {
+        const satellite = supportAircraft("satellite", 42);
+        expect(satellite.addEquipmentFromTag("light-sail", "aft")?.weight).toBe(5);
+        expect(satellite.addEquipmentFromTag("naval-comm-scanner-suite-small", "nose")).not.toBeNull();
+        expect(satellite.addEquipmentFromTag("naval-comm-scanner-suite-large", "nose")).toBeNull();
+        const airship = supportAircraft("airship", 42);
+        expect(airship.addEquipmentFromTag("light-sail", "aft")).toBeNull();
+        expect(airship.addEquipmentFromTag("space-mine-dispenser", "nose")).toBeNull();
+    });
+});

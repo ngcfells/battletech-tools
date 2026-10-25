@@ -274,6 +274,12 @@ export function isOmniFixedOnly(item: IEquipmentItem): boolean {
  * Lowest rules level an installed item needs: at least Custom Homebrew for custom content (Munchkin when the
  * record says so), Experimental for prototype-only items, otherwise its own rules level (0 when unknown).
  */
+/** One unit carries at most `maxPerUnit` of an item, or of its group (one RISC Viral Jammer of any type). */
+export function isUnderUnitLimit(item: IEquipmentItem, installed: readonly (IEquipmentItem | null | undefined)[]): boolean {
+    const limitKey = item.maxPerUnitGroup ?? item.tag;
+    return !item.maxPerUnit || installed.filter((other) => (other?.maxPerUnitGroup ?? other?.tag) === limitKey).length < item.maxPerUnit;
+}
+
 export function getEquipmentRulesLevel(item: IEquipmentItem): number {
     let level = typeof item.rulesLevel === "number" ? item.rulesLevel : 0;
     if (item.catalog === "custom" || item.category === "Custom Equipment" || item.book === "Custom") {

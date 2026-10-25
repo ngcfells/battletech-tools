@@ -204,6 +204,22 @@ describe("CapitalShip (SO:AA pp.130-149)", () => {
         expect(new CapitalShip(JSON.stringify(old)).isMonitor()).toBe(false);
     });
 
+    it("naval C3 weighs 1% of the vessel and doubles fire control; tug adaptors and NCSS by vessel type (TO:AUE pp.144-147)", () => {
+        const ship = build("warShip", 420000);
+        for (let n = 0; n < 22; n++) ship.addEquipmentFromTag("medium-laser", "nose");
+        const fireControl = ship.getArcFireControlWeight("nose");
+        expect(fireControl).toBeGreaterThan(0);
+        expect(ship.addEquipmentFromTag("naval-c3")?.weight).toBe(4200);
+        expect(ship.getArcFireControlWeight("nose")).toBe(fireControl * 2);
+        expect(ship.addEquipmentFromTag("naval-c3")).toBeNull();
+        expect(ship.addEquipmentFromTag("naval-tug-adaptor")?.weight).toBe(42100);
+        expect(ship.addEquipmentFromTag("naval-comm-scanner-suite-large")).not.toBeNull();
+        expect(ship.addEquipmentFromTag("naval-comm-scanner-suite-small")).toBeNull();
+        const jumpShip = build("jumpShip", 100000);
+        expect(jumpShip.addEquipmentFromTag("naval-tug-adaptor")).toBeNull();
+        expect(jumpShip.addEquipmentFromTag("light-sail")).toBeNull();
+    });
+
     it("saves and loads", () => {
         const ship = build("warShip", 1930000);
         ship.setName("McKenna");

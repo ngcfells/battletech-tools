@@ -12,7 +12,7 @@ Rows ruled by hand (`tools/coverage-triage.tsv`) show the ruling as their status
 | Ammunition | 2261 | 1719 | 30 | 0 | 512 |
 | Armor | 32 | 20 | 11 | 1 | 0 |
 | Battle armor | 43 | 20 | 23 | 0 | 0 |
-| Capital / bay | 72 | 36 | 16 | 0 | 20 |
+| Capital / bay | 72 | 41 | 16 | 15 | 0 |
 | Cockpit | 20 | 10 | 9 | 1 | 0 |
 | Engine | 20 | 10 | 10 | 0 | 0 |
 | Equipment | 262 | 157 | 68 | 37 | 0 |
@@ -651,26 +651,21 @@ Rows ruled by hand (`tools/coverage-triage.tsv`) show the ruling as their status
 | Rocket Launcher Bay | Inner Sphere | Standard |  | in src |  |
 | SRM Bay | Inner Sphere | Standard |  | in src |  |
 | Thunderbolt Bay | Inner Sphere | Standard |  | in src |  |
-| AC Bay | Inner Sphere | Standard |  | missing |  |
-| AR10 Bay | Inner Sphere | Standard | 210, TM | missing |  |
-| ATM Bay | Clan | Standard |  | missing |  |
-| Capital AC Bay | Inner Sphere | Standard |  | missing |  |
-| Capital Gauss Bay | Inner Sphere | Standard |  | missing |  |
-| Capital Laser Bay | Inner Sphere | Standard |  | missing |  |
-| Capital Mass Driver Bay | Inner Sphere | Standard |  | missing |  |
-| Capital Missile Bay | Inner Sphere | Standard |  | missing |  |
-| Capital PPC Bay | Inner Sphere | Standard |  | missing |  |
-| Light Sail | Inner Sphere | Standard | 135, TO:AUE | missing |  |
-| Misc Bay | Inner Sphere | Standard |  | missing |  |
-| Naval C3 | Inner Sphere | Experimental | 144, TO:AUE | missing |  |
-| Naval Comm-Scanner Suite (Large) | Inner Sphere | Standard | 145, TO:AUE | missing |  |
-| Naval Comm-Scanner Suite (Small) | Inner Sphere | Standard | 145, TO:AUE | missing |  |
-| Naval Tug Adaptor | Inner Sphere | Advanced | 147, TO:AUE | missing |  |
-| Screen Launcher Bay | Inner Sphere | Standard | 237, TM; 251, TW | missing |  |
-| Sub-Capital Cannon Bay | Inner Sphere | Standard |  | missing |  |
-| Sub-Capital Laser Bay | Inner Sphere | Standard |  | missing |  |
-| Sub-Capital Missile Bay | Inner Sphere | Standard |  | missing |  |
-| Tele-Operated Capital Missile Bay | Inner Sphere | Standard |  | missing |  |
+| AC Bay | Inner Sphere | Standard |  | not equipment | MegaMek groups weapons into bays internally; the builders make bays from the weapons (SO:AA pp.141-143) |
+| AR10 Bay | Inner Sphere | Standard | 210, TM | not equipment | MegaMek groups weapons into bays internally; the builders make bays from the weapons (SO:AA pp.141-143) |
+| ATM Bay | Clan | Standard |  | not equipment | MegaMek groups weapons into bays internally; the builders make bays from the weapons (SO:AA pp.141-143) |
+| Capital AC Bay | Inner Sphere | Standard |  | not equipment | MegaMek groups weapons into bays internally; the builders make bays from the weapons (SO:AA pp.141-143) |
+| Capital Gauss Bay | Inner Sphere | Standard |  | not equipment | MegaMek groups weapons into bays internally; the builders make bays from the weapons (SO:AA pp.141-143) |
+| Capital Laser Bay | Inner Sphere | Standard |  | not equipment | MegaMek groups weapons into bays internally; the builders make bays from the weapons (SO:AA pp.141-143) |
+| Capital Mass Driver Bay | Inner Sphere | Standard |  | not equipment | MegaMek groups weapons into bays internally; the builders make bays from the weapons (SO:AA pp.141-143) |
+| Capital Missile Bay | Inner Sphere | Standard |  | not equipment | MegaMek groups weapons into bays internally; the builders make bays from the weapons (SO:AA pp.141-143) |
+| Capital PPC Bay | Inner Sphere | Standard |  | not equipment | MegaMek groups weapons into bays internally; the builders make bays from the weapons (SO:AA pp.141-143) |
+| Misc Bay | Inner Sphere | Standard |  | not equipment | MegaMek groups weapons into bays internally; the builders make bays from the weapons (SO:AA pp.141-143) |
+| Screen Launcher Bay | Inner Sphere | Standard | 237, TM; 251, TW | not equipment | MegaMek groups weapons into bays internally; the builders make bays from the weapons (SO:AA pp.141-143) |
+| Sub-Capital Cannon Bay | Inner Sphere | Standard |  | not equipment | MegaMek groups weapons into bays internally; the builders make bays from the weapons (SO:AA pp.141-143) |
+| Sub-Capital Laser Bay | Inner Sphere | Standard |  | not equipment | MegaMek groups weapons into bays internally; the builders make bays from the weapons (SO:AA pp.141-143) |
+| Sub-Capital Missile Bay | Inner Sphere | Standard |  | not equipment | MegaMek groups weapons into bays internally; the builders make bays from the weapons (SO:AA pp.141-143) |
+| Tele-Operated Capital Missile Bay | Inner Sphere | Standard |  | not equipment | MegaMek groups weapons into bays internally; the builders make bays from the weapons (SO:AA pp.141-143) |
 
 ## Cockpit
 

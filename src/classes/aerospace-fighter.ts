@@ -13,7 +13,7 @@ import { mechEngineTypes } from "../data/mech-engine-types";
 import { mechHeatSinkTypes } from "../data/mech-heat-sink-types";
 import { btTechOptions } from "../data/tech-options";
 import { btEraOptions, findEraByTag, getClosestEraForTech, getErasForTech } from "../data/era-options";
-import { CUSTOM_HOMEBREW_RULES_LEVEL, getArtemisLauncherBattleValue, getLauncherBattleValueWithoutFireControl, EXPERIMENTAL_RULES_LEVEL, getAmmoBattleValuePerTon, getBattleArmorScaleListByTech, getCompatibleAmmo, getDatesAvailability, getEquipmentListByTech, getEquipmentRulesLevel, getEquipmentOfferIssue, getWeaponShotsPerTon, isEquipmentOffered, getTechDatesAvailability } from "../data/equipment-registry";
+import { CUSTOM_HOMEBREW_RULES_LEVEL, getArtemisLauncherBattleValue, getLauncherBattleValueWithoutFireControl, EXPERIMENTAL_RULES_LEVEL, getAmmoBattleValuePerTon, getBattleArmorScaleListByTech, getCompatibleAmmo, getDatesAvailability, getEquipmentListByTech, getEquipmentRulesLevel, getEquipmentOfferIssue, getWeaponShotsPerTon, isEquipmentOffered, isUnderUnitLimit, getTechDatesAvailability } from "../data/equipment-registry";
 import { getFractionalAerospaceArmorTonsPerPoint, getFractionalEngineWeight, roundUpToKilogram } from "../data/fractional-accounting";
 import { AlphaStrikeUnit, IASMULUnit } from "./alpha-strike-unit";
 import Pilot, { IPilot } from "./pilot";
@@ -23,7 +23,7 @@ import {
     IRoboticControlSystem, RoboticControlTag, RoboticUnitType, SRCS_BATTLE_VALUE_MULTIPLIER, SRCS_RULES_LEVEL,
 } from "../data/robotic-control-systems";
 import { FIGHTER_CRITICAL_NAMES, FighterAttackDirection, FighterCritical, getFighterHitLocation } from "../data/fighter-hit-tables";
-import { isTargetingComputerWeapon, sizeDroneSystems, sizeTargetingComputers } from "../data/variable-equipment";
+import { isTargetingComputerWeapon, sizeTonnageScaledEquipment, sizeTargetingComputers } from "../data/variable-equipment";
 import { findByTag } from "../data/tag-match";
 import {
     getSupportVehicleBaseCrew, getSupportVehicleChassisModification, getSupportVehicleEngine, getSupportVehicleEngineWeight,
@@ -1394,6 +1394,7 @@ export default class AerospaceFighter {
     public isEquipmentAllowed(item: IEquipmentItem): boolean {
         if (this._support) {
             if ((item.space?.supportVehicle ?? -1) < 0) return false;
+            if (item.aerospaceUnitTypes && !(this._support.motive === "satellite" && item.aerospaceUnitTypes.includes("satellite"))) return false;
             // Small Support Vehicles carry no heavy weapons (TM p.136).
             return !(this._isSmallSupport() && (this._isWeapon(item) || item.isAmmo));
         }
@@ -1413,7 +1414,7 @@ export default class AerospaceFighter {
                 item.criticals = this.getItemSlots(item);
                 const availability = this._techDatesAvailability(item, rulesLevel);
                 item.availableAsPrototype = availability.asPrototype;
-                item.available = availability.available;
+                item.available = availability.available && isUnderUnitLimit(item, this._equipmentList);
                 items.push(item);
             }
         }
@@ -1427,7 +1428,7 @@ export default class AerospaceFighter {
                 item.criticals = this.getItemSlots(item);
                 const availability = this._techDatesAvailability(item, rulesLevel);
                 item.availableAsPrototype = availability.asPrototype;
-                item.available = availability.available;
+                item.available = availability.available && isUnderUnitLimit(item, this._equipmentList);
                 items.push(item);
             }
         }
@@ -1465,7 +1466,7 @@ export default class AerospaceFighter {
 
     public addEquipmentFromTag(tag: string, location?: string): IEquipmentItem | null {
         const catalogItem = this._findRecord(tag);
-        if (!catalogItem || !this.isEquipmentAllowed(catalogItem) || this._equipmentList.length >= MAX_FIGHTER_EQUIPMENT) return null;
+        if (!catalogItem || !this.isEquipmentAllowed(catalogItem) || !isUnderUnitLimit(catalogItem, this._equipmentList) || this._equipmentList.length >= MAX_FIGHTER_EQUIPMENT) return null;
         const item = this._newEquipment(catalogItem, location);
         this._equipmentList.push(item);
         this._calc();
@@ -1670,8 +1671,9 @@ export default class AerospaceFighter {
     }
 
     private _calc(): void {
-        // A drone operating system weighs 10 percent of the fighter plus its sensors (TO:AUE p.117).
-        sizeDroneSystems(this._equipmentList, this._tonnage);
+        // A drone operating system weighs 10 percent of the fighter plus its sensors, a light sail 10 percent of the
+        // satellite (TO:AUE pp.117, 135).
+        sizeTonnageScaledEquipment(this._equipmentList, this._tonnage);
         sizeTargetingComputers(this._equipmentList, this._tonnage);
         if (this._support) {
             this._calcSupportWeights();
