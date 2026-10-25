@@ -15,7 +15,7 @@ Rows ruled by hand (`tools/coverage-triage.tsv`) show the ruling as their status
 | Capital / bay | 72 | 36 | 16 | 0 | 20 |
 | Cockpit | 20 | 10 | 9 | 1 | 0 |
 | Engine | 20 | 10 | 10 | 0 | 0 |
-| Equipment | 262 | 143 | 54 | 0 | 65 |
+| Equipment | 262 | 157 | 68 | 37 | 0 |
 | Gyro | 5 | 3 | 2 | 0 | 0 |
 | Heat sink | 9 | 7 | 2 | 0 | 0 |
 | Infantry armor | 67 | 25 | 2 | 0 | 40 |
@@ -706,7 +706,24 @@ Rows ruled by hand (`tools/coverage-triage.tsv`) show the ruling as their status
 
 | Item | Tech | MegaMek level | Rules reference | Status | Note |
 |---|---|---|---|---|---|
+| Autonomous Tactical Analysis Computer (ATAC) | Inner Sphere | Standard | 139, IO:AE | builder gap | IO:AE pp.135-142 drone systems; robotic-control-systems.ts builds only the SRCS and improved SRCS |
+| BattleMech Neural Interface Unit | Inner Sphere | Standard | 110, IO:AE | builder gap | IO:AE p.110: battle armor item that lets a suit pilot a 'Mech; no BA record yet |
+| BattleMech Turret (Head) | Inner Sphere | Advanced | 159, TO:AUE | builder gap | TO:AUE p.159: weight 10% of the turreted items, a turret location on the 'Mech |
+| BattleMech Turret (Quad) | Inner Sphere | Advanced | 159, TO:AUE; 205, Core | builder gap | TO:AUE p.159: weight 10% of the turreted items, a turret location on the 'Mech |
+| BattleMech Turret (Shoulder) | Inner Sphere | Advanced | 159, TO:AUE | builder gap | TO:AUE p.159: weight 10% of the turreted items, a turret location on the 'Mech |
+| Caspar II Advanced Smart Robotic Control System | Inner Sphere | Experimental | 137, IO:AE | builder gap | IO:AE pp.135-142 drone systems; robotic-control-systems.ts builds only the SRCS and improved SRCS |
+| Caspar II Advanced Smart Robotic Control System (Improved) | Inner Sphere | Experimental | 137, IO:AE | builder gap | IO:AE pp.135-142 drone systems; robotic-control-systems.ts builds only the SRCS and improved SRCS |
+| Direct Tactical Analysis Control (DTAC) System | Inner Sphere | Standard | 140, IO:AE | builder gap | IO:AE pp.135-142 drone systems; robotic-control-systems.ts builds only the SRCS and improved SRCS |
+| Energy Storage Battery | Inner Sphere | Standard | 118, TO:AUE | builder gap | TO:AUE p.118: space stations only; the station builder has no batteries (capital-ship-record-sheet-svg.tsx) |
+| External (PCMT) Power Generator | Inner Sphere | Standard | 131, TO:AR; 132, TO:AR; 133, TO:AR | builder gap | building-classifications.ts leaves the PCMT-fed generator out (TO:AR p.132) |
+| Power Collector and Microwave Transmitter (10 Tons) | Inner Sphere | Standard | 149, TO:AUE | builder gap | TO:AUE p.149: support vehicles and space stations, 10 t per unit of power |
+| SDS Self-Destruct System | Inner Sphere | Standard | 141, IO:AE | builder gap | IO:AE pp.135-142 drone systems; robotic-control-systems.ts builds only the SRCS and improved SRCS |
+| SLDF SDS Jammer System | Inner Sphere | Standard | 142, IO:AE | builder gap | IO:AE pp.135-142 drone systems; robotic-control-systems.ts builds only the SRCS and improved SRCS |
+| Shielded Aerospace Smart Robotic Control System | Inner Sphere | Experimental | 135, IO:AE | builder gap | IO:AE pp.135-142 drone systems; robotic-control-systems.ts builds only the SRCS and improved SRCS |
+| Shielded Aerospace Smart Robotic Control System (Elite) | Inner Sphere | Experimental | 135, IO:AE | builder gap | IO:AE pp.135-142 drone systems; robotic-control-systems.ts builds only the SRCS and improved SRCS |
+| Shielded Aerospace Smart Robotic Control System (Improved) | Inner Sphere | Experimental | 135, IO:AE | builder gap | IO:AE pp.135-142 drone systems; robotic-control-systems.ts builds only the SRCS and improved SRCS |
 | Advanced Fire Control | Inner Sphere | Standard | 217, TM | in src |  |
+| Anti-Mek Gear | Inner Sphere | Standard | 155, TM | in src | infantry-platoon.ts: Anti-'Mech kits, 15 kg a trooper (TM p.155) |
 | Anti-Personnel Weapon Mount | Inner Sphere | Standard | 271, TM | in src |  |
 | Apollo MRM FCS | Inner Sphere | Standard | 143, TO:AUE; 113, BMM; 197, Core | in src |  |
 | Artemis IV FCS | Inner Sphere | Standard | 206, TM; 110, BMM; 197, Core; 130, TW | in src |  |
@@ -714,6 +731,13 @@ Rows ruled by hand (`tools/coverage-triage.tsv`) show the ruling as their status
 | Artemis V FCS | Clan | Standard | 95, TO:AUE; 110, BMM; 197, Core | in src |  |
 | Basic Fire Control | Inner Sphere | Standard | 217, TM | in src |  |
 | Booby Trap | Inner Sphere | Experimental | 109, TO:AUE | in src |  |
+| Combat Vehicle Chassis Mod [Dune Buggy] | Inner Sphere | Standard | 115, TO:AUE | in src | combat-vehicle-chassis-modifications.ts (TO:AUE pp.114-115) |
+| Combat Vehicle Chassis Mod [Environmental Sealing] | Inner Sphere | Standard | 115, TO:AUE | in src | combat-vehicle-chassis-modifications.ts (TO:AUE pp.114-115) |
+| Combat Vehicle Chassis Mod [Flotation Hull] | Inner Sphere | Standard | 114, TO:AUE | in src | combat-vehicle-chassis-modifications.ts (TO:AUE pp.114-115) |
+| Combat Vehicle Chassis Mod [Fully Amphibious] | Inner Sphere | Standard | 115, TO:AUE | in src | combat-vehicle-chassis-modifications.ts (TO:AUE pp.114-115) |
+| Combat Vehicle Chassis Mod [Limited Amphibious] | Inner Sphere | Standard | 114, TO:AUE | in src | combat-vehicle-chassis-modifications.ts (TO:AUE pp.114-115) |
+| Combustion (Liquid) Power Generator | Inner Sphere | Introductory | 131, TO:AR; 132, TO:AR; 133, TO:AR | in src | building-classifications.ts Power Generators Table (TO:AR p.132) |
+| Combustion (Solid) Power Generator | Inner Sphere | Introductory | 131, TO:AR; 132, TO:AR; 133, TO:AR | in src | building-classifications.ts Power Generators Table (TO:AR p.132) |
 | Detachable Weapon Pack | Inner Sphere | Standard | 99, TO:AUE | in src |  |
 | Dumper (Front) | Inner Sphere | Standard | 243, TM; 134, TW | in src |  |
 | Dumper (Left) | Inner Sphere | Standard | 243, TM; 134, TW | in src |  |
@@ -721,7 +745,11 @@ Rows ruled by hand (`tools/coverage-triage.tsv`) show the ruling as their status
 | Dumper (Right) | Inner Sphere | Standard | 243, TM; 134, TW | in src |  |
 | ECM Suite (Guardian) Prototype | Inner Sphere | Standard | 66, IO:AE | in src |  |
 | Electronic Codebreaker, Advanced | Inner Sphere | Standard |  | in src |  |
+| External Power Generator | Inner Sphere | Standard | 131, TO:AR; 132, TO:AR; 133, TO:AR | in src | building-classifications.ts Power Generators Table (TO:AR p.132) |
 | External Power Pickup | Inner Sphere | Standard | 59, TO:AUE | in src |  |
+| Fission Power Generator | Inner Sphere | Standard | 131, TO:AR; 132, TO:AR; 133, TO:AR | in src | building-classifications.ts Power Generators Table (TO:AR p.132) |
+| Fuel Cell Power Generator | Inner Sphere | Standard | 131, TO:AR; 132, TO:AR; 133, TO:AR | in src | building-classifications.ts Power Generators Table (TO:AR p.132) |
+| Fusion Power Generator | Inner Sphere | Introductory | 131, TO:AR; 132, TO:AR; 133, TO:AR | in src | building-classifications.ts Power Generators Table (TO:AR p.132) |
 | Heavy Industrial | Inner Sphere | Standard | 205, TM | in src |  |
 | Liquid Storage | Inner Sphere | Standard | 239, TM | in src |  |
 | Magnetic Clamps System | Clan | Advanced | 60, IO:AE | in src |  |
@@ -755,76 +783,34 @@ Rows ruled by hand (`tools/coverage-triage.tsv`) show the ruling as their status
 | Single-Hex ECM | Clan | Standard | 254, TM; 228, TW | in src |  |
 | Smart Robotic Control System (SRCS) | Inner Sphere | Advanced | 134, IO:AE | in src |  |
 | Smart Robotic Control System (SRCS) (Improved) | Inner Sphere | Advanced | 134, IO:AE | in src |  |
+| Solar Power Generator | Inner Sphere | Standard | 131, TO:AR; 132, TO:AR; 133, TO:AR | in src | building-classifications.ts Power Generators Table (TO:AR p.132) |
 | Standard Aerospace | Inner Sphere | Standard | 205, TM | in src |  |
 | Standard Aerospace | Clan | Standard | 205, TM | in src |  |
 | Standard Modular Weapon Mount | Inner Sphere | Standard | 271, TM | in src |  |
+| Steam Power Generator | Inner Sphere | Standard | 131, TO:AR; 132, TO:AR; 133, TO:AR | in src | building-classifications.ts Power Generators Table (TO:AR p.132) |
 | Trailer Hitch | Inner Sphere | Standard | 101, TM | in src |  |
 | Vehicular Sponson Turret | Inner Sphere | Standard | 160, TO:AUE | in src |  |
-| Anti-Mek Gear | Inner Sphere | Standard | 155, TM | missing |  |
-| Autonomous Tactical Analysis Computer (ATAC) | Inner Sphere | Standard | 139, IO:AE | missing |  |
-| Basic Lock Pick Set | Inner Sphere | Standard |  | missing |  |
-| Basic Toolkit | Inner Sphere | Standard |  | missing |  |
-| BattleMech Neural Interface Unit | Inner Sphere | Standard | 110, IO:AE | missing |  |
-| BattleMech Turret (Head) | Inner Sphere | Advanced | 159, TO:AUE | missing |  |
-| BattleMech Turret (Quad) | Inner Sphere | Advanced | 159, TO:AUE; 205, Core | missing |  |
-| BattleMech Turret (Shoulder) | Inner Sphere | Advanced | 159, TO:AUE | missing |  |
-| Buzzsaw | Inner Sphere | Standard | 243, TM | missing |  |
-| Caspar II Advanced Smart Robotic Control System | Inner Sphere | Experimental | 137, IO:AE | missing |  |
-| Caspar II Advanced Smart Robotic Control System (Improved) | Inner Sphere | Experimental | 137, IO:AE | missing |  |
-| Chain Drape (Apron) | Inner Sphere | Experimental | 16, PS:AO-UrbanFest | missing |  |
-| Chain Drape (Cape) | Inner Sphere | Experimental | 16, PS:AO-UrbanFest | missing |  |
-| Chain Drape (Poncho) | Inner Sphere | Experimental | 16, PS:AO-UrbanFest | missing |  |
-| Combat Vehicle Chassis Mod [Dune Buggy] | Inner Sphere | Standard | 115, TO:AUE | missing |  |
-| Combat Vehicle Chassis Mod [Environmental Sealing] | Inner Sphere | Standard | 115, TO:AUE | missing |  |
-| Combat Vehicle Chassis Mod [Flotation Hull] | Inner Sphere | Standard | 114, TO:AUE | missing |  |
-| Combat Vehicle Chassis Mod [Fully Amphibious] | Inner Sphere | Standard | 115, TO:AUE | missing |  |
-| Combat Vehicle Chassis Mod [Limited Amphibious] | Inner Sphere | Standard | 114, TO:AUE | missing |  |
-| Combat Vehicle Escape Pod | Inner Sphere | Advanced | 121, TO:AUE | missing |  |
-| Combustion (Liquid) Power Generator | Inner Sphere | Introductory | 131, TO:AR; 132, TO:AR; 133, TO:AR | missing |  |
-| Combustion (Solid) Power Generator | Inner Sphere | Introductory | 131, TO:AR; 132, TO:AR; 133, TO:AR | missing |  |
-| Compad | Inner Sphere | Standard |  | missing |  |
-| Compass | Inner Sphere | Standard |  | missing |  |
-| Deluxe Toolkit | Inner Sphere | Standard |  | missing |  |
-| Demolition Charge | Inner Sphere | Standard |  | missing |  |
-| Descartes MK XXI | Inner Sphere | Standard |  | missing |  |
-| Descartes MK XXV | Inner Sphere | Standard |  | missing |  |
-| Direct Tactical Analysis Control (DTAC) System | Inner Sphere | Standard | 140, IO:AE | missing |  |
-| Electronic Compass | Inner Sphere | Standard |  | missing |  |
-| Energy Storage Battery | Inner Sphere | Standard | 118, TO:AUE | missing |  |
-| External (PCMT) Power Generator | Inner Sphere | Standard | 131, TO:AR; 132, TO:AR; 133, TO:AR | missing |  |
-| External Power Generator | Inner Sphere | Standard | 131, TO:AR; 132, TO:AR; 133, TO:AR | missing |  |
-| Fission Power Generator | Inner Sphere | Standard | 131, TO:AR; 132, TO:AR; 133, TO:AR | missing |  |
-| Fuel Cell Power Generator | Inner Sphere | Standard | 131, TO:AR; 132, TO:AR; 133, TO:AR | missing |  |
-| Fusion Power Generator | Inner Sphere | Introductory | 131, TO:AR; 132, TO:AR; 133, TO:AR | missing |  |
-| Ladder | Inner Sphere | Standard | 244, TM | missing |  |
-| Lie Detector/Polygraph | Inner Sphere | Standard |  | missing |  |
-| Mast Mount | Inner Sphere | Standard | 162, TO:AUE | missing |  |
-| Mine | Inner Sphere | Standard |  | missing |  |
-| Neural Interrogation Computer | Inner Sphere | Standard |  | missing |  |
-| Noteputer | Inner Sphere | Standard |  | missing |  |
-| Personal Computer | Inner Sphere | Standard |  | missing |  |
-| Pocket Transcriber | Inner Sphere | Standard |  | missing |  |
-| Power Collector and Microwave Transmitter (10 Tons) | Inner Sphere | Standard | 149, TO:AUE | missing |  |
-| Primitive Fighter | Inner Sphere | Advanced | 119, IO:AE | missing |  |
-| Prototype Remote Sensors/Dispenser | Inner Sphere | Standard | 67, IO:AE | missing |  |
-| Ram Plate | Inner Sphere | Experimental | 30, OTP:HC | missing |  |
-| SDS Self-Destruct System | Inner Sphere | Standard | 141, IO:AE | missing |  |
-| SLDF SDS Jammer System | Inner Sphere | Standard | 142, IO:AE | missing |  |
-| Scanalyzer | Inner Sphere | Standard |  | missing |  |
-| Shielded Aerospace Smart Robotic Control System | Inner Sphere | Experimental | 135, IO:AE | missing |  |
-| Shielded Aerospace Smart Robotic Control System (Elite) | Inner Sphere | Experimental | 135, IO:AE | missing |  |
-| Shielded Aerospace Smart Robotic Control System (Improved) | Inner Sphere | Experimental | 135, IO:AE | missing |  |
-| Solar Power Generator | Inner Sphere | Standard | 131, TO:AR; 132, TO:AR; 133, TO:AR | missing |  |
-| Space Mine Dispenser | Inner Sphere | Standard | 138, TO:AUE | missing |  |
-| Steam Power Generator | Inner Sphere | Standard | 131, TO:AR; 132, TO:AR; 133, TO:AR | missing |  |
-| Tanker's Smock | Inner Sphere | Standard | 295, AToW | missing |  |
-| Telescan | Inner Sphere | Standard |  | missing |  |
-| VTOL Jet Booster | Inner Sphere | Standard | 162, TO:AUE | missing |  |
-| Vehicular DropChute (Camouflage) | Inner Sphere | Standard | 161, TO:AUE | missing |  |
-| Vehicular DropChute (Reusable) | Inner Sphere | Standard | 161, TO:AUE | missing |  |
-| Vehicular DropChute (Standard) | Inner Sphere | Standard | 161, TO:AUE | missing |  |
-| Vehicular DropChute (Stealth) | Inner Sphere | Standard | 161, TO:AUE | missing |  |
-| Vehicular Mine Dispenser | Inner Sphere | Standard | 137, TO:AUE | missing |  |
+| Mine | Inner Sphere | Standard |  | not a record | MegaMek item with no rules reference; mines are the dispensers' ammunition |
+| Chain Drape (Apron) | Inner Sphere | Experimental | 16, PS:AO-UrbanFest | round 10 | PseudoTech UrbanFest p.16: CGL's in-universe arcade game; Munchkin pending the user's ruling |
+| Chain Drape (Cape) | Inner Sphere | Experimental | 16, PS:AO-UrbanFest | round 10 | PseudoTech UrbanFest p.16: CGL's in-universe arcade game; Munchkin pending the user's ruling |
+| Chain Drape (Poncho) | Inner Sphere | Experimental | 16, PS:AO-UrbanFest | round 10 | PseudoTech UrbanFest p.16: CGL's in-universe arcade game; Munchkin pending the user's ruling |
+| Basic Lock Pick Set | Inner Sphere | Standard |  | round 9 | A Time of War personal gear |
+| Basic Toolkit | Inner Sphere | Standard |  | round 9 | A Time of War personal gear |
+| Compad | Inner Sphere | Standard |  | round 9 | A Time of War personal gear |
+| Compass | Inner Sphere | Standard |  | round 9 | A Time of War personal gear |
+| Deluxe Toolkit | Inner Sphere | Standard |  | round 9 | A Time of War personal gear |
+| Demolition Charge | Inner Sphere | Standard |  | round 9 | A Time of War personal gear |
+| Descartes MK XXI | Inner Sphere | Standard |  | round 9 | A Time of War personal gear |
+| Descartes MK XXV | Inner Sphere | Standard |  | round 9 | A Time of War personal gear |
+| Electronic Compass | Inner Sphere | Standard |  | round 9 | A Time of War personal gear |
+| Lie Detector/Polygraph | Inner Sphere | Standard |  | round 9 | A Time of War personal gear |
+| Neural Interrogation Computer | Inner Sphere | Standard |  | round 9 | A Time of War personal gear |
+| Noteputer | Inner Sphere | Standard |  | round 9 | A Time of War personal gear |
+| Personal Computer | Inner Sphere | Standard |  | round 9 | A Time of War personal gear |
+| Pocket Transcriber | Inner Sphere | Standard |  | round 9 | A Time of War personal gear |
+| Scanalyzer | Inner Sphere | Standard |  | round 9 | A Time of War personal gear |
+| Tanker's Smock | Inner Sphere | Standard | 295, AToW | round 9 | A Time of War personal gear |
+| Telescan | Inner Sphere | Standard |  | round 9 | A Time of War personal gear |
 
 ## Gyro
 

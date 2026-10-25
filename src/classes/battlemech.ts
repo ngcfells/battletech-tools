@@ -2188,6 +2188,7 @@ export class BattleMech {
             case "limbs-and-side-torsos": return ["lt", "rt", ...arms, ...legs];
             case "legs": return legs;
             case "side-torsos": return ["lt", "rt"];
+            case "torsos": return ["lt", "ct", "rt"];
         }
         return null;
     }

@@ -39,12 +39,14 @@ describe("catalog editions", () => {
         expect(failures).toEqual([]);
     });
 
+    // An earlier edition with no stats is a sourcebook item of that edition's time, which says its level there.
     it("editions agree with editionStats", () => {
         const failures = records.filter((record) => {
             const stats = Object.keys(record.editionStats ?? {});
             const editions = record.editions ?? [];
             return stats.some((tag) => !editions.includes(tag))
-                || editions.some((tag) => order(tag) < order(DEFAULT_RULES_EDITION) && !stats.includes(tag));
+                || editions.some((tag) => order(tag) < order(DEFAULT_RULES_EDITION) && !stats.includes(tag)
+                    && !(record.editionLevels && tag in record.editionLevels));
         }).map(label);
         expect(failures).toEqual([]);
     });

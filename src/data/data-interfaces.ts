@@ -268,7 +268,7 @@ export interface IAmmoProfile {
 export type EngineRequirement = "fusion" | "fusion-or-fission" | "ice-or-fuel-cell";
 
 /** The 'Mech locations a spread item's slots go in (see IEquipmentItem.spreadLocations). */
-export type SpreadLocations = "all" | "all-but-head" | "limbs-and-side-torsos" | "legs" | "side-torsos";
+export type SpreadLocations = "all" | "all-but-head" | "limbs-and-side-torsos" | "legs" | "side-torsos" | "torsos";
 
 export interface IEquipmentItem extends ICatalogStanding {
     catalog?: "is" | "clan" | "custom" | "universal";

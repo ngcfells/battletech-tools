@@ -147,8 +147,10 @@ describe("Rules editions", () => {
                 problems.push(`${label}: unknown edition ${record.introducedInEdition}`);
             }
             if (!record.editionStats) {
-                // No table: the record must not claim an earlier edition.
-                if (record.introducedInEdition !== undefined && earlier.includes(record.introducedInEdition)) {
+                // No table: the record must not claim an earlier edition, unless it is a sourcebook item of that
+                // edition's time, which says its level there.
+                if (record.introducedInEdition !== undefined && earlier.includes(record.introducedInEdition)
+                    && !(record.editionLevels && record.introducedInEdition in record.editionLevels)) {
                     problems.push(`${label}: introduced in ${record.introducedInEdition} but has no editionStats`);
                 }
                 continue;

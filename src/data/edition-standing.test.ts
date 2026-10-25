@@ -105,6 +105,14 @@ describe("equipment edition standing", () => {
         expect(getEquipmentOfferIssue(item, "total-warfare", 4)).toBeNull();
     });
 
+    it("a FASA-era sourcebook item is Experimental in its editions and apocryphal after them", () => {
+        const buzzsaw = getEquipmentCatalogDefinitions().flatMap((definition) => definition.equipment).find((item) => item.tag === "buzzsaw")!;
+        expect(getEquipmentOfferIssue(buzzsaw, "master-rules", 3)).toBe("level");
+        expect(getEquipmentOfferIssue(buzzsaw, "master-rules", 4)).toBeNull();
+        expect(getEquipmentOfferIssue(buzzsaw, "total-warfare", 4)).toBe("edition");
+        expect(getEquipmentOfferIssue(buzzsaw, "total-warfare", 5)).toBeNull();
+    });
+
     it("the new filter only adds level hiding", () => {
         const disagreements: string[] = [];
         for (const definition of getEquipmentCatalogDefinitions()) {
@@ -113,6 +121,14 @@ describe("equipment edition standing", () => {
                     continue;
                 }
                 for (const edition of btRulesEditions) {
+                    // The old filter could not drop a record, nor see a sourcebook item of an earlier edition (canon
+                    // there with no editionStats): skip editions after its last canon one and those sourcebook ones.
+                    if (record.editions?.length && record.editions.every((tag) => editionOrder(tag) < editionOrder(edition.tag))) {
+                        continue;
+                    }
+                    if (record.editionLevels && edition.tag in record.editionLevels && !(record.editionStats && edition.tag in record.editionStats)) {
+                        continue;
+                    }
                     for (let level = 0; level <= 7; level++) {
                         const old = isInRulesEditionOld(record, edition.tag, level) && isEquipmentWithinRulesLevel(record, level);
                         const offered = isEquipmentOffered(record, edition.tag, level);

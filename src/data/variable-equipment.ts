@@ -40,7 +40,8 @@ export type VariableEquipmentFormula =
     | "drone-carrier-control"
     | "cargo-standard"
     | "cargo-liquid"
-    | "cargo-insulated";
+    | "cargo-insulated"
+    | "ram-plate";
 
 export interface IVariableEquipmentContext {
     /** Unit tonnage. */
@@ -218,6 +219,9 @@ export function sizeVariableEquipment(
             return { weight, slots: Math.ceil(weight), cbills: 500 * weight, battleValue: 0 };
         }
         // TO:AUE p.91: one per limb; tonnage / 35 (biped) or / 50 (quad), half ton; slots by weight class.
+        // OTP: Hanseatic Crusade p.30: 1 ton per 10 tons of the unit, 1 slot in each torso; no cost printed.
+        case "ram-plate":
+            return { weight: roundUpHalfTon(t / 10), slots: 3, cbills: 0, battleValue: 0 };
         case "aes-arm":
         case "aes-leg": {
             const weight = roundUpHalfTon(t / (ctx.isQuad ? 50 : 35));

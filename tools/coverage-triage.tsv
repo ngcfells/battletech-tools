@@ -62,3 +62,57 @@ Prototype Ferro-Aluminum	builder gap	IO:AE p.66; aerospace armor types need buil
 Hand	round 8	actuator catalog
 Hip	round 8	actuator catalog
 Foot	round 8	actuator catalog
+Anti-Mek Gear	in src	infantry-platoon.ts: Anti-'Mech kits, 15 kg a trooper (TM p.155)
+Combat Vehicle Chassis Mod [Dune Buggy]	in src	combat-vehicle-chassis-modifications.ts (TO:AUE pp.114-115)
+Combat Vehicle Chassis Mod [Environmental Sealing]	in src	combat-vehicle-chassis-modifications.ts (TO:AUE pp.114-115)
+Combat Vehicle Chassis Mod [Flotation Hull]	in src	combat-vehicle-chassis-modifications.ts (TO:AUE pp.114-115)
+Combat Vehicle Chassis Mod [Fully Amphibious]	in src	combat-vehicle-chassis-modifications.ts (TO:AUE pp.114-115)
+Combat Vehicle Chassis Mod [Limited Amphibious]	in src	combat-vehicle-chassis-modifications.ts (TO:AUE pp.114-115)
+Combustion (Liquid) Power Generator	in src	building-classifications.ts Power Generators Table (TO:AR p.132)
+Combustion (Solid) Power Generator	in src	building-classifications.ts Power Generators Table (TO:AR p.132)
+External Power Generator	in src	building-classifications.ts Power Generators Table (TO:AR p.132)
+Fission Power Generator	in src	building-classifications.ts Power Generators Table (TO:AR p.132)
+Fuel Cell Power Generator	in src	building-classifications.ts Power Generators Table (TO:AR p.132)
+Fusion Power Generator	in src	building-classifications.ts Power Generators Table (TO:AR p.132)
+Solar Power Generator	in src	building-classifications.ts Power Generators Table (TO:AR p.132)
+Steam Power Generator	in src	building-classifications.ts Power Generators Table (TO:AR p.132)
+External (PCMT) Power Generator	builder gap	building-classifications.ts leaves the PCMT-fed generator out (TO:AR p.132)
+Primitive Fighter	catalog	aerospace-armor-types.ts Primitive Aerospace Fighter Armor (IO:AE pp.119, 181)
+BattleMech Turret (Head)	builder gap	TO:AUE p.159: weight 10% of the turreted items, a turret location on the 'Mech
+BattleMech Turret (Quad)	builder gap	TO:AUE p.159: weight 10% of the turreted items, a turret location on the 'Mech
+BattleMech Turret (Shoulder)	builder gap	TO:AUE p.159: weight 10% of the turreted items, a turret location on the 'Mech
+Energy Storage Battery	builder gap	TO:AUE p.118: space stations only; the station builder has no batteries (capital-ship-record-sheet-svg.tsx)
+Power Collector and Microwave Transmitter (10 Tons)	builder gap	TO:AUE p.149: support vehicles and space stations, 10 t per unit of power
+Caspar II Advanced Smart Robotic Control System	builder gap	IO:AE pp.135-142 drone systems; robotic-control-systems.ts builds only the SRCS and improved SRCS
+Caspar II Advanced Smart Robotic Control System (Improved)	builder gap	IO:AE pp.135-142 drone systems; robotic-control-systems.ts builds only the SRCS and improved SRCS
+Shielded Aerospace Smart Robotic Control System	builder gap	IO:AE pp.135-142 drone systems; robotic-control-systems.ts builds only the SRCS and improved SRCS
+Shielded Aerospace Smart Robotic Control System (Elite)	builder gap	IO:AE pp.135-142 drone systems; robotic-control-systems.ts builds only the SRCS and improved SRCS
+Shielded Aerospace Smart Robotic Control System (Improved)	builder gap	IO:AE pp.135-142 drone systems; robotic-control-systems.ts builds only the SRCS and improved SRCS
+SDS Self-Destruct System	builder gap	IO:AE pp.135-142 drone systems; robotic-control-systems.ts builds only the SRCS and improved SRCS
+SLDF SDS Jammer System	builder gap	IO:AE pp.135-142 drone systems; robotic-control-systems.ts builds only the SRCS and improved SRCS
+Autonomous Tactical Analysis Computer (ATAC)	builder gap	IO:AE pp.135-142 drone systems; robotic-control-systems.ts builds only the SRCS and improved SRCS
+Direct Tactical Analysis Control (DTAC) System	builder gap	IO:AE pp.135-142 drone systems; robotic-control-systems.ts builds only the SRCS and improved SRCS
+BattleMech Neural Interface Unit	builder gap	IO:AE p.110: battle armor item that lets a suit pilot a 'Mech; no BA record yet
+Buzzsaw	catalog	equipment-misc.ts (Unbound p.70): IS prototype 3053, Experimental by user ruling
+Chain Drape (Apron)	round 10	PseudoTech UrbanFest p.16: CGL's in-universe arcade game; Munchkin pending the user's ruling
+Chain Drape (Cape)	round 10	PseudoTech UrbanFest p.16: CGL's in-universe arcade game; Munchkin pending the user's ruling
+Chain Drape (Poncho)	round 10	PseudoTech UrbanFest p.16: CGL's in-universe arcade game; Munchkin pending the user's ruling
+Ram Plate	catalog	equipment-misc.ts (OTP: Hanseatic Crusade p.30); Clan ~3140 per mordel.net, MegaMek says IS 2600
+Mine	not a record	MegaMek item with no rules reference; mines are the dispensers' ammunition
+Basic Lock Pick Set	round 9	A Time of War personal gear
+Basic Toolkit	round 9	A Time of War personal gear
+Compad	round 9	A Time of War personal gear
+Compass	round 9	A Time of War personal gear
+Deluxe Toolkit	round 9	A Time of War personal gear
+Demolition Charge	round 9	A Time of War personal gear
+Descartes MK XXI	round 9	A Time of War personal gear
+Descartes MK XXV	round 9	A Time of War personal gear
+Electronic Compass	round 9	A Time of War personal gear
+Lie Detector/Polygraph	round 9	A Time of War personal gear
+Neural Interrogation Computer	round 9	A Time of War personal gear
+Noteputer	round 9	A Time of War personal gear
+Personal Computer	round 9	A Time of War personal gear
+Pocket Transcriber	round 9	A Time of War personal gear
+Scanalyzer	round 9	A Time of War personal gear
+Telescan	round 9	A Time of War personal gear
+Tanker's Smock	round 9	A Time of War personal gear
