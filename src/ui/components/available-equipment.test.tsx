@@ -9,7 +9,7 @@ afterEach(cleanup);
 
 const list = getEquipmentListByTech("is", true).map((item) => ({ ...item, available: true }));
 const ac5 = list.find((item) => !item.isAmmo && item.name === "Autocannon/5")!;
-const ac5Ammo = list.find((item) => item.tag === "ammo-is-ac-5-standard")!;
+const ac5Ammo = list.find((item) => item.tag === "ammo-ac-5-standard")!;
 const lrmAmmo = list.find((item) => item.tag === "ammo-is-lrm-artemis-iv")!;
 
 const renderList = (mounted?: typeof list) => {

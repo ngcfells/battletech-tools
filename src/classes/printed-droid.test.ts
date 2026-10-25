@@ -72,12 +72,12 @@ describe("Printed Battledroids droids: the ten of the box set", () => {
     });
     it("SHD-2H Shadow Hawk", () => {
         listing("shd-2h", 16, [55, 5, 3, 12, 152], [9, 23, 8, 18, 6, 18, 6, 16, 16, 16, 16],
-            ["ammo-is-ac-5-standard lt", "ammo-lrm-standard lt", "ammo-srm-standard lt", "autocannon-standard-b lt", "lrm-5 rt", "medium-laser ra", "srm-2 hd"], 55);
+            ["ammo-ac-5-standard lt", "ammo-lrm-standard lt", "ammo-srm-standard lt", "autocannon-standard-b lt", "lrm-5 rt", "medium-laser ra", "srm-2 hd"], 55);
     });
     it("RFL-3N Rifleman: the VOX 260 printed is larger than its Walking MP needs", () => {
         const entry = droid("rfl-3n");
         const notes = listing("rfl-3n", 17, [60, 4, 0, 10, 120], [6, 22, 4, 15, 2, 15, 2, 15, 15, 12, 12],
-            ["ammo-is-ac-5-standard ct", "autocannon-standard-b la", "autocannon-standard-b ra", "large-laser la", "large-laser ra"],
+            ["ammo-ac-5-standard ct", "autocannon-standard-b la", "autocannon-standard-b ra", "large-laser la", "large-laser ra"],
             built("rfl-3n").getCurrentTonnage());
         expect(entry.engineRating).toBe(260);
         expect(built("rfl-3n").getEngineRating()).toBe(240);
@@ -104,7 +104,7 @@ describe("Printed Battledroids droids: the ten of the box set", () => {
     });
     it("MAD-3R Marauder", () => {
         listing("mad-3r", 17, [75, 4, 0, 16, 184], [9, 35, 16, 16, 8, 16, 8, 22, 22, 16, 16], [
-            "ammo-is-ac-5-standard lt", "autocannon-standard-b rt", "medium-laser la", "medium-laser ra", "standard-ppc la", "standard-ppc ra",
+            "ammo-ac-5-standard lt", "autocannon-standard-b rt", "medium-laser la", "medium-laser ra", "standard-ppc la", "standard-ppc ra",
         ], 75);
     });
 
@@ -224,7 +224,7 @@ describe("Printed Battledroids droids: the apocryphal sources", () => {
             expect(wolverine.notes.join(" ")).toContain("156");
             expect([mech.getWalkSpeed(), mech.getJumpSpeed(), mech.getHeatSinks()]).toEqual([5, 5, 12]);
             expect(mounted(mech)).toEqual([
-                "ammo-is-ac-5-standard rt", "ammo-srm-standard lt", "autocannon-standard-b ra", "medium-laser hd",
+                "ammo-ac-5-standard rt", "ammo-srm-standard lt", "autocannon-standard-b ra", "medium-laser hd",
                 "srm-2 lt", "srm-2 lt", "srm-2 lt",
             ]);
             expect(mech.getCurrentTonnage()).toBe(56);
@@ -249,7 +249,7 @@ describe("Printed Battledroids droids: the apocryphal sources", () => {
         const mech = built("shd-3h");
         expect(armor(mech)).toEqual([9, 23, 8, 18, 6, 18, 6, 16, 16, 16, 16]);
         expect(mounted(mech)).toEqual([
-            "ammo-is-ac-5-standard lt", "ammo-lrm-standard lt", "ammo-machine-gun-standard lt", "autocannon-standard-b lt",
+            "ammo-ac-5-standard lt", "ammo-lrm-standard lt", "ammo-machine-gun-standard lt", "autocannon-standard-b lt",
             "lrm-5 rt", "machine-gun hd", "medium-laser ra",
         ]);
         expect(hawk.notes.join(" ")).toContain("blank");
@@ -354,7 +354,7 @@ describe("Printed Battledroids droids: the user's Ral Partha conversions", () =>
     });
     it("BKX-7K Battleaxe: the book's Auto Cannon, armor to the limit, half a ton under", () => {
         const notes = custom("bkx-7k", [70, 4, 0, 15, 216], [9, 33, 10, 22, 8, 22, 8, 22, 22, 30, 30], [
-            "ammo-is-ac-5-standard lt", "ammo-srm-standard lt", "ammo-srm-standard rt", "autocannon-standard-b la", "large-laser ra",
+            "ammo-ac-5-standard lt", "ammo-srm-standard lt", "ammo-srm-standard rt", "autocannon-standard-b la", "large-laser ra",
             "srm-6 lt", "srm-6 rt",
         ], 69.5);
         expect(notes).toContain("Auto Cannon");

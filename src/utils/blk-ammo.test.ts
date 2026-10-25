@@ -43,6 +43,6 @@ describe("MegaMek .blk ammunition lines", () => {
         expect(roundFor("Clan Ammo ATM-9 HE", "atm-9")).toBe("ammo-clan-atm-he");
         expect(roundFor("Hyper-Assault Gauss Rifle/20 Ammo", "hyper-assault-gauss-20")).toBe("ammo-clan-hag-20-standard");
         // "AC/10 Primitive" rounds feed the Primitive Prototype AC/10 (IO:AE p.112).
-        expect(roundFor("IS Ammo AC/10 Primitive", "primitive-prototype-ac-10")).toBe("ammo-is-ac-10-standard");
+        expect(roundFor("IS Ammo AC/10 Primitive", "primitive-prototype-ac-10")).toBe("ammo-ac-10-standard");
     });
 });

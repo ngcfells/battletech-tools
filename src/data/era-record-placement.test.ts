@@ -36,26 +36,25 @@ describe("records whose IS and Clan dates differ are not universal", () => {
     });
 
     // TO:AUE p.134 gives "Reintroduced: N/A"; the 3073 the record once carried had no source.
-    it("splits the Laser Insulator: the IS lost it in 2820, the Clans never did (TO:AUE p.134; IO:AE p.38)", () => {
-        expect(hasTag(universalEquipment, "laser-insulator")).toBe(false);
-        expect(isMiscList.find((item) => item.tag === "laser-insulator"))
-            .toMatchObject({ extinct: 2820, reintroduced: null });
-        const clan = clanMiscList.find((item) => item.tag === "clan-laser-insulator")!;
-        expect(clan.altTags).toContain("laser-insulator");
-        expect(clan.extinct).toBeNull();
+    // Catalog consolidation §2: a pair that differs only in dates is one universal record with the Clan dates apart.
+    it("keeps one Laser Insulator: the IS lost it in 2820, the Clans never did (TO:AUE p.134; IO:AE p.38)", () => {
+        const record = universalEquipment.find((item) => item.tag === "laser-insulator")!;
+        expect(record).toMatchObject({ extinct: 2820, reintroduced: null });
+        expect(record.altTags).toContain("clan-laser-insulator");
+        expect(record.clanDates?.extinct).toBeNull();
+        expect(hasTag([...isMiscList, ...clanMiscList], "clan-laser-insulator")).toBe(false);
     });
 });
 
-describe("artillery cannons split by side (TO:AUE pp.97, 217; IO:AE p.31)", () => {
-    // The table gives "3012P / 3032P" and one production year, 3079, for both sides.
+describe("artillery cannons, one record for both sides (TO:AUE pp.97, 217; IO:AE p.31)", () => {
+    // The table gives "3012P / 3032P" and one production year, 3079, for both sides: the Clan dates sit in clanDates.
     it("gives the IS cannons a 3012 prototype and the Clan ones 3032, both in production from 3079", () => {
         for (const gun of ["long-tom", "sniper", "thumper"]) {
-            expect(hasTag(universalEquipment, `${gun}-cannon`)).toBe(false);
-            expect(isArtilleryList.find((item) => item.tag === `${gun}-cannon`))
-                .toMatchObject({ prototype: 3012, introduced: 3079 });
-            const clan = clanArtilleryList.find((item) => item.tag === `clan-${gun}-cannon`)!;
-            expect(clan).toMatchObject({ prototype: 3032, introduced: 3079 });
-            expect(clan.altTags).toContain(`${gun}-cannon`);
+            const record = universalEquipment.find((item) => item.tag === `${gun}-cannon`)!;
+            expect(record).toMatchObject({ prototype: 3012, introduced: 3079 });
+            expect(record.clanDates).toMatchObject({ prototype: 3032, introduced: 3079 });
+            expect(record.altTags).toContain(`clan-${gun}-cannon`);
+            expect(hasTag([...isArtilleryList, ...clanArtilleryList], `clan-${gun}-cannon`)).toBe(false);
         }
     });
 

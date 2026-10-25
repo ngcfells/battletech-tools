@@ -41,15 +41,20 @@ describe("Hailstorm artillery (Apocryphal)", () => {
     });
 
     it("fires every munition the other tubes share, in its own caliber", () => {
-        for (const munition of ["standard", "cluster", "fae", "fascam", "flechette", "illumination", "smoke", "thunder"]) {
+        // FASCAM is the Clan name of the Thunder round, one record since catalog consolidation §2.
+        for (const munition of ["standard", "cluster", "fae", "flechette", "illumination", "smoke", "thunder"]) {
             const longTom = ammoCatalog.find((item) => item.tag.replace(/^ammo-(is|clan)-/, "ammo-") === `ammo-long-tom-${munition}`)!;
             const tag = longTom.tag.replace("long-tom", "hailstorm");
             expect(round(tag), tag).toBeDefined();
             expect(round(tag).techBase).toBe(longTom.techBase);
             expect(getCompatibleAmmo(hailstorm, round(tag))).toBe(true);
         }
-        expect(round("ammo-is-hailstorm-copperhead").techBase).toBe("is");
-        expect(round("ammo-clan-hailstorm-copperhead").techBase).toBe("clan");
+        // The Long Tom's Copperhead is one record for both sides (catalog consolidation §2), and so is the Hailstorm's.
+        const copperhead = round("ammo-hailstorm-copperhead");
+        expect(copperhead.techBase).toBe("universal");
+        expect(copperhead.altTags).toEqual(expect.arrayContaining(["ammo-is-hailstorm-copperhead", "ammo-clan-hailstorm-copperhead"]));
+        expect(copperhead.clanDates).toEqual(ammoCatalog.find((item) => item.tag === "ammo-long-tom-copperhead")!.clanDates);
+        expect(round("ammo-hailstorm-thunder").altTags).toContain("ammo-clan-hailstorm-fascam");
         expect(getCompatibleAmmo(hailstorm, ammoCatalog.find((item) => item.tag === "ammo-long-tom-standard")!)).toBe(false);
     });
 
@@ -67,6 +72,6 @@ describe("Hailstorm artillery (Apocryphal)", () => {
 
     it("joins both tech lists", () => {
         expect(getEquipmentListByTech("is").some((item) => item.tag === "hailstorm-artillery")).toBe(true);
-        expect(getEquipmentListByTech("clan").some((item) => item.tag === "ammo-clan-hailstorm-copperhead")).toBe(true);
+        expect(getEquipmentListByTech("clan").some((item) => item.tag === "ammo-hailstorm-copperhead")).toBe(true);
     });
 });

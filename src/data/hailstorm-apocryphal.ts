@@ -85,6 +85,7 @@ export const ammoApocryphal: IEquipmentItem[] = ammoCatalog
         introduced: item.introduced,
         extinct: item.extinct,
         reintroduced: item.reintroduced,
+        clanDates: item.clanDates,
         battleValue: Math.round((item.battleValue ?? 0) * PER_TON),
         heat: 0,
         heatAero: 0,

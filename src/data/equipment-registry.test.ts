@@ -40,10 +40,12 @@ describe("equipment catalog provenance", () => {
         expect(chemical.map(item => item.heat)).toEqual([6, 2, 1]);
     });
 
-    it("splits 'Mech Mortars by tech base, each side loading its own ammunition (TO:AUE p.221)", () => {
+    it("splits 'Mech Mortars by tech base, both sides loading the one ammunition record (TO:AUE p.221)", () => {
         const allItems = getEquipmentCatalogDefinitions().flatMap(definition => definition.equipment);
-        const is = isAmmoList.find(item => item.tag === "ammo-is-mech-mortar-standard")!;
-        const clan = clanAmmoList.find(item => item.tag === "ammo-clan-mech-mortar-standard")!;
+        // The rounds differ only in dates, so they are one record (catalog consolidation §2).
+        const is = universalAmmoList.find(item => item.tag === "ammo-mech-mortar-standard")!;
+        const clan = is;
+        expect(is.altTags).toEqual(expect.arrayContaining(["ammo-is-mech-mortar-standard", "ammo-clan-mech-mortar-standard"]));
         for (const size of [1, 2, 4, 8]) {
             const isMortar = allItems.find(item => item.tag === `mech-mortar-${size}`)!;
             const clanMortar = allItems.find(item => item.tag === `clan-mech-mortar-${size}`)!;
@@ -197,7 +199,7 @@ describe("equipment catalog provenance", () => {
         const lrmAmmo = universalAmmoList.find(item => item.tag === "ammo-lrm-standard")!;
         const srmAmmo = universalAmmoList.find(item => item.tag === "ammo-srm-standard")!;
         const lrmSwarm = isAmmoList.find(item => item.tag === "ammo-is-lrm-swarm")!;
-        const ac5Ammo = isAmmoList.find(item => item.tag === "ammo-is-ac-5-standard")!;
+        const ac5Ammo = universalAmmoList.find(item => item.tag === "ammo-ac-5-standard")!;
 
         expect(getCompatibleAmmo(mml7, lrmAmmo)).toBe(true);
         expect(getCompatibleAmmo(mml7, srmAmmo)).toBe(true);
@@ -238,8 +240,9 @@ describe("equipment catalog provenance", () => {
         const resolve = (legacyTag: string) => all.filter(item => equipmentMatchesIdentifier(item, legacyTag)).map(item => item.tag);
 
         expect(resolve("ammo-lrm-10")).toEqual(["ammo-lrm-standard"]);
-        // Split records keep the old tag on both sides; each tech list sees only its own copy.
-        expect(resolve("ammo-autocannon-standard-a")).toEqual(["ammo-is-ac-2-standard", "ammo-clan-ac-2-standard"]);
+        // The IS and Clan AC/2 rounds merged back into one record (catalog consolidation §2), which keeps every old tag.
+        expect(resolve("ammo-autocannon-standard-a")).toEqual(["ammo-ac-2-standard"]);
+        expect(resolve("ammo-clan-ac-2-standard")).toEqual(["ammo-ac-2-standard"]);
         expect(resolve("ammo-standard-autocannon-d-precision")).toEqual(["ammo-is-ac-20-precision"]);
         expect(resolve("ammo-autocannon-lb-x-c-cluster")).toEqual(["ammo-is-lb-10x-cluster"]);
         expect(resolve("ammo-atm-standard")).toEqual(["ammo-clan-atm-standard"]);
@@ -420,8 +423,9 @@ describe("equipment catalog provenance", () => {
         const clanItems = getEquipmentListByTech("clan");
         const ac20 = clanItems.find(item => item.tag === "clan-sl-autocannon-standard-d")!;
         const lrm10 = clanItems.find(item => item.tag === "clan-sl-lrm-10")!;
-        const clanAc20Ammo = clanAmmoList.find(item => item.tag === "ammo-clan-ac-20-standard")!;
-        const isAc20Ammo = isAmmoList.find(item => item.tag === "ammo-is-ac-20-standard")!;
+        // One AC/20 round for both sides (catalog consolidation §2): the Clan dates sit in clanDates.
+        const isAc20Ammo = universalAmmoList.find(item => item.tag === "ammo-ac-20-standard")!;
+        const clanAc20Ammo = { ...isAc20Ammo, ...isAc20Ammo.clanDates };
 
         expect([ac20.introduced, ac20.extinct]).toEqual([2500, 2850]);
         expect([lrm10.introduced, lrm10.extinct]).toEqual([2300, 2830]);
@@ -430,8 +434,8 @@ describe("equipment catalog provenance", () => {
         expect(getCompatibleAmmo(ac20, clanAc20Ammo)).toBe(true);
         expect(getWeaponShotsPerTon(lrm10, universalAmmoList.find(item => item.tag === "ammo-lrm-standard")!)).toBe(12);
         // The Inner Sphere list never sees the Clan copy, and vice versa.
-        expect(getEquipmentListByTech("is").some(item => item.tag === "clan-sl-lrm-10" || item.tag === "ammo-clan-ac-20-standard")).toBe(false);
-        expect(clanItems.some(item => item.tag === "ammo-is-ac-20-standard")).toBe(false);
+        expect(getEquipmentListByTech("is").some(item => item.tag === "clan-sl-lrm-10")).toBe(false);
+        expect(clanItems.some(item => item.tag === "ammo-ac-20-standard")).toBe(true);
     });
 
     it("keeps every registered item structurally complete", () => {

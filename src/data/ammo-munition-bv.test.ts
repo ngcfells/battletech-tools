@@ -7,7 +7,8 @@ import { ammoCatalog } from "./ammo";
 // standard round's BV (homing rounds are counted again at force level, through the TAG bonus). LB-X cluster rounds
 // share the standard round's row in the TechManual weapon tables.
 const bv = (tag: string) => {
-    const item = ammoCatalog.find((ammo) => ammo.tag === tag);
+    // A merged IS/Clan twin answers to the Clan tag as an alias (catalog consolidation §2).
+    const item = ammoCatalog.find((ammo) => ammo.tag === tag) ?? ammoCatalog.find((ammo) => !!ammo.altTags?.includes(tag));
     if (!item) throw new Error("no ammo " + tag);
     return item.battleValue;
 };
@@ -34,7 +35,7 @@ describe("alternate munition Battle Values (#34)", () => {
 
     it("finds the rounds named in the issue", () => {
         const tags = cases.map(([tag]) => tag);
-        for (const tag of ["ammo-is-lb-5x-cluster", "ammo-is-thumper-copperhead", "ammo-is-arrow-iv-homing", "ammo-clan-arrow-iv-homing"]) {
+        for (const tag of ["ammo-is-lb-5x-cluster", "ammo-thumper-copperhead", "ammo-is-arrow-iv-homing", "ammo-clan-arrow-iv-homing"]) {
             expect(tags).toContain(tag);
         }
     });
@@ -46,7 +47,7 @@ describe("alternate munition Battle Values (#34)", () => {
     it("matches the TechManual and Tactical Operations values for the three rounds in the issue and their Clan twins", () => {
         expect(bv("ammo-is-lb-5x-cluster")).toBe(10);
         expect(bv("ammo-clan-lb-5x-cluster")).toBe(12);
-        expect(bv("ammo-is-thumper-copperhead")).toBe(5);
+        expect(bv("ammo-thumper-copperhead")).toBe(5);
         expect(bv("ammo-clan-thumper-copperhead")).toBe(5);
         expect(bv("ammo-is-arrow-iv-homing")).toBe(30);
         expect(bv("ammo-clan-arrow-iv-homing")).toBe(30);

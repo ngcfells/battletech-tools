@@ -39,6 +39,15 @@ describe("catalog standing", () => {
         expect(failures).toEqual([]);
     });
 
+    it("uses null, not 0, for a date a record lacks", () => {
+        const zero = (dates: object | undefined) => ["prototype", "introduced", "extinct", "reintroduced"]
+            .some((key) => (dates as Record<string, unknown> | undefined)?.[key] === 0);
+        const failures = catalogs.flatMap(({ id, records }) => records
+            .filter((record) => zero(record) || zero(record.clanDates))
+            .map((record) => label(id, record)));
+        expect(failures).toEqual([]);
+    });
+
     it("clanDates sit only on Inner Sphere or universal records", () => {
         const failures = catalogs.flatMap(({ id, records }) => records
             .filter((record) => record.techBase === "clan" && record.clanDates)

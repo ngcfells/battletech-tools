@@ -136,12 +136,12 @@ describe("Technical Readout sheet: construction tables", () => {
         vehicle.setArmorAllocation("front", 16);
         vehicle.addEquipmentFromTag("autocannon-standard-b");
         vehicle.setEquipmentLocation(vehicle.getEquipmentList().at(-1)!.uuid!, "turret");
-        vehicle.addEquipmentFromTag("ammo-is-ac-5-standard");
+        vehicle.addEquipmentFromTag("ammo-ac-5-standard");
         const text = sheetText(vehicle);
         expect(text).toContain("Control Systems");
         expect(text).toContain("Internal Structure / Armor by location");
         expect(text).toContain("3 / 16");
-        expect(text).toContain("AC/5 - Standard Ammo (IS)");
+        expect(text).toContain("AC/5 - Standard Ammo");
         expect(text).toContain("Body");
     });
 

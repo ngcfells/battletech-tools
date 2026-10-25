@@ -21,6 +21,7 @@ import { equipmentArtillery } from "../data/equipment-artillery";
 import { equipmentBallistic } from "../data/equipment-ballistic";
 import { equipmentEnergy } from "../data/equipment-energy";
 import { equipmentMisc } from "../data/equipment-misc";
+import type { IEquipmentItem } from "../data/data-interfaces";
 import { getAvailableTonnagesForMechType, getTonnageBoundsForMechType } from "../data/mech-tonnages";
 import { universalEquipment } from "../data/universal-equipment";
 
@@ -32,6 +33,14 @@ const isArtilleryList = equipmentArtillery.filter((item) => item.techBase === "i
 const clanArtilleryList = equipmentArtillery.filter((item) => item.techBase === "clan");
 const isMiscList = equipmentMisc.filter((item) => item.techBase === "is");
 const clanMiscList = equipmentMisc.filter((item) => item.techBase === "clan");
+
+// A merged IS/Clan twin (catalog consolidation §2) is one universal record: the Inner Sphere reads its own dates, the
+// Clans its clanDates in their place, and the Clan tag is an alias.
+const seenBy = (tech: "is" | "clan", records: IEquipmentItem[], tag: string): IEquipmentItem | undefined => {
+    const item = records.find((record) => record.tag === tag && record.techBase === tech)
+        ?? records.find((record) => record.techBase === "universal" && (record.tag === tag || !!record.altTags?.includes(tag)));
+    return item && tech === "clan" && item.clanDates ? { ...item, prototype: undefined, ...item.clanDates } : item;
+};
 
 const isMissileList = equipmentMissile.filter((item) => item.techBase === "is");
 const clanMissileList = equipmentMissile.filter((item) => item.techBase === "clan");
@@ -2756,7 +2765,7 @@ describe("Batch 9a misc equipment catalogs", () => {
             "remote-sensor-dispenser-prototype": [2586, null, 2590, null, "IO:AE", 67],
         };
         for (const [tag, want] of Object.entries(expected)) {
-            const item = isMiscList.find(record => record.tag === tag);
+            const item = seenBy("is", equipmentMisc, tag);
             expect([item?.prototype, item?.introduced, item?.extinct, item?.reintroduced, item?.book, item?.page], tag).toEqual(want);
         }
     });
@@ -2795,7 +2804,7 @@ describe("Batch 9a misc equipment catalogs", () => {
             "clan-protomech-myomer-booster": [3066, 3068, null, null, "TM", 232],
         };
         for (const [tag, want] of Object.entries(expected)) {
-            const item = clanMiscList.find(record => record.tag === tag);
+            const item = seenBy("clan", equipmentMisc, tag);
             expect([item?.prototype, item?.introduced, item?.extinct, item?.reintroduced, item?.book, item?.page], tag).toEqual(want);
         }
     });
@@ -2810,7 +2819,7 @@ describe("Batch 9a misc equipment catalogs", () => {
     });
 
     it("prices Modular Armor at 10,000 C-bills per ton (TO:AUE p.217)", () => {
-        expect(isMiscList.find(item => item.tag === "modular-armor")?.cbills).toBe(10000);
+        expect(seenBy("is", equipmentMisc, "modular-armor")?.cbills).toBe(10000);
     });
 });
 
@@ -2914,7 +2923,7 @@ describe("Batch 10a energy weapon catalogs", () => {
             "prototype-small-pulse-laser": [2595, null, 2609, null, "IO:AE", 67],
         };
         for (const [tag, want] of Object.entries(expected)) {
-            const item = isEnergyList.find(record => record.tag === tag);
+            const item = isEnergyList.find(record => record.tag === tag) ?? seenBy("is", equipmentEnergy, tag);
             expect([item?.prototype, item?.introduced, item?.extinct, item?.reintroduced, item?.book, item?.page], tag).toEqual(want);
         }
     });
@@ -2971,7 +2980,7 @@ describe("Batch 10a energy weapon catalogs", () => {
             "clan-prototype-er-small-laser": [2819, null, 2825, null, "IO:AE", 91],
         };
         for (const [tag, want] of Object.entries(expected)) {
-            const item = clanEnergyList.find(record => record.tag === tag);
+            const item = clanEnergyList.find(record => record.tag === tag) ?? seenBy("clan", equipmentEnergy, tag);
             expect([item?.prototype, item?.introduced, item?.extinct, item?.reintroduced, item?.book, item?.page], tag).toEqual(want);
         }
     });
@@ -3496,7 +3505,7 @@ describe("Batch 12b standard ammunition follows its launcher", () => {
             "ammo-is-arrow-iv-standard": [2593, 2600, 2830, 3044, "TO:AUE", 96],
             "ammo-is-enhanced-lrm-standard": [3058, 3082, null, null, "TO:AUE", 139],
             "ammo-is-inarc-standard": [3054, 3062, null, null, "TM", 233],
-            "ammo-is-mech-mortar-standard": [2526, 2531, 2819, 3043, "TO:AUE", 136],
+            "ammo-mech-mortar-standard": [2526, 2531, 2819, 3043, "TO:AUE", 136],
             "ammo-is-mrm-standard": [3052, 3058, null, null, "TM", 231],
             "ammo-is-narc-standard": [2580, 2587, 2795, 3035, "TM", 233],
             "ammo-is-plasma-rifle-standard": [3061, 3068, null, null, "TM", 235],
@@ -3506,9 +3515,9 @@ describe("Batch 12b standard ammunition follows its launcher", () => {
             "ammo-is-thunderbolt-20-standard": [3052, 3072, null, null, "TO:AUE", 159],
             "ammo-is-heavy-machine-gun-standard": [3063, 3068, null, null, "TM", 228],
             "ammo-is-light-machine-gun-standard": [3064, 3068, null, null, "TM", 228],
-            "ammo-is-lrt-standard": [2370, 2380, null, null, "TM", 231],
+            "ammo-lrt-standard": [2370, 2380, null, null, "TM", 231],
             "ammo-is-enhanced-lrt-standard": [3058, 3082, null, null, "TO:AUE", 139],
-            "ammo-is-srt-standard": [2370, 2380, null, null, "TM", 231],
+            "ammo-srt-standard": [2370, 2380, null, null, "TM", 231],
             "ammo-is-rotary-ac-2-standard": [3060, 3062, null, null, "TM", 208],
             "ammo-is-rotary-ac-5-standard": [3060, 3062, null, null, "TM", 208],
             "ammo-is-ultra-ac-2-standard": [3055, 3057, null, null, "TM", 208],
@@ -3516,14 +3525,14 @@ describe("Batch 12b standard ammunition follows its launcher", () => {
             "ammo-is-ultra-ac-10-standard": [3055, 3057, null, null, "TM", 208],
             "ammo-is-ultra-ac-20-standard": [3057, 3060, null, null, "TM", 208],
             "ammo-is-gauss-rifle-standard": [2587, 2590, 2865, 3040, "TM", 219],
-            "ammo-is-heavy-flamer-standard": [undefined, 3068, null, null, "TO:AUE", 124],
-            "ammo-is-ac-2-standard": [2290, 2300, null, null, "TM", 208],
+            "ammo-heavy-flamer-standard": [undefined, 3068, null, null, "TO:AUE", 124],
+            "ammo-ac-2-standard": [2290, 2300, null, null, "TM", 208],
             "ammo-is-lb-2x-standard": [3055, 3058, null, null, "TM", 208],
-            "ammo-is-ac-5-standard": [2240, 2250, null, null, "TM", 208],
+            "ammo-ac-5-standard": [2240, 2250, null, null, "TM", 208],
             "ammo-is-lb-5x-standard": [3055, 3058, null, null, "TM", 208],
-            "ammo-is-ac-10-standard": [2443, 2460, null, null, "TM", 208],
+            "ammo-ac-10-standard": [2443, 2460, null, null, "TM", 208],
             "ammo-is-lb-10x-standard": [2590, 2595, 2840, 3035, "TM", 208],
-            "ammo-is-ac-20-standard": [2488, 2500, null, null, "TM", 208],
+            "ammo-ac-20-standard": [2488, 2500, null, null, "TM", 208],
             "ammo-is-lb-20x-standard": [3055, 3058, null, null, "TM", 208],
             "ammo-is-light-ac-2-standard": [3062, 3068, null, null, "TM", 208],
             "ammo-is-light-ac-5-standard": [3062, 3068, null, null, "TM", 208],
@@ -3544,7 +3553,7 @@ describe("Batch 12b standard ammunition follows its launcher", () => {
             "ammo-is-risc-apds-standard": [3134, 3137, null, null, "IO:AE", 85],
         };
         for (const [tag, want] of Object.entries(expected)) {
-            const item = isAmmoList.find(record => record.tag === tag);
+            const item = seenBy("is", ammoCatalog, tag);
             expect([item?.prototype, item?.introduced, item?.extinct, item?.reintroduced, item?.book, item?.page], tag).toEqual(want);
         }
     });
@@ -3608,7 +3617,7 @@ describe("Batch 12b standard ammunition follows its launcher", () => {
             "ammo-clan-ap-gauss-rifle-standard": [3065, 3069, null, null, "TM", 219],
         };
         for (const [tag, want] of Object.entries(expected)) {
-            const item = clanAmmoList.find(record => record.tag === tag);
+            const item = seenBy("clan", ammoCatalog, tag);
             expect([item?.prototype, item?.introduced, item?.extinct, item?.reintroduced, item?.book, item?.page], tag).toEqual(want);
         }
     });
@@ -3677,10 +3686,10 @@ describe("Batch 13 records without a canon source", () => {
 describe("Batch 14 prototype weapon statistics", () => {
     it("match the IO:AE construction, game data and Battle Value tables (pp.189, 210-213)", () => {
         const expected: [{ tag: string }[], string, Record<string, unknown>][] = [
-            [isBallisticList, "primitive-prototype-ac-2", { weight: 6, space: { battlemech: 1, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, cbills: 75000, battleValue: 37, range: { min: 4, short: 8, medium: 16, long: 24 }, shotsPerTon: 34, ammoBattleValue: 4, ammoTypes: ["ammo-is-ac-2-standard"], techRating: "c", rangeAero: "l" }],
-            [isBallisticList, "primitive-prototype-ac-5", { weight: 8, space: { battlemech: 4, protomech: -1, combatVehicle: 1, supportVehicle: 4, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, cbills: 125000, battleValue: 70, range: { min: 3, short: 6, medium: 12, long: 18 }, shotsPerTon: 15, ammoBattleValue: 7, ammoTypes: ["ammo-is-ac-5-standard"], techRating: "c", rangeAero: "m" }],
-            [isBallisticList, "primitive-prototype-ac-10", { weight: 12, space: { battlemech: 7, protomech: -1, combatVehicle: 1, supportVehicle: 7, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, cbills: 200000, battleValue: 123, range: { min: 0, short: 5, medium: 10, long: 15 }, shotsPerTon: 8, ammoBattleValue: 12, ammoTypes: ["ammo-is-ac-10-standard"], techRating: "c", rangeAero: "m" }],
-            [isBallisticList, "primitive-prototype-ac-20", { weight: 14, space: { battlemech: 10, protomech: -1, combatVehicle: 1, supportVehicle: 10, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, cbills: 300000, battleValue: 178, range: { min: 0, short: 3, medium: 6, long: 9 }, shotsPerTon: 4, ammoBattleValue: 17, ammoTypes: ["ammo-is-ac-20-standard"], techRating: "c", rangeAero: "s" }],
+            [isBallisticList, "primitive-prototype-ac-2", { weight: 6, space: { battlemech: 1, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, cbills: 75000, battleValue: 37, range: { min: 4, short: 8, medium: 16, long: 24 }, shotsPerTon: 34, ammoBattleValue: 4, ammoTypes: ["ammo-ac-2-standard"], techRating: "c", rangeAero: "l" }],
+            [isBallisticList, "primitive-prototype-ac-5", { weight: 8, space: { battlemech: 4, protomech: -1, combatVehicle: 1, supportVehicle: 4, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, cbills: 125000, battleValue: 70, range: { min: 3, short: 6, medium: 12, long: 18 }, shotsPerTon: 15, ammoBattleValue: 7, ammoTypes: ["ammo-ac-5-standard"], techRating: "c", rangeAero: "m" }],
+            [isBallisticList, "primitive-prototype-ac-10", { weight: 12, space: { battlemech: 7, protomech: -1, combatVehicle: 1, supportVehicle: 7, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, cbills: 200000, battleValue: 123, range: { min: 0, short: 5, medium: 10, long: 15 }, shotsPerTon: 8, ammoBattleValue: 12, ammoTypes: ["ammo-ac-10-standard"], techRating: "c", rangeAero: "m" }],
+            [isBallisticList, "primitive-prototype-ac-20", { weight: 14, space: { battlemech: 10, protomech: -1, combatVehicle: 1, supportVehicle: 10, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, cbills: 300000, battleValue: 178, range: { min: 0, short: 3, medium: 6, long: 9 }, shotsPerTon: 4, ammoBattleValue: 17, ammoTypes: ["ammo-ac-20-standard"], techRating: "c", rangeAero: "s" }],
             [isBallisticList, "prototype-autocannon-lbx-10", { weight: 11, space: { battlemech: 7, protomech: -1, combatVehicle: 1, supportVehicle: 7, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, cbills: 1600000, battleValue: 148, ammoBattleValue: 15 }],
             [isBallisticList, "prototype-gauss-rifle", { weight: 15, space: { battlemech: 8, protomech: -1, combatVehicle: 1, supportVehicle: 8, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, cbills: 1200000, battleValue: 320, ammoBattleValue: 40 }],
             [isBallisticList, "prototype-autocannon-uac-5", { weight: 9, space: { battlemech: 6, protomech: -1, combatVehicle: 1, supportVehicle: 6, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, cbills: 1000000, battleValue: 112, ammoBattleValue: 14 }],
@@ -3710,7 +3719,7 @@ describe("Batch 14 prototype weapon statistics", () => {
             [clanMiscList, "clan-nova-cews", { cbills: 1110000 }],
         ];
         for (const [catalog, tag, fields] of expected) {
-            const item = catalog.find(entry => entry.tag === tag);
+            const item = catalog.find(entry => entry.tag === tag) ?? seenBy("is", [...equipmentMisc, ...equipmentEnergy, ...equipmentArtillery, ...ammoCatalog], tag);
             expect(item, tag).toBeDefined();
             expect(item, tag).toMatchObject(fields);
         }
@@ -3757,33 +3766,30 @@ describe("Batch 15 tech-base splits", () => {
         }
     });
 
-    it("splits Artillery Cannons: the Clan prototype is 3032, twenty years after the Lyran one (IO:AE p.31)", () => {
+    // The cannons differ only in dates, so they are one record again (catalog consolidation §2).
+    it("keeps one record per Artillery Cannon: the Clan prototype is 3032, twenty years after the Lyran one (IO:AE p.31)", () => {
         for (const cannon of ["long-tom-cannon", "sniper-cannon", "thumper-cannon"]) {
-            const is = isArtilleryList.find(item => item.tag === cannon);
-            const clan = clanArtilleryList.find(item => item.tag === `clan-${cannon}`);
-            expect(is, cannon).toMatchObject({ catalog: "is", prototype: 3012, introduced: 3079, extinct: null, book: "TO:AUE", page: 97 });
-            expect(clan, `clan-${cannon}`).toMatchObject({ catalog: "clan", prototype: 3032, introduced: 3079, extinct: null, book: "TO:AUE", page: 97 });
-            expect([clan?.weight, clan?.space, clan?.battleValue, clan?.ammoBattleValue, clan?.cbills, clan?.heat, clan?.damage, clan?.range, clan?.shotsPerTon])
-                .toEqual([is?.weight, is?.space, is?.battleValue, is?.ammoBattleValue, is?.cbills, is?.heat, is?.damage, is?.range, is?.shotsPerTon]);
-            expect(universalTags).not.toContain(cannon);
+            const record = equipmentArtillery.find(item => item.tag === cannon);
+            expect(record, cannon).toMatchObject({ techBase: "universal", prototype: 3012, introduced: 3079, extinct: null, book: "TO:AUE", page: 97 });
+            expect(record?.clanDates, cannon).toEqual({ prototype: 3032, introduced: 3079, extinct: null, reintroduced: null });
+            expect(record?.altTags, cannon).toContain(`clan-${cannon}`);
+            expect(equipmentArtillery.some(item => item.tag === `clan-${cannon}`), cannon).toBe(false);
         }
     });
 
-    it("splits the Laser Insulator: lost in the Inner Sphere in 2820, never in Clan space (IO:AE p.38)", () => {
-        const is = isMiscList.find(item => item.tag === "laser-insulator");
-        const clan = clanMiscList.find(item => item.tag === "clan-laser-insulator");
-        expect(is).toMatchObject({ catalog: "is", prototype: 2575, introduced: null, extinct: 2820, reintroduced: null, book: "TO:AUE", page: 134 });
-        expect(clan).toMatchObject({ catalog: "clan", prototype: 2575, introduced: null, extinct: null, reintroduced: null, book: "TO:AUE", page: 134 });
-        expect([clan?.weight, clan?.space, clan?.cbills, clan?.battleValue]).toEqual([is?.weight, is?.space, is?.cbills, is?.battleValue]);
-        expect(universalTags).not.toContain("laser-insulator");
+    it("keeps one Laser Insulator, lost in the Inner Sphere in 2820 and never in Clan space (IO:AE p.38)", () => {
+        const record = equipmentMisc.find(item => item.tag === "laser-insulator");
+        expect(record).toMatchObject({ techBase: "universal", prototype: 2575, introduced: null, extinct: 2820, reintroduced: null, book: "TO:AUE", page: 134 });
+        expect(record?.clanDates).toEqual({ prototype: 2575, introduced: null, extinct: null, reintroduced: null });
+        expect(record?.altTags).toContain("clan-laser-insulator");
+        expect(equipmentMisc.some(item => item.tag === "clan-laser-insulator")).toBe(false);
     });
 
-    it("gives the Clans their own Modular Armor record: prototype 3074 (IO:AE p.29)", () => {
-        const is = isMiscList.find(item => item.tag === "modular-armor");
-        const clan = clanMiscList.find(item => item.tag === "clan-modular-armor");
-        expect(is).toMatchObject({ prototype: 3072, introduced: 3096, isModularArmor: true });
-        expect(clan).toMatchObject({ catalog: "clan", prototype: 3074, introduced: 3096, extinct: null, book: "TO:AUE", page: 93, isModularArmor: true });
-        expect([clan?.weight, clan?.space, clan?.cbills, clan?.additionalArmor]).toEqual([is?.weight, is?.space, is?.cbills, is?.additionalArmor]);
+    it("keeps one Modular Armor record, with the Clan prototype in 3074 (IO:AE p.29)", () => {
+        const record = equipmentMisc.find(item => item.tag === "modular-armor");
+        expect(record).toMatchObject({ techBase: "universal", prototype: 3072, introduced: 3096, isModularArmor: true, book: "TO:AUE", page: 93 });
+        expect(record?.clanDates).toEqual({ prototype: 3074, introduced: 3096, extinct: null, reintroduced: null });
+        expect(record?.altTags).toContain("clan-modular-armor");
     });
 
     it("loads designs saved with the old universal tags: each side gets its own record", () => {
@@ -3798,12 +3804,17 @@ describe("Batch 15 tech-base splits", () => {
         const oldTags: [string, string][] = [
             ["mech-mortar-1", "clan-mech-mortar-1"], ["mech-mortar-2", "clan-mech-mortar-2"],
             ["mech-mortar-4", "clan-mech-mortar-4"], ["mech-mortar-8", "clan-mech-mortar-8"],
-            ["long-tom-cannon", "clan-long-tom-cannon"], ["sniper-cannon", "clan-sniper-cannon"],
-            ["thumper-cannon", "clan-thumper-cannon"], ["laser-insulator", "clan-laser-insulator"],
         ];
         for (const [oldTag, clanTag] of oldTags) {
             expect(load("is", oldTag)?.tag, `is ${oldTag}`).toBe(oldTag);
             expect(load("clan", oldTag)?.tag, `clan ${oldTag}`).toBe(clanTag);
+        }
+        // The Laser Insulator and the Artillery Cannons merged back into one record each (catalog consolidation §2):
+        // both old tags load it on either side.
+        for (const tech of ["is", "clan"]) {
+            for (const record of ["laser-insulator", "long-tom-cannon", "sniper-cannon", "thumper-cannon"]) {
+                for (const tag of [record, `clan-${record}`]) expect(load(tech, tag)?.tag, `${tech} ${tag}`).toBe(record);
+            }
         }
         expect(load("clan", "mech-mortar-8")?.weight).toBe(5);
         expect(load("is", "mech-mortar-8")?.weight).toBe(10);
@@ -4080,7 +4091,7 @@ describe("Batch 18 TechManual table audit", () => {
             [universalEquipment, "wrecking-ball", { cbills: 80000 }],
         ];
         for (const [catalog, tag, fields] of expected) {
-            const item = catalog.find(entry => entry.tag === tag);
+            const item = catalog.find(entry => entry.tag === tag) ?? seenBy("is", [...equipmentMisc, ...equipmentEnergy, ...equipmentArtillery, ...ammoCatalog], tag);
             expect(item, tag).toBeDefined();
             expect(item, tag).toMatchObject(fields);
         }
@@ -4114,7 +4125,7 @@ describe("Batch 19 TO:AUE table audit", () => {
             [clanMiscList, "clan-watchdog-cews", { cbills: 600000 }],
         ];
         for (const [catalog, tag, fields] of expected) {
-            const item = catalog.find(entry => entry.tag === tag);
+            const item = catalog.find(entry => entry.tag === tag) ?? seenBy("is", [...equipmentMisc, ...equipmentEnergy, ...equipmentArtillery, ...ammoCatalog], tag);
             expect(item, tag).toBeDefined();
             expect(item, tag).toMatchObject(fields);
         }
@@ -4134,52 +4145,52 @@ describe("Batch 12c special munitions", () => {
             "ammo-is-inarc-explosive": [3054, 3062, null, null, "TM", 233],
             "ammo-is-inarc-haywire": [3054, 3062, null, null, "TM", 233],
             "ammo-is-inarc-nemesis": [3054, 3062, null, null, "TM", 233],
-            "ammo-is-long-tom-copperhead": [2640, 2645, 2800, 3051, "TO:AUE", 167],
-            "ammo-is-long-tom-thunder": [undefined, 2621, 2833, 3051, "TO:AUE", 169],
+            "ammo-long-tom-copperhead": [2640, 2645, 2800, 3051, "TO:AUE", 167],
+            "ammo-long-tom-thunder": [undefined, 2621, 2833, 3051, "TO:AUE", 169],
             "ammo-is-lrm-artemis-iv": [2592, 2598, 2855, 3035, "TM", 207],
             "ammo-is-lrm-ftl": [3053, null, null, null, "TO:AUE", 180],
-            "ammo-is-lrm-narc": [2520, 2587, 2795, 3035, "TW", 142],
+            "ammo-lrm-narc": [2520, 2587, 2795, 3035, "TW", 142],
             "ammo-is-lrm-swarm": [2615, 2621, 2833, 3053, "TO:AUE", 183],
             "ammo-is-lrt-artemis-iv": [2592, 2598, 2855, 3035, "TM", 207],
             "ammo-is-mech-mortar-airburst": [2540, 2544, 2819, 3043, "TO:AUE", 185],
             "ammo-is-mech-mortar-apersonnel": [2526, 2531, 2819, 3043, "TO:AUE", 186],
             "ammo-is-mech-mortar-flare": [2533, 2536, 2819, 3043, "TO:AUE", 186],
             "ammo-is-mech-mortar-smoke": [2526, 2531, 2819, 3043, "TO:AUE", 187],
-            "ammo-is-sniper-copperhead": [2640, 2645, 2800, 3051, "TO:AUE", 167],
-            "ammo-is-sniper-thunder": [undefined, 2621, 2833, 3051, "TO:AUE", 169],
+            "ammo-sniper-copperhead": [2640, 2645, 2800, 3051, "TO:AUE", 167],
+            "ammo-sniper-thunder": [undefined, 2621, 2833, 3051, "TO:AUE", 169],
             "ammo-is-srm-artemis-iv": [2592, 2598, 2855, 3035, "TM", 207],
             "ammo-is-srm-magnetic-pulse": [3055, 3057, 3065, null, "TO:AUE", 182],
             "ammo-is-srm-narc": [2520, 2587, 2795, 3035, "TW", 142],
             "ammo-is-srm-tandem-charge": [2757, 3062, null, null, "TO:AUE", 184],
             "ammo-is-srt-artemis-iv": [2592, 2598, 2855, 3035, "TM", 207],
-            "ammo-is-thumper-copperhead": [2640, 2645, 2800, 3051, "TO:AUE", 167],
-            "ammo-is-thumper-thunder": [undefined, 2621, 2833, 3051, "TO:AUE", 169],
-            "ammo-is-arrow-iv-fae": [2593, 2600, 2830, 3044, "IO:AE", 159],
-            "ammo-is-lrm-arad": [3066, null, null, null, "TO:AUE", 180],
-            "ammo-is-heavy-flamer-coolant": [undefined, 3068, null, null, "TO:AUE", 173],
-            "ammo-is-ac-2-flak": [2290, 2310, null, null, "TO:AUE", 164],
-            "ammo-is-ac-2-tracer": [2290, 2300, null, null, "TO:AUE", 165],
+            "ammo-thumper-copperhead": [2640, 2645, 2800, 3051, "TO:AUE", 167],
+            "ammo-thumper-thunder": [undefined, 2621, 2833, 3051, "TO:AUE", 169],
+            "ammo-arrow-iv-fae": [2593, 2600, 2830, 3044, "IO:AE", 159],
+            "ammo-lrm-arad": [3066, null, null, null, "TO:AUE", 180],
+            "ammo-heavy-flamer-coolant": [undefined, 3068, null, null, "TO:AUE", 173],
+            "ammo-ac-2-flak": [2290, 2310, null, null, "TO:AUE", 164],
+            "ammo-ac-2-tracer": [2290, 2300, null, null, "TO:AUE", 165],
             "ammo-is-ac-2-armor-piercing": [3055, 3059, null, null, "TM", 208],
             "ammo-is-ac-2-caseless": [3056, 3079, null, null, "TO:AUE", 164],
             "ammo-is-ac-2-flechette": [3053, 3055, null, null, "TM", 208],
             "ammo-is-ac-2-precision": [3058, 3062, null, null, "TM", 208],
             "ammo-is-lb-2x-cluster": [3055, 3058, null, null, "TM", 208],
-            "ammo-is-ac-5-flak": [2240, 2310, null, null, "TO:AUE", 164],
-            "ammo-is-ac-5-tracer": [2240, 2300, null, null, "TO:AUE", 165],
+            "ammo-ac-5-flak": [2240, 2310, null, null, "TO:AUE", 164],
+            "ammo-ac-5-tracer": [2240, 2300, null, null, "TO:AUE", 165],
             "ammo-is-ac-5-armor-piercing": [3055, 3059, null, null, "TM", 208],
             "ammo-is-ac-5-caseless": [3056, 3079, null, null, "TO:AUE", 164],
             "ammo-is-ac-5-flechette": [3053, 3055, null, null, "TM", 208],
             "ammo-is-ac-5-precision": [3058, 3062, null, null, "TM", 208],
             "ammo-is-lb-5x-cluster": [3055, 3058, null, null, "TM", 208],
-            "ammo-is-ac-10-flak": [2443, 2460, null, null, "TO:AUE", 164],
-            "ammo-is-ac-10-tracer": [2443, 2460, null, null, "TO:AUE", 165],
+            "ammo-ac-10-flak": [2443, 2460, null, null, "TO:AUE", 164],
+            "ammo-ac-10-tracer": [2443, 2460, null, null, "TO:AUE", 165],
             "ammo-is-ac-10-armor-piercing": [3055, 3059, null, null, "TM", 208],
             "ammo-is-ac-10-caseless": [3056, 3079, null, null, "TO:AUE", 164],
             "ammo-is-ac-10-flechette": [3053, 3055, null, null, "TM", 208],
             "ammo-is-ac-10-precision": [3058, 3062, null, null, "TM", 208],
             "ammo-is-lb-10x-cluster": [2590, 2595, 2840, 3035, "TM", 208],
-            "ammo-is-ac-20-flak": [2488, 2500, null, null, "TO:AUE", 164],
-            "ammo-is-ac-20-tracer": [2488, 2500, null, null, "TO:AUE", 165],
+            "ammo-ac-20-flak": [2488, 2500, null, null, "TO:AUE", 164],
+            "ammo-ac-20-tracer": [2488, 2500, null, null, "TO:AUE", 165],
             "ammo-is-ac-20-armor-piercing": [3055, 3059, null, null, "TM", 208],
             "ammo-is-ac-20-caseless": [3056, 3079, null, null, "TO:AUE", 164],
             "ammo-is-ac-20-flechette": [3053, 3055, null, null, "TM", 208],
@@ -4257,7 +4268,7 @@ describe("Batch 12c special munitions", () => {
             "ammo-is-srm-acid": [3053, null, null, null, "TO:AUE", 179],
         };
         for (const [tag, want] of Object.entries(expected)) {
-            const item = isAmmoList.find(record => record.tag === tag);
+            const item = seenBy("is", ammoCatalog, tag);
             expect([item?.prototype, item?.introduced, item?.extinct, item?.reintroduced, item?.book, item?.page], tag).toEqual(want);
         }
     });
@@ -4332,7 +4343,7 @@ describe("Batch 12c special munitions", () => {
             "ammo-clan-bomb-as-missile": [undefined, 3076, null, null, "TO:AUE", 170],
         };
         for (const [tag, want] of Object.entries(expected)) {
-            const item = clanAmmoList.find(record => record.tag === tag);
+            const item = seenBy("clan", ammoCatalog, tag);
             expect([item?.prototype, item?.introduced, item?.extinct, item?.reintroduced, item?.book, item?.page], tag).toEqual(want);
         }
     });
@@ -4802,7 +4813,7 @@ describe("Batch 26 explosive ammunition penalty by location (TM p.302, TO:AUE p.
             expect(mech.moveCritical("un", from, location, slot), `${tag} in ${location}`).toBe(true);
         };
         for (const [tag, location] of options.items ?? []) place(tag, location);
-        for (const location of options.ammo) place(tech === "clan" ? "ammo-clan-lb-10x-standard" : "ammo-is-ac-10-standard", location);
+        for (const location of options.ammo) place(tech === "clan" ? "ammo-clan-lb-10x-standard" : "ammo-ac-10-standard", location);
         const log = mech.getBVCalcHTML().split("<br />");
         return {
             locations: log.filter(line => /^Explosive Ammo Crit in /.test(line)).map(line => /in (\w+)/.exec(line)![1]).sort(),
@@ -4936,7 +4947,7 @@ describe("Batch 28 Industrial Equipment Table (TM pp.344-345, errata v8.0)", () 
             [universalEquipment, "wrecking-ball", { space: { battlemech: 5, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: -1, smallCraft: -1, dropShip: -1 } }],
         ];
         for (const [catalog, tag, fields] of expected) {
-            const item = catalog.find(entry => entry.tag === tag);
+            const item = catalog.find(entry => entry.tag === tag) ?? seenBy("is", [...equipmentMisc, ...equipmentEnergy, ...equipmentArtillery, ...ammoCatalog], tag);
             expect(item, tag).toBeDefined();
             expect(item, tag).toMatchObject(fields);
         }
@@ -4997,7 +5008,7 @@ describe("Batch 28 unit slot columns of the Weapons and Equipment Tables (TM pp.
             [clanMiscList, "clan-targeting-computer", { space: { battlemech: 1, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: 0, smallCraft: -1, dropShip: -1 } }],
         ];
         for (const [catalog, tag, fields] of expected) {
-            const item = catalog.find(entry => entry.tag === tag);
+            const item = catalog.find(entry => entry.tag === tag) ?? seenBy("is", [...equipmentMisc, ...equipmentEnergy, ...equipmentArtillery, ...ammoCatalog], tag);
             expect(item, tag).toBeDefined();
             expect(item, tag).toMatchObject(fields);
         }
@@ -5008,7 +5019,8 @@ describe("Batch 29 unit slot columns of the TO:AUE construction tables (pp.217-2
     it("gives advanced weapons and equipment their ProtoMech, vehicle and aerospace slot counts", () => {
         const expected: [{ tag: string }[], string, Record<string, unknown>][] = [
             [isMiscList, "bloodhound-active-probe", { space: { battlemech: 3, protomech: -1, combatVehicle: 1, supportVehicle: 3, aerospaceFighter: 1, smallCraft: 1, dropShip: 0 } }],
-            [isMiscList, "angel-ecm", { space: { battlemech: 2, protomech: -1, combatVehicle: 1, supportVehicle: 2, aerospaceFighter: 1, smallCraft: 1, dropShip: 0 } }],
+            // A merged IS/Clan twin takes the Clan ProtoMech column (catalog consolidation §2): ProtoMechs are Clan units.
+            [isMiscList, "angel-ecm", { space: { battlemech: 2, protomech: 1, combatVehicle: 1, supportVehicle: 2, aerospaceFighter: 1, smallCraft: 1, dropShip: 0 } }],
             [isMiscList, "modular-armor", { space: { battlemech: 1, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: 2, smallCraft: -1, dropShip: -1 } }],
             [isMiscList, "c3-boosted-master", { space: { battlemech: 6, protomech: -1, combatVehicle: 1, supportVehicle: 6, aerospaceFighter: -1, smallCraft: -1, dropShip: -1 } }],
             [isMiscList, "case-ii", { space: { battlemech: 1, protomech: -1, combatVehicle: -1, supportVehicle: -1, aerospaceFighter: 0, smallCraft: -1, dropShip: -1 } }],
@@ -5022,7 +5034,7 @@ describe("Batch 29 unit slot columns of the TO:AUE construction tables (pp.217-2
             [universalEquipment, "long-tom-artillery", { space: { battlemech: 30, protomech: -1, combatVehicle: 1, supportVehicle: 15, aerospaceFighter: -1, smallCraft: 1, dropShip: 1 } }],
             [universalEquipment, "fluid-gun", { space: { battlemech: 2, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
             [clanBallisticList, "clan-autocannon-rac-5", { space: { battlemech: 8, protomech: -1, combatVehicle: 1, supportVehicle: 8, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
-            [isEnergyList, "heavy-flamer", { space: { battlemech: 1, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: -1, smallCraft: -1, dropShip: -1 } }],
+            [isEnergyList, "heavy-flamer", { space: { battlemech: 1, protomech: 1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: -1, smallCraft: -1, dropShip: -1 } }],
             [isEnergyList, "is-laser-ams", { space: { battlemech: 2, protomech: -1, combatVehicle: 1, supportVehicle: 2, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
             [clanEnergyList, "clan-heavy-flamer", { space: { battlemech: 1, protomech: 1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: -1, smallCraft: -1, dropShip: -1 } }],
             [clanEnergyList, "clan-improved-heavy-medium-laser", { space: { battlemech: 2, protomech: 1, combatVehicle: 1, supportVehicle: 2, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
@@ -5049,7 +5061,7 @@ describe("Batch 29 unit slot columns of the TO:AUE construction tables (pp.217-2
             [isBallisticList, "heavy-rifle", { space: { battlemech: 3, protomech: -1, combatVehicle: 1, supportVehicle: 3, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 } }],
         ];
         for (const [catalog, tag, fields] of expected) {
-            const item = catalog.find(entry => entry.tag === tag);
+            const item = catalog.find(entry => entry.tag === tag) ?? seenBy("is", [...equipmentMisc, ...equipmentEnergy, ...equipmentArtillery, ...ammoCatalog], tag);
             expect(item, tag).toBeDefined();
             expect(item, tag).toMatchObject(fields);
         }
@@ -5295,7 +5307,7 @@ describe("Batch 32 physical weapon to-hit modifiers (TW p.146, TO:AUE p.216)", (
             [universalEquipment, "wrecking-ball", { accuracyModifier: 1 }],
         ];
         for (const [catalog, tag, fields] of expected) {
-            const item = catalog.find(entry => entry.tag === tag);
+            const item = catalog.find(entry => entry.tag === tag) ?? seenBy("is", [...equipmentMisc, ...equipmentEnergy, ...equipmentArtillery, ...ammoCatalog], tag);
             expect(item, tag).toBeDefined();
             expect(item, tag).toMatchObject(fields);
         }
@@ -5514,16 +5526,13 @@ describe("Batch 37 engine requirements and the one-jammer limit (IO:AE pp.85, 88
 describe("Batch 38 Coolant Pod (TO:AUE pp.116, 193)", () => {
     const space = { battlemech: 1, protomech: -1, combatVehicle: -1, supportVehicle: -1, aerospaceFighter: 1, smallCraft: -1, dropShip: -1 };
 
-    it("lists an Inner Sphere and a Clan record with the table values and IO:AE dates", () => {
-        expect(isMiscList.find(item => item.tag === "coolant-pod")).toMatchObject({
-            name: "Coolant Pod", cbills: 50000, weight: 1, space, battleValue: 0, explosive: true,
+    it("lists one record with the table values and the IO:AE dates of each tech base", () => {
+        expect(seenBy("is", equipmentMisc, "coolant-pod")).toMatchObject({
+            name: "Coolant Pod", techBase: "universal", cbills: 50000, weight: 1, space, battleValue: 0, explosive: true,
             prototype: 3049, introduced: 3079, extinct: null, reintroduced: null, techRating: "d", book: "TO:AUE", page: 116,
         });
-        const clan = clanMiscList.find(item => item.tag === "clan-coolant-pod");
-        expect(clan).toMatchObject({
-            name: "Coolant Pod (Clan)", cbills: 50000, weight: 1, space, battleValue: 0, explosive: true,
-            introduced: 3079, extinct: null, reintroduced: null, techRating: "d", book: "TO:AUE", page: 116,
-        });
+        const clan = seenBy("clan", equipmentMisc, "clan-coolant-pod");
+        expect(clan).toMatchObject({ tag: "coolant-pod", introduced: 3079, extinct: null, reintroduced: null });
         expect(clan?.prototype).toBeUndefined();
     });
 
@@ -6104,17 +6113,17 @@ describe("Batch 47 Collapsible Command Module, Full-Head Ejection System, Indust
             cbills: 1725000, weight: 0, battleValue: 0, space: { battlemech: 0, ...mechOnly }, maxPerUnit: 1, maxPerUnitGroup: "full-head-ejection-system",
             extinct: null, reintroduced: null, techRating: "d", book: "TO:AUE", page: 122,
         };
-        expect(isMiscList.find(item => item.tag === "full-head-ejection-system")).toMatchObject({ name: "Full-Head Ejection System", prototype: 3020, introduced: 3023, ...common });
-        const clan = clanMiscList.find(item => item.tag === "clan-full-head-ejection-system");
-        expect(clan).toMatchObject({ name: "Full-Head Ejection System (Clan)", introduced: 3052, ...common });
+        expect(seenBy("is", equipmentMisc, "full-head-ejection-system")).toMatchObject({ name: "Full-Head Ejection System", prototype: 3020, introduced: 3023, ...common });
+        const clan = seenBy("clan", equipmentMisc, "clan-full-head-ejection-system");
+        expect(clan).toMatchObject({ name: "Full-Head Ejection System", introduced: 3052, ...common });
         expect(clan?.prototype).toBeUndefined();
     });
 
     it("offers the Full-Head Ejection System from 3023 (Inner Sphere) and 3052 (Clan)", () => {
         expect(offered(build({ era: "late-sw-rn" }), "full-head-ejection-system", 3)).toBe(true);
         expect(offered(build({ era: "late-sw-lt" }), "full-head-ejection-system", 4)).toBe(false);
-        expect(offered(build({ tech: "clan", era: "clan-inv" }), "clan-full-head-ejection-system", 3)).toBe(true);
-        expect(offered(build({ tech: "clan", era: "political-century" }), "clan-full-head-ejection-system", 4)).toBe(false);
+        expect(offered(build({ tech: "clan", era: "clan-inv" }), "full-head-ejection-system", 3)).toBe(true);
+        expect(offered(build({ tech: "clan", era: "political-century" }), "full-head-ejection-system", 4)).toBe(false);
     });
 
     it("mounts one Full-Head Ejection System at no tonnage or critical space", () => {

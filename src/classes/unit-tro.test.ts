@@ -56,7 +56,7 @@ const scorpion = (): Vehicle => {
     vehicle.setCruiseMP(4);
     vehicle.setHasTurret(true);
     ["front", "right", "left", "rear", "turret"].forEach((location, index) => vehicle.setArmorAllocation(location as never, [16, 11, 11, 10, 16][index]));
-    for (const [tag, location, weight] of [["machine-gun", "turret"], ["autocannon-standard-b", "turret"], ["ammo-machine-gun-standard", "", 0.5], ["ammo-is-ac-5-standard", ""]] as [string, string, number?][]) {
+    for (const [tag, location, weight] of [["machine-gun", "turret"], ["autocannon-standard-b", "turret"], ["ammo-machine-gun-standard", "", 0.5], ["ammo-ac-5-standard", ""]] as [string, string, number?][]) {
         vehicle.addEquipmentFromTag(tag);
         const item = vehicle.getEquipmentList().at(-1)!;
         if (weight) item.weight = weight;
@@ -87,7 +87,7 @@ describe("Vehicle Technical Readout construction table", () => {
         expect(rows).toContainEqual({ label: "Front", value: "3 / 16", indent: true });
         expect(rows).toContainEqual({ label: "Turret", value: "3 / 16", indent: true });
         expect(rows).toContainEqual({ label: "Autocannon/5", value: "Turret", mass: "8" });
-        expect(rows).toContainEqual({ label: "AC/5 - Standard Ammo (IS)", value: "Body", mass: "1" });
+        expect(rows).toContainEqual({ label: "AC/5 - Standard Ammo", value: "Body", mass: "1" });
     });
 
     it("names locations for the equipment makes, and leaves ammunition out of them", () => {

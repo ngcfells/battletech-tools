@@ -64,7 +64,7 @@ describe("ArtVee construction", () => {
         vehicle.setHasTurret(true);
         vehicle.addEquipmentFromTag(options.combo ?? "custom-artvee-thumper-combo", options.location ?? "turret");
         vehicle.addEquipmentFromTag("ammo-thumper-standard", "body");
-        vehicle.addEquipmentFromTag("ammo-is-ac-5-standard", "body");
+        vehicle.addEquipmentFromTag("ammo-ac-5-standard", "body");
         vehicle.setArtVee(true);
         return vehicle;
     };
@@ -256,7 +256,7 @@ describe("ArtVee construction", () => {
         expect(loaded.isArtVee()).toBe(true);
         expect(getArtVeeVariant(loaded)).toBe("thumper");
         expect(loaded.getEquipmentList().filter((item) => item.isAmmo).map((item) => item.tag).sort())
-            .toEqual(["ammo-is-ac-5-standard", "ammo-thumper-standard"]);
+            .toEqual(["ammo-ac-5-standard", "ammo-thumper-standard"]);
         expect(loaded.getImportIssues()).toEqual([]);
 
         const ordinary = JSON.parse(saved);
@@ -520,7 +520,7 @@ describe("ArtVee record sheet notes", () => {
         vehicle.setHasTurret(true);
         vehicle.addEquipmentFromTag("custom-artvee-thumper-combo", "turret");
         vehicle.addEquipmentFromTag("ammo-thumper-standard", "body");
-        vehicle.addEquipmentFromTag("ammo-is-ac-5-standard", "body");
+        vehicle.addEquipmentFromTag("ammo-ac-5-standard", "body");
         vehicle.setArtVee(true);
         return vehicle;
     };

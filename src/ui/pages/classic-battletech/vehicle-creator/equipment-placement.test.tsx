@@ -44,7 +44,7 @@ describe("vehicle equipment placement: sponsons", () => {
         const tank = new Vehicle();
         tank.setMotiveType("tracked");
         tank.setTonnage(60);
-        tank.addEquipmentFromTag("ammo-is-ac-5-standard");
+        tank.addEquipmentFromTag("ammo-ac-5-standard");
         const ammo = tank.getEquipmentList()[tank.getEquipmentList().length - 1];
         renderPlacement(tank);
         expect(screen.queryByLabelText(`${ammo.name} location`)).toBeNull();

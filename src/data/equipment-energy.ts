@@ -239,9 +239,11 @@ export const equipmentEnergy: IEquipmentItem[] = [
     {
         isAmmo: false,
         name: "ER Flamer",
+        altNames: ["ER Flamer (Clan)", "Clan ER Flamer"],
         tag: "er-flamer",
         editions: ["total-warfare", "battlemech-manual", "core-rulebook"],
-        techBase: "is",
+        techBase: "universal",
+        altTags: ["clan-er-flamer"],
         category: "Energy Weapons",
         damage: 2,
         sort: "flamer, er",
@@ -262,7 +264,7 @@ export const equipmentEnergy: IEquipmentItem[] = [
         },
         space: {
             battlemech: 1,
-            protomech: -1,
+            protomech: 1,
             combatVehicle: 1,
             supportVehicle: 1,
             aerospaceFighter: 1,
@@ -270,7 +272,7 @@ export const equipmentEnergy: IEquipmentItem[] = [
             dropShip: 1
         },
         shotsPerTon: 0,
-        minAmmoTons: 1,
+        minAmmoTons: 0,
         explosive: false,
         weaponType: [
             "DE",
@@ -290,7 +292,8 @@ export const equipmentEnergy: IEquipmentItem[] = [
                 "Heat"
             ]
         },
-        heatAero: 4
+        heatAero: 4,
+        clanDates: { prototype: 3065, introduced: 3067, extinct: null, reintroduced: null }
     },
     {
         isAmmo: false,
@@ -521,9 +524,11 @@ export const equipmentEnergy: IEquipmentItem[] = [
     {
         isAmmo: false,
         name: "Heavy Flamer",
+        altNames: ["Heavy Flamer (Clan)"],
         tag: "heavy-flamer",
         editions: ["total-warfare", "battlemech-manual", "core-rulebook"],
-        techBase: "is",
+        techBase: "universal",
+        altTags: ["clan-heavy-flamer"],
         category: "Energy Weapons",
         sort: "flamer, heavy",
         damage: 4,
@@ -542,7 +547,7 @@ export const equipmentEnergy: IEquipmentItem[] = [
             medium: 3,
             long: 4
         },
-        space: { battlemech: 1, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: -1, smallCraft: -1, dropShip: -1 },
+        space: { battlemech: 1, protomech: 1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: -1, smallCraft: -1, dropShip: -1 },
         shotsPerTon: 10,
         ammoBattleValue: 2,
         minAmmoTons: 1,
@@ -565,7 +570,8 @@ export const equipmentEnergy: IEquipmentItem[] = [
                 "Heat"
             ]
         },
-        heatAero: 5
+        heatAero: 5,
+        clanDates: { prototype: 3065, introduced: 3067, extinct: null, reintroduced: null }
     },
     {
         isAmmo: false,
@@ -3220,59 +3226,6 @@ export const equipmentEnergy: IEquipmentItem[] = [
     },
     {
         isAmmo: false,
-        name: "Heavy Flamer (Clan)",
-        tag: "clan-heavy-flamer",
-        editions: ["total-warfare", "battlemech-manual", "core-rulebook"],
-        techBase: "clan",
-        altNames: ["Heavy Flamer"],
-        ammoTypes: ["ammo-clan-heavy-flamer-standard"],
-        catalog: "clan",
-        category: "Energy Weapons",
-        sort: "flamer, heavy, clan",
-        damage: 4,
-        damageAero: 4,
-        accuracyModifier: 0,
-        cbills: 11250,
-        prototype: 3065,
-        introduced: 3067,
-        extinct: null,
-        reintroduced: null,
-        battleValue: 15,
-        heat: 5,
-        weight: 1.5,
-        range: {
-            min: 0,
-            short: 2,
-            medium: 3,
-            long: 4
-        },
-        space: { battlemech: 1, protomech: 1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: -1, smallCraft: -1, dropShip: -1 },
-        shotsPerTon: 10,
-        ammoBattleValue: 2,
-        minAmmoTons: 1,
-        explosive: false,
-        weaponType: [
-            "DE",
-            "H"
-        ],
-        techRating: "c",
-        book: "TO:AUE",
-        page: 124,
-        alphaStrike: {
-            heat: 5,
-            rangeShort: 0.4,
-            rangeMedium: 0.4,
-            rangeLong: 0,
-            rangeExtreme: 0,
-            tc: false,
-            notes: [
-                "Heat"
-            ]
-        },
-        heatAero: 5
-    },
-    {
-        isAmmo: false,
         name: "Flamer (Clan)",
         tag: "clan-flamer",
         editions: ["battletech-compendium", "compendium-rules-of-warfare", "master-rules", "master-rules-revised", "total-warfare", "battlemech-manual", "core-rulebook"],
@@ -3331,7 +3284,6 @@ export const equipmentEnergy: IEquipmentItem[] = [
     { isAmmo: false, name: "Improved Heavy Large Laser", tag: "clan-improved-heavy-large-laser", editions: ["total-warfare", "battlemech-manual", "core-rulebook"], techBase: "clan", sort: "laser, heavy, 3, large, clan improved", category: "Energy Weapons", damage: 16, damageAero: 16, accuracyModifier: 1, cbills: 350000, prototype: 3069, introduced: 3079, extinct: null, reintroduced: null, battleValue: 296, heat: 18, weight: 4, range: { min: 0, short: 5, medium: 10, long: 15 }, space: { battlemech: 3, protomech: 1, combatVehicle: 1, supportVehicle: 3, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, shotsPerTon: 0, minAmmoTons: 1, explosive: true, weaponType: ["P"], techRating: "f", book: "TO:AUE", page: 133, alphaStrike: { heat: 18, rangeShort: 1.6, rangeMedium: 1.6, rangeLong: 0, rangeExtreme: 0, tc: true, notes: [] }, heatAero: 18, rangeAero: "m", altNames: ["Clan Improved Heavy Large Laser"], altTags: [], alternateName: "iHLL", catalog: "clan", notes: "Improved heavy laser: explodes like a Gauss rifle when critically hit." },
     { isAmmo: false, name: "Improved Heavy Medium Laser", tag: "clan-improved-heavy-medium-laser", editions: ["total-warfare", "battlemech-manual", "core-rulebook"], techBase: "clan", sort: "laser, heavy, 2, medium, clan improved", category: "Energy Weapons", damage: 10, damageAero: 10, accuracyModifier: 1, cbills: 150000, prototype: 3069, introduced: 3079, extinct: null, reintroduced: null, battleValue: 93, heat: 7, weight: 1, range: { min: 0, short: 3, medium: 6, long: 9 }, space: { battlemech: 2, protomech: 1, combatVehicle: 1, supportVehicle: 2, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, shotsPerTon: 0, minAmmoTons: 1, explosive: true, weaponType: ["DE"], techRating: "f", book: "TO:AUE", page: 133, alphaStrike: { heat: 7, rangeShort: 1, rangeMedium: 1, rangeLong: 0, rangeExtreme: 0, tc: true, notes: [] }, heatAero: 7, rangeAero: "s", altNames: ["Clan Improved Heavy Medium Laser"], altTags: [], alternateName: "iHML", catalog: "clan", notes: "Improved heavy laser: explodes like a Gauss rifle when critically hit." },
     { isAmmo: false, name: "Improved Heavy Small Laser", tag: "clan-improved-heavy-small-laser", editions: ["total-warfare", "battlemech-manual", "core-rulebook"], techBase: "clan", sort: "laser, heavy, 1, small, clan improved", category: "Energy Weapons", damage: 6, damageAero: 6, accuracyModifier: 1, cbills: 30000, prototype: 3069, introduced: 3079, extinct: null, reintroduced: null, battleValue: 19, heat: 3, weight: 0.5, range: { min: 0, short: 1, medium: 2, long: 3 }, space: { battlemech: 1, protomech: 1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, shotsPerTon: 0, minAmmoTons: 1, explosive: true, weaponType: ["DE"], techRating: "e", book: "TO:AUE", page: 133, alphaStrike: { heat: 3, rangeShort: 0.6, rangeMedium: 0, rangeLong: 0, rangeExtreme: 0, tc: true, notes: ["Point Defense"] }, heatAero: 3, rangeAero: "s", altNames: ["Clan Improved Heavy Small Laser"], altTags: [], alternateName: "iHSL", catalog: "clan", notes: "Improved heavy laser: explodes like a Gauss rifle when critically hit." },
-    { isAmmo: false, name: "ER Flamer (Clan)", altNames: ["Clan ER Flamer"], tag: "clan-er-flamer", editions: ["total-warfare", "battlemech-manual", "core-rulebook"], techBase: "clan", altTags: [], catalog: "clan", sort: "flamer, er, clan", category: "Energy Weapons", alternateName: "ER Flamer", damage: 2, notes: "", damageAero: 2, accuracyModifier: 0, cbills: 15000, prototype: 3065, introduced: 3067, extinct: null, reintroduced: null, battleValue: 16, heat: 4, weight: 1, range: { min: 0, short: 3, medium: 5, long: 7 }, space: { battlemech: 1, protomech: 1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, shotsPerTon: 0, minAmmoTons: 0, explosive: false, weaponType: ["DE", "H"], techRating: "d", book: "TO:AUE", page: 124, alphaStrike: { heat: 4, rangeShort: 0.2, rangeMedium: 0.2, rangeLong: 0, rangeExtreme: 0, tc: false, notes: ["Heat"] }, heatAero: 4 },
     { isAmmo: false, name: "Large Chemical Laser", altNames: ["Clan Large Chemical Laser"], tag: "clan-large-chemical-laser", editions: ["total-warfare", "battlemech-manual", "core-rulebook"], techBase: "clan", altTags: [], catalog: "clan", sort: "laser, chemical, large", category: "Energy Weapons", alternateName: "Large Chem Laser", damage: 8, notes: "Chemical laser: fires from explosive ammunition instead of drawing heavy power.", damageAero: 8, accuracyModifier: 0, cbills: 75000, prototype: 3059, introduced: 3083, extinct: null, reintroduced: null, battleValue: 99, heat: 6, weight: 5, range: { min: 0, short: 5, medium: 10, long: 15 }, space: { battlemech: 2, protomech: 1, combatVehicle: 1, supportVehicle: 2, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, ammoTypes: ["ammo-clan-large-chemical-laser-standard"], shotsPerTon: 10, ammoBattleValue: 12, minAmmoTons: 1, explosive: false, weaponType: ["DE"], techRating: "e", book: "TO:AUE", page: 132, alphaStrike: { heat: 6, rangeShort: 0.8, rangeMedium: 0.8, rangeLong: 0, rangeExtreme: 0, tc: true, notes: [] }, heatAero: 6, rangeAero: "m" },
     { isAmmo: false, name: "Medium Chemical Laser", altNames: ["Clan Medium Chemical Laser", "CLMediumChemicalLaser"], tag: "clan-medium-chemical-laser", editions: ["total-warfare", "battlemech-manual", "core-rulebook"], techBase: "clan", altTags: [], catalog: "clan", sort: "laser, chemical, medium", category: "Energy Weapons", alternateName: "Medium Chem Laser", damage: 5, notes: "Chemical laser: fires from explosive ammunition instead of drawing heavy power.", damageAero: 5, accuracyModifier: 0, cbills: 30000, prototype: 3059, introduced: 3083, extinct: null, reintroduced: null, battleValue: 37, heat: 2, weight: 1, range: { min: 0, short: 3, medium: 6, long: 9 }, space: { battlemech: 1, protomech: 1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, ammoTypes: ["ammo-clan-medium-chemical-laser-standard"], shotsPerTon: 30, ammoBattleValue: 5, minAmmoTons: 1, explosive: false, weaponType: ["DE"], techRating: "e", book: "TO:AUE", page: 132, alphaStrike: { heat: 2, rangeShort: 0.5, rangeMedium: 0.5, rangeLong: 0, rangeExtreme: 0, tc: true, notes: [] }, heatAero: 2, rangeAero: "m" },
     { isAmmo: false, name: "Small Chemical Laser", altNames: ["Clan Small Chemical Laser"], tag: "clan-small-chemical-laser", editions: ["total-warfare", "battlemech-manual", "core-rulebook"], techBase: "clan", altTags: [], catalog: "clan", sort: "laser, chemical, small", category: "Energy Weapons", alternateName: "Small Chem Laser", damage: 3, notes: "Chemical laser: fires from explosive ammunition instead of drawing heavy power.", damageAero: 3, accuracyModifier: 0, cbills: 10000, prototype: 3059, introduced: 3083, extinct: null, reintroduced: null, battleValue: 7, heat: 1, weight: 0.5, range: { min: 0, short: 1, medium: 2, long: 3 }, space: { battlemech: 1, protomech: 1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, ammoTypes: ["ammo-clan-small-chemical-laser-standard"], shotsPerTon: 60, ammoBattleValue: 1, minAmmoTons: 1, explosive: false, weaponType: ["DE"], techRating: "e", book: "TO:AUE", page: 132, alphaStrike: { heat: 1, rangeShort: 0.3, rangeMedium: 0, rangeLong: 0, rangeExtreme: 0, tc: true, notes: [] }, heatAero: 1, rangeAero: "s" },

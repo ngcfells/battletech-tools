@@ -446,8 +446,8 @@ describe("Vehicle construction details", () => {
         const tank = build("tracked", 50);
         expect(tank.getTotalItemSlots()).toBe(15);
         place(tank, "autocannon-standard-b", "front");
-        tank.addEquipmentFromTag("ammo-is-ac-5-standard");
-        tank.addEquipmentFromTag("ammo-is-ac-5-standard");
+        tank.addEquipmentFromTag("ammo-ac-5-standard");
+        tank.addEquipmentFromTag("ammo-ac-5-standard");
         expect(tank.getUsedItemSlots()).toBe(2);
         tank.setEngineType("xl");
         expect(tank.getUsedItemSlots()).toBe(4);
@@ -501,17 +501,17 @@ describe("Vehicles against the Master Unit List", () => {
         eq: [string, string, number?][] };
     const specs: Spec[] = [
         { name: "Scorpion", card: '8"t TMM1 SZ1 A2 S2 1/1/1 PV11 EE,SRCH,TUR(1/1/1)', mul: 306, motive: "tracked", tons: 25, cruise: 4, engine: "ice", armor: [16, 11, 11, 10, 16], turret: true,
-            eq: [["machine-gun", "turret"], ["autocannon-standard-b", "turret"], ["ammo-machine-gun-standard", "", 0.5], ["ammo-is-ac-5-standard", ""]] },
+            eq: [["machine-gun", "turret"], ["autocannon-standard-b", "turret"], ["ammo-machine-gun-standard", "", 0.5], ["ammo-ac-5-standard", ""]] },
         { name: "Vedette", card: '10"t TMM2 SZ2 A3 S3 1/1/1 PV16 EE,SRCH,TUR(0*/1/1)', mul: 475, motive: "tracked", tons: 50, cruise: 5, engine: "ice", armor: [20, 18, 18, 20, 20], turret: true,
-            eq: [["machine-gun", "front"], ["autocannon-standard-b", "turret"], ["ammo-machine-gun-standard", ""], ["ammo-is-ac-5-standard", ""]] },
+            eq: [["machine-gun", "front"], ["autocannon-standard-b", "turret"], ["ammo-machine-gun-standard", ""], ["ammo-ac-5-standard", ""]] },
         { name: "Pegasus", card: '16"h TMM3 SZ1 A3 S2 2/2/0 PV25 EE,SRCH,SRM1/1,TUR(2/2/-,SRM1/1)', mul: 640, motive: "hover", tons: 35, cruise: 8, engine: "ice", armor: [26, 19, 19, 19, 21], turret: true,
             eq: [["medium-laser", "front"], ["srm-6", "turret"], ["srm-6", "turret"], ["ammo-srm-standard", ""]] },
         { name: "J. Edgar", card: '22"h TMM4 SZ1 A3 S2 1/1/0 PV23 SRCH,TUR(1/1/-)', mul: 544, motive: "hover", tons: 25, cruise: 11, engine: "standard", armor: [30, 19, 19, 12, 24], turret: true,
             eq: [["medium-laser", "turret"], ["srm-2", "turret"], ["srm-2", "turret"], ["ammo-srm-standard", ""]] },
         { name: "Condor", card: '16"h TMM3 SZ2 A3 S3 2/2/1 PV27 EE,SRCH,TUR(2/2/1)', mul: 653, motive: "hover", tons: 50, cruise: 8, engine: "ice", armor: [30, 15, 15, 14, 22], turret: true,
-            eq: [["machine-gun", "front"], ["autocannon-standard-b", "turret"], ["medium-laser", "turret"], ["medium-laser", "turret"], ["ammo-is-ac-5-standard", ""], ["ammo-machine-gun-standard", "", 0.5]] },
+            eq: [["machine-gun", "front"], ["autocannon-standard-b", "turret"], ["medium-laser", "turret"], ["medium-laser", "turret"], ["ammo-ac-5-standard", ""], ["ammo-machine-gun-standard", "", 0.5]] },
         { name: "Warrior H-7", card: '18"v TMM3 SZ1 A1 S2 1/1/0* PV15 ATMO,EE,SRCH', mul: 295, motive: "vtol", tons: 21, cruise: 9, engine: "ice", armor: [6, 5, 5, 6, 2], turret: false,
-            eq: [["srm-4", "front"], ["autocannon-standard-a", "front"], ["ammo-srm-standard", ""], ["ammo-is-ac-2-standard", ""]] },
+            eq: [["srm-4", "front"], ["autocannon-standard-a", "front"], ["ammo-srm-standard", ""], ["ammo-ac-2-standard", ""]] },
         { name: "Sea Skimmer", card: '24"n TMM4 SZ1 A1 S2 1/1/0 PV17 EE,SRCH,TUR(1/1/-)', mul: 288, motive: "hydrofoil", tons: 25, cruise: 12, engine: "ice", armor: [9, 7, 7, 4, 5], turret: true,
             eq: [["machine-gun", "right"], ["machine-gun", "left"], ["machine-gun", "rear"], ["srm-4", "turret"], ["ammo-machine-gun-standard", "", 0.5], ["ammo-srm-standard", ""]] },
         { name: "Heavy Wheeled APC (MG)", troopSpace: 3, card: '12"w TMM2 SZ1 A2 S1 1/0/0 PV8 EE,IT3,REAR0*/-/-,SRCH', mul: 213, motive: "wheeled", tons: 20, cruise: 6, engine: "ice", armor: [20, 13, 13, 10, 0], turret: false,
@@ -623,7 +623,8 @@ describe("Vehicle equipment saved before the Batch 15 tech-base splits", () => {
         for (const tag of ["mech-mortar-8", "long-tom-cannon", "laser-insulator"]) {
             clan.addEquipmentFromTag(tag);
         }
-        expect(clan.getEquipmentList().map(item => item.tag)).toEqual(["clan-mech-mortar-8", "clan-long-tom-cannon", "clan-laser-insulator"]);
+        // The Long Tom Cannon and the Laser Insulator merged back into one record each (catalog consolidation §2).
+        expect(clan.getEquipmentList().map(item => item.tag)).toEqual(["clan-mech-mortar-8", "long-tom-cannon", "laser-insulator"]);
 
         const is = new Vehicle();
         is.setTech("is");

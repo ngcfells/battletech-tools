@@ -64,7 +64,7 @@ const SAMPLE_DATA: { id: string; name: string; save: ArtVeeSaveData }[] = [
                     "uuid": "b5176d0a-0e44-4642-3c58-3f965c005d63"
                 },
                 {
-                    "tag": "ammo-is-ac-5-standard",
+                    "tag": "ammo-ac-5-standard",
                     "rear": false,
                     "uuid": "bbbf30da-fb29-4fe7-9945-c74c40d9b7fd"
                 },
@@ -256,7 +256,7 @@ const SAMPLE_DATA: { id: string; name: string; save: ArtVeeSaveData }[] = [
                     "uuid": "8634ae8c-5420-4750-87a9-4077c26caccb"
                 },
                 {
-                    "tag": "ammo-is-ac-5-standard",
+                    "tag": "ammo-ac-5-standard",
                     "rear": false,
                     "uuid": "61bfda9d-b4a3-4f27-2555-d5ac414c50d8"
                 },
@@ -343,7 +343,7 @@ const SAMPLE_DATA: { id: string; name: string; save: ArtVeeSaveData }[] = [
                     "uuid": "318a07b2-d8e4-41bd-154b-e49d0a5d5e28"
                 },
                 {
-                    "tag": "ammo-is-ac-10-standard",
+                    "tag": "ammo-ac-10-standard",
                     "rear": false,
                     "uuid": "5a69c012-c3d3-4423-81cd-a4d825e6bf0a"
                 },
@@ -546,7 +546,7 @@ const SAMPLE_DATA: { id: string; name: string; save: ArtVeeSaveData }[] = [
                     "uuid": "7493a799-68c6-43bb-3e7d-83af61c4bbac"
                 },
                 {
-                    "tag": "ammo-is-ac-10-standard",
+                    "tag": "ammo-ac-10-standard",
                     "rear": false,
                     "uuid": "ffb57c62-f778-4305-32bb-3f5bc8602718"
                 },
@@ -644,7 +644,7 @@ const SAMPLE_DATA: { id: string; name: string; save: ArtVeeSaveData }[] = [
                     "uuid": "17906d34-fb35-4a48-a4ea-155a83db5b9d"
                 },
                 {
-                    "tag": "ammo-is-ac-20-standard",
+                    "tag": "ammo-ac-20-standard",
                     "rear": false,
                     "uuid": "55b76b96-1648-4eb2-89d3-5122706c63a0"
                 },
@@ -696,7 +696,7 @@ const SAMPLE_DATA: { id: string; name: string; save: ArtVeeSaveData }[] = [
                     "uuid": "d9d2379c-4a48-4bba-228e-d05275412236"
                 },
                 {
-                    "tag": "ammo-is-mech-mortar-standard",
+                    "tag": "ammo-mech-mortar-standard",
                     "rear": false,
                     "uuid": "30a5ceee-a103-449e-3501-b097d146100d"
                 }
@@ -853,7 +853,7 @@ const SAMPLE_DATA: { id: string; name: string; save: ArtVeeSaveData }[] = [
                     "uuid": "ba513e88-46b7-433f-2c06-6b9571a608b5"
                 },
                 {
-                    "tag": "ammo-is-ac-20-standard",
+                    "tag": "ammo-ac-20-standard",
                     "rear": false,
                     "uuid": "a38d2d94-048e-419c-a4ed-0fbd2ab05519"
                 },

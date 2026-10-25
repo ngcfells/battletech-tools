@@ -22,9 +22,9 @@ describe("vehicle record sheet", () => {
         tank.setTonnage(60);
         tank.addEquipmentFromTag("autocannon-standard-b");
         tank.setEquipmentLocation(tank.getEquipmentList()[tank.getEquipmentList().length - 1].uuid!, "front");
-        tank.addEquipmentFromTag("ammo-is-ac-5-standard");
+        tank.addEquipmentFromTag("ammo-ac-5-standard");
         const markup = renderToStaticMarkup(<VehicleRecordSheet vehicle={tank} />);
         expect(markup).toContain("Ammo: (AC/5) 20");
-        expect(markup).toContain(">AC/5 - Standard Ammo (IS):<");
+        expect(markup).toContain(">AC/5 - Standard Ammo:<");
     });
 });

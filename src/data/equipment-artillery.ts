@@ -90,9 +90,9 @@ export const equipmentArtillery: IEquipmentItem[] = [
         name: "Long Tom Cannon",
         tag: "long-tom-cannon",
         editions: ["total-warfare", "battlemech-manual", "core-rulebook"],
-        techBase: "is",
-        altNames: ["Long Tom Artillery Cannon"],
-        altTags: [],
+        techBase: "universal",
+        altNames: ["Long Tom Cannon (Clan)", "Long Tom Artillery Cannon", "Long Tom Artillery Cannon (Clan)"],
+        altTags: ["clan-long-tom-cannon"],
         sort: "artillery, cannon, long tom",
         category: "Artillery Weapons",
         notes: "Direct-fire artillery cannon; unlike tube artillery it targets a unit directly instead of a map hex.",
@@ -143,15 +143,15 @@ export const equipmentArtillery: IEquipmentItem[] = [
             notes: []
         },
         heatAero: 20,
-        catalog: "is"
+        clanDates: { prototype: 3032, introduced: 3079, extinct: null, reintroduced: null }
     },
     {
         name: "Sniper Cannon",
         tag: "sniper-cannon",
         editions: ["total-warfare", "battlemech-manual", "core-rulebook"],
-        techBase: "is",
-        altNames: ["Sniper Artillery Cannon"],
-        altTags: [],
+        techBase: "universal",
+        altNames: ["Sniper Cannon (Clan)", "Sniper Artillery Cannon", "Sniper Artillery Cannon (Clan)"],
+        altTags: ["clan-sniper-cannon"],
         sort: "artillery, cannon, sniper",
         category: "Artillery Weapons",
         notes: "Direct-fire artillery cannon; unlike tube artillery it targets a unit directly instead of a map hex.",
@@ -202,15 +202,15 @@ export const equipmentArtillery: IEquipmentItem[] = [
             notes: []
         },
         heatAero: 10,
-        catalog: "is"
+        clanDates: { prototype: 3032, introduced: 3079, extinct: null, reintroduced: null }
     },
     {
         name: "Thumper Cannon",
         tag: "thumper-cannon",
         editions: ["total-warfare", "battlemech-manual", "core-rulebook"],
-        techBase: "is",
-        altNames: ["Thumper Artillery Cannon"],
-        altTags: [],
+        techBase: "universal",
+        altNames: ["Thumper Cannon (Clan)", "Thumper Artillery Cannon", "Thumper Artillery Cannon (Clan)"],
+        altTags: ["clan-thumper-cannon"],
         sort: "artillery, cannon, thumper",
         category: "Artillery Weapons",
         notes: "Direct-fire artillery cannon; unlike tube artillery it targets a unit directly instead of a map hex.",
@@ -261,7 +261,7 @@ export const equipmentArtillery: IEquipmentItem[] = [
             notes: []
         },
         heatAero: 5,
-        catalog: "is"
+        clanDates: { prototype: 3032, introduced: 3079, extinct: null, reintroduced: null }
     },
     {
         name: "Arrow IV System (Clan)",
@@ -324,186 +324,6 @@ export const equipmentArtillery: IEquipmentItem[] = [
         },
         heatAero: 10,
         rangeAero: "s" // Short-range payload designation for low-altitude striking/bombing rules
-    },
-    {
-        name: "Long Tom Cannon (Clan)",
-        tag: "clan-long-tom-cannon",
-        editions: ["total-warfare", "battlemech-manual", "core-rulebook"],
-        techBase: "clan",
-        altNames: ["Long Tom Artillery Cannon (Clan)", "Long Tom Artillery Cannon"],
-        altTags: ["long-tom-cannon"],
-        sort: "artillery, cannon, long tom",
-        category: "Artillery Weapons",
-        notes: "Direct-fire artillery cannon; unlike tube artillery it targets a unit directly instead of a map hex.",
-        damage: 20,
-        damageAero: 20,
-        accuracyModifier: 0,
-        cbills: 650000,
-        introduced: 3079,
-        extinct: null,
-        reintroduced: null,
-        prototype: 3032,
-        battleValue: 329,
-        heat: 20,
-        weight: 20,
-        range: {
-            min: 4,
-            short: 6,
-            medium: 13,
-            long: 20,
-            extreme: 30
-        },
-        space: {
-            battlemech: 15,
-            protomech: -1,
-            combatVehicle: 1,
-            supportVehicle: 15,
-            aerospaceFighter: 1,
-            smallCraft: 1,
-            dropShip: 1
-        },
-        shotsPerTon: 5,
-        ammoBattleValue: 41,
-        minAmmoTons: 1,
-        explosive: false,
-        weaponType: [
-            "ARTC"
-        ],
-        techRating: "b",
-        book: "TO:AUE",
-        page: 97,
-        alphaStrike: {
-            heat: 20,
-            rangeShort: 1.32,
-            rangeMedium: 3,
-            rangeLong: 3,
-            rangeExtreme: 0,
-            tc: false,
-            notes: []
-        },
-        heatAero: 20,
-        catalog: "clan",
-        ammoTypes: ["ammo-long-tom-cannon-standard"]
-    },
-    {
-        name: "Sniper Cannon (Clan)",
-        tag: "clan-sniper-cannon",
-        editions: ["total-warfare", "battlemech-manual", "core-rulebook"],
-        techBase: "clan",
-        altNames: ["Sniper Artillery Cannon (Clan)", "Sniper Artillery Cannon"],
-        altTags: ["sniper-cannon"],
-        sort: "artillery, cannon, sniper",
-        category: "Artillery Weapons",
-        notes: "Direct-fire artillery cannon; unlike tube artillery it targets a unit directly instead of a map hex.",
-        damage: 10,
-        damageAero: 10,
-        accuracyModifier: 0,
-        cbills: 475000,
-        introduced: 3079,
-        extinct: null,
-        reintroduced: null,
-        prototype: 3032,
-        battleValue: 77,
-        heat: 10,
-        weight: 15,
-        range: {
-            min: 2,
-            short: 4,
-            medium: 8,
-            long: 12,
-            extreme: 16
-        },
-        space: {
-            battlemech: 10,
-            protomech: -1,
-            combatVehicle: 1,
-            supportVehicle: 10,
-            aerospaceFighter: 1,
-            smallCraft: 1,
-            dropShip: 1
-        },
-        shotsPerTon: 10,
-        ammoBattleValue: 10,
-        minAmmoTons: 1,
-        explosive: false,
-        weaponType: [
-            "ARTC"
-        ],
-        techRating: "b",
-        book: "TO:AUE",
-        page: 97,
-        alphaStrike: {
-            heat: 10,
-            rangeShort: 0.83,
-            rangeMedium: 1,
-            rangeLong: 0,
-            rangeExtreme: 0,
-            tc: false,
-            notes: []
-        },
-        heatAero: 10,
-        catalog: "clan",
-        ammoTypes: ["ammo-sniper-cannon-standard"]
-    },
-    {
-        name: "Thumper Cannon (Clan)",
-        tag: "clan-thumper-cannon",
-        editions: ["total-warfare", "battlemech-manual", "core-rulebook"],
-        techBase: "clan",
-        altNames: ["Thumper Artillery Cannon (Clan)", "Thumper Artillery Cannon"],
-        altTags: ["thumper-cannon"],
-        sort: "artillery, cannon, thumper",
-        category: "Artillery Weapons",
-        notes: "Direct-fire artillery cannon; unlike tube artillery it targets a unit directly instead of a map hex.",
-        damage: 5,
-        damageAero: 5,
-        accuracyModifier: 0,
-        cbills: 200000,
-        introduced: 3079,
-        extinct: null,
-        reintroduced: null,
-        prototype: 3032,
-        battleValue: 41,
-        heat: 5,
-        weight: 10,
-        range: {
-            min: 3,
-            short: 4,
-            medium: 9,
-            long: 14,
-            extreme: 21
-        },
-        space: {
-            battlemech: 7,
-            protomech: -1,
-            combatVehicle: 1,
-            supportVehicle: 7,
-            aerospaceFighter: 1,
-            smallCraft: 1,
-            dropShip: 1
-        },
-        shotsPerTon: 20,
-        ammoBattleValue: 5,
-        minAmmoTons: 1,
-        explosive: false,
-        weaponType: [
-            "ARTC"
-        ],
-        techRating: "b",
-        book: "TO:AUE",
-        page: 97,
-        alphaStrike: {
-            heat: 5,
-            rangeShort: 0.375,
-            rangeMedium: 0.5,
-            rangeLong: 0,
-            rangeExtreme: 0,
-            tc: false,
-            notes: []
-        },
-        heatAero: 5,
-        catalog: "clan",
-        ammoTypes: ["ammo-thumper-cannon-standard"]
     },
     { isAmmo: false, name: "Thumper Artillery Piece", altNames: ["Thumper", "ISThumper"], tag: "thumper-artillery", editions: ["battletech-manual", "battletech-compendium", "compendium-rules-of-warfare", "master-rules", "master-rules-revised", "total-warfare", "battlemech-manual", "core-rulebook"], techBase: "universal", introducedInEdition: "battletech-manual", editionStats: { "battletech-manual": { book: "BTM", page: 87, name: "Thumper", heat: 6, damage: 5, damageAdjacent: 2, rangeMapsheets: 14, weight: 15, criticals: 15, shotsPerTon: 20, cbills: 187500, notes: "Off-board artillery: fires at a hex, with the damage to the adjacent hexes given separately; range is in mapsheets (BTM pp.41-43, 87). Both the Weapons Table and the Artillery Piece Table (BTM p.42) give the Thumper the longer range, 14 against the Sniper's 12; entered as printed." }, "battletech-compendium": { book: "BTC", page: 116, name: "Thumper", heat: 6, damage: 5, damageAdjacent: 2, rangeMapsheets: 14, weight: 15, criticals: 15, shotsPerTon: 20, cbills: 187500, notes: "Off-board artillery: fires at a hex, with the damage to the adjacent hexes given separately; range is in mapsheets (BTC pp.49, 116). New: a piece on the map may fire directly at a hex in its line of sight, base to-hit number 9 (BTC p.50). Its critical slots may be split between adjacent locations (BTC p.113). The Clan table prints the same row (BTC p.115). Both the weapons tables and the Artillery Pieces table (BTC p.49) still give the Thumper the longer range, 14 against the Sniper's 12; entered as printed." }, "compendium-rules-of-warfare": { book: "BTC:RoW", page: 106, name: "Thumper", heat: 6, damage: 5, damageAdjacent: 2, rangeMapsheets: 14, weight: 15, criticals: 15, shotsPerTon: 20, cbills: 187500, notes: "The same row on the Clan table (BTC:RoW p.104). Generally mounted in vehicles, sometimes in BattleMechs; rules in Artillery (BTC:RoW pp.77-80). Damage is to the target hex and to each adjacent hex; the maximum range is in mapsheets (BTC:RoW p.80). AC/20-type weapons, Arrow IV systems and artillery (Long Tom, Thumper, Sniper) may split their critical slots between two adjacent locations (BTC:RoW p.102)." }, "master-rules": { book: "BMR", page: 116, name: "Thumper", heat: 6, damage: 5, damageAdjacent: 2, rangeMapsheets: 14, weight: 15, criticals: 15, shotsPerTon: 20, cbills: 187500, notes: "The same row on the Clan table (BMR p.117). Generally mounted in vehicles, sometimes in BattleMechs; rules in Artillery (BMR pp.68-71). Damage is to the target hex and to each adjacent hex; the maximum range is in mapsheets (BMR p.71). AC/20-type weapons and artillery may split their critical slots between two adjacent locations (BMR p.114)." }, "master-rules-revised": { book: "BMR(R)", page: 122, name: "Thumper", heat: 6, damage: 5, damageAdjacent: 2, rangeMapsheets: 14, weight: 15, criticals: 15, shotsPerTon: 20, cbills: 187500, notes: "The same row on the Clan table (BMR(R) p.123). Generally mounted in vehicles, sometimes in BattleMechs; rules in Artillery (BMR(R) pp.73-77). Damage is to the target hex and to each adjacent hex; the maximum range is in mapsheets (BMR(R) p.76). AC/20-type weapons, the Heavy Gauss rifle and artillery may split their critical slots between two adjacent locations (BMR(R) p.120)." } }, altTags: [], sort: "artillery, thumper", category: "Artillery Weapons", weaponType: ["ART"], notes: "Indirect-fire tube artillery. Targets a physical map hex rather than a specific unit; damage resolves via area-burst radius templates across map sheets.", damage: 15, damageAero: 2, accuracyModifier: 0, cbills: 187500, introduced: 1950, /* Originally engineered as archaic field artillery during the Early Age of War */ extinct: null, reintroduced: null, battleValue: 43, battleValueClan: 48, heat: 6, weight: 15, range: { min: 0, short: 0, medium: 0, long: 0, extreme: 0, maxMapSheets: 21 }, space: { battlemech: 15, protomech: -1, combatVehicle: 1, supportVehicle: 7, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 }, shotsPerTon: 20, ammoBattleValue: 5, minAmmoTons: 1, explosive: false, techRating: "b", book: "TO:AUE", page: 96, alphaStrike: { specialAbility: ["ARTTH"], damageAoE: 1, heat: 0, rangeShort: 0, rangeMedium: 0, rangeLong: 0, rangeExtreme: 0, tc: false, notes: ["Bypasses brackets via the ARTTH trait to place a 1-point AoE strike anywhere on the board."] }, heatAero: 6, rangeAero: "s" /* Short-range tactical mapping for atmosphere/low-altitude strike rules */ },
     {

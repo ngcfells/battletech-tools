@@ -204,7 +204,7 @@ describe("Rules editions: Battledroids, complete", () => {
             "equipment autocannon-standard-b", "equipment machine-gun", "equipment standard-flamer",
             // Their ammunition, BD pp.20, 25
             "equipment ammo-lrm-standard", "equipment ammo-srm-standard", "equipment ammo-machine-gun-standard",
-            "equipment ammo-is-ac-5-standard",
+            "equipment ammo-ac-5-standard",
             // Construction, BD pp.23-25
             "engine standard", "gyro standard", "cockpit standard", "heat sink single", "jump jet standard",
             "armor standard", "structure standard", "mech type biped",
@@ -388,7 +388,7 @@ describe("Rules editions: The BattleTech Manual, complete", () => {
         // Weapons Table, BTM p.87
         "equipment autocannon-standard-a", "equipment autocannon-standard-c", "equipment autocannon-standard-d",
         "equipment long-tom-artillery", "equipment sniper-artillery", "equipment thumper-artillery",
-        "equipment ammo-is-ac-2-standard", "equipment ammo-is-ac-10-standard", "equipment ammo-is-ac-20-standard",
+        "equipment ammo-ac-2-standard", "equipment ammo-ac-10-standard", "equipment ammo-ac-20-standard",
         "equipment ammo-long-tom-standard", "equipment ammo-sniper-standard", "equipment ammo-thumper-standard",
         // Special Weapons, Smoke Rounds and Night Combat, BTM pp.41, 45-46
         "equipment vehicle-flamer", "equipment ammo-vehicle-flamer-standard", "equipment ammo-srm-inferno",
@@ -483,8 +483,8 @@ describe("Rules editions: The BattleTech Manual, complete", () => {
 
     // Reloads column, BTM p.86; shots per ton, BTM p.87.
     it.each([
-        ["ammo-is-ac-2-standard", 45, 1000], ["ammo-is-ac-5-standard", 20, 4500], ["ammo-is-ac-10-standard", 10, 6000],
-        ["ammo-is-ac-20-standard", 5, 10000], ["ammo-machine-gun-standard", 200, 1000],
+        ["ammo-ac-2-standard", 45, 1000], ["ammo-ac-5-standard", 20, 4500], ["ammo-ac-10-standard", 10, 6000],
+        ["ammo-ac-20-standard", 5, 10000], ["ammo-machine-gun-standard", 200, 1000],
         ["ammo-long-tom-standard", 5, 10000], ["ammo-sniper-standard", 10, 6000], ["ammo-thumper-standard", 20, 4500],
     ])("%s has %i shots and costs %i a ton", (tag, shots, price) => {
         const stats = equipment.find(record => record.tag === tag)!.editionStats![TAG]!;
@@ -802,8 +802,8 @@ describe("Rules editions: The BattleTech Compendium, complete", () => {
             "jump jet standard", "mech type biped", "structure standard",
             "equipment large-laser", "equipment medium-laser", "equipment small-laser", "equipment standard-ppc",
             "equipment standard-flamer", "equipment machine-gun",
-            "equipment ammo-is-ac-2-standard", "equipment ammo-is-ac-5-standard", "equipment ammo-is-ac-10-standard",
-            "equipment ammo-is-ac-20-standard", "equipment ammo-lrm-standard", "equipment ammo-srm-standard",
+            "equipment ammo-ac-2-standard", "equipment ammo-ac-5-standard", "equipment ammo-ac-10-standard",
+            "equipment ammo-ac-20-standard", "equipment ammo-lrm-standard", "equipment ammo-srm-standard",
             "equipment ammo-machine-gun-standard", "equipment ammo-long-tom-standard", "equipment ammo-sniper-standard",
             "equipment ammo-thumper-standard", "equipment ammo-vehicle-flamer-standard",
             "equipment ammo-bomb-standard", "equipment ammo-bomb-inferno",
@@ -850,7 +850,7 @@ describe("Rules editions: Third Edition, complete", () => {
         expect(inEdition(TAG)).toEqual([
             ...inEdition("battletech-2nd-edition"),
             "equipment autocannon-standard-a", "equipment autocannon-standard-c", "equipment autocannon-standard-d",
-            "equipment ammo-is-ac-2-standard", "equipment ammo-is-ac-10-standard", "equipment ammo-is-ac-20-standard",
+            "equipment ammo-ac-2-standard", "equipment ammo-ac-10-standard", "equipment ammo-ac-20-standard",
         ].sort());
         const edition = getRulesEditions().find(entry => entry.tag === TAG)!;
         expect(edition.complete).toBe(true);
@@ -900,7 +900,7 @@ describe("Rules editions: Third Edition, complete", () => {
 
     // BT3 p.43: half-ton lots for machine guns only; shots per ton from the table's Ammo column.
     it("counts ammunition by the ton", () => {
-        expect(["ammo-is-ac-2-standard", "ammo-is-ac-5-standard", "ammo-is-ac-10-standard", "ammo-is-ac-20-standard", "ammo-machine-gun-standard"]
+        expect(["ammo-ac-2-standard", "ammo-ac-5-standard", "ammo-ac-10-standard", "ammo-ac-20-standard", "ammo-machine-gun-standard"]
             .map(tag => find(tag).editionStats![TAG]!.shotsPerTon)).toEqual([45, 20, 10, 5, 200]);
         expect(find("ammo-lrm-standard").editionStats![TAG]!.notes).toContain("24 (LRM-5), 12 (LRM-10), 8 (LRM-15), 6 (LRM-20)");
         expect(find("ammo-srm-standard").editionStats![TAG]!.notes).toContain("50 (SRM-2), 25 (SRM-4), 15 (SRM-6)");
@@ -942,18 +942,20 @@ describe("Rules editions: The Rules of Warfare, complete", () => {
     // BTC:RoW p.7: a ground game, so the 1990 Compendium's AeroTech rules are gone and Land-Air BattleMechs move
     // to the Tactical Handbook. New: torpedoes (BTC:RoW p.121), Narc-equipped missiles (BTC:RoW p.119) and the
     // ordnance of aerospace support fighters (BTC:RoW p.73).
-    it("includes the Compendium's records less Ferro-Aluminum armor and LAMs, and thirty-one new ones", () => {
+    it("includes the Compendium's records less Ferro-Aluminum armor and LAMs, and twenty-eight new ones", () => {
         const added = labelled.filter(entry => entry.record.introducedInEdition === TAG).map(entry => entry.label);
         const dropped = ["armor ferro-aluminum", "mech type lam"];
         expect(inEdition(BEFORE).filter(label => !inEdition(TAG).includes(label)).sort()).toEqual(dropped);
         expect(inEdition(TAG)).toEqual([...inEdition(BEFORE).filter(label => !dropped.includes(label)), ...added].sort());
         expect(added.sort()).toEqual([
-            ...["is", "clan"].flatMap(base => ["lrm-narc", "srm-narc", "lrt-standard", "srt-standard"].map(kind => `equipment ammo-${base}-${kind}`)),
+            ...["is", "clan"].flatMap(base => ["srm-narc"].map(kind => `equipment ammo-${base}-${kind}`)),
+            // One torpedo round and one Narc-capable LRM round for both sides (catalog consolidation §2).
+            "equipment ammo-lrm-narc", "equipment ammo-lrt-standard", "equipment ammo-srt-standard",
             ...["", "clan-"].flatMap(base => ["lrt-5", "lrt-10", "lrt-15", "lrt-20", "srt-2", "srt-4", "srt-6"].map(kind => `equipment ${base}${kind}`)),
             ...["is", "clan"].flatMap(base => ["thunder", "arrow-iv", "arrow-iv-homing", "tag"].map(kind => `equipment ammo-${base}-bomb-${kind}`)),
             "equipment ammo-bomb-cluster",
         ].sort());
-        expect(added).toHaveLength(31);
+        expect(added).toHaveLength(28);
         const edition = getRulesEditions().find(entry => entry.tag === TAG)!;
         expect(edition.complete).toBe(true);
         expect(edition.mechs).toEqual(["RVN-3L Raven", "BSW-X1 Bushwacker", "AXM-2N Axman", "MAL-1R Mauler",
@@ -1084,7 +1086,7 @@ describe("Rules editions: The Rules of Warfare, complete", () => {
     it("prices ammunition and munitions", () => {
         const stats = (tag: string) => find(tag).editionStats![TAG]!;
         const load = (tag: string) => [stats(tag).shotsPerTon, stats(tag).cbills];
-        expect(["ammo-is-ac-2-standard", "ammo-is-ac-5-standard", "ammo-is-ac-10-standard", "ammo-is-ac-20-standard"].map(load))
+        expect(["ammo-ac-2-standard", "ammo-ac-5-standard", "ammo-ac-10-standard", "ammo-ac-20-standard"].map(load))
             .toEqual([[45, 1000], [20, 4500], [10, 6000], [5, 10000]]);
         expect([2, 5, 10, 20].map(size => [stats(`ammo-clan-lb-${size}x-standard`).cbills, stats(`ammo-clan-lb-${size}x-cluster`).cbills]))
             .toEqual([[2000, 3300], [9000, 15000], [12000, 20000], [20000, 34000]]);
@@ -1092,7 +1094,7 @@ describe("Rules editions: The Rules of Warfare, complete", () => {
         expect(["ammo-lrm-standard", "ammo-srm-standard", "ammo-srm-inferno"].map(tag => stats(tag).cbills)).toEqual([30000, 27000, 13500]);
         expect(["ammo-is-lrm-artemis-iv", "ammo-is-srm-artemis-iv", "ammo-is-lrm-swarm", "ammo-is-lrm-thunder", "ammo-clan-lrm-fascam"].map(tag => stats(tag).cbills))
             .toEqual([60000, 54000, 60000, 60000, 60000]);
-        expect(["ammo-is-lrm-narc", "ammo-clan-srm-narc"].map(tag => [stats(tag).page, stats(tag).cbills])).toEqual([[119, 60000], [119, 54000]]);
+        expect(["ammo-lrm-narc", "ammo-clan-srm-narc"].map(tag => [stats(tag).page, stats(tag).cbills])).toEqual([[119, 60000], [119, 54000]]);
         expect(["ammo-is-arrow-iv-standard", "ammo-is-arrow-iv-homing", "ammo-long-tom-standard", "ammo-sniper-standard", "ammo-thumper-standard"].map(load))
             .toEqual([[5, 10000], [5, 15000], [5, 10000], [10, 6000], [20, 4500]]);
         expect(stats("ammo-clan-arrow-iv-fascam").cbills).toBeUndefined();
@@ -1305,7 +1307,7 @@ describe("Rules editions: Master Rules, complete", () => {
         expect([price("ammo-is-lrm-fragmentation"), price("ammo-lrm-incendiary"), price("ammo-is-lrm-semi-guided"), price("ammo-is-lrm-swarm-i")])
             .toEqual([60000, 45000, 90000, 90000]);
         expect([price("ammo-is-srm-frag"), price("ammo-srm-inferno"), price("ammo-is-narc-explosive")]).toEqual([54000, 13500, 1500]);
-        expect([price("ammo-is-ac-5-standard"), price("ammo-clan-light-machine-gun-standard")]).toEqual([4500, 500]);
+        expect([price("ammo-ac-5-standard"), price("ammo-clan-light-machine-gun-standard")]).toEqual([4500, 500]);
     });
 
     // BMR p.129: any missile launcher can be single-shot, half a ton heavier and half the price (p.138).

@@ -17,7 +17,7 @@ const tank = (turret = true): Vehicle => {
     v.setEquipmentLocation(v.getEquipmentList().at(-1)!.uuid!, turret ? "turret" : "front");
     v.addEquipmentFromTag("machine-gun");
     v.setEquipmentLocation(v.getEquipmentList().at(-1)!.uuid!, "front");
-    v.addEquipmentFromTag("ammo-is-ac-5-standard");
+    v.addEquipmentFromTag("ammo-ac-5-standard");
     v.setArmorAllocation("front", 20);
     return v;
 };
@@ -127,7 +127,7 @@ describe("vehicle record sheet notes", () => {
         vehicle.setHasTurret(true);
         vehicle.addEquipmentFromTag("custom-artvee-thumper-combo", "turret");
         vehicle.addEquipmentFromTag("ammo-thumper-standard", "body");
-        vehicle.addEquipmentFromTag("ammo-is-ac-5-standard", "body");
+        vehicle.addEquipmentFromTag("ammo-ac-5-standard", "body");
         vehicle.setArtVee(true);
         const notes = [...render(vehicle).matchAll(/<text[^>]*data-testid="artvee-note"[^>]*>(.*?)<\/text>/g)]
             .map((match) => match[1].replace(/<[^>]+>/g, ""));
