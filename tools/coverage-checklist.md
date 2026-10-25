@@ -18,8 +18,8 @@ Rows ruled by hand (`tools/coverage-triage.tsv`) show the ruling as their status
 | Equipment | 262 | 157 | 68 | 37 | 0 |
 | Gyro | 5 | 3 | 2 | 0 | 0 |
 | Heat sink | 9 | 7 | 2 | 0 | 0 |
-| Infantry armor | 67 | 25 | 2 | 0 | 40 |
-| Infantry weapon | 323 | 168 | 19 | 0 | 136 |
+| Infantry armor | 67 | 42 | 2 | 23 | 0 |
+| Infantry weapon | 323 | 182 | 19 | 122 | 0 |
 | Jump jet | 13 | 10 | 3 | 0 | 0 |
 | Myomer | 8 | 7 | 1 | 0 | 0 |
 | ProtoMech | 7 | 5 | 2 | 0 | 0 |
@@ -827,46 +827,29 @@ Rows ruled by hand (`tools/coverage-triage.tsv`) show the ruling as their status
 |---|---|---|---|---|---|
 | Counter-Forgery Kit, Electronic | Inner Sphere | Standard |  | in src |  |
 | Forensics Analysis Kit, Advanced | Inner Sphere | Standard |  | in src |  |
-| Advanced Field Kit | Inner Sphere | Standard |  | missing |  |
-| Advanced Medical Kit | Inner Sphere | Standard |  | missing |  |
-| Aerospace Fighter Pilot Kit | Inner Sphere | Standard | 294, AToW | missing |  |
-| Aerospace Repair Kit | Inner Sphere | Standard |  | missing |  |
-| Basic Field Kit | Inner Sphere | Standard |  | missing |  |
-| Bionic Maintenance Kit | Inner Sphere | Standard |  | missing |  |
-| Capellan Confederation Armor Kit (3050) | Inner Sphere | Standard | 130, TO:AUE | missing |  |
-| Clan Armor Kit (All) | Clan | Standard | 130, TO:AUE | missing |  |
-| ComStar Infantry Kit | Inner Sphere | Standard | 130, TO:AUE | missing |  |
-| Counter-Forgery Kit, Basic | Inner Sphere | Standard |  | missing |  |
-| Cutting/Joining Kit | Inner Sphere | Standard |  | missing |  |
-| Disguise/Make-Up Kit | Inner Sphere | Standard |  | missing |  |
-| Draconis Combine Infantry Kit | Inner Sphere | Standard | 130, TO:AUE | missing |  |
-| Electronic Security Bypass Kit | Inner Sphere | Standard |  | missing |  |
-| Electronics Repair Kit | Inner Sphere | Standard |  | missing |  |
-| Fed Suns Infantry Kit (3067+) | Inner Sphere | Standard | 130, TO:AUE | missing |  |
-| Fed Suns/Fed Commonwealth Infantry Kit (3030-3066) | Inner Sphere | Standard | 130, TO:AUE | missing |  |
-| Federated Suns Infantry Kit | Inner Sphere | Standard | 130, TO:AUE | missing |  |
-| Field Surgical Kit | Inner Sphere | Standard |  | missing |  |
-| Fission/Fusion Repair Kit | Inner Sphere | Standard |  | missing |  |
-| Forensics Analysis Kit, Basic | Inner Sphere | Standard |  | missing |  |
-| Forgery Kit | Inner Sphere | Standard |  | missing |  |
-| Free Rasalhague Republic Infantry Kit | Inner Sphere | Standard | 130, TO:AUE | missing |  |
-| Free Worlds League Infantry Kit | Inner Sphere | Standard | 130, TO:AUE | missing |  |
-| Free Worlds League Infantry Kit (3035+) | Inner Sphere | Standard | 130, TO:AUE | missing |  |
-| Generic Infantry Kit | Inner Sphere | Standard | 130, TO:AUE | missing |  |
-| Lyran Alliance/Lyran Commonwealth (3060+) Infantry Kit | Inner Sphere | Standard | 130, TO:AUE | missing |  |
-| Lyran Commonwealth Infantry Kit | Inner Sphere | Standard | 130, TO:AUE | missing |  |
-| Magistracy of Canopus Infantry Kit | Inner Sphere | Standard | 130, TO:AUE | missing |  |
-| Marian Hegemony Infantry Kit | Inner Sphere | Standard | 130, TO:AUE | missing |  |
-| Medical Kit | Inner Sphere | Standard |  | missing |  |
-| MekWarrior Kit (Advanced) | Inner Sphere | Standard | 294, AToW | missing |  |
-| MekWarrior Kit (Basic) | Inner Sphere | Standard | 294, AToW | missing |  |
-| MekWarrior Kit (Clan) | Clan | Standard | 294, AToW | missing |  |
-| Myomer/Actuator Repair Kit | Inner Sphere | Standard |  | missing |  |
-| SLDF Infantry Kit | Inner Sphere | Standard | 195, AToW Companion | missing |  |
-| Taurian Concordat/Calderon Infantry Kit | Inner Sphere | Standard | 130, TO:AUE | missing |  |
-| Vehicle Repair Kit | Inner Sphere | Standard |  | missing |  |
-| Weapon Repair Kit | Inner Sphere | Standard |  | missing |  |
-| Word of Blake Infantry Kit | Inner Sphere | Standard | 130, TO:AUE | missing |  |
+| Advanced Field Kit | Inner Sphere | Standard |  | round 9 | A Time of War personal gear |
+| Advanced Medical Kit | Inner Sphere | Standard |  | round 9 | A Time of War personal gear |
+| Aerospace Fighter Pilot Kit | Inner Sphere | Standard | 294, AToW | round 9 | A Time of War personal gear |
+| Aerospace Repair Kit | Inner Sphere | Standard |  | round 9 | A Time of War personal gear |
+| Basic Field Kit | Inner Sphere | Standard |  | round 9 | A Time of War personal gear |
+| Bionic Maintenance Kit | Inner Sphere | Standard |  | round 9 | A Time of War personal gear |
+| Counter-Forgery Kit, Basic | Inner Sphere | Standard |  | round 9 | A Time of War personal gear |
+| Cutting/Joining Kit | Inner Sphere | Standard |  | round 9 | A Time of War personal gear |
+| Disguise/Make-Up Kit | Inner Sphere | Standard |  | round 9 | A Time of War personal gear |
+| Electronic Security Bypass Kit | Inner Sphere | Standard |  | round 9 | A Time of War personal gear |
+| Electronics Repair Kit | Inner Sphere | Standard |  | round 9 | A Time of War personal gear |
+| Field Surgical Kit | Inner Sphere | Standard |  | round 9 | A Time of War personal gear |
+| Fission/Fusion Repair Kit | Inner Sphere | Standard |  | round 9 | A Time of War personal gear |
+| Forensics Analysis Kit, Basic | Inner Sphere | Standard |  | round 9 | A Time of War personal gear |
+| Forgery Kit | Inner Sphere | Standard |  | round 9 | A Time of War personal gear |
+| Medical Kit | Inner Sphere | Standard |  | round 9 | A Time of War personal gear |
+| MekWarrior Kit (Advanced) | Inner Sphere | Standard | 294, AToW | round 9 | A Time of War personal gear |
+| MekWarrior Kit (Basic) | Inner Sphere | Standard | 294, AToW | round 9 | A Time of War personal gear |
+| MekWarrior Kit (Clan) | Clan | Standard | 294, AToW | round 9 | A Time of War personal gear |
+| Myomer/Actuator Repair Kit | Inner Sphere | Standard |  | round 9 | A Time of War personal gear |
+| SLDF Infantry Kit | Inner Sphere | Standard | 195, AToW Companion | round 9 | AToW Companion p.195: an RPG armor kit (BAR values), converted with the personal gear |
+| Vehicle Repair Kit | Inner Sphere | Standard |  | round 9 | A Time of War personal gear |
+| Weapon Repair Kit | Inner Sphere | Standard |  | round 9 | A Time of War personal gear |
 
 ## Infantry weapon
 
@@ -891,142 +874,128 @@ Rows ruled by hand (`tools/coverage-triage.tsv`) show the ruling as their status
 | Rifle (Cannon, Medium) | Inner Sphere | Standard | 150, TO:AUE; 106, BMM; 190, Core | in src |  |
 | SMG (KA-23 Submachine Gun) | Inner Sphere | Standard | 273, TM | in src |  |
 | Staff (Pole Arm) (Unofficial) | Inner Sphere | Standard | 272, TM | in src |  |
-| Auto-Pistol (Nissan SG-12) | Inner Sphere | Standard | 176, HB:HK | missing |  |
-| Blade (Archaic Sword)) | Inner Sphere | Standard | 195, AToW Companion | missing |  |
-| Blade (Axe/Hatchet/Tomahawk) | Inner Sphere | Standard | 272, TM | missing |  |
-| Blade (Dao/Katana/No-Dachi/Sword/Wakizashi) | Inner Sphere | Standard | 272, TM | missing |  |
-| Blade (Zweihander Sword) | Inner Sphere | Standard | 195, AToW Companion | missing |  |
-| Bow (Primitive) | Inner Sphere | Standard | 195, AToW Companion | missing |  |
-| Compound Yumi (Bow) (Unofficial) | Inner Sphere | Standard | 272, TM | missing |  |
-| Crossbow (Heavy)(Unofficial) | Inner Sphere | Standard | 272, TM | missing |  |
-| Gauss Pistol (Mandrake Hold-Out) | Inner Sphere | Standard | 273, TM | missing |  |
-| Gauss Pistol [Clan] | Clan | Standard | 273, TM | missing |  |
-| Gauss Rifle (Gungnir Heavy Support) | Inner Sphere | Standard | 176, AToW Companion | missing |  |
-| Girder Club | Inner Sphere | Standard |  | missing |  |
-| Grenade (Mini) (Non-Inferno) | Inner Sphere | Standard | 272, TM | missing |  |
-| Grenade Launcher (Auto) - Incendiary | Inner Sphere | Standard | 273, TM | missing |  |
-| Grenade Launcher (Heavy Auto) w/Incendiary | Clan | Standard | 273, TM | missing |  |
-| Grenade Launcher (Heavy) w/Incendiary | Inner Sphere | Standard | 273, TM | missing |  |
-| Infantry Bridge Kit | Inner Sphere | Standard |  | missing |  |
-| Laser Pistol (AWA Wiliby Mk4 Laser Pistol) | Inner Sphere | Standard | Shrap09 | missing |  |
-| Laser Pistol (Brightstar L-12) | Clan | Standard | Shrap09 | missing |  |
-| Laser Pistol (Brightstar L-15) | Clan | Standard | Shrap09 | missing |  |
-| Laser Pistol (Brightstar L-7) | Inner Sphere | Standard | Shrap09 | missing |  |
-| Laser Pistol (Darklight IV Laser Pistol) | Inner Sphere | Standard | Shrap09 | missing |  |
-| Laser Pistol (Kelvin 000 Lancer 3-mm) | Inner Sphere | Standard | Shrap09 | missing |  |
-| Laser Pistol (Xing Shan ER) | Inner Sphere | Standard | Shrap09 | missing |  |
-| Laser Pistol (Xing Shan) | Inner Sphere | Standard | Shrap09 | missing |  |
-| Laser Rifle (DWS L5S) | Inner Sphere | Standard | Shrap09 | missing |  |
-| Laser Rifle (Darklight-CL Light Laser Rifle) | Inner Sphere | Standard | Shrap09 | missing |  |
-| Laser Rifle (ER [Sunbeam Starfire]) | Inner Sphere | Standard | 273, TM | missing |  |
-| Laser Rifle (Federated-Barrett M61A) (Incendiary Grenades) | Inner Sphere | Standard | 273, TM | missing |  |
-| Laser Rifle (Mauser IIC IAS) (Incendiary Grenades) | Clan | Standard | 273, TM | missing |  |
-| Laser Rifle (Scorcher VI Blazer Rifle) | Inner Sphere | Standard | Shrap09 | missing |  |
-| Laser Rifle (Syrtis Firebolt-12) (Repaired) | Inner Sphere | Standard | Shrap09 | missing |  |
-| Laser Rifle (Syrtis Firebolt-12) (Unrepaired) | Inner Sphere | Standard | Shrap09 | missing |  |
-| Laser Rifle (Wolf-Barron Sunraker) | Inner Sphere | Standard | Shrap09 | missing |  |
-| Laser Rifle (Yang Lie) | Inner Sphere | Standard | Shrap09 | missing |  |
-| Laser Sniper Rifle (DWS L5L) | Inner Sphere | Standard | Shrap09 | missing |  |
-| Limb Club | Inner Sphere | Standard |  | missing |  |
-| Machine Pistol (H-T Spec-7a) | Inner Sphere | Standard | 176, HB:HK | missing |  |
-| Pistol (AA Gemini) | Inner Sphere | Standard | Shrap03 | missing |  |
-| Pistol (Camden HR-7) | Inner Sphere | Standard | Shrap03 | missing |  |
-| Pistol (Dreamel J-4 Derringer) | Inner Sphere | Standard | Shrap03 | missing |  |
-| Pistol (HCK P-14) | Inner Sphere | Standard | Shrap03 | missing |  |
-| Pistol (Lemison Combat Revolver) | Inner Sphere | Standard | Shrap03 | missing |  |
-| Pistol (Momo De Baoying (Special)) | Inner Sphere | Standard | Shrap03 | missing |  |
-| Pistol (Momo De Baoying (Standard)) | Inner Sphere | Standard | Shrap03 | missing |  |
-| Pistol (Nambu 380) | Inner Sphere | Standard | Shrap03 | missing |  |
-| Pistol (Nambu 480) | Inner Sphere | Standard | Shrap03 | missing |  |
-| Pistol (RFW Galahad) | Inner Sphere | Standard | Shrap03 | missing |  |
-| Pistol (Serrek 7994 SF) | Inner Sphere | Standard | Shrap03 | missing |  |
-| Pistol (Serrek 7994) | Inner Sphere | Standard | Shrap03 | missing |  |
-| Pistol (Sturm Eagle Mk4M) | Inner Sphere | Standard | Shrap03 | missing |  |
-| Pistol (Sturm Eagle Mk4P) | Inner Sphere | Standard | Shrap03 | missing |  |
-| Pistol (Type 74D Pistol) | Inner Sphere | Standard | Shrap03 | missing |  |
-| Pistol (Type 74P Pistol) | Inner Sphere | Standard | Shrap03 | missing |  |
-| Pistol (Whisper-4 (Standard Rounds)) | Inner Sphere | Standard | Shrap03 | missing |  |
-| Pistol (Whisper-4 (Sub-Sonic)) | Inner Sphere | Standard | Shrap03 | missing |  |
-| Pistol (Wolf M30) | Inner Sphere | Standard | Shrap03 | missing |  |
-| Pistol (Ya Njingshe) | Inner Sphere | Standard | Shrap03 | missing |  |
-| Prosthetic Needler | Inner Sphere | Standard | 78, IO:AE | missing |  |
-| Prosthetic SMG | Inner Sphere | Standard | 78, IO:AE | missing |  |
-| Prosthetic Shotgun | Inner Sphere | Standard | 78, IO:AE | missing |  |
-| Prosthetic Sonic Stunner | Inner Sphere | Standard | 78, IO:AE | missing |  |
-| Prosthetic Vibro Blade | Inner Sphere | Standard | 78, IO:AE | missing |  |
-| Pulse Laser Pistol (Medusa III) | Inner Sphere | Standard | Shrap09 | missing |  |
-| Pulse Laser Pistol (Medusa IV) | Inner Sphere | Standard | Shrap09 | missing |  |
-| Pulse Laser Pistol (RDI Sunswarm Pulsar) | Inner Sphere | Standard | Shrap09 | missing |  |
-| Pulse Laser Rifle (DWS L5C) | Inner Sphere | Standard | Shrap09 | missing |  |
-| Rifle (Federated-Barrett M42B) (Incendiary Grenades) | Inner Sphere | Standard | 273, TM | missing |  |
-| Rifle (Striker Carbine) | Inner Sphere | Standard | 147, HB:HL | missing |  |
-| Rifle (Vintage Assault) | Inner Sphere | Standard | 195, AToW Companion | missing |  |
-| SMG (AWA Starling Mk7) | Inner Sphere | Standard | Shrap05 | missing |  |
-| SMG (AWA Starling Mk7-LB) | Inner Sphere | Standard | Shrap05 | missing |  |
-| SMG (AWA Starling Mk7-SF) | Inner Sphere | Standard | Shrap05 | missing |  |
-| SMG (Blackfield Scorpion Mk 65) | Inner Sphere | Standard | Shrap05 | missing |  |
-| SMG (Boudicca-4) | Inner Sphere | Standard | Shrap05 | missing |  |
-| SMG (Boudicca-5) | Inner Sphere | Standard | Shrap05 | missing |  |
-| SMG (Boudicca-7) | Inner Sphere | Standard | Shrap05 | missing |  |
-| SMG (DSK Largo SGA) | Inner Sphere | Standard | Shrap05 | missing |  |
-| SMG (DSK Largo SGB) | Inner Sphere | Standard | Shrap05 | missing |  |
-| SMG (Hunkle V) | Inner Sphere | Standard | Shrap05 | missing |  |
-| SMG (J-15 Hagel) | Inner Sphere | Standard | Shrap05 | missing |  |
-| SMG (J-17 Hagel) | Inner Sphere | Standard | Shrap05 | missing |  |
-| SMG (Jinse Yanjingshe (AP Rounds)) | Inner Sphere | Standard | Shrap05 | missing |  |
-| SMG (Jinse Yanjingshe (Standard)) | Inner Sphere | Standard | Shrap05 | missing |  |
-| SMG (Nambu Type S-124) | Inner Sphere | Standard | Shrap05 | missing |  |
-| SMG (RFW Bedivere) | Inner Sphere | Standard | Shrap05 | missing |  |
-| SMG (Spartacus) | Inner Sphere | Standard | Shrap05 | missing |  |
-| SMG (Sturm Hornet Mk III) | Inner Sphere | Standard | Shrap05 | missing |  |
-| SMG (Wolf-Barron A7) | Inner Sphere | Standard | Shrap05 | missing |  |
-| Shotgun (AMI Keymaster-15) | Inner Sphere | Standard | Shrap07 | missing |  |
-| Shotgun (AWA AS-105) | Inner Sphere | Standard | Shrap07 | missing |  |
-| Shotgun (AWA SS-112) | Inner Sphere | Standard | Shrap07 | missing |  |
-| Shotgun (Byron 15S) | Inner Sphere | Standard | Shrap07 | missing |  |
-| Shotgun (CWI Jianhuren) | Inner Sphere | Standard | Shrap07 | missing |  |
-| Shotgun (Daystar I (C)) | Inner Sphere | Standard | Shrap07 | missing |  |
-| Shotgun (Daystar I (M)) | Inner Sphere | Standard | Shrap07 | missing |  |
-| Shotgun (Daystar II (C)) | Inner Sphere | Standard | Shrap07 | missing |  |
-| Shotgun (Daystar II (M)) | Inner Sphere | Standard | Shrap07 | missing |  |
-| Shotgun (Daystar III (C)) | Inner Sphere | Standard | Shrap07 | missing |  |
-| Shotgun (Daystar III (M)) | Inner Sphere | Standard | Shrap07 | missing |  |
-| Shotgun (Daystar IV (C)) | Inner Sphere | Standard | Shrap07 | missing |  |
-| Shotgun (Daystar IV (M)) | Inner Sphere | Standard | Shrap07 | missing |  |
-| Shotgun (Daystar V (C)) | Inner Sphere | Standard | Shrap07 | missing |  |
-| Shotgun (Daystar V (M)) | Inner Sphere | Standard | Shrap07 | missing |  |
-| Shotgun (Duckett A-5) | Inner Sphere | Standard | Shrap07 | missing |  |
-| Shotgun (Hastari III) | Inner Sphere | Standard | Shrap07 | missing |  |
-| Shotgun (Marburg-20) | Inner Sphere | Standard | Shrap07 | missing |  |
-| Shotgun (Marburg-20M) | Inner Sphere | Standard | Shrap07 | missing |  |
-| Shotgun (Morrigan Stormsweeper) | Inner Sphere | Standard | Shrap07 | missing |  |
-| Shotgun (SD Type-31) | Inner Sphere | Standard | Shrap07 | missing |  |
-| Shotgun (Wakazashi O-12) | Inner Sphere | Standard | 176, HB:HK | missing |  |
-| Shotgun (Wrangleman Tri-Barrel) | Inner Sphere | Standard | Shrap07 | missing |  |
-| Sniper Rifle (Barton AMR (Anti-Armor)) | Inner Sphere | Standard | Shrap01 | missing |  |
-| Sniper Rifle (Barton AMR (Standard)) | Inner Sphere | Standard | Shrap01 | missing |  |
-| Sniper Rifle (FNF-J12 (Dark Caste)) | Clan | Standard | Shrap01 | missing |  |
-| Sniper Rifle (FNF-J12 (SLDF)) | Inner Sphere | Standard | Shrap01 | missing |  |
-| Sniper Rifle (Hammel Marksman) | Inner Sphere | Standard | Shrap01 | missing |  |
-| Sniper Rifle (LRS-53 Sniper Rifle) | Inner Sphere | Standard | Shrap01 | missing |  |
-| Sniper Rifle (Lancelot Mk V) | Inner Sphere | Standard | Shrap01 | missing |  |
-| Sniper Rifle (Minolta 9000 Advanced Sniper System) | Inner Sphere | Standard | 273, TM | missing |  |
-| Sniper Rifle (Praetorian S-3) | Inner Sphere | Standard | Shrap01 | missing |  |
-| Sniper Rifle (Praetorian S-5) | Inner Sphere | Standard | Shrap01 | missing |  |
-| Sniper Rifle (SR-17 Suns Killer) | Inner Sphere | Standard | Shrap01 | missing |  |
-| Sniper Rifle (Sairentosutomu) | Inner Sphere | Standard | Shrap01 | missing |  |
-| Sniper Rifle (Stalker Sniper Rifle) | Inner Sphere | Standard | 147, HB:HL | missing |  |
-| Sniper Rifle (Thorshammer) | Inner Sphere | Standard | Shrap01 | missing |  |
-| Sniper Rifle (Wilimton RS-14) | Inner Sphere | Standard | Shrap01 | missing |  |
-| Sniper Rifle (Wilimton RS-17 (Stripped)) | Inner Sphere | Standard | Shrap01 | missing |  |
-| Sniper Rifle (Yuan Ling) | Inner Sphere | Standard | Shrap01 | missing |  |
-| Staff (Nunchaku/Pole Arm) | Inner Sphere | Standard | 272, TM | missing |  |
-| Staff (Shock Staff) | Inner Sphere | Standard | 195, AToW Companion | missing |  |
-| Staff (Unofficial) | Inner Sphere | Standard | 272, TM | missing |  |
-| Tree Club | Inner Sphere | Standard |  | missing |  |
-| Variable-Pulse Laser Rifle | Inner Sphere | Standard | 195, AToW Companion | missing |  |
-| Vibro Lock Pick Set | Inner Sphere | Standard |  | missing |  |
-| Vibro-Shovel | Inner Sphere | Standard |  | missing |  |
+| Infantry Bridge Kit | Inner Sphere | Standard |  | no source | MegaMek item with no rules reference; no book in the library has it |
+| Vibro-Shovel | Inner Sphere | Standard |  | no source | MegaMek item with no rules reference; no book in the library has it |
+| Laser Rifle (Federated-Barrett M61A) (Incendiary Grenades) | Inner Sphere | Standard | 273, TM | not a record | TM p.350 prints one row for the weapon; the incendiary-grenade variant is MegaMek's |
+| Rifle (Federated-Barrett M42B) (Incendiary Grenades) | Inner Sphere | Standard | 273, TM | not a record | TM p.350 prints one row for the weapon; the incendiary-grenade variant is MegaMek's |
+| Crossbow (Heavy)(Unofficial) | Inner Sphere | Standard | 272, TM | not canon | MegaMek marks it unofficial; the TM rows Crossbow (Heavy) and Staff are catalog records |
+| Staff (Unofficial) | Inner Sphere | Standard | 272, TM | not canon | MegaMek marks it unofficial; the TM rows Crossbow (Heavy) and Staff are catalog records |
+| Girder Club | Inner Sphere | Standard |  | not equipment | A club a 'Mech picks up in play (TW p.146), not built into a unit |
+| Limb Club | Inner Sphere | Standard |  | not equipment | A club a 'Mech picks up in play (TW p.146), not built into a unit |
+| Tree Club | Inner Sphere | Standard |  | not equipment | A club a 'Mech picks up in play (TW p.146), not built into a unit |
+| Auto-Pistol (Nissan SG-12) | Inner Sphere | Standard | 176, HB:HK | round 9 | HB:HK p.176 prints tabletop stats (canon, though MegaMek marks the yumi unofficial) without BV, cost or dates; BV and cost come from the conversion rules |
+| Blade (Archaic Sword)) | Inner Sphere | Standard | 195, AToW Companion | round 9 | AToW Companion p.195: RPG stats only; converted with the personal gear |
+| Blade (Zweihander Sword) | Inner Sphere | Standard | 195, AToW Companion | round 9 | AToW Companion p.195: RPG stats only; converted with the personal gear |
+| Bow (Primitive) | Inner Sphere | Standard | 195, AToW Companion | round 9 | AToW Companion p.195: RPG stats only; converted with the personal gear |
+| Compound Yumi (Bow) (Unofficial) | Inner Sphere | Standard | 272, TM | round 9 | HB:HK p.176 prints tabletop stats (canon, though MegaMek marks the yumi unofficial) without BV, cost or dates; BV and cost come from the conversion rules |
+| Gauss Rifle (Gungnir Heavy Support) | Inner Sphere | Standard | 176, AToW Companion | round 9 | AToW Companion p.176: RPG stats only; converted with the personal gear |
+| Laser Pistol (AWA Wiliby Mk4 Laser Pistol) | Inner Sphere | Standard | Shrap09 | round 9 | Shrapnel #9: A Time of War stats only; converted with the personal gear |
+| Laser Pistol (Brightstar L-12) | Clan | Standard | Shrap09 | round 9 | Shrapnel #9: A Time of War stats only; converted with the personal gear |
+| Laser Pistol (Brightstar L-15) | Clan | Standard | Shrap09 | round 9 | Shrapnel #9: A Time of War stats only; converted with the personal gear |
+| Laser Pistol (Brightstar L-7) | Inner Sphere | Standard | Shrap09 | round 9 | Shrapnel #9: A Time of War stats only; converted with the personal gear |
+| Laser Pistol (Darklight IV Laser Pistol) | Inner Sphere | Standard | Shrap09 | round 9 | Shrapnel #9: A Time of War stats only; converted with the personal gear |
+| Laser Pistol (Kelvin 000 Lancer 3-mm) | Inner Sphere | Standard | Shrap09 | round 9 | Shrapnel #9: A Time of War stats only; converted with the personal gear |
+| Laser Pistol (Xing Shan ER) | Inner Sphere | Standard | Shrap09 | round 9 | Shrapnel #9: A Time of War stats only; converted with the personal gear |
+| Laser Pistol (Xing Shan) | Inner Sphere | Standard | Shrap09 | round 9 | Shrapnel #9: A Time of War stats only; converted with the personal gear |
+| Laser Rifle (DWS L5S) | Inner Sphere | Standard | Shrap09 | round 9 | Shrapnel #9: A Time of War stats only; converted with the personal gear |
+| Laser Rifle (Darklight-CL Light Laser Rifle) | Inner Sphere | Standard | Shrap09 | round 9 | Shrapnel #9: A Time of War stats only; converted with the personal gear |
+| Laser Rifle (Scorcher VI Blazer Rifle) | Inner Sphere | Standard | Shrap09 | round 9 | Shrapnel #9: A Time of War stats only; converted with the personal gear |
+| Laser Rifle (Syrtis Firebolt-12) (Repaired) | Inner Sphere | Standard | Shrap09 | round 9 | Shrapnel #9: A Time of War stats only; converted with the personal gear |
+| Laser Rifle (Syrtis Firebolt-12) (Unrepaired) | Inner Sphere | Standard | Shrap09 | round 9 | Shrapnel #9: A Time of War stats only; converted with the personal gear |
+| Laser Rifle (Wolf-Barron Sunraker) | Inner Sphere | Standard | Shrap09 | round 9 | Shrapnel #9: A Time of War stats only; converted with the personal gear |
+| Laser Rifle (Yang Lie) | Inner Sphere | Standard | Shrap09 | round 9 | Shrapnel #9: A Time of War stats only; converted with the personal gear |
+| Laser Sniper Rifle (DWS L5L) | Inner Sphere | Standard | Shrap09 | round 9 | Shrapnel #9: A Time of War stats only; converted with the personal gear |
+| Machine Pistol (H-T Spec-7a) | Inner Sphere | Standard | 176, HB:HK | round 9 | HB:HK p.176 prints tabletop stats (canon, though MegaMek marks the yumi unofficial) without BV, cost or dates; BV and cost come from the conversion rules |
+| Pistol (AA Gemini) | Inner Sphere | Standard | Shrap03 | round 9 | Shrapnel #3: A Time of War stats only; converted with the personal gear |
+| Pistol (Camden HR-7) | Inner Sphere | Standard | Shrap03 | round 9 | Shrapnel #3: A Time of War stats only; converted with the personal gear |
+| Pistol (Dreamel J-4 Derringer) | Inner Sphere | Standard | Shrap03 | round 9 | Shrapnel #3: A Time of War stats only; converted with the personal gear |
+| Pistol (HCK P-14) | Inner Sphere | Standard | Shrap03 | round 9 | Shrapnel #3: A Time of War stats only; converted with the personal gear |
+| Pistol (Lemison Combat Revolver) | Inner Sphere | Standard | Shrap03 | round 9 | Shrapnel #3: A Time of War stats only; converted with the personal gear |
+| Pistol (Momo De Baoying (Special)) | Inner Sphere | Standard | Shrap03 | round 9 | Shrapnel #3: A Time of War stats only; converted with the personal gear |
+| Pistol (Momo De Baoying (Standard)) | Inner Sphere | Standard | Shrap03 | round 9 | Shrapnel #3: A Time of War stats only; converted with the personal gear |
+| Pistol (Nambu 380) | Inner Sphere | Standard | Shrap03 | round 9 | Shrapnel #3: A Time of War stats only; converted with the personal gear |
+| Pistol (Nambu 480) | Inner Sphere | Standard | Shrap03 | round 9 | Shrapnel #3: A Time of War stats only; converted with the personal gear |
+| Pistol (RFW Galahad) | Inner Sphere | Standard | Shrap03 | round 9 | Shrapnel #3: A Time of War stats only; converted with the personal gear |
+| Pistol (Serrek 7994 SF) | Inner Sphere | Standard | Shrap03 | round 9 | Shrapnel #3: A Time of War stats only; converted with the personal gear |
+| Pistol (Serrek 7994) | Inner Sphere | Standard | Shrap03 | round 9 | Shrapnel #3: A Time of War stats only; converted with the personal gear |
+| Pistol (Sturm Eagle Mk4M) | Inner Sphere | Standard | Shrap03 | round 9 | Shrapnel #3: A Time of War stats only; converted with the personal gear |
+| Pistol (Sturm Eagle Mk4P) | Inner Sphere | Standard | Shrap03 | round 9 | Shrapnel #3: A Time of War stats only; converted with the personal gear |
+| Pistol (Type 74D Pistol) | Inner Sphere | Standard | Shrap03 | round 9 | Shrapnel #3: A Time of War stats only; converted with the personal gear |
+| Pistol (Type 74P Pistol) | Inner Sphere | Standard | Shrap03 | round 9 | Shrapnel #3: A Time of War stats only; converted with the personal gear |
+| Pistol (Whisper-4 (Standard Rounds)) | Inner Sphere | Standard | Shrap03 | round 9 | Shrapnel #3: A Time of War stats only; converted with the personal gear |
+| Pistol (Whisper-4 (Sub-Sonic)) | Inner Sphere | Standard | Shrap03 | round 9 | Shrapnel #3: A Time of War stats only; converted with the personal gear |
+| Pistol (Wolf M30) | Inner Sphere | Standard | Shrap03 | round 9 | Shrapnel #3: A Time of War stats only; converted with the personal gear |
+| Pistol (Ya Njingshe) | Inner Sphere | Standard | Shrap03 | round 9 | Shrapnel #3: A Time of War stats only; converted with the personal gear |
+| Prosthetic Needler | Inner Sphere | Standard | 78, IO:AE | round 9 | IO:AE p.78 prosthetic weapon, with the prosthetics |
+| Prosthetic SMG | Inner Sphere | Standard | 78, IO:AE | round 9 | IO:AE p.78 prosthetic weapon, with the prosthetics |
+| Prosthetic Shotgun | Inner Sphere | Standard | 78, IO:AE | round 9 | IO:AE p.78 prosthetic weapon, with the prosthetics |
+| Prosthetic Sonic Stunner | Inner Sphere | Standard | 78, IO:AE | round 9 | IO:AE p.78 prosthetic weapon, with the prosthetics |
+| Prosthetic Vibro Blade | Inner Sphere | Standard | 78, IO:AE | round 9 | IO:AE p.78 prosthetic weapon, with the prosthetics |
+| Pulse Laser Pistol (Medusa III) | Inner Sphere | Standard | Shrap09 | round 9 | Shrapnel #9: A Time of War stats only; converted with the personal gear |
+| Pulse Laser Pistol (Medusa IV) | Inner Sphere | Standard | Shrap09 | round 9 | Shrapnel #9: A Time of War stats only; converted with the personal gear |
+| Pulse Laser Pistol (RDI Sunswarm Pulsar) | Inner Sphere | Standard | Shrap09 | round 9 | Shrapnel #9: A Time of War stats only; converted with the personal gear |
+| Pulse Laser Rifle (DWS L5C) | Inner Sphere | Standard | Shrap09 | round 9 | Shrapnel #9: A Time of War stats only; converted with the personal gear |
+| Rifle (Vintage Assault) | Inner Sphere | Standard | 195, AToW Companion | round 9 | AToW Companion p.195: RPG stats only; converted with the personal gear |
+| SMG (AWA Starling Mk7) | Inner Sphere | Standard | Shrap05 | round 9 | Shrapnel #5: A Time of War stats only; converted with the personal gear |
+| SMG (AWA Starling Mk7-LB) | Inner Sphere | Standard | Shrap05 | round 9 | Shrapnel #5: A Time of War stats only; converted with the personal gear |
+| SMG (AWA Starling Mk7-SF) | Inner Sphere | Standard | Shrap05 | round 9 | Shrapnel #5: A Time of War stats only; converted with the personal gear |
+| SMG (Blackfield Scorpion Mk 65) | Inner Sphere | Standard | Shrap05 | round 9 | Shrapnel #5: A Time of War stats only; converted with the personal gear |
+| SMG (Boudicca-4) | Inner Sphere | Standard | Shrap05 | round 9 | Shrapnel #5: A Time of War stats only; converted with the personal gear |
+| SMG (Boudicca-5) | Inner Sphere | Standard | Shrap05 | round 9 | Shrapnel #5: A Time of War stats only; converted with the personal gear |
+| SMG (Boudicca-7) | Inner Sphere | Standard | Shrap05 | round 9 | Shrapnel #5: A Time of War stats only; converted with the personal gear |
+| SMG (DSK Largo SGA) | Inner Sphere | Standard | Shrap05 | round 9 | Shrapnel #5: A Time of War stats only; converted with the personal gear |
+| SMG (DSK Largo SGB) | Inner Sphere | Standard | Shrap05 | round 9 | Shrapnel #5: A Time of War stats only; converted with the personal gear |
+| SMG (Hunkle V) | Inner Sphere | Standard | Shrap05 | round 9 | Shrapnel #5: A Time of War stats only; converted with the personal gear |
+| SMG (J-15 Hagel) | Inner Sphere | Standard | Shrap05 | round 9 | Shrapnel #5: A Time of War stats only; converted with the personal gear |
+| SMG (J-17 Hagel) | Inner Sphere | Standard | Shrap05 | round 9 | Shrapnel #5: A Time of War stats only; converted with the personal gear |
+| SMG (Jinse Yanjingshe (AP Rounds)) | Inner Sphere | Standard | Shrap05 | round 9 | Shrapnel #5: A Time of War stats only; converted with the personal gear |
+| SMG (Jinse Yanjingshe (Standard)) | Inner Sphere | Standard | Shrap05 | round 9 | Shrapnel #5: A Time of War stats only; converted with the personal gear |
+| SMG (Nambu Type S-124) | Inner Sphere | Standard | Shrap05 | round 9 | Shrapnel #5: A Time of War stats only; converted with the personal gear |
+| SMG (RFW Bedivere) | Inner Sphere | Standard | Shrap05 | round 9 | Shrapnel #5: A Time of War stats only; converted with the personal gear |
+| SMG (Spartacus) | Inner Sphere | Standard | Shrap05 | round 9 | Shrapnel #5: A Time of War stats only; converted with the personal gear |
+| SMG (Sturm Hornet Mk III) | Inner Sphere | Standard | Shrap05 | round 9 | Shrapnel #5: A Time of War stats only; converted with the personal gear |
+| SMG (Wolf-Barron A7) | Inner Sphere | Standard | Shrap05 | round 9 | Shrapnel #5: A Time of War stats only; converted with the personal gear |
+| Shotgun (AMI Keymaster-15) | Inner Sphere | Standard | Shrap07 | round 9 | Shrapnel #7: A Time of War stats only; converted with the personal gear |
+| Shotgun (AWA AS-105) | Inner Sphere | Standard | Shrap07 | round 9 | Shrapnel #7: A Time of War stats only; converted with the personal gear |
+| Shotgun (AWA SS-112) | Inner Sphere | Standard | Shrap07 | round 9 | Shrapnel #7: A Time of War stats only; converted with the personal gear |
+| Shotgun (Byron 15S) | Inner Sphere | Standard | Shrap07 | round 9 | Shrapnel #7: A Time of War stats only; converted with the personal gear |
+| Shotgun (CWI Jianhuren) | Inner Sphere | Standard | Shrap07 | round 9 | Shrapnel #7: A Time of War stats only; converted with the personal gear |
+| Shotgun (Daystar I (C)) | Inner Sphere | Standard | Shrap07 | round 9 | Shrapnel #7: A Time of War stats only; converted with the personal gear |
+| Shotgun (Daystar I (M)) | Inner Sphere | Standard | Shrap07 | round 9 | Shrapnel #7: A Time of War stats only; converted with the personal gear |
+| Shotgun (Daystar II (C)) | Inner Sphere | Standard | Shrap07 | round 9 | Shrapnel #7: A Time of War stats only; converted with the personal gear |
+| Shotgun (Daystar II (M)) | Inner Sphere | Standard | Shrap07 | round 9 | Shrapnel #7: A Time of War stats only; converted with the personal gear |
+| Shotgun (Daystar III (C)) | Inner Sphere | Standard | Shrap07 | round 9 | Shrapnel #7: A Time of War stats only; converted with the personal gear |
+| Shotgun (Daystar III (M)) | Inner Sphere | Standard | Shrap07 | round 9 | Shrapnel #7: A Time of War stats only; converted with the personal gear |
+| Shotgun (Daystar IV (C)) | Inner Sphere | Standard | Shrap07 | round 9 | Shrapnel #7: A Time of War stats only; converted with the personal gear |
+| Shotgun (Daystar IV (M)) | Inner Sphere | Standard | Shrap07 | round 9 | Shrapnel #7: A Time of War stats only; converted with the personal gear |
+| Shotgun (Daystar V (C)) | Inner Sphere | Standard | Shrap07 | round 9 | Shrapnel #7: A Time of War stats only; converted with the personal gear |
+| Shotgun (Daystar V (M)) | Inner Sphere | Standard | Shrap07 | round 9 | Shrapnel #7: A Time of War stats only; converted with the personal gear |
+| Shotgun (Duckett A-5) | Inner Sphere | Standard | Shrap07 | round 9 | Shrapnel #7: A Time of War stats only; converted with the personal gear |
+| Shotgun (Hastari III) | Inner Sphere | Standard | Shrap07 | round 9 | Shrapnel #7: A Time of War stats only; converted with the personal gear |
+| Shotgun (Marburg-20) | Inner Sphere | Standard | Shrap07 | round 9 | Shrapnel #7: A Time of War stats only; converted with the personal gear |
+| Shotgun (Marburg-20M) | Inner Sphere | Standard | Shrap07 | round 9 | Shrapnel #7: A Time of War stats only; converted with the personal gear |
+| Shotgun (Morrigan Stormsweeper) | Inner Sphere | Standard | Shrap07 | round 9 | Shrapnel #7: A Time of War stats only; converted with the personal gear |
+| Shotgun (SD Type-31) | Inner Sphere | Standard | Shrap07 | round 9 | Shrapnel #7: A Time of War stats only; converted with the personal gear |
+| Shotgun (Wakazashi O-12) | Inner Sphere | Standard | 176, HB:HK | round 9 | HB:HK p.176 prints tabletop stats (canon, though MegaMek marks the yumi unofficial) without BV, cost or dates; BV and cost come from the conversion rules |
+| Shotgun (Wrangleman Tri-Barrel) | Inner Sphere | Standard | Shrap07 | round 9 | Shrapnel #7: A Time of War stats only; converted with the personal gear |
+| Sniper Rifle (Barton AMR (Anti-Armor)) | Inner Sphere | Standard | Shrap01 | round 9 | Shrapnel #1: A Time of War stats only; converted with the personal gear |
+| Sniper Rifle (Barton AMR (Standard)) | Inner Sphere | Standard | Shrap01 | round 9 | Shrapnel #1: A Time of War stats only; converted with the personal gear |
+| Sniper Rifle (FNF-J12 (Dark Caste)) | Clan | Standard | Shrap01 | round 9 | Shrapnel #1: A Time of War stats only; converted with the personal gear |
+| Sniper Rifle (FNF-J12 (SLDF)) | Inner Sphere | Standard | Shrap01 | round 9 | Shrapnel #1: A Time of War stats only; converted with the personal gear |
+| Sniper Rifle (Hammel Marksman) | Inner Sphere | Standard | Shrap01 | round 9 | Shrapnel #1: A Time of War stats only; converted with the personal gear |
+| Sniper Rifle (LRS-53 Sniper Rifle) | Inner Sphere | Standard | Shrap01 | round 9 | Shrapnel #1: A Time of War stats only; converted with the personal gear |
+| Sniper Rifle (Lancelot Mk V) | Inner Sphere | Standard | Shrap01 | round 9 | Shrapnel #1: A Time of War stats only; converted with the personal gear |
+| Sniper Rifle (Praetorian S-3) | Inner Sphere | Standard | Shrap01 | round 9 | Shrapnel #1: A Time of War stats only; converted with the personal gear |
+| Sniper Rifle (Praetorian S-5) | Inner Sphere | Standard | Shrap01 | round 9 | Shrapnel #1: A Time of War stats only; converted with the personal gear |
+| Sniper Rifle (SR-17 Suns Killer) | Inner Sphere | Standard | Shrap01 | round 9 | Shrapnel #1: A Time of War stats only; converted with the personal gear |
+| Sniper Rifle (Sairentosutomu) | Inner Sphere | Standard | Shrap01 | round 9 | Shrapnel #1: A Time of War stats only; converted with the personal gear |
+| Sniper Rifle (Thorshammer) | Inner Sphere | Standard | Shrap01 | round 9 | Shrapnel #1: A Time of War stats only; converted with the personal gear |
+| Sniper Rifle (Wilimton RS-14) | Inner Sphere | Standard | Shrap01 | round 9 | Shrapnel #1: A Time of War stats only; converted with the personal gear |
+| Sniper Rifle (Wilimton RS-17 (Stripped)) | Inner Sphere | Standard | Shrap01 | round 9 | Shrapnel #1: A Time of War stats only; converted with the personal gear |
+| Sniper Rifle (Yuan Ling) | Inner Sphere | Standard | Shrap01 | round 9 | Shrapnel #1: A Time of War stats only; converted with the personal gear |
+| Staff (Shock Staff) | Inner Sphere | Standard | 195, AToW Companion | round 9 | AToW Companion p.195: RPG stats only; converted with the personal gear |
+| Variable-Pulse Laser Rifle | Inner Sphere | Standard | 195, AToW Companion | round 9 | AToW Companion p.195: RPG stats only; converted with the personal gear |
+| Vibro Lock Pick Set | Inner Sphere | Standard |  | round 9 | A Time of War personal gear |
 
 ## Jump jet
 

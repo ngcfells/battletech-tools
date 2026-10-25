@@ -36,8 +36,11 @@ const jason = (): InfantryPlatoon => {
 
 describe("Conventional infantry weapons data (TechManual pp.298-301, 319, 349-352)", () => {
     it("holds every row of the weapons table once, with the values the book's examples quote", () => {
-        expect(infantryWeapons.length).toBe(212);
-        expect(new Set(infantryWeapons.map((weapon) => weapon.tag)).size).toBe(212);
+        // 212 TechManual rows and 3 from Handbook: House Liao p.147.
+        const tm = infantryWeapons.filter((weapon) => !weapon.book);
+        expect(tm.length).toBe(212);
+        expect(infantryWeapons.filter((weapon) => weapon.book === "HB:HL").map((weapon) => weapon.tag)).toEqual(["inf-blade-slasher-combat-knife", "inf-rifle-stalker-sniper", "inf-rifle-striker-carbine"]);
+        expect(new Set(infantryWeapons.map((weapon) => weapon.tag)).size).toBe(215);
         expect(findInfantryWeapon("inf-laser-rifle")).toMatchObject({ type: "standard", damageType: "E", baseRange: 2, damage: 0.28, crew: 1, cost: 1250 });
         expect(findInfantryWeapon("inf-auto-rifle")).toMatchObject({ baseRange: 1, damage: 0.52 });
         expect(findInfantryWeapon("inf-machine-gun-support")).toMatchObject({ type: "support", special: "B", baseRange: 2, damage: 0.94, crew: 2 });
