@@ -320,7 +320,7 @@ export default class MechCreatorStep1 extends React.Component<IHomeProps, IHomeS
                               <select value={isUnmodifiedPrintedDroid(this.props.appGlobals.currentBattleMech) ? this.props.appGlobals.currentBattleMech.getPrintedDroid() : ""} onChange={this.loadPrintedDroid}>
                                 <option value="">{locked ? "Choose a printed droid" : "Start from a printed droid (optional)"}</option>
                                 {getPrintedDroids(shownLevel).map((droid) => (
-                                  <option key={droid.id} value={droid.id}>{droid.model} {droid.name}{droid.inferred ? " (inferred)" : ""}</option>
+                                  <option key={droid.id} value={droid.id}>{droid.model !== droid.name.toUpperCase() && `${droid.model} `}{droid.name}{droid.inferred ? " (inferred)" : ""}</option>
                                 ))}
                               </select>
                             </label>

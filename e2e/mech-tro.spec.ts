@@ -12,7 +12,7 @@ test("Step 7 keeps the Technical Readout fields, prints them, and the TRO text i
     await page.goto("classic-battletech/mech-creator/step1");
     await page.getByLabel("Mech Tonnage").selectOption("50");
 
-    await page.getByRole("link", { name: /Step 7/ }).first().click();
+    await page.goto("classic-battletech/mech-creator/step7");
     await expect(page.getByText("Step 7: Technical Readout (optional)")).toBeVisible();
     await page.getByLabel("Manufacturer", { exact: true }).fill("Earthwerks Incorporated");
     await page.getByLabel("Overview").fill("Test overview");

@@ -45,7 +45,7 @@ test("Battledroids lists its own rules levels and plays the printed droids below
     page.on("pageerror", (error) => errors.push(error.stack ?? error.message));
     const book = [
         "STG-3R Stinger", "WSP-1A Wasp", "PXH-1K Phoenix Hawk", "GRF-1N Griffin", "SHD-2H Shadow Hawk",
-        "RFL-3N Rifleman", "CRD-3R Crusader", "ARC-2R Archer", "WHM-6R Warhammer", "MAD-3R Marauder",
+        "RFL-3N Rifleman", "CRD-3R Crusader", "ARC-2R Archer", "WHM-6R Warhammer", "MAD-3R Marauder", "Merlin",
     ];
 
     await page.goto("classic-battletech/mech-creator/step1");

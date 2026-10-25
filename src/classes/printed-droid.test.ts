@@ -111,6 +111,16 @@ describe("Printed Battledroids droids: the ten of the box set", () => {
     it("are the edition's 'Mechs, and the apocryphal droids are not", () => {
         expect(getRulesEdition("battledroids").mechs).toEqual(BOOK.map(id => `${droid(id).model} ${droid(id).name}`));
     });
+
+    // BD pp.23-25: the worked example of droid construction, built from the text and its sheet.
+    it("Merlin: the construction example, with the armor diagram's head and arms over the text's misprint", () => {
+        const notes = listing("merlin", 24, [60, 4, 4, 18, 192], [9, 26, 13, 19, 9, 19, 9, 20, 20, 24, 24], [
+            "ammo-lrm-standard rt", "ammo-machine-gun-standard lt", "lrm-5 rt", "machine-gun lt", "medium-laser la", "medium-laser ra",
+            "standard-flamer lt", "standard-ppc rt",
+        ], 60);
+        expect(notes).toContain("Arms 28");
+        expect(overCap(built("merlin"))).toEqual([]);
+    });
 });
 
 describe("Printed Battledroids droids: across rules editions and old saves", () => {
@@ -380,16 +390,17 @@ describe("Printed Battledroids droids: building and saving", () => {
     });
 
     it("lists the droids at or below a rules level", () => {
-        expect(getPrintedDroids(0).map(entry => entry.id)).toEqual(BOOK);
-        expect(getPrintedDroids(1).map(entry => entry.id)).toEqual(BOOK);
+        expect(getPrintedDroids(0).map(entry => entry.id)).toEqual([...BOOK, "merlin"]);
+        expect(getPrintedDroids(1).map(entry => entry.id)).toEqual([...BOOK, "merlin"]);
         expect(getPrintedDroids(APOCRYPHAL_RULES_LEVEL).map(entry => entry.id)).toEqual([
-            ...BOOK, "spi-5r", "gol-1h", "wlv-3nb", "wlv-3nc", "grf-2n", "shd-3h", "thn-8t", "btl-5r", "shd-2h-jakt", "grf-1n-soltic-h8",
+            ...BOOK, "merlin", "spi-5r", "gol-1h", "wlv-3nb", "wlv-3nc", "grf-2n", "shd-3h", "thn-8t", "btl-5r", "shd-2h-jakt", "grf-1n-soltic-h8",
         ]);
     });
 
     it("names each droid with its model, name and source", () => {
         for (const entry of battledroidsPrintedDroids) {
-            expect(entry.model, entry.id).toMatch(/^[A-Z]{2,3}\d*-[0-9A-Z]+/);
+            // The Merlin's sheet prints only "MERLIN" (BD p.24).
+            expect(entry.model, entry.id).toMatch(/^[A-Z]{2,3}\d*-[0-9A-Z]+|^MERLIN$/);
             expect(entry.source, entry.id).not.toBe("");
             expect(built(entry.id).model, entry.id).toBe(entry.model);
         }

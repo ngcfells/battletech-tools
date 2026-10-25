@@ -15,7 +15,7 @@ import { APOCRYPHAL_RULES_LEVEL, CUSTOM_HOMEBREW_RULES_LEVEL } from "./rules-lev
 export type PrintedDroidLocation = "hd" | "ct" | "lt" | "rt" | "la" | "ra" | "ll" | "rl";
 
 /**
- * A droid as a Battledroids-era record listing prints it: the book's ten, the SPI-5R Spider of Game News #3 and the
+ * A droid as a Battledroids-era record listing prints it: the book's ten and its Merlin construction example, the SPI-5R Spider of Game News #3 and the
  * TCI kit-back sheets. Every figure is as printed; corrections and anything that does not add up are in `notes`.
  */
 export interface IPrintedDroid {
@@ -185,6 +185,22 @@ export const battledroidsPrintedDroids: IPrintedDroid[] = [
             ...items(1, "medium-laser", "la"), ...items(1, "autocannon-standard-b", "rt"), ...items(1, "ammo-ac-5-standard", "lt"),
         ],
         notes: [],
+    },
+    {
+        // BD pp.23-25, the worked example of droid construction. The sheet's Type line reads "MERLIN"; it has no model code.
+        id: "merlin", model: "MERLIN", name: "Merlin", rulesLevel: 0, source: "BD", page: 24, mechType: "biped",
+        tonnage: 60, engineRating: 240, walk: 4, jump: 4, heatSinks: 18,
+        armor: { head: 9, centerTorso: 26, centerTorsoRear: 13, sideTorso: 19, sideTorsoRear: 9, arm: 20, leg: 24 },
+        printedArmorFactor: 192,
+        equipment: [
+            ...items(1, "standard-ppc", "rt"), ...items(1, "lrm-5", "rt"), ...items(1, "ammo-lrm-standard", "rt"),
+            ...items(1, "medium-laser", "ra"), ...items(1, "medium-laser", "la"), ...items(1, "machine-gun", "lt"),
+            ...items(1, "standard-flamer", "lt"), ...items(1, "ammo-machine-gun-standard", "lt"),
+        ],
+        notes: [
+            "The text prints Head 0 and Arms 28 apiece, which add up to 199 and put the arms over twice their 10 structure boxes; the armor diagram on p.25 leaves 9 head boxes and 20 on each arm open, which add up to the printed 192, so those are used.",
+            "The critical hit chart places the 18 heat sinks but not the two tons of ammunition; each goes in the torso beside its weapon.",
+        ],
     },
     {
         id: "spi-5r", model: "SPI-5R", name: "Spider", rulesLevel: APOCRYPHAL_RULES_LEVEL,
