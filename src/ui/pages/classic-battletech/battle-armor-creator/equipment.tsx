@@ -2,6 +2,7 @@ import React, { type JSX } from 'react';
 import { Link } from 'react-router';
 import { FaArrowCircleLeft, FaArrowCircleRight, FaPlus, FaTrash } from "react-icons/fa";
 import BattleArmor, { BATTLE_ARMOR_LOCATION_NAMES, BATTLE_ARMOR_WEAPON_PACK, BattleArmorLocation, IBattleArmorMountedItem } from '../../../../classes/battle-armor';
+import { isInfantryWeaponAtRulesLevel } from '../../../../data/infantry-weapons';
 import { BATTLE_ARMOR_TURRET } from '../../../../data/battle-armor-construction';
 import { IBattleArmorEquipment, battleArmorMineTypes, findBattleArmorEquipment, findBattleArmorMineType, getBattleArmorMunitionsFor } from '../../../../data/battle-armor-equipment';
 import { IAppGlobals } from '../../../app-router';
@@ -149,7 +150,9 @@ export default class BattleArmorCreatorEquipment extends React.Component<IEquipm
         const rulesLevel = this.props.appGlobals.appSettings.mechRulesFilter;
         const available = suit.getAvailableEquipment(rulesLevel);
         const groups = Array.from(new Set(available.map((equipment) => equipment.group)));
-        const apWeapons = suit.getAntiPersonnelWeapons();
+        // A Custom Homebrew weapon is offered at its rules level, or where a mount already carries it.
+        const apWeapons = suit.getAntiPersonnelWeapons().filter((weapon) => isInfantryWeaponAtRulesLevel(weapon, rulesLevel)
+            || suit.getAPMounts().some((mount) => mount.weapon === weapon.tag));
 
         return (
             <UIPage current="classic-battletech-battle-armor-creator" appGlobals={this.props.appGlobals}>

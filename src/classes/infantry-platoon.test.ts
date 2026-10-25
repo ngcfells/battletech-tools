@@ -3,6 +3,8 @@ import InfantryPlatoon, { formatInfantryASDamage, INFANTRY_FORMATIONS, INFANTRY_
 import { INFANTRY_SUPPORT_PPC_TAG, findInfantryWeapon, infantryWeapons } from "../data/infantry-weapons";
 import { BattleMechGroup } from "./battlemech-group";
 import { findInfantryArmor, infantryArmor } from "../data/infantry-armor";
+import { buildSupportVehicleLightWeapon } from "../data/support-vehicle-light-weapons";
+import { getEquipmentRulesLevel } from "../data/equipment-registry";
 
 // The four platoons TechManual builds as its running examples (pp.146-155).
 
@@ -36,11 +38,11 @@ const jason = (): InfantryPlatoon => {
 
 describe("Conventional infantry weapons data (TechManual pp.298-301, 319, 349-352)", () => {
     it("holds every row of the weapons table once, with the values the book's examples quote", () => {
-        // 212 TechManual rows and 3 from Handbook: House Liao p.147.
+        // 212 TechManual rows, 3 from Handbook: House Liao p.147 and 1 Custom Homebrew.
         const tm = infantryWeapons.filter((weapon) => !weapon.book);
         expect(tm.length).toBe(212);
         expect(infantryWeapons.filter((weapon) => weapon.book === "HB:HL").map((weapon) => weapon.tag)).toEqual(["inf-blade-slasher-combat-knife", "inf-rifle-stalker-sniper", "inf-rifle-striker-carbine"]);
-        expect(new Set(infantryWeapons.map((weapon) => weapon.tag)).size).toBe(215);
+        expect(new Set(infantryWeapons.map((weapon) => weapon.tag)).size).toBe(216);
         expect(findInfantryWeapon("inf-laser-rifle")).toMatchObject({ type: "standard", damageType: "E", baseRange: 2, damage: 0.28, crew: 1, cost: 1250 });
         expect(findInfantryWeapon("inf-auto-rifle")).toMatchObject({ baseRange: 1, damage: 0.52 });
         expect(findInfantryWeapon("inf-machine-gun-support")).toMatchObject({ type: "support", special: "B", baseRange: 2, damage: 0.94, crew: 2 });
@@ -50,6 +52,51 @@ describe("Conventional infantry weapons data (TechManual pp.298-301, 319, 349-35
         // The cost table has no row for these: unknown, not free.
         expect(findInfantryWeapon("inf-club-vibro-mace")?.cost).toBeNull();
         expect(infantryWeapons.filter((weapon) => weapon.cost === null).length).toBe(7);
+    });
+});
+
+// Ideas #85: the Ceres Arms Leiting-23 heavy combat carbine, converted from A Time of War (AToW Companion pp.169-171).
+describe("Custom Homebrew infantry weapons", () => {
+    const carbine = "inf-rifle-leiting-23-heavy-combat-carbine";
+
+    it("converts the carbine's standard load by the AToW Companion formula", () => {
+        // AP 3, BD 7 with splash, no Burst, 6 shots: [(3 / 4) x 7 x (3.5 + 0 + 1) / 50] x 0.6 = 0.2835.
+        const damage = Math.round((3 / 4) * 7 * (3.5 + Math.round(1 / 5) + 1) / 50 * Math.min(1, 6 / 10) * 100) / 100;
+        expect(findInfantryWeapon(carbine)).toMatchObject({ damage, baseRange: Math.round(5 / 30), type: "standard", damageType: "B", special: "", crew: 1, cost: 450, ammoCost: 5, shots: 6, techBase: "is", introducedIS: 3100, rulesLevel: 6, book: "Custom" });
+        expect(damage).toBe(0.28);
+    });
+
+    it("takes its Battle Value as the TM table does: damage times the chance to hit over its range at Gunnery 4", () => {
+        const hits = (target: number): number => [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].filter((roll) => roll >= Math.max(2, target)).reduce((sum, roll) => sum + 6 - Math.abs(roll - 7), 0);
+        const derived = (weapon: { baseRange: number; damage: number }): number =>
+            Math.round(weapon.damage * INFANTRY_RANGE_MODIFIERS[weapon.baseRange].reduce((sum, modifier) => sum + hits(4 + modifier), 0) / 36 * 100 + 1e-9) / 100;
+        const tm = infantryWeapons.filter((weapon) => !weapon.book);
+        expect(tm.filter((weapon) => Math.abs(derived(weapon) - weapon.battleValue) < 0.005).length).toBe(208);
+        expect(findInfantryWeapon(carbine)?.battleValue).toBe(derived(findInfantryWeapon(carbine)!));
+    });
+
+    it("is offered only at the Custom Homebrew rules level, and raises the platoon to it", () => {
+        const platoon = new InfantryPlatoon();
+        expect(platoon.setEra("dark-ages")).toBe(true);
+        expect(platoon.getAvailablePrimaryWeapons().map((weapon) => weapon.tag)).not.toContain(carbine);
+        expect(platoon.getAvailablePrimaryWeapons(5).map((weapon) => weapon.tag)).not.toContain(carbine);
+        expect(platoon.getAvailablePrimaryWeapons(6).map((weapon) => weapon.tag)).toContain(carbine);
+        expect(platoon.setPrimaryWeapon(carbine)).toBe(true);
+        expect(platoon.getRequiredRulesLevel()).toBe(6);
+        // Once carried it stays on offer, so the list can show it.
+        expect(platoon.getAvailablePrimaryWeapons().map((weapon) => weapon.tag)).toContain(carbine);
+    });
+
+    it("keeps its level when a Support Vehicle mounts it as a Light weapon", () => {
+        const item = buildSupportVehicleLightWeapon(findInfantryWeapon(carbine)!);
+        expect(getEquipmentRulesLevel(item)).toBe(6);
+        expect(getEquipmentRulesLevel(buildSupportVehicleLightWeapon(findInfantryWeapon("inf-laser-rifle")!))).toBe(0);
+    });
+
+    it("is not in production before 3100", () => {
+        const platoon = new InfantryPlatoon();
+        expect(platoon.setEra("jihad")).toBe(true);
+        expect(platoon.getAvailablePrimaryWeapons(6).map((weapon) => weapon.tag)).not.toContain(carbine);
     });
 });
 

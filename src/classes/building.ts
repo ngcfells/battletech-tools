@@ -12,7 +12,7 @@ import { btEraOptions, findEraByTag, getClosestEraForTech, getErasForTech } from
 import { CUSTOM_HOMEBREW_RULES_LEVEL, equipmentMatchesIdentifier, getCompatibleAmmo, getDatesAvailability, getEquipmentListByTech, getEquipmentRulesLevel, getEquipmentOfferIssue, getWeaponShotsPerTon, isEquipmentOffered, getTechDatesAvailability } from "../data/equipment-registry";
 import { findByTag, matchesTag } from "../data/tag-match";
 import { getWeaponExplosionDamage } from "../data/weapon-explosions";
-import { IInfantryWeapon, INFANTRY_POWER_CELL_COST, findInfantryWeapon, getInfantryClipCost, infantryWeapons, isInfantryWeaponAvailable } from "../data/infantry-weapons";
+import { IInfantryWeapon, INFANTRY_POWER_CELL_COST, findInfantryWeapon, getInfantryClipCost, infantryWeapons, isInfantryWeaponAtRulesLevel, isInfantryWeaponAvailable } from "../data/infantry-weapons";
 import { capitalWeapons } from "../data/capital-weapons";
 import { subCapitalWeapons } from "../data/sub-capital-weapons";
 import { ICapitalWeapon, IEquipmentItem, IEras, IHeatSync, ITechDates, ITechOptions } from "../data/data-interfaces";
@@ -988,10 +988,11 @@ export default class Building {
         return isInfantryWeaponAvailable(weapon, this.getTechBase(), this._era.yearStart, this._era.yearEnd);
     }
 
-    /** Light and Medium weapons the building's technology base and era offer; melee weapons with custom rules. */
+    /** Light and Medium weapons the building's technology base and era offer; melee and homebrew weapons with custom rules. */
     public getAvailableLightWeapons(rulesLevel: number = BUILDING_RULES_LEVEL): IInfantryWeapon[] {
         if (!this.canMountLightWeapons()) return [];
-        return infantryWeapons.filter((weapon) => (weapon.type !== "melee" || rulesLevel >= CUSTOM_HOMEBREW_RULES_LEVEL) && this.isLightWeaponAvailable(weapon));
+        return infantryWeapons.filter((weapon) => (weapon.type !== "melee" || rulesLevel >= CUSTOM_HOMEBREW_RULES_LEVEL)
+            && isInfantryWeaponAtRulesLevel(weapon, rulesLevel) && this.isLightWeaponAvailable(weapon));
     }
 
     public getLightWeapons(): IBuildingLightMount[] { return this._lightWeapons; }
@@ -1310,6 +1311,7 @@ export default class Building {
         let level = BUILDING_RULES_LEVEL;
         for (const mount of this._equipment) level = Math.max(level, getEquipmentRulesLevel(mount.item));
         if (this._lightWeapons.some((mount) => mount.weapon.type === "melee")) level = Math.max(level, CUSTOM_HOMEBREW_RULES_LEVEL);
+        for (const mount of this._lightWeapons) level = Math.max(level, mount.weapon.rulesLevel ?? 0);
         for (const mount of this._capitalWeapons) level = Math.max(level, mount.weapon.rulesLevel);
         if (this.usesAmmoBunkers()) level = Math.max(level, CUSTOM_HOMEBREW_RULES_LEVEL);
         return level;

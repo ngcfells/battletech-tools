@@ -62,6 +62,8 @@ export default class InfantryCreatorWeapons extends React.Component<IWeaponsProp
         const features = platoon.getSpecialFeatures();
         const lines = platoon.getSubPlatoons();
         const issues = platoon.getIssues();
+        const rulesLevel = this.props.appGlobals.appSettings.mechRulesFilter;
+        const notes = [primary, secondary].filter((weapon): weapon is IInfantryWeapon => !!weapon?.notes);
 
         return (
             <UIPage current="classic-battletech-infantry-creator" appGlobals={this.props.appGlobals}>
@@ -74,7 +76,7 @@ export default class InfantryCreatorWeapons extends React.Component<IWeaponsProp
                             <label>
                                 Primary Weapon:
                                 <select value={primary.tag} onChange={(e) => { const value = e.currentTarget.value; this.update((p) => p.setPrimaryWeapon(value)); }}>
-                                    {this.renderOptions(platoon.getAvailablePrimaryWeapons())}
+                                    {this.renderOptions(platoon.getAvailablePrimaryWeapons(rulesLevel))}
                                 </select>
                             </label>
                             <p className="smaller-text">
@@ -86,7 +88,7 @@ export default class InfantryCreatorWeapons extends React.Component<IWeaponsProp
                                 Secondary Weapon:
                                 <select value={secondary ? secondary.tag : ""} onChange={(e) => { const value = e.currentTarget.value; this.update((p) => p.setSecondaryWeapon(value)); }}>
                                     <option value="">None</option>
-                                    {this.renderOptions(platoon.getAvailableSecondaryWeapons())}
+                                    {this.renderOptions(platoon.getAvailableSecondaryWeapons(rulesLevel))}
                                 </select>
                             </label>
                             {secondary ? (
@@ -115,6 +117,7 @@ export default class InfantryCreatorWeapons extends React.Component<IWeaponsProp
                                     {secondary && platoon.getSecondaryCount() > 0 ? this.renderWeaponRow("Secondary", secondary, platoon.getSecondaryCount()) : null}
                                 </tbody>
                             </table>
+                            {notes.map((weapon) => <p key={weapon.tag} className="smaller-text" data-testid="infantry-weapon-notes">{weapon.name}: {weapon.notes}</p>)}
 
                             {issues.length > 0 ? (
                                 <ul className="color-red">

@@ -1,7 +1,7 @@
 import { generateUUID } from "../utils/generateUUID";
 import { TechnicalReadout } from "./technical-readout";
 import type { ITechnicalReadoutExport } from "../data/technical-readout-interfaces";
-import { IInfantryWeapon, INFANTRY_MAX_PRIMARY_DAMAGE, INFANTRY_SUPPORT_PPC_TAG, findInfantryWeapon, infantryWeapons, isInfantryWeaponAvailable } from "../data/infantry-weapons";
+import { IInfantryWeapon, INFANTRY_MAX_PRIMARY_DAMAGE, INFANTRY_SUPPORT_PPC_TAG, findInfantryWeapon, infantryWeapons, isInfantryWeaponAtRulesLevel, isInfantryWeaponAvailable } from "../data/infantry-weapons";
 import { btEraOptions, findEraByTag, getErasForTech } from "../data/era-options";
 import { IEras } from "../data/data-interfaces";
 import { DEFAULT_RULES_EDITION, getSelectableRulesEditionTag } from "../data/rules-editions";
@@ -277,7 +277,11 @@ export default class InfantryPlatoon {
     }
     public getImportIssues(): readonly string[] { return this._importIssues; }
     /** Standard, or Advanced once the platoon wears Tactical Operations infantry armor. */
-    public getRequiredRulesLevel(): number { return this._armor ? Math.max(INFANTRY_RULES_LEVEL, INFANTRY_ARMOR_RULES_LEVEL) : INFANTRY_RULES_LEVEL; }
+    /** Standard rules; Advanced with infantry armor; a Custom Homebrew weapon's own level. */
+    public getRequiredRulesLevel(): number {
+        const level = this._armor ? Math.max(INFANTRY_RULES_LEVEL, INFANTRY_ARMOR_RULES_LEVEL) : INFANTRY_RULES_LEVEL;
+        return Math.max(level, this._primary.rulesLevel ?? 0, this._secondary?.rulesLevel ?? 0);
+    }
 
     // Step 1: platoon type (TM p.145)
 
@@ -406,12 +410,14 @@ export default class InfantryPlatoon {
         return this.getMaxSecondaryPerSquad(weapon) > 0;
     }
 
-    /** Weapons on offer: those the platoon may carry that its era has, and the one it carries already. */
-    public getAvailablePrimaryWeapons(): IInfantryWeapon[] {
-        return infantryWeapons.filter((weapon) => this.canBePrimary(weapon) && (this.isWeaponInEra(weapon) || weapon.tag === this._primary.tag));
+    /** Weapons on offer: those the platoon may carry that its era and rules level have, and the one it carries already. */
+    public getAvailablePrimaryWeapons(rulesLevel: number = INFANTRY_RULES_LEVEL): IInfantryWeapon[] {
+        return infantryWeapons.filter((weapon) => this.canBePrimary(weapon)
+            && ((this.isWeaponInEra(weapon) && isInfantryWeaponAtRulesLevel(weapon, rulesLevel)) || weapon.tag === this._primary.tag));
     }
-    public getAvailableSecondaryWeapons(): IInfantryWeapon[] {
-        return infantryWeapons.filter((weapon) => this.canBeSecondary(weapon) && (this.isWeaponInEra(weapon) || weapon.tag === this._secondary?.tag));
+    public getAvailableSecondaryWeapons(rulesLevel: number = INFANTRY_RULES_LEVEL): IInfantryWeapon[] {
+        return infantryWeapons.filter((weapon) => this.canBeSecondary(weapon)
+            && ((this.isWeaponInEra(weapon) && isInfantryWeaponAtRulesLevel(weapon, rulesLevel)) || weapon.tag === this._secondary?.tag));
     }
 
     /** 2 per squad, or the squad's troopers divided by the weapon's crew, whichever is lower (TM p.151). */

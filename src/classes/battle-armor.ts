@@ -375,6 +375,7 @@ export default class BattleArmor {
         // Mixed technology is an advanced construction option (TO:AUE p.189).
         if (this._mixedTech) level = Math.max(level, BATTLE_ARMOR_ADVANCED_RULES_LEVEL);
         if (this._automata) level = Math.max(level, EXPERIMENTAL_RULES_LEVEL);
+        for (const mount of this._apMounts) level = Math.max(level, findInfantryWeapon(mount.weapon)?.rulesLevel ?? 0);
         return level;
     }
 

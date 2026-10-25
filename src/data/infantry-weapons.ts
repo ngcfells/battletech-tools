@@ -95,6 +95,8 @@ export interface IInfantryWeapon extends ICatalogStanding {
     /** Source of a record from outside the TechManual tables; unset = TM. */
     book?: string;
     page?: number;
+    /** Where a Custom Homebrew record comes from, and how it was converted. */
+    notes?: string;
 }
 
 /** What a supply of power cells for one energy-cell weapon costs (TM p.301, footnote). */
@@ -111,6 +113,10 @@ export const getInfantryClipCost = (weapon: IInfantryWeapon): number | null =>
     weapon.ammoCost === null ? null : weapon.ammoCost * (weapon.inferno ? INFANTRY_INFERNO_AMMO_COST_FACTOR : 1);
 
 export type InfantryWeaponDate = number | "PS" | "ES" | null;
+
+/** Is the weapon allowed at this rules level? Only Custom Homebrew records carry a level of their own. */
+export const isInfantryWeaponAtRulesLevel = (weapon: IInfantryWeapon, rulesLevel: number): boolean =>
+    (weapon.rulesLevel ?? 0) <= rulesLevel;
 
 /** May only be carried by motorized and mechanized (tracked) platoons, and holds them to 2 MP (TM p.352, footnote). */
 export const INFANTRY_SUPPORT_PPC_TAG = "inf-particle-cannon-support";
@@ -337,6 +343,15 @@ export const infantryWeapons: IInfantryWeapon[] = [
     { tag: "inf-blade-slasher-combat-knife", name: "Blade (Slasher Combat Knife)", altNames: ["Slasher Combat Knife"], category: "archaic", techRating: "B", type: "melee", damageType: "P", special: "", baseRange: 0, damage: 0.02, crew: 1, battleValue: 0.02, cost: 12, availability: "X-X-C", weight: 0.15, ammoWeight: null, shots: null, bursts: null, ammoCost: null, editions: ["total-warfare"], techBase: "is", size: "small", encumbering: false, inferno: false, introducedIS: 3060, introducedClan: null, extinctIS: null, extinctClan: null, reintroducedIS: null, disposable: false, powerCells: false, book: "HB:HL", page: 147 },
     { tag: "inf-rifle-stalker-sniper", name: "Rifle (Stalker Sniper)", altNames: ["Stalker Sniper Rifle", "Sniper Rifle (Stalker Sniper Rifle)"], category: "rifle", techRating: "C", type: "standard", damageType: "B", special: "", baseRange: 2, damage: 0.25, crew: 1, battleValue: 0.25, cost: 5000, availability: "X-X-D", weight: 9, ammoWeight: 0.11, shots: 9, bursts: null, ammoCost: 6, editions: ["total-warfare"], techBase: "is", size: "small", encumbering: false, inferno: false, introducedIS: 3060, introducedClan: null, extinctIS: null, extinctClan: null, reintroducedIS: null, disposable: false, powerCells: false, book: "HB:HL", page: 147 },
     { tag: "inf-rifle-striker-carbine", name: "Rifle (Striker Carbine)", altNames: ["Striker Carbine"], category: "rifle", techRating: "D", type: "standard", damageType: "B", special: "", baseRange: 1, damage: 0.29, crew: 1, battleValue: 0.29, cost: 875, availability: "X-X-D", weight: 3, ammoWeight: 0.34, shots: 60, bursts: 2, ammoCost: 8, editions: ["total-warfare"], techBase: "is", size: "small", encumbering: false, inferno: false, introducedIS: 3060, introducedClan: null, extinctIS: null, extinctClan: null, reintroducedIS: null, disposable: false, powerCells: false, book: "HB:HL", page: 147 },
+    // Custom Homebrew: the Ceres Arms Leiting-23 heavy combat carbine, from its A Time of War stats on
+    // is-the-battlemech-cool-or-not's Tumblr (Ideas #85), converted by the AToW Companion's rules (pp.169-171, with
+    // errata v1.1, which rounds Burst / 5 normally). Standard Type 80 SL load, AP/BD 3B/7S: Penetration 3 / 4 = 0.75;
+    // Damage 7 x (3.5 + 0 for no Burst + 1 for splash) = 31.5; Reload 6 shots (5 + 1 chambered) / 10 = 0.6; damage
+    // 0.75 x 31.5 / 50 x 0.6 = 0.28. Range 5 m / 30 rounds to 0. No feature applies (Burst under 15, AP over 0, not
+    // incendiary). Battle Value: the TM table gives none for a converted weapon; damage times the chance to hit at
+    // each hex of its range at Gunnery 4 (here 33/36) gives 208 of the table's 212 rows, and 0.26 here. The post
+    // dates it to the early 32nd century, taken as 3100; its X-X-X-D availability is D only in the last era.
+    { tag: "inf-rifle-leiting-23-heavy-combat-carbine", name: "Rifle (Ceres Arms Léitíng-23 Heavy Combat Carbine)", altNames: ["Ceres Arms Léitíng-23 Heavy Combat Carbine", "Leiting-23 Heavy Combat Carbine"], category: "rifle", techRating: "C", type: "standard", damageType: "B", special: "", baseRange: 0, damage: 0.28, crew: 1, battleValue: 0.26, cost: 450, availability: "X-X-D", weight: 4.9, ammoWeight: 0.51, shots: 6, bursts: null, ammoCost: 5, editions: ["total-warfare"], techBase: "is", size: "small", encumbering: false, inferno: false, introducedIS: 3100, introducedClan: null, extinctIS: null, extinctClan: null, reintroducedIS: null, disposable: false, powerCells: false, rulesLevel: 6, book: "Custom", page: 0, notes: "Custom Homebrew. Design by is-the-battlemech-cool-or-not (Tumblr): https://www.tumblr.com/is-the-battlemech-cool-or-not/828754919572094976/ceres-arms-l%C3%A9it%C3%ADng-23-heavy-combat-carbine. Converted from its A Time of War stats with the standard Type 80 SL load (A Time of War Companion pp.169-171); the post's other thirteen loads are A Time of War rules only." },
 ];
 
 export const findInfantryWeapon = (tag: string): IInfantryWeapon | null =>
