@@ -28,7 +28,7 @@ export default class VehicleLightWeapons extends React.Component<IVehicleLightWe
         if (!vehicle) return <></>;
         const era = vehicle.getEra();
         const techs: ("is" | "clan")[] = vehicle.getTech().tag === "clan" ? ["clan"] : vehicle.getTech().tag === "is" ? ["is"] : ["is", "clan"];
-        const weapons = SUPPORT_VEHICLE_LIGHT_WEAPONS.filter((weapon) => techs.some((tech) => (weapon.techBase === "both" || weapon.techBase === tech)
+        const weapons = SUPPORT_VEHICLE_LIGHT_WEAPONS.filter((weapon) => techs.some((tech) => (weapon.techBase === "universal" || weapon.techBase === tech)
             && isInfantryWeaponAvailable(weapon, tech, era.yearStart, era.yearEnd ?? null)));
         const locations = vehicle.getLocations().filter((loc) => loc.tag !== "rotor");
         return (

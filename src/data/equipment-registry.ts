@@ -1,4 +1,4 @@
-import { IEquipmentItem, ITechDates } from "./data-interfaces";
+import { CatalogTechBase, IEquipmentItem, ITechDates } from "./data-interfaces";
 import { matchesTag } from "./tag-match";
 import { isAlphaStrikeAbilityCode } from "./alpha-strike-special-abilities";
 import { equipmentBallistic } from "./equipment-ballistic";
@@ -374,6 +374,11 @@ export function getStarLeagueCarryOverDates(item: ITechDates & { clanDates?: ITe
 
 /** A unit's tech tag from tech-options.ts: "is", "clan", or a mixed base ("mis", "mclan"). */
 export type UnitTechBase = string;
+
+/** Whether a record of `techBase` serves a unit of `unitTech`: universal records serve both, and mixed tech takes either. */
+export function servesTechBase(techBase: CatalogTechBase | undefined, unitTech: UnitTechBase): boolean {
+    return !techBase || techBase === "universal" || (unitTech !== "is" && unitTech !== "clan") || techBase === unitTech;
+}
 
 /**
  * Availability of a record for a unit of `unitTech` in an era: the Clan dates (`clanDates`, else the record's own)

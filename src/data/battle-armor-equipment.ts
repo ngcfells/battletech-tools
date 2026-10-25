@@ -503,7 +503,8 @@ export const battleArmorEquipment: IBattleArmorEquipment[] = equipmentRows.map((
     const dates = DATE_ROWS.find(([pattern]) => pattern.test(entry.tag))?.[1];
     const alphaStrike = ALPHA_STRIKE_ROWS.find(([pattern]) => pattern.test(entry.tag))?.[1](entry.tag);
     const alphaStrikeSpecial = ALPHA_STRIKE_SPECIALS.find(([pattern]) => pattern.test(entry.tag))?.[1];
-    return { ...entry, ...(dates ? { dates } : {}), ...(alphaStrike ? { alphaStrike } : {}), ...(alphaStrikeSpecial ? { alphaStrikeSpecial } : {}) };
+    // Every Battle Armor Equipment Table row is from a Total Warfare-era book (TM, TO:AUE, IO:AE).
+    return { editions: ["total-warfare"], ...entry, ...(dates ? { dates } : {}), ...(alphaStrike ? { alphaStrike } : {}), ...(alphaStrikeSpecial ? { alphaStrikeSpecial } : {}) };
 });
 
 /** Minefield BV Table (TO:AUE p.197), for the land minefields a mine dispenser lays: Battle Value of a 10-point field. */

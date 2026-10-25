@@ -988,7 +988,7 @@ export default class BattleArmor {
 
     /** Standard-type conventional infantry weapons an anti-personnel mount may carry (TM p.170). */
     public getAntiPersonnelWeapons(): IInfantryWeapon[] {
-        return infantryWeapons.filter((weapon) => weapon.type === "standard" && (weapon.techBase === "both" || this._mixedTech || weapon.techBase === this._techBase));
+        return infantryWeapons.filter((weapon) => weapon.type === "standard" && (weapon.techBase === "universal" || this._mixedTech || weapon.techBase === this._techBase));
     }
 
     public addAPMount(location: BattleArmorLocation, weapon: string = ""): boolean {

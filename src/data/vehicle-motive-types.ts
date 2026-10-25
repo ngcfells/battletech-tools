@@ -24,24 +24,24 @@ import { findByTag } from "./tag-match";
 */
 
 export const vehicleMotiveTypes: IVehicleMotiveType[] = [
-    { id: 1, tag: "tracked", name: "Tracked", minTonnage: 1, standardMaxTonnage: 100, superheavyMaxTonnage: 200,
+    { id: 1, tag: "tracked", editions: ["total-warfare"], techBase: "universal", name: "Tracked", minTonnage: 1, standardMaxTonnage: 100, superheavyMaxTonnage: 200,
         turret: "standard", allowsHardenedArmor: true, allowsJumpJets: true, naval: false, alphaStrikeMove: "t", book: "TM", page: null },
-    { id: 2, tag: "wheeled", name: "Wheeled", minTonnage: 1, standardMaxTonnage: 80, superheavyMaxTonnage: 160,
+    { id: 2, tag: "wheeled", editions: ["total-warfare"], techBase: "universal", name: "Wheeled", minTonnage: 1, standardMaxTonnage: 80, superheavyMaxTonnage: 160,
         turret: "standard", allowsHardenedArmor: true, allowsJumpJets: true, naval: false, alphaStrikeMove: "w", book: "TM", page: null },
-    { id: 3, tag: "hover", name: "Hover", minTonnage: 1, standardMaxTonnage: 50, superheavyMaxTonnage: 100,
+    { id: 3, tag: "hover", editions: ["total-warfare"], techBase: "universal", name: "Hover", minTonnage: 1, standardMaxTonnage: 50, superheavyMaxTonnage: 100,
         liftEquipment: "Lift Equipment", turret: "standard", allowsHardenedArmor: false, allowsJumpJets: true, naval: false, alphaStrikeMove: "h", book: "TM", page: null },
-    { id: 4, tag: "wige", name: "WiGE", minTonnage: 1, standardMaxTonnage: 80, superheavyMaxTonnage: 160,
+    { id: 4, tag: "wige", editions: ["total-warfare"], techBase: "universal", name: "WiGE", minTonnage: 1, standardMaxTonnage: 80, superheavyMaxTonnage: 160,
         liftEquipment: "Lift Equipment", turret: "standard", allowsHardenedArmor: false, allowsJumpJets: true, naval: false, alphaStrikeMove: "g", book: "TM", page: null },
-    { id: 5, tag: "vtol", name: "VTOL", minTonnage: 1, standardMaxTonnage: 30, superheavyMaxTonnage: 60,
+    { id: 5, tag: "vtol", editions: ["total-warfare"], techBase: "universal", name: "VTOL", minTonnage: 1, standardMaxTonnage: 30, superheavyMaxTonnage: 60,
         liftEquipment: "Rotor Assembly", hasRotor: true, turret: "chin", allowsHardenedArmor: false, allowsJumpJets: false, naval: false, alphaStrikeMove: "v", book: "TM", page: null },
-    { id: 6, tag: "naval-surface", name: "Naval (Surface)", minTonnage: 1, standardMaxTonnage: 300, superheavyMaxTonnage: 555,
+    { id: 6, tag: "naval-surface", editions: ["total-warfare"], techBase: "universal", name: "Naval (Surface)", minTonnage: 1, standardMaxTonnage: 300, superheavyMaxTonnage: 555,
         turret: "standard", allowsHardenedArmor: true, allowsJumpJets: false, naval: true, alphaStrikeMove: "n", book: "TM", page: null },
-    { id: 8, tag: "hydrofoil", name: "Naval (Hydrofoil)", minTonnage: 1, standardMaxTonnage: 100, superheavyMaxTonnage: null,
+    { id: 8, tag: "hydrofoil", editions: ["total-warfare"], techBase: "universal", name: "Naval (Hydrofoil)", minTonnage: 1, standardMaxTonnage: 100, superheavyMaxTonnage: null,
         liftEquipment: "Hydrofoil Equipment", turret: "standard", allowsHardenedArmor: true, allowsJumpJets: false, naval: true, alphaStrikeMove: "n", book: "TM", page: null },
-    { id: 7, tag: "naval-sub", name: "Naval (Submarine)", minTonnage: 1, standardMaxTonnage: 300, superheavyMaxTonnage: 555,
+    { id: 7, tag: "naval-sub", editions: ["total-warfare"], techBase: "universal", name: "Naval (Submarine)", minTonnage: 1, standardMaxTonnage: 300, superheavyMaxTonnage: 555,
         liftEquipment: "Dive Equipment", turret: "standard", allowsHardenedArmor: true, allowsJumpJets: false, naval: true, alphaStrikeMove: "s", book: "TM", page: null },
     // Rail Support Vehicles only (TO:AUE pp.17, 55); "r" is the Alpha Strike movement code MegaMek gives rail units.
-    { id: 9, tag: "rail", name: "Rail (Support Vehicles)", minTonnage: 0.1, standardMaxTonnage: 600, superheavyMaxTonnage: null,
+    { id: 9, tag: "rail", editions: ["total-warfare"], techBase: "universal", name: "Rail (Support Vehicles)", minTonnage: 0.1, standardMaxTonnage: 600, superheavyMaxTonnage: null,
         turret: "standard", allowsHardenedArmor: false, allowsJumpJets: false, naval: false, supportOnly: true, alphaStrikeMove: "r", book: "TO:AUE", page: 55 },
 ];
 

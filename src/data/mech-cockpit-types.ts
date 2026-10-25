@@ -19,6 +19,7 @@ export const mechCockpitTypes: ICockpitType[] = [
 	{
 		name: "Cockpit",
 		tag: "standard",
+		techBase: "universal",
 		editions: ["battledroids", "battletech-2nd-edition", "battletech-manual", "battletech-compendium", "battletech-3rd-edition", "compendium-rules-of-warfare", "battletech-4th-edition", "master-rules", "master-rules-revised", "total-warfare", "battlemech-manual", "core-rulebook"],
 		weight: 3,
 		cost: 200000,
@@ -49,6 +50,7 @@ export const mechCockpitTypes: ICockpitType[] = [
 	{
 		name: "Small Cockpit",
 		tag: "small",
+		techBase: "universal",
 		editions: ["total-warfare", "battlemech-manual", "core-rulebook"],
 		weight: 2,
 		cost: 175000,
@@ -66,6 +68,7 @@ export const mechCockpitTypes: ICockpitType[] = [
 	{
 		name: "IndustrialMech Cockpit",
 		tag: "industrial",
+		techBase: "universal",
 		editions: ["total-warfare", "battlemech-manual", "core-rulebook"],
 		weight: 3,
 		cost: 100000,
@@ -81,6 +84,7 @@ export const mechCockpitTypes: ICockpitType[] = [
 	{
 		name: "IndustrialMech Cockpit (Advanced Fire Control)",
 		tag: "industrial-advanced-fire-control",
+		techBase: "universal",
 		editions: ["total-warfare", "battlemech-manual", "core-rulebook"],
 		weight: 3,
 		cost: 200000,
@@ -96,6 +100,7 @@ export const mechCockpitTypes: ICockpitType[] = [
 	{
 		name: "Primitive BattleMech Cockpit",
 		tag: "primitive",
+		techBase: "universal",
 		editions: ["total-warfare", "battlemech-manual", "core-rulebook"],
 		weight: 5,
 		cost: 200000,
@@ -111,6 +116,7 @@ export const mechCockpitTypes: ICockpitType[] = [
 	{
 		name: "Primitive IndustrialMech Cockpit",
 		tag: "primitive-industrial",
+		techBase: "universal",
 		editions: ["total-warfare", "battlemech-manual", "core-rulebook"],
 		weight: 5,
 		cost: 100000,
@@ -126,6 +132,7 @@ export const mechCockpitTypes: ICockpitType[] = [
 	{
 		name: "Primitive IndustrialMech Cockpit (Advanced Fire Control)",
 		tag: "primitive-industrial-advanced-fire-control",
+		techBase: "universal",
 		editions: ["total-warfare", "battlemech-manual", "core-rulebook"],
 		weight: 5,
 		cost: 200000,
@@ -141,6 +148,7 @@ export const mechCockpitTypes: ICockpitType[] = [
 	{
 		name: "Torso-Mounted Cockpit",
 		tag: "torso-mounted",
+		techBase: "universal",
 		editions: ["total-warfare", "battlemech-manual", "core-rulebook"],
 		weight: 4,
 		cost: 750000,
@@ -159,6 +167,7 @@ export const mechCockpitTypes: ICockpitType[] = [
 	{
 		name: "Cockpit Command Console",
 		tag: "command-console",
+		techBase: "universal",
 		editions: ["total-warfare", "battlemech-manual", "core-rulebook"],
 		weight: 3,
 		cost: 500000,
@@ -176,6 +185,7 @@ export const mechCockpitTypes: ICockpitType[] = [
 	{
 		name: "BattleMech Interface Cockpit (Machina Domini)",
 		tag: "interface",
+		techBase: "universal",
 		editions: ["total-warfare", "battlemech-manual", "core-rulebook"],
 		weight: 4,
 		cost: 1500000,

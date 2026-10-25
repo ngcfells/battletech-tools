@@ -21,7 +21,7 @@ import type { CustomComponentKind, ISSWUnresolvedItem } from "../data/custom-con
 import { getCockpitType } from "../data/mech-cockpit-types";
 import { btMechTonnages } from "../data/mech-tonnages";
 import { DEFAULT_RULES_EDITION, editionEngineHoldsHeatSinks, getEditionJumpJetWeight, getEditionPlayRules, getEditionStats, getEditionStructure, getEquipmentForEdition, getRulesEdition, isEarlierRulesEdition, isInRulesEdition, isOfferedInEdition, getRecordOfferIssue } from "../data/rules-editions";
-import { APOCRYPHAL_RULES_LEVEL, CUSTOM_HOMEBREW_RULES_LEVEL, EXPERIMENTAL_RULES_LEVEL, getItemBattleValue, getLauncherBattleValueWithoutFireControl, equipmentMatchesIdentifier, getWeaponAmmoFamilies, getEquipmentRulesLevel, ARTEMIS_FIRE_CONTROL, isArtemisCapableLauncher, isEquipmentOffered, isOmniFixedOnly, getAlphaStrikeEquipmentDisplayAbilityCodes, getAmmoBattleValuePerTon, getAmmoFamily, getAmmoRoundsPerTon, getCompatibleAmmo, getDatesAvailability, getEquipmentListByTech, getEquipmentListForChassis, getStarLeagueCarryOverDates, getWeaponShotsPerTon, getBattleArmorScaleListByTech, getEquipmentCatalogDefinitions, getEquipmentOfferIssue, getTechDatesAvailability } from "../data/equipment-registry";
+import { APOCRYPHAL_RULES_LEVEL, CUSTOM_HOMEBREW_RULES_LEVEL, EXPERIMENTAL_RULES_LEVEL, getItemBattleValue, getLauncherBattleValueWithoutFireControl, equipmentMatchesIdentifier, getWeaponAmmoFamilies, getEquipmentRulesLevel, ARTEMIS_FIRE_CONTROL, isArtemisCapableLauncher, isEquipmentOffered, isOmniFixedOnly, getAlphaStrikeEquipmentDisplayAbilityCodes, getAmmoBattleValuePerTon, getAmmoFamily, getAmmoRoundsPerTon, getCompatibleAmmo, getDatesAvailability, getEquipmentListByTech, getEquipmentListForChassis, getStarLeagueCarryOverDates, getWeaponShotsPerTon, getBattleArmorScaleListByTech, getEquipmentCatalogDefinitions, getEquipmentOfferIssue, getTechDatesAvailability, servesTechBase } from "../data/equipment-registry";
 import { getFractionalArmorTonsPerPoint, getFractionalEngineWeight, roundUpToKilogram } from "../data/fractional-accounting";
 import { isUniversalEquipment } from "../data/universal-equipment";
 import { mechEngineOptions } from "../data/mech-engine-options";
@@ -4828,12 +4828,11 @@ export class BattleMech {
 
     public getAvailableMyomerTypes(rulesLevel: number = 2): IMyomerType[] {
         const techTag = this.getTech().tag;
-        const pureTech = techTag === "is" || techTag === "clan" ? techTag : null;
         return mechMyomerTypes.map(entry => ({ ...entry })).map(myomer => {
             const availability = this._techDatesAvailability(myomer, rulesLevel);
             myomer.availableAsPrototype = availability.asPrototype;
             // Superheavy musculature is incompatible with Triple-Strength Myomer (IO:AE p.156).
-            myomer.available = availability.available && (myomer.tag === "standard" || this.isOfferedInEdition(myomer, rulesLevel)) && !(myomer.techBase && pureTech && myomer.techBase !== pureTech)
+            myomer.available = availability.available && (myomer.tag === "standard" || this.isOfferedInEdition(myomer, rulesLevel)) && servesTechBase(myomer.techBase, techTag)
                 && !(this.isSuperheavy() && BattleMech._isTripleStrengthMyomer(myomer))
                 && this._isChassisLegalMyomer(myomer);
             return myomer;
@@ -10145,10 +10144,8 @@ export class BattleMech {
     public getAvailableHeatSinks(rulesLevel: number = 2): IHeatSync[] {
         return mechHeatSinkTypes.map(entry => ({ ...entry })).map(heatSink => {
             const availability = this._techDatesAvailability(heatSink, rulesLevel);
-            const techTag = this.getTech().tag;
-            const pureTech = techTag === "is" || techTag === "clan" ? techTag : null;
             heatSink.availableAsPrototype = availability.asPrototype;
-            heatSink.available = availability.available && this.isOfferedInEdition(heatSink, rulesLevel) && !(heatSink.techBase && pureTech && heatSink.techBase !== pureTech)
+            heatSink.available = availability.available && this.isOfferedInEdition(heatSink, rulesLevel) && servesTechBase(heatSink.techBase, this.getTech().tag)
                 // IndustrialMechs and Primitive 'Mechs use single heat sinks only (TM p.71; IO:AE p.117).
                 && (!this._hasBasicChassis() || heatSink.tag === "single");
             return heatSink;

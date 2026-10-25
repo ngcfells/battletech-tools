@@ -50,7 +50,8 @@ export const aerospaceArmorTypes: IAerospaceArmorType[] = [
     {
         name: "Standard Armor (Aerospace)",
         tag: "aerospace-standard",
-        techBase: "both",
+        editions: ["total-warfare"],
+        techBase: "universal",
         scale: "standard",
         pointsPerTon: [
             { unit: "conventional-fighter", minTons: null, maxTons: null, clan: 16, is: 16 },
@@ -74,6 +75,7 @@ export const aerospaceArmorTypes: IAerospaceArmorType[] = [
     {
         name: "Light Ferro-Aluminum",
         tag: "light-ferro-aluminum",
+        editions: ["total-warfare"],
         techBase: "is",
         scale: "standard",
         pointsPerTon: [
@@ -98,6 +100,7 @@ export const aerospaceArmorTypes: IAerospaceArmorType[] = [
     {
         name: "Ferro-Aluminum",
         tag: "ferro-aluminum",
+        editions: ["total-warfare"],
         techBase: "is",
         scale: "standard",
         pointsPerTon: [
@@ -122,6 +125,7 @@ export const aerospaceArmorTypes: IAerospaceArmorType[] = [
     {
         name: "Ferro-Aluminum (Clan)",
         tag: "clan-ferro-aluminum",
+        editions: ["total-warfare"],
         techBase: "clan",
         scale: "standard",
         pointsPerTon: [
@@ -146,6 +150,7 @@ export const aerospaceArmorTypes: IAerospaceArmorType[] = [
     {
         name: "Heavy Ferro-Aluminum",
         tag: "heavy-ferro-aluminum",
+        editions: ["total-warfare"],
         techBase: "is",
         scale: "standard",
         pointsPerTon: [
@@ -170,6 +175,7 @@ export const aerospaceArmorTypes: IAerospaceArmorType[] = [
     {
         name: "Primitive Aerospace Fighter Armor",
         tag: "primitive-aerospace-fighter",
+        editions: ["total-warfare"],
         techBase: "is",
         scale: "standard",
         pointsPerTon: [
@@ -190,7 +196,8 @@ export const aerospaceArmorTypes: IAerospaceArmorType[] = [
     {
         name: "Patchwork Armor",
         tag: "patchwork",
-        techBase: "both",
+        editions: ["total-warfare"],
+        techBase: "universal",
         scale: "standard",
         pointsPerTon: [
             { unit: "conventional-fighter", minTons: null, maxTons: null, clan: 16, is: 16 },
@@ -211,7 +218,8 @@ export const aerospaceArmorTypes: IAerospaceArmorType[] = [
     {
         name: "Standard Armor (Capital)",
         tag: "capital-standard",
-        techBase: "both",
+        editions: ["total-warfare"],
+        techBase: "universal",
         scale: "capital",
         pointsPerTon: advancedRows([0.8, 0.6, 0.4], [1.0, 0.7, 0.5]),
         fighterSlots: null,
@@ -229,7 +237,8 @@ export const aerospaceArmorTypes: IAerospaceArmorType[] = [
     {
         name: "Improved Ferro-Aluminum",
         tag: "improved-ferro-aluminum",
-        techBase: "both",
+        editions: ["total-warfare"],
+        techBase: "universal",
         scale: "capital",
         pointsPerTon: advancedRows([1.0, 0.8, 0.6], [1.2, 0.9, 0.7]),
         fighterSlots: null,
@@ -247,7 +256,8 @@ export const aerospaceArmorTypes: IAerospaceArmorType[] = [
     {
         name: "Ferro-Carbide",
         tag: "ferro-carbide",
-        techBase: "both",
+        editions: ["total-warfare"],
+        techBase: "universal",
         scale: "capital",
         pointsPerTon: advancedRows([1.2, 1.0, 0.8], [1.4, 1.1, 0.9]),
         fighterSlots: null,
@@ -265,7 +275,8 @@ export const aerospaceArmorTypes: IAerospaceArmorType[] = [
     {
         name: "Lamellor Ferro-Carbide",
         tag: "lamellor-ferro-carbide",
-        techBase: "both",
+        editions: ["total-warfare"],
+        techBase: "universal",
         scale: "capital",
         pointsPerTon: advancedRows([1.4, 1.2, 1.0], [1.6, 1.3, 1.1]),
         fighterSlots: null,

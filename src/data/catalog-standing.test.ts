@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { getAllCatalogs } from "./catalog-registry";
 import type { ICatalogStanding } from "./data-interfaces";
+import { servesTechBase } from "./equipment-registry";
 import { isKnownEditionTag } from "./rules-editions";
 
 // Every catalog carries the same standing (design 2026-10-24-catalog-consolidation §1).
@@ -9,9 +10,6 @@ const label = (id: string, record: ICatalogStanding) => `${id}: ${record.tag}`;
 // An IS and a Clan record may share an old tag: lookups search the unit's own tech base first (getEquipmentListByTech).
 const tagsOf = (record: ICatalogStanding) => [record.tag, ...(record.altTags ?? [])].map((tag) => `${record.techBase ?? ""}:${tag}`);
 const duplicates = (tags: string[]) => tags.filter((tag, index) => tags.indexOf(tag) !== index);
-
-// Rounds 3-5 move these onto the full core; lower the count as each one moves.
-const PENDING_CATALOGS = 22;
 
 describe("catalog standing", () => {
     it("every catalog record has a tag and a name", () => {
@@ -55,8 +53,8 @@ describe("catalog standing", () => {
         expect(failures).toEqual([]);
     });
 
-    it("catalogs on the full core list editions and tech base", () => {
-        const failures = catalogs.filter(({ custom, pendingStanding }) => !custom && !pendingStanding)
+    it("every catalog lists editions and tech base", () => {
+        const failures = catalogs.filter(({ custom }) => !custom)
             .flatMap(({ id, records }) => records
                 .filter((record) => (record.rulesLevel ?? 0) < 6)
                 .filter((record) => !Array.isArray(record.editions) || !record.techBase)
@@ -64,7 +62,9 @@ describe("catalog standing", () => {
         expect(failures).toEqual([]);
     });
 
-    it("the pending list only shrinks", () => {
-        expect(catalogs.filter(({ pendingStanding }) => pendingStanding).length).toBe(PENDING_CATALOGS);
+    it("a universal record serves both sides, a one-sided record only its own or mixed tech", () => {
+        expect(["is", "clan", "mis", "mclan"].map((tech) => servesTechBase("universal", tech))).toEqual([true, true, true, true]);
+        expect(["is", "clan", "mis", "mclan"].map((tech) => servesTechBase("clan", tech))).toEqual([false, true, true, true]);
+        expect(["is", "clan", "mis", "mclan"].map((tech) => servesTechBase("is", tech))).toEqual([true, false, true, true]);
     });
 });

@@ -72,7 +72,7 @@ describe("capital and sub-capital weapon catalogs", () => {
             heat: 30, damage: 10, range: "long", weight: 2000, cbills: 2000000, battleValue: 1896,
             ammo: { tonsPerShot: 0.2, cbills: 30000, battleValue: 237 },
             space: { supportVehicle: -1, smallCraft: -1, dropShip: -1, jumpShip: 1, warShip: 1, spaceStation: 1, mobileStructure: 1 },
-            techBase: "both", techRating: "d", availability: "E-X-E-E",
+            techBase: "universal", techRating: "d", availability: "E-X-E-E",
             prototype: 2100, introduced: 2195, extinct: 2950, reintroduced: 3051, rulesLevel: 3, book: "TO:AUE", page: 143,
         });
         expect(find("heavy-n-gauss")).toMatchObject({ heat: 18, damage: 30, range: "extreme", weight: 7000, cbills: 50050000, battleValue: 6048, ammo: { tonsPerShot: 0.5 } });
@@ -82,7 +82,7 @@ describe("capital and sub-capital weapon catalogs", () => {
         expect(find("killer-whale")).toMatchObject({
             heat: 20, damage: 4, range: "extreme", weight: 150, cbills: 150000, battleValue: 769,
             ammo: { tonsPerShot: 50, cbills: 20000, cbillsPer: "shot", battleValue: 96, battleValuePer: "shot" },
-            techBase: "both", techRating: "e", availability: "D-E-E-D", prototype: 2200, introduced: 2305, extinct: 2950, reintroduced: 3051,
+            techBase: "universal", techRating: "e", availability: "D-E-E-D", prototype: 2200, introduced: 2305, extinct: 2950, reintroduced: 3051,
             rulesLevel: 2, book: "TM", page: 210,
         });
         expect(find("kraken-t")).toMatchObject({ heat: 50, damage: 10, weight: 220, cbills: 500000, battleValue: 2306, techBase: "is", prototype: 3053, introduced: 3057, ammo: { tonsPerShot: 100, cbills: 55000, battleValue: 288 } });
@@ -102,7 +102,7 @@ describe("capital and sub-capital weapon catalogs", () => {
         expect(find("scl-1")).toMatchObject({
             heat: 24, damage: 1, range: "long", weight: 150, cbills: 220000, battleValue: 237, ammo: null,
             space: { supportVehicle: 20, smallCraft: -1, dropShip: 1, jumpShip: 1, warShip: 1, spaceStation: 1, mobileStructure: 1 },
-            techBase: "both", availability: "X-X-F-D", prototype: 3069, introduced: 3073, clanDates: { introduced: 3091, extinct: null, reintroduced: null },
+            techBase: "universal", availability: "X-X-F-D", prototype: 3069, introduced: 3073, clanDates: { introduced: 3091, extinct: null, reintroduced: null },
         });
         expect(find("manta-ray")).toMatchObject({
             heat: 21, damage: 5, range: "short", weight: 160, cbills: 150000, battleValue: 396,
@@ -151,7 +151,7 @@ describe("capital and sub-capital weapon catalogs", () => {
         expect(find("screen-launcher")).toMatchObject({ techRating: "f", sourceVariants: [{ book: "TM", page: 342, techRating: "e" }] });
         // Clan sub-capital cannons and lasers from 3091 (IO:AE p.33; user ruling); TO:AUE p.223 has them Inner Sphere only.
         for (const item of all.filter(entry => ["Sub-Capital Cannon", "Sub-Capital Laser"].includes(entry.category))) {
-            expect(item, item.tag).toMatchObject({ techBase: "both", clanDates: { introduced: 3091 }, sourceVariants: [{ book: "TO:AUE", page: 223, techBase: "is" }] });
+            expect(item, item.tag).toMatchObject({ techBase: "universal", clanDates: { introduced: 3091 }, sourceVariants: [{ book: "TO:AUE", page: 223, techBase: "is" }] });
         }
         for (const item of all) {
             for (const variant of item.sourceVariants ?? []) expect(variant.page, item.tag).toBeGreaterThan(0);

@@ -1055,7 +1055,7 @@ export default class SmallCraft {
         return ((this.isDropShip() ? weapon.space.dropShip : weapon.space.smallCraft) ?? -1) > 0;
     }
     private _capitalTechAllowed(weapon: ICapitalWeapon): boolean {
-        return weapon.techBase === "both" || this.isMixedTech() || weapon.techBase === this.getChassisTechBase();
+        return weapon.techBase === "universal" || this.isMixedTech() || weapon.techBase === this.getChassisTechBase();
     }
     private _capitalDates(weapon: ICapitalWeapon): ITechDates & { clanDates?: ITechDates } {
         return { introduced: weapon.introduced, extinct: weapon.extinct, reintroduced: weapon.reintroduced, prototype: weapon.prototype ?? undefined, clanDates: weapon.clanDates } as ITechDates & { clanDates?: ITechDates };

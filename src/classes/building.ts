@@ -982,7 +982,7 @@ export default class Building {
     }
 
     public isLightWeaponAvailable(weapon: IInfantryWeapon): boolean {
-        if (weapon.techBase !== "both" && weapon.techBase !== this.getTechBase()) return false;
+        if (weapon.techBase !== "universal" && weapon.techBase !== this.getTechBase()) return false;
         return isInfantryWeaponAvailable(weapon, this.getTechBase(), this._era.yearStart, this._era.yearEnd);
     }
 

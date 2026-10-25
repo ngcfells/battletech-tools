@@ -51,35 +51,35 @@ export interface ICombatVehicleChassisModification extends ICatalogStanding {
 
 export const COMBAT_VEHICLE_CHASSIS_MODIFICATIONS: ICombatVehicleChassisModification[] = [
     {
-        tag: "flotation-hull", name: "Flotation Hull", motives: ["hover", "vtol", "wige"], totalCostMultiplier: 1.25, bvTypeModifier: 0.1,
+        tag: "flotation-hull", editions: ["total-warfare"], techBase: "universal", name: "Flotation Hull", motives: ["hover", "vtol", "wige"], totalCostMultiplier: 1.25, bvTypeModifier: 0.1,
         techRating: "b", availability: "B-B-B", introduced: 2470, rulesLevel: 3, book: "TO:AUE", page: 114,
         description: "Lands on and takes off from water as if it were clear terrain; afloat it is a displacement-hull naval vessel and sinks only if a non-turret location is breached.",
     },
     {
-        tag: "limited-amphibious", name: "Limited Amphibious", motives: ["wheeled", "tracked"], weightDivisor: 25, cost: (_tonnage, weight) => 10000 * weight, bvTypeModifier: 0.1,
+        tag: "limited-amphibious", editions: ["total-warfare"], techBase: "universal", name: "Limited Amphibious", motives: ["wheeled", "tracked"], weightDivisor: 25, cost: (_tonnage, weight) => 10000 * weight, bvTypeModifier: 0.1,
         excludes: ["fully-amphibious"], techRating: "b", availability: "B-B-B", introduced: 2470, rulesLevel: 3, book: "TO:AUE", page: 114,
         description: "Crosses water of any depth at 2 MP a hex, at most 2 MP afloat, always Flanking; enters and leaves water only from an adjacent hex.",
     },
     {
-        tag: "fully-amphibious", name: "Fully Amphibious", motives: ["wheeled", "tracked"], weightDivisor: 10, cost: (_tonnage, weight) => 10000 * weight, bvTypeModifier: 0.2,
+        tag: "fully-amphibious", editions: ["total-warfare"], techBase: "universal", name: "Fully Amphibious", motives: ["wheeled", "tracked"], weightDivisor: 10, cost: (_tonnage, weight) => 10000 * weight, bvTypeModifier: 0.2,
         excludes: ["limited-amphibious"], techRating: "b", availability: "B-B-B", introduced: 2470, rulesLevel: 3, book: "TO:AUE", page: 115,
         description: "Keeps its full Cruising and Flanking MP on water, at 2 MP a hex of any depth.",
     },
     {
-        tag: "dune-buggy", name: "Dune Buggy", motives: ["wheeled"], cost: (tonnage) => 10 * tonnage * tonnage, bvTypeModifier: 0.1,
+        tag: "dune-buggy", editions: ["total-warfare"], techBase: "universal", name: "Dune Buggy", motives: ["wheeled"], cost: (tonnage) => 10 * tonnage * tonnage, bvTypeModifier: 0.1,
         techRating: "b", availability: "B-B-B", introduced: 2470, rulesLevel: 3, book: "TO:AUE", page: 115,
         description: "Crosses sand at 1 MP a hex, but loses 1 Cruising MP (Flanking recalculated).",
     },
     {
         // Built into submarines (TO:AUE p.114), so not offered to them.
-        tag: "environmental-sealing", name: "Environmental (Vacuum) Sealing", motives: ["tracked", "wheeled", "hover", "vtol", "wige", "naval-surface", "hydrofoil"],
+        tag: "environmental-sealing", editions: ["total-warfare"], techBase: "universal", name: "Environmental (Vacuum) Sealing", motives: ["tracked", "wheeled", "hover", "vtol", "wige", "naval-surface", "hydrofoil"],
         weightDivisor: 10, totalCostMultiplier: 1.25, bvTypeModifier: 0.1,
         techRating: "b", availability: "C-D-C", introduced: 2470, rulesLevel: 3, book: "TO:AUE", page: 115,
         description: "Works in toxic atmospheres, and in vacuum with a fission, fusion or fuel cell engine; destroyed when a location loses all armor or a hull breach (10+ on 2D6 whenever damaged) occurs.",
     },
     {
         // Prototype-only in both tech bases (TO:AUE p.217: IS 3071P, Clan 3057P); Inner Sphere E/X-X-F, Clan F/X-X-F.
-        tag: "armored-motive", name: "Armored Motive System", motives: ["tracked", "wheeled", "hover", "hydrofoil", "naval-surface", "naval-sub", "wige"],
+        tag: "armored-motive", editions: ["total-warfare"], techBase: "universal", name: "Armored Motive System", motives: ["tracked", "wheeled", "hover", "hydrofoil", "naval-surface", "naval-sub", "wige"],
         weightFraction: { is: 0.15, clan: 0.10 }, cost: (_tonnage, weight) => 100000 * weight, bvTypeModifier: 0.1,
         dates: {
             is: { prototype: 3071, introduced: null, extinct: null, reintroduced: null },

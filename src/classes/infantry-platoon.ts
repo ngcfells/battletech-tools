@@ -381,7 +381,7 @@ export default class InfantryPlatoon {
     public getSecondaryCount(): number { return this.getSecondaryPerSquad() * this._squads; }
     public getPrimaryCount(): number { return this.getTroopers() - this.getSecondaryCount(); }
 
-    public isWeaponForTechBase(weapon: IInfantryWeapon): boolean { return weapon.techBase === "both" || weapon.techBase === this._techBase; }
+    public isWeaponForTechBase(weapon: IInfantryWeapon): boolean { return weapon.techBase === "universal" || weapon.techBase === this._techBase; }
 
     /** Why the platoon may not carry the weapon at all, or null when it may. */
     private _weaponBar(weapon: IInfantryWeapon): string | null {
@@ -561,7 +561,7 @@ export default class InfantryPlatoon {
     /** 1 without infantry armor. */
     public getDamageDivisor(): number { return this._armor ? this._armor.damageDivisor : 1; }
     public isArmorForPlatoon(armor: IInfantryArmor): boolean {
-        return armor.techBase === "both" || armor.techBase === this._techBase;
+        return armor.techBase === "universal" || armor.techBase === this._techBase;
     }
     public isArmorInEra(armor: IInfantryArmor): boolean {
         return typeof armor.introduced !== "number" || armor.introduced <= (this._era.yearEnd ?? Number.POSITIVE_INFINITY);

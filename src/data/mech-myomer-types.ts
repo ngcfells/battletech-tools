@@ -22,6 +22,7 @@ export const mechMyomerTypes: IMyomerType[] = [
 	{
 		name: "Standard",
 		tag: "standard",
+		techBase: "universal",
 		editions: ["total-warfare", "battlemech-manual", "core-rulebook"],
 		criticals: 0,
 		costPerTon: 2000,

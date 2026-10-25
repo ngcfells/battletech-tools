@@ -577,8 +577,8 @@ export interface ICockpitType extends ICatalogStanding {
     bvMultiplier?: number;
     /** Lowest rules level that mounts it, when above Standard (Torso-Mounted: Experimental, TO:AUE p.112). */
     rulesLevel?: number;
-    /** Only this technology base builds it. */
-    techBase?: "is" | "clan";
+    /** Only this technology base builds it; "universal" for both. */
+    techBase?: CatalogTechBase;
     /** Mounted alongside another cockpit instead of replacing it. */
     addOn?: boolean;
     /** "implemented": the 'Mech builder mounts it; "deferred": catalogued for reference only. */
@@ -613,8 +613,8 @@ export interface IHeatSync extends ICatalogStanding {
     cost: number;
     /** Heat sinks that cost nothing (single-type sinks: the first 10); double-type sinks pay for all. */
     freeSinks?: number;
-    /** Only this technology base builds it (Laser: Clan; prototypes: Inner Sphere). */
-    techBase?: "is" | "clan";
+    /** Only this technology base builds it (Laser: Clan; prototypes: Inner Sphere); "universal" for both. */
+    techBase?: CatalogTechBase;
     /** Tons per heat sink beyond the free ones (default 1; Compact 1.5). */
     weightEach?: number;
     /** Heat sinks that share one critical slot (default 1; Compact 2). */
@@ -769,7 +769,7 @@ export interface IMyomerType extends ICatalogStanding {
     bvWeightMultiplier: number;
     /** Doubles physical weapon damage when hot (TSM and its prototype). */
     tripleStrength: boolean;
-    techBase?: "is" | "clan";
+    techBase?: CatalogTechBase;
     book: string;
     page: number | null;
     notes?: string;
@@ -908,8 +908,7 @@ export type VehicleLocation = "front" | "left" | "right" | "rear" | "frontLeft" 
  * A capital-scale or sub-capital weapon for large craft (capital-weapons.ts, sub-capital-weapons.ts).
  * Kept apart from IEquipmentItem: these are never mounted on a 'Mech or offered by the equipment registry.
  */
-/* Spells the shared tech base "both"; takes `techBase` from the core when that becomes "universal" (rounds 3-5). */
-export interface ICapitalWeapon extends Omit<ICatalogStanding, "techBase"> {
+export interface ICapitalWeapon extends ICatalogStanding {
     name: string;
     altNames: string[];
     tag: string;
@@ -917,7 +916,7 @@ export interface ICapitalWeapon extends Omit<ICatalogStanding, "techBase"> {
     category: "Naval Autocannon" | "Naval Gauss" | "Naval Laser" | "Naval PPC" | "Capital Missile" | "Screen Launcher" | "Mass Driver"
         | "Sub-Capital Cannon" | "Sub-Capital Laser" | "Sub-Capital Missile";
     scale: "capital" | "sub-capital";
-    techBase: "is" | "clan" | "both";
+    techBase: CatalogTechBase;
     notes: string;
     /** Aerospace heat per shot; null when the launcher takes it from the missile it fires (AR-10). */
     heat: number | null;
@@ -964,7 +963,7 @@ export interface ICapitalWeapon extends Omit<ICatalogStanding, "techBase"> {
      * What another book of the same rules edition prints where it differs from this record, which follows the
      * newest publication. Earlier rules editions go in editionStats instead.
      */
-    sourceVariants?: { book: string; page: number; introduced?: number; techRating?: string; techBase?: "is" | "clan" | "both" }[];
+    sourceVariants?: { book: string; page: number; introduced?: number; techRating?: string; techBase?: CatalogTechBase }[];
     /** 2 = Standard, 3 = Advanced, 4 = Experimental. */
     rulesLevel: number;
     book: string;
@@ -1000,11 +999,10 @@ export interface ISupportVehicleArmor extends ICatalogStanding {
 }
 
 /** Armor for fighters, small craft, DropShips and larger craft (aerospace-armor-types.ts). */
-/* Spells the shared tech base "both"; takes `techBase` from the core when that becomes "universal" (rounds 3-5). */
-export interface IAerospaceArmorType extends Omit<ICatalogStanding, "techBase"> {
+export interface IAerospaceArmorType extends ICatalogStanding {
     name: string;
     tag: string;
-    techBase: "is" | "clan" | "both";
+    techBase: CatalogTechBase;
     /** "capital": points are capital-scale (JumpShips, WarShips, space stations), each worth 10 standard points. */
     scale: "standard" | "capital";
     /**
@@ -1042,12 +1040,11 @@ export interface IAerospaceArmorType extends Omit<ICatalogStanding, "techBase"> 
 }
 
 /** A ProtoMech cockpit, heat sink, jump jet system or internal structure (protomech-components.ts). */
-/* Spells the shared tech base "both"; takes `techBase` from the core when that becomes "universal" (rounds 3-5). */
-export interface IProtoMechComponent extends Omit<ICatalogStanding, "techBase"> {
+export interface IProtoMechComponent extends ICatalogStanding {
     name: string;
     tag: string;
     kind: "cockpit" | "heat-sink" | "jump-jet" | "structure";
-    techBase: "is" | "clan" | "both";
+    techBase: CatalogTechBase;
     /** Fixed weight in kilograms; null when it depends on the ProtoMech (see the two fields below). */
     weightKg: number | null;
     /** Jump jets: kilograms per Jumping MP by ProtoMech tonnage band. */
@@ -1076,11 +1073,10 @@ export interface IProtoMechComponent extends Omit<ICatalogStanding, "techBase"> 
 }
 
 /** Battle armor armor (battle-armor-armor-types.ts). */
-/* Spells the shared tech base "both"; takes `techBase` from the core when that becomes "universal" (rounds 3-5). */
-export interface IBattleArmorArmorType extends Omit<ICatalogStanding, "techBase"> {
+export interface IBattleArmorArmorType extends ICatalogStanding {
     name: string;
     tag: string;
-    techBase: "is" | "clan" | "both";
+    techBase: CatalogTechBase;
     /** Kilograms per armor point by tech base; null where that tech base cannot use the armor. */
     kgPerPoint: { clan: number | null; is: number | null };
     /** Weapon slots the armor takes; they may be spread over the suit's locations. */
