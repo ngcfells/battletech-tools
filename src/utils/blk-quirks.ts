@@ -49,6 +49,9 @@ export const readBlkQuirks = (file: IBlkFile, unit: {
             unknown(line);
             continue;
         }
+        // A once-per-unit quirk listed for both arms (battle_fists_la and _ra) is paid once and names no hand.
+        const earlier = record.once ? quirks.find((quirk) => quirk.tag === record.tag) : undefined;
+        if (earlier) { delete earlier.location; continue; }
         quirks.push({ tag: record.tag, ...codeValue(code.toLowerCase()), ...(value && /^\d+$/.test(value) ? { parameter: Number(value) } : {}) });
     }
     for (const line of blkLines(file, "weaponQuirks")) {

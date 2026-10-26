@@ -3832,7 +3832,7 @@ describe("Batch 14 prototype weapon statistics", () => {
             [clanBallisticList, "clan-prototype-ultra-ac-2", { battleValue: 56, ammoBattleValue: 7 }],
             [clanBallisticList, "clan-prototype-ultra-ac-10", { battleValue: 210, ammoBattleValue: 26 }],
             [clanBallisticList, "clan-prototype-ultra-ac-20", { battleValue: 281, ammoBattleValue: 35 }],
-            [clanEnergyList, "enhanced_er_ppc", { name: "Enhanced PPC", altNames: ["Enhanced ER PPC"], weight: 7, cbills: 300000, battleValue: 329 }],
+            [clanEnergyList, "enhanced_er_ppc", { name: "Enhanced PPC", altNames: ["Enhanced ER PPC", "CLWERPPC"], weight: 7, cbills: 300000, battleValue: 329 }],
             [clanMiscList, "clan-nova-cews", { cbills: 1110000 }],
         ];
         for (const [catalog, tag, fields] of expected) {
