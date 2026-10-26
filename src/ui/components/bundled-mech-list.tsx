@@ -94,6 +94,7 @@ export default function BundledMechList( props: { appGlobals: IAppGlobals; onVie
                     ) )}
                 </tbody>
             </table>
+            <SearchResultsPager page={resultsPage} onGo={setPage} />
         </>
     );
 }

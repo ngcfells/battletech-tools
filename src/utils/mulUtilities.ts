@@ -198,10 +198,10 @@ export function getMULTypeLabel(
         return "IndustrialMech";
     }
     if( id === 23 ) {
-        return "Protomech";
+        return "ProtoMech";
     }
     if( id === 24 ) {
-        return "Support Vehicle ";
+        return "Support Vehicle";
     }
 
     return "n/a";

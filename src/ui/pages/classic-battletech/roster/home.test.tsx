@@ -312,4 +312,36 @@ describe("Classic roster Master Unit List search", () => {
         expect(links.some((href) => href.endsWith("/capital-ship-creator"))).toBe(true);
         expect(links.some((href) => href.endsWith("/small-craft-creator"))).toBe(false);
     }, 30_000);
+    // Issue 322: the Type list showed Aerospace three times (fighters, Small Craft and capital ships share MUL type 17).
+    it("lists every unit type once, with fighters, Small Craft and capital ships apart", async () => {
+        const appGlobals = makeAppGlobals();
+        appGlobals.appSettings.cbtMULSearch = newMULSearchFilters({ type: 1703, term: "Magellan JumpShip" });
+        const { container } = render(
+            <MemoryRouter>
+                <BattleMechAddMechDialog appGlobals={appGlobals} currentForce={appGlobals.currentCBTForce!.groups[0]} currentForceIndex={0} onChange={vi.fn()} />
+            </MemoryRouter>
+        );
+        const typeSelect = Array.from(container.querySelectorAll("select")).find((select) => select.parentElement?.textContent?.startsWith("Type:"))!;
+        const labels = Array.from(typeSelect.options).map((option) => option.text);
+        expect(labels).toEqual(["All", "BattleMech", "IndustrialMech", "Combat Vehicle", "Support Vehicle", "Aerospace Fighter", "Small Craft and DropShip", "JumpShip, WarShip and Space Station", "Infantry", "Battle Armor", "ProtoMech"]);
+        await screen.findAllByText(/No Classic design yet/, undefined, { timeout: 20_000 });
+        fireEvent.change(typeSelect, { target: { value: "1701" } });
+        await screen.findByText("No units on the Master Unit List match your filters.", undefined, { timeout: 20_000 });
+    }, 30_000);
+
+    // Issue 325: the results pager sits above and below the list.
+    it("puts the results pager above and below the list", async () => {
+        const appGlobals = makeAppGlobals();
+        appGlobals.appSettings.cbtMULSearch = newMULSearchFilters({ type: 18, term: "" });
+        const { container } = render(
+            <MemoryRouter>
+                <BattleMechAddMechDialog appGlobals={appGlobals} currentForce={appGlobals.currentCBTForce!.groups[0]} currentForceIndex={0} onChange={vi.fn()} />
+            </MemoryRouter>
+        );
+        const mulSearch = () => Array.from(container.querySelectorAll("fieldset")).find((fieldset) => fieldset.querySelector("legend")?.textContent === "Master Unit List Search")!;
+        const pagers = () => Array.from(mulSearch().querySelectorAll("nav[aria-label='Search results pages']"));
+        await waitFor(() => expect(pagers()).toHaveLength(2), { timeout: 20_000 });
+        fireEvent.click(pagers()[1].querySelector("[title='Next page']")!);
+        expect(pagers().map((pager) => pager.textContent)).toEqual([expect.stringContaining("Page 2 of"), expect.stringContaining("Page 2 of")]);
+    }, 30_000);
 });

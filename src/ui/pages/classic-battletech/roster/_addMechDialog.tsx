@@ -30,7 +30,7 @@ import type { TechnicalReadout } from '../../../../classes/technical-readout';
 import type { ITroUnitAdapter } from '../../../../data/technical-readout-interfaces';
 import { buildClassicDesignIndex, ClassicDesignIndex, findClassicDesign, getClassicMechEntries, getClassicUnitEntries, isMULCapitalShip, isMULLargeAerospaceCraft } from '../../../../utils/classicMULMatch';
 import { IMULSearchFilters } from '../../../../utils/mulSearchFilters';
-import { getMULEraLabel } from '../../../../utils/mulUtilities';
+import { getMULEraLabel, getMULTypeLabel } from '../../../../utils/mulUtilities';
 import { paginate } from '../../../../utils/paginate';
 import { IAppGlobals } from '../../../app-router';
 import BundledMechList from '../../../components/bundled-mech-list';
@@ -81,7 +81,17 @@ const CBT_MUL_KINDS: IClassicMULKind[] = [
     { typeIDs: [17], matches: (unit) => isMULLargeAerospaceCraft( unit ) && !isMULCapitalShip( unit ), creator: "small-craft-creator", saves: (g) => g.smallCraftSaves, load: (json) => new SmallCraft( json ), bundledType: "small-craft", table: "smallCraft", sheet: (unit) => <SmallCraftRecordSheet craft={unit as SmallCraft} /> },
     { typeIDs: [17], matches: isMULCapitalShip, creator: "capital-ship-creator", saves: (g) => g.capitalShipSaves, load: (json) => new CapitalShip( json ), table: "capitalShips", sheet: (unit) => <CapitalShipRecordSheet ship={unit as CapitalShip} /> },
 ];
-const CBT_MUL_TYPE_IDS = CBT_MUL_MECH_TYPE_IDS.concat( ...CBT_MUL_KINDS.map( (kind) => kind.typeIDs ) );
+const CBT_MUL_TYPE_IDS = Array.from( new Set( CBT_MUL_MECH_TYPE_IDS.concat( ...CBT_MUL_KINDS.map( (kind) => kind.typeIDs ) ) ) );
+// The MUL files fighters, Small Craft, DropShips and capital ships all under type 17, so the Type list splits it into
+// its own three options (issue 322), on ids of their own that the search maps back to type 17 and the kind's test.
+const CBT_MUL_AEROSPACE_TYPES: { id: number; label: string; kind: IClassicMULKind }[] = [
+    { id: 1701, label: "Aerospace Fighter", kind: CBT_MUL_KINDS.find( (kind) => kind.table === "fighters" )! },
+    { id: 1702, label: "Small Craft and DropShip", kind: CBT_MUL_KINDS.find( (kind) => kind.table === "smallCraft" )! },
+    { id: 1703, label: "JumpShip, WarShip and Space Station", kind: CBT_MUL_KINDS.find( (kind) => kind.table === "capitalShips" )! },
+];
+const CBT_MUL_TYPE_OPTIONS = CBT_MUL_TYPE_IDS
+    .flatMap( (id) => id === 17 ? CBT_MUL_AEROSPACE_TYPES : [{ id, label: getMULTypeLabel( id ) }] )
+    .map( ({ id, label }) => ({ id, label }) );
 const MUL_RESULTS_PAGE_SIZE = 25;
 
 export default class BattleMechAddMechDialog extends React.Component<IBattleMechAddMechDialogProps, IBattleMechAddMechDialogState> {
@@ -108,6 +118,10 @@ export default class BattleMechAddMechDialog extends React.Component<IBattleMech
     }
 
     componentDidMount() {
+        // A search saved before the Type list split type 17 (issue 322) has no option left, so it starts from All.
+        if( this.props.appGlobals.appSettings.cbtMULSearch.type === 17 ) {
+            this.props.appGlobals.appSettings.cbtMULSearch.type = 0;
+        }
         void this.updateMULResults();
         loadBundledMechIndex().then( (bundledMechs) => this.setState({ bundledMechs }) )
             .catch( (error) => console.error("Unable to load the bundled 'Mechs", error) );
@@ -142,8 +156,11 @@ export default class BattleMechAddMechDialog extends React.Component<IBattleMech
     updateMULResults = async (): Promise<void> => {
         const searchId = ++this.latestSearch;
         this.setState({ mulSearching: true });
-        const results = ( await searchBundledMUL( this.props.appGlobals.appSettings.cbtMULSearch ) )
+        const filters = this.props.appGlobals.appSettings.cbtMULSearch;
+        const aerospace = CBT_MUL_AEROSPACE_TYPES.find( (type) => type.id === filters.type );
+        const results = ( await searchBundledMUL( { ...filters, type: aerospace ? 17 : filters.type } ) )
             .filter( (unit) => CBT_MUL_TYPE_IDS.includes( unit.Type?.Id ) )
+            .filter( (unit) => !aerospace || aerospace.kind.matches!( unit ) )
             .sort( (a, b) => getMULDisplayName(a).localeCompare( getMULDisplayName(b) ) );
         if( searchId !== this.latestSearch ) {
             return;
@@ -304,7 +321,7 @@ export default class BattleMechAddMechDialog extends React.Component<IBattleMech
         filters={this.props.appGlobals.appSettings.cbtMULSearch}
         onChange={this.updateMULFilters}
         idPrefix="cbt"
-        typeIDs={CBT_MUL_TYPE_IDS}
+        typeOptions={CBT_MUL_TYPE_OPTIONS}
     />
     <h4 className="text-center">
         MUL Results ({this.state.mulSearching ? "..." : this.state.mulResults.length})
@@ -356,6 +373,7 @@ export default class BattleMechAddMechDialog extends React.Component<IBattleMech
             })}
         </tbody>
     </table>
+    {!this.state.mulSearching ? <SearchResultsPager page={resultsPage} onGo={(page) => this.setState({ mulPage: page })} /> : null}
 </fieldset>
         );
     }

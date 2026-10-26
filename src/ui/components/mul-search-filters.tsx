@@ -58,7 +58,7 @@ export default class MULSearchFilters extends React.Component<IMULSearchFiltersP
 
     render = (): JSX.Element => {
         const filters = this.props.filters;
-        const typeIDs = this.props.typeIDs ?? getMULTypeIDs();
+        const typeOptions = this.props.typeOptions ?? getMULTypeIDs().map( (id) => ({ id, label: getMULTypeLabel( id ) }) );
         const factionSuggestions = this.getFactionSuggestions();
         const abilitySuggestions = this.getAbilitySuggestions();
 
@@ -99,8 +99,8 @@ export default class MULSearchFilters extends React.Component<IMULSearchFiltersP
             <label>
                 Type:<br />
                 <select onChange={(event) => this.change({ type: +event.currentTarget.value })} value={filters.type}>
-                    {typeIDs.length > 1 ? <option value={0}>All</option> : null}
-                    {typeIDs.map( (typeID) => <option key={typeID} value={typeID}>{getMULTypeLabel( typeID )}</option> )}
+                    {typeOptions.length > 1 ? <option value={0}>All</option> : null}
+                    {typeOptions.map( (option) => <option key={option.id} value={option.id}>{option.label}</option> )}
                 </select>
             </label>
         </div>
@@ -247,8 +247,8 @@ interface IMULSearchFiltersProps {
     onChange( filters: IMULSearchFilters, search: boolean ): void;
     /** Prefixes the Unit Lists checkboxes' name, e.g. "alphaStrike" gives "alphaStrikeMULSources". */
     idPrefix: string;
-    /** MUL type ids the Type list offers; all of them when left out. */
-    typeIDs?: number[];
+    /** The Type list's options (MUL type ids, or ids the caller maps itself); every MUL type when left out. */
+    typeOptions?: { id: number; label: string }[];
     /** The special ability picker shows only when given (Alpha Strike). */
     abilityCodes?: IAbilityCodeCount[];
     sourcesNote?: React.ReactNode;
