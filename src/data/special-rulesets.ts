@@ -68,6 +68,30 @@ export function findSpecialRuleset(id: string): ISpecialRuleset | undefined {
     return btSpecialRulesets.find((ruleset) => ruleset.id === id);
 }
 
+/** One ruleset as a sheet credits it: an id no longer in the registry keeps its id, with a note. */
+export interface IRulesetCredit {
+    name: string;
+    source?: { title: string; url?: string };
+}
+
+/** The rulesets a unit is built under, as its sheets, cards and TROs credit them (#324 attribution). */
+export function getRulesetCredits(ids: readonly string[]): IRulesetCredit[] {
+    return ids.map((id) => {
+        const ruleset = findSpecialRuleset(id);
+        return ruleset ? { name: ruleset.name, source: ruleset.source } : { name: `${id} (ruleset no longer listed)` };
+    });
+}
+
+/** "Special Rulesets: <name>, <source>[ (<url>)]; ...", or undefined when none are in use. */
+export function getRulesetsAttribution(ids: readonly string[]): string | undefined {
+    if (ids.length === 0) {
+        return undefined;
+    }
+    const credits = getRulesetCredits(ids).map(({ name, source }) =>
+        source ? `${name}, ${source.title}${source.url ? ` (${source.url})` : ""}` : name);
+    return `Special Rulesets: ${credits.join("; ")}`;
+}
+
 /** The ticked ruleset under which `unitType` does not exist, or undefined. */
 export function getRulesetRemovingUnitType(tickedIds: string[], unitType: RulesEditionUnitType): ISpecialRuleset | undefined {
     return tickedIds.map(findSpecialRuleset).find((ruleset) => !!ruleset?.removesUnitTypes?.includes(unitType));

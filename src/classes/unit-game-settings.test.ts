@@ -6,7 +6,9 @@ import CapitalShip from "./capital-ship";
 import InfantryPlatoon from "./infantry-platoon";
 import ProtoMech from "./protomech";
 import SmallCraft from "./small-craft";
-import { applyUnitGameSettings, getUnitGameSettings, IGameSettingsUnit, keepUnitGameSettings } from "./unit-game-settings";
+import { AlphaStrikeUnit } from "./alpha-strike-unit";
+import { BattleMech } from "./battlemech";
+import { applyUnitGameSettings, getUnitGameSettings, getUnitRulesets, IGameSettingsUnit, keepUnitGameSettings } from "./unit-game-settings";
 import Vehicle from "./vehicle";
 
 type Unit = IGameSettingsUnit & { export(): object };
@@ -70,5 +72,28 @@ describe("the eight Classic unit classes keep their own game settings (#324)", (
         expect(getUnitGameSettings(next, 2)).toMatchObject({ rulesLevel: 4, rulesets: ["sample-no-clans"] });
         keepUnitGameSettings(undefined, next, 2);
         expect(getUnitGameSettings(next, 1)).toMatchObject({ rulesLevel: 2, rulesets: [] });
+    });
+});
+
+describe("getUnitRulesets: attribution reads the unit's save (call 11)", () => {
+    it("reads a Classic design's settings, a 'Mech's own rulesets and an Alpha Strike card's", () => {
+        const vehicle = new Vehicle();
+        vehicle.gameSettings.set(4, ["sample-no-clans"]);
+        expect(getUnitRulesets(vehicle)).toEqual(["sample-no-clans"]);
+
+        const mech = new BattleMech();
+        mech.applyGameSettings({ ...mech.getGameSettings(2), rulesets: ["sample-no-clans"] });
+        expect(getUnitRulesets(mech)).toEqual(["sample-no-clans"]);
+
+        const card = new AlphaStrikeUnit();
+        card.rulesets = ["sample-no-clans"];
+        expect(getUnitRulesets(card)).toEqual(["sample-no-clans"]);
+    });
+
+    it("gives none for a unit without rulesets, or no unit", () => {
+        expect(getUnitRulesets(new Vehicle())).toEqual([]);
+        expect(getUnitRulesets(new BattleMech())).toEqual([]);
+        expect(getUnitRulesets(new AlphaStrikeUnit())).toEqual([]);
+        expect(getUnitRulesets(null)).toEqual([]);
     });
 });

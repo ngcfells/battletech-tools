@@ -1,12 +1,12 @@
 import { afterEach, describe, expect, it } from "vitest";
 import { isKnownEditionTag } from "./rules-editions";
-import { btSpecialRulesets, findSpecialRuleset, getRulesetConflict, ISpecialRuleset } from "./special-rulesets";
+import { btSpecialRulesets, findSpecialRuleset, getRulesetConflict, getRulesetCredits, getRulesetsAttribution, ISpecialRuleset } from "./special-rulesets";
 
 const testRuleset = (id: string, changes: string[]): ISpecialRuleset => ({ id, name: id, description: "", source: { title: "test" }, changes });
 
 describe("Special Rulesets (#324)", () => {
     afterEach(() => {
-        for (const id of ["test-heat", "test-techs"]) {
+        for (const id of ["test-heat", "test-techs", "test-linked"]) {
             const index = btSpecialRulesets.findIndex((ruleset) => ruleset.id === id);
             if (index >= 0) {
                 btSpecialRulesets.splice(index, 1);
@@ -31,5 +31,28 @@ describe("Special Rulesets (#324)", () => {
         for (const ruleset of btSpecialRulesets.filter((item) => item.minEdition)) {
             expect(isKnownEditionTag(ruleset.minEdition!), ruleset.id).toBe(true);
         }
+    });
+
+    describe("attribution (round 5)", () => {
+        it("prints nothing when no rulesets are in use", () => {
+            expect(getRulesetsAttribution([])).toBeUndefined();
+            expect(getRulesetCredits([])).toEqual([]);
+        });
+
+        it("names each ruleset with its source, as the spec's example", () => {
+            expect(getRulesetsAttribution(["sample-no-clans"])).toBe("Special Rulesets: Sample: The Clans never existed (alternate universe), Sample ruleset (#324)");
+        });
+
+        it("puts a source link after its title, and joins rulesets with semicolons", () => {
+            btSpecialRulesets.push({ ...testRuleset("test-linked", ["heat"]), name: "Linked", source: { title: "Fan PDF", url: "https://example.com/rules" } });
+            expect(getRulesetsAttribution(["sample-no-clans", "test-linked"])).toBe(
+                "Special Rulesets: Sample: The Clans never existed (alternate universe), Sample ruleset (#324); Linked, Fan PDF (https://example.com/rules)");
+            expect(getRulesetCredits(["test-linked"])).toEqual([{ name: "Linked", source: { title: "Fan PDF", url: "https://example.com/rules" } }]);
+        });
+
+        it("still prints a ruleset that is no longer listed, by its id", () => {
+            expect(getRulesetsAttribution(["gone"])).toBe("Special Rulesets: gone (ruleset no longer listed)");
+            expect(getRulesetCredits(["gone"])).toEqual([{ name: "gone (ruleset no longer listed)" }]);
+        });
     });
 });
