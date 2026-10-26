@@ -8,6 +8,7 @@ import UIPage from '../../../components/ui-page';
 import SanitizedHTML from '../../../components/sanitized-html';
 import { formatVehicleASDamage } from '../../../../classes/vehicle';
 import { getArtVeeIssues, getArtVeeWarnings } from '../../../../classes/vehicle-artvee';
+import { unitRulesLevel } from '../../../components/game-settings-block';
 
 export default class VehicleCreatorSummary extends React.Component<ISummaryProps, ISummaryState> {
     constructor(props: ISummaryProps) {
@@ -25,7 +26,7 @@ export default class VehicleCreatorSummary extends React.Component<ISummaryProps
         const maxArmor = vehicle.getMaxArmorAllocation();
         const armor = vehicle.getArmorAllocation();
         const artVeeIssues = getArtVeeIssues(vehicle);
-        const artVeeWarnings = vehicle.isArtVee() ? getArtVeeWarnings(vehicle, this.props.appGlobals.appSettings.mechRulesFilter) : [];
+        const artVeeWarnings = vehicle.isArtVee() ? getArtVeeWarnings(vehicle, unitRulesLevel(this.props.appGlobals.currentVehicle, this.props.appGlobals.appSettings)) : [];
 
         return (
             <UIPage current="classic-battletech-vehicle-creator" appGlobals={this.props.appGlobals}>
@@ -107,7 +108,7 @@ export default class VehicleCreatorSummary extends React.Component<ISummaryProps
                                 quirks={vehicle.quirks}
                                 unitType={vehicle.getQuirkUnitType()}
                                 editionTag={vehicle.getRulesEdition()}
-                                rulesLevel={this.props.appGlobals.appSettings.mechRulesFilter}
+                                rulesLevel={unitRulesLevel(this.props.appGlobals.currentVehicle, this.props.appGlobals.appSettings)}
                                 {...vehicle.getQuirkTargets()}
                                 onChange={() => this.props.appGlobals.saveCurrentVehicle(vehicle)}
                             />

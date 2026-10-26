@@ -18,7 +18,7 @@ test("Vehicle Creator: the ArtVee toggle unlocks the combo guns at Custom Homebr
     await page.goto("classic-battletech/vehicle-creator/step1");
     await page.getByLabel("Rules Level").selectOption("6");
     await page.getByLabel("Motive Type").selectOption("tracked");
-    await page.getByLabel("Vehicle Era").selectOption({ label: "Star League (2571-2780)" });
+    await page.getByLabel("Era:").selectOption({ label: "Star League (2571-2780)" });
     await expect(option).toBeVisible();
     await expect(page.getByTestId("artvee")).toHaveCount(0);
 
@@ -51,7 +51,7 @@ test("Vehicle Creator: the record sheet shows both ArtVee modes", async ({ page 
     await page.goto("classic-battletech/vehicle-creator/step1");
     await page.getByLabel("Rules Level").selectOption("6");
     await page.getByLabel("Motive Type").selectOption("tracked");
-    await page.getByLabel("Vehicle Era").selectOption({ label: "Star League (2571-2780)" });
+    await page.getByLabel("Era:").selectOption({ label: "Star League (2571-2780)" });
     await page.getByTestId("artvee-option").click();
 
     await page.goto("classic-battletech/vehicle-creator/equipment-selection");

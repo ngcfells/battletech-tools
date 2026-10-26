@@ -174,7 +174,7 @@ test("Vehicle Creator: a battle armor energy weapon runs off heat sinks or power
     const option = page.getByTestId("fractional-accounting-option");
 
     await page.goto("classic-battletech/vehicle-creator/step1");
-    await page.getByLabel("Vehicle Era").selectOption(DARK_AGE);
+    await page.getByLabel("Era:").selectOption(DARK_AGE);
     await page.getByLabel("Rules Level").selectOption(EXPERIMENTAL);
 
     await page.goto("classic-battletech/vehicle-creator/equipment-selection");
@@ -202,7 +202,7 @@ test("Vehicle Creator: non-weapon battle armor equipment is offered at its own w
     const option = page.getByTestId("fractional-accounting-option");
 
     await page.goto("classic-battletech/vehicle-creator/step1");
-    await page.getByLabel("Vehicle Era").selectOption(DARK_AGE);
+    await page.getByLabel("Era:").selectOption(DARK_AGE);
     await page.getByLabel("Rules Level").selectOption(EXPERIMENTAL);
 
     await page.goto("classic-battletech/vehicle-creator/equipment-selection");

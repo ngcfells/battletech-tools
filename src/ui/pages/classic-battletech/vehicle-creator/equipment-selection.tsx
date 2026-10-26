@@ -10,6 +10,7 @@ import TextSection from '../../../components/text-section';
 import TonnageBar from '../../../components/tonnage-bar';
 import UIPage from '../../../components/ui-page';
 import VehicleLightWeapons from './_light-weapons';
+import { unitRulesLevel } from '../../../components/game-settings-block';
 const ArrowCircleLeft = FaArrowCircleLeft as any;
 const ArrowCircleRight = FaArrowCircleRight as any;
 const Trash = FaTrash as any;
@@ -55,7 +56,7 @@ export default class VehicleCreatorEquipmentSelection extends React.Component<IE
                                 <p><strong>Remaining Tonnage</strong>: {vehicle.getRemainingTonnage()}</p>
                                 <AvailableEquipment
                                     appGlobals={this.props.appGlobals}
-                                    equipment={vehicle.getAvailableEquipmentByCatalog("all", this.props.appGlobals.appSettings.mechRulesFilter >= CUSTOM_HOMEBREW_RULES_LEVEL, this.props.appGlobals.appSettings.mechRulesFilter)}
+                                    equipment={vehicle.getAvailableEquipmentByCatalog("all", unitRulesLevel(this.props.appGlobals.currentVehicle, this.props.appGlobals.appSettings) >= CUSTOM_HOMEBREW_RULES_LEVEL, unitRulesLevel(this.props.appGlobals.currentVehicle, this.props.appGlobals.appSettings))}
                                     mounted={vehicle.getEquipmentList()}
                                     addFunction={this.addEquipment}
                                 />

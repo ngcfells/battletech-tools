@@ -4,6 +4,7 @@ import InputCheckbox from "../../../components/form_elements/input_checkbox";
 import InputNumeric from "../../../components/form_elements/input_numeric";
 import { isInfantryWeaponAtRulesLevel, isInfantryWeaponAvailable } from '../../../../data/infantry-weapons';
 import { getLightWeaponDamage, getLightWeaponRanges, SUPPORT_VEHICLE_LIGHT_WEAPONS } from '../../../../data/support-vehicle-light-weapons';
+import { unitRulesLevel } from '../../../components/game-settings-block';
 
 /**
  * Light (Standard) and Medium (Support) infantry weapons for a Small Support Vehicle, in a location or on a pintle on
@@ -28,7 +29,7 @@ export default class VehicleLightWeapons extends React.Component<IVehicleLightWe
         if (!vehicle) return <></>;
         const era = vehicle.getEra();
         const techs: ("is" | "clan")[] = vehicle.getTech().tag === "clan" ? ["clan"] : vehicle.getTech().tag === "is" ? ["is"] : ["is", "clan"];
-        const rulesLevel = this.props.appGlobals.appSettings.mechRulesFilter;
+        const rulesLevel = unitRulesLevel(this.props.appGlobals.currentVehicle, this.props.appGlobals.appSettings);
         const weapons = SUPPORT_VEHICLE_LIGHT_WEAPONS.filter((weapon) => isInfantryWeaponAtRulesLevel(weapon, rulesLevel) && techs.some((tech) => (weapon.techBase === "universal" || weapon.techBase === tech)
             && isInfantryWeaponAvailable(weapon, tech, era.yearStart, era.yearEnd ?? null)));
         const locations = vehicle.getLocations().filter((loc) => loc.tag !== "rotor");

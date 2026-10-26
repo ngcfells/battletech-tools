@@ -4,15 +4,13 @@ import { IAppGlobals } from '../../../app-router';
 import Vehicle, { IFrankenVehicle } from '../../../../classes/vehicle';
 import { VehicleCreatorSideMenu } from '../../../components/creator-side-menus';
 import VehicleBays from './_vehicle-bays';
-import RulesEditionSelect from '../../../components/rules-edition-select';
-import RulesLevelSelect from '../../../components/rules-level-select';
+import { UnitGameSettingsBlock, unitRulesLevel } from '../../../components/game-settings-block';
+import { keepUnitGameSettings } from '../../../../classes/unit-game-settings';
 import TextSection from '../../../components/text-section';
 import UIPage from '../../../components/ui-page';
 import InputField from "../../../components/form_elements/input_field";
 import InputCheckbox from "../../../components/form_elements/input_checkbox";
 import InputNumeric from "../../../components/form_elements/input_numeric";
-import { btTechOptions } from '../../../../data/tech-options';
-import { chooseEra, getEraChoices, getTechChoices } from '../../../../data/era-choice';
 import { getRulesLevelOptions } from '../../../../data/rules-level-options';
 import { vehicleMotiveTypes } from '../../../../data/vehicle-motive-types';
 import { getVehicleTonnageBounds } from '../../../../data/vehicle-motive-types';
@@ -48,7 +46,7 @@ export default class VehicleCreatorStep1 extends React.Component<IStep1Props, IS
         if (vehicle) {
             vehicle.setWeightAccounting(
                 vehicle.usesFractionalAccounting() ? "standard" : "fractional",
-                this.props.appGlobals.appSettings.mechRulesFilter,
+                this.rulesLevel(),
             );
             this.props.appGlobals.saveCurrentVehicle(vehicle);
         }
@@ -62,30 +60,14 @@ export default class VehicleCreatorStep1 extends React.Component<IStep1Props, IS
         }
     }
 
-    updateTech = (e: React.FormEvent<HTMLSelectElement>): void => {
+    // The design's own rules level, or the app-wide one for a save from before designs kept one (#324).
+    private rulesLevel = (): number => unitRulesLevel(this.props.appGlobals.currentVehicle, this.props.appGlobals.appSettings);
+
+    // The settings block changed the design: a lower level or another tech base may take away its tonnage.
+    updateGameSettings = (): void => {
         const vehicle = this.props.appGlobals.currentVehicle;
         if (vehicle) {
-            vehicle.setTech(e.currentTarget.value);
-            this.props.appGlobals.saveCurrentVehicle(vehicle);
-        }
-    }
-
-    updateEra = (e: React.FormEvent<HTMLSelectElement>): void => {
-        const vehicle = this.props.appGlobals.currentVehicle;
-        if (vehicle) {
-            chooseEra(vehicle, e.currentTarget.value);
-            this.props.appGlobals.saveCurrentVehicle(vehicle);
-        }
-    }
-
-    updateRulesLevel = (level: number): void => {
-        const appSettings = this.props.appGlobals.appSettings;
-        appSettings.mechRulesFilter = level;
-        this.props.appGlobals.saveAppSettings(appSettings);
-
-        const vehicle = this.props.appGlobals.currentVehicle;
-        if (vehicle) {
-            this.clampTonnage(vehicle, appSettings.mechRulesFilter);
+            this.clampTonnage(vehicle, this.rulesLevel());
             this.props.appGlobals.saveCurrentVehicle(vehicle);
         }
     }
@@ -94,7 +76,7 @@ export default class VehicleCreatorStep1 extends React.Component<IStep1Props, IS
         const vehicle = this.props.appGlobals.currentVehicle;
         if (vehicle) {
             vehicle.setMotiveType(e.currentTarget.value);
-            this.clampTonnage(vehicle, this.props.appGlobals.appSettings.mechRulesFilter);
+            this.clampTonnage(vehicle, this.rulesLevel());
             this.props.appGlobals.saveCurrentVehicle(vehicle);
         }
     }
@@ -103,7 +85,7 @@ export default class VehicleCreatorStep1 extends React.Component<IStep1Props, IS
         const vehicle = this.props.appGlobals.currentVehicle;
         if (vehicle) {
             vehicle.setTonnage(+e.currentTarget.value);
-            this.clampTonnage(vehicle, this.props.appGlobals.appSettings.mechRulesFilter);
+            this.clampTonnage(vehicle, this.rulesLevel());
             this.props.appGlobals.saveCurrentVehicle(vehicle);
         }
     }
@@ -151,7 +133,7 @@ export default class VehicleCreatorStep1 extends React.Component<IStep1Props, IS
     updateFrankenVehicle = (e: React.FormEvent<HTMLInputElement>): void => {
         const vehicle = this.props.appGlobals.currentVehicle;
         if (vehicle) {
-            vehicle.setFrankenVehicle(e.currentTarget.checked, this.props.appGlobals.appSettings.mechRulesFilter);
+            vehicle.setFrankenVehicle(e.currentTarget.checked, this.rulesLevel());
             this.props.appGlobals.saveCurrentVehicle(vehicle);
         }
     }
@@ -215,7 +197,7 @@ export default class VehicleCreatorStep1 extends React.Component<IStep1Props, IS
 
     // Loads a sample ArtVee in place of the current design, offering to save the current one first.
     loadArtVeeSample = (e: React.FormEvent<HTMLSelectElement>): void => {
-        const sample = getArtVeeSamples(this.props.appGlobals.appSettings.mechRulesFilter).find((entry) => entry.id === e.currentTarget.value);
+        const sample = getArtVeeSamples(this.rulesLevel()).find((entry) => entry.id === e.currentTarget.value);
         if (!sample) return;
         confirmReplaceDesign(this.props.appGlobals, {
             what: "vehicle",
@@ -225,7 +207,11 @@ export default class VehicleCreatorStep1 extends React.Component<IStep1Props, IS
                     this.props.appGlobals.saveVehicleSaves([...(this.props.appGlobals.vehicleSaves || []), this.props.appGlobals.currentVehicle.export(true)]);
                 }
             },
-            replace: () => this.props.appGlobals.saveCurrentVehicle(new Vehicle(JSON.stringify({ ...sample.save, uuid: generateUUID() }))),
+            replace: () => {
+                const next = new Vehicle(JSON.stringify({ ...sample.save, uuid: generateUUID() }));
+                keepUnitGameSettings(this.props.appGlobals.currentVehicle, next, this.props.appGlobals.appSettings.mechRulesFilter);
+                this.props.appGlobals.saveCurrentVehicle(next);
+            },
         });
     }
 
@@ -233,14 +219,14 @@ export default class VehicleCreatorStep1 extends React.Component<IStep1Props, IS
         const support = e.currentTarget.value === "support";
         this.changeVehicle((vehicle) => {
             vehicle.setSupportVehicle(support);
-            this.clampTonnage(vehicle, this.props.appGlobals.appSettings.mechRulesFilter);
+            this.clampTonnage(vehicle, this.rulesLevel());
         });
     }
 
     updateSupportTonnage = (tons: number): void => {
         this.changeVehicle((vehicle) => {
             vehicle.setTonnage(tons);
-            this.clampTonnage(vehicle, this.props.appGlobals.appSettings.mechRulesFilter);
+            this.clampTonnage(vehicle, this.rulesLevel());
         });
     }
 
@@ -427,7 +413,7 @@ export default class VehicleCreatorStep1 extends React.Component<IStep1Props, IS
         const vehicle = this.props.appGlobals.currentVehicle;
         if (!vehicle) return <></>;
 
-        const rulesLevel = this.props.appGlobals.appSettings.mechRulesFilter;
+        const rulesLevel = this.rulesLevel();
         const artVeeSamples = getArtVeeSamples(rulesLevel);
         const chassisOptions = vehicle.getChassisModificationOptions(rulesLevel);
         const { min, max } = getVehicleTonnageBounds(vehicle.getMotiveType().tag, rulesLevel);
@@ -455,21 +441,8 @@ export default class VehicleCreatorStep1 extends React.Component<IStep1Props, IS
                         </div>
                         <div className="col-md-9 col-lg-10">
                             <TextSection label="Step 1: Design the Chassis">
-                                {/* The rules edition comes first: it decides what every field below offers. */}
-                                <RulesEditionSelect unitType="vehicle" value={vehicle.getRulesEdition()} onChange={(tag) => { vehicle.setRulesEdition(tag); this.props.appGlobals.saveCurrentVehicle(vehicle); }} />
-                                <RulesLevelSelect editionTag={vehicle.getRulesEdition()} value={rulesLevel} onChange={this.updateRulesLevel} />
-                                {/* The era comes next and decides the tech bases offered below (user ruling 2026-10-21). */}
-                                <label>
-                                    Vehicle Era:
-                                    <select value={vehicle.getEra().tag} onChange={this.updateEra}>
-                                        {getEraChoices(btTechOptions.map((option) => option.tag)).map((option) => (
-                                            <option key={option.tag} value={option.tag}>{option.name}</option>
-                                        ))}
-                                    </select>
-                                </label>
-                                {vehicle.getEra().description ? (
-                                    <p className="smaller-text">{vehicle.getEra().description}</p>
-                                ) : null}
+                                {/* The shared settings block comes first: it decides what every field below offers (#324). */}
+                                <UnitGameSettingsBlock unitType="vehicle" unit={vehicle} appGlobals={this.props.appGlobals} onChange={this.updateGameSettings} />
                                 <InputField
                                     label="Vehicle Model # (e.g. SRT-1, Vedette)"
                                     value={vehicle.getModel()}
@@ -501,16 +474,6 @@ export default class VehicleCreatorStep1 extends React.Component<IStep1Props, IS
                                         <option value="support">Support Vehicle (TM pp.116-139)</option>
                                     </select>
                                 </label>
-
-                                <label>
-                                    Technology Base:
-                                    <select value={vehicle.getTech().tag} onChange={this.updateTech}>
-                                        {btTechOptions.filter((option) => getTechChoices(vehicle.getEra(), [option.tag]).length > 0).map((option) => (
-                                            <option key={option.tag} value={option.tag}>{option.name}</option>
-                                        ))}
-                                    </select>
-                                </label>
-
 
                                 <label>
                                     Motive Type:

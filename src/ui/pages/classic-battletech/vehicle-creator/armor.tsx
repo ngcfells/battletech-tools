@@ -10,6 +10,7 @@ import UIPage from '../../../components/ui-page';
 import { availabilityOptionLabel, isOptionShown } from '../../../components/availability-options';
 import { supportVehicleArmor } from '../../../../data/support-vehicle-armor';
 import { SUPPORT_VEHICLE_TECH_RATINGS } from '../../../../data/support-vehicle-construction';
+import { unitRulesLevel } from '../../../components/game-settings-block';
 const ArrowCircleLeft = FaArrowCircleLeft as any;
 const ArrowCircleRight = FaArrowCircleRight as any;
 
@@ -107,7 +108,7 @@ export default class VehicleCreatorArmor extends React.Component<IArmorProps, IA
         const maxArmor = vehicle.getMaxArmorAllocation();
         const locations = vehicle.getLocations();
         const support = vehicle.getSupportVehicleSettings();
-        const rulesLevel = this.props.appGlobals.appSettings.mechRulesFilter;
+        const rulesLevel = unitRulesLevel(this.props.appGlobals.currentVehicle, this.props.appGlobals.appSettings);
         const patchwork = vehicle.isPatchworkArmor();
 
         return (
@@ -151,7 +152,7 @@ export default class VehicleCreatorArmor extends React.Component<IArmorProps, IA
                                 <label>
                                     Armor Type:
                                     <select value={vehicle.getArmorType().tag} onChange={this.updateArmorType}>
-                                        {vehicle.getAvailableArmorTypes(this.props.appGlobals.appSettings.mechRulesFilter)
+                                        {vehicle.getAvailableArmorTypes(unitRulesLevel(this.props.appGlobals.currentVehicle, this.props.appGlobals.appSettings))
                                             .filter((option) => isOptionShown(option, option.tag === vehicle.getArmorType().tag))
                                             .map((option) => (
                                                 <option key={option.tag} value={option.tag}>{availabilityOptionLabel(option)}</option>
