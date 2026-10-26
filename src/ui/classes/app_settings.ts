@@ -37,6 +37,8 @@ export class AppSettings {
     alphaStrikeAbilitySearchTerm: string = "";
     // Ability codes the unit must have; a "!" prefix means it must not have it.
     alphaStrikeSearchAbilities: Array<string> = [];
+    // Special Rulesets (#324) the search follows.
+    alphaStrikeSearchRulesets: Array<string> = [];
     alphaStrikeMULSources: MULSourceSelection = DEFAULT_MUL_SOURCE_SELECTION;
     hideMPIntro: boolean = false;
 
@@ -106,6 +108,9 @@ export class AppSettings {
             if ( Array.isArray( io.alphaStrikeSearchAbilities ) ) {
                 this.alphaStrikeSearchAbilities = io.alphaStrikeSearchAbilities.filter( (ability) => typeof ability === "string" );
             }
+            if ( Array.isArray( io.alphaStrikeSearchRulesets ) ) {
+                this.alphaStrikeSearchRulesets = io.alphaStrikeSearchRulesets.filter( (id) => typeof id === "string" );
+            }
 
             this.alphaStrikeMULSources = normalizeMULSourceSelection( io.alphaStrikeMULSources ) ?? DEFAULT_MUL_SOURCE_SELECTION;
 
@@ -134,6 +139,7 @@ export class AppSettings {
                     type: Number.isFinite( +saved.type ) ? +saved.type : CBT_MUL_DEFAULT_TYPE,
                     factions: Array.isArray( saved.factions ) ? saved.factions.filter( (id) => typeof id === "number" ) : [],
                     sources: normalizeMULSourceSelection( saved.sources ) ?? DEFAULT_MUL_SOURCE_SELECTION,
+                    rulesets: Array.isArray( saved.rulesets ) ? saved.rulesets.filter( (id) => typeof id === "string" ) : [],
                 });
             }
             if ( typeof( io.hideMPIntro ) !== "undefined" ) {
@@ -160,6 +166,7 @@ export class AppSettings {
             asValues: this.asValues,
             alphaStrikeSearchFactions: this.alphaStrikeSearchFactions,
             alphaStrikeSearchAbilities: this.alphaStrikeSearchAbilities,
+            alphaStrikeSearchRulesets: this.alphaStrikeSearchRulesets,
             alphaStrikeMULSources: this.alphaStrikeMULSources,
             hideMPIntro: this.hideMPIntro,
         
@@ -188,6 +195,7 @@ export interface IAppSettingsExport {
     alphaStrikeMeasurementsInHexes: boolean;
     alphaStrikeSearchFactions: Array<number>;
     alphaStrikeSearchAbilities?: Array<string>;
+    alphaStrikeSearchRulesets?: Array<string>;
     // A "mul2+mul1"-style string in settings saved before the lists became checkboxes.
     alphaStrikeMULSources?: MULSourceSelection | string;
     hideMPIntro: boolean;

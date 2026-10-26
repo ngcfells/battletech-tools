@@ -126,6 +126,7 @@ export default class AlphaStrikeAddUnitsView extends React.Component<IAlphaStrik
           abilities: settings.alphaStrikeSearchAbilities,
           abilitySearchTerm: settings.alphaStrikeAbilitySearchTerm,
           sources: settings.alphaStrikeMULSources,
+          rulesets: settings.alphaStrikeSearchRulesets,
         };
     }
 
@@ -144,6 +145,7 @@ export default class AlphaStrikeAddUnitsView extends React.Component<IAlphaStrik
         settings.alphaStrikeSearchAbilities = filters.abilities;
         settings.alphaStrikeAbilitySearchTerm = filters.abilitySearchTerm;
         settings.alphaStrikeMULSources = filters.sources;
+        settings.alphaStrikeSearchRulesets = filters.rulesets;
         this.props.appGlobals.saveAppSettings( settings );
 
         if( sourcesChanged ) {

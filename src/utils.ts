@@ -9,7 +9,7 @@ import { replaceAll } from "./utils/replaceAll";
 import { getQuirkToHit } from "./utils/quirk-effects";
 import { unitHasAbility } from "./utils/mulAbilities";
 import { resolveMULEraFilter } from "./utils/mulUtilities";
-import { IMULSearchFilters } from "./utils/mulSearchFilters";
+import { filterMULByRulesets, IMULSearchFilters } from "./utils/mulSearchFilters";
 
 export function getISEquipmentList(): IEquipmentItem[] {
     return getEquipmentListByTech("is");
@@ -466,9 +466,9 @@ function getMULSearchTokens(searchTerm: string, abilityFilters: string[]): IMULS
 export async function searchBundledMUL(filters: IMULSearchFilters): Promise<IASMULUnit[]> {
     const tokens = getMULSearchTokens(filters.term, filters.abilities);
     const era = resolveMULEraFilter(filters.era);
-    return (await loadMULListItems(filters.sources)).filter((unit) =>
+    return filterMULByRulesets((await loadMULListItems(filters.sources)).filter((unit) =>
         matchesMULDropdownFilters(unit, filters.rules, filters.tech, filters.role, era, filters.type, filters.factions) &&
-        matchesMULSearchTokens(unit, tokens));
+        matchesMULSearchTokens(unit, tokens)), filters.rulesets);
 }
 
 async function getCachedMULSearchResults(

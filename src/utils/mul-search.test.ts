@@ -35,6 +35,14 @@ describe("Bundled MUL 2.0 search and cards", () => {
         expect(results.map((unit) => unit.Id).sort()).toEqual(sameAsAlphaStrike.map((unit) => unit.Id).sort());
     }, 30_000);
 
+    it("leaves out the Clan units and ProtoMechs a ticked ruleset removes (#324)", async () => {
+        const all = await searchBundledMUL(newMULSearchFilters({ term: "Timber Wolf", type: 0 }));
+        expect(all.some((unit) => unit.Technology?.Id === 2)).toBe(true);
+        expect(await searchBundledMUL(newMULSearchFilters({ term: "Timber Wolf", type: 0, rulesets: ["sample-no-clans"] }))).toEqual([]);
+        expect((await searchBundledMUL(newMULSearchFilters({ type: 23 }))).length).toBeGreaterThan(0);
+        expect(await searchBundledMUL(newMULSearchFilters({ type: 23, rulesets: ["sample-no-clans"] }))).toEqual([]);
+    }, 30_000);
+
     it("does not match an ability code inside a longer code", async () => {
         const results = await getMULASSearchResults("a:ECM", "", "", "", 0, 0, [], true);
         expect(results.every((unit) => (unit.BFAbilities ?? "").split(",").some((ability) => ability.trim() === "ECM"))).toBe(true);
