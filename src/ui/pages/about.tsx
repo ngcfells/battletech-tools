@@ -69,6 +69,12 @@ export default class About extends React.Component<IAboutProps, IAboutState> {
             <p>The data in ./src/data/* contains copyrighted material and is not included. Each of the comments header in the file repeats this exception in the above license.</p>
           </TextSection>
           <TextSection
+            label="Bundled Designs"
+          >
+            <p>The bundled BattleMechs and IndustrialMechs are converted from the <a href="https://github.com/Solaris-Skunk-Werks/SSW-Master">Solaris Skunk Werks</a> project's files.</p>
+            <p>The bundled battle armor, ProtoMechs, Small Craft and DropShips and Support Vehicles are converted from <a href="https://github.com/MegaMek/megamek">MegaMek</a>'s unit files: MegaMek Data &copy; 2025-2026 by The MegaMek Team, licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a>. A design we have checked against its printed Technical Readout is our own transcription and no longer carries this notice.</p>
+          </TextSection>
+          <TextSection
             label="Copyrights"
           >
           <p>This site and app is a completely free fan-site that makes no claim to ownership to any of <a href="http://catalystgamelabs.com/">Catalyst Game Labs</a>, <a href="http://topps.com">The Topps Company, Inc</a>, or <a href="http://microsoft.com">Microsoft Corporation</a> properties.</p>

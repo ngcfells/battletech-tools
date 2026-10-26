@@ -1,36 +1,16 @@
 import { BattleMech } from "../classes/battlemech";
-import { BUNDLED_CHUNK_SIZE, IBundledDesignHeader, loadBundledMech } from "../utils/bundled-designs";
+import { IBundledDesignHeader, loadBundledMech } from "../utils/bundled-designs";
 import type { IClassicDesignEntry } from "../utils/classicMULMatch";
+import { loadBundledDesignData, loadBundledIndex } from "./bundled-units";
 
-/*
-    The data here is/may be copyrighted and NOT included in the GPLv3 license.
-    The 'Mechs are converted from the Solaris Skunk Werks project's files at https://github.com/Solaris-Skunk-Werks/SSW-Master
-    (regenerate with WRITE_BUNDLED_MECHS=1 npx vitest run src/data/bundled-mechs.test.ts).
-*/
-
-type ChunkLoaders = Record<string, () => Promise<unknown>>;
-
-const chunkLoaders = import.meta.glob("./bundled/mechs/*.json", { import: "default" }) as ChunkLoaders;
-
-let index: Promise<IBundledDesignHeader[]> | null = null;
-const chunks = new Map<number, Promise<Record<string, Record<string, unknown>>>>();
+// The bundled 'Mechs (#241), from the Skunk Werks files: see bundled-units.ts for the notice.
 
 /** The bundled 'Mechs' headers, fetched the first time a list needs them. */
-export const loadBundledMechIndex = (): Promise<IBundledDesignHeader[]> =>
-    index ??= import("./bundled/mechs-index.json").then((module) => (module.default as { designs: IBundledDesignHeader[] }).designs);
-
-const loadChunk = (chunk: number) => {
-    if (!chunks.has(chunk)) {
-        const loader = chunkLoaders[`./bundled/mechs/${chunk}.json`];
-        chunks.set(chunk, loader().then((data) => (data as { designs: Record<string, Record<string, unknown>> }).designs));
-    }
-    return chunks.get(chunk)!;
-};
+export const loadBundledMechIndex = (): Promise<IBundledDesignHeader[]> => loadBundledIndex("mechs");
 
 /** Imports one bundled 'Mech; an OmniMech comes in the configuration asked for, else its own. */
 export async function loadBundledMechDesign(header: Pick<IBundledDesignHeader, "id">, configuration?: string): Promise<BattleMech> {
-    const designs = await loadChunk(Math.floor(header.id / BUNDLED_CHUNK_SIZE));
-    const mech = loadBundledMech(designs[header.id]);
+    const mech = loadBundledMech(await loadBundledDesignData("mechs", header));
     return configuration ? mech.cloneOmniConfiguration(configuration) as BattleMech : mech;
 }
 

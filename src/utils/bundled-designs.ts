@@ -17,7 +17,7 @@ export interface IBundledDesignHeader {
     tons: number;
     bv: number;
     cost: number;
-    /** SSW rules level (0 Introductory to 4 Experimental), for the rules filter. */
+    /** SSW rules level (0 Introductory, 1 Standard, 2 Advanced, 3 Experimental, 4 Era Specific), for the rules filter. */
     rulesLevel: number;
     year: number;
     tech: string;
@@ -31,7 +31,9 @@ export interface IBundledDesignHeader {
 
 export const BUNDLED_CHUNK_SIZE = 150;
 
-const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+// A UUID, alone or with a suffix such as a crit slot's ":7".
+const UUID = /^([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})(:.*)?$/i;
+const SHORT_ID = /^(#\d+)(:.*)?$/;
 // Recomputed on import, or identity and timestamps a bundled copy should not carry.
 const DERIVED = ["uuid", "lastUpdated", "battle_value", "c_bills", "as_value", "tech_label"];
 
@@ -43,9 +45,10 @@ const same = (a: unknown, b: unknown): boolean => JSON.stringify(a) === JSON.str
 
 /** Drops empty fields inside list entries and shortens UUIDs to "#n", the same id for the same UUID. */
 function shrink(value: unknown, ids: Map<string, string>, inList: boolean): unknown {
-    if (typeof value === "string" && UUID.test(value)) {
-        if (!ids.has(value)) ids.set(value, "#" + ids.size);
-        return ids.get(value);
+    const uuid = typeof value === "string" ? UUID.exec(value) : null;
+    if (uuid) {
+        if (!ids.has(uuid[1])) ids.set(uuid[1], "#" + ids.size);
+        return ids.get(uuid[1]) + (uuid[2] ?? "");
     }
     if (Array.isArray(value)) return value.map((item) => shrink(item, ids, true));
     if (value && typeof value === "object") {
@@ -60,9 +63,10 @@ function shrink(value: unknown, ids: Map<string, string>, inList: boolean): unkn
 }
 
 function grow(value: unknown, ids: Map<string, string>): unknown {
-    if (typeof value === "string" && /^#\d+$/.test(value)) {
-        if (!ids.has(value)) ids.set(value, generateUUID());
-        return ids.get(value);
+    const id = typeof value === "string" ? SHORT_ID.exec(value) : null;
+    if (id) {
+        if (!ids.has(id[1])) ids.set(id[1], generateUUID());
+        return ids.get(id[1]) + (id[2] ?? "");
     }
     if (Array.isArray(value)) return value.map((item) => grow(item, ids));
     if (value && typeof value === "object") return Object.fromEntries(Object.entries(value).map(([key, item]) => [key, grow(item, ids)]));
@@ -113,3 +117,20 @@ export const compactMech = (mech: BattleMech): Record<string, unknown> =>
 
 export const loadBundledMech = (design: Record<string, unknown>): BattleMech =>
     new BattleMech(JSON.stringify(thickenMech(expandDesign(design, getBlankMech()))));
+
+/** A unit class the bundled designs of another type are made of: a JSON constructor and a play-free export. */
+export interface IBundledUnitClass<T> {
+    new (json?: string): T;
+}
+
+const blanks = new Map<unknown, Record<string, unknown>>();
+const getBlank = <T extends { export(noInPlayVariables?: boolean): object }>(Unit: IBundledUnitClass<T>): Record<string, unknown> => {
+    if (!blanks.has(Unit)) blanks.set(Unit, { ...(new Unit().export(true) as Record<string, unknown>) });
+    return blanks.get(Unit)!;
+};
+
+export const compactUnit = <T extends { export(noInPlayVariables?: boolean): object }>(unit: T, Unit: IBundledUnitClass<T>): Record<string, unknown> =>
+    compactDesign(unit.export(true) as Record<string, unknown>, getBlank(Unit));
+
+export const loadBundledUnit = <T extends { export(noInPlayVariables?: boolean): object }>(design: Record<string, unknown>, Unit: IBundledUnitClass<T>): T =>
+    new Unit(JSON.stringify(expandDesign(design, getBlank(Unit))));

@@ -40,4 +40,12 @@ describe("the compact design format (#241)", () => {
         expect(expanded.list[0].uuid).not.toBe(design.list[0].uuid);
         expect(expanded.list[1].uuid).toBe(expanded.list[0].uuid);
     });
+
+    it("shortens a UUID with a suffix, such as a crit slot's, to the same id and keeps the suffix", () => {
+        const id = "0f8fad5b-d9cb-469f-a165-70867728950e";
+        const compact = compactDesign({ list: [{ uuid: id }, { uuid: id + ":7" }] }, {});
+        expect(compact).toEqual({ list: [{ uuid: "#0" }, { uuid: "#0:7" }] });
+        const expanded = expandDesign(compact, {}) as { list: { uuid: string }[] };
+        expect(expanded.list[1].uuid).toBe(expanded.list[0].uuid + ":7");
+    });
 });

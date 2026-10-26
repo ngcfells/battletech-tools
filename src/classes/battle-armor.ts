@@ -32,6 +32,8 @@ import { AlphaStrikeUnit, IASMULUnit } from "./alpha-strike-unit";
 // introduction dates (IO:AE pp.45-47); play (Total Warfare pp.219-227); Alpha Strike conversion (ASC pp.92-141);
 // Automata (BattleTech Adventures: Ghosts of Obeedah pp.51-53).
 
+const AP_MOUNT_UNCOUNTED_WEAPON = "inf-auto-rifle";
+
 export type BattleArmorLocation = "la" | "ra" | "body" | "turret";
 export type BattleArmorArm = "la" | "ra";
 
@@ -1308,7 +1310,9 @@ export default class BattleArmor {
             const armFire = own.filter((entry) => findBattleArmorEquipment(entry.tag)?.kind === "weapon" && (entry.location === "la" || entry.location === "ra")).reduce((sum, entry) => sum + this._itemBattleValue(entry), 0);
             antiMech = armFire + each + pair;
         }
-        const antiPersonnel = this._apMounts.reduce((sum, mount) => sum + (findInfantryWeapon(mount.weapon)?.battleValue ?? 0), 0);
+        // The assault rifle (auto-rifle) in an anti-personnel mount adds nothing: the Master Unit List values every suit
+        // carrying one that way without it (181 suits), as MegaMek does after a rules forum answer.
+        const antiPersonnel = this._apMounts.reduce((sum, mount) => sum + (mount.weapon === AP_MOUNT_UNCOUNTED_WEAPON ? 0 : findInfantryWeapon(mount.weapon)?.battleValue ?? 0), 0);
         const squadSupport = this._items.filter((entry) => entry.squadSupport).reduce((sum, entry) => sum + this._itemBattleValue(entry), 0) / this._squadSize;
         const other = own.filter((entry) => findBattleArmorEquipment(entry.tag)?.kind === "equipment").reduce((sum, entry) => sum + this._itemBattleValue(entry), 0);
         const weaponRating = directFire + missiles + antiMech + antiPersonnel + squadSupport + other;

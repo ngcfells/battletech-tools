@@ -14,6 +14,7 @@ export const BUNDLED_MECHS_NOTICE = "The data here is/may be copyrighted and NOT
     + "Converted from the Solaris Skunk Werks project's files at https://github.com/Solaris-Skunk-Werks/SSW-Master";
 
 const MECH_CLASSES = ["BattleMech", "IndustrialMech"];
+const MECH_TYPE_IDS = [18, 20];
 
 // SSW's names for chassis components ("XL Engine", "Extra-Light Gyro", "Endo-Steel"). SSW's engine techbase
 // attribute (0 Inner Sphere, 1 Clan) picks the Inner Sphere or Clan XL/XXL engine. Primitive I.C.E. and fuel cell
@@ -56,13 +57,13 @@ export const describeCriticals = (mech: BattleMech): string =>
 const listFiles = (dir: string): string[] => fs.readdirSync(dir, { withFileTypes: true })
     .flatMap((entry) => entry.isDirectory() ? listFiles(path.join(dir, entry.name)) : /\.ssw$/i.test(entry.name) ? [path.join(dir, entry.name)] : []);
 
-/** Live MUL entries first, so they win a key the MUL 1.0 leftovers share. */
-function loadMULMechs(mulDir: string): Map<string, IASMULUnit> {
+/** Every Master Unit List entry the test picks, by match key: live entries first, then MUL 1.0's, then our own. */
+export function loadMULIndex(mulDir: string, test: (unit: IASMULUnit) => boolean): Map<string, IASMULUnit> {
     const index = new Map<string, IASMULUnit>();
-    for (const list of ["live", "mul1"]) {
+    for (const list of ["live", "mul1", "custom"]) {
         for (const file of fs.readdirSync(path.join(mulDir, list)).sort()) {
             for (const unit of JSON.parse(fs.readFileSync(path.join(mulDir, list, file), "utf8")) as IASMULUnit[]) {
-                if (!MECH_CLASSES.includes(unit.Class)) continue;
+                if (!test(unit)) continue;
                 for (const key of getMULMatchKeys(unit.Name ?? "", unit.Variant ?? "")) if (!index.has(key)) index.set(key, unit);
             }
         }
@@ -70,19 +71,34 @@ function loadMULMechs(mulDir: string): Map<string, IASMULUnit> {
     return index;
 }
 
-export interface IBundledMechBuild {
+/**
+ * Seeds Math.random from a file's name while it is built (mulberry32), so the UUIDs a design is given, and any order
+ * they decide, come out the same every build and a rebuild's diff shows only the designs that changed.
+ */
+export function seedRandom(seed: string): void {
+    let state = [...seed].reduce((hash, char) => Math.imul(hash ^ char.charCodeAt(0), 16777619), 2166136261) >>> 0;
+    Math.random = () => {
+        state = (state + 0x6D2B79F5) >>> 0;
+        let t = Math.imul(state ^ (state >>> 15), state | 1);
+        t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+}
+
+export interface IBundledBuild {
     headers: IBundledDesignHeader[];
     designs: Record<string, unknown>[];
     /** Files left out: why, and the particulars. */
     leftOut: { file: string; reason: string; detail: string }[];
 }
 
-export function buildBundledMechs(sswDir: string, mulDir: string): IBundledMechBuild {
-    const mul = loadMULMechs(mulDir);
+export function buildBundledMechs(sswDir: string, mulDir: string): IBundledBuild {
+    const mul = loadMULIndex(mulDir, (unit) => MECH_CLASSES.includes(unit.Class) || MECH_TYPE_IDS.includes(unit.Type?.Id));
     const kept: { header: Omit<IBundledDesignHeader, "id">; design: Record<string, unknown> }[] = [];
-    const leftOut: IBundledMechBuild["leftOut"] = [];
+    const leftOut: IBundledBuild["leftOut"] = [];
     const taken = new Set<string>();
     const { warn, log } = console;
+    const random = Math.random;
     let failedAllocations = 0;
     console.warn = (message?: unknown) => { if (String(message).startsWith("_allocateCritical failed")) failedAllocations++; };
     console.log = () => {};
@@ -90,6 +106,7 @@ export function buildBundledMechs(sswDir: string, mulDir: string): IBundledMechB
         for (const file of listFiles(sswDir).sort()) {
             const name = path.relative(sswDir, file).replace(/\\/g, "/");
             const leave = (reason: string, detail = "") => leftOut.push({ file: name, reason, detail });
+            seedRandom(name);
             const xml = fs.readFileSync(file, "utf8");
             const info = getSSWXMLBasicInfo(xml);
             if (!info) { leave("not a Skunk Werks 'Mech file"); continue; }
@@ -144,6 +161,7 @@ export function buildBundledMechs(sswDir: string, mulDir: string): IBundledMechB
     } finally {
         console.warn = warn;
         console.log = log;
+        Math.random = random;
     }
     kept.sort((a, b) => (a.header.name + " " + a.header.model).localeCompare(b.header.name + " " + b.header.model));
     return { headers: kept.map(({ header }, id) => ({ id, ...header })), designs: kept.map(({ design }) => design), leftOut };
@@ -153,24 +171,27 @@ export function buildBundledMechs(sswDir: string, mulDir: string): IBundledMechB
 const lines = (records: [string, unknown][], open: string, close: string) =>
     open + "\n" + records.map(([key, value]) => (key ? JSON.stringify(key) + ":" : "") + JSON.stringify(value)).join(",\n") + "\n" + close;
 
-export function writeBundledMechs(build: IBundledMechBuild, dataDir: string): void {
-    const chunkDir = path.join(dataDir, "mechs");
+/** Writes a type's index, its chunks and its report under dataDir, replacing the last build. */
+export function writeBundledDesigns(type: string, title: string, notice: string, build: IBundledBuild, dataDir: string): void {
+    const chunkDir = path.join(dataDir, type);
     fs.rmSync(chunkDir, { recursive: true, force: true });
     fs.mkdirSync(chunkDir, { recursive: true });
-    const notice = `"notice":${JSON.stringify(BUNDLED_MECHS_NOTICE)},`;
-    fs.writeFileSync(path.join(dataDir, "mechs-index.json"), lines(build.headers.map((header) => ["", header]), `{${notice}"designs":[`, "]}\n"));
+    const head = `"notice":${JSON.stringify(notice)},`;
+    fs.writeFileSync(path.join(dataDir, `${type}-index.json`), lines(build.headers.map((header) => ["", header]), `{${head}"designs":[`, "]}\n"));
     for (let chunk = 0; chunk * BUNDLED_CHUNK_SIZE < build.designs.length; chunk++) {
         const ids = build.headers.slice(chunk * BUNDLED_CHUNK_SIZE, (chunk + 1) * BUNDLED_CHUNK_SIZE).map((header) => header.id);
-        fs.writeFileSync(path.join(chunkDir, `${chunk}.json`), lines(ids.map((id) => [String(id), build.designs[id]]), `{${notice}"designs":{`, "}}\n"));
+        fs.writeFileSync(path.join(chunkDir, `${chunk}.json`), lines(ids.map((id) => [String(id), build.designs[id]]), `{${head}"designs":{`, "}}\n"));
     }
     const reasons = new Map<string, number>();
     for (const { reason } of build.leftOut) {
         reasons.set(reason, (reasons.get(reason) ?? 0) + 1);
     }
-    fs.writeFileSync(path.join(dataDir, "mechs-report.md"), [
-        "# Bundled 'Mechs: build report", "",
+    fs.writeFileSync(path.join(dataDir, `${type}-report.md`), [
+        `# Bundled ${title}: build report`, "",
         `${build.headers.length} designs kept, ${build.leftOut.length} files left out.`, "",
         "| Reason | Files |", "|---|---|", ...[...reasons].sort((a, b) => b[1] - a[1]).map(([reason, count]) => `| ${reason} | ${count} |`), "",
         "## Left out", "", ...build.leftOut.map(({ file, reason, detail }) => `- \`${file}\`: ${reason}${detail ? ": " + detail : ""}`), "",
     ].join("\n"));
 }
+
+export const writeBundledMechs = (build: IBundledBuild, dataDir: string): void => writeBundledDesigns("mechs", "'Mechs", BUNDLED_MECHS_NOTICE, build, dataDir);

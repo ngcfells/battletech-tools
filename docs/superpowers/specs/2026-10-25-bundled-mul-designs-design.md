@@ -108,3 +108,38 @@ The exact field list the codec drops, the data file paths and names, and the rep
   design. Loading is that slow because each setter in `import` runs a full recalculation.
 - **Retired with `sswMechs.ts`**: the old converter (`src/bin/convert-ssw-to-bttools.ts`), the SSW corpus shards, and
   the developer-menu SSW Sanity Check page, whose BV and cost comparison the build report now does for every file.
+
+## Builder's calls (round 2, 2026-10-25)
+
+- **Layout**: every type is `src/data/bundled/<type>-index.json` plus `<type>/<n>.json`, read through one loader
+  (`src/data/bundled-units.ts`). The types are `battle-armor`, `protomechs`, `small-craft` (Small Craft and
+  DropShips) and `support-vehicles` (ground and VTOL). Fixed-wing Support Vehicles wait for the fighter round: none
+  matched the MUL's BV.
+- **Build**: `WRITE_BUNDLED_UNITS=1 npx vitest run src/data/bundled-units.test.ts`. It takes about a minute.
+- **What a file must pass to be kept**:
+  - the import carries the whole file over, with no issues reported;
+  - our BV equals the MUL's (MegaMek files hold no BV of their own, so a file with no MUL entry is left out);
+  - the design survives the compact format, with the same BV, the same cost and an identical re-compacted design.
+- **MUL ids (user, 2026-10-25)**: every bundled design that matches a MUL entry carries that entry's id, whether the
+  entry is live, MUL 1.0 or one of our custom entries. A MegaMek file's `mul id` is MUL 1.0's. Only our MUL 1.0
+  leftover entries still carry those ids, so a file links to one of them by id; every other file is matched by name.
+- **Duplicates**: a design is a duplicate only when its full name repeats. A battle armor name ends in its squad
+  size ("(Sqd4)"), which the alternate-name keys read as a second chassis name.
+- **Battle armor BV fix**: an assault rifle (auto-rifle) in an anti-personnel mount adds no BV. The MUL values all
+  181 suits carrying one this way without it, and MegaMek does the same after a rules forum answer. With this fix,
+  820 of 1,188 battle armor files match the MUL.
+- **Results**:
+
+  | Type | Kept | Files |
+  |---|---|---|
+  | Battle armor | 820 | 1,188 |
+  | ProtoMechs | 62 | 86 |
+  | Small Craft and DropShips | 30 | 248 |
+  | Support Vehicles | 5 | 225 |
+
+  Most of what is left out has no MUL entry, or a BV the importers do not reach yet. Support Vehicle chassis mods,
+  fire control and many named items are among the causes. The per-file reasons are in each `<type>-report.md`.
+- **Size**: about 4.7 MB raw and about 420 KB gzipped, most of it TRO text.
+- **Stable rebuilds**: both builds seed `Math.random` from each file's name, and the codec shortens UUIDs that carry
+  a suffix (a crit slot's `uuid:7`). A rebuild from the same files is byte-identical, so its diff shows only the
+  designs that changed.

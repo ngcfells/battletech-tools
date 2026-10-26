@@ -1,0 +1,232 @@
+# Bundled Support Vehicles: build report
+
+5 designs kept, 220 files left out.
+
+| Reason | Files |
+|---|---|
+| no Master Unit List entry to check its BV against | 104 |
+| the import could not carry all of it over | 63 |
+| BV differs from the MUL | 53 |
+
+## Left out
+
+- `vehicles/3025 IS Land/Air Car.blk`: no Master Unit List entry to check its BV against
+- `vehicles/3039u/Hi-Scout Drone (NapFind).blk`: the import could not carry all of it over: "ISDroneOperatingSystem" has no match in this catalog and was left off.
+- `vehicles/3039u/Hi-Scout Drone (PathTrak).blk`: the import could not carry all of it over: "ISDroneOperatingSystem" has no match in this catalog and was left off.
+- `vehicles/3075 Support tanks/Buffel VII Engineering Support Vehicle (Cargo).blk`: the import could not carry all of it over: "ISMineSweeper" has no match in this catalog and was left off.
+- `vehicles/3075 Support tanks/Buffel VII Engineering Support Vehicle Reverse.blk`: the import could not carry all of it over: "ISMineSweeper" has no match in this catalog and was left off.
+- `vehicles/3075 Support tanks/Buffel VII Engineering Support Vehicle.blk`: the import could not carry all of it over: "ISMineSweeper" has no match in this catalog and was left off.
+- `vehicles/3075 Support tanks/Buffel VIII Engineering Support Vehicle.blk`: the import could not carry all of it over: "ISMineSweeper" has no match in this catalog and was left off.
+- `vehicles/3075 Support tanks/Dromedary Water Transport.blk`: BV differs from the MUL: BV 310, MUL 341
+- `vehicles/3075 Support tanks/HMRV (Hazardous Materials Recovery Vehicle) DeConAid Trailer.blk`: BV differs from the MUL: BV 273, MUL 296
+- `vehicles/3075 Support tanks/HMRV (Hazardous Materials Recovery Vehicle) Oppie O-65.blk`: the import could not carry all of it over: "ISMineSweeper" has no match in this catalog and was left off.
+- `vehicles/3075 Support tanks/HMRV (Hazardous Materials Recovery Vehicle) Oppie O-66.blk`: the import could not carry all of it over: "ISMineSweeper" has no match in this catalog and was left off.
+- `vehicles/3075 Support tanks/HMRV (Hazardous Materials Recovery Vehicle) Salvage Bed.blk`: BV differs from the MUL: BV 724, MUL 606
+- `vehicles/3075 Support tanks/Jifty Transportable Field Repair Unit JI-50 (Hoist).blk`: no Master Unit List entry to check its BV against
+- `vehicles/3075 Support tanks/Jifty Transportable Field Repair Unit JI-50 (MG).blk`: no Master Unit List entry to check its BV against
+- `vehicles/3075 Support tanks/Jifty Transportable Field Repair Unit JI-50 (ML).blk`: no Master Unit List entry to check its BV against
+- `vehicles/3075 Support tanks/Jifty Transportable Field Repair Unit JI-50 (Q-Vehicle).blk`: no Master Unit List entry to check its BV against
+- `vehicles/3075 Support tanks/Jifty Transportable Field Repair Unit JI-50.blk`: no Master Unit List entry to check its BV against
+- `vehicles/3075 Support tanks/Merkava Heavy Tank Mk VII.blk`: BV differs from the MUL: BV 623, MUL 636
+- `vehicles/3075 Support tanks/Paramour Mobile Repair Vehicle (MFB).blk`: the import could not carry all of it over: "ISMobileFieldBase" has no match in this catalog and was left off.
+- `vehicles/3075 Support tanks/Paramour Mobile Repair Vehicle.blk`: BV differs from the MUL: BV 236, MUL 226
+- `vehicles/3075 Support tanks/Prometheus Combat Support Bridgelayer.blk`: BV differs from the MUL: BV 760, MUL 704
+- `vehicles/3075 Support tanks/Transportable Field Repair Unit Nifty.blk`: BV differs from the MUL: BV 236, MUL 226
+- `vehicles/3085u/Cutting Edge/Augustus MBT A3.blk`: the import could not carry all of it over: "Cargo:SIZE:1.0" has no match in this catalog and was left off.
+- `vehicles/3085u/Cutting Edge/J-37 Ordnance Transport (Original).blk`: BV differs from the MUL: BV 206, MUL 503
+- `vehicles/3085u/Cutting Edge/J-37 Ordnance Transport.blk`: BV differs from the MUL: BV 351, MUL 535
+- `vehicles/3085u/Cutting Edge/Tonbo Superheavy Transport.blk`: BV differs from the MUL: BV 155, MUL 233
+- `vehicles/3085u/Cutting Edge/Trireme Infantry Transport (CS).blk`: BV differs from the MUL: BV 351, MUL 417
+- `vehicles/3085u/Cutting Edge/Trireme Infantry Transport.blk`: the import could not carry all of it over: Transport "battlearmorbay" is not one this builder has and was left off.
+- `vehicles/3145/Merc/Bishop Transport VTOL.blk`: BV differs from the MUL: BV 145, MUL 199
+- `vehicles/3145/Merc/Savior Repair Vehicle.blk`: the import could not carry all of it over: "ISMobileFieldBase" has no match in this catalog and was left off.
+- `vehicles/AToW Companion/Hover/Boreas Cavalry Hovercraft A.blk`: no Master Unit List entry to check its BV against
+- `vehicles/AToW Companion/Hover/Boreas Cavalry Hovercraft B.blk`: the import could not carry all of it over: "Autocannon (Bearhunter Superheavy):SIZE:1.0" has no match in this catalog and was left off.
+- `vehicles/AToW Companion/Hover/Boreas Cavalry Hovercraft Prime.blk`: the import could not carry all of it over: "Laser Rifle (Mauser IIC IAS):SIZE:1.0" has no match in this catalog and was left off.; "Laser Rifle (Mauser IIC IAS):SIZE:1.0" has no match in this catalog and was left off.
+- `vehicles/AToW Companion/Hover/Hoodling Sensor Hoverjeep.blk`: no Master Unit List entry to check its BV against
+- `vehicles/AToW Companion/Hover/Hoverpod.blk`: no Master Unit List entry to check its BV against
+- `vehicles/AToW Companion/Hover/JI-002 Hoverbike.blk`: no Master Unit List entry to check its BV against
+- `vehicles/AToW Companion/Naval/Harpoon ParaSub.blk`: the import could not carry all of it over: "HHSearchlight" has no match in this catalog and was left off.; "HHSearchlight" has no match in this catalog and was left off.; "InfantryStandardSRM:SIZE:1.0" has no match in this catalog and was left off.
+- `vehicles/AToW Companion/Naval/Small Steamer.blk`: no Master Unit List entry to check its BV against
+- `vehicles/AToW Companion/VTOL/HTE Micro-Copter.blk`: the import could not carry all of it over: The file's weight of 0.04 tons is outside the rules for this motive type; 0.1 tons used.
+- `vehicles/AToW Companion/Wheeled/Assuan Armored Bike.blk`: the import could not carry all of it over: "InfantryTAG:SIZE:1.0" has no match in this catalog and was left off.
+- `vehicles/AToW Companion/Wheeled/Beast Riot Car.blk`: the import could not carry all of it over: "InfantryAutoGL:SIZE:1.0" has no match in this catalog and was left off.
+- `vehicles/AToW Companion/Wheeled/Death Trike.blk`: the import could not carry all of it over: "InfantryStandardSRM:SIZE:1.0" has no match in this catalog and was left off.
+- `vehicles/AToW Companion/Wheeled/Dune Buggy.blk`: the import could not carry all of it over: "Wire-Guided Missile Launcher:SIZE:1.0" has no match in this catalog and was left off.
+- `vehicles/AToW Companion/Wheeled/Eagre Firefighting ATV.blk`: the import could not carry all of it over: "HHSearchlight" has no match in this catalog and was left off.; "HHSearchlight" has no match in this catalog and was left off.
+- `vehicles/AToW Companion/Wheeled/Tracked Quad.blk`: the import could not carry all of it over: "HHSearchlight" has no match in this catalog and was left off.; "HHSearchlight" has no match in this catalog and was left off.; "HHSearchlight" has no match in this catalog and was left off.
+- `vehicles/DarkAge/Shackleton AESV.blk`: the import could not carry all of it over: "ISArmoredMotiveSystem" has no match in this catalog and was left off.; "VehicleJumpJet" has no match in this catalog and was left off.; "VehicleJumpJet" has no match in this catalog and was left off.; "VehicleJumpJet" has no match in this catalog and was left off.; "VehicleJumpJet" has no match in this catalog and was left off.
+- `vehicles/Era Digests/Age of War/Estevez AA.blk`: BV differs from the MUL: BV 633, MUL 571
+- `vehicles/Era Digests/Age of War/Estevez MBT.blk`: the import could not carry all of it over: "Rifle (Cannon, Heavy)" has no match in this catalog and was left off.; Ammunition "IS Ammo Heavy Rifle" has no weapon or no match in this catalog and was left off.; Ammunition "IS Ammo Heavy Rifle" has no weapon or no match in this catalog and was left off.; Ammunition "IS Ammo Heavy Rifle" has no weapon or no match in this catalog and was left off.; Ammunition "IS Ammo Heavy Rifle" has no weapon or no match in this catalog and was left off.; Ammunition "IS Ammo Heavy Rifle" has no weapon or no match in this catalog and was left off.; Ammunition "IS Ammo Heavy Rifle" has no weapon or no match in this catalog and was left off.; Ammunition "IS Ammo Heavy Rifle" has no weapon or no match in this catalog and was left off.
+- `vehicles/Era Digests/Age of War/Marsden I.blk`: BV differs from the MUL: BV 498, MUL 500
+- `vehicles/HB HD/Apocalypse World Rover.blk`: no Master Unit List entry to check its BV against
+- `vehicles/HB HD/Generic Expandable Services Vehicle (Command Post).blk`: BV differs from the MUL: BV 137, MUL 132
+- `vehicles/HB HD/Generic Expandable Services Vehicle (Kitchen).blk`: BV differs from the MUL: BV 137, MUL 132
+- `vehicles/HB HD/Generic Expandable Services Vehicle (MASH).blk`: BV differs from the MUL: BV 137, MUL 132
+- `vehicles/HB HD/Generic Expandable Services Vehicle Trailer (Bunk).blk`: the import could not carry all of it over: Transport "infantrybay" is not one this builder has and was left off.
+- `vehicles/HB HD/Generic Expandable Services Vehicle Trailer (Cargo).blk`: BV differs from the MUL: BV 63, MUL 61
+- `vehicles/HB HD/Heavy Combat ATV.blk`: no Master Unit List entry to check its BV against
+- `vehicles/HB HK/Obuzaabaa Tactical Vehicle.blk`: no Master Unit List entry to check its BV against
+- `vehicles/HB HK/Sasayaku Control Transport.blk`: the import could not carry all of it over: "ISDroneCarrierControlSystem:SIZE:1.0" has no match in this catalog and was left off.
+- `vehicles/HB HL/Apple-Churchill Surveillance VTOL.blk`: the import could not carry all of it over: "ISInfraredImager" has no match in this catalog and was left off.
+- `vehicles/HB HL/C-85 Sprinter Delivery Vehicle.blk`: no Master Unit List entry to check its BV against
+- `vehicles/HB HM/Hector Road Train Tractor.blk`: the import could not carry all of it over: "ISInfraredImager" has no match in this catalog and was left off.
+- `vehicles/HB HM/Hector Road Train Trailer Module (Liquid).blk`: no Master Unit List entry to check its BV against
+- `vehicles/HB HM/Hector Road Train Trailer Module (Livestock).blk`: no Master Unit List entry to check its BV against
+- `vehicles/HB HM/Hector Road Train Trailer Module (Passenger).blk`: the import could not carry all of it over: Transport "infantrybay" is not one this builder has and was left off.
+- `vehicles/HB HM/Hector Road Train Trailer Module (Refrigerated).blk`: no Master Unit List entry to check its BV against
+- `vehicles/HB HM/Hector Road Train Trailer Module.blk`: no Master Unit List entry to check its BV against
+- `vehicles/HB HM/Ibex RV (Militarized LDGR).blk`: no Master Unit List entry to check its BV against
+- `vehicles/HB HM/Ibex RV (Militarized MG).blk`: no Master Unit List entry to check its BV against
+- `vehicles/HB HM/Ibex RV.blk`: no Master Unit List entry to check its BV against
+- `vehicles/Hist Reunification War/Wayland Mobile Base.blk`: the import could not carry all of it over: "ISMobileFieldBase" has no match in this catalog and was left off.
+- `vehicles/Operation Klondike/Brunel Dump Truck AC20.blk`: no Master Unit List entry to check its BV against
+- `vehicles/Operation Klondike/Brunel Dump Truck LRM.blk`: no Master Unit List entry to check its BV against
+- `vehicles/ProtoTypes/Lexan Surveillance VTOL.blk`: no Master Unit List entry to check its BV against
+- `vehicles/ProtoTypes/Nishikigoi Support Aircraft Koi.blk`: BV differs from the MUL: BV 1704, MUL 2017
+- `vehicles/TOS/Granada/Auxiliary Defense Tank ADT-1.blk`: the import could not carry all of it over: "Rifle (Cannon, Medium)" has no match in this catalog and was left off.; Ammunition "IS Ammo Medium Rifle" has no weapon or no match in this catalog and was left off.; Ammunition "IS Ammo Medium Rifle" has no weapon or no match in this catalog and was left off.
+- `vehicles/TOS/Granada/Auxiliary Defense Tank ADT-2.blk`: no Master Unit List entry to check its BV against
+- `vehicles/TOS/Tortuga/Debbie 'The Warcrime Wagon'.blk`: the import could not carry all of it over: "Flamer (Vehicle)" has no match in this catalog and was left off.; "Flamer (Vehicle)" has no match in this catalog and was left off.; "Flamer (Vehicle)" has no match in this catalog and was left off.; "Flamer (Vehicle)" has no match in this catalog and was left off.; "Flamer (Vehicle)" has no match in this catalog and was left off.; "Flamer (Vehicle)" has no match in this catalog and was left off.; "Flamer (Vehicle)" has no match in this catalog and was left off.; "Flamer (Vehicle)" has no match in this catalog and was left off.; "Flamer (Vehicle)" has no match in this catalog and was left off.; Ammunition "IS Vehicle Flamer Ammo" has no weapon or no match in this catalog and was left off.; Ammunition "IS Vehicle Flamer Ammo" has no weapon or no match in this catalog and was left off.; Ammunition "IS Vehicle Flamer Ammo" has no weapon or no match in this catalog and was left off.; Ammunition "IS Vehicle Flamer Ammo" has no weapon or no match in this catalog and was left off.; Ammunition "IS Vehicle Flamer Ammo" has no weapon or no match in this catalog and was left off.; Ammunition "IS Vehicle Flamer Ammo" has no weapon or no match in this catalog and was left off.; Ammunition "IS Vehicle Flamer Ammo" has no weapon or no match in this catalog and was left off.; Ammunition "IS Vehicle Flamer Ammo" has no weapon or no match in this catalog and was left off.; Ammunition "IS Vehicle Flamer Ammo" has no weapon or no match in this catalog and was left off.
+- `vehicles/TOS/Tortuga/Outrider.blk`: BV differs from the MUL: BV 17, MUL 5
+- `vehicles/TRO Irregulars/Smalls/Hoverbike (Laser).blk`: BV differs from the MUL: BV 51, MUL 45
+- `vehicles/TRO Irregulars/Smalls/Hoverbike (MG).blk`: BV differs from the MUL: BV 45, MUL 38
+- `vehicles/TRO Irregulars/Smalls/Hoverbike.blk`: BV differs from the MUL: BV 48, MUL 42
+- `vehicles/TRO Irregulars/Smalls/Minigun Cycle (SRM).blk`: the import could not carry all of it over: "InfantrySRMLight:SIZE:1.0" has no match in this catalog and was left off.; "InfantrySRMLight:SIZE:1.0" has no match in this catalog and was left off.; "InfantrySRMLight:SIZE:1.0" has no match in this catalog and was left off.; "InfantrySRMLight:SIZE:1.0" has no match in this catalog and was left off.
+- `vehicles/TRO Irregulars/Smalls/Minigun Cycle.blk`: BV differs from the MUL: BV 23, MUL 18
+- `vehicles/TRO Irregulars/Smalls/Monocycle.blk`: the import could not carry all of it over: "Plasma Rifle (Man-Portable):SIZE:1.0" has no match in this catalog and was left off.; "Plasma Rifle (Man-Portable):SIZE:1.0" has no match in this catalog and was left off.; "Plasma Rifle (Man-Portable):SIZE:1.0" has no match in this catalog and was left off.; "Plasma Rifle (Man-Portable):SIZE:1.0" has no match in this catalog and was left off.
+- `vehicles/TRO Irregulars/Smalls/Scout ATV.blk`: the import could not carry all of it over: "InfantryHeavyGrenadeLauncher:SIZE:1.0" has no match in this catalog and was left off.
+- `vehicles/TRO Irregulars/Smalls/TrackBike.blk`: BV differs from the MUL: BV 28, MUL 19
+- `vehicles/TRO Irregulars/Smalls/Trike.blk`: BV differs from the MUL: BV 18, MUL 11
+- `vehicles/TRO Irregulars/Vehicles/Prime Mover (Original).blk`: no Master Unit List entry to check its BV against
+- `vehicles/TRO Irregulars/Vehicles/Prime Mover (Succession Wars).blk`: no Master Unit List entry to check its BV against
+- `vehicles/TRO Irregulars/Vehicles/Prime Mover.blk`: BV differs from the MUL: BV 410, MUL 284
+- `vehicles/TRO Irregulars/Vehicles/Sturmvogel Gunship WiGE.blk`: BV differs from the MUL: BV 577, MUL 614
+- `vehicles/TRO Irregulars/Vehicles/Sturmvogel Maritime Patrol WiGE (LB-10X).blk`: BV differs from the MUL: BV 586, MUL 624
+- `vehicles/TRO Irregulars/Vehicles/Sturmvogel Maritime Patrol WiGE (LB-2X).blk`: BV differs from the MUL: BV 270, MUL 323
+- `vehicles/TRO Irregulars/Vehicles/Sturmvogel Maritime Patrol WiGE.blk`: BV differs from the MUL: BV 471, MUL 523
+- `vehicles/TRO Vehicle Annex/Hover/Bayamo Hoverbike.blk`: the import could not carry all of it over: "HHSearchlight" has no match in this catalog and was left off.
+- `vehicles/TRO Vehicle Annex/Hover/Buffalo BFFL Hovertruck.blk`: no Master Unit List entry to check its BV against
+- `vehicles/TRO Vehicle Annex/Hover/Champion Hoversports CS535 Hover Car.blk`: no Master Unit List entry to check its BV against
+- `vehicles/TRO Vehicle Annex/Hover/Champion Hoversports Crimson Streak Hover Racer.blk`: no Master Unit List entry to check its BV against
+- `vehicles/TRO Vehicle Annex/Hover/Deusenberg VIP Luxury Hovercar (One).blk`: no Master Unit List entry to check its BV against
+- `vehicles/TRO Vehicle Annex/Hover/Deusenberg VIP Luxury Hovercar (Original).blk`: no Master Unit List entry to check its BV against
+- `vehicles/TRO Vehicle Annex/Hover/Dillinger Police Vehicle.blk`: no Master Unit List entry to check its BV against
+- `vehicles/TRO Vehicle Annex/Hover/Freedom 900 Hover Jeep.blk`: no Master Unit List entry to check its BV against
+- `vehicles/TRO Vehicle Annex/Hover/Ina-du Swamp Skimmer.blk`: no Master Unit List entry to check its BV against
+- `vehicles/TRO Vehicle Annex/Hover/Lewis Skimmer Bus.blk`: no Master Unit List entry to check its BV against
+- `vehicles/TRO Vehicle Annex/Hover/Routemaster Hover Shuttle.blk`: no Master Unit List entry to check its BV against
+- `vehicles/TRO Vehicle Annex/Hover/Slipper Hovercar LX-Series.blk`: no Master Unit List entry to check its BV against
+- `vehicles/TRO Vehicle Annex/Naval (Submarine)/Baleena Passenger Submarine.blk`: the import could not carry all of it over: Transport "lightvehiclebay" is not one this builder has and was left off.
+- `vehicles/TRO Vehicle Annex/Naval (Submarine)/Jonah Submarine.blk`: no Master Unit List entry to check its BV against
+- `vehicles/TRO Vehicle Annex/Naval (Submarine)/Seahorse Cargo Sub.blk`: the import could not carry all of it over: Ammunition "IS Ammo LRTorpedo-10" has no weapon or no match in this catalog and was left off.; Ammunition "IS Ammo LRTorpedo-10" has no weapon or no match in this catalog and was left off.
+- `vehicles/TRO Vehicle Annex/Naval (Surface)/Atlantia Luxury Yacht.blk`: no Master Unit List entry to check its BV against
+- `vehicles/TRO Vehicle Annex/Naval (Surface)/Silverback Coastal Cutter.blk`: the import could not carry all of it over: Cruise MP 6 is outside the rules; 8 used.
+- `vehicles/TRO Vehicle Annex/Naval (Surface)/Silverfin Coastal Cutter.blk`: the import could not carry all of it over: Cruise MP 6 is outside the rules; 8 used.; Ammunition "IS Ammo SRTorpedo-2" has no weapon or no match in this catalog and was left off.
+- `vehicles/TRO Vehicle Annex/Naval (Surface)/Whitestreak Jetski.blk`: no Master Unit List entry to check its BV against
+- `vehicles/TRO Vehicle Annex/Naval (Surface)/Whitestreak Speedboat.blk`: no Master Unit List entry to check its BV against
+- `vehicles/TRO Vehicle Annex/Rail/Adelante Passenger-Cargo Train.blk`: no Master Unit List entry to check its BV against
+- `vehicles/TRO Vehicle Annex/Rail/TGV Omni Railcar A (Passengers).blk`: no Master Unit List entry to check its BV against
+- `vehicles/TRO Vehicle Annex/Rail/TGV Omni Railcar B (Military Support).blk`: the import could not carry all of it over: "ISMobileFieldBase:OMNI" has no match in this catalog and was left off.; Transport "lightvehiclebay" is not one this builder has and was left off.; Transport "battlearmorbay" is not one this builder has and was left off.
+- `vehicles/TRO Vehicle Annex/Rail/TGV Omni Railcar C (Cargo).blk`: the import could not carry all of it over: "Dumper (Right):OMNI" has no match in this catalog and was left off.
+- `vehicles/TRO Vehicle Annex/Rail/TGV Omni Railcar D (MASH).blk`: the import could not carry all of it over: "ISMobileFieldBase:OMNI" has no match in this catalog and was left off.; Transport "lightvehiclebay" is not one this builder has and was left off.
+- `vehicles/TRO Vehicle Annex/Rail/TGV Omni Railcar Primary (Luxury).blk`: no Master Unit List entry to check its BV against
+- `vehicles/TRO Vehicle Annex/Rail/TGV Omni Railcar Primary Configuration.blk`: no Master Unit List entry to check its BV against
+- `vehicles/TRO Vehicle Annex/Tracked/Cellco Ranger UPU-3000.blk`: the import could not carry all of it over: "HHSearchlight" has no match in this catalog and was left off.; "HHSearchlight" has no match in this catalog and was left off.; "HHSearchlight" has no match in this catalog and was left off.
+- `vehicles/TRO Vehicle Annex/Tracked/Corx Mobile Tunnel Miner.blk`: no Master Unit List entry to check its BV against
+- `vehicles/TRO Vehicle Annex/Tracked/Croyle Systems Cortez Series N.blk`: the import could not carry all of it over: "HHSearchlight" has no match in this catalog and was left off.; "HHSearchlight" has no match in this catalog and was left off.; "HHSearchlight" has no match in this catalog and was left off.; "HHSearchlight" has no match in this catalog and was left off.; "HHSearchlight" has no match in this catalog and was left off.; "HHSearchlight" has no match in this catalog and was left off.; "HHSearchlight" has no match in this catalog and was left off.; "HHSearchlight" has no match in this catalog and was left off.; "HHSearchlight" has no match in this catalog and was left off.; "HHSearchlight" has no match in this catalog and was left off.; "HHSearchlight" has no match in this catalog and was left off.; "HHSearchlight" has no match in this catalog and was left off.; Transport "infantrybay" is not one this builder has and was left off.
+- `vehicles/TRO Vehicle Annex/Tracked/Galaport Ground Trailer.blk`: no Master Unit List entry to check its BV against
+- `vehicles/TRO Vehicle Annex/Tracked/Galaport Ground Tug.blk`: no Master Unit List entry to check its BV against
+- `vehicles/TRO Vehicle Annex/Tracked/Gienah-Durapaq Elite Land Train (Tractor) Series 3.blk`: no Master Unit List entry to check its BV against
+- `vehicles/TRO Vehicle Annex/Tracked/Gienah-Durapaq Elite Land Train (Trailer) Series 3.blk`: no Master Unit List entry to check its BV against
+- `vehicles/TRO Vehicle Annex/Tracked/Hesiod Utility Vehicle (Bulldozer).blk`: no Master Unit List entry to check its BV against
+- `vehicles/TRO Vehicle Annex/Tracked/Hesiod Utility Vehicle (Cargo).blk`: no Master Unit List entry to check its BV against
+- `vehicles/TRO Vehicle Annex/Tracked/Hesiod Utility Vehicle (Crane).blk`: no Master Unit List entry to check its BV against
+- `vehicles/TRO Vehicle Annex/Tracked/Hesiod Utility Vehicle (Harvester).blk`: no Master Unit List entry to check its BV against
+- `vehicles/TRO Vehicle Annex/Tracked/Kallon UL-series Construction Vehicle UL-10 'Backhoe'.blk`: no Master Unit List entry to check its BV against
+- `vehicles/TRO Vehicle Annex/Tracked/Kallon UL-series Construction Vehicle UL-11 'Rock Cutter'.blk`: no Master Unit List entry to check its BV against
+- `vehicles/TRO Vehicle Annex/Tracked/Kallon UL-series Construction Vehicle UL-12 'Chainsaw'.blk`: no Master Unit List entry to check its BV against
+- `vehicles/TRO Vehicle Annex/Tracked/Kallon UL-series Construction Vehicle UL-14 'Dual Bulldozer'.blk`: no Master Unit List entry to check its BV against
+- `vehicles/TRO Vehicle Annex/Tracked/Limpet Half-Track.blk`: the import could not carry all of it over: "HHSearchlight" has no match in this catalog and was left off.; "InfantryAssaultRifle(PT):SIZE:10.0" has no match in this catalog and was left off.; "InfantryAssaultRifle(PT):SIZE:10.0" has no match in this catalog and was left off.; "InfantryStandardSRM:SIZE:1.0" has no match in this catalog and was left off.
+- `vehicles/TRO Vehicle Annex/Tracked/Luciano White Wolverine.blk`: no Master Unit List entry to check its BV against
+- `vehicles/TRO Vehicle Annex/Tracked/Magellan Series Four.blk`: no Master Unit List entry to check its BV against
+- `vehicles/TRO Vehicle Annex/Tracked/Raptor.blk`: no Master Unit List entry to check its BV against
+- `vehicles/TRO Vehicle Annex/Tracked/Rock Rover Half-Track (RRV).blk`: the import could not carry all of it over: "HHSearchlight" has no match in this catalog and was left off.; "InfantryAssaultRifle(PT):SIZE:10.0" has no match in this catalog and was left off.; "InfantryAssaultRifle(PT):SIZE:10.0" has no match in this catalog and was left off.
+- `vehicles/TRO Vehicle Annex/Tracked/Rock Rover Half-Track RRV (Speed).blk`: the import could not carry all of it over: "HHSearchlight" has no match in this catalog and was left off.
+- `vehicles/TRO Vehicle Annex/Tracked/Rumbler-HT.blk`: the import could not carry all of it over: "HHSearchlight" has no match in this catalog and was left off.; "InfantryHRR:SIZE:1.0" has no match in this catalog and was left off.
+- `vehicles/TRO Vehicle Annex/Tracked/Saturn Harvester.blk`: no Master Unit List entry to check its BV against
+- `vehicles/TRO Vehicle Annex/Tracked/Sherpa Armored Truck (MASH).blk`: no Master Unit List entry to check its BV against
+- `vehicles/TRO Vehicle Annex/Tracked/Sherpa Armored Truck (Mobile Canteen).blk`: the import could not carry all of it over: "Hitch" has no match in this catalog and was left off.
+- `vehicles/TRO Vehicle Annex/Tracked/Sherpa Armored Truck.blk`: no Master Unit List entry to check its BV against
+- `vehicles/TRO Vehicle Annex/VTOL/Blackstone Baronet Passenger VTOL.blk`: no Master Unit List entry to check its BV against
+- `vehicles/TRO Vehicle Annex/VTOL/Blackstone Pegasus Passenger VTOL.blk`: no Master Unit List entry to check its BV against
+- `vehicles/TRO Vehicle Annex/VTOL/Cascatelle Firefighting VTOL.blk`: no Master Unit List entry to check its BV against
+- `vehicles/TRO Vehicle Annex/VTOL/Lexan Oceanic Luxury VTOL Series VI.blk`: no Master Unit List entry to check its BV against
+- `vehicles/TRO Vehicle Annex/VTOL/Lexan Oceanic Personal VTOL Series II.blk`: no Master Unit List entry to check its BV against
+- `vehicles/TRO Vehicle Annex/VTOL/Peacekeeper SWAT Carrier.blk`: no Master Unit List entry to check its BV against
+- `vehicles/TRO Vehicle Annex/VTOL/Pion-Laurier Lama-Deux.blk`: no Master Unit List entry to check its BV against
+- `vehicles/TRO Vehicle Annex/VTOL/SOAR VTOL.blk`: no Master Unit List entry to check its BV against
+- `vehicles/TRO Vehicle Annex/VTOL/Sky Eye News Helicopter.blk`: the import could not carry all of it over: "ISInfraredImager" has no match in this catalog and was left off.
+- `vehicles/TRO Vehicle Annex/VTOL/St. Christopher Cargo Transport C1.blk`: no Master Unit List entry to check its BV against
+- `vehicles/TRO Vehicle Annex/VTOL/St. Christopher Cargo Transport C2.blk`: no Master Unit List entry to check its BV against
+- `vehicles/TRO Vehicle Annex/VTOL/Swiftran RTC-215M.blk`: no Master Unit List entry to check its BV against
+- `vehicles/TRO Vehicle Annex/Wheeled/Aston-Martin Fiver Roadster.blk`: no Master Unit List entry to check its BV against
+- `vehicles/TRO Vehicle Annex/Wheeled/Aston-Martin Fiver Traveler.blk`: no Master Unit List entry to check its BV against
+- `vehicles/TRO Vehicle Annex/Wheeled/Bailey Armored Car.blk`: no Master Unit List entry to check its BV against
+- `vehicles/TRO Vehicle Annex/Wheeled/Bombduster.blk`: no Master Unit List entry to check its BV against
+- `vehicles/TRO Vehicle Annex/Wheeled/Brunel Dump Truck.blk`: the import could not carry all of it over: "Dumper (Rear)" has no match in this catalog and was left off.; "Cargo:SIZE:50.0" has no match in this catalog and was left off.
+- `vehicles/TRO Vehicle Annex/Wheeled/Bulldog Medium Truck.blk`: the import could not carry all of it over: "HHSearchlight" has no match in this catalog and was left off.; "HHSearchlight" has no match in this catalog and was left off.; "HHSearchlight" has no match in this catalog and was left off.; "HHSearchlight" has no match in this catalog and was left off.
+- `vehicles/TRO Vehicle Annex/Wheeled/Burro Heavy Support Truck.blk`: the import could not carry all of it over: "HHSearchlight" has no match in this catalog and was left off.; "HHSearchlight" has no match in this catalog and was left off.; "HHSearchlight" has no match in this catalog and was left off.; "HHSearchlight" has no match in this catalog and was left off.; "HHSearchlight" has no match in this catalog and was left off.
+- `vehicles/TRO Vehicle Annex/Wheeled/Burro II Super Heavy Cargo Truck.blk`: BV differs from the MUL: BV 229, MUL 247
+- `vehicles/TRO Vehicle Annex/Wheeled/Ceres-Bikes Flashbang.blk`: no Master Unit List entry to check its BV against
+- `vehicles/TRO Vehicle Annex/Wheeled/Durandel-British 'Blue Nova' Convertible.blk`: no Master Unit List entry to check its BV against
+- `vehicles/TRO Vehicle Annex/Wheeled/Knox Armored Car.blk`: no Master Unit List entry to check its BV against
+- `vehicles/TRO Vehicle Annex/Wheeled/Lesseps Dump Truck.blk`: the import could not carry all of it over: "Dumper (Rear)" has no match in this catalog and was left off.; "Cargo:SIZE:20.0" has no match in this catalog and was left off.
+- `vehicles/TRO Vehicle Annex/Wheeled/Mao-Heng Charioteer (Original).blk`: no Master Unit List entry to check its BV against
+- `vehicles/TRO Vehicle Annex/Wheeled/Motuo Che Shang No.2.blk`: no Master Unit List entry to check its BV against
+- `vehicles/TRO Vehicle Annex/Wheeled/Pit Bull Medium Truck.blk`: the import could not carry all of it over: "HHSearchlight" has no match in this catalog and was left off.; "HHSearchlight" has no match in this catalog and was left off.; "HHSearchlight" has no match in this catalog and was left off.; "HHSearchlight" has no match in this catalog and was left off.
+- `vehicles/TRO Vehicle Annex/Wheeled/Prairie Schooner Land Train.blk`: BV differs from the MUL: BV 406, MUL 393
+- `vehicles/TRO Vehicle Annex/Wheeled/Prairie Schooner Module.blk`: BV differs from the MUL: BV 101, MUL 99
+- `vehicles/TRO Vehicle Annex/Wheeled/Saturnus V Grande Circuit Racer.blk`: no Master Unit List entry to check its BV against
+- `vehicles/TRO Vehicle Annex/Wheeled/Saurer-Bucher Fire Engine TLF-LL6500.blk`: the import could not carry all of it over: "Ladder:SIZE:100.0" has no match in this catalog and was left off.; "Ladder:SIZE:100.0" has no match in this catalog and was left off.
+- `vehicles/TRO Vehicle Annex/Wheeled/Simca Ambulance.blk`: no Master Unit List entry to check its BV against
+- `vehicles/TRO Vehicle Annex/Wheeled/Skoda 'Growler' Service Utility Truck.blk`: the import could not carry all of it over: "HHSearchlight" has no match in this catalog and was left off.; "HHSearchlight" has no match in this catalog and was left off.; "Ladder:SIZE:20.0" has no match in this catalog and was left off.; "HHSearchlight" has no match in this catalog and was left off.; "HHSearchlight" has no match in this catalog and was left off.
+- `vehicles/TRO Vehicle Annex/WiGE/Coanda Personal Sports Craft.blk`: no Master Unit List entry to check its BV against
+- `vehicles/TRO Vehicle Annex/WiGE/Cormorant Medium Cargo Craft (Cargo).blk`: no Master Unit List entry to check its BV against
+- `vehicles/TRO Vehicle Annex/WiGE/Cormorant Medium Cargo Craft.blk`: no Master Unit List entry to check its BV against
+- `vehicles/TRO Vehicle Annex/WiGE/Fulmar Patrol Craft (Original).blk`: no Master Unit List entry to check its BV against
+- `vehicles/TRO Vehicle Annex/WiGE/Fulmar Patrol Craft.blk`: no Master Unit List entry to check its BV against
+- `vehicles/TRO Vehicle Annex/WiGE/Koi Heavy Transport.blk`: no Master Unit List entry to check its BV against
+- `vehicles/TRO Vehicle Annex/WiGE/Quicksilver Personal Sports Craft.blk`: no Master Unit List entry to check its BV against
+- `vehicles/TRO Vehicle Annex/WiGE/Ryu Heavy Transport.blk`: no Master Unit List entry to check its BV against
+- `vehicles/Turning Points/TP Vega 3039/Flatbed Railcar.blk`: no Master Unit List entry to check its BV against
+- `vehicles/XTRs/Boondocks/Lexan Surveillance Helo (Prototype).blk`: BV differs from the MUL: BV 257, MUL 232
+- `vehicles/XTRs/Boondocks/Nishikigoi Support Aircraft.blk`: BV differs from the MUL: BV 1644, MUL 1524
+- `vehicles/XTRs/Periphery/Dreadnought Mk II Land Trailer Configuration #1.blk`: the import could not carry all of it over: "ISArtemisIV" has no match in this catalog and was left off.
+- `vehicles/XTRs/Periphery/Dreadnought Mk II Land Trailer Configuration #2.blk`: no Master Unit List entry to check its BV against
+- `vehicles/XTRs/Periphery/Dreadnought Mk II Land Trailer Configuration #3.blk`: no Master Unit List entry to check its BV against
+- `vehicles/XTRs/Periphery/Dreadnought Mk II Land Trailer Configuration #4.blk`: no Master Unit List entry to check its BV against
+- `vehicles/XTRs/Periphery/Dreadnought Mk II Land Train.blk`: the import could not carry all of it over: Transport "infantrybay" is not one this builder has and was left off.
+- `vehicles/XTRs/Primitives III/Carter MERV.blk`: BV differs from the MUL: BV 122, MUL 117
+- `vehicles/XTRs/Primitives II/AC2 Carrier Primitive.blk`: BV differs from the MUL: BV 360, MUL 351
+- `vehicles/XTRs/Primitives II/LRM Carrier Primitive.blk`: BV differs from the MUL: BV 695, MUL 686
+- `vehicles/XTRs/Primitives II/Randolph Support Vehicle.blk`: BV differs from the MUL: BV 151, MUL 145
+- `vehicles/XTRs/Primitives II/SRM Carrier Primitive.blk`: BV differs from the MUL: BV 593, MUL 569
+- `vehicles/XTRs/Primitives IV/Chi-Ha Infantry Combat Vehicle (Original).blk`: no Master Unit List entry to check its BV against
+- `vehicles/XTRs/Primitives IV/Chi-Ha Infantry Combat Vehicle.blk`: no Master Unit List entry to check its BV against
+- `vehicles/XTRs/Primitives IV/Sturmblitz Assault Gun.blk`: BV differs from the MUL: BV 723, MUL 732
+- `vehicles/XTRs/Primitives V/Apostle Self-Propelled Artillery.blk`: BV differs from the MUL: BV 400, MUL 387
+- `vehicles/XTRs/Primitives V/Asher Hover Scout.blk`: the import could not carry all of it over: "Flamer (Vehicle)" has no match in this catalog and was left off.; Ammunition "IS Vehicle Flamer Ammo" has no weapon or no match in this catalog and was left off.
+- `vehicles/XTRs/Primitives V/Dunning Mobile Tactical Command Post.blk`: no Master Unit List entry to check its BV against
+- `vehicles/XTRs/Primitives V/RR-3 Recovery Vehicle.blk`: BV differs from the MUL: BV 222, MUL 213
+- `vehicles/XTRs/Primitives V/Reaper Self-Propelled Artillery.blk`: BV differs from the MUL: BV 260, MUL 250
+- `vehicles/XTRs/Primitives V/UTR-588 Recovery Vehicle.blk`: BV differs from the MUL: BV 421, MUL 407
+- `vehicles/XTRs/Primitives/Armored Personnel Carrier (Hover Primitive).blk`: BV differs from the MUL: BV 42, MUL 41
+- `vehicles/XTRs/Primitives/Armored Personnel Carrier (Wheeled Primitive).blk`: BV differs from the MUL: BV 58, MUL 57
+- `vehicles/XTRs/Primitives/Merkava Heavy Tank MK VI.blk`: BV differs from the MUL: BV 484, MUL 477
+- `vehicles/XTRs/Primitives/Sand Devil Hover Tank.blk`: BV differs from the MUL: BV 358, MUL 345
+- `vehicles/XTRs/Primitives/Stoat Scout Car.blk`: BV differs from the MUL: BV 89, MUL 88
+- `vehicles/XTRs/RetroTech/Barouche Hovercraft.blk`: BV differs from the MUL: BV 402, MUL 424
+- `vehicles/XTRs/RetroTech/HW1 Hwacha.blk`: BV differs from the MUL: BV 556, MUL 570
+- `vehicles/XTRs/RetroTech/Humming Bird Rescue VTOL.blk`: no Master Unit List entry to check its BV against
+- `vehicles/XTRs/RetroTech/White Tip Submarine.blk`: the import could not carry all of it over: Ammunition "IS Ammo SRTorpedo-4" has no weapon or no match in this catalog and was left off.; Ammunition "IS Ammo SRTorpedo-4" has no weapon or no match in this catalog and was left off.; Ammunition "IS Ammo LRTorpedo-15" has no weapon or no match in this catalog and was left off.; Ammunition "IS Ammo LRTorpedo-15" has no weapon or no match in this catalog and was left off.; Ammunition "IS Ammo LRTorpedo-15" has no weapon or no match in this catalog and was left off.; Ammunition "IS Ammo LRTorpedo-10" has no weapon or no match in this catalog and was left off.; Ammunition "IS Ammo LRTorpedo-10" has no weapon or no match in this catalog and was left off.
+- `vehicles/XTRs/Succession Wars/Buffalo Drone Bomb.blk`: the import could not carry all of it over: "ISBoobyTrap" has no match in this catalog and was left off.; "ISDroneOperatingSystem" has no match in this catalog and was left off.; Ammunition "IS Machine Gun Ammo - Half" has no weapon or no match in this catalog and was left off.; Ammunition "IS Machine Gun Ammo - Half" has no weapon or no match in this catalog and was left off.; Ammunition "IS Machine Gun Ammo - Half" has no weapon or no match in this catalog and was left off.; Ammunition "IS Machine Gun Ammo - Half" has no weapon or no match in this catalog and was left off.; Ammunition "IS Machine Gun Ammo - Half" has no weapon or no match in this catalog and was left off.; Ammunition "IS Machine Gun Ammo - Half" has no weapon or no match in this catalog and was left off.; Ammunition "IS Machine Gun Ammo - Half" has no weapon or no match in this catalog and was left off.; Ammunition "IS Machine Gun Ammo - Half" has no weapon or no match in this catalog and was left off.; Ammunition "IS Machine Gun Ammo - Half" has no weapon or no match in this catalog and was left off.

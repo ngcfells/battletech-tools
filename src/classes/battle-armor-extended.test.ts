@@ -529,9 +529,14 @@ describe("MegaMek battle armor file import", () => {
         expect(suit.getManipulator("la").tag).toBe("battle-claw");
         expect(suit.getEra().yearStart).toBeLessThanOrEqual(2868);
         expect(suit.getIssues()).toEqual([]);
-        // Without the rifle in its mount this is the published Elemental: 447 for the Point.
+        // The published Elemental, 447 for the Point: the assault rifle in its mount adds nothing (the MUL values every
+        // suit carrying it that way so), and an empty mount nothing either. Another anti-personnel weapon adds its own.
+        expect(suit.getBattleValue()).toBe(447);
         suit.setAPMountWeapon(0, "");
         expect(suit.getBattleValue()).toBe(447);
+        const other = suit.getAntiPersonnelWeapons().find((weapon) => weapon.tag !== "inf-auto-rifle" && weapon.battleValue >= 1)!;
+        suit.setAPMountWeapon(0, other.tag);
+        expect(suit.getBattleValue()).toBeGreaterThan(447);
     });
 
     it("brings the file's Technical Readout fields across (TRO round 2, #78)", () => {
