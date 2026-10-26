@@ -65,11 +65,14 @@ export function getUnitGameSettings(unit: IGameSettingsUnit, fallbackLevel: numb
     };
 }
 
+/** Any unit that keeps Special Rulesets: a Classic design's settings, a 'Mech's own, or an Alpha Strike card's. */
+export type IRulesetsHost = { readonly gameSettings: UnitGameSettings } | { getRulesets(): string[] } | { rulesets?: string[] };
+
 /**
  * The Special Rulesets a unit was built under, read from its save (call 11): a Classic design's settings, a 'Mech's own,
  * or an Alpha Strike card's. None for no unit.
  */
-export function getUnitRulesets(unit: IGameSettingsUnit | { getRulesets(): string[] } | { rulesets?: string[] } | null | undefined): string[] {
+export function getUnitRulesets(unit: IRulesetsHost | null | undefined): string[] {
     if (!unit) return [];
     if ("gameSettings" in unit) return unit.gameSettings.getRulesets();
     if ("getRulesets" in unit) return unit.getRulesets();

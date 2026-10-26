@@ -143,6 +143,8 @@ export const sheetFooter = (tablesCitation: string, rulesets: readonly string[] 
     const y = DOC_HEIGHT - 70;
     const x = 25;
     const notice = TRADEMARK_NOTICE(new Date().getFullYear());
+    // With a credit on top, the lines close up so all four stay below the sheets' boxes, which end at y 2500.
+    const lineY = rulesets.length > 0 ? [16, 38, 60] : [0, 26, 52];
     return (
         <g>
             <g data-testid="battletech-logo">
@@ -150,10 +152,10 @@ export const sheetFooter = (tablesCitation: string, rulesets: readonly string[] 
             </g>
             {text(x, y + 38, "Created with Jeff's BattleTech Tools IIC", { size: 18, weight: 700, fill: GRAY })}
             {text(x, y + 60, "https://heysporky.github.io/battletech-tools/", { size: 15, fill: GRAY })}
-            {rulesetsAttributionSvg(DOC_WIDTH - x, y - 26, rulesets, { anchor: "end", fill: INK, maxWidth: DOC_WIDTH - 400 })}
-            {text(DOC_WIDTH - x, y, `${tablesCitation} ${NOT_ENDORSED}`, { size: 15, anchor: "end", fill: GRAY })}
-            {text(DOC_WIDTH - x, y + 26, notice[0], { size: 15, anchor: "end", fill: GRAY })}
-            {text(DOC_WIDTH - x, y + 52, notice[1], { size: 15, anchor: "end", fill: GRAY })}
+            {rulesetsAttributionSvg(DOC_WIDTH - x, y - 4, rulesets, { size: 14, anchor: "end", fill: INK, maxWidth: DOC_WIDTH - 400 })}
+            {text(DOC_WIDTH - x, y + lineY[0], `${tablesCitation} ${NOT_ENDORSED}`, { size: 15, anchor: "end", fill: GRAY })}
+            {text(DOC_WIDTH - x, y + lineY[1], notice[0], { size: 15, anchor: "end", fill: GRAY })}
+            {text(DOC_WIDTH - x, y + lineY[2], notice[1], { size: 15, anchor: "end", fill: GRAY })}
         </g>
     );
 };

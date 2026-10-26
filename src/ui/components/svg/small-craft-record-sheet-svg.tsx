@@ -191,7 +191,7 @@ export default class SmallCraftRecordSheetSVG extends React.Component<ISmallCraf
 
     renderHeatData(): JSX.Element {
         const craft = this.craft;
-        return heatDataBox(RIGHT_X, BOTTOM, 510, 810, {
+        return heatDataBox(RIGHT_X, BOTTOM, 510, 780, {
             count: craft.getTotalHeatSinks(),
             dissipation: craft.getHeatDissipation(),
             lost: 0,
@@ -215,7 +215,7 @@ export default class SmallCraftRecordSheetSVG extends React.Component<ISmallCraf
             {this.renderNotes()}
             {this.renderCriticalDamage()}
             {this.renderCrewData()}
-            {velocityRecordBox(LEFT.x, 2070, RIGHT_X - 20 - LEFT.x, 430)}
+            {velocityRecordBox(LEFT.x, 2070, RIGHT_X - 20 - LEFT.x, 400)}
             {this.renderHeatData()}
             {heatScaleColumn(1855, 1270, this.play?.heat ?? -1)}
             {sheetFooter("Tables: Total Warfare pp. 161, 239-240.", getUnitRulesets(this.craft))}

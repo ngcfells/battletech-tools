@@ -2,7 +2,7 @@ import React, { type ComponentType, type JSX, useEffect } from 'react';
 import { FaArrowCircleLeft, FaArrowCircleRight, FaPrint } from "react-icons/fa";
 import { Link } from 'react-router';
 import type { TechnicalReadout } from '../../classes/technical-readout';
-import { getUnitRulesets } from '../../classes/unit-game-settings';
+import { getUnitRulesets, type IRulesetsHost } from '../../classes/unit-game-settings';
 import type { ITroUnitAdapter } from '../../data/technical-readout-interfaces';
 import { IAppGlobals } from '../app-router';
 import PrintablePage from './printable-page';
@@ -18,11 +18,11 @@ const Print = FaPrint as any;
 // The Technical Readout step and the printed TRO sheet, shared by every unit creator. Each creator supplies one
 // ICreatorTroConfig (creator-tro-configs.tsx) instead of its own copy of these pages.
 
-/** Any unit that carries a TRO record. */
-export interface ITroHost {
+/** Any unit that carries a TRO record, and the Special Rulesets its TRO credits. */
+export type ITroHost = IRulesetsHost & {
     tro: TechnicalReadout;
     getRequiredRulesLevel(): number;
-}
+};
 
 type CurrentUnitKey = "currentBattleMech" | "currentVehicle" | "currentFighter" | "currentInfantry" | "currentBattleArmor"
     | "currentProtoMech" | "currentSmallCraft" | "currentCapitalShip" | "currentBuilding";
@@ -107,7 +107,7 @@ export function CreatorPrintTRO({ appGlobals, config }: ICreatorTroPageProps): J
             provisionalNote={config.provisionalNote?.(unit)}
         >
             <div className="print-page">
-                <TechnicalReadoutSheet tro={unit.tro} adapter={config.adapter(unit)} rulesets={getUnitRulesets(unit as unknown as Parameters<typeof getUnitRulesets>[0])} />
+                <TechnicalReadoutSheet tro={unit.tro} adapter={config.adapter(unit)} rulesets={getUnitRulesets(unit)} />
             </div>
         </PrintablePage>
     );

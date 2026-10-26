@@ -96,4 +96,11 @@ describe("getUnitRulesets: attribution reads the unit's save (call 11)", () => {
         expect(getUnitRulesets(new AlphaStrikeUnit())).toEqual([]);
         expect(getUnitRulesets(null)).toEqual([]);
     });
+
+    it("drops anything but ids from a hand-edited 'Mech save, so no junk credit prints", () => {
+        const mech = new BattleMech();
+        const saved = JSON.parse(mech.exportJSON());
+        mech.importJSON(JSON.stringify({ ...saved, rulesets: [null, 3, "sample-no-clans"] }));
+        expect(getUnitRulesets(mech)).toEqual(["sample-no-clans"]);
+    });
 });

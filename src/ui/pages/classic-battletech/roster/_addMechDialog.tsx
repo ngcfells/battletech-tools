@@ -24,6 +24,7 @@ import SmallCraftRecordSheet from '../../../components/small-craft-record-sheet'
 import CapitalShipRecordSheet from '../../../components/capital-ship-record-sheet';
 import VehicleRecordSheet from '../../../components/vehicle-record-sheet';
 import TechnicalReadoutSheet from '../../../components/technical-readout-sheet';
+import { getUnitRulesets } from '../../../../classes/unit-game-settings';
 import { getBattleMechTroAdapter } from '../../../../classes/battlemech-tro';
 import { getUnitTroAdapter } from '../../../../classes/unit-tro';
 import type { TechnicalReadout } from '../../../../classes/technical-readout';
@@ -237,7 +238,7 @@ export default class BattleMechAddMechDialog extends React.Component<IBattleMech
     viewTRO = ( e: React.FormEvent<HTMLButtonElement>, design: BattleMech | ClassicMULUnit ): void => {
         e.preventDefault();
         const adapter = design instanceof BattleMech ? getBattleMechTroAdapter( design ) : getUnitTroAdapter( design );
-        this.setState({ viewingTRO: { title: design.getName(), tro: design.tro, adapter } });
+        this.setState({ viewingTRO: { title: design.getName(), tro: design.tro, adapter, rulesets: getUnitRulesets( design ) } });
     }
 
     viewOtherUnit = ( e: React.FormEvent<HTMLButtonElement>, kind: IClassicMULKind, design: ClassicMULUnit ): void => {
@@ -421,7 +422,7 @@ export default class BattleMechAddMechDialog extends React.Component<IBattleMech
         className="modal modal-xl"
     >
         <h3 className="text-center">Technical Readout: {viewingTRO.title}</h3>
-        <TechnicalReadoutSheet tro={viewingTRO.tro} adapter={viewingTRO.adapter} />
+        <TechnicalReadoutSheet tro={viewingTRO.tro} adapter={viewingTRO.adapter} rulesets={viewingTRO.rulesets} />
     </StandardModal>
 ) : null}
 {viewingOther ? (
@@ -561,7 +562,7 @@ interface IBattleMechAddMechDialogState {
     updated: boolean;
     mulResults: IASMULUnit[];
     viewingOther: { kind: IClassicMULKind; design: ClassicMULUnit } | null;
-    viewingTRO: { title: string; tro: TechnicalReadout; adapter: ITroUnitAdapter } | null;
+    viewingTRO: { title: string; tro: TechnicalReadout; adapter: ITroUnitAdapter; rulesets: string[] } | null;
     mulPage: number;
     mulSearching: boolean;
     bundledMechs: IBundledDesignHeader[];

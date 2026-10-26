@@ -221,7 +221,7 @@ export default class FighterRecordSheetSVG extends React.Component<IFighterRecor
 
     renderHeatData(): JSX.Element {
         const fighter = this.fighter;
-        return heatDataBox(RIGHT_X, BOTTOM, 510, 810, {
+        return heatDataBox(RIGHT_X, BOTTOM, 510, 780, {
             count: fighter.getTotalHeatSinks(),
             dissipation: fighter.getHeatDissipation(),
             lost: this.play?.heatSinks ?? 0,
@@ -272,7 +272,7 @@ export default class FighterRecordSheetSVG extends React.Component<IFighterRecor
             {this.renderNotes()}
             {this.renderCriticalDamage()}
             {this.renderPilotData()}
-            {velocityRecordBox(LEFT.x, 2070, RIGHT_X - 20 - LEFT.x, 430)}
+            {velocityRecordBox(LEFT.x, 2070, RIGHT_X - 20 - LEFT.x, 400)}
             {this.fighter.tracksHeat() ? <>{this.renderHeatData()}{heatScaleColumn(1855, 1270, this.play?.heat ?? -1)}</> : <>{this.renderGroundMapMovement()}{this.renderFighterReturn()}</>}
             {sheetFooter("Tables: Total Warfare pp. 92, 161.", getUnitRulesets(this.fighter))}
         </svg>

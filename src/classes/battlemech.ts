@@ -8576,7 +8576,7 @@ export class BattleMech {
             // Before anything is mounted: the edition decides the stats of what is loaded.
             this._rulesEdition = getRulesEdition(importObject.rulesEdition).tag;
             this._rulesLevel = typeof importObject.rulesLevel === "number" ? importObject.rulesLevel : undefined;
-            this._rulesets = Array.isArray(importObject.rulesets) ? [...importObject.rulesets] : [];
+            this._rulesets = Array.isArray(importObject.rulesets) ? importObject.rulesets.filter((id: unknown): id is string => typeof id === "string") : [];
             this._printedDroid = importObject.printedDroid || undefined;
             this._rulesEditionReturn = importObject.rulesEditionReturn || undefined;
 
