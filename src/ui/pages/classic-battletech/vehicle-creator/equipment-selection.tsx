@@ -43,6 +43,7 @@ export default class VehicleCreatorEquipmentSelection extends React.Component<IE
     render = (): JSX.Element => {
         const vehicle = this.props.appGlobals.currentVehicle;
         if (!vehicle) return <></>;
+        const rulesLevel = unitRulesLevel(vehicle, this.props.appGlobals.appSettings);
 
         return (
             <UIPage current="classic-battletech-vehicle-creator" appGlobals={this.props.appGlobals}>
@@ -56,7 +57,7 @@ export default class VehicleCreatorEquipmentSelection extends React.Component<IE
                                 <p><strong>Remaining Tonnage</strong>: {vehicle.getRemainingTonnage()}</p>
                                 <AvailableEquipment
                                     appGlobals={this.props.appGlobals}
-                                    equipment={vehicle.getAvailableEquipmentByCatalog("all", unitRulesLevel(this.props.appGlobals.currentVehicle, this.props.appGlobals.appSettings) >= CUSTOM_HOMEBREW_RULES_LEVEL, unitRulesLevel(this.props.appGlobals.currentVehicle, this.props.appGlobals.appSettings))}
+                                    equipment={vehicle.getAvailableEquipmentByCatalog("all", rulesLevel >= CUSTOM_HOMEBREW_RULES_LEVEL, rulesLevel)}
                                     mounted={vehicle.getEquipmentList()}
                                     addFunction={this.addEquipment}
                                 />

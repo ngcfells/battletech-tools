@@ -73,7 +73,7 @@ export default class InfantryCreatorPlatoon extends React.Component<IPlatoonProp
                                 {motive.mechanized ? " Mechanized infantry ride their own vehicles; they cannot make Anti-'Mech attacks or use melee and point-blank weapons." : ""}
                             </p>
 
-<label>
+                            <label>
                                 Affiliation:
                                 <select value={platoon.getFormation().tag} onChange={(e) => { const value = e.currentTarget.value; this.update((p) => p.setFormation(value)); }}>
                                     {platoon.getAvailableFormations().map((option) => (

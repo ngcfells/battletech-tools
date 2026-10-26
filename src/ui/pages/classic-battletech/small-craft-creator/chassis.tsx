@@ -132,7 +132,7 @@ export default class SmallCraftCreatorChassis extends React.Component<IChassisPr
                                     : "A spheroid craft lands on its tail: Nose, Fore-Side, Aft-Side and Aft arcs, a lighter structure, more free heat sinks and up to 4 bay doors (TM pp. 187-196)."}
                             </p>
 
-<label>
+                            <label>
                                 Tonnage:
                                 {craft.isDropShip() ? (
                                     <input

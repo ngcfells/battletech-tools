@@ -79,7 +79,7 @@ export default class FighterCreatorChassis extends React.Component<IChassisProps
                                     : "An aerospace fighter flies in atmosphere and space: 5 to 100 tons, a fusion engine and armor of up to eight points per ton of fighter (TM pp. 184-193)."}
                             </p>
 
-{fighter.isSupportVehicle() ? <SupportAircraftChassis fighter={fighter} update={this.update} /> : (<>
+                            {fighter.isSupportVehicle() ? <SupportAircraftChassis fighter={fighter} update={this.update} /> : (<>
                             <label>
                                 Tonnage:
                                 <select value={fighter.getTonnage()} onChange={(e) => { const value = +e.currentTarget.value; this.update((f) => f.setTonnage(value)); }}>

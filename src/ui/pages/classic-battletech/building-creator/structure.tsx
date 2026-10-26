@@ -51,9 +51,9 @@ export default class BuildingCreatorStructure extends React.Component<IStructure
                                 onChange={(e) => { const value = e.currentTarget.value; this.update((b) => b.setName(value)); }}
                             />
 
-<p className="smaller-text">Building construction is an Advanced rule (Tactical Operations: Advanced Rules p. 126).</p>
+                            <p className="smaller-text">Building construction is an Advanced rule (Tactical Operations: Advanced Rules p. 126).</p>
 
-<label>
+                            <label>
                                 Building Classification:
                                 <select value={classification.tag} onChange={(e) => { const value = e.currentTarget.value; this.update((b) => b.setClassification(value)); }}>
                                     {BUILDING_CLASSIFICATIONS.map((option) => (

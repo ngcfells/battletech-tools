@@ -46,6 +46,17 @@ describe("Vehicle builder step 1: the shared game settings block (#324)", () => 
         expect(appGlobals.saveCurrentVehicle).toHaveBeenCalled();
     });
 
+    it("a support vehicle keeps its own tonnage through a level change (TM pp.116-139)", () => {
+        const vehicle = new Vehicle();
+        vehicle.setSupportVehicle(true);
+        vehicle.setTonnage(150);
+        const tonnage = vehicle.getTonnage();
+        renderStep1(vehicle, 4);
+        fireEvent.change(select(/Rules Level/), { target: { value: "1" } });
+        expect(vehicle.gameSettings.getRulesLevel(-1)).toBe(1);
+        expect(vehicle.getTonnage()).toBe(tonnage);
+    });
+
     it("has one of each setting and no old era select", () => {
         renderStep1(new Vehicle(), 2);
         expect(screen.getAllByLabelText(/Rules Level/)).toHaveLength(1);

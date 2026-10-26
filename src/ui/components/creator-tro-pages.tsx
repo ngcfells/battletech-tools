@@ -5,6 +5,7 @@ import type { TechnicalReadout } from '../../classes/technical-readout';
 import type { ITroUnitAdapter } from '../../data/technical-readout-interfaces';
 import { IAppGlobals } from '../app-router';
 import PrintablePage from './printable-page';
+import { unitRulesLevel } from './game-settings-block';
 import TechnicalReadoutSection from './technical-readout-section';
 import TechnicalReadoutSheet from './technical-readout-sheet';
 import TextSection from './text-section';
@@ -101,6 +102,7 @@ export function CreatorPrintTRO({ appGlobals, config }: ICreatorTroPageProps): J
     return (
         <PrintablePage backTo={creatorUrl(config, troStepPath(config))} appGlobals={appGlobals}
             requiredRulesLevel={unit.getRequiredRulesLevel()}
+            rulesLevel={unitRulesLevel(unit as unknown as Parameters<typeof unitRulesLevel>[0], appGlobals.appSettings)}
             provisionalNote={config.provisionalNote?.(unit)}
         >
             <div className="print-page">

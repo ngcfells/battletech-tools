@@ -137,9 +137,10 @@ export default function GameSettingsBlock(props: {
     );
 }
 
-/** A design's own rules level, or the app-wide one for a save from before designs kept one (or no design). */
-export function unitRulesLevel(unit: IGameSettingsUnit | undefined | null, appSettings: { mechRulesFilter: number }): number {
-    return unit?.gameSettings.getRulesLevel(appSettings.mechRulesFilter) ?? appSettings.mechRulesFilter;
+/** A design's own rules level, or the app-wide one for a save from before designs kept one (or no design). A 'Mech keeps its own. */
+export function unitRulesLevel(unit: IGameSettingsUnit | { getRulesLevel(fallback: number): number } | undefined | null, appSettings: { mechRulesFilter: number }): number {
+    if (!unit) return appSettings.mechRulesFilter;
+    return "gameSettings" in unit ? unit.gameSettings.getRulesLevel(appSettings.mechRulesFilter) : unit.getRulesLevel(appSettings.mechRulesFilter);
 }
 
 /** The last level picked is the default for the next new design and the roster searches (call 12). */

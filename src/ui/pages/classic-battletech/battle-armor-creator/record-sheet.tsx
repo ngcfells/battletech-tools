@@ -2,6 +2,7 @@ import React, { type JSX } from 'react';
 import { IAppGlobals } from '../../../app-router';
 import BattleArmorRecordSheet from '../../../components/battle-armor-record-sheet';
 import PrintablePage from '../../../components/printable-page';
+import { unitRulesLevel } from '../../../components/game-settings-block';
 
 export default class BattleArmorCreatorRecordSheet extends React.Component<IRecordSheetProps> {
     constructor(props: IRecordSheetProps) {
@@ -17,7 +18,7 @@ export default class BattleArmorCreatorRecordSheet extends React.Component<IReco
         const suits = [suit, ...suit.getLoadouts().map((_loadout, index) => suit.getLoadoutSuit(index))];
 
         return (
-            <PrintablePage backTo={`${process.env.PUBLIC_URL}/classic-battletech/battle-armor-creator/summary`} appGlobals={this.props.appGlobals} requiredRulesLevel={Math.max(...suits.map((item) => item.getRequiredRulesLevel()))}>
+            <PrintablePage backTo={`${process.env.PUBLIC_URL}/classic-battletech/battle-armor-creator/summary`} appGlobals={this.props.appGlobals} rulesLevel={unitRulesLevel(suit, this.props.appGlobals.appSettings)} requiredRulesLevel={Math.max(...suits.map((item) => item.getRequiredRulesLevel()))}>
                 <BattleArmorRecordSheet squads={suits} />
             </PrintablePage>
         );

@@ -121,6 +121,23 @@ describe("Technical Readout step and printed TRO sheet, shared by every creator 
             expect(container.querySelector(".print-page .tro-sheet")).not.toBeNull();
             expect(globals.makeDocumentTitle).toHaveBeenCalledWith(`Technical Readout | ${config.name}`);
         });
+
+        it("the print guard checks the design's own rules level, not the app-wide one (#324)", () => {
+            const unit = makeUnit() as unknown as { getRequiredRulesLevel(): number; gameSettings?: { set(level: number, rulesets: string[]): void } };
+            if (unit.gameSettings) unit.gameSettings.set(4, []);
+            else { const mech = unit as unknown as BattleMech; mech.applyGameSettings({ ...mech.getGameSettings(0), rulesLevel: 4 }); }
+            vi.spyOn(unit, "getRequiredRulesLevel").mockReturnValue(3);
+            const globals = makeGlobals(config, unit as unknown as TroUnit);
+            globals.appSettings.mechRulesFilter = 0;
+            const confirm = vi.fn(() => false);
+            window.confirm = confirm;
+            const print = vi.fn();
+            window.print = print;
+            render(<MemoryRouter><CreatorPrintTRO appGlobals={globals} config={config} /></MemoryRouter>);
+            fireEvent.click(screen.getByRole("button", { name: /Print/ }));
+            expect(confirm).not.toHaveBeenCalled();
+            expect(print).toHaveBeenCalled();
+            });
     });
 });
 
