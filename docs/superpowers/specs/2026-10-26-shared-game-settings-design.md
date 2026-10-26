@@ -128,6 +128,21 @@ are in use.
 19. **A sample loaded in place of the design keeps the design's level and rulesets** (round 3; ArtVee samples), as
    call 12 does for printed droids.
 
+20. **The MUL searches take the Special Rulesets step only** (user ruling 2026-10-26, round 4). It sits on top of the
+   shared MUL filters, in both rosters. They have no Edition step and keep the MUL's own Rules, Tech and Era values, with
+   "All". Ticked rulesets trim the Tech, Type and Era lists (the Clan era aliases too) and leave their units out of the
+   results, live search included: under no-Clans, no Clan or Mixed units and no ProtoMechs (call 18). The search's
+   Rules filter stays the MUL's own; the app-wide level does not set it.
+21. **A search change moves later filters, never earlier ones** (round 4), in the order Tech, Type, Era: Tech and Type
+   move to All, Era to the offered era nearest by start year (a tie goes to the earlier). Picking Clan tech moves Age of
+   War or Star League to the Early Succession War. One line under the step says what moved.
+22. **The Alpha Strike creator shows Special Rulesets and Rules Level only** (user ruling 2026-10-26, round 4): one AS
+   edition, and no tech base or era on a card. The block comes first. The card type stands for a Classic unit type
+   (BattleMech, ProtoMech, Combat Vehicle, Aerospace as fighter), so under no-Clans the ProtoMech type is disabled with
+   the reason, and a ProtoMech card cannot tick it. The rulesets are saved on the card (`rulesets`, left out when none).
+23. **The AS creator's level is not the app-wide default** (round 4): a hand-built card starts at Custom Homebrew, so a
+   level picked there does not change the Classic builders' or the searches' default (call 12 does not apply).
+
 ## Non-goals
 
 - No real rulesets yet beyond the sample.
@@ -141,7 +156,7 @@ are in use.
 2. Shared `GameSettingsBlock` component and the Special Rulesets window; wire into the 'Mech builder and remove its old
    controls. **Done 2026-10-26.**
 3. The other eight Classic builders; delete the old per-builder code. **Done 2026-10-26.**
-4. Alpha Strike creator and both roster MUL searches.
+4. Alpha Strike creator and both roster MUL searches. **Done 2026-10-26.**
 5. Attribution on cards, sheets, TROs and printouts. About and home news.
 
 ## Left to the builder
