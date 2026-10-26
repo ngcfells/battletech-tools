@@ -11,7 +11,7 @@ import { loadMULListItems, MUL_SOURCE_LABELS } from '../../../../data/mul-list-i
 import { getMULASSearchResults } from '../../../../utils';
 import { countAbilityCodes, IAbilityCodeCount } from '../../../../utils/mulAbilities';
 import { getMULEraLabel } from '../../../../utils/mulUtilities';
-import { IMULSearchFilters } from '../../../../utils/mulSearchFilters';
+import { filterMULByRulesets, IMULSearchFilters } from '../../../../utils/mulSearchFilters';
 import { IAppGlobals } from '../../../app-router';
 import MULSearchFilters from '../../../components/mul-search-filters';
 import SearchResultsPager from '../../../components/search-results-pager';
@@ -190,6 +190,8 @@ export default class AlphaStrikeAddUnitsView extends React.Component<IAlphaStrik
           this.props.appGlobals,
           this.props.appGlobals.appSettings.alphaStrikeSearchAbilities,
         );
+        // The live search knows nothing of Special Rulesets (#324): their units are left out here.
+        data = filterMULByRulesets( data, this.props.appGlobals.appSettings.alphaStrikeSearchRulesets );
 
         if(this.latestSearchId !== currentSearchId) {
           console.log("updateSearchResults: searchId mismatch, aborting");

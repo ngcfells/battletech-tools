@@ -3,9 +3,10 @@ import { FaPlus, FaTrash } from "react-icons/fa";
 import { MUL_SOURCE_OPTIONS } from '../../data/mul-list-items';
 import { MULSource } from '../../classes/alpha-strike-unit';
 import { IAbilityCodeCount } from '../../utils/mulAbilities';
-import { IMULSearchFilters } from '../../utils/mulSearchFilters';
+import { changeMULSearchFilters, IMULSearchFilters, isMULEraOffered, isMULTechOffered, isMULTypeOffered } from '../../utils/mulSearchFilters';
 import { getMULAerospaceRoles, getMULEraAliases, getMULEraIDs, getMULEraLabel, getMULFactionIDs, getMULFactionLabels, getMULGroundRoles, getMULTypeIDs, getMULTypeLabel } from '../../utils/mulUtilities';
 import InputField from './form_elements/input_field';
+import SpecialRulesetsStep from './special-rulesets-step';
 import type { JSX } from "react";
 const Plus = FaPlus as any;
 const Trash = FaTrash as any;
@@ -14,11 +15,22 @@ const MAX_ABILITY_SUGGESTIONS = 12;
 
 // The Master Unit List search filters, shared by the Alpha Strike and Classic rosters. Each roster keeps its own
 // IMULSearchFilters and runs the search; `search` is false for edits that do not change the results (typing in the
-// faction or ability pickers).
-export default class MULSearchFilters extends React.Component<IMULSearchFiltersProps> {
+// faction or ability pickers). Special Rulesets come first (#324): they trim the Tech, Type and Era lists, and a change
+// that leaves a later filter's value unoffered moves it, saying so in one line until the filters change again.
+export default class MULSearchFilters extends React.Component<IMULSearchFiltersProps, { notice: { text: string; made: string } }> {
+
+    state = { notice: { text: "", made: "" } };
 
     private change = ( changes: Partial<IMULSearchFilters>, search: boolean = true ): void => {
-        this.props.onChange( { ...this.props.filters, ...changes }, search );
+        const { filters, moves } = changeMULSearchFilters( this.props.filters, changes );
+        this.setState({ notice: { text: moves.join( "; " ), made: JSON.stringify( filters ) } });
+        this.props.onChange( filters, search );
+    }
+
+    // Ticking or unticking each id in turn, as the settings block does.
+    private toggleRulesets = ( ids: string[] ): void => {
+        const rulesets = ids.reduce( (ticked, id) => ticked.includes( id ) ? ticked.filter( (existing) => existing !== id ) : ticked.concat( id ), this.props.filters.rulesets );
+        this.change({ rulesets });
     }
 
     private getFactionSuggestions = (): number[] => {
@@ -58,12 +70,23 @@ export default class MULSearchFilters extends React.Component<IMULSearchFiltersP
 
     render = (): JSX.Element => {
         const filters = this.props.filters;
-        const typeOptions = this.props.typeOptions ?? getMULTypeIDs().map( (id) => ({ id, label: getMULTypeLabel( id ) }) );
+        const typeOptions = ( this.props.typeOptions ?? getMULTypeIDs().map( (id) => ({ id, label: getMULTypeLabel( id ) }) ) )
+            .filter( (option) => isMULTypeOffered( option.id, filters.rulesets ) );
+        const techOffered = ( tech: string ) => isMULTechOffered( tech, filters.rulesets );
+        const eraOffered = ( eraID: number ) => isMULEraOffered( eraID, filters.tech, filters.rulesets );
+        const eraAliases = getMULEraAliases().filter( (alias) => eraOffered( alias.id ) );
+        const notice = this.state.notice.made === JSON.stringify( filters ) ? this.state.notice.text : "";
         const factionSuggestions = this.getFactionSuggestions();
         const abilitySuggestions = this.getAbilitySuggestions();
 
         return (
 <fieldset className="fieldset">
+    <div className="row">
+        <div className="col-md-12 text-center">
+            <SpecialRulesetsStep rulesets={filters.rulesets} notice={notice} onToggle={this.toggleRulesets} />
+            {notice ? <p className="smaller-text" role="status">{notice}</p> : null}
+        </div>
+    </div>
     <div className="row">
         <div className="col-md-6 text-center">
             <InputField
@@ -92,7 +115,7 @@ export default class MULSearchFilters extends React.Component<IMULSearchFiltersP
                 <select onChange={(event) => this.change({ tech: event.currentTarget.value })} value={filters.tech}>
                     <option value="">All</option>
                     <option value="inner sphere">Inner Sphere</option>
-                    <option value="clan">Clan</option>
+                    {techOffered( "clan" ) ? <option value="clan">Clan</option> : null}
                 </select>
             </label>
 
@@ -109,10 +132,12 @@ export default class MULSearchFilters extends React.Component<IMULSearchFiltersP
                 Era:<br />
                 <select onChange={(event) => this.change({ era: +event.currentTarget.value })} value={filters.era}>
                     <option value={0}>All</option>
-                    {getMULEraIDs().map( (eraID) => <option key={eraID} value={eraID}>{getMULEraLabel( eraID )}</option> )}
-                    <optgroup label="Clan eras">
-                        {getMULEraAliases().map( (alias) => <option key={alias.id} value={alias.id}>{alias.label}</option> )}
-                    </optgroup>
+                    {getMULEraIDs().filter( eraOffered ).map( (eraID) => <option key={eraID} value={eraID}>{getMULEraLabel( eraID )}</option> )}
+                    {eraAliases.length > 0 ? (
+                        <optgroup label="Clan eras">
+                            {eraAliases.map( (alias) => <option key={alias.id} value={alias.id}>{alias.label}</option> )}
+                        </optgroup>
+                    ) : null}
                 </select>
             </label>
 
