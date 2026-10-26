@@ -194,8 +194,13 @@ const TECH_FALLBACKS: Record<string, string[]> = {
 
 /** `techTag` when `era` allows it, else the nearest base the era does allow. */
 export function fitTechToEra(techTag: string, era: IEras): string {
-	const order = TECH_FALLBACKS[techTag] ?? [techTag, ...era.techBases];
-	return order.find((tag) => era.techBases.includes(tag)) ?? era.techBases[0] ?? techTag;
+	return fitTechToBases(techTag, era.techBases);
+}
+
+/** `techTag` when it is one of `bases`, else the nearest of them (see TECH_FALLBACKS). */
+export function fitTechToBases(techTag: string, bases: string[]): string {
+	const order = TECH_FALLBACKS[techTag] ?? [techTag, ...bases];
+	return order.find((tag) => bases.includes(tag)) ?? bases[0] ?? techTag;
 }
 
 export function isEraAvailableForTech(era: IEras, techTag: string): boolean {
