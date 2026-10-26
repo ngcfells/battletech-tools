@@ -90,7 +90,13 @@ are in use.
 8. **Alpha Strike storage:** the AS unit creator stores the block on each custom unit. The AS and Classic roster
    searches store it with their existing search settings in app settings (`alphaStrikeSearchEra`/`Tech`,
    `cbtMULSearch`).
-9. **Attribution reads the unit's save**, never the current block state, so a printout always shows what the unit was
+9. **A stored value the lists no longer offer is flagged.** For example, an old Clan save under the no-Clans ruleset
+   keeps its Clan tech base until edited (call 2). The block shows that step with a warning ("not offered under the
+   ticked rulesets") so the mismatch is visible. Round 2 (final review of round 1).
+10. **Rules level moves up, as `getShownRulesLevel` does** (the 2026-10-15 Battledroids spec: "the lowest listed level
+   above it"). Total Warfare Advanced switched to Battledroids lands on Apocryphal, and the notice says so. Builder's
+   call for consistency; the user may rule otherwise.
+11. **Attribution reads the unit's save**, never the current block state, so a printout always shows what the unit was
    built under.
 
 ## Non-goals

@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, it } from "vitest";
+import { isKnownEditionTag } from "./rules-editions";
 import { btSpecialRulesets, findSpecialRuleset, getRulesetConflict, ISpecialRuleset } from "./special-rulesets";
 
 const testRuleset = (id: string, changes: string[]): ISpecialRuleset => ({ id, name: id, description: "", source: { title: "test" }, changes });
@@ -25,5 +26,10 @@ describe("Special Rulesets (#324)", () => {
         expect(getRulesetConflict(["sample-no-clans"], "test-techs")?.id).toBe("sample-no-clans");
         expect(getRulesetConflict(["sample-no-clans"], "test-heat")).toBeUndefined();
         expect(getRulesetConflict(["sample-no-clans"], "sample-no-clans")).toBeUndefined();
+    });
+    it("names only editions that exist as a minimum edition", () => {
+        for (const ruleset of btSpecialRulesets.filter((item) => item.minEdition)) {
+            expect(isKnownEditionTag(ruleset.minEdition!), ruleset.id).toBe(true);
+        }
     });
 });

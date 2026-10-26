@@ -14,7 +14,7 @@
 
 import { IEras, IRulesLevelOption } from "./data-interfaces";
 import { findEraByTag, fitTechToBases, getClosestEraForTech, getErasForTech } from "./era-options";
-import { btRulesEditions, getRulesEdition, getRulesLevelOptionsForEdition, getSelectableRulesEditions, IRulesEdition, RulesEditionUnitType } from "./rules-editions";
+import { btRulesEditions, DEFAULT_RULES_EDITION, getRulesEdition, getRulesLevelOptionsForEdition, getSelectableRulesEditions, IRulesEdition, RulesEditionUnitType } from "./rules-editions";
 import { findSpecialRuleset, GameSettingStep, getRulesetConflict, ISpecialRuleset } from "./special-rulesets";
 import { btTechOptions } from "./tech-options";
 
@@ -74,8 +74,16 @@ export function getGameSettingOptions(settings: IGameSettings, unitType: RulesEd
 // The value a step moves to when its list no longer offers the current one.
 function fitStep(step: GameSettingStep, settings: IGameSettings, options: IGameSettingOptions): string | number {
     switch (step) {
-        case "edition":
-            return options.editions.some((edition) => edition.tag === settings.edition) ? settings.edition : options.editions[0]?.tag ?? settings.edition;
+        case "edition": {
+            if (options.editions.some((edition) => edition.tag === settings.edition)) {
+                return settings.edition;
+            }
+            // The next offered edition after a known one; the default edition for one this version does not know.
+            const stored = editionOrder(settings.edition);
+            const later = stored >= 0 ? options.editions.find((edition) => editionOrder(edition.tag) >= stored) : undefined;
+            const fallback = options.editions.find((edition) => edition.tag === DEFAULT_RULES_EDITION) ?? options.editions[0];
+            return (later ?? fallback)?.tag ?? settings.edition;
+        }
         case "rulesLevel": {
             const ids = options.rulesLevels.map((level) => level.id);
             return ids.includes(settings.rulesLevel) ? settings.rulesLevel : ids.find((id) => id >= settings.rulesLevel) ?? ids[ids.length - 1] ?? settings.rulesLevel;
@@ -99,7 +107,7 @@ function fitStep(step: GameSettingStep, settings: IGameSettings, options: IGameS
 
 /**
  * Applies one change, then moves each later step whose value the new lists no longer offer, in step order. A ruleset
- * that clashes with one already ticked is refused and nothing changes.
+ * that clashes with one already ticked is refused and nothing changes; an id the registry does not know is ignored.
  */
 export function changeGameSetting(
     settings: IGameSettings,
@@ -112,6 +120,8 @@ export function changeGameSetting(
     if (change.step === "rulesets") {
         if (next.rulesets.includes(change.toggle)) {
             next.rulesets = next.rulesets.filter((id) => id !== change.toggle);
+        } else if (!findSpecialRuleset(change.toggle)) {
+            return { settings, moves: [] };
         } else {
             const refused = getRulesetConflict(next.rulesets, change.toggle);
             if (refused) {
@@ -120,16 +130,21 @@ export function changeGameSetting(
             next.rulesets.push(change.toggle);
         }
     } else {
-        values[change.step] = change.value;
-        firstLater = STEPS.indexOf(change.step) + 1;
+        // A select hands over the rules level as text. The edited step itself is fitted too, in case it is not offered.
+        values[change.step] = change.step === "rulesLevel" ? Number(change.value) : change.value;
+        firstLater = STEPS.indexOf(change.step);
     }
     const moves: IGameSettingMove[] = [];
     for (const step of STEPS.slice(firstLater)) {
         const from = values[step];
+        // The edited step's own fit is not a move the player needs telling about.
+        const edited = change.step === step;
         const to = fitStep(step, next, getGameSettingOptions(next, unitType));
         if (to !== from) {
             values[step] = to;
-            moves.push({ step, from, to });
+            if (!edited) {
+                moves.push({ step, from, to });
+            }
         }
     }
     return { settings: next, moves };

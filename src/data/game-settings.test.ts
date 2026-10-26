@@ -1,8 +1,8 @@
 import { afterEach, describe, expect, it } from "vitest";
 import { changeGameSetting, describeGameSettingMove, getGameSettingOptions, IGameSettings } from "./game-settings";
 import { btSpecialRulesets } from "./special-rulesets";
-import { DEFAULT_RULES_EDITION, getSelectableRulesEditions } from "./rules-editions";
-import { findEraByTag, getClosestEraForTech } from "./era-options";
+import { DEFAULT_RULES_EDITION, getRulesLevelOptionsForEdition, getSelectableRulesEditions } from "./rules-editions";
+import { findEraByTag, getClosestEraForTech, getErasForTech } from "./era-options";
 
 const base: IGameSettings = { rulesets: [], edition: DEFAULT_RULES_EDITION, rulesLevel: 1, techBase: "clan", era: "clan-inv" };
 
@@ -66,5 +66,47 @@ describe("shared game settings (#324)", () => {
         expect(result.refused?.id).toBe("sample-no-clans");
         expect(result.settings).toEqual(ticked);
         expect(result.moves).toEqual([]);
+    });
+    // Final review fixes.
+    it("moves an unknown edition to the default edition, not the oldest", () => {
+        const result = changeGameSetting({ ...base, edition: "edition-from-the-future" }, { step: "rulesets", toggle: "sample-no-clans" }, "mech");
+        expect(result.settings.edition).toBe(DEFAULT_RULES_EDITION);
+    });
+
+    it("ignores a ruleset id the registry does not know", () => {
+        const result = changeGameSetting(base, { step: "rulesets", toggle: "no-such-ruleset" }, "mech");
+        expect(result.settings).toEqual(base);
+        expect(result.moves).toEqual([]);
+    });
+
+    it("stores a rules level picked from a select as a number, with no move", () => {
+        const result = changeGameSetting(base, { step: "rulesLevel", value: "3" }, "mech");
+        expect(result.settings.rulesLevel).toBe(3);
+        expect(result.moves).toEqual([]);
+    });
+
+    it("fits an edited value the lists do not offer", () => {
+        const ticked: IGameSettings = { ...base, techBase: "is", rulesets: ["sample-no-clans"] };
+        const result = changeGameSetting(ticked, { step: "techBase", value: "clan" }, "mech");
+        expect(result.settings.techBase).toBe("is");
+    });
+
+    it("moves an unknown era to an era the tech base offers", () => {
+        const result = changeGameSetting({ ...base, era: "no-such-era" }, { step: "techBase", value: "clan" }, "mech");
+        expect(getErasForTech("clan").map((era) => era.tag)).toContain(result.settings.era);
+    });
+
+    it("moves the rules level when the edition does not list it, then reports each move in step order", () => {
+        const battledroids = getSelectableRulesEditions("mech").find((edition) => edition.noEras)!;
+        const result = changeGameSetting({ ...base, rulesLevel: 3 }, { step: "edition", value: battledroids.tag }, "mech");
+        expect(result.moves.map((move) => move.step)).toEqual(["rulesLevel"]);
+        expect(getRulesLevelOptionsForEdition(battledroids.tag).map((level) => level.id)).toContain(result.settings.rulesLevel);
+    });
+
+    it("drops editions before a ruleset's minimum edition", () => {
+        btSpecialRulesets.push({ id: "test-techs", name: "test", description: "", source: { title: "test" }, minEdition: DEFAULT_RULES_EDITION, changes: ["edition"] });
+        const tags = getGameSettingOptions({ ...base, rulesets: ["test-techs"] }, "mech").editions.map((edition) => edition.tag);
+        expect(tags[0]).toBe(DEFAULT_RULES_EDITION);
+        expect(tags).not.toContain("battledroids");
     });
 });
