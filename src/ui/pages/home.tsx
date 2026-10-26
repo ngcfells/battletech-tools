@@ -167,6 +167,17 @@ export default class Home extends React.Component<IHomeProps, IHomeState> {
                   <ul className="news">
                   <li>
                   <h3>
+                      <strong>October 26th, 2026</strong> - 690 more bundled 'Mechs, and every SSW OmniMech configuration
+                    </h3>
+                    <h4>Author - NGCFells</h4>
+                      <ul>
+                        <li>Importing a Solaris Skunk Werks OmniMech now brings in every configuration in the file (Prime, A, B...), not only the base chassis. The base loadout's equipment is fixed; each configuration's is in pods.</li>
+                        <li>An OmniMech configuration now keeps its own heat sinks, jump jets, lower arm and hand actuators and Clan CASE, as the published configurations vary them.</li>
+                        <li>The bundled designs behind the Master Unit List search now include 84 OmniMechs with their configurations, and 602 'Mechs that Skunk Werks has no file for, converted from MegaMek's files. Each one matches its Master Unit List Battle Value.</li>
+                      </ul>
+                   </li>
+                  <li>
+                  <h3>
                       <strong>October 26th, 2026</strong> - One game settings block for every creator, and Special Rulesets
                     </h3>
                     <h4>Author - NGCFells</h4>

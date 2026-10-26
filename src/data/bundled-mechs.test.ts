@@ -2,23 +2,25 @@ import fs from "node:fs";
 import path from "node:path";
 import { describe, expect, it, vi } from "vitest";
 import { BUNDLED_CHUNK_SIZE } from "../utils/bundled-designs";
-import { buildBundledMechs, DEFAULT_SSW_DIR, writeBundledMechs } from "./bundled-mechs-build";
+import { buildBundledMechs, DEFAULT_MEGAMEK_DIR, DEFAULT_SSW_DIR, writeBundledMechs } from "./bundled-mechs-build";
 import { getBundledMechEntries, loadBundledMechDesign, loadBundledMechIndex } from "./bundled-mechs";
 
-// The bundled 'Mechs (#241). Regenerate from the Skunk Werks files (about ten minutes):
+// The bundled 'Mechs (#241). Regenerate from the Skunk Werks and MegaMek files:
 //   WRITE_BUNDLED_MECHS=1 npx vitest run src/data/bundled-mechs.test.ts
 // The build imports every file, checks its BV against the Master Unit List (or the file) and its round trip through
 // the compact format, and writes the designs that pass plus a report of the rest (bundled/mechs-report.md).
 const dataDir = path.resolve(__dirname, "bundled");
 
 // Pinned so a growing data set is a deliberate change.
-const DESIGNS = 2859;
-const MAX_BYTES = 11_500_000;
+const DESIGNS = 3549;
+// Round 3 added MegaMek's 'Mechs, whose TRO text is long: about 1.8 MB gzipped, read a chunk at a time.
+const MAX_BYTES = 19_500_000;
 
 describe("bundled 'Mechs", () => {
     if (process.env.WRITE_BUNDLED_MECHS) {
-        it("are rebuilt from the Skunk Werks files", () => {
-            const build = buildBundledMechs(process.env.BUNDLED_SSW_DIR ?? DEFAULT_SSW_DIR, path.resolve(__dirname, "mul"));
+        it("are rebuilt from the Skunk Werks and MegaMek files", () => {
+            const build = buildBundledMechs(process.env.BUNDLED_SSW_DIR ?? DEFAULT_SSW_DIR, path.resolve(__dirname, "mul"),
+                path.join(process.env.BUNDLED_MEGAMEK_DIR ?? DEFAULT_MEGAMEK_DIR, "meks"));
             writeBundledMechs(build, dataDir);
             expect(build.headers.length).toBeGreaterThan(2500);
         }, 3_600_000);

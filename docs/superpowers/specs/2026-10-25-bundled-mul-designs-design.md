@@ -143,3 +143,38 @@ The exact field list the codec drops, the data file paths and names, and the rep
 - **Stable rebuilds**: both builds seed `Math.random` from each file's name, and the codec shortens UUIDs that carry
   a suffix (a crit slot's `uuid:7`). A rebuild from the same files is byte-identical, so its diff shows only the
   designs that changed.
+
+## Builder's calls (round 3, 2026-10-26)
+
+- **SSW OmniMechs (#112, folded in by the user 2026-10-26)**: an SSW file's every `<loadout>` becomes one of our
+  configurations, the first one active. Each loadout is imported as the base loadout plus its own items: the base
+  loadout's equipment is marked fixed, the loadout's goes in pods. SSW repeats the base loadout's CASE in every
+  loadout, so an item at the same name and slot as a base item is taken once. A loadout's heat sinks and jump jets
+  give the total but list only the pod ones' slots, so the base loadout's slots are added. A loadout without heat
+  sinks, jump jets or actuators keeps the base loadout's.
+- **Configurations carry more than pods**: SSW loadouts vary the heat sinks, jump jets, lower arm and hand
+  actuators and Clan CASE (the Dire Wolf Prime has 22 double heat sinks, the B 15, the C 3 jump jets). A stored
+  configuration now keeps them (`IOmniConfiguration.chassis`), with the heat sink and jump jet slots. In the editor
+  these are now set per configuration too. Saves from before this have no `chassis` and keep the chassis values.
+- **A configuration's BV**: an OmniMech keeps each configuration whose BV matches the MUL's, or the loadout's own
+  BV in the file where the MUL has no entry. The others are dropped one by one and listed in the report
+  ("configuration BV differs from the MUL"). The design is left out only when no configuration passes.
+- **MegaMek 'Mechs**: after the SSW files, the build reads MegaMek's `.mtf` files. A file whose 'Mech an SSW design
+  already covers (by name, or by MUL id) is a duplicate. SSW comes first, but a 'Mech whose SSW file failed may still
+  come from MegaMek. A MegaMek file has no BV of its own, so it is kept only on a MUL BV match: by its `mul id`
+  (MUL 1.0's ids) when that entry has a BV, else by name. MegaMek OmniMechs keep one file per configuration, so each
+  is its own design; MegaMek's `(OMNIPOD)` items go in pods, the rest is fixed.
+- **Converter fixes**: an engine without a tech marker is the design's own tech base (the build's chassis check
+  read 1,037 such engines as wrong); Talons, one item spread over every leg, are listed once, as SSW does.
+- **Catalog**: the Clan SRT and LRT records gained SSW's spellings ("SRT-6", "LRT-20"); the U Dire Wolf's Clan
+  SRT-6 had resolved to the Inner Sphere record.
+- **Compact format**: an OmniMech's active configuration is not stored a second time; it is the design's own
+  equipment and is stored again when the design is saved.
+- **Notice**: the index notice credits both Skunk Werks and MegaMek (`BUNDLED_MECHS_NOTICE`); the MegaMek credit
+  moved to `bundled-mechs-build.ts`, and `bundled-units-build.ts` re-exports it unchanged.
+- **Results**: 3,549 'Mechs kept (2,859 before): 2,947 from Skunk Werks, 84 of them OmniMechs with their
+  configurations, and 602 from MegaMek. The commonest reasons left in `mechs-report.md`: LAMs, Heavy Industrial
+  armor, the Cockpit Command Console, Narc-capable and special Arrow IV ammunition, HarJel III, supercooled
+  myomer, prototype jump jets and the Clan ER flamer.
+- **Size**: 18.7 MB raw and 1.8 MB gzipped (0.9 MB before), most of the growth MegaMek's TRO text. The chunks
+  load as they are needed; the test's cap is 19.5 MB.

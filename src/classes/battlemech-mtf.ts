@@ -99,7 +99,7 @@ const xml = (text: string): string => text.replace(/&/g, "&amp;").replace(/</g, 
 /** A slot name without MegaMek's markers: rear, pod, turret and armored, and a variable size. */
 const readSlot = (raw: string) => {
     let name = raw;
-    const marks = { rear: false, turret: false, armored: false, size: 0 };
+    const marks = { rear: false, turret: false, armored: false, pod: false, size: 0 };
     const size = /:SIZE:([\d.]+)/i.exec(name);
     if (size) { marks.size = +size[1]; name = name.replace(size[0], ""); }
     name = name.replace(/\s*\((R|OMNIPOD|T|ARMORED)\)/gi, (_match, mark: string) => {
@@ -107,6 +107,7 @@ const readSlot = (raw: string) => {
         if (key === "R") marks.rear = true;
         if (key === "T") marks.turret = true;
         if (key === "ARMORED") marks.armored = true;
+        if (key === "OMNIPOD") marks.pod = true;
         return "";
     }).replace(/^Dumper \(Rear\)$/, "Dumper").trim();
     return { name, ...marks };
@@ -117,6 +118,8 @@ interface IMtfItem {
     /** The file's slot name, for the report. */
     name: string;
     rear: boolean;
+    /** In an OmniMech's pod space, not its base chassis. */
+    pod: boolean;
     tons: number;
     half: boolean;
     places: { loc: string; index: number; count: number }[];
@@ -144,7 +147,8 @@ export function convertMtfToSSW(file: IMtfFile): { xml: string; issues: string[]
     const engine = /^(\d+)\s+(.+?)\s*(\((Clan|IS)\))?\s*Engine\s*(\((Clan|IS)\))?$/i.exec(value(file, "engine"));
     const engineName = engine ? ENGINES[engine[2].trim()] : undefined;
     if (!engine || !engineName) issues.push(`Engine '${value(file, "engine")}' is not converted yet`);
-    const engineTech = engine?.[4] ?? engine?.[6];
+    // An engine of the design's own tech base carries no marker: SSW writes its tech base all the same.
+    const engineTech = engine?.[4] ?? engine?.[6] ?? (faction === "clan" ? "Clan" : "IS");
     const structureTech = /^clan /i.test(value(file, "structure")) ? "1" : /^is /i.test(value(file, "structure")) ? "0" : "2";
     const structureName = STRUCTURES[value(file, "structure").replace(/^(IS|Clan) /i, "")] ?? value(file, "structure");
     const armor = /^(.+?)\((Clan|Inner Sphere)\)$/.exec(value(file, "armor"));
@@ -180,7 +184,7 @@ export function convertMtfToSSW(file: IMtfFile): { xml: string; issues: string[]
     let boosterMP = 0;
     const leftovers: { item: IMtfItem; have: number }[] = [];
     const weapons: IEquipmentItem[] = [];
-    const ammoSlots: { name: string; loc: string; index: number; rear: boolean }[] = [];
+    const ammoSlots: { name: string; loc: string; index: number; rear: boolean; pod: boolean }[] = [];
     const place = (loc: string, index: number) => `<location index="${index}">${loc.toUpperCase()}</location>`;
 
     for (const [section, list] of Object.entries(file.slots)) {
@@ -202,7 +206,7 @@ export function convertMtfToSSW(file: IMtfFile): { xml: string; issues: string[]
             }
             const fcs = FIRE_CONTROL.find(([test]) => test.test(name));
             if (fcs) { fireControl.add(fcs[1]); index++; continue; }
-            if (/ammo|Pods$/i.test(name)) { ammoSlots.push({ name, loc, index, rear: slot.rear }); index++; continue; }
+            if (/ammo|Pods$/i.test(name)) { ammoSlots.push({ name, loc, index, rear: slot.rear, pod: slot.pod }); index++; continue; }
             if (HEAT_SINK_SLOT.test(name)) {
                 if (/prototype/i.test(name)) issues.push(`'${name}' is not converted yet`);
                 // Each sink lists its own slots (a mixed-tech 'Mech can carry both IS and Clan doubles).
@@ -256,6 +260,8 @@ export function convertMtfToSSW(file: IMtfFile): { xml: string; issues: string[]
                 index += run; continue;
             }
             if (!record) { issues.push(`Cannot find any equipment named '${name}'`); index += run; continue; }
+            // An item spread over several locations (Talons: every leg) is listed once, as SSW does; the import spreads it.
+            if (record.spreadSlots && items.some((item) => item.record.tag === record!.tag)) { index += run; continue; }
             const size = record.space?.battlemech ?? 1;
             // Sized items (cargo) and variable-size ones (hatchets, targeting computers, MASC) fill their run; a whole
             // number of others fill theirs, the rest is split.
@@ -263,7 +269,7 @@ export function convertMtfToSSW(file: IMtfFile): { xml: string; issues: string[]
             let left = run;
             while (left > 0) {
                 const count = Math.min(each, left);
-                const item: IMtfItem = { record, name, rear: slot.rear, tons: slot.size, half: false, places: [{ loc, index: index + run - left, count }] };
+                const item: IMtfItem = { record, name, rear: slot.rear, pod: slot.pod, tons: slot.size, half: false, places: [{ loc, index: index + run - left, count }] };
                 if (count < each) leftovers.push({ item, have: count });
                 else items.push(item);
                 left -= count;
@@ -289,7 +295,7 @@ export function convertMtfToSSW(file: IMtfFile): { xml: string; issues: string[]
         const weapon = line ? findBlkAmmoWeapon(line, weapons) : undefined;
         const round = line && weapon ? findBlkAmmo(line, weapon) : undefined;
         if (!line || !round) { issues.push(`Cannot find the ammunition '${ammo.name}'`); continue; }
-        items.push({ record: round, name: ammo.name, rear: ammo.rear, tons: 0, half: line.half, places: [{ loc: ammo.loc, index: ammo.index, count: 1 }] });
+        items.push({ record: round, name: ammo.name, rear: ammo.rear, pod: ammo.pod, tons: 0, half: line.half, places: [{ loc: ammo.loc, index: ammo.index, count: 1 }] });
     }
 
     const tech = (record: IEquipmentItem) => record.techBase === "clan" || /^clan|-clan$|clan_/.test(record.tag) ? "(CL) " : "(IS) ";
@@ -298,7 +304,7 @@ export function convertMtfToSSW(file: IMtfFile): { xml: string; issues: string[]
         const where = item.places.length === 1
             ? place(item.places[0].loc, item.places[0].index)
             : item.places.map((part) => `<splitlocation index="${part.index}" number="${part.count}">${part.loc.toUpperCase()}</splitlocation>`).join("");
-        return `<equipment><name manufacturer="">${xml(name)}</name><type>${item.record.isAmmo ? "ammunition" : "equipment"}</type>`
+        return `<equipment${item.pod ? ' omnipod="TRUE"' : ""}><name manufacturer="">${xml(name)}</name><type>${item.record.isAmmo ? "ammunition" : "equipment"}</type>`
             + (item.tons > 0 ? `<tons>${item.tons}</tons>` : "") + where + "</equipment>";
     });
 

@@ -112,6 +112,16 @@ describe("MegaMek 'Mech import", () => {
         expect(mech!.getInstalledEquipment().filter((item) => item.tag === "large-laser")).toHaveLength(2);
     });
 
+    it("keeps an OmniMech's pod items in its pods and the rest fixed (#112)", () => {
+        const omni = brawler.replace("Config:Biped", "Config:Biped Omnimek").replace("Right Torso:\nMedium Laser", "Right Torso:\nMedium Laser (omnipod)");
+        const { mech, issues } = importBattleMechMtf(omni);
+        expect(issues).toEqual([]);
+        expect(mech?.isOmnimech).toBe(true);
+        const lasers = mech!.getInstalledEquipment().filter((item) => item.tag === "medium-laser");
+        expect(lasers.map((item) => !!item.omniFixed).sort()).toEqual([false, true, true]);
+        expect(lasers.find((item) => !item.omniFixed)?.location).toBe("rt");
+    });
+
     it("leaves out what it cannot convert, saying why", () => {
         const lam = striker.replace("Config:Biped", "Config:LAM");
         expect(importBattleMechMtf(lam).issues.some((issue) => /LAM/.test(issue))).toBe(true);

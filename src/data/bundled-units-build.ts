@@ -15,10 +15,7 @@ import { getClassicUnitEntries, getMULMatchKeys, isMULCapitalShip, isMULLargeAer
 import { IBundledBuild, loadMULIndex, seedRandom } from "./bundled-mechs-build";
 import { BundledUnit, BundledUnitType, getBundledUnitClass } from "./bundled-units";
 
-export const DEFAULT_MEGAMEK_DIR = "C:/repo/megamek/megamek/data/mekfiles/unit_files";
-export const MEGAMEK_NOTICE = "The data here is/may be copyrighted and NOT included in the GPLv3 license. Converted from MegaMek's "
-    + "unit files (https://github.com/MegaMek/megamek): MegaMek Data (C) 2025-2026 by The MegaMek Team, licensed under "
-    + "CC BY-NC-SA 4.0 (https://creativecommons.org/licenses/by-nc-sa/4.0/).";
+export { DEFAULT_MEGAMEK_DIR, MEGAMEK_NOTICE } from "./bundled-mechs-build";
 
 interface IBlkKind {
     title: string;
