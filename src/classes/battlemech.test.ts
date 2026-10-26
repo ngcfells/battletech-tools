@@ -1,5 +1,4 @@
 import { describe, expect, it, vi } from "vitest";
-import { sswMechs } from "../data/ssw/sswMechs";
 import { sswTestFixtures } from "../data/ssw/sswTestFixtures";
 import { BattleMech } from "./battlemech";
 import { getVTOLAMSamples } from "../data/vtolam-samples";
@@ -2096,12 +2095,12 @@ describe("BattleMech", () => {
         expect(new BattleMech(exported).exportJSON()).toBe(exported);
     });
 
-    // Every bundled SSW 'Mech is imported and round-tripped in ssw-corpus-1..4.test.ts.
+    // Every bundled 'Mech is imported from its SSW file and round-tripped by the build (bundled-mechs-build.ts).
 
     // Regression: odd Jump MP used to produce a fractional Speed Factor table index and crash the import.
     // TechManual p. 316: MP = Run + round(Jump / 2) = 8 + round(2.5) = 11 -> Speed Factor 1.76.
     it("uses the canonical Speed Factor for odd Jump MP (Griffin GRF-1N)", () => {
-        const griffin = sswMechs.find((xml) => /name="Griffin" model="GRF-1N"/.test(xml))!;
+        const griffin = sswTestFixtures["Griffin GRF-1N"];
         const mech = new BattleMech();
         mech.importSSWXML(griffin);
 
@@ -2113,7 +2112,7 @@ describe("BattleMech", () => {
     // Regression: SSW names ammunition "@ SRM-6" ("Ammo (SRM-6)"); after the ammunition catalog moved to one
     // record per family ("SRM - Standard Ammo"), exact name matching dropped the ammo of most bundled 'Mechs.
     it("imports the ammunition of a bundled SSW 'Mech (Atlas AS7-D)", () => {
-        const atlas = sswMechs.find((xml) => /name="Atlas" model="AS7-D"/.test(xml))!;
+        const atlas = sswTestFixtures["Atlas AS7-D"];
         const mech = new BattleMech();
         mech.importSSWXML(atlas);
 
@@ -2129,7 +2128,7 @@ describe("BattleMech", () => {
     it("imports Artemis IV launchers and matches the Master Unit List BV (Commando COM-5S, Shogun C)", () => {
         for (const [name, model, bv] of [["Commando", "COM-5S", 557], ["Shogun", "C", 3032]] as const) {
             const mech = new BattleMech();
-            mech.importSSWXML(sswMechs.find((xml) => new RegExp(`name="${name}" model="${model}"`).test(xml))!);
+            mech.importSSWXML(sswTestFixtures[`${name} ${model}`]);
             expect(mech.getInstalledEquipment().some((item) => item.tag.endsWith("-artemis-iv")), `${name} ${model}`).toBe(true);
             expect(mech.getBattleValue(), `${name} ${model}`).toBe(bv);
         }
@@ -2176,14 +2175,14 @@ describe("BattleMech", () => {
 
     // Regression: heat sinks get a fresh UUID on every recalculation; allocation must fall back to tag + rear.
     it("places every critical of an imported SSW mech (Griffin GRF-1N)", () => {
-        const griffin = sswMechs.find((xml) => /name="Griffin" model="GRF-1N"/.test(xml))!;
+        const griffin = sswTestFixtures["Griffin GRF-1N"];
         const mech = new BattleMech();
         mech.importSSWXML(griffin);
 
         expect(mech.getUnallocatedCriticals()).toEqual([]);
     });
 
-    // The engine, gyro and structure of every bundled SSW 'Mech are checked in ssw-corpus-1..4.test.ts.
+    // The engine, gyro and structure of every bundled 'Mech are checked by the build (bundled-mechs-build.ts).
 
     // SSW's spellings of canon armor, heat sink and jump jet types (TM, TO:AUE) used to fall back to Standard armor,
     // Double heat sinks and Standard jump jets without a warning.
@@ -2195,7 +2194,7 @@ describe("BattleMech", () => {
         ["heat sinks", "<type>Single Heat Sink</type>", "<type>Compact Heat Sink</type>", "compact"],
         ["jump jets", "<type>Standard Jump Jet</type>", "<type>Mech UMU</type>", "umu"],
     ])("imports SSW %s named %s -> %s", (component, from, to, expectedTag) => {
-        const griffin = sswMechs.find((xml) => /name="Griffin" model="GRF-1N"/.test(xml))!;
+        const griffin = sswTestFixtures["Griffin GRF-1N"];
         const mech = new BattleMech();
         mech.importSSWXML(griffin.replace(from, to));
 
@@ -2209,7 +2208,7 @@ describe("BattleMech", () => {
     // (0-based 4-5) free (TM p.52). SSW writes it as <cockpit><type>Small Cockpit</type>; the Commando COM-7B puts
     // Endo-Steel in those slots.
     it("imports an SSW Small Cockpit (Commando COM-7B)", () => {
-        const xml = sswMechs.find((candidate) => /model="COM-7B"/.test(candidate))!;
+        const xml = sswTestFixtures["Commando COM-7B"];
         const mech = new BattleMech();
         mech.importSSWXML(xml);
         expect(mech.getCockpitWeight()).toBe(2);
@@ -2217,8 +2216,8 @@ describe("BattleMech", () => {
 
     it("clears an SSW Small Cockpit when the next SSW import into the same 'Mech has a standard one", () => {
         const mech = new BattleMech();
-        mech.importSSWXML(sswMechs.find((candidate) => /model="COM-7B"/.test(candidate))!);
-        mech.importSSWXML(sswMechs.find((candidate) => /name="Griffin" model="GRF-1N"/.test(candidate))!);
+        mech.importSSWXML(sswTestFixtures["Commando COM-7B"]);
+        mech.importSSWXML(sswTestFixtures["Griffin GRF-1N"]);
         expect(mech.getCockpitWeight()).toBe(3);
     });
 
@@ -2293,7 +2292,7 @@ describe("BattleMech Clan Star League XL engine", () => {
 // Project decision (2026-09-30): Clan designs keep Star League equipment until their own Clan version
 // enters production, and the carried version keeps its Inner Sphere slots and armor factor.
 describe("BattleMech SSW import era", () => {
-    const griffin = sswMechs.find((xml) => /name="Griffin" model="GRF-1N"/.test(xml))!;
+    const griffin = sswTestFixtures["Griffin GRF-1N"];
     const withYear = (xml: string, year: number, techbase?: string) => {
         let out = xml.replace(/(<year[^>]*>)\d+(<\/year>)/, `$1${year}$2`);
         if (techbase) {
@@ -2367,7 +2366,7 @@ describe("saved designs with custom equipment", () => {
 });
 
 describe("SSW unresolved items", () => {
-    const griffin = () => sswMechs.find((xml) => /name="Griffin" model="GRF-1N"/.test(xml))!;
+    const griffin = () => sswTestFixtures["Griffin GRF-1N"];
 
     it("reports an unknown weapon with its faction, type, location and slot", () => {
         const xml = griffin().replace('<name manufacturer="Fusigon">(IS) PPC</name>', '<name manufacturer="">(IS) Widget Cannon</name>');

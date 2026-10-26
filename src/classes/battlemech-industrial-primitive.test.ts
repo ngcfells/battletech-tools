@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { BattleMech } from "./battlemech";
 import { getCockpitType } from "../data/mech-cockpit-types";
-import { sswMechs } from "../data/ssw/sswMechs";
+import { sswTestFixtures } from "../data/ssw/sswTestFixtures";
 import { getTargetToHitFromWeapon } from "../utils";
 import { universalEquipment } from "../data/universal-equipment";
 
@@ -143,7 +143,7 @@ describe("Weight-free heat sinks by engine type (TM p.71)", () => {
 describe("Importing a design with a non-fusion engine", () => {
     it("keeps the heat sink total of an SSW file", () => {
         // The Griffin GRF-1N file lists 12 heat sinks. With a fission engine 5 are free and 7 are added.
-        const griffin = sswMechs.find((xml) => /name="Griffin" model="GRF-1N"/.test(xml))!;
+        const griffin = sswTestFixtures["Griffin GRF-1N"];
         const fusion = new BattleMech();
         fusion.importSSWXML(griffin);
         expect([fusion.getEngineType().tag, fusion.getHeatSinks(), fusion.getAdditionalHeatSinks()]).toEqual(["standard", 12, 2]);
@@ -151,6 +151,20 @@ describe("Importing a design with a non-fusion engine", () => {
         const fission = new BattleMech();
         fission.importSSWXML(griffin.replace(">Fusion Engine</engine>", ">Fission Engine</engine>"));
         expect([fission.getEngineType().tag, fission.getHeatSinks(), fission.getAdditionalHeatSinks()]).toEqual(["fission", 12, 7]);
+    });
+});
+
+// A saved IndustrialMech lost its industrial armor on load (the armor was set before the Industrial structure made
+// it an IndustrialMech), so its Battle Value and cost changed: a Buster BC XV went from 222 to 294 BV (#241 build).
+describe("Reloading a saved IndustrialMech", () => {
+    it("keeps its Commercial armor, Battle Value and cost", () => {
+        const mech = new BattleMech();
+        mech.setInternalStructureType("industrial");
+        mech.setArmorType("commercial");
+        expect(mech.getArmorType()).toBe("commercial");
+        const reload = new BattleMech(mech.exportJSON());
+        expect(reload.getArmorType()).toBe("commercial");
+        expect([reload.getBattleValue(), reload.getCBillCostNumeric()]).toEqual([mech.getBattleValue(), mech.getCBillCostNumeric()]);
     });
 });
 

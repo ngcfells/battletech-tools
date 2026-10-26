@@ -1,10 +1,10 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { sswMechs } from "../data/ssw/sswMechs";
+import { sswTestFixtures } from "../data/ssw/sswTestFixtures";
 import { registerLocalCustomContent } from "../data/custom-content-local";
 import type { ICustomContentDraft } from "../data/custom-content-types";
 import { MAX_SSW_IMPORT_FILE_BYTES, MAX_SSW_IMPORT_FILES, runSSWImportSession, sswImportLimitError } from "./sswImportSession";
 
-const griffin = sswMechs.find((xml) => /name="Griffin" model="GRF-1N"/.test(xml))!;
+const griffin = sswTestFixtures["Griffin GRF-1N"];
 const withWidget = griffin.replace(/\(IS\) PPC</, "(IS) Widget Cannon<");
 let saved: ICustomContentDraft[] = [];
 let evidence: Record<string, string> = {};

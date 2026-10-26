@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { BattleMech } from "../classes/battlemech";
-import { sswMechs } from "../data/ssw/sswMechs";
+import { sswTestFixtures } from "../data/ssw/sswTestFixtures";
 import { getSSWXMLBasicInfo } from "./getSSWXMLBasicInfo";
 
 // Reads an attribute of the root <mech> tag straight from the XML text, independently of the XML parser under test.
@@ -20,12 +20,8 @@ function rootMechAttribute(xml: string, attribute: string): string | null {
 }
 
 describe("getSSWXMLBasicInfo", () => {
-    it("has the bundled SSW mech library to test against", () => {
-        expect(sswMechs.length).toBeGreaterThan(500);
-    });
-
-    it("parses name, model and tonnage of every bundled SSW mech", () => {
-        for (const xml of sswMechs) {
+    it("parses name, model and tonnage of every SSW fixture", () => {
+        for (const xml of Object.values(sswTestFixtures)) {
             const info = getSSWXMLBasicInfo(xml);
             const label = `${rootMechAttribute(xml, "name")} ${rootMechAttribute(xml, "model")}`;
 

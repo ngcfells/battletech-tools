@@ -1,0 +1,513 @@
+# Bundled 'Mechs: build report
+
+2859 designs kept, 499 files left out.
+
+| Reason | Files |
+|---|---|
+| duplicate of a design already kept | 208 |
+| OmniMech: the import does not read its configurations yet (#112) | 160 |
+| BV differs from the MUL | 89 |
+| import errors | 38 |
+| BV differs from the file (no MUL entry) | 4 |
+
+## Left out
+
+- `BoT/Archer C.ssw`: BV differs from the MUL: C: BV 1883, MUL 1811
+- `BoT/Shadow Hawk C.ssw`: BV differs from the MUL: C: BV 1348, MUL 1309
+- `BoT/Victor C.ssw`: BV differs from the MUL: C: BV 1950, MUL 1925
+- `BoT/Warhammer C.ssw`: BV differs from the MUL: C: BV 1746, MUL 1728
+- `Clan/Omni/Adder (Puma).ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Clan/Omni/Arctic Cheetah (Hankyu).ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Clan/Omni/Blood Asp (Star Adder).ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Clan/Omni/Dire Wolf (Daishi).ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Clan/Omni/Ebon Jaguar (Cauldron-Born).ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Clan/Omni/Executioner (Gladiator).ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Clan/Omni/Executioner-B (Gladiator-B).ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Clan/Omni/Fenris (Ice Ferret).ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Clan/Omni/Fire Moth (Dasher).ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Clan/Omni/Gargoyle (Man O War).ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Clan/Omni/Grand Summoner (Thor II).ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Clan/Omni/Hellbringer (Loki).ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Clan/Omni/Hellbringer Mk II (Loki Mk II).ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Clan/Omni/Huntsman (Nobori-nin).ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Clan/Omni/Ice Ferret (Fenris).ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Clan/Omni/Ion Sparrow (Butcherbird).ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Clan/Omni/Kit Fox (Uller).ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Clan/Omni/Mad Dog (Vulture).ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Clan/Omni/Mad Dog Mk III (Vulture Mk III).ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Clan/Omni/Mist Lynx (Koshi).ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Clan/Omni/Mongrel (Grendel).ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Clan/Omni/Nova (Black Hawk).ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Clan/Omni/Skinwalker (Ryoken III).ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Clan/Omni/Stormcrow (Ryoken).ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Clan/Omni/Summoner (Thor).ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Clan/Omni/Timber Wolf (Mad Cat).ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Clan/Omni/Viper (Dragonfly).ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Clan/Omni/Warhawk (Masakari).ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Clan/RecGuide/Vol 11/Horned Owl (Peregrine) 6.ssw`: BV differs from the MUL: 6: BV 1413, MUL 1475
+- `Clan/RecGuide/Vol 9/Vapor Eagle (Goshawk).ssw`: duplicate of a design already kept
+- `Golden Century/Devastator DVS-2-EC.ssw`: BV differs from the MUL: DVS-2-EC: BV 2844, MUL 2859
+- `Golden Century/Emperor EMP-6A-EC.ssw`: BV differs from the MUL: EMP-6A-EC: BV 2210, MUL 2165
+- `Golden Century/Excalibur EXC-B2b-EC.ssw`: BV differs from the MUL: EXC-B2b-EC: BV 2001, MUL 2008
+- `Golden Century/Minsk 2.ssw`: BV differs from the MUL: 2: BV 2364, MUL 2363
+- `Golden Century/Starslayer STY-2C-EC.ssw`: BV differs from the MUL: STY-2C-EC: BV 1419, MUL 1407
+- `Golden Century/Vision Quest VQ-1NC.ssw`: BV differs from the MUL: VQ-1NC: BV 2401, MUL 2180
+- `MWDA/Firestarter FS9-M3.ssw`: BV differs from the MUL: FS9-M3: BV 827, MUL 866
+- `MWDA/Mad Cat III 2.ssw`: BV differs from the MUL: 2: BV 2095, MUL 1697
+- `MWDA/Mad Cat III.ssw`: BV differs from the MUL: : BV 2061, MUL 2400
+- `Misc/Gestalt D2X-G.ssw`: import errors: Cannot import the cockpit type: 'Interface Cockpit'; Cannot find any gyro named: 'No Gyro'; Cannot place the Void Signature System in the ct; Unallocated Criticals: 3; - Heavy Ferro Fibrous (heavy-ferro-fibrous); - Angel ECM Suite (angel-ecm); - Void Signature System (void-signature-system)
+- `Misc/Pulverizer PUL-2V.ssw`: import errors: '(IS) Enhanced ER PPC' is Clan equipment (Enhanced PPC) on an Inner Sphere design; the design needs Mixed Tech
+- `Misc/Revenant UBM-1A.ssw`: import errors: Cannot import the cockpit type: 'Robotic Cockpit'
+- `Misc/Stag II STG-24G.ssw`: import errors: '(IS) Enhanced ER PPC' is Clan equipment (Enhanced PPC) on an Inner Sphere design; the design needs Mixed Tech
+- `Misc/Vanquisher VQR-5V.ssw`: BV differs from the MUL: VQR-5V: BV 2334, MUL 2332
+- `Omnis/Alpha Wolf.ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Archangel C-ANG-O.ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Arctic Fox AF1.ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Arctic Wolf II.ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Arctic Wolf.ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Avalanche AVL-1O.ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Avatar AV1-O.ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Balius.ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Battle Cobra BTL-C-2O.ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Battle Cobra.ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Black Hawk (Nova).ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Black Hawk-KU BHKU-O.ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Black Lanner.ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Blackjack BJ2-O.ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Butcherbird (Ion Sparrow).ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Carrion Crow.ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Cauldron-Born (Ebon Jaguar).ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Celerity CLR-03-O.ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Centurion CN11-O.ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Cephalus.ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Cougar.ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Coyotl.ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Crimson Langur.ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Crossbow.ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Daishi (Dire Wolf).ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Dasher (Fire Moth).ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Deimos.ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Deva C-DVA-O.ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Doloire DLR-O.ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Doom Courser.ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Dragonfly (Viper).ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Epimetheus.ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Fenris (Ice Ferret).ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Fire Falcon.ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Firestarter FS9-O.ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Flamberge.ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Gauntlet GTL-1O.ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Gladiator (Executioner).ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Gladiator-B (Executioner-B).ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Grendel (Mongrel).ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Grigori C-GRG-O.ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Gun GN-2O.ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Hankyu (Arctic Cheetah).ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Hauptmann HA1-O.ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Hellion.ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Hierofalcon.ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Inferno INF-NO.ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Iron Cheetah.ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Jade Phoenix.ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Karhu.ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Kingfisher.ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Koshi (Mist Lynx).ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Linebacker.ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Loki (Hellbringer).ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Loki Mk II (Hellbringer Mk II).ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Lupus.ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Mad Cat (Timber Wolf).ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Mad Cat Mk IV.ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Malak C-MK-O.ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Man O War (Gargoyle).ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Masakari (Warhawk).ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Mastodon.ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Men Shen MS1-O.ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Naga II.ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Naga.ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Night Chanter.ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Night Gyr.ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Nobori-nin (Huntsman).ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Nova Cat.ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Omni-Corvis.ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Osteon.ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Owens OW-1.ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Pariah (Septicemia).ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Perseus P1.ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Phantom.ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Pouncer.ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Preta C-PRT-O.ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Puma (Adder).ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Raptor RTX1-O.ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Regent.ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Rime Otter.ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Ryoken (Stormcrow).ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Ryoken III (Skinwalker).ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Sarath SRTH-1O.ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Savage Coyote.ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Seraph C-SRP-O.ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Shadow Cat III.ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Shadow Cat.ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Sojourner.ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Spirit Walker.ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Star Adder (Blood Asp).ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Star Crusader.ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Stooping Hawk.ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Stormwolf.ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Strider SR1-O.ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Sun Bear.ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Sunder SD1-O.ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Templar III TLR2-O.ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Templar TLR1-O.ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Tenshi TN-10-O.ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Thor (Summoner).ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Thor II (Grand Summoner).ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Tomahawk II.ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Tomahawk.ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Turkina.ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Uller (Kit Fox).ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Vandal LI-O.ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Vandal.ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Vulture (Mad Dog).ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Vulture Mk III (Mad Dog Mk III).ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Vulture Mk IV.ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/War Crow.ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Warwolf.ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Wendigo-VP.ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Wendigo.ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Woodsman.ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Omnis/Wulfen.ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Operation Klondike/Carbine CON-1 ConstructionMech (RL).ssw`: BV differs from the MUL: CON-1 ConstructionMech (RL): BV 281, MUL 296
+- `Operation Klondike/Daedalus GTX2 Militarized.ssw`: BV differs from the MUL: GTX2 "Militarized": BV 836, MUL 849
+- `Operation Klondike/Highlander HGN-732 (Colleen).ssw`: import errors: 'Streak SRM-6 CP' is Clan equipment (Prototype Streak SRM 6 (Clan)) on an Inner Sphere design; the design needs Mixed Tech; '@ Streak SRM-6 CP' is Clan equipment (Streak SRM - Standard Ammo (C)) on an Inner Sphere design; the design needs Mixed Tech
+- `RS 3039u/Atlas AS7-D-DC.ssw`: import errors: Cannot import the Cockpit Command Console yet (TO:AUE p.112)
+- `RS 3039u/BattleMaster BLR-1G-DC.ssw`: import errors: Cannot import the Cockpit Command Console yet (TO:AUE p.112)
+- `RS 3039u/Orion ON1-V-DC.ssw`: import errors: Cannot import the Cockpit Command Console yet (TO:AUE p.112)
+- `RS 3050U/Clan Star League/Black Knight BL-9-KNT.ssw`: duplicate of a design already kept
+- `RS 3050U/Inner Sphere/Atlas AS7-K-DC.ssw`: import errors: Cannot import the Cockpit Command Console yet (TO:AUE p.112)
+- `RS 3050U/Inner Sphere/Atlas AS7-S2.ssw`: BV differs from the MUL: AS7-S2: BV 2389, MUL 2378
+- `RS 3050U/Inner Sphere/Atlas C.ssw`: duplicate of a design already kept
+- `RS 3050U/Inner Sphere/Awesome AWS-9Ma.ssw`: import errors: Cannot import the Cockpit Command Console yet (TO:AUE p.112)
+- `RS 3050U/Inner Sphere/Banshee BNC-6S.ssw`: BV differs from the MUL: BNC-6S: BV 1899, MUL 1889
+- `RS 3050U/Inner Sphere/Caesar CES-4S.ssw`: BV differs from the MUL: CES-4S: BV 1750, MUL 1739
+- `RS 3050U/Inner Sphere/Cyclops CP-11-A-DC.ssw`: import errors: Cannot import the Cockpit Command Console yet (TO:AUE p.112)
+- `RS 3050U/Inner Sphere/Grand Dragon DRG-5K-DC.ssw`: import errors: Cannot import the Cockpit Command Console yet (TO:AUE p.112)
+- `RS 3050U/Inner Sphere/Orion ON1-M-DC.ssw`: import errors: Cannot import the Cockpit Command Console yet (TO:AUE p.112)
+- `RS 3050U/Inner Sphere/Whitworth WTH-K.ssw`: BV differs from the MUL: WTH-K: BV 819, MUL 958
+- `RS 3050U/Inner Sphere/Zeus ZEU-9S-DC.ssw`: import errors: Cannot import the Cockpit Command Console yet (TO:AUE p.112)
+- `RS 3055U/Baboon (Howler) 2.ssw`: duplicate of a design already kept
+- `RS 3055U/Baboon (Howler) 3 Devil.ssw`: duplicate of a design already kept
+- `RS 3055U/Baboon (Howler).ssw`: duplicate of a design already kept
+- `RS 3055U/Behemoth (Stone Rhino) 2.ssw`: duplicate of a design already kept
+- `RS 3055U/Behemoth (Stone Rhino) 3.ssw`: duplicate of a design already kept
+- `RS 3055U/Behemoth (Stone Rhino) 4.ssw`: duplicate of a design already kept
+- `RS 3055U/Behemoth (Stone Rhino) 5.ssw`: duplicate of a design already kept
+- `RS 3055U/Behemoth (Stone Rhino) 6.ssw`: duplicate of a design already kept
+- `RS 3055U/Behemoth (Stone Rhino).ssw`: duplicate of a design already kept
+- `RS 3055U/Berserker BRZ-C3.ssw`: BV differs from the MUL: BRZ-C3: BV 2395, MUL 2354
+- `RS 3055U/Galahad (Glass Spider) 2.ssw`: duplicate of a design already kept
+- `RS 3055U/Galahad (Glass Spider) 3.ssw`: duplicate of a design already kept
+- `RS 3055U/Galahad (Glass Spider).ssw`: duplicate of a design already kept
+- `RS 3055U/Goshawk (Vapor Eagle) 2.ssw`: duplicate of a design already kept
+- `RS 3055U/Goshawk (Vapor Eagle) 3.ssw`: duplicate of a design already kept
+- `RS 3055U/Goshawk (Vapor Eagle) 4.ssw`: duplicate of a design already kept
+- `RS 3055U/Goshawk (Vapor Eagle).ssw`: duplicate of a design already kept
+- `RS 3055U/Hellhound (Conjurer) 2.ssw`: duplicate of a design already kept
+- `RS 3055U/Hellhound (Conjurer) 3.ssw`: duplicate of a design already kept
+- `RS 3055U/Hellhound (Conjurer) 4.ssw`: duplicate of a design already kept
+- `RS 3055U/Hellhound (Conjurer) 5.ssw`: duplicate of a design already kept
+- `RS 3055U/Hellhound (Conjurer).ssw`: duplicate of a design already kept
+- `RS 3055U/Kraken (Bane) 2.ssw`: duplicate of a design already kept
+- `RS 3055U/Kraken (Bane) 3.ssw`: duplicate of a design already kept
+- `RS 3055U/Kraken (Bane) 4.ssw`: duplicate of a design already kept
+- `RS 3055U/Kraken (Bane).ssw`: duplicate of a design already kept
+- `RS 3055U/Peregrine (Horned Owl) 2.ssw`: duplicate of a design already kept
+- `RS 3055U/Peregrine (Horned Owl) 3.ssw`: duplicate of a design already kept
+- `RS 3055U/Peregrine (Horned Owl) 4.ssw`: duplicate of a design already kept
+- `RS 3055U/Peregrine (Horned Owl) 5.ssw`: duplicate of a design already kept
+- `RS 3055U/Peregrine (Horned Owl).ssw`: duplicate of a design already kept
+- `RS 3055U/Solaris/Bombard BMB-1X.ssw`: BV differs from the MUL: BMB-1X: BV 1648, MUL 1652
+- `RS 3055U/Solaris/Hachiwara HCA-3T.ssw`: BV differs from the MUL: HCA-3T: BV 1646, MUL 1651
+- `RS 3055U/Solaris/Hachiwara HCA-4T.ssw`: BV differs from the MUL: HCA-4T: BV 1728, MUL 1731
+- `RS 3055U/Solaris/Hachiwara HCA-4U.ssw`: BV differs from the MUL: HCA-4U: BV 1786, MUL 1791
+- `RS 3055U/Solaris/Mantis MTS-L.ssw`: BV differs from the MUL: MTS-L: BV 1194, MUL 1176
+- `RS 3055U/Solaris/Ronin SA-RN7.ssw`: BV differs from the MUL: SA-RN7: BV 1180, MUL 1182
+- `RS 3055U/Viper (Black Python) 2.ssw`: duplicate of a design already kept
+- `RS 3055U/Viper (Black Python) 3.ssw`: duplicate of a design already kept
+- `RS 3055U/Viper (Black Python) 4.ssw`: duplicate of a design already kept
+- `RS 3055U/Viper (Black Python).ssw`: duplicate of a design already kept
+- `RS 3055U/Vixen (Incubus) 2.ssw`: duplicate of a design already kept
+- `RS 3055U/Vixen (Incubus) 3.ssw`: duplicate of a design already kept
+- `RS 3055U/Vixen (Incubus) 4.ssw`: duplicate of a design already kept
+- `RS 3055U/Vixen (Incubus) 5.ssw`: duplicate of a design already kept
+- `RS 3055U/Vixen (Incubus).ssw`: duplicate of a design already kept
+- `RS 3060u/Jinggau JN-G9CC.ssw`: import errors: Cannot import the Cockpit Command Console yet (TO:AUE p.112)
+- `RS 3060u/Shugenja SJA-8H.ssw`: BV differs from the MUL: SJA-8H: BV 1692, MUL 1691
+- `RS 3067/Bloodhound B3-HND.ssw`: BV differs from the MUL: B3-HND: BV 1006, MUL 1005
+- `RS 3067/Bowman 3.ssw`: BV differs from the MUL: 3: BV 2770, MUL 2767
+- `RS 3067/No-Dachi NDA-2KO.ssw`: BV differs from the MUL: NDA-2KO: BV 1759, MUL 1728
+- `RS 3067/Vanquisher VQR-5V.ssw`: BV differs from the MUL: VQR-5V: BV 2334, MUL 2332
+- `RS 3075u/AoW/Battlemaster BLR-1Gbc.ssw`: import errors: Cannot import the Cockpit Command Console yet (TO:AUE p.112)
+- `RS 3075u/AoW/Battlemaster BLR-1Gc.ssw`: import errors: Cannot import the Cockpit Command Console yet (TO:AUE p.112)
+- `RS 3075u/AoW/Gladiator GLD-1R (Keller).ssw`: BV differs from the MUL: GLD-1R (Keller): BV 1553, MUL 1517
+- `RS 3075u/AoW/Jabberwocky JAW-65A EngineerMech.ssw`: BV differs from the MUL: JAW-65A EngineerMech: BV 250, MUL 230
+- `RS 3075u/AoW/Jabberwocky JAW-66B EngineerMech.ssw`: BV differs from the MUL: JAW-66B EngineerMech: BV 350, MUL 322
+- `RS 3075u/AoW/Jabberwocky JAW-66D ConstructionMech.ssw`: BV differs from the MUL: JAW-66D ConstructionMech: BV 352, MUL 326
+- `RS 3075u/AoW/Kiso ConstructionMech K-3N-KR4.ssw`: import errors: Cannot import the Cockpit Command Console yet (TO:AUE p.112)
+- `RS 3075u/AoW/Kiso ConstructionMech K-3N-KR5.ssw`: import errors: Cannot import the Cockpit Command Console yet (TO:AUE p.112)
+- `RS 3075u/AoW/Lumberjack LoggerMech LM1A.ssw`: BV differs from the file (no MUL entry): BV 311, file 308
+- `RS 3075u/AoW/Phoenix PX-1R.ssw`: BV differs from the MUL: PX-1R: BV 900, MUL 917
+- `RS 3075u/AoW/Quasit QUA-51M MilitiaMech.ssw`: BV differs from the MUL: QUA-51M MilitiaMech: BV 707, MUL 636
+- `RS 3075u/AoW/Quasit QUA-51P MilitiaMech.ssw`: BV differs from the MUL: QUA-51P MilitiaMech: BV 865, MUL 779
+- `RS 3075u/AoW/Quasit QUA-51T MilitiaMech.ssw`: BV differs from the MUL: QUA-51T MilitiaMech: BV 696, MUL 670
+- `RS 3075u/AoW/Toro TR-A-1.ssw`: BV differs from the MUL: TR-A-1: BV 661, MUL 671
+- `RS 3075u/AoW/Wolverine II WVR-7H.ssw`: duplicate of a design already kept
+- `RS 3085/Diomede D-M3D-3 ConstructionMech.ssw`: BV differs from the MUL: D-M3D-3 ConstructionMech: BV 1227, MUL 1228
+- `RS 3085/Diomede D-M3D-4 ConstructionMech.ssw`: BV differs from the file (no MUL entry): BV 1234, file 1235
+- `RS 3085/ONN/Charger CGR-3Kr.ssw`: BV differs from the MUL: CGR-3Kr: BV 2121, MUL 2092
+- `RS 3085/PP/Archer ARC-5R.ssw`: BV differs from the MUL: ARC-5R: BV 1672, MUL 1674
+- `RS 3085/PP/Archer C.ssw`: BV differs from the MUL: C: BV 1721, MUL 1811
+- `RS 3085/PP/BattleMaster BLR-2C.ssw`: import errors: Cannot import the Cockpit Command Console yet (TO:AUE p.112)
+- `RS 3085/PP/Battlemaster BLR-10S.ssw`: BV differs from the MUL: BLR-10S: BV 1930, MUL 1927
+- `RS 3085/PP/Battlemaster BLR-10S2.ssw`: BV differs from the MUL: BLR-10S2: BV 1930, MUL 1927
+- `RS 3085/PP/Goliath GOL-3S.ssw`: BV differs from the MUL: GOL-3S: BV 1828, MUL 1792
+- `RS 3085/PP/Goliath GOL-4S.ssw`: BV differs from the MUL: GOL-4S: BV 1923, MUL 1912
+- `RS 3085/PP/Goliath GOL-6H.ssw`: BV differs from the MUL: GOL-6H: BV 1681, MUL 1676
+- `RS 3085/PP/Longbow LGB-13NAIS.ssw`: BV differs from the MUL: LGB-13NAIS: BV 1806, MUL 1804
+- `RS 3085/PP/Marauder C.ssw`: duplicate of a design already kept
+- `RS 3085/PP/Rifleman C.ssw`: duplicate of a design already kept
+- `RS 3085/PP/Shadow Hawk C.ssw`: BV differs from the MUL: C: BV 1260, MUL 1309
+- `RS 3085/PP/Thunderbolt C.ssw`: duplicate of a design already kept
+- `RS 3085/PP/Valkyrie VLK-QW5.ssw`: BV differs from the MUL: VLK-QW5: BV 689, MUL 701
+- `RS 3085/PP/Warhammer C.ssw`: BV differs from the MUL: C: BV 1668, MUL 1728
+- `RS 3085/PP/Wasp WSP-3L.ssw`: BV differs from the MUL: WSP-3L: BV 593, MUL 534
+- `RS 3085/PP/Wolverine WVR-9K.ssw`: BV differs from the MUL: WVR-9K: BV 1420, MUL 1419
+- `RS 3085/Pack Hunter II.ssw`: BV differs from the MUL: : BV 1797, MUL 1794
+- `RS 3085/Thunder Fox TFT-C3.ssw`: import errors: Cannot import the Cockpit Command Console yet (TO:AUE p.112)
+- `RS 3090/Deep Lord RCL-Z1M MilitiaMech.ssw`: BV differs from the MUL: RCL-Z1M MilitiaMech: BV 713, MUL 715
+- `RS 3090/Trebuchet TBT-K7R.ssw`: BV differs from the MUL: TBT-K7R: BV 1415, MUL 1408
+- `RS 3145/Draconis Combine/Dragon II DRG-11R.ssw`: BV differs from the MUL: DRG-11R: BV 2302, MUL 2300
+- `RS 3145/Draconis Combine/Hatamoto-Godai HTM-30Z.ssw`: import errors: Cannot import the Cockpit Command Console yet (TO:AUE p.112); Cannot armor slot 4 of the hd
+- `RS 3145/Federated Suns/Antlion LK-3D.ssw`: BV differs from the MUL: LK-3D: BV 854, MUL 859
+- `RS 3145/Free Worlds League/Anzu ZU-G60.ssw`: BV differs from the MUL: ZU-G60: BV 1503, MUL 1486
+- `RS 3145/Free Worlds League/Neanderthal NTL-AG.ssw`: BV differs from the MUL: NTL-AG: BV 2020, MUL 2024
+- `RS 3145/Lyran Commonwealth/Firestarter FS9-M2.ssw`: duplicate of a design already kept
+- `RS 3145/Lyran Commonwealth/Zeus X ZEU-X4.ssw`: import errors: Cannot import the Cockpit Command Console yet (TO:AUE p.112)
+- `RS 3145/Mercs/Koshi (Standard) 2.ssw`: duplicate of a design already kept
+- `RS 3145/Mercs/Koshi (Standard) 3.ssw`: duplicate of a design already kept
+- `RS 3145/Mercs/Koshi (Standard).ssw`: duplicate of a design already kept
+- `RS 3145/NTNU/Blade BLD-7R.ssw`: duplicate of a design already kept
+- `RS 3145/NTNU/Cougar X.ssw`: duplicate of a design already kept
+- `RS 3145/NTNU/Fennec FEC-5CM.ssw`: BV differs from the MUL: FEC-5CM: BV 1498, MUL 1445
+- `RS 3145/NTNU/Grand Titan T-IT-N13M.ssw`: BV differs from the MUL: T-IT-N13M: BV 2533, MUL 2553
+- `RS 3145/NTNU/Legionnaire LGN-2K.ssw`: duplicate of a design already kept
+- `RS 3145/NTNU/Ti Tsang TSG-10L.ssw`: BV differs from the MUL: TSG-10L: BV 1728, MUL 1730
+- `RS 3145/NTNU/Xanthos XNT-6O.ssw`: BV differs from the MUL: XNT-6O: BV 2320, MUL 2300
+- `Recognition Guide/Vol 10/Archer (Wolf).ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 10/Archer ARC-2Rb.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 10/Archer ARC-4M.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 10/Archer ARC-5R.ssw`: BV differs from the MUL: ARC-5R: BV 1672, MUL 1674
+- `Recognition Guide/Vol 10/Archer ARC-5S.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 10/Archer ARC-5W.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 11/Horned Owl (Peregrine) 6.ssw`: BV differs from the MUL: 6: BV 1413, MUL 1475
+- `Recognition Guide/Vol 11/Horned Owl (Peregrine) 7 Shimafukuro.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 11/Ion Sparrow (Butcherbird).ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Recognition Guide/Vol 11/Peregrine (Horned Owl) 6.ssw`: BV differs from the MUL: 6: BV 1413, MUL 1475
+- `Recognition Guide/Vol 11/Peregrine (Horned Owl) 7 Shimafukuro.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 12/Black Python (Viper) 5.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 12/Shadow Hawk SHD-2Hb.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 12/Shadow Hawk SHD-2d2.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 12/Shadow Hawk SHD-5M.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 12/Viper (Black Python) 5.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 13/Galahad (Glass Spider) 4.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 14/Griffin IIC 2.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 14/Griffin IIC.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 14/Ostsol OTL-5M.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 15/Phoenix Hawk IIC 2.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 15/Phoenix Hawk IIC.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 15/Thunderbolt C.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 15/Thunderbolt TDR-7M.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 15/Thunderbolt TDR-9S.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 15/Thunderbolt TDR-9SE.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 16/Locust C.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 16/Locust IIC 2.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 16/Locust IIC 3.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 16/Locust IIC.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 16/Locust LCT-1Vb.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 16/Locust LCT-3D.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 16/Locust LCT-3M.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 16/Locust LCT-3S.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 17/Bane (Kraken) 2.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 17/Bane (Kraken) 3.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 17/Bane (Kraken) 5.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 17/Bane (Kraken) 6.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 17/Bane (Kraken) 7.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 17/Bane (Kraken).ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 17/Crusader CRD-3R (Crael).ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 17/Crusader CRD-4BR.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 17/Crusader CRD-4D.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 17/Crusader CRD-4K.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 17/Crusader CRD-5M.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 17/Crusader CRD-5S.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 17/Kraken (Bane) 2.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 17/Kraken (Bane) 3.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 17/Kraken (Bane) 5.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 17/Kraken (Bane) 6.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 17/Kraken (Bane) 7.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 17/Kraken (Bane).ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 18/Jenner IIC 2.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 18/Jenner IIC 3.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 18/Jenner IIC.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 18/Wolverine WVR-7D.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 18/Wolverine WVR-7K.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 18/Wolverine WVR-7M.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 19/Iron Cheetah.ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Recognition Guide/Vol 19/Rime Otter.ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Recognition Guide/Vol 19/Scorpion SCP-1TB.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 1/Goliath C.ssw`: BV differs from the MUL: C: BV 2227, MUL 2222
+- `Recognition Guide/Vol 1/Griffin GRF-1DS.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 1/Griffin GRF-3M.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 20/Mastodon.ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Recognition Guide/Vol 20/Shadow Hawk IIC 2.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 20/Shadow Hawk IIC.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 21/Regent.ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Recognition Guide/Vol 22/Jade Phoenix.ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Recognition Guide/Vol 23/Grand Crusader GRN-D-01-X.ssw`: BV differs from the MUL: GRN-D-01-X: BV 1869, MUL 1895
+- `Recognition Guide/Vol 24/Atlas AS7-S3-DC.ssw`: import errors: Cannot import the Cockpit Command Console yet (TO:AUE p.112)
+- `Recognition Guide/Vol 25/Chameleon TRC-4B.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 26/Merlin MLN-1P.ssw`: BV differs from the MUL: MLN-1P: BV 1182, MUL 1181
+- `Recognition Guide/Vol 26/Naga II.ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Recognition Guide/Vol 2/Behemoth (Stone Rhino) 4.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 2/Behemoth (Stone Rhino) 5.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 2/Behemoth (Stone Rhino) 6.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 2/Behemoth (Stone Rhino).ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 2/Ostscout OTT-7K.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 2/Sojourner.ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Recognition Guide/Vol 2/Stone Rhino (Behemoth) 4.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 2/Stone Rhino (Behemoth) 5.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 2/Stone Rhino (Behemoth) 6.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 2/Stone Rhino (Behemoth) 7.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 2/Stone Rhino (Behemoth) 8.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 2/Stone Rhino (Behemoth).ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 2/UrbanMech UM-R93.ssw`: BV differs from the MUL: UM-R93: BV 852, MUL 894
+- `Recognition Guide/Vol 30/Hellhound (Conjurer) 6.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 30/Hellhound II (Hellcat).ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 30/Hellhound II-P (Hellcat-P).ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 3/BattleMaster BLR-2C.ssw`: import errors: Cannot import the Cockpit Command Console yet (TO:AUE p.112)
+- `Recognition Guide/Vol 3/BattleMaster BLR-3M-DC.ssw`: import errors: Cannot import the Cockpit Command Console yet (TO:AUE p.112)
+- `Recognition Guide/Vol 3/BattleMaster BLR-3M.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 3/BattleMaster BLR-3S.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 3/BattleMaster BLR-6C.ssw`: import errors: Cannot import the Cockpit Command Console yet (TO:AUE p.112)
+- `Recognition Guide/Vol 3/Hierofalcon.ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Recognition Guide/Vol 3/Shadow Cat III.ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Recognition Guide/Vol 4/Warhammer IIC 2.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 4/Warhammer IIC.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 4/Wasp WSP-1S.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 4/Wasp WSP-3M.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 4/Wasp WSP-3W.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 5/Conjurer (Hellhound) 7.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 5/Conjurer (Hellhound) 8.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 5/Conjurer (Hellhound).ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 5/Hellhound (Conjurer) 7.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 5/Hellhound (Conjurer) 8.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 5/Hellhound (Conjurer).ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 5/Marauder II MAD-5A.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 5/Marauder II MAD-5B.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 5/Marauder II MAD-5C.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 5/Marauder II MAD-6C.ssw`: import errors: Cannot import the Cockpit Command Console yet (TO:AUE p.112)
+- `Recognition Guide/Vol 6/Marauder Bounty Hunter 3015.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 6/Marauder Bounty Hunter 3044.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 6/Marauder Bounty Hunter 3138.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 6/Marauder Bounty Hunter 3146.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 6/Marauder C.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 6/Marauder IIC 8.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 6/Marauder IIC.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 6/Marauder MAD-5D-DC.ssw`: import errors: Cannot import the Cockpit Command Console yet (TO:AUE p.112)
+- `Recognition Guide/Vol 6/Marauder MAD-5D.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 6/Marauder MAD-5M.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 6/Marauder MAD-5S.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 7/Incubus (Vixen) 2.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 7/Incubus (Vixen) 3.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 7/Incubus (Vixen) 7.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 7/Incubus (Vixen) 8.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 7/Incubus (Vixen) 9.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 7/Incubus (Vixen).ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 7/Vixen (Incubus) 2.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 7/Vixen (Incubus) 3.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 7/Vixen (Incubus) 7.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 7/Vixen (Incubus) 8.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 7/Vixen (Incubus) 9.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 7/Vixen (Incubus).ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 7/Warhammer WHM-7A.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 7/Warhammer WHM-7K.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 7/Warhammer WHM-7M-DC.ssw`: import errors: Cannot import the Cockpit Command Console yet (TO:AUE p.112)
+- `Recognition Guide/Vol 7/Warhammer WHM-7M.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 7/Warhammer WHM-7S.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 8/Baboon (Howler) 4.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 8/Baboon (Howler) 5.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 8/Baboon (Howler) 6.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 8/Baboon (Howler).ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 8/Howler (Baboon) 4.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 8/Howler (Baboon) 5.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 8/Howler (Baboon) 6.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 8/Howler (Baboon).ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 8/Rifleman C.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 8/Rifleman RFL-5D.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 8/Rifleman RFL-5M.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 9/Goshawk (Vapor Eagle) 2.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 9/Goshawk (Vapor Eagle) 5.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 9/Goshawk (Vapor Eagle) 6.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 9/Goshawk (Vapor Eagle) 7.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 9/Goshawk (Vapor Eagle).ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 9/Valkyrie VLK-QD.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 9/Vapor Eagle (Goshawk) 2.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 9/Vapor Eagle (Goshawk) 5.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 9/Vapor Eagle (Goshawk) 6.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 9/Vapor Eagle (Goshawk) 7.ssw`: duplicate of a design already kept
+- `Recognition Guide/Vol 9/Vapor Eagle (Goshawk).ssw`: duplicate of a design already kept
+- `Shrapnel/Albatross ALB-5W.ssw`: BV differs from the MUL: ALB-5W: BV 2296, MUL 2370
+- `Shrapnel/Battle Cobra BTL-C-20.ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Shrapnel/Centurion CN10-B.ssw`: duplicate of a design already kept
+- `Shrapnel/Grotesque (Mongrel).ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Shrapnel/Gyrfalcon 5.ssw`: duplicate of a design already kept
+- `Shrapnel/Hatchetman HCT-5DT.ssw`: BV differs from the MUL: HCT-5DT: BV 1509, MUL 1788
+- `Shrapnel/Jinggau JN-G9B.ssw`: BV differs from the MUL: JN-G9B: BV 2733, MUL 2747
+- `Shrapnel/Jinggau JN-G9CCr.ssw`: import errors: Cannot import the Cockpit Command Console yet (TO:AUE p.112)
+- `Shrapnel/Mauler MAL-2R.ssw`: duplicate of a design already kept
+- `Shrapnel/Rattlesnake II RSN-1.ssw`: BV differs from the MUL: RSN-1: BV 1999, MUL 1962
+- `Shrapnel/Rattlesnake II RSN-2.ssw`: BV differs from the MUL: RSN-2: BV 1557, MUL 1480
+- `Shrapnel/Rattlesnake JR7-31R (Gideon).ssw`: BV differs from the MUL: JR7-31R (Gideon): BV 2063, MUL 1959
+- `Shrapnel/Sidewinder.ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Shrapnel/Starhawk.ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Shrapnel/Thunder Stallion 4 Avenging Annie.ssw`: BV differs from the file (no MUL entry): BV 2607, file 2643
+- `TRI/Demeter WLD-1-M AgroMech MOD.ssw`: BV differs from the MUL: WLD-1-M AgroMech MOD: BV 332, MUL 327
+- `TRI/Harvester HVR-199 AgroMech.ssw`: BV differs from the MUL: HVR-199 AgroMech: BV 485, MUL 490
+- `TRI/Harvester HVR-199M-M AgroMech MOD.ssw`: BV differs from the MUL: HVR-199M-M AgroMech MOD: BV 406, MUL 438
+- `Turning Points/DATP Liao/Harvester HVR-99 AgroMech.ssw`: duplicate of a design already kept
+- `Turning Points/DATP Liao/Mad Cat III Eve.ssw`: duplicate of a design already kept
+- `Turning Points/DATP Liao/Yu Huang Carson.ssw`: duplicate of a design already kept
+- `Turning Points/DATP Vega/Atlas AS7-K2 Jedra.ssw`: duplicate of a design already kept
+- `Turning Points/DATP Vega/Dig Lord RCL-4M MiningMech MOD.ssw`: duplicate of a design already kept
+- `Turning Points/OTP Falcon Incursion/Battlemaster BLR-3M (Rogers).ssw`: BV differs from the MUL: BLR-3M (Rogers): BV 1819, MUL 1818
+- `Turning Points/OTP Hanseatic Crusade/Rhino.ssw`: BV differs from the MUL: : BV 2056, MUL 2124
+- `Turning Points/OTP Hanseatic Crusade/Snow Fox (Omni).ssw`: OmniMech: the import does not read its configurations yet (#112)
+- `Turning Points/OTP Red Corsair/Battlemaster BLR-1G (Red Corsair).ssw`: import errors: Cannot import the Cockpit Command Console yet (TO:AUE p.112)
+- `Turning Points/TP Tokasha/Fox CS-1.ssw`: duplicate of a design already kept
+- `Turning Points/TP Tokasha/Lancelot C 2.ssw`: duplicate of a design already kept
+- `Turning Points/TP Tokasha/Lancelot C.ssw`: duplicate of a design already kept
+- `Turning Points/TP Tokasha/Minsk MNK-101.ssw`: duplicate of a design already kept
+- `XTRO/Clans/Ha Otoko-HR.ssw`: BV differs from the file (no MUL entry): BV 1547, file 1553
+- `XTRO/Gladiators/Crosscut ED-XX Ichabod.ssw`: import errors: Cannot mount a Torso-Mounted Cockpit on an IndustrialMech (TM p.69); Unallocated Criticals: 2; - ER Medium Laser (er-medium-laser); - Heat Sink (heat-sink)
+- `XTRO/Gladiators/Juggernaut JG-R9TX1 Leapin Lil.ssw`: BV differs from the MUL: JG-R9TX1 "Leapin' Lil": BV 1946, MUL 1951
+- `XTRO/Gunslingers/Thug Jose THG-11ECX.ssw`: import errors: Cannot import the Cockpit Command Console yet (TO:AUE p.112)
+- `XTRO/Gunslingers/Wyvern City WVN-5UX.ssw`: import errors: Cannot import the Cockpit Command Console yet (TO:AUE p.112)
+- `XTRO/Kurita/Wolf Trap WFT-2X Bear Trap.ssw`: duplicate of a design already kept
+- `XTRO/Mercenaries/Wolfhound WLF-2X.ssw`: BV differs from the MUL: WLF-2X: BV 1842, MUL 1812
+- `XTRO/Periphery/Atlas AS7-00 (Jurn).ssw`: import errors: Cannot import the Cockpit Command Console yet (TO:AUE p.112); Cannot armor slot 4 of the hd
+- `XTRO/Phantoms/Warlord BLR-2XC.ssw`: import errors: Cannot import the Cockpit Command Console yet (TO:AUE p.112)
+- `XTRO/Pirates/Victor VTR-9K2 St.James.ssw`: duplicate of a design already kept
+- `XTRO/Primitives IV/Xanthos XNT-2O.ssw`: duplicate of a design already kept
+- `XTRO/Primitives I/Ostwar OWR-2M.ssw`: duplicate of a design already kept
+- `XTRO/Primitives V/Ymir BWP-X1 Bipedal Weapons Platform.ssw`: duplicate of a design already kept
+- `XTRO/Steiner/Stealth STH-5X.ssw`: BV differs from the MUL: STH-5X: BV 2155, MUL 2240
+- `XTRO/Succession Wars/Kiso K-3N-KRHQ CommandMech.ssw`: import errors: Cannot import the Cockpit Command Console yet (TO:AUE p.112)

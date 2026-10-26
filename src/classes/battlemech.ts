@@ -8568,6 +8568,10 @@ export class BattleMech {
             if( importObject.as_role)
                 this.setASRole(importObject.as_role);
 
+            // Structure before armor: Industrial structure makes an IndustrialMech, which the industrial armors need.
+            if( importObject.is_type)
+                this.setInternalStructureType(importObject.is_type);
+
             if( importObject.armor_type)
                 this.setArmorType(importObject.armor_type);
 
@@ -8577,9 +8581,6 @@ export class BattleMech {
             if (importObject.as_special_ammo_tag) {
                 this._alphaStrikeSpecialAmmoTag = importObject.as_special_ammo_tag;
             }
-
-            if( importObject.is_type)
-                this.setInternalStructureType(importObject.is_type);
 
             // FrankenMech donors decide the structure points and weight; set after tonnage, type and structure,
             // and before the jump jets, whose count may depend on their size.

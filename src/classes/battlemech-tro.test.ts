@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { sswMechs } from "../data/ssw/sswMechs";
+import { sswTestFixtures } from "../data/ssw/sswTestFixtures";
 import { BattleMech } from "./battlemech";
 import { getBattleMechTroAdapter } from "./battlemech-tro";
 import { getPrintedDroid } from "../data/battledroids-mechs";
@@ -7,7 +7,7 @@ import { buildPrintedDroid } from "./printed-droid";
 
 const archer = (): BattleMech => {
     const mech = new BattleMech();
-    mech.importSSWXML(sswMechs[1]);
+    mech.importSSWXML(sswTestFixtures["Archer ARC-2R"]);
     return mech;
 };
 
@@ -126,7 +126,7 @@ describe("'Mech reset and SSW import", () => {
     it("an SSW import does not keep the previous design's quirks", () => {
         const mech = new BattleMech();
         mech.quirks.add({ tag: "quirk-command-mech" });
-        mech.importSSWXML(sswMechs[1]);
+        mech.importSSWXML(sswTestFixtures["Archer ARC-2R"]);
         expect(mech.quirks.getAll()).toEqual([]);
     });
 });

@@ -6,7 +6,7 @@ import { registerLocalCustomContent, toRuntimeRecord } from "../data/custom-cont
 import type { ICustomContentDraft } from "../data/custom-content-types";
 import type { IEquipmentItem } from "../data/data-interfaces";
 import { getCompatibleAmmo } from "../data/equipment-registry";
-import { sswMechs } from "../data/ssw/sswMechs";
+import { sswTestFixtures } from "../data/ssw/sswTestFixtures";
 import { buildDrafts } from "./sswDraftBuilder";
 import { sha256HexSync } from "./sha256";
 import { runSSWImportSession, sha256Hex } from "./sswImportSession";
@@ -14,7 +14,7 @@ import { runSSWImportSession, sha256Hex } from "./sswImportSession";
 // Follow-ups from the 2026-09-30 SSW import review (#45).
 
 const pillager = readFileSync("src/utils/__fixtures__/pillager-plg-4x-anvil.ssw", "utf8");
-const griffin = sswMechs.find((xml) => /name="Griffin" model="GRF-1N"/.test(xml))!;
+const griffin = sswTestFixtures["Griffin GRF-1N"];
 const withWidget = griffin.replace(/\(IS\) PPC</, "(IS) Widget Cannon<");
 
 let saved: ICustomContentDraft[] = [];

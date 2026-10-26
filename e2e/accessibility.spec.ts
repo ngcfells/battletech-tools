@@ -33,7 +33,6 @@ const PAGES = [
     "classic-battletech/mech-creator/summary",
     "classic-battletech/mech-creator/exports",
     "classic-battletech/mech-creator/imports",
-    "classic-battletech/mech-creator/imports/ssw-sanity-check",
     "classic-battletech/mech-creator/ssw-file-import",
     "classic-battletech/mech-creator/print-rs",
     "classic-battletech/mech-creator/print-as",

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { FaBook, FaCheckCircle, FaEye, FaPlusCircle, FaTimesCircle } from 'react-icons/fa';
+import { FaBook, FaEye, FaPlusCircle } from 'react-icons/fa';
 import { Link } from "react-router";
 import { getMULDisplayName, IASMULUnit } from '../../../../classes/alpha-strike-unit';
 import { BattleMech } from '../../../../classes/battlemech';
@@ -13,6 +13,8 @@ import SmallCraft from '../../../../classes/small-craft';
 import CapitalShip from '../../../../classes/capital-ship';
 import Vehicle from '../../../../classes/vehicle';
 import { ARTVEE_SAMPLES } from '../../../../data/artvee-samples';
+import { getBundledMechEntries, IBundledMechRef, loadBundledMechDesign, loadBundledMechIndex } from '../../../../data/bundled-mechs';
+import type { IBundledDesignHeader } from '../../../../utils/bundled-designs';
 import BattleArmorRecordSheet from '../../../components/battle-armor-record-sheet';
 import FighterRecordSheet from '../../../components/fighter-record-sheet';
 import InfantryRecordSheet from '../../../components/infantry-record-sheet';
@@ -29,9 +31,8 @@ import { buildClassicDesignIndex, ClassicDesignIndex, findClassicDesign, getClas
 import { IMULSearchFilters } from '../../../../utils/mulSearchFilters';
 import { getMULEraLabel } from '../../../../utils/mulUtilities';
 import { paginate } from '../../../../utils/paginate';
-import { getSSWRulesLevelLabel } from '../../../../utils/sswUtils';
 import { IAppGlobals } from '../../../app-router';
-import InputField from '../../../components/form_elements/input_field';
+import BundledMechList from '../../../components/bundled-mech-list';
 import MULSearchFilters from '../../../components/mul-search-filters';
 import SearchResultsPager from '../../../components/search-results-pager';
 import SanitizedHTML from '../../../components/sanitized-html';
@@ -39,11 +40,12 @@ import StandardModal from '../../../components/standard-modal';
 import BattleMechSVG from '../../../components/svg/battlemech-svg';
 import BattleMechTableGroup from './_tableGroup';
 import type { JSX } from "react";
-const CheckCircle = FaCheckCircle as any;
 const Eye = FaEye as any;
 const Book = FaBook as any;
 const PlusCircle = FaPlusCircle as any;
-const TimesCircle = FaTimesCircle as any;
+
+// A saved 'Mech, already imported, or a bundled one imported when the user opens it.
+type MechDesign = BattleMech | IBundledMechRef;
 
 type ClassicMULUnit = Vehicle | AerospaceFighter | InfantryPlatoon | BattleArmor | ProtoMech | SmallCraft | CapitalShip;
 
@@ -80,7 +82,7 @@ export default class BattleMechAddMechDialog extends React.Component<IBattleMech
 
     private searchTimeout: ReturnType<typeof setTimeout> | null = null;
     private latestSearch = 0;
-    private designIndex: { key: string; index: ClassicDesignIndex<BattleMech> } | null = null;
+    private designIndex: { key: string; index: ClassicDesignIndex<MechDesign> } | null = null;
     private unitIndexes = new Map<IClassicMULKind, { key: string; index: ClassicDesignIndex<ClassicMULUnit> }>();
 
     constructor(props: IBattleMechAddMechDialogProps) {
@@ -93,12 +95,15 @@ export default class BattleMechAddMechDialog extends React.Component<IBattleMech
             mulResults: [],
             mulPage: 0,
             mulSearching: false,
+            bundledMechs: [],
         }
 
     }
 
     componentDidMount() {
         void this.updateMULResults();
+        loadBundledMechIndex().then( (bundledMechs) => this.setState({ bundledMechs }) )
+            .catch( (error) => console.error("Unable to load the bundled 'Mechs", error) );
     }
 
     componentWillUnmount() {
@@ -136,15 +141,26 @@ export default class BattleMechAddMechDialog extends React.Component<IBattleMech
     }
 
     // Saved designs come first, so a design the user built wins over the bundled Skunk Werks copy of the same model.
-    getDesignIndex = (): ClassicDesignIndex<BattleMech> => {
+    getDesignIndex = (): ClassicDesignIndex<MechDesign> => {
         const saves = this.props.appGlobals.battleMechSaves;
-        const bundled = this.props.appGlobals.sswMechObjects;
+        const bundled = this.state.bundledMechs;
         const key = JSON.stringify( saves.map( (save) => save.uuid + save.lastUpdated ) ) + bundled.length;
         if( !this.designIndex || this.designIndex.key !== key ) {
             const saved = saves.map( (save) => new BattleMech( JSON.stringify( save ) ) );
-            this.designIndex = { key, index: buildClassicDesignIndex( getClassicMechEntries( saved ).concat( getClassicMechEntries( bundled ) ) ) };
+            this.designIndex = { key, index: buildClassicDesignIndex<MechDesign>( [ ...getClassicMechEntries( saved ), ...getBundledMechEntries( bundled ) ] ) };
         }
         return this.designIndex.index;
+    }
+
+    // Runs a button's action on the design, importing a bundled one first.
+    withMech = ( design: MechDesign, action: ( e: React.FormEvent<HTMLButtonElement>, mech: BattleMech ) => void ) => ( e: React.FormEvent<HTMLButtonElement> ): void => {
+        e.preventDefault();
+        if( design instanceof BattleMech ) {
+            action( e, design );
+            return;
+        }
+        loadBundledMechDesign( design.header, design.configuration ).then( (mech) => action( e, mech ) )
+            .catch( (error) => console.error("Unable to load " + design.header.name, error) );
     }
 
     getUnitIndex = ( kind: IClassicMULKind ): ClassicDesignIndex<ClassicMULUnit> => {
@@ -183,61 +199,6 @@ export default class BattleMechAddMechDialog extends React.Component<IBattleMech
         e.preventDefault();
         this.setState({ viewingOther: { kind, design } });
     }
-
-
-    updateMechNameFilter = (
-        e: React.FormEvent<HTMLInputElement>,
-      ) => {
-        if( e && e.preventDefault ) {
-          e.preventDefault()
-        }
-        let appSettings = this.props.appGlobals.appSettings;
-        appSettings.mechNameFilter = e.currentTarget.value;
-
-        this.props.appGlobals.saveAppSettings(appSettings);
-        this.setState({
-          updated: true,
-        })
-      }
-
-      updateMechRulesFilter = (
-        e: React.FormEvent<HTMLSelectElement>,
-      ) => {
-        if( e && e.preventDefault ) {
-          e.preventDefault()
-        }
-        let appSettings = this.props.appGlobals.appSettings;
-        appSettings.mechRulesFilter = +e.currentTarget.value;
-
-        this.props.appGlobals.saveAppSettings(appSettings)
-        this.setState({
-          updated: true,
-        })
-      }
-
-      _filterSSWMechs = (
-        a: BattleMech
-      ): boolean => {
-
-        if(
-          this.props.appGlobals.appSettings.mechNameFilter.trim() !== ""
-          &&
-          a.getName().trim().toLowerCase().indexOf( this.props.appGlobals.appSettings.mechNameFilter.trim().toLowerCase()  ) === -1
-        ) {
-          return false;
-        }
-
-        if(
-          this.props.appGlobals.appSettings.mechRulesFilter > -1
-          &&
-          a.basicSSWInfo?.rules_level_ssw !== this.props.appGlobals.appSettings.mechRulesFilter
-        ) {
-          return false;
-        }
-
-        return true;
-      }
-
 
 
     viewUnit = (
@@ -352,13 +313,13 @@ export default class BattleMechAddMechDialog extends React.Component<IBattleMech
                         <td className="min-width no-wrap text-left">{unit.Technology?.Name}</td>
                         <td className="min-width no-wrap text-left">{getMULEraLabel( unit.EraId )}</td>
                         <td className="min-width no-wrap text-center">{unit.Tonnage}</td>
-                        <td className="min-width no-wrap text-center">{design ? design.getBattleValue() : unit.BattleValue}</td>
+                        <td className="min-width no-wrap text-center">{design ? ( design instanceof BattleMech ? design.getBattleValue() : design.bv ) : unit.BattleValue}</td>
                         <td className="min-width no-wrap text-center">
                             {design ? (
                                 <>
-                                    <button className='btn btn-sm btn-primary' onClick={e => this.viewUnit(e, design)} title={"View " + design.getName()}><Eye /></button>
-                                    <button className='btn btn-sm btn-primary' onClick={e => this.viewTRO(e, design)} title={"Technical Readout of " + design.getName()} aria-label={"TRO " + getMULDisplayName( unit )}><Book /></button>
-                                    <button className='btn btn-sm btn-primary' onClick={e => this.importUnit(e, design)} title={"Add " + design.getName() + " to this group"} aria-label={"Add " + getMULDisplayName( unit )}><PlusCircle /></button>
+                                    <button className='btn btn-sm btn-primary' onClick={this.withMech( design, this.viewUnit )} title={"View " + getMULDisplayName( unit )}><Eye /></button>
+                                    <button className='btn btn-sm btn-primary' onClick={this.withMech( design, this.viewTRO )} title={"Technical Readout of " + getMULDisplayName( unit )} aria-label={"TRO " + getMULDisplayName( unit )}><Book /></button>
+                                    <button className='btn btn-sm btn-primary' onClick={this.withMech( design, this.importUnit )} title={"Add " + getMULDisplayName( unit ) + " to this group"} aria-label={"Add " + getMULDisplayName( unit )}><PlusCircle /></button>
                                 </>
                             ) : (
                                 <span className="small-text">
@@ -514,126 +475,8 @@ export default class BattleMechAddMechDialog extends React.Component<IBattleMech
 
         <fieldset className="fieldset">
             <legend>Solaris Skunk Werks Data Import</legend>
-            <p>'Mech designs bundled from Solaris Skunk Werks. A <CheckCircle title="This import looks good to add!" className="color-green" /> beside a name means its Battle Value and cost match the Skunk Werks file and nothing failed to import; hover over a red icon to see what differs.</p>
-
-            <div className="row">
-  <div className="col">
-  <InputField
-              type="search"
-              placeholder='Filter'
-              value={this.props.appGlobals.appSettings.mechNameFilter}
-              onChange={this.updateMechNameFilter}
-            />
-  </div>
-  <div className="col">
-  <label>
-              <select
-                  value={this.props.appGlobals.appSettings.mechRulesFilter}
-                  onChange={this.updateMechRulesFilter}
-              >
-                <option value={-1}>All</option>
-                <option value={0}>{getSSWRulesLevelLabel(0)}</option>
-                <option value={1}>{getSSWRulesLevelLabel(1)}</option>
-                <option value={2}>{getSSWRulesLevelLabel(2)}</option>
-              </select>
-            </label>
-
-  </div>
-</div>
-
-
-<table className="table">
-                    <thead>
-                        <tr>
-                            <th>Make</th>
-                            <th className="min-width no-wrap text-left">Tech</th>
-                            <th className="min-width no-wrap text-center">Rules</th>
-                            <th className="min-width no-wrap text-center">Tonnage</th>
-
-                            <th className="min-width no-wrap text-center">BV2</th>
-                            <th className="min-width no-wrap text-center">&nbsp;</th>
-                        </tr>
-                    </thead>
-                    {this.props.appGlobals.sswMechObjects.length === 0 ? (
-                        <tbody>
-                            <tr>
-                                <td className="text-center" colSpan={6}>
-                                    <br />No 'mechs found for import. This should not be!
-                                    <br />
-                                    <br />
-                                </td>
-                            </tr>
-                        </tbody>
-                    ) : null}
-                    {this.props.appGlobals.sswMechObjects.length > 0 && this.props.appGlobals.sswMechObjects.filter( this._filterSSWMechs ).length === 0 ? (
-                        <tbody>
-                            <tr>
-                                <td className="text-center" colSpan={6}>
-                                    <br />There are no 'mechs found with your filter preferences
-                                    <br />
-                                    <br />
-                                </td>
-                            </tr>
-                        </tbody>
-                    ) : (
-                      <>
-                      {this.props.appGlobals.sswMechObjects.filter( this._filterSSWMechs ).map( (bmObj, bmIndex) => {
-
-
-let perfectImport = true;
-let problems: string[] = [];
-if( bmObj.basicSSWInfo && bmObj.basicSSWInfo.bv2 !== bmObj.getBattleValue()) {
-    perfectImport = false;
-    problems.push( "BV2 doesn't match! SSW " + bmObj.basicSSWInfo.bv2 + " vs calculated " + bmObj.getBattleValue() )
-}
-if( bmObj.basicSSWInfo && bmObj.basicSSWInfo.cbill_cost !== bmObj.getCBillCostNumeric(true)) {
-    perfectImport = false;
-    problems.push( "Cbill Cost doesn't match! SSW " + bmObj.basicSSWInfo.cbill_cost + " vs calculated " + bmObj.getCBillCost(true) )
-}
-if( bmObj.sswImportErrors.length > 0 ) {
-    perfectImport = false;
-    problems.push( bmObj.sswImportErrors.length + " import errors!" );
-}
-
-return (
-    <tbody key={bmIndex}>
-        <tr>
-            <td>
-                {bmObj.getName()}&nbsp;
-                {perfectImport ? (
-                    <CheckCircle title="This import looks good to add!" className="color-green" />
-                ) : (
-                    <TimesCircle title={"Not an accurate import, not recommended for adding to your force. " + problems.join("; ")} className="color-red" />
-                )}
-            </td>
-            <td className="min-width no-wrap text-left">{bmObj.getTech().name}</td>
-            <td className="min-width no-wrap text-left">{getSSWRulesLevelLabel(bmObj.basicSSWInfo?.rules_level_ssw ? bmObj.basicSSWInfo?.rules_level_ssw : 0, true )}</td>
-            <td className="min-width no-wrap text-center">{bmObj.getTonnage()}</td>
-            <td className="min-width no-wrap text-center">{bmObj.getBattleValue()}</td>
-            <td className="min-width no-wrap text-center">
-                <button
-                    className='btn btn-sm btn-primary'
-                    onClick={e => this.viewUnit(e, bmObj )}
-                >
-                    <Eye />
-                </button>
-
-                <button
-                    className='btn btn-sm btn-primary'
-                    onClick={e => this.importUnit(e, bmObj )}
-                >
-                    <PlusCircle />
-                </button>
-            </td>
-        </tr>
-    </tbody>
-)
-})}
-                      </>
-                    )}
-
-
-                </table>
+            <p>'Mech designs converted from Solaris Skunk Werks files, each checked against the Battle Value on the Master Unit List (or in the file, for a design the MUL does not list).</p>
+            <BundledMechList appGlobals={this.props.appGlobals} onView={(mech) => this.setState({ viewingUnit: mech })} onAdd={(mech) => this.importUnit( null, mech )} />
 
 
 
@@ -674,4 +517,5 @@ interface IBattleMechAddMechDialogState {
     viewingTRO: { title: string; tro: TechnicalReadout; adapter: ITroUnitAdapter } | null;
     mulPage: number;
     mulSearching: boolean;
+    bundledMechs: IBundledDesignHeader[];
 }

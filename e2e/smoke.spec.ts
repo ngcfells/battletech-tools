@@ -35,12 +35,15 @@ for (const route of ROUTES) {
     });
 }
 
-// 500 ms after startup, app-router imports every bundled SSW mech in the background, after most smoke tests are done.
-// Give it time to run: an exception there silently truncates the SSW mech list (it once did, on odd Jump MP).
-test("background SSW import finishes without an uncaught error", async ({ page }) => {
-    const pageError = page.waitForEvent("pageerror", { timeout: 15_000 }).catch(() => null);
-    await page.goto("");
-    expect((await pageError)?.stack).toBeUndefined();
+// The bundled 'Mechs (#241) load when a list shows them: the index, then one design's chunk when it is opened.
+test("the 'Mech Creator imports page lists the bundled 'Mechs and opens one", async ({ page }) => {
+    const errors: string[] = [];
+    page.on("pageerror", (error) => errors.push(error.stack ?? error.message));
+    await page.goto("classic-battletech/mech-creator/imports");
+    await page.getByPlaceholder("Filter").fill("Atlas AS7-D");
+    await page.getByRole("button", { name: "View Atlas AS7-D", exact: true }).click();
+    await expect(page.getByRole("heading", { name: "Viewing AS7-D" })).toBeVisible();
+    expect(errors).toEqual([]);
 });
 
 test("deep links resolve under the GitHub Pages base path", async ({ page }) => {

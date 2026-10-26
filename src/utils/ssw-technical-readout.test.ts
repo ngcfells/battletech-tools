@@ -1,10 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { sswMechs } from "../data/ssw/sswMechs";
+import { sswTestFixtures } from "../data/ssw/sswTestFixtures";
 import { BattleMech } from "../classes/battlemech";
 import { getBattleMechTroAdapter } from "../classes/battlemech-tro";
 import { isSSWNoMake } from "./ssw-technical-readout";
 
-const archerXml = sswMechs[1];
+const archerXml = sswTestFixtures["Archer ARC-2R"];
 const importArcher = (xml: string = archerXml): BattleMech => {
     const mech = new BattleMech();
     mech.importSSWXML(xml);
@@ -54,7 +54,7 @@ describe("SSW Technical Readout import", () => {
     });
 
     it("an Artemis launcher keeps its make", () => {
-        const xml = sswMechs.find((candidate) => /name="Commando" model="COM-5S"/.test(candidate))!;
+        const xml = sswTestFixtures["Commando COM-5S"];
         const marked = xml.replace('<name manufacturer="">(IS) SRM-6</name>', '<name manufacturer="Holly">(IS) SRM-6</name>');
         expect(marked).not.toBe(xml);
         const mech = importArcher(marked);

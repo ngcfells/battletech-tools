@@ -20,7 +20,6 @@ import { registerLocalCustomContent } from "../data/custom-content-local";
 import { getAppSettings, getBattleMechSaves, getCurrentASForce, getCurrentBattleMech, getCurrentCBTForce, getCurrentFighter, getBuildingSaves, getCurrentBuilding, getCurrentInfantry, getCurrentBattleArmor, getBattleArmorSaves, saveBattleArmorSaves, saveCurrentBattleArmor, getCurrentProtoMech, getProtoMechSaves, saveProtoMechSaves, saveCurrentProtoMech, getCurrentSmallCraft, getSmallCraftSaves, saveSmallCraftSaves, saveCurrentSmallCraft, getCurrentVehicle, getFavoriteASGroups, getFighterSaves, getInfantrySaves, getFavoriteCBTGroups, getVehicleSaves, onStorageSaveError, saveAppSettings, saveBattleMechSaves, saveCurrentASForce, saveCurrentBattleMech, saveCurrentCBTForce, saveCurrentFighter, saveBuildingSaves, saveCurrentBuilding, saveCurrentInfantry, saveCurrentVehicle, saveFavoriteASGroups, saveFighterSaves, saveInfantrySaves, saveFavoriteASGroupsObjects, saveFavoriteCBTGroupsObjects, saveVehicleSaves, getCapitalShipSaves, getCurrentCapitalShip, saveCapitalShipSaves, saveCurrentCapitalShip } from "../dataSaves";
 import { callAnalytics } from "../jdgAnalytics";
 import { generateUUID } from "../utils/generateUUID";
-import { getSSWXMLBasicInfo } from "../utils/getSSWXMLBasicInfo";
 import Alerts from './classes/alerts';
 import { AppSettings } from "./classes/app_settings";
 import SanitizedHTML from './components/sanitized-html';
@@ -39,7 +38,6 @@ const GameManagementRouter = React.lazy(() => import("./pages/game-management/_r
 const Home = React.lazy(() => import("./pages/home"));
 const OtherTools = React.lazy(() => import("./pages/other-tools"));
 const SettingsRouter = React.lazy(() => import("./pages/settings/_router"));
-const SSWSanityCheck = React.lazy(() => import("./pages/ssw-sanity-check"));
 
 export default class AppRouter extends React.Component<IAppRouterProps, IAppRouterState> {
 
@@ -86,7 +84,6 @@ export default class AppRouter extends React.Component<IAppRouterProps, IAppRout
 
             saveAppSettings: this.saveAppSettings,
 
-            sswMechObjects: [],
             favoriteASGroups: [],
             currentASForce: null,
             currentBattleMech: null,
@@ -211,10 +208,6 @@ export default class AppRouter extends React.Component<IAppRouterProps, IAppRout
     }
 
     private _unmounted = false;
-    private _pageLeaving = false;
-    private _onPageLeaving = (): void => { this._pageLeaving = true; };
-    private _onPageShown = (): void => { this._pageLeaving = false; };
-    private _sswImportTimer: ReturnType<typeof setTimeout> | null = null;
 
     private _onConnectionChange = (): void => {
         this.setState({
@@ -225,23 +218,13 @@ export default class AppRouter extends React.Component<IAppRouterProps, IAppRout
     componentDidMount(): void {
         this._unmounted = false;
         window.addEventListener('offline', this._onConnectionChange);
-        window.addEventListener('pagehide', this._onPageLeaving);
-        window.addEventListener('beforeunload', this._onPageLeaving);
-        window.addEventListener('pageshow', this._onPageShown);
         window.addEventListener('online', this._onConnectionChange);
     }
 
     componentWillUnmount(): void {
         this._unmounted = true;
         window.removeEventListener('offline', this._onConnectionChange);
-        window.removeEventListener('pagehide', this._onPageLeaving);
-        window.removeEventListener('beforeunload', this._onPageLeaving);
-        window.removeEventListener('pageshow', this._onPageShown);
         window.removeEventListener('online', this._onConnectionChange);
-        if( this._sswImportTimer !== null ) {
-            clearTimeout( this._sswImportTimer );
-            this._sswImportTimer = null;
-        }
     }
 
     setData = async (
@@ -377,52 +360,6 @@ export default class AppRouter extends React.Component<IAppRouterProps, IAppRout
         this.setState({
             appGlobals: appGlobals,
         })
-
-
-        // Import the bundled SSW mechs in ~12 ms slices, yielding to the browser between slices. Importing all of them
-        // in one go blocked the main thread for several seconds on desktop (far longer on phones), freezing the UI.
-        // The 2 MB of XML is fetched as its own chunk after startup, so it is not part of the entry bundle.
-        let sswMechs: string[] = [];
-        let nextSSWIndex = 0;
-        const importSSWSlice = () => {
-            this._sswImportTimer = null;
-            const sliceEnd = performance.now() + 12;
-            while( nextSSWIndex < sswMechs.length && performance.now() < sliceEnd ) {
-                const sswXML = sswMechs[nextSSWIndex++];
-                const basicSSWInfo = getSSWXMLBasicInfo( sswXML );
-
-                if( basicSSWInfo && basicSSWInfo.rules_level_ssw < 3 ) {
-                    const bmObj = new BattleMech();
-                    bmObj.importSSWXML( sswXML );
-                    bmObj.basicSSWInfo = basicSSWInfo;
-
-                    appGlobals.sswMechObjects.push(bmObj);
-                }
-            }
-
-            if( nextSSWIndex < sswMechs.length ) {
-                this._sswImportTimer = setTimeout( importSSWSlice, 0 );
-            } else {
-                this.setState({
-                    appGlobals: appGlobals,
-                })
-            }
-        };
-        this._sswImportTimer = setTimeout( () => {
-            this._sswImportTimer = null;
-            import("../data/ssw/sswMechs").then( (sswModule) => {
-                if( this._unmounted )
-                    return;
-                sswMechs = sswModule.sswMechs;
-                importSSWSlice();
-            }).catch( (error) => {
-                // Leaving the page while the chunk is on its way cancels the request: that is not a failure.
-                if( this._unmounted || this._pageLeaving )
-                    return;
-                console.error("Unable to load the bundled SSW 'Mechs", error);
-            });
-        }, 500 );
-
 
 
     }
@@ -917,12 +854,6 @@ export default class AppRouter extends React.Component<IAppRouterProps, IAppRout
                     />
                 }/>
 
-                <Route path={`${process.env.PUBLIC_URL}/ssw-sanity-check`}   element={
-                    <SSWSanityCheck
-                        appGlobals={this.state.appGlobals}
-                    />
-                }/>
-
                 <Route path={`${process.env.PUBLIC_URL}/dev-status`}    element={
                     <DevelopmentStatus
                         appGlobals={this.state.appGlobals}
@@ -992,7 +923,6 @@ interface IAppRouterState {
 }
 
 export interface IAppGlobals {
-    sswMechObjects: BattleMech[];
     sessionUUID: string;
     currentPageTitle: string;
     siteAlerts: Alerts;

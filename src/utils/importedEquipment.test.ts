@@ -1,9 +1,6 @@
-import { describe, expect, it, vi } from "vitest";
-import { BattleMech } from "../classes/battlemech";
-import { SSW_KNOWN_MISSING_ITEMS } from "../classes/ssw-corpus-checks";
+import { describe, expect, it } from "vitest";
 import { IEquipmentItem } from "../data/data-interfaces";
 import { getEquipmentCatalogDefinitions, getEquipmentTier } from "../data/equipment-registry";
-import { sswMechs } from "../data/ssw/sswMechs";
 import { findCatalogMatches, findImportedEquipment } from "./importedEquipment";
 
 describe("findImportedEquipment", () => {
@@ -127,30 +124,6 @@ describe("equipment catalogs", () => {
         for (const size of [20, 30, 40]) {
             expect(findImportedEquipment(`CLHAG${size}`, "clan")?.item.name, `CLHAG${size}`).toBe(`Hyper-Assault Gauss (HAG) ${size}`);
         }
-    });
-});
-
-describe("SSW import", () => {
-    // The corpus shards (ssw-corpus-1..4.test.ts) allow these errors and no others; each must still happen, so the
-    // list is shortened when a missing canon record is added.
-    it.each(SSW_KNOWN_MISSING_ITEMS)("still raises %s on the bundled designs that use it", (error) => {
-        vi.spyOn(console, "warn").mockImplementation(() => {});
-        vi.spyOn(console, "log").mockImplementation(() => {});
-        const name = /'(.*)'/.exec(error)![1];
-        const designs = sswMechs.filter((xml) => xml.includes(name));
-        expect(designs.length).toBeGreaterThan(0);
-        const raised = designs.some((xml) => {
-            const mech = new BattleMech();
-            mech.importSSWXML(xml);
-            return mech.sswImportErrors.includes(error);
-        });
-        expect(raised).toBe(true);
-        vi.restoreAllMocks();
-    });
-
-    // Every canon item the bundled designs use has a record (#44); the list stays empty.
-    it("knows of no missing canon items", () => {
-        expect(SSW_KNOWN_MISSING_ITEMS).toEqual([]);
     });
 });
 

@@ -34,7 +34,6 @@ const makeAppGlobals = () => {
         battleMechSaves: [],
         vehicleSaves: [], fighterSaves: [], smallCraftSaves: [], capitalShipSaves: [],
         infantrySaves: [], battleArmorSaves: [], protoMechSaves: [], buildingSaves: [],
-        sswMechObjects: [],
         makeDocumentTitle: vi.fn(),
         saveAppSettings: vi.fn(),
         toggleMobile: vi.fn(),
@@ -95,20 +94,17 @@ describe("Classic BattleTech roster: adding 'Mechs (issue 18)", () => {
         );
         const text = container.textContent ?? "";
         expect(text).not.toContain("only Introductory Mechs");
-        expect(text).toContain("Battle Value and cost match");
-        // The empty-list message spans all six columns.
-        const emptyCells = [...container.querySelectorAll("td[colspan='6']")];
-        expect(emptyCells.some((cell) => cell.textContent?.includes("No 'mechs found for import"))).toBe(true);
+        expect(text).toContain("checked against the Battle Value on the Master Unit List");
     });
 });
 
 // Ideas #84 (Camille, Centrella-Sworn, Star League Discord): search the MUL from the Classic roster.
 describe("Classic roster Master Unit List search", () => {
-    it("finds a 'Mech on the MUL and adds its Skunk Werks design to the group", async () => {
+    it("finds a 'Mech on the MUL and adds the design saved for it to the group", async () => {
         const appGlobals = makeAppGlobals();
         const champion = new BattleMech();
         champion.importSSWXML(sswTestFixtures["Champion C"]);
-        (appGlobals.sswMechObjects as BattleMech[]).push(champion);
+        appGlobals.battleMechSaves.push(JSON.parse(champion.exportJSON()));
         appGlobals.appSettings.cbtMULSearch = newMULSearchFilters({ type: 18, term: "Champion" });
         const onChange = vi.fn();
         render(
@@ -126,9 +122,26 @@ describe("Classic roster Master Unit List search", () => {
         expect(group.members.map((member) => member.getName())).toContain(champion.getName());
     }, 30_000);
 
-    it("offers the creator for a MUL 'Mech with no Classic design", async () => {
+    // #241: a 'Mech with nothing saved matches its bundled design, imported when a button is pressed.
+    it("adds the bundled design for a MUL 'Mech, with nothing saved", async () => {
         const appGlobals = makeAppGlobals();
         appGlobals.appSettings.cbtMULSearch = newMULSearchFilters({ type: 18, term: "Atlas AS7-D" });
+        const onChange = vi.fn();
+        render(
+            <MemoryRouter>
+                <BattleMechAddMechDialog appGlobals={appGlobals} currentForce={appGlobals.currentCBTForce!.groups[0]} currentForceIndex={0} onChange={onChange} />
+            </MemoryRouter>
+        );
+        // The MUL row and the bundled list both offer it; either adds the same design.
+        fireEvent.click((await screen.findAllByRole("button", { name: "Add Atlas AS7-D" }, { timeout: 20_000 }))[0]);
+        await waitFor(() => expect(onChange).toHaveBeenCalledTimes(1), { timeout: 20_000 });
+        const group: BattleMechGroup = onChange.mock.calls[0][0];
+        expect(group.members.map((member) => member.getChassisName() + " " + member.getModelName())).toContain("Atlas AS7-D");
+    }, 30_000);
+
+    it("offers the creator for a MUL 'Mech with no Classic design", async () => {
+        const appGlobals = makeAppGlobals();
+        appGlobals.appSettings.cbtMULSearch = newMULSearchFilters({ type: 18, term: "Poseidon PSD-V2" });
         render(
             <MemoryRouter>
                 <BattleMechAddMechDialog appGlobals={appGlobals} currentForce={appGlobals.currentCBTForce!.groups[0]} currentForceIndex={0} onChange={vi.fn()} />
