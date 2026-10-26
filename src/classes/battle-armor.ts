@@ -1,4 +1,6 @@
 import { generateUUID } from "../utils/generateUUID";
+import { IGameSettingsUnit, UnitGameSettings } from "./unit-game-settings";
+import { chooseEraByTechBase } from "../data/era-choice";
 import { TechnicalReadout } from "./technical-readout";
 import type { ITechnicalReadoutExport } from "../data/technical-readout-interfaces";
 import { IAssignedQuirk, IQuirkTargets, QuirkUnitType } from "../data/quirk-interfaces";
@@ -211,6 +213,8 @@ export interface IBattleArmorTurret {
 export interface IBattleArmorExport {
     /** The rules edition it is built under (rules-editions.ts); absent means Total Warfare. */
     rulesEdition?: string;
+    rulesLevel?: number;
+    rulesets?: string[];
     uuid: string;
     tro?: ITechnicalReadoutExport;
     quirks?: IAssignedQuirk[];
@@ -291,7 +295,7 @@ export const normalizeBattleArmorExport = (raw: unknown): { suit: IBattleArmorEx
     return { suit: loaded.export(true), issues: [...loaded.getImportIssues()] };
 };
 
-export default class BattleArmor {
+export default class BattleArmor implements IGameSettingsUnit {
     private _uuid: string = generateUUID();
     public tro: TechnicalReadout = new TechnicalReadout();
 
@@ -303,6 +307,8 @@ export default class BattleArmor {
 
     private _name: string = "";
     private _rulesEdition: string = DEFAULT_RULES_EDITION;
+    /** The rules level and Special Rulesets the design is built under (#324). */
+    public readonly gameSettings = new UnitGameSettings();
     private _techBase: BattleArmorTechBase = "is";
     private _mixedTech: boolean = false;
     private _armorTechBase: BattleArmorTechBase | null = null;
@@ -358,6 +364,9 @@ export default class BattleArmor {
         this._rulesEdition = getSelectableRulesEditionTag(editionTag, "battle-armor");
         return this._rulesEdition;
     }
+    public getTechTag(): string { return this.getTechBase(); }
+    public setTechTag(tag: string): void { this.setTechBase(tag === "clan" ? "clan" : "is"); }
+    public chooseEra(tag: string): void { chooseEraByTechBase(this, tag); }
 
     public setName(name: string): void { this._name = String(name ?? "").slice(0, MAX_BATTLE_ARMOR_NAME_LENGTH); }
     public getBaseName(): string { return this._name.trim() || `${this._weightClass.name} ${this.getUnitTypeName()}`; }
@@ -1976,6 +1985,7 @@ export default class BattleArmor {
             lastUpdated: this.lastUpdated.toISOString(),
             name: this._name,
             ...(this._rulesEdition !== DEFAULT_RULES_EDITION ? { rulesEdition: this._rulesEdition } : {}),
+            ...this.gameSettings.export(),
             techBase: this._techBase,
             ...(this._mixedTech ? { mixedTech: true } : {}),
             ...(this._mixedTech && this._armorBase() !== this._techBase ? { armorTechBase: this._armorBase() } : {}),
@@ -2026,6 +2036,7 @@ export default class BattleArmor {
         if (!Number.isNaN(updated.getTime())) this.lastUpdated = updated;
         this.setName(savedString(raw.name));
         this._rulesEdition = getSelectableRulesEditionTag(raw.rulesEdition, "battle-armor");
+        this.gameSettings.import(raw);
 
         this._techBase = raw.techBase === "clan" ? "clan" : "is";
         this._mixedTech = raw.mixedTech === true;

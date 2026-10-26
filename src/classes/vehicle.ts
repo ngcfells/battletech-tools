@@ -1,4 +1,6 @@
 import { generateUUID } from "../utils/generateUUID";
+import { IGameSettingsUnit, UnitGameSettings } from "./unit-game-settings";
+import { chooseEra } from "../data/era-choice";
 import { copyCatalogRecord, findUnitCatalogRecord, getUnitCatalogRecords } from "../data/equipment-lookup";
 import { TechnicalReadout } from "./technical-readout";
 import type { ITechnicalReadoutExport } from "../data/technical-readout-interfaces";
@@ -472,6 +474,8 @@ export interface IFrankenVehicle {
 export interface IVehicleExport {
     /** The rules edition it is built under (rules-editions.ts); absent means Total Warfare. */
     rulesEdition?: string;
+    rulesLevel?: number;
+    rulesets?: string[];
     uuid: string;
     tro?: ITechnicalReadoutExport;
     quirks?: IAssignedQuirk[];
@@ -589,7 +593,7 @@ const ENGINE_ITEM_SLOTS: Record<string, number> = { light: 1, xl: 2, clan_xl: 1,
 /** Vehicular jump jets: Advanced (TO:AUE); prototype 2650 (TH), production ~3083 (CHH), extinct 2840 (IO p. 35). */
 export const VEHICLE_JUMP_JET_INTRODUCED = 3083;
 
-export default class Vehicle {
+export default class Vehicle implements IGameSettingsUnit {
     private _uuid: string = generateUUID();
     public tro: TechnicalReadout = new TechnicalReadout();
 
@@ -601,6 +605,8 @@ export default class Vehicle {
 
     private _name: string = "";
     private _rulesEdition: string = DEFAULT_RULES_EDITION;
+    /** The rules level and Special Rulesets the design is built under (#324). */
+    public readonly gameSettings = new UnitGameSettings();
     private _model: string = "";
     private _nickname: string = "";
 
@@ -695,6 +701,9 @@ export default class Vehicle {
         this._rulesEdition = getSelectableRulesEditionTag(editionTag, "vehicle");
         return this._rulesEdition;
     }
+    public getTechTag(): string { return this.getTech().tag; }
+    public setTechTag(tag: string): void { this.setTech(tag); }
+    public chooseEra(tag: string): void { chooseEra(this, tag); }
 
     public setName(name: string): string {
         this._name = name;
@@ -4823,6 +4832,7 @@ export default class Vehicle {
             quirks: this.quirks.export(),
             name: this._name,
             ...(this._rulesEdition !== DEFAULT_RULES_EDITION ? { rulesEdition: this._rulesEdition } : {}),
+            ...this.gameSettings.export(),
             model: this._model,
             nickname: this._nickname,
             tonnage: this._tonnage,
@@ -4953,6 +4963,7 @@ export default class Vehicle {
             this.lastUpdated = Number.isNaN(updated.getTime()) ? new Date() : updated;
             this._name = text("name");
             this._rulesEdition = getSelectableRulesEditionTag(importObject.rulesEdition, "vehicle");
+            this.gameSettings.import(importObject);
             this._model = text("model");
             this._nickname = text("nickname");
             if (importObject.tonnage !== undefined && typeof importObject.tonnage !== "number") issue("Ignored a tonnage that is not a number");

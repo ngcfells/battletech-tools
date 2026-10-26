@@ -1,4 +1,6 @@
 import { generateUUID } from "../utils/generateUUID";
+import { IGameSettingsUnit, UnitGameSettings } from "./unit-game-settings";
+import { chooseEra } from "../data/era-choice";
 import { findUnitCatalogRecord, copyCatalogRecord, getUnitCatalogRecords } from "../data/equipment-lookup";
 import { TechnicalReadout } from "./technical-readout";
 import type { ITechnicalReadoutExport } from "../data/technical-readout-interfaces";
@@ -216,6 +218,8 @@ export interface IFighterEquipmentExport {
 export interface IAerospaceFighterExport {
     /** The rules edition it is built under (rules-editions.ts); absent means Total Warfare. */
     rulesEdition?: string;
+    rulesLevel?: number;
+    rulesets?: string[];
     uuid: string;
     tro?: ITechnicalReadoutExport;
     quirks?: IAssignedQuirk[];
@@ -306,7 +310,7 @@ export const normalizeAerospaceFighterExport = (raw: unknown): { fighter: IAeros
     return { fighter: loaded.export(), issues: [...loaded.getImportIssues()] };
 };
 
-export default class AerospaceFighter {
+export default class AerospaceFighter implements IGameSettingsUnit {
     public static readonly PATCHWORK_ARMOR_TAG = "patchwork";
 
     private _uuid: string = generateUUID();
@@ -320,6 +324,8 @@ export default class AerospaceFighter {
 
     private _name: string = "";
     private _rulesEdition: string = DEFAULT_RULES_EDITION;
+    /** The rules level and Special Rulesets the design is built under (#324). */
+    public readonly gameSettings = new UnitGameSettings();
     private _model: string = "";
     private _fighterType: FighterType = "aerospace";
     private _vstol: boolean = false;
@@ -389,6 +395,9 @@ export default class AerospaceFighter {
         this._rulesEdition = getSelectableRulesEditionTag(editionTag, "fighter");
         return this._rulesEdition;
     }
+    public getTechTag(): string { return this.getTech().tag; }
+    public setTechTag(tag: string): void { this.setTech(tag); }
+    public chooseEra(tag: string): void { chooseEra(this, tag); }
 
     public setName(name: string): string {
         this._name = name.slice(0, 200);
@@ -2661,6 +2670,7 @@ export default class AerospaceFighter {
             lastUpdated: this.lastUpdated,
             name: this._name,
             ...(this._rulesEdition !== DEFAULT_RULES_EDITION ? { rulesEdition: this._rulesEdition } : {}),
+            ...this.gameSettings.export(),
             model: this._model,
             fighterType: this._fighterType,
             vstol: this._vstol,
@@ -2790,6 +2800,7 @@ export default class AerospaceFighter {
             }
             this.setName(savedString(saved.name));
             this._rulesEdition = getSelectableRulesEditionTag(saved.rulesEdition, "fighter");
+            this.gameSettings.import(saved);
             this.setModel(savedString(saved.model));
             // A save from before conventional fighters has no type: it is an aerospace fighter.
             if (saved.fighterType !== undefined && !["aerospace", "conventional", "support"].includes(saved.fighterType as string)) issue("Ignored an unknown fighter type");

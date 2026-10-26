@@ -1,4 +1,6 @@
 import { generateUUID } from "../utils/generateUUID";
+import { IGameSettingsUnit, UnitGameSettings } from "./unit-game-settings";
+import { chooseEra } from "../data/era-choice";
 import { findUnitCatalogRecord, copyCatalogRecord } from "../data/equipment-lookup";
 import { DEFAULT_RULES_EDITION, getSelectableRulesEditionTag } from "../data/rules-editions";
 import {
@@ -192,6 +194,8 @@ const newInPlay = (): IBuildingInPlay => ({ hexes: [], destroyed: [], malfunctio
 export interface IBuildingExport {
     /** The rules edition it is built under (rules-editions.ts); absent means Total Warfare. */
     rulesEdition?: string;
+    rulesLevel?: number;
+    rulesets?: string[];
     /** The gunners' Gunnery skill; absent in saves from before buildings joined the roster. */
     gunnery?: number;
     /** Damage and critical hits taken in play; left out of a design save. */
@@ -296,7 +300,7 @@ export const normalizeBuildingExport = (raw: unknown): { building: IBuildingExpo
     return { building: loaded.export(), issues: [...loaded.getImportIssues()] };
 };
 
-export default class Building {
+export default class Building implements IGameSettingsUnit {
     private _uuid: string = generateUUID();
     public lastUpdated: Date = new Date();
     /** The optional Technical Readout (TRO fields round 2, #78). */
@@ -304,6 +308,8 @@ export default class Building {
 
     private _name: string = "";
     private _rulesEdition: string = DEFAULT_RULES_EDITION;
+    /** The rules level and Special Rulesets the design is built under (#324). */
+    public readonly gameSettings = new UnitGameSettings();
     private _tech: ITechOptions = btTechOptions[0];
     private _era: IEras = latestEra("is");
     private _classification: IBuildingClassification = BUILDING_CLASSIFICATIONS[0];
@@ -348,6 +354,9 @@ export default class Building {
         this._rulesEdition = getSelectableRulesEditionTag(editionTag, "building");
         return this._rulesEdition;
     }
+    public getTechTag(): string { return this.getTech().tag; }
+    public setTechTag(tag: string): void { this.setTech(tag); }
+    public chooseEra(tag: string): void { chooseEra(this, tag); }
 
     public setName(name: string): string {
         this._name = name.slice(0, 200);
@@ -1989,6 +1998,7 @@ export default class Building {
             lastUpdated: this.lastUpdated,
             name: this._name,
             ...(this._rulesEdition !== DEFAULT_RULES_EDITION ? { rulesEdition: this._rulesEdition } : {}),
+            ...this.gameSettings.export(),
             tech: this._tech.tag,
             era: this._era.tag,
             classification: this._classification.tag,
@@ -2060,6 +2070,7 @@ export default class Building {
             if (saved.name !== undefined && typeof saved.name !== "string") issue("Ignored a name that is not text");
             this.setName(savedString(saved.name));
             this._rulesEdition = getSelectableRulesEditionTag(saved.rulesEdition, "building");
+            this.gameSettings.import(saved);
             this.setTech(savedString(saved.tech));
             this.setEra(savedString(saved.era));
 

@@ -1,4 +1,6 @@
 import { TechnicalReadout } from "./technical-readout";
+import { IGameSettingsUnit, UnitGameSettings } from "./unit-game-settings";
+import { chooseEra } from "../data/era-choice";
 import { findUnitCatalogRecord, copyCatalogRecord, getUnitCatalogRecords } from "../data/equipment-lookup";
 import type { ITechnicalReadoutExport } from "../data/technical-readout-interfaces";
 import { generateUUID } from "../utils/generateUUID";
@@ -194,6 +196,8 @@ export interface ISmallCraftEquipmentExport {
 export interface ISmallCraftExport {
     /** The rules edition it is built under (rules-editions.ts); absent means Total Warfare. */
     rulesEdition?: string;
+    rulesLevel?: number;
+    rulesets?: string[];
     version: number;
     uuid: string;
     quirks?: IAssignedQuirk[];
@@ -270,7 +274,7 @@ export const normalizeSmallCraftExport = (raw: unknown): { craft: ISmallCraftExp
     return { craft: loaded.export(), issues: [...loaded.getImportIssues()] };
 };
 
-export default class SmallCraft {
+export default class SmallCraft implements IGameSettingsUnit {
     private _uuid: string = generateUUID();
 
     /** The design quirks assigned to this unit (quirk tables, Campaign Operations pp.228 and 232). */
@@ -283,6 +287,8 @@ export default class SmallCraft {
 
     private _name: string = "";
     private _rulesEdition: string = DEFAULT_RULES_EDITION;
+    /** The rules level and Special Rulesets the design is built under (#324). */
+    public readonly gameSettings = new UnitGameSettings();
     private _model: string = "";
     private _shape: SmallCraftShape = "aerodyne";
     private _craftType: CraftType = "smallCraft";
@@ -360,6 +366,9 @@ export default class SmallCraft {
         this._rulesEdition = getSelectableRulesEditionTag(editionTag, "small-craft");
         return this._rulesEdition;
     }
+    public getTechTag(): string { return this.getTech().tag; }
+    public setTechTag(tag: string): void { this.setTech(tag); }
+    public chooseEra(tag: string): void { chooseEra(this, tag); }
 
     public setName(name: string): string {
         this._name = String(name ?? "").slice(0, 200);
@@ -2207,6 +2216,7 @@ export default class SmallCraft {
             lastUpdated: this.lastUpdated,
             name: this._name,
             ...(this._rulesEdition !== DEFAULT_RULES_EDITION ? { rulesEdition: this._rulesEdition } : {}),
+            ...this.gameSettings.export(),
             model: this._model,
             shape: this._shape,
             craftType: this._craftType,
@@ -2310,6 +2320,7 @@ export default class SmallCraft {
             }
             this.setName(savedString(saved.name));
             this._rulesEdition = getSelectableRulesEditionTag(saved.rulesEdition, "small-craft");
+            this.gameSettings.import(saved);
             this.setModel(savedString(saved.model));
             if (saved.shape !== undefined && saved.shape !== "aerodyne" && saved.shape !== "spheroid") issue("Ignored an unknown shape");
             this._shape = saved.shape === "spheroid" ? "spheroid" : "aerodyne";

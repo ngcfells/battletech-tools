@@ -1,4 +1,6 @@
 import { generateUUID } from "../utils/generateUUID";
+import { IGameSettingsUnit, UnitGameSettings } from "./unit-game-settings";
+import { chooseEraByTechBase } from "../data/era-choice";
 import { TechnicalReadout } from "./technical-readout";
 import type { ITechnicalReadoutExport } from "../data/technical-readout-interfaces";
 import { IInfantryWeapon, INFANTRY_MAX_PRIMARY_DAMAGE, INFANTRY_SUPPORT_PPC_TAG, findInfantryWeapon, infantryWeapons, isInfantryWeaponAtRulesLevel, isInfantryWeaponAvailable } from "../data/infantry-weapons";
@@ -175,6 +177,8 @@ export interface IInfantryInPlay {
 export interface IInfantryPlatoonExport {
     /** The rules edition it is built under (rules-editions.ts); absent means Total Warfare. */
     rulesEdition?: string;
+    rulesLevel?: number;
+    rulesets?: string[];
     uuid: string;
     tro?: ITechnicalReadoutExport;
     lastUpdated: string;
@@ -229,13 +233,15 @@ export const normalizeInfantryPlatoonExport = (raw: unknown): { platoon: IInfant
     return { platoon: loaded.export(true), issues: [...loaded.getImportIssues()] };
 };
 
-export default class InfantryPlatoon {
+export default class InfantryPlatoon implements IGameSettingsUnit {
     private _uuid: string = generateUUID();
     public tro: TechnicalReadout = new TechnicalReadout();
     public lastUpdated: Date = new Date();
 
     private _name: string = "";
     private _rulesEdition: string = DEFAULT_RULES_EDITION;
+    /** The rules level and Special Rulesets the design is built under (#324). */
+    public readonly gameSettings = new UnitGameSettings();
     private _techBase: InfantryTechBase = "is";
     private _formation: IInfantryFormation = INFANTRY_FORMATIONS[0];
     private _era: IEras = latestEra("is");
@@ -267,6 +273,9 @@ export default class InfantryPlatoon {
         this._rulesEdition = getSelectableRulesEditionTag(editionTag, "infantry");
         return this._rulesEdition;
     }
+    public getTechTag(): string { return this.getTechBase(); }
+    public setTechTag(tag: string): void { this.setTechBase(tag === "clan" ? "clan" : "is"); }
+    public chooseEra(tag: string): void { chooseEraByTechBase(this, tag); }
 
     public setName(name: string): void { this._name = String(name ?? "").slice(0, MAX_INFANTRY_NAME_LENGTH); }
     /** The saved name, or the book's style of name: motive and weapon (TM p.154). */
@@ -1050,6 +1059,7 @@ export default class InfantryPlatoon {
             lastUpdated: this.lastUpdated.toISOString(),
             name: this._name,
             ...(this._rulesEdition !== DEFAULT_RULES_EDITION ? { rulesEdition: this._rulesEdition } : {}),
+            ...this.gameSettings.export(),
             techBase: this._techBase,
             formation: this._formation.tag,
             era: this._era.tag,
@@ -1090,6 +1100,7 @@ export default class InfantryPlatoon {
         if (!Number.isNaN(updated.getTime())) this.lastUpdated = updated;
         this.setName(savedString(raw.name));
         this._rulesEdition = getSelectableRulesEditionTag(raw.rulesEdition, "infantry");
+        this.gameSettings.import(raw);
 
         this._techBase = raw.techBase === "clan" ? "clan" : "is";
         const formation = INFANTRY_FORMATIONS.find((item) => item.tag === raw.formation && item.techBase === this._techBase);

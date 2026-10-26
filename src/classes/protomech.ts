@@ -1,4 +1,5 @@
 import { generateUUID } from "../utils/generateUUID";
+import { IGameSettingsUnit, UnitGameSettings } from "./unit-game-settings";
 import { TechnicalReadout } from "./technical-readout";
 import type { ITechnicalReadoutExport } from "../data/technical-readout-interfaces";
 import { DEFAULT_RULES_EDITION, getSelectableRulesEditionTag } from "../data/rules-editions";
@@ -133,6 +134,8 @@ export interface IFrankenProtoDonor {
 export interface IProtoMechExport {
     /** The rules edition it is built under (rules-editions.ts); absent means Total Warfare. */
     rulesEdition?: string;
+    rulesLevel?: number;
+    rulesets?: string[];
     version: 1;
     /** FrankenProto (Custom Homebrew): each location's donor; present only on a FrankenProto. */
     frankenProto?: Partial<Record<FrankenProtoLocation, IFrankenProtoDonor>>;
@@ -257,13 +260,15 @@ export const normalizeProtoMechExport = (raw: unknown): { proto: IProtoMechExpor
     return { proto: proto.export(), issues: proto.getImportIssues() };
 };
 
-export default class ProtoMech {
+export default class ProtoMech implements IGameSettingsUnit {
     public lastUpdated: Date = new Date();
 
     private _uuid: string = generateUUID();
     public tro: TechnicalReadout = new TechnicalReadout();
     private _name: string = "";
     private _rulesEdition: string = DEFAULT_RULES_EDITION;
+    /** The rules level and Special Rulesets the design is built under (#324). */
+    public readonly gameSettings = new UnitGameSettings();
     private _tons: number = 5;
     private _chassis: ProtoMechChassis = "biped";
     private _walkMP: number = 4;
@@ -298,6 +303,10 @@ export default class ProtoMech {
         this._rulesEdition = getSelectableRulesEditionTag(editionTag, "protomech");
         return this._rulesEdition;
     }
+    /** A ProtoMech is Clan technology only. */
+    public getTechTag(): string { return "clan"; }
+    public setTechTag(_tag: string): void { /* Clan only */ }
+    public chooseEra(tag: string): void { this.setEra(tag); }
 
     public setName(name: string): void {
         this._name = String(name ?? "").slice(0, MAX_PROTOMECH_NAME_LENGTH);
@@ -1435,6 +1444,7 @@ export default class ProtoMech {
             tro: this.tro.export(),
             name: this._name,
             ...(this._rulesEdition !== DEFAULT_RULES_EDITION ? { rulesEdition: this._rulesEdition } : {}),
+            ...this.gameSettings.export(),
             tons: this._tons,
             chassis: this._chassis,
             walkMP: this._walkMP,
@@ -1466,6 +1476,7 @@ export default class ProtoMech {
         this.tro.import(data.tro);
         this.setName(typeof data.name === "string" ? data.name : "");
         this._rulesEdition = getSelectableRulesEditionTag(data.rulesEdition, "protomech");
+        this.gameSettings.import(data);
         this._chassis = CHASSIS_TAGS.includes(data.chassis) ? data.chassis : "biped";
         this._tons = clampInt(data.tons, this.getMinTons(), PROTOMECH_MAX_TONS, 5);
         this._mainGun = data.mainGun === true;

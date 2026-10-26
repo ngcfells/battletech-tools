@@ -1,4 +1,6 @@
 import { generateUUID } from "../utils/generateUUID";
+import { IGameSettingsUnit, UnitGameSettings } from "./unit-game-settings";
+import { chooseEra } from "../data/era-choice";
 import { findUnitCatalogRecord, copyCatalogRecord, getUnitCatalogRecords } from "../data/equipment-lookup";
 import { IAssignedQuirk, IQuirkTargets, QuirkUnitType } from "../data/quirk-interfaces";
 import { getQuirkIssues, getQuirkTargets, quirkBayTarget } from "../data/quirk-registry";
@@ -159,6 +161,8 @@ export interface ICapitalShipExport {
     inPlay?: ICapitalShipInPlay;
     /** The rules edition it is built under (rules-editions.ts); absent means Total Warfare. */
     rulesEdition?: string;
+    rulesLevel?: number;
+    rulesets?: string[];
     version: number;
     uuid: string;
     quirks?: IAssignedQuirk[];
@@ -229,7 +233,7 @@ export const normalizeCapitalShipExport = (raw: unknown): { ship: ICapitalShipEx
 /** A weapon bay (SO:AA p.142) as the record sheet lists it (SO:AA p.146). */
 export type ICapitalShipWeaponBay = IWeaponBay;
 
-export default class CapitalShip {
+export default class CapitalShip implements IGameSettingsUnit {
     private _uuid: string = generateUUID();
 
     /** The design quirks assigned to this unit (quirk tables, Campaign Operations pp.228 and 232). */
@@ -242,6 +246,8 @@ export default class CapitalShip {
 
     private _name: string = "";
     private _rulesEdition: string = DEFAULT_RULES_EDITION;
+    /** The rules level and Special Rulesets the design is built under (#324). */
+    public readonly gameSettings = new UnitGameSettings();
     private _model: string = "";
     private _shipType: AdvancedAerospaceType = "warShip";
     private _tonnage: number = 100000;
@@ -321,6 +327,9 @@ export default class CapitalShip {
         this._rulesEdition = getSelectableRulesEditionTag(editionTag, "capital-ship");
         return this._rulesEdition;
     }
+    public getTechTag(): string { return this.getTech().tag; }
+    public setTechTag(tag: string): void { this.setTech(tag); }
+    public chooseEra(tag: string): void { chooseEra(this, tag); }
 
     // Type, weight and tech -------------------------------------------------------------------------------------
 
@@ -1676,6 +1685,7 @@ export default class CapitalShip {
             lastUpdated: this.lastUpdated,
             name: this._name,
             ...(this._rulesEdition !== DEFAULT_RULES_EDITION ? { rulesEdition: this._rulesEdition } : {}),
+            ...this.gameSettings.export(),
             model: this._model,
             shipType: this._shipType,
             tonnage: this._tonnage,
@@ -1736,6 +1746,7 @@ export default class CapitalShip {
         this.setName(savedString(saved.name));
         this.setModel(savedString(saved.model));
         this._rulesEdition = getSelectableRulesEditionTag(saved.rulesEdition, "capital-ship");
+        this.gameSettings.import(saved);
         if (saved.shipType !== undefined && !advancedAerospaceTypes.some((type) => type.tag === saved.shipType)) issue("Ignored an unknown vessel type");
         this._shipType = advancedAerospaceTypes.find((type) => type.tag === saved.shipType)?.tag ?? "warShip";
         this._kfBoom = saved.kfBoom === true;
