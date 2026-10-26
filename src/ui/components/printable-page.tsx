@@ -14,7 +14,7 @@ export default class PrintablePage extends React.Component<IPrintablePageProps, 
 
     // Guard against printing a unit above the selected rules level by mistake.
     print = (): void => {
-        printWithRulesLevelGuard(this.props.requiredRulesLevel, this.props.appGlobals.appSettings.mechRulesFilter);
+        printWithRulesLevelGuard(this.props.requiredRulesLevel, this.props.rulesLevel ?? this.props.appGlobals.appSettings.mechRulesFilter);
     }
 
     render = (): JSX.Element => {
@@ -60,6 +60,8 @@ interface IPrintablePageProps {
     backTo: string;
     /** Lowest rules level the printed unit is legal at; stamps and guards printing above Standard. */
     requiredRulesLevel?: number;
+    /** The level the unit is built at, when it keeps its own (#324); the app-wide level otherwise. */
+    rulesLevel?: number;
     provisionalNote?: string;
     children?: React.ReactNode | React.ReactNode[];
   }

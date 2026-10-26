@@ -122,7 +122,7 @@ test("'Mech Creator: a battle armor weapon is Experimental and turns Fractional 
     const weaponRow = () => page.getByRole("row").filter({ has: page.getByRole("cell", { name: "BA-Medium Recoilless Rifle", exact: true }) });
 
     await page.goto("classic-battletech/mech-creator/step1");
-    await page.getByLabel("Mech Era").selectOption(DARK_AGE);
+    await page.getByLabel("Era:").selectOption(DARK_AGE);
     await page.getByLabel("Rules Level").selectOption(STANDARD);
 
     await page.goto("classic-battletech/mech-creator/step5");

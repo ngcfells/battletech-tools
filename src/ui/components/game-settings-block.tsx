@@ -1,9 +1,10 @@
 import React, { useState, type JSX } from 'react';
 import { findEraByTag } from '../../data/era-options';
 import { changeGameSetting, describeGameSettingMove, GameSettingChange, getGameSettingOptions, getStaleGameSettingSteps, IGameSettings } from '../../data/game-settings';
-import { RulesEditionUnitType } from '../../data/rules-editions';
+import { isEarlierRulesEdition, RulesEditionUnitType } from '../../data/rules-editions';
 import { getRulesetConflict, getSpecialRulesets } from '../../data/special-rulesets';
 import { btTechOptions } from '../../data/tech-options';
+import EditionChoice from './edition-choice';
 import RulesEditionSelect from './rules-edition-select';
 import RulesLevelSelect from './rules-level-select';
 import StandardModal from './standard-modal';
@@ -73,13 +74,16 @@ export default function GameSettingsBlock(props: {
             <RulesEditionSelect unitType={props.unitType} value={settings.edition} editions={options.editions} onChange={(value) => change({ step: "edition", value })} />
             {staleNote("edition")}
             <RulesLevelSelect editionTag={settings.edition} value={settings.rulesLevel} options={options.rulesLevels} onChange={(value) => change({ step: "rulesLevel", value })} />
-            <label>
-                Technology Base:
-                <select value={settings.techBase} onChange={(e) => change({ step: "techBase", value: e.currentTarget.value })}>
-                    {stale.includes("techBase") ? <option value={settings.techBase}>{techName(settings.techBase)} ({STALE_WARNING})</option> : null}
-                    {options.techBases.map((tag) => <option key={tag} value={tag}>{techName(tag)}</option>)}
-                </select>
-            </label>
+            {/* An earlier rulebook with one tech base has no such choice: the field is hidden, as the builders did. */}
+            <EditionChoice earlierEdition={isEarlierRulesEdition(settings.edition)}>
+                <label>
+                    Technology Base:
+                    <select value={settings.techBase} onChange={(e) => change({ step: "techBase", value: e.currentTarget.value })}>
+                        {stale.includes("techBase") ? <option value={settings.techBase}>{techName(settings.techBase)} ({STALE_WARNING})</option> : null}
+                        {options.techBases.map((tag) => <option key={tag} value={tag}>{techName(tag)}</option>)}
+                    </select>
+                </label>
+            </EditionChoice>
             {staleNote("techBase")}
             {options.eras.length > 0 ? (
                 <>

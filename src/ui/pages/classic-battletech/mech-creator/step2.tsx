@@ -9,7 +9,7 @@ import TextSection from '../../../components/text-section';
 import UIPage from '../../../components/ui-page';
 import './home.scss';
 import { availabilityOptionLabel, isOptionShown } from '../../../components/availability-options';
-import DesignLockColumn from '../../../components/design-lock';
+import DesignLockColumn, { mechRulesLevel } from '../../../components/design-lock';
 import EditionChoice from '../../../components/edition-choice';
 const ArrowCircleLeft = FaArrowCircleLeft as any;
 const ArrowCircleRight = FaArrowCircleRight as any;
@@ -130,9 +130,9 @@ export default class MechCreatorStep2 extends React.Component<IHomeProps, IHomeS
                                 onChange={this.setWalkingMP}
                               >
                                 <option value={0}>-Select Walking Speed-</option>
-                                {Array.from({ length: Math.max(20, this.props.appGlobals.currentBattleMech?.getMaxWalkSpeed(this.props.appGlobals.appSettings.mechRulesFilter) ?? 20) }, (_, index) => index + 1).map( (option) => {
+                                {Array.from({ length: Math.max(20, this.props.appGlobals.currentBattleMech?.getMaxWalkSpeed(mechRulesLevel(this.props.appGlobals)) ?? 20) }, (_, index) => index + 1).map( (option) => {
                                 // Engine ratings above 400 (Large engines) are Experimental only; the Engine Table starts at 10.
-                                const overMax = option > (this.props.appGlobals.currentBattleMech?.getMaxWalkSpeed(this.props.appGlobals.appSettings.mechRulesFilter) ?? 20)
+                                const overMax = option > (this.props.appGlobals.currentBattleMech?.getMaxWalkSpeed(mechRulesLevel(this.props.appGlobals)) ?? 20)
                                   || option < (this.props.appGlobals.currentBattleMech?.getMinWalkSpeed() ?? 1);
                                 if( overMax && option !== this.props.appGlobals.currentBattleMech?.getWalkSpeed() ) {
                                   return <React.Fragment key={option}></React.Fragment>;
@@ -151,7 +151,7 @@ export default class MechCreatorStep2 extends React.Component<IHomeProps, IHomeS
                                   value={this.props.appGlobals.currentBattleMech.getMyomerType().tag}
                                   onChange={this.setMyomerType}
                                 >
-                                  {this.props.appGlobals.currentBattleMech.getAvailableMyomerTypes(this.props.appGlobals.appSettings.mechRulesFilter).map( (myomer) => {
+                                  {this.props.appGlobals.currentBattleMech.getAvailableMyomerTypes(mechRulesLevel(this.props.appGlobals)).map( (myomer) => {
                                     const selected = myomer.tag === this.props.appGlobals.currentBattleMech?.getMyomerType().tag;
                                     if( !isOptionShown(myomer, selected) ) {
                                       return <React.Fragment key={myomer.tag}></React.Fragment>;
@@ -171,7 +171,7 @@ export default class MechCreatorStep2 extends React.Component<IHomeProps, IHomeS
                                   value={this.props.appGlobals.currentBattleMech.getJumpJetType().tag}
                                   onChange={this.setJumpJetType}
                                 >
-                                  {this.props.appGlobals.currentBattleMech.getAvailableJumpJets(this.props.appGlobals.appSettings.mechRulesFilter).map( (jumpJet) => {
+                                  {this.props.appGlobals.currentBattleMech.getAvailableJumpJets(mechRulesLevel(this.props.appGlobals)).map( (jumpJet) => {
                                     const selected = jumpJet.tag === this.props.appGlobals.currentBattleMech?.getJumpJetType().tag;
                                     if( !isOptionShown(jumpJet, selected) ) {
                                       return <React.Fragment key={jumpJet.tag}></React.Fragment>;
@@ -265,7 +265,7 @@ export default class MechCreatorStep2 extends React.Component<IHomeProps, IHomeS
                                   onChange={this.setEngineType}
                                 >
                                   {/* <option value={0}>-Select Jumping Speed-</option> */}
-                                  {this.props.appGlobals.currentBattleMech.getAvailableEngines(this.props.appGlobals.appSettings.mechRulesFilter)
+                                  {this.props.appGlobals.currentBattleMech.getAvailableEngines(mechRulesLevel(this.props.appGlobals))
                                     .filter( (engineData) => isOptionShown(engineData, engineData.tag === this.props.appGlobals.currentBattleMech?.getEngineType().tag) )
                                     .map( (engineData, engineIndex) => (
                                       <option key={engineIndex} value={engineData.tag}>{availabilityOptionLabel(engineData)}</option>
@@ -282,7 +282,7 @@ export default class MechCreatorStep2 extends React.Component<IHomeProps, IHomeS
                                   onChange={this.setGyroType}
                                 >
                                   {/* <option value={0}>-Select Jumping Speed-</option> */}
-                                  {this.props.appGlobals.currentBattleMech.getAvailableGyros(this.props.appGlobals.appSettings.mechRulesFilter)
+                                  {this.props.appGlobals.currentBattleMech.getAvailableGyros(mechRulesLevel(this.props.appGlobals))
                                     .filter( (gyroData) => isOptionShown(gyroData, gyroData.tag === this.props.appGlobals.currentBattleMech?.getGyro().tag) )
                                     .map( (gyroData, gyroIndex) => (
                                       <option key={gyroIndex} value={gyroData.tag}>{availabilityOptionLabel(gyroData)}</option>
@@ -298,7 +298,7 @@ export default class MechCreatorStep2 extends React.Component<IHomeProps, IHomeS
                                   value={this.props.appGlobals.currentBattleMech.getCockpitType().tag}
                                   onChange={this.setCockpitType}
                                 >
-                                  {this.props.appGlobals.currentBattleMech.getAvailableCockpits(this.props.appGlobals.appSettings.mechRulesFilter)
+                                  {this.props.appGlobals.currentBattleMech.getAvailableCockpits(mechRulesLevel(this.props.appGlobals))
                                     .filter( (cockpitData) => isOptionShown(cockpitData, cockpitData.tag === this.props.appGlobals.currentBattleMech?.getCockpitType().tag) )
                                     .map( (cockpitData, cockpitIndex) => (
                                       <option key={cockpitIndex} value={cockpitData.tag}>{availabilityOptionLabel(cockpitData)}</option>

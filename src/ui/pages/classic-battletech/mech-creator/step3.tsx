@@ -10,7 +10,7 @@ import UIPage from '../../../components/ui-page';
 import './home.scss';
 import { makeRange } from "../../../../utils/makeRange";
 import { availabilityOptionLabel, isOptionShown } from '../../../components/availability-options';
-import DesignLockColumn from '../../../components/design-lock';
+import DesignLockColumn, { mechRulesLevel } from '../../../components/design-lock';
 import EditionChoice from '../../../components/edition-choice';
 const ArrowCircleLeft = FaArrowCircleLeft as any;
 const ArrowCircleRight = FaArrowCircleRight as any;
@@ -81,7 +81,7 @@ export default class MechCreatorStep3 extends React.Component<IHomeProps, IHomeS
                                   value={this.props.appGlobals.currentBattleMech.getHeatSinksType()}
                                   onChange={this.setHeatSinkType}
                                 >
-                                  {this.props.appGlobals.currentBattleMech.getAvailableHeatSinks(this.props.appGlobals.appSettings.mechRulesFilter).map( (heatSink) => {
+                                  {this.props.appGlobals.currentBattleMech.getAvailableHeatSinks(mechRulesLevel(this.props.appGlobals)).map( (heatSink) => {
                                     const selected = heatSink.tag === this.props.appGlobals.currentBattleMech?.getHeatSinksType();
                                     if( !isOptionShown(heatSink, selected) ) {
                                       return <React.Fragment key={heatSink.tag}></React.Fragment>;

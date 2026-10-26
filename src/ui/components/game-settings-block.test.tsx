@@ -80,4 +80,9 @@ describe("GameSettingsBlock (#324)", () => {
         render(<Harness start={{ ...base, edition: "battledroids", techBase: "is", rulesLevel: 2 }} />);
         expect(screen.queryByLabelText(/^Era/)).toBeNull();
     });
+
+    it("an earlier edition with one tech base hides the Tech Base step, as the builders did", () => {
+        render(<Harness start={{ ...base, edition: "battledroids", techBase: "is", rulesLevel: 2 }} />);
+        expect((select(/Technology Base/).closest("div") as HTMLElement).style.display).toBe("none");
+    });
 });

@@ -11,10 +11,11 @@ test("a design built under Battledroids takes that rulebook's tonnages and parts
     await page.goto("classic-battletech/mech-creator/step1");
     const edition = page.getByLabel("Rules Edition");
     await expect(edition).toHaveValue("total-warfare");
-    // The edition is the first field: it decides what the others offer.
+    // The shared settings block comes first, Special Rulesets then the edition: they decide what the others offer (#324).
     const step1 = page.locator(".text-section", { has: page.getByRole("heading", { name: "Step 1: Design the Chassis" }) });
-    await expect(step1.locator("input, select").first()).toHaveAccessibleName(/Rules Edition/);
-    await expect(step1.locator("input, select").nth(1)).toHaveAccessibleName(/Rules Level/);
+    await expect(step1.locator("input, select").first()).toHaveAccessibleName(/Special Rulesets/);
+    await expect(step1.locator("input, select").nth(1)).toHaveAccessibleName(/Rules Edition/);
+    await expect(step1.locator("input, select").nth(2)).toHaveAccessibleName(/Rules Level/);
     await expect(page.getByLabel("Mech Tonnage").locator("option").first()).toHaveText("20 (Light)");
 
     await edition.selectOption("battledroids");
@@ -105,14 +106,17 @@ test("Battledroids lists its own rules levels and plays the printed droids below
     expect(errors).toEqual([]);
 });
 
-// A stored rules level Battledroids does not list (3) shows as Apocryphal, and Step 1 judges everything by it.
-test("a stored level Battledroids does not list acts as the level shown", async ({ page }) => {
+// A rules level Battledroids does not list (3, Advanced) becomes its nearest game level, Expert, never Apocryphal
+// (#324 call 10); Step 1 judges everything by the level shown.
+test("a rules level Battledroids does not list becomes its nearest game level", async ({ page }) => {
     const errors: string[] = [];
     page.on("pageerror", (error) => errors.push(error.stack ?? error.message));
     await page.goto("classic-battletech/mech-creator/step1");
     await page.getByLabel("Rules Level").selectOption("3");
     await page.getByLabel("Rules Edition").selectOption("battledroids");
-    await expect(page.getByLabel("Rules Level")).toHaveValue("5");
+    await expect(page.getByLabel("Rules Level")).toHaveValue("2");
+    // The Goliath is not in the book: Apocryphal offers it.
+    await page.getByLabel("Rules Level").selectOption("5");
     await page.getByRole("combobox", { name: /^Droid/ }).selectOption("gol-1h");
     await expect(page.getByText("Not in this rules edition")).toHaveCount(0);
     await expect(page.getByLabel("Mech Type").locator("option")).toHaveText(["Biped", "Quad"]);
@@ -143,7 +147,7 @@ test("Battledroids hides the fields its rulebook does not have", async ({ page }
     await expect(page.getByLabel("Technology Base")).toBeVisible();
     await page.getByLabel("Rules Edition").selectOption("battledroids");
     await page.getByLabel("Rules Level").selectOption("2");
-    for (const field of ["Technology Base", "Mech Type", "Mech Era", "Internal Structure Type"]) {
+    for (const field of ["Technology Base", "Mech Type", "Era:", "Internal Structure Type"]) {
         await expect(page.getByLabel(field), field).toBeHidden();
     }
     await expect(page.getByText("Is an Omnimech")).toBeHidden();

@@ -14,7 +14,7 @@ import StandardModal from '../../../components/standard-modal';
 import TextSection from '../../../components/text-section';
 import UIPage from '../../../components/ui-page';
 import './home.scss';
-import DesignLockColumn from '../../../components/design-lock';
+import DesignLockColumn, { mechRulesLevel } from '../../../components/design-lock';
 import { getShownRulesLevel } from '../../../../data/rules-editions';
 const ArrowCircleLeft = FaArrowCircleLeft as any;
 const ArrowCircleRight = FaArrowCircleRight as any;
@@ -48,7 +48,7 @@ export default class MechCreatorStep5 extends React.Component<IHomeProps, IHomeS
           undefined,
           undefined,
           undefined,
-          this.props.appGlobals.appSettings.mechRulesFilter >= CUSTOM_HOMEBREW_RULES_LEVEL,
+          mechRulesLevel(this.props.appGlobals) >= CUSTOM_HOMEBREW_RULES_LEVEL,
         );
         this.props.appGlobals.saveCurrentBattleMech( this.props.appGlobals.currentBattleMech );
 
@@ -221,7 +221,7 @@ export default class MechCreatorStep5 extends React.Component<IHomeProps, IHomeS
       const includeClan = techTag === "clan" || techTag === "mis" || techTag === "mclan";
       const includeIS = techTag === "is" || techTag === "mis" || techTag === "mclan";
       // The level the edition shows: a stored level the edition does not list acts as the next one it does.
-      const shownLevel = getShownRulesLevel(currentMech.getRulesEdition(), this.props.appGlobals.appSettings.mechRulesFilter);
+      const shownLevel = getShownRulesLevel(currentMech.getRulesEdition(), mechRulesLevel(this.props.appGlobals));
       const includeCustom = shownLevel >= CUSTOM_HOMEBREW_RULES_LEVEL;
       // Armored components are Experimental (TO:AUE p.95); a design that has them always shows them.
       // Superheavy 'Mechs may not use them (IO:AE p.156).

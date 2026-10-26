@@ -15,6 +15,7 @@ import TextSection from '../../../components/text-section';
 import InputField from '../../../components/form_elements/input_field';
 import { editionHasBattleValue, editionHasPrices, getRulesEdition } from '../../../../data/rules-editions';
 import { getMULGroundRoles } from '../../../../utils/mulUtilities';
+import { mechRulesLevel } from '../../../components/design-lock';
 const ArrowCircleLeft = FaArrowCircleLeft as any;
 const ArrowCircleRight = FaArrowCircleRight as any;
 
@@ -209,7 +210,7 @@ export default class MechCreatorSummary extends React.Component<IHomeProps, IHom
                             quirks={this.props.appGlobals.currentBattleMech.quirks}
                             unitType={this.props.appGlobals.currentBattleMech.getQuirkUnitType()}
                             editionTag={this.props.appGlobals.currentBattleMech.getRulesEdition()}
-                            rulesLevel={this.props.appGlobals.appSettings.mechRulesFilter}
+                            rulesLevel={mechRulesLevel(this.props.appGlobals)}
                             {...this.props.appGlobals.currentBattleMech.getQuirkTargets()}
                             onChange={() => this.props.appGlobals.saveCurrentBattleMech(this.props.appGlobals.currentBattleMech)}
                           />
