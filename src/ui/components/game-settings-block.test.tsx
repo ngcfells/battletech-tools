@@ -19,9 +19,9 @@ const base: IGameSettings = { rulesets: [], edition: DEFAULT_RULES_EDITION, rule
 const SAMPLE = "Sample: The Clans never existed (alternate universe)";
 
 // The parent keeps the settings, as a builder does with its design.
-function Harness(props: { start: IGameSettings; unitType?: RulesEditionUnitType; onChange?: (settings: IGameSettings, step: string) => void }) {
+function Harness(props: { start: IGameSettings; unitType?: RulesEditionUnitType; hiddenSteps?: Array<"edition" | "techBase" | "era">; onChange?: (settings: IGameSettings, step: string) => void }) {
     const [settings, setSettings] = useState(props.start);
-    return <GameSettingsBlock unitType={props.unitType ?? "mech"} settings={settings} onChange={(next, step) => { props.onChange?.(next, step); setSettings(next); }} />;
+    return <GameSettingsBlock unitType={props.unitType ?? "mech"} hiddenSteps={props.hiddenSteps} settings={settings} onChange={(next, step) => { props.onChange?.(next, step); setSettings(next); }} />;
 }
 
 const select = (label: RegExp) => screen.getByLabelText(label) as HTMLSelectElement;
@@ -146,6 +146,23 @@ describe("GameSettingsBlock (#324)", () => {
     it("a suit offers Inner Sphere and Clan only", () => {
         render(<Harness unitType="battle-armor" start={{ ...base, techBase: "is", era: "jihad" }} />);
         expect(optionNames(/Technology Base/)).toEqual(["Inner Sphere", "Clan"]);
+    });
+
+    it("hides the steps it is told to hide", () => {
+        const { container } = render(<Harness start={base} hiddenSteps={["edition", "techBase", "era"]} />);
+        const text = container.textContent ?? "";
+        expect(text).toContain("Special Rulesets:");
+        expect(text).toContain("Rules Level:");
+        expect(text).not.toContain("Rules Edition:");
+        expect(text).not.toContain("Technology Base:");
+        expect(text).not.toContain("Era:");
+    });
+
+    it("says nothing about a hidden step that moved", () => {
+        render(<Harness start={{ ...base, techBase: "is", era: "" }} hiddenSteps={["edition", "techBase", "era"]} />);
+        fireEvent.change(select(/Rules Level/), { target: { value: "3" } });
+        expect(screen.queryByRole("status")?.textContent ?? "").not.toMatch(/Era moved/);
+        expect(screen.queryByText(/not offered under the ticked rulesets/)).toBeNull();
     });
 
     it("unitRulesLevel prefers the design's own level", () => {

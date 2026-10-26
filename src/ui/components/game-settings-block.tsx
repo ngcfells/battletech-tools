@@ -1,13 +1,13 @@
 import React, { useState, type JSX } from 'react';
+import SpecialRulesetsStep from './special-rulesets-step';
 import { findEraByTag } from '../../data/era-options';
 import { changeGameSetting, describeGameSettingMove, GameSettingChange, getGameSettingOptions, getStaleGameSettingSteps, IGameSettings } from '../../data/game-settings';
 import { isEarlierRulesEdition, RulesEditionUnitType } from '../../data/rules-editions';
-import { GameSettingStep, getRulesetConflict, getRulesetRemovingUnitType, getSpecialRulesets, UNIT_TYPE_PLURALS } from '../../data/special-rulesets';
+import { GameSettingStep, getRulesetRemovingUnitType, UNIT_TYPE_PLURALS } from '../../data/special-rulesets';
 import { btTechOptions } from '../../data/tech-options';
 import EditionChoice from './edition-choice';
 import RulesEditionSelect from './rules-edition-select';
 import RulesLevelSelect from './rules-level-select';
-import StandardModal from './standard-modal';
 import { applyUnitGameSettings, getUnitGameSettings, IGameSettingsUnit } from '../../classes/unit-game-settings';
 import { IAppGlobals } from '../app-router';
 
@@ -23,8 +23,9 @@ export default function GameSettingsBlock(props: {
     unitType: RulesEditionUnitType;
     settings: IGameSettings;
     onChange: (settings: IGameSettings, step: GameSettingStep | "rulesets") => void;
+    /** Steps the creator does not have (call 6): not shown, never flagged, and their moves not reported. */
+    hiddenSteps?: Array<"edition" | "techBase" | "era">;
 }): JSX.Element {
-    const [windowOpen, setWindowOpen] = useState(false);
     // The notice describes the settings its change made; once the design differs (replaced, or restored by a way back
     // to an edition) it no longer applies.
     const [notice, setNotice] = useState({ text: "", made: "" });
@@ -33,6 +34,8 @@ export default function GameSettingsBlock(props: {
     const options = getGameSettingOptions(settings, props.unitType);
     const stale = getStaleGameSettingSteps(settings, props.unitType);
 
+    const shown = (step: "edition" | "techBase" | "era") => !props.hiddenSteps?.includes(step);
+
     // Runs each change in turn and reports every move they made, or why a ruleset was refused.
     const change = (...changes: GameSettingChange[]): void => {
         let next = settings;
@@ -40,7 +43,8 @@ export default function GameSettingsBlock(props: {
         for (const one of changes) {
             const result = changeGameSetting(next, one, props.unitType);
             next = result.settings;
-            lines.push(...result.moves.map((move) => describeGameSettingMove(move, next.edition)));
+            lines.push(...result.moves.filter((move) => move.step === "rulesLevel" || shown(move.step))
+                .map((move) => describeGameSettingMove(move, next.edition)));
             if (result.removesUnitType) lines.push(`${UNIT_TYPE_PLURALS[props.unitType]} do not exist under ${result.refused?.name}`);
             else if (result.refused) lines.push("Clashes with " + result.refused.name);
         }
@@ -48,42 +52,22 @@ export default function GameSettingsBlock(props: {
         props.onChange(next, changes[0]?.step ?? "rulesets");
     };
 
-    const chooseRulesets = (value: string): void => {
-        if (value === "yes") {
-            setWindowOpen(true);
-        } else {
-            change(...settings.rulesets.map((id): GameSettingChange => ({ step: "rulesets", toggle: id })));
-        }
-    };
-
-    const staleNote = (step: "edition" | "techBase" | "era") => stale.includes(step)
+    const staleNote = (step: "edition" | "techBase" | "era") => shown(step) && stale.includes(step)
         ? <p className="color-red smaller-text">The stored value is {STALE_WARNING}.</p> : null;
     const techName = (tag: string) => btTechOptions.find((option) => option.tag === tag)?.name ?? tag;
     const era = findEraByTag(settings.era);
-    const using = settings.rulesets.length > 0 || windowOpen;
     const removedBy = getRulesetRemovingUnitType(settings.rulesets, props.unitType);
 
     return (
         <div className="game-settings-block">
-            <label>
-                Special Rulesets:
-                <select value={using ? "yes" : "no"} onChange={(e) => chooseRulesets(e.currentTarget.value)}>
-                    <option value="no">No</option>
-                    <option value="yes">Yes</option>
-                </select>
-            </label>
-            {using ? (
-                <button type="button" className="btn btn-primary btn-sm" onClick={() => setWindowOpen(true)}>Choose rulesets</button>
-            ) : null}
-            <p className="smaller-text">
-                Optional and homebrew rules that change how the game plays or how units are built. Leave this off for standard BattleTech.
-            </p>
+            <SpecialRulesetsStep rulesets={settings.rulesets} unitType={props.unitType} notice={shownNotice}
+                onToggle={(ids) => change(...ids.map((id): GameSettingChange => ({ step: "rulesets", toggle: id })))} />
 
-            <RulesEditionSelect unitType={props.unitType} value={settings.edition} editions={options.editions} staleLabel={STALE_WARNING} onChange={(value) => change({ step: "edition", value })} />
+            {shown("edition") ? <RulesEditionSelect unitType={props.unitType} value={settings.edition} editions={options.editions} staleLabel={STALE_WARNING} onChange={(value) => change({ step: "edition", value })} /> : null}
             {staleNote("edition")}
             <RulesLevelSelect editionTag={settings.edition} value={settings.rulesLevel} options={options.rulesLevels} staleLabel={STALE_WARNING} onChange={(value) => change({ step: "rulesLevel", value })} />
             {/* A unit type or an earlier rulebook with one tech base has no such choice: the field is hidden (call 6). */}
-            <EditionChoice earlierEdition={isEarlierRulesEdition(settings.edition)} hidden={options.techBases.length === 1 && !stale.includes("techBase")}>
+            {shown("techBase") ? <EditionChoice earlierEdition={isEarlierRulesEdition(settings.edition)} hidden={options.techBases.length === 1 && !stale.includes("techBase")}>
                 <label>
                     Technology Base:
                     <select value={settings.techBase} onChange={(e) => change({ step: "techBase", value: e.currentTarget.value })}>
@@ -91,9 +75,9 @@ export default function GameSettingsBlock(props: {
                         {options.techBases.map((tag) => <option key={tag} value={tag}>{techName(tag)}</option>)}
                     </select>
                 </label>
-            </EditionChoice>
+            </EditionChoice> : null}
             {staleNote("techBase")}
-            {options.eras.length > 0 ? (
+            {shown("era") && options.eras.length > 0 ? (
                 <>
                     <label>
                         Era:
@@ -109,36 +93,6 @@ export default function GameSettingsBlock(props: {
             {/* An older save with such a ruleset ticked; untick it to build the design. */}
             {removedBy ? <p className="color-red smaller-text">{UNIT_TYPE_PLURALS[props.unitType]} do not exist under {removedBy.name}.</p> : null}
             {shownNotice ? <p className="smaller-text" role="status">{shownNotice}</p> : null}
-
-            <StandardModal show={windowOpen} title="Special Rulesets" className="modal-xl" onClose={() => setWindowOpen(false)}>
-                {/* The block's own notice sits behind the window. */}
-                {shownNotice ? <p className="smaller-text">{shownNotice}</p> : null}
-                {getSpecialRulesets().map((ruleset) => {
-                    const ticked = settings.rulesets.includes(ruleset.id);
-                    const clash = ticked ? undefined : getRulesetConflict(settings.rulesets, ruleset.id);
-                    const removesThis = !ticked && !!ruleset.removesUnitTypes?.includes(props.unitType);
-                    return (
-                        <div key={ruleset.id}>
-                            <label>
-                                <input
-                                    type="checkbox"
-                                    checked={ticked}
-                                    disabled={!!clash || removesThis}
-                                    aria-describedby={"ruleset-about-" + ruleset.id}
-                                    onChange={() => change({ step: "rulesets", toggle: ruleset.id })}
-                                />{" "}
-                                {ruleset.name}
-                            </label>
-                            <p className="smaller-text" id={"ruleset-about-" + ruleset.id}>
-                                {ruleset.description}{" "}
-                                Source: {ruleset.source.url ? <a href={ruleset.source.url} target="_blank" rel="noopener noreferrer">{ruleset.source.title}</a> : ruleset.source.title}.
-                                {clash ? <span className="color-red"> Clashes with {clash.name}.</span> : null}
-                                {removesThis ? <span className="color-red"> {UNIT_TYPE_PLURALS[props.unitType]} do not exist under this ruleset.</span> : null}
-                            </p>
-                        </div>
-                    );
-                })}
-            </StandardModal>
         </div>
     );
 }
