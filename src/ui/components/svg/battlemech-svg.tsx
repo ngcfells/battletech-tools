@@ -76,6 +76,9 @@ export default class BattleMechSVG extends React.Component<IBattleMechSVGProps, 
         if( !this.props.inPlay && mech.getRulesEdition() === "battledroids" && !mech.isQuad() && !mech.isTripod() && !mech.isLAM() && !mech.isQuadVee() ) {
             return <BattledroidsMechRecordSheetSVG mechData={mech} />;
         }
+        // The footer band's notice lines; with Special Rulesets to credit (#324) they close up to make room on top.
+        const rulesets = mech.getRulesets();
+        const noticeY = rulesets.length > 0 ? [58, 36, 14] : [75, 45, 15];
 
         // Biped/LAM use the Biped anatomy; Tripod extends that base with a Center Leg overlay.
         // QuadVee correctly reuses the Quad diagram (same 4-leg, no-arm anatomy).
@@ -1868,10 +1871,10 @@ export default class BattleMechSVG extends React.Component<IBattleMechSVGProps, 
     CLASSIC BATTLETECH
     </text> */}
     {/* The Special Rulesets the 'Mech is built under (#324), above the notices. */}
-    {rulesetsAttributionSvg(450, this.docHeight - 105, this.props.mechData.getRulesets(), { fill: this.colorTan, size: 14, maxWidth: this.docWidth - 470 })}
+    {rulesetsAttributionSvg(450, this.docHeight - 80, rulesets, { fill: this.colorTan, size: 14, maxWidth: 1000 })}
     <text
         x={450}
-        y={this.docHeight - 75}
+        y={this.docHeight - noticeY[0]}
         textAnchor="start"
         fontFamily="sans-serif"
         fill={this.colorTan}
@@ -1882,7 +1885,7 @@ export default class BattleMechSVG extends React.Component<IBattleMechSVGProps, 
     </text>
     <text
         x={450}
-        y={this.docHeight - 45}
+        y={this.docHeight - noticeY[1]}
         textAnchor="start"
         fontFamily="sans-serif"
         fill={this.colorTan}
@@ -1893,7 +1896,7 @@ export default class BattleMechSVG extends React.Component<IBattleMechSVGProps, 
     </text>
     <text
         x={450}
-        y={this.docHeight - 15}
+        y={this.docHeight - noticeY[2]}
         textAnchor="start"
         fontFamily="sans-serif"
         fill={this.colorTan}

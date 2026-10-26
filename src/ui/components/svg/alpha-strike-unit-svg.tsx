@@ -911,8 +911,8 @@ export default class AlphaStrikeUnitSVG extends React.Component<IAlphaStrikeUnit
                     yLoc={600}
                     width={250}
                 />
-                {/* The Special Rulesets the unit is built under (#324), along the bottom edge. */}
-                {rulesetsAttributionSvg(20, 632, this.props.asUnit.rulesets, { size: 14, maxWidth: 700 })}
+                {/* The Special Rulesets the unit is built under (#324), in the strip under the Special box. */}
+                {rulesetsAttributionSvg(25, 586, this.props.asUnit.rulesets, { size: 13, maxWidth: 950 })}
                 </g>
                 </svg>
                 {this.props.asUnit.hasArcs() ? <AlphaStrikeArcsSVG asUnit={this.props.asUnit} className={this.props.className} /> : null}

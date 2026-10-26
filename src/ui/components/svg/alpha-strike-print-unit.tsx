@@ -576,9 +576,10 @@ export default class AlphaStrikePrintUnitSVG extends React.Component<IAlphaStrik
                     altColor='rgb(105,106,108)'
                 />
 
-                <text x="-450" y="1020" transform="rotate(-90)" fontSize="15" fill="rgb(0,0,0)">{CARD_NOTICE( new Date().getFullYear() )}</text>
+                {/* 12 points: it runs from the Critical Hits box up to the top frame, where 15 ran off the card. */}
+                <text x="-450" y="1020" transform="rotate(-90)" fontSize="12" fill="rgb(0,0,0)">{CARD_NOTICE( new Date().getFullYear() )}</text>
                 {/* The Special Rulesets the unit is built under (#324), down the edge beside the notice. */}
-                {rulesetsAttributionSvg(-735, 1040, this.props.asUnit.rulesets, { size: 13, maxWidth: 720, transform: "rotate(-90)" })}
+                {rulesetsAttributionSvg(-720, 1040, this.props.asUnit.rulesets, { size: 13, maxWidth: 690, transform: "rotate(-90)" })}
 
                 </svg>
                 {this.props.asUnit.hasArcs() ? <AlphaStrikeArcsSVG asUnit={this.props.asUnit} className={this.props.className} width={1050} height={750} /> : null}
