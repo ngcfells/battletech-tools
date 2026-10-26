@@ -1,4 +1,5 @@
 import React, { type JSX } from 'react';
+import { getUnitRulesets } from '../../../classes/unit-game-settings';
 import BattleArmor from '../../../classes/battle-armor';
 import { findBattleArmorEquipment, findBattleArmorMineType, findBattleArmorMunition } from '../../../data/battle-armor-equipment';
 import {
@@ -244,7 +245,7 @@ export default class BattleArmorRecordSheetSVG extends React.Component<IBattleAr
                 {titleBanner(LEFT.x, DOC_WIDTH - 2 * LEFT.x, "BATTLE ARMOR RECORD SHEET")}
                 {Array.from({ length: BA_SQUADS_PER_PAGE }, (_, i) => this.renderSquad(i, squads[i]))}
                 {this.renderTables()}
-                {sheetFooter("Tables: TW pp. 221-222, 227.")}
+                {sheetFooter("Tables: TW pp. 221-222, 227.", this.props.squads.flatMap(getUnitRulesets))}
             </svg>
         );
     }

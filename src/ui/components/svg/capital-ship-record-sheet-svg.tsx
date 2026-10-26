@@ -1,4 +1,5 @@
 import React, { type JSX } from 'react';
+import { getUnitRulesets } from '../../../classes/unit-game-settings';
 import CapitalShip from '../../../classes/capital-ship';
 import { AdvancedAerospaceArc, AdvancedAerospaceFacing } from '../../../data/advanced-aerospace-construction';
 import { ADVANCED_AEROSPACE_CREW_HITS, ADVANCED_AEROSPACE_CRITICAL_BLOCK } from '../../../data/aerospace-record-sheet';
@@ -304,7 +305,7 @@ export default class CapitalShipRecordSheetSVG extends React.Component<ICapitalS
                 {this.renderCriticalDamage()}
                 {station ? null : velocityRecordBox(LEFT.x, VELOCITY_Y, RIGHT_X - 20 - LEFT.x, BOTTOM - VELOCITY_Y, false)}
                 {this.renderHeatData()}
-                {sheetFooter("Tables: SO:AA pp. 9-11.")}
+                {sheetFooter("Tables: SO:AA pp. 9-11.", getUnitRulesets(this.props.ship))}
             </svg>
         );
     }

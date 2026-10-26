@@ -2,6 +2,7 @@ import React, { type ComponentType, type JSX, useEffect } from 'react';
 import { FaArrowCircleLeft, FaArrowCircleRight, FaPrint } from "react-icons/fa";
 import { Link } from 'react-router';
 import type { TechnicalReadout } from '../../classes/technical-readout';
+import { getUnitRulesets } from '../../classes/unit-game-settings';
 import type { ITroUnitAdapter } from '../../data/technical-readout-interfaces';
 import { IAppGlobals } from '../app-router';
 import PrintablePage from './printable-page';
@@ -106,7 +107,7 @@ export function CreatorPrintTRO({ appGlobals, config }: ICreatorTroPageProps): J
             provisionalNote={config.provisionalNote?.(unit)}
         >
             <div className="print-page">
-                <TechnicalReadoutSheet tro={unit.tro} adapter={config.adapter(unit)} />
+                <TechnicalReadoutSheet tro={unit.tro} adapter={config.adapter(unit)} rulesets={getUnitRulesets(unit as unknown as Parameters<typeof getUnitRulesets>[0])} />
             </div>
         </PrintablePage>
     );

@@ -29,6 +29,7 @@ import RecordSheetEquipmentTable from './record-sheet-equipment-table';
 import RecordSheetGATORTable from './record-sheet-gator-table';
 import RecordSheetGroupBoxSVG from './record-sheet-group-box-svg';
 import ShieldDiagramSVG from './shield-diagram-svg';
+import { rulesetsAttributionSvg } from '../rulesets-attribution';
 import TakeDamageButtonSVG from './take-damage-button';
 import TargetSelectSVG from './target-select-svg';
 import TripodArmorCircles from './tripod-armor-circles';
@@ -1866,6 +1867,8 @@ export default class BattleMechSVG extends React.Component<IBattleMechSVGProps, 
     >
     CLASSIC BATTLETECH
     </text> */}
+    {/* The Special Rulesets the 'Mech is built under (#324), above the notices. */}
+    {rulesetsAttributionSvg(450, this.docHeight - 105, this.props.mechData.getRulesets(), { fill: this.colorTan, size: 14, maxWidth: this.docWidth - 470 })}
     <text
         x={450}
         y={this.docHeight - 75}

@@ -1,5 +1,6 @@
 import React, { type JSX } from 'react';
 import BattleTechLogo from '../battletech-logo';
+import { rulesetsAttributionSvg } from '../rulesets-attribution';
 import RecordSheetGroupBoxSVG from './record-sheet-group-box-svg';
 
 // Drawing helpers the full-page record sheets share (vehicle, fighter, Small Craft and the rest). Coordinates are
@@ -134,8 +135,11 @@ export const CARD_NOTICE = (year: number): string => `© ${year} The Topps Compa
 
 export const NOT_ENDORSED ="This sheet is not published or endorsed by The Topps Company, Inc. or Catalyst Game Labs.";
 
-/** Our footer: the BattleTech logo, the app's name and address, where the tables come from, and the trademark notice. */
-export const sheetFooter = (tablesCitation: string): JSX.Element => {
+/**
+ * Our footer: the BattleTech logo, the app's name and address, where the tables come from, and the trademark notice;
+ * above them, the Special Rulesets the units on the sheet were built under (#324), when there are any.
+ */
+export const sheetFooter = (tablesCitation: string, rulesets: readonly string[] = []): JSX.Element => {
     const y = DOC_HEIGHT - 70;
     const x = 25;
     const notice = TRADEMARK_NOTICE(new Date().getFullYear());
@@ -146,6 +150,7 @@ export const sheetFooter = (tablesCitation: string): JSX.Element => {
             </g>
             {text(x, y + 38, "Created with Jeff's BattleTech Tools IIC", { size: 18, weight: 700, fill: GRAY })}
             {text(x, y + 60, "https://heysporky.github.io/battletech-tools/", { size: 15, fill: GRAY })}
+            {rulesetsAttributionSvg(DOC_WIDTH - x, y - 26, rulesets, { anchor: "end", fill: INK, maxWidth: DOC_WIDTH - 400 })}
             {text(DOC_WIDTH - x, y, `${tablesCitation} ${NOT_ENDORSED}`, { size: 15, anchor: "end", fill: GRAY })}
             {text(DOC_WIDTH - x, y + 26, notice[0], { size: 15, anchor: "end", fill: GRAY })}
             {text(DOC_WIDTH - x, y + 52, notice[1], { size: 15, anchor: "end", fill: GRAY })}

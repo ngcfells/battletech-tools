@@ -1,4 +1,5 @@
 import React, { type JSX } from 'react';
+import { getUnitRulesets } from '../../../classes/unit-game-settings';
 import SmallCraft from '../../../classes/small-craft';
 import { AEROSPACE_FIGHTER_CRITICAL_BLOCK } from '../../../data/aerospace-record-sheet';
 import { SMALL_CRAFT_ARCS, SmallCraftArc, findTransportBayType, quartersTypes } from '../../../data/small-craft-construction';
@@ -217,7 +218,7 @@ export default class SmallCraftRecordSheetSVG extends React.Component<ISmallCraf
             {velocityRecordBox(LEFT.x, 2070, RIGHT_X - 20 - LEFT.x, 430)}
             {this.renderHeatData()}
             {heatScaleColumn(1855, 1270, this.play?.heat ?? -1)}
-            {sheetFooter("Tables: Total Warfare pp. 161, 239-240.")}
+            {sheetFooter("Tables: Total Warfare pp. 161, 239-240.", getUnitRulesets(this.craft))}
         </svg>
     );
 }

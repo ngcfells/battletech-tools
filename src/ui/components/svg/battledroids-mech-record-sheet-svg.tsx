@@ -1,4 +1,5 @@
 import React, { type JSX } from 'react';
+import { getUnitRulesets } from '../../../classes/unit-game-settings';
 import { BattleMech, ICriticalSlot } from '../../../classes/battlemech';
 import { DOC_HEIGHT, DOC_WIDTH, INK, SHADE, groupBox, sheetFooter, text } from './record-sheet-svg-kit';
 
@@ -290,7 +291,7 @@ export default class BattledroidsMechRecordSheetSVG extends React.Component<IBat
             {text(25 + LEFT_W / 2, 1325, "BATTLEDROIDS", { size: 64, weight: 900, anchor: "middle", fill: "white" })}
             {this.renderCriticalChart(25, 1370, LEFT_W, 1120)}
             {this.renderHeatScale(RIGHT.x, 1045, RIGHT.w, 1445)}
-            {sheetFooter("The droid record sheet of Battledroids (FASA 1984).")}
+            {sheetFooter("The droid record sheet of Battledroids (FASA 1984).", getUnitRulesets(this.props.mechData))}
         </svg>
     );
 }

@@ -1,4 +1,5 @@
 import React, { type JSX } from 'react';
+import { getUnitRulesets } from '../../../classes/unit-game-settings';
 import ProtoMech, { PROTOMECH_CRITICAL_BOXES } from '../../../classes/protomech';
 import type { ProtoMechLocation } from '../../../data/protomech-construction';
 import { DOC_HEIGHT, DOC_WIDTH, GRAY, INK, SHADE, blank, groupBox, sheetFooter, text, titleBanner, wrapText } from './record-sheet-svg-kit';
@@ -251,7 +252,7 @@ export default class ProtoMechRecordSheetSVG extends React.Component<IProtoMechR
                 <rect x={0} y={0} width={DOC_WIDTH} height={DOC_HEIGHT} fill="white" />
                 {titleBanner(X, W, "PROTOMECH RECORD SHEET")}
                 {Array.from({ length: PROTOMECH_UNITS_PER_PAGE }, (_, i) => this.renderUnit(i, units[i]))}
-                {sheetFooter("Tables: TW pp. 185-187; IO:AE pp. 93-94.")}
+                {sheetFooter("Tables: TW pp. 185-187; IO:AE pp. 93-94.", this.props.units.map((unit) => unit.proto).flatMap(getUnitRulesets))}
             </svg>
         );
     }

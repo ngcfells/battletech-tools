@@ -76,7 +76,7 @@ export interface IRulesetCredit {
 
 /** The rulesets a unit is built under, as its sheets, cards and TROs credit them (#324 attribution). */
 export function getRulesetCredits(ids: readonly string[]): IRulesetCredit[] {
-    return ids.map((id) => {
+    return [...new Set(ids)].map((id) => {
         const ruleset = findSpecialRuleset(id);
         return ruleset ? { name: ruleset.name, source: ruleset.source } : { name: `${id} (ruleset no longer listed)` };
     });

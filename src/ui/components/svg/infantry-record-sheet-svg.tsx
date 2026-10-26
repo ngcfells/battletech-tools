@@ -1,4 +1,5 @@
 import React, { type JSX } from 'react';
+import { getUnitRulesets } from '../../../classes/unit-game-settings';
 import InfantryPlatoon, { INFANTRY_SPECIAL_FEATURES } from '../../../classes/infantry-platoon';
 import {
     INFANTRY_BURST_FIRE_BATTLE_ARMOR, INFANTRY_BURST_FIRE_UNITS, INFANTRY_LEG_ATTACKS, INFANTRY_NON_INFANTRY_DAMAGE, INFANTRY_NON_INFANTRY_DAMAGE_NOTES,
@@ -246,7 +247,7 @@ export default class InfantryRecordSheetSVG extends React.Component<IInfantryRec
                 {titleBanner(X, W, "CONVENTIONAL INFANTRY RECORD SHEET")}
                 {Array.from({ length: INFANTRY_LINES_PER_PAGE }, (_, i) => this.renderLine(i, lines[i]))}
                 {this.renderTables()}
-                {sheetFooter("Tables: TW pp. 216-217, 221.")}
+                {sheetFooter("Tables: TW pp. 216-217, 221.", this.props.lines.map((line) => line.platoon).flatMap(getUnitRulesets))}
             </svg>
         );
     }

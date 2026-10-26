@@ -1,4 +1,5 @@
 import React, { type JSX } from 'react';
+import { getUnitRulesets } from '../../../classes/unit-game-settings';
 import Building, { BUILDING_CRITICAL_HITS, findBuildingCapitalWeapon } from '../../../classes/building';
 import { DOC_HEIGHT, DOC_WIDTH, GRAY, INK, SHADE, blank, checkbox, groupBox, sheetFooter, text, titleBanner, wrapText } from './record-sheet-svg-kit';
 import { weaponDamageText } from './vehicle-record-sheet-svg';
@@ -466,7 +467,7 @@ export default class BuildingRecordSheetSVG extends React.Component<IBuildingRec
                 <rect x={0} y={0} width={DOC_WIDTH} height={DOC_HEIGHT} fill="white" />
                 {titleBanner(X, DOC_WIDTH - 2 * X, page === 0 ? "STRUCTURE RECORD SHEET" : `STRUCTURE RECORD SHEET (CONTINUED): ${this.building.getDisplayName()}`)}
                 {page === 0 ? this.renderFirstPage() : this.renderContinuation(page)}
-                {sheetFooter("Tables: TW p.171; TO:AR pp.117-119, 124.")}
+                {sheetFooter("Tables: TW p.171; TO:AR pp.117-119, 124.", getUnitRulesets(this.props.building))}
             </svg>
         );
     }

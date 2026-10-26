@@ -1,4 +1,5 @@
 import React, { type JSX } from 'react';
+import { getUnitRulesets } from '../../../classes/unit-game-settings';
 import { FighterLocation } from '../../../classes/aerospace-fighter';
 import { ADVANCED_AEROSPACE_CREW_HITS } from '../../../data/aerospace-record-sheet';
 import { AIRSHIP_VELOCITY_TABLE } from '../../../data/support-aircraft';
@@ -220,7 +221,7 @@ export default class SupportAircraftRecordSheetSVG extends FighterRecordSheetSVG
                         {velocityRecordBox(LEFT.x, 2060, RIGHT_X - 20 - LEFT.x, 410)}
                         {this.renderAirshipVelocityTable(2060, 410)}
                     </>}
-                {sheetFooter(satellite ? "Tables: Total Warfare pp. 204-206; Tactical Operations: Advanced Units & Equipment p. 66." : "Tables: Total Warfare pp. 204-206.")}
+                {sheetFooter(satellite ? "Tables: Total Warfare pp. 204-206; Tactical Operations: Advanced Units & Equipment p. 66." : "Tables: Total Warfare pp. 204-206.", getUnitRulesets(this.fighter))}
             </svg>
         );
     };

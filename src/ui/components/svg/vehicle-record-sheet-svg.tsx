@@ -1,4 +1,5 @@
 import React, { type JSX } from 'react';
+import { getUnitRulesets } from '../../../classes/unit-game-settings';
 import Vehicle from '../../../classes/vehicle';
 import { getArtVeeNotes } from '../../../classes/vehicle-artvee';
 import { IEquipmentItem, VehicleLocation } from '../../../data/data-interfaces';
@@ -543,7 +544,7 @@ export default class VehicleRecordSheetSVG extends React.Component<IVehicleRecor
     }
 
     renderFooter(): JSX.Element {
-        return sheetFooter("Tables: Total Warfare pp. 192-197.");
+        return sheetFooter("Tables: Total Warfare pp. 192-197.", getUnitRulesets(this.props.vehicle));
     }
 
     render = (): JSX.Element => (

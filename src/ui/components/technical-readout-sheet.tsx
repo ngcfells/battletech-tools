@@ -2,6 +2,7 @@ import React, { type JSX } from "react";
 import { TechnicalReadout } from "../../classes/technical-readout";
 import { ITroUnitAdapter, TRO_TEXT_SECTIONS } from "../../data/technical-readout-interfaces";
 import BattleTechLogo from "./battletech-logo";
+import { RulesetsAttribution } from "./rulesets-attribution";
 import TrademarkNoticeParagraphs from "./trademark-notice";
 import TroConstructionTable from "./tro-construction-table";
 import "./technical-readout-sheet.scss";
@@ -14,7 +15,8 @@ const paragraphs = (text: string): JSX.Element[] => text
     .map((paragraph, index) => <p key={index}>{paragraph}</p>);
 
 /** The printed Technical Readout of a unit: spec block, text in two columns, construction table. Shared by every unit type. */
-export default function TechnicalReadoutSheet(props: { tro: TechnicalReadout; adapter: ITroUnitAdapter }): JSX.Element {
+/** `rulesets`: the Special Rulesets the unit is built under, credited in the footer (#324). */
+export default function TechnicalReadoutSheet(props: { tro: TechnicalReadout; adapter: ITroUnitAdapter; rulesets?: readonly string[] }): JSX.Element {
     const { tro, adapter } = props;
     const spec = adapter.getSpecValues();
     const armament = tro.getArmamentLine(adapter.getEquipmentCopies());
@@ -63,6 +65,7 @@ export default function TechnicalReadoutSheet(props: { tro: TechnicalReadout; ad
             <TroConstructionTable rows={adapter.getConstructionRows()} />
             <footer className="tro-footer">
                 <BattleTechLogo />
+                <RulesetsAttribution rulesets={props.rulesets ?? []} />
                 <TrademarkNoticeParagraphs />
             </footer>
         </div>

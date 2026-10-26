@@ -1,4 +1,5 @@
 import React, { type JSX } from 'react';
+import { getUnitRulesets } from '../../../classes/unit-game-settings';
 import SmallCraft from '../../../classes/small-craft';
 import { AEROSPACE_FIGHTER_CRITICAL_BLOCK } from '../../../data/aerospace-record-sheet';
 import { SMALL_CRAFT_ARCS, SmallCraftArc } from '../../../data/small-craft-construction';
@@ -230,7 +231,7 @@ export default class DropShipRecordSheetSVG extends React.Component<IDropShipRec
             {this.renderCriticalDamage()}
             {velocityRecordBox(LEFT.x, 2060, RIGHT_X - 20 - LEFT.x, BOTTOM - 2060)}
             {this.renderHeatData()}
-            {sheetFooter("Tables: TW pp. 234, 238-240; TM p. 199.")}
+            {sheetFooter("Tables: TW pp. 234, 238-240; TM p. 199.", getUnitRulesets(this.craft))}
         </svg>
     );
 }

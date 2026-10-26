@@ -1,4 +1,5 @@
 import React, { type JSX } from 'react';
+import { getUnitRulesets } from '../../../classes/unit-game-settings';
 import AerospaceFighter, { FighterLocation } from '../../../classes/aerospace-fighter';
 import { AEROSPACE_FIGHTER_CRITICAL_BLOCK, FIGHTER_RETURN_TABLE, GROUND_MAP_STRAIGHT_MOVEMENT } from '../../../data/aerospace-record-sheet';
 import { SUPPORT_VEHICLE_CHASSIS_MODIFICATIONS, SUPPORT_VEHICLE_FIRE_CONTROL } from '../../../data/support-vehicle-construction';
@@ -273,7 +274,7 @@ export default class FighterRecordSheetSVG extends React.Component<IFighterRecor
             {this.renderPilotData()}
             {velocityRecordBox(LEFT.x, 2070, RIGHT_X - 20 - LEFT.x, 430)}
             {this.fighter.tracksHeat() ? <>{this.renderHeatData()}{heatScaleColumn(1855, 1270, this.play?.heat ?? -1)}</> : <>{this.renderGroundMapMovement()}{this.renderFighterReturn()}</>}
-            {sheetFooter("Tables: Total Warfare pp. 92, 161.")}
+            {sheetFooter("Tables: Total Warfare pp. 92, 161.", getUnitRulesets(this.fighter))}
         </svg>
     );
 }
