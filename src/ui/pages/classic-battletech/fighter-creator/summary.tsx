@@ -8,6 +8,7 @@ import SanitizedHTML from '../../../components/sanitized-html';
 import QuirkPicker from '../../../components/quirk-picker';
 import TextSection from '../../../components/text-section';
 import UIPage from '../../../components/ui-page';
+import { unitRulesLevel } from '../../../components/game-settings-block';
 const ArrowCircleLeft = FaArrowCircleLeft as any;
 
 export default class FighterCreatorSummary extends React.Component<ISummaryProps> {
@@ -19,7 +20,7 @@ export default class FighterCreatorSummary extends React.Component<ISummaryProps
     render = (): JSX.Element => {
         const fighter = this.props.appGlobals.currentFighter;
         if (!fighter) return <></>;
-        const issues = fighter.getIssues(this.props.appGlobals.appSettings.mechRulesFilter);
+        const issues = fighter.getIssues(unitRulesLevel(this.props.appGlobals.currentFighter, this.props.appGlobals.appSettings));
         const armor = fighter.getArmorAllocation();
         const as = fighter.getAlphaStrikeStats();
         const title = `${fighter.getModel()} ${fighter.getName()}`.trim() || "Unnamed Fighter";
@@ -131,7 +132,7 @@ export default class FighterCreatorSummary extends React.Component<ISummaryProps
                                 quirks={fighter.quirks}
                                 unitType={fighter.getQuirkUnitType()}
                                 editionTag={fighter.getRulesEdition()}
-                                rulesLevel={this.props.appGlobals.appSettings.mechRulesFilter}
+                                rulesLevel={unitRulesLevel(this.props.appGlobals.currentFighter, this.props.appGlobals.appSettings)}
                                 {...fighter.getQuirkTargets()}
                                 onChange={() => this.props.appGlobals.saveCurrentFighter(fighter)}
                             />

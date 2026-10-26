@@ -3,18 +3,16 @@ import { Link } from 'react-router';
 import { FaArrowCircleRight } from "react-icons/fa";
 import CapitalShip, { MAX_CAPITAL_SHIP_SAFE_THRUST } from '../../../../classes/capital-ship';
 import { advancedAerospaceTypes } from '../../../../data/advanced-aerospace-construction';
-import { btTechOptions } from '../../../../data/tech-options';
-import { chooseEra, getEraChoices, getTechChoices } from '../../../../data/era-choice';
-import { CUSTOM_HOMEBREW_RULES_LEVEL, getRulesLevelOptions } from '../../../../data/rules-level-options';
+import { CUSTOM_HOMEBREW_RULES_LEVEL } from '../../../../data/rules-level-options';
 import { IAppGlobals } from '../../../app-router';
 import InputField from "../../../components/form_elements/input_field";
 import InputNumeric from "../../../components/form_elements/input_numeric";
 import NumberField from "./_numberField";
 import { CapitalShipCreatorSideMenu } from '../../../components/creator-side-menus';
-import RulesEditionSelect from '../../../components/rules-edition-select';
 import TextSection from '../../../components/text-section';
 import UIPage from '../../../components/ui-page';
 import CapitalShipStatusBar from './_statusBar';
+import { UnitGameSettingsBlock, unitRulesLevel } from '../../../components/game-settings-block';
 const ArrowCircleRight = FaArrowCircleRight as any;
 
 const range = (from: number, to: number): number[] => Array.from({ length: to - from + 1 }, (_value, index) => from + index);
@@ -35,16 +33,10 @@ export default class CapitalShipCreatorChassis extends React.Component<IChassisP
         }
     }
 
-    updateRulesLevel = (e: React.FormEvent<HTMLSelectElement>): void => {
-        const appSettings = this.props.appGlobals.appSettings;
-        appSettings.mechRulesFilter = +e.currentTarget.value;
-        this.props.appGlobals.saveAppSettings(appSettings);
-    }
-
     render = (): JSX.Element => {
         const ship = this.props.appGlobals.currentCapitalShip;
         if (!ship) return <></>;
-        const rulesLevel = this.props.appGlobals.appSettings.mechRulesFilter;
+        const rulesLevel = unitRulesLevel(this.props.appGlobals.currentCapitalShip, this.props.appGlobals.appSettings);
 
         return (
             <UIPage current="classic-battletech-capital-ship-creator" appGlobals={this.props.appGlobals}>
@@ -55,21 +47,8 @@ export default class CapitalShipCreatorChassis extends React.Component<IChassisP
                     <div className="col-md-9 col-lg-10">
                         <CapitalShipStatusBar ship={ship} rulesLevel={rulesLevel} />
                         <TextSection label="Step 1: Design the Hull">
-                            {/* The rules edition comes first: it decides what every field below offers. */}
-                            <RulesEditionSelect unitType="capital-ship" value={ship.getRulesEdition()} onChange={(tag) => this.update((s) => s.setRulesEdition(tag))} />
-                            <label>
-                                Rules Level:
-                                <select value={rulesLevel} onChange={this.updateRulesLevel}>
-                                    {getRulesLevelOptions().map((option) => <option key={option.id} value={option.id}>{option.name}</option>)}
-                                </select>
-                            </label>
-                            {/* The era comes next and decides the tech bases offered below (user ruling 2026-10-21). */}
-                            <label>
-                                Era:
-                                <select value={ship.getEra().tag} onChange={(e) => { const value = e.currentTarget.value; this.update((s) => chooseEra(s, value)); }}>
-                                    {getEraChoices(btTechOptions.map((option) => option.tag)).map((option) => <option key={option.tag} value={option.tag}>{option.name}</option>)}
-                                </select>
-                            </label>
+                            {/* The shared settings block comes first: it decides what every field below offers (#324). */}
+                            <UnitGameSettingsBlock unitType="capital-ship" unit={ship} appGlobals={this.props.appGlobals} onChange={() => this.update(() => undefined)} />
                             <InputField
                                 label="Class (e.g. McKenna)"
                                 value={ship.getName()}
@@ -103,12 +82,6 @@ export default class CapitalShipCreatorChassis extends React.Component<IChassisP
                                     (after the SLDF's monitors, XTRO: Boondoggles p.19).
                                 </label>
                             ) : null}
-                            <label>
-                                Technology Base:
-                                <select value={ship.getTech().tag} onChange={(e) => { const value = e.currentTarget.value; this.update((s) => s.setTech(value)); }}>
-                                    {btTechOptions.filter((option) => getTechChoices(ship.getEra(), [option.tag]).length > 0).map((option) => <option key={option.tag} value={option.tag}>{option.name}</option>)}
-                                </select>
-                            </label>
                             <label>
                                 Tonnage:
                                 <input

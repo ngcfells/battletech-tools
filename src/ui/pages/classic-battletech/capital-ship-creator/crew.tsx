@@ -10,6 +10,7 @@ import { CapitalShipCreatorSideMenu } from '../../../components/creator-side-men
 import TextSection from '../../../components/text-section';
 import UIPage from '../../../components/ui-page';
 import CapitalShipStatusBar from './_statusBar';
+import { unitRulesLevel } from '../../../components/game-settings-block';
 const ArrowCircleLeft = FaArrowCircleLeft as any;
 const ArrowCircleRight = FaArrowCircleRight as any;
 const Trash = FaTrash as any;
@@ -31,7 +32,7 @@ export default class CapitalShipCreatorCrew extends React.Component<ICrewProps> 
     render = (): JSX.Element => {
         const ship = this.props.appGlobals.currentCapitalShip;
         if (!ship) return <></>;
-        const rulesLevel = this.props.appGlobals.appSettings.mechRulesFilter;
+        const rulesLevel = unitRulesLevel(this.props.appGlobals.currentCapitalShip, this.props.appGlobals.appSettings);
         const people = ship.getPeopleNeedingQuarters();
         const techBase = ship.getChassisTechBase();
         const bayOptions = transportBayTypes.filter((type) => !type.tech || type.tech === techBase || ship.isMixedTech());

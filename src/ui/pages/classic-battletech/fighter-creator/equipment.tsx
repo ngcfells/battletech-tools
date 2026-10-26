@@ -12,6 +12,7 @@ import InputNumeric from "../../../components/form_elements/input_numeric";
 import TextSection from '../../../components/text-section';
 import TonnageBar from '../../../components/tonnage-bar';
 import UIPage from '../../../components/ui-page';
+import { unitRulesLevel } from '../../../components/game-settings-block';
 const ArrowCircleLeft = FaArrowCircleLeft as any;
 const ArrowCircleRight = FaArrowCircleRight as any;
 const Trash = FaTrash as any;
@@ -41,7 +42,7 @@ export default class FighterCreatorEquipment extends React.Component<IEquipmentP
     render = (): JSX.Element => {
         const fighter = this.props.appGlobals.currentFighter;
         if (!fighter) return <></>;
-        const rulesLevel = this.props.appGlobals.appSettings.mechRulesFilter;
+        const rulesLevel = unitRulesLevel(this.props.appGlobals.currentFighter, this.props.appGlobals.appSettings);
         const remaining = fighter.getRemainingTonnage();
         const stores = fighter.getExternalStores();
         const storesUsed = fighter.getExternalStoresHardpointsUsed();

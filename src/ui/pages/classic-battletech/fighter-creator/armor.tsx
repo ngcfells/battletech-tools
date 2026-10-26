@@ -9,6 +9,7 @@ import InputNumeric from "../../../components/form_elements/input_numeric";
 import TextSection from '../../../components/text-section';
 import UIPage from '../../../components/ui-page';
 import { SUPPORT_VEHICLE_TECH_RATINGS } from '../../../../data/support-vehicle-construction';
+import { unitRulesLevel } from '../../../components/game-settings-block';
 const ArrowCircleLeft = FaArrowCircleLeft as any;
 const ArrowCircleRight = FaArrowCircleRight as any;
 
@@ -38,7 +39,7 @@ export default class FighterCreatorArmor extends React.Component<IArmorProps> {
     render = (): JSX.Element => {
         const fighter = this.props.appGlobals.currentFighter;
         if (!fighter) return <></>;
-        const rulesLevel = this.props.appGlobals.appSettings.mechRulesFilter;
+        const rulesLevel = unitRulesLevel(this.props.appGlobals.currentFighter, this.props.appGlobals.appSettings);
         const armor = fighter.getArmorAllocation();
         const remaining = fighter.getRemainingTonnage();
         const slots = fighter.getArmorType().fighterSlots;

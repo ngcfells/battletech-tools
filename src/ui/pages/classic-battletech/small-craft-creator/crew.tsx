@@ -9,6 +9,7 @@ import { SmallCraftCreatorSideMenu } from '../../../components/creator-side-menu
 import TextSection from '../../../components/text-section';
 import UIPage from '../../../components/ui-page';
 import SmallCraftStatusBar from './_statusBar';
+import { unitRulesLevel } from '../../../components/game-settings-block';
 const ArrowCircleLeft = FaArrowCircleLeft as any;
 const ArrowCircleRight = FaArrowCircleRight as any;
 const Trash = FaTrash as any;
@@ -30,7 +31,7 @@ export default class SmallCraftCreatorCrew extends React.Component<ICrewProps> {
     render = (): JSX.Element => {
         const craft = this.props.appGlobals.currentSmallCraft;
         if (!craft) return <></>;
-        const rulesLevel = this.props.appGlobals.appSettings.mechRulesFilter;
+        const rulesLevel = unitRulesLevel(this.props.appGlobals.currentSmallCraft, this.props.appGlobals.appSettings);
         const people = craft.getCrew() + craft.getPassengers();
         const techBase = craft.getChassisTechBase();
         const bayOptions = transportBayTypes.filter((type) => !type.tech || type.tech === techBase || craft.isMixedTech());

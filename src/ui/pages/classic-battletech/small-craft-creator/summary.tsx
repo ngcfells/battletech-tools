@@ -8,6 +8,7 @@ import { SmallCraftCreatorSideMenu } from '../../../components/creator-side-menu
 import QuirkPicker from '../../../components/quirk-picker';
 import TextSection from '../../../components/text-section';
 import UIPage from '../../../components/ui-page';
+import { unitRulesLevel } from '../../../components/game-settings-block';
 const ArrowCircleLeft = FaArrowCircleLeft as any;
 
 export default class SmallCraftCreatorSummary extends React.Component<ISummaryProps> {
@@ -19,7 +20,7 @@ export default class SmallCraftCreatorSummary extends React.Component<ISummaryPr
     render = (): JSX.Element => {
         const craft = this.props.appGlobals.currentSmallCraft;
         if (!craft) return <></>;
-        const rulesLevel = this.props.appGlobals.appSettings.mechRulesFilter;
+        const rulesLevel = unitRulesLevel(this.props.appGlobals.currentSmallCraft, this.props.appGlobals.appSettings);
         const issues = craft.getIssues(rulesLevel);
         const notes = craft.getNotes();
         const alphaStrike = craft.getAlphaStrikeStats();
@@ -80,7 +81,7 @@ export default class SmallCraftCreatorSummary extends React.Component<ISummaryPr
                                 quirks={craft.quirks}
                                 unitType={craft.getQuirkUnitType()}
                                 editionTag={craft.getRulesEdition()}
-                                rulesLevel={this.props.appGlobals.appSettings.mechRulesFilter}
+                                rulesLevel={unitRulesLevel(this.props.appGlobals.currentSmallCraft, this.props.appGlobals.appSettings)}
                                 {...craft.getQuirkTargets()}
                                 onChange={() => this.props.appGlobals.saveCurrentSmallCraft(craft)}
                             />

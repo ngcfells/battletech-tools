@@ -3,17 +3,14 @@ import { Link } from 'react-router';
 import { FaArrowCircleRight } from "react-icons/fa";
 import SmallCraft from '../../../../classes/small-craft';
 import { KF_BOOM_TYPES, PRIMITIVE_FIRST_YEAR, PRIMITIVE_LAST_YEAR, SMALL_CRAFT_MAX_TONNAGE, SMALL_CRAFT_MIN_TONNAGE, SMALL_CRAFT_SHAPES, SMALL_CRAFT_TONNAGE_STEP } from '../../../../data/small-craft-construction';
-import { btTechOptions } from '../../../../data/tech-options';
-import { chooseEra, getEraChoices, getTechChoices } from '../../../../data/era-choice';
 import { IAppGlobals } from '../../../app-router';
 import InputField from "../../../components/form_elements/input_field";
 import InputNumeric from "../../../components/form_elements/input_numeric";
 import { SmallCraftCreatorSideMenu } from '../../../components/creator-side-menus';
-import RulesEditionSelect from '../../../components/rules-edition-select';
-import RulesLevelSelect from '../../../components/rules-level-select';
 import TextSection from '../../../components/text-section';
 import UIPage from '../../../components/ui-page';
 import SmallCraftStatusBar from './_statusBar';
+import { UnitGameSettingsBlock, unitRulesLevel } from '../../../components/game-settings-block';
 const ArrowCircleRight = FaArrowCircleRight as any;
 
 const range = (from: number, to: number, step: number = 1): number[] => {
@@ -37,16 +34,10 @@ export default class SmallCraftCreatorChassis extends React.Component<IChassisPr
         }
     }
 
-    updateRulesLevel = (level: number): void => {
-        const appSettings = this.props.appGlobals.appSettings;
-        appSettings.mechRulesFilter = level;
-        this.props.appGlobals.saveAppSettings(appSettings);
-    }
-
     render = (): JSX.Element => {
         const craft = this.props.appGlobals.currentSmallCraft;
         if (!craft) return <></>;
-        const rulesLevel = this.props.appGlobals.appSettings.mechRulesFilter;
+        const rulesLevel = unitRulesLevel(this.props.appGlobals.currentSmallCraft, this.props.appGlobals.appSettings);
 
         return (
             <UIPage current="classic-battletech-small-craft-creator" appGlobals={this.props.appGlobals}>
@@ -57,19 +48,8 @@ export default class SmallCraftCreatorChassis extends React.Component<IChassisPr
                     <div className="col-md-9 col-lg-10">
                         <SmallCraftStatusBar craft={craft} rulesLevel={rulesLevel} />
                         <TextSection label="Step 1: Design the Hull">
-                            {/* The rules edition comes first: it decides what every field below offers. */}
-                            <RulesEditionSelect unitType="small-craft" value={craft.getRulesEdition()} onChange={(tag) => this.update((c) => c.setRulesEdition(tag))} />
-                            <RulesLevelSelect editionTag={craft.getRulesEdition()} value={rulesLevel} onChange={this.updateRulesLevel} />
-                            {/* The era comes next and decides the tech bases offered below (user ruling 2026-10-21). */}
-                            <label>
-                                Era:
-                                <select value={craft.getEra().tag} onChange={(e) => { const value = e.currentTarget.value; this.update((c) => chooseEra(c, value)); }}>
-                                    {getEraChoices(btTechOptions.map((option) => option.tag)).map((option) => (
-                                        <option key={option.tag} value={option.tag}>{option.name}</option>
-                                    ))}
-                                </select>
-                            </label>
-                            {craft.getEra().description ? <p className="smaller-text">{craft.getEra().description}</p> : null}
+                            {/* The shared settings block comes first: it decides what every field below offers (#324). */}
+                            <UnitGameSettingsBlock unitType="small-craft" unit={craft} appGlobals={this.props.appGlobals} onChange={() => this.update(() => undefined)} />
                             <InputField
                                 label="Model # (e.g. LC-100)"
                                 value={craft.getModel()}
@@ -152,18 +132,7 @@ export default class SmallCraftCreatorChassis extends React.Component<IChassisPr
                                     : "A spheroid craft lands on its tail: Nose, Fore-Side, Aft-Side and Aft arcs, a lighter structure, more free heat sinks and up to 4 bay doors (TM pp. 187-196)."}
                             </p>
 
-                            <label>
-                                Technology Base:
-                                <select value={craft.getTech().tag} onChange={(e) => { const value = e.currentTarget.value; this.update((c) => c.setTech(value)); }}>
-                                    {btTechOptions.filter((option) => getTechChoices(craft.getEra(), [option.tag]).length > 0).map((option) => (
-                                        <option key={option.tag} value={option.tag}>{option.name}</option>
-                                    ))}
-                                </select>
-                            </label>
-
-
-
-                            <label>
+<label>
                                 Tonnage:
                                 {craft.isDropShip() ? (
                                     <input

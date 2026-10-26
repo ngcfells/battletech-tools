@@ -8,6 +8,7 @@ import CapitalShipAlphaStrikeCard from '../../../components/capital-ship-as-card
 import QuirkPicker from '../../../components/quirk-picker';
 import TextSection from '../../../components/text-section';
 import UIPage from '../../../components/ui-page';
+import { unitRulesLevel } from '../../../components/game-settings-block';
 const ArrowCircleLeft = FaArrowCircleLeft as any;
 
 export default class CapitalShipCreatorSummary extends React.Component<ISummaryProps> {
@@ -19,7 +20,7 @@ export default class CapitalShipCreatorSummary extends React.Component<ISummaryP
     render = (): JSX.Element => {
         const ship = this.props.appGlobals.currentCapitalShip;
         if (!ship) return <></>;
-        const rulesLevel = this.props.appGlobals.appSettings.mechRulesFilter;
+        const rulesLevel = unitRulesLevel(this.props.appGlobals.currentCapitalShip, this.props.appGlobals.appSettings);
         const issues = ship.getIssues(rulesLevel);
         const notes = ship.getNotes();
         const typeName = ship.getShipTypeName();
@@ -77,7 +78,7 @@ export default class CapitalShipCreatorSummary extends React.Component<ISummaryP
                                 quirks={ship.quirks}
                                 unitType={ship.getQuirkUnitType()}
                                 editionTag={ship.getRulesEdition()}
-                                rulesLevel={this.props.appGlobals.appSettings.mechRulesFilter}
+                                rulesLevel={unitRulesLevel(this.props.appGlobals.currentCapitalShip, this.props.appGlobals.appSettings)}
                                 {...ship.getQuirkTargets()}
                                 onChange={() => this.props.appGlobals.saveCurrentCapitalShip(ship)}
                             />
