@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it } from "vitest";
-import { changeGameSetting, describeGameSettingMove, getEditionTechBases, getGameSettingOptions, getStaleGameSettingSteps, IGameSettings } from "./game-settings";
+import { changeGameSetting, describeGameSettingMove, getEditionTechBases, getGameSettingOptions, getStaleGameSettingSteps, getUnitTypeEras, IGameSettings } from "./game-settings";
 import { btTechOptions } from "./tech-options";
 import { btSpecialRulesets } from "./special-rulesets";
 import { DEFAULT_RULES_EDITION, getSelectableRulesEditions } from "./rules-editions";
@@ -123,5 +123,22 @@ describe("shared game settings (#324)", () => {
         const tags = getGameSettingOptions({ ...base, rulesets: ["test-techs"] }, "mech").editions.map((edition) => edition.tag);
         expect(tags[0]).toBe(DEFAULT_RULES_EDITION);
         expect(tags).not.toContain("battledroids");
+    });
+    it("offers a unit type only its own tech bases", () => {
+        const settings = { ...base, techBase: "is" };
+        expect(getGameSettingOptions(settings, "battle-armor").techBases).toEqual(["is", "clan"]);
+        expect(getGameSettingOptions(settings, "infantry").techBases).toEqual(["is", "clan"]);
+        expect(getGameSettingOptions({ ...base, techBase: "clan" }, "protomech").techBases).toEqual(["clan"]);
+        expect(getGameSettingOptions(settings, "vehicle").techBases).toEqual(btTechOptions.map((option) => option.tag));
+    });
+
+    it("a ProtoMech's eras start in 3055 and the no-Clans universe flags its tech base without moving it", () => {
+        const proto = { ...base, techBase: "clan", era: getUnitTypeEras("protomech", "clan")[0].tag };
+        expect(getGameSettingOptions(proto, "protomech").eras.every((era) => (era.yearEnd ?? Infinity) >= 3055)).toBe(true);
+        expect(getGameSettingOptions(proto, "protomech").eras.length).toBeLessThan(getErasForTech("clan").length);
+        const result = changeGameSetting(proto, { step: "rulesets", toggle: "sample-no-clans" }, "protomech");
+        expect(result.settings.techBase).toBe("clan");
+        expect(result.moves).toEqual([]);
+        expect(getStaleGameSettingSteps(result.settings, "protomech")).toEqual(["techBase"]);
     });
 });

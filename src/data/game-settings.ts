@@ -75,17 +75,34 @@ export function getEditionTechBases(editionTag: string): string[] {
         || (clan && edition.mixedTech === true && (tag === "mis" || tag === "mclan")));
 }
 
+// The tech bases a unit type builds with, where it has fewer than all: battle armor and infantry are Inner Sphere or
+// Clan (Battle Armor's Mixed technology is a construction option of its own), a ProtoMech is Clan only.
+const UNIT_TYPE_TECH_BASES: Partial<Record<RulesEditionUnitType, string[]>> = { "battle-armor": ["is", "clan"], infantry: ["is", "clan"], protomech: ["clan"] };
+// The first year a unit type exists: ProtoMechs are first built in 3055.
+const UNIT_TYPE_FIRST_YEAR: Partial<Record<RulesEditionUnitType, number>> = { protomech: 3055 };
+
+export function getUnitTypeTechBases(unitType: RulesEditionUnitType): string[] | undefined {
+    return UNIT_TYPE_TECH_BASES[unitType];
+}
+
+/** The eras a unit type can be built in with `techTag`: those of the tech base that reach the type's first year. */
+export function getUnitTypeEras(unitType: RulesEditionUnitType, techTag: string): IEras[] {
+    const firstYear = UNIT_TYPE_FIRST_YEAR[unitType] ?? -Infinity;
+    return getErasForTech(techTag).filter((era) => (era.yearEnd ?? Infinity) >= firstYear);
+}
+
 export function getGameSettingOptions(settings: IGameSettings, unitType: RulesEditionUnitType): IGameSettingOptions {
     const rulesets = tickedRulesets(settings);
     const minEdition = Math.max(-1, ...rulesets.map((ruleset) => ruleset.minEdition ? editionOrder(ruleset.minEdition) : -1));
     const minLevel = Math.max(-Infinity, ...rulesets.map((ruleset) => ruleset.minRulesLevel ?? -Infinity));
     const removedTech = rulesets.flatMap((ruleset) => ruleset.removesTechBases ?? []);
     const removedEras = rulesets.flatMap((ruleset) => ruleset.removesEras ?? []);
+    const unitTechBases = getUnitTypeTechBases(unitType);
     return {
         editions: getSelectableRulesEditions(unitType).filter((edition) => editionOrder(edition.tag) >= minEdition),
         rulesLevels: getRulesLevelOptionsForEdition(settings.edition).filter((level) => level.id >= minLevel),
-        techBases: getEditionTechBases(settings.edition).filter((tag) => !removedTech.includes(tag)),
-        eras: getRulesEdition(settings.edition).noEras ? [] : getErasForTech(settings.techBase).filter((era) => !removedEras.includes(era.tag)),
+        techBases: getEditionTechBases(settings.edition).filter((tag) => !removedTech.includes(tag) && (unitTechBases?.includes(tag) ?? true)),
+        eras: getRulesEdition(settings.edition).noEras ? [] : getUnitTypeEras(unitType, settings.techBase).filter((era) => !removedEras.includes(era.tag)),
     };
 }
 

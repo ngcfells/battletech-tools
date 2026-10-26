@@ -3,7 +3,8 @@ import { TechnicalReadout } from "./technical-readout";
 import type { ITechnicalReadoutExport } from "../data/technical-readout-interfaces";
 import { DEFAULT_RULES_EDITION, getSelectableRulesEditionTag } from "../data/rules-editions";
 import { IEquipmentItem, IEras } from "../data/data-interfaces";
-import { btEraOptions, findEraByTag, getErasForTech } from "../data/era-options";
+import { btEraOptions, findEraByTag } from "../data/era-options";
+import { getUnitTypeEras } from "../data/game-settings";
 import { CUSTOM_HOMEBREW_RULES_LEVEL, getAlphaStrikeEquipmentAbilityCodes, getAmmoBattleValuePerTon, getAmmoRoundsPerTon, getBattleArmorScaleListByTech, getCompatibleAmmo, getEquipmentListByTech, getEquipmentRulesLevel, getWeaponShotsPerTon } from "../data/equipment-registry";
 import { mechEngineOptions } from "../data/mech-engine-options";
 import { getProtoMechJumpJetWeightKg, protoMechComponents } from "../data/protomech-components";
@@ -786,7 +787,7 @@ export default class ProtoMech {
     }
 
     public getEra(): IEras { return this._era; }
-    public getAvailableEras(): IEras[] { return getErasForTech("clan").filter((era) => (era.yearEnd ?? Infinity) >= 3055); }
+    public getAvailableEras(): IEras[] { return getUnitTypeEras("protomech", "clan"); }
     public setEra(tag: string): boolean {
         const era = this.getAvailableEras().find((item) => item.tag === tag);
         if (era) this._era = era;
