@@ -34,7 +34,7 @@ import { mechMyomerTypes } from "../data/mech-myomer-types";
 import { mechTypeOptions } from "../data/mech-type-options";
 import { getTargetingComputerWeaponWeight, IVariableEquipmentContext, isTargetingComputerWeapon, sizeVariableEquipment } from "../data/variable-equipment";
 import { btTechOptions } from "../data/tech-options";
-import { getEditionTechBases } from "../data/game-settings";
+import { getEditionTechBases, IGameSettings } from "../data/game-settings";
 import { getHexDistanceFromModifier, getLocationName, getMovementModifier } from "../utils";
 import { addCommas } from "../utils/addCommas";
 import { adjustAlphaStrikeDamage, calculateAlphaStrikeValue, IAlphaStrikeExport, isAlphaStrikeConversionKeyword } from "../utils/calculateAlphaStrikeValue";
@@ -281,6 +281,10 @@ export interface IBattleMechExport {
     printedDroid?: string;
     /** The edition the design last left, its design then, and its design just after the switch (see setRulesEdition). */
     rulesEditionReturn?: IRulesEditionReturn;
+    /** The design's own rules level (#324); absent in older saves, which show the app-wide level. */
+    rulesLevel?: number;
+    /** Special Rulesets the design is built under (ids from special-rulesets.ts); absent when none. */
+    rulesets?: string[];
     introductoryRules?: boolean;
     is_type: string;
     jumpSpeed: number;
@@ -440,6 +444,8 @@ export class BattleMech {
     /** The printed droid the design was loaded from (an id from battledroids-mechs.ts), if any. */
     private _printedDroid: string | undefined = undefined;
     private _rulesEditionReturn: IRulesEditionReturn | undefined = undefined;
+    private _rulesLevel: number | undefined = undefined;
+    private _rulesets: string[] = [];
     private _model: string = "";
     private _name: string = "";
     private _tonnage = 20;
@@ -656,6 +662,8 @@ export class BattleMech {
         this.tro = new TechnicalReadout();
         this.quirks = new QuirkList();
         this._rulesEditionReturn = undefined;
+        this._rulesLevel = undefined;
+        this._rulesets = [];
         this._advancedFireControl = false;
         this._patchworkArmor = {};
         this._frankenMech = false;
@@ -6121,7 +6129,7 @@ export class BattleMech {
     /** The design as it stands, for telling whether it changed: no ids, timestamps or way back. */
     private _editionState(): string {
         const saved = this.export() as unknown as Record<string, unknown>;
-        return JSON.stringify({ ...saved, uuid: undefined, lastUpdated: undefined, rulesEditionReturn: undefined });
+        return JSON.stringify({ ...saved, uuid: undefined, lastUpdated: undefined, rulesEditionReturn: undefined, rulesLevel: undefined, rulesets: undefined });
     }
 
     /**
@@ -6198,6 +6206,38 @@ export class BattleMech {
     public getAvailableTechOptions(): typeof btTechOptions {
         const tags = getEditionTechBases(this._rulesEdition);
         return btTechOptions.filter((option) => tags.includes(option.tag));
+    }
+
+    /** The design's own rules level, or `fallback` (the app-wide level) for a save from before designs kept one. */
+    public getRulesLevel(fallback: number): number {
+        return this._rulesLevel ?? fallback;
+    }
+
+    public getRulesets(): string[] {
+        return [...this._rulesets];
+    }
+
+    /** The shared settings block's values for this design (#324). */
+    public getGameSettings(fallbackLevel: number): IGameSettings {
+        return {
+            rulesets: this.getRulesets(),
+            edition: this._rulesEdition,
+            rulesLevel: this.getRulesLevel(fallbackLevel),
+            techBase: this._tech.tag,
+            era: this._era.tag,
+        };
+    }
+
+    /**
+     * Applies the settings block's values: edition, then tech base, then era. The level and rulesets go last, since
+     * going back to the edition the design just left re-imports the save it had there.
+     */
+    public applyGameSettings(settings: IGameSettings): void {
+        if (settings.edition !== this._rulesEdition) this.setRulesEdition(settings.edition);
+        if (settings.techBase !== this._tech.tag) this.setTech(settings.techBase);
+        if (settings.era !== this._era.tag) this.setEra(settings.era);
+        this._rulesLevel = settings.rulesLevel;
+        this._rulesets = [...settings.rulesets];
     }
 
     /**
@@ -8175,6 +8215,8 @@ export class BattleMech {
             rulesEdition: this._rulesEdition === DEFAULT_RULES_EDITION ? undefined : this._rulesEdition,
             printedDroid: this._printedDroid,
             rulesEditionReturn: this._rulesEditionReturn,
+            rulesLevel: this._rulesLevel,
+            rulesets: this._rulesets.length > 0 ? [...this._rulesets] : undefined,
             features: [],
             gyro: this._gyro.tag,
             heat_sink_type: this.getHeatSinksType(),
@@ -8517,6 +8559,8 @@ export class BattleMech {
 
             // Before anything is mounted: the edition decides the stats of what is loaded.
             this._rulesEdition = getRulesEdition(importObject.rulesEdition).tag;
+            this._rulesLevel = typeof importObject.rulesLevel === "number" ? importObject.rulesLevel : undefined;
+            this._rulesets = Array.isArray(importObject.rulesets) ? [...importObject.rulesets] : [];
             this._printedDroid = importObject.printedDroid || undefined;
             this._rulesEditionReturn = importObject.rulesEditionReturn || undefined;
 
