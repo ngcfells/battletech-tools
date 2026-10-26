@@ -269,6 +269,7 @@ export default class AlphaStrikeUnitCreatorHome extends React.Component<IHomePro
                                 }}
                                 onChange={this.setGameSettings}
                             />
+                            <p className="smaller-text">Printing asks for confirmation above the selected rules level and stamps anything above Standard.</p>
                         </fieldset>
                         <fieldset className="fieldset">
                         <div className="row">

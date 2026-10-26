@@ -5,6 +5,7 @@ import { DEFAULT_MUL_SOURCE_SELECTION, MULSourceSelection } from "../data/mul-li
 import { RulesEditionUnitType } from "../data/rules-editions";
 import { findSpecialRuleset, getRulesetConflict, ISpecialRuleset } from "../data/special-rulesets";
 import { btTechOptions } from "../data/tech-options";
+import { getMULAerospaceClass, MULAerospaceClass } from "./classicMULMatch";
 import { getMULEraAliases, getMULEraLabel, MUL_ERA_ALIAS_OFFSET, mulEras } from "./mulUtilities";
 
 /** The filters of a Master Unit List search, shared by the Alpha Strike and Classic rosters. */
@@ -49,8 +50,9 @@ export function newMULSearchFilters(overrides: Partial<IMULSearchFilters> = {}):
 
 /** MUL Tech filter values and the btTechOptions tags each stands for. */
 export const MUL_TECH_BASES: Record<string, string[]> = { "inner sphere": ["is"], clan: ["clan"], mixed: ["mis", "mclan"] };
-// MUL Technology ids (the live site's Technologies values); Primitive is Inner Sphere technology.
-const MUL_TECHNOLOGY_TAGS: Record<number, string[]> = { 1: ["is"], 2: ["clan"], 3: ["mis", "mclan"], 57: ["is"] };
+// MUL Technology ids: Primitive is Inner Sphere technology (4 in the MUL's own records, 57 on custom units, as the live
+// site's Technologies filter takes it). Unknown (5, 75) is never left out.
+const MUL_TECHNOLOGY_TAGS: Record<number, string[]> = { 1: ["is"], 2: ["clan"], 3: ["mis", "mclan"], 4: ["is"], 57: ["is"] };
 // MUL type ids, and the Classic roster's aerospace kinds filed under type 17, as the unit types a ruleset removes.
 const MUL_TYPE_UNIT_TYPES: Record<number, RulesEditionUnitType> = {
     18: "mech", 20: "mech", 19: "vehicle", 24: "vehicle", 21: "infantry", 22: "battle-armor", 23: "protomech",
@@ -58,11 +60,16 @@ const MUL_TYPE_UNIT_TYPES: Record<number, RulesEditionUnitType> = {
     1705: "capital-ship", 1706: "capital-ship", 1707: "capital-ship",
 };
 
+// The MUL files every aerospace unit under type 17: its class says which unit type it is.
+const AEROSPACE_UNIT_TYPES: Record<MULAerospaceClass, RulesEditionUnitType> = {
+    AF: "fighter", CF: "fighter", SC: "small-craft", DS: "small-craft", JS: "capital-ship", WS: "capital-ship", SS: "capital-ship",
+};
+
 const ticked = (rulesets: string[]): ISpecialRuleset[] => rulesets.flatMap((id) => findSpecialRuleset(id) ?? []);
 const removedTech = (rulesets: string[]): string[] => ticked(rulesets).flatMap((ruleset) => ruleset.removesTechBases ?? []);
 
 export function isMULTechOffered(tech: string, rulesets: string[]): boolean {
-    const tags = MUL_TECH_BASES[tech.toLowerCase()];
+    const tags = MUL_TECH_BASES[(tech ?? "").toLowerCase()];
     return !tech || !tags || tags.some((tag) => !removedTech(rulesets).includes(tag));
 }
 
@@ -88,7 +95,7 @@ export function isMULEraOffered(eraId: number, tech: string, rulesets: string[])
     if (!eraId) return true;
     const removed = removedTech(rulesets);
     const removedEras = ticked(rulesets).flatMap((ruleset) => ruleset.removesEras ?? []);
-    const tags = (MUL_TECH_BASES[tech.toLowerCase()] ?? btTechOptions.map((option) => option.tag)).filter((tag) => !removed.includes(tag));
+    const tags = (MUL_TECH_BASES[(tech ?? "").toLowerCase()] ?? btTechOptions.map((option) => option.tag)).filter((tag) => !removed.includes(tag));
     const eras = erasForMULEra(eraId);
     return eras.length === 0 || eras.some((era) => !removedEras.includes(era.tag) && era.techBases.some((tag) => tags.includes(tag)));
 }
@@ -136,6 +143,9 @@ export function filterMULByRulesets(units: IASMULUnit[], rulesets: string[]): IA
     const removed = removedTech(rulesets);
     return units.filter((unit) => {
         const tags = MUL_TECHNOLOGY_TAGS[unit.Technology?.Id];
-        return (!tags || tags.some((tag) => !removed.includes(tag))) && isMULTypeOffered(unit.Type?.Id ?? 0, rulesets);
+        const aerospace = getMULAerospaceClass(unit);
+        const unitType = aerospace ? AEROSPACE_UNIT_TYPES[aerospace] : MUL_TYPE_UNIT_TYPES[unit.Type?.Id];
+        return (!tags || tags.some((tag) => !removed.includes(tag)))
+            && !(unitType && ticked(rulesets).some((ruleset) => ruleset.removesUnitTypes?.includes(unitType)));
     });
 }

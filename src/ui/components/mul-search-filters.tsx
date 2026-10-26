@@ -6,6 +6,7 @@ import { IAbilityCodeCount } from '../../utils/mulAbilities';
 import { changeMULSearchFilters, IMULSearchFilters, isMULEraOffered, isMULTechOffered, isMULTypeOffered } from '../../utils/mulSearchFilters';
 import { getMULAerospaceRoles, getMULEraAliases, getMULEraIDs, getMULEraLabel, getMULFactionIDs, getMULFactionLabels, getMULGroundRoles, getMULTypeIDs, getMULTypeLabel } from '../../utils/mulUtilities';
 import InputField from './form_elements/input_field';
+import { STALE_WARNING } from './game-settings-block';
 import SpecialRulesetsStep from './special-rulesets-step';
 import type { JSX } from "react";
 const Plus = FaPlus as any;
@@ -70,11 +71,15 @@ export default class MULSearchFilters extends React.Component<IMULSearchFiltersP
 
     render = (): JSX.Element => {
         const filters = this.props.filters;
-        const typeOptions = ( this.props.typeOptions ?? getMULTypeIDs().map( (id) => ({ id, label: getMULTypeLabel( id ) }) ) )
-            .filter( (option) => isMULTypeOffered( option.id, filters.rulesets ) );
+        const allTypeOptions = this.props.typeOptions ?? getMULTypeIDs().map( (id) => ({ id, label: getMULTypeLabel( id ) }) );
+        const typeOptions = allTypeOptions.filter( (option) => isMULTypeOffered( option.id, filters.rulesets ) );
         const techOffered = ( tech: string ) => isMULTechOffered( tech, filters.rulesets );
         const eraOffered = ( eraID: number ) => isMULEraOffered( eraID, filters.tech, filters.rulesets );
         const eraAliases = getMULEraAliases().filter( (alias) => eraOffered( alias.id ) );
+        // A stored value the lists no longer offer (a search saved before, or a roster button's type) stays selected,
+        // flagged as the settings block flags one (call 9), until the user picks another.
+        const stale = ( offered: boolean, value: string | number, label: string ) => offered ? null
+            : <option value={value}>{label} ({STALE_WARNING})</option>;
         const notice = this.state.notice.made === JSON.stringify( filters ) ? this.state.notice.text : "";
         const factionSuggestions = this.getFactionSuggestions();
         const abilitySuggestions = this.getAbilitySuggestions();
@@ -116,6 +121,7 @@ export default class MULSearchFilters extends React.Component<IMULSearchFiltersP
                     <option value="">All</option>
                     <option value="inner sphere">Inner Sphere</option>
                     {techOffered( "clan" ) ? <option value="clan">Clan</option> : null}
+                    {stale( [ "", "inner sphere", ...( techOffered( "clan" ) ? [ "clan" ] : [] ) ].includes( filters.tech ), filters.tech, filters.tech === "clan" ? "Clan" : filters.tech )}
                 </select>
             </label>
 
@@ -123,6 +129,8 @@ export default class MULSearchFilters extends React.Component<IMULSearchFiltersP
                 Type:<br />
                 <select onChange={(event) => this.change({ type: +event.currentTarget.value })} value={filters.type}>
                     {typeOptions.length > 1 ? <option value={0}>All</option> : null}
+                    {stale( !filters.type || typeOptions.some( (option) => option.id === filters.type ), filters.type,
+                        allTypeOptions.find( (option) => option.id === filters.type )?.label ?? getMULTypeLabel( filters.type ) )}
                     {typeOptions.map( (option) => <option key={option.id} value={option.id}>{option.label}</option> )}
                 </select>
             </label>
@@ -132,6 +140,7 @@ export default class MULSearchFilters extends React.Component<IMULSearchFiltersP
                 Era:<br />
                 <select onChange={(event) => this.change({ era: +event.currentTarget.value })} value={filters.era}>
                     <option value={0}>All</option>
+                    {stale( eraOffered( filters.era ), filters.era, getMULEraLabel( filters.era ) )}
                     {getMULEraIDs().filter( eraOffered ).map( (eraID) => <option key={eraID} value={eraID}>{getMULEraLabel( eraID )}</option> )}
                     {eraAliases.length > 0 ? (
                         <optgroup label="Clan eras">

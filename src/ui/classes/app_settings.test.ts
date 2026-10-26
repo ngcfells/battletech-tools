@@ -35,6 +35,10 @@ describe("AppSettings MUL search rulesets (#324 round 4)", () => {
         expect(new AppSettings({ cbtMULSearch: { rulesets: ["sample-no-clans", 3] } } as never).cbtMULSearch.rulesets).toEqual(["sample-no-clans"]);
     });
 
+    it("a stored Alpha Strike Tech filter that is not text loads as All", () => {
+        expect(new AppSettings({ alphaStrikeSearchTech: null } as never).alphaStrikeSearchTech).toBe("");
+    });
+
     it("the Alpha Strike search's rulesets round-trip and default to none", () => {
         expect(new AppSettings({} as never).alphaStrikeSearchRulesets).toEqual([]);
         const settings = new AppSettings({ alphaStrikeSearchRulesets: ["sample-no-clans", 3] } as never);

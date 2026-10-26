@@ -90,7 +90,7 @@ export class AppSettings {
                 this.alphaStrikeSearchEra = +io.alphaStrikeSearchEra;
             }
 
-            if ( typeof( io.alphaStrikeSearchTech ) !== "undefined" ) {
+            if ( typeof( io.alphaStrikeSearchTech ) === "string" ) {
                 this.alphaStrikeSearchTech = io.alphaStrikeSearchTech;
             }
             if ( typeof( io.alphaStrikeSearchType ) !== "undefined" ) {

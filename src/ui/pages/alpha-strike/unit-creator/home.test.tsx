@@ -62,4 +62,9 @@ describe("Alpha Strike unit creator settings block (#324 round 4)", () => {
         expect(saved().rulesets).toEqual(["sample-no-clans"]);
         expect(saved().rulesLevel).toBe(3);
     });
+
+    it("says what the rules level does for printing", () => {
+        renderCreator();
+        expect(screen.getByText(/Printing asks for confirmation above the selected rules level and stamps anything above Standard/)).toBeTruthy();
+    });
 });

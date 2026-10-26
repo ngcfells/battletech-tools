@@ -42,4 +42,21 @@ describe("MULSearchFilters Special Rulesets (#324 round 4)", () => {
         const aliases = getMULEraAliases().map((alias) => String(alias.id));
         expect(optionValues(/Era/).some((value) => aliases.includes(value))).toBe(false);
     });
+
+    it("a stored value the lists do not offer stays selected and flagged", () => {
+        render(<Harness start={newMULSearchFilters({ tech: "clan", era: 10 })} />);
+        const era = screen.getByLabelText(/Era/) as HTMLSelectElement;
+        expect(era.value).toBe("10");
+        expect(era.selectedOptions[0].textContent).toMatch(/not offered under the ticked rulesets/);
+        cleanup();
+        render(<Harness start={newMULSearchFilters({ type: 23, rulesets: ["sample-no-clans"] })} />);
+        const type = screen.getByLabelText(/Type/) as HTMLSelectElement;
+        expect(type.value).toBe("23");
+        expect(type.selectedOptions[0].textContent).toMatch(/ProtoMech \(not offered under the ticked rulesets\)/);
+        cleanup();
+        render(<Harness start={newMULSearchFilters({ tech: "clan", rulesets: ["sample-no-clans"] })} />);
+        const tech = screen.getByLabelText(/Search Tech/) as HTMLSelectElement;
+        expect(tech.value).toBe("clan");
+        expect(tech.selectedOptions[0].textContent).toBe("Clan (not offered under the ticked rulesets)");
+    });
 });

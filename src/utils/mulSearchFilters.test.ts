@@ -1,12 +1,21 @@
 import { describe, expect, it } from "vitest";
 import { IASMULUnit } from "../classes/alpha-strike-unit";
-import { btSpecialRulesets } from "../data/special-rulesets";
+import { btSpecialRulesets, ISpecialRuleset } from "../data/special-rulesets";
 import { getMULEraAliases, getMULEraIDs } from "./mulUtilities";
 import { changeMULSearchFilters, filterMULByRulesets, isMULEraOffered, isMULTechOffered, isMULTypeOffered, newMULSearchFilters } from "./mulSearchFilters";
 
 const NO_CLANS = "sample-no-clans";
 const aliasId = (name: string) => getMULEraAliases().find((alias) => alias.label.startsWith(name))!.id;
-const unit = (techId: number, typeId: number) => ({ Technology: { Id: techId }, Type: { Id: typeId } }) as unknown as IASMULUnit;
+const unit = (techId: number, typeId: number, bfType = "") => ({ Technology: { Id: techId }, Type: { Id: typeId }, BFType: bfType }) as unknown as IASMULUnit;
+// A ruleset of the test's own, taken out again after it.
+const withRuleset = (ruleset: Partial<ISpecialRuleset>, run: () => void) => {
+    btSpecialRulesets.push({ id: "test-ruleset", name: "Test", description: "", source: { title: "test" }, changes: ["test"], ...ruleset });
+    try {
+        run();
+    } finally {
+        btSpecialRulesets.splice(btSpecialRulesets.findIndex((entry) => entry.id === "test-ruleset"), 1);
+    }
+};
 
 describe("MUL search rulesets (#324 round 4)", () => {
     it("offers every tech, type and era with no rulesets", () => {
@@ -80,5 +89,23 @@ describe("MUL search rulesets (#324 round 4)", () => {
         const units = [unit(1, 18), unit(2, 18), unit(3, 19), unit(57, 18), unit(1, 23)];
         expect(filterMULByRulesets(units, [NO_CLANS])).toEqual([units[0], units[3]]);
         expect(filterMULByRulesets(units, [])).toEqual(units);
+    });
+
+    it("knows the MUL's Primitive units (id 4) are Inner Sphere technology", () => {
+        withRuleset({ removesTechBases: ["is"] }, () => {
+            expect(filterMULByRulesets([unit(4, 18), unit(57, 18), unit(2, 18)], ["test-ruleset"])).toEqual([unit(2, 18)]);
+        });
+    });
+
+    it("sorts the MUL's aerospace (type 17) into fighters, small craft and capital ships", () => {
+        withRuleset({ removesUnitTypes: ["capital-ship"] }, () => {
+            const kept = filterMULByRulesets([unit(1, 17, "AF"), unit(1, 17, "DS"), unit(1, 17, "WS")], ["test-ruleset"]);
+            expect(kept.map((entry) => entry.BFType)).toEqual(["AF", "DS"]);
+        });
+    });
+
+    it("treats a missing Tech filter as All", () => {
+        expect(isMULTechOffered(null as never, [NO_CLANS])).toBe(true);
+        expect(isMULEraOffered(13, undefined as never, [NO_CLANS])).toBe(true);
     });
 });
