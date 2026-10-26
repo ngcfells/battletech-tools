@@ -1,12 +1,13 @@
 import React, { type JSX } from 'react';
-import { getRulesEdition, getSelectableRulesEditions, RulesEditionUnitType } from '../../data/rules-editions';
+import { getRulesEdition, getSelectableRulesEditions, IRulesEdition, RulesEditionUnitType } from '../../data/rules-editions';
 
 /**
  * The Rules Edition control every unit creator opens Step 1 with: the edition decides what each field below it
  * offers. Only the editions with rules for `unitType` are listed.
  */
-export default function RulesEditionSelect(props: { unitType: RulesEditionUnitType; value: string; onChange: (editionTag: string) => void }): JSX.Element {
-    const editions = getSelectableRulesEditions(props.unitType);
+export default function RulesEditionSelect(props: { unitType: RulesEditionUnitType; value: string; onChange: (editionTag: string) => void; editions?: IRulesEdition[] }): JSX.Element {
+    // The shared settings block passes the editions the ticked rulesets allow.
+    const editions = props.editions ?? getSelectableRulesEditions(props.unitType);
     return (
         <>
             <label>
