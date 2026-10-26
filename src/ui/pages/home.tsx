@@ -167,6 +167,21 @@ export default class Home extends React.Component<IHomeProps, IHomeState> {
                   <ul className="news">
                   <li>
                   <h3>
+                      <strong>October 26th, 2026</strong> - One game settings block for every creator, and Special Rulesets
+                    </h3>
+                    <h4>Author - NGCFells</h4>
+                      <ul>
+                        <li>Every Classic unit creator now opens with the same game settings, in one order: Special Rulesets, Edition, Rules Level, Tech Base, Era. Each step offers only what the steps above it allow, and a change moves only the steps below it, so a later choice no longer undoes an earlier one. The old per-creator edition, level, tech and era controls are gone.</li>
+                        <li>Each design keeps its own rules level and rulesets. The last level you pick is the default for your next design and for the roster searches.</li>
+                        <li>Special Rulesets: optional and homebrew rules that change how the game plays or how units are built, ticked in a pop-up window. Two rulesets that change the same thing cannot both be ticked. For now there is one sample, "The Clans never existed (alternate universe)": no Clan or Mixed tech, and no ProtoMechs. Real rulesets come in through GitHub issues.</li>
+                        <li>Clan and Mixed tech start at the Clan Founding Years: there are no Clans in the Star League era any more.</li>
+                        <li>The Alpha Strike unit creator opens with Special Rulesets and the Rules Level. Both roster Master Unit List searches have Special Rulesets on top: ticked rulesets trim the Tech, Type and Era lists and the results.</li>
+                        <li>Every record sheet, Alpha Strike card and Technical Readout of a unit built under Special Rulesets names them and their source. Alpha Strike cards made from a Classic design carry its rulesets.</li>
+                        <li>The printed Alpha Strike card's trademark notice no longer runs off the top of the card.</li>
+                      </ul>
+                   </li>
+                  <li>
+                  <h3>
                       <strong>October 25th, 2026</strong> - Primitive Small Craft and DropShips, and the VTOLAM
                     </h3>
                     <h4>Author - NGCFells</h4>

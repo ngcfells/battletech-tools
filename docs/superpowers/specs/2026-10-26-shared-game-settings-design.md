@@ -142,6 +142,17 @@ are in use.
    the reason, and a ProtoMech card cannot tick it. The rulesets are saved on the card (`rulesets`, left out when none).
 23. **The AS creator's level is not the app-wide default** (round 4): a hand-built card starts at Custom Homebrew, so a
    level picked there does not change the Classic builders' or the searches' default (call 12 does not apply).
+24. **Attribution wording** (round 5): "Special Rulesets: <name>, <source title>", a source URL after the title in
+   parentheses, rulesets joined with "; ", each listed once on a sheet of several units. An id no longer in the registry
+   still prints, as "<id> (ruleset no longer listed)", so a sheet never hides what a unit was built under.
+25. **Where the credit sits** (round 5): on the shared sheet footer, right-aligned above the tables line; on the 'Mech
+   sheet inside the black footer band (the notices close up when there is a credit); on the Alpha Strike card in the
+   strip under the Special box; on the printed card down the edge beside the trademark notice; at the foot of the TRO
+   sheet and the HTML Small Craft and capital ship cards. A line too long for its room is squeezed to fit.
+26. **Cards made from Classic designs carry their rulesets** (round 5): each `getAlphaStrikeUnit()` and the 'Mech's
+   `calcAlphaStrike()` copy the design's rulesets onto the card (call 11), so the AS roster credits them too.
+27. **About lists the registry** (round 5): the About page's Special Rulesets section is built from the registry, so a
+   new ruleset appears there with its source without an About edit.
 
 ## Non-goals
 
@@ -157,7 +168,7 @@ are in use.
    controls. **Done 2026-10-26.**
 3. The other eight Classic builders; delete the old per-builder code. **Done 2026-10-26.**
 4. Alpha Strike creator and both roster MUL searches. **Done 2026-10-26.**
-5. Attribution on cards, sheets, TROs and printouts. About and home news.
+5. Attribution on cards, sheets, TROs and printouts. About and home news. **Done 2026-10-26.**
 
 ## Left to the builder
 

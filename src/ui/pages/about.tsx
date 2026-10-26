@@ -4,6 +4,7 @@ import './about.scss';
 import UIPage from '../components/ui-page';
 import TextSection from '../components/text-section';
 import TrademarkNoticeParagraphs from '../components/trademark-notice';
+import { getSpecialRulesets } from '../../data/special-rulesets';
 
 export default class About extends React.Component<IAboutProps, IAboutState> {
 
@@ -73,6 +74,18 @@ export default class About extends React.Component<IAboutProps, IAboutState> {
           >
             <p>The bundled BattleMechs and IndustrialMechs are converted from the <a href="https://github.com/Solaris-Skunk-Werks/SSW-Master">Solaris Skunk Werks</a> project's files.</p>
             <p>The bundled battle armor, ProtoMechs, Small Craft and DropShips and Support Vehicles are converted from <a href="https://github.com/MegaMek/megamek">MegaMek</a>'s unit files: MegaMek Data &copy; 2025-2026 by The MegaMek Team, licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a>. A design we have checked against its printed Technical Readout is our own transcription and no longer carries this notice.</p>
+          </TextSection>
+          <TextSection
+            label="Special Rulesets"
+          >
+            <p>Special Rulesets are optional and homebrew rules that change how the game plays or how units are built. Tick them in the first step of any unit creator, the Alpha Strike unit creator or a roster's Master Unit List search. Every record sheet, Alpha Strike card and Technical Readout of a unit built under them names them and their source. New rulesets come in through <a href="https://github.com/ngcfells/battletech-tools/issues">GitHub issues</a>.</p>
+            <ul>
+              {getSpecialRulesets().map((ruleset) => (
+                <li key={ruleset.id}>
+                  <strong>{ruleset.name}</strong>: {ruleset.description} Source: {ruleset.source.url ? <a href={ruleset.source.url}>{ruleset.source.title}</a> : ruleset.source.title}.
+                </li>
+              ))}
+            </ul>
           </TextSection>
           <TextSection
             label="Copyrights"
