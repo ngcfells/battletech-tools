@@ -6126,7 +6126,7 @@ export class BattleMech {
      * damage, ranges, critical slots and price wherever it still held the old edition's; nothing is removed.
      * getRulesEditionIssues() lists what the new edition does not include. An unknown tag is ignored.
      */
-    /** The design as it stands, for telling whether it changed: no ids, timestamps or way back. */
+    /** The design as it stands, for telling whether it changed: no ids, timestamps, way back or game settings (#324). */
     private _editionState(): string {
         const saved = this.export() as unknown as Record<string, unknown>;
         return JSON.stringify({ ...saved, uuid: undefined, lastUpdated: undefined, rulesEditionReturn: undefined, rulesLevel: undefined, rulesets: undefined });
