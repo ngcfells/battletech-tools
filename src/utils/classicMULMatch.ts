@@ -140,3 +140,34 @@ export function isMULCapitalShip(unit: Pick<IASMULUnit, "Type" | "Tonnage" | "Na
     }
     return CAPITAL_SHIP_NAME.test(fullName) || CAPITAL_SHIP_WHOLE_NAME.test(name) || +unit.Tonnage > DROPSHIP_MAX_TONS;
 }
+
+export type MULAerospaceClass = "AF" | "CF" | "SC" | "DS" | "JS" | "WS" | "SS";
+
+/**
+ * Which kind of MUL type 17 unit this is, by its Alpha Strike type (AS:CE p.93): aerospace or conventional fighter,
+ * Small Craft, DropShip (spheroid or aerodyne), JumpShip, WarShip or space station (issue 322). Where the MUL has no
+ * Alpha Strike stats the tests above decide, then the tonnage (Small Craft weigh 200 tons at most, TM p.180) and name.
+ */
+export function getMULAerospaceClass(unit: Pick<IASMULUnit, "Type" | "Tonnage" | "Name" | "BFType"> & { BFMove?: string | null; Variant?: string | null }): MULAerospaceClass | null {
+    if (unit.Type?.Id !== 17) {
+        return null;
+    }
+    const bfType = (unit.BFType ?? "").trim().toUpperCase();
+    if (bfType === "DA") {
+        return "DS";
+    }
+    if (["AF", "CF", "SC", "DS", "JS", "WS", "SS"].includes(bfType)) {
+        return bfType as MULAerospaceClass;
+    }
+    const fullName = (unit.Name ?? "") + " " + (unit.Variant ?? "");
+    if (!isMULLargeAerospaceCraft(unit)) {
+        return /conventional/i.test(fullName) ? "CF" : "AF";
+    }
+    if (!isMULCapitalShip(unit)) {
+        return +unit.Tonnage <= 200 ? "SC" : "DS";
+    }
+    if (/station|yard|habitat|factory|facility/i.test(fullName)) {
+        return "SS";
+    }
+    return /jump ?ship|^scout$/i.test(fullName.trim()) ? "JS" : "WS";
+}

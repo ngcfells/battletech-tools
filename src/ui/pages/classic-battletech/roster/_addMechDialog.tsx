@@ -28,7 +28,7 @@ import { getBattleMechTroAdapter } from '../../../../classes/battlemech-tro';
 import { getUnitTroAdapter } from '../../../../classes/unit-tro';
 import type { TechnicalReadout } from '../../../../classes/technical-readout';
 import type { ITroUnitAdapter } from '../../../../data/technical-readout-interfaces';
-import { buildClassicDesignIndex, ClassicDesignIndex, findClassicDesign, getClassicMechEntries, getClassicUnitEntries, isMULCapitalShip, isMULLargeAerospaceCraft } from '../../../../utils/classicMULMatch';
+import { getMULAerospaceClass, MULAerospaceClass, buildClassicDesignIndex, ClassicDesignIndex, findClassicDesign, getClassicMechEntries, getClassicUnitEntries, isMULCapitalShip, isMULLargeAerospaceCraft } from '../../../../utils/classicMULMatch';
 import { IMULSearchFilters } from '../../../../utils/mulSearchFilters';
 import { getMULEraLabel, getMULTypeLabel } from '../../../../utils/mulUtilities';
 import { paginate } from '../../../../utils/paginate';
@@ -82,12 +82,16 @@ const CBT_MUL_KINDS: IClassicMULKind[] = [
     { typeIDs: [17], matches: isMULCapitalShip, creator: "capital-ship-creator", saves: (g) => g.capitalShipSaves, load: (json) => new CapitalShip( json ), table: "capitalShips", sheet: (unit) => <CapitalShipRecordSheet ship={unit as CapitalShip} /> },
 ];
 const CBT_MUL_TYPE_IDS = Array.from( new Set( CBT_MUL_MECH_TYPE_IDS.concat( ...CBT_MUL_KINDS.map( (kind) => kind.typeIDs ) ) ) );
-// The MUL files fighters, Small Craft, DropShips and capital ships all under type 17, so the Type list splits it into
-// its own three options (issue 322), on ids of their own that the search maps back to type 17 and the kind's test.
-const CBT_MUL_AEROSPACE_TYPES: { id: number; label: string; kind: IClassicMULKind }[] = [
-    { id: 1701, label: "Aerospace Fighter", kind: CBT_MUL_KINDS.find( (kind) => kind.table === "fighters" )! },
-    { id: 1702, label: "Small Craft and DropShip", kind: CBT_MUL_KINDS.find( (kind) => kind.table === "smallCraft" )! },
-    { id: 1703, label: "JumpShip, WarShip and Space Station", kind: CBT_MUL_KINDS.find( (kind) => kind.table === "capitalShips" )! },
+// The MUL files fighters, Small Craft, DropShips and capital ships all under type 17, so the Type list gives each kind
+// its own option (issue 322), on ids of their own that the search maps back to type 17 and the kind's Alpha Strike type.
+const CBT_MUL_AEROSPACE_TYPES: { id: number; label: string; aeroClass: MULAerospaceClass }[] = [
+    { id: 1701, label: "Aerospace Fighter", aeroClass: "AF" },
+    { id: 1702, label: "Conventional Fighter", aeroClass: "CF" },
+    { id: 1703, label: "Small Craft", aeroClass: "SC" },
+    { id: 1704, label: "DropShip", aeroClass: "DS" },
+    { id: 1705, label: "JumpShip", aeroClass: "JS" },
+    { id: 1706, label: "WarShip", aeroClass: "WS" },
+    { id: 1707, label: "Space Station", aeroClass: "SS" },
 ];
 const CBT_MUL_TYPE_OPTIONS = CBT_MUL_TYPE_IDS
     .flatMap( (id) => id === 17 ? CBT_MUL_AEROSPACE_TYPES : [{ id, label: getMULTypeLabel( id ) }] )
@@ -160,7 +164,7 @@ export default class BattleMechAddMechDialog extends React.Component<IBattleMech
         const aerospace = CBT_MUL_AEROSPACE_TYPES.find( (type) => type.id === filters.type );
         const results = ( await searchBundledMUL( { ...filters, type: aerospace ? 17 : filters.type } ) )
             .filter( (unit) => CBT_MUL_TYPE_IDS.includes( unit.Type?.Id ) )
-            .filter( (unit) => !aerospace || aerospace.kind.matches!( unit ) )
+            .filter( (unit) => !aerospace || getMULAerospaceClass( unit ) === aerospace.aeroClass )
             .sort( (a, b) => getMULDisplayName(a).localeCompare( getMULDisplayName(b) ) );
         if( searchId !== this.latestSearch ) {
             return;

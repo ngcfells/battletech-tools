@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildClassicDesignIndex, findClassicDesign, getMULMatchKeys, isMULCapitalShip, isMULLargeAerospaceCraft } from "./classicMULMatch";
+import { buildClassicDesignIndex, findClassicDesign, getMULMatchKeys, getMULAerospaceClass, isMULCapitalShip, isMULLargeAerospaceCraft } from "./classicMULMatch";
 
 describe("getMULMatchKeys", () => {
     it("drops quotes, parentheses and HTML entities so MUL and Skunk Werks spellings meet", () => {
@@ -106,5 +106,27 @@ describe("isMULCapitalShip", () => {
     it("is never true for fighters or other types", () => {
         expect(isMULCapitalShip(craft("Goth", 60, "5", "Fighter Craft"))).toBe(false);
         expect(isMULCapitalShip({ ...craft("Atlas", 100, "3"), Type: { Id: 18, Name: "BattleMech" } } as never)).toBe(false);
+    });
+});
+
+// Issue 322: each MUL aerospace kind gets its own Type filter.
+describe("getMULAerospaceClass", () => {
+    const craft = (Name: string, Tonnage: number, BFType: string | null, typeName = "Aerospace") =>
+        ({ Name, Tonnage, BFType, Type: { Id: 17, Name: typeName, Image: "", SortOrder: 0 } }) as Parameters<typeof getMULAerospaceClass>[0];
+
+    it("reads the Alpha Strike type, aerodyne DropShips counted as DropShips", () => {
+        expect(["AF", "CF", "SC", "DS", "DA", "JS", "WS", "SS"].map((bfType) => getMULAerospaceClass(craft("X", 50, bfType))))
+            .toEqual(["AF", "CF", "SC", "DS", "DS", "JS", "WS", "SS"]);
+    });
+
+    it("falls back on tonnage and name where the MUL has no Alpha Strike stats", () => {
+        expect(getMULAerospaceClass(craft("Stuka", 100, null))).toBe("AF");
+        expect(getMULAerospaceClass(craft("Conventional Fighter", 20, null))).toBe("CF");
+        expect(getMULAerospaceClass(craft("Gunboat", 180, null))).toBe("SC");
+        expect(getMULAerospaceClass(craft("Union", 3500, null))).toBe("DS");
+        expect(getMULAerospaceClass(craft("Merchant JumpShip", 150000, null))).toBe("JS");
+        expect(getMULAerospaceClass(craft("Crucible Station", 0, null, "Aerospace Craft"))).toBe("SS");
+        expect(getMULAerospaceClass(craft("Aegis Heavy Cruiser", 750000, null))).toBe("WS");
+        expect(getMULAerospaceClass({ ...craft("Atlas", 100, "BM"), Type: { Id: 18, Name: "BattleMech", Image: "", SortOrder: 0 } })).toBeNull();
     });
 });

@@ -313,9 +313,9 @@ describe("Classic roster Master Unit List search", () => {
         expect(links.some((href) => href.endsWith("/small-craft-creator"))).toBe(false);
     }, 30_000);
     // Issue 322: the Type list showed Aerospace three times (fighters, Small Craft and capital ships share MUL type 17).
-    it("lists every unit type once, with fighters, Small Craft and capital ships apart", async () => {
+    it("gives every unit type its own option, each aerospace kind included", async () => {
         const appGlobals = makeAppGlobals();
-        appGlobals.appSettings.cbtMULSearch = newMULSearchFilters({ type: 1703, term: "Magellan JumpShip" });
+        appGlobals.appSettings.cbtMULSearch = newMULSearchFilters({ type: 1705, term: "Magellan JumpShip" });
         const { container } = render(
             <MemoryRouter>
                 <BattleMechAddMechDialog appGlobals={appGlobals} currentForce={appGlobals.currentCBTForce!.groups[0]} currentForceIndex={0} onChange={vi.fn()} />
@@ -323,9 +323,9 @@ describe("Classic roster Master Unit List search", () => {
         );
         const typeSelect = Array.from(container.querySelectorAll("select")).find((select) => select.parentElement?.textContent?.startsWith("Type:"))!;
         const labels = Array.from(typeSelect.options).map((option) => option.text);
-        expect(labels).toEqual(["All", "BattleMech", "IndustrialMech", "Combat Vehicle", "Support Vehicle", "Aerospace Fighter", "Small Craft and DropShip", "JumpShip, WarShip and Space Station", "Infantry", "Battle Armor", "ProtoMech"]);
+        expect(labels).toEqual(["All", "BattleMech", "IndustrialMech", "Combat Vehicle", "Support Vehicle", "Aerospace Fighter", "Conventional Fighter", "Small Craft", "DropShip", "JumpShip", "WarShip", "Space Station", "Infantry", "Battle Armor", "ProtoMech"]);
         await screen.findAllByText(/No Classic design yet/, undefined, { timeout: 20_000 });
-        fireEvent.change(typeSelect, { target: { value: "1701" } });
+        fireEvent.change(typeSelect, { target: { value: "1706" } });
         await screen.findByText("No units on the Master Unit List match your filters.", undefined, { timeout: 20_000 });
     }, 30_000);
 
