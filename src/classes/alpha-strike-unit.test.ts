@@ -23,6 +23,36 @@ describe("Alpha Strike unit rules level", () => {
     });
 });
 
+describe("Alpha Strike unit Special Rulesets (#324 round 4)", () => {
+    const roundTrip = (unit: AlphaStrikeUnit) => {
+        const restored = new AlphaStrikeUnit();
+        restored.importUnit(JSON.parse(JSON.stringify(unit.export())));
+        return restored;
+    };
+
+    it("rulesets round-trip and are left out when empty", () => {
+        const unit = new AlphaStrikeUnit();
+        unit.move = [{ move: 8, currentMove: 8, type: "" }];
+        expect(unit.export()).not.toHaveProperty("rulesets");
+        unit.rulesets = ["sample-no-clans"];
+        expect(roundTrip(unit).rulesets).toEqual(["sample-no-clans"]);
+    });
+
+    it("a new card with no move yet works out its values (the creator opens on one)", () => {
+        expect(() => new AlphaStrikeUnit().isWrecked()).not.toThrow();
+    });
+
+    it("an older save loads with no rulesets and its rules level stays unknown", () => {
+        const unit = new AlphaStrikeUnit();
+        unit.move = [{ move: 8, currentMove: 8, type: "" }];
+        const saved = { ...unit.export(), rulesets: "sample-no-clans" } as unknown as ReturnType<AlphaStrikeUnit["export"]>;
+        const restored = new AlphaStrikeUnit();
+        restored.importUnit(saved);
+        expect(restored.rulesets).toEqual([]);
+        expect(restored.rulesLevel).toBeUndefined();
+    });
+});
+
 describe("Alpha Strike unit Armor and Structure setters", () => {
     // Armor and Structure are separate values on an Alpha Strike unit (ASCE p.25); each setter changes only its own.
     it("setStructure changes structure and leaves armor alone", () => {

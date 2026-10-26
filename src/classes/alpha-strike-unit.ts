@@ -169,6 +169,8 @@ export interface IAlphaStrikeUnitExport {
     mechCreatorUUID: string;
     /** Rules level id (rules-level-options): from the MUL "Rules" field or the unit's creator. */
     rulesLevel?: number;
+    /** Special Rulesets (#324) a hand-built card is made under; left out when none. */
+    rulesets?: string[];
     /** The design's Alpha Strike Companion quirks; none for a MUL unit or an older save. */
     quirks?: IAlphaStrikeQuirk[];
     /** The start of the design's era: the year its quirks are checked against when the game sets none. */
@@ -256,6 +258,8 @@ export class AlphaStrikeUnit {
 
     /** Rules level id (rules-level-options); undefined when unknown. */
     public rulesLevel: number | undefined = undefined;
+    /** Special Rulesets (#324) the unit creator built the card under. */
+    public rulesets: string[] = [];
 
     /** The Companion quirks of the design this unit was made from (ASC pp.59-67); the MUL has no quirk data. */
     public quirks: IAlphaStrikeQuirk[] = [];
@@ -534,6 +538,7 @@ export class AlphaStrikeUnit {
             this.tro = incomingMechData.tro;
 
             this.rulesLevel = typeof incomingMechData.rulesLevel === "number" ? incomingMechData.rulesLevel : undefined;
+            this.rulesets = Array.isArray(incomingMechData.rulesets) ? incomingMechData.rulesets.filter((id): id is string => typeof id === "string") : [];
             this.quirks = Array.isArray(incomingMechData.quirks)
                 ? incomingMechData.quirks.filter((quirk) => quirk && typeof quirk.tag === "string").map((quirk) => ({ ...quirk }))
                 : [];
@@ -1441,7 +1446,7 @@ export class AlphaStrikeUnit {
         this.currentMoveHexes = "";
 
         this.immobile = true;
-        if( this.move[0].type === "j" ) {
+        if( this.move[0]?.type === "j" ) {
             this.move = [
                 {
                     move: this.move[0].move,
@@ -1986,6 +1991,7 @@ export class AlphaStrikeUnit {
             tonnage:  this.tonnage,
             tro:  this.tro,
             rulesLevel:  this.rulesLevel,
+            ...(this.rulesets.length > 0 ? { rulesets: [...this.rulesets] } : {}),
             quirks:  this.quirks.map((quirk) => ({ ...quirk })),
             quirkEraStart:  this.quirkEraStart,
             role:  this.role,
