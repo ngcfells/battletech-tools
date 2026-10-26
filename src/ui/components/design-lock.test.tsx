@@ -4,7 +4,8 @@ import { getPrintedDroids } from "../../data/battledroids-mechs";
 import { buildPrintedDroid } from "../../classes/printed-droid";
 import { getRulesEdition } from "../../data/rules-editions";
 import type { IAppGlobals } from "../app-router";
-import { confirmEditPrintedDroid, getDesignLockNote, mechRulesLevel } from "./design-lock";
+import { BattleMech } from "../../classes/battlemech";
+import { confirmEditPrintedDroid, getDesignLockNote, keepDesignSettings, mechRulesLevel } from "./design-lock";
 
 afterEach(() => vi.unstubAllGlobals());
 
@@ -27,5 +28,14 @@ describe("design lock (#324)", () => {
         confirmEditPrintedDroid(appGlobals);
         expect(mech.getRulesLevel(99)).toBe(construction);
         expect(getDesignLockNote(appGlobals)).toBeNull();
+    });
+
+    it("a printed droid or sample picked in place of the design keeps the design's level and rulesets", () => {
+        const current = new BattleMech();
+        current.applyGameSettings({ ...current.getGameSettings(2), rulesLevel: 5, rulesets: ["sample-no-clans"] });
+        const appGlobals = { currentBattleMech: current, appSettings: { mechRulesFilter: 2 } } as unknown as IAppGlobals;
+        const next = keepDesignSettings(appGlobals, buildPrintedDroid(getPrintedDroids(5)[0]));
+        expect(next.getRulesLevel(2)).toBe(5);
+        expect(next.getRulesets()).toEqual(["sample-no-clans"]);
     });
 });

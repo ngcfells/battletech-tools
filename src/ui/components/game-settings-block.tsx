@@ -2,28 +2,32 @@ import React, { useState, type JSX } from 'react';
 import { findEraByTag } from '../../data/era-options';
 import { changeGameSetting, describeGameSettingMove, GameSettingChange, getGameSettingOptions, getStaleGameSettingSteps, IGameSettings } from '../../data/game-settings';
 import { isEarlierRulesEdition, RulesEditionUnitType } from '../../data/rules-editions';
-import { getRulesetConflict, getSpecialRulesets } from '../../data/special-rulesets';
+import { GameSettingStep, getRulesetConflict, getSpecialRulesets } from '../../data/special-rulesets';
 import { btTechOptions } from '../../data/tech-options';
 import EditionChoice from './edition-choice';
 import RulesEditionSelect from './rules-edition-select';
 import RulesLevelSelect from './rules-level-select';
 import StandardModal from './standard-modal';
 
-const STALE_WARNING = "not offered under the ticked rulesets";
+export const STALE_WARNING = "not offered under the ticked rulesets";
 
 /**
  * The shared game settings block (#324): Special Rulesets, Edition, Rules Level, Tech Base and Era, first on every
  * builder. Each step offers only what the steps above allow; a change moves later steps that no longer fit and says
- * so in one line under the block. The parent keeps the settings (on its design) and passes them back in.
+ * so in one line under the block. The parent keeps the settings (on its design) and passes them back in, and learns
+ * which step was edited.
  */
 export default function GameSettingsBlock(props: {
     unitType: RulesEditionUnitType;
     settings: IGameSettings;
-    onChange: (settings: IGameSettings) => void;
+    onChange: (settings: IGameSettings, step: GameSettingStep | "rulesets") => void;
 }): JSX.Element {
     const [windowOpen, setWindowOpen] = useState(false);
-    const [notice, setNotice] = useState("");
+    // The notice describes the settings its change made; once the design differs (replaced, or restored by a way back
+    // to an edition) it no longer applies.
+    const [notice, setNotice] = useState({ text: "", made: "" });
     const { settings } = props;
+    const shownNotice = notice.made === JSON.stringify(settings) ? notice.text : "";
     const options = getGameSettingOptions(settings, props.unitType);
     const stale = getStaleGameSettingSteps(settings, props.unitType);
 
@@ -37,8 +41,8 @@ export default function GameSettingsBlock(props: {
             lines.push(...result.moves.map((move) => describeGameSettingMove(move, next.edition)));
             if (result.refused) lines.push("Clashes with " + result.refused.name);
         }
-        setNotice(lines.join("; "));
-        props.onChange(next);
+        setNotice({ text: lines.join("; "), made: JSON.stringify(next) });
+        props.onChange(next, changes[0]?.step ?? "rulesets");
     };
 
     const chooseRulesets = (value: string): void => {
@@ -71,9 +75,9 @@ export default function GameSettingsBlock(props: {
                 Optional and homebrew rules that change how the game plays or how units are built. Leave this off for standard BattleTech.
             </p>
 
-            <RulesEditionSelect unitType={props.unitType} value={settings.edition} editions={options.editions} onChange={(value) => change({ step: "edition", value })} />
+            <RulesEditionSelect unitType={props.unitType} value={settings.edition} editions={options.editions} staleLabel={STALE_WARNING} onChange={(value) => change({ step: "edition", value })} />
             {staleNote("edition")}
-            <RulesLevelSelect editionTag={settings.edition} value={settings.rulesLevel} options={options.rulesLevels} onChange={(value) => change({ step: "rulesLevel", value })} />
+            <RulesLevelSelect editionTag={settings.edition} value={settings.rulesLevel} options={options.rulesLevels} staleLabel={STALE_WARNING} onChange={(value) => change({ step: "rulesLevel", value })} />
             {/* An earlier rulebook with one tech base has no such choice: the field is hidden, as the builders did. */}
             <EditionChoice earlierEdition={isEarlierRulesEdition(settings.edition)}>
                 <label>
@@ -98,9 +102,11 @@ export default function GameSettingsBlock(props: {
                     {era?.description ? <p className="smaller-text">{era.description}</p> : null}
                 </>
             ) : null}
-            {notice ? <p className="smaller-text" role="status">{notice}</p> : null}
+            {shownNotice ? <p className="smaller-text" role="status">{shownNotice}</p> : null}
 
             <StandardModal show={windowOpen} title="Special Rulesets" className="modal-xl" onClose={() => setWindowOpen(false)}>
+                {/* The block's own notice sits behind the window. */}
+                {shownNotice ? <p className="smaller-text">{shownNotice}</p> : null}
                 {getSpecialRulesets().map((ruleset) => {
                     const ticked = settings.rulesets.includes(ruleset.id);
                     const clash = ticked ? undefined : getRulesetConflict(settings.rulesets, ruleset.id);
@@ -111,11 +117,12 @@ export default function GameSettingsBlock(props: {
                                     type="checkbox"
                                     checked={ticked}
                                     disabled={!!clash}
+                                    aria-describedby={"ruleset-about-" + ruleset.id}
                                     onChange={() => change({ step: "rulesets", toggle: ruleset.id })}
                                 />{" "}
                                 {ruleset.name}
                             </label>
-                            <p className="smaller-text">
+                            <p className="smaller-text" id={"ruleset-about-" + ruleset.id}>
                                 {ruleset.description}{" "}
                                 Source: {ruleset.source.url ? <a href={ruleset.source.url} target="_blank" rel="noopener noreferrer">{ruleset.source.title}</a> : ruleset.source.title}.
                                 {clash ? <span className="color-red"> Clashes with {clash.name}.</span> : null}

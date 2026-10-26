@@ -100,8 +100,10 @@ are in use.
 11. **Attribution reads the unit's save**, never the current block state, so a printout always shows what the unit was
    built under.
 
-12. **The last level used is the default** (round 2). Editing the rules level in the block sets the design's level and
-   the app-wide `mechRulesFilter`, so the next new design and the roster searches start from it (call 1).
+12. **The last level picked is the default** (round 2). Picking a rules level in the block sets the design's level and
+   the app-wide `mechRulesFilter`, so the next new design and the roster searches start from it (call 1). A level an
+   edition change fitted does not touch the default. A printed droid or sample picked in place of the design keeps the
+   design's level and rulesets, since the picker listed it under them.
 13. **The rules level is shown fitted, never flagged** (round 2). The block shows it through `getShownRulesLevel`;
    only Edition, Tech Base and Era carry the call-9 warning.
 14. **The edition decides the tech bases** (round 2). `getEditionTechBases` (moved out of the 'Mech class) filters the
@@ -109,6 +111,8 @@ are in use.
    offers one choice, as the builders did.
 15. **The game settings are not design work** (round 2). The replace-design guard and the edition-switch state leave
    the level and rulesets out: changing only them never asks to save, and never blocks the way back to an edition.
+   Going straight back to the edition a design just left restores it exactly, tech base, era and level included,
+   unless a level was picked while away; the block's notice is dropped once the design differs from what it described.
 
 ## Non-goals
 

@@ -8,9 +8,10 @@ import { getRulesLevelOptions } from '../../../../data/rules-level-options';
 import { editionEditsPrintedUnitsAfterWarning, editionHasBattleValue, editionHasPrices, getRulesEdition, getShownRulesLevel } from '../../../../data/rules-editions';
 import { editionHasPrintedDroids, getPrintedDroid, getPrintedDroids } from '../../../../data/battledroids-mechs';
 import { buildPrintedDroid, isUnmodifiedPrintedDroid } from '../../../../classes/printed-droid';
-import { confirmEditPrintedDroid, getDesignLockNote, mechRulesLevel } from '../../../components/design-lock';
+import { confirmEditPrintedDroid, getDesignLockNote, keepDesignSettings, mechRulesLevel } from '../../../components/design-lock';
 import GameSettingsBlock from '../../../components/game-settings-block';
 import { IGameSettings } from '../../../../data/game-settings';
+import { GameSettingStep } from '../../../../data/special-rulesets';
 import { IAppGlobals } from '../../../app-router';
 import { MechCreatorSideMenu } from '../../../components/creator-side-menus';
 import MechCreatorStatusbar from '../../../components/mech-creator-status-bar';
@@ -116,18 +117,19 @@ export default class MechCreatorStep1 extends React.Component<IHomeProps, IHomeS
     }
 
     // The shared settings block (#324): the design takes its edition, tech base, era, level and rulesets; its tonnage
-    // moves into the range they allow. A level change is also the default for the next new design (call 12).
-    updateGameSettings = ( settings: IGameSettings ): void => {
+    // moves into the range they allow. A rules level the player picks is also the default for the next new design
+    // (call 12); one an edition change fitted is not.
+    updateGameSettings = ( settings: IGameSettings, step: GameSettingStep | "rulesets" ): void => {
       const currentMech = this.props.appGlobals.currentBattleMech;
       if( !currentMech ) return;
       const appSettings = this.props.appGlobals.appSettings;
-      const levelChanged = settings.rulesLevel !== mechRulesLevel(this.props.appGlobals);
       currentMech.applyGameSettings( settings );
       // A Clan tech base has no superheavy tonnages (IO:AE p.154).
-      this.clampTonnageToChassisRules(currentMech, settings.rulesLevel);
+      // A way back to an edition may restore another level: clamp at the design's own.
+      this.clampTonnageToChassisRules(currentMech, mechRulesLevel(this.props.appGlobals));
       // The clamp finishes an edition switch; an undo of the switch still brings back the design as it was.
       currentMech.settleRulesEditionSwitch();
-      if( levelChanged ) {
+      if( step === "rulesLevel" ) {
         appSettings.mechRulesFilter = settings.rulesLevel;
         this.props.appGlobals.saveAppSettings(appSettings);
       }
@@ -140,7 +142,7 @@ export default class MechCreatorStep1 extends React.Component<IHomeProps, IHomeS
       const droid = getPrintedDroid( e.currentTarget.value );
       if( droid ) {
         replaceCurrentBattleMech( this.props.appGlobals, () => {
-          this.props.appGlobals.saveCurrentBattleMech( buildPrintedDroid( droid ) );
+          this.props.appGlobals.saveCurrentBattleMech( keepDesignSettings( this.props.appGlobals, buildPrintedDroid( droid ) ) );
           this.setState({ updated: !this.state.updated });
         });
       }
@@ -150,7 +152,7 @@ export default class MechCreatorStep1 extends React.Component<IHomeProps, IHomeS
       const sample = getVTOLAMSamples( mechRulesLevel(this.props.appGlobals) ).find( (entry) => entry.id === e.currentTarget.value );
       if( sample ) {
         replaceCurrentBattleMech( this.props.appGlobals, () => {
-          this.props.appGlobals.saveCurrentBattleMech( new BattleMech( JSON.stringify( { ...sample.save, uuid: generateUUID() } ) ) );
+          this.props.appGlobals.saveCurrentBattleMech( keepDesignSettings( this.props.appGlobals, new BattleMech( JSON.stringify( { ...sample.save, uuid: generateUUID() } ) ) ) );
           this.setState({ updated: !this.state.updated });
         });
       }

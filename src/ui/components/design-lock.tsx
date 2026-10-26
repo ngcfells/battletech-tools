@@ -8,6 +8,18 @@ export function mechRulesLevel(appGlobals: IAppGlobals): number {
     return appGlobals.currentBattleMech?.getRulesLevel(appGlobals.appSettings.mechRulesFilter) ?? appGlobals.appSettings.mechRulesFilter;
 }
 
+type Mech = NonNullable<IAppGlobals["currentBattleMech"]>;
+
+/**
+ * A 'Mech picked in place of the current design (a printed droid, a sample) keeps the design's rules level and
+ * rulesets: the picker listed it under them (#324).
+ */
+export function keepDesignSettings(appGlobals: IAppGlobals, next: Mech): Mech {
+    const level = mechRulesLevel(appGlobals);
+    next.applyGameSettings({ ...next.getGameSettings(level), rulesLevel: level, rulesets: appGlobals.currentBattleMech?.getRulesets() ?? [] });
+    return next;
+}
+
 /** Why the current 'Mech design cannot be changed at the selected rules level, or null when it can. */
 export function getDesignLockNote(appGlobals: IAppGlobals): string | null {
     const mech = appGlobals.currentBattleMech;

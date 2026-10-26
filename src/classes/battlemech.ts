@@ -76,6 +76,8 @@ export interface IRulesEditionReturn {
     edition: string;
     design: string;
     left: string;
+    /** The rules level the design arrived at (#324): another level on the way back means the player picked it. */
+    arrivalLevel?: number;
 }
 
 export interface ICriticalSlot {
@@ -6233,7 +6235,19 @@ export class BattleMech {
      * going back to the edition the design just left re-imports the save it had there.
      */
     public applyGameSettings(settings: IGameSettings): void {
-        if (settings.edition !== this._rulesEdition) this.setRulesEdition(settings.edition);
+        if (settings.edition !== this._rulesEdition) {
+            const back = this._rulesEditionReturn;
+            const awayLevel = this._rulesLevel;
+            this.setRulesEdition(settings.edition);
+            if (back && !this._rulesEditionReturn) {
+                // Went back: the restored design wins, its tech base, era and level too, unless a level was picked
+                // while away. The block's moves on the way out no longer apply.
+                if (back.arrivalLevel !== awayLevel) this._rulesLevel = settings.rulesLevel;
+                this._rulesets = [...settings.rulesets];
+                return;
+            }
+            if (this._rulesEditionReturn) this._rulesEditionReturn.arrivalLevel = settings.rulesLevel;
+        }
         if (settings.techBase !== this._tech.tag) this.setTech(settings.techBase);
         if (settings.era !== this._era.tag) this.setEra(settings.era);
         this._rulesLevel = settings.rulesLevel;

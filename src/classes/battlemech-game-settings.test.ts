@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { changeGameSetting } from "../data/game-settings";
 import { DEFAULT_RULES_EDITION } from "../data/rules-editions";
 import { BattleMech } from "./battlemech";
 
@@ -27,14 +28,38 @@ describe("BattleMech game settings (#324)", () => {
         expect(mech.getGameSettings(2)).toMatchObject({ techBase: "clan", era: "clan-inv", edition: DEFAULT_RULES_EDITION });
     });
 
-    it("a switch to Battledroids and back restores the design and keeps the new level", () => {
+    it("a switch to Battledroids and back restores the design and the level it left with", () => {
         const mech = new BattleMech();
-        const before = JSON.stringify({ ...mech.export(), rulesLevel: undefined });
+        const before = JSON.stringify(mech.export());
         mech.applyGameSettings({ ...mech.getGameSettings(2), edition: "battledroids", rulesLevel: 0 });
         expect(mech.getRulesEdition()).toBe("battledroids");
         expect(mech.getRulesLevel(2)).toBe(0);
         mech.applyGameSettings({ ...mech.getGameSettings(2), edition: DEFAULT_RULES_EDITION, rulesLevel: 1 });
+        expect(mech.getRulesLevel(2)).toBe(2);
+        expect(JSON.stringify(mech.export())).toBe(before);
+    });
+
+    // As the block does it: each change runs through the resolver, which moves the later steps.
+    const viaBlock = (mech: BattleMech, edition: string) =>
+        mech.applyGameSettings(changeGameSetting(mech.getGameSettings(2), { step: "edition", value: edition }, "mech").settings);
+
+    it("going back restores a Clan design and its level exactly, though the way out moved them", () => {
+        const mech = new BattleMech();
+        mech.applyGameSettings({ ...mech.getGameSettings(2), techBase: "clan", era: "clan-inv", rulesLevel: 3 });
+        const before = JSON.stringify({ ...mech.export(), uuid: undefined, lastUpdated: undefined });
+        viaBlock(mech, "battledroids");
+        expect(mech.getTech().tag).toBe("is");
+        viaBlock(mech, DEFAULT_RULES_EDITION);
+        expect(JSON.stringify({ ...mech.export(), uuid: undefined, lastUpdated: undefined })).toBe(before);
+    });
+
+    it("going back keeps a level picked while away", () => {
+        const mech = new BattleMech();
+        mech.applyGameSettings({ ...mech.getGameSettings(2), rulesLevel: 3 });
+        viaBlock(mech, "battledroids");
+        mech.applyGameSettings({ ...mech.getGameSettings(2), rulesLevel: 1 });
+        viaBlock(mech, DEFAULT_RULES_EDITION);
+        expect(mech.getRulesEdition()).toBe(DEFAULT_RULES_EDITION);
         expect(mech.getRulesLevel(2)).toBe(1);
-        expect(JSON.stringify({ ...mech.export(), rulesLevel: undefined })).toBe(before);
     });
 });
