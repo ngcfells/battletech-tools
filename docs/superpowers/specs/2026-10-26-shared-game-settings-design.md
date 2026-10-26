@@ -100,6 +100,16 @@ are in use.
 11. **Attribution reads the unit's save**, never the current block state, so a printout always shows what the unit was
    built under.
 
+12. **The last level used is the default** (round 2). Editing the rules level in the block sets the design's level and
+   the app-wide `mechRulesFilter`, so the next new design and the roster searches start from it (call 1).
+13. **The rules level is shown fitted, never flagged** (round 2). The block shows it through `getShownRulesLevel`;
+   only Edition, Tech Base and Era carry the call-9 warning.
+14. **The edition decides the tech bases** (round 2). `getEditionTechBases` (moved out of the 'Mech class) filters the
+   Tech Base step, so Battledroids offers Inner Sphere only, and the step is hidden under an earlier edition that
+   offers one choice, as the builders did.
+15. **The game settings are not design work** (round 2). The replace-design guard and the edition-switch state leave
+   the level and rulesets out: changing only them never asks to save, and never blocks the way back to an edition.
+
 ## Non-goals
 
 - No real rulesets yet beyond the sample.
@@ -109,9 +119,9 @@ are in use.
 ## Suggested rounds (one per session, per standing practice)
 
 1. Data: ruleset registry and sample AU, settings type, resolver (allowed options per step given the steps above),
-   downward reset, conflict check. Unit tests.
+   downward reset, conflict check. Unit tests. **Done 2026-10-26.**
 2. Shared `GameSettingsBlock` component and the Special Rulesets window; wire into the 'Mech builder and remove its old
-   controls.
+   controls. **Done 2026-10-26.**
 3. The other eight Classic builders; delete the old per-builder code.
 4. Alpha Strike creator and both roster MUL searches.
 5. Attribution on cards, sheets, TROs and printouts. About and home news.
