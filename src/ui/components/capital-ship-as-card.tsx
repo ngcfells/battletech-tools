@@ -1,4 +1,6 @@
 import React, { type JSX } from 'react';
+import { getUnitRulesets } from '../../classes/unit-game-settings';
+import { RulesetsAttribution } from './rulesets-attribution';
 import CapitalShip, { CAPITAL_SHIP_AS_ARCS } from '../../classes/capital-ship';
 import { LARGE_CRAFT_AS_ATTACK_CLASSES, formatLargeCraftASDamage } from '../../data/large-craft-alpha-strike';
 
@@ -40,6 +42,7 @@ export default class CapitalShipAlphaStrikeCard extends React.Component<ICapital
                 </table>
                 <p style={{ margin: "0.3em 0" }}><strong>Armor</strong>: {stats.armor} &nbsp; <strong>Structure</strong>: {stats.structure}</p>
                 <p style={{ margin: "0.3em 0" }}><strong>Special</strong>: {stats.specialAbilities.join(", ") || "none"}</p>
+                <RulesetsAttribution rulesets={getUnitRulesets(ship)} className="small mb-0" />
             </div>
         );
     }

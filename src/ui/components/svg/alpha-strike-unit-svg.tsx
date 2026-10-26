@@ -5,6 +5,7 @@ import { IASSpecialAbility } from '../../../data/alpha-strike-special-abilities'
 import { IAppGlobals } from '../../app-router';
 import { safeImageURL } from '../../../utils/safeImageURL';
 import BattleTechLogo from '../battletech-logo';
+import { rulesetsAttributionSvg } from '../rulesets-attribution';
 import AlphaStrikeArcsSVG from './alpha-strike-arcs-svg';
 
 export default class AlphaStrikeUnitSVG extends React.Component<IAlphaStrikeUnitSVGProps, IAlphaStrikeUnitSVGState> {
@@ -910,6 +911,8 @@ export default class AlphaStrikeUnitSVG extends React.Component<IAlphaStrikeUnit
                     yLoc={600}
                     width={250}
                 />
+                {/* The Special Rulesets the unit is built under (#324), along the bottom edge. */}
+                {rulesetsAttributionSvg(20, 632, this.props.asUnit.rulesets, { size: 14, maxWidth: 700 })}
                 </g>
                 </svg>
                 {this.props.asUnit.hasArcs() ? <AlphaStrikeArcsSVG asUnit={this.props.asUnit} className={this.props.className} /> : null}

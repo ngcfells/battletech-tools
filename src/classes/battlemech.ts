@@ -3054,6 +3054,8 @@ export class BattleMech {
         unitObj.quirkEraStart = this.getEra().yearStart;
         // Carry the design's rules level so the Alpha Strike print guard and stamp apply.
         unitObj.rulesLevel = this.getRequiredRulesLevel();
+        // The card credits the Special Rulesets the design is built under (#324).
+        unitObj.rulesets = this.getRulesets();
         return unitObj;
 
     }

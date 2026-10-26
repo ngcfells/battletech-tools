@@ -1,4 +1,6 @@
 import React, { type JSX } from 'react';
+import { getUnitRulesets } from '../../classes/unit-game-settings';
+import { RulesetsAttribution } from './rulesets-attribution';
 import SmallCraft, { SMALL_CRAFT_AS_ARCS, formatSmallCraftASDamage } from '../../classes/small-craft';
 
 // The Alpha Strike card of a Small Craft. Like a DropShip, it is a large aerospace unit: armor, structure and a
@@ -43,6 +45,7 @@ export default class SmallCraftAlphaStrikeCard extends React.Component<ISmallCra
                 <p style={{ margin: "0.3em 0" }}><strong>A ({stats.armor})</strong>: {pips(stats.armor, false)}</p>
                 <p style={{ margin: "0.3em 0" }}><strong>S ({stats.structure})</strong>: {pips(stats.structure, true)}</p>
                 <p style={{ margin: "0.3em 0" }}><strong>Special</strong>: {stats.specialAbilities.join(", ") || "none"}</p>
+                <RulesetsAttribution rulesets={getUnitRulesets(craft)} className="small mb-0" />
             </div>
         );
     }

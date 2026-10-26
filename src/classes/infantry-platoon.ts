@@ -881,6 +881,8 @@ export default class InfantryPlatoon implements IGameSettingsUnit {
         const unit = new AlphaStrikeUnit();
         unit.importMUL(record);
         unit.rulesLevel = Math.max(2, this.getRequiredRulesLevel());
+        // The card credits the Special Rulesets the design is built under (#324).
+        unit.rulesets = this.gameSettings.getRulesets();
         return unit;
     }
 

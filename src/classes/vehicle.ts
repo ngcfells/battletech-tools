@@ -3678,6 +3678,8 @@ export default class Vehicle implements IGameSettingsUnit {
         unit.rulesLevel = Math.max(2, this.getRequiredRulesLevel());
         unit.quirks = getAlphaStrikeQuirks(this);
         unit.quirkEraStart = this.getEra().yearStart;
+        // The card credits the Special Rulesets the design is built under (#324).
+        unit.rulesets = this.gameSettings.getRulesets();
         return unit;
     }
 

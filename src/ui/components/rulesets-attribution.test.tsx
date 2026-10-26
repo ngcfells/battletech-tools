@@ -2,6 +2,7 @@ import React, { type JSX } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import AerospaceFighter from "../../classes/aerospace-fighter";
+import { AlphaStrikeUnit } from "../../classes/alpha-strike-unit";
 import BattleArmor from "../../classes/battle-armor";
 import { BattleMech } from "../../classes/battlemech";
 import Building from "../../classes/building";
@@ -13,7 +14,12 @@ import { TechnicalReadout } from "../../classes/technical-readout";
 import { IGameSettingsUnit } from "../../classes/unit-game-settings";
 import Vehicle from "../../classes/vehicle";
 import { ITroUnitAdapter } from "../../data/technical-readout-interfaces";
+import type { IAppGlobals } from "../app-router";
+import CapitalShipAlphaStrikeCard from "./capital-ship-as-card";
 import { RulesetsAttribution, rulesetsAttributionSvg } from "./rulesets-attribution";
+import SmallCraftAlphaStrikeCard from "./small-craft-as-card";
+import AlphaStrikePrintUnitSVG from "./svg/alpha-strike-print-unit";
+import AlphaStrikeUnitSVG from "./svg/alpha-strike-unit-svg";
 import BattleArmorRecordSheetSVG from "./svg/battle-armor-record-sheet-svg";
 import BattledroidsMechRecordSheetSVG from "./svg/battledroids-mech-record-sheet-svg";
 import BattleMechSVG from "./svg/battlemech-svg";
@@ -101,5 +107,45 @@ describe("ruleset attribution (#324 round 5)", () => {
         expect(tro).toContain('data-testid="rulesets-attribution"');
         expect(tro.replace(/<[^>]+>/g, "")).toContain(CREDIT);
         expect(markup(<TechnicalReadoutSheet tro={new TechnicalReadout()} adapter={adapter} />)).not.toContain("Special Rulesets");
+    });
+
+    describe("Alpha Strike cards", () => {
+        const appGlobals = { appSettings: {} } as unknown as IAppGlobals;
+        const card = (rulesets: string[]): AlphaStrikeUnit => {
+            const unit = new AlphaStrikeUnit();
+            unit.name = "Atlas";
+            unit.type = "BM";
+            unit.rulesets = rulesets;
+            return unit;
+        };
+
+        it("carries a Classic design's rulesets onto its card, and none from a design without", () => {
+            const vehicle = withRulesets(new Vehicle());
+            expect(vehicle.getAlphaStrikeUnit().rulesets).toEqual(RULESETS);
+            expect(new Vehicle().getAlphaStrikeUnit().rulesets).toEqual([]);
+            for (const unit of [new AerospaceFighter(), new BattleArmor(), new InfantryPlatoon(), new ProtoMech()]) {
+                expect(withRulesets(unit).getAlphaStrikeUnit().rulesets, unit.constructor.name).toEqual(RULESETS);
+            }
+            const mech = new BattleMech();
+            mech.applyGameSettings({ ...mech.getGameSettings(2), rulesets: RULESETS });
+            expect(mech.getAlphaStrikeForceStats().rulesets).toEqual(RULESETS);
+        });
+
+        it("credits them on the card and the printed card, and nothing on a card without", () => {
+            for (const render of [
+                (unit: AlphaStrikeUnit) => <AlphaStrikeUnitSVG asUnit={unit} appGlobals={appGlobals} measurementsInHexes={false} />,
+                (unit: AlphaStrikeUnit) => <AlphaStrikePrintUnitSVG asUnit={unit} appGlobals={appGlobals} measurementsInHexes={false} />,
+            ]) {
+                expect(markup(render(card(RULESETS)))).toContain(CREDIT);
+                expect(markup(render(card([])))).not.toContain("Special Rulesets");
+            }
+        });
+
+        it("credits them on the Small Craft and capital ship cards", () => {
+            const strip = (element: JSX.Element) => markup(element).replace(/<[^>]+>/g, "");
+            expect(strip(<SmallCraftAlphaStrikeCard craft={withRulesets(new SmallCraft())} />)).toContain(CREDIT);
+            expect(strip(<CapitalShipAlphaStrikeCard ship={withRulesets(new CapitalShip())} />)).toContain(CREDIT);
+            expect(strip(<SmallCraftAlphaStrikeCard craft={new SmallCraft()} />)).not.toContain("Special Rulesets");
+        });
     });
 });

@@ -5,6 +5,7 @@ import { IASSpecialAbility } from '../../../data/alpha-strike-special-abilities'
 import { IAppGlobals } from '../../app-router';
 import { safeImageURL } from '../../../utils/safeImageURL';
 import BattleTechLogo from '../battletech-logo';
+import { rulesetsAttributionSvg } from '../rulesets-attribution';
 import AlphaStrikeArcsSVG from './alpha-strike-arcs-svg';
 import { CARD_NOTICE } from './record-sheet-svg-kit';
 import './alpha-strike-card-svg.scss';
@@ -576,6 +577,8 @@ export default class AlphaStrikePrintUnitSVG extends React.Component<IAlphaStrik
                 />
 
                 <text x="-450" y="1020" transform="rotate(-90)" fontSize="15" fill="rgb(0,0,0)">{CARD_NOTICE( new Date().getFullYear() )}</text>
+                {/* The Special Rulesets the unit is built under (#324), down the edge beside the notice. */}
+                {rulesetsAttributionSvg(-735, 1040, this.props.asUnit.rulesets, { size: 13, maxWidth: 720, transform: "rotate(-90)" })}
 
                 </svg>
                 {this.props.asUnit.hasArcs() ? <AlphaStrikeArcsSVG asUnit={this.props.asUnit} className={this.props.className} width={1050} height={750} /> : null}
