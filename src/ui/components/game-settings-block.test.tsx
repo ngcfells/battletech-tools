@@ -3,9 +3,11 @@ import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { useState } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { IGameSettings } from "../../data/game-settings";
-import { DEFAULT_RULES_EDITION } from "../../data/rules-editions";
+import { DEFAULT_RULES_EDITION, RulesEditionUnitType } from "../../data/rules-editions";
 import { btSpecialRulesets } from "../../data/special-rulesets";
-import GameSettingsBlock from "./game-settings-block";
+import Vehicle from "../../classes/vehicle";
+import { IAppGlobals } from "../app-router";
+import GameSettingsBlock, { UnitGameSettingsBlock, unitRulesLevel } from "./game-settings-block";
 
 afterEach(() => {
     cleanup();
@@ -17,9 +19,9 @@ const base: IGameSettings = { rulesets: [], edition: DEFAULT_RULES_EDITION, rule
 const SAMPLE = "Sample: The Clans never existed (alternate universe)";
 
 // The parent keeps the settings, as a builder does with its design.
-function Harness(props: { start: IGameSettings; onChange?: (settings: IGameSettings, step: string) => void }) {
+function Harness(props: { start: IGameSettings; unitType?: RulesEditionUnitType; onChange?: (settings: IGameSettings, step: string) => void }) {
     const [settings, setSettings] = useState(props.start);
-    return <GameSettingsBlock unitType="mech" settings={settings} onChange={(next, step) => { props.onChange?.(next, step); setSettings(next); }} />;
+    return <GameSettingsBlock unitType={props.unitType ?? "mech"} settings={settings} onChange={(next, step) => { props.onChange?.(next, step); setSettings(next); }} />;
 }
 
 const select = (label: RegExp) => screen.getByLabelText(label) as HTMLSelectElement;
@@ -120,5 +122,50 @@ describe("GameSettingsBlock (#324)", () => {
     it("an earlier edition with one tech base hides the Tech Base step, as the builders did", () => {
         render(<Harness start={{ ...base, edition: "battledroids", techBase: "is", rulesLevel: 2 }} />);
         expect((select(/Technology Base/).closest("div") as HTMLElement).style.display).toBe("none");
+    });
+    it("a ProtoMech has no Technology Base step", () => {
+        render(<Harness unitType="protomech" start={{ ...base, era: "clan-inv" }} />);
+        expect((select(/Technology Base/).closest("div") as HTMLElement).style.display).toBe("none");
+    });
+
+    it("a ProtoMech under the no-Clans universe shows its tech base with the warning", () => {
+        const { container } = render(<Harness unitType="protomech" start={{ ...base, rulesets: ["sample-no-clans"] }} />);
+        expect(select(/Technology Base/).value).toBe("clan");
+        expect((select(/Technology Base/).closest("div") as HTMLElement).style.display).toBe("contents");
+        expect(container.textContent).toMatch(/not offered under the ticked rulesets/);
+    });
+
+    it("a suit offers Inner Sphere and Clan only", () => {
+        render(<Harness unitType="battle-armor" start={{ ...base, techBase: "is", era: "jihad" }} />);
+        expect(optionNames(/Technology Base/)).toEqual(["Inner Sphere", "Clan"]);
+    });
+
+    it("unitRulesLevel prefers the design's own level", () => {
+        const vehicle = new Vehicle();
+        expect(unitRulesLevel(vehicle, { mechRulesFilter: 2 })).toBe(2);
+        expect(unitRulesLevel(undefined, { mechRulesFilter: 2 })).toBe(2);
+        vehicle.gameSettings.set(4, []);
+        expect(unitRulesLevel(vehicle, { mechRulesFilter: 2 })).toBe(4);
+    });
+
+    it("UnitGameSettingsBlock applies a picked level to the design and the app-wide default", () => {
+        const vehicle = new Vehicle();
+        const appGlobals = { appSettings: { mechRulesFilter: 2 }, saveAppSettings: vi.fn() } as unknown as IAppGlobals;
+        const onChange = vi.fn();
+        render(<UnitGameSettingsBlock unitType="vehicle" unit={vehicle} appGlobals={appGlobals} onChange={onChange} />);
+        fireEvent.change(select(/Rules Level/), { target: { value: "1" } });
+        expect(vehicle.gameSettings.getRulesLevel(9)).toBe(1);
+        expect(appGlobals.appSettings.mechRulesFilter).toBe(1);
+        expect(appGlobals.saveAppSettings).toHaveBeenCalled();
+        expect(onChange).toHaveBeenCalledWith("rulesLevel");
+    });
+
+    it("UnitGameSettingsBlock leaves the app-wide level alone for other steps", () => {
+        const vehicle = new Vehicle();
+        const appGlobals = { appSettings: { mechRulesFilter: 2 }, saveAppSettings: vi.fn() } as unknown as IAppGlobals;
+        render(<UnitGameSettingsBlock unitType="vehicle" unit={vehicle} appGlobals={appGlobals} onChange={vi.fn()} />);
+        fireEvent.change(select(/Technology Base/), { target: { value: "clan" } });
+        expect(vehicle.getTech().tag).toBe("clan");
+        expect(appGlobals.saveAppSettings).not.toHaveBeenCalled();
     });
 });

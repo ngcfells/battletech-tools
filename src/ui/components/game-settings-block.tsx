@@ -8,6 +8,8 @@ import EditionChoice from './edition-choice';
 import RulesEditionSelect from './rules-edition-select';
 import RulesLevelSelect from './rules-level-select';
 import StandardModal from './standard-modal';
+import { applyUnitGameSettings, getUnitGameSettings, IGameSettingsUnit } from '../../classes/unit-game-settings';
+import { IAppGlobals } from '../app-router';
 
 export const STALE_WARNING = "not offered under the ticked rulesets";
 
@@ -78,8 +80,8 @@ export default function GameSettingsBlock(props: {
             <RulesEditionSelect unitType={props.unitType} value={settings.edition} editions={options.editions} staleLabel={STALE_WARNING} onChange={(value) => change({ step: "edition", value })} />
             {staleNote("edition")}
             <RulesLevelSelect editionTag={settings.edition} value={settings.rulesLevel} options={options.rulesLevels} staleLabel={STALE_WARNING} onChange={(value) => change({ step: "rulesLevel", value })} />
-            {/* An earlier rulebook with one tech base has no such choice: the field is hidden, as the builders did. */}
-            <EditionChoice earlierEdition={isEarlierRulesEdition(settings.edition)}>
+            {/* A unit type or an earlier rulebook with one tech base has no such choice: the field is hidden (call 6). */}
+            <EditionChoice earlierEdition={isEarlierRulesEdition(settings.edition)} hidden={options.techBases.length === 1 && !stale.includes("techBase")}>
                 <label>
                     Technology Base:
                     <select value={settings.techBase} onChange={(e) => change({ step: "techBase", value: e.currentTarget.value })}>
@@ -133,4 +135,34 @@ export default function GameSettingsBlock(props: {
             </StandardModal>
         </div>
     );
+}
+
+/** A design's own rules level, or the app-wide one for a save from before designs kept one (or no design). */
+export function unitRulesLevel(unit: IGameSettingsUnit | undefined | null, appSettings: { mechRulesFilter: number }): number {
+    return unit?.gameSettings.getRulesLevel(appSettings.mechRulesFilter) ?? appSettings.mechRulesFilter;
+}
+
+/** The last level picked is the default for the next new design and the roster searches (call 12). */
+export function rememberRulesLevel(appGlobals: IAppGlobals, settings: IGameSettings, step: GameSettingStep | "rulesets"): void {
+    if (step !== "rulesLevel") return;
+    appGlobals.appSettings.mechRulesFilter = settings.rulesLevel;
+    appGlobals.saveAppSettings(appGlobals.appSettings);
+}
+
+/**
+ * The settings block wired to a design other than a 'Mech: the block's values go onto the design and a picked level
+ * becomes the default. The builder saves the design (and does its own follow-up) in `onChange`.
+ */
+export function UnitGameSettingsBlock(props: {
+    unitType: RulesEditionUnitType;
+    unit: IGameSettingsUnit;
+    appGlobals: IAppGlobals;
+    onChange: (step: GameSettingStep | "rulesets") => void;
+}): JSX.Element {
+    const change = (settings: IGameSettings, step: GameSettingStep | "rulesets"): void => {
+        applyUnitGameSettings(props.unit, settings);
+        rememberRulesLevel(props.appGlobals, settings, step);
+        props.onChange(step);
+    };
+    return <GameSettingsBlock unitType={props.unitType} settings={getUnitGameSettings(props.unit, props.appGlobals.appSettings.mechRulesFilter)} onChange={change} />;
 }

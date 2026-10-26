@@ -9,7 +9,7 @@ import { editionEditsPrintedUnitsAfterWarning, editionHasBattleValue, editionHas
 import { editionHasPrintedDroids, getPrintedDroid, getPrintedDroids } from '../../../../data/battledroids-mechs';
 import { buildPrintedDroid, isUnmodifiedPrintedDroid } from '../../../../classes/printed-droid';
 import { confirmEditPrintedDroid, getDesignLockNote, keepDesignSettings, mechRulesLevel } from '../../../components/design-lock';
-import GameSettingsBlock from '../../../components/game-settings-block';
+import GameSettingsBlock, { rememberRulesLevel } from '../../../components/game-settings-block';
 import { IGameSettings } from '../../../../data/game-settings';
 import { GameSettingStep } from '../../../../data/special-rulesets';
 import { IAppGlobals } from '../../../app-router';
@@ -122,17 +122,13 @@ export default class MechCreatorStep1 extends React.Component<IHomeProps, IHomeS
     updateGameSettings = ( settings: IGameSettings, step: GameSettingStep | "rulesets" ): void => {
       const currentMech = this.props.appGlobals.currentBattleMech;
       if( !currentMech ) return;
-      const appSettings = this.props.appGlobals.appSettings;
       currentMech.applyGameSettings( settings );
       // A Clan tech base has no superheavy tonnages (IO:AE p.154).
       // A way back to an edition may restore another level: clamp at the design's own.
       this.clampTonnageToChassisRules(currentMech, mechRulesLevel(this.props.appGlobals));
       // The clamp finishes an edition switch; an undo of the switch still brings back the design as it was.
       currentMech.settleRulesEditionSwitch();
-      if( step === "rulesLevel" ) {
-        appSettings.mechRulesFilter = settings.rulesLevel;
-        this.props.appGlobals.saveAppSettings(appSettings);
-      }
+      rememberRulesLevel( this.props.appGlobals, settings, step );
       this.props.appGlobals.saveCurrentBattleMech( currentMech );
       this.setState({ updated: !this.state.updated });
     }
