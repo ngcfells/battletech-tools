@@ -382,6 +382,8 @@ export interface IEquipmentItem extends ICatalogStanding {
     battleValueByLauncher?: Record<string, number>;
     /** Minefield munitions: BV per ton comes from the launcher's rack size and shots (TO:AUE pp.185, 197-198). */
     minefieldBattleValue?: "thunder" | "thunder-augmented" | "thunder-inferno" | "thunder-vibrabomb" | "thunder-active" | "fascam";
+    /** Points of minefield one shot lays, where it is not the launcher's rack size (artillery FASCAM, TO:AR p.152). */
+    minefieldPoints?: number;
     /** Weapon arrays (MG Array): tags of the weapons it links in its own location; its BV derives from them. */
     linkedWeaponTags?: string[];
     /** Ammunition bins in a unit: tag of the weapon this bin is loaded for. */

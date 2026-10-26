@@ -20,7 +20,7 @@ export const mechArmorTypes: IArmorType[] = [
 		tag: "standard",
 		techBase: "universal",
 		editions: ["battledroids", "battletech-2nd-edition", "battletech-manual", "battletech-compendium", "battletech-3rd-edition", "compendium-rules-of-warfare", "battletech-4th-edition", "master-rules", "master-rules-revised", "total-warfare", "battlemech-manual", "core-rulebook"],
-		altNames: ["Standard Armor"],
+		altNames: ["Standard Armor", "Heavy Industrial Armor"],
 		patchwork: { slots: { is: 0, clan: 0 }, vehicleSlots: { is: 0, clan: 0 }, tonsPerPoint: { is: 0.0625, clan: 0.0625 } },
 		combatVehicleSlots: { is: 0, clan: 0 },
 		unitTypes: {
@@ -551,7 +551,7 @@ export const mechArmorTypes: IArmorType[] = [
 		prototype: 2430,
 		book: "TM",
 		page: 205,
-		notes: "IndustrialMech only, either tech base. BAR 10; 16 x 0.67 points per ton, rounded down (TM p.72). 5,000 C-bills per ton, rating C (TM p.278)."
+		notes: "IndustrialMech only, either tech base. BAR 10; 16 x 0.67 points per ton, rounded down (TM p.72). 5,000 C-bills per ton, rating C (TM p.278). BV x1.0 (TM p.315)."
 	},
 	{
 		name: "Commercial Armor",
@@ -589,7 +589,7 @@ export const mechArmorTypes: IArmorType[] = [
 		prototype: 2290,
 		book: "TM",
 		page: 205,
-		notes: "IndustrialMech only (TM p.206). BAR 5; 16 x 1.5 points per ton (TM p.72)."
+		notes: "IndustrialMech only (TM p.206). BAR 5; 16 x 1.5 points per ton (TM p.72). BV x0.5 (TM p.315)."
 	},
 	{
 		name: "Modular Armor",

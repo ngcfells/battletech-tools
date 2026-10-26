@@ -217,7 +217,7 @@ interface ILAMTypeRules {
 }
 
 export const LAM_TYPE_RULES: Record<LAMType, ILAMTypeRules> = {
-    // Conversion weight: 10%, Bimodal 15% (IO:AE p.108); cost: x0.75, Bimodal x0.65 (IO, as implemented by MegaMek).
+    // Conversion weight: 10%, Bimodal 15% (IO:AE p.108); cost: x0.75, Bimodal x0.65 (IO:AE p.180).
     standard: { name: "LAM", conversion: 0.1, costRate: 0.75, modes: ["mech", "airmech", "aerospace"], minJumpMP: 3, lamLimits: true },
     bimodal: { name: "Bimodal LAM", conversion: 0.15, costRate: 0.65, modes: ["mech", "aerospace"], minJumpMP: 3, lamLimits: true },
     // BishopSteiner's VTOLAM, "a form of Bimodal LAM" (deviantart.com/bishopsteiner/art/LOCUST-VTOLAM-concept-899660337).
@@ -312,6 +312,9 @@ export interface IBattleMechExport {
     /** OmniMech configurations sharing this base chassis; `equipment` holds the active one. */
     omniConfigurations?: IOmniConfiguration[];
     activeOmniConfiguration?: string;
+    /** The base chassis' additional heat sinks and jump MP; left out, what every configuration has. */
+    omniBaseHeatSinks?: number;
+    omniBaseJumpSpeed?: number;
     transformationMode?:"mech" | "airmech" | "aerospace" | "vehicle";
     mirrorArmorAllocations: boolean;
     model: string;
@@ -450,6 +453,9 @@ export class BattleMech {
     /** Stored OmniMech configurations; the active one is live in _equipmentList. */
     private _omniConfigurations: IOmniConfiguration[] = [];
     private _activeOmniConfiguration = BattleMech.DEFAULT_OMNI_CONFIGURATION;
+    /** Additional heat sinks and jump MP of the OmniMech base chassis, when the design gives them; the rest are pod-mounted. */
+    private _omniBaseHeatSinks: number | undefined;
+    private _omniBaseJumpSpeed: number | undefined;
     private _transformationMode: "mech" | "airmech" | "aerospace" | "vehicle" = "mech";
     private _tech = btTechOptions[0];
     private _era = btEraOptions[1]; // Default to the Star League
@@ -1423,19 +1429,16 @@ export class BattleMech {
         // 3H. Apply Speed Factor Scaling Multiplier (TM p. 304)
         const speedFactorModifier = this._getSpeedFactorModifier();
         let finalOffensiveBattleRating = baseOffensiveRating * speedFactorModifier;
+        this._calcLogBV += `<strong>Offensive Battle Rating:</strong> ${finalOffensiveBattleRating.toFixed(2)} ` +
+            `(${totalWeaponBV.toFixed(2)} [Weapon BV] + ${totalAmmoBV.toFixed(2)} [Ammo BV] + ${modifiedMechTonnage} [Mech Tonnage]) ` +
+            `x ${speedFactorModifier.toFixed(4)} [Speed Factor Rating]<br />`;
         // "IndustrialMechs, unless equipped with Advanced Fire Control (see p. 69), multiply their
         // Offensive Battle Rating by 0.9" (TM p.304).
         if (!this.hasAdvancedFireControl()) {
+            this._calcLogBV += `IndustrialMech without Advanced Fire Control: ${finalOffensiveBattleRating.toFixed(2)} x 0.9 = ${(finalOffensiveBattleRating * 0.9).toFixed(2)}<br />`;
             finalOffensiveBattleRating *= 0.9;
         }
-
-        this._calcLogBV += `<strong>Final Offensive Battle Rating:</strong> ${finalOffensiveBattleRating.toFixed(2)} ` +
-            `(${totalWeaponBV.toFixed(2)} [Weapon BV] + ${totalAmmoBV.toFixed(2)} [Ammo BV] + ${modifiedMechTonnage} [Mech Tonnage]) ` +
-            `x ${speedFactorModifier.toFixed(4)} [Speed Factor Rating]<br />`;
-
-        if (!this.hasAdvancedFireControl()) {
-            this._calcLogBV += `IndustrialMech without Advanced Fire Control: Offensive Battle Rating x 0.9 -> ${finalOffensiveBattleRating.toFixed(2)}<br />`;
-        }
+        this._calcLogBV += `<strong>Final Offensive Battle Rating:</strong> ${finalOffensiveBattleRating.toFixed(2)}<br />`;
         this._offensiveBattleRating = finalOffensiveBattleRating;
 
         /* *************************************************************************
@@ -1656,7 +1659,7 @@ export class BattleMech {
             const myomerName = primitiveMusculature ? "Primitive Musculature"
                 : this._myomerType.tag === "standard" ? "Standard Musculature" : this._myomerType.name;
             // Primitive 'Mech musculature costs 1,000 x tonnage (IO:AE pp.181, 215).
-            // Superheavy standard musculature costs 12,000/ton (provisional, via MegaMek).
+            // Superheavy standard musculature costs 12,000 x tonnage (IO:AE p.217).
             const myomerCostPerTon = primitiveMusculature ? 1000
                 : this._myomerType.tag === "standard" && this._tonnage > 100 ? 12000 : this._myomerType.costPerTon;
             const myomerCost = myomerCostPerTon * this.getTonnage();
@@ -1665,8 +1668,8 @@ export class BattleMech {
         }
 
         // Internal Structure. Superheavy structure uses its own per-ton table, and Tripod
-        // structure costs x1.2 (provisional, via MegaMek).
-        const superheavyStructureCost: Record<string, number> = { "standard": 4000, "industrial": 3000, "endo-steel": 16000, "composite": 1600, "endo-composite": 6400 };
+        // structure costs x1.2 (IO:AE p.217).
+        const superheavyStructureCost: Record<string, number> = { "standard": 4000, "industrial": 3000, "endo-steel": 16000, "endo-composite": 6400 };
         const structureCostPerTonOf = (structure: IInternalStructure): number => this._tonnage > 100
             ? superheavyStructureCost[structure.tag] ?? structure.cost
             : structure.cost;
@@ -1811,9 +1814,9 @@ export class BattleMech {
 
         // Close Actuator Layout Block subtotaling
         this._calcLogCBill += "<tr><td colspan=\"2\" class=\"text-right\"><strong>Actuators Subtotal: " + addCommas(actuatorTotal) + "</strong></td></tr>\n";
-        // Superheavy actuators cost double (provisional, via MegaMek).
+        // Superheavy actuators cost double (IO:AE p.217).
         if (this._tonnage > 100) {
-            this._calcLogCBill += "<tr><td>Superheavy Actuators (x2)<br /><span class=\"smaller-text\">provisional</span></td><td>" + addCommas(actuatorTotal) + "</td></tr>\n";
+            this._calcLogCBill += "<tr><td>Superheavy Actuators (x2)</td><td>" + addCommas(actuatorTotal) + "</td></tr>\n";
             cbillDryTotal += actuatorTotal;
         }
 
@@ -1837,8 +1840,8 @@ export class BattleMech {
         cbillDryTotal += engineCost;
 
         // Gyro
-        // Superheavy 'Mechs use the Superheavy Gyro, priced at the Heavy-Duty rate per ton of its
-        // doubled weight (IO via MegaMek MekCostCalculator; provisional).
+        // Superheavy 'Mechs use the Superheavy Gyro: 500,000 x its own (doubled) weight, the
+        // Heavy-Duty rate (IO:AE p.217).
         const superheavyGyroCostMultiplier = findByTag(mechGyroTypes, "heavy-duty")?.costMultiplier ?? 500000;
         let gyroName = this._tonnage > 100 ? "Superheavy (" + this.getGyroName() + ")" : this.getGyroName();
         let gyrocostMultiplier = this._tonnage > 100 ? superheavyGyroCostMultiplier : this.getGyro().costMultiplier;
@@ -1896,12 +1899,10 @@ export class BattleMech {
         cbillDryTotal += this.getArmorCost();
 
         // Equipment
-        let equipmentCost = 0;
         for( let eqC = 0; eqC < this._equipmentList.length; eqC++) {
             if( this._equipmentList[eqC].tag.indexOf( "ammo-" ) === -1) {
                 this._calcLogCBill += "<tr><td><strong>" + this._equipmentList[eqC].name + "</strong></td><td>" + addCommas(this._equipmentList[eqC].cbills) + "</td></tr>\n";
                 cbillDryTotal += this._equipmentList[eqC].cbills;
-                equipmentCost += this._equipmentList[eqC].cbills;
             } else {
                 this._calcLogCBill += "<tr><td><strong>" + this._equipmentList[eqC].name + "</strong></td><td class=\"text-right\">" + addCommas(this._equipmentList[eqC].cbills * this._equipmentList[eqC].weight) + "<div class=\"smaller-text\">(not included in dry cost)</div></td></tr>\n";
                 cbillAmmoTotal += this._equipmentList[eqC].cbills * this._equipmentList[eqC].weight;
@@ -1915,12 +1916,20 @@ export class BattleMech {
             cbillDryTotal += armoredComponentSlots * 150000;
         }
 
-        // Conversion equipment: LAM_TYPE_RULES, and QuadVee 50% of internal structure plus equipment cost (IO, as implemented
-        // by MegaMek; provisional).
+        // Conversion equipment: LAM_TYPE_RULES, or QuadVee x0.5, of "WSC", the weapons, equipment and structure, read as
+        // the whole dry cost so far, as the books' worked examples do ("structural, weapon, and equipment costs":
+        // LAMs IO p.186, IO:AE p.180; QuadVees IO p.187, IO:AE p.181; user ruling 2026-10-26).
         const conversionRate = this.isLAM() ? LAM_TYPE_RULES[this._lamType].costRate : this.isQuadVee() ? 0.5 : 0;
         if (conversionRate > 0) {
-            const conversionCost = (structureCost + equipmentCost) * conversionRate;
-            this._calcLogCBill += "<tr><td><strong>Conversion Equipment</strong><br /><span class=\"smaller-text\">" + conversionRate + " x (Structure [" + addCommas(structureCost) + "] + Equipment [" + addCommas(equipmentCost) + "]) - provisional</span></td><td>" + addCommas(conversionCost) + "</td></tr>\n";
+            const conversionBase = cbillDryTotal;
+            const conversionCost = conversionBase * conversionRate;
+            const conversionSource = this.isVTOLAM() ? "VTOLAM (Custom Homebrew) at the Bimodal LAM rate."
+                : (this.isLAM() ? "LAM conversion cost from Interstellar Operations p.186 and Interstellar Operations: Alternate Eras p.180;"
+                    : "QuadVee conversion cost from Interstellar Operations p.187 and Interstellar Operations: Alternate Eras p.181;")
+                    + " no other edition prints this cost, so a later edition may change it.";
+            this._calcLogCBill += "<tr><td><strong>Conversion Equipment</strong><br /><span class=\"smaller-text\">" + conversionRate
+                + " x (Structural, Weapon and Equipment Costs [" + addCommas(conversionBase) + "])<br />" + conversionSource
+                + "</span></td><td>" + addCommas(conversionCost) + "</td></tr>\n";
             cbillDryTotal += conversionCost;
         }
 
@@ -1929,12 +1938,11 @@ export class BattleMech {
         this._calcLogCBill += "<tr><td colspan=\"2\" class=\"text-right\"><strong>Dry Subtotal: " + addCommas(cbillDryTotal) + "</strong></td></tr>\n";
 
         // (Structural Cost + Weapon/Equipment Costs) x (Omni Conversion Cost) x (1 + [Total Tonnage ÷ 100])
-        // OmniMechs x1.25 (TM, as implemented by MegaMek). The Custom Homebrew Omni-LAM uses x1.75
+        // OmniMechs x1.25 (TM p.285). The Custom Homebrew Omni-LAM uses x1.75
         // in its place ("costs 1.75 times a normal mech", Kronos Battle Systems fan rule).
         const omniCostMultiplier = this.isOmniLAM() ? 1.75 : this._omnimech ? 1.25 : 1;
         const omniCostLabel = this.isOmniLAM() ? " x 1.75 [Omni-LAM, Custom Homebrew]" : this._omnimech ? " x 1.25 [OmniMech]" : "";
-        // IndustrialMechs (Industrial internal structure) use 1 + tonnage / 400 (TM, as implemented
-        // by MegaMek; provisional).
+        // IndustrialMechs (Industrial internal structure) use 1 + tonnage / 400 (TM p.285).
         const tonnageDivisor = this.getInternalStructureType() === "industrial" ? 400 : 100;
         const costMultiplier = (1 + this.getTonnage() / tonnageDivisor) * omniCostMultiplier;
 
@@ -6675,6 +6683,8 @@ export class BattleMech {
             // The design keeps the active configuration's equipment; the others are dropped.
             this._omniConfigurations = [];
             this._activeOmniConfiguration = BattleMech.DEFAULT_OMNI_CONFIGURATION;
+            this._omniBaseHeatSinks = undefined;
+            this._omniBaseJumpSpeed = undefined;
         }
         this._calc();
     }
@@ -6791,8 +6801,31 @@ export class BattleMech {
         return {
             locations,
             totalSlots: Object.values(locations).reduce((sum, slots) => sum + slots, 0),
-            podTonnage: this.getRemainingTonnage() + podWeight,
+            podTonnage: this.getRemainingTonnage() + podWeight + this._podChassisWeight(this._omniBaseChassis()),
         };
+    }
+
+    /**
+     * The base chassis' additional heat sinks and jump MP: the design's own, else what every configuration has.
+     * Heat sinks and jump jets above them are pod-mounted.
+     */
+    private _omniBaseChassis(): { additionalHeatSinks: number, jumpSpeed: number } {
+        const chassis = [
+            { additionalHeatSinks: this._additionalHeatSinks, jumpSpeed: this._jumpSpeed },
+            // A configuration saved without its own chassis has the active one's; the compact format leaves out zeros.
+            ...this._omniConfigurations.filter(configuration => configuration.name !== this._activeOmniConfiguration && configuration.chassis)
+                .map(configuration => ({ additionalHeatSinks: configuration.chassis!.additionalHeatSinks ?? 0, jumpSpeed: configuration.chassis!.jumpSpeed ?? 0 })),
+        ];
+        return {
+            additionalHeatSinks: this._omniBaseHeatSinks ?? Math.min(...chassis.map(entry => entry.additionalHeatSinks)),
+            jumpSpeed: this._omniBaseJumpSpeed ?? Math.min(...chassis.map(entry => entry.jumpSpeed)),
+        };
+    }
+
+    /** Weight of the active configuration's pod heat sinks and jump jets. */
+    private _podChassisWeight(base: { additionalHeatSinks: number, jumpSpeed: number }): number {
+        return Math.max(0, this._additionalHeatSinks - base.additionalHeatSinks) * (this._heatSinkType.weightEach ?? 1)
+            + Math.max(0, this._jumpSpeed - base.jumpSpeed) * this._jumpJetWeightEach();
     }
 
     /** Remove every pod-mounted item, leaving the fixed base chassis to build a new configuration on. */
@@ -6999,6 +7032,7 @@ export class BattleMech {
         if (!this._omnimech) return [];
         this._storeActiveOmniConfiguration();
         const exported = this.export(true);
+        const base = this._omniBaseChassis();
         return this._omniConfigurations.map(configuration => {
             const variant = new BattleMech(JSON.stringify(exported));
             variant.switchOmniConfiguration(configuration.name);
@@ -7006,7 +7040,7 @@ export class BattleMech {
                 name: configuration.name,
                 battleValue: variant.getBattleValue(),
                 cost: variant.getCBillCostNumeric(),
-                podTonnage: variant._podItems().reduce((sum, item) => sum + (item.weight || 0), 0),
+                podTonnage: variant._podItems().reduce((sum, item) => sum + (item.weight || 0), 0) + variant._podChassisWeight(base),
             };
         });
     }
@@ -7148,7 +7182,7 @@ export class BattleMech {
         return bays;
     }
 
-    /** LAM fuel points: 80 from the conversion equipment plus 80 per Fuel Tank (via MegaMekLab). */
+    /** LAM fuel points: 80 from the conversion equipment plus 80 per Fuel Tank (IO:AE pp.180, 214). */
     public getLAMFuelPoints(): number {
         if (!this.isLAM() || this.isVTOLAM()) return 0;
         const tanks = this._equipmentList.filter(item => matchesTag(item, BattleMech.LAM_FUEL_TANK_TAG)).length;
@@ -8331,6 +8365,8 @@ export class BattleMech {
             this._storeActiveOmniConfiguration();
             exportObject.omniConfigurations = JSON.parse(JSON.stringify(this._omniConfigurations));
             exportObject.activeOmniConfiguration = this._activeOmniConfiguration;
+            if( this._omniBaseHeatSinks !== undefined ) exportObject.omniBaseHeatSinks = this._omniBaseHeatSinks;
+            if( this._omniBaseJumpSpeed !== undefined ) exportObject.omniBaseJumpSpeed = this._omniBaseJumpSpeed;
         }
 
         if( !this.hasLowerArmActuator( "la" ))
@@ -8863,6 +8899,8 @@ export class BattleMech {
                 ? JSON.parse(JSON.stringify(importObject.omniConfigurations))
                 : [];
             this._activeOmniConfiguration = importObject.activeOmniConfiguration || BattleMech.DEFAULT_OMNI_CONFIGURATION;
+            this._omniBaseHeatSinks = this._omnimech ? importObject.omniBaseHeatSinks : undefined;
+            this._omniBaseJumpSpeed = this._omnimech ? importObject.omniBaseJumpSpeed : undefined;
 
             this._calc();
             return true;
@@ -11099,47 +11137,27 @@ export class BattleMech {
         )) {
             return false;
         }
-        if (!this.isLAM() && !this.isTripod()) {
+        // Tripods mount weapons and equipment as a 'Mech of equal weight and size does (IO:AE p.159).
+        if (!this.isLAM()) {
             return true;
         }
-
         const tag = item.tag.toLowerCase();
         const name = item.name.toLowerCase();
-        if (this.isLAM()) {
-            // A VTOLAM has no fighter mode, so no fuel tanks or bomb bays.
-            if (this.isVTOLAM() && (tag === BattleMech.LAM_FUEL_TANK_TAG || tag === BattleMech.LAM_BOMB_BAY_TAG)) return false;
-            // Battletech Into The Future: "A VTOLAM can use any equipment a normal battlemech can use".
-            if (!this._hasLAMLimits()) return true;
-            // IO:AE p.108, Prohibited Technologies and construction notes: no artillery, no weapon
-            // that needs a Piloting skill except physical attack weapons (heavy Gauss), no
-            // supercharger, and none of the listed conversion-blocking equipment. Items split
-            // across locations are reported by getChassisEquipmentViolations().
-            return !(
-                item.category === "Artillery Weapons" ||
-                item.weaponType?.includes("ART") ||
-                tag.includes("gauss-rifle-heavy") ||
-                name.includes("heavy gauss") ||
-                BattleMech.LAM_PROHIBITED_TAGS.includes(tag) ||
-                tag.startsWith("bridge-layer")
-            );
-        }
-        // Tripod weapon limits (pre-existing list; source not re-checked).
+        // A VTOLAM has no fighter mode, so no fuel tanks or bomb bays.
+        if (this.isVTOLAM() && (tag === BattleMech.LAM_FUEL_TANK_TAG || tag === BattleMech.LAM_BOMB_BAY_TAG)) return false;
+        // Battletech Into The Future: "A VTOLAM can use any equipment a normal battlemech can use".
+        if (!this._hasLAMLimits()) return true;
+        // IO:AE p.108, Prohibited Technologies and construction notes: no artillery, no weapon
+        // that needs a Piloting skill except physical attack weapons (heavy Gauss), no
+        // supercharger, and none of the listed conversion-blocking equipment. Items split
+        // across locations are reported by getChassisEquipmentViolations().
         return !(
+            item.category === "Artillery Weapons" ||
+            item.weaponType?.includes("ART") ||
             tag.includes("gauss-rifle-heavy") ||
-            tag.includes("plasma-rifle") ||
-            tag.includes("mml") ||
-            tag.includes("rotary") ||
-            tag.includes("artemis") ||
-            tag.includes("hatchet") ||
-            tag.includes("sword") ||
-            tag.includes("claw") ||
-            tag.includes("mace") ||
             name.includes("heavy gauss") ||
-            name.includes("plasma rifle") ||
-            name.includes("hatchet") ||
-            name.includes("sword") ||
-            name.includes("claw") ||
-            name.includes("mace")
+            BattleMech.LAM_PROHIBITED_TAGS.includes(tag) ||
+            tag.startsWith("bridge-layer")
         );
     }
 
@@ -13138,6 +13156,8 @@ export class BattleMech {
             const podSlots = listed( loadout[system].location ).filter( ( slot ) => !fixedSlotKeys.has( JSON.stringify( slot ) ) );
             return { [system]: { ...loadout[system], location: [ ...fixedSlots, ...podSlots ] } };
         };
+        // The base chassis' heat sinks and jump jets; a converted MegaMek file gives its own (battlemech-mtf.ts).
+        copy.mech.omnibase ??= { "@_heatsinks": base.heatsinks?.["@_number"] ?? 0, "@_jumpjets": base.jumpjets?.["@_number"] ?? 0 };
         copy.mech.baseloadout = {
             ...base,
             ...loadout,
@@ -13588,6 +13608,11 @@ export class BattleMech {
             if( jObj.mech.baseloadout?.armored_locations ) this._importSSWArmoredLocations( jObj.mech.baseloadout.armored_locations.location );
 
             this._importSSWTechnicalReadout( jObj.mech );
+
+            // The file gives the base chassis' total heat sinks; the engine brings some of them free (TM p.71).
+            const omniBase = this._omnimech ? jObj.mech.omnibase : undefined;
+            this._omniBaseHeatSinks = omniBase ? Math.max( 0, ( +omniBase["@_heatsinks"] || 0 ) - this.getFreeHeatSinks() ) : undefined;
+            this._omniBaseJumpSpeed = omniBase ? +omniBase["@_jumpjets"] || 0 : undefined;
 
             this._calc();
             this.calcAlphaStrike();

@@ -247,6 +247,12 @@ describe("Vehicle motive types", () => {
         expect(build("hydrofoil", 25).getSuspensionFactor()).toBe(150);
         expect(build("naval-surface", 100).getSuspensionFactor()).toBe(30);
         expect(build("naval-sub", 100).getSuspensionFactor()).toBe(30);
+        // Super-Heavy naval: tonnage / 10, rounded up to the nearest 5 (TO:AUE p.190).
+        expect(build("naval-surface", 301).getSuspensionFactor()).toBe(35);
+        expect(build("naval-surface", 310).getSuspensionFactor()).toBe(35);
+        expect(build("naval-sub", 320).getSuspensionFactor()).toBe(35);
+        expect(build("naval-sub", 351).getSuspensionFactor()).toBe(40);
+        expect(build("naval-surface", 555).getSuspensionFactor()).toBe(60);
 
         const hover = build("hover", 20);
         hover.setCruiseMP(10);

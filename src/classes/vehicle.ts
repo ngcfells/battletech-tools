@@ -3153,10 +3153,13 @@ export default class Vehicle implements IGameSettingsUnit {
             rows.push([`${this._motiveType.liftEquipment} (${liftTons} t)`, liftTons * (this._motiveType.hasRotor ? 40000 : 20000)]);
         }
         if (this._artVee) {
-            // Half the weapons, equipment and structure cost, as the QuadVee's conversion equipment adds (IO:AE p.181).
-            const weaponsAndEquipmentCost = this._equipmentList.reduce((sum, item) => sum + (item.isAmmo ? 0 : item.cbills || 0), 0);
-            rows.push([`${ARTVEE_CONVERSION_EQUIPMENT.name} (${ARTVEE_CONVERSION_EQUIPMENT.costFraction} x weapons, equipment and structure)`,
-                ARTVEE_CONVERSION_EQUIPMENT.costFraction * (structureCost + weaponsAndEquipmentCost)]);
+            // Half of "WSC", the whole structural, weapon and equipment cost so far without ammunition, as the QuadVee's
+            // conversion equipment adds (IO p.187, IO:AE p.181; user ruling 2026-10-26).
+            const ammoCost = this._equipmentList.reduce((sum, item) => sum + (item.isAmmo ? (item.cbills || 0) * item.weight : 0), 0);
+            const conversionBase = rows.reduce((sum, [, value]) => sum + value, 0) - ammoCost;
+            rows.push([`${ARTVEE_CONVERSION_EQUIPMENT.name} (${ARTVEE_CONVERSION_EQUIPMENT.costFraction} x structural, weapon and equipment costs `
+                + `${Math.round(conversionBase).toLocaleString()}, the QuadVee rule of IO:AE p.181)`,
+                ARTVEE_CONVERSION_EQUIPMENT.costFraction * conversionBase]);
         }
         const subtotal = rows.reduce((sum, [, value]) => sum + value, 0);
         const divisors: Record<string, number> = {

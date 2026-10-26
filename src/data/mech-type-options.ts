@@ -11,8 +11,8 @@ import { IMechType } from "./data-interfaces";
 * excluded from the software's underlying license (GNU GPLv3).
 */
 
-// Rules levels follow IO:AE p.44 as implemented by MegaMek (Mek/QuadVee/LandAirMek tech
-// advancement); book not yet in hand. Standard (tournament) play excludes Advanced and
+// Rules levels from the Additional Alternate Era Weapons and Equipment Table: LAM conversion Experimental,
+// QuadVee and superheavy components Advanced (IO:AE p.214), Tripod components Advanced (IO:AE p.216). Standard (tournament) play excludes Advanced and
 // Experimental chassis, so they never appear on tournament lists or cards by default.
 export const mechTypeOptions: IMechType[] = [
 	{

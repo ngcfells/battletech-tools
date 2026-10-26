@@ -73,11 +73,6 @@ describe("ArtVee construction", () => {
         vehicle.setArtVee(false);
         return vehicle;
     };
-    const logValue = (log: string, label: string): number => {
-        const row = log.split("<br />").find((line) => line.startsWith(label));
-        if (!row) throw new Error(`no cost row ${label}`);
-        return Number(row.slice(row.lastIndexOf(": ") + 2).replace(/,/g, ""));
-    };
 
     it("is offered at Custom Homebrew to tracked Combat Vehicles only", () => {
         const vehicle = plain();
@@ -119,13 +114,17 @@ describe("ArtVee construction", () => {
         expect(vehicle.getUsedItemSlots()).toBe(withTurret - ARTVEE_CONVERSION_EQUIPMENT.turretSlots);
     });
 
-    it("adds half the weapons, equipment and structure cost before the final multiplier (IO:AE p.181 precedent)", () => {
+    // QuadVee: "WSC x 0.5", from a 'Mech's "structural, weapon, and equipment costs" (IO p.187, IO:AE p.181).
+    it("adds half the structural, weapon and equipment cost before the final multiplier (IO:AE p.181 precedent)", () => {
         const vehicle = thumperArtVee();
-        const log = vehicle.getCBillCostLog();
-        const label = "ArtVee Conversion Equipment (0.5 x weapons, equipment and structure)";
-        const structure = logValue(log, "Internal Structure");
-        const equipment = vehicle.getEquipmentList().filter((item) => !item.isAmmo).reduce((sum, item) => sum + item.cbills, 0);
-        expect(logValue(log, label)).toBe(Math.round(0.5 * (structure + equipment)));
+        const lines = vehicle.getCBillCostLog().split("<br />");
+        const conversionIndex = lines.findIndex((line) => line.startsWith("ArtVee Conversion Equipment (0.5 x structural, weapon and equipment costs "));
+        expect(conversionIndex).toBeGreaterThan(0);
+        expect(lines[conversionIndex]).toContain("the QuadVee rule of IO:AE p.181");
+        const value = (line: string) => Number(line.slice(line.lastIndexOf(": ") + 2).replace(/,/g, ""));
+        const ammo = vehicle.getEquipmentList().filter((item) => item.isAmmo).reduce((sum, item) => sum + item.cbills * item.weight, 0);
+        const before = lines.slice(0, conversionIndex).reduce((sum, line) => sum + value(line), 0) - ammo;
+        expect(value(lines[conversionIndex])).toBeCloseTo(0.5 * before, -1);
         expect(plain().getCBillCostLog()).not.toContain("ArtVee Conversion Equipment");
         expect(vehicle.getCBillCost()).toBeGreaterThan(plain().getCBillCost());
     });

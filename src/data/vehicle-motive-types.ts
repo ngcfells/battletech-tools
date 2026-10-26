@@ -82,8 +82,8 @@ export function getVehicleSuspensionFactor(motiveTag: string, tonnage: number): 
             return byWeight([[15, 45], [30, 80], [45, 115], [80, 140]], w => 140 + 35 * Math.ceil((w - 80) / 30));
         case "naval-surface":
         case "naval-sub":
-            // Over 300 tons: unverified (MegaMek's formula); 30 up to 300 tons.
-            return tonnage <= 300 ? 30 : (() => { const factor = Math.ceil(tonnage / 10); return factor + (factor % 5); })();
+            // Super-Heavy (301-555 tons): tonnage / 10, rounded up to the nearest 5 (TO:AUE p.190); 30 up to 300 tons.
+            return tonnage <= 300 ? 30 : Math.ceil(tonnage / 50) * 5;
         default:
             return 0;
     }

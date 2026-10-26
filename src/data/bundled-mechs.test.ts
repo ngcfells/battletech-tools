@@ -12,7 +12,7 @@ import { getBundledMechEntries, loadBundledMechDesign, loadBundledMechIndex } fr
 const dataDir = path.resolve(__dirname, "bundled");
 
 // Pinned so a growing data set is a deliberate change.
-const DESIGNS = 3549;
+const DESIGNS = 3554;
 // Round 3 added MegaMek's 'Mechs, whose TRO text is long: about 1.8 MB gzipped, read a chunk at a time.
 const MAX_BYTES = 19_500_000;
 

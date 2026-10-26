@@ -634,6 +634,15 @@ describe("ammunition Battle Value", () => {
         expect(getAmmoBattleValuePerTon(weapon("lrm-20"), thunder)).toBe(20 * 6 / 5 * 4);
     });
 
+    it("prices artillery Thunder (FASCAM) shells from their minefield points (TO:AUE p.198, TO:AR p.152)", () => {
+        const artillery = (tag: string) => equipmentArtillery.find(item => item.tag === tag)!;
+        const shells = (tag: string) => ammoCatalog.find(item => item.tag === tag)!;
+        // Points of mines per ton / 5, times the Standard minefield's 4 (Minefield BV Table, TO:AUE p.197).
+        expect(getAmmoBattleValuePerTon(artillery("long-tom-artillery"), shells("ammo-long-tom-thunder"))).toBe(25 * 5 / 5 * 4);
+        expect(getAmmoBattleValuePerTon(artillery("sniper-artillery"), shells("ammo-sniper-thunder"))).toBe(20 * 10 / 5 * 4);
+        expect(getAmmoBattleValuePerTon(artillery("thumper-artillery"), shells("ammo-thumper-thunder"))).toBe(15 * 20 / 5 * 4);
+    });
+
     it("prices family ammo per launcher (TM p.229)", () => {
         expect(getAmmoBattleValuePerTon(weapon("lrm-5"), lrmAmmo)).toBe(6);
         expect(getAmmoBattleValuePerTon(weapon("lrm-10"), lrmAmmo)).toBe(11);

@@ -516,8 +516,23 @@ describe("BattleMech ATM ammunition", () => {
 });
 
 describe("LAM and QuadVee chassis rules", () => {
-    // IO via MegaMek TestMek (provisional): at least 3 Jump MP, walking-MP cap still applies;
-    // Standard, Compact, or Heavy-Duty gyros only.
+    // "Tripod 'Mechs may mount weapons and equipment in accordance with the standard rules for a 'Mech of equal
+    // weight and size" (IO:AE p.159).
+    it("offers a Tripod everything a biped of the same weight can mount", () => {
+        const available = (type: string) => {
+            const mech = new BattleMech();
+            mech.setTech("is");
+            mech.setEra("dark-ages");
+            mech.setType(type);
+            mech.setTonnage(80);
+            return mech.getAvailableEquipment(false, 4).filter(item => item.available).map(item => item.tag).sort();
+        };
+        const tripod = available("tripod");
+        expect(tripod).toEqual(expect.arrayContaining(["mml-5", "melee-hatchet"]));
+        expect(tripod).toEqual(available("biped"));
+    });
+
+    // IO:AE p.108: at least 3 Jump MP, walking-MP cap still applies; Standard, Compact, or Heavy-Duty gyros only.
     it("requires LAMs to have at least 3 jump MP and a Standard, Compact, or Heavy-Duty gyro", () => {
         const mech = new BattleMech();
         mech.setType("lam");
@@ -1483,7 +1498,7 @@ describe("Chassis rules levels, provisional BV, and cost multipliers", () => {
         return mech.getCBillCostNumeric();
     };
 
-    // IO:AE p.44 (via MegaMek): Tripods and QuadVees are Advanced, LAMs Experimental; Standard is tournament play.
+    // IO:AE pp.214, 216: Tripods, QuadVees and superheavies are Advanced, LAMs Experimental; Standard is tournament play.
     it("reports the lowest legal rules level for each chassis", () => {
         const level = (type: string, tonnage = 50) => {
             const mech = new BattleMech();
@@ -1567,11 +1582,31 @@ describe("Chassis rules levels, provisional BV, and cost multipliers", () => {
         expect(tripodHTML).toContain("Tripod 'Mech Cockpit");
         expect(tripodHTML).toContain("x 1.2 [Tripod]");
 
-        const lamHTML = (() => { const lam = new BattleMech(); lam.setType("lam"); return lam.getCBillCalcHTML(); })();
-        expect(lamHTML).toContain("0.75 x (Structure");
+        expect(quadveeHTML).toContain("0.5 x (Structural, Weapon and Equipment Costs");
+        expect(quadveeHTML).toContain("Interstellar Operations p.187");
     });
 
-    // TM / IO via MegaMek MekCostCalculator (provisional).
+    // "WSC x 0.65 for Bimodal LAMs, and WSC x 0.75 for Standard LAMs": a 'Mech that "had run up a cost of 1,850,000
+    // C-bills in structural, weapon, and equipment costs" adds 1,387,500 (IO p.186, IO:AE p.180). QuadVees: WSC x 0.5,
+    // with the same wording (IO p.187, IO:AE p.181).
+    it("prices LAM and QuadVee conversion on the whole structural, weapon and equipment cost", () => {
+        const amount = (html: string, pattern: RegExp) => Number(html.match(pattern)![1].replace(/,/g, ""));
+        for (const [lamType, rate] of [["standard", 0.75], ["bimodal", 0.65], ["quadvee", 0.5]] as const) {
+            const lam = new BattleMech();
+            if (lamType === "quadvee") {
+                lam.setType("quadvee");
+            } else {
+                lam.setType("lam");
+                lam.setLAMType(lamType);
+            }
+            const html = lam.getCBillCalcHTML();
+            const base = amount(html, /Structural, Weapon and Equipment Costs \[([\d,.]+)\]/);
+            expect(html).toContain(lamType === "quadvee" ? "Interstellar Operations p.187" : "Interstellar Operations p.186");
+            expect(amount(html, /Dry Subtotal: ([\d,.]+)/)).toBeCloseTo(base * (1 + rate), 0);
+        }
+    });
+
+    // Superheavy gyro 500,000 x its weight (IO:AE p.217); IndustrialMech final cost (TM p.285).
     it("prices Superheavy gyros at the Heavy-Duty rate and IndustrialMechs at 1 + tonnage / 400", () => {
         const superheavy = new BattleMech();
         superheavy.setTonnage(120);
@@ -1681,7 +1716,7 @@ describe("Bimodal LAM", () => {
     it("uses 15% conversion weight and 65% conversion cost", () => {
         const lam = makeBimodal();
         expect(lam.getWeightBreakdown().find(entry => /Conversion/.test(entry.name))?.weight).toBe(5);
-        expect(lam.getCBillCalcHTML()).toContain("0.65 x (Structure");
+        expect(lam.getCBillCalcHTML()).toContain("0.65 x (Structural, Weapon and Equipment Costs");
     });
 
     it("keeps the LAM type through save and load and resets it for other chassis", () => {
@@ -1724,7 +1759,10 @@ describe("VTOLAM", () => {
         lam.setGyroType("xl");
         expect(lam.getEngineType().tag).toBe("xl");
         expect(lam.getGyro().tag).toBe("xl");
-        expect(lam.getCBillCalcHTML()).toContain("0.65 x (Structure");
+        const vtolamCostHTML = lam.getCBillCalcHTML();
+        expect(vtolamCostHTML).toContain("0.65 x (Structural, Weapon and Equipment Costs");
+        expect(vtolamCostHTML).toContain("VTOLAM (Custom Homebrew) at the Bimodal LAM rate.");
+        expect(vtolamCostHTML).not.toContain("Interstellar Operations p.186");
         lam.setLAMType("standard");
         expect(lam.getEngineType().tag).toBe("standard");
         expect(lam.getGyro().tag).toBe("standard");
@@ -1983,6 +2021,23 @@ describe("OmniMech configurations", () => {
         expect(stats[1].battleValue).toBeGreaterThan(stats[0].battleValue);
         expect(stats[1].cost).toBeGreaterThan(stats[0].cost);
         expect(omni.getActiveOmniConfiguration()).toBe("Prime");
+    });
+
+    it("counts heat sinks and jump jets above the base chassis in pod tonnage", () => {
+        const omni = makeOmni();
+        omni.setJumpSpeed(2);
+        omni.addOmniConfiguration("A", true);
+        omni.setAdditionalHeatSinks(omni.getAdditionalHeatSinks() + 2);
+        omni.setJumpSpeed(4);
+        // No base chassis given: what every configuration has is fixed.
+        const [prime, a] = omni.getOmniConfigurationStats();
+        expect(a.podTonnage).toBe(prime.podTonnage + 2 + 2 * 0.5);
+        const podSpace = omni.getOmniPodSpace().podTonnage;
+        omni.switchOmniConfiguration("Prime");
+        expect(omni.getOmniPodSpace().podTonnage).toBe(podSpace);
+
+        const restored = new BattleMech(omni.exportJSON(true));
+        expect(restored.getOmniConfigurationStats().map(entry => entry.podTonnage)).toEqual([prime.podTonnage, a.podTonnage]);
     });
 
     it("names the active configuration and clones a chosen one for the roster", () => {
@@ -5838,7 +5893,7 @@ describe("Batch 41 cockpit selection and IndustrialMech fire control (TM pp.69, 
         const mech = build({ structure: "industrial" });
         add(mech, "medium-laser");
         const plain = offensive(mech);
-        expect(mech.getBVCalcHTML()).toContain("IndustrialMech without Advanced Fire Control: Offensive Battle Rating x 0.9");
+        expect(mech.getBVCalcHTML()).toMatch(/IndustrialMech without Advanced Fire Control: [\d.]+ x 0.9 = [\d.]+/);
         mech.setCockpitType("industrial-advanced-fire-control");
         expect(plain).toBeCloseTo(offensive(mech) * 0.9, 1);
         expect(mech.getBVCalcHTML()).not.toContain("without Advanced Fire Control");
@@ -6305,7 +6360,7 @@ describe("Batch 48 superheavy IndustrialMechs and superheavy engines (IO:AE pp.1
         mech.addEquipmentFromTag("medium-laser", "is", "", false, undefined, "", false, [], undefined, undefined);
         const plain = offensive(mech);
         const plainCost = mech.getCBillCostNumeric();
-        expect(mech.getBVCalcHTML()).toContain("IndustrialMech without Advanced Fire Control: Offensive Battle Rating x 0.9");
+        expect(mech.getBVCalcHTML()).toMatch(/IndustrialMech without Advanced Fire Control: [\d.]+ x 0.9 = [\d.]+/);
         expect(mech.setCockpitType("superheavy")).toMatchObject({ tag: "superheavy", weight: 4, cost: 300000 });
         expect(mech.hasAdvancedFireControl()).toBe(true);
         expect(plain).toBeCloseTo(offensive(mech) * 0.9, 1);

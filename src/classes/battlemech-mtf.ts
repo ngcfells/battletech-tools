@@ -179,6 +179,9 @@ export function convertMtfToSSW(file: IMtfFile): { xml: string; issues: string[]
     const fireControl = new Set<string>();
     const actuators = { la: { lla: false, lh: false }, ra: { lla: false, lh: false } };
     let jetType = "";
+    // An OmniMech's pod heat sinks and jump jets: the rest are its base chassis'.
+    let podSinks = 0;
+    let podJets = 0;
     const multislots: Record<string, string[]> = {};
     const wing = { tech: -1, lt: -1, rt: -1 };
     let boosterMP = 0;
@@ -213,11 +216,18 @@ export function convertMtfToSSW(file: IMtfFile): { xml: string; issues: string[]
                 const per = /double/i.test(name) ? (/^(CL|Clan)/i.test(name) ? 2 : /^IS/i.test(name) ? 3 : sinkSlots) : /laser/i.test(name) ? 2 : 1;
                 let run = 1;
                 while (list[index + run] === raw) run++;
-                for (let sink = 0; sink + per <= run; sink += per) sinkSlotsAt.push(place(loc, index + sink));
+                for (let sink = 0; sink + per <= run; sink += per) {
+                    sinkSlotsAt.push(place(loc, index + sink));
+                    if (slot.pod) podSinks++;
+                }
                 if (run % per !== 0) issues.push(`'${name}' in ${section} is split in a way not converted yet`);
                 index += run; continue;
             }
-            if (JUMP_JETS[name]) { jetType = JUMP_JETS[name][0]; jetSlotsAt.push(place(loc, index)); index += JUMP_JETS[name][1]; continue; }
+            if (JUMP_JETS[name]) {
+                jetType = JUMP_JETS[name][0]; jetSlotsAt.push(place(loc, index)); index += JUMP_JETS[name][1];
+                if (slot.pod) podJets++;
+                continue;
+            }
             if (/Triple Strength Myomer/i.test(name)) { myomerSlots.push(place(loc, index)); index++; continue; }
             if (STRUCTURE_SLOT.test(name)) { structureSlots.push(place(loc, index)); index++; continue; }
             if (ARMOR_SLOT.test(name)) { armorSlots.push(place(loc, index)); index++; continue; }
@@ -333,6 +343,7 @@ export function convertMtfToSSW(file: IMtfFile): { xml: string; issues: string[]
 <cockpit><type${ejection}${value(file, "cockpit") === "Command Console" ? ` commandconsole="TRUE"` : ""}>${xml(value(file, "cockpit") === "Command Console" ? "Standard Cockpit" : cockpit)}</type></cockpit>
 ${myomer && !/^standard$/i.test(myomer) ? `<enhancement techbase="${clan ? 1 : 0}"><type>${/industrial/i.test(myomer) ? "Industrial TSM" : "TSM"}</type>${myomerSlots.join("")}</enhancement>` : ""}
 <armor techbase="${armor ? (armor[2] === "Clan" ? 1 : 0) : 2}"><type>${xml(armorName)}</type>${armorValues.join("")}${armorSlots.join("")}</armor>
+${/omnimek/i.test(config) ? `<omnibase heatsinks="${Math.max(0, +(sinks?.[1] ?? 0) - podSinks)}" jumpjets="${Math.max(0, (jetType === "Mech UMU" ? jetSlotsAt.length : jumpMP) - podJets)}" />` : ""}
 <baseloadout${fcs}>
 ${quad ? "" : `<actuators lla="${actuators.la.lla ? "TRUE" : "FALSE"}" lh="${actuators.la.lh ? "TRUE" : "FALSE"}" rla="${actuators.ra.lla ? "TRUE" : "FALSE"}" rh="${actuators.ra.lh ? "TRUE" : "FALSE"}"/>`}
 <clancase>${mixed && faction === "clan" ? "TRUE" : "FALSE"}</clancase>

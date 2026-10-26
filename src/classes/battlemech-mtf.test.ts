@@ -101,6 +101,12 @@ describe("MegaMek 'Mech import", () => {
         expect(xml.match(/<heatsinks[^>]*>[\s\S]*?<\/heatsinks>/)?.[0].match(/<location /g)).toHaveLength(1);
     });
 
+    it("reads Heavy Industrial armor as Standard armor (TM p.205)", () => {
+        const { mech, issues } = importBattleMechMtf(brawler.replace("armor:Standard(Inner Sphere)", "armor:Heavy Industrial(Inner Sphere)"));
+        expect(issues).toEqual([]);
+        expect(mech!.getArmorType()).toBe("standard");
+    });
+
     it("reads a quad's legs", () => {
         const file = parseMtfFile(quad)!;
         const { issues, quad: isQuad } = convertMtfToSSW(file);
@@ -120,6 +126,17 @@ describe("MegaMek 'Mech import", () => {
         const lasers = mech!.getInstalledEquipment().filter((item) => item.tag === "medium-laser");
         expect(lasers.map((item) => !!item.omniFixed).sort()).toEqual([false, true, true]);
         expect(lasers.find((item) => !item.omniFixed)?.location).toBe("rt");
+    });
+
+    it("counts pod heat sinks and pod jump jets in an OmniMech's pod tonnage", () => {
+        // MegaMek's "base chassis heat sinks" is the engine's capacity (12 in a Dire Wolf's 300 XL): the pod ones are marked.
+        const omni = brawler.replace("Config:Biped", "Config:Biped Omnimek").replace("heat sinks:11 Double", "heat sinks:11 Double\nbase chassis heat sinks:10")
+            .replace("Left Torso:\nISDoubleHeatSink\nISDoubleHeatSink\nISDoubleHeatSink", "Left Torso:\n" + fill(3, "ISDoubleHeatSink (omnipod)").join("\n"))
+            .replace("jump mp:0", "jump mp:2").replace("Right Torso:\nMedium Laser\n-Empty-\n-Empty-", "Right Torso:\nMedium Laser (omnipod)\nJump Jet\nJump Jet (omnipod)");
+        const { mech, issues } = importBattleMechMtf(omni);
+        expect(issues).toEqual([]);
+        // The pod laser, one double heat sink and one half-ton jump jet.
+        expect(mech!.getOmniConfigurationStats()[0].podTonnage).toBe(1 + 1 + 0.5);
     });
 
     it("leaves out what it cannot convert, saying why", () => {

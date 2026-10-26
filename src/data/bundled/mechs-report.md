@@ -1,13 +1,13 @@
 # Bundled 'Mechs: build report
 
-3549 designs kept, 4143 files left out.
+3554 designs kept, 4138 files left out.
 
 | Reason | Files |
 |---|---|
-| duplicate of a design already kept | 3180 |
-| the import could not carry all of it over | 386 |
-| no Master Unit List entry to check its BV against | 249 |
-| BV differs from the MUL | 194 |
+| duplicate of a design already kept | 3229 |
+| the import could not carry all of it over | 312 |
+| no Master Unit List entry to check its BV against | 253 |
+| BV differs from the MUL | 210 |
 | import errors | 83 |
 | configuration BV differs from the MUL | 39 |
 | does not survive the compact format | 7 |
@@ -1963,7 +1963,7 @@
 - `megamek/3075/Hyena HYN-KTO.mtf`: duplicate of a design already kept
 - `megamek/3075/Icarus II ICR-1S.mtf`: duplicate of a design already kept
 - `megamek/3075/Icarus II ICR-2S.mtf`: duplicate of a design already kept
-- `megamek/3075/Jabberwocky ConstructionMech JAW-66D.mtf`: the import could not carry all of it over: Cannot find any armor named: 'Heavy Industrial Armor'
+- `megamek/3075/Jabberwocky ConstructionMech JAW-66D.mtf`: BV differs from the MUL: JAW-66D ConstructionMech: BV 352, MUL 326
 - `megamek/3075/Jabberwocky DemolitionMech JAW-66C.mtf`: duplicate of a design already kept
 - `megamek/3075/Jabberwocky EngineerMech JAW-65A.mtf`: BV differs from the MUL: JAW-65A EngineerMech: BV 250, MUL 230
 - `megamek/3075/Jabberwocky EngineerMech JAW-66B.mtf`: BV differs from the MUL: JAW-66B EngineerMech: BV 350, MUL 322
@@ -1975,8 +1975,8 @@
 - `megamek/3075/Jupiter.mtf`: duplicate of a design already kept
 - `megamek/3075/King Crab KGC-000b.mtf`: duplicate of a design already kept
 - `megamek/3075/Kintaro KTO-19b.mtf`: the import could not carry all of it over: Cannot find the ammunition 'IS Ammo LRM-15 Narc-capable'; Cannot find the ammunition 'IS Ammo LRM-15 Narc-capable'; Cannot find the ammunition 'IS Ammo SRM-6 Narc-capable'; Cannot find the ammunition 'IS Ammo SRM-6 Narc-capable'
-- `megamek/3075/Kiso K-3N-KR4 ConstructionMech.mtf`: the import could not carry all of it over: Cannot find any armor named: 'Heavy Industrial Armor'; Cannot import the Cockpit Command Console yet (TO:AUE p.112)
-- `megamek/3075/Kiso K-3N-KR5 ConstructionMech.mtf`: the import could not carry all of it over: Cannot find any armor named: 'Heavy Industrial Armor'; Cannot import the Cockpit Command Console yet (TO:AUE p.112)
+- `megamek/3075/Kiso K-3N-KR4 ConstructionMech.mtf`: the import could not carry all of it over: Cannot import the Cockpit Command Console yet (TO:AUE p.112)
+- `megamek/3075/Kiso K-3N-KR5 ConstructionMech.mtf`: the import could not carry all of it over: Cannot import the Cockpit Command Console yet (TO:AUE p.112)
 - `megamek/3075/Koschei KSC-3I.mtf`: duplicate of a design already kept
 - `megamek/3075/Koschei KSC-3L.mtf`: duplicate of a design already kept
 - `megamek/3075/Koschei KSC-4I.mtf`: duplicate of a design already kept
@@ -2012,15 +2012,14 @@
 - `megamek/3075/Patriot PKM-2C.mtf`: duplicate of a design already kept
 - `megamek/3075/Patriot PKM-2D.mtf`: duplicate of a design already kept
 - `megamek/3075/Patriot PKM-2E.mtf`: duplicate of a design already kept
-- `megamek/3075/Patron LoaderMech.mtf`: the import could not carry all of it over: Cannot find any armor named: 'Heavy Industrial Armor'
+- `megamek/3075/Patron LoaderMech.mtf`: no Master Unit List entry to check its BV against
 - `megamek/3075/Patron PTN-1 LoaderMech.mtf`: BV differs from the MUL: PTN-1 LoaderMech: BV 73, MUL 107
 - `megamek/3075/Phoenix Hawk PXH-1b.mtf`: no Master Unit List entry to check its BV against
 - `megamek/3075/Phoenix Hawk PXH-1c.mtf`: no Master Unit List entry to check its BV against
 - `megamek/3075/Phoenix PX-3R.mtf`: duplicate of a design already kept
 - `megamek/3075/Phoenix PX-4R.mtf`: duplicate of a design already kept
-- `megamek/3075/Quasit QUA-51M MilitiaMech.mtf`: the import could not carry all of it over: Cannot find any armor named: 'Heavy Industrial Armor'
-- `megamek/3075/Quasit QUA-51P MilitiaMech.mtf`: the import could not carry all of it over: Cannot find any armor named: 'Heavy Industrial Armor'
-- `megamek/3075/Quasit QUA-51T MilitiaMech.mtf`: the import could not carry all of it over: Cannot find any armor named: 'Heavy Industrial Armor'
+- `megamek/3075/Quasit QUA-51M MilitiaMech.mtf`: BV differs from the MUL: QUA-51M MilitiaMech: BV 680, MUL 636
+- `megamek/3075/Quasit QUA-51P MilitiaMech.mtf`: BV differs from the MUL: QUA-51P MilitiaMech: BV 826, MUL 779
 - `megamek/3075/Rifleman II RFL-3N-2.mtf`: duplicate of a design already kept
 - `megamek/3075/Ryoken II 2.mtf`: duplicate of a design already kept
 - `megamek/3075/Ryoken II 3.mtf`: duplicate of a design already kept
@@ -2083,8 +2082,8 @@
 - `megamek/3085u/Cutting Edge/Dasher II 2.mtf`: duplicate of a design already kept
 - `megamek/3085u/Cutting Edge/Dasher II.mtf`: duplicate of a design already kept
 - `megamek/3085u/Cutting Edge/Deimos 2.mtf`: duplicate of a design already kept
-- `megamek/3085u/Cutting Edge/Diomede D-M3D-3 ConstructionMech.mtf`: the import could not carry all of it over: Cannot find any armor named: 'Heavy Industrial Armor'
-- `megamek/3085u/Cutting Edge/Diomede D-M3D-4 DemolitionMech.mtf`: the import could not carry all of it over: Cannot find any armor named: 'Heavy Industrial Armor'
+- `megamek/3085u/Cutting Edge/Diomede D-M3D-3 ConstructionMech.mtf`: BV differs from the MUL: D-M3D-3 ConstructionMech: BV 1206, MUL 1228
+- `megamek/3085u/Cutting Edge/Diomede D-M3D-4 DemolitionMech.mtf`: BV differs from the MUL: D-M3D-4 DemolitionMech: BV 1212, MUL 1235
 - `megamek/3085u/Cutting Edge/Ebony MEB-10.mtf`: duplicate of a design already kept
 - `megamek/3085u/Cutting Edge/Ebony MEB-11.mtf`: duplicate of a design already kept
 - `megamek/3085u/Cutting Edge/Ebony MEB-9.mtf`: duplicate of a design already kept
@@ -2165,9 +2164,9 @@
 - `megamek/3085u/Cutting Edge/Shen Yi SHY-3B.mtf`: duplicate of a design already kept
 - `megamek/3085u/Cutting Edge/Shockwave SKW-2F.mtf`: duplicate of a design already kept
 - `megamek/3085u/Cutting Edge/Shockwave SKW-4G.mtf`: duplicate of a design already kept
-- `megamek/3085u/Cutting Edge/Sokuryou SKU-181 SurveyMech.mtf`: the import could not carry all of it over: Cannot find any armor named: 'Heavy Industrial Armor'
-- `megamek/3085u/Cutting Edge/Sokuryou SKU-197 SurveyMech.mtf`: the import could not carry all of it over: Cannot find any armor named: 'Heavy Industrial Armor'
-- `megamek/3085u/Cutting Edge/Sokuryou SKU-198 SurveyMech.mtf`: the import could not carry all of it over: Cannot find any armor named: 'Heavy Industrial Armor'
+- `megamek/3085u/Cutting Edge/Sokuryou SKU-181 SurveyMech.mtf`: duplicate of a design already kept
+- `megamek/3085u/Cutting Edge/Sokuryou SKU-197 SurveyMech.mtf`: duplicate of a design already kept
+- `megamek/3085u/Cutting Edge/Sokuryou SKU-198 SurveyMech.mtf`: duplicate of a design already kept
 - `megamek/3085u/Cutting Edge/Sphinx 2.mtf`: duplicate of a design already kept
 - `megamek/3085u/Cutting Edge/Sphinx.mtf`: duplicate of a design already kept
 - `megamek/3085u/Cutting Edge/Spider SDR-8K.mtf`: duplicate of a design already kept
@@ -2631,7 +2630,7 @@
 - `megamek/3145/NTNU RS/Cygnus 4.mtf`: duplicate of a design already kept
 - `megamek/3145/NTNU RS/Dasher II 3.mtf`: duplicate of a design already kept
 - `megamek/3145/NTNU RS/Dasher II 4.mtf`: duplicate of a design already kept
-- `megamek/3145/NTNU RS/Diomede D-M3D-M.mtf`: the import could not carry all of it over: Cannot find any armor named: 'Heavy Industrial Armor'
+- `megamek/3145/NTNU RS/Diomede D-M3D-M.mtf`: duplicate of a design already kept
 - `megamek/3145/NTNU RS/Ebony MEB-12.mtf`: duplicate of a design already kept
 - `megamek/3145/NTNU RS/Ebony MEB-13.mtf`: duplicate of a design already kept
 - `megamek/3145/NTNU RS/Emperor EMP-8L.mtf`: duplicate of a design already kept
@@ -2935,8 +2934,8 @@
 - `megamek/ISP2/Rampage RMP-2G.mtf`: duplicate of a design already kept
 - `megamek/ISP2/Rampage RMP-4G.mtf`: duplicate of a design already kept
 - `megamek/ISP2/Rampage RMP-5G.mtf`: duplicate of a design already kept
-- `megamek/ISP3/Arana MilitiaMech ARA-S-1.mtf`: the import could not carry all of it over: Turret-mounted 'CLERMediumLaser' is not converted yet; Cannot find any armor named: 'Heavy Industrial Armor'
-- `megamek/ISP3/Reptar EPT-C-1 MilitiaMech.mtf`: the import could not carry all of it over: Cannot find any armor named: 'Heavy Industrial Armor'
+- `megamek/ISP3/Arana MilitiaMech ARA-S-1.mtf`: the import could not carry all of it over: Turret-mounted 'CLERMediumLaser' is not converted yet
+- `megamek/ISP3/Reptar EPT-C-1 MilitiaMech.mtf`: BV differs from the MUL: EPT-C-1 MilitiaMech: BV 497, MUL 514
 - `megamek/Iron Wind Metals/Thunderbolt IIC 2.mtf`: BV differs from the MUL: 2: BV 2177, MUL 2174
 - `megamek/Jihad Final Reckoning/'Gestalt' D2X-G.mtf`: the import could not carry all of it over: Cannot import the cockpit type: 'Interface Cockpit'; Cannot find any gyro named: 'None'; Unallocated Criticals: 3; - Heavy Ferro Fibrous (heavy-ferro-fibrous); - Heavy Ferro Fibrous (heavy-ferro-fibrous); - Angel ECM Suite (angel-ecm)
 - `megamek/Jihad Final Reckoning/OMEGA SHP-4X.mtf`: the import could not carry all of it over: Superheavy 'Mechs are not converted yet; Cannot place 'ISGaussRifle': its slots are split in a way not converted yet; Cannot place 'ISGaussRifle': its slots are split in a way not converted yet; Cannot place 'ISGaussRifle': its slots are split in a way not converted yet; Cannot place 'ISC3iUnit': its slots are split in a way not converted yet; Cannot find the ammunition 'IS LB 10-X AC Ammo|IS LB 10-X AC Ammo'; Cannot find the ammunition 'IS LB 10-X Cluster Ammo|IS LB 10-X Cluster Ammo'; Cannot find the ammunition 'IS Gauss Ammo|IS Gauss Ammo'; Cannot find the ammunition 'IS Gauss Ammo|IS Gauss Ammo'; Cannot find the ammunition 'IS Gauss Ammo|IS Gauss Ammo'; Cannot find the ammunition 'IS Gauss Ammo|IS Gauss Ammo'; Cannot find the ammunition 'IS Gauss Ammo|IS Gauss Ammo'; Cannot import the cockpit type: 'Superheavy Cockpit'; Cannot find any gyro named: 'Superheavy Gyro'
@@ -3027,7 +3026,7 @@
 - `megamek/ProtoTypes/Mad Cat Mk II Enhanced.mtf`: duplicate of a design already kept
 - `megamek/ProtoTypes/Orion ON3-M.mtf`: duplicate of a design already kept
 - `megamek/ProtoTypes/Pandarus LFA-1A.mtf`: duplicate of a design already kept
-- `megamek/ProtoTypes/Patron PTN-2M MilitiaMech.mtf`: the import could not carry all of it over: Cannot find any armor named: 'Heavy Industrial Armor'
+- `megamek/ProtoTypes/Patron PTN-2M MilitiaMech.mtf`: no Master Unit List entry to check its BV against
 - `megamek/ProtoTypes/Pendragon PDG-1R.mtf`: duplicate of a design already kept
 - `megamek/ProtoTypes/Quickdraw QKD-8P.mtf`: duplicate of a design already kept
 - `megamek/ProtoTypes/Sarissa MN2-A SecurityMech.mtf`: duplicate of a design already kept
@@ -3730,55 +3729,51 @@
 - `megamek/Starterpack Sword and Dragon/Hatchetman HCT-5S Austin.mtf`: duplicate of a design already kept
 - `megamek/Starterpack Sword and Dragon/Hunchback HBK-4G Hohiro.mtf`: duplicate of a design already kept
 - `megamek/Starterpack Sword and Dragon/Jenner JR7-K Grace II.mtf`: duplicate of a design already kept
-- `megamek/TRO Irregulars/Burrower DTM-1 MiningMech.mtf`: the import could not carry all of it over: Cannot find any armor named: 'Heavy Industrial Armor'
-- `megamek/TRO Irregulars/Burrower DTM-1M MiningMech MOD.mtf`: the import could not carry all of it over: Cannot find any armor named: 'Heavy Industrial Armor'
-- `megamek/TRO Irregulars/Buster BC XXI-M HaulerMech MOD.mtf`: the import could not carry all of it over: Cannot find any armor named: 'Heavy Industrial Armor'
-- `megamek/TRO Irregulars/Carbine CON-9M Karenna.mtf`: the import could not carry all of it over: Cannot find any armor named: 'Heavy Industrial Armor'
-- `megamek/TRO Irregulars/Carbine CON-9M-J ConstructionMech MOD.mtf`: the import could not carry all of it over: Cannot find any armor named: 'Heavy Industrial Armor'
-- `megamek/TRO Irregulars/Carbine CON-9M-JB ConstructionMech MOD.mtf`: the import could not carry all of it over: Cannot find any armor named: 'Heavy Industrial Armor'
+- `megamek/TRO Irregulars/Burrower DTM-1 MiningMech.mtf`: duplicate of a design already kept
+- `megamek/TRO Irregulars/Burrower DTM-1M MiningMech MOD.mtf`: duplicate of a design already kept
+- `megamek/TRO Irregulars/Buster BC XXI-M HaulerMech MOD.mtf`: duplicate of a design already kept
+- `megamek/TRO Irregulars/Carbine CON-9M Karenna.mtf`: duplicate of a design already kept
+- `megamek/TRO Irregulars/Carbine CON-9M-J ConstructionMech MOD.mtf`: duplicate of a design already kept
+- `megamek/TRO Irregulars/Carbine CON-9M-JB ConstructionMech MOD.mtf`: duplicate of a design already kept
 - `megamek/TRO Irregulars/Centurion CN9-H2 MilitiaMech.mtf`: duplicate of a design already kept
-- `megamek/TRO Irregulars/Centurion CN9-H2H MilitiaMech.mtf`: the import could not carry all of it over: Cannot find any armor named: 'Heavy Industrial Armor'
+- `megamek/TRO Irregulars/Centurion CN9-H2H MilitiaMech.mtf`: duplicate of a design already kept
 - `megamek/TRO Irregulars/Centurion CN9-H3 MilitiaMech.mtf`: duplicate of a design already kept
-- `megamek/TRO Irregulars/Crosscut ED-X4M-A LoggerMech MOD.mtf`: the import could not carry all of it over: Cannot find any armor named: 'Heavy Industrial Armor'
-- `megamek/TRO Irregulars/Crosscut ED-X4M-E LoggerMech MOD.mtf`: the import could not carry all of it over: Cannot find any armor named: 'Heavy Industrial Armor'
-- `megamek/TRO Irregulars/Crosscut ED-X4M-L LoggerMech MOD.mtf`: the import could not carry all of it over: Cannot find any armor named: 'Heavy Industrial Armor'
-- `megamek/TRO Irregulars/Deep Lord RCL-Z1M-B MilitiaMech.mtf`: the import could not carry all of it over: Cannot find any armor named: 'Heavy Industrial Armor'
-- `megamek/TRO Irregulars/Demeter WLD-1 AgroMech.mtf`: the import could not carry all of it over: Cannot find any armor named: 'Heavy Industrial Armor'
-- `megamek/TRO Irregulars/Demeter WLD-1-M AgroMech MOD.mtf`: the import could not carry all of it over: Cannot find any armor named: 'Heavy Industrial Armor'
+- `megamek/TRO Irregulars/Crosscut ED-X4M-A LoggerMech MOD.mtf`: duplicate of a design already kept
+- `megamek/TRO Irregulars/Crosscut ED-X4M-E LoggerMech MOD.mtf`: duplicate of a design already kept
+- `megamek/TRO Irregulars/Crosscut ED-X4M-L LoggerMech MOD.mtf`: duplicate of a design already kept
+- `megamek/TRO Irregulars/Deep Lord RCL-Z1M-B MilitiaMech.mtf`: BV differs from the MUL: RCL-Z1M-B MilitiaMech: BV 740, MUL 773
+- `megamek/TRO Irregulars/Demeter WLD-1 AgroMech.mtf`: duplicate of a design already kept
 - `megamek/TRO Irregulars/DemolitionMech WI-DMM MOD.mtf`: duplicate of a design already kept
-- `megamek/TRO Irregulars/Dig Lord RCL-4M MiningMech MOD.mtf`: the import could not carry all of it over: Cannot find any armor named: 'Heavy Industrial Armor'
-- `megamek/TRO Irregulars/Dig Lord RCL-4M-B MiningMech MOD.mtf`: the import could not carry all of it over: Cannot find any armor named: 'Heavy Industrial Armor'
-- `megamek/TRO Irregulars/Exo HMX-3 Haulermech.mtf`: the import could not carry all of it over: Cannot find any armor named: 'Heavy Industrial Armor'
-- `megamek/TRO Irregulars/Exo HMX-3M Haulermech.mtf`: the import could not carry all of it over: Cannot find any armor named: 'Heavy Industrial Armor'
+- `megamek/TRO Irregulars/Dig Lord RCL-4M MiningMech MOD.mtf`: duplicate of a design already kept
+- `megamek/TRO Irregulars/Dig Lord RCL-4M-B MiningMech MOD.mtf`: duplicate of a design already kept
+- `megamek/TRO Irregulars/Exo HMX-3M Haulermech.mtf`: BV differs from the MUL: HMX-3M HaulerMech: BV 107, MUL 108
 - `megamek/TRO Irregulars/Firebee WI-WAM MilitiaMech.mtf`: duplicate of a design already kept
-- `megamek/TRO Irregulars/Ground Pounder DVM-2 MiningMech.mtf`: the import could not carry all of it over: Cannot find any armor named: 'Heavy Industrial Armor'
-- `megamek/TRO Irregulars/Ground Pounder DVM-2M MiningMech MOD.mtf`: the import could not carry all of it over: Cannot find any armor named: 'Heavy Industrial Armor'
-- `megamek/TRO Irregulars/Guard GS-107X SecurityMech.mtf`: the import could not carry all of it over: Cannot find any armor named: 'Heavy Industrial Armor'
-- `megamek/TRO Irregulars/Guard GS-54 SecurityMech.mtf`: the import could not carry all of it over: Cannot find any armor named: 'Heavy Industrial Armor'
-- `megamek/TRO Irregulars/Gulon C SolahmaMech.mtf`: the import could not carry all of it over: Cannot find any armor named: 'Heavy Industrial Armor'
-- `megamek/TRO Irregulars/Gulon GLN-1A MiningMech.mtf`: the import could not carry all of it over: Cannot find any armor named: 'Heavy Industrial Armor'
-- `megamek/TRO Irregulars/Gulon GLN-1B SecurityMech.mtf`: the import could not carry all of it over: Cannot find any armor named: 'Heavy Industrial Armor'
-- `megamek/TRO Irregulars/Harvester HVR-199 AgroMech.mtf`: the import could not carry all of it over: Cannot find any armor named: 'Heavy Industrial Armor'
-- `megamek/TRO Irregulars/Harvester HVR-199M AgroMech MOD.mtf`: the import could not carry all of it over: Cannot find any armor named: 'Heavy Industrial Armor'
-- `megamek/TRO Irregulars/Harvester HVR-199M-A AgroMech MOD.mtf`: the import could not carry all of it over: Cannot find any armor named: 'Heavy Industrial Armor'
-- `megamek/TRO Irregulars/Harvester HVR-199M-B AgroMech MOD.mtf`: the import could not carry all of it over: Cannot find any armor named: 'Heavy Industrial Armor'
-- `megamek/TRO Irregulars/Harvester HVR-199M-M AgroMech MOD.mtf`: the import could not carry all of it over: Cannot find any armor named: 'Heavy Industrial Armor'
+- `megamek/TRO Irregulars/Ground Pounder DVM-2 MiningMech.mtf`: duplicate of a design already kept
+- `megamek/TRO Irregulars/Ground Pounder DVM-2M MiningMech MOD.mtf`: duplicate of a design already kept
+- `megamek/TRO Irregulars/Guard GS-107X SecurityMech.mtf`: BV differs from the MUL: GS-107X SecurityMech: BV 351, MUL 367
+- `megamek/TRO Irregulars/Guard GS-54 SecurityMech.mtf`: BV differs from the MUL: GS-54 SecurityMech: BV 153, MUL 156
+- `megamek/TRO Irregulars/Gulon C SolahmaMech.mtf`: duplicate of a design already kept
+- `megamek/TRO Irregulars/Gulon GLN-1B SecurityMech.mtf`: BV differs from the MUL: GLN-1B SecurityMech: BV 399, MUL 410
+- `megamek/TRO Irregulars/Harvester HVR-199M AgroMech MOD.mtf`: duplicate of a design already kept
+- `megamek/TRO Irregulars/Harvester HVR-199M-A AgroMech MOD.mtf`: duplicate of a design already kept
+- `megamek/TRO Irregulars/Harvester HVR-199M-B AgroMech MOD.mtf`: duplicate of a design already kept
+- `megamek/TRO Irregulars/Harvester HVR-199M-M AgroMech MOD.mtf`: BV differs from the MUL: HVR-199M-M AgroMech MOD: BV 394, MUL 438
 - `megamek/TRO Irregulars/Heavy Forester HFL-1 LoggerMech.mtf`: duplicate of a design already kept
 - `megamek/TRO Irregulars/Heavy Forester HFL-1M LoggerMech MOD.mtf`: duplicate of a design already kept
 - `megamek/TRO Irregulars/Heavy Lifter HCL-1M CargoMech MOD.mtf`: the import could not carry all of it over: Cannot place the Environmental Sealing in the la; Cannot place the Environmental Sealing in the ra; Unallocated Criticals: 2; - Environmental Sealing (environmental-sealing); - Environmental Sealing (environmental-sealing)
-- `megamek/TRO Irregulars/Heavy Lifter HCL-1MM MilitiaMech.mtf`: the import could not carry all of it over: Cannot find any armor named: 'Heavy Industrial Armor'; Cannot place the Environmental Sealing in the la; Cannot place the Environmental Sealing in the ra; Unallocated Criticals: 2; - Environmental Sealing (environmental-sealing); - Environmental Sealing (environmental-sealing)
-- `megamek/TRO Irregulars/Inquisitor ITW-80 SecurityMech.mtf`: the import could not carry all of it over: Cannot find any armor named: 'Heavy Industrial Armor'
-- `megamek/TRO Irregulars/Inquisitor ITW-85 SecurityMech.mtf`: the import could not carry all of it over: Cannot find any armor named: 'Heavy Industrial Armor'
-- `megamek/TRO Irregulars/MuckRaker GMMM-2 MiningMech.mtf`: the import could not carry all of it over: Cannot find any equipment named 'Dumper (Front)'; Cannot find any equipment named 'Dumper (Front)'; Cannot find any armor named: 'Heavy Industrial Armor'
-- `megamek/TRO Irregulars/MuckRaker GMMM-2M MiningMech MOD.mtf`: the import could not carry all of it over: Cannot find any armor named: 'Heavy Industrial Armor'
-- `megamek/TRO Irregulars/MuckRaker GMMM-2M-B MiningMech MOD.mtf`: the import could not carry all of it over: Cannot find any armor named: 'Heavy Industrial Armor'
-- `megamek/TRO Irregulars/Opossum OPO-2 SalvageMech.mtf`: the import could not carry all of it over: Cannot find any armor named: 'Heavy Industrial Armor'
-- `megamek/TRO Irregulars/Opossum OPO-3 SalvageMech MOD.mtf`: the import could not carry all of it over: Cannot find any armor named: 'Heavy Industrial Armor'
+- `megamek/TRO Irregulars/Heavy Lifter HCL-1MM MilitiaMech.mtf`: the import could not carry all of it over: Cannot place the Environmental Sealing in the la; Cannot place the Environmental Sealing in the ra; Unallocated Criticals: 2; - Environmental Sealing (environmental-sealing); - Environmental Sealing (environmental-sealing)
+- `megamek/TRO Irregulars/Inquisitor ITW-80 SecurityMech.mtf`: duplicate of a design already kept
+- `megamek/TRO Irregulars/Inquisitor ITW-85 SecurityMech.mtf`: duplicate of a design already kept
+- `megamek/TRO Irregulars/MuckRaker GMMM-2 MiningMech.mtf`: the import could not carry all of it over: Cannot find any equipment named 'Dumper (Front)'; Cannot find any equipment named 'Dumper (Front)'
+- `megamek/TRO Irregulars/MuckRaker GMMM-2M MiningMech MOD.mtf`: duplicate of a design already kept
+- `megamek/TRO Irregulars/MuckRaker GMMM-2M-B MiningMech MOD.mtf`: duplicate of a design already kept
+- `megamek/TRO Irregulars/Opossum OPO-2 SalvageMech.mtf`: duplicate of a design already kept
+- `megamek/TRO Irregulars/Opossum OPO-3 SalvageMech MOD.mtf`: duplicate of a design already kept
 - `megamek/TRO Irregulars/Pacifier CCU-36 SecurityMech.mtf`: duplicate of a design already kept
-- `megamek/TRO Irregulars/Pacifier CCU-40 SecurityMech.mtf`: the import could not carry all of it over: Cannot find any armor named: 'Heavy Industrial Armor'
-- `megamek/TRO Irregulars/Pompier GM-4P PoliceMech.mtf`: the import could not carry all of it over: Cannot find any armor named: 'Heavy Industrial Armor'
-- `megamek/TRO Irregulars/St. Florian FLN-366 FireMech.mtf`: the import could not carry all of it over: Cannot find any armor named: 'Heavy Industrial Armor'
-- `megamek/TRO Irregulars/St. Florian FLN-366-M FireMech MOD.mtf`: the import could not carry all of it over: Cannot find any armor named: 'Heavy Industrial Armor'
+- `megamek/TRO Irregulars/Pacifier CCU-40 SecurityMech.mtf`: duplicate of a design already kept
+- `megamek/TRO Irregulars/Pompier GM-4P PoliceMech.mtf`: BV differs from the MUL: GM-4P PoliceMech: BV 140, MUL 148
+- `megamek/TRO Irregulars/St. Florian FLN-366 FireMech.mtf`: duplicate of a design already kept
+- `megamek/TRO Irregulars/St. Florian FLN-366-M FireMech MOD.mtf`: duplicate of a design already kept
 - `megamek/TRO Irregulars/StrongArm SC CV ConstructionMech.mtf`: duplicate of a design already kept
 - `megamek/TRO Irregulars/StrongArm SC CV-M ConstructionMech MOD.mtf`: duplicate of a design already kept
 - `megamek/TRO Irregulars/StrongArm SC CVI ConstructionMech.mtf`: duplicate of a design already kept
@@ -3787,33 +3782,33 @@
 - `megamek/TRO Vehicle Annex/Buster BC XV-M HaulerMech MOD.mtf`: duplicate of a design already kept
 - `megamek/TRO Vehicle Annex/Buster BC XV-M-B HaulerMech MOD.mtf`: duplicate of a design already kept
 - `megamek/TRO Vehicle Annex/Buster BC XV-M-C HaulerMech MOD.mtf`: duplicate of a design already kept
-- `megamek/TRO Vehicle Annex/Buster BC XV-M-W HaulerMech MOD.mtf`: the import could not carry all of it over: Cannot find any armor named: 'Heavy Industrial Armor'
+- `megamek/TRO Vehicle Annex/Buster BC XV-M-W HaulerMech MOD.mtf`: duplicate of a design already kept
 - `megamek/TRO Vehicle Annex/Buster BC XXI HaulerMech.mtf`: duplicate of a design already kept
 - `megamek/TRO Vehicle Annex/Carbine CON-7 ConstructionMech.mtf`: duplicate of a design already kept
 - `megamek/TRO Vehicle Annex/Carbine CON-7M ConstructionMech MOD.mtf`: duplicate of a design already kept
-- `megamek/TRO Vehicle Annex/Carbine CON-8 ConstructionMech.mtf`: the import could not carry all of it over: Cannot find any armor named: 'Heavy Industrial Armor'
-- `megamek/TRO Vehicle Annex/Carbine CON-8H HaulerMech.mtf`: the import could not carry all of it over: Cannot find any armor named: 'Heavy Industrial Armor'
+- `megamek/TRO Vehicle Annex/Carbine CON-8 ConstructionMech.mtf`: duplicate of a design already kept
+- `megamek/TRO Vehicle Annex/Carbine CON-8H HaulerMech.mtf`: duplicate of a design already kept
 - `megamek/TRO Vehicle Annex/Carbine CON-9 ConstructionMech.mtf`: duplicate of a design already kept
 - `megamek/TRO Vehicle Annex/Carbine CON-9M ConstructionMech MOD.mtf`: duplicate of a design already kept
 - `megamek/TRO Vehicle Annex/Carbine CON-9M-B ConstructionMech MOD.mtf`: duplicate of a design already kept
 - `megamek/TRO Vehicle Annex/CattleMaster CTL-3R 'Herder' IndustrialMech.mtf`: no Master Unit List entry to check its BV against
 - `megamek/TRO Vehicle Annex/CattleMaster CTL-3R2 'Hunter' IndustrialMech.mtf`: no Master Unit List entry to check its BV against
-- `megamek/TRO Vehicle Annex/CattleMaster CTL-3R3 SecurityMech.mtf`: the import could not carry all of it over: Cannot find any armor named: 'Heavy Industrial Armor'
-- `megamek/TRO Vehicle Annex/Chaffee BT1 Servicemech.mtf`: the import could not carry all of it over: Cannot find any armor named: 'Heavy Industrial Armor'
-- `megamek/TRO Vehicle Annex/Copper CPK-19 SecurityMech.mtf`: the import could not carry all of it over: Cannot find any armor named: 'Heavy Industrial Armor'
-- `megamek/TRO Vehicle Annex/Copper CPK-65 SecurityMech.mtf`: the import could not carry all of it over: Cannot find any armor named: 'Heavy Industrial Armor'
+- `megamek/TRO Vehicle Annex/CattleMaster CTL-3R3 SecurityMech.mtf`: duplicate of a design already kept
+- `megamek/TRO Vehicle Annex/Chaffee BT1 Servicemech.mtf`: duplicate of a design already kept
+- `megamek/TRO Vehicle Annex/Copper CPK-19 SecurityMech.mtf`: duplicate of a design already kept
+- `megamek/TRO Vehicle Annex/Copper CPK-65 SecurityMech.mtf`: duplicate of a design already kept
 - `megamek/TRO Vehicle Annex/Crosscut ED-X1 LoggerMech.mtf`: duplicate of a design already kept
 - `megamek/TRO Vehicle Annex/Crosscut ED-X2M LoggerMech MOD.mtf`: duplicate of a design already kept
 - `megamek/TRO Vehicle Annex/Crosscut ED-X4 LoggerMech.mtf`: duplicate of a design already kept
 - `megamek/TRO Vehicle Annex/Crosscut ED-X4B DemolitionMech.mtf`: duplicate of a design already kept
 - `megamek/TRO Vehicle Annex/Crosscut ED-X4D DemolitionMech.mtf`: duplicate of a design already kept
-- `megamek/TRO Vehicle Annex/Crosscut ED-X4M LoggerMech MOD.mtf`: the import could not carry all of it over: Cannot find any armor named: 'Heavy Industrial Armor'
+- `megamek/TRO Vehicle Annex/Crosscut ED-X4M LoggerMech MOD.mtf`: duplicate of a design already kept
 - `megamek/TRO Vehicle Annex/Crosscut ED-X4X LoggerMech.mtf`: duplicate of a design already kept
-- `megamek/TRO Vehicle Annex/Crosscut ED-X5M LoggerMech MOD.mtf`: the import could not carry all of it over: Cannot find any armor named: 'Heavy Industrial Armor'
-- `megamek/TRO Vehicle Annex/Crosscut ED-X5M-B DemolitionMech MOD.mtf`: the import could not carry all of it over: Cannot find any armor named: 'Heavy Industrial Armor'
-- `megamek/TRO Vehicle Annex/Dig King RCL-1 MiningMech MOD.mtf`: the import could not carry all of it over: Cannot find any armor named: 'Heavy Industrial Armor'
-- `megamek/TRO Vehicle Annex/Dig King RCL-1 MiningMech.mtf`: the import could not carry all of it over: Cannot find any armor named: 'Heavy Industrial Armor'
-- `megamek/TRO Vehicle Annex/Dig Lord RCL-4 MiningMech.mtf`: the import could not carry all of it over: Cannot find any armor named: 'Heavy Industrial Armor'
+- `megamek/TRO Vehicle Annex/Crosscut ED-X5M LoggerMech MOD.mtf`: duplicate of a design already kept
+- `megamek/TRO Vehicle Annex/Crosscut ED-X5M-B DemolitionMech MOD.mtf`: duplicate of a design already kept
+- `megamek/TRO Vehicle Annex/Dig King RCL-1 MiningMech MOD.mtf`: no Master Unit List entry to check its BV against
+- `megamek/TRO Vehicle Annex/Dig King RCL-1 MiningMech.mtf`: duplicate of a design already kept
+- `megamek/TRO Vehicle Annex/Dig Lord RCL-4 MiningMech.mtf`: duplicate of a design already kept
 - `megamek/TRO Vehicle Annex/ForestryMech ED-X3.mtf`: duplicate of a design already kept
 - `megamek/TRO Vehicle Annex/Grommet D90 MilitiaMech.mtf`: the import could not carry all of it over: Cannot find any equipment named 'Dumper (Front)'
 - `megamek/TRO Vehicle Annex/Harvester Ant KIC-3 Agromech.mtf`: duplicate of a design already kept
@@ -3822,20 +3817,20 @@
 - `megamek/TRO Vehicle Annex/Harvester HVR-99 Agromech .mtf`: duplicate of a design already kept
 - `megamek/TRO Vehicle Annex/Heavy Lifter HCL-1 CargoMech.mtf`: the import could not carry all of it over: Cannot place the Environmental Sealing in the la; Cannot place the Environmental Sealing in the ra; Unallocated Criticals: 2; - Environmental Sealing (environmental-sealing); - Environmental Sealing (environmental-sealing)
 - `megamek/TRO Vehicle Annex/Jabberwocky MilitiaMech JAW-67.mtf`: duplicate of a design already kept
-- `megamek/TRO Vehicle Annex/Lumberjack LM5M.mtf`: the import could not carry all of it over: Cannot find any armor named: 'Heavy Industrial Armor'
+- `megamek/TRO Vehicle Annex/Lumberjack LM5M.mtf`: duplicate of a design already kept
 - `megamek/TRO Vehicle Annex/Marco MR-6.mtf`: duplicate of a design already kept
 - `megamek/TRO Vehicle Annex/Marco MR-7.mtf`: duplicate of a design already kept
 - `megamek/TRO Vehicle Annex/Peacekeeper PK-6 SecurityMech.mtf`: duplicate of a design already kept
 - `megamek/TRO Vehicle Annex/Peacemaker PM6 PoliceMech.mtf`: duplicate of a design already kept
-- `megamek/TRO Vehicle Annex/Pompier GM-3A Firemech.mtf`: the import could not carry all of it over: Cannot find any armor named: 'Heavy Industrial Armor'
-- `megamek/TRO Vehicle Annex/Pompier GM-3CD FireMech.mtf`: the import could not carry all of it over: Cannot find any armor named: 'Heavy Industrial Armor'
-- `megamek/TRO Vehicle Annex/Pompier GM-3HT FireMech.mtf`: the import could not carry all of it over: Cannot find any armor named: 'Heavy Industrial Armor'
+- `megamek/TRO Vehicle Annex/Pompier GM-3A Firemech.mtf`: duplicate of a design already kept
+- `megamek/TRO Vehicle Annex/Pompier GM-3CD FireMech.mtf`: duplicate of a design already kept
+- `megamek/TRO Vehicle Annex/Pompier GM-3HT FireMech.mtf`: duplicate of a design already kept
 - `megamek/TRO Vehicle Annex/Powerman SC XI-M LoaderMech MOD.mtf`: no Master Unit List entry to check its BV against
 - `megamek/TRO Vehicle Annex/Powerman SC XI-M-B LoaderMech MOD.mtf`: no Master Unit List entry to check its BV against
 - `megamek/TRO Vehicle Annex/Powerman SC XV HaulerMech.mtf`: duplicate of a design already kept
 - `megamek/TRO Vehicle Annex/Powerman SC XVI HaulerMech.mtf`: duplicate of a design already kept
-- `megamek/TRO Vehicle Annex/ScavengerMech SC-V SalvageMech.mtf`: the import could not carry all of it over: Cannot find any equipment named 'Fluid Suction System (Light - Mech)'; Cannot find any armor named: 'Heavy Industrial Armor'
-- `megamek/TRO Vehicle Annex/ScavengerMech SC-V-M MilitiaMech.mtf`: the import could not carry all of it over: Cannot find any armor named: 'Heavy Industrial Armor'
+- `megamek/TRO Vehicle Annex/ScavengerMech SC-V SalvageMech.mtf`: the import could not carry all of it over: Cannot find any equipment named 'Fluid Suction System (Light - Mech)'
+- `megamek/TRO Vehicle Annex/ScavengerMech SC-V-M MilitiaMech.mtf`: duplicate of a design already kept
 - `megamek/TRO Vehicle Annex/Shugosha LAW-QM1 Q-Mech.mtf`: the import could not carry all of it over: Cannot find any equipment named 'ISBoobyTrap'
 - `megamek/TRO Vehicle Annex/Shugosha LAW-QM2 Q-Mech.mtf`: the import could not carry all of it over: Cannot find any equipment named 'ISBoobyTrap'
 - `megamek/TRO Vehicle Annex/Shugosha LAW-QM3 Q-Mech.mtf`: duplicate of a design already kept
@@ -3845,8 +3840,8 @@
 - `megamek/TRO Vehicle Annex/Uni ATAE-70T CargoMech.mtf`: duplicate of a design already kept
 - `megamek/TRO Vehicle Annex/Vampyr SC-V-1 SalvageMech.mtf`: the import could not carry all of it over: Cannot find any equipment named 'Fluid Suction System (Light - Mech)'; Cannot place the Environmental Sealing in the la; Cannot place the Environmental Sealing in the ra; Unallocated Criticals: 2; - Environmental Sealing (environmental-sealing); - Environmental Sealing (environmental-sealing)
 - `megamek/ToS/ToS Kaumberg/Commando COM-1AK.mtf`: BV differs from the MUL: COM-1AK: BV 549, MUL 533
-- `megamek/ToS/ToS Kaumberg/Copper CPK-65KM SecurityMech.mtf`: the import could not carry all of it over: Cannot find any armor named: 'Heavy Industrial Armor'
-- `megamek/ToS/ToS Kaumberg/Crosscut ED-X4K LoggerMech.mtf`: the import could not carry all of it over: Cannot find any armor named: 'Heavy Industrial Armor'
+- `megamek/ToS/ToS Kaumberg/Copper CPK-65KM SecurityMech.mtf`: BV differs from the MUL: CPK-65KM SecurityMech: BV 331, MUL 339
+- `megamek/ToS/ToS Kaumberg/Crosscut ED-X4K LoggerMech.mtf`: BV differs from the MUL: ED-X4K LoggerMech: BV 359, MUL 367
 - `megamek/Total Chaos/Atlas II AS7-D-H (Devlin).mtf`: duplicate of a design already kept
 - `megamek/Total Chaos/Awesome AWS-10KM (Cameron).mtf`: duplicate of a design already kept
 - `megamek/Tukayyid/Archer ARC-5CS.mtf`: duplicate of a design already kept
@@ -3982,9 +3977,9 @@
 - `megamek/XTRs/Boondoggles/Ostscout IIC.mtf`: duplicate of a design already kept
 - `megamek/XTRs/Caveat Emptor/Aquagladius AQS-5 MAM.mtf`: the import could not carry all of it over: Patchwork armor is not converted yet; Cannot find any armor named: 'Patchwork'
 - `megamek/XTRs/Caveat Emptor/Carbine CON-9M-D ConstructionMech MOD.mtf`: BV differs from the MUL: CON-9M-D ConstructionMech MOD: BV 245, MUL 257
-- `megamek/XTRs/Caveat Emptor/Crosscut IIC SolahmaMech.mtf`: the import could not carry all of it over: Cannot find any armor named: 'Heavy Industrial Armor'
-- `megamek/XTRs/Caveat Emptor/Gauss-Buster.mtf`: the import could not carry all of it over: Cannot find any armor named: 'Heavy Industrial Armor'
-- `megamek/XTRs/Caveat Emptor/Uni ATAE-70 ArtilleryMech.mtf`: the import could not carry all of it over: Cannot place 'ISThumper': its slots are split in a way not converted yet; Cannot place 'ISThumper': its slots are split in a way not converted yet; Cannot place 'ISThumper': its slots are split in a way not converted yet; Cannot find any armor named: 'Heavy Industrial Armor'
+- `megamek/XTRs/Caveat Emptor/Crosscut IIC SolahmaMech.mtf`: BV differs from the MUL: IIC SolahmaMech: BV 541, MUL 571
+- `megamek/XTRs/Caveat Emptor/Gauss-Buster.mtf`: no Master Unit List entry to check its BV against
+- `megamek/XTRs/Caveat Emptor/Uni ATAE-70 ArtilleryMech.mtf`: the import could not carry all of it over: Cannot place 'ISThumper': its slots are split in a way not converted yet; Cannot place 'ISThumper': its slots are split in a way not converted yet; Cannot place 'ISThumper': its slots are split in a way not converted yet
 - `megamek/XTRs/Caveat Emptor/Volkh VKH-68.mtf`: the import could not carry all of it over: Turret-mounted 'ISMediumXPulseLaser' is not converted yet
 - `megamek/XTRs/Caveat Emptor/Wasp WSP-3X.mtf`: the import could not carry all of it over: Compact heat sinks are not converted yet
 - `megamek/XTRs/Clans/Cougar-XR.mtf`: no Master Unit List entry to check its BV against
@@ -4155,7 +4150,7 @@
 - `megamek/XTRs/Steiner/Stiletto STO-6X.mtf`: the import could not carry all of it over: Turret-mounted 'ISERMediumLaser' is not converted yet; Turret-mounted 'ISERMediumLaser' is not converted yet
 - `megamek/XTRs/Succession Wars/Cataphract CTF-0X.mtf`: the import could not carry all of it over: Cannot find any equipment named 'ISElectronicWarfareEquipment'
 - `megamek/XTRs/Succession Wars/Flea FLE-14.mtf`: duplicate of a design already kept
-- `megamek/XTRs/Succession Wars/Kiso K-3N-KRHQ CommandMech.mtf`: the import could not carry all of it over: Cannot find any armor named: 'Heavy Industrial Armor'; Cannot import the Cockpit Command Console yet (TO:AUE p.112)
+- `megamek/XTRs/Succession Wars/Kiso K-3N-KRHQ CommandMech.mtf`: the import could not carry all of it over: Cannot import the Cockpit Command Console yet (TO:AUE p.112)
 - `megamek/XTRs/Succession Wars/Marauder MAD-4X.mtf`: the import could not carry all of it over: 'ISDoubleHeatSinkPrototype' is not converted yet; 'ISDoubleHeatSinkPrototype' is not converted yet; 'ISDoubleHeatSinkPrototype' is not converted yet; 'ISDoubleHeatSinkPrototype' is not converted yet; Cannot find any internal structure named: 'Endo-Steel Prototype'
 - `megamek/XTRs/Succession Wars/Super Griffin GRF-2N-X.mtf`: the import could not carry all of it over: 'ISDoubleHeatSinkPrototype' is not converted yet; 'ISDoubleHeatSinkPrototype' is not converted yet; 'ISDoubleHeatSinkPrototype' is not converted yet; Cannot place 'LRM 10': its slots are split in a way not converted yet; Unallocated Criticals: 2; - Prototype Improved Jump Jets (jj-prototype-improved); - Prototype Improved Jump Jets (jj-prototype-improved)
 - `megamek/XTRs/Succession Wars/Zeus ZEU-6Y.mtf`: duplicate of a design already kept

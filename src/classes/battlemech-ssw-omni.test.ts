@@ -47,6 +47,20 @@ describe("SSW import of OmniMech configurations (#112)", { timeout: 30000 }, () 
         expect(configuration(mech, "C").getUnallocatedCriticals()).toEqual([]);
     });
 
+    it("counts heat sinks and jump jets above the base loadout's in pod tonnage: Dire Wolf base has 15 heat sinks", () => {
+        const mech = imported("dire-wolf-omni");
+        const stats = Object.fromEntries(mech.getOmniConfigurationStats().map((entry) => [entry.name, entry.podTonnage]));
+        const podWeight = (name: string) => configuration(mech, name).getInstalledEquipment()
+            .filter((item) => !item.omniFixed).reduce((sum, item) => sum + (item.weight || 0), 0);
+        // Clan double heat sinks weigh a ton; a 100-ton 'Mech's jump jets two tons each (TM p.53).
+        expect(stats.Prime).toBe(podWeight("Prime") + 7);
+        expect(stats.C).toBe(podWeight("C") + 8 + 3 * 2);
+        expect(stats.B).toBe(podWeight("B"));
+        const podSpace = configuration(mech, "Prime").getOmniPodSpace().podTonnage;
+        expect(configuration(mech, "B").getOmniPodSpace().podTonnage).toBe(podSpace);
+        expect(configuration(mech, "C").getOmniPodSpace().podTonnage).toBe(podSpace);
+    });
+
     it("gives each configuration its own arm actuators: Dire Wolf A has a right lower arm actuator", () => {
         const mech = imported("dire-wolf-omni");
         expect(configuration(mech, "Prime").hasLowerArmActuator("ra")).toBe(false);

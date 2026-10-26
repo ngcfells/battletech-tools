@@ -109,7 +109,8 @@ deployed.
 - **Slots:** 2 body item slots and 1 turret item slot (the turret slot holds the breech and the collapsible
   barrel). The 2/1 split is my call; the user said "most in the body, one in the turret".
 - **Cost:** QuadVee precedent (IO:AE p.181). Add (cost of all weapons, equipment and structure) × 0.5 before the
-  final cost multiplier.
+  final cost multiplier. "Structure" is the whole structural cost, ammunition left out, as the book's worked example
+  reads ("structural, weapon, and equipment costs"; user ruling 2026-10-26, which also applies to LAMs and QuadVees).
 - **Critical hits (my call):** the conversion equipment sits in the vehicle's equipment pool and can be picked by
   a critical result that destroys equipment. Destroyed, it strands the ArtVee in its current mode. Stranded in
   Vehicle Mode, the artillery profile can never fire; stranded in Siege Mode, the tank cannot move.

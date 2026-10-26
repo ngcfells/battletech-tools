@@ -658,7 +658,7 @@ export const ammoCatalog: IEquipmentItem[] = [
         introduced: 2621,
         extinct: 2833,
         reintroduced: 3051,
-        battleValue: 46,
+        battleValue: 100,
         heat: 0,
         heatAero: 0,
         weight: 1,
@@ -670,6 +670,9 @@ export const ammoCatalog: IEquipmentItem[] = [
         book: "TO:AUE",
         page: 169,
         alphaStrike: { specialAbility: ["ARTLT-1"], heat: 0, rangeShort: 0, rangeMedium: 0, rangeLong: 0, rangeExtreme: 0, tc: false, notes: ["Deploys a standard 25-point density minefield onto the target hex layout upon impact."] },
+        // A FASCAM shell lays a minefield of these points (TO:AR p.152 Artillery Ordnance Table).
+        minefieldBattleValue: "fascam",
+        minefieldPoints: 25,
         clanDates: { introduced: 2621, extinct: null, reintroduced: null }
     },
     {
@@ -1168,7 +1171,7 @@ export const ammoCatalog: IEquipmentItem[] = [
         introduced: 2621,
         extinct: 2833,
         reintroduced: 3051,
-        battleValue: 23,
+        battleValue: 160,
         heat: 0,
         heatAero: 0,
         weight: 1,
@@ -1179,7 +1182,10 @@ export const ammoCatalog: IEquipmentItem[] = [
         techRating: "e",
         book: "TO:AUE",
         page: 169,
-        alphaStrike: { specialAbility: ["ARTSN-1"], heat: 0, rangeShort: 0, rangeMedium: 0, rangeLong: 0, rangeExtreme: 0, tc: false, notes: ["Deploys a standard 15-point density minefield onto the target hex layout upon impact."] },
+        alphaStrike: { specialAbility: ["ARTSN-1"], heat: 0, rangeShort: 0, rangeMedium: 0, rangeLong: 0, rangeExtreme: 0, tc: false, notes: ["Deploys a standard 20-point density minefield onto the target hex layout upon impact."] },
+        // A FASCAM shell lays a minefield of these points (TO:AR p.152 Artillery Ordnance Table).
+        minefieldBattleValue: "fascam",
+        minefieldPoints: 20,
         clanDates: { introduced: 2621, extinct: null, reintroduced: null }
     },
     {
@@ -1375,7 +1381,7 @@ export const ammoCatalog: IEquipmentItem[] = [
         introduced: 2621,
         extinct: 2833,
         reintroduced: 3051,
-        battleValue: 12,
+        battleValue: 240,
         heat: 0,
         heatAero: 0,
         weight: 1,
@@ -1386,7 +1392,10 @@ export const ammoCatalog: IEquipmentItem[] = [
         techRating: "e",
         book: "TO:AUE",
         page: 169,
-        alphaStrike: { specialAbility: ["ARTTH-1"], heat: 0, rangeShort: 0, rangeMedium: 0, rangeLong: 0, rangeExtreme: 0, tc: false, notes: ["Deploys a standard 5-point density minefield onto the target hex layout upon impact."] },
+        alphaStrike: { specialAbility: ["ARTTH-1"], heat: 0, rangeShort: 0, rangeMedium: 0, rangeLong: 0, rangeExtreme: 0, tc: false, notes: ["Deploys a standard 15-point density minefield onto the target hex layout upon impact (Clan Thumper only)."] },
+        // A FASCAM shell lays a minefield of these points (TO:AR p.152 Artillery Ordnance Table).
+        minefieldBattleValue: "fascam",
+        minefieldPoints: 15,
         clanDates: { introduced: 2621, extinct: null, reintroduced: null }
     },
     {

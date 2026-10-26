@@ -20,7 +20,7 @@ export interface IArtVeeConversionEquipment {
     bodySlots: number;
     /** Item slots taken in the turret (the breech and collapsible barrel). */
     turretSlots: number;
-    /** Added to the cost before the final multiplier: this fraction of the weapons, equipment and structure cost. */
+    /** Added to the cost before the final multiplier: this fraction of the structural, weapon and equipment cost (no ammunition). */
     costFraction: number;
     /** Same dates as the combo guns. */
     dates: { is: ITechDates; clan: ITechDates };

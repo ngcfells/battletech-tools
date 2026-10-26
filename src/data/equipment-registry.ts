@@ -597,7 +597,7 @@ export function getAmmoBattleValuePerTon(weapon: IEquipmentItem | null, ammo: IE
         // Minefield munitions (TO:AUE pp.185, 197-198): value from rack size R and shots per ton S.
         const isArrowIV = /arrow-iv/.test(weapon.tag);
         const clanArrowIV = weapon.catalog === "clan" || weapon.tag.startsWith("clan") || weapon.name.includes("(Clan");
-        const rack = isArrowIV ? (clanArrowIV ? 30 : 20) : (weapon.damageClusters ?? 0);
+        const rack = ammo.minefieldPoints ?? (isArrowIV ? (clanArrowIV ? 30 : 20) : (weapon.damageClusters ?? 0));
         const shots = getWeaponShotsPerTon(weapon, ammo);
         switch (ammo.minefieldBattleValue) {
             case "thunder":
