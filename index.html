@@ -51,11 +51,11 @@
 
 
     </script>
-    <script type="module" crossorigin src="/battletech-tools/assets/index-DzWz9FxO.js"></script>
+    <script type="module" crossorigin src="/battletech-tools/assets/index-IHiMpkix.js"></script>
     <link rel="modulepreload" crossorigin href="/battletech-tools/assets/ui-page-CQ265viS.js">
     <link rel="modulepreload" crossorigin href="/battletech-tools/assets/generateUUID-C1ZQ69Hk.js">
-    <link rel="modulepreload" crossorigin href="/battletech-tools/assets/mulUtilities-BLIcTL2g.js">
-    <link rel="modulepreload" crossorigin href="/battletech-tools/assets/alpha-strike-unit-CIaQZfAe.js">
+    <link rel="modulepreload" crossorigin href="/battletech-tools/assets/mulUtilities-fBNK6yck.js">
+    <link rel="modulepreload" crossorigin href="/battletech-tools/assets/alpha-strike-unit-CVOK76iT.js">
     <link rel="stylesheet" crossorigin href="/battletech-tools/assets/ui-page-2H9Jw5YI.css">
     <link rel="stylesheet" crossorigin href="/battletech-tools/assets/index-BbeH1im0.css">
   </head>
@@ -86,8 +86,8 @@ li.beta-ideas a.beta-ideas-button:hover{background:#2e86c1!important}
   function add(){
     var logo=document.querySelector("header.topmenu ul.main-menu > li.logo");
     if(!logo||logo.parentNode.querySelector("li.beta-issues"))return;
-    var ideas=button("beta-ideas","https://github.com/ngcfells/battletech-tools/issues?q=is%3Aissue%20state%3Aopen%20label%3Aenhancement","We are the beta test: see the ideas and suggest one on GitHub","Beta: Ideas/Suggestions");
-    var issues=button("beta-issues","https://github.com/NGCFells/battletech-tools/issues","We are the beta test: report a problem on GitHub","Beta: Report an Issue");
+    var ideas=button("beta-ideas","https://github.com/ngcfells/battletech-tools/issues/new?labels=enhancement","We are the beta test: see the ideas and suggest one on GitHub","Beta: Ideas/Suggestions");
+    var issues=button("beta-issues","https://github.com/ngcfells/battletech-tools/issues/new?labels=bug","We are the beta test: report a problem on GitHub","Beta: Report an Issue");
     logo.parentNode.insertBefore(ideas,logo);logo.parentNode.insertBefore(issues,ideas);
   }
   new MutationObserver(add).observe(document.documentElement,{childList:true,subtree:true});
