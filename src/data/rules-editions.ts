@@ -831,12 +831,27 @@ export function getRulesLevelOptionsForEdition(editionTag: string | undefined): 
 }
 
 /**
- * The level the Rules Level control shows for the stored app-wide level: the stored level when the edition lists it,
- * else the lowest listed level above it, else the highest listed. The stored setting is left as it is.
+ * The level the Rules Level control shows for the stored app-wide level (see fitRulesLevel). The stored setting is
+ * left as it is.
  */
 export function getShownRulesLevel(editionTag: string | undefined, storedLevel: number): number {
-    const ids = getRulesLevelOptionsForEdition(editionTag).map(option => option.id);
-    return ids.find(id => id >= storedLevel) ?? ids[ids.length - 1];
+    return fitRulesLevel(getRulesLevelOptionsForEdition(editionTag).map(option => option.id), storedLevel);
+}
+
+/**
+ * `storedLevel` when `levelIds` lists it. A game level the edition lacks becomes the edition's nearest game level, the
+ * highest at or below it, else its lowest: never Apocryphal or above (user ruling 2026-10-26, #324: Total Warfare
+ * Advanced under Battledroids is Expert Battledroids). Apocryphal and above go to the next listed level up.
+ */
+export function fitRulesLevel(levelIds: number[], storedLevel: number): number {
+    if (levelIds.includes(storedLevel)) {
+        return storedLevel;
+    }
+    const game = levelIds.filter(id => id < APOCRYPHAL_RULES_LEVEL);
+    if (storedLevel < APOCRYPHAL_RULES_LEVEL && game.length > 0) {
+        return [...game].reverse().find(id => id <= storedLevel) ?? game[0];
+    }
+    return levelIds.find(id => id >= storedLevel) ?? levelIds[levelIds.length - 1] ?? storedLevel;
 }
 
 /** Whether the edition's rules allow designing a new unit at this rules level. */

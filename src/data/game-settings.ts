@@ -14,7 +14,7 @@
 
 import { IEras, IRulesLevelOption } from "./data-interfaces";
 import { findEraByTag, fitTechToBases, getClosestEraForTech, getErasForTech } from "./era-options";
-import { btRulesEditions, DEFAULT_RULES_EDITION, getRulesEdition, getRulesLevelOptionsForEdition, getSelectableRulesEditions, IRulesEdition, RulesEditionUnitType } from "./rules-editions";
+import { btRulesEditions, DEFAULT_RULES_EDITION, fitRulesLevel, getRulesEdition, getRulesLevelOptionsForEdition, getSelectableRulesEditions, IRulesEdition, RulesEditionUnitType } from "./rules-editions";
 import { findSpecialRuleset, GameSettingStep, getRulesetConflict, ISpecialRuleset } from "./special-rulesets";
 import { btTechOptions } from "./tech-options";
 
@@ -84,10 +84,8 @@ function fitStep(step: GameSettingStep, settings: IGameSettings, options: IGameS
             const fallback = options.editions.find((edition) => edition.tag === DEFAULT_RULES_EDITION) ?? options.editions[0];
             return (later ?? fallback)?.tag ?? settings.edition;
         }
-        case "rulesLevel": {
-            const ids = options.rulesLevels.map((level) => level.id);
-            return ids.includes(settings.rulesLevel) ? settings.rulesLevel : ids.find((id) => id >= settings.rulesLevel) ?? ids[ids.length - 1] ?? settings.rulesLevel;
-        }
+        case "rulesLevel":
+            return fitRulesLevel(options.rulesLevels.map((level) => level.id), settings.rulesLevel);
         case "techBase":
             return fitTechToBases(settings.techBase, options.techBases);
         case "era": {

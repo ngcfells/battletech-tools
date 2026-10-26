@@ -1524,8 +1524,11 @@ describe("rules levels by edition", () => {
         expect(getRulesLevelOptionsForEdition(undefined)).toEqual(getRulesLevelOptions());
     });
 
-    it("shows the lowest listed level above a stored level the edition does not list", () => {
-        expect(getShownRulesLevel("battledroids", 3)).toBe(5);
+    // User ruling 2026-10-26 (#324): an edition's own level, never a jump to Apocryphal, for a game level it lacks.
+    it("shows the edition's nearest game level for a stored game level the edition does not list", () => {
+        expect(getShownRulesLevel("battledroids", 3)).toBe(2);
+        expect(getShownRulesLevel("battledroids", 4)).toBe(2);
+        expect(getShownRulesLevel("battledroids", 5)).toBe(5);
         expect(getShownRulesLevel("battledroids", 1)).toBe(1);
         expect(getShownRulesLevel("battledroids", 9)).toBe(7);
         expect(getShownRulesLevel("total-warfare", 3)).toBe(3);

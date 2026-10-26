@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it } from "vitest";
 import { changeGameSetting, describeGameSettingMove, getGameSettingOptions, IGameSettings } from "./game-settings";
 import { btSpecialRulesets } from "./special-rulesets";
-import { DEFAULT_RULES_EDITION, getRulesLevelOptionsForEdition, getSelectableRulesEditions } from "./rules-editions";
+import { DEFAULT_RULES_EDITION, getSelectableRulesEditions } from "./rules-editions";
 import { findEraByTag, getClosestEraForTech, getErasForTech } from "./era-options";
 
 const base: IGameSettings = { rulesets: [], edition: DEFAULT_RULES_EDITION, rulesLevel: 1, techBase: "clan", era: "clan-inv" };
@@ -100,7 +100,8 @@ describe("shared game settings (#324)", () => {
         const battledroids = getSelectableRulesEditions("mech").find((edition) => edition.noEras)!;
         const result = changeGameSetting({ ...base, rulesLevel: 3 }, { step: "edition", value: battledroids.tag }, "mech");
         expect(result.moves.map((move) => move.step)).toEqual(["rulesLevel"]);
-        expect(getRulesLevelOptionsForEdition(battledroids.tag).map((level) => level.id)).toContain(result.settings.rulesLevel);
+        expect(result.settings.rulesLevel).toBe(2);
+        expect(describeGameSettingMove(result.moves[0], battledroids.tag)).toBe("Rules Level moved to Expert Battledroids");
     });
 
     it("drops editions before a ruleset's minimum edition", () => {

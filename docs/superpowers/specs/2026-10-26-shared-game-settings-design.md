@@ -93,9 +93,10 @@ are in use.
 9. **A stored value the lists no longer offer is flagged.** For example, an old Clan save under the no-Clans ruleset
    keeps its Clan tech base until edited (call 2). The block shows that step with a warning ("not offered under the
    ticked rulesets") so the mismatch is visible. Round 2 (final review of round 1).
-10. **Rules level moves up, as `getShownRulesLevel` does** (the 2026-10-15 Battledroids spec: "the lowest listed level
-   above it"). Total Warfare Advanced switched to Battledroids lands on Apocryphal, and the notice says so. Builder's
-   call for consistency; the user may rule otherwise.
+10. **Rules level keeps to the edition's own levels** (user ruling 2026-10-26). A game level the new edition lacks
+   becomes its nearest game level (highest at or below, else lowest), never Apocryphal: Total Warfare Advanced under
+   Battledroids is Expert Battledroids. Apocryphal, Custom Homebrew and Munchkin stay only if already picked.
+   `getShownRulesLevel` follows the same rule (`fitRulesLevel`), replacing the 2026-10-15 "lowest listed level above".
 11. **Attribution reads the unit's save**, never the current block state, so a printout always shows what the unit was
    built under.
 
