@@ -101,7 +101,9 @@ function thinMech(design: Record<string, unknown>): Record<string, unknown> {
     const allocation = ((design.allocation ?? []) as Record<string, unknown>[])
         .map((slot) => installed.has(slot.uuid) ? Object.fromEntries(Object.entries(slot)
             .filter(([key]) => ["uuid", "loc", "slot", "rear", "size", "crits"].includes(key) && !(key === "crits" && slot.crits === slot.size))) : slot);
-    return { ...design, equipment, allocation };
+    // An OmniMech's active configuration is its equipment and crit table, stored again when the design is next saved.
+    const omniConfigurations = (design.omniConfigurations as { name: string }[] | undefined)?.filter((configuration) => configuration.name !== design.activeOmniConfiguration);
+    return { ...design, equipment, allocation, ...(omniConfigurations ? { omniConfigurations } : {}) };
 }
 
 function thickenMech(design: Record<string, unknown>): Record<string, unknown> {

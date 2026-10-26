@@ -169,6 +169,18 @@ export interface IOmniConfiguration {
     equipment: IBMEquipmentExport[];
     allocation: ICriticalSlot[];
     bombLoadout?: Record<string, number>;
+    /** What else a configuration sets (SSW loadouts vary all of it, #112); saves from before it leave it out. */
+    chassis?: IOmniConfigurationChassis;
+}
+
+/** A configuration's heat sinks, jump jets, arm actuators and Clan CASE, with the heat sink and jump jet slots. */
+export interface IOmniConfigurationChassis {
+    additionalHeatSinks: number;
+    jumpSpeed: number;
+    /** Lower arm and hand actuators missing, as the save's no_lala/no_laha/no_rala/no_raha features. */
+    noActuators: { lala: boolean, laha: boolean, rala: boolean, raha: boolean };
+    clanCASE: boolean;
+    slots: ICriticalSlot[];
 }
 
 /** The 'Mech one FrankenMech location came from (CO p.213): its tonnage, its internal structure and, optionally, its name. */
@@ -6858,7 +6870,42 @@ export class BattleMech {
             equipment: podItems.map(item => this._exportEquipmentItem(item, true)),
             allocation,
             bombLoadout: Object.keys(this._bombLoadout).length ? { ...this._bombLoadout } : undefined,
+            chassis: {
+                additionalHeatSinks: this._additionalHeatSinks,
+                jumpSpeed: this._jumpSpeed,
+                noActuators: {
+                    lala: this._no_left_arm_lower_actuator, laha: this._no_left_arm_hand_actuator,
+                    rala: this._no_right_arm_lower_actuator, raha: this._no_right_arm_hand_actuator,
+                },
+                clanCASE: this._clanCASE,
+                slots: JSON.parse(JSON.stringify(
+                    this._criticalAllocationTable
+                        .filter(slot => BattleMech._isConfigurationChassisSlot(slot))
+                        .map(slot => ({ ...slot, obj: undefined, damaged: undefined }))
+                )),
+            },
         };
+    }
+
+    /** Heat sink and jump jet slots, which a configuration places itself. */
+    private static _isConfigurationChassisSlot(slot: ICriticalSlot): boolean {
+        return slot?.tag === "heat-sink" || !!slot?.tag?.startsWith("jj-");
+    }
+
+    /** Sets a configuration's heat sinks, jump jets, arm actuators and Clan CASE, and places their slots. */
+    private _loadOmniConfigurationChassis(chassis: IOmniConfigurationChassis): void {
+        // The bundled designs' compact format leaves out empty and false fields (bundled-designs.ts).
+        this._additionalHeatSinks = chassis.additionalHeatSinks ?? 0;
+        this._jumpSpeed = chassis.jumpSpeed ?? 0;
+        this._no_left_arm_lower_actuator = !!chassis.noActuators?.lala;
+        this._no_left_arm_hand_actuator = !!chassis.noActuators?.laha;
+        this._no_right_arm_lower_actuator = !!chassis.noActuators?.rala;
+        this._no_right_arm_hand_actuator = !!chassis.noActuators?.raha;
+        this._clanCASE = !!chassis.clanCASE;
+        this._criticalAllocationTable = this._criticalAllocationTable.filter(slot => !BattleMech._isConfigurationChassisSlot(slot));
+        for (const slot of chassis.slots ?? []) {
+            this._criticalAllocationTable.push({ ...slot, rear: !!slot.rear, damaged: false, obj: null } as ICriticalSlot);
+        }
     }
 
     private _storeActiveOmniConfiguration(): void {
@@ -6882,6 +6929,7 @@ export class BattleMech {
 
     private _loadOmniConfiguration(configuration: IOmniConfiguration | undefined): void {
         if (configuration) {
+            if (configuration.chassis) this._loadOmniConfigurationChassis(configuration.chassis);
             for (const item of configuration.equipment) {
                 this._restoreEquipmentItem(item);
             }
@@ -12766,6 +12814,20 @@ export class BattleMech {
     private _installSSWEquipment(
         item: any
     ) {
+        // The list is kept sorted, so the new items are told apart by their UUIDs.
+        const installed = new Set( this._equipmentList.map( ( equipment ) => equipment?.uuid ) );
+        this._installSSWEquipmentItem( item );
+        // An OmniMech's base loadout is its fixed equipment (#112).
+        if( this._omnimech && item?.["@_omnifixed"] ) {
+            for( const equipment of this._equipmentList ) {
+                if( equipment && !installed.has( equipment.uuid ) ) equipment.omniFixed = true;
+            }
+        }
+    }
+
+    private _installSSWEquipmentItem(
+        item: any
+    ) {
 
         // Unprefixed items belong to the design's own tech base; SSW marks the other side's items
         // with "(IS) " or "(CL) " (older files: "(CLAN) ").
@@ -13031,14 +13093,73 @@ export class BattleMech {
     public importSSWXML(
         ssw_xml: string
     ): void {
+        const jObj = parseSSWXML(ssw_xml);
+        const omnimech = String( jObj?.mech?.["@_omnimech"] ?? "" ).toLowerCase().trim() === "true";
+        const loadouts: any[] = omnimech ? ( [] as any[] ).concat( jObj.mech.loadout ?? [] ) : [];
+        if( loadouts.length === 0 ) {
+            this._importSSWObject( omnimech ? BattleMech._withSSWLoadout( jObj, {} ) : jObj );
+            return;
+        }
+        // An OmniMech file holds every loadout (Prime, A, B...): each becomes a configuration, the first one active (#112).
+        const names: string[] = [];
+        const configurations: IOmniConfiguration[] = [];
+        for( const loadout of loadouts ) {
+            let name = String( loadout["@_name"] ?? "" ).trim() || BattleMech.DEFAULT_OMNI_CONFIGURATION;
+            for( let copy = 2; names.includes( name ); copy++ ) name = String( loadout["@_name"] ).trim() + " (" + copy + ")";
+            names.push( name );
+            const variant = configurations.length === 0 ? this : new BattleMech();
+            variant._importSSWObject( BattleMech._withSSWLoadout( jObj, loadout ) );
+            variant._activeOmniConfiguration = name;
+            if( variant !== this ) {
+                this._sswImportErrors.push( ...variant._sswImportErrors.map( ( error ) => name + ": " + error ) );
+                this._sswUnresolved.push( ...variant._sswUnresolved );
+            }
+            configurations.push( variant._snapshotActiveOmniConfiguration() );
+        }
+        this._omniConfigurations = configurations;
+    }
+
+    /**
+     * The file with one loadout in place of the base loadout: the base loadout's equipment marked fixed, then the
+     * loadout's own (SSW repeats the base loadout's CASE in every loadout). A loadout without heat sinks, jump jets
+     * or actuators keeps the base loadout's.
+     */
+    private static _withSSWLoadout( jObj: any, loadout: any ): any {
+        const copy = JSON.parse( JSON.stringify( jObj ) );
+        const base = copy.mech.baseloadout ?? {};
+        const listed = ( value: unknown ): any[] => ( [] as any[] ).concat( value ?? [] );
+        const key = ( item: any ) => JSON.stringify( [ item?.name?.["#text"] ?? item?.name, item?.location ] );
+        const fixedKeys = new Set( listed( base.equipment ).map( key ) );
+        // A loadout's heat sinks and jump jets give the total, but only the pod ones' slots: the fixed ones' are the base loadout's.
+        const withFixedSlots = ( system: "heatsinks" | "jumpjets" ) => {
+            if( !loadout[system] || !base[system] ) return {};
+            const fixedSlots = listed( base[system].location );
+            const fixedSlotKeys = new Set( fixedSlots.map( ( slot ) => JSON.stringify( slot ) ) );
+            const podSlots = listed( loadout[system].location ).filter( ( slot ) => !fixedSlotKeys.has( JSON.stringify( slot ) ) );
+            return { [system]: { ...loadout[system], location: [ ...fixedSlots, ...podSlots ] } };
+        };
+        copy.mech.baseloadout = {
+            ...base,
+            ...loadout,
+            ...withFixedSlots( "heatsinks" ),
+            ...withFixedSlots( "jumpjets" ),
+            equipment: [
+                // A MegaMek file converted for this import (battlemech-mtf.ts) marks its pod items omnipod.
+                ...listed( base.equipment ).map( ( item ) => item["@_omnipod"] ? item : { ...item, "@_omnifixed": "TRUE" } ),
+                ...listed( loadout.equipment ).filter( ( item ) => !fixedKeys.has( key( item ) ) ),
+            ],
+        };
+        delete copy.mech.loadout;
+        return copy;
+    }
+
+    private _importSSWObject(
+        jObj: any
+    ): void {
 
         this._sswImportErrors = [];
         this._sswUnresolved = [];
         this._sswCopyMakes = [];
-
-
-
-        let jObj = parseSSWXML(ssw_xml);
 
         // console.log( "battlemech.importSSWXML() jObj", jObj)
         // IndustrialMech and Primitive files were skipped without a word, leaving an empty design (#46).
