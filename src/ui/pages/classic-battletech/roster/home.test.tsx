@@ -339,7 +339,7 @@ describe("Classic roster Master Unit List search", () => {
             </MemoryRouter>
         );
         const mulSearch = () => Array.from(container.querySelectorAll("fieldset")).find((fieldset) => fieldset.querySelector("legend")?.textContent === "Master Unit List Search")!;
-        const pagers = () => Array.from(mulSearch().querySelectorAll("nav[aria-label='Search results pages']"));
+        const pagers = () => Array.from(mulSearch().querySelectorAll("nav[aria-label^='Search results pages']"));
         await waitFor(() => expect(pagers()).toHaveLength(2), { timeout: 20_000 });
         fireEvent.click(pagers()[1].querySelector("[title='Next page']")!);
         expect(pagers().map((pager) => pager.textContent)).toEqual([expect.stringContaining("Page 2 of"), expect.stringContaining("Page 2 of")]);

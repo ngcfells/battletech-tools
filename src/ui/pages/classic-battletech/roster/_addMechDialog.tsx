@@ -377,7 +377,7 @@ export default class BattleMechAddMechDialog extends React.Component<IBattleMech
             })}
         </tbody>
     </table>
-    {!this.state.mulSearching ? <SearchResultsPager page={resultsPage} onGo={(page) => this.setState({ mulPage: page })} /> : null}
+    {!this.state.mulSearching ? <SearchResultsPager page={resultsPage} onGo={(page) => this.setState({ mulPage: page })} below /> : null}
 </fieldset>
         );
     }

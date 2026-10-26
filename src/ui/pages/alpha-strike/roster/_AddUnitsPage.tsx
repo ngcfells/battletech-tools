@@ -516,7 +516,7 @@ export default class AlphaStrikeAddUnitsView extends React.Component<IAlphaStrik
 
                     </table>
                   </div>
-                  {!this.state.isSearching ? <SearchResultsPager page={resultsPage} onGo={this.goToSearchPage} /> : null}
+                  {!this.state.isSearching ? <SearchResultsPager page={resultsPage} onGo={this.goToSearchPage} below /> : null}
     </>
 ) : (
     <div className="alert alert-warning">
