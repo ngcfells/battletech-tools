@@ -128,11 +128,19 @@ describe("GameSettingsBlock (#324)", () => {
         expect((select(/Technology Base/).closest("div") as HTMLElement).style.display).toBe("none");
     });
 
-    it("a ProtoMech under the no-Clans universe shows its tech base with the warning", () => {
+    it("a ProtoMech saved under the no-Clans universe is flagged: ProtoMechs do not exist there", () => {
         const { container } = render(<Harness unitType="protomech" start={{ ...base, rulesets: ["sample-no-clans"] }} />);
-        expect(select(/Technology Base/).value).toBe("clan");
-        expect((select(/Technology Base/).closest("div") as HTMLElement).style.display).toBe("contents");
-        expect(container.textContent).toMatch(/not offered under the ticked rulesets/);
+        expect((select(/Technology Base/).closest("div") as HTMLElement).style.display).toBe("none");
+        expect(container.textContent).not.toMatch(/not offered under the ticked rulesets/);
+        expect(screen.getByText(/ProtoMechs do not exist under Sample: The Clans never existed/)).toBeTruthy();
+    });
+
+    it("a ProtoMech cannot tick the no-Clans universe", () => {
+        render(<Harness unitType="protomech" start={{ ...base, era: "clan-inv" }} />);
+        fireEvent.change(screen.getByLabelText(/Special Rulesets/), { target: { value: "yes" } });
+        const box = screen.getByLabelText(SAMPLE) as HTMLInputElement;
+        expect(box.disabled).toBe(true);
+        expect(screen.getByText(/ProtoMechs do not exist under this ruleset/)).toBeTruthy();
     });
 
     it("a suit offers Inner Sphere and Clan only", () => {

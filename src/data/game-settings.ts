@@ -16,7 +16,7 @@ import { IEras, IRulesLevelOption } from "./data-interfaces";
 import { findEraByTag, fitTechToBases, getClosestEraForTech, getErasForTech } from "./era-options";
 import { getEquipmentCatalogDefinitions } from "./equipment-registry";
 import { btRulesEditions, DEFAULT_RULES_EDITION, fitRulesLevel, getRulesEdition, getRulesLevelOptionsForEdition, getSelectableRulesEditions, isEarlierRulesEdition, isInRulesEdition, IRulesEdition, RulesEditionUnitType } from "./rules-editions";
-import { findSpecialRuleset, GameSettingStep, getRulesetConflict, ISpecialRuleset } from "./special-rulesets";
+import { findSpecialRuleset, GameSettingStep, getRulesetConflict, getRulesetRemovingUnitType, ISpecialRuleset } from "./special-rulesets";
 import { btTechOptions } from "./tech-options";
 
 // The shared settings block (#324): Special Rulesets, Edition, Rules Level, Tech Base, Era, in that order. Each step
@@ -98,10 +98,12 @@ export function getGameSettingOptions(settings: IGameSettings, unitType: RulesEd
     const removedTech = rulesets.flatMap((ruleset) => ruleset.removesTechBases ?? []);
     const removedEras = rulesets.flatMap((ruleset) => ruleset.removesEras ?? []);
     const unitTechBases = getUnitTypeTechBases(unitType);
+    // A unit type the rulesets take away is flagged as a whole, not through its tech bases.
+    const removedUnit = !!getRulesetRemovingUnitType(settings.rulesets, unitType);
     return {
         editions: getSelectableRulesEditions(unitType).filter((edition) => editionOrder(edition.tag) >= minEdition),
         rulesLevels: getRulesLevelOptionsForEdition(settings.edition).filter((level) => level.id >= minLevel),
-        techBases: getEditionTechBases(settings.edition).filter((tag) => !removedTech.includes(tag) && (unitTechBases?.includes(tag) ?? true)),
+        techBases: getEditionTechBases(settings.edition).filter((tag) => (removedUnit || !removedTech.includes(tag)) && (unitTechBases?.includes(tag) ?? true)),
         eras: getRulesEdition(settings.edition).noEras ? [] : getUnitTypeEras(unitType, settings.techBase).filter((era) => !removedEras.includes(era.tag)),
     };
 }
@@ -150,13 +152,14 @@ function fitStep(step: GameSettingStep, settings: IGameSettings, options: IGameS
 
 /**
  * Applies one change, then moves each later step whose value the new lists no longer offer, in step order. A ruleset
- * that clashes with one already ticked is refused and nothing changes; an id the registry does not know is ignored.
+ * that clashes with one already ticked, or under which the unit type does not exist, is refused and nothing changes;
+ * an id the registry does not know is ignored.
  */
 export function changeGameSetting(
     settings: IGameSettings,
     change: GameSettingChange,
     unitType: RulesEditionUnitType,
-): { settings: IGameSettings; moves: IGameSettingMove[]; refused?: ISpecialRuleset } {
+): { settings: IGameSettings; moves: IGameSettingMove[]; refused?: ISpecialRuleset; removesUnitType?: boolean } {
     const next: IGameSettings = { ...settings, rulesets: [...settings.rulesets] };
     const values = next as unknown as Record<GameSettingStep, string | number>;
     let firstLater = 0;
@@ -166,6 +169,10 @@ export function changeGameSetting(
         } else if (!findSpecialRuleset(change.toggle)) {
             return { settings, moves: [] };
         } else {
+            const removing = getRulesetRemovingUnitType([change.toggle], unitType);
+            if (removing) {
+                return { settings, moves: [], refused: removing, removesUnitType: true };
+            }
             const refused = getRulesetConflict(next.rulesets, change.toggle);
             if (refused) {
                 return { settings, moves: [], refused };

@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it } from "vitest";
 import { changeGameSetting, describeGameSettingMove, getEditionTechBases, getGameSettingOptions, getStaleGameSettingSteps, getUnitTypeEras, IGameSettings } from "./game-settings";
 import { btTechOptions } from "./tech-options";
-import { btSpecialRulesets } from "./special-rulesets";
+import { btSpecialRulesets, getRulesetRemovingUnitType } from "./special-rulesets";
 import { DEFAULT_RULES_EDITION, getSelectableRulesEditions } from "./rules-editions";
 import { findEraByTag, getClosestEraForTech, getErasForTech } from "./era-options";
 
@@ -132,13 +132,21 @@ describe("shared game settings (#324)", () => {
         expect(getGameSettingOptions(settings, "vehicle").techBases).toEqual(btTechOptions.map((option) => option.tag));
     });
 
-    it("a ProtoMech's eras start in 3055 and the no-Clans universe flags its tech base without moving it", () => {
+    it("a ProtoMech's eras start in 3055 and the no-Clans universe cannot be ticked on one (ProtoMechs do not exist)", () => {
         const proto = { ...base, techBase: "clan", era: getUnitTypeEras("protomech", "clan")[0].tag };
         expect(getGameSettingOptions(proto, "protomech").eras.every((era) => (era.yearEnd ?? Infinity) >= 3055)).toBe(true);
         expect(getGameSettingOptions(proto, "protomech").eras.length).toBeLessThan(getErasForTech("clan").length);
         const result = changeGameSetting(proto, { step: "rulesets", toggle: "sample-no-clans" }, "protomech");
-        expect(result.settings.techBase).toBe("clan");
-        expect(result.moves).toEqual([]);
-        expect(getStaleGameSettingSteps(result.settings, "protomech")).toEqual(["techBase"]);
+        expect(result.settings).toBe(proto);
+        expect(result.refused?.id).toBe("sample-no-clans");
+        expect(result.removesUnitType).toBe(true);
+        expect(getRulesetRemovingUnitType(["sample-no-clans"], "protomech")?.id).toBe("sample-no-clans");
+        expect(getRulesetRemovingUnitType(["sample-no-clans"], "mech")).toBeUndefined();
+        // An older save with it ticked keeps Clan: the design itself is flagged, not its tech base.
+        const stored = { ...proto, rulesets: ["sample-no-clans"] };
+        expect(getGameSettingOptions(stored, "protomech").techBases).toEqual(["clan"]);
+        expect(getStaleGameSettingSteps(stored, "protomech")).toEqual([]);
+        // It can still be unticked.
+        expect(changeGameSetting(stored, { step: "rulesets", toggle: "sample-no-clans" }, "protomech").settings.rulesets).toEqual([]);
     });
 });

@@ -120,8 +120,11 @@ are in use.
 17. **Battle Armor's Mixed technology stays a construction option** below the block (its own Advanced gate, TO:AUE
    p.189), not a fifth tech base: the suit's tech base is its chassis's. An era change still turns Mixed off in an era
    without it.
-18. **A removed single tech base is flagged, not moved** (round 3). Under the no-Clans ruleset a ProtoMech has no tech
-   base on offer: the step appears with the call-9 warning and the design keeps Clan until the ruleset is unticked.
+18. **A ruleset can take a whole unit type away** (user ruling 2026-10-26, replacing round 3's "flag the tech base").
+   ProtoMechs do not exist when the Clans never existed: the ruleset lists them in `removesUnitTypes`. A ProtoMech
+   design cannot tick it (the box is disabled, saying why; a forced toggle is refused). An older save that has it
+   ticked keeps Clan and shows one warning that ProtoMechs do not exist under it; unticking it is always allowed.
+   Round 4's roster MUL searches leave out every unit type a ticked ruleset removes.
 19. **A sample loaded in place of the design keeps the design's level and rulesets** (round 3; ArtVee samples), as
    call 12 does for printed droids.
 

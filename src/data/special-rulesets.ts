@@ -13,12 +13,20 @@
  * excluded from the software's underlying license (GNU GPLv3).
  */
 
+import { RulesEditionUnitType } from "./rules-editions";
+
 // Special Rulesets (#324): optional and homebrew rules that change how the game plays or how units are built. They
 // are chosen first in the shared settings block, so each can set the minimum edition and narrow every list below it.
 // Only rules that change gameplay or construction belong here, never a single custom item or unit type.
 
 /** The settings block's steps after Special Rulesets, in order. */
 export type GameSettingStep = "edition" | "rulesLevel" | "techBase" | "era";
+
+/** Plural names for the unit types a ruleset can take away, for its notices. */
+export const UNIT_TYPE_PLURALS: Record<RulesEditionUnitType, string> = {
+    mech: "BattleMechs", vehicle: "Vehicles", fighter: "Fighters", "small-craft": "Small Craft", "capital-ship": "Capital Ships",
+    infantry: "Infantry", "battle-armor": "Battle Armor", protomech: "ProtoMechs", building: "Buildings",
+};
 
 export interface ISpecialRuleset {
     id: string;
@@ -33,6 +41,8 @@ export interface ISpecialRuleset {
     removesTechBases?: string[];
     /** Era tags the ruleset takes away. */
     removesEras?: string[];
+    /** Unit types that do not exist under the ruleset: it cannot be ticked on one, and they are not offered. */
+    removesUnitTypes?: RulesEditionUnitType[];
     /** What the ruleset changes; two rulesets that change the same thing cannot both be in use. */
     changes: string[];
 }
@@ -44,6 +54,8 @@ export const btSpecialRulesets: ISpecialRuleset[] = [
         description: "A sample alternate universe in which the Clans never formed: no Clan or Mixed tech. A placeholder until real rulesets are added.",
         source: { title: "Sample ruleset (#324)" },
         removesTechBases: ["clan", "mclan", "mis"],
+        // ProtoMechs are a Clan creation: they do not exist either (user ruling 2026-10-26).
+        removesUnitTypes: ["protomech"],
         changes: ["techBases"],
     },
 ];
@@ -54,6 +66,11 @@ export function getSpecialRulesets(): ISpecialRuleset[] {
 
 export function findSpecialRuleset(id: string): ISpecialRuleset | undefined {
     return btSpecialRulesets.find((ruleset) => ruleset.id === id);
+}
+
+/** The ticked ruleset under which `unitType` does not exist, or undefined. */
+export function getRulesetRemovingUnitType(tickedIds: string[], unitType: RulesEditionUnitType): ISpecialRuleset | undefined {
+    return tickedIds.map(findSpecialRuleset).find((ruleset) => !!ruleset?.removesUnitTypes?.includes(unitType));
 }
 
 /** The ticked ruleset that clashes with `candidateId` (they change the same thing), or undefined. */

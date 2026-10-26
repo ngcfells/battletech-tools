@@ -2,7 +2,7 @@ import React, { useState, type JSX } from 'react';
 import { findEraByTag } from '../../data/era-options';
 import { changeGameSetting, describeGameSettingMove, GameSettingChange, getGameSettingOptions, getStaleGameSettingSteps, IGameSettings } from '../../data/game-settings';
 import { isEarlierRulesEdition, RulesEditionUnitType } from '../../data/rules-editions';
-import { GameSettingStep, getRulesetConflict, getSpecialRulesets } from '../../data/special-rulesets';
+import { GameSettingStep, getRulesetConflict, getRulesetRemovingUnitType, getSpecialRulesets, UNIT_TYPE_PLURALS } from '../../data/special-rulesets';
 import { btTechOptions } from '../../data/tech-options';
 import EditionChoice from './edition-choice';
 import RulesEditionSelect from './rules-edition-select';
@@ -41,7 +41,8 @@ export default function GameSettingsBlock(props: {
             const result = changeGameSetting(next, one, props.unitType);
             next = result.settings;
             lines.push(...result.moves.map((move) => describeGameSettingMove(move, next.edition)));
-            if (result.refused) lines.push("Clashes with " + result.refused.name);
+            if (result.removesUnitType) lines.push(`${UNIT_TYPE_PLURALS[props.unitType]} do not exist under ${result.refused?.name}`);
+            else if (result.refused) lines.push("Clashes with " + result.refused.name);
         }
         setNotice({ text: lines.join("; "), made: JSON.stringify(next) });
         props.onChange(next, changes[0]?.step ?? "rulesets");
@@ -60,6 +61,7 @@ export default function GameSettingsBlock(props: {
     const techName = (tag: string) => btTechOptions.find((option) => option.tag === tag)?.name ?? tag;
     const era = findEraByTag(settings.era);
     const using = settings.rulesets.length > 0 || windowOpen;
+    const removedBy = getRulesetRemovingUnitType(settings.rulesets, props.unitType);
 
     return (
         <div className="game-settings-block">
@@ -104,6 +106,8 @@ export default function GameSettingsBlock(props: {
                     {era?.description ? <p className="smaller-text">{era.description}</p> : null}
                 </>
             ) : null}
+            {/* An older save with such a ruleset ticked; untick it to build the design. */}
+            {removedBy ? <p className="color-red smaller-text">{UNIT_TYPE_PLURALS[props.unitType]} do not exist under {removedBy.name}.</p> : null}
             {shownNotice ? <p className="smaller-text" role="status">{shownNotice}</p> : null}
 
             <StandardModal show={windowOpen} title="Special Rulesets" className="modal-xl" onClose={() => setWindowOpen(false)}>
@@ -112,13 +116,14 @@ export default function GameSettingsBlock(props: {
                 {getSpecialRulesets().map((ruleset) => {
                     const ticked = settings.rulesets.includes(ruleset.id);
                     const clash = ticked ? undefined : getRulesetConflict(settings.rulesets, ruleset.id);
+                    const removesThis = !ticked && !!ruleset.removesUnitTypes?.includes(props.unitType);
                     return (
                         <div key={ruleset.id}>
                             <label>
                                 <input
                                     type="checkbox"
                                     checked={ticked}
-                                    disabled={!!clash}
+                                    disabled={!!clash || removesThis}
                                     aria-describedby={"ruleset-about-" + ruleset.id}
                                     onChange={() => change({ step: "rulesets", toggle: ruleset.id })}
                                 />{" "}
@@ -128,6 +133,7 @@ export default function GameSettingsBlock(props: {
                                 {ruleset.description}{" "}
                                 Source: {ruleset.source.url ? <a href={ruleset.source.url} target="_blank" rel="noopener noreferrer">{ruleset.source.title}</a> : ruleset.source.title}.
                                 {clash ? <span className="color-red"> Clashes with {clash.name}.</span> : null}
+                                {removesThis ? <span className="color-red"> {UNIT_TYPE_PLURALS[props.unitType]} do not exist under this ruleset.</span> : null}
                             </p>
                         </div>
                     );
