@@ -14,7 +14,8 @@
 
 import { IEras, IRulesLevelOption } from "./data-interfaces";
 import { findEraByTag, fitTechToBases, getClosestEraForTech, getErasForTech } from "./era-options";
-import { btRulesEditions, DEFAULT_RULES_EDITION, fitRulesLevel, getRulesEdition, getRulesLevelOptionsForEdition, getSelectableRulesEditions, IRulesEdition, RulesEditionUnitType } from "./rules-editions";
+import { getEquipmentCatalogDefinitions } from "./equipment-registry";
+import { btRulesEditions, DEFAULT_RULES_EDITION, fitRulesLevel, getRulesEdition, getRulesLevelOptionsForEdition, getSelectableRulesEditions, isEarlierRulesEdition, isInRulesEdition, IRulesEdition, RulesEditionUnitType } from "./rules-editions";
 import { findSpecialRuleset, GameSettingStep, getRulesetConflict, ISpecialRuleset } from "./special-rulesets";
 import { btTechOptions } from "./tech-options";
 
@@ -57,6 +58,23 @@ const editionOrder = (tag: string) => btRulesEditions.findIndex((edition) => edi
 const tickedRulesets = (settings: IGameSettings): ISpecialRuleset[] =>
     settings.rulesets.flatMap((id) => findSpecialRuleset(id) ?? []);
 
+/**
+ * Technology bases an edition builds with. An earlier edition has the Clan base only when its rulebook prints Clan
+ * equipment (Battledroids to the BattleTech Manual, BT3 and BT4 print none; the BattleTech Compendium builds "Inner
+ * Sphere or Clan", BTC p.111, BTC:RoW p.99), and Mixed Tech only when it lets the two be mixed (`mixedTech`). Total
+ * Warfare and later editions have them all; the rules level and era decide.
+ */
+export function getEditionTechBases(editionTag: string): string[] {
+    if (!isEarlierRulesEdition(editionTag)) {
+        return btTechOptions.map((option) => option.tag);
+    }
+    const edition = getRulesEdition(editionTag);
+    const clan = getEquipmentCatalogDefinitions().some((catalog) => !catalog.custom
+        && catalog.equipment.some((item) => item.techBase === "clan" && isInRulesEdition(item, edition.tag)));
+    return btTechOptions.map((option) => option.tag).filter((tag) => tag === "is" || (clan && tag === "clan")
+        || (clan && edition.mixedTech === true && (tag === "mis" || tag === "mclan")));
+}
+
 export function getGameSettingOptions(settings: IGameSettings, unitType: RulesEditionUnitType): IGameSettingOptions {
     const rulesets = tickedRulesets(settings);
     const minEdition = Math.max(-1, ...rulesets.map((ruleset) => ruleset.minEdition ? editionOrder(ruleset.minEdition) : -1));
@@ -66,9 +84,19 @@ export function getGameSettingOptions(settings: IGameSettings, unitType: RulesEd
     return {
         editions: getSelectableRulesEditions(unitType).filter((edition) => editionOrder(edition.tag) >= minEdition),
         rulesLevels: getRulesLevelOptionsForEdition(settings.edition).filter((level) => level.id >= minLevel),
-        techBases: btTechOptions.map((option) => option.tag).filter((tag) => !removedTech.includes(tag)),
+        techBases: getEditionTechBases(settings.edition).filter((tag) => !removedTech.includes(tag)),
         eras: getRulesEdition(settings.edition).noEras ? [] : getErasForTech(settings.techBase).filter((era) => !removedEras.includes(era.tag)),
     };
+}
+
+/** The steps whose stored value their list does not offer (call 9). The rules level is shown fitted, never flagged. */
+export function getStaleGameSettingSteps(settings: IGameSettings, unitType: RulesEditionUnitType): GameSettingStep[] {
+    const options = getGameSettingOptions(settings, unitType);
+    const stale: GameSettingStep[] = [];
+    if (!options.editions.some((edition) => edition.tag === settings.edition)) stale.push("edition");
+    if (!options.techBases.includes(settings.techBase)) stale.push("techBase");
+    if (options.eras.length > 0 && !options.eras.some((era) => era.tag === settings.era)) stale.push("era");
+    return stale;
 }
 
 // The value a step moves to when its list no longer offers the current one.

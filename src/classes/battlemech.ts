@@ -34,6 +34,7 @@ import { mechMyomerTypes } from "../data/mech-myomer-types";
 import { mechTypeOptions } from "../data/mech-type-options";
 import { getTargetingComputerWeaponWeight, IVariableEquipmentContext, isTargetingComputerWeapon, sizeVariableEquipment } from "../data/variable-equipment";
 import { btTechOptions } from "../data/tech-options";
+import { getEditionTechBases } from "../data/game-settings";
 import { getHexDistanceFromModifier, getLocationName, getMovementModifier } from "../utils";
 import { addCommas } from "../utils/addCommas";
 import { adjustAlphaStrikeDamage, calculateAlphaStrikeValue, IAlphaStrikeExport, isAlphaStrikeConversionKeyword } from "../utils/calculateAlphaStrikeValue";
@@ -6193,21 +6194,10 @@ export class BattleMech {
         return this._rulesEdition;
     }
 
-    /**
-     * Technology bases the design's rules edition builds with. An earlier edition has the Clan base only when its
-     * rulebook prints Clan equipment (Battledroids to the BattleTech Manual, BT3 and BT4 print none; the BattleTech
-     * Compendium builds "Inner Sphere or Clan", BTC p.111, BTC:RoW p.99), and Mixed Tech only when it lets the two
-     * be mixed (`mixedTech`). Total Warfare and later editions have them all; the rules level and era decide.
-     */
+    /** Technology bases the design's rules edition builds with (see `getEditionTechBases`). */
     public getAvailableTechOptions(): typeof btTechOptions {
-        if (!this.usesEarlierRulesEdition()) {
-            return btTechOptions;
-        }
-        const edition = getRulesEdition(this._rulesEdition);
-        const clan = getEquipmentCatalogDefinitions().some((catalog) => !catalog.custom
-            && catalog.equipment.some((item) => item.techBase === "clan" && isInRulesEdition(item, edition.tag)));
-        return btTechOptions.filter((option) => option.tag === "is" || (clan && option.tag === "clan")
-            || (clan && edition.mixedTech === true && (option.tag === "mis" || option.tag === "mclan")));
+        const tags = getEditionTechBases(this._rulesEdition);
+        return btTechOptions.filter((option) => tags.includes(option.tag));
     }
 
     /**

@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it } from "vitest";
-import { changeGameSetting, describeGameSettingMove, getGameSettingOptions, IGameSettings } from "./game-settings";
+import { changeGameSetting, describeGameSettingMove, getEditionTechBases, getGameSettingOptions, getStaleGameSettingSteps, IGameSettings } from "./game-settings";
+import { btTechOptions } from "./tech-options";
 import { btSpecialRulesets } from "./special-rulesets";
 import { DEFAULT_RULES_EDITION, getSelectableRulesEditions } from "./rules-editions";
 import { findEraByTag, getClosestEraForTech, getErasForTech } from "./era-options";
@@ -20,6 +21,17 @@ describe("shared game settings (#324)", () => {
         expect(result.settings.techBase).toBe("is");
         expect(result.moves.map((move) => move.step)).toEqual(["techBase"]);
         expect(getGameSettingOptions(result.settings, "mech").techBases).toEqual(["is"]);
+    });
+
+    it("offers only the edition's own tech bases", () => {
+        expect(getEditionTechBases(DEFAULT_RULES_EDITION)).toEqual(btTechOptions.map((option) => option.tag));
+        expect(getEditionTechBases("battledroids")).toEqual(["is"]);
+        expect(getGameSettingOptions({ ...base, edition: "battledroids" }, "mech").techBases).toEqual(["is"]);
+    });
+
+    it("flags a stored tech base the ticked rulesets no longer offer, and nothing else", () => {
+        expect(getStaleGameSettingSteps({ ...base, rulesets: ["sample-no-clans"] }, "mech")).toEqual(["techBase"]);
+        expect(getStaleGameSettingSteps(base, "mech")).toEqual([]);
     });
 
     it("never moves a step above the one changed", () => {
@@ -99,8 +111,10 @@ describe("shared game settings (#324)", () => {
     it("moves the rules level when the edition does not list it, then reports each move in step order", () => {
         const battledroids = getSelectableRulesEditions("mech").find((edition) => edition.noEras)!;
         const result = changeGameSetting({ ...base, rulesLevel: 3 }, { step: "edition", value: battledroids.tag }, "mech");
-        expect(result.moves.map((move) => move.step)).toEqual(["rulesLevel"]);
+        // Battledroids prints no Clan equipment, so the Clan tech base moves too.
+        expect(result.moves.map((move) => move.step)).toEqual(["rulesLevel", "techBase"]);
         expect(result.settings.rulesLevel).toBe(2);
+        expect(result.settings.techBase).toBe("is");
         expect(describeGameSettingMove(result.moves[0], battledroids.tag)).toBe("Rules Level moved to Expert Battledroids");
     });
 
