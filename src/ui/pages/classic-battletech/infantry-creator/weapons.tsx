@@ -7,6 +7,7 @@ import { IAppGlobals } from '../../../app-router';
 import { InfantryCreatorSideMenu } from '../../../components/creator-side-menus';
 import TextSection from '../../../components/text-section';
 import UIPage from '../../../components/ui-page';
+import { unitRulesLevel } from '../../../components/game-settings-block';
 const ArrowCircleLeft = FaArrowCircleLeft as any;
 const ArrowCircleRight = FaArrowCircleRight as any;
 
@@ -62,7 +63,7 @@ export default class InfantryCreatorWeapons extends React.Component<IWeaponsProp
         const features = platoon.getSpecialFeatures();
         const lines = platoon.getSubPlatoons();
         const issues = platoon.getIssues();
-        const rulesLevel = this.props.appGlobals.appSettings.mechRulesFilter;
+        const rulesLevel = unitRulesLevel(this.props.appGlobals.currentInfantry, this.props.appGlobals.appSettings);
         const notes = [primary, secondary].filter((weapon): weapon is IInfantryWeapon => !!weapon?.notes);
 
         return (

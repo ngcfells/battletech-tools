@@ -3,7 +3,7 @@ import { BattleMech } from "../classes/battlemech";
 import BattleArmor from "../classes/battle-armor";
 import InfantryPlatoon from "../classes/infantry-platoon";
 import Vehicle from "../classes/vehicle";
-import { chooseEra, chooseEraByTechBase, getEraChoices, getTechChoices } from "./era-choice";
+import { chooseEra, chooseEraByTechBase, getTechChoices } from "./era-choice";
 
 // The era is picked first and decides the tech base (user ruling 2026-10-21).
 describe("era-first choices", () => {
@@ -27,10 +27,8 @@ describe("era-first choices", () => {
         expect(mech.getTech().tag).toBe("mclan");
     });
 
-    it("offers every era some allowed tech base can use, and only that era's tech bases", () => {
+    it("offers only the era's own tech bases", () => {
         const all = ["is", "clan", "mis", "mclan"];
-        expect(getEraChoices(all).map((era) => era.tag)).toContain("clan-founding-years");
-        expect(getEraChoices(["is"]).map((era) => era.tag)).not.toContain("clan-founding-years");
         const vehicle = new Vehicle();
         vehicle.setEra("star-league");
         expect(getTechChoices(vehicle.getEra(), all)).toEqual(["is"]);

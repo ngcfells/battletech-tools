@@ -11,6 +11,7 @@ import TextSection from '../../../components/text-section';
 import TonnageBar from '../../../components/tonnage-bar';
 import UIPage from '../../../components/ui-page';
 import BattleArmorStatusBar from './_statusBar';
+import { unitRulesLevel } from '../../../components/game-settings-block';
 const ArrowCircleLeft = FaArrowCircleLeft as any;
 const ArrowCircleRight = FaArrowCircleRight as any;
 const Plus = FaPlus as any;
@@ -45,7 +46,7 @@ export default class BattleArmorCreatorEquipment extends React.Component<IEquipm
     private _itemRow = (suit: BattleArmor, entry: IBattleArmorMountedItem, index: number): JSX.Element | null => {
         const equipment = findBattleArmorEquipment(entry.tag);
         if (!equipment) return null;
-        const rulesLevel = this.props.appGlobals.appSettings.mechRulesFilter;
+        const rulesLevel = unitRulesLevel(this.props.appGlobals.currentBattleArmor, this.props.appGlobals.appSettings);
         const missile = equipment.kind === "missile";
         const mountable = !equipment.noMount && !suit.isQuad();
         return (
@@ -147,7 +148,7 @@ export default class BattleArmorCreatorEquipment extends React.Component<IEquipm
         const locations = suit.getLocations();
         const location = locations.includes(this.state.location) ? this.state.location : "body";
         const turret = suit.getTurret();
-        const rulesLevel = this.props.appGlobals.appSettings.mechRulesFilter;
+        const rulesLevel = unitRulesLevel(this.props.appGlobals.currentBattleArmor, this.props.appGlobals.appSettings);
         const available = suit.getAvailableEquipment(rulesLevel);
         const groups = Array.from(new Set(available.map((equipment) => equipment.group)));
         // A Custom Homebrew weapon is offered at its rules level, or where a mount already carries it.

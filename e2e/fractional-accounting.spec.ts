@@ -316,7 +316,7 @@ test("ProtoMech Creator: Clan battle armor weapons are offered at the Experiment
     await page.goto("classic-battletech/protomech-creator");
     await page.getByRole("button", { name: /Start Over/ }).click();
     await page.getByRole("link", { name: /Start Building/ }).click();
-    await page.getByTestId("pm-era").selectOption(DARK_AGE);
+    await page.getByLabel("Era:").selectOption(DARK_AGE);
     await page.getByLabel("Rules Level").selectOption(STANDARD);
     await page.goto("classic-battletech/protomech-creator/equipment");
     await expect(page.getByTestId("pm-add-ba-clan-er-small-laser")).toHaveCount(0);

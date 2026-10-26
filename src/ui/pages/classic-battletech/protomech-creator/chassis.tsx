@@ -8,11 +8,10 @@ import {
 import { IAppGlobals } from '../../../app-router';
 import InputField from "../../../components/form_elements/input_field";
 import { ProtoMechCreatorSideMenu } from '../../../components/creator-side-menus';
-import RulesEditionSelect from '../../../components/rules-edition-select';
-import RulesLevelSelect from '../../../components/rules-level-select';
 import TextSection from '../../../components/text-section';
 import UIPage from '../../../components/ui-page';
 import ProtoMechStatusBar from './_statusBar';
+import { UnitGameSettingsBlock, unitRulesLevel } from '../../../components/game-settings-block';
 const ArrowCircleRight = FaArrowCircleRight as any;
 
 const range = (from: number, to: number): number[] => Array.from({ length: Math.max(0, to - from + 1) }, (_unused, index) => from + index);
@@ -34,16 +33,10 @@ export default class ProtoMechCreatorChassis extends React.Component<IChassisPro
         }
     }
 
-    updateRulesLevel = (level: number): void => {
-        const appSettings = this.props.appGlobals.appSettings;
-        appSettings.mechRulesFilter = level;
-        this.props.appGlobals.saveAppSettings(appSettings);
-    }
-
     render = (): JSX.Element => {
         const proto = this.props.appGlobals.currentProtoMech;
         if (!proto) return <></>;
-        const rulesLevel = this.props.appGlobals.appSettings.mechRulesFilter;
+        const rulesLevel = unitRulesLevel(this.props.appGlobals.currentProtoMech, this.props.appGlobals.appSettings);
         const advanced = rulesLevel >= PROTOMECH_ADVANCED_RULES_LEVEL;
         const experimental = rulesLevel >= PROTOMECH_EXPERIMENTAL_RULES_LEVEL;
         const maxTons = advanced || proto.isUltraheavy() ? proto.getMaxTons() : PROTOMECH_MAX_STANDARD_TONS;
@@ -59,17 +52,8 @@ export default class ProtoMechCreatorChassis extends React.Component<IChassisPro
                     <div className="col-md-9 col-lg-10">
                         <ProtoMechStatusBar proto={proto} />
                         <TextSection label="Step 1: Design the Chassis">
-                            {/* The rules edition comes first: it decides what every field below offers. */}
-                            <RulesEditionSelect unitType="protomech" value={proto.getRulesEdition()} onChange={(tag) => this.update((p) => p.setRulesEdition(tag))} />
-                            <RulesLevelSelect editionTag={proto.getRulesEdition()} value={rulesLevel} onChange={this.updateRulesLevel} />
-                            <label>
-                                Era:
-                                <select data-testid="pm-era" value={proto.getEra().tag} onChange={(e) => { const value = e.currentTarget.value; this.update((p) => p.setEra(value)); }}>
-                                    {proto.getAvailableEras().map((option) => (
-                                        <option key={option.tag} value={option.tag}>{option.name}</option>
-                                    ))}
-                                </select>
-                            </label>
+                            {/* The shared settings block comes first: it decides what every field below offers (#324). */}
+                            <UnitGameSettingsBlock unitType="protomech" unit={proto} appGlobals={this.props.appGlobals} onChange={() => this.update(() => undefined)} />
                             <InputField
                                 label="Name (e.g. Centaur 2, Roc)"
                                 value={proto.getName()}

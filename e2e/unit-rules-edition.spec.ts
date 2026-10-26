@@ -6,6 +6,7 @@ const creators: [string, string, string[]][] = [
     ["vehicle-creator/step1", "Step 1: Design the Chassis", ["Total Warfare (2006)"]],
     ["fighter-creator/chassis", "Step 1: Design the Chassis", ["Total Warfare (2006)"]],
     ["small-craft-creator/chassis", "Step 1: Design the Hull", ["Total Warfare (2006)"]],
+    ["capital-ship-creator/chassis", "Step 1: Design the Hull", ["Total Warfare (2006)"]],
     ["infantry-creator/platoon", "Step 1: Establish Platoon Type", ["Total Warfare (2006)"]],
     ["battle-armor-creator/chassis", "Step 1: Design the Chassis", ["Total Warfare (2006)"]],
     ["protomech-creator/chassis", "Step 1: Design the Chassis", ["Total Warfare (2006)"]],

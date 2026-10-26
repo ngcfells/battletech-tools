@@ -8,12 +8,11 @@ import {
 import { IAppGlobals } from '../../../app-router';
 import { BattleArmorCreatorSideMenu } from '../../../components/creator-side-menus';
 import InputField from "../../../components/form_elements/input_field";
-import RulesEditionSelect from '../../../components/rules-edition-select';
-import RulesLevelSelect from '../../../components/rules-level-select';
-import { chooseEraByTechBase, getEraChoices, getTechChoices } from '../../../../data/era-choice';
+import { getTechChoices } from '../../../../data/era-choice';
 import TextSection from '../../../components/text-section';
 import UIPage from '../../../components/ui-page';
 import BattleArmorStatusBar from './_statusBar';
+import { UnitGameSettingsBlock, unitRulesLevel } from '../../../components/game-settings-block';
 const ArrowCircleRight = FaArrowCircleRight as any;
 
 const range = (from: number, to: number): number[] => Array.from({ length: Math.max(0, to - from + 1) }, (_unused, index) => from + index);
@@ -34,16 +33,10 @@ export default class BattleArmorCreatorChassis extends React.Component<IChassisP
         }
     }
 
-    updateRulesLevel = (level: number): void => {
-        const appSettings = this.props.appGlobals.appSettings;
-        appSettings.mechRulesFilter = level;
-        this.props.appGlobals.saveAppSettings(appSettings);
-    }
-
     render = (): JSX.Element => {
         const suit = this.props.appGlobals.currentBattleArmor;
         if (!suit) return <></>;
-        const rulesLevel = this.props.appGlobals.appSettings.mechRulesFilter;
+        const rulesLevel = unitRulesLevel(this.props.appGlobals.currentBattleArmor, this.props.appGlobals.appSettings);
         const armorValue = (techBase: string, tag: string): string => (techBase === suit.getTechBase() ? tag : `${techBase}:${tag}`);
         const weightClass = suit.getWeightClass();
         const motive = suit.getMotive();
@@ -60,31 +53,13 @@ export default class BattleArmorCreatorChassis extends React.Component<IChassisP
                     <div className="col-md-9 col-lg-10">
                         <BattleArmorStatusBar suit={suit} />
                         <TextSection label="Step 1: Design the Chassis">
-                            {/* The rules edition comes first: it decides what every field below offers. */}
-                            <RulesEditionSelect unitType="battle-armor" value={suit.getRulesEdition()} onChange={(tag) => this.update((s) => s.setRulesEdition(tag))} />
-                            <RulesLevelSelect editionTag={suit.getRulesEdition()} value={rulesLevel} onChange={this.updateRulesLevel} />
-                            {/* The era comes next and decides the tech base (user ruling 2026-10-21). */}
-                            <label>
-                                Era:
-                                <select data-testid="ba-era" value={suit.getEra().tag} onChange={(e) => { const value = e.currentTarget.value; this.update((s) => chooseEraByTechBase(s, value)); }}>
-                                    {getEraChoices(["is", "clan"]).map((option) => (
-                                        <option key={option.tag} value={option.tag}>{option.name}</option>
-                                    ))}
-                                </select>
-                            </label>
+                            {/* The shared settings block comes first: it decides what every field below offers (#324). */}
+                            <UnitGameSettingsBlock unitType="battle-armor" unit={suit} appGlobals={this.props.appGlobals} onChange={() => this.update(() => undefined)} />
                             <InputField
                                 label="Name (e.g. Elemental, Purifier Adaptive Battle Armor)"
                                 value={suit.getName()}
                                 onChange={(e) => { const value = e.currentTarget.value; this.update((s) => s.setName(value)); }}
                             />
-                            <label>
-                                Technology Base:
-                                <select data-testid="ba-tech-base" value={suit.getTechBase()} onChange={(e) => { const value = e.currentTarget.value; this.update((s) => s.setTechBase(value === "clan" ? "clan" : "is")); }}>
-                                    {getTechChoices(suit.getEra(), ["is", "clan"]).map((tag) => (
-                                        <option key={tag} value={tag}>{tag === "clan" ? "Clan" : "Inner Sphere"}</option>
-                                    ))}
-                                </select>
-                            </label>
                             {(rulesLevel >= 3 && getTechChoices(suit.getEra(), ["mis", "mclan"]).length > 0) || suit.isMixedTech() ? (
                                 <label>
                                     <input type="checkbox" data-testid="ba-mixed-tech" checked={suit.isMixedTech()} onChange={(e) => { const value = e.currentTarget.checked; this.update((s) => s.setMixedTech(value)); }} />

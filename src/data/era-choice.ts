@@ -1,5 +1,5 @@
 import { IEras } from "./data-interfaces";
-import { btEraOptions, findEraByTag, fitTechToEra } from "./era-options";
+import { findEraByTag, fitTechToEra } from "./era-options";
 
 /** A design whose era and tech base the builder sets. */
 interface IEraTechUnit {
@@ -18,11 +18,6 @@ export function chooseEra(unit: IEraTechUnit, eraTag: string): void {
     const tech = fitTechToEra(unit.getTech().tag, era);
     if (tech !== unit.getTech().tag) unit.setTech(tech);
     unit.setEra(era.tag);
-}
-
-/** The eras a builder offers: every era one of the tech bases it builds with (`techTags`) can use. */
-export function getEraChoices(techTags: string[]): IEras[] {
-    return btEraOptions.filter((era) => era.techBases.some((tag) => techTags.includes(tag)));
 }
 
 /** The tech bases a builder offers in `era`: those the era allows, of the ones it builds with, in `techTags` order. */

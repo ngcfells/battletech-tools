@@ -6,11 +6,9 @@ import { INFANTRY_ARMOR_GROUPS, INFANTRY_ARMOR_RULES_LEVEL } from '../../../../d
 import { IAppGlobals } from '../../../app-router';
 import { InfantryCreatorSideMenu } from '../../../components/creator-side-menus';
 import InputField from "../../../components/form_elements/input_field";
-import RulesEditionSelect from '../../../components/rules-edition-select';
-import RulesLevelSelect from '../../../components/rules-level-select';
-import { chooseEraByTechBase, getEraChoices, getTechChoices } from '../../../../data/era-choice';
 import TextSection from '../../../components/text-section';
 import UIPage from '../../../components/ui-page';
+import { UnitGameSettingsBlock, unitRulesLevel } from '../../../components/game-settings-block';
 const ArrowCircleRight = FaArrowCircleRight as any;
 
 const range = (from: number, to: number): number[] => Array.from({ length: Math.max(0, to - from + 1) }, (_unused, index) => from + index);
@@ -30,16 +28,10 @@ export default class InfantryCreatorPlatoon extends React.Component<IPlatoonProp
         }
     }
 
-    updateRulesLevel = (level: number): void => {
-        const appSettings = this.props.appGlobals.appSettings;
-        appSettings.mechRulesFilter = level;
-        this.props.appGlobals.saveAppSettings(appSettings);
-    }
-
     render = (): JSX.Element => {
         const platoon = this.props.appGlobals.currentInfantry;
         if (!platoon) return <></>;
-        const rulesLevel = this.props.appGlobals.appSettings.mechRulesFilter;
+        const rulesLevel = unitRulesLevel(this.props.appGlobals.currentInfantry, this.props.appGlobals.appSettings);
         const armor = platoon.getArmor();
         const armorOffered = rulesLevel >= INFANTRY_ARMOR_RULES_LEVEL || armor !== null;
         const availableArmor = platoon.getAvailableArmor();
@@ -55,21 +47,10 @@ export default class InfantryCreatorPlatoon extends React.Component<IPlatoonProp
                     </div>
                     <div className="col-md-9 col-lg-10">
                         <TextSection label="Step 1: Establish Platoon Type">
-                            {/* The rules edition comes first: it decides what every field below offers. */}
-                            <RulesEditionSelect unitType="infantry" value={platoon.getRulesEdition()} onChange={(tag) => this.update((p) => p.setRulesEdition(tag))} />
-                            <RulesLevelSelect editionTag={platoon.getRulesEdition()} value={rulesLevel} onChange={this.updateRulesLevel} />
-                            {/* The era comes next and decides the tech base (user ruling 2026-10-21). */}
-                            <label>
-                                Era:
-                                <select value={platoon.getEra().tag} onChange={(e) => { const value = e.currentTarget.value; this.update((p) => chooseEraByTechBase(p, value)); }}>
-                                    {getEraChoices(["is", "clan"]).map((option) => (
-                                        <option key={option.tag} value={option.tag}>{option.name}</option>
-                                    ))}
-                                </select>
-                            </label>
+                            {/* The shared settings block comes first: it decides what every field below offers (#324). */}
+                            <UnitGameSettingsBlock unitType="infantry" unit={platoon} appGlobals={this.props.appGlobals} onChange={() => this.update(() => undefined)} />
                             <p className="smaller-text">
                                 The weapons step offers what was in production in this era (TM pp. 298-301).
-                                {platoon.getEra().description ? ` ${platoon.getEra().description}` : ""}
                             </p>
                             <InputField
                                 label="Platoon Name (e.g. Laser Rifle Platoon, Third Crucis Lancers)"
@@ -92,18 +73,7 @@ export default class InfantryCreatorPlatoon extends React.Component<IPlatoonProp
                                 {motive.mechanized ? " Mechanized infantry ride their own vehicles; they cannot make Anti-'Mech attacks or use melee and point-blank weapons." : ""}
                             </p>
 
-                            <label>
-                                Technology Base:
-                                <select value={platoon.getTechBase()} onChange={(e) => { const value = e.currentTarget.value; this.update((p) => p.setTechBase(value === "clan" ? "clan" : "is")); }}>
-                                    {getTechChoices(platoon.getEra(), ["is", "clan"]).map((tag) => (
-                                        <option key={tag} value={tag}>{tag === "clan" ? "Clan" : "Inner Sphere"}</option>
-                                    ))}
-                                </select>
-                            </label>
-
-
-
-                            <label>
+<label>
                                 Affiliation:
                                 <select value={platoon.getFormation().tag} onChange={(e) => { const value = e.currentTarget.value; this.update((p) => p.setFormation(value)); }}>
                                     {platoon.getAvailableFormations().map((option) => (

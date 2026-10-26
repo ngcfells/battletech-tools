@@ -13,6 +13,7 @@ import InputNumeric from "../../../components/form_elements/input_numeric";
 import TextSection from '../../../components/text-section';
 import TonnageBar from '../../../components/tonnage-bar';
 import UIPage from '../../../components/ui-page';
+import { unitRulesLevel } from '../../../components/game-settings-block';
 const ArrowCircleLeft = FaArrowCircleLeft as any;
 const ArrowCircleRight = FaArrowCircleRight as any;
 const Trash = FaTrash as any;
@@ -45,7 +46,7 @@ export default class BuildingCreatorEquipment extends React.Component<IEquipment
     render = (): JSX.Element => {
         const building = this.props.appGlobals.currentBuilding;
         if (!building) return <></>;
-        const rulesLevel = this.props.appGlobals.appSettings.mechRulesFilter;
+        const rulesLevel = unitRulesLevel(this.props.appGlobals.currentBuilding, this.props.appGlobals.appSettings);
         const loads = building.getHexLoads();
         const worst = loads.reduce((least, load) => Math.min(least, load.remaining), Number.POSITIVE_INFINITY);
         const heat = building.getEnergyWeaponHeat();

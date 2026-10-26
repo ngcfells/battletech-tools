@@ -70,7 +70,7 @@ test("a Clan quad with a turret follows the quad rules", async ({ page }) => {
     await page.goto("classic-battletech/battle-armor-creator");
     await page.getByRole("button", { name: /Start Over/ }).click();
     await page.getByRole("link", { name: /Start Building/ }).click();
-    await page.getByTestId("ba-tech-base").selectOption("clan");
+    await page.getByLabel("Technology Base:").selectOption("clan");
     await page.getByTestId("ba-weight-class").selectOption("assault");
     await page.getByTestId("ba-body-type").selectOption("quad");
     await expect(page.getByText("Quad battle armor may not use manipulators")).toBeVisible();

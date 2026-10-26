@@ -7,6 +7,7 @@ import { BattleArmorCreatorSideMenu } from '../../../components/creator-side-men
 import QuirkPicker from '../../../components/quirk-picker';
 import TextSection from '../../../components/text-section';
 import UIPage from '../../../components/ui-page';
+import { unitRulesLevel } from '../../../components/game-settings-block';
 const ArrowCircleLeft = FaArrowCircleLeft as any;
 
 export default class BattleArmorCreatorSummary extends React.Component<ISummaryProps> {
@@ -111,7 +112,7 @@ export default class BattleArmorCreatorSummary extends React.Component<ISummaryP
                                 quirks={suit.quirks}
                                 unitType={suit.getQuirkUnitType()}
                                 editionTag={suit.getRulesEdition()}
-                                rulesLevel={this.props.appGlobals.appSettings.mechRulesFilter}
+                                rulesLevel={unitRulesLevel(this.props.appGlobals.currentBattleArmor, this.props.appGlobals.appSettings)}
                                 {...suit.getQuirkTargets()}
                                 onChange={() => this.props.appGlobals.saveCurrentBattleArmor(suit)}
                             />

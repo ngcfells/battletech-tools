@@ -9,6 +9,7 @@ import TextSection from '../../../components/text-section';
 import TonnageBar from '../../../components/tonnage-bar';
 import UIPage from '../../../components/ui-page';
 import ProtoMechStatusBar from './_statusBar';
+import { unitRulesLevel } from '../../../components/game-settings-block';
 const ArrowCircleRight = FaArrowCircleRight as any;
 const Plus = FaPlus as any;
 const Trash = FaTrash as any;
@@ -33,7 +34,7 @@ export default class ProtoMechCreatorEquipment extends React.Component<IEquipmen
     render = (): JSX.Element => {
         const proto = this.props.appGlobals.currentProtoMech;
         if (!proto) return <></>;
-        const rulesLevel = this.props.appGlobals.appSettings.mechRulesFilter;
+        const rulesLevel = unitRulesLevel(this.props.appGlobals.currentProtoMech, this.props.appGlobals.appSettings);
         const locations = proto.getMountLocations();
         const location: ProtoMechMountLocation = locations.includes(this.state.location) ? this.state.location : "torso";
         const filter = this.state.filter.trim().toLowerCase();

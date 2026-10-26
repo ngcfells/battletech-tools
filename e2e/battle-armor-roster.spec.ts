@@ -61,9 +61,9 @@ test("a suit gets an alternate loadout, an era and an Alpha Strike card", async 
 
     // An earlier era has no mimetic armor, and the creator says so (IO:AE pp. 45-47).
     await page.goto("classic-battletech/battle-armor-creator/chassis");
-    await page.getByTestId("ba-era").selectOption("late-sw-rn");
+    await page.getByLabel("Era:").selectOption("late-sw-rn");
     await expect(page.getByTestId("ba-issues")).toContainText("Mimetic armor is not available to Inner Sphere battle armor");
-    await page.getByTestId("ba-era").selectOption("jihad");
+    await page.getByLabel("Era:").selectOption("jihad");
     await expect(page.getByTestId("ba-issues")).toHaveCount(0);
 
     expect(errors).toEqual([]);

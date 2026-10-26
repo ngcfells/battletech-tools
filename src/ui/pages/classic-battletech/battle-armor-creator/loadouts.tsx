@@ -10,6 +10,7 @@ import InputField from '../../../components/form_elements/input_field';
 import TextSection from '../../../components/text-section';
 import UIPage from '../../../components/ui-page';
 import BattleArmorStatusBar from './_statusBar';
+import { unitRulesLevel } from '../../../components/game-settings-block';
 const ArrowCircleLeft = FaArrowCircleLeft as any;
 const ArrowCircleRight = FaArrowCircleRight as any;
 const Plus = FaPlus as any;
@@ -35,7 +36,7 @@ export default class BattleArmorCreatorLoadouts extends React.Component<ILoadout
     render = (): JSX.Element => {
         const suit = this.props.appGlobals.currentBattleArmor;
         if (!suit) return <></>;
-        const rulesLevel = this.props.appGlobals.appSettings.mechRulesFilter;
+        const rulesLevel = unitRulesLevel(this.props.appGlobals.currentBattleArmor, this.props.appGlobals.appSettings);
         const mounts = suit.getSwappableItems();
         const arms = suit.getAdaptorArms();
         const options = suit.getMountOptions(rulesLevel);

@@ -5,6 +5,7 @@ import { IAppGlobals } from '../../../app-router';
 import { BuildingCreatorSideMenu } from '../../../components/creator-side-menus';
 import TextSection from '../../../components/text-section';
 import UIPage from '../../../components/ui-page';
+import { unitRulesLevel } from '../../../components/game-settings-block';
 const ArrowCircleLeft = FaArrowCircleLeft as any;
 
 export default class BuildingCreatorSummary extends React.Component<ISummaryProps> {
@@ -16,7 +17,7 @@ export default class BuildingCreatorSummary extends React.Component<ISummaryProp
     render = (): JSX.Element => {
         const building = this.props.appGlobals.currentBuilding;
         if (!building) return <></>;
-        const rulesLevel = this.props.appGlobals.appSettings.mechRulesFilter;
+        const rulesLevel = unitRulesLevel(this.props.appGlobals.currentBuilding, this.props.appGlobals.appSettings);
         const issues = building.getIssues(rulesLevel);
         const notes = building.getNotes();
         const classification = building.getClassification();
