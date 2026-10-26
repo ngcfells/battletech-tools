@@ -114,6 +114,17 @@ are in use.
    Going straight back to the edition a design just left restores it exactly, tech base, era and level included,
    unless a level was picked while away; the block's notice is dropped once the design differs from what it described.
 
+16. **Each unit type has its own tech bases and earliest era** (round 3). Battle Armor and Infantry build Inner Sphere
+   or Clan; a ProtoMech is Clan only, from the eras that reach 3055. The resolver filters by these, so a step with one
+   choice is hidden (call 6): ProtoMech shows no Tech Base step.
+17. **Battle Armor's Mixed technology stays a construction option** below the block (its own Advanced gate, TO:AUE
+   p.189), not a fifth tech base: the suit's tech base is its chassis's. An era change still turns Mixed off in an era
+   without it.
+18. **A removed single tech base is flagged, not moved** (round 3). Under the no-Clans ruleset a ProtoMech has no tech
+   base on offer: the step appears with the call-9 warning and the design keeps Clan until the ruleset is unticked.
+19. **A sample loaded in place of the design keeps the design's level and rulesets** (round 3; ArtVee samples), as
+   call 12 does for printed droids.
+
 ## Non-goals
 
 - No real rulesets yet beyond the sample.
@@ -126,7 +137,7 @@ are in use.
    downward reset, conflict check. Unit tests. **Done 2026-10-26.**
 2. Shared `GameSettingsBlock` component and the Special Rulesets window; wire into the 'Mech builder and remove its old
    controls. **Done 2026-10-26.**
-3. The other eight Classic builders; delete the old per-builder code.
+3. The other eight Classic builders; delete the old per-builder code. **Done 2026-10-26.**
 4. Alpha Strike creator and both roster MUL searches.
 5. Attribution on cards, sheets, TROs and printouts. About and home news.
 
