@@ -1,0 +1,1 @@
+function e(e){return(e+``).replace(/\b(\d+)((\.\d+)*)\b/g,function(e,t,n){return(t.charAt(0)>0&&!(n||`.`).lastIndexOf(`.`)?t.replace(/(\d)(?=(\d{3})+$)/g,`$1,`):t)+n})}export{e as t};

@@ -1,0 +1,10 @@
+var e=4e5,t=/^<\s*\/?\s*(p|br|b|i|u|em|strong|ul|ol|li|div|span|h[1-6])(\s[^<>]*)?\/?\s*>$/i,n=e=>{if(typeof e!=`string`||e.length===0||e.length>4e5)return null;let n=Object.create(null),r=null;for(let i of e.split(/\r?\n/)){let e=i.trim();if(!e||e.startsWith(`#`))continue;if(t.test(e)){r!==null&&n[r].length<400&&n[r].push(e);continue}if(/^<\/([^<>]{1,80})>$/.exec(e)){r=null;continue}let a=/^<([^<>/][^<>]{0,79})>$/.exec(e);if(a){r=a[1].trim().toLowerCase(),n[r]||(n[r]=[]);continue}r!==null&&n[r].length<400&&n[r].push(e)}return Object.keys(n).length>0?{blocks:n}:null},r=(e,t)=>e.blocks[t.toLowerCase()]?.[0]??``,i=(e,t)=>e.blocks[t.toLowerCase()]??[],a=[[`overview`,`overview`],[`capabilities`,`capabilities`],[`deployment`,`deployment`],[`battleHistory`,`history`],[`notes`,`notes`]],o=[[`manufacturer`,`manufacturer`],[`primaryFactory`,`primaryFactory`]],s={CHASSIS:{component:`chassis`},ENGINE:{component:`engine`},ARMOR:{component:`armor`},JUMP_JET:{component:`jumpJets`},COMMUNICATIONS:{production:`communications`},TARGETING:{production:`targeting`}},c={amp:`&`,lt:`<`,gt:`>`,quot:`"`,apos:`'`,nbsp:` `,"#39":`'`},l=e=>/^(unknown|none)?$/i.test(e.trim());function u(e){return e.join(`
+
+`).replace(/<\s*br\s*\/?\s*>/gi,`
+`).replace(/<\s*\/?\s*p(\s[^<>]*)?>/gi,`
+
+`).replace(/<[^<>]*>/g,``).replace(/&(amp|lt|gt|quot|apos|nbsp|#39);/g,(e,t)=>c[t]).split(/\n{2,}/).map(e=>e.split(`
+`).map(e=>e.trim()).join(`
+`).trim()).filter(e=>e).join(`
+
+`)}function d(e,t){let n={};for(let r of i(e,t)){let e=r.indexOf(`:`);if(e<=0)continue;let t=r.slice(e+1).trim();l(t)||(n[r.slice(0,e).trim().toUpperCase()]=t)}return n}function f(e){let t={},n={};for(let[t,r]of o){let a=u(i(e,r)).replace(/\s+/g,` `);l(a)||(n[t]=a)}let r={},c=d(e,`systemManufacturers`),f=d(e,`systemModels`);for(let[e,t]of Object.entries(s)){let i=[c[e],f[e]].filter(e=>e).join(` `);i&&(t.production&&(n[t.production]=i),t.component&&(r[t.component]=i))}Object.keys(n).length&&(t.production=n),Object.keys(r).length&&(t.components=r);let p={};for(let[t,n]of a){let r=u(i(e,n));r&&(p[t]=r)}return Object.keys(p).length&&(t.text=p),t}export{n as a,r as i,e as n,i as r,f as t};
