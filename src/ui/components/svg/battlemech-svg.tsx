@@ -832,11 +832,11 @@ export default class BattleMechSVG extends React.Component<IBattleMechSVGProps, 
 
 		<text x={this.armorBoxLeft +  this.armorBoxWidth / 2 - 280 } y={this.armorBoxTop + 970} textAnchor="start" fontFamily="sans-serif" fill={strokeColor} style={{fontWeight: 700}} fontSize={20}>FRONT</text>
 		<text x={this.armorBoxLeft +  this.armorBoxWidth / 2 - 280 } y={this.armorBoxTop + 990} textAnchor="start" fontFamily="sans-serif" fill={strokeColor} style={{fontWeight: 700}} fontSize={20}>LEFT</text>
-		<text x={this.armorBoxLeft +  this.armorBoxWidth / 2 - 280 } y={this.armorBoxTop + 1010} textAnchor="start" fontFamily="sans-serif" fill={strokeColor} style={{fontWeight: 700}} fontSize={20}>LEG [{ this.props.mechData.getArmorAllocation().leftArm }]</text>
+		<text x={this.armorBoxLeft +  this.armorBoxWidth / 2 - 280 } y={this.armorBoxTop + 1010} textAnchor="start" fontFamily="sans-serif" fill={strokeColor} style={{fontWeight: 700}} fontSize={20}>LEG [{ this.props.mechData.getArmorAllocation().frontLeftLeg }]</text>
 
 		<text x={this.armorBoxLeft + this.armorBoxWidth / 2 + 280 } y={this.armorBoxTop + 970} textAnchor="end" fontFamily="sans-serif" fill={strokeColor} style={{fontWeight: 700}} fontSize={20}>FRONT</text>
 		<text x={this.armorBoxLeft + this.armorBoxWidth / 2 + 280 } y={this.armorBoxTop + 990} textAnchor="end" fontFamily="sans-serif" fill={strokeColor} style={{fontWeight: 700}} fontSize={20}>RIGHT</text>
-		<text x={this.armorBoxLeft + this.armorBoxWidth / 2 + 280 } y={this.armorBoxTop + 1010} textAnchor="end" fontFamily="sans-serif" fill={strokeColor} style={{fontWeight: 700}} fontSize={20}>LEG [{ this.props.mechData.getArmorAllocation().rightArm }]</text>
+		<text x={this.armorBoxLeft + this.armorBoxWidth / 2 + 280 } y={this.armorBoxTop + 1010} textAnchor="end" fontFamily="sans-serif" fill={strokeColor} style={{fontWeight: 700}} fontSize={20}>LEG [{ this.props.mechData.getArmorAllocation().frontRightLeg }]</text>
 
 		<text x={this.armorBoxLeft +  this.armorBoxWidth / 2 - 110 } y={this.armorBoxTop + 935} textAnchor="start" fontFamily="sans-serif" fill={strokeColor} style={{fontWeight: 700}} fontSize={20}>REAR</text>
 		<text x={this.armorBoxLeft +  this.armorBoxWidth / 2 - 110 } y={this.armorBoxTop + 955} textAnchor="start" fontFamily="sans-serif" fill={strokeColor} style={{fontWeight: 700}} fontSize={20}>LEFT</text>
@@ -1173,7 +1173,7 @@ export default class BattleMechSVG extends React.Component<IBattleMechSVGProps, 
                             isFilled={this.props.mechData.structureDamaged("cl", index)}
                             xLoc={this.isBoxLeft + this.isBoxWidth / 2 + position.x}
                             yLoc={this.isBoxTop + TRIPOD_INTERNAL_CENTER_LEG_LAYOUT.firstRowY + position.y}
-                            radius={TRIPOD_INTERNAL_CENTER_LEG_LAYOUT.radius}
+                            radius={position.radius}
                             inPlay={this.props.inPlay}
                             clickLocation="cl"
                             clickIndex={index}
@@ -1519,7 +1519,7 @@ export default class BattleMechSVG extends React.Component<IBattleMechSVGProps, 
 
         <CritAllocationTableSVG
             strokeColor={strokeColor}
-            critData={this.props.mechData.getCriticals().leftArm}
+            critData={hasArms ? this.props.mechData.getCriticals().leftArm : this.props.mechData.getCriticals().frontLeftLeg}
             inPlay={inPlay}
             mechData={this.props.mechData}
             xLoc={critBoxLeft + critCol1Start}
@@ -1566,7 +1566,7 @@ export default class BattleMechSVG extends React.Component<IBattleMechSVGProps, 
         <CritAllocationTableSVG
             strokeColor={strokeColor}
             mechData={this.props.mechData}
-            critData={this.props.mechData.getCriticals().rightArm}
+            critData={hasArms ? this.props.mechData.getCriticals().rightArm : this.props.mechData.getCriticals().frontRightLeg}
             inPlay={inPlay}
             xLoc={critBoxLeft + critCol3Start}
             yLoc={critBoxTop + 140}

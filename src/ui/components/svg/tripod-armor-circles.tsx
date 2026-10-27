@@ -37,14 +37,14 @@ export default class TripodArmorCircles extends React.Component<ITripodArmorCirc
                 <text x={centerX} y={this.props.armorBoxTop + layout.labelY} textAnchor="middle" fontFamily="sans-serif" fill={strokeColor} style={{fontWeight: 700}} fontSize={14}>CENTER LEG</text>
                 <text x={centerX} y={this.props.armorBoxTop + layout.labelY + 16} textAnchor="middle" fontFamily="sans-serif" fill={strokeColor} style={{fontWeight: 700}} fontSize={14}>[{centerLegArmor}]</text>
 
-                {tripodCenterLegBubbles(centerLegArmor, layout).map((position, index) => {
+                {tripodCenterLegBubbles(Math.min(centerLegArmor, this.props.mechData.getMaxLocationArmor("centerLeg")), layout).map((position, index) => {
                     return (
                         <DamageCircleSVG
                             key={index}
                             isFilled={this.props.mechData.armorDamaged("cl", index)}
                             xLoc={centerX + position.x}
                             yLoc={this.props.armorBoxTop + layout.firstRowY + position.y}
-                            radius={layout.radius}
+                            radius={position.radius}
                             inPlay={this.props.inPlay}
                             clickLocation="cl"
                             clickIndex={index}

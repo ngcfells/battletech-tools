@@ -11374,6 +11374,24 @@ export class BattleMech {
         this._calc();
     }
 
+    /**
+     * The most armor the rules let a location carry as allocated now: the head 9, a torso front or rear what its
+     * shared allowance leaves (each its own under earlier editions), any other location twice its internal structure.
+     */
+    public getMaxLocationArmor(location: string): number {
+        switch (location) {
+            case "head": return 9;
+            case "centerTorso": return this.getMaxCenterTorsoArmor();
+            case "centerTorsoRear": return this.getMaxCenterTorsoRearArmor();
+            case "leftTorso": return this.getMaxLeftTorsoArmor();
+            case "leftTorsoRear": return this.getMaxLeftTorsoRearArmor();
+            case "rightTorso": return this.getMaxRightTorsoArmor();
+            case "rightTorsoRear": return this.getMaxRightTorsoRearArmor();
+        }
+        const structure = (this.getInternalStructure() as unknown as Record<string, number | undefined>)[location];
+        return (structure ?? 0) * 2;
+    }
+
     public getMaxCenterTorsoRearArmor(): number {
         return this.getInternalStructure().centerTorso * 2 - (this.torsoArmorSectionsApart() ? 0 : this.getArmorAllocation().centerTorso);
     }

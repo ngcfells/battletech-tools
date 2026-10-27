@@ -1,4 +1,5 @@
 import React, { type JSX } from "react";
+import { bubblePositions, type BubblePoint } from "./armor-bubble-layouts";
 import BipedArmorDiagramSVG from "./biped-armor-diagram";
 import BipedDamageTransferDiagramSVG from "./biped-damage-transfer-diagram-svg";
 import BipedInternalStructureDiagramSVG from "./biped-internal-structure-diagram-svg";
@@ -63,7 +64,7 @@ export interface ITripodCenterLegBubbleLayout {
     columnSpacing: number;
     rowSpacing: number;
     radius: number;
-    // As many as the Biped legs hold, so a superheavy Tripod fits too.
+    // The grid's bubbles, as many as the Biped legs hold; more split into smaller ones (bubblePositions).
     max: number;
 }
 
@@ -75,12 +76,14 @@ export const TRIPOD_INTERNAL_CENTER_LEG_LAYOUT: ITripodCenterLegBubbleLayout = {
     labelY: 462, firstRowY: 488, columns: 4, columnSpacing: 13, rowSpacing: 13, radius: 5.5, max: 32,
 };
 
-/** Bubble centers, relative to the layout's center and first row, filling each row left to right. */
-export const tripodCenterLegBubbles = (count: number, layout: ITripodCenterLegBubbleLayout): { x: number; y: number }[] => {
-    return Array.from({ length: Math.min(Math.max(count, 0), layout.max) }, (_, index) => ({
-        x: (index % layout.columns - (layout.columns - 1) / 2) * layout.columnSpacing,
-        y: Math.floor(index / layout.columns) * layout.rowSpacing,
-    }));
+/** Bubble centers, relative to the layout's center and first row, filling the grid from its center outward. */
+export const tripodCenterLegBubbles = (count: number, layout: ITripodCenterLegBubbleLayout): { x: number; y: number; radius: number }[] => {
+    const grid = Array.from({ length: layout.max }, (_, index): BubblePoint => [
+        (index % layout.columns - (layout.columns - 1) / 2) * layout.columnSpacing,
+        Math.floor(index / layout.columns) * layout.rowSpacing,
+    ]);
+    const { points, radius } = bubblePositions(grid, layout.radius, count);
+    return points.map(([x, y]) => ({ x, y, radius }));
 };
 
 interface ITripodDiagramSVGProps {

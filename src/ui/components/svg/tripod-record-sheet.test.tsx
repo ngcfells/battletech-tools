@@ -62,14 +62,32 @@ describe("Tripod record sheet (issue 77)", () => {
         expect(extra).toBe(42 + (tripod.getInternalStructure().centerLeg ?? 0));
     });
 
+    it("prints all 84 points of a 200-ton superheavy Tripod's Center Leg armor", () => {
+        const superheavy = (type: string) => {
+            const mech = new BattleMech();
+            mech.setType(type);
+            mech.setTonnage(200);
+            mech.allocateArmorMax();
+            return mech;
+        };
+        const tripod = superheavy("tripod");
+        const extra = circleCount(renderToStaticMarkup(<BattleMechSVG mechData={tripod} />))
+            - circleCount(renderToStaticMarkup(<BattleMechSVG mechData={superheavy("biped")} />));
+        expect(tripod.getArmorAllocation().centerLeg).toBe(84);
+        expect(extra).toBe(84 + (tripod.getInternalStructure().centerLeg ?? 0));
+    });
+
+    // Up to twice today's superheavy allowance, for an armor that may one day double it.
     it("keeps every Center Leg bubble inside the Center Leg it draws", () => {
         const sheet = new BattleMechSVG({ mechData: new BattleMech() });
         const check = (layout: tripodDiagram.ITripodCenterLegBubbleLayout, polygon: tripodDiagram.SheetPoint[], centerX: number, top: number) => {
-            for (const bubble of tripodDiagram.tripodCenterLegBubbles(layout.max, layout)) {
-                const x = centerX + bubble.x;
-                const y = top + layout.firstRowY + bubble.y;
-                for (const [dx, dy] of [[-1, 0], [1, 0], [0, -1], [0, 1]]) {
-                    expect(insidePolygon(x + dx * (layout.radius + 3), y + dy * (layout.radius + 3), polygon)).toBe(true);
+            for (const count of [layout.max, 84, 168]) {
+                for (const bubble of tripodDiagram.tripodCenterLegBubbles(count, layout)) {
+                    const x = centerX + bubble.x;
+                    const y = top + layout.firstRowY + bubble.y;
+                    for (const [dx, dy] of [[-1, 0], [1, 0], [0, -1], [0, 1]]) {
+                        expect(insidePolygon(x + dx * (bubble.radius + 3), y + dy * (bubble.radius + 3), polygon)).toBe(true);
+                    }
                 }
             }
         };
