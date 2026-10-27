@@ -9,6 +9,15 @@ describe("findImportedEquipment", () => {
         expect(findImportedEquipment("medium-laser", "is")?.catalog).toBe("is");
     });
 
+    it("reads SSW's Narc-capable SRM ammo on a Clan design as the Clan round (Stormcrow, Summoner, Warhawk)", () => {
+        for (const size of [2, 4, 6]) {
+            const match = findImportedEquipment(`Ammo (SRM-${size} (Narc Capable))`, "clan");
+            expect(match?.item.tag).toBe("ammo-clan-srm-narc");
+            expect(match?.catalog).toBe("clan");
+        }
+        expect(findImportedEquipment("Ammo (SRM-4 (Narc Capable))", "is")?.item.tag).toBe("ammo-is-srm-narc");
+    });
+
     it("matches another tool's spelling through altNames", () => {
         // SSW writes launcher sizes with a hyphen; the records list that spelling in altNames.
         expect(findImportedEquipment("LRM-10", "is")?.item.name).toBe("LRM 10");

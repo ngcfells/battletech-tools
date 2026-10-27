@@ -556,6 +556,8 @@ export class BattleMech {
     private _torsoMountedCockpit: boolean = false;
     // IndustrialMechs: the Advanced Fire Control cockpit enhancement (TM p.69). An option, off by default.
     private _advancedFireControl: boolean = false;
+    // A Cockpit Command Console beside the cockpit (TO:AUE p.112). An option, off by default.
+    private _commandConsole: boolean = false;
     // Built under the Primitive 'Mech rules (IO:AE pp.116-118). With later equipment it is a RetroTech unit.
     private _primitive: boolean = false;
     // Mixed Tech on an Inner Sphere base: Clan CASE, "seamless and weightless", in every location (TM p.210).
@@ -686,6 +688,7 @@ export class BattleMech {
         this._rulesLevel = undefined;
         this._rulesets = [];
         this._advancedFireControl = false;
+        this._commandConsole = false;
         this._patchworkArmor = {};
         this._frankenMech = false;
         this._frankenMechDonors = {};
@@ -1643,6 +1646,11 @@ export class BattleMech {
         const cockpit = this.getCockpitType();
         this._calcLogCBill += "<tr><td><strong>" + (cockpit.tag === "standard" ? "Standard Cockpit" : cockpit.name) + "</strong></td><td>" + addCommas(cockpit.cost) + "</td></tr>\n";
         cbillDryTotal += cockpit.cost;
+        if (this.hasCommandConsole()) {
+            const console = getCockpitType("command-console");
+            this._calcLogCBill += "<tr><td><strong>" + console.name + "</strong></td><td>" + addCommas(console.cost) + "</td></tr>\n";
+            cbillDryTotal += console.cost;
+        }
 
         // Life Support
         this._calcLogCBill += "<tr><td><strong>Life Support</strong></td><td>50,000</td></tr>\n";
@@ -2230,6 +2238,40 @@ export class BattleMech {
             this._calc();
         }
         return this.getCockpitType();
+    }
+
+    /**
+     * May this 'Mech add a Cockpit Command Console? Not with a Torso-Mounted Cockpit (TO:AUE p.112), on a QuadVee or
+     * a tripod, whose cockpits already seat a second warrior (IO:AE pp.128, 159), nor where the console's head slot is
+     * taken: by the interface cockpit's second slot or a LAM's avionics.
+     */
+    public canMountCommandConsole(): boolean {
+        const typeTag = this._mechType.tag;
+        if (typeTag === "tripod" || typeTag === "quadvee" || typeTag === "lam") return false;
+        return !["torso-mounted", "interface"].includes(this.getCockpitType().tag);
+    }
+
+    /** The Command Console as the cockpit picker offers it: availability judged as getAvailableCockpits() does. */
+    public getCommandConsoleOption(rulesLevel: number = 2): ICockpitType {
+        const console = { ...getCockpitType("command-console") };
+        const availability = this._techDatesAvailability(console, rulesLevel);
+        console.availableAsPrototype = availability.asPrototype;
+        console.available = this.canMountCommandConsole() && availability.available
+            && this.isOfferedInEdition(console, rulesLevel) && rulesLevel >= (console.rulesLevel ?? 0);
+        return console;
+    }
+
+    /** A Cockpit Command Console is mounted: chosen, and allowed by the cockpit and chassis in force. */
+    public hasCommandConsole(): boolean {
+        return this._commandConsole && this.canMountCommandConsole();
+    }
+
+    /** Add or remove the Cockpit Command Console; returns whether one is mounted. */
+    public setCommandConsole(mounted: boolean): boolean {
+        if (mounted && !this.canMountCommandConsole()) return false;
+        this._commandConsole = mounted;
+        this._calc();
+        return this.hasCommandConsole();
     }
 
     /**
@@ -3132,6 +3174,10 @@ export class BattleMech {
         } else {
             html += "Cockpit".padEnd(col1Padding + col2Padding, " " ) + "" + this.getCockpitWeight() + "\n";
         }
+        if( this.hasCommandConsole() ) {
+            const console = getCockpitType("command-console");
+            html += console.name.padEnd(col1Padding + col2Padding, " " ) + "" + console.weight + "\n";
+        }
 
         // if( this.getJumpJetWeight() > 0 ) {
         // html += "Jump Jets".padEnd( " ",col1Padding + col2Padding) + "" + this.getJumpJetWeight() + "\n";
@@ -3432,6 +3478,10 @@ export class BattleMech {
         } else {
             html += "<tr><td colspan=\"3\">Cockpit</td><td class=\"text-center\" colspan=\"1\">" + this.getCockpitWeight() + "</td></tr>";
         }
+        if( this.hasCommandConsole() ) {
+            const console = getCockpitType("command-console");
+            html += "<tr><td colspan=\"3\">" + esc(console.name) + "</td><td class=\"text-center\" colspan=\"1\">" + console.weight + "</td></tr>";
+        }
 
         if( typeTag === "biped" || typeTag === "lam" || typeTag === "tripod" ) {
             html += "<tr><td colspan=\"4\">Actuators: ";
@@ -3716,6 +3766,10 @@ export class BattleMech {
                 name: "Cockpit",
                 weight: this.getCockpitWeight()
             });
+        }
+        if (this.hasCommandConsole()) {
+            const console = getCockpitType("command-console");
+            this._weights.push({ name: console.name, weight: console.weight });
         }
 
         // LAM/QuadVee conversion equipment is 10% of mass, rounded up to a whole ton
@@ -4225,7 +4279,8 @@ export class BattleMech {
                 "hd",
                 2
             );
-            this._addCriticalItem( "sensors", "Sensors", 1, "hd", 3);
+            // A Command Console takes slot 3, so the second Sensors move down (MegaMek's addSmallCommandConsole).
+            this._addCriticalItem( "sensors", "Sensors", 1, "hd", this.hasCommandConsole() ? 4 : 3);
         } else {
             this._addCriticalItem( "life-support", "Life Support", 1, "hd", 0);
             this._addCriticalItem( "sensors", "Sensors", 1, "hd", 1);
@@ -4241,6 +4296,10 @@ export class BattleMech {
         }
         if (typeTag === "lam" && this._hasLAMLimits()) {
             this._addCriticalItem("lam-avionics", "LAM Avionics", 1, "hd", 3);
+        }
+        // The console sits beside the cockpit, in the cockpit's own location (TO:AUE p.112).
+        if (this.hasCommandConsole()) {
+            this._addCriticalItem("command-console", "Command Console", 1, "hd", 3);
         }
         if (typeTag === "quadvee") {
             this._addCriticalItem(cockpitTag, "Cockpit (Gunner)", 1, "hd", 3);
@@ -6340,6 +6399,7 @@ export class BattleMech {
         }
         check("Gyro", this._gyro);
         check("Cockpit", this.getCockpitType());
+        if (this.hasCommandConsole()) check("Command Console", getCockpitType("command-console"));
         check("Internal structure", this._selectedInternalStructure);
         check("Armor", this.getArmorObj());
         check("Heat sinks", this._heatSinkType);
@@ -6776,6 +6836,7 @@ export class BattleMech {
         // Primitive 'Mech construction is Advanced (IO:AE p.116).
         if (this._primitive) level = Math.max(level, 3);
         level = Math.max(level, this.getCockpitType().rulesLevel ?? 0);
+        if (this.hasCommandConsole()) level = Math.max(level, getCockpitType("command-console").rulesLevel ?? 0);
         // An IndustrialMech with BattleMech armor is Experimental (TO:AUE p.92); the Dark Age armors are
         // "only under Experimental Mixed-Tech rules" (IO:AE p.82).
         const armorTypes = this.isPatchworkArmor()
@@ -7306,14 +7367,15 @@ export class BattleMech {
     private static readonly CRITICAL_LOCATIONS = ["hd", "ct", "lt", "rt", "la", "ra", "ll", "rl", "cl", "fll", "frl"];
     private static readonly CASE_TAGS = ["case", "case-ii", "clan-case-ii", "case-prototype"];
     // Chassis systems that are one component however many records they fill.
-    private static readonly WHOLE_COMPONENT_TAGS = ["engine", "gyro", "cockpit", "multi-pilot-cockpit", "sensors", "life-support"];
+    private static readonly WHOLE_COMPONENT_TAGS = ["engine", "gyro", "cockpit", "multi-pilot-cockpit", "command-console", "sensors", "life-support"];
 
     private static _armoredSlotKey(tag: string, loc: string, slot: number): string {
         return `${tag}@${loc}:${slot}`;
     }
 
+    // Armoring the cockpit systems, Command Console included, adds 1 ton in all (TO:AUE p.94).
     private static _isCockpitRecord(tag: string): boolean {
-        return tag === "cockpit" || tag === "multi-pilot-cockpit";
+        return tag === "cockpit" || tag === "multi-pilot-cockpit" || tag === "command-console";
     }
 
     /** SSW names the rear quad legs RLL and RRL. */
@@ -8412,6 +8474,9 @@ export class BattleMech {
         // IndustrialMech cockpit with the Advanced Fire Control enhancement (TM p.69).
         if( this._advancedFireControl)
             exportObject.features.push( "afc" );
+        // Cockpit Command Console (TO:AUE p.112).
+        if( this.hasCommandConsole())
+            exportObject.features.push( "command_console" );
         // Built under the Primitive 'Mech rules (IO:AE pp.116-118).
         if( this._primitive)
             exportObject.features.push( "primitive" );
@@ -8849,6 +8914,8 @@ export class BattleMech {
                 // IndustrialMech cockpit with Advanced Fire Control
                 if( importObject.features.indexOf( "afc" ) > -1)
                     this._advancedFireControl = true;
+                if( importObject.features.indexOf( "command_console" ) > -1)
+                    this._commandConsole = true;
 
                 // Other features
             }
@@ -12846,7 +12913,7 @@ export class BattleMech {
     /**
      * SSW marks a Full-Head Ejection System, an IndustrialMech ejection seat and a Cockpit Command Console as
      * attributes of the cockpit type, outside the equipment list (#46). The FHES takes no slot (TO:AUE p.122); the
-     * ejection seat takes a head slot (TM p.214). The Command Console cannot be built yet.
+     * ejection seat takes a head slot (TM p.214); the Command Console takes the head slot beside the cockpit.
      */
     private _installSSWCockpitSystems( cockpitType: any ) {
         if( !cockpitType || typeof cockpitType !== "object" ) return;
@@ -12871,8 +12938,8 @@ export class BattleMech {
                 }
             }
         }
-        if( flag( "commandconsole" ) ) {
-            this._sswImportErrors.push( "Cannot import the Cockpit Command Console yet (TO:AUE p.112)" );
+        if( flag( "commandconsole" ) && !this.setCommandConsole( true ) ) {
+            this._sswImportErrors.push( "This 'Mech cannot mount a Cockpit Command Console (TO:AUE p.112)" );
         }
     }
 

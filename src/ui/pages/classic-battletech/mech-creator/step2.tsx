@@ -98,6 +98,14 @@ export default class MechCreatorStep2 extends React.Component<IHomeProps, IHomeS
       }
     }
 
+    setCommandConsole = ( event: React.FormEvent<HTMLInputElement>): void => {
+      if( this.props.appGlobals.currentBattleMech ) {
+        const currentMech = this.props.appGlobals.currentBattleMech;
+        currentMech.setCommandConsole( event.currentTarget.checked );
+        this.props.appGlobals.saveCurrentBattleMech( currentMech );
+      }
+    }
+
     render = (): JSX.Element => {
       if(!this.props.appGlobals.currentBattleMech) {
         return <></>
@@ -305,6 +313,21 @@ export default class MechCreatorStep2 extends React.Component<IHomeProps, IHomeS
                                   ))}
                                 </select>
                               </label>
+                              {(() => {
+                                const mech = this.props.appGlobals.currentBattleMech;
+                                const console = mech.getCommandConsoleOption(mechRulesLevel(this.props.appGlobals));
+                                if( !isOptionShown(console, mech.hasCommandConsole()) ) return null;
+                                return (
+                                  <label className="d-block">
+                                    <input
+                                      type="checkbox"
+                                      checked={mech.hasCommandConsole()}
+                                      onChange={this.setCommandConsole}
+                                    />{" "}
+                                    {availabilityOptionLabel(console)}: 3 tons, 1 head slot
+                                  </label>
+                                );
+                              })()}
                             </EditionChoice>
 
                             <div className="clear-both overflow-hidden">

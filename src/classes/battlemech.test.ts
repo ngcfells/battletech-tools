@@ -2886,7 +2886,7 @@ describe("Batch 8 cockpit catalog", () => {
             expect([item.book, item.page], item.tag).toEqual(pages[item.tag]);
         }
         expect(mechCockpitTypes.filter(item => item.constructionStatus === "implemented").map(item => item.tag).sort())
-            .toEqual(["industrial", "industrial-advanced-fire-control", "primitive", "primitive-industrial", "primitive-industrial-advanced-fire-control", "quadvee", "small", "standard", "superheavy", "superheavy-industrial", "superheavy-tripod", "torso-mounted", "tripod"]);
+            .toEqual(["command-console", "industrial", "industrial-advanced-fire-control", "primitive", "primitive-industrial", "primitive-industrial-advanced-fire-control", "quadvee", "small", "standard", "superheavy", "superheavy-industrial", "superheavy-tripod", "torso-mounted", "tripod"]);
         // Small (TM p.304) and Torso-Mounted (TO:AUE p.193) cockpits multiply the final BV by 0.95.
         expect(cockpit("small")?.bvMultiplier).toBe(0.95);
         expect(cockpit("torso-mounted")?.bvMultiplier).toBe(0.95);

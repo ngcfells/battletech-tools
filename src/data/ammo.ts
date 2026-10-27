@@ -6711,7 +6711,7 @@ export const ammoCatalog: IEquipmentItem[] = [
         isAmmo: true,
         isSpecialAmmo: true,
         name: "SRM - Narc-Capable Ammo (C)",
-        altNames: ["Clan Narc SRM Ammo", "Clan Narc-Capable SRM Ammo"],
+        altNames: ["Clan Narc SRM Ammo", "Clan Narc-Capable SRM Ammo", "Ammo (SRM-2 (Narc Capable))", "Ammo (SRM-4 (Narc Capable))", "Ammo (SRM-6 (Narc Capable))"],
         tag: "ammo-clan-srm-narc",
         editions: ["compendium-rules-of-warfare", "master-rules", "master-rules-revised", "total-warfare", "battlemech-manual", "core-rulebook"],
         techBase: "clan",

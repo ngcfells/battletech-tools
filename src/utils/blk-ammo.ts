@@ -12,7 +12,7 @@ const WEAPON_ALIASES: Record<string, string> = Object.assign(Object.create(null)
     mg: "machinegun", lightmg: "machinegunlight", heavymg: "machinegunheavy", lmg: "machinegunlight", hmg: "machinegunheavy",
 });
 
-/** The kind of round a line names: an MML's LRM or SRM rounds, an ATM's ER or HE, Artemis IV or V, cluster or homing. */
+/** The kind of round a line names: an MML's LRM or SRM rounds, an ATM's ER or HE, Artemis IV or V, Narc-capable, cluster or homing. */
 const lineKind = (name: string): RegExp | undefined => {
     const artemis = /artemis\s*v\b/i.test(name) ? "artemis-v" : /artemis/i.test(name) ? "artemis-iv" : "";
     const mml = /\bmml/i.test(name) ? /\b(lrm|srm)\b/i.exec(name)?.[1].toLowerCase() : undefined;
@@ -20,6 +20,7 @@ const lineKind = (name: string): RegExp | undefined => {
     if (artemis) return new RegExp(`${artemis}$`);
     const atm = /\batm/i.test(name) ? /\b(er|he)\b/i.exec(name)?.[1].toLowerCase() : undefined;
     if (atm) return new RegExp(`-atm-${atm}$`);
+    if (/narc[- ]capable/i.test(name)) return /-narc(-capable)?$/;
     return /cluster/i.test(name) ? /cluster/ : /homing/i.test(name) ? /homing/ : undefined;
 };
 
@@ -41,7 +42,7 @@ export const parseBlkAmmoLine = (name: string): IBlkAmmoLine | null => {
         .replace(/\b(IS|Clan|CL)\b/g, "")
         .replace(/ammo/ig, "")
         .replace(/-\s*(half|full)\b/ig, "")
-        .replace(/\bartemis(\s*v)?[- ]capable\b/ig, "")
+        .replace(/\b(artemis(\s*v)?|narc)[- ]capable\b/ig, "")
         .replace(/\b(cluster|slug|homing|standard)\b/ig, "");
     if (/\bmml/i.test(name)) weapon = weapon.replace(/\b(lrm|srm)\b/ig, "");
     if (/\batm/i.test(name)) weapon = weapon.replace(/\b(er|he)\b/ig, "");

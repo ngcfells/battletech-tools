@@ -32,6 +32,9 @@ describe("MUL chunk loader", () => {
         expect(bv(102180)).toBe(1227); // Diomede D-M3D-3, live MUL 1228 (#371)
         expect(bv(101073)).toBe(1234); // Diomede D-M3D-4, live MUL 1235
         expect(bv(100319)).toBe(73); // Patron PTN-1, live MUL 107
+        expect(bv(100143)).toBe(954); // Kiso K-3N-KR4, live MUL 946 (#171)
+        expect(bv(104760)).toBe(1091); // Kiso K-3N-KR5, live MUL 1082
+        expect(bv(108066)).toBe(2278); // Atlas AS7-S3-DC, live MUL 2276
     }, 30_000);
 
     it("adds MUL 1.0 leftovers only when selected, one record per legacy id", async () => {

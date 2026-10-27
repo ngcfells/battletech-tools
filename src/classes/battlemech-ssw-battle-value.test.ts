@@ -141,11 +141,6 @@ describe("SSW Battle Value (#46)", () => {
         expect(hound.sswImportErrors).toEqual([]);
     });
 
-    it("reports a Cockpit Command Console it cannot build yet: Hatamoto-Godai HTM-30Z", () => {
-        const mech = importFixture("hatamoto-godai-htm-30z");
-        expect(mech.sswImportErrors.some((error) => error.includes("Command Console"))).toBe(true);
-    });
-
     it("imports IndustrialMech and Primitive files, which were skipped: Harvester Ant KIC-3, Commando COM-1A", () => {
         const ant = importFixture("harvester-ant-kic-3");
         expect(ant.isIndustrialMech()).toBe(true);

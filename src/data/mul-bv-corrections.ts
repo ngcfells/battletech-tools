@@ -17,6 +17,11 @@ export const MUL_BV_CORRECTIONS: Record<number, { bv: number; source: string }> 
     101073: { bv: 1234, source: "Diomede D-M3D-4: TM p.317 (live MUL 1235)" },
     // Commercial armor counts half (TM p.315), as the MUL's own PTN-2 (143) has it; MegaMek also gets 73.
     100319: { bv: 73, source: "Patron PTN-1: TM p.315 (live MUL 107, as MUL: Battle Values v1.0 p.174)" },
+    // #171, Command Console designs. The live MUL takes the Kisos' x0.9 for no Advanced Fire Control; their RS:3075
+    // sheets print the BV with it. MUL: Battle Values v1.0 p.174 agrees for the KR4 but prints 959 for the KR5.
+    100143: { bv: 954, source: "Kiso K-3N-KR4: RS:3075 record sheet, MUL: Battle Values v1.0 p.174 (live MUL 946)" },
+    104760: { bv: 1091, source: "Kiso K-3N-KR5: RS:3075 record sheet (live MUL 1082; MUL: Battle Values v1.0 p.174 prints 959)" },
+    108066: { bv: 2278, source: "Atlas AS7-S3-DC: Recognition Guide: ilClan Vol. 24 record sheet (live MUL 2276)" },
 };
 
 /** A live MUL entry with its Battle Value corrected, when the table has one. */

@@ -14,7 +14,7 @@ import { getBundledMechEntries, loadBundledMechDesign, loadBundledMechIndex } fr
 const dataDir = path.resolve(__dirname, "bundled");
 
 // Pinned so a growing data set is a deliberate change.
-const DESIGNS = 3553;
+const DESIGNS = 3585;
 // The table format with values shared per chunk (#241 follow-up) took it from 18.4 MB to 8.7 MB, read a chunk at a time.
 const MAX_BYTES = 9_000_000;
 
@@ -38,6 +38,8 @@ describe("bundled 'Mechs", () => {
         expect([103087, 107159, 108513, 100674, 106363].map(bv)).toEqual([352, 250, 350, 680, 826]);
         // #371: Nail/Rivet Gun ammo at 0 BV (TM p.317) and commercial armor at half (TM p.315).
         expect([102180, 101073, 100319].map(bv)).toEqual([1227, 1234, 73]);
+        // #171: Command Console designs at their record sheets' BV.
+        expect([100143, 104760, 108066].map(bv)).toEqual([954, 1091, 2278]);
         // MegaMek files with no cockpit line whose record sheets have a plain Industrial cockpit (no AFC).
         const byModel = (model: string) => headers.find((header) => header.model === model)?.bv;
         expect(["QUA-51T MilitiaMech", "HYN-4A SalvageMech", "HYN-4B SalvageMech"].map(byModel)).toEqual([670, 474, 398]);

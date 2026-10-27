@@ -45,4 +45,11 @@ describe("MegaMek .blk ammunition lines", () => {
         // "AC/10 Primitive" rounds feed the Primitive Prototype AC/10 (IO:AE p.112).
         expect(roundFor("IS Ammo AC/10 Primitive", "primitive-prototype-ac-10")).toBe("ammo-ac-10-standard");
     });
+
+    it("reads Narc-capable LRM and SRM rounds, each of its own tech base (Orion ON1-M-DC)", () => {
+        expect(roundFor("IS Ammo LRM-20 Narc-capable", "lrm-20")).toBe("ammo-lrm-narc");
+        expect(roundFor("IS Ammo SRM-4 Narc-capable", "srm-4")).toBe("ammo-is-srm-narc");
+        expect(roundFor("Clan Ammo SRM-6 (Clan) Narc-capable", "clan-srm-6")).toBe("ammo-clan-srm-narc");
+        expect(roundFor("Clan Ammo LRM-20 (Clan) Narc-capable", "clan-lrm-20")).toBe("ammo-lrm-narc");
+    });
 });

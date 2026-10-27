@@ -171,9 +171,10 @@ export function convertMtfToSSW(file: IMtfFile): { xml: string; issues: string[]
     const industrial = /industrial/i.test(cockpit) || /industrial/i.test(value(file, "structure"));
     const mechType = /^primitive/i.test(cockpit) ? (industrial ? "PrimitiveIndustrialMech" : "PrimitiveBattleMech") : industrial ? "IndustrialMech" : "BattleMech";
     // MegaMek gives an IndustrialMech with Advanced Fire Control a BattleMech cockpit, and writes no line for a Standard
-    // one (its Mek.hasAdvancedFireControl); Skunk Werks names it "Industrial w/ Adv. FC" (#371).
-    const sswCockpit = value(file, "cockpit") === "Command Console" ? "Standard Cockpit"
-        : industrial && /^(standard|primitive) cockpit$/i.test(cockpit) ? "Industrial w/ Adv. FC" : cockpit;
+    // one (its Mek.hasAdvancedFireControl); Skunk Werks names it "Industrial w/ Adv. FC" (#371). A Command Console is
+    // a BattleMech cockpit there too, so an IndustrialMech with one has Advanced Fire Control.
+    const sswCockpit = industrial && /^((standard|primitive) cockpit|command console)$/i.test(cockpit) ? "Industrial w/ Adv. FC"
+        : cockpit === "Command Console" ? "Standard Cockpit" : cockpit;
 
     // The slots: each location's equipment, in runs of one item's slots.
     const items: IMtfItem[] = [];
