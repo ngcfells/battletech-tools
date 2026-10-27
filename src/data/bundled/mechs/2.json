@@ -1,4 +1,4 @@
-{"notice":"The data here is/may be copyrighted and NOT included in the GPLv3 license. Converted from the Solaris Skunk Werks project's files at https://github.com/Solaris-Skunk-Werks/SSW-Master, and from MegaMek's unit files (https://github.com/MegaMek/megamek): MegaMek Data (C) 2025-2026 by The MegaMek Team, licensed under CC BY-NC-SA 4.0 (https://creativecommons.org/licenses/by-nc-sa/4.0/).","shared":[
+{"notice":"The data here is/may be copyrighted and NOT included in the GPLv3 license. Converted from the Solaris Skunk Werks project's files at https://github.com/Solaris-Skunk-Werks/SSW-Master, from mordel.net's MegaMek-format files (https://www.mordel.net), and from MegaMek's unit files (https://github.com/MegaMek/megamek): MegaMek Data (C) 2025-2026 by The MegaMek Team, licensed under CC BY-NC-SA 4.0 (https://creativecommons.org/licenses/by-nc-sa/4.0/).","shared":[
 {"name":"Standard Jump Jets","tag":"jj-standard","movable":true,"crits":1},
 ["lt",2,"#1",1,{"name":"Standard Jump Jets","tag":"jj-standard","movable":true,"crits":1}],
 ["rt",3,"#2",1,{"name":"Standard Jump Jets","tag":"jj-standard","movable":true,"crits":1}],

@@ -7,7 +7,7 @@ import type { UnitStanding } from "./unit-standing";
 // they can be and imported only when one is opened. Each carries the few fields the lists and the Master Unit List
 // search show, so nothing is imported to list them.
 
-export type BundledDesignSource = "ssw" | "megamek" | "verified";
+export type BundledDesignSource = "ssw" | "megamek" | "mordel" | "verified";
 
 /** What the lists and the Master Unit List search show of a bundled design, so nothing is imported to list them. */
 export interface IBundledDesignHeader {
@@ -27,6 +27,8 @@ export interface IBundledDesignHeader {
     mulId?: number;
     /** Where the data comes from: a MegaMek design carries its credit until it is checked against its TRO. */
     source: BundledDesignSource;
+    /** The design's own page at its source (a mordel.net unit page), linked from the source label. */
+    sourceUrl?: string;
     /** An OmniMech's configurations, each its own Master Unit List variant. */
     configs?: { name: string; bv: number; layout?: string }[];
     /** getMechFingerprint of the design, to tell it from a saved design of the same name and model. */

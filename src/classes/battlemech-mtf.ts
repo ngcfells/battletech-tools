@@ -137,7 +137,7 @@ export function convertMtfToSSW(file: IMtfFile): { xml: string; issues: string[]
     const mixed = /^mixed/i.test(techbase);
     const faction: ImportFaction = clan || /clan chassis/i.test(techbase) ? "clan" : "is";
     const quad = /^quad/i.test(config) && !/quadvee/i.test(config);
-    if (!/^(biped|quad)( omnimek)?$/i.test(config)) issues.push(`'Mech configuration '${config}' is not converted yet`);
+    if (!/^(biped|quad)( omnime(k|ch))?$/i.test(config)) issues.push(`'Mech configuration '${config}' is not converted yet`);
     const locations = quad ? QUAD_LOCATIONS : BIPED_LOCATIONS;
     const tons = +value(file, "mass");
     if (tons > 100) issues.push("Superheavy 'Mechs are not converted yet");
@@ -151,13 +151,18 @@ export function convertMtfToSSW(file: IMtfFile): { xml: string; issues: string[]
     const engineTech = engine?.[4] ?? engine?.[6] ?? (faction === "clan" ? "Clan" : "IS");
     const structureTech = /^clan /i.test(value(file, "structure")) ? "1" : /^is /i.test(value(file, "structure")) ? "0" : "2";
     const structureName = STRUCTURES[value(file, "structure").replace(/^(IS|Clan) /i, "")] ?? value(file, "structure");
-    const armor = /^(.+?)\((Clan|Inner Sphere)\)$/.exec(value(file, "armor"));
+    // MegaMek writes "Standard(Inner Sphere)", mordel.net "Standard (IS)".
+    const armor = /^(.+?)\s*\((Clan|Inner Sphere|IS)\)$/.exec(value(file, "armor"));
     const armorName = armor ? ARMORS[armor[1]] ?? armor[1] : value(file, "armor");
     if (/patchwork/i.test(armorName)) issues.push("Patchwork armor is not converted yet");
     const sinks = /^(\d+)\s+(IS |Clan )?(\w+)$/i.exec(value(file, "heat sinks"));
     const sinkType = sinks ? HEAT_SINKS[sinks[3]] : undefined;
     if (!sinks || !sinkType) issues.push(`Heat sinks '${value(file, "heat sinks")}' are not converted yet`);
-    const sinkClan = sinks?.[2] ? /clan/i.test(sinks[2]) : clan;
+    // mordel.net writes "Double" with no tech base: its slots name it (CLDoubleHeatSink on an Inner Sphere 'Mech).
+    const sinkSlotNames = Object.values(file.slots).flat().filter((slot) => /double ?heat ?sink/i.test(slot));
+    const sinkClan = sinks?.[2] ? /clan/i.test(sinks[2])
+        : sinkSlotNames.length > 0 && sinkSlotNames.every((slot) => /^(CL|Clan)/i.test(slot)) ? true
+        : sinkSlotNames.length > 0 && sinkSlotNames.every((slot) => /^IS/i.test(slot)) ? false : clan;
     const sinkSlots = sinkType === "Double Heat Sink" ? (sinkClan ? 2 : 3) : sinkType === "Laser Heat Sink" ? 2 : 1;
     if (sinkType === "Compact Heat Sink") issues.push("Compact heat sinks are not converted yet");
     const cockpit = value(file, "cockpit") || "Standard Cockpit";
@@ -196,6 +201,8 @@ export function convertMtfToSSW(file: IMtfFile): { xml: string; issues: string[]
 
     for (const [section, list] of Object.entries(file.slots)) {
         const loc = locations[section];
+        // mordel.net lists an empty Center Leg on every 'Mech, tripod or not.
+        if (!loc && section === "Center Leg" && list.every((slot) => slot === "-Empty-")) continue;
         if (!loc) { issues.push(`Location '${section}' is not converted yet`); continue; }
         if (list.length > 12) issues.push(`${section} lists more than 12 slots`);
         for (let index = 0; index < list.length;) {
@@ -232,7 +239,7 @@ export function convertMtfToSSW(file: IMtfFile): { xml: string; issues: string[]
                 if (slot.pod) podJets++;
                 continue;
             }
-            if (/Triple Strength Myomer/i.test(name)) { myomerSlots.push(place(loc, index)); index++; continue; }
+            if (/Triple Strength Myomer|^TSM$/i.test(name)) { myomerSlots.push(place(loc, index)); index++; continue; }
             if (STRUCTURE_SLOT.test(name)) { structureSlots.push(place(loc, index)); index++; continue; }
             if (ARMOR_SLOT.test(name)) { armorSlots.push(place(loc, index)); index++; continue; }
             const multi = MULTISLOTS.find(([test]) => test.test(name));
@@ -336,7 +343,7 @@ export function convertMtfToSSW(file: IMtfFile): { xml: string; issues: string[]
     const sswTech = mixed ? "Mixed" : clan ? "Clan" : "Inner Sphere";
 
     const out = `<?xml version="1.0" encoding="UTF-8"?>
-<mech name="${xml(name)}" model="${xml(value(file, "model"))}" tons="${tons}" omnimech="${/omnimek/i.test(config) ? "TRUE" : "FALSE"}">
+<mech name="${xml(name)}" model="${xml(value(file, "model"))}" tons="${tons}" omnimech="${/omnime(k|ch)/i.test(config) ? "TRUE" : "FALSE"}">
 <mech_type>${mechType}</mech_type>
 <techbase manufacturer="" location="">${sswTech}</techbase>
 <year>${xml(value(file, "era"))}</year>
@@ -347,7 +354,7 @@ export function convertMtfToSSW(file: IMtfFile): { xml: string; issues: string[]
 <cockpit><type${ejection}${value(file, "cockpit") === "Command Console" ? ` commandconsole="TRUE"` : ""}>${xml(sswCockpit)}</type></cockpit>
 ${myomer && !/^standard$/i.test(myomer) ? `<enhancement techbase="${clan ? 1 : 0}"><type>${/industrial/i.test(myomer) ? "Industrial TSM" : "TSM"}</type>${myomerSlots.join("")}</enhancement>` : ""}
 <armor techbase="${armor ? (armor[2] === "Clan" ? 1 : 0) : 2}"><type>${xml(armorName)}</type>${armorValues.join("")}${armorSlots.join("")}</armor>
-${/omnimek/i.test(config) ? `<omnibase heatsinks="${Math.max(0, +(sinks?.[1] ?? 0) - podSinks)}" jumpjets="${Math.max(0, (jetType === "Mech UMU" ? jetSlotsAt.length : jumpMP) - podJets)}" />` : ""}
+${/omnime(k|ch)/i.test(config) ? `<omnibase heatsinks="${Math.max(0, +(sinks?.[1] ?? 0) - podSinks)}" jumpjets="${Math.max(0, (jetType === "Mech UMU" ? jetSlotsAt.length : jumpMP) - podJets)}" />` : ""}
 <baseloadout${fcs}>
 ${quad ? "" : `<actuators lla="${actuators.la.lla ? "TRUE" : "FALSE"}" lh="${actuators.la.lh ? "TRUE" : "FALSE"}" rla="${actuators.ra.lla ? "TRUE" : "FALSE"}" rh="${actuators.ra.lh ? "TRUE" : "FALSE"}"/>`}
 <clancase>${mixed && faction === "clan" ? "TRUE" : "FALSE"}</clancase>

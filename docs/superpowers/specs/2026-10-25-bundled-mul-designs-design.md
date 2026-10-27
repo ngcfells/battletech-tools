@@ -98,7 +98,9 @@ The exact field list the codec drops, the data file paths and names, and the rep
   tech, MUL id, source) and `src/data/bundled/mechs/<n>.json`, 150 designs a chunk, each fetched on first use. The
   report is `src/data/bundled/mechs-report.md`.
 - **Build**: an env-gated vitest writer (`WRITE_BUNDLED_MECHS=1`), like the ArtVee MUL writer, since it needs Vite's
-  module resolution. It also runs the old corpus checks (engine, gyro and structure names, failed crit placements,
+  module resolution. Replaced 2026-10-27 by `npm run build:bundled`: `scripts/bundled-build.mjs` bundles
+  `src/data/bundled-build-runner.ts` with Vite and runs each file's import and checks on worker threads, cached per
+  file (32 min to 3.5 min cold, 16 s warm). It also runs the old corpus checks (engine, gyro and structure names, failed crit placements,
   import errors), which leave a file out instead of failing a test.
 - **OmniMechs** are left out in round 1: the SSW import reads only the base loadout, not the configurations, so every
   OmniMech fails its BV check. The SSW OmniMech issue (#112) brings them in; the header and index already carry

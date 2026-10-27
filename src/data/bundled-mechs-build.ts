@@ -1,7 +1,8 @@
 // Build support, not app code: converts a folder of Skunk Werks files, then MegaMek's 'Mech files for the 'Mechs those
-// lack, into the bundled 'Mech data (#241). Run by
-//   WRITE_BUNDLED_MECHS=1 npx vitest run src/data/bundled-mechs.test.ts
-// with BUNDLED_SSW_DIR and BUNDLED_MEGAMEK_DIR set when they are not the defaults below.
+// lack, then mordel.net's for the canon 'Mechs neither has, into the bundled 'Mech data (#241). Run by
+//   npm run build:bundled
+// (bundled-build-runner.ts) with BUNDLED_SSW_DIR, BUNDLED_MEGAMEK_DIR and BUNDLED_MORDEL_DIR set when they are not the
+// defaults below.
 import fs from "node:fs";
 import path from "node:path";
 import { BattleMech } from "../classes/battlemech";
@@ -12,10 +13,23 @@ import { BUNDLED_CHUNK_SIZE, BundledDesignSource, compactMech, compareDesigns, d
 import { getClassicMechEntries, getMULMatchKeys } from "../utils/classicMULMatch";
 import { stringifyTable, untabulate } from "../utils/packed-json";
 import { getRulesLevelStanding, UnitStanding } from "../utils/unit-standing";
-import { getSSWXMLBasicInfo, ISSWBasicInfo, parseSSWXML } from "../utils/getSSWXMLBasicInfo";
+import { getSSWXMLBasicInfo, parseSSWXML } from "../utils/getSSWXMLBasicInfo";
 
 export const DEFAULT_SSW_DIR = "C:/repo/battletech-tools/WorkingData_DEV/SSWdata";
 export const DEFAULT_MEGAMEK_DIR = "C:/repo/megamek/megamek/data/mekfiles/unit_files";
+// MegaMek-format files from mordel.net's "Generate in MegaMek format", a folder per mordel unit id
+// (node ~/.claude/tools/mordel_fetch.mjs C:/repo/mordel-units --ids-file=<ids> --formats=MTF; IndustrialMechs into
+// C:/repo/mordel-units/im with --type=im).
+export const DEFAULT_MORDEL_DIR = "C:/repo/mordel-units";
+
+/**
+ * The mordel.net unit page of a file fetched into DEFAULT_MORDEL_DIR: "mordel/<id>/<file>" is a BattleMech,
+ * "mordel/im/<id>/<file>" an IndustrialMech (mordel's page types bm and im).
+ */
+export function getMordelUnitUrl(name: string): string | undefined {
+    const match = /^mordel\/(?:(im)\/)?(\d+)\/[^/]+$/.exec(name);
+    return match ? `https://www.mordel.net/tro.php?a=vt&ut=${match[1] ?? "bm"}&id=${match[2]}` : undefined;
+}
 
 // MegaMek's files for these IndustrialMechs have no cockpit line, which MegaMek (and the converter, #371) reads as a
 // Standard cockpit with Advanced Fire Control; their record sheets have a plain Industrial cockpit. The Quasit's RS:3075
@@ -37,7 +51,8 @@ const SSW_CREDIT = "the Solaris Skunk Werks project's files at https://github.co
 const MEGAMEK_CREDIT = "MegaMek's unit files (https://github.com/MegaMek/megamek): MegaMek Data (C) 2025-2026 by The MegaMek Team, "
     + "licensed under CC BY-NC-SA 4.0 (https://creativecommons.org/licenses/by-nc-sa/4.0/).";
 export const MEGAMEK_NOTICE = COPYRIGHT_NOTICE + "Converted from " + MEGAMEK_CREDIT;
-export const BUNDLED_MECHS_NOTICE = COPYRIGHT_NOTICE + "Converted from " + SSW_CREDIT + ", and from " + MEGAMEK_CREDIT;
+const MORDEL_CREDIT = "mordel.net's MegaMek-format files (https://www.mordel.net)";
+export const BUNDLED_MECHS_NOTICE = COPYRIGHT_NOTICE + "Converted from " + SSW_CREDIT + ", from " + MORDEL_CREDIT + ", and from " + MEGAMEK_CREDIT;
 
 const MECH_CLASSES = ["BattleMech", "IndustrialMech"];
 const MECH_TYPE_IDS = [18, 20];
@@ -251,80 +266,115 @@ function keepMatchingConfigurations(mech: BattleMech, xml: string, mul: Map<stri
     return true;
 }
 
-export function buildBundledMechs(sswDir: string, mulDir: string, megamekDir?: string, canon: ICanonMech[] = []): IBundledBuild {
-    const mul = loadMULIndex(mulDir, isMULMech);
-    const mul1ById = loadMUL1ById(mulDir, isMULMech);
-    const officialMechs = [...new Set(mul.values())].filter(isOfficialMULRecord);
-    const kept: { header: Omit<IBundledDesignHeader, "id">; design: Record<string, unknown> }[] = [];
-    const leftOut: IBundledBuild["leftOut"] = [];
-    const renamed: NonNullable<IBundledBuild["renamed"]> = [];
-    // The kept design each match key and MUL id belongs to, with its layouts, to tell a duplicate from a variant.
-    const taken = new Map<string, IKeptLayout>();
-    const takenIds = new Map<number, IKeptLayout>();
+/** A file the 'Mechs are built from, in build order: Skunk Werks first, then MegaMek's, then mordel.net's. */
+export interface IMechJob {
+    file: string;
+    source: Exclude<BundledDesignSource, "verified">;
+    /** The file's name in the report: its path under its folder, a MegaMek-format one prefixed "megamek/" or "mordel/". */
+    name: string;
+}
+
+export function listMechJobs(sswDir: string, megamekDir?: string, mordelDir?: string): IMechJob[] {
+    const under = (dir: string | undefined, extension: string, source: IMechJob["source"], prefix: string): IMechJob[] =>
+        (dir ? listFiles(dir, extension).sort() : []).map((file) => ({ file, source, name: prefix + path.relative(dir!, file).replace(/\\/g, "/") }));
+    // Skunk Werks first; MegaMek's files fill in the 'Mechs it has no design for (#241 round 3), mordel.net's the canon
+    // 'Mechs neither has a file for.
+    return [...under(sswDir, ".ssw", "ssw", ""), ...under(megamekDir, ".mtf", "megamek", "megamek/"), ...under(mordelDir, ".mtf", "mordel", "mordel/")];
+}
+
+/** One of a prepared design's entries (an OmniMech's configurations too), with its layout. */
+interface IPreparedEntry { chassis: string; model: string; summary: IDesignSummary; bv: number; base: boolean }
+
+/**
+ * What a file gives on its own, before the other files are weighed: the import, its checks, each entry's layout and
+ * the compact design with its round trip. The build's slow part, so it is what runs on the workers and is cached.
+ */
+export interface IPreparedMech {
+    /** Left out, or configurations dropped, for reasons that hold whatever the other files are. */
+    leaves: { reason: string; detail: string }[];
+    rejected?: boolean;
+    chassis?: string;
+    model?: string;
+    tons?: number;
+    bv?: number;
+    /** The BV the Skunk Werks file gives. */
+    fileBV?: number;
+    omnimech?: boolean;
+    /** The MUL 1.0 entry a MegaMek-format file names, when it has a BV. */
+    mulUnitId?: number;
+    entries?: IPreparedEntry[];
+    /** The design reloads from the compact format at the same BV, cost, tonnage and crit table. */
+    survives?: boolean;
+    header?: Pick<IBundledDesignHeader, "cost" | "rulesLevel" | "year" | "tech" | "configs" | "layout" | "standing">;
+    design?: Record<string, unknown>;
+}
+
+/** The MUL indexes a build reads, loaded once a process. */
+export interface IMechMUL {
+    mul: Map<string, IASMULUnit>;
+    mul1ById: Map<number, IASMULUnit>;
+}
+
+export const loadMechMUL = (mulDir: string): IMechMUL => ({ mul: loadMULIndex(mulDir, isMULMech), mul1ById: loadMUL1ById(mulDir, isMULMech) });
+
+const hashText = (text: string): string => {
+    let hash = 0x811c9dc5;
+    for (let index = 0; index < text.length; index++) hash = Math.imul(hash ^ text.charCodeAt(index), 0x01000193);
+    return (hash >>> 0).toString(16) + ":" + text.length;
+};
+
+/** Imports a file and runs the checks that need no other file. `model` renames it first (a renumbered submodel). */
+export function prepareMechFile(job: IMechJob, { mul, mul1ById }: IMechMUL, model?: string): IPreparedMech {
+    const leaves: IPreparedMech["leaves"] = [];
+    const leave: Leave = (reason, detail = "") => { leaves.push({ reason, detail }); };
     const { warn, log } = console;
     const random = Math.random;
     let failedAllocations = 0;
     console.warn = (message?: unknown) => { if (String(message).startsWith("_allocateCritical failed")) failedAllocations++; };
     console.log = () => {};
-
-    /**
-     * Checks an imported design and keeps it if it passes. A MegaMek file may name its MUL 1.0 entry (mulUnit), else it
-     * is matched by name like a Skunk Werks file; it is kept only on a MUL BV match, having no BV of its own. A Skunk
-     * Werks file without a MUL entry is checked against its own BV. A Skunk Werks file of a different submodel of a kept
-     * design is renamed and checked once more under its new model, against its own BV (a MegaMek file has none to check
-     * a new model by). True when the design is kept.
-     */
-    const keep = (mech: BattleMech, xml: string, info: ISSWBasicInfo, source: BundledDesignSource, file: string, leave: Leave, mulUnit?: IASMULUnit, renaming = false): boolean => {
-        if (failedAllocations > 0) { leave("crit slots failed to place", String(failedAllocations)); return false; }
-        if (mech.getTonnage() !== +info.tonnage) { leave("tonnage differs", `${mech.getTonnage()} t, file says ${info.tonnage}`); return false; }
+    try {
+        seedRandom(job.name);
+        let mech: BattleMech, xml: string, mulUnitId: number | undefined;
+        if (job.source === "ssw") {
+            xml = fs.readFileSync(job.file, "utf8");
+            if (!getSSWXMLBasicInfo(xml)) { leave("not a Skunk Werks 'Mech file"); return { leaves, rejected: true }; }
+            mech = new BattleMech();
+            try {
+                mech.importSSWXML(xml);
+            } catch (error) {
+                leave("import threw", String(error)); return { leaves, rejected: true };
+            }
+            if (mech.sswImportErrors.length > 0) { leave("import errors", mech.sswImportErrors.join("; ")); return { leaves, rejected: true }; }
+        } else {
+            const text = withIndustrialCockpit(job.name, fs.readFileSync(job.file, "utf8"));
+            const byId = mul1ById.get(Number(/^mul id:\s*(\d+)/m.exec(text)?.[1]));
+            mulUnitId = byId && byId.BattleValue > 0 ? byId.Id : undefined;
+            let imported: ReturnType<typeof importBattleMechMtf>;
+            try {
+                imported = importBattleMechMtf(text);
+            } catch (error) {
+                leave("import threw", String(error)); return { leaves, rejected: true };
+            }
+            if (!imported.mech || !getSSWXMLBasicInfo(imported.xml)) { leave("import failed", imported.issues.join("; ")); return { leaves, rejected: true }; }
+            if (imported.issues.length > 0) { leave("the import could not carry all of it over", imported.issues.join("; ")); return { leaves, rejected: true }; }
+            mech = imported.mech;
+            xml = imported.xml;
+        }
+        const info = getSSWXMLBasicInfo(xml)!;
+        if (model !== undefined) mech.setModel(model);
+        if (failedAllocations > 0) { leave("crit slots failed to place", String(failedAllocations)); return { leaves, rejected: true }; }
+        if (mech.getTonnage() !== +info.tonnage) { leave("tonnage differs", `${mech.getTonnage()} t, file says ${info.tonnage}`); return { leaves, rejected: true }; }
         const components = checkComponents(xml, mech);
-        if (components.length > 0) { leave("chassis components differ", components.join("; ")); return false; }
-        if (!keepMatchingConfigurations(mech, xml, mul, leave)) return false;
+        if (components.length > 0) { leave("chassis components differ", components.join("; ")); return { leaves, rejected: true }; }
+        if (!keepMatchingConfigurations(mech, xml, mul, leave)) return { leaves, rejected: true };
 
         // Each entry (an OmniMech's configurations too) with its own layout: MegaMek's one-configuration file is
-        // compared with that configuration of a kept OmniMech, not with its base.
-        const entries = getClassicMechEntries([mech]);
-        const layoutOf = (design: BattleMech, name: string): IKeptLayout => ({ summary: summarizeDesign(design), name });
-        const own = entries.map((entry) => ({ keys: getMULMatchKeys(entry.chassis, entry.model), layout: layoutOf(entry.design, entry.chassis + " " + entry.model) }));
-        const named = entries.map((entry) => ({ entry, unit: getMULMatchKeys(entry.chassis, entry.model).map((key) => mul.get(key)).find(Boolean) }));
-        // A 'Mech the MUL names another way is found by chassis, tonnage, BV and model code (#241).
-        const loose = !mulUnit && !renaming && !info.omnimech && !named.some(({ unit }) => unit)
-            ? findLooseMULMatch(mech.getChassisName(), mech.getModelName(), mech.getTonnage(), mech.getBattleValue(), officialMechs) : undefined;
-        const listed = mulUnit || loose ? [{ entry: entries[entries.length - 1], unit: (mulUnit ?? loose)! }] : named.filter((match) => match.unit);
-        // One copy of each MUL record: a design checked against a record already taken, by any name, is a twin.
-        const clash = own.flatMap(({ keys, layout }) => keys.map((key) => ({ layout, twin: taken.get(key) }))).find(({ twin }) => twin)
-            ?? listed.map(({ entry, unit }) => ({ layout: own[entries.indexOf(entry)].layout, twin: takenIds.get(unit!.Id) })).find(({ twin }) => twin);
-        if (clash) {
-            const { layout, twin } = clash as { layout: IKeptLayout; twin: IKeptLayout };
-            // A duplicate names what it differs in; a different submodel waits for its renumbered model.
-            const { duplicate, why } = compareDesigns(twin.summary, layout.summary);
-            if (!duplicate && !renaming && !info.omnimech && source === "ssw") {
-                const chassis = mech.getChassisName(), from = mech.getModelName();
-                const keptModels = kept.filter(({ header }) => header.name.toLowerCase() === chassis.trim().toLowerCase()).map(({ header }) => header.model);
-                // The twin's own name, spelled another way ("Cougar X 3" for Cougar X3), is taken too.
-                const isTaken = (model: string) => squash(chassis + model) === squash(twin.name)
-                    || getMULMatchKeys(chassis, model).some((key) => taken.has(key) || mul.has(key));
-                const to = getRenumberedModel(chassis, from, mech.getTonnage(), mech.getBattleValue(), keptModels, canon, isTaken);
-                mech.setModel(to);
-                const note = `${chassis} ${from} renamed ${to}, a different submodel (${why}) of ${twin.name}`;
-                if (keep(mech, xml, info, source, file, (reason, detail) => leave(reason, (detail ? detail + "; " : "") + note), undefined, true)) {
-                    renamed.push({ file, from: chassis + " " + from, to: chassis + " " + to });
-                    return true;
-                }
-                return false;
-            }
-            leave(duplicate ? "duplicate of a design already kept" + (why ? ", differs only in " + why : "") : "different submodel, same name and model: " + why, twin.name);
-            return false;
-        }
-        const matched = listed.filter((match) => match.unit!.BattleValue > 0);
-        const wrong = matched.filter(({ entry, unit }) => entry.design.getBattleValue() !== unit!.BattleValue);
-        if (wrong.length > 0) {
-            leave("BV differs from the MUL", wrong.map(({ entry, unit }) => `${entry.model}: BV ${entry.design.getBattleValue()}, MUL ${unit!.BattleValue}`).join("; ")); return false;
-        }
-        if (matched.length === 0 && source === "megamek") { leave("no Master Unit List entry to check its BV against"); return false; }
-        // An OmniMech's configurations were checked one by one.
-        if (matched.length === 0 && !info.omnimech && mech.getBattleValue() !== +info.bv2) { leave("BV differs from the file (no MUL entry)", `BV ${mech.getBattleValue()}, file ${info.bv2}`); return false; }
-
+        // compared with that configuration of a kept OmniMech, not with its base. Layouts are compared whole only for
+        // equality, so the exact one is kept as a hash.
+        const entries = getClassicMechEntries([mech]).map((entry) => {
+            const summary = summarizeDesign(entry.design);
+            return { chassis: entry.chassis, model: entry.model, summary: { ...summary, strict: hashText(summary.strict) }, bv: entry.design.getBattleValue(), base: entry.design === mech };
+        });
         const design = compactMech(mech);
         const reload = loadBundledMech(design);
         const configurations = mech.getOmniConfigurationNames();
@@ -335,67 +385,109 @@ export function buildBundledMechs(sswDir: string, mulDir: string, megamekDir?: s
             })
             : undefined;
         const reloadConfigs = configs?.map((config) => (reload.cloneOmniConfiguration(config.name) as BattleMech).getBattleValue());
-        if (reload.getBattleValue() !== mech.getBattleValue() || reload.getCBillCostNumeric() !== mech.getCBillCostNumeric()
-            || reload.getTonnage() !== mech.getTonnage() || describeCriticals(reload) !== describeCriticals(mech)
-            || (configs && reloadConfigs!.some((bv, index) => bv !== configs[index].bv))) {
-            leave("does not survive the compact format"); return false;
-        }
-        own.forEach(({ keys, layout }) => keys.forEach((key) => taken.set(key, layout)));
-        listed.forEach(({ entry, unit }) => takenIds.set(unit!.Id, own[entries.indexOf(entry)].layout));
-        const mulId = matched.find(({ entry }) => entry.design === mech)?.unit?.Id ?? matched[0]?.unit?.Id;
-        kept.push({
+        const survives = reload.getBattleValue() === mech.getBattleValue() && reload.getCBillCostNumeric() === mech.getCBillCostNumeric()
+            && reload.getTonnage() === mech.getTonnage() && describeCriticals(reload) === describeCriticals(mech)
+            && !(configs && reloadConfigs!.some((bv, index) => bv !== configs[index].bv));
+        return {
+            leaves, chassis: mech.getChassisName(), model: mech.getModelName(), tons: mech.getTonnage(), bv: mech.getBattleValue(),
+            fileBV: +info.bv2, omnimech: !!info.omnimech, ...(mulUnitId ? { mulUnitId } : {}), entries, survives,
             header: {
-                name: mech.getChassisName(), model: mech.getModelName(), tons: mech.getTonnage(), bv: mech.getBattleValue(),
                 cost: mech.getCBillCostNumeric(), rulesLevel: +info.rules_level_ssw, year: +info.year, tech: mech.getTech().name,
-                ...(mulId ? { mulId } : {}), source, ...(configs ? { configs } : {}), layout: getMechFingerprint(mech), ...getBundledStanding(file, mech),
+                ...(configs ? { configs } : {}), layout: getMechFingerprint(mech), ...getBundledStanding(job.name, mech),
             },
             design,
-        });
-        return true;
-    };
-
-    try {
-        // Skunk Werks first; MegaMek's files fill in the 'Mechs it has no design for (#241 round 3).
-        for (const file of listFiles(sswDir, ".ssw").sort()) {
-            const name = path.relative(sswDir, file).replace(/\\/g, "/");
-            const leave = (reason: string, detail = "") => leftOut.push({ file: name, reason, detail });
-            seedRandom(name);
-            const xml = fs.readFileSync(file, "utf8");
-            const info = getSSWXMLBasicInfo(xml);
-            if (!info) { leave("not a Skunk Werks 'Mech file"); continue; }
-            const mech = new BattleMech();
-            failedAllocations = 0;
-            try {
-                mech.importSSWXML(xml);
-            } catch (error) {
-                leave("import threw", String(error)); continue;
-            }
-            if (mech.sswImportErrors.length > 0) { leave("import errors", mech.sswImportErrors.join("; ")); continue; }
-            keep(mech, xml, info, "ssw", name, leave);
-        }
-        for (const file of megamekDir ? listFiles(megamekDir, ".mtf").sort() : []) {
-            const name = "megamek/" + path.relative(megamekDir!, file).replace(/\\/g, "/");
-            const leave = (reason: string, detail = "") => leftOut.push({ file: name, reason, detail });
-            seedRandom(name);
-            const text = withIndustrialCockpit(name, fs.readFileSync(file, "utf8"));
-            const byId = mul1ById.get(Number(/^mul id:\s*(\d+)/m.exec(text)?.[1]));
-            const mulUnit = byId && byId.BattleValue > 0 ? byId : undefined;
-            failedAllocations = 0;
-            let imported: ReturnType<typeof importBattleMechMtf>;
-            try {
-                imported = importBattleMechMtf(text);
-            } catch (error) {
-                leave("import threw", String(error)); continue;
-            }
-            const info = getSSWXMLBasicInfo(imported.xml);
-            if (!imported.mech || !info) { leave("import failed", imported.issues.join("; ")); continue; }
-            if (imported.issues.length > 0) { leave("the import could not carry all of it over", imported.issues.join("; ")); continue; }
-            keep(imported.mech, imported.xml, info, "megamek", name, leave, mulUnit);
-        }
+        };
     } finally {
         console.warn = warn;
         console.log = log;
         Math.random = random;
+    }
+}
+
+/**
+ * Builds the bundled 'Mechs. `prepare` gives each file's prepared design (the build runner's workers and cache, see
+ * bundled-build-runner.ts); by default each is prepared here, one after another.
+ */
+export function buildBundledMechs(sswDir: string, mulDir: string, megamekDir?: string, canon: ICanonMech[] = [], mordelDir?: string,
+    prepare?: (job: IMechJob) => IPreparedMech): IBundledBuild {
+    const indexes = loadMechMUL(mulDir);
+    const { mul, mul1ById } = indexes;
+    const prepared = prepare ?? ((job: IMechJob) => prepareMechFile(job, indexes));
+    const officialMechs = [...new Set(mul.values())].filter(isOfficialMULRecord);
+    const kept: { header: Omit<IBundledDesignHeader, "id">; design: Record<string, unknown> }[] = [];
+    const leftOut: IBundledBuild["leftOut"] = [];
+    const renamed: NonNullable<IBundledBuild["renamed"]> = [];
+    // The kept design each match key and MUL id belongs to, with its layouts, to tell a duplicate from a variant.
+    const taken = new Map<string, IKeptLayout>();
+    const takenIds = new Map<number, IKeptLayout>();
+
+    /**
+     * Keeps a prepared design if it passes. A MegaMek-format file (MegaMek's or mordel's) may name its MUL 1.0 entry,
+     * else it is matched by name like a Skunk Werks file; it is kept only on a MUL BV match, having no BV of its own.
+     * A Skunk Werks file without a MUL entry is checked against its own BV. A Skunk Werks file of a different submodel
+     * of a kept design is renamed and checked once more under its new model, against its own BV (a MegaMek file has
+     * none to check a new model by). True when the design is kept.
+     */
+    const keep = (job: IMechJob, design: IPreparedMech, leave: Leave, renaming = false): boolean => {
+        design.leaves.forEach(({ reason, detail }) => leave(reason, detail));
+        if (design.rejected) return false;
+        const { chassis, model, tons, bv, entries } = design as Required<IPreparedMech>;
+        const mulUnit = design.mulUnitId ? mul1ById.get(design.mulUnitId) : undefined;
+        const own = entries.map((entry) => ({ keys: getMULMatchKeys(entry.chassis, entry.model), layout: { summary: entry.summary, name: entry.chassis + " " + entry.model } }));
+        const named = entries.map((entry, index) => ({ entry, unit: own[index].keys.map((key) => mul.get(key)).find(Boolean) }));
+        // A 'Mech the MUL names another way is found by chassis, tonnage, BV and model code (#241).
+        const loose = !mulUnit && !renaming && !design.omnimech && !named.some(({ unit }) => unit)
+            ? findLooseMULMatch(chassis, model, tons, bv, officialMechs) : undefined;
+        const listed = mulUnit || loose ? [{ entry: entries[entries.length - 1], unit: (mulUnit ?? loose)! }] : named.filter((match) => match.unit);
+        // One copy of each MUL record: a design checked against a record already taken, by any name, is a twin.
+        const clash = own.flatMap(({ keys, layout }) => keys.map((key) => ({ layout, twin: taken.get(key) }))).find(({ twin }) => twin)
+            ?? listed.map(({ entry, unit }) => ({ layout: own[entries.indexOf(entry)].layout, twin: takenIds.get(unit!.Id) })).find(({ twin }) => twin);
+        if (clash) {
+            const { layout, twin } = clash as { layout: IKeptLayout; twin: IKeptLayout };
+            // A duplicate names what it differs in; a different submodel waits for its renumbered model.
+            const { duplicate, why } = compareDesigns(twin.summary, layout.summary);
+            if (!duplicate && !renaming && !design.omnimech && job.source === "ssw") {
+                const keptModels = kept.filter(({ header }) => header.name.toLowerCase() === chassis.trim().toLowerCase()).map(({ header }) => header.model);
+                // The twin's own name, spelled another way ("Cougar X 3" for Cougar X3), is taken too.
+                const isTaken = (other: string) => squash(chassis + other) === squash(twin.name)
+                    || getMULMatchKeys(chassis, other).some((key) => taken.has(key) || mul.has(key));
+                const to = getRenumberedModel(chassis, model, tons, bv, keptModels, canon, isTaken);
+                const note = `${chassis} ${model} renamed ${to}, a different submodel (${why}) of ${twin.name}`;
+                if (keep(job, prepareMechFile(job, indexes, to), (reason, detail) => leave(reason, (detail ? detail + "; " : "") + note), true)) {
+                    renamed.push({ file: job.name, from: chassis + " " + model, to: chassis + " " + to });
+                    return true;
+                }
+                return false;
+            }
+            leave(duplicate ? "duplicate of a design already kept" + (why ? ", differs only in " + why : "") : "different submodel, same name and model: " + why, twin.name);
+            return false;
+        }
+        const matched = listed.filter((match) => match.unit!.BattleValue > 0);
+        const wrong = matched.filter(({ entry, unit }) => entry.bv !== unit!.BattleValue);
+        if (wrong.length > 0) {
+            leave("BV differs from the MUL", wrong.map(({ entry, unit }) => `${entry.model}: BV ${entry.bv}, MUL ${unit!.BattleValue}`).join("; ")); return false;
+        }
+        if (matched.length === 0 && job.source !== "ssw") { leave("no Master Unit List entry to check its BV against"); return false; }
+        // An OmniMech's configurations were checked one by one.
+        if (matched.length === 0 && !design.omnimech && bv !== design.fileBV) { leave("BV differs from the file (no MUL entry)", `BV ${bv}, file ${design.fileBV}`); return false; }
+        if (!design.survives) { leave("does not survive the compact format"); return false; }
+        own.forEach(({ keys, layout }) => keys.forEach((key) => taken.set(key, layout)));
+        listed.forEach(({ entry, unit }) => takenIds.set(unit!.Id, own[entries.indexOf(entry)].layout));
+        const mulId = matched.find(({ entry }) => entry.base)?.unit?.Id ?? matched[0]?.unit?.Id;
+        const sourceUrl = job.source === "mordel" ? getMordelUnitUrl(job.name) : undefined;
+        const { cost, rulesLevel, year, tech, configs, layout, standing } = design.header!;
+        kept.push({
+            header: {
+                name: chassis, model, tons, bv, cost, rulesLevel, year, tech, ...(mulId ? { mulId } : {}), source: job.source,
+                ...(sourceUrl ? { sourceUrl } : {}), ...(configs ? { configs } : {}), layout, ...(standing ? { standing } : {}),
+            },
+            design: design.design!,
+        });
+        return true;
+    };
+
+    for (const job of listMechJobs(sswDir, megamekDir, mordelDir)) {
+        keep(job, prepared(job), (reason, detail = "") => leftOut.push({ file: job.name, reason, detail }));
     }
     kept.sort((a, b) => (a.header.name + " " + a.header.model).localeCompare(b.header.name + " " + b.header.model));
     return { headers: kept.map(({ header }, id) => ({ id, ...header })), designs: kept.map(({ design }) => design), leftOut, renamed };

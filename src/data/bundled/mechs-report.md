@@ -1,13 +1,13 @@
 # Bundled 'Mechs: build report
 
-3552 designs kept (38 renamed), 4140 files left out.
+3553 designs kept (38 renamed), 4163 files left out.
 
 | Reason | Files |
 |---|---|
-| duplicate of a design already kept | 2972 |
-| the import could not carry all of it over | 312 |
-| BV differs from the MUL | 201 |
-| no Master Unit List entry to check its BV against | 160 |
+| duplicate of a design already kept | 2978 |
+| the import could not carry all of it over | 321 |
+| BV differs from the MUL | 208 |
+| no Master Unit List entry to check its BV against | 161 |
 | different submodel, same name and model: equipment | 138 |
 | different submodel, same name and model: ammo type | 97 |
 | import errors | 83 |
@@ -4164,6 +4164,29 @@
 - `megamek/XTRs/Succession Wars/Super Griffin GRF-2N-X.mtf`: the import could not carry all of it over: 'ISDoubleHeatSinkPrototype' is not converted yet; 'ISDoubleHeatSinkPrototype' is not converted yet; 'ISDoubleHeatSinkPrototype' is not converted yet; Cannot place 'LRM 10': its slots are split in a way not converted yet; Unallocated Criticals: 2; - Prototype Improved Jump Jets (jj-prototype-improved); - Prototype Improved Jump Jets (jj-prototype-improved)
 - `megamek/XTRs/Succession Wars/Super Wasp WSP-2A-X.mtf`: duplicate of a design already kept: Super Wasp WSP-2A-X
 - `megamek/XTRs/Succession Wars/Zeus ZEU-6Y.mtf`: duplicate of a design already kept: Zeus ZEU-6Y
+- `mordel/3499/Vulture Mk IV (Mad Dog Mk IV) A.mtf`: duplicate of a design already kept: Vulture Mk IV  A
+- `mordel/3500/Vulture Mk IV (Mad Dog Mk IV) B.mtf`: duplicate of a design already kept: Vulture Mk IV  B
+- `mordel/3501/Vulture Mk IV (Mad Dog Mk IV) C.mtf`: duplicate of a design already kept: Vulture Mk IV  C
+- `mordel/3502/Vulture Mk IV (Mad Dog Mk IV) D.mtf`: duplicate of a design already kept: Vulture Mk IV  D
+- `mordel/3520/Mad Cat Mk IV (Savage Wolf) PRIME.mtf`: BV differs from the MUL: PRIME: BV 2681, MUL 2781
+- `mordel/3522/Mad Cat Mk IV (Savage Wolf) B.mtf`: duplicate of a design already kept: Mad Cat Mk IV  B
+- `mordel/3523/Mad Cat Mk IV (Savage Wolf) C.mtf`: duplicate of a design already kept: Mad Cat Mk IV  C
+- `mordel/3652/Bandersnatch BNDR-01A (Horus).mtf`: BV differs from the MUL: BNDR-01A (Horus): BV 1584, MUL 1587
+- `mordel/36972/Jackalope JLP-NH _Tepoztēcatl_.mtf`: BV differs from the MUL: JLP-NH "Tepoztēcatl": BV 1216, MUL 1208
+- `mordel/38485/Ares ARS-V1A Hera.mtf`: the import could not carry all of it over: 'Mech configuration 'Tripod Omnimech' is not converted yet; Superheavy 'Mechs are not converted yet; 'ISDoubleHeatSink' in Left Arm is split in a way not converted yet; 'ISDoubleHeatSink' in Right Arm is split in a way not converted yet; 'ISDoubleHeatSink' in Right Torso is split in a way not converted yet; 'ISDoubleHeatSink' in Center Torso is split in a way not converted yet; Location 'Center Leg' is not converted yet; Cannot place 'CLERMediumPulseLaser': its slots are split in a way not converted yet; Cannot place 'ISImprovedHeavyGaussRifle': its slots are split in a way not converted yet; Cannot find the ammunition 'ISImprovedHeavyGauss Ammo|ISImprovedHeavyGauss Ammo'; Cannot find the ammunition 'ISImprovedHeavyGauss Ammo|ISImprovedHeavyGauss Ammo'; Cannot find the ammunition 'ISImprovedHeavyGauss Ammo|ISImprovedHeavyGauss Ammo'; Armor location 'cl armor' is not converted yet; Cannot import the cockpit type: 'Superheavy Tripod Cockpit'; Cannot find any gyro named: 'Superheavy Gyro'; Unallocated Criticals: 5; - Double Heat Sink (heat-sink); - Double Heat Sink (heat-sink); - Double Heat Sink (heat-sink); - Double Heat Sink (heat-sink); - Double Heat Sink (heat-sink)
+- `mordel/38486/Ares ARS-V1B Hades.mtf`: the import could not carry all of it over: 'Mech configuration 'Tripod Omnimech' is not converted yet; Superheavy 'Mechs are not converted yet; 'ISDoubleHeatSink' in Center Torso is split in a way not converted yet; Location 'Center Leg' is not converted yet; Cannot place 'MRM 20': its slots are split in a way not converted yet; Cannot place 'CLUltraAC10': its slots are split in a way not converted yet; Cannot place 'MRM 20': its slots are split in a way not converted yet; Cannot place 'TSEMP Cannon': its slots are split in a way not converted yet; Cannot find the ammunition 'Clan Ultra AC/10 Ammo|Clan Ultra AC/10 Ammo'; Cannot find the ammunition 'Clan Ultra AC/10 Ammo|Clan Ultra AC/10 Ammo'; Armor location 'cl armor' is not converted yet; Cannot import the cockpit type: 'Superheavy Tripod Cockpit'; Cannot find any gyro named: 'Superheavy Gyro'; Unallocated Criticals: 1; - Double Heat Sink (heat-sink)
+- `mordel/38487/Ares ARS-V1C Aphrodite.mtf`: the import could not carry all of it over: 'Mech configuration 'Tripod Omnimech' is not converted yet; Superheavy 'Mechs are not converted yet; 'ISDoubleHeatSink' in Left Arm is split in a way not converted yet; 'ISDoubleHeatSink' in Right Arm is split in a way not converted yet; 'ISDoubleHeatSink' in Left Torso is split in a way not converted yet; 'ISDoubleHeatSink' in Right Torso is split in a way not converted yet; 'ISDoubleHeatSink' in Center Torso is split in a way not converted yet; Location 'Center Leg' is not converted yet; Cannot place 'CLRotaryAC5': its slots are split in a way not converted yet; Cannot place 'ISC3MasterUnit': its slots are split in a way not converted yet; Cannot place 'ISC3MasterUnit': its slots are split in a way not converted yet; Cannot place 'ISAngelECMSuite': its slots are split in a way not converted yet; Cannot find the ammunition 'CLRotaryAC5 Ammo|CLRotaryAC5 Ammo'; Cannot find the ammunition 'CLRotaryAC5 Ammo|CLRotaryAC5 Ammo'; Cannot find the ammunition 'Clan Streak LRM 5 Ammo|Clan Streak LRM 5 Ammo'; Armor location 'cl armor' is not converted yet; Cannot import the cockpit type: 'Superheavy Tripod Cockpit'; Cannot find any gyro named: 'Superheavy Gyro'; Unallocated Criticals: 5; - Double Heat Sink (heat-sink); - Double Heat Sink (heat-sink); - Double Heat Sink (heat-sink); - Double Heat Sink (heat-sink); - Double Heat Sink (heat-sink)
+- `mordel/38488/Ares ARS-V1D Hephaestus.mtf`: the import could not carry all of it over: 'Mech configuration 'Tripod Omnimech' is not converted yet; Superheavy 'Mechs are not converted yet; 'ISDoubleHeatSink' in Center Torso is split in a way not converted yet; Location 'Center Leg' is not converted yet; Cannot place 'Light PPC': its slots are split in a way not converted yet; Armor location 'cl armor' is not converted yet; Cannot import the cockpit type: 'Superheavy Tripod Cockpit'; Cannot find any gyro named: 'Superheavy Gyro'; Unallocated Criticals: 4; - Double Heat Sink (heat-sink); - Double Heat Sink (heat-sink); - Double Heat Sink (heat-sink); - Double Heat Sink (heat-sink)
+- `mordel/3941/Seraph C-SRP-OR (Ravana).mtf`: BV differs from the MUL: C-SRP-OR (Ravana): BV 1957, MUL 1941
+- `mordel/4165/Kraken (Bane) XR.mtf`: BV differs from the MUL: XR: BV 3055, MUL 2894
+- `mordel/4241/Scarecrow UCU-F4r.mtf`: BV differs from the MUL: UCU-F4r: BV 1433, MUL 1472
+- `mordel/4447/Wyvern City WVE-5UX.mtf`: the import could not carry all of it over: Cannot import the Cockpit Command Console yet (TO:AUE p.112)
+- `mordel/52185/Guillotine GLT-3N (Estriđsen).mtf`: no Master Unit List entry to check its BV against
+- `mordel/5278/Omega SHP-X4.mtf`: the import could not carry all of it over: Superheavy 'Mechs are not converted yet; Cannot place 'ISGaussRifle': its slots are split in a way not converted yet; Cannot place 'ISGaussRifle': its slots are split in a way not converted yet; Cannot place 'ISGaussRifle': its slots are split in a way not converted yet; Cannot place 'ISC3iUnit': its slots are split in a way not converted yet; Cannot find the ammunition 'IS LB 10-X AC Ammo|IS LB 10-X AC Ammo'; Cannot find the ammunition 'IS LB 10-X Cluster Ammo|IS LB 10-X Cluster Ammo'; Cannot find the ammunition 'IS Gauss Ammo|IS Gauss Ammo'; Cannot find the ammunition 'IS Gauss Ammo|IS Gauss Ammo'; Cannot find the ammunition 'IS Gauss Ammo|IS Gauss Ammo'; Cannot find the ammunition 'IS Gauss Ammo|IS Gauss Ammo'; Cannot find the ammunition 'IS Gauss Ammo|IS Gauss Ammo'; Cannot import the cockpit type: 'Superheavy Cockpit'; Cannot find any gyro named: 'Superheavy Gyro'
+- `mordel/766/Centurion CN9-YLW2 _Yen-Lo-Wang_.mtf`: BV differs from the MUL: CN9-YLW2 "Yen-Lo-Wang": BV 1435, MUL 1415
+- `mordel/im/121/Crosscut ED-X2 LoggerMech (RL).mtf`: the import could not carry all of it over: Cannot find any equipment named 'ISRocketLauncher10Prototype'; Cannot find any equipment named 'ISRocketLauncher10Prototype'; Cannot import the cockpit type: 'Industrial'
+- `mordel/im/138/Patron PTN LoaderMech.mtf`: the import could not carry all of it over: Cannot find any equipment named 'Fuel Cell Engine'; Cannot find any equipment named 'Fuel Cell Engine'; Cannot find any internal structure named: 'IS Primitive Industrial'; Cannot find any armor named: 'Primitive Commercial'
+- `mordel/im/229/Rock Hound AM-PRM-RH7C _Rock Possum_ ProspectorMech.mtf`: the import could not carry all of it over: Cannot import the cockpit type: 'Industrial'
 
 ## Renamed
 

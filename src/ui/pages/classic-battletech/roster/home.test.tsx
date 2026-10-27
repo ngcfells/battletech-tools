@@ -169,6 +169,20 @@ describe("Classic roster Master Unit List search", () => {
         expect(group.members.map((member) => [member.getChassisName() + " " + member.getModelName(), member.getBattleValue()])).toContainEqual(["Albatross ALB-5W", 2370]);
     }, 30_000);
 
+    // #241: a canon 'Mech neither Skunk Werks nor MegaMek has a file for comes from mordel.net, linked to its page there.
+    it("lists the bundled mordel.net design for a MUL 'Mech, its source linked to the unit's mordel page", async () => {
+        const appGlobals = makeAppGlobals();
+        appGlobals.appSettings.cbtMULSearch = newMULSearchFilters({ type: 18, term: "Dola DOL-1A2" });
+        render(
+            <MemoryRouter>
+                <BattleMechAddMechDialog appGlobals={appGlobals} currentForce={appGlobals.currentCBTForce!.groups[0]} currentForceIndex={0} onChange={vi.fn()} />
+            </MemoryRouter>
+        );
+        const link = await screen.findByRole("link", { name: "mordel.net" }, { timeout: 20_000 });
+        expect(link.getAttribute("href")).toBe("https://www.mordel.net/tro.php?a=vt&ut=bm&id=23454");
+        expect(link.closest("tr")?.textContent).toContain("Dola");
+    }, 30_000);
+
     it("views and adds the bundled MegaMek design for MUL battle armor, with nothing saved", async () => {
         const appGlobals = makeAppGlobals();
         appGlobals.appSettings.cbtMULSearch = newMULSearchFilters({ type: 22, term: "Achileus Light Battle Armor [David] (Sqd4)" });

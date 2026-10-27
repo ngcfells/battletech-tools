@@ -101,6 +101,21 @@ describe("MegaMek 'Mech import", () => {
         expect(xml.match(/<heatsinks[^>]*>[\s\S]*?<\/heatsinks>/)?.[0].match(/<location /g)).toHaveLength(1);
     });
 
+    // mordel.net's MegaMek-format files (#241): "Standard (IS)" armor, TSM slots named "TSM", an empty Center Leg on a
+    // biped, "Biped Omnimech", and a mixed-tech 'Mech's "Double" sinks whose Clan tech only the slot names give
+    // (Jackalope JLP-NH).
+    it("reads mordel.net's spellings", () => {
+        const mordel = brawler.replace("armor:Standard(Inner Sphere)", "armor:Standard (IS)").replace("techbase:Inner Sphere", "techbase:Mixed (IS Chassis)").replace("myomer:Standard", "myomer:Triple-Strength")
+            .replace(/ISDoubleHeatSink\nISDoubleHeatSink\nISDoubleHeatSink\n/, "CLDoubleHeatSink\nCLDoubleHeatSink\nTSM\n")
+            .replace("Medium Laser" + "\n-Empty-".repeat(5), "Medium Laser" + "\nTSM".repeat(5)) + "\n" + location("Center Leg").join("\n");
+        const { mech, issues, xml } = importBattleMechMtf(mordel);
+        expect(issues).toEqual([]);
+        expect(mech!.getArmorType()).toBe("standard");
+        expect(xml.match(/<enhancement[^>]*>[\s\S]*?<\/enhancement>/)?.[0].match(/<location /g)).toHaveLength(6);
+        expect(xml).toMatch(/<heatsinks number="11" techbase="1">/);
+        expect(convertMtfToSSW(parseMtfFile(mordel.replace("Config:Biped", "Config:Biped Omnimech"))!).xml).toContain(`omnimech="TRUE"`);
+    });
+
     it("reads Heavy Industrial armor as Standard armor (TM p.205)", () => {
         const { mech, issues } = importBattleMechMtf(brawler.replace("armor:Standard(Inner Sphere)", "armor:Heavy Industrial(Inner Sphere)"));
         expect(issues).toEqual([]);

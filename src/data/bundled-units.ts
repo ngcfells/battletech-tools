@@ -10,7 +10,7 @@ import { BUNDLED_CHUNK_SIZE, IBundledDesignHeader, IBundledUnitClass, loadBundle
     The 'Mechs are converted from the Solaris Skunk Werks project's files at https://github.com/Solaris-Skunk-Werks/SSW-Master;
     the other types from MegaMek's unit files (https://github.com/MegaMek/megamek), MegaMek Data (C) 2025-2026 by The
     MegaMek Team, licensed under CC BY-NC-SA 4.0 (https://creativecommons.org/licenses/by-nc-sa/4.0/).
-    Regenerate with WRITE_BUNDLED_MECHS=1 npx vitest run src/data/bundled-mechs.test.ts and
+    Regenerate with npm run build:bundled and
     WRITE_BUNDLED_UNITS=1 npx vitest run src/data/bundled-units.test.ts.
 */
 

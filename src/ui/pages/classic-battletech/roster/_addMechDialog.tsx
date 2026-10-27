@@ -71,7 +71,7 @@ interface IPickerRow {
     standing: UnitStanding;
 }
 
-const BUNDLED_SOURCE_LABELS: Record<BundledDesignSource, string> = { ssw: "Skunk Werks", megamek: "MegaMek", verified: "TRO" };
+const BUNDLED_SOURCE_LABELS: Record<BundledDesignSource, string> = { ssw: "Skunk Werks", megamek: "MegaMek", mordel: "mordel.net", verified: "TRO" };
 
 interface IClassicMULKind {
     typeIDs: number[];
@@ -482,6 +482,12 @@ export default class BattleMechAddMechDialog extends React.Component<IBattleMech
         return this.samples.has( design ) ? "Sample" : "Saved";
     }
 
+    // A design from mordel.net links to its unit page there.
+    renderSource = ( design: MechDesign | UnitDesign | null ): JSX.Element | string => {
+        const url = design && "header" in design ? design.header.sourceUrl : undefined;
+        return url ? <a href={url} target="_blank" rel="noopener noreferrer">{this.getSourceLabel( design )}</a> : this.getSourceLabel( design );
+    }
+
     renderRow = ( row: IPickerRow, index: number ): JSX.Element => {
         const { unit, kind, design } = row;
         // A design saved before it was named still needs a name for its row and buttons.
@@ -512,7 +518,7 @@ export default class BattleMechAddMechDialog extends React.Component<IBattleMech
         return (
             <tr key={( unit.MulUnitKey ?? unit.Id ) + ":" + index}>
                 <td><UnitStandingBadge standing={row.standing} />{name}</td>
-                <td className="min-width no-wrap text-left">{this.getSourceLabel( design )}</td>
+                <td className="min-width no-wrap text-left">{this.renderSource( design )}</td>
                 <td className="min-width no-wrap text-left">{unit.Technology?.Name}</td>
                 <td className="min-width no-wrap text-left">{unit.EraId ? getMULEraLabel( unit.EraId ) : ""}</td>
                 <td className="min-width no-wrap text-center">{unit.Tonnage}</td>

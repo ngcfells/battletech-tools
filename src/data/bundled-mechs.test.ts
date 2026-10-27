@@ -2,33 +2,23 @@ import fs from "node:fs";
 import path from "node:path";
 import { describe, expect, it, vi } from "vitest";
 import { BUNDLED_CHUNK_SIZE } from "../utils/bundled-designs";
-import { buildBundledMechs, DEFAULT_MEGAMEK_DIR, DEFAULT_SSW_DIR, loadCanonMechs, writeBundledMechs } from "./bundled-mechs-build";
 import { getBundledMechEntries, loadBundledMechDesign, loadBundledMechIndex } from "./bundled-mechs";
 
-// The bundled 'Mechs (#241). Regenerate from the Skunk Werks and MegaMek files:
-//   WRITE_BUNDLED_MECHS=1 npx vitest run src/data/bundled-mechs.test.ts
-// The build imports every file, checks its BV against the Master Unit List (or the file) and its round trip through
-// the compact format, and writes the designs that pass plus a report of the rest (bundled/mechs-report.md). A
-// different submodel of a kept design is renamed by mordel.net's canon list (mordel/canon-mechs.csv, refreshed with
-// ~/.claude/tools/mordel_canon_csv.py for BattleMech and IndustrialMech).
+// The bundled 'Mechs (#241). Regenerate from the Skunk Werks, MegaMek and mordel.net files:
+//   npm run build:bundled
+// (src/data/bundled-build-runner.ts: every core, cached per file). The build imports every file, checks its BV against
+// the Master Unit List (or the file) and its round trip through the compact format, and writes the designs that pass
+// plus a report of the rest (bundled/mechs-report.md). A different submodel of a kept design is renamed by mordel.net's
+// canon list (mordel/canon-mechs.csv, refreshed with ~/.claude/tools/mordel_canon_csv.py for BattleMech and
+// IndustrialMech).
 const dataDir = path.resolve(__dirname, "bundled");
 
 // Pinned so a growing data set is a deliberate change.
-const DESIGNS = 3552;
+const DESIGNS = 3553;
 // The table format with values shared per chunk (#241 follow-up) took it from 18.4 MB to 8.7 MB, read a chunk at a time.
 const MAX_BYTES = 9_000_000;
 
 describe("bundled 'Mechs", () => {
-    if (process.env.WRITE_BUNDLED_MECHS) {
-        it("are rebuilt from the Skunk Werks and MegaMek files", () => {
-            const build = buildBundledMechs(process.env.BUNDLED_SSW_DIR ?? DEFAULT_SSW_DIR, path.resolve(__dirname, "mul"),
-                path.join(process.env.BUNDLED_MEGAMEK_DIR ?? DEFAULT_MEGAMEK_DIR, "meks"), loadCanonMechs(path.resolve(__dirname, "mordel", "canon-mechs.csv")));
-            writeBundledMechs(build, dataDir);
-            expect(build.headers.length).toBeGreaterThan(2500);
-        }, 3_600_000);
-        return;
-    }
-
     it("list every design once, each in its chunk, at the pinned count and size", async () => {
         const headers = await loadBundledMechIndex();
         expect(headers).toHaveLength(DESIGNS);

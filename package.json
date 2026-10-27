@@ -24,6 +24,7 @@
     "preview": "vite preview",
     "lint": "eslint .",
     "typecheck": "node scripts/typecheck.mjs",
+    "build:bundled": "node scripts/bundled-build.mjs",
     "typecheck:ts6": "tsc --noEmit -p tsconfig.json",
     "test": "vitest run --project unit",
     "test:watch": "vitest --project unit",

@@ -3,7 +3,7 @@ import os from "node:os";
 import path from "node:path";
 import { expect, it } from "vitest";
 import type { IASMULUnit } from "../classes/alpha-strike-unit";
-import { buildBundledMechs, findLooseMULMatch, getBundledStanding, getRenumberedModel, isOfficialMULRecord, loadCanonMechs } from "./bundled-mechs-build";
+import { buildBundledMechs, findLooseMULMatch, getBundledStanding, getMordelUnitUrl, getRenumberedModel, isOfficialMULRecord, loadCanonMechs } from "./bundled-mechs-build";
 
 // #241: canon is what the live MUL or MUL 1.0 lists. These records stand in for the MUL's own spellings of 'Mechs
 // that Skunk Werks names another way (found by a scan of the bundled designs without a MUL id).
@@ -87,3 +87,31 @@ it("takes MegaMek's one-configuration file for a duplicate of the kept OmniMech'
         fs.rmSync(root, { recursive: true, force: true });
     }
 }, 120_000);
+
+// mordel.net's MegaMek-format files fill in the canon 'Mechs neither Skunk Werks nor MegaMek has a file for (#241),
+// checked like MegaMek's; a MegaMek file for the same 'Mech comes first.
+it("keeps a mordel.net file as source mordel, after MegaMek's for the same unit", () => {
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), "bundled-mechs-build-"));
+    const ssw = path.join(root, "ssw"), mordel = path.join(root, "mordel", "23454"), megamek = path.join(root, "megamek", "DA");
+    for (const dir of [ssw, mordel, megamek]) fs.mkdirSync(dir, { recursive: true });
+    const fixture = path.resolve(__dirname, "../utils/__fixtures__/mordel-dola-dol-1a2.mtf");
+    fs.copyFileSync(fixture, path.join(mordel, "Dola DOL-1A2.mtf"));
+    try {
+        const alone = buildBundledMechs(ssw, path.resolve(__dirname, "mul"), undefined, [], path.join(root, "mordel"));
+        expect(alone.leftOut).toEqual([]);
+        expect(alone.headers.map((header) => [header.name, header.model, header.bv, header.source, header.sourceUrl]))
+            .toEqual([["Dola", "DOL-1A2 \"Yoh Ti Ts'ang\"", 826, "mordel", "https://www.mordel.net/tro.php?a=vt&ut=bm&id=23454"]]);
+        fs.copyFileSync(fixture, path.join(megamek, "Dola DOL-1A2.mtf"));
+        const both = buildBundledMechs(ssw, path.resolve(__dirname, "mul"), path.join(root, "megamek"), [], path.join(root, "mordel"));
+        expect(both.headers.map((header) => [header.source, header.sourceUrl])).toEqual([["megamek", undefined]]);
+        expect(both.leftOut).toEqual([expect.objectContaining({ file: "mordel/23454/Dola DOL-1A2.mtf", reason: "duplicate of a design already kept" })]);
+    } finally {
+        fs.rmSync(root, { recursive: true, force: true });
+    }
+}, 120_000);
+
+it("links a mordel.net file to its BattleMech or IndustrialMech page", () => {
+    expect(getMordelUnitUrl("mordel/23454/Dola DOL-1A2.mtf")).toBe("https://www.mordel.net/tro.php?a=vt&ut=bm&id=23454");
+    expect(getMordelUnitUrl("mordel/im/121/Crosscut ED-X2 LoggerMech (RL).mtf")).toBe("https://www.mordel.net/tro.php?a=vt&ut=im&id=121");
+    expect(getMordelUnitUrl("megamek/3075/Quasit QUA-51M MilitiaMech.mtf")).toBeUndefined();
+});

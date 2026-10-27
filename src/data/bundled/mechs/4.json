@@ -1,4 +1,4 @@
-{"notice":"The data here is/may be copyrighted and NOT included in the GPLv3 license. Converted from the Solaris Skunk Werks project's files at https://github.com/Solaris-Skunk-Werks/SSW-Master, and from MegaMek's unit files (https://github.com/MegaMek/megamek): MegaMek Data (C) 2025-2026 by The MegaMek Team, licensed under CC BY-NC-SA 4.0 (https://creativecommons.org/licenses/by-nc-sa/4.0/).","shared":[
+{"notice":"The data here is/may be copyrighted and NOT included in the GPLv3 license. Converted from the Solaris Skunk Werks project's files at https://github.com/Solaris-Skunk-Werks/SSW-Master, from mordel.net's MegaMek-format files (https://www.mordel.net), and from MegaMek's unit files (https://github.com/MegaMek/megamek): MegaMek Data (C) 2025-2026 by The MegaMek Team, licensed under CC BY-NC-SA 4.0 (https://creativecommons.org/licenses/by-nc-sa/4.0/).","shared":[
 ["lt",0,"#4",3,{"name":"Double Heat Sink","tag":"heat-sink","crits":3,"movable":true}],
 {"name":"Ferro Fibrous","tag":"ferro-fibrous","rollAgain":true,"crits":1,"movable":true},
 ["rt",5,"#8",1,{"name":"Ferro Fibrous","tag":"ferro-fibrous","rollAgain":true,"crits":1,"movable":true}],
