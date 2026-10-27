@@ -1,6 +1,7 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import Vehicle from "../../../classes/vehicle";
+import { edgeDistance, insideShape } from "./shape-bubbles";
 import VehicleDiagramSVG from "./vehicle-diagram-svg";
 
 const tank = (motive: string, tonnage: number = 30, turret: boolean = false): Vehicle => {
@@ -21,8 +22,8 @@ const draw = (vehicle: Vehicle, width?: number): string => renderToStaticMarkup(
     />
 );
 
-// The radius of each pip drawn, as printed.
-const pipRadii = (markup: string): number[] => [...markup.matchAll(/<circle[^>]* r="([\d.]+)"[^>]*fill="rgb\(255,255,255\)"/g)]
+// The radius of each armor (white) and structure (shaded) pip drawn in a location, as printed (the legend left out).
+const pipRadii = (markup: string): number[] => [...markup.split('data-location="').slice(1).join("").matchAll(/<circle[^>]* r="([\d.]+)"[^>]*fill="rgb\((255,255,255|205,205,205)\)"/g)]
     .map((match) => +match[1]);
 
 describe("vehicle armor diagram (beta feedback 2026-10-21)", () => {
@@ -58,6 +59,34 @@ describe("vehicle armor diagram (beta feedback 2026-10-21)", () => {
     it("draws the turret, with its gun, when there is one", () => {
         expect(draw(tank("tracked", 50, true))).toContain('data-testid="vehicle-turret-gun"');
         expect(draw(tank("tracked", 50))).not.toContain('data-testid="vehicle-turret-gun"');
+    });
+
+    // Every bubble of a location, structure and armor, drawn wholly inside that location's own section of the hull.
+    it.each([
+        ["tracked", 100, true, 0],
+        ["vtol", 30, true, 0],
+        ["hover", 50, false, 0],
+        ["naval-surface", 300, true, 0],
+        ["naval-sub", 100, false, 0],
+        ["naval-surface", 2000, true, 5],
+        ["tracked", 180, true, 0],
+    ] as const)("packs a %s %i-ton vehicle's bubbles inside each section's shape", (motive, tonnage, turret, turrets) => {
+        const vehicle = tank(motive, tonnage, turret);
+        if (turrets) vehicle.setTurretCount(turrets);
+        vehicle.allocateMaxArmor();
+        const markup = draw(vehicle);
+        const structure = vehicle.getStructureAllocation() as unknown as Record<string, number>;
+        const armor = vehicle.getArmorAllocation() as unknown as Record<string, number>;
+        for (const { tag } of vehicle.getLocations()) {
+            const group = new RegExp(`<g data-location="${tag}">(.*?)</g>`).exec(markup)![1];
+            const shape = /<polygon points="([^"]+)"/.exec(group)![1].split(" ").map((pair) => pair.split(",").map(Number) as [number, number]);
+            const bubbles = [...group.matchAll(/<circle cx="([\d.]+)" cy="([\d.]+)" r="([\d.]+)"/g)].map((match) => match.slice(1).map(Number));
+            expect(bubbles).toHaveLength((structure[tag] ?? 0) + (armor[tag] ?? 0));
+            for (const [cx, cy, r] of bubbles) {
+                expect(insideShape(shape, [cx, cy])).toBe(true);
+                expect(edgeDistance(shape, [cx, cy])).toBeGreaterThanOrEqual(r - 0.2);
+            }
+        }
     });
 
     it("draws pips large enough to read and mark", () => {
