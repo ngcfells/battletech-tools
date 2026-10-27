@@ -122,6 +122,20 @@ describe("Classic roster Master Unit List search", () => {
         expect(group.members.map((member) => member.getName())).toContain(champion.getName());
     }, 30_000);
 
+    // A design saved before it was named listed a blank name, its buttons read only "View", "TRO" and "Add".
+    it("names a saved design that has no name yet", async () => {
+        const appGlobals = makeAppGlobals();
+        appGlobals.battleMechSaves.push(JSON.parse(new BattleMech().exportJSON()));
+        render(
+            <MemoryRouter>
+                <BattleMechAddMechDialog appGlobals={appGlobals} currentForce={appGlobals.currentCBTForce!.groups[0]} currentForceIndex={0} onChange={vi.fn()} />
+            </MemoryRouter>
+        );
+        const add = await screen.findByRole("button", { name: "Add Unnamed design" }, { timeout: 20_000 });
+        expect(add.closest("tr")?.textContent).toContain("Unnamed design");
+        expect(screen.getByRole("button", { name: "TRO Unnamed design" })).toBeTruthy();
+    }, 30_000);
+
     // #241: a 'Mech with nothing saved matches its bundled design, imported when a button is pressed.
     it("adds the bundled design for a MUL 'Mech, with nothing saved", async () => {
         const appGlobals = makeAppGlobals();

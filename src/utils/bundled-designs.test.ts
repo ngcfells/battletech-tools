@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { BattleMech } from "../classes/battlemech";
 import { sswTestFixtures } from "../data/ssw/sswTestFixtures";
-import { compactDesign, compactMech, describeCriticals, expandDesign, getMechFingerprint, loadBundledMech, shareChunk, unshareDesign } from "./bundled-designs";
+import { compactDesign, compactMech, compareDesigns, describeCriticals, expandDesign, getMechFingerprint, loadBundledMech, shareChunk, summarizeDesign, unshareDesign } from "./bundled-designs";
 
 describe("the compact design format (#241)", () => {
     it("gives back the same 'Mech: BV, cost, tonnage, crit table and equipment", () => {
@@ -74,11 +74,19 @@ describe("telling a duplicate from a variant", () => {
     const laser = { name: "Medium Laser", tag: "medium-laser" };
     const endo = { name: "Endo-Steel", tag: "endo-steel" };
     const ferro = { name: "Ferro-Fibrous", tag: "ferro-fibrous" };
-    const mech = (criticals: Record<string, unknown[]>) => ({
-        getCriticals: () => criticals, getArmorAllocation: () => ({ ra: 10, la: 10 }),
+    const sink = { name: "Heat Sink", tag: "heat-sink" };
+    const caseSlot = { name: "CASE", tag: "case" };
+    const srmAmmo = { name: "SRM 6 Ammo", tag: "ammo-srm-6" };
+    const infernoAmmo = { name: "SRM 6 Inferno Ammo", tag: "ammo-srm-6-inferno" };
+    const hand = { name: "Hand Actuator", tag: "hand-actuator" };
+    const mech = (criticals: Record<string, unknown[]>, armor: { ra: number; la: number } = { ra: 10, la: 10 }, armorTons = 1, heatSinks = 10) => ({
+        getCriticals: () => criticals, getArmorAllocation: () => armor, getArmorWeight: () => armorTons,
         getInternalStructureType: () => "endo-steel", getArmorType: () => "ferro-fibrous",
+        getHeatSinks: () => heatSinks, getHeatSinksObj: () => ({ name: "Heat Sink", tag: "heat-sink" }),
     }) as unknown as BattleMech;
     const atlas = getMechFingerprint(mech({ ra: [laser, null, endo], la: [ferro, null, null] }));
+    const compare = (a: BattleMech, b: BattleMech) => compareDesigns(summarizeDesign(a), summarizeDesign(b));
+    const kept = mech({ ra: [laser, srmAmmo, hand], la: [caseSlot, sink, null] });
 
     it("counts the same equipment in another slot of its location, or structure and armor slots anywhere, as the same design", () => {
         expect(getMechFingerprint(mech({ ra: [null, endo, laser], la: [null, null, ferro] }))).toBe(atlas);
@@ -88,5 +96,33 @@ describe("telling a duplicate from a variant", () => {
     it("counts equipment moved to another location, or changed, as a different design", () => {
         expect(getMechFingerprint(mech({ ra: [null, null, endo], la: [ferro, laser, null] }))).not.toBe(atlas);
         expect(getMechFingerprint(mech({ ra: [laser, laser, endo], la: [ferro, null, null] }))).not.toBe(atlas);
+    });
+
+    // The user's ruling on same name and model files that differ (#241, 2026-10-27).
+    it("counts engine heat sinks shown in crit slots, when the count is the same, as the same design", () => {
+        const shown = mech({ ra: [laser, srmAmmo, hand], la: [caseSlot, sink, sink] });
+        expect(compare(kept, shown)).toEqual({ duplicate: true, why: "engine heat sinks in crit slots" });
+        expect(getMechFingerprint(shown)).toBe(getMechFingerprint(kept));
+        expect(compare(kept, mech({ ra: [laser, srmAmmo, hand], la: [caseSlot, sink, sink] }, undefined, undefined, 11)).duplicate).toBe(false);
+    });
+
+    it("counts armor spread differently as the same design only when its tonnage is the same", () => {
+        const spread = mech({ ra: [laser, srmAmmo, hand], la: [caseSlot, sink, null] }, { ra: 12, la: 8 });
+        expect(compare(kept, spread)).toEqual({ duplicate: true, why: "armor spread" });
+        expect(getMechFingerprint(spread)).toBe(getMechFingerprint(kept));
+        expect(compare(kept, mech({ ra: [laser, srmAmmo, hand], la: [caseSlot, sink, null] }, { ra: 12, la: 10 }, 1.5)))
+            .toEqual({ duplicate: false, why: "armor tonnage" });
+    });
+
+    it("counts CASE, which takes no critical hit, in another location as the same design, but not added or dropped", () => {
+        expect(compare(kept, mech({ ra: [laser, srmAmmo, hand, caseSlot], la: [sink, null, null] }))).toEqual({ duplicate: true, why: "CASE placed" });
+        expect(compare(kept, mech({ ra: [laser, srmAmmo, hand], la: [sink, null, null] }))).toEqual({ duplicate: false, why: "CASE" });
+    });
+
+    it("counts another ammo type, actuators or equipment as a different submodel", () => {
+        expect(compare(kept, mech({ ra: [laser, infernoAmmo, hand], la: [caseSlot, sink, null] }))).toEqual({ duplicate: false, why: "ammo type" });
+        expect(compare(kept, mech({ ra: [laser, srmAmmo, null], la: [caseSlot, sink, null] }))).toEqual({ duplicate: false, why: "actuators" });
+        expect(compare(kept, mech({ ra: [srmAmmo, hand, null], la: [caseSlot, sink, laser] }))).toEqual({ duplicate: false, why: "equipment" });
+        expect(compare(kept, mech({ ra: [laser, srmAmmo, hand, sink], la: [caseSlot, null, null] }))).toEqual({ duplicate: false, why: "heat sinks placed" });
     });
 });

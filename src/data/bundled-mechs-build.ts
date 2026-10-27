@@ -8,7 +8,7 @@ import { BattleMech } from "../classes/battlemech";
 import { importBattleMechMtf } from "../classes/battlemech-mtf";
 import type { IASMULUnit } from "../classes/alpha-strike-unit";
 import { correctMULBattleValue } from "./mul-bv-corrections";
-import { BUNDLED_CHUNK_SIZE, BundledDesignSource, compactMech, describeCriticals, describeEquipmentLayout, describeLayout, getMechFingerprint, IBundledDesignHeader, loadBundledMech, shareChunk } from "../utils/bundled-designs";
+import { BUNDLED_CHUNK_SIZE, BundledDesignSource, compactMech, compareDesigns, describeCriticals, getMechFingerprint, IBundledDesignHeader, IDesignSummary, loadBundledMech, shareChunk, summarizeDesign } from "../utils/bundled-designs";
 import { getClassicMechEntries, getMULMatchKeys } from "../utils/classicMULMatch";
 import { stringifyTable, untabulate } from "../utils/packed-json";
 import { getRulesLevelStanding, UnitStanding } from "../utils/unit-standing";
@@ -52,7 +52,7 @@ export function getBundledStanding(file: string, unit: { getRequiredRulesLevel()
     const standing = /apocryphal/i.test(file) ? "apocryphal" : getRulesLevelStanding(unit.getRequiredRulesLevel());
     return standing === "canon" ? {} : { standing };
 }
-interface IKeptLayout { strict: string; loose: string; name: string }
+interface IKeptLayout { summary: IDesignSummary; name: string }
 
 // SSW's names for chassis components ("XL Engine", "Extra-Light Gyro", "Endo-Steel"). SSW's engine techbase
 // attribute (0 Inner Sphere, 1 Clan) picks the Inner Sphere or Clan XL/XXL engine. Primitive I.C.E. and fuel cell
@@ -191,14 +191,15 @@ export function buildBundledMechs(sswDir: string, mulDir: string, megamekDir?: s
         // Each entry (an OmniMech's configurations too) with its own layout: MegaMek's one-configuration file is
         // compared with that configuration of a kept OmniMech, not with its base.
         const entries = getClassicMechEntries([mech]);
-        const layoutOf = (design: BattleMech, name: string): IKeptLayout => ({ strict: describeLayout(design), loose: describeEquipmentLayout(design), name });
+        const layoutOf = (design: BattleMech, name: string): IKeptLayout => ({ summary: summarizeDesign(design), name });
         const own = entries.map((entry) => ({ keys: getMULMatchKeys(entry.chassis, entry.model), layout: layoutOf(entry.design, entry.chassis + " " + entry.model) }));
         const clash = own.flatMap(({ keys, layout }) => keys.map((key) => ({ layout, twin: taken.get(key) }))).find(({ twin }) => twin)
             ?? (mulUnit && takenIds.has(mulUnit.Id) ? { layout: own[own.length - 1].layout, twin: takenIds.get(mulUnit.Id) } : undefined);
         if (clash) {
             const { layout, twin } = clash as { layout: IKeptLayout; twin: IKeptLayout };
-            leave(twin.strict === layout.strict ? "duplicate of a design already kept"
-                : twin.loose === layout.loose ? "duplicate of a design already kept, slots arranged differently" : "same name and model, different equipment or locations", twin.name);
+            // A duplicate names what it differs in; a different submodel waits for its renumbered model.
+            const { duplicate, why } = compareDesigns(twin.summary, layout.summary);
+            leave(duplicate ? "duplicate of a design already kept" + (why ? ", differs only in " + why : "") : "different submodel, same name and model: " + why, twin.name);
             return;
         }
         const matched = mulUnit

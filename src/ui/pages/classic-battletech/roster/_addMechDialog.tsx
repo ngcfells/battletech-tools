@@ -482,7 +482,8 @@ export default class BattleMechAddMechDialog extends React.Component<IBattleMech
 
     renderRow = ( row: IPickerRow, index: number ): JSX.Element => {
         const { unit, kind, design } = row;
-        const name = getMULDisplayName( unit );
+        // A design saved before it was named still needs a name for its row and buttons.
+        const name = getMULDisplayName( unit ) || "Unnamed design";
         let bv: number = unit.BattleValue;
         let buttons: JSX.Element | null = null;
         if( design && !kind ) {

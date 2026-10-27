@@ -42,16 +42,99 @@ export const describeCriticals = (mech: BattleMech): string =>
 /** A design's exact layout: its crit table and armor. */
 export const describeLayout = (mech: BattleMech): string => describeCriticals(mech) + JSON.stringify(mech.getArmorAllocation());
 
+// CASE takes no critical hit (TW p.124), like the slots marked "roll again".
+const CASE_TAG = /^(clan-|is-)?case(-ii|-prototype)?$/;
+
+/** What the duplicate check compares of a design (the user's rulings, #241). */
+export interface IDesignSummary {
+    /** The exact crit table and armor. */
+    strict: string;
+    /** Each location's equipment that can take a critical hit, in name order, heat sinks apart. */
+    equipment: [string, string[]][];
+    /** Heat sinks in crit slots, by location. */
+    heatSinkSlots: Record<string, number>;
+    /** Heat sink count and type. */
+    heatSinks: string;
+    /** Lines that take no critical hit (CASE and the like) other than structure and armor slots, in name order. */
+    rollAgain: string[];
+    /** Where those lines sit. */
+    rollAgainSlots: string;
+    armor: string;
+    armorType: string;
+    armorWeight: number;
+}
+
+export function summarizeDesign(mech: BattleMech): IDesignSummary {
+    const structural = new Set([mech.getInternalStructureType(), mech.getArmorType()]);
+    const equipment: [string, string[]][] = [];
+    const heatSinkSlots: Record<string, number> = {};
+    const rollAgain: string[] = [];
+    const rollAgainSlots: [string, string[]][] = [];
+    for (const [loc, slots] of Object.entries(mech.getCriticals())) {
+        const items: string[] = [];
+        heatSinkSlots[loc] = 0;
+        for (const slot of slots as ({ name?: string; tag?: string; rollAgain?: boolean } | null)[]) {
+            if (!slot?.name || structural.has(slot.tag ?? "")) continue;
+            if (slot.tag === "heat-sink") heatSinkSlots[loc]++;
+            else if (slot.rollAgain || CASE_TAG.test(slot.tag ?? "")) {
+                rollAgain.push(slot.name);
+                rollAgainSlots.push([loc, [slot.name]]);
+            } else items.push(slot.name);
+        }
+        equipment.push([loc, items.sort()]);
+    }
+    return {
+        strict: describeLayout(mech), equipment, heatSinkSlots, heatSinks: mech.getHeatSinks() + " " + mech.getHeatSinksObj()?.tag,
+        rollAgain: rollAgain.sort(), rollAgainSlots: JSON.stringify(rollAgainSlots), armor: JSON.stringify(mech.getArmorAllocation()), armorType: mech.getArmorType(), armorWeight: mech.getArmorWeight(),
+    };
+}
+
 /**
- * What makes two designs of the same name and model different (the user's ruling): each location's equipment in
- * name order, and the armor. A move to another slot of the same location is the same design, and structure and armor
- * slots may sit anywhere; a move to another location, or any equipment changed, is a different design.
+ * Whether two designs of the same name and model are one (the user's rulings, #241): the same equipment in another
+ * slot of its location, structure and armor slots or CASE anywhere, engine heat sinks shown in crit slots or not, and
+ * armor spread differently over the same tonnage are the same design. Another ammo type, actuators, equipment added,
+ * dropped or moved to another location, or another armor tonnage is a different submodel. `why` names the first
+ * difference that makes it one, or what the duplicate differs in.
+ */
+export function compareDesigns(kept: IDesignSummary, other: IDesignSummary): { duplicate: boolean; why: string } {
+    if (kept.strict === other.strict) return { duplicate: true, why: "" };
+    const kinds = new Set<string>();
+    kept.equipment.forEach(([loc, items], index) => {
+        const theirs = [...(other.equipment[index]?.[0] === loc ? other.equipment[index][1] : other.equipment.find(([key]) => key === loc)?.[1] ?? [])];
+        const only = items.filter((item) => {
+            const at = theirs.indexOf(item);
+            if (at < 0) return true;
+            theirs.splice(at, 1);
+            return false;
+        });
+        [...only, ...theirs].forEach((item) => kinds.add(/Ammo/i.test(item) ? "ammo type" : /Actuator/i.test(item) ? "actuators" : "equipment"));
+    });
+    const variant = ["ammo type", "actuators", "equipment"].find((kind) => kinds.has(kind));
+    if (variant) return { duplicate: false, why: variant };
+    if (kept.heatSinks !== other.heatSinks) return { duplicate: false, why: "heat sinks" };
+    // Engine heat sinks shown in crit slots: one design has at least the other's heat sink slots in every location.
+    const locations = Object.keys({ ...kept.heatSinkSlots, ...other.heatSinkSlots });
+    const covers = (a: IDesignSummary, b: IDesignSummary) => locations.every((loc) => (a.heatSinkSlots[loc] ?? 0) >= (b.heatSinkSlots[loc] ?? 0));
+    if (!covers(kept, other) && !covers(other, kept)) return { duplicate: false, why: "heat sinks placed" };
+    if (kept.rollAgain.join() !== other.rollAgain.join()) {
+        return { duplicate: false, why: [...kept.rollAgain, ...other.rollAgain].some((name) => /\bCASE\b/.test(name)) ? "CASE" : "equipment" };
+    }
+    if (kept.armorType !== other.armorType || kept.armorWeight !== other.armorWeight) return { duplicate: false, why: "armor tonnage" };
+    const same: string[] = [];
+    if (locations.some((loc) => (kept.heatSinkSlots[loc] ?? 0) !== (other.heatSinkSlots[loc] ?? 0))) same.push("engine heat sinks in crit slots");
+    if (kept.rollAgainSlots !== other.rollAgainSlots) same.push("CASE placed");
+    if (kept.armor !== other.armor) same.push("armor spread");
+    return { duplicate: true, why: same.join(", ") };
+}
+
+/**
+ * The part of summarizeDesign two designs that are one share: equipment by location, heat sink count, CASE and the
+ * like in any location, armor type and tonnage. Heat sinks in crit slots are left out, so a heat sink moved to
+ * another location (a different submodel to compareDesigns) keeps the fingerprint.
  */
 export const describeEquipmentLayout = (mech: BattleMech): string => {
-    const structural = new Set([mech.getInternalStructureType(), mech.getArmorType()]);
-    return JSON.stringify(Object.entries(mech.getCriticals()).map(([loc, slots]) =>
-        [loc, (slots as ({ name?: string; tag?: string } | null)[]).filter((slot) => slot?.name && !structural.has(slot.tag ?? "")).map((slot) => slot!.name!).sort()]))
-        + JSON.stringify(mech.getArmorAllocation());
+    const summary = summarizeDesign(mech);
+    return JSON.stringify([summary.equipment, summary.heatSinks, summary.rollAgain, summary.armorType, summary.armorWeight]);
 };
 
 /** describeEquipmentLayout, hashed short (32-bit FNV-1a): designs with the same name, model and fingerprint are one. */
