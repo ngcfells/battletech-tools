@@ -1,5 +1,6 @@
 import type { IASMULUnit } from "../classes/alpha-strike-unit";
 import { generateUUID } from "../utils/generateUUID";
+import { stringifyTable, untabulate } from "../utils/packed-json";
 
 // Curated non-canonical units live in src/data/mul/custom/custom-units.json (the shared list). The
 // developer-menu Custom MUL Editor (/custom-mul-editor) saves new entries in the browser first
@@ -311,19 +312,20 @@ export function toSharedCustomMULRecord(record: IASMULUnit): IASMULUnit {
     return shared;
 }
 
-// Stable, review-friendly file contents: sorted by name/variant, loader/browser-only fields stripped.
+// Stable, review-friendly file contents: sorted by name/variant, loader/browser-only fields stripped, stored as a
+// table (packed-json.ts) with one record a line.
 export function serializeCustomMULRecords(records: IASMULUnit[]): string {
     const sorted = records
         .map(toSharedCustomMULRecord)
         .sort((a, b) => mulIdentity(a.Name, a.Variant).localeCompare(mulIdentity(b.Name, b.Variant)));
-    return `${JSON.stringify(sorted, null, 2)}\n`;
+    return stringifyTable(sorted);
 }
 
 // Adds or replaces (by MulUnitKey) `entries` in the shared list's current file text. An entry whose
 // Id is already used by a different unit (someone else's entry merged since this one was created)
 // gets the next free Id. Returns the new file text.
 export function mergeCustomMULEntries(currentFileText: string | null, entries: IASMULUnit[]): string {
-    const parsed = currentFileText ? JSON.parse(currentFileText) : [];
+    const parsed = currentFileText ? untabulate(JSON.parse(currentFileText)) : [];
     const records: IASMULUnit[] = Array.isArray(parsed) ? parsed : [];
 
     for (const entry of entries.map(toSharedCustomMULRecord)) {

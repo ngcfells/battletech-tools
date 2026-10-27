@@ -8,8 +8,10 @@ import { BattleMech } from "../classes/battlemech";
 import { importBattleMechMtf } from "../classes/battlemech-mtf";
 import type { IASMULUnit } from "../classes/alpha-strike-unit";
 import { correctMULBattleValue } from "./mul-bv-corrections";
-import { BUNDLED_CHUNK_SIZE, BundledDesignSource, compactMech, IBundledDesignHeader, loadBundledMech } from "../utils/bundled-designs";
+import { BUNDLED_CHUNK_SIZE, BundledDesignSource, compactMech, describeCriticals, describeEquipmentLayout, describeLayout, getMechFingerprint, IBundledDesignHeader, loadBundledMech, shareChunk } from "../utils/bundled-designs";
 import { getClassicMechEntries, getMULMatchKeys } from "../utils/classicMULMatch";
+import { stringifyTable, untabulate } from "../utils/packed-json";
+import { getRulesLevelStanding, UnitStanding } from "../utils/unit-standing";
 import { getSSWXMLBasicInfo, ISSWBasicInfo, parseSSWXML } from "../utils/getSSWXMLBasicInfo";
 
 export const DEFAULT_SSW_DIR = "C:/repo/battletech-tools/WorkingData_DEV/SSWdata";
@@ -41,6 +43,16 @@ const MECH_CLASSES = ["BattleMech", "IndustrialMech"];
 const MECH_TYPE_IDS = [18, 20];
 const isMULMech = (unit: IASMULUnit) => MECH_CLASSES.includes(unit.Class) || MECH_TYPE_IDS.includes(unit.Type?.Id);
 type Leave = (reason: string, detail?: string) => void;
+
+/**
+ * A bundled design's standing, left out when canon: a file from an apocryphal folder (MegaMek's "Videogame
+ * (Apocryphal)"), else what the gear's rules level makes it.
+ */
+export function getBundledStanding(file: string, unit: { getRequiredRulesLevel(): number }): { standing?: UnitStanding } {
+    const standing = /apocryphal/i.test(file) ? "apocryphal" : getRulesLevelStanding(unit.getRequiredRulesLevel());
+    return standing === "canon" ? {} : { standing };
+}
+interface IKeptLayout { strict: string; loose: string; name: string }
 
 // SSW's names for chassis components ("XL Engine", "Extra-Light Gyro", "Endo-Steel"). SSW's engine techbase
 // attribute (0 Inner Sphere, 1 Clan) picks the Inner Sphere or Clan XL/XXL engine. Primitive I.C.E. and fuel cell
@@ -76,10 +88,6 @@ function checkComponents(xml: string, mech: BattleMech): string[] {
     return wrong;
 }
 
-/** A crit table as text, without the UUIDs and object links a reload changes. */
-export const describeCriticals = (mech: BattleMech): string =>
-    JSON.stringify(mech.getCriticals(), (key, value) => key === "obj" || key === "uuid" ? undefined : value);
-
 const listFiles = (dir: string, extension: string): string[] => fs.readdirSync(dir, { withFileTypes: true })
     .flatMap((entry) => entry.isDirectory() ? listFiles(path.join(dir, entry.name), extension)
         : entry.name.toLowerCase().endsWith(extension) ? [path.join(dir, entry.name)] : []);
@@ -89,7 +97,7 @@ export function loadMULIndex(mulDir: string, test: (unit: IASMULUnit) => boolean
     const index = new Map<string, IASMULUnit>();
     for (const list of ["live", "mul1", "custom"]) {
         for (const file of fs.readdirSync(path.join(mulDir, list)).sort()) {
-            for (const entry of JSON.parse(fs.readFileSync(path.join(mulDir, list, file), "utf8")) as IASMULUnit[]) {
+            for (const entry of untabulate(JSON.parse(fs.readFileSync(path.join(mulDir, list, file), "utf8"))) as IASMULUnit[]) {
                 const unit = list === "live" ? correctMULBattleValue(entry) : entry;
                 if (!test(unit)) continue;
                 for (const key of getMULMatchKeys(unit.Name ?? "", unit.Variant ?? "")) if (!index.has(key)) index.set(key, unit);
@@ -159,8 +167,9 @@ export function buildBundledMechs(sswDir: string, mulDir: string, megamekDir?: s
     const mul1ById = loadMUL1ById(mulDir, isMULMech);
     const kept: { header: Omit<IBundledDesignHeader, "id">; design: Record<string, unknown> }[] = [];
     const leftOut: IBundledBuild["leftOut"] = [];
-    const taken = new Set<string>();
-    const takenIds = new Set<number>();
+    // The kept design each match key and MUL id belongs to, with its layouts, to tell a duplicate from a variant.
+    const taken = new Map<string, IKeptLayout>();
+    const takenIds = new Map<number, IKeptLayout>();
     const { warn, log } = console;
     const random = Math.random;
     let failedAllocations = 0;
@@ -172,16 +181,26 @@ export function buildBundledMechs(sswDir: string, mulDir: string, megamekDir?: s
      * is matched by name like a Skunk Werks file; it is kept only on a MUL BV match, having no BV of its own. A Skunk
      * Werks file without a MUL entry is checked against its own BV.
      */
-    const keep = (mech: BattleMech, xml: string, info: ISSWBasicInfo, source: BundledDesignSource, leave: Leave, mulUnit?: IASMULUnit) => {
+    const keep = (mech: BattleMech, xml: string, info: ISSWBasicInfo, source: BundledDesignSource, file: string, leave: Leave, mulUnit?: IASMULUnit) => {
         if (failedAllocations > 0) { leave("crit slots failed to place", String(failedAllocations)); return; }
         if (mech.getTonnage() !== +info.tonnage) { leave("tonnage differs", `${mech.getTonnage()} t, file says ${info.tonnage}`); return; }
         const components = checkComponents(xml, mech);
         if (components.length > 0) { leave("chassis components differ", components.join("; ")); return; }
         if (!keepMatchingConfigurations(mech, xml, mul, leave)) return;
 
+        // Each entry (an OmniMech's configurations too) with its own layout: MegaMek's one-configuration file is
+        // compared with that configuration of a kept OmniMech, not with its base.
         const entries = getClassicMechEntries([mech]);
-        const keys = entries.flatMap((entry) => getMULMatchKeys(entry.chassis, entry.model));
-        if (keys.some((key) => taken.has(key))) { leave("duplicate of a design already kept"); return; }
+        const layoutOf = (design: BattleMech, name: string): IKeptLayout => ({ strict: describeLayout(design), loose: describeEquipmentLayout(design), name });
+        const own = entries.map((entry) => ({ keys: getMULMatchKeys(entry.chassis, entry.model), layout: layoutOf(entry.design, entry.chassis + " " + entry.model) }));
+        const clash = own.flatMap(({ keys, layout }) => keys.map((key) => ({ layout, twin: taken.get(key) }))).find(({ twin }) => twin)
+            ?? (mulUnit && takenIds.has(mulUnit.Id) ? { layout: own[own.length - 1].layout, twin: takenIds.get(mulUnit.Id) } : undefined);
+        if (clash) {
+            const { layout, twin } = clash as { layout: IKeptLayout; twin: IKeptLayout };
+            leave(twin.strict === layout.strict ? "duplicate of a design already kept"
+                : twin.loose === layout.loose ? "duplicate of a design already kept, slots arranged differently" : "same name and model, different equipment or locations", twin.name);
+            return;
+        }
         const matched = mulUnit
             ? [{ entry: entries[entries.length - 1], unit: mulUnit }]
             : entries.map((entry) => ({ entry, unit: getMULMatchKeys(entry.chassis, entry.model).map((key) => mul.get(key)).find(Boolean) }))
@@ -198,7 +217,10 @@ export function buildBundledMechs(sswDir: string, mulDir: string, megamekDir?: s
         const reload = loadBundledMech(design);
         const configurations = mech.getOmniConfigurationNames();
         const configs = configurations.length > 1
-            ? configurations.map((config) => ({ name: config, bv: (mech.cloneOmniConfiguration(config) as BattleMech).getBattleValue() }))
+            ? configurations.map((config) => {
+                const configured = mech.cloneOmniConfiguration(config) as BattleMech;
+                return { name: config, bv: configured.getBattleValue(), layout: getMechFingerprint(configured) };
+            })
             : undefined;
         const reloadConfigs = configs?.map((config) => (reload.cloneOmniConfiguration(config.name) as BattleMech).getBattleValue());
         if (reload.getBattleValue() !== mech.getBattleValue() || reload.getCBillCostNumeric() !== mech.getCBillCostNumeric()
@@ -206,14 +228,14 @@ export function buildBundledMechs(sswDir: string, mulDir: string, megamekDir?: s
             || (configs && reloadConfigs!.some((bv, index) => bv !== configs[index].bv))) {
             leave("does not survive the compact format"); return;
         }
-        keys.forEach((key) => taken.add(key));
-        matched.forEach(({ unit }) => takenIds.add(unit!.Id));
+        own.forEach(({ keys, layout }) => keys.forEach((key) => taken.set(key, layout)));
+        matched.forEach(({ entry, unit }) => takenIds.set(unit!.Id, own[entries.indexOf(entry)].layout));
         const mulId = matched.find(({ entry }) => entry.design === mech)?.unit?.Id ?? matched[0]?.unit?.Id;
         kept.push({
             header: {
                 name: mech.getChassisName(), model: mech.getModelName(), tons: mech.getTonnage(), bv: mech.getBattleValue(),
                 cost: mech.getCBillCostNumeric(), rulesLevel: +info.rules_level_ssw, year: +info.year, tech: mech.getTech().name,
-                ...(mulId ? { mulId } : {}), source, ...(configs ? { configs } : {}),
+                ...(mulId ? { mulId } : {}), source, ...(configs ? { configs } : {}), layout: getMechFingerprint(mech), ...getBundledStanding(file, mech),
             },
             design,
         });
@@ -236,7 +258,7 @@ export function buildBundledMechs(sswDir: string, mulDir: string, megamekDir?: s
                 leave("import threw", String(error)); continue;
             }
             if (mech.sswImportErrors.length > 0) { leave("import errors", mech.sswImportErrors.join("; ")); continue; }
-            keep(mech, xml, info, "ssw", leave);
+            keep(mech, xml, info, "ssw", name, leave);
         }
         for (const file of megamekDir ? listFiles(megamekDir, ".mtf").sort() : []) {
             const name = "megamek/" + path.relative(megamekDir!, file).replace(/\\/g, "/");
@@ -245,7 +267,6 @@ export function buildBundledMechs(sswDir: string, mulDir: string, megamekDir?: s
             const text = withIndustrialCockpit(name, fs.readFileSync(file, "utf8"));
             const byId = mul1ById.get(Number(/^mul id:\s*(\d+)/m.exec(text)?.[1]));
             const mulUnit = byId && byId.BattleValue > 0 ? byId : undefined;
-            if (mulUnit && takenIds.has(mulUnit.Id)) { leave("duplicate of a design already kept"); continue; }
             failedAllocations = 0;
             let imported: ReturnType<typeof importBattleMechMtf>;
             try {
@@ -256,7 +277,7 @@ export function buildBundledMechs(sswDir: string, mulDir: string, megamekDir?: s
             const info = getSSWXMLBasicInfo(imported.xml);
             if (!imported.mech || !info) { leave("import failed", imported.issues.join("; ")); continue; }
             if (imported.issues.length > 0) { leave("the import could not carry all of it over", imported.issues.join("; ")); continue; }
-            keep(imported.mech, imported.xml, info, "megamek", leave, mulUnit);
+            keep(imported.mech, imported.xml, info, "megamek", name, leave, mulUnit);
         }
     } finally {
         console.warn = warn;
@@ -277,10 +298,12 @@ export function writeBundledDesigns(type: string, title: string, notice: string,
     fs.rmSync(chunkDir, { recursive: true, force: true });
     fs.mkdirSync(chunkDir, { recursive: true });
     const head = `"notice":${JSON.stringify(notice)},`;
-    fs.writeFileSync(path.join(dataDir, `${type}-index.json`), lines(build.headers.map((header) => ["", header]), `{${head}"designs":[`, "]}\n"));
+    fs.writeFileSync(path.join(dataDir, `${type}-index.json`), `{${head}"designs":${stringifyTable(build.headers).trimEnd()}}\n`);
     for (let chunk = 0; chunk * BUNDLED_CHUNK_SIZE < build.designs.length; chunk++) {
         const ids = build.headers.slice(chunk * BUNDLED_CHUNK_SIZE, (chunk + 1) * BUNDLED_CHUNK_SIZE).map((header) => header.id);
-        fs.writeFileSync(path.join(chunkDir, `${chunk}.json`), lines(ids.map((id) => [String(id), build.designs[id]]), `{${head}"designs":{`, "}}\n"));
+        const { shared, designs } = shareChunk(Object.fromEntries(ids.map((id) => [String(id), build.designs[id]])));
+        fs.writeFileSync(path.join(chunkDir, `${chunk}.json`), lines(shared.map((value) => ["", value]), `{${head}"shared":[`, "],")
+            + lines(Object.entries(designs), `"designs":{`, "}}\n"));
     }
     const reasons = new Map<string, number>();
     for (const { reason } of build.leftOut) {

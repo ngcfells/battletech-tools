@@ -2,6 +2,8 @@ import * as React from 'react';
 import { FaBars, FaEye, FaPlus } from "react-icons/fa";
 import { Link } from 'react-router';
 import { AlphaStrikeUnit, getMULDisplayName, IASMULUnit } from '../../../../classes/alpha-strike-unit';
+import { getMULRecordStanding } from '../../../../utils/unit-standing';
+import UnitStandingBadge, { UnitStandingLegend } from '../../../components/unit-standing-badge';
 import { BattleMech } from '../../../../classes/battlemech';
 import AerospaceFighter from '../../../../classes/aerospace-fighter';
 import InfantryPlatoon from '../../../../classes/infantry-platoon';
@@ -338,6 +340,7 @@ export default class AlphaStrikeAddUnitsView extends React.Component<IAlphaStrik
                         <label htmlFor="search-sort-pv">PV</label>
                     </span>
                 </div>
+                  <UnitStandingLegend />
                   {!this.state.isSearching ? <SearchResultsPager page={resultsPage} onGo={this.goToSearchPage} /> : null}
                   <div className="table-wrapper">
                     <table className="table">
@@ -442,6 +445,7 @@ export default class AlphaStrikeAddUnitsView extends React.Component<IAlphaStrik
     </button>
   </td>
                                 <td>
+                                  <UnitStandingBadge standing={getMULRecordStanding(asUnit)} />
                                   {getMULDisplayName(asUnit)}
                                   {asUnit.MulSource && asUnit.MulSource !== "mul2" ? (
                                     <>

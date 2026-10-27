@@ -1,11 +1,12 @@
 import { readdirSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { AlphaStrikeUnit, IASMULUnit } from "../classes/alpha-strike-unit";
+import { untabulate } from "./packed-json";
 
 // The shipped live MUL records (src/data/mul/live) once had no BFThreshold, Rules or ImageUrl (#48).
 const liveDir = "src/data/mul/live";
 const liveRecords: IASMULUnit[] = readdirSync(liveDir).filter((file) => file.endsWith(".json"))
-    .flatMap((file) => JSON.parse(readFileSync(`${liveDir}/${file}`, "utf8")) as IASMULUnit[]);
+    .flatMap((file) => untabulate(JSON.parse(readFileSync(`${liveDir}/${file}`, "utf8"))) as IASMULUnit[]);
 const find = (name: string, variant: string | null) => liveRecords.find((record) => record.Name === name && record.Variant === variant)!;
 
 describe("the shipped live MUL records", () => {

@@ -14,7 +14,7 @@ test("the roster's design quirks switch is off by default and is saved with the 
 
     await page.goto("classic-battletech/roster");
     await page.getByTitle("Add 'Mechs, or search the Master Unit List for any unit type").first().click();
-    await page.locator(".modal button.btn-xs.btn-primary").nth(1).click();
+    await page.locator(".modal tr", { hasText: "Saved" }).getByRole("button", { name: /^Add / }).first().click();
     await page.goto("classic-battletech/roster");
 
     // InputCheckbox is a label with a square icon, green when on.
@@ -48,7 +48,7 @@ test("with the switch on, play shows the side's quirk Initiative and the unit's 
 
     await page.goto("classic-battletech/roster");
     await page.getByTitle("Add 'Mechs, or search the Master Unit List for any unit type").first().click();
-    await page.locator(".modal button.btn-xs.btn-primary").nth(1).click();
+    await page.locator(".modal tr", { hasText: "Saved" }).getByRole("button", { name: /^Add / }).first().click();
 
     await page.goto("classic-battletech/roster/play");
     await page.locator(".mech-selector li button").first().click();
@@ -78,7 +78,7 @@ test("with the switch on, the roster takes a game year and saves it with the for
 
     await page.goto("classic-battletech/roster");
     await page.getByTitle("Add 'Mechs, or search the Master Unit List for any unit type").first().click();
-    await page.locator(".modal button.btn-xs.btn-primary").nth(1).click();
+    await page.locator(".modal tr", { hasText: "Saved" }).getByRole("button", { name: /^Add / }).first().click();
     await page.goto("classic-battletech/roster");
 
     await expect(page.getByLabel("Game year")).toHaveCount(0);

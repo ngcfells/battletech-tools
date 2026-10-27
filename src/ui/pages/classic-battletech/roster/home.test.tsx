@@ -358,7 +358,7 @@ describe("Classic roster Master Unit List search", () => {
         expect(labels).toEqual(["All", "BattleMech", "IndustrialMech", "Combat Vehicle", "Support Vehicle", "Aerospace Fighter", "Conventional Fighter", "Small Craft", "DropShip", "JumpShip", "WarShip", "Space Station", "Infantry", "Battle Armor", "ProtoMech"]);
         await screen.findAllByText(/No Classic design yet/, undefined, { timeout: 20_000 });
         fireEvent.change(typeSelect, { target: { value: "1706" } });
-        await screen.findByText("No units on the Master Unit List match your filters.", undefined, { timeout: 20_000 });
+        await screen.findByText("No units match your filters.", undefined, { timeout: 20_000 });
     }, 30_000);
 
     // Issue 325: the results pager sits above and below the list.
@@ -370,7 +370,7 @@ describe("Classic roster Master Unit List search", () => {
                 <BattleMechAddMechDialog appGlobals={appGlobals} currentForce={appGlobals.currentCBTForce!.groups[0]} currentForceIndex={0} onChange={vi.fn()} />
             </MemoryRouter>
         );
-        const mulSearch = () => Array.from(container.querySelectorAll("fieldset")).find((fieldset) => fieldset.querySelector("legend")?.textContent === "Master Unit List Search")!;
+        const mulSearch = () => Array.from(container.querySelectorAll("fieldset")).find((fieldset) => fieldset.querySelector("legend")?.textContent === "Find Units")!;
         const pagers = () => Array.from(mulSearch().querySelectorAll("nav[aria-label^='Search results pages']"));
         await waitFor(() => expect(pagers()).toHaveLength(2), { timeout: 20_000 });
         fireEvent.click(pagers()[1].querySelector("[title='Next page']")!);

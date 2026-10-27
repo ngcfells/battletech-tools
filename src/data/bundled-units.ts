@@ -2,7 +2,8 @@ import BattleArmor from "../classes/battle-armor";
 import ProtoMech from "../classes/protomech";
 import SmallCraft from "../classes/small-craft";
 import Vehicle from "../classes/vehicle";
-import { BUNDLED_CHUNK_SIZE, IBundledDesignHeader, IBundledUnitClass, loadBundledUnit } from "../utils/bundled-designs";
+import { untabulate } from "../utils/packed-json";
+import { BUNDLED_CHUNK_SIZE, IBundledDesignHeader, IBundledUnitClass, loadBundledUnit, unshareDesign } from "../utils/bundled-designs";
 
 /*
     The data here is/may be copyrighted and NOT included in the GPLv3 license.
@@ -21,13 +22,14 @@ const indexLoaders = import.meta.glob("./bundled/*-index.json", { import: "defau
 const chunkLoaders = import.meta.glob("./bundled/*/*.json", { import: "default" }) as Loaders;
 
 const indexes = new Map<BundledType, Promise<IBundledDesignHeader[]>>();
-const chunks = new Map<string, Promise<Record<string, Record<string, unknown>>>>();
+interface IBundledChunk { shared?: unknown[]; designs: Record<string, Record<string, unknown>> }
+const chunks = new Map<string, Promise<IBundledChunk>>();
 
 /** A bundled type's headers; a type not built yet has none. */
 export function loadBundledIndex(type: BundledType): Promise<IBundledDesignHeader[]> {
     if (!indexes.has(type)) {
         const loader = indexLoaders[`./bundled/${type}-index.json`];
-        indexes.set(type, loader ? loader().then((data) => (data as { designs: IBundledDesignHeader[] }).designs) : Promise.resolve([]));
+        indexes.set(type, loader ? loader().then((data) => untabulate((data as { designs: unknown }).designs) as IBundledDesignHeader[]) : Promise.resolve([]));
     }
     return indexes.get(type)!;
 }
@@ -35,8 +37,8 @@ export function loadBundledIndex(type: BundledType): Promise<IBundledDesignHeade
 /** The compact design behind a header. */
 export function loadBundledDesignData(type: BundledType, header: Pick<IBundledDesignHeader, "id">): Promise<Record<string, unknown>> {
     const file = `./bundled/${type}/${Math.floor(header.id / BUNDLED_CHUNK_SIZE)}.json`;
-    if (!chunks.has(file)) chunks.set(file, chunkLoaders[file]().then((data) => (data as { designs: Record<string, Record<string, unknown>> }).designs));
-    return chunks.get(file)!.then((designs) => designs[header.id]);
+    if (!chunks.has(file)) chunks.set(file, chunkLoaders[file]().then((data) => data as IBundledChunk));
+    return chunks.get(file)!.then((chunk) => unshareDesign(chunk.designs[header.id], chunk.shared ?? []));
 }
 
 export type BundledUnit = BattleArmor | ProtoMech | SmallCraft | Vehicle;

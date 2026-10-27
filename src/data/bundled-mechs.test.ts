@@ -12,9 +12,9 @@ import { getBundledMechEntries, loadBundledMechDesign, loadBundledMechIndex } fr
 const dataDir = path.resolve(__dirname, "bundled");
 
 // Pinned so a growing data set is a deliberate change.
-const DESIGNS = 3578;
-// Round 3 added MegaMek's 'Mechs, whose TRO text is long: about 1.8 MB gzipped, read a chunk at a time.
-const MAX_BYTES = 19_500_000;
+const DESIGNS = 3581;
+// The table format with values shared per chunk (#241 follow-up) took it from 18.4 MB to 8.7 MB, read a chunk at a time.
+const MAX_BYTES = 9_000_000;
 
 describe("bundled 'Mechs", () => {
     if (process.env.WRITE_BUNDLED_MECHS) {

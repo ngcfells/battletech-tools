@@ -4,6 +4,7 @@ import { APOCRYPHAL_RULES_LEVEL } from "../data/rules-level-options";
 import { calculateGroundPointValue, splitSpecialAbilities } from "../utils/alphaStrikeGroundPointValue";
 import { IAlphaStrikeExport } from "../utils/calculateAlphaStrikeValue";
 import { generateUUID } from "../utils/generateUUID";
+import type { UnitStanding } from "../utils/unit-standing";
 import { getAlphaStrikeQuirksInYear, getAlphaStrikeQuirkToHit, IAlphaStrikeQuirk } from "../utils/quirk-effects";
 import Pilot, { IPilot } from "./pilot";
 
@@ -158,6 +159,8 @@ export interface ICustomMULInfo {
     author: string;
     source: string;
     notes: string;
+    /** Custom unless set: a custom entry may be apocryphal (licensed, not canon) or munchkin. */
+    standing?: UnitStanding;
     createdAt: string;
     updatedAt: string;
     // Only on entries saved in this browser; the shared list never stores these.

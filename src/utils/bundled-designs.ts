@@ -1,5 +1,7 @@
 import { BattleMech } from "../classes/battlemech";
 import { generateUUID } from "./generateUUID";
+import { tabulate, untabulate } from "./packed-json";
+import type { UnitStanding } from "./unit-standing";
 
 // Bundled designs (#241): designs converted at build time from SSW (and later MegaMekLab) files, kept as small as
 // they can be and imported only when one is opened. Each carries the few fields the lists and the Master Unit List
@@ -26,7 +28,39 @@ export interface IBundledDesignHeader {
     /** Where the data comes from: a MegaMek design carries its credit until it is checked against its TRO. */
     source: BundledDesignSource;
     /** An OmniMech's configurations, each its own Master Unit List variant. */
-    configs?: { name: string; bv: number }[];
+    configs?: { name: string; bv: number; layout?: string }[];
+    /** getMechFingerprint of the design, to tell it from a saved design of the same name and model. */
+    layout?: string;
+    /** Canon unless set: an apocryphal source, or gear at the Custom Homebrew or Munchkin rules level. */
+    standing?: UnitStanding;
+}
+
+/** A crit table as text, without the UUIDs and object links a reload changes. */
+export const describeCriticals = (mech: BattleMech): string =>
+    JSON.stringify(mech.getCriticals(), (key, value) => key === "obj" || key === "uuid" ? undefined : value);
+
+/** A design's exact layout: its crit table and armor. */
+export const describeLayout = (mech: BattleMech): string => describeCriticals(mech) + JSON.stringify(mech.getArmorAllocation());
+
+/**
+ * What makes two designs of the same name and model different (the user's ruling): each location's equipment in
+ * name order, and the armor. A move to another slot of the same location is the same design, and structure and armor
+ * slots may sit anywhere; a move to another location, or any equipment changed, is a different design.
+ */
+export const describeEquipmentLayout = (mech: BattleMech): string => {
+    const structural = new Set([mech.getInternalStructureType(), mech.getArmorType()]);
+    return JSON.stringify(Object.entries(mech.getCriticals()).map(([loc, slots]) =>
+        [loc, (slots as ({ name?: string; tag?: string } | null)[]).filter((slot) => slot?.name && !structural.has(slot.tag ?? "")).map((slot) => slot!.name!).sort()]))
+        + JSON.stringify(mech.getArmorAllocation());
+};
+
+/** describeEquipmentLayout, hashed short (32-bit FNV-1a): designs with the same name, model and fingerprint are one. */
+export function getMechFingerprint(mech: BattleMech): string {
+    let hash = 0x811c9dc5;
+    for (const char of describeEquipmentLayout(mech)) {
+        hash = Math.imul(hash ^ char.charCodeAt(0), 0x01000193);
+    }
+    return (hash >>> 0).toString(16).padStart(8, "0");
 }
 
 export const BUNDLED_CHUNK_SIZE = 150;
@@ -73,18 +107,75 @@ function grow(value: unknown, ids: Map<string, string>): unknown {
     return value;
 }
 
-/**
- * A unit export reduced to what a fresh unit of the same type would not export anyway: top-level fields equal to
- * `blank`'s and the derived ones go, empty fields in list entries go, and UUIDs become short ids.
- */
-export function compactDesign(design: Record<string, unknown>, blank: Record<string, unknown>): Record<string, unknown> {
+/** A unit export reduced to the fields that differ from `blank`, without the derived ones, UUIDs as short ids. */
+function reduce(design: Record<string, unknown>, blank: Record<string, unknown>): Record<string, unknown> {
     const kept = Object.fromEntries(Object.entries(design).filter(([key, value]) => !DERIVED.includes(key) && value !== undefined && !same(value, blank[key])));
     return shrink(kept, new Map(), false) as Record<string, unknown>;
 }
 
+/**
+ * A unit export reduced to what a fresh unit of the same type would not export anyway: top-level fields equal to
+ * `blank`'s and the derived ones go, empty fields in list entries go, UUIDs become short ids and lists of objects
+ * become tables.
+ */
+export const compactDesign = (design: Record<string, unknown>, blank: Record<string, unknown>): Record<string, unknown> =>
+    tabulate(reduce(design, blank)) as Record<string, unknown>;
+
 /** The export compactDesign was made from, with fresh UUIDs, ready for the unit's importJSON. */
 export function expandDesign(compact: Record<string, unknown>, blank: Record<string, unknown>): Record<string, unknown> {
-    return { ...blank, ...(grow(compact, new Map()) as Record<string, unknown>) };
+    return { ...blank, ...(grow(untabulate(compact), new Map()) as Record<string, unknown>) };
+}
+
+// A chunk of designs keeps one copy of each long text or object its designs repeat (a TRO paragraph a variant shares,
+// an Endo-Steel slot's details) in `shared`, and "~n" for each use. A string of the design's own that starts with "~"
+// gets a second one.
+const SHARED_MIN_LENGTH = 24;
+
+/** Moves what the designs of one chunk repeat into a shared list. */
+export function shareChunk(designs: Record<string, unknown>): { shared: unknown[]; designs: Record<string, unknown> } {
+    const counts = new Map<string, number>();
+    const count = (value: unknown): void => {
+        if (value === null || typeof value !== "object" && typeof value !== "string") return;
+        const text = JSON.stringify(value);
+        if (text.length > SHARED_MIN_LENGTH) counts.set(text, (counts.get(text) ?? 0) + 1);
+        if (Array.isArray(value)) value.forEach(count);
+        else if (typeof value === "object") Object.values(value).forEach(count);
+    };
+    Object.values(designs).forEach((design) => Object.values(design as object).forEach(count));
+    const shared: unknown[] = [];
+    const refs = new Map<string, string>();
+    const escape = (value: unknown): unknown => typeof value === "string" ? (value.startsWith("~") ? "~" + value : value)
+        : Array.isArray(value) ? value.map(escape)
+        : value && typeof value === "object" ? Object.fromEntries(Object.entries(value).map(([key, item]) => [key, escape(item)])) : value;
+    const share = (value: unknown): unknown => {
+        if (value === null || typeof value !== "object" && typeof value !== "string") return value;
+        const text = JSON.stringify(value);
+        if ((counts.get(text) ?? 0) > 1) {
+            if (!refs.has(text)) {
+                refs.set(text, "~" + shared.length);
+                shared.push(escape(value));
+            }
+            return refs.get(text);
+        }
+        if (typeof value === "string") return escape(value);
+        if (Array.isArray(value)) return value.map(share);
+        return Object.fromEntries(Object.entries(value).map(([key, item]) => [key, share(item)]));
+    };
+    return { shared, designs: Object.fromEntries(Object.entries(designs).map(([id, design]) => [id, Object.fromEntries(Object.entries(design as object).map(([key, item]) => [key, share(item)]))])) };
+}
+
+/** A design of a chunk shareChunk made, with what it shares put back. */
+export function unshareDesign(design: Record<string, unknown>, shared: unknown[]): Record<string, unknown> {
+    const resolve = (value: unknown): unknown => {
+        if (typeof value === "string") {
+            if (!value.startsWith("~")) return value;
+            return value.startsWith("~~") ? value.slice(1) : resolve(shared[+value.slice(1)]);
+        }
+        if (Array.isArray(value)) return value.map(resolve);
+        if (value && typeof value === "object") return Object.fromEntries(Object.entries(value).map(([key, item]) => [key, resolve(item)]));
+        return value;
+    };
+    return resolve(design) as Record<string, unknown>;
 }
 
 let blankMech: Record<string, unknown> | null = null;
@@ -114,11 +205,34 @@ function thickenMech(design: Record<string, unknown>): Record<string, unknown> {
     return { ...design, equipment, allocation };
 }
 
+// A crit slot is stored as [location, slot, id, size, the rest of its fields], the rest left off when it has none.
+type SlotTuple = [unknown, unknown, unknown, unknown, Record<string, unknown>?];
+const SLOT_FIELDS = ["loc", "slot", "uuid", "size"];
+
+const toTuple = (slot: Record<string, unknown>): SlotTuple => {
+    const rest = Object.fromEntries(Object.entries(slot).filter(([key]) => !SLOT_FIELDS.includes(key)));
+    return Object.keys(rest).length > 0 ? [slot.loc, slot.slot, slot.uuid, slot.size ?? null, rest] : [slot.loc, slot.slot, slot.uuid, slot.size ?? null];
+};
+
+const fromTuple = (slot: unknown): unknown => {
+    if (!Array.isArray(slot)) return slot;
+    const [loc, place, uuid, size, rest] = slot as SlotTuple;
+    return { uuid, loc, slot: place, ...(size === null ? {} : { size }), ...rest };
+};
+
+/** Applies `change` to the design's crit table and each OmniMech configuration's. */
+function mapSlots<T>(design: Record<string, unknown>, change: (slot: T) => unknown): Record<string, unknown> {
+    const slots = (allocation: unknown) => Array.isArray(allocation) ? (allocation as T[]).map((slot) => change(slot)) : allocation;
+    const omniConfigurations = (design.omniConfigurations as Record<string, unknown>[] | undefined)
+        ?.map((configuration) => "allocation" in configuration ? { ...configuration, allocation: slots(configuration.allocation) } : configuration);
+    return { ...design, ...("allocation" in design ? { allocation: slots(design.allocation) } : {}), ...(omniConfigurations ? { omniConfigurations } : {}) };
+}
+
 export const compactMech = (mech: BattleMech): Record<string, unknown> =>
-    compactDesign(thinMech(mech.export(true) as unknown as Record<string, unknown>), getBlankMech());
+    tabulate(mapSlots(reduce(thinMech(mech.export(true) as unknown as Record<string, unknown>), getBlankMech()), toTuple)) as Record<string, unknown>;
 
 export const loadBundledMech = (design: Record<string, unknown>): BattleMech =>
-    new BattleMech(JSON.stringify(thickenMech(expandDesign(design, getBlankMech()))));
+    new BattleMech(JSON.stringify(thickenMech(mapSlots(expandDesign(design, getBlankMech()), fromTuple))));
 
 /** A unit class the bundled designs of another type are made of: a JSON constructor and a play-free export. */
 export interface IBundledUnitClass<T> {

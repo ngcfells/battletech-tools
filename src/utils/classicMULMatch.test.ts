@@ -15,6 +15,12 @@ describe("getMULMatchKeys", () => {
             "timber wolf prime",
         ]);
     });
+
+    it("does not take a configuration word in parentheses for a name", () => {
+        // "Koshi (Standard) 2" and "Black Hawk (Standard) 2" are two 'Mechs, not one under the name "Standard".
+        expect(getMULMatchKeys("Koshi (Standard)", "2")).toEqual(["koshi standard 2", "koshi 2"]);
+        expect(getMULMatchKeys("Hunchback IIC (Omni)", "A")).toEqual(["hunchback iic omni a", "hunchback iic a"]);
+    });
 });
 
 describe("findClassicDesign", () => {

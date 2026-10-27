@@ -7,6 +7,7 @@ import { ARTVEE_SAMPLES } from "./artvee-samples";
 import { VTOLAM_SAMPLES } from "./vtolam-samples";
 import { loadMULListItems } from "./mul-list-items";
 import { CUSTOM_MUL_FILE_PATH, mergeCustomMULEntries } from "./custom-mul";
+import { untabulate } from "../utils/packed-json";
 
 // The creators' sample units ride in the shared custom unit list (#376). Regenerate after changing a sample:
 //   WRITE_SAMPLE_MUL=1 npx vitest run --project unit src/data/sample-mul.test.ts
@@ -20,7 +21,7 @@ describe("Sample units in the custom unit list", () => {
     }
 
     it("carries every sample with the stats its creator converts to", () => {
-        const list: IASMULUnit[] = JSON.parse(fs.readFileSync(listPath, "utf8"));
+        const list = untabulate(JSON.parse(fs.readFileSync(listPath, "utf8"))) as IASMULUnit[];
         expect(built).toHaveLength(ARTVEE_SAMPLES.length + VTOLAM_SAMPLES.length);
         for (const record of built) {
             expect(list.find((entry) => entry.MulUnitKey === record.MulUnitKey)).toEqual(record);

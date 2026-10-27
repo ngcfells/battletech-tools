@@ -1,7 +1,7 @@
-{"notice":"The data here is/may be copyrighted and NOT included in the GPLv3 license. Converted from MegaMek's unit files (https://github.com/MegaMek/megamek): MegaMek Data (C) 2025-2026 by The MegaMek Team, licensed under CC BY-NC-SA 4.0 (https://creativecommons.org/licenses/by-nc-sa/4.0/).","designs":[
-{"id":0,"name":"Armored Personnel Carrier","model":"(Tracked Primitive)","tons":10,"bv":61,"cost":55481,"rulesLevel":1,"year":2390,"tech":"Inner Sphere","mulId":107191,"source":"megamek"},
-{"id":1,"name":"Cobra VTOL Transport","model":"","tons":30,"bv":149,"cost":261125,"rulesLevel":3,"year":2317,"tech":"Inner Sphere","mulId":107023,"source":"megamek"},
-{"id":2,"name":"Cobra VTOL Transport","model":"(Fusion)","tons":30,"bv":165,"cost":273625,"rulesLevel":1,"year":2489,"tech":"Inner Sphere","mulId":104303,"source":"megamek"},
-{"id":3,"name":"Korvin Tank","model":"KRV-2","tons":50,"bv":507,"cost":666844,"rulesLevel":1,"year":2367,"tech":"Inner Sphere","mulId":104319,"source":"megamek"},
-{"id":4,"name":"Strike Falcon Attack VTOL","model":"","tons":30,"bv":284,"cost":523125,"rulesLevel":1,"year":2371,"tech":"Inner Sphere","mulId":102707,"source":"megamek"}
-]}
+{"notice":"The data here is/may be copyrighted and NOT included in the GPLv3 license. Converted from MegaMek's unit files (https://github.com/MegaMek/megamek): MegaMek Data (C) 2025-2026 by The MegaMek Team, licensed under CC BY-NC-SA 4.0 (https://creativecommons.org/licenses/by-nc-sa/4.0/).","designs":{"$k":["id","name","model","tons","bv","cost","rulesLevel","year","tech","mulId","source"],"$v":[
+[0,"Armored Personnel Carrier","(Tracked Primitive)",10,61,55481,1,2390,"Inner Sphere",107191,"megamek"],
+[1,"Cobra VTOL Transport","",30,149,261125,3,2317,"Inner Sphere",107023,"megamek"],
+[2,"Cobra VTOL Transport","(Fusion)",30,165,273625,1,2489,"Inner Sphere",104303,"megamek"],
+[3,"Korvin Tank","KRV-2",50,507,666844,1,2367,"Inner Sphere",104319,"megamek"],
+[4,"Strike Falcon Attack VTOL","",30,284,523125,1,2371,"Inner Sphere",102707,"megamek"]
+]}}

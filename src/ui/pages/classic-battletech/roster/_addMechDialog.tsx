@@ -4,7 +4,7 @@ import { Link } from "react-router";
 import { getMULDisplayName, IASMULUnit } from '../../../../classes/alpha-strike-unit';
 import { BattleMech } from '../../../../classes/battlemech';
 import { BattleMechGroup } from '../../../../classes/battlemech-group';
-import { searchBundledMUL } from '../../../../utils';
+import { filterMULRecords, searchBundledMUL } from '../../../../utils';
 import AerospaceFighter from '../../../../classes/aerospace-fighter';
 import BattleArmor from '../../../../classes/battle-armor';
 import InfantryPlatoon from '../../../../classes/infantry-platoon';
@@ -30,13 +30,16 @@ import { getBattleMechTroAdapter } from '../../../../classes/battlemech-tro';
 import { getUnitTroAdapter } from '../../../../classes/unit-tro';
 import type { TechnicalReadout } from '../../../../classes/technical-readout';
 import type { ITroUnitAdapter } from '../../../../data/technical-readout-interfaces';
-import { getMULAerospaceClass, MULAerospaceClass, buildClassicDesignIndex, ClassicDesignIndex, findClassicDesign, getClassicMechEntries, getClassicUnitEntries, isMULCapitalShip, isMULLargeAerospaceCraft } from '../../../../utils/classicMULMatch';
+import { getMULAerospaceClass, MULAerospaceClass, buildClassicDesignIndex, ClassicDesignIndex, findClassicDesigns, getClassicMechEntries, getClassicUnitEntries, getDesignMULRecord, getDesignsOffMUL, getMULMatchKeys, IClassicDesignEntry, IDesignSummary, isMULCapitalShip, isMULLargeAerospaceCraft } from '../../../../utils/classicMULMatch';
 import { IMULSearchFilters } from '../../../../utils/mulSearchFilters';
 import { getMULEraLabel, getMULTypeLabel } from '../../../../utils/mulUtilities';
 import { paginate } from '../../../../utils/paginate';
+import { getMULRecordStanding, getRulesLevelStanding, UnitStanding, worseStanding } from '../../../../utils/unit-standing';
+import { loadMULListItems, MUL_SOURCE_OPTIONS } from '../../../../data/mul-list-items';
+import type { BundledDesignSource } from '../../../../utils/bundled-designs';
 import { IAppGlobals } from '../../../app-router';
-import BundledMechList from '../../../components/bundled-mech-list';
 import MULSearchFilters from '../../../components/mul-search-filters';
+import UnitStandingBadge, { UnitStandingLegend } from '../../../components/unit-standing-badge';
 import SearchResultsPager from '../../../components/search-results-pager';
 import MechViewPanel from '../../../components/mech-view-panel';
 import StandardModal from '../../../components/standard-modal';
@@ -53,6 +56,22 @@ type ClassicMULUnit = Vehicle | AerospaceFighter | InfantryPlatoon | BattleArmor
 // Likewise for the other types: a saved or sample unit, or a bundled MegaMek one.
 type UnitDesign = ClassicMULUnit | IBundledUnitRef;
 const isBundledRef = ( design: UnitDesign ): design is IBundledUnitRef => "header" in design;
+
+// A type's designs, saved, sample and bundled, and their index by MUL match key.
+interface IDesignPool<T> {
+    index: ClassicDesignIndex<T>;
+    entries: IClassicDesignEntry<T>[];
+}
+
+interface IPickerRow {
+    unit: IASMULUnit;
+    // The type when it is not a 'Mech.
+    kind: IClassicMULKind | null;
+    design: MechDesign | UnitDesign | null;
+    standing: UnitStanding;
+}
+
+const BUNDLED_SOURCE_LABELS: Record<BundledDesignSource, string> = { ssw: "Skunk Werks", megamek: "MegaMek", verified: "TRO" };
 
 interface IClassicMULKind {
     typeIDs: number[];
@@ -103,8 +122,11 @@ export default class BattleMechAddMechDialog extends React.Component<IBattleMech
 
     private searchTimeout: ReturnType<typeof setTimeout> | null = null;
     private latestSearch = 0;
-    private designIndex: { key: string; index: ClassicDesignIndex<MechDesign> } | null = null;
-    private unitIndexes = new Map<IClassicMULKind, { key: string; index: ClassicDesignIndex<UnitDesign> }>();
+    private designIndex: { key: string; pool: IDesignPool<MechDesign> } | null = null;
+    private unitIndexes = new Map<IClassicMULKind, { key: string; pool: IDesignPool<UnitDesign> }>();
+    private rows: { key: string; rows: IPickerRow[] } | null = null;
+    // The sample designs that ship with the app (VTOLAMs, ArtVees), told apart from the user's saves.
+    private samples = new WeakSet<object>();
 
     constructor(props: IBattleMechAddMechDialogProps) {
         super(props);
@@ -118,6 +140,7 @@ export default class BattleMechAddMechDialog extends React.Component<IBattleMech
             mulSearching: false,
             bundledMechs: [],
             bundledUnits: {},
+            mulKeys: null,
         }
 
     }
@@ -128,6 +151,10 @@ export default class BattleMechAddMechDialog extends React.Component<IBattleMech
             this.props.appGlobals.appSettings.cbtMULSearch.type = 0;
         }
         void this.updateMULResults();
+        // Every match key on any of the lists, ticked or not: a design one names is not "off the MUL".
+        loadMULListItems( MUL_SOURCE_OPTIONS.map( (option) => option.value ) )
+            .then( (units) => this.setState({ mulKeys: new Set( units.filter( (unit) => CBT_MUL_TYPE_IDS.includes( unit.Type?.Id ) ).flatMap( (unit) => getMULMatchKeys( unit.Name ?? "", unit.Variant ?? "" ) ) ) }) )
+            .catch( (error) => console.error("Unable to load the Master Unit List", error) );
         loadBundledMechIndex().then( (bundledMechs) => this.setState({ bundledMechs }) )
             .catch( (error) => console.error("Unable to load the bundled 'Mechs", error) );
         for( const type of CBT_MUL_KINDS.flatMap( (kind) => kind.bundledType ? [kind.bundledType] : [] ) ) {
@@ -173,17 +200,21 @@ export default class BattleMechAddMechDialog extends React.Component<IBattleMech
         this.setState({ mulResults: results, mulPage: 0, mulSearching: false });
     }
 
-    // Saved designs come first, so a design the user built wins over the bundled Skunk Werks copy of the same model.
-    getDesignIndex = (): ClassicDesignIndex<MechDesign> => {
+    // Saved designs come first, so a design the user built wins over a bundled copy of the same name, model and layout;
+    // one with another layout is listed beside it.
+    getDesignIndex = (): IDesignPool<MechDesign> => {
         const saves = this.props.appGlobals.battleMechSaves;
         const bundled = this.state.bundledMechs;
         const key = JSON.stringify( saves.map( (save) => save.uuid + save.lastUpdated ) ) + bundled.length;
         if( !this.designIndex || this.designIndex.key !== key ) {
             // The sample VTOLAMs ship with the app like the ArtVees, after the user's own saves (#376).
-            const saved = ( saves as object[] ).concat( VTOLAM_SAMPLES.map( (sample) => sample.save ) ).map( (save) => new BattleMech( JSON.stringify( save ) ) );
-            this.designIndex = { key, index: buildClassicDesignIndex<MechDesign>( [ ...getClassicMechEntries( saved ), ...getBundledMechEntries( bundled ) ] ) };
+            const samples = getClassicMechEntries( VTOLAM_SAMPLES.map( (sample) => new BattleMech( JSON.stringify( sample.save ) ) ) );
+            samples.forEach( (entry) => this.samples.add( entry.design ) );
+            const saved = getClassicMechEntries( ( saves as object[] ).map( (save) => new BattleMech( JSON.stringify( save ) ) ) );
+            const entries: IClassicDesignEntry<MechDesign>[] = [ ...saved, ...samples, ...getBundledMechEntries( bundled ) ];
+            this.designIndex = { key, pool: { index: buildClassicDesignIndex<MechDesign>( entries ), entries } };
         }
-        return this.designIndex.index;
+        return this.designIndex.pool;
     }
 
     // Runs a button's action on the design, importing a bundled one first.
@@ -197,18 +228,25 @@ export default class BattleMechAddMechDialog extends React.Component<IBattleMech
             .catch( (error) => console.error("Unable to load " + design.header.name, error) );
     }
 
-    getUnitIndex = ( kind: IClassicMULKind ): ClassicDesignIndex<UnitDesign> => {
+    // Other types have no crit table to compare: a saved and a bundled design of one name and model are the same
+    // design when their Battle Values agree.
+    getUnitIndex = ( kind: IClassicMULKind ): IDesignPool<UnitDesign> => {
         const saves = kind.saves( this.props.appGlobals );
         const headers = kind.bundledType ? this.state.bundledUnits[kind.bundledType] ?? [] : [];
         const key = JSON.stringify( saves.map( (save) => String( save.uuid ) + String( save.lastUpdated ) ) ) + headers.length;
         let cached = this.unitIndexes.get( kind );
         if( !cached || cached.key !== key ) {
-            const designs = ( saves as object[] ).concat( kind.bundled ? kind.bundled() : [] );
-            const bundled = headers.map( (header) => ({ chassis: header.name, model: header.model, design: { type: kind.bundledType!, header } }) );
-            cached = { key, index: buildClassicDesignIndex<UnitDesign>( [ ...getClassicUnitEntries( designs.map( (save) => kind.load( JSON.stringify( save ) ) ) ), ...bundled ] ) };
+            const load = ( save: object ) => kind.load( JSON.stringify( save ) );
+            const samples = getClassicUnitEntries( ( kind.bundled ? kind.bundled() : [] ).map( load ) );
+            samples.forEach( (entry) => this.samples.add( entry.design ) );
+            const bundled = headers.map( (header) => ({ chassis: header.name, model: header.model, design: { type: kind.bundledType!, header } as UnitDesign, fingerprint: String( header.bv ) }) );
+            const entries: IClassicDesignEntry<UnitDesign>[] = [ ...getClassicUnitEntries( saves.map( load ) ), ...samples ]
+                .map( (entry) => ({ ...entry, fingerprint: String( entry.design.getBattleValue() ) }) );
+            entries.push( ...bundled );
+            cached = { key, pool: { index: buildClassicDesignIndex<UnitDesign>( entries ), entries } };
             this.unitIndexes.set( kind, cached );
         }
-        return cached.index;
+        return cached.pool;
     }
 
     // Runs a button's action on the unit, importing a bundled one first.
@@ -318,14 +356,84 @@ export default class BattleMechAddMechDialog extends React.Component<IBattleMech
 
     }
 
+    // A row of the one list: a Master Unit List entry with one of its designs (a row each when they differ in layout)
+    // or none yet, or a design no MUL entry names, shown through a stand-in record the same filters test.
+    getRows = (): IPickerRow[] => {
+        const filters = this.props.appGlobals.appSettings.cbtMULSearch;
+        const mechs = this.getDesignIndex();
+        const pools = CBT_MUL_KINDS.map( (kind) => this.getUnitIndex( kind ) );
+        const key = [ this.latestSearch, this.state.mulSearching, this.state.mulKeys?.size, JSON.stringify( filters ), mechs.entries.length, ...pools.map( (pool) => pool.entries.length ) ].join( "|" );
+        if( this.rows && this.rows.key === key ) {
+            return this.rows.rows;
+        }
+        const rows: IPickerRow[] = [];
+        for( const unit of this.state.mulResults ) {
+            const kindIndex = CBT_MUL_KINDS.findIndex( (item) => item.typeIDs.includes( unit.Type?.Id ) && ( !item.matches || item.matches( unit ) ) );
+            const kind = kindIndex < 0 ? null : CBT_MUL_KINDS[kindIndex];
+            const designs: ( MechDesign | UnitDesign )[] = kind ? findClassicDesigns( unit, pools[kindIndex].index ) : findClassicDesigns( unit, mechs.index );
+            const recordStanding = getMULRecordStanding( unit );
+            if( designs.length === 0 ) {
+                rows.push( { unit, kind, design: null, standing: recordStanding } );
+            }
+            for( const design of designs ) {
+                // A saved design beside a bundled one of another layout is the user's own variant.
+                const own = this.getDesignStanding( design, designs.length === 1 && recordStanding === "canon" ? "canon" : "custom" );
+                rows.push( { unit, kind, design, standing: worseStanding( recordStanding, own ) } );
+            }
+        }
+        const mulKeys = this.state.mulKeys;
+        if( mulKeys && !this.state.mulSearching ) {
+            const aerospace = CBT_MUL_AEROSPACE_TYPES.find( (type) => type.id === filters.type );
+            const offMUL = [
+                ...getDesignsOffMUL( mechs.entries, mechs.index, (key) => mulKeys.has( key ) ).map( (entry) => ({ entry, kind: null as IClassicMULKind | null }) ),
+                ...CBT_MUL_KINDS.flatMap( (kind, index) => getDesignsOffMUL( pools[index].entries, pools[index].index, (key) => mulKeys.has( key ) ).map( (entry) => ({ entry, kind }) ) ),
+            ].map( ({ entry, kind }, index) => ({ entry, kind, record: getDesignMULRecord( this.summarize( entry, kind ), "design-" + index ) }) );
+            const passing = new Set( filterMULRecords( offMUL.map( (item) => item.record ), { ...filters, type: aerospace ? 17 : filters.type } )
+                .filter( (record) => !aerospace || getMULAerospaceClass( record ) === aerospace.aeroClass ) );
+            for( const item of offMUL.filter( (item) => passing.has( item.record ) ) ) {
+                rows.push( { unit: item.record, kind: item.kind, design: item.entry.design, standing: this.getDesignStanding( item.entry.design, "custom" ) } );
+            }
+        }
+        rows.sort( (a, b) => getMULDisplayName( a.unit ).localeCompare( getMULDisplayName( b.unit ) ) );
+        this.rows = { key, rows };
+        return rows;
+    }
+
+    /** A bundled design's standing is in its header; a saved one's comes from its rules level, else `otherwise`. */
+    getDesignStanding = ( design: MechDesign | UnitDesign, otherwise: UnitStanding ): UnitStanding => {
+        if( "header" in design ) {
+            return design.header.standing ?? "canon";
+        }
+        const standing = getRulesLevelStanding( design.getRequiredRulesLevel() );
+        return standing !== "canon" ? standing : this.samples.has( design ) ? "custom" : otherwise;
+    }
+
+    // What the results show of a design off the MUL, and its search filters test.
+    summarize = ( entry: IClassicDesignEntry<MechDesign | UnitDesign>, kind: IClassicMULKind | null ): IDesignSummary => {
+        const design = entry.design;
+        const base = { name: entry.chassis, model: entry.model };
+        const typeId = kind ? kind.typeIDs[0] : 18;
+        const bfType = ( tons: number ) => kind?.table === "fighters" ? "AF" : kind?.table === "smallCraft" ? ( tons <= 200 ? "SC" : "DS" ) : kind?.table === "capitalShips" ? "WS" : undefined;
+        if( "header" in design ) {
+            const header = design.header;
+            const bv = "bv" in design ? design.bv : header.bv;
+            return { ...base, tons: header.tons, bv, tech: header.tech, typeId, year: header.year, rulesLevel: header.rulesLevel, bfType: bfType( header.tons ) };
+        }
+        const unit = design as ClassicMULUnit | BattleMech & { getTonnage?(): number; getTech?(): { name: string }; getTechName?(): string; isClan?(): boolean };
+        const tons = "getTonnage" in unit && unit.getTonnage ? +unit.getTonnage() : 0;
+        const tech = "getTech" in unit && unit.getTech ? unit.getTech().name : "getTechName" in unit && unit.getTechName ? unit.getTechName() : "isClan" in unit && unit.isClan?.() ? "Clan" : "Inner Sphere";
+        const year = ( unit.getEra() as { yearStart?: number } | null )?.yearStart;
+        return { ...base, tons, bv: unit.getBattleValue(), tech, typeId: design instanceof BattleMech && design.isIndustrialMech() ? 20 : typeId, year, bfType: bfType( tons ) };
+    }
+
     renderMULSearch = (): JSX.Element => {
-        const resultsPage = paginate( this.state.mulResults, this.state.mulPage, MUL_RESULTS_PAGE_SIZE );
-        const index = this.getDesignIndex();
+        const rows = this.state.mulSearching ? [] : this.getRows();
+        const resultsPage = paginate( rows, this.state.mulPage, MUL_RESULTS_PAGE_SIZE );
         return (
 <fieldset className="fieldset">
-    <legend>Master Unit List Search</legend>
+    <legend>Find Units</legend>
     <p className="small-text">
-        Search the Master Unit List copy kept in the app by name, era, faction and more, then add the matching Classic design. A 'Mech matches one you saved first, else the bundled Skunk Werks 'Mech; vehicles, fighters, Small Craft and DropShips, JumpShips, WarShips and space stations, infantry, battle armor and ProtoMechs match the designs you saved, by name and model (infantry, battle armor and ProtoMechs by a name holding both). 'Mechs also match the sample VTOLAMs, vehicles the bundled ArtVees, and battle armor, ProtoMechs, Small Craft and DropShips and Support Vehicles the designs converted from MegaMek's unit files (MegaMek Data by The MegaMek Team, CC BY-NC-SA 4.0), each checked against the Battle Value on the Master Unit List. Idea from Camille, Centrella-Sworn on the Star League Discord.
+        One list of every unit the app has: the Master Unit List copy kept in the app, your saved designs, the sample VTOLAMs and ArtVees, and the designs converted from Solaris Skunk Werks and MegaMek's unit files (MegaMek Data by The MegaMek Team, CC BY-NC-SA 4.0), each checked against the Battle Value on the Master Unit List. A design with the same name, model and layout is listed once, whatever its source; one with another layout gets a row of its own. Designs no MUL entry names are listed too, and the filters on factions, roles and Alpha Strike values leave them out. Idea from Camille, Centrella-Sworn on the Star League Discord.
     </p>
     <MULSearchFilters
         filters={this.props.appGlobals.appSettings.cbtMULSearch}
@@ -334,53 +442,27 @@ export default class BattleMechAddMechDialog extends React.Component<IBattleMech
         typeOptions={CBT_MUL_TYPE_OPTIONS}
     />
     <h4 className="text-center">
-        MUL Results ({this.state.mulSearching ? "..." : this.state.mulResults.length})
+        Results ({this.state.mulSearching ? "..." : rows.length})
     </h4>
+    <UnitStandingLegend />
     {!this.state.mulSearching ? <SearchResultsPager page={resultsPage} onGo={(page) => this.setState({ mulPage: page })} /> : null}
     <table className="table">
         <thead>
             <tr>
                 <th>Name</th>
+                <th className="min-width no-wrap text-left">Source</th>
                 <th className="min-width no-wrap text-left">Tech</th>
                 <th className="min-width no-wrap text-left">Era</th>
                 <th className="min-width no-wrap text-center">Tonnage</th>
                 <th className="min-width no-wrap text-center">BV2</th>
-                <th className="min-width no-wrap text-center">&nbsp;</th>
+                <th className="min-width no-wrap text-center"><span className="visually-hidden">Actions</span></th>
             </tr>
         </thead>
         <tbody>
-            {!this.state.mulSearching && this.state.mulResults.length === 0 ? (
-                <tr><td className="text-center" colSpan={6}>No units on the Master Unit List match your filters.</td></tr>
+            {!this.state.mulSearching && rows.length === 0 ? (
+                <tr><td className="text-center" colSpan={7}>No units match your filters.</td></tr>
             ) : null}
-            {resultsPage.items.map( (unit: IASMULUnit) => {
-                const kind = CBT_MUL_KINDS.find( (item) => item.typeIDs.includes( unit.Type?.Id ) && ( !item.matches || item.matches( unit ) ) );
-                if( kind ) {
-                    return this.renderOtherMULRow( unit, kind );
-                }
-                const design = findClassicDesign( unit, index );
-                return (
-                    <tr key={unit.MulUnitKey ?? unit.Id}>
-                        <td>{getMULDisplayName( unit )}</td>
-                        <td className="min-width no-wrap text-left">{unit.Technology?.Name}</td>
-                        <td className="min-width no-wrap text-left">{getMULEraLabel( unit.EraId )}</td>
-                        <td className="min-width no-wrap text-center">{unit.Tonnage}</td>
-                        <td className="min-width no-wrap text-center">{design ? ( design instanceof BattleMech ? design.getBattleValue() : design.bv ) : unit.BattleValue}</td>
-                        <td className="min-width no-wrap text-center">
-                            {design ? (
-                                <>
-                                    <button className='btn btn-sm btn-primary' onClick={this.withMech( design, this.viewUnit )} title={"View " + getMULDisplayName( unit )}><Eye /></button>
-                                    <button className='btn btn-sm btn-primary' onClick={this.withMech( design, this.viewTRO )} title={"Technical Readout of " + getMULDisplayName( unit )} aria-label={"TRO " + getMULDisplayName( unit )}><Book /></button>
-                                    <button className='btn btn-sm btn-primary' onClick={this.withMech( design, this.importUnit )} title={"Add " + getMULDisplayName( unit ) + " to this group"} aria-label={"Add " + getMULDisplayName( unit )}><PlusCircle /></button>
-                                </>
-                            ) : (
-                                <span className="small-text">
-                                    No Classic design yet: <Link to={`${process.env.PUBLIC_URL}/classic-battletech/mech-creator`}>build it</Link>
-                                </span>
-                            )}
-                        </td>
-                    </tr>
-                );
-            })}
+            {resultsPage.items.map( (row, index) => this.renderRow( row, index ) )}
         </tbody>
     </table>
     {!this.state.mulSearching ? <SearchResultsPager page={resultsPage} onGo={(page) => this.setState({ mulPage: page })} below /> : null}
@@ -388,26 +470,54 @@ export default class BattleMechAddMechDialog extends React.Component<IBattleMech
         );
     }
 
-    renderOtherMULRow = ( unit: IASMULUnit, kind: IClassicMULKind ): JSX.Element => {
-        const design = findClassicDesign( unit, this.getUnitIndex( kind ) );
-        const name = design ? ( isBundledRef( design ) ? ( design.header.name + " " + design.header.model ).trim() : design.getName() ) : "";
+    getSourceLabel = ( design: MechDesign | UnitDesign | null ): string => {
+        if( !design ) {
+            return "MUL only";
+        }
+        if( "header" in design ) {
+            return BUNDLED_SOURCE_LABELS[design.header.source];
+        }
+        return this.samples.has( design ) ? "Sample" : "Saved";
+    }
+
+    renderRow = ( row: IPickerRow, index: number ): JSX.Element => {
+        const { unit, kind, design } = row;
+        const name = getMULDisplayName( unit );
+        let bv: number = unit.BattleValue;
+        let buttons: JSX.Element | null = null;
+        if( design && !kind ) {
+            const mech = design as MechDesign;
+            bv = mech instanceof BattleMech ? mech.getBattleValue() : mech.bv;
+            buttons = (
+                <>
+                    <button className='btn btn-sm btn-primary' onClick={this.withMech( mech, this.viewUnit )} title={"View " + name}><Eye /></button>
+                    <button className='btn btn-sm btn-primary' onClick={this.withMech( mech, this.viewTRO )} title={"Technical Readout of " + name} aria-label={"TRO " + name}><Book /></button>
+                    <button className='btn btn-sm btn-primary' onClick={this.withMech( mech, this.importUnit )} title={"Add " + name + " to this group"} aria-label={"Add " + name}><PlusCircle /></button>
+                </>
+            );
+        } else if( design && kind ) {
+            const other = design as UnitDesign;
+            bv = isBundledRef( other ) ? other.header.bv : other.getBattleValue();
+            buttons = (
+                <>
+                    <button className='btn btn-sm btn-primary' onClick={this.withUnit( other, (e, loaded) => this.viewOtherUnit(e, kind, loaded) )} title={"View " + name} aria-label={"View " + name}><Eye /></button>
+                    <button className='btn btn-sm btn-primary' onClick={this.withUnit( other, this.viewTRO )} title={"Technical Readout of " + name} aria-label={"TRO " + name}><Book /></button>
+                    <button className='btn btn-sm btn-primary' onClick={this.withUnit( other, (e, loaded) => this.importOtherUnit(e, kind, loaded) )} title={"Add " + name + " to this group"} aria-label={"Add " + name}><PlusCircle /></button>
+                </>
+            );
+        }
         return (
-            <tr key={unit.MulUnitKey ?? unit.Id}>
-                <td>{getMULDisplayName( unit )}</td>
+            <tr key={( unit.MulUnitKey ?? unit.Id ) + ":" + index}>
+                <td><UnitStandingBadge standing={row.standing} />{name}</td>
+                <td className="min-width no-wrap text-left">{this.getSourceLabel( design )}</td>
                 <td className="min-width no-wrap text-left">{unit.Technology?.Name}</td>
-                <td className="min-width no-wrap text-left">{getMULEraLabel( unit.EraId )}</td>
+                <td className="min-width no-wrap text-left">{unit.EraId ? getMULEraLabel( unit.EraId ) : ""}</td>
                 <td className="min-width no-wrap text-center">{unit.Tonnage}</td>
-                <td className="min-width no-wrap text-center">{design ? ( isBundledRef( design ) ? design.header.bv : design.getBattleValue() ) : unit.BattleValue}</td>
+                <td className="min-width no-wrap text-center">{bv}</td>
                 <td className="min-width no-wrap text-center">
-                    {design ? (
-                        <>
-                        <button className='btn btn-sm btn-primary' onClick={this.withUnit( design, (e, loaded) => this.viewOtherUnit(e, kind, loaded) )} title={"View " + name} aria-label={"View " + getMULDisplayName( unit )}><Eye /></button>
-                        <button className='btn btn-sm btn-primary' onClick={this.withUnit( design, this.viewTRO )} title={"Technical Readout of " + name} aria-label={"TRO " + getMULDisplayName( unit )}><Book /></button>
-                        <button className='btn btn-sm btn-primary' onClick={this.withUnit( design, (e, loaded) => this.importOtherUnit(e, kind, loaded) )} title={"Add " + name + " to this group"} aria-label={"Add " + getMULDisplayName( unit )}><PlusCircle /></button>
-                        </>
-                    ) : (
+                    {buttons ?? (
                         <span className="small-text">
-                            No Classic design yet: <Link to={`${process.env.PUBLIC_URL}/classic-battletech/${kind.creator}`}>build it</Link>
+                            No Classic design yet: <Link to={`${process.env.PUBLIC_URL}/classic-battletech/${kind ? kind.creator : "mech-creator"}`}>build it</Link>
                         </span>
                     )}
                 </td>
@@ -460,82 +570,6 @@ export default class BattleMechAddMechDialog extends React.Component<IBattleMech
     <div className="row">
       <div className="col">
           {this.renderMULSearch()}
-          <fieldset className="fieldset">
-              <legend>Your Saved Units</legend>
-              {this.props.appGlobals.battleMechSaves.length === 0 ? (
-                <div className='text-center'>
-                    You have no saved 'mechs. Currently this app does not have permission to have any pre-built 'mechs loaded, but you should be able to create existing or new ' mechs in the <Link to={`${process.env.PUBLIC_URL}/classic-battletech/mech-creator`}>'Mech Creator</Link>
-                </div>
-              ) : (
-                <table className="table">
-                    <thead>
-                        <tr>
-                            <th>Make</th>
-                            <th className="min-width no-wrap text-left">Tech</th>
-                            <th className="min-width no-wrap text-center">Tonnage</th>
-                            <th className="min-width no-wrap text-center">BV2</th>
-                            <th className="min-width no-wrap text-center">&nbsp;</th>
-                        </tr>
-                    </thead>
-                    {this.props.appGlobals.battleMechSaves.map( (bmDef, bmIndex) => {
-                        const savedObj = new BattleMech( JSON.stringify(bmDef) )
-                        // An OmniMech with several configurations gets one row per configuration
-                        const configurations = savedObj.getOmniConfigurationNames().length > 1
-                            ? savedObj.getOmniConfigurationNames().map( (name) => savedObj.cloneOmniConfiguration( name ) as BattleMech )
-                            : [savedObj];
-                        return (
-                            <tbody key={bmIndex}>
-                                {configurations.map( (bmObj, configIndex) => (
-                                <tr key={configIndex}>
-                                    <td>{bmObj.getName()}</td>
-                                    <td className="min-width no-wrap text-left">{bmObj.getTech().name}</td>
-                                    <td className="min-width no-wrap text-center">{bmObj.getTonnage()}</td>
-                                    <td className="min-width no-wrap text-center">{bmObj.getBattleValue()}</td>
-                                    <td className="min-width no-wrap text-center">
-                                        <button
-                                            className='btn btn-xs btn-primary'
-                                            onClick={e => this.viewUnit(e, bmObj )}
-                                            title={"View " + bmObj.getName()}
-                                        >
-                                            <Eye />
-                                        </button>
-
-                                        <button
-                                            className='btn btn-xs btn-primary'
-                                            onClick={e => this.viewTRO(e, bmObj )}
-                                            title={"Technical Readout of " + bmObj.getName()}
-                                            aria-label={"TRO " + bmObj.getName()}
-                                        >
-                                            <Book />
-                                        </button>
-
-                                        <button
-                                            className='btn btn-xs btn-primary'
-                                            onClick={e => this.importUnit(e, bmObj )}
-                                            title={"Add " + bmObj.getName()}
-                                        >
-                                            <PlusCircle />
-                                        </button>
-                                    </td>
-                                </tr>
-                                ))}
-                            </tbody>
-                        )
-                    })}
-
-                </table>
-            )}
-        </fieldset>
-
-
-        <fieldset className="fieldset">
-            <legend>Solaris Skunk Werks Data Import</legend>
-            <p>'Mech designs converted from Solaris Skunk Werks files, each checked against the Battle Value on the Master Unit List (or in the file, for a design the MUL does not list).</p>
-            <BundledMechList appGlobals={this.props.appGlobals} onView={(mech) => this.setState({ viewingUnit: mech })} onAdd={(mech) => this.importUnit( null, mech )} onTRO={this.showTRO} />
-
-
-
-        </fieldset>
       </div>
       <div className="col">
           <fieldset className="fieldset">
@@ -574,4 +608,5 @@ interface IBattleMechAddMechDialogState {
     mulSearching: boolean;
     bundledMechs: IBundledDesignHeader[];
     bundledUnits: Partial<Record<BundledUnitType, IBundledDesignHeader[]>>;
+    mulKeys: Set<string> | null;
 }

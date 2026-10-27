@@ -1,6 +1,7 @@
 import type { IASMULUnit, MULSource } from "../classes/alpha-strike-unit";
 import { getLocalCustomMULUnits } from "./custom-mul-local";
 import { correctMULBattleValue } from "./mul-bv-corrections";
+import { untabulate } from "../utils/packed-json";
 
 /*
 * DISCLAIMER: This file processes gameplay data derived from the BattleTech universe. 
@@ -174,7 +175,8 @@ function loadMULSource(source: MULSource): Promise<IASMULUnit[]> {
         const chunkResults = await Promise.all(
             Object.entries(mulChunkModulesBySource[source]).map(async ([path, loader]) => {
                 try {
-                    const chunkData = await loader();
+                    // A chunk is a table of records (packed-json.ts), or a plain list in files from before.
+                    const chunkData = untabulate(await loader());
                     const entries = Array.isArray(chunkData) ? chunkData : [];
                     return entries
                         .filter(isMULListEntry)

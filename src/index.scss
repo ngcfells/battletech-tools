@@ -1504,3 +1504,17 @@ body.retro {
     }
   }
 }
+
+// Canon / apocryphal / custom / munchkin badges on unit lists (unit-standing-badge.tsx).
+.unit-standing {
+    display: inline-block;
+    margin-right: 0.25em;
+    &.unit-standing-canon { color: $colorGreen; }
+    &.unit-standing-apocryphal { color: #6a3fa0; }
+    &.unit-standing-custom { color: $colorBlue; }
+    &.unit-standing-munchkin { color: $colorBrighterRed; }
+}
+.unit-standing-legend > span {
+    margin-right: 1em;
+    white-space: nowrap;
+}

@@ -21,6 +21,7 @@ import {
 } from '../../data/custom-mul';
 import { getLocalCustomMULUnits, saveLocalCustomMULUnits } from '../../data/custom-mul-local';
 import bundledCustomUnits from '../../data/mul/custom/custom-units.json';
+import { untabulate } from '../../utils/packed-json';
 import { loadMULListItems } from '../../data/mul-list-items';
 import { submitGithubFileContribution } from '../../utils/githubContribution';
 import { getMULAerospaceRoles, getMULEraIDs, getMULEraLabel, getMULGroundRoles } from '../../utils/mulUtilities';
@@ -34,7 +35,7 @@ const Trash = FaTrash as any;
 const GITHUB_TOKEN_SESSION_KEY = "customMULGithubToken";
 
 // The shared list as shipped in this build. Read-only here; changes to it go through pull requests.
-const sharedRecords = bundledCustomUnits as unknown as IASMULUnit[];
+const sharedRecords = untabulate(bundledCustomUnits) as IASMULUnit[];
 const sharedKeys = new Set(sharedRecords.map((record) => record.MulUnitKey));
 
 function damageSummary(record: IASMULUnit): string {

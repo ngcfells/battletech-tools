@@ -53,6 +53,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { bfTypeOf, fillFromLegacy, legacyEraIdOf, legacyFillByLiveKey, subTypeIdOfSummaryHash, takeThreshold } from "./mul-mappings.mjs";
 import { arcCardGlyphs, bitmapOfPng, compactArcs, readArcCard } from "./arc-card-reader.mjs";
+import { stringifyTable } from "./pack-json.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(__dirname, "..", "..");
@@ -548,7 +549,8 @@ async function writeLiveChunks(store) {
         const chunk = records.slice(i, i + CHUNK_SIZE);
         const first = chunk[0].Id;
         const last = chunk[chunk.length - 1].Id;
-        await saveJson(path.join(liveMulDir, `mul_live_${first}_to_${last}.json`), chunk);
+        // Tables (pack-json.mjs): the keys once a chunk, not once a record.
+        await fs.writeFile(path.join(liveMulDir, `mul_live_${first}_to_${last}.json`), stringifyTable(chunk), "utf8");
     }
 
     console.log(`Wrote ${records.length} live units across ${Math.ceil(records.length / CHUNK_SIZE)} chunk file(s).`);

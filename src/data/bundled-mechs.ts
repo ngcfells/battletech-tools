@@ -25,7 +25,8 @@ export interface IBundledMechRef {
 export const getBundledMechEntries = (headers: IBundledDesignHeader[]): IClassicDesignEntry<IBundledMechRef>[] => headers.flatMap((header) => [
     ...(header.configs ?? []).flatMap((config) => {
         const design = { header, configuration: config.name, bv: config.bv };
-        return [{ chassis: header.name, model: config.name, design }, { chassis: header.name, model: header.model + " " + config.name, design }];
+        const fingerprint = config.layout;
+        return [{ chassis: header.name, model: config.name, design, fingerprint }, { chassis: header.name, model: header.model + " " + config.name, design, fingerprint, alias: true }];
     }),
-    { chassis: header.name, model: header.model, design: { header, bv: header.bv } },
+    { chassis: header.name, model: header.model, design: { header, bv: header.bv }, fingerprint: header.layout, ...(header.configs ? { alias: true } : {}) },
 ]);

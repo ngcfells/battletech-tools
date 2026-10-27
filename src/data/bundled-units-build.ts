@@ -12,7 +12,7 @@ import { importSupportVehicleBlk } from "../classes/support-vehicle-blk";
 import { blkValue, parseBlkFile } from "../utils/blk-file";
 import { compactUnit, IBundledDesignHeader, loadBundledUnit } from "../utils/bundled-designs";
 import { getClassicUnitEntries, getMULMatchKeys, isMULCapitalShip, isMULLargeAerospaceCraft } from "../utils/classicMULMatch";
-import { IBundledBuild, loadMULIndex, seedRandom } from "./bundled-mechs-build";
+import { getBundledStanding, IBundledBuild, loadMULIndex, seedRandom } from "./bundled-mechs-build";
 import { BundledUnit, BundledUnitType, getBundledUnitClass } from "./bundled-units";
 
 export { DEFAULT_MEGAMEK_DIR, MEGAMEK_NOTICE } from "./bundled-mechs-build";
@@ -110,7 +110,7 @@ export function buildBundledUnits(megamekDir: string, mulDir: string): Record<Bu
                     name: unit.getName(), model: "getModel" in unit ? unit.getModel() : "", tons: getTons(unit, match), bv, cost: getCost(unit),
                     rulesLevel: getBlkRulesLevel(type), year: +blkValue(blk, "year") || 0,
                     tech: match.Technology?.Name ?? (/^clan/i.test(type) ? "Clan" : /^mixed/i.test(type) ? "Mixed" : "Inner Sphere"),
-                    mulId: match.Id, source: "megamek",
+                    mulId: match.Id, source: "megamek", ...getBundledStanding(name, unit),
                 },
                 design,
             });

@@ -94,7 +94,7 @@ test("a battledroid in play mode shows the Battledroids helpers", async ({ page 
 
     await page.goto("classic-battletech/roster");
     await page.getByTitle("Add 'Mechs, or search the Master Unit List for any unit type").first().click();
-    await page.locator(".modal button.btn-xs.btn-primary").nth(1).click();
+    await page.locator(".modal tr", { hasText: "Saved" }).getByRole("button", { name: /^Add / }).first().click();
     await page.goto("classic-battletech/roster/play");
     const helper = page.getByTestId("battledroids-droid-helper");
     if (!(await helper.isVisible().catch(() => false))) {

@@ -463,12 +463,17 @@ function getMULSearchTokens(searchTerm: string, abilityFilters: string[]): IMULS
 }
 
 /** Searches the MUL copy bundled with the app; the Classic roster uses it, and the Alpha Strike offline path matches the same way. */
-export async function searchBundledMUL(filters: IMULSearchFilters): Promise<IASMULUnit[]> {
+/** The records that pass a MUL search's filters, whatever list they come from. */
+export function filterMULRecords(units: IASMULUnit[], filters: IMULSearchFilters): IASMULUnit[] {
     const tokens = getMULSearchTokens(filters.term, filters.abilities);
     const era = resolveMULEraFilter(filters.era);
-    return filterMULByRulesets((await loadMULListItems(filters.sources)).filter((unit) =>
+    return filterMULByRulesets(units.filter((unit) =>
         matchesMULDropdownFilters(unit, filters.rules, filters.tech, filters.role, era, filters.type, filters.factions) &&
         matchesMULSearchTokens(unit, tokens)), filters.rulesets);
+}
+
+export async function searchBundledMUL(filters: IMULSearchFilters): Promise<IASMULUnit[]> {
+    return filterMULRecords(await loadMULListItems(filters.sources), filters);
 }
 
 async function getCachedMULSearchResults(

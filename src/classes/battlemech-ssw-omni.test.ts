@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it, vi } from "vitest";
 import { compactMech, loadBundledMech } from "../utils/bundled-designs";
+import { untabulate } from "../utils/packed-json";
 import { BattleMech } from "./battlemech";
 
 // SSW keeps every OmniMech loadout in one file: each becomes one of our configurations (#112).
@@ -85,7 +86,7 @@ describe("SSW import of OmniMech configurations (#112)", { timeout: 30000 }, () 
         const mech = imported("dire-wolf-omni");
         const compact = compactMech(mech);
         // The active configuration is the design's own equipment, so the compact format does not store it twice.
-        expect((compact.omniConfigurations as { name: string }[]).map((entry) => entry.name)).not.toContain("Prime");
+        expect((untabulate(compact.omniConfigurations) as { name: string }[]).map((entry) => entry.name)).not.toContain("Prime");
         expect(loadBundledMech(compact).getOmniConfigurationNames()).toEqual(mech.getOmniConfigurationNames());
         for (const reload of [new BattleMech(mech.exportJSON(true)), loadBundledMech(compact)]) {
             for (const name of ["Prime", "A", "C"]) {
