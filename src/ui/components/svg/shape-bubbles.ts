@@ -35,9 +35,12 @@ export interface IPackOptions {
     rowsAlong?: "x" | "y";
 }
 
+/** An ellipse as a polygon, for a spheroid craft's hull or an airship's envelope. */
+export const ellipseShape = (cx: number, cy: number, rx: number, ry: number, sides: number = 48): Shape =>
+    Array.from({ length: sides }, (_, i): BubblePoint => [cx + rx * Math.cos(2 * Math.PI * i / sides), cy + ry * Math.sin(2 * Math.PI * i / sides)]);
+
 /** A circle as a polygon, for a rotor or a round turret. */
-export const circleShape = (cx: number, cy: number, r: number, sides: number = 32): Shape =>
-    Array.from({ length: sides }, (_, i): BubblePoint => [cx + r * Math.cos(2 * Math.PI * i / sides), cy + r * Math.sin(2 * Math.PI * i / sides)]);
+export const circleShape = (cx: number, cy: number, r: number, sides: number = 32): Shape => ellipseShape(cx, cy, r, r, sides);
 
 /** A rectangle with rounded corners, the top two rounded by `rTop` and the bottom two by `rBottom`. */
 export const roundedRectShape = (x: number, y: number, w: number, h: number, rTop: number, rBottom: number = rTop): Shape => {
@@ -111,9 +114,12 @@ const fits = (region: IBubbleRegion, point: BubblePoint, r: number): boolean =>
     && !(region.avoid ?? []).some(({ x, y, w, h }) =>
         point[0] + r > x && point[0] - r < x + w && point[1] + r > y && point[1] - r < y + h);
 
-/** The middle of every `pitch`-wide grid cell, the grid centred on the region's bounds, where a bubble that wide fits. */
-const gridIn = (region: IBubbleRegion, pitch: number): BubblePoint[] => {
-    const corners = region.within.flat();
+/**
+ * The middle of every `pitch`-wide grid cell, the grid centred on the bounds of all the regions, where a bubble that
+ * wide fits in one of them.
+ */
+const gridIn = (regions: IBubbleRegion[], pitch: number): BubblePoint[] => {
+    const corners = regions.flatMap((region) => region.within.flat());
     const xs = corners.map(([x]) => x), ys = corners.map(([, y]) => y);
     const [left, right, top, bottom] = [Math.min(...xs), Math.max(...xs), Math.min(...ys), Math.max(...ys)];
     const columns = Math.floor((right - left) / pitch), rows = Math.floor((bottom - top) / pitch);
@@ -122,7 +128,7 @@ const gridIn = (region: IBubbleRegion, pitch: number): BubblePoint[] => {
     for (let row = 0; row < rows; row++) {
         for (let column = 0; column < columns; column++) {
             const point: BubblePoint = [x0 + column * pitch, y0 + row * pitch];
-            if (fits(region, point, pitch / 2)) points.push(point);
+            if (regions.some((region) => fits(region, point, pitch / 2))) points.push(point);
         }
     }
     return points;
@@ -132,33 +138,35 @@ const packed = new Map<string, { points: BubblePoint[]; pitch: number }>();
 
 /**
  * Where `count` bubbles go inside the region, and their spacing: the widest spacing up to `maxPitch` at which all of
- * them fit, found by halving the range. A bubble's footprint is a `pitch`-wide circle around its point.
+ * them fit, found by halving the range. A bubble's footprint is a `pitch`-wide circle around its point. Several
+ * regions are one area made of parts (a fighter's aft: the fuselage's end and the tail fins).
  */
-export const packBubbles = (region: IBubbleRegion, count: number, options: IPackOptions): { points: BubblePoint[]; pitch: number } => {
+export const packBubbles = (region: IBubbleRegion | IBubbleRegion[], count: number, options: IPackOptions): { points: BubblePoint[]; pitch: number } => {
+    const regions = Array.isArray(region) ? region : [region];
     const wanted = Math.max(Math.floor(count), 0);
     if (wanted === 0) {
         return { points: [], pitch: options.maxPitch };
     }
-    const key = JSON.stringify([region, wanted, options]);
+    const key = JSON.stringify([regions, wanted, options]);
     const cached = packed.get(key);
     if (cached) {
         return cached;
     }
     let pitch = options.maxPitch;
-    let points = gridIn(region, pitch);
+    let points = gridIn(regions, pitch);
     if (points.length < wanted) {
-        // No spacing wider than one that gives each bubble an equal share of the smallest shape's area can fit them all.
-        const area = Math.min(...region.within.map((shape) => Math.abs(signedArea(shape))));
+        // No spacing wider than one that gives each bubble an equal share of the area can fit them all.
+        const area = regions.reduce((sum, part) => sum + Math.min(...part.within.map((shape) => Math.abs(signedArea(shape)))), 0);
         let low = 0, high = Math.min(options.maxPitch, Math.sqrt(area / wanted));
         points = [];
         for (let step = 0; step < 24 && points.length < wanted; step++) {
             for (let i = 0; i < 12; i++) {
                 const middle = (low + high) / 2;
-                if (gridIn(region, middle).length >= wanted) low = middle;
+                if (gridIn(regions, middle).length >= wanted) low = middle;
                 else high = middle;
             }
             pitch = low;
-            points = low > 0 ? gridIn(region, low) : [];
+            points = low > 0 ? gridIn(regions, low) : [];
             // The count is not quite monotonic in the spacing: start again below the one that came up short.
             high = low * 0.98;
             low = 0;
