@@ -12,6 +12,7 @@ import { makeRange } from "../../../../utils/makeRange";
 import { availabilityOptionLabel, isOptionShown } from '../../../components/availability-options';
 import DesignLockColumn, { mechRulesLevel } from '../../../components/design-lock';
 import EditionChoice from '../../../components/edition-choice';
+import ComponentTechBaseChoice from '../../../components/component-tech-base-choice';
 const ArrowCircleLeft = FaArrowCircleLeft as any;
 const ArrowCircleRight = FaArrowCircleRight as any;
 
@@ -94,6 +95,13 @@ export default class MechCreatorStep3 extends React.Component<IHomeProps, IHomeS
                                 </select>
                               </label>
                           </EditionChoice>
+                          <ComponentTechBaseChoice
+                            label="Heat Sink Version"
+                            choices={this.props.appGlobals.currentBattleMech.getComponentTechBases("heatSink")}
+                            value={this.props.appGlobals.currentBattleMech.getHeatSinkTechBase()}
+                            clanDesign={this.props.appGlobals.currentBattleMech.getTech().tag === "clan"}
+                            onChange={(techBase) => { const mech = this.props.appGlobals.currentBattleMech; if (mech) { mech.setHeatSinkTechBase(techBase); this.props.appGlobals.saveCurrentBattleMech(mech); } }}
+                          />
                             {heatSinkObj.notes ? (
                               <p className="text-center smaller-text">{heatSinkObj.notes}{heatSinkObj.book ? " (" + heatSinkObj.book + (heatSinkObj.page ? " p." + heatSinkObj.page : "") + ")" : ""}</p>
                             ) : null}

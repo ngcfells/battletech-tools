@@ -61,6 +61,62 @@ describe("a Mixed Tech 'Mech's component tech bases", () => {
     });
 });
 
+// The Clans fielded Star League Endo-Steel, Ferro-Fibrous and double heat sinks until their own versions were in
+// production (2825-2827). Clan Founding Years (2800-2840) holds both windows, so a Clan 'Mech there may take either (#168).
+function clanMech(era: string): BattleMech {
+    const mech = mixedMech();
+    mech.setTech("clan");
+    mech.setEra(era);
+    mech.setInternalStructureType("endo-steel");
+    mech.setArmorType("ferro-fibrous");
+    mech.setHeatSinksType("double");
+    return mech;
+}
+
+describe("a Clan 'Mech's Star League components", () => {
+    it("offer the Star League version beside the Clan one while the era holds both", () => {
+        const mech = clanMech("clan-founding-years");
+        for (const component of ["structure", "armor", "heatSink"] as const) {
+            expect(mech.getComponentTechBases(component)).toEqual(["clan", "is"]);
+        }
+        expect(slotsTagged(mech, "ferro-fibrous")).toBe(7);
+        expect(mech.setStructureTechBase("is")).toBe("is");
+        expect(mech.setArmorTechBase("is")).toBe("is");
+        expect(mech.setHeatSinkTechBase("is")).toBe("is");
+        expect(slotsTagged(mech, "endo-steel")).toBe(14);
+        expect(slotsTagged(mech, "ferro-fibrous")).toBe(14);
+        expect(mech.getArmorObj().armorMultiplier[mech.getArmorTechBase()]).toBeCloseTo(16 * 1.12, 6);
+        expect(mech.getUnallocatedCriticals().filter((item) => item.tag === "heat-sink").every((item) => item.crits === 3)).toBe(true);
+    });
+
+    it("keep the Star League choice through a save and load", () => {
+        const mech = clanMech("clan-founding-years");
+        mech.setArmorTechBase("is");
+        const reloaded = new BattleMech(mech.exportJSON());
+        expect(reloaded.getArmorTechBase()).toBe("is");
+        expect(reloaded.getStructureTechBase()).toBe("clan");
+    });
+
+    it("drop the Star League version once the Clan one is the only one in the era", () => {
+        const mech = clanMech("clan-golden-years");
+        expect(mech.getComponentTechBases("armor")).toEqual(["clan"]);
+        expect(mech.setArmorTechBase("is")).toBe("clan");
+        expect(slotsTagged(mech, "ferro-fibrous")).toBe(7);
+        // A Star League choice made earlier lapses when the era moves on.
+        const earlier = clanMech("clan-founding-years");
+        earlier.setArmorTechBase("is");
+        earlier.setEra("clan-golden-years");
+        expect(earlier.getArmorTechBase()).toBe("clan");
+    });
+
+    it("leave an Inner Sphere 'Mech one version, and a Mixed Tech 'Mech both", () => {
+        const inner = mixedMech();
+        inner.setTech("is");
+        expect(inner.getComponentTechBases("armor")).toEqual(["is"]);
+        expect(mixedMech().getComponentTechBases("armor")).toEqual(["is", "clan"]);
+    });
+});
+
 describe("SSW import of a Mixed Tech 'Mech", () => {
     it("uses each component's own tech base, so every item lands where the file puts it: Pulverizer PUL-3R", () => {
         vi.spyOn(console, "error").mockImplementation(() => undefined);
@@ -69,6 +125,26 @@ describe("SSW import of a Mixed Tech 'Mech", () => {
         expect(mech.getArmorTechBase()).toBe("clan"); // <armor techbase="1">: Clan Ferro-Fibrous, 7 slots
         expect(mech.getStructureTechBase()).toBe("is"); // <structure techbase="0">
         expect(mech.getUnallocatedCriticals().map((item) => item.tag)).toEqual([]);
+    });
+});
+
+describe("SSW import of a Clan 'Mech's Star League components", () => {
+    const hunchbackIIC = (year: number, structureTechBase: string) => {
+        vi.spyOn(console, "error").mockImplementation(() => undefined);
+        const mech = new BattleMech();
+        mech.importSSWXML(readFileSync("src/utils/__fixtures__/hunchback-iic.ssw", "utf8")
+            .replace(/(<year[^>]*>)\d+/, `$1${year}`)
+            .replace(/<structure manufacturer="Unknown" techbase="1">/, `<structure manufacturer="Unknown" techbase="${structureTechBase}">`));
+        return mech;
+    };
+
+    it("keeps <structure techbase=\"0\"> as Star League Endo-Steel in the Clan Founding Years", () => {
+        expect(hunchbackIIC(2830, "0").getStructureTechBase()).toBe("is");
+        expect(hunchbackIIC(2830, "1").getStructureTechBase()).toBe("clan");
+    });
+
+    it("gives the Clan version once the era offers no other: Hunchback IIC (2856)", () => {
+        expect(hunchbackIIC(2856, "0").getStructureTechBase()).toBe("clan");
     });
 });
 

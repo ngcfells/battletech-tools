@@ -17,6 +17,7 @@ import './step4.scss';
 import { availabilityOptionLabel, isOptionShown } from '../../../components/availability-options';
 import DesignLockColumn, { mechRulesLevel } from '../../../components/design-lock';
 import EditionChoice from '../../../components/edition-choice';
+import ComponentTechBaseChoice from '../../../components/component-tech-base-choice';
 const ArrowCircleLeft = FaArrowCircleLeft as any;
 const ArrowCircleRight = FaArrowCircleRight as any;
 
@@ -213,6 +214,13 @@ export default class MechCreatorStep4 extends React.Component<IHomeProps, IHomeS
                                     </select>
                                   </label>
                             </EditionChoice>
+                            <ComponentTechBaseChoice
+                              label="Armor Version"
+                              choices={this.props.appGlobals.currentBattleMech.getComponentTechBases("armor")}
+                              value={this.props.appGlobals.currentBattleMech.getArmorTechBase()}
+                              clanDesign={this.props.appGlobals.currentBattleMech.getTech().tag === "clan"}
+                              onChange={(techBase) => { const mech = this.props.appGlobals.currentBattleMech; if (mech) { mech.setArmorTechBase(techBase); this.props.appGlobals.saveCurrentBattleMech(mech); } }}
+                            />
                             </div>
                             <div className="col-xs-12 col-md-6">
                             {this.props.appGlobals.currentBattleMech.isPatchworkArmor() ? (

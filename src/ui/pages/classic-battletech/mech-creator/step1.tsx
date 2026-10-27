@@ -24,6 +24,7 @@ import InputField from "../../../components/form_elements/input_field";
 import { availabilityOptionLabel, isOptionShown } from '../../../components/availability-options';
 import { replaceCurrentBattleMech } from '../../../components/confirm-replace-design';
 import EditionChoice from '../../../components/edition-choice';
+import ComponentTechBaseChoice from '../../../components/component-tech-base-choice';
 import { getVTOLAMSamples } from '../../../../data/vtolam-samples';
 import { CUSTOM_HOMEBREW_RULES_LEVEL } from '../../../../data/rules-level-options';
 import { generateUUID } from '../../../../utils/generateUUID';
@@ -490,6 +491,13 @@ export default class MechCreatorStep1 extends React.Component<IHomeProps, IHomeS
                               </select>
                             </label>
                           </EditionChoice>
+                          <ComponentTechBaseChoice
+                            label="Structure Version"
+                            choices={this.props.appGlobals.currentBattleMech.getComponentTechBases("structure")}
+                            value={this.props.appGlobals.currentBattleMech.getStructureTechBase()}
+                            clanDesign={this.props.appGlobals.currentBattleMech.getTech().tag === "clan"}
+                            onChange={(techBase) => { const mech = this.props.appGlobals.currentBattleMech; if (mech) { mech.setStructureTechBase(techBase); this.props.appGlobals.saveCurrentBattleMech(mech); } }}
+                          />
 
                           {this.props.appGlobals.currentBattleMech.isFrankenMech() || this.props.appGlobals.currentBattleMech.canBeFrankenMech(mechRulesLevel(this.props.appGlobals)) ? (
                             <InputCheckbox

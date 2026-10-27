@@ -100,7 +100,7 @@ export const mechArmorTypes: IArmorType[] = [
 		introduced: 2571,
 		extinct: 2810,
 		reintroduced: 3040,
-		notes: "IS Ferro-Fibrous 2571 (Star League); Clan Ferro-Fibrous 2825. The Clans' earlier use of Star League Ferro-Fibrous is not modelled separately.",
+		notes: "IS Ferro-Fibrous 2571 (Star League); Clan Ferro-Fibrous 2825. A Clan 'Mech may mount the Star League version while its era holds both windows (#168).",
 		page: 205,
 		book: "TM",
 		clanDates: { prototype: 2820, introduced: 2825, extinct: null, reintroduced: null },

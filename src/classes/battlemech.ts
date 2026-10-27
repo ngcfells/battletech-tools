@@ -591,7 +591,8 @@ export class BattleMech {
     private _engineType = mechEngineTypes[0];
     private _engineTechBase: "is" | "clan" = "is";
     // A Mixed Tech 'Mech's structure, armor and heat sinks may each be the Inner Sphere or the Clan version, with
-    // that version's slots (#43). Unset, they follow the chassis as before.
+    // that version's slots (#43). Unset, they follow the chassis as before. A Clan 'Mech may pick the Star League
+    // version while its era holds both versions' windows (#168).
     private _mixedTechBases: { structure?: "is" | "clan"; armor?: "is" | "clan"; heatSink?: "is" | "clan" } = {};
     private _jumpJetType = mechJumpJetTypes[0];
     // Movement Speeeds
@@ -5591,9 +5592,7 @@ export class BattleMech {
 
     public getArmorTechBase(): "is" | "clan" {
         const techTag = this.getTech().tag;
-        if (techTag === "clan") {
-            return this._armorType.armorMultiplier.is > 0 && this._usesStarLeagueVersion(this._armorType) ? "is" : "clan";
-        }
+        if (techTag === "clan") return this._clanComponentTechBase("armor");
         if (techTag === "is") return "is";
         if (this._mixedTechBases.armor && this._armorType.armorMultiplier[this._mixedTechBases.armor] > 0) return this._mixedTechBases.armor;
         const preferredBase = techTag === "mclan" ? "clan" : "is";
@@ -6573,18 +6572,44 @@ export class BattleMech {
     /** Whose structure slots the 'Mech uses: a Clan 'Mech's, unless the structure is the Star League version. */
     public getStructureTechBase(): "is" | "clan" {
         if (this._isMixedTechBase()) return this._mixedTechBases.structure ?? "is";
+        if (this.getTech().tag === "clan") return this._clanComponentTechBase("structure");
         return this._defaultStructureTechBase(this._selectedInternalStructure);
     }
 
     /** Whose heat sink slots the 'Mech uses (Clan double heat sinks take 2, the Inner Sphere's 3). */
     public getHeatSinkTechBase(): "is" | "clan" {
         if (this._isMixedTechBase()) return this._mixedTechBases.heatSink ?? "is";
-        return this.getTech().tag === "clan" && !this._usesStarLeagueVersion(this._heatSinkType) ? "clan" : "is";
+        return this.getTech().tag === "clan" ? this._clanComponentTechBase("heatSink") : "is";
     }
 
-    /** On a Mixed Tech 'Mech: the Inner Sphere or Clan version of its structure, armor or heat sinks. */
+    /**
+     * The versions of its structure, armor or heat sinks a 'Mech may mount: either on Mixed Tech; on a Clan 'Mech,
+     * the Star League version beside the Clan one while the era holds both production windows (#168).
+     */
+    public getComponentTechBases(component: "structure" | "armor" | "heatSink"): ("is" | "clan")[] {
+        const item = component === "structure" ? this._selectedInternalStructure : component === "armor" ? this._armorType : this._heatSinkType;
+        // Versions that are the same in slots and armor factor are no choice at all.
+        const armor = this._armorType.armorMultiplier;
+        const versionsDiffer = item.crits.is !== item.crits.clan
+            || (component === "armor" && armor.is > 0 && armor.clan > 0 && armor.is !== armor.clan);
+        if (this._isMixedTechBase()) return versionsDiffer ? ["is", "clan"] : [this._mixedTechBases[component] ?? "is"];
+        if (this.getTech().tag !== "clan") return ["is"];
+        if (component === "armor" && !(armor.is > 0)) return ["clan"];
+        if (!versionsDiffer) return ["clan"];
+        if (this._usesStarLeagueVersion(item)) return ["is"];
+        return this._starLeagueVersionInEra(item) ? ["clan", "is"] : ["clan"];
+    }
+
+    /** A Clan 'Mech's chosen version of a component, if the era still offers it, else its own default. */
+    private _clanComponentTechBase(component: "structure" | "armor" | "heatSink"): "is" | "clan" {
+        const choices = this.getComponentTechBases(component);
+        const chosen = this._mixedTechBases[component];
+        return chosen && choices.includes(chosen) ? chosen : choices[0];
+    }
+
+    /** On a Mixed Tech 'Mech: the Inner Sphere or Clan version of its structure, armor or heat sinks; on a Clan 'Mech, any version the era offers. */
     private _setMixedTechBase(component: "structure" | "armor" | "heatSink", techBase: "is" | "clan") {
-        if (this._isMixedTechBase()) {
+        if (this._isMixedTechBase() || (this.getTech().tag === "clan" && this.getComponentTechBases(component).includes(techBase))) {
             this._mixedTechBases[component] = techBase;
             this._calc();
         }
@@ -8310,7 +8335,7 @@ export class BattleMech {
             fractional_armor_points: this.usesFractionalAccounting() ? this._fractionalArmorPoints : undefined,
             engineType: this.getEngineType().tag,
             engineTechBase: this.getEngineTechBase(),
-            mixedTechBases: this._isMixedTechBase() && Object.keys(this._mixedTechBases).length > 0 ? { ...this._mixedTechBases } : undefined,
+            mixedTechBases: (this._isMixedTechBase() || this.getTech().tag === "clan") && Object.keys(this._mixedTechBases).length > 0 ? { ...this._mixedTechBases } : undefined,
             equipment: [],
             era: this._era.tag,
             rulesEdition: this._rulesEdition === DEFAULT_RULES_EDITION ? undefined : this._rulesEdition,
@@ -8695,8 +8720,9 @@ export class BattleMech {
                 this.setEngineTechBase(importObject.engineTechBase);
             }
             for (const component of ["structure", "armor", "heatSink"] as const) {
+                // Stored as saved: the component itself is set further down, and the getters check the choice.
                 const techBase = importObject.mixedTechBases?.[component];
-                if (techBase === "is" || techBase === "clan") this._setMixedTechBase(component, techBase);
+                if (techBase === "is" || techBase === "clan") this._mixedTechBases[component] = techBase;
             }
 
             if( importObject.pilot)
@@ -10397,12 +10423,15 @@ export class BattleMech {
      * armor factor) because the Clan version is not yet in production in the selected era.
      */
     private _usesStarLeagueVersion(item: ITechDates & { clanDates?: ITechDates }): boolean {
+        if (this.getTech().tag !== "clan" || !item.clanDates || !this._starLeagueVersionInEra(item)) return false;
+        return !(item.clanDates.introduced
+            && this._itemIsAvailable(item.clanDates.introduced, item.clanDates.extinct, item.clanDates.reintroduced));
+    }
+
+    /** Whether the selected era overlaps the years the Clans fielded the Star League version of a component. */
+    private _starLeagueVersionInEra(item: ITechDates & { clanDates?: ITechDates }): boolean {
         const starLeague = getStarLeagueCarryOverDates(item);
-        if (this.getTech().tag !== "clan" || !starLeague || !item.clanDates) return false;
-        const clanInProduction = !!item.clanDates.introduced
-            && this._itemIsAvailable(item.clanDates.introduced, item.clanDates.extinct, item.clanDates.reintroduced);
-        return !clanInProduction
-            && this._itemIsAvailable(starLeague.prototype ?? starLeague.introduced, starLeague.extinct, null);
+        return !!starLeague && this._itemIsAvailable(starLeague.prototype ?? starLeague.introduced, starLeague.extinct, null);
     }
 
     public getAvailableGyros(rulesLevel: number = 2): IGyro[] {
@@ -13223,19 +13252,26 @@ export class BattleMech {
                 this.setTonnage( +jObj.mech["@_tons"] )
             }
             if( jObj.mech.techbase && jObj.mech.techbase["#text"] ) {
+                // Each component carries a techbase (0 Inner Sphere, 1 Clan, 2 either) that sets its slots
+                // (Clan Endo-Steel and Ferro-Fibrous 7, Clan double heat sinks 2, a Clan XL engine 2 per side torso) (#43).
+                const componentTech = ( component: any ): string => String( component?.["@_techbase"] ?? "2" );
+                const ownTechBase = ( component: any ): "is" | "clan" | undefined =>
+                    componentTech( component ) === "1" ? "clan" : componentTech( component ) === "0" ? "is" : undefined;
                 if( jObj.mech.techbase["#text"].toLowerCase().indexOf("inner") > -1) {
                     this.setTech("is");
                 } else if( jObj.mech.techbase["#text"].toLowerCase().indexOf("clan") > -1) {
                     this.setTech("clan");
+                    // A Clan design may mount Star League structure, armor or heat sinks (#168); the era is set
+                    // from the year below, and the getters check the choice against it.
+                    const components = { structure: jObj.mech.structure, armor: jObj.mech.armor, heatSink: jObj.mech.baseloadout?.heatsinks };
+                    for( const [component, data] of Object.entries( components ) as ["structure" | "armor" | "heatSink", any][] ) {
+                        const techBase = ownTechBase( data );
+                        if( techBase ) this._mixedTechBases[component] = techBase;
+                    }
                 } else if( jObj.mech.techbase["#text"].toLowerCase().indexOf("mixed") > -1) {
                     // SSW keeps no chassis tech base: its Mixed designs follow the Inner Sphere rules, with Clan
                     // CASE a choice of their own (<clancase>), and a Clan engine does not make a Clan chassis.
                     this.setTech( "mis" );
-                    // Each component carries a techbase (0 Inner Sphere, 1 Clan, 2 either) that sets its slots
-                    // (Clan Endo-Steel and Ferro-Fibrous 7, Clan double heat sinks 2, a Clan XL engine 2 per side torso) (#43).
-                    const componentTech = ( component: any ): string => String( component?.["@_techbase"] ?? "2" );
-                    const ownTechBase = ( component: any ): "is" | "clan" | undefined =>
-                        componentTech( component ) === "1" ? "clan" : componentTech( component ) === "0" ? "is" : undefined;
                     const engineTechBase = ownTechBase( jObj.mech.engine );
                     if( engineTechBase ) this.setEngineTechBase( engineTechBase );
                     const structureTechBase = ownTechBase( jObj.mech.structure );
