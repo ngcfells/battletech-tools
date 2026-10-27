@@ -11,6 +11,7 @@ describe("site metadata", () => {
         expect(description).toContain("SPA");
         expect(description).not.toMatch(/\bPWA\b/);
         expect(readFileSync(join(root, "src/index.tsx"), "utf8")).toContain("serviceWorker.unregister()");
+        expect(readFileSync(join(root, "src/serviceWorker.ts"), "utf8")).not.toMatch(/\bregister\(/);
         expect(readFileSync(join(root, "README.md"), "utf8")).not.toMatch(/\bPWA\b/);
     });
 
