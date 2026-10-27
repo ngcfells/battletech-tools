@@ -142,7 +142,7 @@ export interface IFullBackup {
 export async function getFullBackup(
     appSettings: AppSettings,
 ): Promise<string> {
-    let rv: IFullBackup  = {
+    const rv: IFullBackup  = {
         battleMechSaves: await getBattleMechSaves(appSettings),
         // appSettings: getAppSettings(),
         favoriteASGroups: await getFavoriteASGroups(appSettings),
@@ -259,7 +259,7 @@ export function restoreFullBackup(
     performActions: boolean = false,
 ): IRestoreMessage[] {
 
-    let restoreMessages: IRestoreMessage[] = [];
+    const restoreMessages: IRestoreMessage[] = [];
     const writeFailuresBefore = storageWriteFailures;
 
     restoreMessages.push({
@@ -271,14 +271,14 @@ export function restoreFullBackup(
         if( io.favoriteASGroups.length > MAX_RESTORE_GROUPS ) {
             restoreMessages.push(warning("Only the first " + MAX_RESTORE_GROUPS + " of " + io.favoriteASGroups.length + " Alpha Strike Favorite Groups are restored"));
         }
-        for( let item of io.favoriteASGroups.slice(0, MAX_RESTORE_GROUPS) ) {
+        for( const item of io.favoriteASGroups.slice(0, MAX_RESTORE_GROUPS) ) {
             let foundItem: IASGroupExport | null = null;
             let itemName = "(nameless)";
             if( item.name ) {
                 itemName = item.name;
             }
-            for( let existingItem of appGlobals.favoriteASGroups ) {
-                let existingItemExport = existingItem.export();
+            for( const existingItem of appGlobals.favoriteASGroups ) {
+                const existingItemExport = existingItem.export();
                 if( existingItem.uuid === item.uuid ) {
                     foundItem = existingItemExport;
 
@@ -311,14 +311,14 @@ export function restoreFullBackup(
 
     if( Array.isArray(io.favoriteCBTGroups) ) {
         restoreMessages.push(...groupVehicleWarnings("Classic BattleTech Favorite Group", io.favoriteCBTGroups));
-        for( let item of io.favoriteCBTGroups.slice(0, MAX_RESTORE_GROUPS) ) {
+        for( const item of io.favoriteCBTGroups.slice(0, MAX_RESTORE_GROUPS) ) {
             let foundItem: ICBTGroupExport | null = null;
             let itemName = "(nameless)";
             if( item.name ) {
                 itemName = item.name;
             }
-            for( let existingItem of appGlobals.favoriteCBTGroups ) {
-                let existingItemExport = existingItem.export();
+            for( const existingItem of appGlobals.favoriteCBTGroups ) {
+                const existingItemExport = existingItem.export();
                 if( existingItem.uuid === item.uuid ) {
                     foundItem = existingItemExport;
 
@@ -350,13 +350,13 @@ export function restoreFullBackup(
     }
 
     if( io.battleMechSaves ) {
-        for( let item of io.battleMechSaves ) {
+        for( const item of io.battleMechSaves ) {
             let foundItem: IBattleMechExport | null = null;
             let itemName = "(nameless)";
             if( item.name ) {
                 itemName = item.name;
             }
-            for( let existingItemIndex in appGlobals.battleMechSaves ) {
+            for( const existingItemIndex in appGlobals.battleMechSaves ) {
 
                 if( appGlobals.battleMechSaves[existingItemIndex].uuid === item.uuid ) {
                     foundItem = appGlobals.battleMechSaves[existingItemIndex];
@@ -396,7 +396,7 @@ export function restoreFullBackup(
         if( io.vehicleSaves.length > MAX_VEHICLE_SAVES ) {
             restoreMessages.push(warning("Only the first " + MAX_VEHICLE_SAVES + " of " + io.vehicleSaves.length + " saved vehicles are restored"));
         }
-        for( let rawItem of io.vehicleSaves.slice(0, MAX_VEHICLE_SAVES) ) {
+        for( const rawItem of io.vehicleSaves.slice(0, MAX_VEHICLE_SAVES) ) {
             const normalized = normalizeVehicleExport( rawItem );
             const item = normalized.vehicle;
             for( const issue of normalized.issues ) {
@@ -410,7 +410,7 @@ export function restoreFullBackup(
             if( item.name ) {
                 itemName = item.name;
             }
-            for( let existingItemIndex in appGlobals.vehicleSaves ) {
+            for( const existingItemIndex in appGlobals.vehicleSaves ) {
 
                 if( appGlobals.vehicleSaves[existingItemIndex].uuid === item.uuid ) {
                     foundItem = appGlobals.vehicleSaves[existingItemIndex];
@@ -785,7 +785,7 @@ export function restoreFullBackup(
             appGlobals.currentBuilding = new Building(io.currentBuilding);
         }
         if( io.currentVBattleMech ) {
-            let bmObj = new BattleMech();
+            const bmObj = new BattleMech();
             bmObj.importJSON(io.currentVBattleMech);
             appGlobals.currentBattleMech = bmObj;
         }
@@ -951,7 +951,7 @@ export function saveBattleMechSaves(
     appSettings: AppSettings,
     newValue: IBattleMechExport[]
 ) {
-    for( let itemIndex in newValue ) {
+    for( const itemIndex in newValue ) {
         newValue[itemIndex].lastUpdated = new Date();
     }
     saveData(appSettings, "battleMechSaves", JSON.stringify(newValue) );
@@ -962,7 +962,7 @@ export async function getBattleMechSaves(
 ): Promise<IBattleMechExport[]> {
     let rv: IBattleMechExport[] = [];
 
-    let rawData = await getData(appSettings, "battleMechSaves" );
+    const rawData = await getData(appSettings, "battleMechSaves" );
     try {
         if( rawData )
             rv = JSON.parse( rawData );
@@ -982,7 +982,7 @@ export function saveVehicleSaves(
     appSettings: AppSettings,
     newValue: IVehicleExport[]
 ) {
-    for( let itemIndex in newValue ) {
+    for( const itemIndex in newValue ) {
         newValue[itemIndex].lastUpdated = new Date();
     }
     saveData(appSettings, "vehicleSaves", JSON.stringify(newValue) );
@@ -993,7 +993,7 @@ export async function getVehicleSaves(
 ): Promise<IVehicleExport[]> {
     let rv: IVehicleExport[] = [];
 
-    let rawData = await getData(appSettings, "vehicleSaves" );
+    const rawData = await getData(appSettings, "vehicleSaves" );
     try {
         if( rawData )
             rv = JSON.parse( rawData );
@@ -1037,7 +1037,7 @@ export function saveAcesGame(
 export async function getAcesGame(
     appSettings: AppSettings,
 ): Promise<IAcesGameExport | null> {
-    let rawData = await getData(appSettings, "acesGame" );
+    const rawData = await getData(appSettings, "acesGame" );
     try {
         if( rawData ) {
             const rv = JSON.parse( rawData );
@@ -1084,7 +1084,7 @@ export async function getCurrentCBTForce(
 ): Promise<ICBTForceExport | null> {
     let rv: ICBTForceExport | null = null;
 
-    let rawData = await getData(appSettings, "currentCBTForce" );
+    const rawData = await getData(appSettings, "currentCBTForce" );
     try {
         if( rawData )
             rv = JSON.parse( rawData );
@@ -1105,7 +1105,7 @@ export async function getCurrentASForce(
 ): Promise<IASForceExport | null> {
     let rv: IASForceExport | null = null;
 
-    let rawData = await getData(appSettings, "currentASForce" );
+    const rawData = await getData(appSettings, "currentASForce" );
     try {
         if( rawData )
             rv = JSON.parse( rawData );
@@ -1473,7 +1473,7 @@ export function saveFavoriteASGroups(
     newValue: IASGroupExport[]
 ) {
 
-    for( let itemIndex in newValue ) {
+    for( const itemIndex in newValue ) {
         newValue[itemIndex].lastUpdated = new Date();
     }
     saveData(appSettings, "favoriteASGroups", JSON.stringify(newValue) );
@@ -1483,12 +1483,12 @@ export function saveFavoriteASGroupsObjects(
     appSettings: AppSettings,
     newValue: AlphaStrikeGroup[]
 ) {
-    let rv: IASGroupExport[] = [];
-    for( let unit of newValue ) {
+    const rv: IASGroupExport[] = [];
+    for( const unit of newValue ) {
         rv.push( unit.export() );
     }
 
-    for( let itemIndex in newValue ) {
+    for( const itemIndex in newValue ) {
         newValue[itemIndex].lastUpdated = new Date();
     }
 
@@ -1500,7 +1500,7 @@ export async function getFavoriteASGroups(
 ): Promise<IASGroupExport[]> {
     let rv: IASGroupExport[] = [];
 
-    let rawData = await getData(appSettings, "favoriteASGroups" );
+    const rawData = await getData(appSettings, "favoriteASGroups" );
     try {
         if( rawData )
             rv = JSON.parse( rawData );
@@ -1520,12 +1520,12 @@ export function saveFavoriteCBTGroupsObjects(
     appSettings: AppSettings,
     newValue: BattleMechGroup[]
 ) {
-    let rv: ICBTGroupExport[] = [];
-    for( let unit of newValue ) {
+    const rv: ICBTGroupExport[] = [];
+    for( const unit of newValue ) {
         rv.push( unit.export() );
     }
 
-    for( let itemIndex in newValue ) {
+    for( const itemIndex in newValue ) {
         newValue[itemIndex].lastUpdated = new Date();
     }
     saveData(appSettings, "favoriteCBTGroups", JSON.stringify(rv) );
@@ -1536,7 +1536,7 @@ export async function getFavoriteCBTGroups(
 ): Promise<ICBTGroupExport[]> {
     let rv: ICBTGroupExport[] = [];
 
-    let rawData = await getData(appSettings, "favoriteCBTGroups" );
+    const rawData = await getData(appSettings, "favoriteCBTGroups" );
     try {
         if( rawData )
             rv = JSON.parse( rawData );
@@ -1560,7 +1560,7 @@ export function saveAppSettings(
 
 export function getAppSettings(): IAppSettingsExport {
     let rv: IAppSettingsExport = (new AppSettings(null)).export()
-    let rawData = localStorage.getItem("appSettings" );
+    const rawData = localStorage.getItem("appSettings" );
 
     try {
         if( rawData )

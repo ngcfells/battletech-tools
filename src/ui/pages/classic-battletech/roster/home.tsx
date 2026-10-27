@@ -132,7 +132,7 @@ export default class BattleMechRosterHome extends React.Component<IHomeProps, IH
     }
 
     openViewUnit = ( theUnit: BattleMech ): void => {
-      let showBMUnit = theUnit;
+      const showBMUnit = theUnit;
 
       this.setState({
         showBMUnit: showBMUnit,
@@ -158,7 +158,7 @@ export default class BattleMechRosterHome extends React.Component<IHomeProps, IH
     selectFile = async (e: React.FormEvent<HTMLInputElement>): Promise<void> => {
       e.preventDefault();
       if( e.currentTarget.files && e.currentTarget.files.length > 0 ) {
-        let foundFile = e.currentTarget.files[0];
+        const foundFile = e.currentTarget.files[0];
         // console.log( "test", foundFIle );
         if( foundFile.type === "application/json" ) {
           this.fileReader = new FileReader();
@@ -171,16 +171,16 @@ export default class BattleMechRosterHome extends React.Component<IHomeProps, IH
 
     handleFileRead = (_e: any) => {
       if( this.fileReader ) {
-        let content = this.fileReader.result;
+        const content = this.fileReader.result;
 
         // console.log("content", content)
         try {
           if( content ) {
-            let data: ICBTGroupExport = JSON.parse( content.toString() )
+            const data: ICBTGroupExport = JSON.parse( content.toString() )
 
             // let btFavCBTGroup = this.props.appGlobals.favoriteCBTGroup;
             // for( let item of data ) {
-            let parsedItem =  new BattleMechGroup(data);
+            const parsedItem =  new BattleMechGroup(data);
             // }
 
             this.props.appGlobals.saveCBTGroupFavorite( parsedItem );
@@ -406,8 +406,8 @@ export default class BattleMechRosterHome extends React.Component<IHomeProps, IH
         </tr>
       </thead>
       {favGroup.members.map( (mechObj, mechIndex) => {
-            let pilotBV2 = mechObj.getPilotAdjustedBattleValue();
-            let baseBV2 = mechObj.getBattleValue();
+            const pilotBV2 = mechObj.getPilotAdjustedBattleValue();
+            const baseBV2 = mechObj.getBattleValue();
 
             return (
                 <tbody key={mechIndex}>

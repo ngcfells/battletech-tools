@@ -69,8 +69,8 @@ export default class MechCreatorStep6 extends React.Component<IHomeProps, IHomeS
     ) => {
       if( e && e.preventDefault ) e.preventDefault();
 
-      let selectionMessage = "Select a location to place your the first part of " + this.state.selectedItem?.name + " ( " + this.state.splitItemCount + " slots)";
-      let selectionMessageType = "warning";
+      const selectionMessage = "Select a location to place your the first part of " + this.state.selectedItem?.name + " ( " + this.state.splitItemCount + " slots)";
+      const selectionMessageType = "warning";
 
       this.setState({
         isSplitting: true,
@@ -189,7 +189,7 @@ export default class MechCreatorStep6 extends React.Component<IHomeProps, IHomeS
               selectedItemSize = selectedItem.size
             }
             // console.log("isSplitting")
-            let split_criticals = this.state.split_criticals;
+            const split_criticals = this.state.split_criticals;
             if( this.state.onSecondClick && this.props.appGlobals.currentBattleMech ) {
               // console.log("onSecondClick")
 
@@ -201,7 +201,7 @@ export default class MechCreatorStep6 extends React.Component<IHomeProps, IHomeS
 
               // console.log("split_criticals", split_criticals)
 
-              let wasMoved = this.props.appGlobals.currentBattleMech.moveCritical(
+              const wasMoved = this.props.appGlobals.currentBattleMech.moveCritical(
                 // this.state.selectedItem.tag,
                 // this.state.selectedItem.rear,
                 this.state.selectedItemLocation,
@@ -274,8 +274,8 @@ export default class MechCreatorStep6 extends React.Component<IHomeProps, IHomeS
                   size : this.state.splitItemCount,
                   index: selectedIndex,
                 });
-                let selectionMessage = "Select the location to place the second part of your" + this.state.selectedItem?.name + " ( " + (this.state.selectedItem.crits - this.state.splitItemCount) + " slots)";
-                let selectionMessageType = "warning";
+                const selectionMessage = "Select the location to place the second part of your" + this.state.selectedItem?.name + " ( " + (this.state.selectedItem.crits - this.state.splitItemCount) + " slots)";
+                const selectionMessageType = "warning";
 
                 // console.log("firstClick split_criticals", split_criticals)
 
@@ -293,7 +293,7 @@ export default class MechCreatorStep6 extends React.Component<IHomeProps, IHomeS
             // console.log("moving?")
             // try to move item to slot
             if( this.state.selectedItemLocation && this.state.selectedItemIndex > -1 && this.props.appGlobals.currentBattleMech) {
-              let wasMoved = this.props.appGlobals.currentBattleMech.moveCritical(
+              const wasMoved = this.props.appGlobals.currentBattleMech.moveCritical(
                 // this.state.selectedItem.tag,
                 // this.state.selectedItem.rear,
                 this.state.selectedItemLocation,

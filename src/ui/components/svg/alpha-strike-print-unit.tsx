@@ -42,7 +42,7 @@ export default class AlphaStrikePrintUnitSVG extends React.Component<IAlphaStrik
         radius: number = 0,
         target: string = "armor",
     ): JSX.Element[] => {
-        let dots: JSX.Element[] = []
+        const dots: JSX.Element[] = []
         // We reduce the number of dots per row to accommodate a threshold number
         let maxCountInRow = this.props.asUnit && this.props.asUnit.threshold!==0 ? 15 : 17;
         if (!this.props.inPlay) {
@@ -50,7 +50,7 @@ export default class AlphaStrikePrintUnitSVG extends React.Component<IAlphaStrik
         }
         // If armor is more than 1 row, nudge the display upwards to make room for both above the structure.
         let yLoc = target === "armor" && this.props.asUnit && this.props.asUnit.armor > maxCountInRow ? -22 : -10;
-        let xLoc = this.props.inPlay ? 0 : 40;
+        const xLoc = this.props.inPlay ? 0 : 40;
 
         if( radius === 0 ) {
             radius = this.buttonRadius - 5;
@@ -90,9 +90,9 @@ export default class AlphaStrikePrintUnitSVG extends React.Component<IAlphaStrik
             return <></>
         }
 
-        let showHeat = this.props.asUnit.type.toLocaleLowerCase() === "bm" || this.props.asUnit.type.toLocaleLowerCase() === "af";
+        const showHeat = this.props.asUnit.type.toLocaleLowerCase() === "bm" || this.props.asUnit.type.toLocaleLowerCase() === "af";
         let critLineStart = showHeat ? 63 : 72;
-        let critLineHeight = showHeat ? 33 : 36;
+        const critLineHeight = showHeat ? 33 : 36;
 
         let damageLabelColWidth = 110;
         let damageColWidth=170;
@@ -101,13 +101,13 @@ export default class AlphaStrikePrintUnitSVG extends React.Component<IAlphaStrik
             damageLabelColWidth = 100;
         }
 
-        let shortDamageX = damageLabelColWidth;
-        let mediumDamageX = damageLabelColWidth + damageColWidth;
-        let longDamageX = damageLabelColWidth + damageColWidth*2;
-        let extremeDamageX = damageLabelColWidth + damageColWidth*3;
+        const shortDamageX = damageLabelColWidth;
+        const mediumDamageX = damageLabelColWidth + damageColWidth;
+        const longDamageX = damageLabelColWidth + damageColWidth*2;
+        const extremeDamageX = damageLabelColWidth + damageColWidth*3;
 
-        let pilotAbilitiesList = this.props.asUnit.getPilotAbilityList();
-        let pilotAbilities = this.props.asUnit.getPilotAbilities();
+        const pilotAbilitiesList = this.props.asUnit.getPilotAbilityList();
+        const pilotAbilities = this.props.asUnit.getPilotAbilities();
 
         return (
 
@@ -142,7 +142,7 @@ export default class AlphaStrikePrintUnitSVG extends React.Component<IAlphaStrik
                             )}
                         {pilotAbilities.map( (ability, abilityIndex) => {
                             if (ability) {
-                                let comma = abilityIndex < pilotAbilitiesList.length - 1 ? ", " : "";
+                                const comma = abilityIndex < pilotAbilitiesList.length - 1 ? ", " : "";
                                 return <tspan key={abilityIndex}>{ability.ability}{comma}</tspan>;
                             } else {
                                 return null;
@@ -352,7 +352,7 @@ export default class AlphaStrikePrintUnitSVG extends React.Component<IAlphaStrik
                 <foreignObject x="14" y="3" width="512" height="70">
                     <p className='specials'>SPECIAL:&nbsp;
                     {this.props.asUnit.abilities.map( (word, wordIndex) => {
-                        let comma = this.props.asUnit && wordIndex < this.props.asUnit.abilities.length - 1 ? ", " : "";
+                        const comma = this.props.asUnit && wordIndex < this.props.asUnit.abilities.length - 1 ? ", " : "";
 
                         return (
                             <React.Fragment key={wordIndex}>{word}{comma}</React.Fragment>

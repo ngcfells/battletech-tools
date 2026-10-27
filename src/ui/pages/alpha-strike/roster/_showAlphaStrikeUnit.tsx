@@ -62,7 +62,7 @@ export default class AlphaStrikeUnitEditViewModal extends React.Component<IAlpha
 
     renameUnit = (event: React.FormEvent<HTMLInputElement>): void => {
       if(this.props.showASUnit) {
-        let asUnit = this.props.showASUnit;
+        const asUnit = this.props.showASUnit;
         asUnit.customName = event.currentTarget.value;
         this.setState({
           updated: true,

@@ -65,8 +65,8 @@ export default class BattleMechTableGroup extends React.Component<IBattleMechTab
         }
         if( this.props.appGlobals.currentCBTForce && this.state.viewingUnit ) {
 
-            let bmGroup = this.props.appGlobals.currentCBTForce.groups[this.props.bmGroupIndex];
-            let newBM = new BattleMech( this.state.viewingUnit.exportJSON()  );
+            const bmGroup = this.props.appGlobals.currentCBTForce.groups[this.props.bmGroupIndex];
+            const newBM = new BattleMech( this.state.viewingUnit.exportJSON()  );
             newBM.newUUID();
             bmGroup.members.push (
                 newBM
@@ -94,7 +94,7 @@ export default class BattleMechTableGroup extends React.Component<IBattleMechTab
 
   onAddUnitsChange = ( nv: BattleMechGroup ): void => {
     if( this.props.appGlobals.currentCBTForce && this.props.appGlobals.currentCBTForce.groups[this.state.addingUnitsGroupIndex] ) {
-      let currentCBTForce = this.props.appGlobals.currentCBTForce;
+      const currentCBTForce = this.props.appGlobals.currentCBTForce;
       currentCBTForce.groups[this.state.addingUnitsGroupIndex] = nv;
       this.props.appGlobals.saveCurrentCBTForce( currentCBTForce );
 
@@ -133,8 +133,8 @@ export default class BattleMechTableGroup extends React.Component<IBattleMechTab
         }
 
         if( this.props.appGlobals.currentCBTForce ) {
-            let currentCBTForce = this.props.appGlobals.currentCBTForce;
-            let editUnit = new BattleMech(currentCBTForce.groups[this.props.bmGroupIndex].members[editUnitIndex].exportJSON() );
+            const currentCBTForce = this.props.appGlobals.currentCBTForce;
+            const editUnit = new BattleMech(currentCBTForce.groups[this.props.bmGroupIndex].members[editUnitIndex].exportJSON() );
             this.setState({
                 editingUnit: editUnit,
                 editingUnitIndex: editUnitIndex,
@@ -153,8 +153,8 @@ export default class BattleMechTableGroup extends React.Component<IBattleMechTab
         }
 
         if( this.props.appGlobals.currentCBTForce && this.state.editingUnit) {
-            let currentCBTForce = this.props.appGlobals.currentCBTForce;
-            let saveUnit = new BattleMech(this.state.editingUnit.exportJSON() );
+            const currentCBTForce = this.props.appGlobals.currentCBTForce;
+            const saveUnit = new BattleMech(this.state.editingUnit.exportJSON() );
             currentCBTForce.groups[this.props.bmGroupIndex].members[this.state.editingUnitIndex] = saveUnit;
             this.props.appGlobals.saveCurrentCBTForce( currentCBTForce );
             this.setState({
@@ -182,7 +182,7 @@ export default class BattleMechTableGroup extends React.Component<IBattleMechTab
           "No, thank you",
           () => {
             if( this.props.appGlobals.currentCBTForce ) {
-                let currentCBTForce = this.props.appGlobals.currentCBTForce;
+                const currentCBTForce = this.props.appGlobals.currentCBTForce;
                 currentCBTForce.groups[this.props.bmGroupIndex].members.splice(removeUnitIndex, 1);
                 this.props.appGlobals.saveCurrentCBTForce( currentCBTForce );
             }
@@ -206,7 +206,7 @@ export default class BattleMechTableGroup extends React.Component<IBattleMechTab
     }
 
     updateNickname = ( event: React.FormEvent<HTMLInputElement>): void => {
-        let mech = this.state.editingUnit;
+        const mech = this.state.editingUnit;
         if( mech ) {
             mech.nickname = event.currentTarget.value;
             this.setState({
@@ -216,7 +216,7 @@ export default class BattleMechTableGroup extends React.Component<IBattleMechTab
     }
 
     setPilotName = ( event: React.FormEvent<HTMLInputElement>): void => {
-        let mech = this.state.editingUnit;
+        const mech = this.state.editingUnit;
         if( mech ) {
             mech.setPilotName( event.currentTarget.value );
             this.setState({
@@ -227,7 +227,7 @@ export default class BattleMechTableGroup extends React.Component<IBattleMechTab
 
       setPilotPiloting = ( event: React.FormEvent<HTMLSelectElement>): void => {
 
-        let mech = this.state.editingUnit;
+        const mech = this.state.editingUnit;
         if( mech ) {
             mech.setPilotPiloting( +event.currentTarget.value );
             this.setState({
@@ -238,7 +238,7 @@ export default class BattleMechTableGroup extends React.Component<IBattleMechTab
 
       setPilotGunnery = ( event: React.FormEvent<HTMLSelectElement>): void => {
 
-        let mech = this.state.editingUnit;
+        const mech = this.state.editingUnit;
         if( mech ) {
             mech.setPilotGunnery( +event.currentTarget.value );
             this.setState({
@@ -403,8 +403,8 @@ export default class BattleMechTableGroup extends React.Component<IBattleMechTab
     {this.props.appGlobals.currentCBTForce.groups[this.props.bmGroupIndex].members.length > 0 ? (
       <>
         {this.props.appGlobals.currentCBTForce.groups[this.props.bmGroupIndex].members.map( (mechObj, mechIndex) => {
-            let pilotBV2 = mechObj.getPilotAdjustedBattleValue();
-            let baseBV2 = mechObj.getBattleValue();
+            const pilotBV2 = mechObj.getPilotAdjustedBattleValue();
+            const baseBV2 = mechObj.getBattleValue();
 
             return (
                 <tbody key={mechIndex}>

@@ -42,7 +42,7 @@ export default class MechCreatorStep1 extends React.Component<IHomeProps, IHomeS
 
     updateMake = ( e: React.FormEvent<HTMLInputElement>): void => {
       if( this.props.appGlobals.currentBattleMech ) {
-        let currentMech = this.props.appGlobals.currentBattleMech;
+        const currentMech = this.props.appGlobals.currentBattleMech;
         currentMech.setModel( e.currentTarget.value);
         this.props.appGlobals.saveCurrentBattleMech( currentMech );
       }
@@ -50,7 +50,7 @@ export default class MechCreatorStep1 extends React.Component<IHomeProps, IHomeS
 
     updateName = ( e: React.FormEvent<HTMLInputElement>): void => {
       if( this.props.appGlobals.currentBattleMech ) {
-        let currentMech = this.props.appGlobals.currentBattleMech;
+        const currentMech = this.props.appGlobals.currentBattleMech;
         currentMech.setName( e.currentTarget.value);
         this.props.appGlobals.saveCurrentBattleMech( currentMech );
       }
@@ -60,7 +60,7 @@ export default class MechCreatorStep1 extends React.Component<IHomeProps, IHomeS
       if( e && e.preventDefault ) e.preventDefault();
 
       if( this.props.appGlobals.currentBattleMech ) {
-        let currentMech = this.props.appGlobals.currentBattleMech;
+        const currentMech = this.props.appGlobals.currentBattleMech;
         currentMech.toggleOmni(mechRulesLevel(this.props.appGlobals));
         this.props.appGlobals.saveCurrentBattleMech( currentMech );
       }
@@ -70,7 +70,7 @@ export default class MechCreatorStep1 extends React.Component<IHomeProps, IHomeS
       if( e && e.preventDefault ) e.preventDefault();
 
       if( this.props.appGlobals.currentBattleMech ) {
-        let currentMech = this.props.appGlobals.currentBattleMech;
+        const currentMech = this.props.appGlobals.currentBattleMech;
         currentMech.setPrimitive( !currentMech.isPrimitive() );
         this.props.appGlobals.saveCurrentBattleMech( currentMech );
       }
@@ -80,7 +80,7 @@ export default class MechCreatorStep1 extends React.Component<IHomeProps, IHomeS
       if( e && e.preventDefault ) e.preventDefault();
 
       if( this.props.appGlobals.currentBattleMech ) {
-        let currentMech = this.props.appGlobals.currentBattleMech;
+        const currentMech = this.props.appGlobals.currentBattleMech;
         currentMech.setClanCASE( !currentMech.hasClanCASE() );
         this.props.appGlobals.saveCurrentBattleMech( currentMech );
       }
@@ -90,7 +90,7 @@ export default class MechCreatorStep1 extends React.Component<IHomeProps, IHomeS
       if( e && e.preventDefault ) e.preventDefault();
 
       if( this.props.appGlobals.currentBattleMech ) {
-        let currentMech = this.props.appGlobals.currentBattleMech;
+        const currentMech = this.props.appGlobals.currentBattleMech;
         currentMech.setFrankenMech( !currentMech.isFrankenMech(), mechRulesLevel(this.props.appGlobals) );
         this.props.appGlobals.saveCurrentBattleMech( currentMech );
       }
@@ -98,7 +98,7 @@ export default class MechCreatorStep1 extends React.Component<IHomeProps, IHomeS
 
     updateFrankenMechDonor = ( locationKey: string, donor: Partial<IFrankenMechDonor> ): void => {
       if( this.props.appGlobals.currentBattleMech ) {
-        let currentMech = this.props.appGlobals.currentBattleMech;
+        const currentMech = this.props.appGlobals.currentBattleMech;
         currentMech.setFrankenMechDonor( locationKey, donor );
         this.props.appGlobals.saveCurrentBattleMech( currentMech );
       }
@@ -106,7 +106,7 @@ export default class MechCreatorStep1 extends React.Component<IHomeProps, IHomeS
 
     toggleFractionalAccounting = (): void => {
       if( this.props.appGlobals.currentBattleMech ) {
-        let currentMech = this.props.appGlobals.currentBattleMech;
+        const currentMech = this.props.appGlobals.currentBattleMech;
         currentMech.setWeightAccounting(
           currentMech.usesFractionalAccounting() ? "standard" : "fractional",
           mechRulesLevel(this.props.appGlobals),
@@ -156,7 +156,7 @@ export default class MechCreatorStep1 extends React.Component<IHomeProps, IHomeS
 
     updateType = ( e: React.FormEvent<HTMLSelectElement>): void => {
       if( this.props.appGlobals.currentBattleMech ) {
-        let currentMech = this.props.appGlobals.currentBattleMech;
+        const currentMech = this.props.appGlobals.currentBattleMech;
         currentMech.setType( e.currentTarget.value);
         this.clampTonnageToChassisRules(currentMech, mechRulesLevel(this.props.appGlobals));
         this.props.appGlobals.saveCurrentBattleMech( currentMech );
@@ -198,7 +198,7 @@ export default class MechCreatorStep1 extends React.Component<IHomeProps, IHomeS
 
     updateTonnage = ( e: React.FormEvent<HTMLSelectElement>): void => {
       if( this.props.appGlobals.currentBattleMech ) {
-        let currentMech = this.props.appGlobals.currentBattleMech;
+        const currentMech = this.props.appGlobals.currentBattleMech;
         currentMech.setTonnage( +e.currentTarget.value);
         this.props.appGlobals.saveCurrentBattleMech( currentMech );
       }
@@ -206,7 +206,7 @@ export default class MechCreatorStep1 extends React.Component<IHomeProps, IHomeS
 
     updateStructureType = ( e: React.FormEvent<HTMLSelectElement>): void => {
       if( this.props.appGlobals.currentBattleMech ) {
-        let currentMech = this.props.appGlobals.currentBattleMech;
+        const currentMech = this.props.appGlobals.currentBattleMech;
         currentMech.setInternalStructureType( e.currentTarget.value);
         this.props.appGlobals.saveCurrentBattleMech( currentMech );
       }

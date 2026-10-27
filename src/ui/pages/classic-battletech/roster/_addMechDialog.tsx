@@ -282,8 +282,8 @@ export default class BattleMechAddMechDialog extends React.Component<IBattleMech
             e.preventDefault();
         }
         if( this.props.currentForce && this.state.viewingUnit ) {
-            let currentForce = this.props.currentForce;
-            let newBM = new BattleMech( this.state.viewingUnit.exportJSON()  );
+            const currentForce = this.props.currentForce;
+            const newBM = new BattleMech( this.state.viewingUnit.exportJSON()  );
             newBM.newUUID();
             currentForce.members.push (
                 newBM
@@ -304,8 +304,8 @@ export default class BattleMechAddMechDialog extends React.Component<IBattleMech
             e.preventDefault();
         }
         if( this.props.currentForce && bm ) {
-            let currentForce = this.props.currentForce;
-            let newBM = new BattleMech( bm.exportJSON()  );
+            const currentForce = this.props.currentForce;
+            const newBM = new BattleMech( bm.exportJSON()  );
             newBM.newUUID();
             currentForce.members.push (
                 newBM
@@ -478,9 +478,9 @@ export default class BattleMechAddMechDialog extends React.Component<IBattleMech
                         </tr>
                     </thead>
                     {this.props.appGlobals.battleMechSaves.map( (bmDef, bmIndex) => {
-                        let savedObj = new BattleMech( JSON.stringify(bmDef) )
+                        const savedObj = new BattleMech( JSON.stringify(bmDef) )
                         // An OmniMech with several configurations gets one row per configuration
-                        let configurations = savedObj.getOmniConfigurationNames().length > 1
+                        const configurations = savedObj.getOmniConfigurationNames().length > 1
                             ? savedObj.getOmniConfigurationNames().map( (name) => savedObj.cloneOmniConfiguration( name ) as BattleMech )
                             : [savedObj];
                         return (

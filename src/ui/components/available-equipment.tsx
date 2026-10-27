@@ -22,7 +22,7 @@ export default class AvailableEquipment extends React.Component<IAvailableEquipm
 
     updateEquipmentFilter = (e: React.FormEvent<HTMLInputElement>):void => {
 
-        let appSettings = this.props.appGlobals.appSettings;
+        const appSettings = this.props.appGlobals.appSettings;
 
         appSettings.equipmentFilter = e.currentTarget.value;
         this.props.appGlobals.saveAppSettings( appSettings );
@@ -31,7 +31,7 @@ export default class AvailableEquipment extends React.Component<IAvailableEquipm
 
     clickSelectCategory = ( newValue: string ): void => {
 
-        let appSettings = this.props.appGlobals.appSettings;
+        const appSettings = this.props.appGlobals.appSettings;
 
         appSettings.installEquipCategory =newValue;
         this.props.appGlobals.saveAppSettings( appSettings );
@@ -78,8 +78,8 @@ export default class AvailableEquipment extends React.Component<IAvailableEquipm
 
         let currentCategory = this.props.appGlobals.appSettings.installEquipCategory;
 
-        let groupedItems : { [categoryName: string] : IEquipmentItem[]; }= {};
-        for( let item of this.props.equipment ) {
+        const groupedItems : { [categoryName: string] : IEquipmentItem[]; }= {};
+        for( const item of this.props.equipment ) {
             if( item.available && this._ammoFilter( item ) ) {
                 if( !groupedItems[ item.category ] ) {
                     groupedItems[ item.category ] = []

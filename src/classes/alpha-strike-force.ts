@@ -98,7 +98,7 @@ export default class AlphaStrikeForce {
                 this.groups[groupIndex].setAvailableFormationBonuses( formationBonuses.filter(x=>x.IsValid(this.groups[groupIndex], this.groups)));
 
                 // Used to update nova/mechanized check
-                for(let group of this.groups){
+                for(const group of this.groups){
                     if(group.needsToCheckBonuses()){
                         group.setAvailableFormationBonuses( formationBonuses.filter(x=>x.IsValid(group, this.groups)));
                     }
@@ -119,7 +119,7 @@ export default class AlphaStrikeForce {
 
         )  {
             if( this.groups[fromGroupIndex].members.length > fromUnitIndex ) {
-                let asUnit = this.groups[fromGroupIndex].members[fromUnitIndex];
+                const asUnit = this.groups[fromGroupIndex].members[fromUnitIndex];
                 this.groups[fromGroupIndex].members.splice(fromUnitIndex, 1 );
 
                 this.groups[toGroupIndex].members.push( asUnit);
@@ -128,7 +128,7 @@ export default class AlphaStrikeForce {
                 this.groups[fromGroupIndex].sortUnits();
                 this.groups[toGroupIndex].setAvailableFormationBonuses( formationBonuses.filter(x=>x.IsValid(this.groups[toGroupIndex], this.groups)));
                 this.groups[fromGroupIndex].setAvailableFormationBonuses( formationBonuses.filter(x=>x.IsValid(this.groups[fromGroupIndex], this.groups)));
-                for(let group of this.groups){
+                for(const group of this.groups){
                     if(group.needsToCheckBonuses()){
                         group.setAvailableFormationBonuses( formationBonuses.filter(x=>x.IsValid(group, this.groups)));
                     }
@@ -146,7 +146,7 @@ export default class AlphaStrikeForce {
             if( this.groups[asGroupIndex].members.length > asUnitIndex && this.groups[asGroupIndex].members[asUnitIndex]) {
                 this.groups[asGroupIndex].members.splice( asUnitIndex, 1);
                 this.groups[asGroupIndex].setAvailableFormationBonuses(formationBonuses.filter(x=>x.IsValid(this.groups[asGroupIndex], this.groups)));
-                for(let group of this.groups){
+                for(const group of this.groups){
                     if(group.needsToCheckBonuses()){
                         group.setAvailableFormationBonuses( formationBonuses.filter(x=>x.IsValid(group, this.groups)));
                     }
@@ -168,7 +168,7 @@ export default class AlphaStrikeForce {
     public getTotalUnits(): number {
         let returnValue: number = 0;
 
-        for( let group of this.groups ) {
+        for( const group of this.groups ) {
             returnValue += group.getTotalUnits();
         }
 
@@ -178,7 +178,7 @@ export default class AlphaStrikeForce {
     public getTotalPoints(): number {
         let returnValue: number = 0;
 
-        for( let group of this.groups ) {
+        for( const group of this.groups ) {
             returnValue += group.getTotalPoints();
         }
 
@@ -188,7 +188,7 @@ export default class AlphaStrikeForce {
     public export(
         noInPlayVariables: boolean = false,
     ): IASForceExport {
-        let returnValue: IASForceExport = {
+        const returnValue: IASForceExport = {
             groups: [],
             uuid: this._uuid,
             lastUpdated: new Date(),
@@ -199,7 +199,7 @@ export default class AlphaStrikeForce {
             gameYear: this.gameYear,
         }
 
-        for( let group of this.groups) {
+        for( const group of this.groups) {
             returnValue.groups.push( group.export(noInPlayVariables) );
         }
 
@@ -208,12 +208,12 @@ export default class AlphaStrikeForce {
 
     public validateAllGroups(): void {
         // First validate each group individually
-        for (let group of this.groups) {
+        for (const group of this.groups) {
             group.setAvailableFormationBonuses(formationBonuses.filter(x => x.IsValid(group, this.groups)));
         }
 
         // Then revalidate all groups to ensure cross-group dependencies are met
-        for (let group of this.groups) {
+        for (const group of this.groups) {
             if (group.formationBonus) {
                 // If the current formation bonus is no longer valid, reset to None
                 if (!group.availableFormationBonuses.find(x => x.Name === group.formationBonus?.Name)) {
@@ -239,7 +239,7 @@ export default class AlphaStrikeForce {
     }
 
     public import(importObj: IASForceExport) {
-        for( let group of importObj.groups ) {
+        for( const group of importObj.groups ) {
             this.groups.push( new AlphaStrikeGroup( group) );
         }
         if( importObj.uuid ) {

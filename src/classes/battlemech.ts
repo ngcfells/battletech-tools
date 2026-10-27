@@ -812,7 +812,7 @@ export class BattleMech {
     }
 
     public getGATOR(): IGATOR {
-        let rv: IGATOR = {
+        const rv: IGATOR = {
             gunnerySkill: 0,
             attackerMovementModifier: 0,
             targetMovementModifier: 0,
@@ -829,7 +829,7 @@ export class BattleMech {
     public hasCASE(
         loc: string
     ): boolean {
-        for( let crit of this._criticalAllocationTable ) {
+        for( const crit of this._criticalAllocationTable ) {
             if( crit.loc === loc ) {
                 if( matchesTag(crit, "case") ) {
                     return true;
@@ -843,13 +843,13 @@ export class BattleMech {
         this._battleValueStale = false;
         // Insulators follow their lasers' locations, which can change without a full recalculation.
         mateLaserInsulators(this._equipmentList);
-        let hasCamo = false;
+        const hasCamo = false;
         // Stealth Armor counts at full effect even when Modular Armor negates it in play (TO:AUE p.192).
-        let hasBasicStealth = this._armorType.tag === "stealth-basic";
-        let hasPrototypeStealth = false;
-        let hasStandardStealth = false;
-        let hasImprovedStealth = false;
-        let hasMimetic = this._armorType.tag === "mimetic";
+        const hasBasicStealth = this._armorType.tag === "stealth-basic";
+        const hasPrototypeStealth = false;
+        const hasStandardStealth = false;
+        const hasImprovedStealth = false;
+        const hasMimetic = this._armorType.tag === "mimetic";
         this._battleValue = 0;
         this._calcLogBV = "";
         /* *************************************************************************
@@ -962,7 +962,7 @@ export class BattleMech {
         if (gyroType === "heavy-duty" && this.getTonnage() <= 100) {
             gyroModifier = 1.0;
         }
-        let totalGyroPoints = this.getTonnage() * gyroModifier;
+        const totalGyroPoints = this.getTonnage() * gyroModifier;
         this._calcLogBV += `Total Gyro BV = ${gyroModifier} x Tonnage for ${gyroType} Gyro: ${totalGyroPoints} = ${gyroModifier} x ${this.getTonnage()}<br />`;
         // 1D-2. Defensive Equipment (TM p. 302): AMS, ECM, active probes, pods, etc. AMS ammo counts
         // here too, capped at the BV of the AMS it feeds (Excessive Ammunition rule).
@@ -1127,7 +1127,7 @@ export class BattleMech {
         // Jumping modifier bonus (TM p. 304); UMU movement earns no jump bonus.
         const jumpModifier = Math.max(jumpSpeed > 0 ? getMovementModifier(jumpSpeed) + 1 : 0, getMovementModifier(this.getUMUSpeed()));
         // Determine the optimal Target Movement Modifier (TMM)
-        let moveModifier = Math.max(runModifier, jumpModifier);
+        const moveModifier = Math.max(runModifier, jumpModifier);
         this._calcLogBV += `Best Base TMM: ${moveModifier} (Run TMM: ${runModifier}, Jump TMM: ${jumpModifier})<br />`;
         // Calculate baseline Defensive Factor Modifier
         let defensiveFactorModifier = 1 + (moveModifier / 10);
@@ -1843,27 +1843,27 @@ export class BattleMech {
         // Superheavy 'Mechs use the Superheavy Gyro: 500,000 x its own (doubled) weight, the
         // Heavy-Duty rate (IO:AE p.217).
         const superheavyGyroCostMultiplier = findByTag(mechGyroTypes, "heavy-duty")?.costMultiplier ?? 500000;
-        let gyroName = this._tonnage > 100 ? "Superheavy (" + this.getGyroName() + ")" : this.getGyroName();
-        let gyrocostMultiplier = this._tonnage > 100 ? superheavyGyroCostMultiplier : this.getGyro().costMultiplier;
-        let gyroTonnage = this.getGyroWeight();
+        const gyroName = this._tonnage > 100 ? "Superheavy (" + this.getGyroName() + ")" : this.getGyroName();
+        const gyrocostMultiplier = this._tonnage > 100 ? superheavyGyroCostMultiplier : this.getGyro().costMultiplier;
+        const gyroTonnage = this.getGyroWeight();
 
         this._calcLogCBill += "<tr><td><strong>Gyro: " + gyroName  + "</strong><br /><span class=\"smaller-text\">" +  addCommas( gyrocostMultiplier ) + " x Gyro Tonnage [" + gyroTonnage + "]</span></td><td>" +  addCommas( gyrocostMultiplier * gyroTonnage  ) + "</td></tr>\n";
         cbillDryTotal += gyrocostMultiplier * gyroTonnage ;
 
         // Jump Jets
-        let numberOfJumpJets = this.getNumberOfJumpJets();
+        const numberOfJumpJets = this.getNumberOfJumpJets();
         if( numberOfJumpJets ) {
-            let jumpJetName = this._jumpJetType.name;
-            let jumpJetCost = this._jumpJetType.costMultiplier;
+            const jumpJetName = this._jumpJetType.name;
+            const jumpJetCost = this._jumpJetType.costMultiplier;
             this._calcLogCBill += "<tr><td><strong>Jump Jets: " + jumpJetName  + "</strong><br /><span class=\"smaller-text\">" +  addCommas( jumpJetCost ) + " x (# Jump Jets [" +  numberOfJumpJets + "])<sup>2</sup> x Unit Tonnage [" + this.getTonnage() + "]</span></td><td>" +  addCommas( jumpJetCost * Math.pow( numberOfJumpJets, 2) *  this.getTonnage()  ) + "</td></tr>\n";
             cbillDryTotal += jumpJetCost * Math.pow( numberOfJumpJets, 2) *  this.getTonnage()  ;
         }
 
         // Heat Sinks
-        let heatSinksName = this.getHeatSinksObj().name;
-        let heatSinksCost =  this.getHeatSinksObj().cost ;
-        let numberOfHeatSinks = this.getHeatSinks();
-        let heatSinkType = this.getHeatSinksType();
+        const heatSinksName = this.getHeatSinksObj().name;
+        const heatSinksCost =  this.getHeatSinksObj().cost ;
+        const numberOfHeatSinks = this.getHeatSinks();
+        const heatSinkType = this.getHeatSinksType();
         // console.log( numberOfHeatSinks );
         // console.log( heatSinkType );
 
@@ -1881,9 +1881,9 @@ export class BattleMech {
         }
 
         // Armor
-        let armorName = this.getArmorObj().name;
-        let armorcostMultiplier = this.getArmorObj().costMultiplier;
-        let armorTonnage = this.getArmorWeight();
+        const armorName = this.getArmorObj().name;
+        const armorcostMultiplier = this.getArmorObj().costMultiplier;
+        const armorTonnage = this.getArmorWeight();
 
         if (this.isPatchworkArmor()) {
             // Patchwork: each location's armor at its own type's cost per ton.
@@ -2544,7 +2544,7 @@ export class BattleMech {
         // let total_weapon_heat_extreme = 0;
         let has_explosive = false;
 
-        let lrmDamage: IAlphaStrikeDamage = {
+        const lrmDamage: IAlphaStrikeDamage = {
             short: 0,
             medium: 0,
             long: 0,
@@ -2552,42 +2552,42 @@ export class BattleMech {
 
         }
 
-        let heatDamage: IAlphaStrikeDamage = {
+        const heatDamage: IAlphaStrikeDamage = {
             short:0,
             medium: 0,
             long: 0,
             extreme: 0
         }
 
-        let flakDamage: IAlphaStrikeDamage = {
+        const flakDamage: IAlphaStrikeDamage = {
             short: 0,
             medium: 0,
             long: 0,
             extreme: 0
         }
 
-        let acDamage: IAlphaStrikeDamage = {
+        const acDamage: IAlphaStrikeDamage = {
             short: 0,
             medium: 0,
             long: 0,
             extreme: 0
         }
 
-        let srmDamage: IAlphaStrikeDamage = {
+        const srmDamage: IAlphaStrikeDamage = {
             short: 0,
             medium: 0,
             long: 0,
             extreme: 0
         }
 
-        let mslDamage: IAlphaStrikeDamage = {
+        const mslDamage: IAlphaStrikeDamage = {
             short: 0,
             medium: 0,
             long: 0,
             extreme: 0
         }
 
-        let rearDamage: IAlphaStrikeDamage = {
+        const rearDamage: IAlphaStrikeDamage = {
             short: 0,
             medium: 0,
             long: 0,
@@ -2774,9 +2774,9 @@ export class BattleMech {
 
         heatDissipation += this.getHeatSinks() * this._heatSinkType.dissipation + this.getEquipmentHeatDissipation();
 
-        let max_short_overheat_value =  move_heat + total_weapon_heat_short ;
-        let max_medium_overheat_value =  move_heat + total_weapon_heat_medium ;
-        let max_long_overheat_value =  move_heat + total_weapon_heat_long;
+        const max_short_overheat_value =  move_heat + total_weapon_heat_short ;
+        const max_medium_overheat_value =  move_heat + total_weapon_heat_medium ;
+        const max_long_overheat_value =  move_heat + total_weapon_heat_long;
         // let max_weapon_heat_extreme = move_heat + total_weapon_heat_extreme;
 
         let max_heat_output =  max_short_overheat_value;
@@ -2827,9 +2827,9 @@ export class BattleMech {
         const heatDamageScale = (damage: number | string): number => (max_heat_output - 4 <= heatDissipation
             ? Math.ceil(+damage)
             : Math.ceil((+damage * heatDissipation) / (max_heat_output - 4)));
-        let weapon_heat_damage_short = heatDamageScale(this._alphaStrikeForceStats.damage.short);
-        let weapon_heat_damage_medium = heatDamageScale(this._alphaStrikeForceStats.damage.medium);
-        let weapon_heat_damage_long = heatDamageScale(this._alphaStrikeForceStats.damage.long);
+        const weapon_heat_damage_short = heatDamageScale(this._alphaStrikeForceStats.damage.short);
+        const weapon_heat_damage_medium = heatDamageScale(this._alphaStrikeForceStats.damage.medium);
+        const weapon_heat_damage_long = heatDamageScale(this._alphaStrikeForceStats.damage.long);
         // let weapon_heat_damage_extreme = Math.ceil((this._alphaStrikeForceStats.damage.extreme * heatDissipation) / (max_heat_output - 4));
 
 
@@ -2929,7 +2929,7 @@ export class BattleMech {
         this._alphaStrikeForceStats.name = this._model;
         this._alphaStrikeForceStats.type = "BM";
 
-        let alphaStrikeCalculation = calculateAlphaStrikeValue(
+        const alphaStrikeCalculation = calculateAlphaStrikeValue(
             this._alphaStrikeForceStats,
             rearDamage,
             heatDamage,
@@ -2942,11 +2942,11 @@ export class BattleMech {
         );
 
         this._calcLogAS += alphaStrikeCalculation.calcLogs;
-        let finalValue = alphaStrikeCalculation.finalValue;
+        const finalValue = alphaStrikeCalculation.finalValue;
         this._alphaStrikeForceStats = alphaStrikeCalculation.alphaStrikeForceStats;
 
         this._alphaStrikeValue = Math.round(finalValue); // + " (WIP)";
-        let asMechData: IASMULUnit = {
+        const asMechData: IASMULUnit = {
             FormatedTonnage: this._tonnage.toString(),
             GroupName: "",
             BFAbilities: "",             // "";
@@ -3067,7 +3067,7 @@ export class BattleMech {
         this._alphaStrikeForceStats.abilityCodes.sort();
         asMechData["BFAbilities"] = this._alphaStrikeForceStats.abilityCodes.join( ", " ).toUpperCase();
 
-        let unitObj = new AlphaStrikeUnit();
+        const unitObj = new AlphaStrikeUnit();
 
         unitObj.customName = this._alphaStrikeForceStats.customName;
         unitObj.setPilotSkill( this._pilot.gunnery );
@@ -3293,7 +3293,7 @@ export class BattleMech {
         for( let locC = 0; locC < this._validJJLocations.length; locC++) {
 
             for( let critC = 0; critC < this._criticals[this._validJJLocations[locC].long].length; critC++) {
-                let item = this._criticals[this._validJJLocations[locC].long][critC];
+                const item = this._criticals[this._validJJLocations[locC].long][critC];
                 if(
                     item &&
                     item.tag &&
@@ -3310,7 +3310,7 @@ export class BattleMech {
         html += "and Ammo".padEnd(col1Padding, " " ) + "Location".padEnd(col2Padding, " " ) + "Critical".padEnd(col3Padding, " " ) + "Tonnage".padEnd(col4Padding, " " ) + "\n";
 
         for( let countEQ = 0; countEQ < this._equipmentList.length; countEQ++) {
-            let currentItem = this._equipmentList[countEQ];
+            const currentItem = this._equipmentList[countEQ];
 
             if( typeof(currentItem.location) === "undefined" )
                 currentItem.location = "n/a";
@@ -3334,9 +3334,9 @@ export class BattleMech {
 
         for( let locC = 0; locC < this._validJJLocations.length; locC++) {
 
-            let jjObjs = [];
+            const jjObjs = [];
             for( let critC = 0; critC < this._criticals[this._validJJLocations[locC].long].length; critC++) {
-                let currentItem = this._criticals[this._validJJLocations[locC].long][critC];
+                const currentItem = this._criticals[this._validJJLocations[locC].long][critC];
                 if(
                     currentItem &&
                     currentItem.tag &&
@@ -3354,7 +3354,7 @@ export class BattleMech {
             }
         }
 
-        let jjObjs = [];
+        const jjObjs = [];
 
         for( let critC = 0; critC < this._unallocatedCriticals.length; critC++) {
             if(
@@ -3373,7 +3373,7 @@ export class BattleMech {
 
         }
 
-        let createdBy = "\n\nCreated with BattleTech Tools: [url]https://heysporky.github.io/battletech-tools/[/url]\n\n";
+        const createdBy = "\n\nCreated with BattleTech Tools: [url]https://heysporky.github.io/battletech-tools/[/url]\n\n";
 
         return "[code]" + html + "[/code]" + createdBy;
 
@@ -3524,7 +3524,7 @@ export class BattleMech {
         this._equipmentList.sort(sortByLocationThenName);
 
         for( let countEQ = 0; countEQ < this._equipmentList.length; countEQ++) {
-            let currentItem = this._equipmentList[countEQ];
+            const currentItem = this._equipmentList[countEQ];
             if( typeof(currentItem.location) === "undefined" )
                 currentItem.location = "n/a";
 
@@ -3553,9 +3553,9 @@ export class BattleMech {
             const locationShort = this._validJJLocations[locC].short.toUpperCase();
     
             // Gather all Jump Jet objects occupying critical slots in this specific location
-            let jjObjs = [];
+            const jjObjs = [];
             for (let critC = 0; critC < this._criticals[locationLong].length; critC++) {
-                let item = this._criticals[locationLong][critC];
+                const item = this._criticals[locationLong][critC];
                 if (item && item.tag && item.tag.indexOf("jj-") === 0) {
                     jjObjs.push(item);
                 }
@@ -3570,9 +3570,9 @@ export class BattleMech {
             }
         }
         // Process any Unallocated/Floating Jump Jets lingering in the construction queue
-        let unallocatedJJs = [];
+        const unallocatedJJs = [];
         for (let critC = 0; critC < this._unallocatedCriticals.length; critC++) {
-            let item = this._unallocatedCriticals[critC];
+            const item = this._unallocatedCriticals[critC];
             if (item && item.tag && item.tag.indexOf("jj-") === 0) {
                 unallocatedJJs.push(item);
             }
@@ -3878,7 +3878,7 @@ export class BattleMech {
             this._heatSinkCriticals.slotsEach = this._heatSinkType.crits.is;
         }
 
-        let findEngine = this.getEngine();
+        const findEngine = this.getEngine();
         if( findEngine && findEngine.rating) {
             // Sinks the engine cannot hold need slots; Compact sinks pair up, two per slot.
             const external = Math.max(0, this.getHeatSinks() - this.getEngineHeatSinkCapacity());
@@ -3933,7 +3933,7 @@ export class BattleMech {
     // Tiny bubbles... on my mech... make me happy and you so wrecked...
     // Using .length truncation preserves historical check/damage states without inverting arrays
     const syncBubbles = (currentArray: boolean[] | undefined, targetCount: number): boolean[] => {
-        let arr = currentArray ?? [];
+        const arr = currentArray ?? [];
         while (arr.length < targetCount) {
             arr.push(true); // Fill missing allocation boxes
         }
@@ -4426,7 +4426,7 @@ export class BattleMech {
         // Jump Jets
         // Battledroids keeps jump jets off the Critical Hit Chart (BD p.25).
         const jumpJetCriticals = getEditionStats(this._jumpJetType, this._rulesEdition)?.criticals ?? this._jumpJetType.criticals;
-        let jump_move = jumpJetCriticals > 0 ? this._jumpSpeed : 0;
+        const jump_move = jumpJetCriticals > 0 ? this._jumpSpeed : 0;
         for( let jmc = 0; jmc < jump_move; jmc++) {
             this._unallocatedCriticals.push({
                 uuid: generateUUID(),
@@ -4572,7 +4572,7 @@ export class BattleMech {
         }
 
         // Heat Sink Requirements
-        let hs_requirements = this.getHeatSinkCriticalRequirements();
+        const hs_requirements = this.getHeatSinkCriticalRequirements();
         let hs_nickname = "";
         if( (this._heatSinkType.perSlot ?? 1) > 1)
             hs_nickname = "Compact Heat Sinks";
@@ -4605,9 +4605,9 @@ export class BattleMech {
         // Allocate items per allocation table.
         // console.log( "_calc this._criticalAllocationTable", this._criticalAllocationTable);
 
-        let criticalTally: Record<string, number> = {};
+        const criticalTally: Record<string, number> = {};
         this._sortCriticalAllocationTableByTagThenUUID();
-        for( let item of this._criticalAllocationTable) {
+        for( const item of this._criticalAllocationTable) {
             // Armor with fixed critical locations (Stealth, ...) is placed after this loop, at its saved slots.
             if( armorCriticalLocations && item.tag === armorObj.tag ) {
                 continue;
@@ -5078,7 +5078,7 @@ export class BattleMech {
 
         newItem = JSON.parse(JSON.stringify(newItem));
         // console.log("_assignItemToArea", this.getName(), newItem, criticalCount, slotNumber);
-        let placeholder: ICriticalSlot = {
+        const placeholder: ICriticalSlot = {
             uuid: newItem.uuid,
             name: "placeholder",
             placeholder: true,
@@ -5285,7 +5285,7 @@ export class BattleMech {
         const installedUuids = quirksInPlay ? this.getQuirkInstalledUuids(equipmentList) : [];
         let rv = 0;
 
-        for( let eq of equipmentList) {
+        for( const eq of equipmentList) {
             if( eq.target ) {
                 // A cooling jacket quirk changes the weapon's heat when fired (CO pp.227, 234).
                 rv += quirksInPlay && eq.uuid
@@ -5862,7 +5862,7 @@ export class BattleMech {
         if (this.isLAM() && !this._isLAMLegalComponent("structure", isTag)) {
             return this._selectedInternalStructure;
         }
-        for( let is of getComponentRecords("structure")) {
+        for( const is of getComponentRecords("structure")) {
             if( matchesTag(is, isTag)) {
                 this._selectedInternalStructure = is;
                 this._calc();
@@ -5900,7 +5900,7 @@ export class BattleMech {
             this.criticalDamage[location] = [];
         }
 
-        let indexNumber = this.criticalDamage[location].indexOf( critSlotIndex );
+        const indexNumber = this.criticalDamage[location].indexOf( critSlotIndex );
         if( indexNumber === - 1 ) {
             this.criticalDamage[location].push( critSlotIndex );
             const targetProp = BattleMech.MECH_LOCATION_MAP[location];
@@ -6387,7 +6387,7 @@ export class BattleMech {
     public setTech(
         techTag: string,
     ) {
-        for( let technology of btTechOptions ) {
+        for( const technology of btTechOptions ) {
             if( matchesTag(technology, techTag)) {
                 this._tech = technology;
                 this._engineTechBase = technology.tag === "clan" || technology.tag === "mclan" ? "clan" : "is";
@@ -6469,7 +6469,7 @@ export class BattleMech {
         if (this.isLAM() && !this._isLAMLegalComponent("engine", engineTag.toLowerCase())) {
             return this._engineType;
         }
-        for( let engine of getComponentRecords("engine")) {
+        for( const engine of getComponentRecords("engine")) {
             if( matchesTag(engine, engineTag.toLowerCase())) {
                 this._engineType = engine;
                 this._calc();
@@ -6484,7 +6484,7 @@ export class BattleMech {
     public setGyroTypeByName(
         gyroName: string,
     ) {
-        for( let gyro of mechGyroTypes) {
+        for( const gyro of mechGyroTypes) {
             if(
                 gyroName.toLowerCase().trim() === gyro.name.toLowerCase().trim()
                 ||
@@ -6507,7 +6507,7 @@ export class BattleMech {
     public setEngineTypeByName(
         engineName: string,
     ) {
-        for( let engine of mechEngineTypes) {
+        for( const engine of mechEngineTypes) {
             if(
                 engineName.toLowerCase().trim() === engine.name.toLowerCase().trim()
                 ||
@@ -6533,7 +6533,7 @@ export class BattleMech {
         if (this.isLAM() && !this._isLAMLegalGyro(gyroType.toLowerCase())) {
             gyroType = "standard";
         }
-        for( let gyro of getComponentRecords("gyro")) {
+        for( const gyro of getComponentRecords("gyro")) {
             if( matchesTag(gyro, gyroType.toLowerCase())) {
                 this._gyro = gyro;
                 this._calc();
@@ -7761,8 +7761,8 @@ export class BattleMech {
             return true;
         }
 
-        for( let area of Object.keys(this._criticals) )  {
-            for( let crit of this._criticals[area] ) {
+        for( const area of Object.keys(this._criticals) )  {
+            for( const crit of this._criticals[area] ) {
                 if( crit && crit.damaged ) {
                     return true;
                 }
@@ -8215,7 +8215,7 @@ export class BattleMech {
     public getTargetSummaryText(
         target: string
     ): string {
-        let targetData = this.getTarget(target);
+        const targetData = this.getTarget(target);
 
         if( targetData ) {
             if( targetData.active ) {
@@ -8266,15 +8266,15 @@ export class BattleMech {
             _currentTargetModifier = this.currentTargetModifier;
             _currentTargetJumpingMP = this.currentTargetJumpingMP;
         }
-        let thinnedAllocations: ICriticalSlot[] = JSON.parse(JSON.stringify(this._criticalAllocationTable));
+        const thinnedAllocations: ICriticalSlot[] = JSON.parse(JSON.stringify(this._criticalAllocationTable));
 
 
-        for( let alloc of thinnedAllocations ) {
+        for( const alloc of thinnedAllocations ) {
             delete alloc.obj
             delete alloc.damaged
         }
 
-        let exportObject: IBattleMechExport = {
+        const exportObject: IBattleMechExport = {
 
 
             // Non In-Play Variables
@@ -8830,7 +8830,7 @@ export class BattleMech {
             if( importObject.equipment) {
                 for( let countEQ = 0; countEQ < importObject.equipment.length; countEQ++) {
 
-                    let importItem = importObject.equipment[countEQ];
+                    const importItem = importObject.equipment[countEQ];
 
                     if( importItem.rear)
                         importItem.rear = true;
@@ -8916,7 +8916,7 @@ export class BattleMech {
     getEquipmentByUUID(
         uuid: string,
     ): IEquipmentItem | null {
-        for( let eq of this._equipmentList ) {
+        for( const eq of this._equipmentList ) {
             if( eq.uuid === uuid ) {
                 return eq;
             }
@@ -9071,11 +9071,11 @@ export class BattleMech {
             uuid = generateUUID()
         }
 
-        let equipmentList = this.getEquipmentList( equipmentListTag );
+        const equipmentList = this.getEquipmentList( equipmentListTag );
 
         if( equipmentList[equipmentIndex]) {
 
-            let equipmentItem: IEquipmentItem = JSON.parse(JSON.stringify(equipmentList[equipmentIndex]));
+            const equipmentItem: IEquipmentItem = JSON.parse(JSON.stringify(equipmentList[equipmentIndex]));
 
             if( typeof(location) !== "undefined" )
                 equipmentItem.location = location;
@@ -9109,9 +9109,9 @@ export class BattleMech {
             uuid = generateUUID()
         }
 
-        let equipmentList = this.getEquipmentList( equipmentListTag );
+        const equipmentList = this.getEquipmentList( equipmentListTag );
 
-        for( let item of equipmentList ) {
+        for( const item of equipmentList ) {
             if(
                 item.name.toLowerCase().trim() === equipmentName.toLowerCase().trim()
                     ||
@@ -9133,7 +9133,7 @@ export class BattleMech {
         weight: number | undefined,
         split_location: ISplitLocation[],
     ): IEquipmentItem {
-        let equipmentItem: IEquipmentItem = JSON.parse(JSON.stringify( item ));
+        const equipmentItem: IEquipmentItem = JSON.parse(JSON.stringify( item ));
 
         if( typeof(location) !== "undefined" )
             equipmentItem.location = location;
@@ -9190,9 +9190,9 @@ export class BattleMech {
             ...equipmentList.filter( item => item.tag.toLowerCase() !== normalizedTag ),
         ];
 
-        for( let item of equipmentList ) {
+        for( const item of equipmentList ) {
             if( equipmentMatchesIdentifier(item, equipmentTag)) {
-                let equipmentItem: IEquipmentItem = JSON.parse(JSON.stringify(item));
+                const equipmentItem: IEquipmentItem = JSON.parse(JSON.stringify(item));
                 if( typeof(location) !== "undefined" )
                     equipmentItem.location = this._sanitizeLocationInput(location);
                 equipmentItem.rear = rear;
@@ -9236,7 +9236,7 @@ export class BattleMech {
     public removeEquipment(itemUUID: string | undefined) {
 
         if( itemUUID ) {
-            for( let equipmentIndex in this._equipmentList ) {
+            for( const equipmentIndex in this._equipmentList ) {
                 if( this._equipmentList[equipmentIndex] && itemUUID === this._equipmentList[equipmentIndex].uuid ) {
                     this._equipmentList.splice(+equipmentIndex, 1);
                     return 1;
@@ -9285,7 +9285,7 @@ export class BattleMech {
                 )
             )
         ) {
-            let damageSnarks: string[] = [
+            const damageSnarks: string[] = [
                 "Massive hole in chest.",
                 "Radiation leak, very dangerous.",
                 "Where oh where did my reactor go?",
@@ -9295,7 +9295,7 @@ export class BattleMech {
         }
 
         if( this._structureInLocation( "hd" ) < 1 ) {
-            let damageSnarks: string[] = [
+            const damageSnarks: string[] = [
                 "Cockpit became a convertible",
                 "Mechwarrior missing",
                 "User error. Replace user.",
@@ -9305,28 +9305,28 @@ export class BattleMech {
 
 
         if( this.engineHits() > 2 ) {
-            let damageSnarks: string[] = [
+            const damageSnarks: string[] = [
                 "Engine took too many hits",
                 "Some days, even the engine has to take a nap.",
             ];
             return this._returnRandomString(damageSnarks);
         }
         if( this.gyroHits() > 2 && !this.canOperateAfterGyroFailure() ) {
-            let damageSnarks: string[] = [
+            const damageSnarks: string[] = [
                 "Oh man my mech can't keep it's liqueur!",
                 "'mech drunk, can't stand",
             ];
             return this._returnRandomString(damageSnarks);
         }
         if( this.lifeSupportHits() > 0 ) {
-            let damageSnarks: string[] = [
+            const damageSnarks: string[] = [
                 "Mechwarrior can't breathe",
                 "Needed to open a window to catch some air",
             ];
             return this._returnRandomString(damageSnarks);
         }
         if( this.areSensorsDestroyed() ) {
-            let damageSnarks: string[] = [
+            const damageSnarks: string[] = [
                 "I can't see!",
             ];
             return this._returnRandomString(damageSnarks);
@@ -9341,7 +9341,7 @@ export class BattleMech {
         rear: boolean,
     ): IDamageResults[] {
 
-        let rv: IDamageResults[] = [];
+        const rv: IDamageResults[] = [];
         location = this._normalizeLocation(location);
 
         // Check location armor
@@ -9633,7 +9633,7 @@ export class BattleMech {
     ) {
 
         if( itemUUID ) {
-            for( let item of this._equipmentList ) {
+            for( const item of this._equipmentList ) {
                 if( item.uuid && item.uuid === itemUUID) {
 
                     item.weight = weight;
@@ -9663,13 +9663,13 @@ export class BattleMech {
     ) {
 
         if( itemUUID ) {
-            for( let item of this._equipmentList ) {
+            for( const item of this._equipmentList ) {
                 if( item.uuid && item.uuid === itemUUID) {
 
                     item.rear = newValue;
                     if( newValue ) item.turret = undefined;
 
-                    for( let critAllItem of this._criticalAllocationTable ) {
+                    for( const critAllItem of this._criticalAllocationTable ) {
                         if( critAllItem.obj && critAllItem.uuid === itemUUID ) {
                             critAllItem.rear = newValue;
                             critAllItem.obj.rear = newValue;
@@ -9771,8 +9771,8 @@ export class BattleMech {
             return false;
         }
         // Normalize incoming structural shorthand tracking tokens cleanly
-        let srcLoc = fromLocation.toLowerCase().trim();
-        let destLoc = toLocation.toLowerCase().trim();
+        const srcLoc = fromLocation.toLowerCase().trim();
+        const destLoc = toLocation.toLowerCase().trim();
         // Maps standard, legacy, and new leg trackers directly to their active class backing fields
         const getCriticalArray = (locTag: string): ICriticalSlot[] | null => {
             switch (locTag) {
@@ -9902,7 +9902,7 @@ export class BattleMech {
         allocationIndex: number,
         allocationLocation: string,
     ) {
-        for( let item of this._equipmentList ) {
+        for( const item of this._equipmentList ) {
             if( item && item.uuid === uuid ) {
                 item.allocationIndex = allocationIndex;
                 item.allocationLocation = allocationLocation;
@@ -10219,7 +10219,7 @@ export class BattleMech {
             }
             if( this._equipmentList[ eqC ] && this._equipmentList[ eqC ].variableSize ) {
 
-                let currentItem = this._equipmentList[ eqC ];
+                const currentItem = this._equipmentList[ eqC ];
 
                 if(currentItem.criticalsDivisor) {
                     currentItem.criticals = Math.ceil( this.getTonnage() / currentItem.criticalsDivisor );
@@ -10261,7 +10261,7 @@ export class BattleMech {
     }
 
     public getAvailableEngines(rulesLevel: number = 2): IEngineType[] {
-        let returnValue: IEngineType[] = [];
+        const returnValue: IEngineType[] = [];
         const lookupTag = this.getEngineTechBase();
         const weights = this._engine?.weight;
         const large = this.isLargeEngine();
@@ -10406,7 +10406,7 @@ export class BattleMech {
     }
 
     public getAvailableGyros(rulesLevel: number = 2): IGyro[] {
-        let returnValue: IGyro[] = [];
+        const returnValue: IGyro[] = [];
 
         for (const gyro of mechGyroTypes.map(entry => ({ ...entry }))) {
             const availability = this._datesAvailability(gyro, rulesLevel);
@@ -11031,7 +11031,7 @@ export class BattleMech {
     }
 
     public getAvailableArmorTypes(rulesLevel: number = 2): IArmorType[] {
-        let returnValue: IArmorType[] = [];
+        const returnValue: IArmorType[] = [];
         const techTag = this.getTech().tag;
         const isMixed = techTag === "mis" || techTag === "mclan";
 
@@ -11370,7 +11370,7 @@ export class BattleMech {
     }
 
     public getAvailableEquipment(includeCustom: boolean = false, rulesLevel: number = 2): IEquipmentItem[] {
-        let returnItems: IEquipmentItem[] = [];
+        const returnItems: IEquipmentItem[] = [];
         const techTag = this.getTech().tag;
 
         const addedTags = new Set<string>();
@@ -11460,7 +11460,7 @@ export class BattleMech {
     public lifeSupportHits(): number {
         let rv = 0;
 
-        for( let critIndex in this._criticals.head ) {
+        for( const critIndex in this._criticals.head ) {
             if(
                 this._criticals.head[critIndex]
                 &&
@@ -11556,7 +11556,7 @@ export class BattleMech {
         let rv = 0;
 
         let lastName = "";
-        for( let critIndex in this._criticals.centerTorso ) {
+        for( const critIndex in this._criticals.centerTorso ) {
 
             if(
                 this._criticals.centerTorso[critIndex]
@@ -11583,7 +11583,7 @@ export class BattleMech {
         }
 
         lastName = ""
-        for( let critIndex in this._criticals.leftTorso ) {
+        for( const critIndex in this._criticals.leftTorso ) {
 
             if(
                 this._criticals.leftTorso[critIndex]
@@ -11609,7 +11609,7 @@ export class BattleMech {
         }
 
         lastName = "";
-        for( let critIndex in this._criticals.rightTorso ) {
+        for( const critIndex in this._criticals.rightTorso ) {
 
             if(
                 this._criticals.rightTorso[critIndex]
@@ -11642,7 +11642,7 @@ export class BattleMech {
 
 
         let lastName = "";
-        for( let critIndex in this._criticals.centerTorso ) {
+        for( const critIndex in this._criticals.centerTorso ) {
 
             if(
                 this._criticals.centerTorso[critIndex]
@@ -11663,7 +11663,7 @@ export class BattleMech {
             }
         }
         lastName = ""
-        for( let critIndex in this._criticals.leftTorso ) {
+        for( const critIndex in this._criticals.leftTorso ) {
 
             if(
                 this._criticals.leftTorso[critIndex]
@@ -11683,7 +11683,7 @@ export class BattleMech {
             }
         }
         lastName = "";
-        for( let critIndex in this._criticals.rightTorso ) {
+        for( const critIndex in this._criticals.rightTorso ) {
 
             if(
                 this._criticals.rightTorso[critIndex]
@@ -11708,7 +11708,7 @@ export class BattleMech {
     public sensorHits(): number {
         let rv = 0;
 
-        for( let critIndex in this._criticals.head ) {
+        for( const critIndex in this._criticals.head ) {
             if(
                 this._criticals.head[critIndex]
                 &&
@@ -11798,7 +11798,7 @@ export class BattleMech {
         //     return true;
         // }
 
-        for( let item of this.getInstalledEquipment() ) {
+        for( const item of this.getInstalledEquipment() ) {
 
             if( item.available === false ) {
                 return true;
@@ -11814,7 +11814,7 @@ export class BattleMech {
     ): void {
         importString = importString.trim();
 
-        let lines = importString.split( "\n" );
+        const lines = importString.split( "\n" );
 
         let inEquipmentList = false;
         let equipmentList: IEquipmentItem[] = [];
@@ -11861,7 +11861,7 @@ export class BattleMech {
                 line = line.replace(/double heat sink:/ig, '').trim();
                 if( line && line.indexOf( " " ) > - 1 ) {
                     line = line.replace(/ {2}/ig, ' ').trim();
-                    let splitLine = line.split( " " );
+                    const splitLine = line.split( " " );
 
                     if( splitLine.length > 1 && !isNaN(+splitLine[0]) ) {
 
@@ -11875,7 +11875,7 @@ export class BattleMech {
                 line = line.replace(/single heat sinks:/ig, '').trim();
                 if( line && line.indexOf( " " ) > - 1 ) {
                     line = line.replace(/ {2}/ig, ' ').trim();
-                    let splitLine = line.split( " " );
+                    const splitLine = line.split( " " );
 
                     if( splitLine.length > 1 && !isNaN(+splitLine[0]) ) {
 
@@ -11890,7 +11890,7 @@ export class BattleMech {
                 line = line.replace(/heat sinks:/ig, '').trim();
                 if( line && line.indexOf( " " ) > - 1 ) {
                     line = line.replace(/ {2}/ig, ' ').trim();
-                    let splitLine = line.split( " " );
+                    const splitLine = line.split( " " );
 
                     if( splitLine.length > 1 && !isNaN(+splitLine[0]) ) {
 
@@ -11906,7 +11906,7 @@ export class BattleMech {
                 line = line.replace(/armor factor:/ig, '').trim();
                 if( line && line.indexOf( " " ) > - 1 ) {
                     line = line.replace(/ {2}/ig, ' ').trim();
-                    let splitLine = line.split( " " );
+                    const splitLine = line.split( " " );
 
                     if( splitLine.length > 1 && +splitLine[1] > 0) {
                         this.setArmorWeight( +splitLine[1] )
@@ -11920,7 +11920,7 @@ export class BattleMech {
                 line = line.replace(/head/ig, '').trim();
                 if( line && line.indexOf( " " ) > - 1 ) {
                     line = line.replace(/ {2}/ig, ' ').trim();
-                    let splitLine = line.split( " " );
+                    const splitLine = line.split( " " );
 
                     if( splitLine.length > 1 && +splitLine[1] > 0) {
                         this.setHeadArmor( +splitLine[1] )
@@ -11933,7 +11933,7 @@ export class BattleMech {
                 line = line.replace(/center torso/ig, '').trim();
                 if( line && line.indexOf( " " ) > - 1 ) {
                     line = line.replace(/ {2}/ig, ' ').trim();
-                    let splitLine = line.split( " " );
+                    const splitLine = line.split( " " );
 
                     if( splitLine.length > 1 && +splitLine[1] > 0) {
                         this.setCenterTorsoArmor( +splitLine[1] )
@@ -11956,7 +11956,7 @@ export class BattleMech {
                 line = line.replace(/r\/l torso/ig, '').trim();
                 if( line && line.indexOf( " " ) > - 1 ) {
                     line = line.replace(/ {2}/ig, ' ').trim();
-                    let splitLine = line.split( " " );
+                    const splitLine = line.split( " " );
 
                     if( splitLine.length > 1 && +splitLine[1] > 0) {
                         this.setRightTorsoArmor( +splitLine[1] )
@@ -11980,7 +11980,7 @@ export class BattleMech {
                 line = line.replace(/r\/l leg/ig, '').trim();
                 if( line && line.indexOf( " " ) > - 1 ) {
                     line = line.replace(/ {2}/ig, ' ').trim();
-                    let splitLine = line.split( " " );
+                    const splitLine = line.split( " " );
 
                     if( splitLine.length > 1 && +splitLine[1] > 0) {
                         this.setLeftLegArmor( +splitLine[1] )
@@ -11994,7 +11994,7 @@ export class BattleMech {
                 line = line.replace(/r\/l arm/ig, '').trim();
                 if( line && line.indexOf( " " ) > - 1 ) {
                     line = line.replace(/ {2}/ig, ' ').trim();
-                    let splitLine = line.split( " " );
+                    const splitLine = line.split( " " );
 
                     if( splitLine.length > 1 && +splitLine[1] > 0) {
                         this.setLeftArmArmor( +splitLine[1] )
@@ -12012,9 +12012,9 @@ export class BattleMech {
 
                 // remove double-spaces
                 line = line.replace(/ {2}/ig, ' ').trim();
-                let lineSplit = line.split(' ');
+                const lineSplit = line.split(' ');
 
-                let equipmentLine = {
+                const equipmentLine = {
                     name: "",
                     location: "",
                     criticals: 0,
@@ -12039,8 +12039,8 @@ export class BattleMech {
                     equipmentLine.name = lineSplit.join( " " )
 
                     if( !isNaN( +equipmentLine.name[0] ) ) {
-                        let nameSplit = equipmentLine.name.split( " " );
-                        let count = +nameSplit[0];
+                        const nameSplit = equipmentLine.name.split( " " );
+                        const count = +nameSplit[0];
                         nameSplit.shift();
                         equipmentLine.name = nameSplit.join( " " )
                         equipmentLine.number = count;
@@ -12082,8 +12082,8 @@ export class BattleMech {
 
                         } else {
 
-                            for( let eqIndex in equipmentList ) {
-                                let eq = equipmentList[eqIndex];
+                            for( const eqIndex in equipmentList ) {
+                                const eq = equipmentList[eqIndex];
 
                                 if(
                                     (
@@ -12433,7 +12433,7 @@ export class BattleMech {
         this.currentMovementMode = "n"
         this.currentToHitMovementModifier = -1;
         this.damageLog = [];
-        for( let item of this._equipmentList ) {
+        for( const item of this._equipmentList ) {
             item.resolved = false;
             item.damageClusterHits = [];
         }
@@ -12510,7 +12510,7 @@ export class BattleMech {
 
     private _decrementAmmoBin( uuid: string | undefined, amount: number = 1 ) {
         if( uuid ) {
-            for( let eq of this._equipmentList ) {
+            for( const eq of this._equipmentList ) {
                 if( eq.uuid === uuid && eq.isAmmo ) {
                     const remaining = this.getAmmoBinRemaining(eq);
                     if( remaining >= amount ) {
@@ -12523,7 +12523,7 @@ export class BattleMech {
 
     private _incrementAmmoBin( uuid: string | undefined, amount: number = 1 ) {
         if( uuid ) {
-            for( let eq of this._equipmentList ) {
+            for( const eq of this._equipmentList ) {
                 if( eq.uuid === uuid && eq.isAmmo ) {
                     eq.currentAmmo = Math.min(this.getAmmoBinRemaining(eq) + amount, this.getAmmoBinCapacity(eq));
                 }
@@ -12938,7 +12938,7 @@ export class BattleMech {
                         + " equipment (" + other.item.name + ") on " + ( listTag === "clan" ? "a Clan" : "an Inner Sphere" ) + " design; the design needs Mixed Tech" );
                 }
             }
-            let newItem = match ? this._installEquipmentRecord(
+            const newItem = match ? this._installEquipmentRecord(
                 match.item,
                 location,
                 rear,
@@ -13034,7 +13034,7 @@ export class BattleMech {
 
 
                 if( item.splitlocation ) {
-                    for( let split of item.splitlocation ) {
+                    for( const split of item.splitlocation ) {
 
                         newItem.split_location.push(
                             {
@@ -13404,16 +13404,16 @@ export class BattleMech {
 
                 if( jObj.mech.baseloadout.equipment && jObj.mech.baseloadout.equipment.length > 0 ) {
 
-                    for( let item of jObj.mech.baseloadout.equipment ) {
+                    for( const item of jObj.mech.baseloadout.equipment ) {
                         this._installSSWEquipment( item );
                     }
                     this._applySSWFireControl( jObj.mech.baseloadout );
 
                     this._calcCriticals();
 
-                    for( let item of this._equipmentList ) {
+                    for( const item of this._equipmentList ) {
                         let foundIndex = -1;
-                        for( let critItemIndex in this._unallocatedCriticals ) {
+                        for( const critItemIndex in this._unallocatedCriticals ) {
                             if( this._unallocatedCriticals[critItemIndex] && this._unallocatedCriticals[critItemIndex].tag === item.tag ) {
 
                                 foundIndex = +critItemIndex;
@@ -13422,7 +13422,7 @@ export class BattleMech {
                         }
 
 
-                        let success = this.moveCritical(
+                        const success = this.moveCritical(
                             "un",
                             foundIndex,
                             item.allocationLocation ? item.allocationLocation : "un",
@@ -13460,9 +13460,9 @@ export class BattleMech {
 
                         this._calcCriticals();
 
-                        for( let item of this._equipmentList ) {
+                        for( const item of this._equipmentList ) {
                             let foundIndex = -1;
-                            for( let critItemIndex in this._unallocatedCriticals ) {
+                            for( const critItemIndex in this._unallocatedCriticals ) {
                                 if( this._unallocatedCriticals[critItemIndex] && this._unallocatedCriticals[critItemIndex].tag === item.tag ) {
                                     foundIndex = +critItemIndex;
                                     break;
@@ -13506,11 +13506,11 @@ export class BattleMech {
                         this._calcCriticals();
 
                         try {
-                            for( let loc of ( [] as any[] ).concat( jObj.mech.baseloadout.heatsinks.location ?? [] ) ) {
+                            for( const loc of ( [] as any[] ).concat( jObj.mech.baseloadout.heatsinks.location ?? [] ) ) {
                                 let foundIndex = -1;
 
 
-                                    for( let critItemIndex in this._unallocatedCriticals ) {
+                                    for( const critItemIndex in this._unallocatedCriticals ) {
                                         if( this._unallocatedCriticals[critItemIndex] && this._unallocatedCriticals[critItemIndex].tag === "heat-sink" ) {
                                             foundIndex = +critItemIndex;
                                             break;
@@ -13536,7 +13536,7 @@ export class BattleMech {
                             let foundIndex = -1;
 
 
-                            for( let critItemIndex in this._unallocatedCriticals ) {
+                            for( const critItemIndex in this._unallocatedCriticals ) {
                                 if( this._unallocatedCriticals[critItemIndex] && this._unallocatedCriticals[critItemIndex].tag === "heat-sink" ) {
                                     foundIndex = +critItemIndex;
                                     break;
@@ -13561,7 +13561,7 @@ export class BattleMech {
 
                 if( jObj.mech.baseloadout.jumpjets ) {
 
-                    let jumpJetNumber = jObj.mech.baseloadout.jumpjets["@_number"];
+                    const jumpJetNumber = jObj.mech.baseloadout.jumpjets["@_number"];
                     this.setJumpSpeed(jumpJetNumber);
                     this._calcCriticals();
 
@@ -13575,10 +13575,10 @@ export class BattleMech {
                     }
                     const jjType = "jj-" + this.getJumpJetType().tag;
 
-                    for( let loc of ( [] as any[] ).concat( jObj.mech.baseloadout.jumpjets.location ?? [] ) ) {
+                    for( const loc of ( [] as any[] ).concat( jObj.mech.baseloadout.jumpjets.location ?? [] ) ) {
                         let foundIndex = -1;
 
-                        for( let critItemIndex in this._unallocatedCriticals ) {
+                        for( const critItemIndex in this._unallocatedCriticals ) {
                             if( this._unallocatedCriticals[critItemIndex] && this._unallocatedCriticals[critItemIndex].tag === jjType ) {
                                 foundIndex = +critItemIndex;
                                 break;
@@ -13622,7 +13622,7 @@ export class BattleMech {
 
             if( this._unallocatedCriticals && this._unallocatedCriticals.length > 0 ) {
                 this.sswImportErrors.push("Unallocated Criticals: " + this._unallocatedCriticals.length);
-                for( let crit of this._unallocatedCriticals ) {
+                for( const crit of this._unallocatedCriticals ) {
                     this.sswImportErrors.push("- " + crit.name + " (" + crit.tag + ")");
                 }
 
@@ -13802,7 +13802,7 @@ export class BattleMech {
         // Step One check to see if TO has enough slots for item....
         let hasSpace = true;
 
-        let toLocation = this._getToLocationFromTag( toLocTag );
+        const toLocation = this._getToLocationFromTag( toLocTag );
 
         if( toIndex === -1 ) {
 

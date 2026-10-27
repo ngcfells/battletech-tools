@@ -26,7 +26,7 @@ export default class StandardModal extends React.Component<IStandardModalProps, 
             labelSaveAsNew = this.props.labelSaveAsNew;
 
         let closeClass = "btn btn-secondary";
-        let addClass  = "btn btn-primary";
+        const addClass  = "btn btn-primary";
         if( !this.props.onAdd && !this.props.onSave && !this.props.onSaveAsNew ) {
             closeClass = addClass
         }

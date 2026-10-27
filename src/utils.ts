@@ -545,7 +545,7 @@ export async function getMULASSearchResults(
 
     let returnUnits: IASMULUnit[] = [];
 
-    let rulesNumbersURI: string[] = [];
+    const rulesNumbersURI: string[] = [];
 
     if( mechRules.toLowerCase() === "introductory" ) {
         rulesNumbersURI.push( "&Rules=55" );
@@ -581,12 +581,12 @@ export async function getMULASSearchResults(
         rulesNumbersURI.push( "&Rules=78" );
     }
 
-    let roleFilterURI: string[] = [];
+    const roleFilterURI: string[] = [];
     if( roleFilter.trim() ) {
         roleFilterURI.push( "&Roles=" + replaceAll(roleFilter, " ", "%20", false, false, true) );
     }
 
-    let techFilterURI: string[] = [];
+    const techFilterURI: string[] = [];
     if( techFilter.toLowerCase() === "inner sphere" ) {
         techFilterURI.push( "&Technologies=1" );
     }
@@ -600,14 +600,14 @@ export async function getMULASSearchResults(
         techFilterURI.push( "&Technologies=57" );
     }
 
-    let typesFilterURI: string[] = [];
+    const typesFilterURI: string[] = [];
     if( typeFilter ) {
         typesFilterURI.push( "&Types=" + typeFilter.toString() );
     }
 
-    let factionFilterURI: string[] = [];
+    const factionFilterURI: string[] = [];
     if( factionFilter.length > 0 ) {
-        for( let faction of factionFilter ) {
+        for( const faction of factionFilter ) {
             factionFilterURI.push( "&Factions=" + faction );
         }
     }
@@ -856,7 +856,7 @@ export function getTargetToHitFromWeapon(
     equipmentList: IEquipmentItem[] | null = null,
     quirksInPlay: boolean = false,
 ): IGATOR {
-    let gator: IGATOR = JSON.parse(JSON.stringify(mech.getGATOR()));
+    const gator: IGATOR = JSON.parse(JSON.stringify(mech.getGATOR()));
 
     if( equipmentList === null ) {
         equipmentList = mech.equipmentList;
@@ -907,7 +907,7 @@ export function getTargetToHitFromWeapon(
             gator.finalToHit += target.movement;
             gator.targetMovementModifier = target.movement;
 
-            let otherModifiersExplanation: string[] = [];
+            const otherModifiersExplanation: string[] = [];
             gator.finalToHit += target.otherMods;
             gator.otherModifiers = target.otherMods;
             if( target.otherMods ) {
@@ -968,7 +968,7 @@ export function getTargetToHitFromWeapon(
 
                     // +1 at the minimum range and +1 for each hex closer: [minimum] - [target range] + 1 (TW p.118; BD p.9).
                     if( target.range <= minRange ) {
-                        let rangeModifier = minRange - target.range + 1;
+                        const rangeModifier = minRange - target.range + 1;
                         gator.finalToHit += rangeModifier;
                         gator.rangeModifier = rangeModifier;
                         gator.rangeExplanation = "Minimum Range";

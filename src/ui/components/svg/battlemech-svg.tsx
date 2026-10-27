@@ -108,16 +108,16 @@ export default class BattleMechSVG extends React.Component<IBattleMechSVGProps, 
             (_, index) => modularArmorLabels.slice(index * 4, index * 4 + 4).join("   ")
         );
 
-        let currentPhaseGroupColor = "#00a";
+        const currentPhaseGroupColor = "#00a";
 
-        let generalDataBoxX = 10;
-        let generalDataBoxY = 10;
+        const generalDataBoxX = 10;
+        const generalDataBoxY = 10;
 
-        let pilotBoxX = 725;
-        let pilotBoxY = 160;
+        const pilotBoxX = 725;
+        const pilotBoxY = 160;
 
-        let eraString = this.props.mechData.getEra().name;
-        let eraArray = eraString.split("(");
+        const eraString = this.props.mechData.getEra().name;
+        const eraArray = eraString.split("(");
         let eraLine1 = eraArray[0];
         let eraLine2 = "";
         if( eraArray[1] ) {
@@ -129,21 +129,21 @@ export default class BattleMechSVG extends React.Component<IBattleMechSVGProps, 
         eraLine2 = eraLine2.trim();
 
         let battleValue = this.props.mechData.getBattleValue().toString();
-        let adjustedBattleValue = this.props.mechData.getPilotAdjustedBattleValue().toString();
+        const adjustedBattleValue = this.props.mechData.getPilotAdjustedBattleValue().toString();
         let battleValueLabel = "BattleValue (BV2)"
         if( battleValue !== adjustedBattleValue ) {
             battleValueLabel = "Adjusted / Base BV (BV2)"
             battleValue = "with pilot: " + adjustedBattleValue + " / base: " + battleValue + "";
         }
 
-        let critBoxTop = 1250;
-        let critBoxLeft = 10;
-        let critBoxWidth = 1225;
-        let damageTransferWidth = 150;
+        const critBoxTop = 1250;
+        const critBoxLeft = 10;
+        const critBoxWidth = 1225;
+        const damageTransferWidth = 150;
 
-        let critCol1Start = 125;
-        let critCol2Start = 513;
-        let critCol3Start = 925;
+        const critCol1Start = 125;
+        const critCol2Start = 513;
+        const critCol3Start = 925;
 
         let currentMoveColor = "white";
         let currentMoveBackground = "#009";
@@ -1957,7 +1957,7 @@ export default class BattleMechSVG extends React.Component<IBattleMechSVGProps, 
                     </rect>
                     <text y={250} x={400} textAnchor='middle' fontFamily="sans-serif" transform={"rotate( 30, " + 350 + ", " + 200 + ")"} fontSize="125" stroke="rgb(255,255,255)" strokeWidth="2" fill="rgb(255,255,255)">WRECKED</text>
                     {breakLines( this.props.mechData.isWreckedBlurb(), 38 ).map( (line, lineIndex) => {
-                        let yLoc = 45 + 35 * lineIndex;
+                        const yLoc = 45 + 35 * lineIndex;
                         return(
                             <text key={lineIndex} y={250 + yLoc } x={400} textAnchor='middle' fontFamily="sans-serif" transform={"rotate( 30, " + 350 + ", " + 200 + ")"} fontSize="35" stroke="rgb(255,255,255)" strokeWidth="1" fill="rgb(255,255,255)">{line.toUpperCase()}</text>
                         )

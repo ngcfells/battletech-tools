@@ -183,7 +183,7 @@ export default class AlphaStrikeUnitSVG extends React.Component<IAlphaStrikeUnit
         radius: number = 0,
         target: string = "armor",
     ): JSX.Element[] => {
-        let dots: JSX.Element[] = []
+        const dots: JSX.Element[] = []
 
         if( radius === 0 ) {
             radius = this.buttonRadius - 5;
@@ -239,8 +239,8 @@ export default class AlphaStrikeUnitSVG extends React.Component<IAlphaStrikeUnit
 
     private _splitAbilities = ( val: string ): string[][] => {
         val = val.trim();
-        let words = val.split(",");
-        let rv: string[][] = [];
+        const words = val.split(",");
+        const rv: string[][] = [];
         let line: string[] = [];
 
 
@@ -270,15 +270,15 @@ export default class AlphaStrikeUnitSVG extends React.Component<IAlphaStrikeUnit
         }
         let critLineStart = 325;
 
-        let damageLabelColWidth=130;
+        const damageLabelColWidth=130;
         let damageColWidth=150;
         if (this.props.showExtreme && this.props.asUnit.damage.extreme > 0 ){
             damageColWidth=110;
         }
 
-        let abilitiesSplit: string[][] = this._splitAbilities(this.props.asUnit.currentAbilities.join( ", "));
+        const abilitiesSplit: string[][] = this._splitAbilities(this.props.asUnit.currentAbilities.join( ", "));
 
-        let pilotAbilitiesList = this.props.asUnit.getPilotAbilityList();
+        const pilotAbilitiesList = this.props.asUnit.getPilotAbilityList();
 
         return (
 
@@ -634,7 +634,7 @@ export default class AlphaStrikeUnitSVG extends React.Component<IAlphaStrikeUnit
                                 }
 
                                 if( this.props.asUnit && this.props.inPlay ) {
-                                    let ability = this.props.asUnit.getSpecialAbility(word);
+                                    const ability = this.props.asUnit.getSpecialAbility(word);
                                     if( ability !== null ) {
                                         return (
                                             // @ts-expect-error Legacy compatibility type mismatch
@@ -671,7 +671,7 @@ export default class AlphaStrikeUnitSVG extends React.Component<IAlphaStrikeUnit
                                     comma = <>,&nbsp;</>;
                                 }
                                 if( this.props.showSpecialAbility && this.props.asUnit && this.props.inPlay ) {
-                                    let ability = this.props.asUnit.getSpecialAbility(word);
+                                    const ability = this.props.asUnit.getSpecialAbility(word);
                                     if( ability ) {
                                         return (
                                             // @ts-expect-error Legacy compatibility type mismatch
@@ -713,7 +713,7 @@ export default class AlphaStrikeUnitSVG extends React.Component<IAlphaStrikeUnit
 
                         {this.props.asUnit.engineHits.map( (ehValue, ehIndex) => {
                             let fillColor = this.props.inPlay && this.props.asUnit?.roundEngineHits[ehIndex] ? this.roundDotColor : "rgb(255,255,255)";
-                            let strokeColor = this.props.inPlay && this.props.asUnit?.roundEngineHits[ehIndex] ? this.roundStrokeColor : "rgb(0,0,0)";
+                            const strokeColor = this.props.inPlay && this.props.asUnit?.roundEngineHits[ehIndex] ? this.roundStrokeColor : "rgb(0,0,0)";
                             if( this.props.inPlay && ehValue ) {
                                 fillColor = this.props.asUnit?.roundEngineHits[ehIndex] ? this.roundActiveColor : this.activeDotColor;
                             }
@@ -749,7 +749,7 @@ export default class AlphaStrikeUnitSVG extends React.Component<IAlphaStrikeUnit
                 <text x="750" y={critLineStart} textAnchor="end" fontFamily="sans-serif" fontSize="20">FIRE CONTROL</text>
                 {this.props.asUnit.fireControlHits.map( (fcValue, fcIndex) => {
                             let fillColor = this.props.inPlay && this.props.asUnit?.roundFireControlHits[fcIndex] ? this.roundDotColor : "rgb(255,255,255)";
-                            let strokeColor = this.props.inPlay && this.props.asUnit?.roundFireControlHits[fcIndex] ? this.roundStrokeColor : "rgb(0,0,0)";
+                            const strokeColor = this.props.inPlay && this.props.asUnit?.roundFireControlHits[fcIndex] ? this.roundStrokeColor : "rgb(0,0,0)";
                             if( this.props.inPlay &&  fcValue ) {
                                 fillColor = this.props.asUnit?.roundFireControlHits[fcIndex] ? this.roundActiveColor : this.activeDotColor;
                             }
@@ -782,7 +782,7 @@ export default class AlphaStrikeUnitSVG extends React.Component<IAlphaStrikeUnit
                         <text x="750"y={critLineStart} textAnchor="end" fontFamily="sans-serif" fontSize="20">MP</text>
                         {this.props.asUnit.mpControlHits.map( (mpValue, mpIndex) => {
                             let fillColor = this.props.inPlay && this.props.asUnit?.roundMpControlHits[mpIndex] ? this.roundDotColor : "rgb(255,255,255)";
-                            let strokeColor = this.props.inPlay && this.props.asUnit?.roundMpControlHits[mpIndex] ? this.roundStrokeColor : "rgb(0,0,0)";
+                            const strokeColor = this.props.inPlay && this.props.asUnit?.roundMpControlHits[mpIndex] ? this.roundStrokeColor : "rgb(0,0,0)";
                             if( this.props.inPlay &&  mpValue ) {
                                 fillColor = this.props.asUnit?.roundMpControlHits[mpIndex] ? this.roundActiveColor : this.activeDotColor;
                             }
@@ -818,7 +818,7 @@ export default class AlphaStrikeUnitSVG extends React.Component<IAlphaStrikeUnit
                 <text x="750" y={critLineStart} textAnchor="end" fontFamily="sans-serif" fontSize="20">WEAPONS</text>
                 {this.props.asUnit.weaponHits.map( (whValue, whIndex) => {
                             let fillColor = this.props.inPlay && this.props.asUnit?.roundWeaponHits[whIndex] ? this.roundDotColor : "rgb(255,255,255)";
-                            let strokeColor = this.props.inPlay && this.props.asUnit?.roundWeaponHits[whIndex] ? this.roundStrokeColor : "rgb(0,0,0)";
+                            const strokeColor = this.props.inPlay && this.props.asUnit?.roundWeaponHits[whIndex] ? this.roundStrokeColor : "rgb(0,0,0)";
                             if( whValue && this.props.inPlay ) {
                                 fillColor = this.props.inPlay && this.props.asUnit?.roundWeaponHits[whIndex] ? this.roundActiveColor : this.activeDotColor;
                             }

@@ -25,12 +25,12 @@ export default class AlphaStrikeUnitCreatorHome extends React.Component<IHomePro
 
         let asUnit = new AlphaStrikeUnit();
         let calcLog = "";
-        let lsASUnit = localStorage.getItem("editing_as_unit");
+        const lsASUnit = localStorage.getItem("editing_as_unit");
         if( lsASUnit ) {
             console.log("lsASUnit");
             try {
 
-                let unitInfo = JSON.parse( lsASUnit );
+                const unitInfo = JSON.parse( lsASUnit );
                 asUnit = new AlphaStrikeUnit();
                 asUnit.importUnit( unitInfo );
                 calcLog = asUnit.calc();
@@ -59,7 +59,7 @@ export default class AlphaStrikeUnitCreatorHome extends React.Component<IHomePro
     }
 
     toggleShortMinimal = (e: React.FormEvent<HTMLInputElement>) => {
-        let unit = this.state.editingASUnit;
+        const unit = this.state.editingASUnit;
         unit.damage.shortMinimal = e.currentTarget.checked;
         this.saveUnit();
         this.setState({
@@ -67,7 +67,7 @@ export default class AlphaStrikeUnitCreatorHome extends React.Component<IHomePro
         })
     }
     toggleMediumMinimal = (e: React.FormEvent<HTMLInputElement>) => {
-        let unit = this.state.editingASUnit;
+        const unit = this.state.editingASUnit;
         unit.damage.mediumMinimal = e.currentTarget.checked;
         this.saveUnit();
         this.setState({
@@ -75,7 +75,7 @@ export default class AlphaStrikeUnitCreatorHome extends React.Component<IHomePro
         })
     }
     toggleLongMinimal = (e: React.FormEvent<HTMLInputElement>) => {
-        let unit = this.state.editingASUnit;
+        const unit = this.state.editingASUnit;
         unit.damage.longMinimal = e.currentTarget.checked;
         this.saveUnit();
         this.setState({
@@ -83,7 +83,7 @@ export default class AlphaStrikeUnitCreatorHome extends React.Component<IHomePro
         })
     }
     toggleExtremeMinimal = (e: React.FormEvent<HTMLInputElement>) => {
-        let unit = this.state.editingASUnit;
+        const unit = this.state.editingASUnit;
         unit.damage.extremeMinimal = e.currentTarget.checked;
         this.saveUnit();
         this.setState({
@@ -103,7 +103,7 @@ export default class AlphaStrikeUnitCreatorHome extends React.Component<IHomePro
     updateShortRange = (
         e: React.FormEvent<HTMLInputElement>,
      ): void => {
-        let unit = this.state.editingASUnit;
+        const unit = this.state.editingASUnit;
         unit.damage.short = +e.currentTarget.value;
         if( unit.damage.short > 0 ) {
             unit.damage.shortMinimal = false;
@@ -116,7 +116,7 @@ export default class AlphaStrikeUnitCreatorHome extends React.Component<IHomePro
     updateMediumRange = (
         e: React.FormEvent<HTMLInputElement>,
      ): void => {
-        let unit = this.state.editingASUnit;
+        const unit = this.state.editingASUnit;
         unit.damage.medium = +e.currentTarget.value;
         if( unit.damage.medium > 0 ) {
             unit.damage.mediumMinimal = false;
@@ -129,7 +129,7 @@ export default class AlphaStrikeUnitCreatorHome extends React.Component<IHomePro
     updateLongRange = (
         e: React.FormEvent<HTMLInputElement>,
      ): void => {
-        let unit = this.state.editingASUnit;
+        const unit = this.state.editingASUnit;
         unit.damage.long = +e.currentTarget.value;
         if( unit.damage.long > 0 ) {
             unit.damage.longMinimal = false;
@@ -142,7 +142,7 @@ export default class AlphaStrikeUnitCreatorHome extends React.Component<IHomePro
     updateExtremeRange = (
         e: React.FormEvent<HTMLInputElement>,
      ): void => {
-        let unit = this.state.editingASUnit;
+        const unit = this.state.editingASUnit;
         unit.damage.extreme = +e.currentTarget.value;
         if( unit.damage.extreme > 0 ) {
             unit.damage.extremeMinimal = false;
@@ -156,7 +156,7 @@ export default class AlphaStrikeUnitCreatorHome extends React.Component<IHomePro
     setName = (
         e: React.FormEvent<HTMLInputElement>,
      ): void => {
-        let unit = this.state.editingASUnit;
+        const unit = this.state.editingASUnit;
         unit.name = e.currentTarget.value;
         this.saveUnit(true);
         this.setState({
@@ -167,7 +167,7 @@ export default class AlphaStrikeUnitCreatorHome extends React.Component<IHomePro
     // The shared settings block (#324) with only the steps the creator has: Special Rulesets and Rules Level. A
     // hand-built card starts at Custom Homebrew, so its level does not become the app-wide default.
     setGameSettings = ( settings: IGameSettings ): void => {
-        let unit = this.state.editingASUnit;
+        const unit = this.state.editingASUnit;
         unit.rulesLevel = settings.rulesLevel;
         unit.rulesets = settings.rulesets;
         this.saveUnit(true);
@@ -179,7 +179,7 @@ export default class AlphaStrikeUnitCreatorHome extends React.Component<IHomePro
     setRole = (
         e: React.FormEvent<HTMLInputElement>,
      ): void => {
-        let unit = this.state.editingASUnit;
+        const unit = this.state.editingASUnit;
         unit.role = e.currentTarget.value;
         this.saveUnit(true);
         this.setState({
@@ -190,7 +190,7 @@ export default class AlphaStrikeUnitCreatorHome extends React.Component<IHomePro
     setType = (
         e: React.FormEvent<HTMLSelectElement>,
      ): void => {
-        let unit = this.state.editingASUnit;
+        const unit = this.state.editingASUnit;
         unit.type = e.currentTarget.value;
         this.saveUnit();
         this.setState({
@@ -201,7 +201,7 @@ export default class AlphaStrikeUnitCreatorHome extends React.Component<IHomePro
     updateArmor = (
         e: React.FormEvent<HTMLInputElement>,
      ): void => {
-        let unit = this.state.editingASUnit;
+        const unit = this.state.editingASUnit;
         unit.armor = +e.currentTarget.value;
         this.saveUnit();
         this.setState({
@@ -212,7 +212,7 @@ export default class AlphaStrikeUnitCreatorHome extends React.Component<IHomePro
     updateSize = (
         e: React.FormEvent<HTMLInputElement>,
      ): void => {
-        let unit = this.state.editingASUnit;
+        const unit = this.state.editingASUnit;
         unit.size = +e.currentTarget.value;
         this.saveUnit();
         this.setState({
@@ -223,7 +223,7 @@ export default class AlphaStrikeUnitCreatorHome extends React.Component<IHomePro
     updateTMM = (
         e: React.FormEvent<HTMLInputElement>,
      ): void => {
-        let unit = this.state.editingASUnit;
+        const unit = this.state.editingASUnit;
         unit.tmm = +e.currentTarget.value;
         this.saveUnit();
         this.setState({
@@ -234,7 +234,7 @@ export default class AlphaStrikeUnitCreatorHome extends React.Component<IHomePro
     updateStructure = (
         e: React.FormEvent<HTMLInputElement>,
      ): void => {
-        let unit = this.state.editingASUnit;
+        const unit = this.state.editingASUnit;
         unit.structure = +e.currentTarget.value;
         this.saveUnit();
         this.setState({

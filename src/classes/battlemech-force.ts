@@ -67,8 +67,8 @@ export class BattleMechForce {
     setSelectedMech(
         uuid: string
     ) {
-        for( let group of this.groups ) {
-            for( let unit of group.members ) {
+        for( const group of this.groups ) {
+            for( const unit of group.members ) {
                 if( unit.uuid === uuid ) {
                     unit.selectedMech = true;
                 } else {
@@ -79,8 +79,8 @@ export class BattleMechForce {
     }
 
     getSelectedMech(): BattleMech | null {
-        for( let group of this.groups ) {
-            for( let unit of group.members ) {
+        for( const group of this.groups ) {
+            for( const unit of group.members ) {
                 if( unit.selectedMech ) {
                     return unit;
                 }
@@ -110,7 +110,7 @@ export class BattleMechForce {
     public export(
         noInPlayVariabless: boolean = false,
     ): ICBTForceExport {
-        let returnValue: ICBTForceExport = {
+        const returnValue: ICBTForceExport = {
             groups: [],
             uuid: this._uuid,
             lastUpdated: new Date(),
@@ -126,7 +126,7 @@ export class BattleMechForce {
             returnValue.spaceTracker = this.spaceTracker.export();
         }
 
-        for( let group of this.groups) {
+        for( const group of this.groups) {
             returnValue.groups.push( group.export(noInPlayVariabless) );
         }
 
@@ -136,8 +136,8 @@ export class BattleMechForce {
     getUnitViaUUID(
         uuid: string
     ): BattleMech | null {
-        for( let group of this.groups ) {
-            for( let unit of group.members ) {
+        for( const group of this.groups ) {
+            for( const unit of group.members ) {
                 if( unit.uuid === uuid )
                     return unit;
             }
@@ -148,8 +148,8 @@ export class BattleMechForce {
     updateUnitViaUUID(
         nv: BattleMech
     ): boolean {
-        for( let groupIndex in this.groups ) {
-            for( let unitIndex in this.groups[groupIndex].members ) {
+        for( const groupIndex in this.groups ) {
+            for( const unitIndex in this.groups[groupIndex].members ) {
                 if( this.groups[groupIndex].members[unitIndex].uuid === nv.uuid ) {
                     this.groups[groupIndex].members[unitIndex] = nv;
                     return true;
@@ -182,7 +182,7 @@ export class BattleMechForce {
     public import(importObj: ICBTForceExport) {
         // Forces come back from saves and other people's backups: read a bounded list of groups.
         const groups = Array.isArray(importObj.groups) ? importObj.groups.slice(0, MAX_FORCE_GROUPS) : [];
-        for( let group of groups ) {
+        for( const group of groups ) {
             this.groups.push( new BattleMechGroup( group) );
         }
         if( importObj.uuid ) {
@@ -250,8 +250,8 @@ export class BattleMechForce {
 
     public applyHeat() {
         this.heatApplied = true;
-        for( let group of this.groups ) {
-            for( let unit of group.members ) {
+        for( const group of this.groups ) {
+            for( const unit of group.members ) {
                 unit.applyHeat(this.quirksInPlay);
             }
         }
@@ -260,7 +260,7 @@ export class BattleMechForce {
     public getTotalUnits(): number {
         let returnValue: number = 0;
 
-        for( let group of this.groups ) {
+        for( const group of this.groups ) {
             returnValue += group.getTotalUnits();
         }
 
@@ -270,7 +270,7 @@ export class BattleMechForce {
     public getTotalBV2(): number {
         let returnValue: number = 0;
 
-        for( let group of this.groups ) {
+        for( const group of this.groups ) {
             returnValue += group.getTotaBV2();
         }
 
@@ -280,8 +280,8 @@ export class BattleMechForce {
     getTech(): string {
         let rv = "";
 
-        for( let group of this.groups ) {
-            let tech = group.getTech();
+        for( const group of this.groups ) {
+            const tech = group.getTech();
             // An empty group has no tech of its own.
             if( tech === "" ) {
                 continue;
@@ -300,7 +300,7 @@ export class BattleMechForce {
     getTotalTons(): number {
         let returnValue: number = 0;
 
-        for( let group of this.groups ) {
+        for( const group of this.groups ) {
             returnValue += group.getTotalTons();
         }
 
@@ -318,7 +318,7 @@ export class BattleMechForce {
     public getTotaBV2(): number {
         let rv = 0;
 
-        for( let group of this.groups ) {
+        for( const group of this.groups ) {
             rv += group.getTotaBV2();
         }
 

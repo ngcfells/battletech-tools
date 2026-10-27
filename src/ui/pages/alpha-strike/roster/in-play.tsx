@@ -45,8 +45,8 @@ export default class AlphaStrikeRosterInPlay extends React.Component<IInPlayProp
         "Cancel",
         () => {
           if (this.props.appGlobals.currentASForce) {
-            for (let group of this.props.appGlobals.currentASForce.groups) {
-              for( let unit of group.members ) {
+            for (const group of this.props.appGlobals.currentASForce.groups) {
+              for( const unit of group.members ) {
                 unit.applyRound();
               }
             }
@@ -66,7 +66,7 @@ export default class AlphaStrikeRosterInPlay extends React.Component<IInPlayProp
 
       if( e && e.preventDefault ) e.preventDefault();
 
-      let appSettings = this.props.appGlobals.appSettings;
+      const appSettings = this.props.appGlobals.appSettings;
 
       if (appSettings.alphaStrikeInPlayColumns < 5) {
         appSettings.alphaStrikeInPlayColumns++;
@@ -92,7 +92,7 @@ export default class AlphaStrikeRosterInPlay extends React.Component<IInPlayProp
         "Yes",
         "No, Thank you",
         () => {
-          for( let unit of group.members ) {
+          for( const unit of group.members ) {
             if( unit && unit.reset ) {
               unit.reset();
             }

@@ -42,12 +42,12 @@ export function getSSWXMLBasicInfo(
     ssw_xml: string,
 ): ISSWBasicInfo | null {
 
-    let jObj = parseSSWXML(ssw_xml);
+    const jObj = parseSSWXML(ssw_xml);
 
     // console.log( "battlemech.importSSWXML() jObj", jObj)
     if( jObj && jObj.mech ) {
 
-        let rv: ISSWBasicInfo = {
+        const rv: ISSWBasicInfo = {
             model: "",
             name: "",
             tonnage: 0,

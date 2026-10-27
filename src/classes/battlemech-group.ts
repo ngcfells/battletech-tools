@@ -71,7 +71,7 @@ export class BattleMechGroup {
 	}
 
 	public isUnderStrength(): boolean {
-		for( let member of this.members ) {
+		for( const member of this.members ) {
 			if( member.isUnderStrength() ) {
 				return true;
 			}
@@ -99,34 +99,34 @@ export class BattleMechGroup {
 
 	public setNew() {
 		this.uuid = generateUUID();
-		for( let mech of this.members ) {
+		for( const mech of this.members ) {
 			mech.newUUID();
 		}
-		for( let vehicle of this.vehicles ) {
+		for( const vehicle of this.vehicles ) {
 			vehicle.newUUID();
 		}
-		for( let fighter of this.fighters ) {
+		for( const fighter of this.fighters ) {
 			fighter.newUUID();
 		}
-		for( let craft of this.smallCraft ) {
+		for( const craft of this.smallCraft ) {
 			craft.newUUID();
 		}
-		for( let ship of this.capitalShips ) {
+		for( const ship of this.capitalShips ) {
 			ship.newUUID();
 		}
-		for( let platoon of this.infantry ) {
+		for( const platoon of this.infantry ) {
 			platoon.newUUID();
 		}
-		for( let squad of this.battleArmor ) {
+		for( const squad of this.battleArmor ) {
 			squad.newUUID();
 		}
-		for( let point of this.protoMechs ) {
+		for( const point of this.protoMechs ) {
 			point.newUUID();
 		}
-		for( let building of this.buildings ) {
+		for( const building of this.buildings ) {
 			building.newUUID();
 		}
-		for( let unit of this.battledroidsUnits ) {
+		for( const unit of this.battledroidsUnits ) {
 			unit.newUUID();
 		}
 		this.lastUpdated = new Date();
@@ -135,28 +135,28 @@ export class BattleMechGroup {
 	public getTotaBV2(): number {
         let rv = 0;
 
-        for( let unit of this.members ) {
+        for( const unit of this.members ) {
             rv += unit.getPilotAdjustedBattleValue();
         }
-        for( let vehicle of this.vehicles ) {
+        for( const vehicle of this.vehicles ) {
             rv += vehicle.getPilotAdjustedBattleValue();
         }
-        for( let fighter of this.fighters ) {
+        for( const fighter of this.fighters ) {
             rv += fighter.getPilotAdjustedBattleValue();
         }
-        for( let craft of this.smallCraft ) {
+        for( const craft of this.smallCraft ) {
             rv += craft.getPilotAdjustedBattleValue();
         }
-        for( let ship of this.capitalShips ) {
+        for( const ship of this.capitalShips ) {
             rv += ship.getPilotAdjustedBattleValue();
         }
-        for( let platoon of this.infantry ) {
+        for( const platoon of this.infantry ) {
             rv += platoon.getSkillAdjustedBattleValue();
         }
-        for( let squad of this.battleArmor ) {
+        for( const squad of this.battleArmor ) {
             rv += squad.getSkillAdjustedBattleValue();
         }
-        for( let point of this.protoMechs ) {
+        for( const point of this.protoMechs ) {
             rv += point.getSkillAdjustedPointBattleValue();
         }
 
@@ -166,30 +166,30 @@ export class BattleMechGroup {
 	public getTotalTons(): number {
         let rv = 0;
 
-        for( let unit of this.members ) {
+        for( const unit of this.members ) {
             rv += unit.getTonnage();
         }
-        for( let vehicle of this.vehicles ) {
+        for( const vehicle of this.vehicles ) {
             rv += vehicle.getTonnage();
         }
-        for( let fighter of this.fighters ) {
+        for( const fighter of this.fighters ) {
             rv += fighter.getTonnage();
         }
-        for( let craft of this.smallCraft ) {
+        for( const craft of this.smallCraft ) {
             rv += craft.getTonnage();
         }
-        for( let ship of this.capitalShips ) {
+        for( const ship of this.capitalShips ) {
             rv += ship.getTonnage();
         }
         // Infantry count by their transport weight (TM p. 155).
-        for( let platoon of this.infantry ) {
+        for( const platoon of this.infantry ) {
             rv += platoon.getWeight();
         }
         // Battle armor takes 1 ton of cargo space for each trooper (Battle Armor Organization/Weight Table, TW p.214).
-        for( let squad of this.battleArmor ) {
+        for( const squad of this.battleArmor ) {
             rv += squad.getSquadSize();
         }
-        for( let point of this.protoMechs ) {
+        for( const point of this.protoMechs ) {
             rv += point.getTons() * point.getPointSize();
         }
 
@@ -207,7 +207,7 @@ export class BattleMechGroup {
             ...this.buildings.map( (building) => building.getTech().name ),
             ...this.battledroidsUnits.map( () => "Battledroids" ),
         ];
-        for( let tech of techNames ) {
+        for( const tech of techNames ) {
             if( rv !== tech && rv !== "" ) {
                 rv = "Mixed"
             }  else {
@@ -222,13 +222,13 @@ export class BattleMechGroup {
     public import(importObj: ICBTGroupExport) {
 
 		this.customName = importObj.name;
-		for( let unit of importObj.units) {
-			let theUnit = new BattleMech( JSON.stringify(unit) );
+		for( const unit of importObj.units) {
+			const theUnit = new BattleMech( JSON.stringify(unit) );
 			this.members.push( theUnit );
 		}
 		// Vehicles in a saved group may come from someone else's backup: a list only, capped.
 		const vehicles = Array.isArray(importObj.vehicles) ? importObj.vehicles.slice(0, MAX_GROUP_VEHICLES) : [];
-		for( let vehicle of vehicles ) {
+		for( const vehicle of vehicles ) {
 			// Skip entries that are not saved vehicles rather than adding blank default vehicles.
 			if( vehicle && typeof vehicle === "object" && !Array.isArray(vehicle) ) {
 				this.vehicles.push( new Vehicle( JSON.stringify(vehicle) ) );
@@ -236,55 +236,55 @@ export class BattleMechGroup {
 		}
 		// Fighters likewise: a capped list, read through the fighter's own validating import.
 		const fighters = Array.isArray(importObj.fighters) ? importObj.fighters.slice(0, MAX_GROUP_FIGHTERS) : [];
-		for( let fighter of fighters ) {
+		for( const fighter of fighters ) {
 			if( fighter && typeof fighter === "object" && !Array.isArray(fighter) ) {
 				this.fighters.push( new AerospaceFighter( JSON.stringify(fighter) ) );
 			}
 		}
 		const capitalShips = Array.isArray(importObj.capitalShips) ? importObj.capitalShips.slice(0, MAX_GROUP_CAPITAL_SHIPS) : [];
-		for( let ship of capitalShips ) {
+		for( const ship of capitalShips ) {
 			if( ship && typeof ship === "object" && !Array.isArray(ship) ) {
 				this.capitalShips.push( new CapitalShip( JSON.stringify(ship) ) );
 			}
 		}
 		// Small Craft likewise: a capped list, read through the craft's own validating import.
 		const smallCraft = Array.isArray(importObj.smallCraft) ? importObj.smallCraft.slice(0, MAX_GROUP_SMALL_CRAFT) : [];
-		for( let craft of smallCraft ) {
+		for( const craft of smallCraft ) {
 			if( craft && typeof craft === "object" && !Array.isArray(craft) ) {
 				this.smallCraft.push( new SmallCraft( JSON.stringify(craft) ) );
 			}
 		}
 		// Infantry platoons likewise.
 		const infantry = Array.isArray(importObj.infantry) ? importObj.infantry.slice(0, MAX_GROUP_INFANTRY) : [];
-		for( let platoon of infantry ) {
+		for( const platoon of infantry ) {
 			if( platoon && typeof platoon === "object" && !Array.isArray(platoon) ) {
 				this.infantry.push( new InfantryPlatoon( JSON.stringify(platoon) ) );
 			}
 		}
 		// Battle armor squads likewise.
 		const battleArmor = Array.isArray(importObj.battleArmor) ? importObj.battleArmor.slice(0, MAX_GROUP_BATTLE_ARMOR) : [];
-		for( let squad of battleArmor ) {
+		for( const squad of battleArmor ) {
 			if( squad && typeof squad === "object" && !Array.isArray(squad) ) {
 				this.battleArmor.push( new BattleArmor( JSON.stringify(squad) ) );
 			}
 		}
 		// ProtoMech Points likewise.
 		const protoMechs = Array.isArray(importObj.protoMechs) ? importObj.protoMechs.slice(0, MAX_GROUP_PROTOMECHS) : [];
-		for( let point of protoMechs ) {
+		for( const point of protoMechs ) {
 			if( point && typeof point === "object" && !Array.isArray(point) ) {
 				this.protoMechs.push( new ProtoMech( JSON.stringify(point) ) );
 			}
 		}
 		// Buildings likewise.
 		const buildings = Array.isArray(importObj.buildings) ? importObj.buildings.slice(0, MAX_GROUP_BUILDINGS) : [];
-		for( let building of buildings ) {
+		for( const building of buildings ) {
 			if( building && typeof building === "object" && !Array.isArray(building) ) {
 				this.buildings.push( new Building( JSON.stringify(building) ) );
 			}
 		}
 		// Battledroids units likewise; an entry that names no known design is skipped.
 		const battledroidsUnits = Array.isArray(importObj.battledroidsUnits) ? importObj.battledroidsUnits.slice(0, MAX_GROUP_BATTLEDROIDS_UNITS) : [];
-		for( let unit of battledroidsUnits ) {
+		for( const unit of battledroidsUnits ) {
 			if( unit && typeof unit === "object" && !Array.isArray(unit) && findBattledroidsUnitDesign(unit.design) ) {
 				this.battledroidsUnits.push( new BattledroidsUnit( JSON.stringify(unit) ) );
 			}
@@ -306,7 +306,7 @@ export class BattleMechGroup {
     public export(
 		noInPlayVariabless: boolean = false,
 	): ICBTGroupExport {
-        let returnValue: ICBTGroupExport = {
+        const returnValue: ICBTGroupExport = {
 			name: this.customName,
 			units: [],
             uuid: this.uuid,
@@ -324,8 +324,8 @@ export class BattleMechGroup {
 			...(this.battledroidsUnits.length > 0 ? { battledroidsUnits: this.battledroidsUnits.map( (unit) => unit.export(noInPlayVariabless) ) } : {}),
 		}
 
-		for( let unit of this.members ) {
-			let exportUnit = unit.export(noInPlayVariabless);
+		for( const unit of this.members ) {
+			const exportUnit = unit.export(noInPlayVariabless);
 			if( exportUnit ) {
 				returnValue.units.push( exportUnit );
 			}

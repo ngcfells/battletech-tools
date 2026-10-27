@@ -32,7 +32,7 @@ export default class TopMenu extends React.Component<ITopMenuProps, ITopMenuStat
 
     render = (): JSX.Element => {
 
-    let menuStructure: IMenuDef[] = [
+    const menuStructure: IMenuDef[] = [
         {
             label: "Home",
             url: "/",
@@ -310,7 +310,7 @@ export default class TopMenu extends React.Component<ITopMenuProps, ITopMenuStat
     }
 
     let currentSubmenu: IMenuDef[] = [];
-    for( let menu of menuStructure ) {
+    for( const menu of menuStructure ) {
         if(
             menu &&
             menu.startsWithTag &&

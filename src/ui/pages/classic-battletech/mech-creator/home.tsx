@@ -32,15 +32,15 @@ export default class MechCreatorHome extends React.Component<IHomeProps, IHomeSt
 
     handleFileRead = (_e: any) => {
       if( this.fileReader ) {
-        let content = this.fileReader.result;
+        const content = this.fileReader.result;
 
         // console.log("content", content)
         try {
           if( content ) {
-            let data: IBattleMechExport[] = JSON.parse( content.toString() )
+            const data: IBattleMechExport[] = JSON.parse( content.toString() )
 
-            let btData = this.props.appGlobals.battleMechSaves;
-            for( let item of data ) {
+            const btData = this.props.appGlobals.battleMechSaves;
+            for( const item of data ) {
               btData.push( item );
             }
 
@@ -56,7 +56,7 @@ export default class MechCreatorHome extends React.Component<IHomeProps, IHomeSt
     selectFile = async (e: React.FormEvent<HTMLInputElement>): Promise<void> => {
       e.preventDefault();
       if( e.currentTarget.files && e.currentTarget.files.length > 0 ) {
-        let foundFile = e.currentTarget.files[0];
+        const foundFile = e.currentTarget.files[0];
         // console.log( "test", foundFIle );
         if( foundFile.type === "application/json" ) {
           this.fileReader = new FileReader();
@@ -133,7 +133,7 @@ export default class MechCreatorHome extends React.Component<IHomeProps, IHomeSt
     startNew = (e: React.FormEvent<HTMLButtonElement>): void => {
       e.preventDefault();
 
-      let currentBattleMech = new BattleMech();
+      const currentBattleMech = new BattleMech();
       this.replaceDesign(() => this.props.appGlobals.saveCurrentBattleMech( currentBattleMech ))
     }
 
@@ -220,7 +220,7 @@ export default class MechCreatorHome extends React.Component<IHomeProps, IHomeSt
                       {this.props.appGlobals.battleMechSaves && this.props.appGlobals.battleMechSaves.length > 0 ? (
                         <>
                         {this.props.appGlobals.battleMechSaves.map( (mech, mechIndex) => {
-                          let mechObj = new BattleMech(JSON.stringify(mech));
+                          const mechObj = new BattleMech(JSON.stringify(mech));
                           const incomplete = mechObj.getIncompleteCustomStats();
                           return (
                             <tbody key={mechIndex}>

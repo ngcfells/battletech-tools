@@ -26,7 +26,7 @@ export default class MechCreatorStep2 extends React.Component<IHomeProps, IHomeS
 
     setWalkingMP = ( event: React.FormEvent<HTMLSelectElement>): void => {
       if( this.props.appGlobals.currentBattleMech ) {
-        let currentMech = this.props.appGlobals.currentBattleMech;
+        const currentMech = this.props.appGlobals.currentBattleMech;
         currentMech.setWalkSpeed( +event.currentTarget.value);
         this.props.appGlobals.saveCurrentBattleMech( currentMech );
       }
@@ -34,7 +34,7 @@ export default class MechCreatorStep2 extends React.Component<IHomeProps, IHomeS
 
     setJumpJetType = ( event: React.FormEvent<HTMLSelectElement>): void => {
       if( this.props.appGlobals.currentBattleMech ) {
-        let currentMech = this.props.appGlobals.currentBattleMech;
+        const currentMech = this.props.appGlobals.currentBattleMech;
         currentMech.setJumpJetType( event.currentTarget.value );
         this.props.appGlobals.saveCurrentBattleMech( currentMech );
       }
@@ -42,7 +42,7 @@ export default class MechCreatorStep2 extends React.Component<IHomeProps, IHomeS
 
     setMyomerType = ( event: React.FormEvent<HTMLSelectElement>): void => {
       if( this.props.appGlobals.currentBattleMech ) {
-        let currentMech = this.props.appGlobals.currentBattleMech;
+        const currentMech = this.props.appGlobals.currentBattleMech;
         currentMech.setMyomerType( event.currentTarget.value );
         this.props.appGlobals.saveCurrentBattleMech( currentMech );
       }
@@ -50,7 +50,7 @@ export default class MechCreatorStep2 extends React.Component<IHomeProps, IHomeS
 
     setJumpingMP = ( event: React.FormEvent<HTMLSelectElement>): void => {
       if( this.props.appGlobals.currentBattleMech ) {
-        let currentMech = this.props.appGlobals.currentBattleMech;
+        const currentMech = this.props.appGlobals.currentBattleMech;
         currentMech.setJumpSpeed( +event.currentTarget.value);
         this.props.appGlobals.saveCurrentBattleMech( currentMech );
       }
@@ -58,7 +58,7 @@ export default class MechCreatorStep2 extends React.Component<IHomeProps, IHomeS
 
     setFrankenMechJumpJetClass = ( event: React.FormEvent<HTMLSelectElement>): void => {
       if( this.props.appGlobals.currentBattleMech ) {
-        let currentMech = this.props.appGlobals.currentBattleMech;
+        const currentMech = this.props.appGlobals.currentBattleMech;
         const value = event.currentTarget.value;
         currentMech.setFrankenMechJumpJetClass( value === "light" || value === "medium" || value === "heavy" ? value : null );
         this.props.appGlobals.saveCurrentBattleMech( currentMech );
@@ -67,7 +67,7 @@ export default class MechCreatorStep2 extends React.Component<IHomeProps, IHomeS
 
     setEngineType = ( event: React.FormEvent<HTMLSelectElement>): void => {
       if( this.props.appGlobals.currentBattleMech ) {
-        let currentMech = this.props.appGlobals.currentBattleMech;
+        const currentMech = this.props.appGlobals.currentBattleMech;
         currentMech.setEngineType( event.currentTarget.value);
         this.props.appGlobals.saveCurrentBattleMech( currentMech );
       }
@@ -84,7 +84,7 @@ export default class MechCreatorStep2 extends React.Component<IHomeProps, IHomeS
 
     setGyroType = ( event: React.FormEvent<HTMLSelectElement>): void => {
       if( this.props.appGlobals.currentBattleMech ) {
-        let currentMech = this.props.appGlobals.currentBattleMech;
+        const currentMech = this.props.appGlobals.currentBattleMech;
         currentMech.setGyroType( event.currentTarget.value);
         this.props.appGlobals.saveCurrentBattleMech( currentMech );
       }
@@ -92,7 +92,7 @@ export default class MechCreatorStep2 extends React.Component<IHomeProps, IHomeS
 
     setCockpitType = ( event: React.FormEvent<HTMLSelectElement>): void => {
       if( this.props.appGlobals.currentBattleMech ) {
-        let currentMech = this.props.appGlobals.currentBattleMech;
+        const currentMech = this.props.appGlobals.currentBattleMech;
         currentMech.setCockpitType( event.currentTarget.value);
         this.props.appGlobals.saveCurrentBattleMech( currentMech );
       }

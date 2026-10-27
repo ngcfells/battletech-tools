@@ -164,7 +164,7 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
       if( e && e.preventDefault ) e.preventDefault();
 
       if(this.props.appGlobals.currentCBTForce) {
-        let currentCBTForce = this.props.appGlobals.currentCBTForce;
+        const currentCBTForce = this.props.appGlobals.currentCBTForce;
 
         unit.selectAmmoBin( attackUUID, e.currentTarget.value  );
         this.props.appGlobals.saveCurrentCBTForce( currentCBTForce );
@@ -233,7 +233,7 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
         })
 
         if(this.props.appGlobals.currentCBTForce) {
-          let currentCBTForce = this.props.appGlobals.currentCBTForce;
+          const currentCBTForce = this.props.appGlobals.currentCBTForce;
 
           unit.setDamageClusterHits( eq_index, damageClusterHits );
           this.props.appGlobals.saveCurrentCBTForce( currentCBTForce );
@@ -331,7 +331,7 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
       }
 
       if(this.props.appGlobals.currentCBTForce) {
-        let currentCBTForce = this.props.appGlobals.currentCBTForce;
+        const currentCBTForce = this.props.appGlobals.currentCBTForce;
 
         bm.toggleResolved( eq_index );
         this.props.appGlobals.saveCurrentCBTForce( currentCBTForce );
@@ -346,7 +346,7 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
       }
 
       if(this.props.appGlobals.currentCBTForce) {
-        let currentCBTForce = this.props.appGlobals.currentCBTForce;
+        const currentCBTForce = this.props.appGlobals.currentCBTForce;
         currentCBTForce.turn = +e.currentTarget.value;
 
         this.props.appGlobals.saveCurrentCBTForce( currentCBTForce );
@@ -365,7 +365,7 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
       }
 
       if(this.props.appGlobals.currentCBTForce) {
-        let currentCBTForce = this.props.appGlobals.currentCBTForce;
+        const currentCBTForce = this.props.appGlobals.currentCBTForce;
         currentCBTForce.phase = nv;
 
         this.props.appGlobals.saveCurrentCBTForce( currentCBTForce );
@@ -385,7 +385,7 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
       }
 
       if(this.props.appGlobals.currentCBTForce) {
-        let currentCBTForce = this.props.appGlobals.currentCBTForce;
+        const currentCBTForce = this.props.appGlobals.currentCBTForce;
         currentCBTForce.hideHelp = !currentCBTForce.hideHelp;
 
         this.props.appGlobals.saveCurrentCBTForce( currentCBTForce );
@@ -447,7 +447,7 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
       }
 
       if(this.props.appGlobals.currentCBTForce) {
-        let currentCBTForce = this.props.appGlobals.currentCBTForce;
+        const currentCBTForce = this.props.appGlobals.currentCBTForce;
         currentCBTForce.applyHeat();
 
         this.props.appGlobals.saveCurrentCBTForce( currentCBTForce );
@@ -466,28 +466,28 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
       }
 
       if(this.props.appGlobals.currentCBTForce) {
-        let currentCBTForce = this.props.appGlobals.currentCBTForce;
+        const currentCBTForce = this.props.appGlobals.currentCBTForce;
         currentCBTForce.phase = 0;
         currentCBTForce.turn++;
         currentCBTForce.heatApplied = false;
 
-        for( let group of currentCBTForce.groups ) {
-          for( let unit of group.members ) {
+        for( const group of currentCBTForce.groups ) {
+          for( const unit of group.members ) {
             unit.turnReset();
           }
-          for( let vehicle of group.vehicles ) {
+          for( const vehicle of group.vehicles ) {
             vehicle.turnReset();
           }
-          for( let fighter of group.fighters ) {
+          for( const fighter of group.fighters ) {
             fighter.turnReset();
           }
-          for( let craft of group.smallCraft ) {
+          for( const craft of group.smallCraft ) {
             craft.turnReset();
           }
-          for( let ship of group.capitalShips ) {
+          for( const ship of group.capitalShips ) {
             ship.turnReset();
           }
-          for( let building of group.buildings ) {
+          for( const building of group.buildings ) {
             building.startTurn();
           }
         }
@@ -510,7 +510,7 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
       if( e && e.preventDefault ) {
         e.preventDefault();
       }
-      let targetWeaponSelection = this.state.targetWeaponSelection;
+      const targetWeaponSelection = this.state.targetWeaponSelection;
 
       if( targetWeaponSelection.length > eq_index && targetWeaponSelection[eq_index]) {
         targetWeaponSelection[eq_index].target = e.currentTarget.value;
@@ -529,8 +529,8 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
       if( e && e.preventDefault ) {
         e.preventDefault();
       }
-      let targetData = this.state.targetData;
-      let targetWeaponSelection = this.state.targetWeaponSelection;
+      const targetData = this.state.targetData;
+      const targetWeaponSelection = this.state.targetWeaponSelection;
       if( targetData ) {
         if( target === "a" ) {
           targetData.a.primary = true;
@@ -561,8 +561,8 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
       if( e && e.preventDefault ) {
         e.preventDefault();
       }
-      let targetData = this.state.targetData;
-      let targetWeaponSelection = this.state.targetWeaponSelection;
+      const targetData = this.state.targetData;
+      const targetWeaponSelection = this.state.targetWeaponSelection;
       let removeTarget = "";
       if( targetData ) {
         if( target === "a" ) {
@@ -584,7 +584,7 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
       }
 
       if( removeTarget !== "") {
-        for( let item of targetWeaponSelection ) {
+        for( const item of targetWeaponSelection ) {
           if( item.target === removeTarget ) {
             item.target = "";
           }
@@ -604,8 +604,8 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
       if( e && e.preventDefault ) {
         e.preventDefault();
       }
-      let targetData = this.state.targetData;
-      let targetWeaponSelection = this.state.targetWeaponSelection;
+      const targetData = this.state.targetData;
+      const targetWeaponSelection = this.state.targetWeaponSelection;
       if( targetData ) {
         if( target === "a" ) {
           targetData.a.inRearArc = e.currentTarget.checked;
@@ -633,7 +633,7 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
       if( e && e.preventDefault ) {
         e.preventDefault();
       }
-      let targetData = this.state.targetData;
+      const targetData = this.state.targetData;
       if( targetData ) {
         if( target === "a" ) {
           targetData.a.name = e.currentTarget.value;
@@ -691,7 +691,7 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
       if( e && e.preventDefault ) {
         e.preventDefault();
       }
-      let targetData = this.state.targetData;
+      const targetData = this.state.targetData;
       if( targetData ) {
         if( target === "a" ) {
           targetData.a.jumped = e.currentTarget.checked;
@@ -714,7 +714,7 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
       if( e && e.preventDefault ) {
         e.preventDefault();
       }
-      let targetData = this.state.targetData;
+      const targetData = this.state.targetData;
       if( targetData ) {
         if( target === "a" ) {
           targetData.a.range = +e.currentTarget.value;
@@ -737,7 +737,7 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
       if( e && e.preventDefault ) {
         e.preventDefault();
       }
-      let targetData = this.state.targetData;
+      const targetData = this.state.targetData;
       if( targetData ) {
         if( target === "a" ) {
           targetData.a.otherMods = +e.currentTarget.value;
@@ -760,7 +760,7 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
       if( e && e.preventDefault ) {
         e.preventDefault();
       }
-      let targetData = this.state.targetData;
+      const targetData = this.state.targetData;
       if( targetData ) {
         if( target === "a" ) {
           targetData.a.movement = +e.currentTarget.value;
@@ -835,37 +835,37 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
         "Yes",
         "No, Thank you",
         () => {
-          for( let unit of group.members ) {
+          for( const unit of group.members ) {
             if( unit && unit.resetDamage ) {
               unit.resetDamage();
             }
 
           }
-          for( let vehicle of group.vehicles ) {
+          for( const vehicle of group.vehicles ) {
             vehicle.resetInPlay();
           }
-          for( let fighter of group.fighters ) {
+          for( const fighter of group.fighters ) {
             fighter.resetInPlay();
           }
-          for( let craft of group.smallCraft ) {
+          for( const craft of group.smallCraft ) {
             craft.resetInPlay();
           }
-          for( let ship of group.capitalShips ) {
+          for( const ship of group.capitalShips ) {
             ship.resetInPlay();
           }
-          for( let platoon of group.infantry ) {
+          for( const platoon of group.infantry ) {
             platoon.resetInPlay();
           }
-          for( let squad of group.battleArmor ) {
+          for( const squad of group.battleArmor ) {
             squad.resetInPlay();
           }
-          for( let point of group.protoMechs ) {
+          for( const point of group.protoMechs ) {
             point.resetInPlay();
           }
-          for( let building of group.buildings ) {
+          for( const building of group.buildings ) {
             building.resetInPlay();
           }
-          for( let unit of group.battledroidsUnits ) {
+          for( const unit of group.battledroidsUnits ) {
             unit.resetInPlay();
           }
           if( this.props.appGlobals.currentCBTForce )
@@ -956,7 +956,7 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
     ) => {
 
       if( this.props.appGlobals.currentCBTForce && currentBM ) {
-        let targetData = {
+        const targetData = {
           a: JSON.parse(JSON.stringify(currentBM.getTarget("a"))),
           b: JSON.parse(JSON.stringify(currentBM.getTarget("b"))),
           c: JSON.parse(JSON.stringify(currentBM.getTarget("c"))),
@@ -965,7 +965,7 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
         // A weapon in a torso location a mechanized trooper occupies may not fire.
         const carrierLoad = this._carrierLoad( currentBM.uuid, currentBM.getName(), "mech", currentBM.isOmnimech, currentBM.isFrankenMech() );
         const targetWeaponSelection: IEquipmentItem[] = JSON.parse(JSON.stringify(currentBM.equipmentList));
-        for( let item of targetWeaponSelection ) {
+        for( const item of targetWeaponSelection ) {
           if( isCarrierWeaponBlocked( carrierLoad, item ) ) {
             item.target = "";
           }
@@ -1003,7 +1003,7 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
         e.preventDefault();
       }
 
-      let currentBM: BattleMech | null = this.state.setTargetDialog;
+      const currentBM: BattleMech | null = this.state.setTargetDialog;
       if( this.props.appGlobals.currentCBTForce && currentBM && this.state.targetData ) {
         currentBM.setTargets(
           this.state.targetData.a,
@@ -1086,11 +1086,11 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
       }
 
       if(  this.state.takeDamageDialog && this.props.appGlobals.currentCBTForce  ) {
-        let currentBM = this.state.takeDamageDialog;
+        const currentBM = this.state.takeDamageDialog;
         if( currentBM ) {
-          let damageLog = currentBM.damageLog;
+          const damageLog = currentBM.damageLog;
 
-          let takeDamageResult = currentBM.takeDamage(
+          const takeDamageResult = currentBM.takeDamage(
             this.state.takeDamageAmount,
             this.state.takeDamageLocation,
             this.state.takeDamageLocationRear,
@@ -1169,7 +1169,7 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
       if( this.props.appGlobals.currentCBTForce ) {
 
         if( this.state.setMovementDialog ) {
-          let currentBM = this.state.setMovementDialog;
+          const currentBM = this.state.setMovementDialog;
           currentBM.currentMovementMode = this.state.setMovementMode;
           currentBM.currentToHitMovementModifier = this.state.setMovementNumber;
           if( currentBM.currentMovementMode === "j")
@@ -1300,7 +1300,7 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
       if(!this.props.appGlobals.currentCBTForce) {
         return <></>;
       }
-      let selectedMech: BattleMech | null = this.props.appGlobals.currentCBTForce.getSelectedMech();
+      const selectedMech: BattleMech | null = this.props.appGlobals.currentCBTForce.getSelectedMech();
       // The game's "Use design quirks" switch (quirks design, plan 3).
       const quirksInPlay = this.props.appGlobals.currentCBTForce.quirksInPlay;
       // Units added on the roster since the force loaded have not had the game year yet.
@@ -1314,8 +1314,8 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
         : null;
 
       let selectedVehicle: Vehicle | null = null;
-      for( let group of this.props.appGlobals.currentCBTForce.groups ) {
-        for( let vehicle of group.vehicles ) {
+      for( const group of this.props.appGlobals.currentCBTForce.groups ) {
+        for( const vehicle of group.vehicles ) {
           if( vehicle.getUUID() === this.state.selectedVehicleUUID ) {
             selectedVehicle = vehicle;
           }
@@ -1323,8 +1323,8 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
       }
       // A fighter is selected the same way as a vehicle, by its UUID.
       let selectedFighter: AerospaceFighter | null = null;
-      for( let group of this.props.appGlobals.currentCBTForce.groups ) {
-        for( let fighter of group.fighters ) {
+      for( const group of this.props.appGlobals.currentCBTForce.groups ) {
+        for( const fighter of group.fighters ) {
           if( fighter.getUUID() === this.state.selectedVehicleUUID ) {
             selectedFighter = fighter;
           }
@@ -1332,8 +1332,8 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
       }
       // A Small Craft is selected the same way as a vehicle, by its UUID.
       let selectedSmallCraft: SmallCraft | null = null;
-      for( let group of this.props.appGlobals.currentCBTForce.groups ) {
-        for( let craft of group.smallCraft ) {
+      for( const group of this.props.appGlobals.currentCBTForce.groups ) {
+        for( const craft of group.smallCraft ) {
           if( craft.getUUID() === this.state.selectedVehicleUUID ) {
             selectedSmallCraft = craft;
           }
@@ -1341,8 +1341,8 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
       }
       // So is a JumpShip, WarShip or space station.
       let selectedCapitalShip: CapitalShip | null = null;
-      for( let group of this.props.appGlobals.currentCBTForce.groups ) {
-        for( let ship of group.capitalShips ) {
+      for( const group of this.props.appGlobals.currentCBTForce.groups ) {
+        for( const ship of group.capitalShips ) {
           if( ship.getUUID() === this.state.selectedVehicleUUID ) {
             selectedCapitalShip = ship;
           }
@@ -1350,8 +1350,8 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
       }
       // So is an infantry platoon.
       let selectedInfantry: InfantryPlatoon | null = null;
-      for( let group of this.props.appGlobals.currentCBTForce.groups ) {
-        for( let platoon of group.infantry ) {
+      for( const group of this.props.appGlobals.currentCBTForce.groups ) {
+        for( const platoon of group.infantry ) {
           if( platoon.getUUID() === this.state.selectedVehicleUUID ) {
             selectedInfantry = platoon;
           }
@@ -1359,8 +1359,8 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
       }
       // And a battle armor squad.
       let selectedBattleArmor: BattleArmor | null = null;
-      for( let group of this.props.appGlobals.currentCBTForce.groups ) {
-        for( let squad of group.battleArmor ) {
+      for( const group of this.props.appGlobals.currentCBTForce.groups ) {
+        for( const squad of group.battleArmor ) {
           if( squad.getUUID() === this.state.selectedVehicleUUID ) {
             selectedBattleArmor = squad;
           }
@@ -1368,8 +1368,8 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
       }
       // And a ProtoMech Point.
       let selectedProtoMech: ProtoMech | null = null;
-      for( let group of this.props.appGlobals.currentCBTForce.groups ) {
-        for( let point of group.protoMechs ) {
+      for( const group of this.props.appGlobals.currentCBTForce.groups ) {
+        for( const point of group.protoMechs ) {
           if( point.getUUID() === this.state.selectedVehicleUUID ) {
             selectedProtoMech = point;
           }
@@ -1377,8 +1377,8 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
       }
       // And a Battledroids tank, jeep or infantry squad.
       let selectedBattledroidsUnit: BattledroidsUnit | null = null;
-      for( let group of this.props.appGlobals.currentCBTForce.groups ) {
-        for( let unit of group.battledroidsUnits ) {
+      for( const group of this.props.appGlobals.currentCBTForce.groups ) {
+        for( const unit of group.battledroidsUnits ) {
           if( unit.getUUID() === this.state.selectedVehicleUUID ) {
             selectedBattledroidsUnit = unit;
           }
@@ -1386,8 +1386,8 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
       }
       // And a building.
       let selectedBuilding: Building | null = null;
-      for( let group of this.props.appGlobals.currentCBTForce.groups ) {
-        for( let building of group.buildings ) {
+      for( const group of this.props.appGlobals.currentCBTForce.groups ) {
+        for( const building of group.buildings ) {
           if( building.getUUID() === this.state.selectedVehicleUUID ) {
             selectedBuilding = building;
           }
@@ -1578,7 +1578,7 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
           <h2>{group.getName(groupIndex)}</h2>
           {group.members.map( (unit, unitIndex) => {
             let numberOfAttacks = 0;
-            for( let attack of unit.equipmentList ) {
+            for( const attack of unit.equipmentList ) {
               if( attack.target ) {
                 numberOfAttacks++;
               }
@@ -1613,7 +1613,7 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
                 ) : (
                   <>
                     {unit.equipmentList.map( (attack, attackIndex) => {
-                      let attackGATOR = getTargetToHitFromWeapon(
+                      const attackGATOR = getTargetToHitFromWeapon(
                           unit,
                           attackIndex,
                           null,
@@ -1647,7 +1647,7 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
                         let attackLocation = "";
                         if( attack.location )
                           attackLocation = attack.location;
-                        let attackDamaged = unit.isEquipmentDamaged( attackUUID, attackLocation );
+                        const attackDamaged = unit.isEquipmentDamaged( attackUUID, attackLocation );
                         return (
                           <tbody key={attackIndex}>
                             <tr>
@@ -3084,7 +3084,7 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
                   {group.members.map( (unit, unitIndex) => {
                     let dieBG = "#009";
                     let dieFG = "white";
-                    let diePips = unit.currentToHitMovementModifier;
+                    const diePips = unit.currentToHitMovementModifier;
 
                     if( unit.currentMovementMode === "n" ) {
                       dieBG = CONST_HIGHLIGHT_COLOR;

@@ -475,7 +475,7 @@ export class AlphaStrikeUnit {
                 tmpMove = tmpMove.replace('"', "");
             if( tmpMove.indexOf("/") > 0 ) {
                 //split move....
-                let moveArray = tmpMove.split( "/" );
+                const moveArray = tmpMove.split( "/" );
 
                 for( let moveCount = 0; moveCount < moveArray.length; moveCount++ ) {
                     tmpMoveObj = {
@@ -712,7 +712,7 @@ export class AlphaStrikeUnit {
     public get currentPilotAbility(): IASPilotAbility | null {
 
         if( this._pilot.alphaStrikeAbilities.length > 0 ) {
-            for( let abi of CONST_AS_PILOT_ABILITIES ) {
+            for( const abi of CONST_AS_PILOT_ABILITIES ) {
                 if( this._pilot.alphaStrikeAbilities[0] === abi.id )
                     return abi;
             }
@@ -723,7 +723,7 @@ export class AlphaStrikeUnit {
 
     public get currentPilotVeteranAbility(): IASPilotAbility | null {
         if( this._pilot.alphaStrikeAbilities.length > 1 ) {
-            for( let abi of CONST_AS_PILOT_ABILITIES ) {
+            for( const abi of CONST_AS_PILOT_ABILITIES ) {
                 if( this._pilot.alphaStrikeAbilities[1] === abi.id )
                     return abi;
             }
@@ -734,7 +734,7 @@ export class AlphaStrikeUnit {
 
     public get currentPilotHeroAbility(): IASPilotAbility | null {
         if( this._pilot.alphaStrikeAbilities.length > 2 ) {
-            for( let abi of CONST_AS_PILOT_ABILITIES ) {
+            for( const abi of CONST_AS_PILOT_ABILITIES ) {
                 if( this._pilot.alphaStrikeAbilities[2] === abi.id )
                     return abi;
             }
@@ -744,13 +744,13 @@ export class AlphaStrikeUnit {
     }
 
     public getPilotAbilities(): any[] {
-        let rv: any[] = [];
+        const rv: any[] = [];
 
 
 
-        for( let id of this._pilot.alphaStrikeAbilities ) {
+        for( const id of this._pilot.alphaStrikeAbilities ) {
             let found = false;
-            for( let card of CONST_AS_PILOT_ABILITIES ) {
+            for( const card of CONST_AS_PILOT_ABILITIES ) {
                 if( id === card.id ) {
                     rv.push(card);
                     found = true;
@@ -765,10 +765,10 @@ export class AlphaStrikeUnit {
     }
 
     getPilotAbilityList(): string[] {
-        let rv: string[] = [];
+        const rv: string[] = [];
 
-        for( let id of this._pilot.alphaStrikeAbilities ) {
-            for( let card of CONST_AS_PILOT_ABILITIES ) {
+        for( const id of this._pilot.alphaStrikeAbilities ) {
+            for( const card of CONST_AS_PILOT_ABILITIES ) {
                 if( id === card.id ) {
                     rv.push(card.ability + " (" + card.cost + ")");
                     break;
@@ -783,8 +783,8 @@ export class AlphaStrikeUnit {
     public getTotalPilotAbilityPoints(): number {
         let rv = 0;
 
-        for( let id of this._pilot.alphaStrikeAbilities ) {
-            for( let card of CONST_AS_PILOT_ABILITIES ) {
+        for( const id of this._pilot.alphaStrikeAbilities ) {
+            for( const card of CONST_AS_PILOT_ABILITIES ) {
                 if( id === card.id ) {
                     rv += card.cost;
                 }
@@ -815,12 +815,12 @@ export class AlphaStrikeUnit {
 
 
     private _getRawNumber( incomingString: string ): number {
-        let myString = incomingString.replace(/\D/g,'');
+        const myString = incomingString.replace(/\D/g,'');
         return +myString / 1;
     }
 
     private _getRawAlpha( incomingString: string ): string {
-        let myString = incomingString.replace(/\d/g,'');
+        const myString = incomingString.replace(/\d/g,'');
         return myString.toLowerCase().trim();
     }
 
@@ -895,32 +895,32 @@ export class AlphaStrikeUnit {
             return true;
         }
 
-        for( let point of this.roundArmor ) {
+        for( const point of this.roundArmor ) {
             if (point) {
                 return true;
             }
         }
-        for( let point of this.roundStructure ) {
+        for( const point of this.roundStructure ) {
             if (point) {
                 return true;
             }
         }
-        for( let point of this.roundEngineHits ) {
+        for( const point of this.roundEngineHits ) {
             if (point) {
                 return true;
             }
         }
-        for( let point of this.roundFireControlHits ) {
+        for( const point of this.roundFireControlHits ) {
             if (point) {
                 return true;
             }
         }
-        for( let point of this.roundMpControlHits ) {
+        for( const point of this.roundMpControlHits ) {
             if (point) {
                 return true;
             }
         }
-        for( let point of this.roundWeaponHits ) {
+        for( const point of this.roundWeaponHits ) {
             if (point) {
                 return true;
             }
@@ -954,7 +954,7 @@ export class AlphaStrikeUnit {
     public getEngineHits(): number {
         let rv = 0;
         if( this.engineHits ) {
-            for( let val of this.engineHits  ) {
+            for( const val of this.engineHits  ) {
                 if( val ) {
                     rv++;
                 }
@@ -971,7 +971,7 @@ export class AlphaStrikeUnit {
     }
 
     public hasAbility( ability: string ): boolean {
-        for( let abi of this.abilities ) {
+        for( const abi of this.abilities ) {
             if( abi.toLowerCase().trim() === ability.toLowerCase().trim()) {
                 return true;
             }
@@ -981,7 +981,7 @@ export class AlphaStrikeUnit {
     public getFireControlHits(): number {
         let rv = 0;
         if( this.engineHits ) {
-            for( let val of this.fireControlHits  ) {
+            for( const val of this.fireControlHits  ) {
                 if( val ) {
                     rv++;
                 }
@@ -994,7 +994,7 @@ export class AlphaStrikeUnit {
     public getMPHits(): number {
         let rv = 0;
         if( this.engineHits ) {
-            for( let val of this.mpControlHits  ) {
+            for( const val of this.mpControlHits  ) {
                 if( val ) {
                     rv++;
                 }
@@ -1013,7 +1013,7 @@ export class AlphaStrikeUnit {
     public getWeaponHits(): number {
         let rv = 0;
         if( this.engineHits ) {
-            for( let val of this.weaponHits  ) {
+            for( const val of this.weaponHits  ) {
                 if( val ) {
                     rv++;
                 }
@@ -1314,10 +1314,10 @@ export class AlphaStrikeUnit {
         }
         // Calculate Current Damage Values from Crits...
         
-        let [shortDamage, shortMinimal] = this.calculateDamage(this.damage.short, currentWeaponHits, this.damage.shortMinimal || false);
-        let [mediumDamage, mediumMinimal] = this.calculateDamage(this.damage.medium, currentWeaponHits, this.damage.mediumMinimal || false);
-        let [longDamage, longMinimal] = this.calculateDamage(this.damage.long, currentWeaponHits, this.damage.longMinimal || false);
-        let [extremeDamage, extremeMinimal] = this.calculateDamage(this.damage.extreme, currentWeaponHits, this.damage.extremeMinimal || false);
+        const [shortDamage, shortMinimal] = this.calculateDamage(this.damage.short, currentWeaponHits, this.damage.shortMinimal || false);
+        const [mediumDamage, mediumMinimal] = this.calculateDamage(this.damage.medium, currentWeaponHits, this.damage.mediumMinimal || false);
+        const [longDamage, longMinimal] = this.calculateDamage(this.damage.long, currentWeaponHits, this.damage.longMinimal || false);
+        const [extremeDamage, extremeMinimal] = this.calculateDamage(this.damage.extreme, currentWeaponHits, this.damage.extremeMinimal || false);
 
         this.currentDamage = {
             short: shortDamage,
@@ -1331,16 +1331,16 @@ export class AlphaStrikeUnit {
         };
 
         this.currentAbilities = this.abilities.map((abi) => {
-                let split = abi.trimStart().split(/\d/);
+                const split = abi.trimStart().split(/\d/);
 
-                let canBeCritAbilities = ['FLK', 'HT', 'IF', 'LRM', 'MSL', 'SRM', 'TUR(', 'TOR', 'REAR', 'AC','IATM']
+                const canBeCritAbilities = ['FLK', 'HT', 'IF', 'LRM', 'MSL', 'SRM', 'TUR(', 'TOR', 'REAR', 'AC','IATM']
                 // If there are no numbers, it's not got damage values.
                 // MUL cards space the code from its values ("IF 0*", "TUR (2/2/1"), so compare without spaces.
                 if (split.length === 1 || !canBeCritAbilities.includes(split[0].replace(/\s+/g, "").toUpperCase())) {
                     return abi;
                 }
                 // Keep the card's own spelling of the code, space included.
-                let type = split[0];
+                const type = split[0];
                 let values = abi.trimStart().slice(type.length).trim();
                 let turret = false;
 
@@ -1350,8 +1350,8 @@ export class AlphaStrikeUnit {
                     turret = true;
                     values = values.slice(0, values.length - 1);
                 }
-                let damageValues = values.split("/");
-                let abiString = type + damageValues.map((damageValue) => {
+                const damageValues = values.split("/");
+                const abiString = type + damageValues.map((damageValue) => {
                     let damage = 0;
                     let minimal = false;
                     let dash = false;
@@ -1556,7 +1556,7 @@ export class AlphaStrikeUnit {
                 tmpTMM++;
             }
 
-            let typeLower = this.type.trim().toLowerCase();
+            const typeLower = this.type.trim().toLowerCase();
             if (typeLower === "sv" || typeLower === "cv") {
                 if (this.getEngineHits() > 0) {
                     // Vehicles with an engine hit halve their TMM (round down)
@@ -1691,7 +1691,7 @@ export class AlphaStrikeUnit {
     }
 
     private calculateDamage(damage: number, weaponHits: number, minimal: boolean | undefined): [number, boolean] {
-        let typeLower = this.type.trim().toLowerCase();
+        const typeLower = this.type.trim().toLowerCase();
         if ((typeLower === "sv") || (typeLower === "cv")) {
             if (this.getEngineHits() > 0) {
                 // Vehicles with an engine hit halve their damage (round down)
@@ -1746,28 +1746,28 @@ export class AlphaStrikeUnit {
 
     public getSpecialAbility( tag: string ): IASSpecialAbility | null {
         if( this.abilities ) {
-            for( let def of CONST_AS_SPECIAL_ABILITIES ) {
+            for( const def of CONST_AS_SPECIAL_ABILITIES ) {
                 if( tag.toLowerCase().trim() === def.tag.toLowerCase().trim() ) {
-                    let newDef = JSON.parse(JSON.stringify(def));
+                    const newDef = JSON.parse(JSON.stringify(def));
                     newDef.rawTag = tag;
                     return newDef;
                 }
                 if(def.tag.indexOf("%") > 0) {
-                    let baseTag = def.tag.substring(0, def.tag.indexOf("%") ).toLowerCase();
+                    const baseTag = def.tag.substring(0, def.tag.indexOf("%") ).toLowerCase();
 
                     if( tag.toLowerCase().startsWith(baseTag) ) {
-                        let newDef = JSON.parse(JSON.stringify(def));
+                        const newDef = JSON.parse(JSON.stringify(def));
                         newDef.rawTag = tag;
                         return newDef;
                     }
                 }
                 if(def.tag.indexOf("#") > 0) {
-                    let baseTag = def.tag.substring(0, def.tag.indexOf("#") ).toLowerCase();
+                    const baseTag = def.tag.substring(0, def.tag.indexOf("#") ).toLowerCase();
                     if( tag.toLowerCase().startsWith(baseTag) ) {
-                        let tmp = tag.toLowerCase().replace(baseTag, "");
+                        const tmp = tag.toLowerCase().replace(baseTag, "");
                         if( tmp.length > 0 ) {
                             if( !Number.isNaN(Number(tmp[0])) ) {
-                                let newDef = JSON.parse(JSON.stringify(def));
+                                const newDef = JSON.parse(JSON.stringify(def));
                                 newDef.rawTag = tag;
                                 return newDef;
                             }
@@ -1956,7 +1956,7 @@ export class AlphaStrikeUnit {
             _roundHeat = this.roundHeat;
         }
 
-        let rv:  IAlphaStrikeUnitExport = {
+        const rv:  IAlphaStrikeUnitExport = {
             mechCreatorUUID:  this.mechCreatorUUID,
             customName: this.customName,
             currentArmor: _currentArmor,
@@ -2017,7 +2017,7 @@ export class AlphaStrikeUnit {
     }
 
     export2(): IAlphaStrikeExport {
-        let rv: IAlphaStrikeExport = {
+        const rv: IAlphaStrikeExport = {
             mechCreatorUUID: this.uuid,
             name: this.name,
             move: this.move[0].move,

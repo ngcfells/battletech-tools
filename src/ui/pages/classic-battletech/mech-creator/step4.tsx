@@ -32,7 +32,7 @@ export default class MechCreatorStep4 extends React.Component<IHomeProps, IHomeS
 
     allocateSanely = (): void => {
       if( this.props.appGlobals.currentBattleMech ) {
-        let currentMech = this.props.appGlobals.currentBattleMech;
+        const currentMech = this.props.appGlobals.currentBattleMech;
         currentMech.allocateArmorSane();
         this.props.appGlobals.saveCurrentBattleMech( currentMech );
       }
@@ -40,7 +40,7 @@ export default class MechCreatorStep4 extends React.Component<IHomeProps, IHomeS
 
     allocateMax = (): void => {
       if( this.props.appGlobals.currentBattleMech ) {
-        let currentMech = this.props.appGlobals.currentBattleMech;
+        const currentMech = this.props.appGlobals.currentBattleMech;
         currentMech.allocateArmorMax();
         this.props.appGlobals.saveCurrentBattleMech( currentMech );
       }
@@ -48,7 +48,7 @@ export default class MechCreatorStep4 extends React.Component<IHomeProps, IHomeS
 
     allocateClear = (): void => {
       if( this.props.appGlobals.currentBattleMech ) {
-        let currentMech = this.props.appGlobals.currentBattleMech;
+        const currentMech = this.props.appGlobals.currentBattleMech;
         currentMech.allocateArmorClear();
         this.props.appGlobals.saveCurrentBattleMech( currentMech );
       }
@@ -56,7 +56,7 @@ export default class MechCreatorStep4 extends React.Component<IHomeProps, IHomeS
 
     toggleMirrorArmorAllocations = (): void => {
       if( this.props.appGlobals.currentBattleMech ) {
-        let currentMech = this.props.appGlobals.currentBattleMech;
+        const currentMech = this.props.appGlobals.currentBattleMech;
         currentMech.toggleMirrorArmorAllocations();
         this.props.appGlobals.saveCurrentBattleMech( currentMech );
       }
@@ -64,7 +64,7 @@ export default class MechCreatorStep4 extends React.Component<IHomeProps, IHomeS
 
     setArmorLocationValue = ( locationAbbr: string, newValue: number ): void => {
       if( this.props.appGlobals.currentBattleMech ) {
-        let currentMech = this.props.appGlobals.currentBattleMech;
+        const currentMech = this.props.appGlobals.currentBattleMech;
         switch( locationAbbr.toLowerCase().trim() ) {
           case "hd": {
             currentMech.setHeadArmor( newValue);
@@ -136,7 +136,7 @@ export default class MechCreatorStep4 extends React.Component<IHomeProps, IHomeS
 
     setArmorWeight = ( event: React.FormEvent<HTMLSelectElement>): void => {
       if( this.props.appGlobals.currentBattleMech ) {
-        let currentMech = this.props.appGlobals.currentBattleMech;
+        const currentMech = this.props.appGlobals.currentBattleMech;
         currentMech.setArmorWeight( +event.currentTarget.value);
         this.props.appGlobals.saveCurrentBattleMech( currentMech );
       }
@@ -144,7 +144,7 @@ export default class MechCreatorStep4 extends React.Component<IHomeProps, IHomeS
 
     setPatchworkArmorType = ( locationKey: string, armorTag: string ): void => {
       if( this.props.appGlobals.currentBattleMech ) {
-        let currentMech = this.props.appGlobals.currentBattleMech;
+        const currentMech = this.props.appGlobals.currentBattleMech;
         currentMech.setPatchworkArmorType( locationKey, armorTag );
         this.props.appGlobals.saveCurrentBattleMech( currentMech );
       }
@@ -152,7 +152,7 @@ export default class MechCreatorStep4 extends React.Component<IHomeProps, IHomeS
 
     setFractionalArmorPoints = ( event: React.FormEvent<HTMLInputElement>): void => {
       if( this.props.appGlobals.currentBattleMech ) {
-        let currentMech = this.props.appGlobals.currentBattleMech;
+        const currentMech = this.props.appGlobals.currentBattleMech;
         currentMech.setFractionalArmorPoints( +event.currentTarget.value);
         this.props.appGlobals.saveCurrentBattleMech( currentMech );
       }
@@ -160,7 +160,7 @@ export default class MechCreatorStep4 extends React.Component<IHomeProps, IHomeS
 
     setArmorType = ( event: React.FormEvent<HTMLSelectElement>): void => {
       if( this.props.appGlobals.currentBattleMech ) {
-        let currentMech = this.props.appGlobals.currentBattleMech;
+        const currentMech = this.props.appGlobals.currentBattleMech;
         currentMech.setArmorType( event.currentTarget.value);
         this.props.appGlobals.saveCurrentBattleMech( currentMech );
       }

@@ -40,10 +40,10 @@ export default class Pilot {
     }
 
     getASAbilities(): IASPilotAbility[] {
-        let rv: IASPilotAbility[] = [];
+        const rv: IASPilotAbility[] = [];
 
-        for( let id of this.alphaStrikeAbilities ) {
-            for( let abi of CONST_AS_PILOT_ABILITIES) {
+        for( const id of this.alphaStrikeAbilities ) {
+            for( const abi of CONST_AS_PILOT_ABILITIES) {
                 if( abi.id === id ) {
                     rv.push( abi );
                     break;
@@ -56,7 +56,7 @@ export default class Pilot {
 
 
     export(): IPilot {
-        let rv: IPilot = {
+        const rv: IPilot = {
             name: this.name,
             piloting: this.piloting,
             gunnery: this.gunnery,

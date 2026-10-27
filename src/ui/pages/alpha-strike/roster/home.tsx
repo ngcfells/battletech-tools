@@ -63,9 +63,9 @@ export default class AlphaStrikeRosterHome extends React.Component<IHomeProps, I
     ) => {
       if( e && e.preventDefault ) e.preventDefault();
 
-      let currentASForce = this.props.appGlobals.currentASForce;
+      const currentASForce = this.props.appGlobals.currentASForce;
       if( currentASForce) {
-        let newGroup = new AlphaStrikeGroup();
+        const newGroup = new AlphaStrikeGroup();
         newGroup.groupLabel = pack.groupLabel;
 
         newGroup.customName = pack.name;
@@ -78,7 +78,7 @@ export default class AlphaStrikeRosterHome extends React.Component<IHomeProps, I
             console.log("No match found for '" + member + "'");
             return;
           }
-          let newUnit = new AlphaStrikeUnit();
+          const newUnit = new AlphaStrikeUnit();
           newUnit.importMUL( item );
           const skill = pack.skills?.[index] ?? (pack.tech === "clan" ? 3 : undefined);
           if( skill !== undefined ) newUnit.setSkill(skill);
@@ -87,7 +87,7 @@ export default class AlphaStrikeRosterHome extends React.Component<IHomeProps, I
 
         if( newGroup.members.length > 0 ) {
           newGroup.setAvailableFormationBonuses(formationBonuses.filter(x=>x.IsValid(newGroup, currentASForce?.groups ?? [])))
-          for(let group of currentASForce?.groups ?? []){
+          for(const group of currentASForce?.groups ?? []){
               if(group.needsToCheckBonuses()){
                   group.setAvailableFormationBonuses( formationBonuses.filter(x=>x.IsValid(group, currentASForce?.groups ?? [])));
               }
@@ -161,7 +161,7 @@ export default class AlphaStrikeRosterHome extends React.Component<IHomeProps, I
     }
 
     openViewUnit = ( theUnit: AlphaStrikeUnit ): void => {
-      let showASUnit = theUnit;
+      const showASUnit = theUnit;
 
       this.setState({
         showASUnit: showASUnit,
@@ -187,7 +187,7 @@ export default class AlphaStrikeRosterHome extends React.Component<IHomeProps, I
     selectFile = async (e: React.FormEvent<HTMLInputElement>): Promise<void> => {
       if( e && e.preventDefault ) e.preventDefault();
       if( e.currentTarget.files && e.currentTarget.files.length > 0 ) {
-        let foundFile = e.currentTarget.files[0];
+        const foundFile = e.currentTarget.files[0];
         // console.log( "test", foundFIle );
         if( foundFile.type === "application/json" ) {
           this.fileReader = new FileReader();
@@ -200,16 +200,16 @@ export default class AlphaStrikeRosterHome extends React.Component<IHomeProps, I
 
     handleFileRead = (_e: any) => {
       if( this.fileReader ) {
-        let content = this.fileReader.result;
+        const content = this.fileReader.result;
 
         // console.log("content", content)
         try {
           if( content ) {
-            let data: IASGroupExport = JSON.parse( content.toString() )
+            const data: IASGroupExport = JSON.parse( content.toString() )
 
             // let btFavASGroup = this.props.appGlobals.favoriteASGroup;
             // for( let item of data ) {
-            let parsedItem =  new AlphaStrikeGroup(data);
+            const parsedItem =  new AlphaStrikeGroup(data);
             // }
 
             this.props.appGlobals.saveASGroupFavorite( parsedItem );

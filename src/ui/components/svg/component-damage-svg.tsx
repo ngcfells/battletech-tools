@@ -22,8 +22,8 @@ export default class ComponentDamageSVG extends React.Component<IComponentDamage
             this.strokeColor = this.props.strokeColor;
         }
 
-        let baseWidth = 744.09448819;
-        let baseHeight = 1052.3622047;
+        const baseWidth = 744.09448819;
+        const baseHeight = 1052.3622047;
         if( this.props.width ) {
             this.theWidth = this.props.width;
             this.theHeight = Math.round( this.props.width / baseWidth * baseHeight );
@@ -56,7 +56,7 @@ export default class ComponentDamageSVG extends React.Component<IComponentDamage
         //     var svg = "<!DOCTYPE HTML><svg version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xml:space=\"preserve\" height=\"" + theHeight  + " px\" width=\"" + theWidth  + "px\" viewBox=\"0 0 790 100\" ><g>\n";
         // console.log( this.theWidth )
 
-        let textRightLine = this.theWidth * 2 / 3 - 40;
+        const textRightLine = this.theWidth * 2 / 3 - 40;
 
         // theHeight = 100;
         return (

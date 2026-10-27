@@ -165,7 +165,7 @@ export default class AlphaStrikeAddUnitsView extends React.Component<IAlphaStrik
 
     updateSearchResults = async (): Promise<void> => {
 
-      let currentSearchId = generateUUID();
+      const currentSearchId = generateUUID();
       this.latestSearchId = currentSearchId;
 
       this.setState({
@@ -220,7 +220,7 @@ export default class AlphaStrikeAddUnitsView extends React.Component<IAlphaStrik
         searchPage: 0,
       });
 
-      let appSettings = this.props.appGlobals.appSettings;
+      const appSettings = this.props.appGlobals.appSettings;
 
       appSettings.alphasStrikeCachedSearchResults = data;
       // Search results stay in memory; saveAppSettings persists preferences and user work, not
@@ -401,7 +401,7 @@ export default class AlphaStrikeAddUnitsView extends React.Component<IAlphaStrik
               <li
                 key={asGroupIndex}
                 onClick={() => {
-                  let unitObj = new AlphaStrikeUnit();
+                  const unitObj = new AlphaStrikeUnit();
                   unitObj.importMUL( JSON.parse(JSON.stringify(asUnit)) );
                   this.addToGroup( unitObj, asGroupIndex)
                 }}
@@ -419,7 +419,7 @@ export default class AlphaStrikeAddUnitsView extends React.Component<IAlphaStrik
       <button
         className="btn-sm btn btn-primary no-right-margin"
         onClick={() => {
-          let unitObj = new AlphaStrikeUnit();
+          const unitObj = new AlphaStrikeUnit();
           unitObj.importMUL( JSON.parse(JSON.stringify(asUnit)) );
           this.addToGroup( unitObj, 0)
         }}
@@ -432,7 +432,7 @@ export default class AlphaStrikeAddUnitsView extends React.Component<IAlphaStrik
     <button
       className="btn btn-primary btn-sm"
       onClick={() => {
-        let unitObj = new AlphaStrikeUnit();
+        const unitObj = new AlphaStrikeUnit();
         unitObj.importMUL( asUnit );
         this.props.openViewUnit( unitObj )
       }}
@@ -550,10 +550,10 @@ export default class AlphaStrikeAddUnitsView extends React.Component<IAlphaStrik
                     </thead>
 
         {this.props.appGlobals.battleMechSaves.map( (bm, unitIndex) => {
-            let bmObj = new BattleMech();
+            const bmObj = new BattleMech();
             bmObj.import( bm );
 
-            let asUnit = bmObj.calcAlphaStrike();
+            const asUnit = bmObj.calcAlphaStrike();
 
             return (
                 <tbody key={unitIndex}>

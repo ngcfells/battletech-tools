@@ -89,7 +89,7 @@ export default class EquipmentEditor extends React.Component<IEquipmentEditorPro
     }
 
     _normalizeListData = (data: IEquipmentItem[]): IEquipmentItem[] => {
-        for(let item of data) {
+        for(const item of data) {
             if( typeof(item.heatAero) === "undefined") {
                 item.heatAero = item.heat;
             }
@@ -144,7 +144,7 @@ export default class EquipmentEditor extends React.Component<IEquipmentEditorPro
                             isDirty: false,
                         });
 
-                        let appSettings = this.props.appGlobals.appSettings;
+                        const appSettings = this.props.appGlobals.appSettings;
 
                         appSettings.equipmentEditorFile = e.currentTarget.value;
                         this.props.appGlobals.saveAppSettings( appSettings );
@@ -160,7 +160,7 @@ export default class EquipmentEditor extends React.Component<IEquipmentEditorPro
                     currentListData: currentListData,
                 });
 
-                let appSettings = this.props.appGlobals.appSettings;
+                const appSettings = this.props.appGlobals.appSettings;
 
                 appSettings.equipmentEditorFile = e.currentTarget.value;
                 this.props.appGlobals.saveAppSettings( appSettings );
@@ -243,7 +243,7 @@ export default class EquipmentEditor extends React.Component<IEquipmentEditorPro
         if( e && e.preventDefault ) {
             e.preventDefault();
         }
-        let item: IEquipmentItem = {
+        const item: IEquipmentItem = {
             uuid: "",
             notes: "",
             count: 0,
@@ -329,7 +329,7 @@ export default class EquipmentEditor extends React.Component<IEquipmentEditorPro
     }
 
     saveItem = () => {
-        let currentListData = [...this.state.currentListData];
+        const currentListData = [...this.state.currentListData];
         if( this.state.editItem !== null ) {
             if( this.state.editItemIndex > - 1 ) {
                 if( this.state.editItemIndex < currentListData.length ) {
@@ -349,7 +349,7 @@ export default class EquipmentEditor extends React.Component<IEquipmentEditorPro
     }
 
     saveItemAsNew = () => {
-        let currentListData = [...this.state.currentListData];
+        const currentListData = [...this.state.currentListData];
         if( this.state.editItem !== null ) {
 
             currentListData.push( this.state.editItem );

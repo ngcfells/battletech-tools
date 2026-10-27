@@ -59,7 +59,7 @@ export default class AlphaStrikeGameManagementHome extends React.Component<IAlph
         }
 
         toggleDeployment = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-            let curDeployments = this.props.appGlobals.currentDeployments!;
+            const curDeployments = this.props.appGlobals.currentDeployments!;
             for(let i = 0; i < curDeployments.length; i++) {
                 if(curDeployments[i].uuid === e.currentTarget!.value) {
                     if(curDeployments[i].banned === false && this.props.appGlobals.currentDeployments!.filter(x => x.banned === true).length === this.numberOfOptions - 1){
@@ -73,7 +73,7 @@ export default class AlphaStrikeGameManagementHome extends React.Component<IAlph
         }
 
         toggleScenario = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-            let curScenarios = this.props.appGlobals.currentScenarios!;
+            const curScenarios = this.props.appGlobals.currentScenarios!;
             for(let i = 0; i < curScenarios.length; i++) {
                 if(curScenarios[i].uuid === e.currentTarget!.value) {
                     if(curScenarios[i].banned === false && this.props.appGlobals.currentScenarios!.filter(x => x.banned === true).length === this.numberOfOptions - 1){
@@ -86,7 +86,7 @@ export default class AlphaStrikeGameManagementHome extends React.Component<IAlph
         }
 
         toggleTerrain = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-            let curTerrains = this.props.appGlobals.currentTerrains!;
+            const curTerrains = this.props.appGlobals.currentTerrains!;
             for(let i = 0; i < curTerrains.length; i++) {
                 if(curTerrains[i].uuid === e.currentTarget!.value) {
                     if(curTerrains[i].banned === false && this.props.appGlobals.currentTerrains!.filter(x => x.banned === true).length === this.numberOfOptions - 1){
@@ -99,7 +99,7 @@ export default class AlphaStrikeGameManagementHome extends React.Component<IAlph
         }
 
         saveAppSettings = () => {
-            let appSettings = this.props.appGlobals.appSettings;
+            const appSettings = this.props.appGlobals.appSettings;
             this.props.appGlobals.saveAppSettings(appSettings);
         }
 

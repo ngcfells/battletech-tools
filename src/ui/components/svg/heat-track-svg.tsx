@@ -28,18 +28,18 @@ export default class HeatTrackSVG extends React.Component<IHeatTrackSVGProps, IH
 
     render = (): JSX.Element => {
 
-        let heatScale: JSX.Element[] = [];
-        let boxHeight = 36;
+        const heatScale: JSX.Element[] = [];
+        const boxHeight = 36;
         // As on the Total Warfare sheet: an Overflow box, then 30 at the top down to 0.
         const overflowTop = this.props.yLoc + 60;
         const scaleTop = overflowTop + boxHeight + 8;
         const rowY = (heat: number) => scaleTop + boxHeight * (30 - heat);
-        let boxWidth = 60;
-        let normalBG = this.bgColor;
-        let effectBG = this.effectBGColor;
+        const boxWidth = 60;
+        const normalBG = this.bgColor;
+        const effectBG = this.effectBGColor;
         let boxBG = normalBG;
 
-        for( var hCounter = 30; hCounter >= 0; hCounter-- ) {
+        for( let hCounter = 30; hCounter >= 0; hCounter-- ) {
             heatScale.push(
                 <rect
                     key={hCounter.toString() + "a"}

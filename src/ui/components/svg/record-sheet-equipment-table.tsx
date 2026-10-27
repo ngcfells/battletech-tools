@@ -75,25 +75,25 @@ export default class RecordSheetEquipmentTable extends React.Component<IRecordSh
 
     render = (): JSX.Element => {
 
-        let weapAndEqpTop = this.props.yLoc;
-        let weapAndEqpLeft = this.props.xLoc;
+        const weapAndEqpTop = this.props.yLoc;
+        const weapAndEqpLeft = this.props.xLoc;
 
-        let wacCol1 = weapAndEqpLeft + 15;
-        let wacCol2 = weapAndEqpLeft + 90;
-        let wacCol3 = weapAndEqpLeft + 470;
-        let wacCol4 = weapAndEqpLeft + 550;
-        let wacCol5 = weapAndEqpLeft + 650;
-        let wacCol6 = weapAndEqpLeft + 770;
-        let wacCol7 = weapAndEqpLeft + 880;
-        let wacCol8 = weapAndEqpLeft + 990;
-        let wacCol9 = weapAndEqpLeft + 1100;
+        const wacCol1 = weapAndEqpLeft + 15;
+        const wacCol2 = weapAndEqpLeft + 90;
+        const wacCol3 = weapAndEqpLeft + 470;
+        const wacCol4 = weapAndEqpLeft + 550;
+        const wacCol5 = weapAndEqpLeft + 650;
+        const wacCol6 = weapAndEqpLeft + 770;
+        const wacCol7 = weapAndEqpLeft + 880;
+        const wacCol8 = weapAndEqpLeft + 990;
+        const wacCol9 = weapAndEqpLeft + 1100;
 
-        let equipmentList: JSX.Element[] = [];
+        const equipmentList: JSX.Element[] = [];
         let rearDesignation = "";
 
-        let colorVeryLightGray = "rgb(200, 200, 200)";
+        const colorVeryLightGray = "rgb(200, 200, 200)";
 
-        let eqLineHeight = 33;
+        const eqLineHeight = 33;
         let bgColor = "rgb(255,255,255)";
         let strokeColor = "rgb(0,0,0)";
         // landscape: boolean = false;
@@ -116,12 +116,12 @@ export default class RecordSheetEquipmentTable extends React.Component<IRecordSh
             if( eq_count % 2 === 0 )
                 equipmentList.push( <rect key={ eq_count.toString() + "a"}x={wacCol1 - 5 } y={weapAndEqpTop + 93 + eqLineHeight * row} width={1180} height={eqLineHeight + 4} fill={colorVeryLightGray} /> );
 
-            let ammoPerTon = this.props.mechData.getAmmoBinCapacity(this.props.mechData.equipmentList[ eq_count]);
-            let currentAmmo = this.props.mechData.getAmmoBinRemaining(this.props.mechData.equipmentList[ eq_count]);
-            let isAmmo = this.props.mechData.equipmentList[ eq_count].isAmmo ? true : false ;
-            let isEquipment = this.props.mechData.equipmentList[ eq_count].isEquipment ? true : false ;
-            let location = this.props.mechData.equipmentList[eq_count].location;
-            let uuid = this.props.mechData.equipmentList[ eq_count].uuid;
+            const ammoPerTon = this.props.mechData.getAmmoBinCapacity(this.props.mechData.equipmentList[ eq_count]);
+            const currentAmmo = this.props.mechData.getAmmoBinRemaining(this.props.mechData.equipmentList[ eq_count]);
+            const isAmmo = this.props.mechData.equipmentList[ eq_count].isAmmo ? true : false ;
+            const isEquipment = this.props.mechData.equipmentList[ eq_count].isEquipment ? true : false ;
+            const location = this.props.mechData.equipmentList[eq_count].location;
+            const uuid = this.props.mechData.equipmentList[ eq_count].uuid;
             const modularArmorPoints = this.props.mechData.equipmentList[eq_count].isModularArmor
                 ? this.props.mechData.getModularArmorCurrentPoints(this.props.mechData.equipmentList[eq_count])
                 : null;
@@ -132,9 +132,9 @@ export default class RecordSheetEquipmentTable extends React.Component<IRecordSh
             if( this.props.inPlay && !isAmmo && !isEquipment ) {
 
 
-                let targetColor = getTargetColor( this.props.mechData.equipmentList[ eq_count].target );
+                const targetColor = getTargetColor( this.props.mechData.equipmentList[ eq_count].target );
                 // The live sheet in Play Mode takes the game's "Use design quirks" switch, as the attack list does.
-                let targetGATOR = getTargetToHitFromWeapon(
+                const targetGATOR = getTargetToHitFromWeapon(
                     this.props.mechData,
                     eq_count,
                     null,

@@ -46,10 +46,10 @@ export default class AlphaStrikeRosterPrint extends React.Component<IPrintProps,
 
     render = (): JSX.Element => {
       // Create a running list of pilot ability cards to render on the last page.
-      let forceSPAs: any[] = [];
-      let formationBonus: any[] = [];
+      const forceSPAs: any[] = [];
+      const formationBonus: any[] = [];
 
-      let pages: PrintPage[] = [];
+      const pages: PrintPage[] = [];
       pages.push({
         units: 0,
         groups: [],
@@ -60,7 +60,7 @@ export default class AlphaStrikeRosterPrint extends React.Component<IPrintProps,
       }
 
       
-      for (let group of this.props.appGlobals.currentASForce.groups) {
+      for (const group of this.props.appGlobals.currentASForce.groups) {
         // Find a home for this group
         let placed = false;
         for (let index = 0; index < pages.length; index++) {

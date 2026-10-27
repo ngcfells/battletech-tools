@@ -44,16 +44,16 @@ export default class AppRouter extends React.Component<IAppRouterProps, IAppRout
     constructor(props: IAppRouterProps) {
         super(props);
 
-        let settingsData = getAppSettings();
+        const settingsData = getAppSettings();
 
-        let appSettings = new AppSettings( settingsData );
+        const appSettings = new AppSettings( settingsData );
 
         // let uiTheme: string = "";
         // let lsTheme = getData("uiTheme");
 
         // Don't worry about tracking individual users here, this UUID resets on every page load or refresh and is NOT tied to a machine or browser...
         // this just helps me see the flow of traffic to help folks find what they need :)
-        let sessionUUID = generateUUID();
+        const sessionUUID = generateUUID();
 
         // console.log("settingsData", settingsData);
         if( settingsData && settingsData.uiTheme ) {
@@ -62,7 +62,7 @@ export default class AppRouter extends React.Component<IAppRouterProps, IAppRout
             document.body.className = '';
         }
 
-        let appGlobals: IAppGlobals = {
+        const appGlobals: IAppGlobals = {
             sessionUUID: sessionUUID,
             appSettings: appSettings,
             currentPageTitle: "",
@@ -235,20 +235,20 @@ export default class AppRouter extends React.Component<IAppRouterProps, IAppRout
         // This browser's custom content drafts must be registered before saved designs that use them load.
         registerLocalCustomContent();
 
-        let asImport: IASForceExport | null = await getCurrentASForce(appSettings);
+        const asImport: IASForceExport | null = await getCurrentASForce(appSettings);
 
-        let alphaStrikeForce = new AlphaStrikeForce( asImport );
+        const alphaStrikeForce = new AlphaStrikeForce( asImport );
 
-        let lsBMImport = await getCurrentBattleMech(appSettings);
-        let currentBattleMech = new BattleMech();
+        const lsBMImport = await getCurrentBattleMech(appSettings);
+        const currentBattleMech = new BattleMech();
         if( lsBMImport ) {
             currentBattleMech.importJSON( lsBMImport);
         }
 
-        let lsVehicleImport = await getCurrentVehicle(appSettings);
-        let currentVehicle = new Vehicle( lsVehicleImport || "" );
+        const lsVehicleImport = await getCurrentVehicle(appSettings);
+        const currentVehicle = new Vehicle( lsVehicleImport || "" );
 
-        let vehicleSaves: IVehicleExport[] = await getVehicleSaves(appSettings);
+        const vehicleSaves: IVehicleExport[] = await getVehicleSaves(appSettings);
 
         const currentFighter = new AerospaceFighter( (await getCurrentFighter(appSettings)) || "" );
         const fighterSaves: IAerospaceFighterExport[] = await getFighterSaves(appSettings);
@@ -271,12 +271,12 @@ export default class AppRouter extends React.Component<IAppRouterProps, IAppRout
         const currentBuilding = new Building( (await getCurrentBuilding(appSettings)) || "" );
         const buildingSaves: IBuildingExport[] = await getBuildingSaves(appSettings);
 
-        let battleMechSaves: IBattleMechExport[] = await getBattleMechSaves(appSettings);
-        let asImportFavorites: IASGroupExport[] = await getFavoriteASGroups(appSettings);
+        const battleMechSaves: IBattleMechExport[] = await getBattleMechSaves(appSettings);
+        const asImportFavorites: IASGroupExport[] = await getFavoriteASGroups(appSettings);
 
         // Basic Data Integrity Checks
         let needsBMReSave = false;
-        for( let item of battleMechSaves ) {
+        for( const item of battleMechSaves ) {
             if( !item.uuid ) {
                 item.uuid = generateUUID();
                 needsBMReSave = true;
@@ -288,7 +288,7 @@ export default class AppRouter extends React.Component<IAppRouterProps, IAppRout
             await saveBattleMechSaves( appSettings, battleMechSaves )
         }
         let needsASReSave = false;
-        for( let item of asImportFavorites ) {
+        for( const item of asImportFavorites ) {
             if( !item.uuid ) {
                 item.uuid = generateUUID();
                 needsASReSave = true;
@@ -301,31 +301,31 @@ export default class AppRouter extends React.Component<IAppRouterProps, IAppRout
 
         // End of Basic Data Integrity Checks
 
-        let asImportedFavorites: AlphaStrikeGroup[] = [];
+        const asImportedFavorites: AlphaStrikeGroup[] = [];
 
         if( asImportFavorites.length > 0 ) {
             if( asImportFavorites && asImportFavorites.length > 0 )  {
-                for( let importItem of asImportFavorites ) {
+                for( const importItem of asImportFavorites ) {
                     asImportedFavorites.push( new AlphaStrikeGroup(importItem) );
                 }
             }
         }
 
-        let bmImportFavorites: ICBTGroupExport[] = await getFavoriteCBTGroups(appSettings);
+        const bmImportFavorites: ICBTGroupExport[] = await getFavoriteCBTGroups(appSettings);
 
-        let bmImportedFavorites: BattleMechGroup[] = [];
+        const bmImportedFavorites: BattleMechGroup[] = [];
 
         if( bmImportFavorites.length > 0 ) {
             if( bmImportFavorites && bmImportFavorites.length > 0 )  {
-                for( let importItem of bmImportFavorites ) {
+                for( const importItem of bmImportFavorites ) {
                     bmImportedFavorites.push( new BattleMechGroup(importItem) );
                 }
             }
         }
 
-        let bmfImport: ICBTForceExport | null = await getCurrentCBTForce(appSettings);
+        const bmfImport: ICBTForceExport | null = await getCurrentCBTForce(appSettings);
 
-        let currentCBTForce = new BattleMechForce( bmfImport );
+        const currentCBTForce = new BattleMechForce( bmfImport );
 
         appGlobals.favoriteASGroups = asImportedFavorites;
         appGlobals.currentASForce = alphaStrikeForce;
@@ -366,7 +366,7 @@ export default class AppRouter extends React.Component<IAppRouterProps, IAppRout
 
     saveBattleMechSaves = ( newValue: IBattleMechExport[] ): void => {
 
-        let appGlobals = this.state.appGlobals;
+        const appGlobals = this.state.appGlobals;
         appGlobals.battleMechSaves = newValue;
 
         saveBattleMechSaves( appGlobals.appSettings, appGlobals.battleMechSaves )
@@ -378,7 +378,7 @@ export default class AppRouter extends React.Component<IAppRouterProps, IAppRout
 
     saveVehicleSaves = ( newValue: IVehicleExport[] ): void => {
 
-        let appGlobals = this.state.appGlobals;
+        const appGlobals = this.state.appGlobals;
         appGlobals.vehicleSaves = newValue;
 
         saveVehicleSaves( appGlobals.appSettings, appGlobals.vehicleSaves )
@@ -389,7 +389,7 @@ export default class AppRouter extends React.Component<IAppRouterProps, IAppRout
     }
 
     saveAppSettings = ( appSettings: AppSettings ): void => {
-        let appGlobals = this.state.appGlobals;
+        const appGlobals = this.state.appGlobals;
         appGlobals.appSettings = appSettings;
 
         if( appSettings.uiTheme.trim() ) {
@@ -407,7 +407,7 @@ export default class AppRouter extends React.Component<IAppRouterProps, IAppRout
     }
 
     saveCurrentBattleMech = ( mech: BattleMech ): void => {
-        let appGlobals = this.state.appGlobals;
+        const appGlobals = this.state.appGlobals;
         appGlobals.currentBattleMech = mech;
         this.setState({
             appGlobals: appGlobals,
@@ -419,7 +419,7 @@ export default class AppRouter extends React.Component<IAppRouterProps, IAppRout
     }
 
     saveFighterSaves = ( newValue: IAerospaceFighterExport[] ): void => {
-        let appGlobals = this.state.appGlobals;
+        const appGlobals = this.state.appGlobals;
         appGlobals.fighterSaves = newValue;
 
         saveFighterSaves( appGlobals.appSettings, appGlobals.fighterSaves )
@@ -430,7 +430,7 @@ export default class AppRouter extends React.Component<IAppRouterProps, IAppRout
     }
 
     saveBuildingSaves = ( newValue: IBuildingExport[] ): void => {
-        let appGlobals = this.state.appGlobals;
+        const appGlobals = this.state.appGlobals;
         appGlobals.buildingSaves = newValue;
 
         saveBuildingSaves( appGlobals.appSettings, appGlobals.buildingSaves )
@@ -441,7 +441,7 @@ export default class AppRouter extends React.Component<IAppRouterProps, IAppRout
     }
 
     saveCurrentBuilding = ( building: Building ): void => {
-        let appGlobals = this.state.appGlobals;
+        const appGlobals = this.state.appGlobals;
         appGlobals.currentBuilding = building;
         this.setState({
             appGlobals: appGlobals,
@@ -453,7 +453,7 @@ export default class AppRouter extends React.Component<IAppRouterProps, IAppRout
     }
 
     saveInfantrySaves = ( newValue: IInfantryPlatoonExport[] ): void => {
-        let appGlobals = this.state.appGlobals;
+        const appGlobals = this.state.appGlobals;
         appGlobals.infantrySaves = newValue;
 
         saveInfantrySaves( appGlobals.appSettings, appGlobals.infantrySaves )
@@ -464,7 +464,7 @@ export default class AppRouter extends React.Component<IAppRouterProps, IAppRout
     }
 
     saveCurrentInfantry = ( platoon: InfantryPlatoon ): void => {
-        let appGlobals = this.state.appGlobals;
+        const appGlobals = this.state.appGlobals;
         appGlobals.currentInfantry = platoon;
         this.setState({
             appGlobals: appGlobals,
@@ -476,7 +476,7 @@ export default class AppRouter extends React.Component<IAppRouterProps, IAppRout
     }
 
     saveBattleArmorSaves = ( newValue: IBattleArmorExport[] ): void => {
-        let appGlobals = this.state.appGlobals;
+        const appGlobals = this.state.appGlobals;
         appGlobals.battleArmorSaves = newValue;
 
         saveBattleArmorSaves( appGlobals.appSettings, appGlobals.battleArmorSaves )
@@ -487,7 +487,7 @@ export default class AppRouter extends React.Component<IAppRouterProps, IAppRout
     }
 
     saveCurrentBattleArmor = ( suit: BattleArmor ): void => {
-        let appGlobals = this.state.appGlobals;
+        const appGlobals = this.state.appGlobals;
         appGlobals.currentBattleArmor = suit;
         this.setState({
             appGlobals: appGlobals,
@@ -499,7 +499,7 @@ export default class AppRouter extends React.Component<IAppRouterProps, IAppRout
     }
 
     saveProtoMechSaves = ( newValue: IProtoMechExport[] ): void => {
-        let appGlobals = this.state.appGlobals;
+        const appGlobals = this.state.appGlobals;
         appGlobals.protoMechSaves = newValue;
 
         saveProtoMechSaves( appGlobals.appSettings, appGlobals.protoMechSaves )
@@ -510,7 +510,7 @@ export default class AppRouter extends React.Component<IAppRouterProps, IAppRout
     }
 
     saveCurrentProtoMech = ( proto: ProtoMech ): void => {
-        let appGlobals = this.state.appGlobals;
+        const appGlobals = this.state.appGlobals;
         appGlobals.currentProtoMech = proto;
         this.setState({
             appGlobals: appGlobals,
@@ -522,7 +522,7 @@ export default class AppRouter extends React.Component<IAppRouterProps, IAppRout
     }
 
     saveSmallCraftSaves = ( newValue: ISmallCraftExport[] ): void => {
-        let appGlobals = this.state.appGlobals;
+        const appGlobals = this.state.appGlobals;
         appGlobals.smallCraftSaves = newValue;
 
         saveSmallCraftSaves( appGlobals.appSettings, appGlobals.smallCraftSaves )
@@ -533,7 +533,7 @@ export default class AppRouter extends React.Component<IAppRouterProps, IAppRout
     }
 
     saveCurrentSmallCraft = ( craft: SmallCraft ): void => {
-        let appGlobals = this.state.appGlobals;
+        const appGlobals = this.state.appGlobals;
         appGlobals.currentSmallCraft = craft;
         this.setState({
             appGlobals: appGlobals,
@@ -545,7 +545,7 @@ export default class AppRouter extends React.Component<IAppRouterProps, IAppRout
     }
 
     saveCapitalShipSaves = ( newValue: ICapitalShipExport[] ): void => {
-        let appGlobals = this.state.appGlobals;
+        const appGlobals = this.state.appGlobals;
         appGlobals.capitalShipSaves = newValue;
 
         saveCapitalShipSaves( appGlobals.appSettings, appGlobals.capitalShipSaves )
@@ -556,7 +556,7 @@ export default class AppRouter extends React.Component<IAppRouterProps, IAppRout
     }
 
     saveCurrentCapitalShip = ( craft: CapitalShip ): void => {
-        let appGlobals = this.state.appGlobals;
+        const appGlobals = this.state.appGlobals;
         appGlobals.currentCapitalShip = craft;
         this.setState({
             appGlobals: appGlobals,
@@ -568,7 +568,7 @@ export default class AppRouter extends React.Component<IAppRouterProps, IAppRout
     }
 
     saveCurrentFighter = ( fighter: AerospaceFighter ): void => {
-        let appGlobals = this.state.appGlobals;
+        const appGlobals = this.state.appGlobals;
         appGlobals.currentFighter = fighter;
         this.setState({
             appGlobals: appGlobals,
@@ -580,7 +580,7 @@ export default class AppRouter extends React.Component<IAppRouterProps, IAppRout
     }
 
     saveCurrentVehicle = ( vehicle: Vehicle ): void => {
-        let appGlobals = this.state.appGlobals;
+        const appGlobals = this.state.appGlobals;
         appGlobals.currentVehicle = vehicle;
         this.setState({
             appGlobals: appGlobals,
@@ -593,7 +593,7 @@ export default class AppRouter extends React.Component<IAppRouterProps, IAppRout
 
     saveCurrentASForce = ( asForce: AlphaStrikeForce ): void => {
 
-        let appGlobals = this.state.appGlobals;
+        const appGlobals = this.state.appGlobals;
 
         appGlobals.currentASForce = asForce;
 
@@ -605,8 +605,8 @@ export default class AppRouter extends React.Component<IAppRouterProps, IAppRout
     }
 
     saveASGroupFavorite = ( asGroup: AlphaStrikeGroup ): void => {
-        let appGlobals = this.state.appGlobals;
-        let asGroupThinned = new AlphaStrikeGroup( asGroup.export(true) ); // Don't Save in-play variables for Favorite Groups, this will save localStorage space
+        const appGlobals = this.state.appGlobals;
+        const asGroupThinned = new AlphaStrikeGroup( asGroup.export(true) ); // Don't Save in-play variables for Favorite Groups, this will save localStorage space
         appGlobals.favoriteASGroups.push( asGroupThinned );
         this.saveFavoriteASGroups( appGlobals.favoriteASGroups );
 
@@ -614,7 +614,7 @@ export default class AppRouter extends React.Component<IAppRouterProps, IAppRout
     }
 
     removeASGroupFavorite = ( asGroupIndex: number ): void => {
-        let appGlobals = this.state.appGlobals;
+        const appGlobals = this.state.appGlobals;
 
         if( appGlobals.favoriteASGroups.length > asGroupIndex ) {
             appGlobals.favoriteASGroups.splice( asGroupIndex, 1 );
@@ -626,12 +626,12 @@ export default class AppRouter extends React.Component<IAppRouterProps, IAppRout
     }
 
     saveFavoriteASGroups = ( asGroups: AlphaStrikeGroup[] ): void => {
-        let exportASGroups: IASGroupExport[] = [];
-        for( let group of asGroups) {
+        const exportASGroups: IASGroupExport[] = [];
+        for( const group of asGroups) {
             exportASGroups.push( group.export() );
         }
         // console.log("exportASGroups", exportASGroups)
-        let appGlobals = this.state.appGlobals;
+        const appGlobals = this.state.appGlobals;
         appGlobals.favoriteASGroups = asGroups;
         this.setState({
             appGlobals: appGlobals,
@@ -641,7 +641,7 @@ export default class AppRouter extends React.Component<IAppRouterProps, IAppRout
 
     saveCurrentCBTForce = ( bmForce: BattleMechForce ): void => {
 
-        let appGlobals = this.state.appGlobals;
+        const appGlobals = this.state.appGlobals;
         appGlobals.currentCBTForce = bmForce;
 
         this.setState({
@@ -653,15 +653,15 @@ export default class AppRouter extends React.Component<IAppRouterProps, IAppRout
     }
 
     saveCBTGroupFavorite = ( bmGroup: BattleMechGroup ): void => {
-        let appGlobals = this.state.appGlobals;
-        let bmGroupThinned = new BattleMechGroup( bmGroup.export(true)); // Don't Save in-play variables for Favorite Groups, this will save localStorage space
+        const appGlobals = this.state.appGlobals;
+        const bmGroupThinned = new BattleMechGroup( bmGroup.export(true)); // Don't Save in-play variables for Favorite Groups, this will save localStorage space
         appGlobals.favoriteCBTGroups.push( bmGroupThinned );
         this.saveFavoriteCBTGroups( appGlobals.favoriteCBTGroups );
         saveFavoriteCBTGroupsObjects( appGlobals.appSettings, appGlobals.favoriteCBTGroups )
     }
 
     removeCBTGroupFavorite = ( asGroupIndex: number ): void => {
-        let appGlobals = this.state.appGlobals;
+        const appGlobals = this.state.appGlobals;
 
         if( appGlobals.favoriteCBTGroups.length > asGroupIndex ) {
             appGlobals.favoriteCBTGroups.splice( asGroupIndex, 1 );
@@ -673,11 +673,11 @@ export default class AppRouter extends React.Component<IAppRouterProps, IAppRout
     }
 
     saveFavoriteCBTGroups = ( asGroups: BattleMechGroup[] ): void => {
-        let exportCBTGroups: ICBTGroupExport[] = [];
-        for( let group of asGroups) {
+        const exportCBTGroups: ICBTGroupExport[] = [];
+        for( const group of asGroups) {
             exportCBTGroups.push( group.export() );
         }
-        let appGlobals = this.state.appGlobals;
+        const appGlobals = this.state.appGlobals;
         appGlobals.favoriteCBTGroups = asGroups;
         this.setState({
             appGlobals: appGlobals,
@@ -686,7 +686,7 @@ export default class AppRouter extends React.Component<IAppRouterProps, IAppRout
     }
 
     toggleMobile = (): void => {
-        let appGlobals = this.state.appGlobals;
+        const appGlobals = this.state.appGlobals;
         appGlobals.showMobile = !appGlobals.showMobile;
         this.setState({
             appGlobals: appGlobals,
@@ -695,7 +695,7 @@ export default class AppRouter extends React.Component<IAppRouterProps, IAppRout
     }
 
     closeMobile = (): void => {
-        let appGlobals = this.state.appGlobals;
+        const appGlobals = this.state.appGlobals;
         appGlobals.showMobile = false;
         this.setState({
             appGlobals: appGlobals,
@@ -704,7 +704,7 @@ export default class AppRouter extends React.Component<IAppRouterProps, IAppRout
     }
 
     makeDocumentTitle = ( subTitle: string = "" ): void => {
-        let appGlobals = this.state.appGlobals;
+        const appGlobals = this.state.appGlobals;
 
         callAnalytics(
             window,
@@ -741,7 +741,7 @@ export default class AppRouter extends React.Component<IAppRouterProps, IAppRout
     }
 
     closeConfirmDialog = (): void => {
-        let appGlobals = this.state.appGlobals;
+        const appGlobals = this.state.appGlobals;
         appGlobals.showConfirmDialog = false;
         this.setState({
             appGlobals: appGlobals,
@@ -762,7 +762,7 @@ export default class AppRouter extends React.Component<IAppRouterProps, IAppRout
             if( this.state.appGlobals.confirmDialogConfirm ) {
                 this.state.appGlobals.confirmDialogConfirm();
             }
-            let appGlobals = this.state.appGlobals;
+            const appGlobals = this.state.appGlobals;
             appGlobals.showConfirmDialog = false;
             this.setState({
                 appGlobals: appGlobals,
@@ -779,7 +779,7 @@ export default class AppRouter extends React.Component<IAppRouterProps, IAppRout
         altLabel?: string,
         altCallback?: Function,
     ): void => {
-        let appGlobals = this.state.appGlobals;
+        const appGlobals = this.state.appGlobals;
         appGlobals.confirmDialogMessage = confirmMessage;
         appGlobals.confirmDialogTitle = confirmTitle;
         appGlobals.confirmDialogYesLabel = confirmYesLabel;
