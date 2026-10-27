@@ -363,6 +363,7 @@ export interface IGATOR {
 
 export class BattleMech {
     private static readonly SIGNATURE_SYSTEM_TAGS = ["null-signature-system", "void-signature-system", "chameleon-lps"];
+    private static readonly HEAVY_GAUSS_TAGS = ["gauss-rifle-heavy", "gauss-rifle-heavy-improved"];
     private static readonly MECH_LOCATION_MAP: Record<string, string> = {
         // Shared location mapper for all front, rear, and advanced chassis locations
         hd: "head",
@@ -2338,8 +2339,12 @@ export class BattleMech {
     private _getAllowedLocations(item: IEquipmentItem): string[] | null {
         if (item.armTool) return this._hasFrontLegs() ? ["lt", "rt"] : ["la", "ra"];
         if (!item.allowedLocations) return null;
+        // "Superheavy 'Mechs may ignore the torso-only mounting restrictions applied to Heavy Gauss Rifles (standard and
+        // improved), and may place these items in the arms" (IO:AE p.157).
+        const allowed = this.isSuperheavy() && BattleMech.HEAVY_GAUSS_TAGS.includes(item.tag)
+            ? [...item.allowedLocations, "la", "ra"] : item.allowedLocations;
         // A four-legged 'Mech has no arm locations.
-        return this._hasFrontLegs() ? item.allowedLocations.filter(location => location !== "la" && location !== "ra") : item.allowedLocations;
+        return this._hasFrontLegs() ? allowed.filter(location => location !== "la" && location !== "ra") : allowed;
     }
 
     /** ECM suites, including the CEWS that work as one. */
@@ -13308,6 +13313,10 @@ export class BattleMech {
 
             if( jObj.mech.motive_type && jObj.mech.motive_type === "Quad" ) {
                 this.setMechType("quad");
+            }
+            // SSW writes no tripods; a converted MegaMek file does (battlemech-mtf.ts).
+            if( jObj.mech.motive_type === "Tripod" ) {
+                this.setMechType("tripod");
             }
             if( jObj.mech["@_model" ] ) {
                 this.setModel( jObj.mech["@_model"] );

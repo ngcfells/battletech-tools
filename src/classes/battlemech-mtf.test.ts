@@ -63,6 +63,27 @@ const quad = [
     ...location("Rear Right Leg", "Hip", "Upper Leg Actuator", "Lower Leg Actuator", "Foot Actuator"),
 ].join("\n");
 
+// A 150-ton superheavy (IO:AE pp.154-157): every item but the actuators in half its slots (a Gauss Rifle in 4),
+// two tons of ammunition sharing one slot, and MegaMek's superheavy cockpit and gyro.
+const superheavy = [
+    "chassis:Test Colossus", "model:TC-X", "Config:Biped", "techbase:Inner Sphere", "era:3076", "rules level:3", "mass:150",
+    "engine:300 Fusion Engine(IS)", "structure:IS Standard", "myomer:Standard", "cockpit:Superheavy Cockpit", "gyro:Superheavy Gyro",
+    "heat sinks:10 Single", "walk mp:2", "jump mp:0", "armor:Standard (IS)", ...armor([30, 30, 30, 30, 40, 12, 40, 40, 10, 10, 10]), "",
+    ...location("Left Arm", "Shoulder", "Upper Arm Actuator", "Lower Arm Actuator", "Hand Actuator", ...fill(3, "ISLBXAC10")),
+    ...location("Right Arm", "Shoulder", "Upper Arm Actuator", "Lower Arm Actuator", "Hand Actuator", "Medium Laser"),
+    ...location("Left Torso", ...fill(4, "ISGaussRifle"), "IS Gauss Ammo|IS Gauss Ammo"),
+    ...location("Right Torso", "IS LB 10-X AC Ammo|IS LB 10-X Cluster Ammo"),
+    ...location("Center Torso", ...fill(3, "Fusion Engine"), ...fill(2, "Gyro")),
+    ...location("Head", "Life Support", "Sensors", "Cockpit", "-Empty-", "Sensors", "Life Support"),
+    ...location("Left Leg", "Hip", "Upper Leg Actuator", "Lower Leg Actuator", "Foot Actuator"),
+    ...location("Right Leg", "Hip", "Upper Leg Actuator", "Lower Leg Actuator", "Foot Actuator"),
+].join("\n");
+
+// A tripod (IO:AE pp.128-130): a real Center Leg, its armor, and a laser mounted in it.
+const tripod = brawler.replace("Config:Biped", "Config:Tripod").replace("walk mp:5", "walk mp:5\ncockpit:Tripod Cockpit")
+    .replace("RL armor:18", "RL armor:18\nCL armor:16") + "\n"
+    + location("Center Leg", "Hip", "Upper Leg Actuator", "Lower Leg Actuator", "Foot Actuator", "Medium Laser").join("\n");
+
 describe("MegaMek 'Mech import", () => {
     it("rejects what is not a MegaMek 'Mech file", () => {
         expect(parseMtfFile("")).toBeNull();
@@ -171,6 +192,71 @@ describe("MegaMek 'Mech import", () => {
         expect(issues).toEqual([]);
         // The pod laser, one double heat sink and one half-ton jump jet.
         expect(mech!.getOmniConfigurationStats()[0].podTonnage).toBe(1 + 1 + 0.5);
+    });
+
+    it("reads a superheavy 'Mech: half-size slots and two tons of ammunition to a slot (IO:AE pp.155-157)", () => {
+        const { mech, issues } = importBattleMechMtf(superheavy);
+        expect(issues).toEqual([]);
+        expect(mech!.isSuperheavy()).toBe(true);
+        const tags = mech!.getInstalledEquipment().map((item) => item.tag);
+        expect(tags.filter((tag) => tag === "standard-gauss-rifle")).toHaveLength(1);
+        expect(tags.filter((tag) => tag === "autocannon-lbx-10")).toHaveLength(1);
+        const ammo = mech!.getInstalledEquipment().filter((item) => item.isAmmo);
+        expect(ammo.filter((item) => item.location === "lt")).toHaveLength(2);
+        expect(ammo.filter((item) => item.location === "rt")).toHaveLength(2);
+    });
+
+    // "Superheavy 'Mechs may ignore the torso-only mounting restrictions applied to Heavy Gauss Rifles (standard and
+    // improved), and may place these items in the arms" (IO:AE p.157): the Ares ARS-V1A Hera's right-arm rifle.
+    it("mounts an Improved Heavy Gauss Rifle in a superheavy 'Mech's arm (IO:AE p.157)", () => {
+        const armed = superheavy.replace([...fill(3, "ISLBXAC10"), ...fill(3, "-Empty-")].join("\n"), fill(6, "ISImprovedHeavyGaussRifle").join("\n"))
+            .replace("IS LB 10-X AC Ammo|IS LB 10-X Cluster Ammo", "ISImprovedHeavyGauss Ammo|ISImprovedHeavyGauss Ammo");
+        const { mech, issues } = importBattleMechMtf(armed);
+        expect(issues).toEqual([]);
+        expect(mech!.getInstalledEquipment().find((item) => item.tag === "gauss-rifle-heavy-improved")?.location).toBe("la");
+    });
+
+    it("reads a tripod's Center Leg, its armor and what it mounts", () => {
+        const { mech, issues } = importBattleMechMtf(tripod);
+        expect(issues).toEqual([]);
+        expect(mech!.isTripod()).toBe(true);
+        expect(mech!.getArmorAllocation().centerLeg).toBe(16);
+        expect(mech!.getInstalledEquipment().filter((item) => item.tag === "medium-laser" && item.location === "cl")).toHaveLength(1);
+        const omni = convertMtfToSSW(parseMtfFile(tripod.replace("Config:Tripod", "Config:Tripod OmniMek"))!);
+        expect(omni.issues).toEqual([]);
+        expect(omni.xml).toContain(`omnimech="TRUE"`);
+    });
+
+    // mordel.net writes "Industrial" for MegaMek's "Industrial Cockpit" (Rock Hound AM-PRM-RH7C).
+    it("reads mordel.net's Industrial cockpit as one without Advanced Fire Control", () => {
+        const industrial = brawler.replace("structure:IS Standard", "structure:IS Industrial\ncockpit:Industrial");
+        const { mech, issues } = importBattleMechMtf(industrial);
+        expect(issues).toEqual([]);
+        expect(mech!.hasAdvancedFireControl()).toBe(false);
+    });
+
+    // The Patron PTN LoaderMech: a Primitive IndustrialMech whose SSW save has Primitive Industrial Structure and
+    // Commercial Armor, and whose fuel-cell engine fills slots named "Fuel Cell Engine".
+    it("reads a Primitive IndustrialMech's structure, commercial armor and fuel-cell engine slots", () => {
+        const primitive = brawler.replace("structure:IS Standard", "structure:IS Primitive Industrial\ncockpit:Primitive Industrial Cockpit")
+            .replace("engine:250 Fusion Engine", "engine:250 Fuel Cell Engine(IS)").replace("armor:Standard(Inner Sphere)", "armor:Primitive Commercial (IS)")
+            .replace(/(Center Torso:\n)Fusion Engine\nFusion Engine\nFusion Engine/, "$1Fuel Cell Engine\nFuel Cell Engine\nFuel Cell Engine");
+        const { mech, issues } = importBattleMechMtf(primitive);
+        expect(issues).toEqual([]);
+        expect(mech!.isIndustrialMech()).toBe(true);
+        expect(mech!.getArmorType()).toBe("commercial");
+        expect(mech!.getInternalStructureType()).toBe("industrial");
+    });
+
+    it("finds MegaMek's prototype rocket launchers (Crosscut ED-X2)", () => {
+        // One, two and three slots.
+        for (const [size, slots] of [[10, 1], [15, 2], [20, 3]]) {
+            const rockets = brawler.replace("Right Torso:\nMedium Laser" + "\n-Empty-".repeat(slots),
+                "Right Torso:\nMedium Laser" + `\nISRocketLauncher${size}Prototype`.repeat(slots));
+            const { mech, issues } = importBattleMechMtf(rockets);
+            expect(issues).toEqual([]);
+            expect(mech!.getInstalledEquipment().map((item) => item.tag)).toContain(`prototype-rocket-launcher-${size}`);
+        }
     });
 
     it("leaves out what it cannot convert, saying why", () => {

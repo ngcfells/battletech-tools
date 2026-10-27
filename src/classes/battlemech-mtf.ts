@@ -16,6 +16,7 @@ const BIPED_LOCATIONS: Record<string, string> = {
     "Head": "hd", "Center Torso": "ct", "Left Torso": "lt", "Right Torso": "rt", "Left Arm": "la", "Right Arm": "ra",
     "Left Leg": "ll", "Right Leg": "rl",
 };
+const TRIPOD_LOCATIONS: Record<string, string> = { ...BIPED_LOCATIONS, "Center Leg": "cl" };
 // SSW gives a quad's front legs as la and ra.
 const QUAD_LOCATIONS: Record<string, string> = {
     "Head": "hd", "Center Torso": "ct", "Left Torso": "lt", "Right Torso": "rt", "Front Left Leg": "la", "Front Right Leg": "ra",
@@ -23,11 +24,11 @@ const QUAD_LOCATIONS: Record<string, string> = {
 };
 const ARMOR_LOCATIONS: Record<string, string> = {
     HD: "hd", CT: "ct", LT: "lt", RT: "rt", LA: "la", RA: "ra", LL: "ll", RL: "rl", RTC: "ctr", RTL: "ltr", RTR: "rtr",
-    FLL: "la", FRL: "ra", RLL: "ll", RRL: "rl",
+    FLL: "la", FRL: "ra", RLL: "ll", RRL: "rl", CL: "cl",
 };
 /** Our crit table for an SSW location code. */
 const CRIT_TABLE: Record<string, string> = {
-    hd: "head", ct: "centerTorso", lt: "leftTorso", rt: "rightTorso", la: "leftArm", ra: "rightArm", ll: "leftLeg", rl: "rightLeg",
+    hd: "head", ct: "centerTorso", lt: "leftTorso", rt: "rightTorso", la: "leftArm", ra: "rightArm", ll: "leftLeg", rl: "rightLeg", cl: "centerLeg",
 };
 const QUAD_CRIT_TABLE: Record<string, string> = { ...CRIT_TABLE, la: "frontLeftLeg", ra: "frontRightLeg" };
 
@@ -38,14 +39,18 @@ const ENGINES: Record<string, string> = {
 const STRUCTURES: Record<string, string> = {
     "Standard": "Standard Structure", "Endo Steel": "Endo-Steel", "Endo Steel Prototype": "Endo-Steel Prototype", "Industrial": "Industrial Structure",
     "Endo-Composite": "Endo-Composite", "Composite": "Composite Structure", "Reinforced": "Reinforced Structure",
+    "Primitive": "Primitive Structure", "Primitive Industrial": "Primitive Industrial Structure",
 };
 const ARMORS: Record<string, string> = {
     "Standard": "Standard Armor", "Stealth": "Stealth Armor", "Reactive": "Reactive Armor", "Reflective": "Laser-Reflective",
     "Hardened": "Hardened Armor", "Industrial": "Industrial Armor", "Heavy Industrial": "Heavy Industrial Armor", "Commercial": "Commercial Armor",
     "Primitive": "Primitive Armor", "Ballistic-Reinforced": "Ballistic-Reinforced Armor", "Impact-Resistant": "Impact-Resistant Armor",
     "Heat-Dissipating": "Heat-Dissipating Armor", "Anti-Penetrative Ablation": "Ablation Armor", "Ferro-Fibrous Prototype": "Prototype Ferro-Fibrous",
+    // A Primitive IndustrialMech's commercial armor: SSW names it Commercial Armor (Patron PTN LoaderMech).
+    "Primitive Commercial": "Commercial Armor",
 };
-const GYROS: Record<string, string> = { "": "Standard Gyro", "XL Gyro": "Extra-Light Gyro", "Heavy Duty Gyro": "Heavy-Duty Gyro" };
+// A superheavy 'Mech's gyro follows from its tonnage (IO:AE p.156): the import takes it as a standard one.
+const GYROS: Record<string, string> = { "": "Standard Gyro", "XL Gyro": "Extra-Light Gyro", "Heavy Duty Gyro": "Heavy-Duty Gyro", "Superheavy Gyro": "Standard Gyro" };
 const HEAT_SINKS: Record<string, string> = { "Single": "Single Heat Sink", "Double": "Double Heat Sink", "Laser": "Laser Heat Sink", "Compact": "Compact Heat Sink" };
 /** Jump jet slot names, their SSW type and slots a jet. */
 const JUMP_JETS: Record<string, [string, number]> = {
@@ -53,7 +58,7 @@ const JUMP_JETS: Record<string, [string, number]> = {
     "ISPrototypeImprovedJumpJet": ["Prototype Improved Jump Jet", 2], "UMU": ["Mech UMU", 1],
 };
 const FIXED_SLOTS = new Set(["Shoulder", "Upper Arm Actuator", "Lower Arm Actuator", "Hand Actuator", "Hip", "Upper Leg Actuator",
-    "Lower Leg Actuator", "Foot Actuator", "Life Support", "Sensors", "Cockpit", "Fusion Engine", "Gyro", "-Empty-"]);
+    "Lower Leg Actuator", "Foot Actuator", "Life Support", "Sensors", "Cockpit", "Fusion Engine", "Fuel Cell Engine", "Gyro", "-Empty-"]);
 const ARMOR_SLOT = /Ferro|Stealth|Reactive|Reflective|Lamellor|Ballistic-Reinforced|Impact-Resistant|Anti-Penetrative|Heat-Dissipating|Hardened/i;
 const STRUCTURE_SLOT = /Endo|Composite/i;
 const HEAT_SINK_SLOT = /HeatSink|Heat Sink/i;
@@ -82,7 +87,7 @@ export const parseMtfFile = (text: string): IMtfFile | null => {
         if (!line) { location = null; continue; }
         if (location !== null) { slots[location].push(line); continue; }
         const section = /^([A-Za-z ]+):$/.exec(line);
-        if (section && (BIPED_LOCATIONS[section[1]] || QUAD_LOCATIONS[section[1]] || section[1] === "Center Leg")) {
+        if (section && (TRIPOD_LOCATIONS[section[1]] || QUAD_LOCATIONS[section[1]])) {
             location = section[1];
             slots[location] = [];
             continue;
@@ -137,10 +142,13 @@ export function convertMtfToSSW(file: IMtfFile): { xml: string; issues: string[]
     const mixed = /^mixed/i.test(techbase);
     const faction: ImportFaction = clan || /clan chassis/i.test(techbase) ? "clan" : "is";
     const quad = /^quad/i.test(config) && !/quadvee/i.test(config);
-    if (!/^(biped|quad)( omnime(k|ch))?$/i.test(config)) issues.push(`'Mech configuration '${config}' is not converted yet`);
-    const locations = quad ? QUAD_LOCATIONS : BIPED_LOCATIONS;
+    const tripod = /^tripod/i.test(config);
+    if (!/^(biped|quad|tripod)( omnime(k|ch))?$/i.test(config)) issues.push(`'Mech configuration '${config}' is not converted yet`);
+    const locations = quad ? QUAD_LOCATIONS : tripod ? TRIPOD_LOCATIONS : BIPED_LOCATIONS;
     const tons = +value(file, "mass");
-    if (tons > 100) issues.push("Superheavy 'Mechs are not converted yet");
+    // A superheavy 'Mech's items take half their slots, rounded up (IO:AE p.155); MegaMek lists them so.
+    const superheavy = tons > 100;
+    const slotsOf = (slots: number) => superheavy ? Math.ceil(slots / 2) : slots;
     for (const key of ["lam", "motive"]) if (value(file, key)) issues.push(`'${key}: ${value(file, key)}' is not converted yet`);
 
     // Chassis components.
@@ -163,9 +171,10 @@ export function convertMtfToSSW(file: IMtfFile): { xml: string; issues: string[]
     const sinkClan = sinks?.[2] ? /clan/i.test(sinks[2])
         : sinkSlotNames.length > 0 && sinkSlotNames.every((slot) => /^(CL|Clan)/i.test(slot)) ? true
         : sinkSlotNames.length > 0 && sinkSlotNames.every((slot) => /^IS/i.test(slot)) ? false : clan;
-    const sinkSlots = sinkType === "Double Heat Sink" ? (sinkClan ? 2 : 3) : sinkType === "Laser Heat Sink" ? 2 : 1;
+    const sinkSlots = slotsOf(sinkType === "Double Heat Sink" ? (sinkClan ? 2 : 3) : sinkType === "Laser Heat Sink" ? 2 : 1);
     if (sinkType === "Compact Heat Sink") issues.push("Compact heat sinks are not converted yet");
-    const cockpit = value(file, "cockpit") || "Standard Cockpit";
+    // mordel.net writes "Industrial" for MegaMek's "Industrial Cockpit".
+    const cockpit = /^industrial$/i.test(value(file, "cockpit")) ? "Industrial Cockpit" : value(file, "cockpit") || "Standard Cockpit";
     const gyro = GYROS[value(file, "gyro")] ?? value(file, "gyro");
     const myomer = value(file, "myomer");
     const industrial = /industrial/i.test(cockpit) || /industrial/i.test(value(file, "structure"));
@@ -174,7 +183,9 @@ export function convertMtfToSSW(file: IMtfFile): { xml: string; issues: string[]
     // one (its Mek.hasAdvancedFireControl); Skunk Werks names it "Industrial w/ Adv. FC" (#371). A Command Console is
     // a BattleMech cockpit there too, so an IndustrialMech with one has Advanced Fire Control.
     const sswCockpit = industrial && /^((standard|primitive) cockpit|command console)$/i.test(cockpit) ? "Industrial w/ Adv. FC"
-        : cockpit === "Command Console" ? "Standard Cockpit" : cockpit;
+        : cockpit === "Command Console" ? "Standard Cockpit"
+        // Tripods and superheavy 'Mechs have a mandatory cockpit (IO:AE pp.128, 156): the import takes it from the chassis.
+        : /^(superheavy (tripod )?|tripod )cockpit$/i.test(cockpit) ? "Standard Cockpit" : cockpit;
 
     // The slots: each location's equipment, in runs of one item's slots.
     const items: IMtfItem[] = [];
@@ -221,11 +232,15 @@ export function convertMtfToSSW(file: IMtfFile): { xml: string; issues: string[]
             }
             const fcs = FIRE_CONTROL.find(([test]) => test.test(name));
             if (fcs) { fireControl.add(fcs[1]); index++; continue; }
-            if (/ammo|Pods$/i.test(name)) { ammoSlots.push({ name, loc, index, rear: slot.rear, pod: slot.pod }); index++; continue; }
+            if (/ammo|Pods$/i.test(name)) {
+                // A superheavy 'Mech's slot holds two tons of ammunition, "A|B" (IO:AE p.157).
+                for (const bin of name.split("|")) ammoSlots.push({ name: bin.trim(), loc, index, rear: slot.rear, pod: slot.pod });
+                index++; continue;
+            }
             if (HEAT_SINK_SLOT.test(name)) {
                 if (/prototype/i.test(name)) issues.push(`'${name}' is not converted yet`);
                 // Each sink lists its own slots (a mixed-tech 'Mech can carry both IS and Clan doubles).
-                const per = /double/i.test(name) ? (/^(CL|Clan)/i.test(name) ? 2 : /^IS/i.test(name) ? 3 : sinkSlots) : /laser/i.test(name) ? 2 : 1;
+                const per = /double/i.test(name) ? (/^(CL|Clan)/i.test(name) ? slotsOf(2) : /^IS/i.test(name) ? slotsOf(3) : sinkSlots) : /laser/i.test(name) ? slotsOf(2) : 1;
                 let run = 1;
                 while (list[index + run] === raw) run++;
                 for (let sink = 0; sink + per <= run; sink += per) {
@@ -284,7 +299,7 @@ export function convertMtfToSSW(file: IMtfFile): { xml: string; issues: string[]
             if (!record) { issues.push(`Cannot find any equipment named '${name}'`); index += run; continue; }
             // An item spread over several locations (Talons: every leg) is listed once, as SSW does; the import spreads it.
             if (record.spreadSlots && items.some((item) => item.record.tag === record!.tag)) { index += run; continue; }
-            const size = record.space?.battlemech ?? 1;
+            const size = slotsOf(record.space?.battlemech ?? 1);
             // Sized items (cargo) and variable-size ones (hatchets, targeting computers, MASC) fill their run; a whole
             // number of others fill theirs, the rest is split.
             const each = slot.size > 0 || size <= 0 || record.variableSize ? run : size;
@@ -304,7 +319,7 @@ export function convertMtfToSSW(file: IMtfFile): { xml: string; issues: string[]
     // A split item lists part of its slots in each of two locations.
     while (leftovers.length > 0) {
         const first = leftovers.shift()!;
-        const need = (first.item.record.space?.battlemech ?? 1) - first.have;
+        const need = slotsOf(first.item.record.space?.battlemech ?? 1) - first.have;
         const other = leftovers.findIndex((piece) => piece.item.record.tag === first.item.record.tag && piece.have === need);
         if (other < 0) { issues.push(`Cannot place '${first.item.name}': its slots are split in a way not converted yet`); continue; }
         const [second] = leftovers.splice(other, 1);
@@ -348,7 +363,7 @@ export function convertMtfToSSW(file: IMtfFile): { xml: string; issues: string[]
 <mech_type>${mechType}</mech_type>
 <techbase manufacturer="" location="">${sswTech}</techbase>
 <year>${xml(value(file, "era"))}</year>
-<motive_type>${quad ? "Quad" : "Biped"}</motive_type>
+<motive_type>${quad ? "Quad" : tripod ? "Tripod" : "Biped"}</motive_type>
 <structure techbase="${structureTech}"><type>${xml(structureName)}</type>${structureSlots.join("")}</structure>
 <engine rating="${engine?.[1] ?? 0}" techbase="${tb(engineTech)}">${xml(engineName ?? "")}</engine>
 <gyro techbase="2">${xml(gyro)}</gyro>

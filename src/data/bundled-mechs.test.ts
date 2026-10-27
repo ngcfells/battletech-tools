@@ -14,7 +14,7 @@ import { getBundledMechEntries, loadBundledMechDesign, loadBundledMechIndex } fr
 const dataDir = path.resolve(__dirname, "bundled");
 
 // Pinned so a growing data set is a deliberate change.
-const DESIGNS = 3585;
+const DESIGNS = 3590;
 // The table format with values shared per chunk (#241 follow-up) took it from 18.4 MB to 8.7 MB, read a chunk at a time.
 const MAX_BYTES = 9_000_000;
 
@@ -43,6 +43,16 @@ describe("bundled 'Mechs", () => {
         // MegaMek files with no cockpit line whose record sheets have a plain Industrial cockpit (no AFC).
         const byModel = (model: string) => headers.find((header) => header.model === model)?.bv;
         expect(["QUA-51T MilitiaMech", "HYN-4A SalvageMech", "HYN-4B SalvageMech"].map(byModel)).toEqual([670, 474, 398]);
+    });
+
+    // MegaMek's superheavy tripods (#241): the Ares OmniMechs load as tripods over 100 tons.
+    it("keep the Ares superheavy tripods", async () => {
+        vi.spyOn(console, "log").mockImplementation(() => {});
+        const ares = (await loadBundledMechIndex()).filter((header) => header.name === "Ares");
+        expect(ares.length).toBeGreaterThanOrEqual(5);
+        const mech = await loadBundledMechDesign(ares[0]);
+        vi.restoreAllMocks();
+        expect([mech.isTripod(), mech.isSuperheavy(), mech.getBattleValue()]).toEqual([true, true, ares[0].bv]);
     });
 
     // The build checked every design; a sample here catches an import or Battle Value change that needs a rebuild.
