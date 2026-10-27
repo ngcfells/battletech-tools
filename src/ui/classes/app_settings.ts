@@ -1,7 +1,7 @@
 import { IASMULUnit } from "../../classes/alpha-strike-unit";
 import { DEFAULT_MUL_SOURCE_SELECTION, MULSourceSelection, normalizeMULSourceSelection } from "../../data/mul-list-items";
 import { normalizeStandingSelection, UNIT_STANDING_ORDER, UnitStanding } from "../../utils/unit-standing";
-import { ESaveDataMode } from "../../dataSaves";
+import { ESaveDataMode } from "../../dataSavesStorage";
 import { CUSTOM_HOMEBREW_RULES_LEVEL } from "../../data/rules-level-options";
 import { IMULSearchFilters, newMULSearchFilters } from "../../utils/mulSearchFilters";
 

@@ -3,6 +3,7 @@ import { act } from "react";
 import { createRoot } from "react-dom/client";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import AppRouter from "./app-router";
+import { loadUnitClasses } from "./app-unit-classes";
 
 // AppRouter is the root component, so it only unmounts on hot reload and in tests. It still has to take its
 // window listeners with it, or each remount leaves a copy running.
@@ -14,6 +15,10 @@ const mount = async () => {
     const root = createRoot(container);
     await act(async () => {
         root.render(<AppRouter />);
+    });
+    // The router builds the saved units after mounting (#589): let those imports finish, or they load after teardown.
+    await act(async () => {
+        await Promise.all([loadUnitClasses(), import("../dataSaves")]);
     });
     return root;
 };

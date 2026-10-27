@@ -25,6 +25,21 @@ export default defineConfig(({ command, mode }) => {
         build: {
             outDir: "build",
             sourcemap: false,
+            rolldownOptions: {
+                output: {
+                    codeSplitting: {
+                        // The big equipment catalogs get a chunk each, so their shared chunk stays under the 500 kB
+                        // warning (#589). They import only data types, so moving them cannot change the order
+                        // modules run in (broad groups did, and broke startup) nor pull anything else along.
+                        groups: [
+                            {
+                                name: (id: string) => id.replace(/\\/g, "/").split("/").pop()!.replace(/\.ts$/, ""),
+                                test: /src[\\/]data[\\/](equipment-(missile|misc|ballistic|energy)|ammo)\.ts$/,
+                            },
+                        ],
+                    },
+                },
+            },
         },
         server: {
             port: 3000,

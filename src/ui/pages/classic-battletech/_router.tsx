@@ -3,18 +3,20 @@ import { Route, Routes } from "react-router";
 import { IAppGlobals } from '../../app-router';
 import Error404 from "../error404";
 import ClassicBattleTechHome from './home';
-import MechCreatorRouter from './mech-creator/_router';
-import BattleMechRosterRouter from './roster/_router';
-import VehicleCreatorRouter from './vehicle-creator/_router';
-import FighterCreatorRouter from './fighter-creator/_router';
-import InfantryCreatorRouter from './infantry-creator/_router';
-import BattleArmorCreatorRouter from './battle-armor-creator/_router';
-import ProtoMechCreatorRouter from './protomech-creator/_router';
-import SmallCraftCreatorRouter from './small-craft-creator/_router';
-import CapitalShipCreatorRouter from './capital-ship-creator/_router';
-import BuildingCreatorRouter from './building-creator/_router';
 
 import type { JSX } from "react";
+
+// Each creator and the roster load when opened, so no one chunk holds them all (#589).
+const MechCreatorRouter = React.lazy(() => import("./mech-creator/_router"));
+const BattleMechRosterRouter = React.lazy(() => import("./roster/_router"));
+const VehicleCreatorRouter = React.lazy(() => import("./vehicle-creator/_router"));
+const FighterCreatorRouter = React.lazy(() => import("./fighter-creator/_router"));
+const InfantryCreatorRouter = React.lazy(() => import("./infantry-creator/_router"));
+const BattleArmorCreatorRouter = React.lazy(() => import("./battle-armor-creator/_router"));
+const ProtoMechCreatorRouter = React.lazy(() => import("./protomech-creator/_router"));
+const SmallCraftCreatorRouter = React.lazy(() => import("./small-craft-creator/_router"));
+const CapitalShipCreatorRouter = React.lazy(() => import("./capital-ship-creator/_router"));
+const BuildingCreatorRouter = React.lazy(() => import("./building-creator/_router"));
 
 export default class ClassicBattleTechRouter extends React.Component<IClassicBattleTechRouterProps, IClassicBattleTechRouterState> {
 

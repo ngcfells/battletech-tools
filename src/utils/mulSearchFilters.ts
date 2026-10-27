@@ -5,7 +5,7 @@ import { DEFAULT_MUL_SOURCE_SELECTION, MULSourceSelection } from "../data/mul-li
 import { RulesEditionUnitType } from "../data/rules-editions";
 import { findSpecialRuleset, getRulesetConflict, ISpecialRuleset } from "../data/special-rulesets";
 import { btTechOptions } from "../data/tech-options";
-import { getMULAerospaceClass, MULAerospaceClass } from "./classicMULMatch";
+import { getMULAerospaceClass, MULAerospaceClass } from "./mulAerospaceClass";
 import { getMULRecordStanding, UNIT_STANDING_ORDER, UnitStanding } from "./unit-standing";
 import { getMULEraAliases, getMULEraLabel, MUL_ERA_ALIAS_OFFSET, mulEras } from "./mulUtilities";
 

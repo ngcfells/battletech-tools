@@ -15,50 +15,16 @@ import SmallCraft, { ISmallCraftExport, normalizeSmallCraftExport } from "./clas
 import CapitalShip, { ICapitalShipExport, normalizeCapitalShipExport } from "./classes/capital-ship";
 import Building, { IBuildingExport, normalizeBuildingExport } from "./classes/building";
 import { IAppGlobals } from "./ui/app-router";
-import { AppSettings, IAppSettingsExport } from "./ui/classes/app_settings";
+import { AppSettings } from "./ui/classes/app_settings";
+import { ESaveDataMode, getStorageWriteFailures, readLocalStorage, writeLocalStorage } from "./dataSavesStorage";
+export { ESaveDataMode, getAppSettings, getSaveDataModeName, getSaveDataModes, onStorageSaveError, saveAppSettings } from "./dataSavesStorage";
+export type { StorageSaveErrorHandler } from "./dataSavesStorage";
 // import {Storage} from 'session-storage-sync';
 
-export enum ESaveDataMode {
-    localStorage = 0,
-    firebase = 1,
-}
-
-export function getSaveDataModes(): number[] {
-    return [0,1];
-}
-
-export function getSaveDataModeName( id: ESaveDataMode ): string {
-
-    if( id === ESaveDataMode.localStorage ) return "localStorage";
-    if( id === ESaveDataMode.firebase) return "Firebase";
-
-    return "n/a";
-}
-
-export type StorageSaveErrorHandler = (keyName: string, error: unknown) => void;
-
-let storageSaveErrorHandler: StorageSaveErrorHandler | null = null;
-
-/** Registers the one listener that is told when a save cannot be written (pass null to remove it). */
-export function onStorageSaveError( handler: StorageSaveErrorHandler | null ): void {
-    storageSaveErrorHandler = handler;
-}
-
-/** Saves that could not be written since the page loaded; a restore compares it before and after. */
-let storageWriteFailures = 0;
 
 /** Most Aces campaigns restored from one backup, as for the other saved collections. */
 export const MAX_ACES_CAMPAIGNS = 500;
 
-// Reading throws when storage is blocked (some private modes): load as if nothing were saved.
-function readLocalStorage( keyName: string ): string | null {
-    try {
-        return localStorage.getItem( keyName );
-    } catch( error ) {
-        console.error("Unable to read " + keyName + " from localStorage", error);
-        return null;
-    }
-}
 
 // The restore reads what it merges with at once, so every write it makes is finished when it returns.
 function getDataNow( appSettings: AppSettings, keyName: string ): string | null {
@@ -84,17 +50,6 @@ function parseAcesCardLibrary( rawData: string | null ): IAcesCardLibrary {
     }
 }
 
-// localStorage.setItem throws when the origin's quota (about 5 MB) is used up, or when storage is disabled.
-function writeLocalStorage( keyName: string, data: string ): void {
-    try {
-        localStorage.setItem(keyName, data);
-    } catch( error ) {
-        storageWriteFailures++;
-        console.error("Unable to save " + keyName + " to localStorage", error);
-        if( storageSaveErrorHandler )
-            storageSaveErrorHandler( keyName, error );
-    }
-}
 
 export interface IFullBackup {
     battleMechSaves: IBattleMechExport[];
@@ -260,7 +215,7 @@ export function restoreFullBackup(
 ): IRestoreMessage[] {
 
     const restoreMessages: IRestoreMessage[] = [];
-    const writeFailuresBefore = storageWriteFailures;
+    const writeFailuresBefore = getStorageWriteFailures();
 
     restoreMessages.push({
         severity: "replace",
@@ -895,8 +850,8 @@ export function restoreFullBackup(
         // appGlobals.saveAppSettings( appSettingsObj );
     }
 
-    if( performActions && storageWriteFailures > writeFailuresBefore ) {
-        const failed = storageWriteFailures - writeFailuresBefore;
+    if( performActions && getStorageWriteFailures() > writeFailuresBefore ) {
+        const failed = getStorageWriteFailures() - writeFailuresBefore;
         restoreMessages.push({
             severity: "error",
             message: failed + " save" + ( failed === 1 ? "" : "s" ) + " could not be written (the browser's storage is full or blocked), so part of this backup was not restored",
@@ -1552,27 +1507,3 @@ export async function getFavoriteCBTGroups(
     return rv;
 }
 
-export function saveAppSettings(
-    newValue: IAppSettingsExport,
-) {
-    writeLocalStorage("appSettings", JSON.stringify(newValue) );
-}
-
-export function getAppSettings(): IAppSettingsExport {
-    let rv: IAppSettingsExport = (new AppSettings(null)).export()
-    const rawData = localStorage.getItem("appSettings" );
-
-    try {
-        if( rawData )
-            rv = JSON.parse( rawData );
-
-        if(rv ) {
-            return rv;
-        }
-    }
-    catch {
-        return rv;
-    }
-
-    return rv;
-}
