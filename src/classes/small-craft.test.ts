@@ -164,6 +164,17 @@ describe("Small Craft construction (TechManual pp.180-197)", () => {
         expect(other.getIssues().some((issue) => issue.includes("door"))).toBe(false);
         expect(other.getBaysWeight()).toBe(15);
     });
+
+    it("gives a battle armor bay a door, or lets it use another unit bay's", () => {
+        const craft = new SmallCraft();
+        craft.addBay("battle-armor-clan", 2);
+        expect(craft.getBays()[0].doors).toBe(1);
+        craft.setBay(0, 2, 0);
+        expect(craft.getIssues().some((issue) => issue.includes("Battle Armor Bay (5 troopers): needs a door"))).toBe(true);
+        // The troopers can leave through a vehicle bay's door instead.
+        craft.addBay("vehicle-light", 1);
+        expect(craft.getIssues().some((issue) => issue.includes("door"))).toBe(false);
+    });
 });
 
 describe("Small Craft Battle Value and cost", () => {

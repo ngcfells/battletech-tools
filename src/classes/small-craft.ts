@@ -854,7 +854,7 @@ export default class SmallCraft implements IGameSettingsUnit {
     public addBay(tag: string, amount: number = 1): ISmallCraftBay | null {
         const type = findTransportBayType(tag);
         if (!type || this._bays.length >= MAX_SMALL_CRAFT_BAYS) return null;
-        const bay: ISmallCraftBay = { tag: type.tag, amount: 1, doors: type.infantry || type.tonsEach === null ? 0 : 1 };
+        const bay: ISmallCraftBay = { tag: type.tag, amount: 1, doors: (type.infantry && !type.battleArmor) || type.tonsEach === null ? 0 : 1 };
         this._bays.push(bay);
         this.setBay(this._bays.length - 1, amount, bay.doors);
         return bay;
@@ -1295,10 +1295,15 @@ export default class SmallCraft implements IGameSettingsUnit {
         if (this.getBayDoors() > this.getMaxBayDoors()) {
             issues.push(`${this.getBayDoors()} bay doors; ${this.isDropShip() ? `a DropShip of ${this._tonnage.toLocaleString("en-US")} tons` : this.isAerodyne() ? "an aerodyne Small Craft" : "a spheroid Small Craft"} has no more than ${this.getMaxBayDoors()} (TM p.196).`);
         }
+        // "Transport bays for any unit type other than infantry": a cargo bay carries no unit and needs none.
+        const isUnitBay = (type: ReturnType<typeof findTransportBayType>) => !!type && !type.infantry && !type.cargoFactor && type.tonsEach !== null;
+        const unitBayDoors = this._bays.some((bay) => isUnitBay(findTransportBayType(bay.tag)) && bay.doors > 0);
         for (const bay of this._bays) {
             const type = findTransportBayType(bay.tag);
-            // "Transport bays for any unit type other than infantry": a cargo bay carries no unit and needs none.
-            if (type && !type.infantry && !type.cargoFactor && type.tonsEach !== null && bay.doors < 1) issues.push(`${type.name}: a bay for units other than infantry needs a door (TM p.196).`);
+            if (!type || bay.doors > 0) continue;
+            if (isUnitBay(type)) issues.push(`${type.name}: a bay for units other than infantry needs a door (TM p.196).`);
+            // Battle armor bays want a door too (TM p.196, SO:AA p.144), but the troopers can share another unit bay's.
+            else if (type.battleArmor && !unitBayDoors) issues.push(`${type.name}: needs a door, or another unit bay's door to share (TM p.196).`);
         }
         if (this._fuelTons <= 0) issues.push("The craft carries no fuel.");
         if (this.isPrimitive() && !this.canBePrimitive()) issues.push("Primitive craft are built with Inner Sphere technology only (IO:AE pp.119-120).");

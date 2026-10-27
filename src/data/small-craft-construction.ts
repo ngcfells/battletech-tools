@@ -104,6 +104,8 @@ export interface ITransportBayType {
     cost: number;
     costPerTon?: boolean;
     infantry?: boolean;
+    /** Battle armor bays: infantry, but they still want a door (TM p.196, SO:AA p.144). */
+    battleArmor?: boolean;
     /** The tech base that fields this bay; absent for both. */
     tech?: "is" | "clan";
     /** Bay personnel, who need no quarters (TM p.239). */
@@ -121,9 +123,9 @@ export const transportBayTypes: ITransportBayType[] = [
     { tag: "infantry-jump", name: "Infantry Bay, Jump", tonsEach: 6, capacity: "30 jump troopers", cost: 15000, costPerTon: true, infantry: true, personnel: 30 },
     { tag: "infantry-motorized", name: "Infantry Bay, Motorized", tonsEach: 7, capacity: "30 motorized troopers", cost: 15000, costPerTon: true, infantry: true, personnel: 30 },
     { tag: "infantry-mechanized", name: "Infantry Bay, Mechanized", tonsEach: 8, capacity: "7 mechanized troopers", cost: 15000, costPerTon: true, infantry: true, personnel: 7 },
-    { tag: "battle-armor-is", name: "Battle Armor Bay (4 troopers)", tonsEach: 8, capacity: "4 battle armor troopers", cost: 15000, costPerTon: true, infantry: true, tech: "is", personnel: 6 },
-    { tag: "battle-armor-clan", name: "Battle Armor Bay (5 troopers)", tonsEach: 10, capacity: "5 battle armor troopers", cost: 15000, costPerTon: true, infantry: true, tech: "clan", personnel: 6 },
-    { tag: "battle-armor-is-6", name: "Battle Armor Bay (6 troopers)", tonsEach: 12, capacity: "6 battle armor troopers", cost: 15000, costPerTon: true, infantry: true, tech: "is", personnel: 6 },
+    { tag: "battle-armor-is", name: "Battle Armor Bay (4 troopers)", tonsEach: 8, capacity: "4 battle armor troopers", cost: 15000, costPerTon: true, infantry: true, battleArmor: true, tech: "is", personnel: 6 },
+    { tag: "battle-armor-clan", name: "Battle Armor Bay (5 troopers)", tonsEach: 10, capacity: "5 battle armor troopers", cost: 15000, costPerTon: true, infantry: true, battleArmor: true, tech: "clan", personnel: 6 },
+    { tag: "battle-armor-is-6", name: "Battle Armor Bay (6 troopers)", tonsEach: 12, capacity: "6 battle armor troopers", cost: 15000, costPerTon: true, infantry: true, battleArmor: true, tech: "is", personnel: 6 },
     { tag: "protomech", name: "ProtoMech Cubicles (5)", tonsEach: 50, capacity: "5 ProtoMechs", cost: 10000, tech: "clan", personnel: 6 },
     { tag: "vehicle-light", name: "Vehicle Cubicle, Light", tonsEach: 50, capacity: "1 vehicle of up to 50 tons", cost: 10000, personnel: 5 },
     { tag: "vehicle-heavy", name: "Vehicle Cubicle, Heavy", tonsEach: 100, capacity: "1 vehicle of up to 100 tons", cost: 10000, personnel: 8 },
