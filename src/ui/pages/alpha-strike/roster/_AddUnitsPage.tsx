@@ -63,12 +63,8 @@ export default class AlphaStrikeAddUnitsView extends React.Component<IAlphaStrik
     }
 
       componentDidMount() {
-        if (
-          this.props.appGlobals.appSettings.alphaStrikeSearchTerm.trim().length >= 3
-          || this.props.appGlobals.appSettings.alphaStrikeSearchAbilities.length > 0
-        ) {
-          void this.updateSearchResults();
-        }
+        // Search on opening even with no filters, so the unit lists show their units (#377).
+        void this.updateSearchResults();
         void this.loadAbilityCodes();
       }
 

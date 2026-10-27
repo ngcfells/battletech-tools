@@ -2750,7 +2750,6 @@ export class BattleMech {
 
 
 
-        indirectFireRating = Math.round(indirectFireRating);
 
         let move_heat = 0;
         if (this.getJumpSpeed() > 0) {
@@ -3051,6 +3050,10 @@ export class BattleMech {
         asMechData["BFDamageMedium"] = +this._alphaStrikeForceStats.damage.medium;
         asMechData["BFDamageLong"] = +this._alphaStrikeForceStats.damage.long;
         asMechData["BFDamageExtreme"] = +this._alphaStrikeForceStats.damage.extreme;
+        asMechData["BFDamageShortMin"] = !!this._alphaStrikeForceStats.damage.shortMinimal;
+        asMechData["BFDamageMediumMin"] = !!this._alphaStrikeForceStats.damage.mediumMinimal;
+        asMechData["BFDamageLongMin"] = !!this._alphaStrikeForceStats.damage.longMinimal;
+        asMechData["BFDamageExtremeMin"] = !!this._alphaStrikeForceStats.damage.extremeMinimal;
 
         asMechData["BFOverheat"] = this._alphaStrikeForceStats.overheat;
 

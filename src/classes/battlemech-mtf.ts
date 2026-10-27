@@ -165,6 +165,10 @@ export function convertMtfToSSW(file: IMtfFile): { xml: string; issues: string[]
     const myomer = value(file, "myomer");
     const industrial = /industrial/i.test(cockpit) || /industrial/i.test(value(file, "structure"));
     const mechType = /^primitive/i.test(cockpit) ? (industrial ? "PrimitiveIndustrialMech" : "PrimitiveBattleMech") : industrial ? "IndustrialMech" : "BattleMech";
+    // MegaMek gives an IndustrialMech with Advanced Fire Control a BattleMech cockpit, and writes no line for a Standard
+    // one (its Mek.hasAdvancedFireControl); Skunk Werks names it "Industrial w/ Adv. FC" (#371).
+    const sswCockpit = value(file, "cockpit") === "Command Console" ? "Standard Cockpit"
+        : industrial && /^(standard|primitive) cockpit$/i.test(cockpit) ? "Industrial w/ Adv. FC" : cockpit;
 
     // The slots: each location's equipment, in runs of one item's slots.
     const items: IMtfItem[] = [];
@@ -340,7 +344,7 @@ export function convertMtfToSSW(file: IMtfFile): { xml: string; issues: string[]
 <structure techbase="${structureTech}"><type>${xml(structureName)}</type>${structureSlots.join("")}</structure>
 <engine rating="${engine?.[1] ?? 0}" techbase="${tb(engineTech)}">${xml(engineName ?? "")}</engine>
 <gyro techbase="2">${xml(gyro)}</gyro>
-<cockpit><type${ejection}${value(file, "cockpit") === "Command Console" ? ` commandconsole="TRUE"` : ""}>${xml(value(file, "cockpit") === "Command Console" ? "Standard Cockpit" : cockpit)}</type></cockpit>
+<cockpit><type${ejection}${value(file, "cockpit") === "Command Console" ? ` commandconsole="TRUE"` : ""}>${xml(sswCockpit)}</type></cockpit>
 ${myomer && !/^standard$/i.test(myomer) ? `<enhancement techbase="${clan ? 1 : 0}"><type>${/industrial/i.test(myomer) ? "Industrial TSM" : "TSM"}</type>${myomerSlots.join("")}</enhancement>` : ""}
 <armor techbase="${armor ? (armor[2] === "Clan" ? 1 : 0) : 2}"><type>${xml(armorName)}</type>${armorValues.join("")}${armorSlots.join("")}</armor>
 ${/omnimek/i.test(config) ? `<omnibase heatsinks="${Math.max(0, +(sinks?.[1] ?? 0) - podSinks)}" jumpjets="${Math.max(0, (jetType === "Mech UMU" ? jetSlotsAt.length : jumpMP) - podJets)}" />` : ""}

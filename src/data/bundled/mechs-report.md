@@ -1,13 +1,13 @@
 # Bundled 'Mechs: build report
 
-3554 designs kept, 4138 files left out.
+3578 designs kept, 4114 files left out.
 
 | Reason | Files |
 |---|---|
-| duplicate of a design already kept | 3229 |
+| duplicate of a design already kept | 3233 |
 | the import could not carry all of it over | 312 |
 | no Master Unit List entry to check its BV against | 253 |
-| BV differs from the MUL | 210 |
+| BV differs from the MUL | 182 |
 | import errors | 83 |
 | configuration BV differs from the MUL | 39 |
 | does not survive the compact format | 7 |
@@ -204,19 +204,15 @@
 - `RS 3075u/AoW/Battlemaster BLR-1Gbc.ssw`: import errors: Cannot import the Cockpit Command Console yet (TO:AUE p.112)
 - `RS 3075u/AoW/Battlemaster BLR-1Gc.ssw`: import errors: Cannot import the Cockpit Command Console yet (TO:AUE p.112)
 - `RS 3075u/AoW/Gladiator GLD-1R (Keller).ssw`: BV differs from the MUL: GLD-1R (Keller): BV 1553, MUL 1517
-- `RS 3075u/AoW/Jabberwocky JAW-65A EngineerMech.ssw`: BV differs from the MUL: JAW-65A EngineerMech: BV 250, MUL 230
-- `RS 3075u/AoW/Jabberwocky JAW-66B EngineerMech.ssw`: BV differs from the MUL: JAW-66B EngineerMech: BV 350, MUL 322
-- `RS 3075u/AoW/Jabberwocky JAW-66D ConstructionMech.ssw`: BV differs from the MUL: JAW-66D ConstructionMech: BV 352, MUL 326
 - `RS 3075u/AoW/Kiso ConstructionMech K-3N-KR4.ssw`: import errors: Cannot import the Cockpit Command Console yet (TO:AUE p.112)
 - `RS 3075u/AoW/Kiso ConstructionMech K-3N-KR5.ssw`: import errors: Cannot import the Cockpit Command Console yet (TO:AUE p.112)
 - `RS 3075u/AoW/Lumberjack LoggerMech LM1A.ssw`: BV differs from the file (no MUL entry): BV 311, file 308
 - `RS 3075u/AoW/Phoenix PX-1R.ssw`: BV differs from the MUL: PX-1R: BV 900, MUL 917
-- `RS 3075u/AoW/Quasit QUA-51M MilitiaMech.ssw`: BV differs from the MUL: QUA-51M MilitiaMech: BV 707, MUL 636
-- `RS 3075u/AoW/Quasit QUA-51P MilitiaMech.ssw`: BV differs from the MUL: QUA-51P MilitiaMech: BV 865, MUL 779
+- `RS 3075u/AoW/Quasit QUA-51M MilitiaMech.ssw`: BV differs from the MUL: QUA-51M MilitiaMech: BV 707, MUL 680
+- `RS 3075u/AoW/Quasit QUA-51P MilitiaMech.ssw`: BV differs from the MUL: QUA-51P MilitiaMech: BV 865, MUL 826
 - `RS 3075u/AoW/Quasit QUA-51T MilitiaMech.ssw`: BV differs from the MUL: QUA-51T MilitiaMech: BV 696, MUL 670
 - `RS 3075u/AoW/Toro TR-A-1.ssw`: BV differs from the MUL: TR-A-1: BV 661, MUL 671
 - `RS 3075u/AoW/Wolverine II WVR-7H.ssw`: duplicate of a design already kept
-- `RS 3085/Diomede D-M3D-3 ConstructionMech.ssw`: BV differs from the MUL: D-M3D-3 ConstructionMech: BV 1227, MUL 1228
 - `RS 3085/Diomede D-M3D-4 ConstructionMech.ssw`: BV differs from the file (no MUL entry): BV 1234, file 1235
 - `RS 3085/ONN/Charger CGR-3Kr.ssw`: BV differs from the MUL: CGR-3Kr: BV 2121, MUL 2092
 - `RS 3085/PP/Archer ARC-5R.ssw`: BV differs from the MUL: ARC-5R: BV 1672, MUL 1674
@@ -1963,10 +1959,10 @@
 - `megamek/3075/Hyena HYN-KTO.mtf`: duplicate of a design already kept
 - `megamek/3075/Icarus II ICR-1S.mtf`: duplicate of a design already kept
 - `megamek/3075/Icarus II ICR-2S.mtf`: duplicate of a design already kept
-- `megamek/3075/Jabberwocky ConstructionMech JAW-66D.mtf`: BV differs from the MUL: JAW-66D ConstructionMech: BV 352, MUL 326
+- `megamek/3075/Jabberwocky ConstructionMech JAW-66D.mtf`: duplicate of a design already kept
 - `megamek/3075/Jabberwocky DemolitionMech JAW-66C.mtf`: duplicate of a design already kept
-- `megamek/3075/Jabberwocky EngineerMech JAW-65A.mtf`: BV differs from the MUL: JAW-65A EngineerMech: BV 250, MUL 230
-- `megamek/3075/Jabberwocky EngineerMech JAW-66B.mtf`: BV differs from the MUL: JAW-66B EngineerMech: BV 350, MUL 322
+- `megamek/3075/Jabberwocky EngineerMech JAW-65A.mtf`: duplicate of a design already kept
+- `megamek/3075/Jabberwocky EngineerMech JAW-66B.mtf`: duplicate of a design already kept
 - `megamek/3075/Jackrabbit JKR-8T.mtf`: duplicate of a design already kept
 - `megamek/3075/Jackrabbit JKR-9R.mtf`: no Master Unit List entry to check its BV against
 - `megamek/3075/Jackrabbit JKR-9W.mtf`: duplicate of a design already kept
@@ -2013,13 +2009,10 @@
 - `megamek/3075/Patriot PKM-2D.mtf`: duplicate of a design already kept
 - `megamek/3075/Patriot PKM-2E.mtf`: duplicate of a design already kept
 - `megamek/3075/Patron LoaderMech.mtf`: no Master Unit List entry to check its BV against
-- `megamek/3075/Patron PTN-1 LoaderMech.mtf`: BV differs from the MUL: PTN-1 LoaderMech: BV 73, MUL 107
 - `megamek/3075/Phoenix Hawk PXH-1b.mtf`: no Master Unit List entry to check its BV against
 - `megamek/3075/Phoenix Hawk PXH-1c.mtf`: no Master Unit List entry to check its BV against
 - `megamek/3075/Phoenix PX-3R.mtf`: duplicate of a design already kept
 - `megamek/3075/Phoenix PX-4R.mtf`: duplicate of a design already kept
-- `megamek/3075/Quasit QUA-51M MilitiaMech.mtf`: BV differs from the MUL: QUA-51M MilitiaMech: BV 680, MUL 636
-- `megamek/3075/Quasit QUA-51P MilitiaMech.mtf`: BV differs from the MUL: QUA-51P MilitiaMech: BV 826, MUL 779
 - `megamek/3075/Rifleman II RFL-3N-2.mtf`: duplicate of a design already kept
 - `megamek/3075/Ryoken II 2.mtf`: duplicate of a design already kept
 - `megamek/3075/Ryoken II 3.mtf`: duplicate of a design already kept
@@ -2082,8 +2075,7 @@
 - `megamek/3085u/Cutting Edge/Dasher II 2.mtf`: duplicate of a design already kept
 - `megamek/3085u/Cutting Edge/Dasher II.mtf`: duplicate of a design already kept
 - `megamek/3085u/Cutting Edge/Deimos 2.mtf`: duplicate of a design already kept
-- `megamek/3085u/Cutting Edge/Diomede D-M3D-3 ConstructionMech.mtf`: BV differs from the MUL: D-M3D-3 ConstructionMech: BV 1206, MUL 1228
-- `megamek/3085u/Cutting Edge/Diomede D-M3D-4 DemolitionMech.mtf`: BV differs from the MUL: D-M3D-4 DemolitionMech: BV 1212, MUL 1235
+- `megamek/3085u/Cutting Edge/Diomede D-M3D-3 ConstructionMech.mtf`: duplicate of a design already kept
 - `megamek/3085u/Cutting Edge/Ebony MEB-10.mtf`: duplicate of a design already kept
 - `megamek/3085u/Cutting Edge/Ebony MEB-11.mtf`: duplicate of a design already kept
 - `megamek/3085u/Cutting Edge/Ebony MEB-9.mtf`: duplicate of a design already kept
@@ -2568,7 +2560,6 @@
 - `megamek/3145/Liao/Tian-Zong TNZ-N2.mtf`: duplicate of a design already kept
 - `megamek/3145/Liao/Tian-Zong TNZ-N3.mtf`: duplicate of a design already kept
 - `megamek/3145/Liao/Vandal LI-O.mtf`: duplicate of a design already kept
-- `megamek/3145/Liao/Vandal LI-OB.mtf`: BV differs from the MUL: LI-OB: BV 1653, MUL 1666
 - `megamek/3145/Liao/Yinghuochong YHC-3E.mtf`: duplicate of a design already kept
 - `megamek/3145/Liao/Yinghuochong YHC-3Y.mtf`: duplicate of a design already kept
 - `megamek/3145/Marik/Anzu ZU-G60.mtf`: BV differs from the MUL: ZU-G60: BV 1503, MUL 1486
@@ -2674,7 +2665,6 @@
 - `megamek/3145/NTNU RS/NTNU/Omega SHP-5R.mtf`: the import could not carry all of it over: Superheavy 'Mechs are not converted yet; 'ISDoubleHeatSink' in Left Torso is split in a way not converted yet; 'ISDoubleHeatSink' in Right Torso is split in a way not converted yet; 'ISDoubleHeatSink' in Center Torso is split in a way not converted yet; 'ISDoubleHeatSink' in Left Leg is split in a way not converted yet; 'ISDoubleHeatSink' in Right Leg is split in a way not converted yet; Cannot place 'Heavy PPC': its slots are split in a way not converted yet; Cannot place 'ISGuardianECMSuite': its slots are split in a way not converted yet; Cannot find the ammunition 'IS LB 10-X AC Ammo|IS LB 10-X AC Ammo'; Cannot find the ammunition 'IS LB 10-X Cluster Ammo|IS LB 10-X Cluster Ammo'; Cannot import the cockpit type: 'Superheavy Cockpit'; Cannot find any gyro named: 'Superheavy Gyro'; Unallocated Criticals: 7; - Double Heat Sink (heat-sink); - Double Heat Sink (heat-sink); - Double Heat Sink (heat-sink); - Double Heat Sink (heat-sink); - Double Heat Sink (heat-sink); - Double Heat Sink (heat-sink); - Double Heat Sink (heat-sink)
 - `megamek/3145/NTNU RS/NTNU/Shogun C 2.mtf`: the import could not carry all of it over: Unallocated Criticals: 12; - Ferro-Lamellor Armor (ferro-lamellor); - Ferro-Lamellor Armor (ferro-lamellor); - Ferro-Lamellor Armor (ferro-lamellor); - Ferro-Lamellor Armor (ferro-lamellor); - Ferro-Lamellor Armor (ferro-lamellor); - Ferro-Lamellor Armor (ferro-lamellor); - Ferro-Lamellor Armor (ferro-lamellor); - Ferro-Lamellor Armor (ferro-lamellor); - Ferro-Lamellor Armor (ferro-lamellor); - Ferro-Lamellor Armor (ferro-lamellor); - Ferro-Lamellor Armor (ferro-lamellor); - Ferro-Lamellor Armor (ferro-lamellor)
 - `megamek/3145/NTNU RS/NTNU/Shogun SHG-3E.mtf`: BV differs from the MUL: SHG-3E: BV 1988, MUL 1998
-- `megamek/3145/NTNU RS/NTNU/Venom SDR-9KE.mtf`: BV differs from the MUL: SDR-9KE: BV 721, MUL 803
 - `megamek/3145/NTNU RS/Nova Cat H.mtf`: duplicate of a design already kept
 - `megamek/3145/NTNU RS/Nova Cat I.mtf`: duplicate of a design already kept
 - `megamek/3145/NTNU RS/Nyx NX-100.mtf`: duplicate of a design already kept
@@ -2785,7 +2775,6 @@
 - `megamek/Battlecorps/Ti Tsang TSG-9 China Doll.mtf`: no Master Unit List entry to check its BV against
 - `megamek/Dark Age/Agrotera AGT-1A.mtf`: duplicate of a design already kept
 - `megamek/Dark Age/Atlas AS7-K2 (Jedra).mtf`: duplicate of a design already kept
-- `megamek/Dark Age/Inquisitor II ITW-205.mtf`: BV differs from the MUL: ITW-205: BV 687, MUL 714
 - `megamek/Dark Age/Legionnaire LGN-2D Raul.mtf`: duplicate of a design already kept
 - `megamek/Dark Age/Mad Cat III (Eve).mtf`: duplicate of a design already kept
 - `megamek/Dark Age/Mad Cat III 2 (MWDA).mtf`: no Master Unit List entry to check its BV against
@@ -2920,7 +2909,6 @@
 - `megamek/HBMPS/Rock Hound AM-PRM-RH7 'Rock Possum' ProspectorMech.mtf`: no Master Unit List entry to check its BV against
 - `megamek/HBMPS/Rock Hound AM-PRM-RH7 ProspectorMech.mtf`: no Master Unit List entry to check its BV against
 - `megamek/HBMPS/Rock Hound AM-PRM-RH7A 'Rock Otter' ProspectorMech.mtf`: no Master Unit List entry to check its BV against
-- `megamek/HBMPS/Space Hound AM-PRM-SH1 ProspectorMech.mtf`: BV differs from the MUL: AM-PRM-SH1 ProspectorMech: BV 458, MUL 465
 - `megamek/Historicals/Hist LOT II/Dragoon AEM-01.mtf`: duplicate of a design already kept
 - `megamek/Historicals/Hist LOT II/Dragoon AEM-02.mtf`: no Master Unit List entry to check its BV against
 - `megamek/Historicals/Hist LOT II/Dragoon AEM-03.mtf`: no Master Unit List entry to check its BV against
@@ -2935,7 +2923,6 @@
 - `megamek/ISP2/Rampage RMP-4G.mtf`: duplicate of a design already kept
 - `megamek/ISP2/Rampage RMP-5G.mtf`: duplicate of a design already kept
 - `megamek/ISP3/Arana MilitiaMech ARA-S-1.mtf`: the import could not carry all of it over: Turret-mounted 'CLERMediumLaser' is not converted yet
-- `megamek/ISP3/Reptar EPT-C-1 MilitiaMech.mtf`: BV differs from the MUL: EPT-C-1 MilitiaMech: BV 497, MUL 514
 - `megamek/Iron Wind Metals/Thunderbolt IIC 2.mtf`: BV differs from the MUL: 2: BV 2177, MUL 2174
 - `megamek/Jihad Final Reckoning/'Gestalt' D2X-G.mtf`: the import could not carry all of it over: Cannot import the cockpit type: 'Interface Cockpit'; Cannot find any gyro named: 'None'; Unallocated Criticals: 3; - Heavy Ferro Fibrous (heavy-ferro-fibrous); - Heavy Ferro Fibrous (heavy-ferro-fibrous); - Angel ECM Suite (angel-ecm)
 - `megamek/Jihad Final Reckoning/OMEGA SHP-4X.mtf`: the import could not carry all of it over: Superheavy 'Mechs are not converted yet; Cannot place 'ISGaussRifle': its slots are split in a way not converted yet; Cannot place 'ISGaussRifle': its slots are split in a way not converted yet; Cannot place 'ISGaussRifle': its slots are split in a way not converted yet; Cannot place 'ISC3iUnit': its slots are split in a way not converted yet; Cannot find the ammunition 'IS LB 10-X AC Ammo|IS LB 10-X AC Ammo'; Cannot find the ammunition 'IS LB 10-X Cluster Ammo|IS LB 10-X Cluster Ammo'; Cannot find the ammunition 'IS Gauss Ammo|IS Gauss Ammo'; Cannot find the ammunition 'IS Gauss Ammo|IS Gauss Ammo'; Cannot find the ammunition 'IS Gauss Ammo|IS Gauss Ammo'; Cannot find the ammunition 'IS Gauss Ammo|IS Gauss Ammo'; Cannot find the ammunition 'IS Gauss Ammo|IS Gauss Ammo'; Cannot import the cockpit type: 'Superheavy Cockpit'; Cannot find any gyro named: 'Superheavy Gyro'
@@ -3741,23 +3728,18 @@
 - `megamek/TRO Irregulars/Crosscut ED-X4M-A LoggerMech MOD.mtf`: duplicate of a design already kept
 - `megamek/TRO Irregulars/Crosscut ED-X4M-E LoggerMech MOD.mtf`: duplicate of a design already kept
 - `megamek/TRO Irregulars/Crosscut ED-X4M-L LoggerMech MOD.mtf`: duplicate of a design already kept
-- `megamek/TRO Irregulars/Deep Lord RCL-Z1M-B MilitiaMech.mtf`: BV differs from the MUL: RCL-Z1M-B MilitiaMech: BV 740, MUL 773
 - `megamek/TRO Irregulars/Demeter WLD-1 AgroMech.mtf`: duplicate of a design already kept
+- `megamek/TRO Irregulars/Demeter WLD-1-M AgroMech MOD.mtf`: BV differs from the MUL: WLD-1-M AgroMech MOD: BV 332, MUL 327
 - `megamek/TRO Irregulars/DemolitionMech WI-DMM MOD.mtf`: duplicate of a design already kept
 - `megamek/TRO Irregulars/Dig Lord RCL-4M MiningMech MOD.mtf`: duplicate of a design already kept
 - `megamek/TRO Irregulars/Dig Lord RCL-4M-B MiningMech MOD.mtf`: duplicate of a design already kept
-- `megamek/TRO Irregulars/Exo HMX-3M Haulermech.mtf`: BV differs from the MUL: HMX-3M HaulerMech: BV 107, MUL 108
 - `megamek/TRO Irregulars/Firebee WI-WAM MilitiaMech.mtf`: duplicate of a design already kept
 - `megamek/TRO Irregulars/Ground Pounder DVM-2 MiningMech.mtf`: duplicate of a design already kept
 - `megamek/TRO Irregulars/Ground Pounder DVM-2M MiningMech MOD.mtf`: duplicate of a design already kept
-- `megamek/TRO Irregulars/Guard GS-107X SecurityMech.mtf`: BV differs from the MUL: GS-107X SecurityMech: BV 351, MUL 367
-- `megamek/TRO Irregulars/Guard GS-54 SecurityMech.mtf`: BV differs from the MUL: GS-54 SecurityMech: BV 153, MUL 156
 - `megamek/TRO Irregulars/Gulon C SolahmaMech.mtf`: duplicate of a design already kept
-- `megamek/TRO Irregulars/Gulon GLN-1B SecurityMech.mtf`: BV differs from the MUL: GLN-1B SecurityMech: BV 399, MUL 410
 - `megamek/TRO Irregulars/Harvester HVR-199M AgroMech MOD.mtf`: duplicate of a design already kept
 - `megamek/TRO Irregulars/Harvester HVR-199M-A AgroMech MOD.mtf`: duplicate of a design already kept
 - `megamek/TRO Irregulars/Harvester HVR-199M-B AgroMech MOD.mtf`: duplicate of a design already kept
-- `megamek/TRO Irregulars/Harvester HVR-199M-M AgroMech MOD.mtf`: BV differs from the MUL: HVR-199M-M AgroMech MOD: BV 394, MUL 438
 - `megamek/TRO Irregulars/Heavy Forester HFL-1 LoggerMech.mtf`: duplicate of a design already kept
 - `megamek/TRO Irregulars/Heavy Forester HFL-1M LoggerMech MOD.mtf`: duplicate of a design already kept
 - `megamek/TRO Irregulars/Heavy Lifter HCL-1M CargoMech MOD.mtf`: the import could not carry all of it over: Cannot place the Environmental Sealing in the la; Cannot place the Environmental Sealing in the ra; Unallocated Criticals: 2; - Environmental Sealing (environmental-sealing); - Environmental Sealing (environmental-sealing)
@@ -3771,7 +3753,6 @@
 - `megamek/TRO Irregulars/Opossum OPO-3 SalvageMech MOD.mtf`: duplicate of a design already kept
 - `megamek/TRO Irregulars/Pacifier CCU-36 SecurityMech.mtf`: duplicate of a design already kept
 - `megamek/TRO Irregulars/Pacifier CCU-40 SecurityMech.mtf`: duplicate of a design already kept
-- `megamek/TRO Irregulars/Pompier GM-4P PoliceMech.mtf`: BV differs from the MUL: GM-4P PoliceMech: BV 140, MUL 148
 - `megamek/TRO Irregulars/St. Florian FLN-366 FireMech.mtf`: duplicate of a design already kept
 - `megamek/TRO Irregulars/St. Florian FLN-366-M FireMech MOD.mtf`: duplicate of a design already kept
 - `megamek/TRO Irregulars/StrongArm SC CV ConstructionMech.mtf`: duplicate of a design already kept
@@ -3840,8 +3821,6 @@
 - `megamek/TRO Vehicle Annex/Uni ATAE-70T CargoMech.mtf`: duplicate of a design already kept
 - `megamek/TRO Vehicle Annex/Vampyr SC-V-1 SalvageMech.mtf`: the import could not carry all of it over: Cannot find any equipment named 'Fluid Suction System (Light - Mech)'; Cannot place the Environmental Sealing in the la; Cannot place the Environmental Sealing in the ra; Unallocated Criticals: 2; - Environmental Sealing (environmental-sealing); - Environmental Sealing (environmental-sealing)
 - `megamek/ToS/ToS Kaumberg/Commando COM-1AK.mtf`: BV differs from the MUL: COM-1AK: BV 549, MUL 533
-- `megamek/ToS/ToS Kaumberg/Copper CPK-65KM SecurityMech.mtf`: BV differs from the MUL: CPK-65KM SecurityMech: BV 331, MUL 339
-- `megamek/ToS/ToS Kaumberg/Crosscut ED-X4K LoggerMech.mtf`: BV differs from the MUL: ED-X4K LoggerMech: BV 359, MUL 367
 - `megamek/Total Chaos/Atlas II AS7-D-H (Devlin).mtf`: duplicate of a design already kept
 - `megamek/Total Chaos/Awesome AWS-10KM (Cameron).mtf`: duplicate of a design already kept
 - `megamek/Tukayyid/Archer ARC-5CS.mtf`: duplicate of a design already kept
@@ -3976,8 +3955,6 @@
 - `megamek/XTRs/Boondoggles/Liberator LIB-4T.mtf`: duplicate of a design already kept
 - `megamek/XTRs/Boondoggles/Ostscout IIC.mtf`: duplicate of a design already kept
 - `megamek/XTRs/Caveat Emptor/Aquagladius AQS-5 MAM.mtf`: the import could not carry all of it over: Patchwork armor is not converted yet; Cannot find any armor named: 'Patchwork'
-- `megamek/XTRs/Caveat Emptor/Carbine CON-9M-D ConstructionMech MOD.mtf`: BV differs from the MUL: CON-9M-D ConstructionMech MOD: BV 245, MUL 257
-- `megamek/XTRs/Caveat Emptor/Crosscut IIC SolahmaMech.mtf`: BV differs from the MUL: IIC SolahmaMech: BV 541, MUL 571
 - `megamek/XTRs/Caveat Emptor/Gauss-Buster.mtf`: no Master Unit List entry to check its BV against
 - `megamek/XTRs/Caveat Emptor/Uni ATAE-70 ArtilleryMech.mtf`: the import could not carry all of it over: Cannot place 'ISThumper': its slots are split in a way not converted yet; Cannot place 'ISThumper': its slots are split in a way not converted yet; Cannot place 'ISThumper': its slots are split in a way not converted yet
 - `megamek/XTRs/Caveat Emptor/Volkh VKH-68.mtf`: the import could not carry all of it over: Turret-mounted 'ISMediumXPulseLaser' is not converted yet
@@ -4123,7 +4100,6 @@
 - `megamek/XTRs/RetroTech/HawkWolf HWK-3F.mtf`: duplicate of a design already kept
 - `megamek/XTRs/RetroTech/Pathfinder PFF-2.mtf`: duplicate of a design already kept
 - `megamek/XTRs/RetroTech/Pathfinder PFF-2T.mtf`: no Master Unit List entry to check its BV against
-- `megamek/XTRs/RetroTech/Patron PTN-2 MilitiaMech.mtf`: BV differs from the MUL: PTN-2 MilitiaMech: BV 133, MUL 143
 - `megamek/XTRs/RetroTech/Rook-X NH-1B.mtf`: no Master Unit List entry to check its BV against
 - `megamek/XTRs/Royal Fantasy/Agrotera AGT-UA _Ariel_.mtf`: the import could not carry all of it over: Cannot find any equipment named 'HarJel Repair Systems (HarJel III)'; Cannot find any equipment named 'HarJel Repair Systems (HarJel III)'; Cannot find any equipment named 'HarJel Repair Systems (HarJel III)'
 - `megamek/XTRs/Royal Fantasy/Buccaneer BCN-6PX _Pan_.mtf`: no Master Unit List entry to check its BV against

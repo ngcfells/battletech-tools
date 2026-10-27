@@ -107,6 +107,25 @@ describe("MegaMek 'Mech import", () => {
         expect(mech!.getArmorType()).toBe("standard");
     });
 
+    // MegaMek gives an IndustrialMech with Advanced Fire Control a BattleMech cockpit and writes no line for a
+    // Standard one (its Mek.hasAdvancedFireControl); an Industrial cockpit is the one without (#371).
+    it("reads an IndustrialMech's BattleMech cockpit as Advanced Fire Control", () => {
+        const industrial = brawler.replace("structure:IS Standard", "structure:IS Industrial");
+        expect(importBattleMechMtf(industrial).mech!.hasAdvancedFireControl()).toBe(true);
+        expect(importBattleMechMtf(industrial.replace("structure:", "cockpit:Primitive Cockpit\nstructure:")).mech!.hasAdvancedFireControl()).toBe(true);
+        expect(importBattleMechMtf(industrial.replace("structure:", "cockpit:Industrial Cockpit\nstructure:")).mech!.hasAdvancedFireControl()).toBe(false);
+        expect(importBattleMechMtf(brawler).mech!.isIndustrialMech()).toBe(false);
+    });
+
+    // "BV is equal to a 10 point minefield" of its mines (TO:AUE p.195): 8 for standard ones (p.197), offensive (#371).
+    it("counts a Vehicular Mine Dispenser as 8 offensive BV", () => {
+        const mined = brawler.replace("Right Torso:\nMedium Laser\n-Empty-", "Right Torso:\nMedium Laser\nISVehicularMineDispenser");
+        const { mech, issues } = importBattleMechMtf(mined);
+        expect(issues).toEqual([]);
+        expect(mech!.getInstalledEquipment().map((item) => item.tag)).toContain("vehicular-mine-dispenser");
+        expect(Math.abs(mech!.getBattleValue() - importBattleMechMtf(brawler).mech!.getBattleValue() - 8 * 1.37)).toBeLessThan(1);
+    });
+
     it("reads a quad's legs", () => {
         const file = parseMtfFile(quad)!;
         const { issues, quad: isQuad } = convertMtfToSSW(file);

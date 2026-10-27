@@ -1459,6 +1459,28 @@ body.retro {
 
 @media print {
   @page { margin: 0; }
+  // A modal's Print button (#372): only that modal's body, laid out on the page rather than over it.
+  body.printing-modal {
+    > *:not(.modal-printing) {
+      display: none !important;
+    }
+    .modal-printing {
+      position: static !important;
+      overflow: visible !important;
+      .modal-dialog {
+        max-width: none !important;
+        margin: 0 !important;
+        transform: none !important;
+      }
+      .modal-content {
+        border: none !important;
+        box-shadow: none !important;
+      }
+      .modal-header, .modal-footer {
+        display: none !important;
+      }
+    }
+  }
   .print-bar {
     display: none !important;
     margin: 0 !important;

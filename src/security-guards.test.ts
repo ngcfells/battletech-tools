@@ -122,10 +122,9 @@ describe("Security guard rails", () => {
         // sinks, weapons, ammunition tags, arcs, bays, grav decks) and the type name go through escapeLogText in
         // capital-ship.ts; the rest is numbers.
         "ui/pages/classic-battletech/capital-ship-creator/summary.tsx": 3,
-        "ui/pages/classic-battletech/roster/_tableGroup.tsx": 1,
+        "ui/components/mech-view-panel.tsx": 1, // makeTROHTML(), from the roster's two view dialogs (#372)
         // Pre-existing sites not traced in the 2026-09-29 review (TRO output was hardened upstream in 7e01b14fe;
         // the Alpha Strike creator log is unreviewed). Review them before extending them.
-        "ui/pages/classic-battletech/roster/_addMechDialog.tsx": 1,
         "ui/pages/alpha-strike/unit-creator/home.tsx": 1,
     };
 

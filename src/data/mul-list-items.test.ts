@@ -17,6 +17,23 @@ describe("MUL chunk loader", () => {
         expect(blackKnight?.EraId).toBe(11);
     }, 30_000);
 
+    // The live MUL keeps RS:3075's IndustrialMech BVs, which took the x0.9 off the whole BV, not the Offensive
+    // Battle Rating alone (TM p.304); MUL: Battle Values v1.0 pp.173-174 printed the corrected figures (#354).
+    it("serves the corrected Battle Value where the live MUL's is stale", async () => {
+        const items = await loadMULListItems();
+        const bv = (id: number) => items.find((item) => item.Id === id)?.BattleValue;
+
+        expect(bv(108513)).toBe(350); // Jabberwocky JAW-66B, live MUL 322
+        expect(bv(103087)).toBe(352); // Jabberwocky JAW-66D, live MUL 326
+        expect(bv(107159)).toBe(250); // Jabberwocky JAW-65A, live MUL 230
+        expect(bv(100674)).toBe(680); // Quasit QUA-51M, live MUL 636
+        expect(bv(106363)).toBe(826); // Quasit QUA-51P, live MUL 779
+        expect(bv(108024)).toBe(351); // Jabberwocky JAW-66C, already right on the live MUL
+        expect(bv(102180)).toBe(1227); // Diomede D-M3D-3, live MUL 1228 (#371)
+        expect(bv(101073)).toBe(1234); // Diomede D-M3D-4, live MUL 1235
+        expect(bv(100319)).toBe(73); // Patron PTN-1, live MUL 107
+    }, 30_000);
+
     it("adds MUL 1.0 leftovers only when selected, one record per legacy id", async () => {
         const items = await loadMULListItems(["mul2", "mul1"]);
         const legacy = items.filter((item) => item.MulSource === "mul1");

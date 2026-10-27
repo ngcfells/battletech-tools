@@ -167,18 +167,7 @@ export default class Home extends React.Component<IHomeProps, IHomeState> {
                   <ul className="news">
                   <li>
                   <h3>
-                      <strong>October 26th, 2026</strong> - 690 more bundled 'Mechs, and every SSW OmniMech configuration
-                    </h3>
-                    <h4>Author - NGCFells</h4>
-                      <ul>
-                        <li>Importing a Solaris Skunk Werks OmniMech now brings in every configuration in the file (Prime, A, B...), not only the base chassis. The base loadout's equipment is fixed; each configuration's is in pods.</li>
-                        <li>An OmniMech configuration now keeps its own heat sinks, jump jets, lower arm and hand actuators and Clan CASE, as the published configurations vary them.</li>
-                        <li>The bundled designs behind the Master Unit List search now include 84 OmniMechs with their configurations, and 602 'Mechs that Skunk Werks has no file for, converted from MegaMek's files. Each one matches its Master Unit List Battle Value.</li>
-                      </ul>
-                   </li>
-                  <li>
-                  <h3>
-                      <strong>October 26th, 2026</strong> - One game settings block for every creator, and Special Rulesets
+                      <strong>October 26th, 2026</strong> - One game settings block and Special Rulesets, 690 more bundled 'Mechs, IndustrialMech Battle Values, and printing from the roster
                     </h3>
                     <h4>Author - NGCFells</h4>
                       <ul>
@@ -189,6 +178,18 @@ export default class Home extends React.Component<IHomeProps, IHomeState> {
                         <li>The Alpha Strike unit creator opens with Special Rulesets and the Rules Level. Both roster Master Unit List searches have Special Rulesets on top: ticked rulesets trim the Tech, Type and Era lists and the results.</li>
                         <li>Every record sheet, Alpha Strike card and Technical Readout of a unit built under Special Rulesets names them and their source. Alpha Strike cards made from a Classic design carry its rulesets.</li>
                         <li>The printed Alpha Strike card's trademark notice no longer runs off the top of the card.</li>
+                        <li>Importing a Solaris Skunk Werks OmniMech now brings in every configuration in the file (Prime, A, B...), not only the base chassis. The base loadout's equipment is fixed; each configuration's is in pods.</li>
+                        <li>An OmniMech configuration now keeps its own heat sinks, jump jets, lower arm and hand actuators and Clan CASE, as the published configurations vary them.</li>
+                        <li>The bundled designs behind the Master Unit List search now include 84 OmniMechs with their configurations, and 602 'Mechs that Skunk Werks has no file for, converted from MegaMek's files. Each one matches its Master Unit List Battle Value.</li>
+                        <li>IndustrialMechs imported from MegaMek's files keep their Advanced Fire Control. MegaMek gives such a 'Mech a BattleMech cockpit, which had been read as a plain Industrial cockpit, so their Battle Value came out about 4% low. The Guard, Gulon, Inquisitor II, Reptar and others now match the Master Unit List and are among the bundled designs.</li>
+                        <li>Vehicular Mine Dispensers count 8 Battle Value each, and Space Mine Dispensers 10: the value of a 10-point minefield of their mines (<i>Tactical Operations: Advanced Units &amp; Equipment</i> pp.195, 197).</li>
+                        <li>The Master Unit List search shows a corrected Battle Value for eight IndustrialMechs whose MUL figure is out of date or departs from <i>TechManual</i>: the Jabberwocky JAW-65A, JAW-66B and JAW-66D, the Quasit QUA-51M and QUA-51P, the Diomede D-M3D-3 and D-M3D-4 and the Patron PTN-1, each with its source. Nail and rivet gun ammunition counts 0 (<i>TechManual</i> p.317), and commercial armor half (p.315).</li>
+                        <li>Classic Roster: the Skunk Werks list in the Add dialog has a TRO button, as the Master Unit List search does, and so does the list of your saved 'Mechs.</li>
+                        <li>Classic and Alpha Strike Rosters: viewing a record sheet, card or TRO now offers Print, which prints only what is shown. Clicking a 'Mech's record sheet beside its TRO shows the sheet at full width; click again to bring the TRO back.</li>
+                        <li>The BattleTech logo on a printed TRO is now drawn in black and gray, as on the record sheets; it had been pale yellow on white.</li>
+                        <li>Alpha Strike Roster: the Master Unit List search lists units as soon as it opens, with no filters set; it had shown none until a filter changed.</li>
+                        <li>The eight sample VTOLAMs are in the custom units, as the ArtVees are: both roster searches find them when "Custom units" is ticked, each with its designer's credit, and the Classic Roster adds the sample design.</li>
+                        <li>A 'Mech's Alpha Strike card shows minimal damage as 0*, not 0. Its LRM, SRM and AC specials need 10 or more points of damage at medium range, as the Master Unit List's do; minimal indirect fire is IF0*, and a special with no damage is left off, where the card had shown IF 0, SRM 0/0/0 or HEAT 0/0/0.</li>
                       </ul>
                    </li>
                   <li>

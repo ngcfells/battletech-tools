@@ -292,7 +292,8 @@ describe("BattleMech armor technology availability", () => {
     it("keeps TechManual weapon type codes and catalog notes off the Alpha Strike card", () => {
         // A large laser's weapon type is "DE" (direct-fire energy, TM): not an Alpha Strike special ability.
         const mech = new BattleMech();
-        for (const tag of ["large-laser", "medium-laser", "lrm-10", "is-ams"]) {
+        // An LRM 20 (1.2 at medium): an LRM 10's 0.6 is under the LRM special's 10 points at medium (#378).
+        for (const tag of ["large-laser", "medium-laser", "lrm-20", "is-ams"]) {
             mech.addEquipmentFromTag(tag, "is", "", false, undefined, "", false, [], undefined, undefined);
         }
         const abilities = mech.getAlphaStrikeForceStats().abilities;
@@ -466,6 +467,15 @@ describe("BattleMech Alpha Strike special ammunition", () => {
         expect(restored.equipmentList.map(item => item.tag)).toEqual(["ammo-is-lrm-swarm-i"]);
         expect(restored.getAlphaStrikeSpecialAmmoTag()).toBe("ammo-is-lrm-swarm-i");
         expect(restored.getAlphaStrikeForceStats().abilities).toContain("AOE#");
+    });
+
+    // A lone Medium Laser converts to minimal damage, which the card showed as plain 0 (found with #376).
+    it("keeps minimal damage on the card as 0*", () => {
+        const locust = getVTOLAMSamples(CUSTOM_HOMEBREW_RULES_LEVEL).find((sample) => sample.id === "locust-vtolam")!;
+        const damage = new BattleMech(JSON.stringify(locust.save)).calcAlphaStrike().damage;
+        expect(damage.short).toBe(0);
+        expect(damage.shortMinimal).toBe(true);
+        expect(damage.mediumMinimal).toBe(true);
     });
 });
 

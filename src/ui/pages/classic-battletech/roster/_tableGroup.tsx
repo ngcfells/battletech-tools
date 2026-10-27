@@ -4,10 +4,9 @@ import { BattleMech } from '../../../../classes/battlemech';
 import { BattleMechGroup } from '../../../../classes/battlemech-group';
 import { IAppGlobals } from '../../../app-router';
 import InputField from '../../../components/form_elements/input_field';
-import SanitizedHTML from '../../../components/sanitized-html';
+import MechViewPanel from '../../../components/mech-view-panel';
 import StandardModal from '../../../components/standard-modal';
 import StatBar from '../../../components/stat-bar';
-import BattleMechSVG from '../../../components/svg/battlemech-svg';
 import BattleMechAddMechDialog from './_addMechDialog';
 import VehicleGroupTable from './_vehicleGroupTable';
 import FighterGroupTable from './_fighterGroupTable';
@@ -366,22 +365,11 @@ export default class BattleMechTableGroup extends React.Component<IBattleMechTab
         onClose={this.closeViewUnit}
         onAdd={this.addViewedUnit}
         className="modal-xl"
+        printable={true}
     >
 
         <h3 className="text-center">Viewing {this.state.viewingUnit.model}</h3>
-        <div className="row">
-            <div className='col'>
-                <SanitizedHTML
-                    raw={true}
-                    html={this.state.viewingUnit.makeTROHTML()}
-                />
-            </div>
-            <div className='col'>
-                <BattleMechSVG
-                    mechData={this.state.viewingUnit}
-                />
-            </div>
-        </div>
+        <MechViewPanel mech={this.state.viewingUnit} />
     </StandardModal>
 ) : (
 <>

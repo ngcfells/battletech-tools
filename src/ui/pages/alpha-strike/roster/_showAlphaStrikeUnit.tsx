@@ -77,6 +77,7 @@ export default class AlphaStrikeUnitEditViewModal extends React.Component<IAlpha
     onClose={this.props.closeShowUnitDialog}
     show={this.props.showASUnit !== null}
     className="modal-xl"
+    printable={!this.props.editASUnit}
     title={
       this.props.showASUnit ?
        (

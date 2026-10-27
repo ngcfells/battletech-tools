@@ -7,12 +7,29 @@ import path from "node:path";
 import { BattleMech } from "../classes/battlemech";
 import { importBattleMechMtf } from "../classes/battlemech-mtf";
 import type { IASMULUnit } from "../classes/alpha-strike-unit";
+import { correctMULBattleValue } from "./mul-bv-corrections";
 import { BUNDLED_CHUNK_SIZE, BundledDesignSource, compactMech, IBundledDesignHeader, loadBundledMech } from "../utils/bundled-designs";
 import { getClassicMechEntries, getMULMatchKeys } from "../utils/classicMULMatch";
 import { getSSWXMLBasicInfo, ISSWBasicInfo, parseSSWXML } from "../utils/getSSWXMLBasicInfo";
 
 export const DEFAULT_SSW_DIR = "C:/repo/battletech-tools/WorkingData_DEV/SSWdata";
 export const DEFAULT_MEGAMEK_DIR = "C:/repo/megamek/megamek/data/mekfiles/unit_files";
+
+// MegaMek's files for these IndustrialMechs have no cockpit line, which MegaMek (and the converter, #371) reads as a
+// Standard cockpit with Advanced Fire Control; their record sheets have a plain Industrial cockpit. The Quasit's RS:3075
+// sheet shows one, and the MUL's Battle Values (MUL: Battle Values v1.0 p.174 for the Quasit; the live MUL for the
+// Hyena) are the no-AFC figures. Each gets the Industrial cockpit line it is missing.
+export const MEGAMEK_INDUSTRIAL_COCKPIT = new Set([
+    "megamek/3075/Quasit QUA-51M MilitiaMech.mtf",
+    "megamek/3075/Quasit QUA-51P MilitiaMech.mtf",
+    "megamek/3075/Quasit QUA-51T MilitiaMech.mtf",
+    "megamek/3075/Hyena HYN-4A SalvageMech .mtf",
+    "megamek/3075/Hyena HYN-4B SalvageMech.mtf",
+]);
+
+function withIndustrialCockpit(name: string, text: string): string {
+    return MEGAMEK_INDUSTRIAL_COCKPIT.has(name) && !/^cockpit:/im.test(text) ? "cockpit:Industrial Cockpit\n" + text : text;
+}
 const COPYRIGHT_NOTICE = "The data here is/may be copyrighted and NOT included in the GPLv3 license. ";
 const SSW_CREDIT = "the Solaris Skunk Werks project's files at https://github.com/Solaris-Skunk-Werks/SSW-Master";
 const MEGAMEK_CREDIT = "MegaMek's unit files (https://github.com/MegaMek/megamek): MegaMek Data (C) 2025-2026 by The MegaMek Team, "
@@ -72,7 +89,8 @@ export function loadMULIndex(mulDir: string, test: (unit: IASMULUnit) => boolean
     const index = new Map<string, IASMULUnit>();
     for (const list of ["live", "mul1", "custom"]) {
         for (const file of fs.readdirSync(path.join(mulDir, list)).sort()) {
-            for (const unit of JSON.parse(fs.readFileSync(path.join(mulDir, list, file), "utf8")) as IASMULUnit[]) {
+            for (const entry of JSON.parse(fs.readFileSync(path.join(mulDir, list, file), "utf8")) as IASMULUnit[]) {
+                const unit = list === "live" ? correctMULBattleValue(entry) : entry;
                 if (!test(unit)) continue;
                 for (const key of getMULMatchKeys(unit.Name ?? "", unit.Variant ?? "")) if (!index.has(key)) index.set(key, unit);
             }
@@ -224,7 +242,7 @@ export function buildBundledMechs(sswDir: string, mulDir: string, megamekDir?: s
             const name = "megamek/" + path.relative(megamekDir!, file).replace(/\\/g, "/");
             const leave = (reason: string, detail = "") => leftOut.push({ file: name, reason, detail });
             seedRandom(name);
-            const text = fs.readFileSync(file, "utf8");
+            const text = withIndustrialCockpit(name, fs.readFileSync(file, "utf8"));
             const byId = mul1ById.get(Number(/^mul id:\s*(\d+)/m.exec(text)?.[1]));
             const mulUnit = byId && byId.BattleValue > 0 ? byId : undefined;
             if (mulUnit && takenIds.has(mulUnit.Id)) { leave("duplicate of a design already kept"); continue; }

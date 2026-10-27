@@ -13,6 +13,7 @@ import SmallCraft from '../../../../classes/small-craft';
 import CapitalShip from '../../../../classes/capital-ship';
 import Vehicle from '../../../../classes/vehicle';
 import { ARTVEE_SAMPLES } from '../../../../data/artvee-samples';
+import { VTOLAM_SAMPLES } from '../../../../data/vtolam-samples';
 import { getBundledMechEntries, IBundledMechRef, loadBundledMechDesign, loadBundledMechIndex } from '../../../../data/bundled-mechs';
 import { BundledUnitType, IBundledUnitRef, loadBundledIndex, loadBundledUnitDesign } from '../../../../data/bundled-units';
 import type { IBundledDesignHeader } from '../../../../utils/bundled-designs';
@@ -37,9 +38,8 @@ import { IAppGlobals } from '../../../app-router';
 import BundledMechList from '../../../components/bundled-mech-list';
 import MULSearchFilters from '../../../components/mul-search-filters';
 import SearchResultsPager from '../../../components/search-results-pager';
-import SanitizedHTML from '../../../components/sanitized-html';
+import MechViewPanel from '../../../components/mech-view-panel';
 import StandardModal from '../../../components/standard-modal';
-import BattleMechSVG from '../../../components/svg/battlemech-svg';
 import BattleMechTableGroup from './_tableGroup';
 import type { JSX } from "react";
 const Eye = FaEye as any;
@@ -179,7 +179,8 @@ export default class BattleMechAddMechDialog extends React.Component<IBattleMech
         const bundled = this.state.bundledMechs;
         const key = JSON.stringify( saves.map( (save) => save.uuid + save.lastUpdated ) ) + bundled.length;
         if( !this.designIndex || this.designIndex.key !== key ) {
-            const saved = saves.map( (save) => new BattleMech( JSON.stringify( save ) ) );
+            // The sample VTOLAMs ship with the app like the ArtVees, after the user's own saves (#376).
+            const saved = ( saves as object[] ).concat( VTOLAM_SAMPLES.map( (sample) => sample.save ) ).map( (save) => new BattleMech( JSON.stringify( save ) ) );
             this.designIndex = { key, index: buildClassicDesignIndex<MechDesign>( [ ...getClassicMechEntries( saved ), ...getBundledMechEntries( bundled ) ] ) };
         }
         return this.designIndex.index;
@@ -237,6 +238,10 @@ export default class BattleMechAddMechDialog extends React.Component<IBattleMech
 
     viewTRO = ( e: React.FormEvent<HTMLButtonElement>, design: BattleMech | ClassicMULUnit ): void => {
         e.preventDefault();
+        this.showTRO( design );
+    }
+
+    showTRO = ( design: BattleMech | ClassicMULUnit ): void => {
         const adapter = design instanceof BattleMech ? getBattleMechTroAdapter( design ) : getUnitTroAdapter( design );
         this.setState({ viewingTRO: { title: design.getName(), tro: design.tro, adapter, rulesets: getUnitRulesets( design ) } });
     }
@@ -320,7 +325,7 @@ export default class BattleMechAddMechDialog extends React.Component<IBattleMech
 <fieldset className="fieldset">
     <legend>Master Unit List Search</legend>
     <p className="small-text">
-        Search the Master Unit List copy kept in the app by name, era, faction and more, then add the matching Classic design. A 'Mech matches one you saved first, else the bundled Skunk Werks 'Mech; vehicles, fighters, Small Craft and DropShips, JumpShips, WarShips and space stations, infantry, battle armor and ProtoMechs match the designs you saved, by name and model (infantry, battle armor and ProtoMechs by a name holding both). Vehicles also match the bundled ArtVees, and battle armor, ProtoMechs, Small Craft and DropShips and Support Vehicles the designs converted from MegaMek's unit files (MegaMek Data by The MegaMek Team, CC BY-NC-SA 4.0), each checked against the Battle Value on the Master Unit List. Idea from Camille, Centrella-Sworn on the Star League Discord.
+        Search the Master Unit List copy kept in the app by name, era, faction and more, then add the matching Classic design. A 'Mech matches one you saved first, else the bundled Skunk Werks 'Mech; vehicles, fighters, Small Craft and DropShips, JumpShips, WarShips and space stations, infantry, battle armor and ProtoMechs match the designs you saved, by name and model (infantry, battle armor and ProtoMechs by a name holding both). 'Mechs also match the sample VTOLAMs, vehicles the bundled ArtVees, and battle armor, ProtoMechs, Small Craft and DropShips and Support Vehicles the designs converted from MegaMek's unit files (MegaMek Data by The MegaMek Team, CC BY-NC-SA 4.0), each checked against the Battle Value on the Master Unit List. Idea from Camille, Centrella-Sworn on the Star League Discord.
     </p>
     <MULSearchFilters
         filters={this.props.appGlobals.appSettings.cbtMULSearch}
@@ -420,6 +425,7 @@ export default class BattleMechAddMechDialog extends React.Component<IBattleMech
         show={true}
         onClose={() => this.setState({ viewingTRO: null })}
         className="modal modal-xl"
+        printable={true}
     >
         <h3 className="text-center">Technical Readout: {viewingTRO.title}</h3>
         <TechnicalReadoutSheet tro={viewingTRO.tro} adapter={viewingTRO.adapter} rulesets={viewingTRO.rulesets} />
@@ -431,6 +437,7 @@ export default class BattleMechAddMechDialog extends React.Component<IBattleMech
         onClose={() => this.setState({ viewingOther: null })}
         onAdd={() => this.importOtherUnit( null, viewingOther.kind, viewingOther.design )}
         className="modal modal-xl"
+        printable={true}
     >
         <h3 className="text-center">Viewing {( viewingOther.design.getName() + " " + ( "getModel" in viewingOther.design ? viewingOther.design.getModel() : "" ) ).trim()}</h3>
         {viewingOther.kind.sheet( viewingOther.design )}
@@ -442,22 +449,11 @@ export default class BattleMechAddMechDialog extends React.Component<IBattleMech
         onClose={this.closeViewUnit}
         onAdd={this.addViewedUnit}
         className="modal modal-xl"
+        printable={true}
     >
 
         <h3 className="text-center">Viewing {this.state.viewingUnit.getName()}</h3>
-        <div className="row">
-            <div className='col'>
-                <SanitizedHTML
-                    raw={true}
-                    html={this.state.viewingUnit.makeTROHTML()}
-                />
-            </div>
-            <div className='col'>
-                <BattleMechSVG
-                    mechData={this.state.viewingUnit}
-                />
-            </div>
-        </div>
+        <MechViewPanel mech={this.state.viewingUnit} />
     </StandardModal>
 ) : null}
 
@@ -499,13 +495,24 @@ export default class BattleMechAddMechDialog extends React.Component<IBattleMech
                                         <button
                                             className='btn btn-xs btn-primary'
                                             onClick={e => this.viewUnit(e, bmObj )}
+                                            title={"View " + bmObj.getName()}
                                         >
                                             <Eye />
                                         </button>
 
                                         <button
                                             className='btn btn-xs btn-primary'
+                                            onClick={e => this.viewTRO(e, bmObj )}
+                                            title={"Technical Readout of " + bmObj.getName()}
+                                            aria-label={"TRO " + bmObj.getName()}
+                                        >
+                                            <Book />
+                                        </button>
+
+                                        <button
+                                            className='btn btn-xs btn-primary'
                                             onClick={e => this.importUnit(e, bmObj )}
+                                            title={"Add " + bmObj.getName()}
                                         >
                                             <PlusCircle />
                                         </button>
@@ -524,7 +531,7 @@ export default class BattleMechAddMechDialog extends React.Component<IBattleMech
         <fieldset className="fieldset">
             <legend>Solaris Skunk Werks Data Import</legend>
             <p>'Mech designs converted from Solaris Skunk Werks files, each checked against the Battle Value on the Master Unit List (or in the file, for a design the MUL does not list).</p>
-            <BundledMechList appGlobals={this.props.appGlobals} onView={(mech) => this.setState({ viewingUnit: mech })} onAdd={(mech) => this.importUnit( null, mech )} />
+            <BundledMechList appGlobals={this.props.appGlobals} onView={(mech) => this.setState({ viewingUnit: mech })} onAdd={(mech) => this.importUnit( null, mech )} onTRO={this.showTRO} />
 
 
 

@@ -1,5 +1,6 @@
 import type { IASMULUnit, MULSource } from "../classes/alpha-strike-unit";
 import { getLocalCustomMULUnits } from "./custom-mul-local";
+import { correctMULBattleValue } from "./mul-bv-corrections";
 
 /*
 * DISCLAIMER: This file processes gameplay data derived from the BattleTech universe. 
@@ -177,7 +178,7 @@ function loadMULSource(source: MULSource): Promise<IASMULUnit[]> {
                     const entries = Array.isArray(chunkData) ? chunkData : [];
                     return entries
                         .filter(isMULListEntry)
-                        .map((entry) => ({ ...normalizeLiveEntry(entry), MulSource: source }));
+                        .map((entry) => ({ ...normalizeLiveEntry(source === "mul2" ? correctMULBattleValue(entry) : entry), MulSource: source }));
                 } catch (error) {
                     console.warn(`Unable to read MUL chunk ${path}:`, error);
                     return [] as IASMULUnit[];

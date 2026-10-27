@@ -1,5 +1,5 @@
 import React, { useEffect, useState, type JSX } from 'react';
-import { FaEye, FaPlusCircle } from "react-icons/fa";
+import { FaBook, FaEye, FaPlusCircle } from "react-icons/fa";
 import { BattleMech } from "../../classes/battlemech";
 import { loadBundledMechDesign, loadBundledMechIndex } from "../../data/bundled-mechs";
 import type { IBundledDesignHeader } from "../../utils/bundled-designs";
@@ -8,6 +8,7 @@ import { getSSWRulesLevelLabel } from '../../utils/sswUtils';
 import type { IAppGlobals } from '../app-router';
 import InputField from './form_elements/input_field';
 import SearchResultsPager from './search-results-pager';
+const Book = FaBook as any;
 const Eye = FaEye as any;
 const PlusCircle = FaPlusCircle as any;
 
@@ -16,8 +17,9 @@ const PAGE_SIZE = 25;
 /**
  * The bundled 'Mechs (#241), filtered by name and Skunk Werks rules level and paged. Each design is imported only when
  * the user views or adds it. Every one was checked at build time against the Master Unit List's BV, or the file's.
+ * `onTRO` adds a TRO button (#374).
  */
-export default function BundledMechList( props: { appGlobals: IAppGlobals; onView( mech: BattleMech ): void; onAdd( mech: BattleMech ): void } ): JSX.Element {
+export default function BundledMechList( props: { appGlobals: IAppGlobals; onView( mech: BattleMech ): void; onAdd( mech: BattleMech ): void; onTRO?( mech: BattleMech ): void } ): JSX.Element {
     const [designs, setDesigns] = useState<IBundledDesignHeader[] | null>(null);
     const [page, setPage] = useState(0);
     // Its own filter, on Skunk Werks' rules levels: the app setting with a similar name is the creators' rules level.
@@ -88,6 +90,7 @@ export default function BundledMechList( props: { appGlobals: IAppGlobals; onVie
                             <td className="min-width no-wrap text-center">{design.bv}</td>
                             <td className="min-width no-wrap text-center">
                                 <button className="btn btn-sm btn-primary" onClick={open( design, props.onView )} title={"View " + design.name + " " + design.model}><Eye /></button>
+                                {props.onTRO ? <button className="btn btn-sm btn-primary" onClick={open( design, props.onTRO )} title={"Technical Readout of " + design.name + " " + design.model} aria-label={"TRO " + design.name + " " + design.model}><Book /></button> : null}
                                 <button className="btn btn-sm btn-primary" onClick={open( design, props.onAdd )} title={"Add " + design.name + " " + design.model}><PlusCircle /></button>
                             </td>
                         </tr>

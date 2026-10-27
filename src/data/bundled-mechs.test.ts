@@ -12,7 +12,7 @@ import { getBundledMechEntries, loadBundledMechDesign, loadBundledMechIndex } fr
 const dataDir = path.resolve(__dirname, "bundled");
 
 // Pinned so a growing data set is a deliberate change.
-const DESIGNS = 3554;
+const DESIGNS = 3578;
 // Round 3 added MegaMek's 'Mechs, whose TRO text is long: about 1.8 MB gzipped, read a chunk at a time.
 const MAX_BYTES = 19_500_000;
 
@@ -37,6 +37,18 @@ describe("bundled 'Mechs", () => {
         expect(bytes).toBeLessThanOrEqual(MAX_BYTES);
         const keys = getBundledMechEntries(headers).map((entry) => (entry.chassis + " " + entry.model).toLowerCase());
         expect(new Set(keys).size).toBe(keys.length);
+    });
+
+    // Checked against the corrected MUL BV where the live MUL's is stale (#354).
+    it("keep the IndustrialMechs whose live MUL BV is stale, at the corrected BV", async () => {
+        const headers = await loadBundledMechIndex();
+        const bv = (mulId: number) => headers.find((header) => header.mulId === mulId)?.bv;
+        expect([103087, 107159, 108513, 100674, 106363].map(bv)).toEqual([352, 250, 350, 680, 826]);
+        // #371: Nail/Rivet Gun ammo at 0 BV (TM p.317) and commercial armor at half (TM p.315).
+        expect([102180, 101073, 100319].map(bv)).toEqual([1227, 1234, 73]);
+        // MegaMek files with no cockpit line whose record sheets have a plain Industrial cockpit (no AFC).
+        const byModel = (model: string) => headers.find((header) => header.model === model)?.bv;
+        expect(["QUA-51T MilitiaMech", "HYN-4A SalvageMech", "HYN-4B SalvageMech"].map(byModel)).toEqual([670, 474, 398]);
     });
 
     // The build checked every design; a sample here catches an import or Battle Value change that needs a rebuild.

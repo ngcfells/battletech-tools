@@ -2,6 +2,7 @@ import React, { type JSX } from "react";
 import { TechnicalReadout } from "../../classes/technical-readout";
 import { ITroUnitAdapter, TRO_TEXT_SECTIONS } from "../../data/technical-readout-interfaces";
 import BattleTechLogo from "./battletech-logo";
+import { GRAY, INK } from "./svg/record-sheet-svg-kit";
 import { RulesetsAttribution } from "./rulesets-attribution";
 import TrademarkNoticeParagraphs from "./trademark-notice";
 import TroConstructionTable from "./tro-construction-table";
@@ -64,7 +65,7 @@ export default function TechnicalReadoutSheet(props: { tro: TechnicalReadout; ad
             )}
             <TroConstructionTable rows={adapter.getConstructionRows()} />
             <footer className="tro-footer">
-                <BattleTechLogo />
+                <BattleTechLogo baseColor={INK} altColor={GRAY} />
                 <RulesetsAttribution rulesets={props.rulesets ?? []} />
                 <TrademarkNoticeParagraphs />
             </footer>

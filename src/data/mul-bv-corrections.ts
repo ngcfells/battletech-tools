@@ -1,0 +1,26 @@
+import type { IASMULUnit } from "../classes/alpha-strike-unit";
+
+/**
+ * Battle Values the live MUL has wrong, by live MUL id, with the source for each (#354). The live MUL keeps
+ * RS:3075's IndustrialMech figures, which took the x0.9 for no Advanced Fire Control off the whole BV instead of the
+ * Offensive Battle Rating alone (TM p.304, BV errata v4.1); MUL: Battle Values v1.0 printed the corrected ones.
+ */
+export const MUL_BV_CORRECTIONS: Record<number, { bv: number; source: string }> = {
+    // MUL: Battle Values prints 353, counting Nail/Rivet Gun ammo at 1 BV a ton; TM p.317 gives it 0.
+    103087: { bv: 352, source: "Jabberwocky JAW-66D: TM p.304, p.317 (live MUL 326)" },
+    107159: { bv: 250, source: "Jabberwocky JAW-65A: TM p.304, not in MUL: Battle Values v1.0 (live MUL 230)" },
+    108513: { bv: 350, source: "Jabberwocky JAW-66B: MUL: Battle Values v1.0 p.174 (live MUL 322)" },
+    100674: { bv: 680, source: "Quasit QUA-51M: MUL: Battle Values v1.0 p.174 (live MUL 636)" },
+    106363: { bv: 826, source: "Quasit QUA-51P: MUL: Battle Values v1.0 p.174 (live MUL 779)" },
+    // #371. The MUL and MUL: Battle Values p.173 count each ton of Nail/Rivet Gun ammo at 1 BV; TM p.317 gives it 0.
+    102180: { bv: 1227, source: "Diomede D-M3D-3: TM p.317 (live MUL 1228)" },
+    101073: { bv: 1234, source: "Diomede D-M3D-4: TM p.317 (live MUL 1235)" },
+    // Commercial armor counts half (TM p.315), as the MUL's own PTN-2 (143) has it; MegaMek also gets 73.
+    100319: { bv: 73, source: "Patron PTN-1: TM p.315 (live MUL 107, as MUL: Battle Values v1.0 p.174)" },
+};
+
+/** A live MUL entry with its Battle Value corrected, when the table has one. */
+export function correctMULBattleValue<T extends Pick<IASMULUnit, "Id" | "BattleValue">>(unit: T): T {
+    const correction = MUL_BV_CORRECTIONS[unit.Id];
+    return correction ? { ...unit, BattleValue: correction.bv } : unit;
+}

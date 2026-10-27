@@ -58,27 +58,40 @@ export function calculateAlphaStrikeValue(
         _alphaStrikeForceStats.abilityCodes.push("Rear");
     }
 
-    // Write the damage-bearing special abilities onto the card ("LRM" becomes "LRM 1/1/1").
-    const damageCode = (label: string, damage: IAlphaStrikeDamage) => {
+    // Write the damage-bearing special abilities onto the card ("LRM" becomes "LRM 1/1/1"); null leaves one off (#378).
+    // LRM, SRM and AC need 10 or more points (1 or more) at medium range, before rounding (StratOps errata 2.0, Base
+    // Damage; ASC errata); below that their damage stays in the base damage. A special with no damage at all is left off.
+    const damageCode = (label: string, damage: IAlphaStrikeDamage, needsMedium: boolean): string | null => {
+        // Rounded up to the tenth first, as Vehicle._asFamilySpecials does (0.95 counts as 1).
+        if (needsMedium && Math.ceil(Math.round(+damage.medium * 1000) / 100) / 10 < 1) return null;
         const adjusted = adjustAlphaStrikeDamage(damage);
-        _calcLogAS += "<strong>Adding</strong> " + label + " Ability: " + adjusted.short + "/" + adjusted.medium + "/" + adjusted.long + "<br />\n";
-        return label + " " + adjusted.short + "/" + adjusted.medium + "/" + adjusted.long;
+        const values = (["short", "medium", "long"] as const).map((range) => adjusted[`${range}Minimal`] && !needsMedium ? "0*" : String(adjusted[range]));
+        if (values.every((value) => value === "0")) return null;
+        _calcLogAS += "<strong>Adding</strong> " + label + " Ability: " + values.join("/") + "<br />\n";
+        return label + " " + values.join("/");
     };
-    const codes = _alphaStrikeForceStats.abilityCodes;
-    for (let aC = 0; aC < codes.length; aC++) {
-        const code = codes[aC].toLowerCase();
-        if (code === "heat") codes[aC] = damageCode("Heat", heatDamage);
-        if (code === "lrm") codes[aC] = damageCode("LRM", lrmDamage);
-        if (code === "flak") codes[aC] = damageCode("Flak", flakDamage);
-        if (code === "ac") codes[aC] = damageCode("AC", acDamage);
-        if (code === "srm") codes[aC] = damageCode("SRM", srmDamage);
-        if (code === "missile" || code === "msl") codes[aC] = damageCode("MSL", mslDamage);
-        if (code === "rear") codes[aC] = damageCode("Rear", rearDamage);
-        if (code === "indirect fire" || code === "if") {
-            codes[aC] = "IF " + indirectFireRating;
-            _calcLogAS += "<strong>Adding</strong> IF Ability: " + indirectFireRating + "<br />\n";
+    // IF is the final damage of the indirect-fire weapons, rounded normally; under 0.5 is minimal, IF 0*, as the vehicle
+    // conversion and the MUL print it.
+    const indirectFireCode = (): string | null => {
+        if (indirectFireRating <= 0) return null;
+        const value = indirectFireRating < 0.5 ? "0*" : String(Math.round(indirectFireRating));
+        _calcLogAS += "<strong>Adding</strong> IF Ability: " + value + "<br />\n";
+        return "IF " + value;
+    };
+    const writeCode = (code: string): string | null => {
+        switch (code.toLowerCase()) {
+            case "heat": return damageCode("Heat", heatDamage, false);
+            case "lrm": return damageCode("LRM", lrmDamage, true);
+            case "flak": return damageCode("Flak", flakDamage, false);
+            case "ac": return damageCode("AC", acDamage, true);
+            case "srm": return damageCode("SRM", srmDamage, true);
+            case "missile": case "msl": return damageCode("MSL", mslDamage, false);
+            case "rear": return damageCode("Rear", rearDamage, false);
+            case "indirect fire": case "if": return indirectFireCode();
+            default: return code;
         }
-    }
+    };
+    _alphaStrikeForceStats.abilityCodes = _alphaStrikeForceStats.abilityCodes.map(writeCode).filter((code): code is string => code !== null);
 
     /* Point Value: ASC pp.138-141 as corrected by errata v1.6, shared with the Alpha Strike unit creator. */
     _calcLogAS += "<div class=\"text-center\"><strong> - Calculating Point Value - </strong></div>\n";

@@ -27,3 +27,13 @@ describe("Alpha Strike roster MUL search: Special Rulesets (#324 round 4)", () =
         expect(screen.queryByText(/Timber Wolf/)).toBeNull();
     }, 20000);
 });
+
+describe("Alpha Strike roster MUL search: no filters", () => {
+    // With no term or ability the page searched nothing on opening, so every list showed no units (#377).
+    it("lists the units on opening with no filters set", async () => {
+        const appSettings = new AppSettings({} as never);
+        const appGlobals = { appSettings, currentASForce: new AlphaStrikeForce(), saveAppSettings: vi.fn(), favoriteASGroups: [] } as unknown as IAppGlobals;
+        render(<MemoryRouter><AlphaStrikeAddUnits appGlobals={appGlobals} openEditUnit={vi.fn()} openViewUnit={vi.fn()} /></MemoryRouter>);
+        await waitFor(() => expect(screen.getByText(/Search Results \(2\)/)).toBeTruthy(), { timeout: 10000 });
+    }, 20000);
+});

@@ -70,4 +70,11 @@ describe("TechnicalReadoutSheet", () => {
     it("carries the trademark notice", () => {
         expect(sheet(new TechnicalReadout())).toContain("not published or endorsed by");
     });
+
+    // The logo's default cream and gold are for dark headers and vanish on the white page (#373).
+    it("draws the footer logo in ink, like the record sheets", () => {
+        const markup = sheet(new TechnicalReadout());
+        expect(markup).toContain("fill:rgb(0,0,0)");
+        expect(markup).not.toContain("rgb(253,253,227)");
+    });
 });
