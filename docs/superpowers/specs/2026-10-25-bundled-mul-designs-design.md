@@ -13,7 +13,7 @@ as possible, and shipped (user, 2026-10-25).
 ## What exists (measured 2026-10-25)
 
 | MUL type | Entries | Source on hand | Importer |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | BattleMech, IndustrialMech | 4,250 | SSW 3,358; MTF 4,295 | SSW yes; MTF no |
 | Battle Armor | 1,199 | BLK | yes |
 | Combat Vehicle, OmniVehicle | 1,248 | BLK | no |
@@ -133,7 +133,7 @@ The exact field list the codec drops, the data file paths and names, and the rep
 - **Results**:
 
   | Type | Kept | Files |
-  |---|---|---|
+  | --- | --- | --- |
   | Battle armor | 820 | 1,188 |
   | ProtoMechs | 62 | 86 |
   | Small Craft and DropShips | 30 | 248 |
