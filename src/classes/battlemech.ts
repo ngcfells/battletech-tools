@@ -363,6 +363,10 @@ export interface IGATOR {
 
 export class BattleMech {
     private static readonly SIGNATURE_SYSTEM_TAGS = ["null-signature-system", "void-signature-system", "chameleon-lps"];
+    /** Superheavy Engine Type BV Modifier Table (IO:AE p.188), by engine tag; a large engine counts as its type. */
+    private static readonly SUPERHEAVY_ENGINE_BV_MODIFIERS: Record<string, number> = {
+        light: 0.825, xl: 0.75, clan_xl: 0.825, xxl: 0.5, clan_xxl: 0.75,
+    };
     private static readonly HEAVY_GAUSS_TAGS = ["gauss-rifle-heavy", "gauss-rifle-heavy-improved"];
     private static readonly MECH_LOCATION_MAP: Record<string, string> = {
         // Shared location mapper for all front, rear, and advanced chassis locations
@@ -958,6 +962,10 @@ export class BattleMech {
                 engineModifier = 1.0; // Standard, Compact, Fission, ICE, Cell, Primitive
                 break;
         }
+        // A Superheavy 'Mech uses the Superheavy Engine Type BV Modifier Table instead (IO:AE p.188).
+        if (this.isSuperheavy()) {
+            engineModifier = BattleMech.SUPERHEAVY_ENGINE_BV_MODIFIERS[engineTag] ?? 1.0;
+        }
         totalInternalStructurePoints *= engineModifier;
         this._calcLogBV += `Engine Modification (${engineTag}) = ${engineModifier}x. Total IS BV: ${totalInternalStructurePoints}<br />`;
         // 1D. Gyro Points Modifier (TM p. 302)
@@ -1032,8 +1040,12 @@ export class BattleMech {
         //  'Mech's XXL engine "as for Inner Sphere XL Engines" (TO:AUE p.193).
         //  An arm: without CASE of its own, when the torso inward costs BV. CASE in the arm still saves an XL
         //  engine 'Mech, as the MUL, SSW and MegaMek count it, though TM p.302 says "any location".
+        // A Superheavy 'Mech counts as a Clan 'Mech where any CASE protects the explosives, else as an Inner Sphere one
+        // (IO:AE p.188).
+        const isSuperheavy = this.isSuperheavy();
         const isPenalisedLocation = (loc: string): boolean => {
             if (hasCaseII(loc)) return false;
+            if (isSuperheavy && caseMap[loc]) return false;
             if (loc === "lt" || loc === "rt") return !caseMap[loc] || engineSideSlots >= 3;
             if (loc === "la" || loc === "ra") return !caseMap[loc] && isPenalisedLocation(inward[loc]);
             return true;

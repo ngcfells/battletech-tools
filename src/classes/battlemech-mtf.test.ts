@@ -206,6 +206,44 @@ describe("MegaMek 'Mech import", () => {
         expect(ammo.filter((item) => item.location === "rt")).toHaveLength(2);
     });
 
+    // A Radical Heat Sink System is equipment (IO:AE p.185), not heat sinks: the Ares ARS-V1D Hephaestus carries one.
+    it("reads a Radical Heat Sink System as the system, not as heat sinks", () => {
+        const radical = brawler.replace(location("Right Torso", "Medium Laser").join("\n"),
+            location("Right Torso", "Medium Laser", ...fill(3, "Radical Heat Sink System")).join("\n"));
+        const { mech, issues } = importBattleMechMtf(radical);
+        expect(issues).toEqual([]);
+        expect(mech!.getInstalledEquipment().filter((item) => item.tag === "radical-heat-sink-system")).toHaveLength(1);
+        expect(mech!.getHeatSinks()).toBe(11);
+    });
+
+    // "For Superheavy 'Mechs, use the Superheavy Engine Type BV Modifier Table in place of the standard Battle Value
+    // modifiers" (IO:AE pp.187-188): Inner Sphere XL 0.75 and Light 0.825, where a 'Mech takes 0.5 and 0.75.
+    it.each([["XL", 0.75], ["Light", 0.825]])("rates a superheavy 'Mech's %s engine from the superheavy table (IO:AE p.188)", (engine, modifier) => {
+        const engineSlots = fill(engine === "XL" ? 2 : 1, "Fusion Engine");
+        const sided = superheavy.replace("300 Fusion Engine(IS)", `300 ${engine} Engine(IS)`)
+            .replace(location("Left Torso", ...fill(4, "ISGaussRifle"), "IS Gauss Ammo|IS Gauss Ammo").join("\n"),
+                location("Left Torso", ...engineSlots, ...fill(4, "ISGaussRifle"), "IS Gauss Ammo|IS Gauss Ammo").join("\n"))
+            .replace(location("Right Torso", "IS LB 10-X AC Ammo|IS LB 10-X Cluster Ammo").join("\n"),
+                location("Right Torso", ...engineSlots, "IS LB 10-X AC Ammo|IS LB 10-X Cluster Ammo").join("\n"));
+        const { mech, issues } = importBattleMechMtf(sided);
+        expect(issues).toEqual([]);
+        expect(mech!.calcLogBV).toContain(`= ${modifier}x.`);
+    });
+
+    // "Treat the Superheavy 'Mech as a Clan 'Mech if the explosive components are in a location protected by any form
+    // of CASE" (IO:AE p.188): CASE in an XL engine's side torso saves it.
+    it("lets CASE protect a superheavy XL 'Mech's side torso ammunition (IO:AE p.188)", () => {
+        const xl = superheavy.replace("300 Fusion Engine(IS)", "300 XL Engine(IS)")
+            .replace(location("Left Torso", ...fill(4, "ISGaussRifle"), "IS Gauss Ammo|IS Gauss Ammo").join("\n"),
+                location("Left Torso", ...fill(2, "Fusion Engine"), ...fill(4, "ISGaussRifle"), "IS Gauss Ammo|IS Gauss Ammo").join("\n"))
+            .replace(location("Right Torso", "IS LB 10-X AC Ammo|IS LB 10-X Cluster Ammo").join("\n"),
+                location("Right Torso", ...fill(2, "Fusion Engine"), "IS LB 10-X AC Ammo|IS LB 10-X Cluster Ammo", "ISCASE").join("\n"));
+        const { mech, issues } = importBattleMechMtf(xl);
+        expect(issues).toEqual([]);
+        expect(mech!.calcLogBV).toContain("Explosive Ammo in rightTorso protected by CASE");
+        expect(mech!.calcLogBV).not.toContain("Explosive Ammo Crit in rightTorso");
+    });
+
     // "Superheavy 'Mechs may ignore the torso-only mounting restrictions applied to Heavy Gauss Rifles (standard and
     // improved), and may place these items in the arms" (IO:AE p.157): the Ares ARS-V1A Hera's right-arm rifle.
     it("mounts an Improved Heavy Gauss Rifle in a superheavy 'Mech's arm (IO:AE p.157)", () => {

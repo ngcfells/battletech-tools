@@ -3436,6 +3436,14 @@ describe("Batch 10c missile and artillery catalogs", () => {
         }
     });
 
+    // User ruling 2026-10-27: the Klondike-era BV the MUL and the Operation Klondike record sheets use (seven units:
+    // Carbine CON-1 (RL) 296, Crosscut ED-X2 (RL) 422, Daedalus GTX2 (Militarized) 849, Flatbed Truck (RL) 232, Rotunda
+    // (RL) 320, Galleon GAL-200 (RL) 443), not IO:AE p.189's later 15/18/19, until BV is kept per edition (#590).
+    it("values prototype rocket launchers as the MUL and the Klondike sheets do", () => {
+        const bv = (tag: string) => isMissileList.find(record => record.tag === tag)?.battleValue;
+        expect([bv("prototype-rocket-launcher-10"), bv("prototype-rocket-launcher-15"), bv("prototype-rocket-launcher-20")]).toEqual([17, 21, 22]);
+    });
+
     it("uses null, not 0, for unknown dates in the isMissile records", () => {
         for (const item of isMissileList) {
             expect(item.introduced, item.tag).not.toBe(0);

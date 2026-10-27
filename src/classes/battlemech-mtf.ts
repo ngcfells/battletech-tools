@@ -61,7 +61,8 @@ const FIXED_SLOTS = new Set(["Shoulder", "Upper Arm Actuator", "Lower Arm Actuat
     "Lower Leg Actuator", "Foot Actuator", "Life Support", "Sensors", "Cockpit", "Fusion Engine", "Fuel Cell Engine", "Gyro", "-Empty-"]);
 const ARMOR_SLOT = /Ferro|Stealth|Reactive|Reflective|Lamellor|Ballistic-Reinforced|Impact-Resistant|Anti-Penetrative|Heat-Dissipating|Hardened/i;
 const STRUCTURE_SLOT = /Endo|Composite/i;
-const HEAT_SINK_SLOT = /HeatSink|Heat Sink/i;
+// Heat sinks, not the Radical Heat Sink System (equipment, IO:AE p.185).
+const HEAT_SINK_SLOT = /^(?!Radical).*(HeatSink|Heat Sink)/i;
 // Systems with a slot in several locations: SSW's <multislot name> (one location per slot).
 const MULTISLOTS: [RegExp, string][] = [
     [/^Environmental Sealing/i, "Environmental Sealing"], [/^Tracks$/i, "Tracks"], [/Blue ?Shield/i, "Blue Shield PFD"],
