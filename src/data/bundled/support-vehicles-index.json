@@ -1,7 +1,8 @@
 {"notice":"The data here is/may be copyrighted and NOT included in the GPLv3 license. Converted from MegaMek's unit files (https://github.com/MegaMek/megamek): MegaMek Data (C) 2025-2026 by The MegaMek Team, licensed under CC BY-NC-SA 4.0 (https://creativecommons.org/licenses/by-nc-sa/4.0/).","designs":{"$k":["id","name","model","tons","bv","cost","rulesLevel","year","tech","mulId","source"],"$v":[
 [0,"Armored Personnel Carrier","(Tracked Primitive)",10,61,55481,1,2390,"Inner Sphere",107191,"megamek"],
-[1,"Cobra VTOL Transport","",30,149,261125,3,2317,"Inner Sphere",107023,"megamek"],
-[2,"Cobra VTOL Transport","(Fusion)",30,165,273625,1,2489,"Inner Sphere",104303,"megamek"],
-[3,"Korvin Tank","KRV-2",50,507,666844,1,2367,"Inner Sphere",104319,"megamek"],
-[4,"Strike Falcon Attack VTOL","",30,284,523125,1,2371,"Inner Sphere",102707,"megamek"]
+[1,"Asher Hover Scout","",45,386,638044,3,2298,"Inner Sphere",100547,"megamek"],
+[2,"Cobra VTOL Transport","",30,149,261125,3,2317,"Inner Sphere",107023,"megamek"],
+[3,"Cobra VTOL Transport","(Fusion)",30,165,273625,1,2489,"Inner Sphere",104303,"megamek"],
+[4,"Korvin Tank","KRV-2",50,507,666844,1,2367,"Inner Sphere",104319,"megamek"],
+[5,"Strike Falcon Attack VTOL","",30,284,523125,1,2371,"Inner Sphere",102707,"megamek"]
 ]}}

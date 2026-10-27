@@ -20,6 +20,14 @@ describe("tables of records", () => {
         expect(text.split("\n").length).toBe(records.length + 3);
     });
 
+    // A field set to undefined is not written, as JSON leaves it out of a plain object: a battle armor suit reloaded
+    // from its bundled design carried such fields on its equipment, and wrote a column of nulls for each (#241).
+    it("leave out fields set to undefined, as JSON does", () => {
+        const rows = [{ name: "A", shots: undefined }, { name: "B", shots: undefined }];
+        expect(JSON.stringify(tabulate(rows))).toBe(JSON.stringify(tabulate([{ name: "A" }, { name: "B" }])));
+        expect(untabulate(JSON.parse(JSON.stringify(tabulate([{ name: "A", shots: 3 }, { name: "B", shots: undefined }]))))).toEqual([{ name: "A", shots: 3 }, { name: "B" }]);
+    });
+
     it("read a plain list as it is, for files from before", () => {
         expect(untabulate(records)).toEqual(records);
     });

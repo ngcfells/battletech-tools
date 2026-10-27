@@ -35,15 +35,17 @@ export function tabulate(value: unknown): unknown {
         const tabulated = value.map(tabulate);
         if (tabulated.length < 2 || !tabulated.every(isPlainObject)) return tabulated;
         const { items, objects } = flatten(tabulated as Record<string, unknown>[]);
-        const keys = [...new Set(items.flatMap((item) => Object.keys(item as object)))];
-        const values = new Set(items.flatMap((item) => Object.values(item as object)));
+        // A field set to undefined is left out, as JSON leaves it out of a plain object.
+        const defined = (item: unknown) => Object.entries(item as object).filter(([, field]) => field !== undefined);
+        const keys = [...new Set(items.flatMap((item) => defined(item).map(([key]) => key)))];
+        const values = new Set(items.flatMap((item) => defined(item).map(([, field]) => field as unknown)));
         const absent = ABSENT_MARKERS.find((marker) => !values.has(marker));
         if (absent === undefined) return tabulated;
         return {
             [TABLE_KEYS]: keys,
             ...(objects.length > 0 ? { [TABLE_OBJECTS]: objects } : {}),
             ...(absent === null ? {} : { [TABLE_ABSENT]: absent }),
-            [TABLE_ROWS]: items.map((item) => keys.map((key) => key in (item as object) ? (item as Record<string, unknown>)[key] : absent)),
+            [TABLE_ROWS]: items.map((item) => keys.map((key) => (item as Record<string, unknown>)[key] !== undefined ? (item as Record<string, unknown>)[key] : absent)),
         };
     }
     if (value && typeof value === "object") return Object.fromEntries(Object.entries(value).map(([key, item]) => [key, tabulate(item)]));
