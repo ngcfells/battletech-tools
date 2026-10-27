@@ -1,6 +1,7 @@
 import React, { type JSX } from 'react';
 import { BattleMech } from '../../../classes/battlemech';
 import BipedArmorCircles from './biped-armor-circles';
+import { drawnBubble } from './armor-bubble-layouts';
 import DamageCircleSVG from './damage-circle-svg';
 import { TRIPOD_ARMOR_CENTER_LEG_LAYOUT, tripodCenterLegBubbles } from './tripod-diagram-svg';
 
@@ -44,7 +45,7 @@ export default class TripodArmorCircles extends React.Component<ITripodArmorCirc
                             isFilled={this.props.mechData.armorDamaged("cl", index)}
                             xLoc={centerX + position.x}
                             yLoc={this.props.armorBoxTop + layout.firstRowY + position.y}
-                            radius={position.radius}
+                            {...drawnBubble(position.radius)}
                             inPlay={this.props.inPlay}
                             clickLocation="cl"
                             clickIndex={index}

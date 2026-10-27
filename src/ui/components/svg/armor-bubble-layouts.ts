@@ -50,7 +50,23 @@ export const bubblePositions = (points: BubblePoint[], radius: number, count: nu
     const centerY = points.reduce((sum, [, y]) => sum + y, 0) / points.length;
     const fromCenter = ([x, y]: BubblePoint) => Math.hypot(x - centerX, y - centerY);
     const ordered = [...placed].sort((a, b) => fromCenter(a) - fromCenter(b) || a[1] - b[1] || a[0] - b[0]);
-    return { points: ordered.slice(0, wanted), radius: split === 1 ? radius : cell * 0.4 };
+    return { points: ordered.slice(0, wanted), radius: split === 1 ? radius : cell * 0.45 };
+};
+
+/** The smallest bubble footprint drawn as-is: DamageCircleSVG's circle, 3 short of it, is still a ring at 5 wide. */
+const FULL_SIZE_FOOTPRINT = 8;
+
+/**
+ * The DamageCircleSVG radius and stroke for a bubble of this footprint. DamageCircleSVG draws 3 short of its radius
+ * with a 2-wide stroke, so a smaller bubble (a split superheavy location, a Tripod's Center Leg) would draw as a black
+ * dot, damaged or not; it is drawn as a scaled-down full-size bubble instead.
+ */
+export const drawnBubble = (footprint: number): { radius: number; strokeWidth: number } => {
+    if (footprint >= FULL_SIZE_FOOTPRINT) {
+        return { radius: footprint, strokeWidth: 2 };
+    }
+    const scale = footprint / FULL_SIZE_FOOTPRINT;
+    return { radius: (FULL_SIZE_FOOTPRINT - 3) * scale + 3, strokeWidth: 2 * scale };
 };
 
 /** Biped 'Mechs; a Tripod adds its Center Leg (tripod-armor-circles.tsx). */

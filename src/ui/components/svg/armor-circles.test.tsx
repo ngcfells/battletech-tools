@@ -5,12 +5,25 @@ import { BIPED_ARMOR_BUBBLES, bubblePositions, QUAD_ARMOR_BUBBLES, type IArmorBu
 import BipedArmorCircles from "./biped-armor-circles";
 import DamageCircleSVG from "./damage-circle-svg";
 import QuadArmorCircles from "./quad-armor-circles";
+import { BIPED_STRUCTURE_BUBBLES, QUAD_STRUCTURE_BUBBLES } from "./structure-bubble-layouts";
 
 // Every armor bubble shows and toggles its own point of armor: bubble N of a location is filled by armorDamaged(loc, N)
 // and a click toggles index N. Hand-written lines once had eight wrong (#589): Biped CT 46 toggled 56, LT/RT 33
 // toggled 333, LT 25 showed bubble 2; Quad CT 39 and 51 toggled 19 and 50, the front legs' 27 toggled 17.
 
-type BubbleProps = { isFilled: boolean; clickLocation: string; clickIndex: number; xLoc: number; yLoc: number };
+type BubbleProps = {
+    isFilled: boolean; clickLocation: string; clickIndex: number; xLoc: number; yLoc: number; radius: number; strokeWidth?: number;
+};
+
+/** DamageCircleSVG draws its circle 3 short of its radius, with a 2-wide stroke unless told otherwise. */
+const ring = (bubble: BubbleProps) => ({ radius: bubble.radius - 3, stroke: bubble.strokeWidth ?? 2 });
+
+// A bubble too small for its stroke reads as a black dot, damaged or not: 200 t bubbles once drew at radius 0 to 2
+// with the full 2-wide stroke (#589).
+const unreadable = (drawn: BubbleProps[]) => drawn
+    .filter((bubble) => ring(bubble).radius < 2 * ring(bubble).stroke)
+    .map((bubble) => `${bubble.clickLocation} ${bubble.clickIndex}: r ${ring(bubble).radius}, stroke ${ring(bubble).stroke}`)
+    .slice(0, 3);
 
 /** The DamageCircleSVG elements a render returns, in order, through any fragments. */
 const bubbles = (node: React.ReactNode): BubbleProps[] => {
@@ -76,8 +89,10 @@ describe("'Mech armor bubbles", () => {
             mech.setTonnage(200);
             mech.allocateArmorMax();
             const allocation = mech.getArmorAllocation() as unknown as Record<string, number>;
-            const drawn = drawnPerLocation(bubbles(new Component({ mechData: mech, inPlay: true, armorBoxTop: 0, armorBoxLeft: 0, armorBoxWidth: 0 }).render()));
+            const all = bubbles(new Component({ mechData: mech, inPlay: true, armorBoxTop: 0, armorBoxLeft: 0, armorBoxWidth: 0 }).render());
+            const drawn = drawnPerLocation(all);
             expect(allocation.centerTorso + allocation.centerTorsoRear).toBe(120);
+            expect(unreadable(all)).toEqual([]);
             for (const location of layout) {
                 expect([location.loc, drawn[location.loc] ?? 0]).toEqual([location.loc, allocation[location.field]]);
             }
@@ -100,8 +115,8 @@ describe("'Mech armor bubbles", () => {
     }
 });
 
-describe("armor bubble positions", () => {
-    const locations = [...BIPED_ARMOR_BUBBLES, ...QUAD_ARMOR_BUBBLES];
+describe("armor and structure bubble positions", () => {
+    const locations = [...BIPED_ARMOR_BUBBLES, ...QUAD_ARMOR_BUBBLES, ...BIPED_STRUCTURE_BUBBLES, ...QUAD_STRUCTURE_BUBBLES];
     const center = (points: [number, number][]) => [
         points.reduce((sum, [x]) => sum + x, 0) / points.length,
         points.reduce((sum, [, y]) => sum + y, 0) / points.length,
