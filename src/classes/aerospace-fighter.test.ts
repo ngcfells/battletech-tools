@@ -161,3 +161,37 @@ describe("Aerospace fighter tech dates (design 2026-10-24-catalog-consolidation 
         expect(availability).toEqual({ available: true, asPrototype: false });
     });
 });
+
+// The Clans fielded Star League Ferro-Aluminum until Clan Ferro-Aluminum was in production (2825). Clan Founding
+// Years (2800-2840) holds both windows, so a Clan fighter there may mount either, each at its own figures (#168).
+describe("Star League Ferro-Aluminum on a Clan fighter", () => {
+    const clanFighter = (era: string): AerospaceFighter => {
+        const fighter = new AerospaceFighter();
+        fighter.setTech("clan");
+        fighter.setEra(era);
+        fighter.setTonnage(50);
+        return fighter;
+    };
+    const offered = (fighter: AerospaceFighter, tag: string) => fighter.getAvailableArmorTypes().find((armor) => armor.tag === tag);
+
+    it("offers both versions while the era holds both, the Star League one at Inner Sphere figures", () => {
+        const fighter = clanFighter("clan-founding-years");
+        expect(offered(fighter, "ferro-aluminum")?.available).toBe(true);
+        expect(offered(fighter, "clan-ferro-aluminum")?.available).toBe(true);
+        expect(fighter.setArmorType("ferro-aluminum").tag).toBe("ferro-aluminum");
+        expect(fighter.getArmorPointsPerTon()).toBe(17.92);
+        expect([fighter.getArcSlots("leftWing"), fighter.getArcSlots("nose")]).toEqual([4, 5]);
+        fighter.setArmorType("clan-ferro-aluminum");
+        expect(fighter.getArmorPointsPerTon()).toBe(19.2);
+    });
+
+    it("drops the Star League version once the Clan one is the only one in the era", () => {
+        expect(offered(clanFighter("clan-golden-years"), "ferro-aluminum")).toBeUndefined();
+        // An Inner Sphere fighter still sees its own Ferro-Aluminum again from its 3040 reintroduction.
+        const inner = new AerospaceFighter();
+        inner.setTech("is");
+        inner.setEra("clan-inv");
+        expect(offered(inner, "ferro-aluminum")?.available).toBe(true);
+        expect(offered(inner, "clan-ferro-aluminum")).toBeUndefined();
+    });
+});

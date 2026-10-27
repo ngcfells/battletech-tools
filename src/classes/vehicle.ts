@@ -49,7 +49,7 @@ import {
     MAX_VEHICLE_BAY_COUNT, MAX_VEHICLE_BAYS, MAX_VEHICLE_CARGO_TONS, normalizeVehicleBays, VEHICLE_BAY_TYPES,
 } from "../data/vehicle-transport-bays";
 import { ARTVEE_CONVERSION_EQUIPMENT } from "../data/combat-vehicle-chassis-modifications-custom";
-import { CUSTOM_HOMEBREW_RULES_LEVEL, EXPERIMENTAL_RULES_LEVEL, getItemBattleValue, getLauncherBattleValueWithoutFireControl, equipmentMatchesIdentifier, getAmmoBattleValuePerTon, getBattleArmorScaleListByTech, getCompatibleAmmo, getDatesAvailability, getEquipmentListByTech, getEquipmentRulesLevel, getStarLeagueCarryOverDates, getWeaponShotsPerTon, isEquipmentOffered, isUnderUnitLimit, getTechDatesAvailability } from "../data/equipment-registry";
+import { CUSTOM_HOMEBREW_RULES_LEVEL, EXPERIMENTAL_RULES_LEVEL, getItemBattleValue, getLauncherBattleValueWithoutFireControl, equipmentMatchesIdentifier, getAmmoBattleValuePerTon, getBattleArmorScaleListByTech, getCompatibleAmmo, getDatesAvailability, getEquipmentListByTech, getEquipmentRulesLevel, mustUseStarLeagueVersion, starLeagueVersionInEra, getWeaponShotsPerTon, isEquipmentOffered, isUnderUnitLimit, getTechDatesAvailability } from "../data/equipment-registry";
 import { isTargetingComputerWeapon, roundUpHalfTon, sizeTargetingComputers, sizeVariableEquipment } from "../data/variable-equipment";
 import { getFractionalArmorTonsPerPoint, getFractionalEngineWeight, roundUpToKilogram } from "../data/fractional-accounting";
 import { getBattleArmorScaleExplosionDamage } from "../data/battle-armor-scale-equipment";
@@ -508,6 +508,8 @@ export interface IVehicleExport {
     engineType: string;
     cruiseMP: number;
     armorType: string;
+    /** The armor's version (Inner Sphere / Star League or Clan) where the design chose one (#168). */
+    armorTechBase?: "is" | "clan";
     armorAllocation: IVehicleArmorAllocation;
     /** Patchwork Armor: armor type tag by location; present only when armorType is "patchwork". */
     patchworkArmor?: Partial<Record<VehicleLocation, string>>;
@@ -645,6 +647,8 @@ export default class Vehicle implements IGameSettingsUnit {
     private _cruiseMP: number = 3;
 
     private _armorType: IArmorType = mechArmorTypes[0];
+    /** The chosen version of the armor where the vehicle may choose (getComponentTechBases); checked at read. */
+    private _armorTechBaseChoice: "is" | "clan" | null = null;
     private _armorAllocation: IVehicleArmorAllocation = emptyArmorAllocation();
     public static readonly PATCHWORK_ARMOR_TAG = "patchwork";
     /** Patchwork Armor: the armor type tag of each location (TO:AUE p.189); standard where none is set. */
@@ -2289,13 +2293,48 @@ export default class Vehicle implements IGameSettingsUnit {
         return this._armorAllocation;
     }
 
-    /** The tech base whose version of the armor this vehicle mounts. */
+    /**
+     * The versions of an armor this vehicle may mount, its default first: either on Mixed Tech; on a Clan vehicle,
+     * the Star League version beside the Clan one while the era holds both production windows (#168).
+     */
+    private _armorTechBases(armor: IArmorType): ("is" | "clan")[] {
+        const techTag = this.getTech().tag;
+        const multiplier = armor.armorMultiplier;
+        const slots = armor.combatVehicleSlots;
+        const starLeagueVersion = techTag === "clan" && this._usesStarLeagueVersion(armor);
+        const preferredBase = !starLeagueVersion && (techTag === "clan" || techTag === "mclan") ? "clan" : "is";
+        const otherBase = preferredBase === "clan" ? "is" : "clan";
+        if (!(multiplier[preferredBase] > 0)) return [otherBase];
+        // Versions that are the same in slots and armor factor are no choice at all.
+        const versionsDiffer = multiplier[otherBase] > 0
+            && (multiplier.is !== multiplier.clan || (slots?.is ?? 0) !== (slots?.clan ?? 0));
+        if (!versionsDiffer || techTag === "is") return [preferredBase];
+        if (techTag === "clan") {
+            return !starLeagueVersion && starLeagueVersionInEra(armor, (introduced, extinct, reintroduced) => this._itemIsAvailable(introduced, extinct, reintroduced))
+                ? ["clan", "is"] : [preferredBase];
+        }
+        return [preferredBase, otherBase];
+    }
+
+    /** The versions of its armor the vehicle may mount (one = no choice); 'Mechs take structure and heat sinks too. */
+    public getComponentTechBases(_component: "armor"): ("is" | "clan")[] {
+        return this.isPatchworkArmor() || this._support ? [this.getArmorTechBase()] : this._armorTechBases(this._armorType);
+    }
+
+    public getArmorTechBase(): "is" | "clan" {
+        return this._armorTechBase(this._armorType);
+    }
+
+    public setArmorTechBase(techBase: "is" | "clan"): "is" | "clan" {
+        if (this._armorTechBases(this._armorType).includes(techBase)) this._armorTechBaseChoice = techBase;
+        return this.getArmorTechBase();
+    }
+
+    /** The tech base whose version of the armor this vehicle mounts: the chosen one for its armor, if offered. */
     private _armorTechBase(armor: IArmorType): "is" | "clan" {
-        const starLeagueVersion = this.getTech().tag === "clan" && this._usesStarLeagueVersion(armor);
-        const preferredBase = !starLeagueVersion && (this.getTech().tag === "clan" || this.getTech().tag === "mclan") ? "clan" : "is";
-        return armor.armorMultiplier[preferredBase] > 0
-            ? preferredBase
-            : preferredBase === "clan" ? "is" : "clan";
+        const choices = this._armorTechBases(armor);
+        const chosen = armor.tag === this._armorType.tag ? this._armorTechBaseChoice : null;
+        return chosen && choices.includes(chosen) ? chosen : choices[0];
     }
 
     public getArmorPointsPerTon(): number {
@@ -2784,14 +2823,9 @@ export default class Vehicle implements IGameSettingsUnit {
         return getTechDatesAvailability(item, this._tech.tag, rulesLevel, (introduced, extinct, reintroduced) => this._itemIsAvailable(introduced, extinct, reintroduced));
     }
 
-    /** Whether this Clan vehicle fields the Star League version of a component (Inner Sphere armor factor). */
+    /** Whether this Clan vehicle must field the Star League version of a component (Inner Sphere armor factor). */
     private _usesStarLeagueVersion(item: ITechDates & { clanDates?: ITechDates }): boolean {
-        const starLeague = getStarLeagueCarryOverDates(item);
-        if (!starLeague || !item.clanDates) return false;
-        const clanInProduction = !!item.clanDates.introduced
-            && this._itemIsAvailable(item.clanDates.introduced, item.clanDates.extinct, item.clanDates.reintroduced);
-        return !clanInProduction
-            && this._itemIsAvailable(starLeague.prototype ?? starLeague.introduced, starLeague.extinct, null);
+        return mustUseStarLeagueVersion(item, (introduced, extinct, reintroduced) => this._itemIsAvailable(introduced, extinct, reintroduced));
     }
 
     private _setAvailability(item: IEquipmentItem, rulesLevel: number): void {
@@ -4860,6 +4894,7 @@ export default class Vehicle implements IGameSettingsUnit {
             engineType: this._engineType.tag,
             cruiseMP: this._cruiseMP,
             armorType: this._armorType.tag,
+            armorTechBase: this.getComponentTechBases("armor").length > 1 ? this.getArmorTechBase() : undefined,
             armorAllocation: this._armorAllocation,
             patchworkArmor: this.isPatchworkArmor()
                 ? Object.fromEntries(this.getLocations().map((location) => [location.tag, this.getPatchworkArmorType(location.tag).tag]))
@@ -5008,6 +5043,8 @@ export default class Vehicle implements IGameSettingsUnit {
             if (importObject.sponsonTurrets === true && !this._sponsonTurrets) issue("Dropped sponson turrets: the design also has jump jets");
             this._patchworkArmor = {};
             this.setArmorType(savedString(importObject.armorType));
+            // Stored as saved: the era may be set later, and the getters check the choice.
+            this._armorTechBaseChoice = importObject.armorTechBase === "is" || importObject.armorTechBase === "clan" ? importObject.armorTechBase : null;
             const armor = savedLocationPoints(importObject.armorAllocation);
             for (const tag of Object.keys(armor) as VehicleLocation[]) armor[tag] = Math.floor(armor[tag] ?? 0);
             if (armor.rotor !== undefined) armor.rotor = Math.min(VTOL_MAX_ROTOR_ARMOR, armor.rotor);

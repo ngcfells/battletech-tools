@@ -1032,6 +1032,11 @@ export interface IAerospaceArmorType extends ICatalogStanding {
         clan: number | null;
         is: number | null;
     }[];
+    /**
+     * On an Inner Sphere record the Clans carried over from the Star League: the tag of their own version. A Clan
+     * unit may mount this record, at its Inner Sphere figures, until the Clan version is in production (#168).
+     */
+    clanVersion?: string;
     /** Weapon slots a fighter gives up for the armor, and where; null for armor fighters cannot mount. */
     fighterSlots: { is: number | null; clan: number | null; placement: string } | null;
     /**

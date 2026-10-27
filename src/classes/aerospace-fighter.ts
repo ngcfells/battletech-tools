@@ -9,7 +9,7 @@ import { getQuirkIssues, getQuirkTargets } from "../data/quirk-registry";
 import { QuirkList } from "./quirk-list";
 import { getAlphaStrikeQuirks } from "../utils/quirk-effects";
 import { DEFAULT_RULES_EDITION, getSelectableRulesEditionTag } from "../data/rules-editions";
-import { aerospaceArmorTypes, getAerospaceArmorPointsPerTon } from "../data/aerospace-armor-types";
+import { aerospaceArmorTypes, getAerospaceArmorDates, getAerospaceArmorPointsPerTon, getAerospaceArmorTechBase, isStarLeagueVersion } from "../data/aerospace-armor-types";
 import { mechEngineOptions } from "../data/mech-engine-options";
 import { mechEngineTypes } from "../data/mech-engine-types";
 import { mechHeatSinkTypes } from "../data/mech-heat-sink-types";
@@ -286,8 +286,6 @@ const savedNumber = (value: unknown, fallback: number, min: number, max: number)
 const isPlainObject = (value: unknown): value is Record<string, unknown> =>
     typeof value === "object" && value !== null && !Array.isArray(value);
 const emptyArmor = (): IFighterArmorAllocation => ({ nose: 0, leftWing: 0, rightWing: 0, aft: 0 });
-/** The aerospace armor catalog writes an absent prototype year as null; ITechDates leaves it out. */
-const armorDates = (armor: IAerospaceArmorType): ITechDates => ({ ...armor, prototype: armor.prototype ?? undefined });
 const roundUpHalf = (tons: number): number => Math.ceil(tons * 2 - 1e-9) / 2;
 /** Escapes text written into the HTML calculation logs, which the summary page renders as markup. */
 const escapeLogText = (value: unknown): string => String(value ?? "")
@@ -1083,12 +1081,13 @@ export default class AerospaceFighter implements IGameSettingsUnit {
     public getAvailableArmorTypes(rulesLevel: number = 2): (IAerospaceArmorType & { available: boolean })[] {
         // A Support Vehicle's armor is chosen by BAR and Tech Rating instead (TM p.134).
         if (this._support) return [];
-        const techBase = this.getChassisTechBase();
         return aerospaceArmorTypes
-            .filter((armor) => armor.fighterSlots !== null && armor.fighterSlots[techBase] !== null
-                && getAerospaceArmorPointsPerTon(armor.tag, this._armorUnit(), techBase) !== null)
-            .map((armor) => ({ ...armor, available: this._datesAvailability(armorDates(armor), rulesLevel).available
-                && (armor.tag !== AerospaceFighter.PATCHWORK_ARMOR_TAG || rulesLevel >= PATCHWORK_ARMOR_RULES_LEVEL) }));
+            .filter((armor) => armor.fighterSlots !== null && armor.fighterSlots[this._armorTechBase(armor)] !== null
+                && getAerospaceArmorPointsPerTon(armor.tag, this._armorUnit(), this._armorTechBase(armor)) !== null)
+            .map((armor) => ({ ...armor, available: this._datesAvailability(getAerospaceArmorDates(armor, this._tech.tag), rulesLevel).available
+                && (armor.tag !== AerospaceFighter.PATCHWORK_ARMOR_TAG || rulesLevel >= PATCHWORK_ARMOR_RULES_LEVEL) }))
+            // The Star League version is no choice at all outside its years.
+            .filter((armor) => armor.available || !isStarLeagueVersion(armor, this._tech.tag));
     }
 
     public setArmorType(tag: string): IAerospaceArmorType {
@@ -1113,9 +1112,8 @@ export default class AerospaceFighter implements IGameSettingsUnit {
 
     /** The armor types an arc may carry: those the fighter could mount as its only armor that the Patchwork Armor Table lists. */
     public getAvailablePatchworkArmorTypes(rulesLevel: number = 2): (IAerospaceArmorType & { available: boolean })[] {
-        const techBase = this.getChassisTechBase();
         return this.getAvailableArmorTypes(rulesLevel).filter((armor) => armor.tag !== AerospaceFighter.PATCHWORK_ARMOR_TAG
-            && armor.patchwork?.slots[techBase] !== undefined && armor.patchwork?.tonsPerPoint[techBase] !== undefined);
+            && armor.patchwork?.slots[this._armorTechBase(armor)] !== undefined && armor.patchwork?.tonsPerPoint[this._armorTechBase(armor)] !== undefined);
     }
 
     public getPatchworkArmorType(arc: FighterArc): IAerospaceArmorType {
@@ -1134,13 +1132,15 @@ export default class AerospaceFighter implements IGameSettingsUnit {
     /** Weapon slots the arc gives up for its armor (Patchwork Armor Table, right of the slash; TO:AUE p.189). */
     public getPatchworkArcSlots(arc: FighterArc): number {
         if (!this.isPatchworkArmor()) return 0;
-        return this.getPatchworkArmorType(arc).patchwork?.slots[this.getChassisTechBase()] ?? 0;
+        const armor = this.getPatchworkArmorType(arc);
+        return armor.patchwork?.slots[this._armorTechBase(armor)] ?? 0;
     }
 
     /** Tons of armor on the arc: points x the type's tons per point, "rounding the final result up to the nearest half-ton" (TO:AUE p.189). */
     public getPatchworkArcWeight(arc: FighterArc): number {
         if (!this.isPatchworkArmor()) return 0;
-        const tonsPerPoint = this.getPatchworkArmorType(arc).patchwork?.tonsPerPoint[this.getChassisTechBase()] ?? 0;
+        const armor = this.getPatchworkArmorType(arc);
+        const tonsPerPoint = armor.patchwork?.tonsPerPoint[this._armorTechBase(armor)] ?? 0;
         const weight = this._armorAllocation[arc] * tonsPerPoint;
         return weight > 0 ? roundUpHalf(weight) : 0;
     }
@@ -1154,6 +1154,11 @@ export default class AerospaceFighter implements IGameSettingsUnit {
         }
     }
 
+    /** Whose figures the fighter uses for an armor: its chassis's, or Inner Sphere for a Star League record on a Clan fighter (#168). */
+    private _armorTechBase(armor: IAerospaceArmorType): "is" | "clan" {
+        return getAerospaceArmorTechBase(armor, this.getChassisTechBase(), this._tech.tag);
+    }
+
     private _armorUnit(): "aerospace-fighter" | "conventional-fighter" {
         return this.isConventional() ? "conventional-fighter" : "aerospace-fighter";
     }
@@ -1163,7 +1168,7 @@ export default class AerospaceFighter implements IGameSettingsUnit {
             const kg = this.getSupportArmorKgPerPoint();
             return kg ? Math.floor(1000 / kg) : null;
         }
-        return getAerospaceArmorPointsPerTon(this._armorType.tag, this._armorUnit(), this.getChassisTechBase());
+        return getAerospaceArmorPointsPerTon(this._armorType.tag, this._armorUnit(), this._armorTechBase(this._armorType));
     }
 
     public getArmorAllocation(): IFighterArmorAllocation { return this._armorAllocation; }
@@ -1221,7 +1226,7 @@ export default class AerospaceFighter implements IGameSettingsUnit {
 
     /** Tons per point of the selected armor under Fractional Accounting (Fractional Armor Table, TO:AUE p.188). */
     public getFractionalArmorTonsPerPoint(): number {
-        return getFractionalAerospaceArmorTonsPerPoint(this._armorType.tag, this.getChassisTechBase(), this.getArmorPointsPerTon() ?? 16);
+        return getFractionalAerospaceArmorTonsPerPoint(this._armorType.tag, this._armorTechBase(this._armorType), this.getArmorPointsPerTon() ?? 16);
     }
 
     /** Points the armor tonnage paid for but that are not allocated yet (fractions of a point are lost). */
@@ -1383,7 +1388,7 @@ export default class AerospaceFighter implements IGameSettingsUnit {
         // A Support Vehicle has item slots for the whole unit, not weapon slots by arc (TM p.120).
         if (this._support) return this.getTotalItemSlots();
         if (this.isPatchworkArmor()) return FIGHTER_WEAPONS_PER_ARC - this.getPatchworkArcSlots(arc);
-        const lost = this._armorType.fighterSlots?.[this.getChassisTechBase()] ?? 0;
+        const lost = this._armorType.fighterSlots?.[this._armorTechBase(this._armorType)] ?? 0;
         const placement = (this._armorType.fighterSlots?.placement ?? "").toLowerCase();
         let taken = 0;
         if (lost > 0) {
@@ -1554,11 +1559,11 @@ export default class AerospaceFighter implements IGameSettingsUnit {
             issues.push(`A conventional fighter needs heat sinks for all its energy weapons: ${this.getWeaponHeat()} heat, ${this.getHeatDissipation()} sinks (TM p.193).`);
         }
         if (this.getArmorPointsPerTon() === null) issues.push(`${this._armorType.name} is not available to this tech base.`);
-        else if (!this._datesAvailability(armorDates(this._armorType), rulesLevel).available) issues.push(`${this._armorType.name} is not available in the selected era.`);
+        else if (!this._datesAvailability(getAerospaceArmorDates(this._armorType, this._tech.tag), rulesLevel).available) issues.push(`${this._armorType.name} is not available in the selected era.`);
         if (this.isPatchworkArmor()) {
             for (const arc of FIGHTER_ARCS) {
                 const arcArmor = this.getPatchworkArmorType(arc.tag);
-                if (!this._datesAvailability(armorDates(arcArmor), rulesLevel).available) issues.push(`${arc.name}: ${arcArmor.name} is not available in the selected era.`);
+                if (!this._datesAvailability(getAerospaceArmorDates(arcArmor, this._tech.tag), rulesLevel).available) issues.push(`${arc.name}: ${arcArmor.name} is not available in the selected era.`);
             }
         }
         if (this._heatSinkType.tag !== "single" && !this._techDatesAvailability(this._heatSinkType, rulesLevel).available) {

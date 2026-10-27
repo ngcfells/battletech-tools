@@ -536,3 +536,28 @@ describe("Primitive Small Craft and DropShips (IO:AE pp.119-121)", () => {
         expect(ship.getUnallocatedArmorPoints()).toBeGreaterThanOrEqual(0);
     });
 });
+
+// Star League Ferro-Aluminum on a Clan Small Craft or DropShip, at Inner Sphere points per ton (#168).
+describe("Star League Ferro-Aluminum on a Clan Small Craft", () => {
+    const clanCraft = (era: string): SmallCraft => {
+        const craft = new SmallCraft();
+        craft.setTech("clan");
+        craft.setEra(era);
+        craft.setTonnage(200);
+        return craft;
+    };
+    const offered = (craft: SmallCraft, tag: string) => craft.getAvailableArmorTypes().find((armor) => armor.tag === tag);
+
+    it("offers it while the era holds the Star League version, at the Inner Sphere factor", () => {
+        const craft = clanCraft("clan-founding-years");
+        expect(offered(craft, "ferro-aluminum")?.available).toBe(true);
+        expect(craft.setArmorType("ferro-aluminum").tag).toBe("ferro-aluminum");
+        expect(craft.getArmorPointsPerTon()).toBe(17.92);
+        craft.setArmorType("clan-ferro-aluminum");
+        expect(craft.getArmorPointsPerTon()).toBe(24);
+    });
+
+    it("drops it once the Clan version is the only one in the era", () => {
+        expect(offered(clanCraft("clan-golden-years"), "ferro-aluminum")).toBeUndefined();
+    });
+});

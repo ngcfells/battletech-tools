@@ -380,6 +380,24 @@ export function getStarLeagueCarryOverDates(item: ITechDates & { clanDates?: ITe
     return { prototype: item.prototype, introduced: item.introduced, extinct: clanProduction ?? null, reintroduced: null };
 }
 
+/** Whether the era (by `isAvailable`) overlaps the years the Clans fielded the Star League version of a component. */
+export function starLeagueVersionInEra(
+    item: ITechDates & { clanDates?: ITechDates },
+    isAvailable: (introduced: number | null, extinct: number | null, reintroduced: number | null) => boolean,
+): boolean {
+    const starLeague = getStarLeagueCarryOverDates(item);
+    return !!starLeague && isAvailable(starLeague.prototype ?? starLeague.introduced, starLeague.extinct, null);
+}
+
+/** Whether a Clan design must field the Star League version: the era holds it and not yet the Clan version. */
+export function mustUseStarLeagueVersion(
+    item: ITechDates & { clanDates?: ITechDates },
+    isAvailable: (introduced: number | null, extinct: number | null, reintroduced: number | null) => boolean,
+): boolean {
+    if (!item.clanDates || !starLeagueVersionInEra(item, isAvailable)) return false;
+    return !(item.clanDates.introduced && isAvailable(item.clanDates.introduced, item.clanDates.extinct, item.clanDates.reintroduced));
+}
+
 /** A unit's tech tag from tech-options.ts: "is", "clan", or a mixed base ("mis", "mclan"). */
 export type UnitTechBase = string;
 

@@ -1,4 +1,5 @@
-import { IAerospaceArmorType } from "./data-interfaces";
+import { IAerospaceArmorType, ITechDates } from "./data-interfaces";
+import { getStarLeagueCarryOverDates } from "./equipment-registry";
 
 /*
  * DISCLAIMER: This file processes gameplay data derived from the BattleTech universe.
@@ -109,6 +110,7 @@ export const aerospaceArmorTypes: IAerospaceArmorType[] = [
             { unit: "small-craft", minTons: null, maxTons: null, clan: null, is: 17.92 },
             ...dropShipRows(none, [17.92, 15.68, 13.44, 11.2, 8.96, 6.72]),
         ],
+        clanVersion: "clan-ferro-aluminum",
         fighterSlots: { is: 2, clan: null, placement: "1 each Wing" },
         patchwork: { slots: { is: 1 }, tonsPerPoint: { is: 0.0558 } },
         costMultiplier: 20000,
@@ -292,6 +294,28 @@ export const aerospaceArmorTypes: IAerospaceArmorType[] = [
         notes: "Capital-scale armor for JumpShips, WarShips and space stations. Cost SO p.146; dates IO:AE p.30.",
     },
 ];
+
+/** The catalog writes an absent prototype year as null; ITechDates leaves it out. */
+const catalogDates = (armor: IAerospaceArmorType): ITechDates => ({ ...armor, prototype: armor.prototype ?? undefined });
+
+/** Whether a unit of `unitTech` fields this record as the Star League version of the Clans' own armor (#168). */
+export const isStarLeagueVersion = (armor: IAerospaceArmorType, unitTech: string): boolean => unitTech === "clan" && !!armor.clanVersion;
+
+/**
+ * The armor's dates for a unit of `unitTech`: on a Clan unit, a Star League record runs from its Inner Sphere
+ * introduction until the Clan version is in production (getStarLeagueCarryOverDates).
+ */
+export function getAerospaceArmorDates(armor: IAerospaceArmorType, unitTech: string): ITechDates {
+    const dates = catalogDates(armor);
+    if (!isStarLeagueVersion(armor, unitTech)) return dates;
+    const clanVersion = aerospaceArmorTypes.find((item) => item.tag === armor.clanVersion);
+    return getStarLeagueCarryOverDates({ ...dates, clanDates: clanVersion ? catalogDates(clanVersion) : undefined }) ?? dates;
+}
+
+/** Whose figures (points per ton, slots) a unit uses for an armor: its chassis's, or Inner Sphere for a Star League record. */
+export function getAerospaceArmorTechBase(armor: IAerospaceArmorType, chassisTechBase: "is" | "clan", unitTech: string): "is" | "clan" {
+    return isStarLeagueVersion(armor, unitTech) ? "is" : chassisTechBase;
+}
 
 /**
  * Armor points per ton for a unit, or null when the armor is not available to that unit or tech base.

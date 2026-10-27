@@ -621,6 +621,56 @@ describe("Vehicle Clan tech from the first Clan era", () => {
     });
 });
 
+// The Clans fielded Star League Ferro-Fibrous until Clan Ferro-Fibrous was in production (2825). Clan Founding
+// Years (2800-2840) holds both windows, so a Clan vehicle there may take either version (#168).
+describe("Vehicle Star League armor on a Clan design", () => {
+    const ferroVehicle = (tech: string, era: string) => {
+        const created = new Vehicle();
+        created.setTech(tech);
+        created.setEra(era);
+        created.setArmorType("ferro-fibrous");
+        return created;
+    };
+
+    it("offers the Star League version beside the Clan one while the era holds both", () => {
+        const created = ferroVehicle("clan", "clan-founding-years");
+        expect(created.getComponentTechBases("armor")).toEqual(["clan", "is"]);
+        expect([created.getArmorTechBase(), created.getArmorItemSlots()]).toEqual(["clan", 1]);
+        expect(created.setArmorTechBase("is")).toBe("is");
+        expect(created.getArmorItemSlots()).toBe(2);
+        expect(created.getArmorPointsPerTon()).toBeCloseTo(16 * 1.12, 6);
+    });
+
+    it("keeps the Star League choice through a save and load", () => {
+        const created = ferroVehicle("clan", "clan-founding-years");
+        created.setArmorTechBase("is");
+        expect(created.export().armorTechBase).toBe("is");
+        expect(new Vehicle(created.exportJSON()).getArmorTechBase()).toBe("is");
+    });
+
+    it("drops the Star League version once the Clan one is the only one in the era", () => {
+        const created = ferroVehicle("clan", "clan-golden-years");
+        expect(created.getComponentTechBases("armor")).toEqual(["clan"]);
+        expect(created.setArmorTechBase("is")).toBe("clan");
+        const earlier = ferroVehicle("clan", "clan-founding-years");
+        earlier.setArmorTechBase("is");
+        earlier.setEra("clan-golden-years");
+        expect(earlier.getArmorTechBase()).toBe("clan");
+        expect(earlier.export().armorTechBase).toBeUndefined();
+    });
+
+    it("leaves an Inner Sphere vehicle one version, a Mixed Tech vehicle both, and standard armor none", () => {
+        expect(ferroVehicle("is", "clan-inv").getComponentTechBases("armor")).toEqual(["is"]);
+        const mixed = ferroVehicle("mis", "clan-inv");
+        expect(mixed.getComponentTechBases("armor")).toEqual(["is", "clan"]);
+        expect(mixed.setArmorTechBase("clan")).toBe("clan");
+        expect(mixed.getArmorItemSlots()).toBe(1);
+        const standard = ferroVehicle("clan", "clan-founding-years");
+        standard.setArmorType("standard");
+        expect(standard.getComponentTechBases("armor")).toEqual(["clan"]);
+    });
+});
+
 describe("Vehicle equipment saved before the Batch 15 tech-base splits", () => {
     it("loads the old universal tags on a Clan vehicle as the Clan records", () => {
         const clan = new Vehicle();

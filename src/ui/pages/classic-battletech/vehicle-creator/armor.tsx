@@ -11,6 +11,7 @@ import { availabilityOptionLabel, isOptionShown } from '../../../components/avai
 import { supportVehicleArmor } from '../../../../data/support-vehicle-armor';
 import { SUPPORT_VEHICLE_TECH_RATINGS } from '../../../../data/support-vehicle-construction';
 import { unitRulesLevel } from '../../../components/game-settings-block';
+import ComponentTechBaseChoice from '../../../components/component-tech-base-choice';
 const ArrowCircleLeft = FaArrowCircleLeft as any;
 const ArrowCircleRight = FaArrowCircleRight as any;
 
@@ -160,6 +161,13 @@ export default class VehicleCreatorArmor extends React.Component<IArmorProps, IA
                                     </select>
                                 </label>
                             )}
+                            <ComponentTechBaseChoice
+                                label="Armor Version"
+                                choices={vehicle.getComponentTechBases("armor")}
+                                value={vehicle.getArmorTechBase()}
+                                clanDesign={vehicle.getTech().tag === "clan"}
+                                onChange={(techBase) => { vehicle.setArmorTechBase(techBase); this.props.appGlobals.saveCurrentVehicle(vehicle); }}
+                            />
 
                             <p>
                                 <strong>Max Armor</strong>: {vehicle.getMaxArmorPoints()} points{patchwork ? null : ` (${vehicle.getMaxArmorTonnage()} tons)`} &nbsp;|&nbsp;

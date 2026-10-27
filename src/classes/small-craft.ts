@@ -9,7 +9,7 @@ import { getQuirkIssues, getQuirkTargets, quirkBayTarget } from "../data/quirk-r
 import { QuirkList } from "./quirk-list";
 import { DEFAULT_RULES_EDITION, getSelectableRulesEditionTag, isEarlierRulesEdition } from "../data/rules-editions";
 import { ADVANCED_RULES_LEVEL } from "../data/rules-level-options";
-import { aerospaceArmorTypes, getAerospaceArmorPointsPerTon } from "../data/aerospace-armor-types";
+import { aerospaceArmorTypes, getAerospaceArmorDates, getAerospaceArmorPointsPerTon, getAerospaceArmorTechBase, isStarLeagueVersion } from "../data/aerospace-armor-types";
 import { mechHeatSinkTypes } from "../data/mech-heat-sink-types";
 import { btTechOptions } from "../data/tech-options";
 import { btEraOptions, findEraByTag, getClosestEraForTech, getErasForTech } from "../data/era-options";
@@ -250,8 +250,6 @@ const savedNumber = (value: unknown, fallback: number, min: number, max: number)
     typeof value === "number" && Number.isFinite(value) ? Math.min(max, Math.max(min, value)) : fallback;
 const isPlainObject = (value: unknown): value is Record<string, unknown> =>
     typeof value === "object" && value !== null && !Array.isArray(value);
-/** The aerospace armor catalog writes an absent prototype year as null; ITechDates leaves it out. */
-const armorDates = (armor: IAerospaceArmorType): ITechDates => ({ ...armor, prototype: armor.prototype ?? undefined });
 const wholeNumber = (value: number, min: number, max: number): number => Math.min(max, Math.max(min, Number.isFinite(value) ? Math.floor(value) : min));
 /** Escapes text written into the HTML calculation logs, which the summary page renders as markup. */
 const escapeLogText = (value: unknown): string => String(value ?? "")
@@ -647,10 +645,11 @@ export default class SmallCraft implements IGameSettingsUnit {
 
     /** Armor a Small Craft of this tech base can mount (Aerospace Armor Points per Ton Table, TM p.192). */
     public getAvailableArmorTypes(rulesLevel: number = 2): (IAerospaceArmorType & { available: boolean })[] {
-        const techBase = this.getChassisTechBase();
         return aerospaceArmorTypes
-            .filter((armor) => getAerospaceArmorPointsPerTon(armor.tag, this._armorUnit(), techBase, this._tonnage) !== null)
-            .map((armor) => ({ ...armor, available: this._datesAvailability(armorDates(armor), rulesLevel).available }));
+            .filter((armor) => getAerospaceArmorPointsPerTon(armor.tag, this._armorUnit(), this._armorTechBase(armor), this._tonnage) !== null)
+            .map((armor) => ({ ...armor, available: this._datesAvailability(getAerospaceArmorDates(armor, this._tech.tag), rulesLevel).available }))
+            // The Star League version is no choice at all outside its years.
+            .filter((armor) => armor.available || !isStarLeagueVersion(armor, this._tech.tag));
     }
 
     public setArmorType(tag: string): IAerospaceArmorType {
@@ -661,7 +660,12 @@ export default class SmallCraft implements IGameSettingsUnit {
     }
 
     public getArmorPointsPerTon(): number | null {
-        return getAerospaceArmorPointsPerTon(this._armorType.tag, this._armorUnit(), this.getChassisTechBase(), this._tonnage);
+        return getAerospaceArmorPointsPerTon(this._armorType.tag, this._armorUnit(), this._armorTechBase(this._armorType), this._tonnage);
+    }
+
+    /** Whose figures the craft uses for an armor: its chassis's, or Inner Sphere for a Star League record on a Clan craft (#168). */
+    private _armorTechBase(armor: IAerospaceArmorType): "is" | "clan" {
+        return getAerospaceArmorTechBase(armor, this.getChassisTechBase(), this._tech.tag);
     }
     /** The row of the Aerospace Armor Points per Ton Table (TM p.192). */
     private _armorUnit(): "small-craft" | "aerodyne-dropship" | "spheroid-dropship" {
@@ -675,7 +679,7 @@ export default class SmallCraft implements IGameSettingsUnit {
 
     /** Tons per point of the selected armor under Fractional Accounting (Fractional Armor Table, TO:AUE p.188). */
     public getFractionalArmorTonsPerPoint(): number {
-        return getFractionalAerospaceArmorTonsPerPoint(this._armorType.tag, this.getChassisTechBase(), this.getArmorPointsPerTon() ?? 16);
+        return getFractionalAerospaceArmorTonsPerPoint(this._armorType.tag, this._armorTechBase(this._armorType), this.getArmorPointsPerTon() ?? 16);
     }
 
     /** Most points Fractional Accounting can buy: what the armor tonnage limit holds. */
@@ -1255,7 +1259,7 @@ export default class SmallCraft implements IGameSettingsUnit {
             issues.push(`${-this.getUnallocatedArmorPoints()} more armor points are allocated than the armor provides (${this.getAvailableArmorPoints()}).`);
         }
         if (this.getArmorPointsPerTon() === null) issues.push(`${this._armorType.name} is not available to this tech base.`);
-        else if (!this._datesAvailability(armorDates(this._armorType), rulesLevel).available) issues.push(`${this._armorType.name} is not available in the selected era.`);
+        else if (!this._datesAvailability(getAerospaceArmorDates(this._armorType, this._tech.tag), rulesLevel).available) issues.push(`${this._armorType.name} is not available in the selected era.`);
         if (this._heatSinkType.tag !== "single" && !this._techDatesAvailability(this._heatSinkType, rulesLevel).available) {
             issues.push(`${this._heatSinkType.name} heat sinks are not available in the selected era.`);
         }

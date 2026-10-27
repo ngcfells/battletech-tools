@@ -8,7 +8,7 @@ import { QuirkList } from "./quirk-list";
 import { TechnicalReadout } from "./technical-readout";
 import type { ITechnicalReadoutExport } from "../data/technical-readout-interfaces";
 import { DEFAULT_RULES_EDITION, getSelectableRulesEditionTag } from "../data/rules-editions";
-import { aerospaceArmorTypes, getAerospaceArmorPointsPerTon } from "../data/aerospace-armor-types";
+import { aerospaceArmorTypes, getAerospaceArmorDates, getAerospaceArmorPointsPerTon } from "../data/aerospace-armor-types";
 import { mechHeatSinkTypes } from "../data/mech-heat-sink-types";
 import { btTechOptions } from "../data/tech-options";
 import { btEraOptions, findEraByTag, getClosestEraForTech, getErasForTech } from "../data/era-options";
@@ -211,8 +211,6 @@ const isPlainObject = (value: unknown): value is Record<string, unknown> =>
     typeof value === "object" && value !== null && !Array.isArray(value);
 const wholeNumber = (value: number, min: number, max: number): number => Math.min(max, Math.max(min, Number.isFinite(value) ? Math.floor(value) : min));
 const halfTons = (value: number, max: number): number => Math.min(max, Math.max(0, Math.round((Number.isFinite(value) ? value : 0) * 2) / 2));
-/** The aerospace armor catalog writes an absent prototype year as null; ITechDates leaves it out. */
-const armorDates = (armor: IAerospaceArmorType): ITechDates => ({ ...armor, prototype: armor.prototype ?? undefined });
 /** Escapes text written into the HTML calculation log, which the summary page renders as markup. */
 const escapeLogText = (value: unknown): string => String(value ?? "")
     .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
@@ -483,7 +481,7 @@ export default class CapitalShip implements IGameSettingsUnit {
         const techBase = this.getChassisTechBase();
         return aerospaceArmorTypes
             .filter((armor) => getAerospaceArmorPointsPerTon(armor.tag, "advanced-aerospace", techBase, this._tonnage) !== null)
-            .map((armor) => ({ ...armor, available: this._datesAvailability(armorDates(armor), rulesLevel).available }));
+            .map((armor) => ({ ...armor, available: this._datesAvailability(getAerospaceArmorDates(armor, this._tech.tag), rulesLevel).available }));
     }
     public setArmorType(tag: string): IAerospaceArmorType {
         const armor = this.getAvailableArmorTypes().find((entry) => entry.tag === tag);
@@ -1130,7 +1128,7 @@ export default class CapitalShip implements IGameSettingsUnit {
             issues.push(`${-this.getUnallocatedArmorPoints()} more armor points are allocated than the armor provides (${this.getPurchasedArmorPoints()}).`);
         }
         if (this.getArmorPointsPerTon() === null) issues.push(`${this._armorType.name} is not capital armor for this tech base.`);
-        else if (!this._datesAvailability(armorDates(this._armorType), rulesLevel).available) issues.push(`${this._armorType.name} is not available in the selected era.`);
+        else if (!this._datesAvailability(getAerospaceArmorDates(this._armorType, this._tech.tag), rulesLevel).available) issues.push(`${this._armorType.name} is not available in the selected era.`);
         const unplaced = this._equipmentList.filter((item) => !item.location).length + this._capitalWeapons.filter((mount) => !mount.location).length;
         if (unplaced > 0) issues.push(`${unplaced} weapon${unplaced === 1 ? " has" : "s have"} no firing arc yet.`);
         for (const item of this._equipmentList) {
