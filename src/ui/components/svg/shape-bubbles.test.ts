@@ -46,6 +46,17 @@ describe("bubbles packed inside a shape (#589 follow-up: bubbles follow the draw
         }
     });
 
+    it("shares bubbles out evenly across separate limbs, each filling from its own middle", () => {
+        const legs = [0, 1, 2, 3].map((i): Shape => [[i * 100, 0], [i * 100 + 80, 0], [i * 100 + 80, 100], [i * 100, 100]]);
+        const { points } = packBubbles(legs.map((leg) => ({ within: [leg] })), 9, { maxPitch: 18, spreadParts: true });
+        const perLeg = legs.map((leg) => points.filter((point) => insideShape(leg, point)).length);
+        expect(perLeg).toEqual([3, 2, 2, 2]);
+        // The first bubble of each leg is its middle one.
+        for (const [x, y] of points.slice(0, 4)) {
+            expect(Math.hypot((x % 100) - 40, y - 50)).toBeLessThan(13);
+        }
+    });
+
     it("returns nothing for no bubbles", () => {
         expect(packBubbles({ within: [square] }, 0, { maxPitch: 18 }).points).toEqual([]);
     });

@@ -33,6 +33,8 @@ export interface IPackOptions {
      * (a vehicle's Front fills from its inner edge toward the bow).
      */
     rowsAlong?: "x" | "y";
+    /** Several regions are separate limbs (a ProtoMech's legs): share the bubbles out evenly, each from its own middle. */
+    spreadParts?: boolean;
 }
 
 /** An ellipse as a polygon, for a spheroid craft's hull or an airship's envelope. */
@@ -177,13 +179,25 @@ export const packBubbles = (region: IBubbleRegion | IBubbleRegion[], count: numb
         points.reduce((sum, [, y]) => sum + y, 0) / points.length,
     ];
     const across = options.rowsAlong === "x" ? 0 : 1, along = 1 - across;
-    const order = (point: BubblePoint): [number, number] => options.rowsAlong
-        ? [Math.round(Math.abs(point[across] - anchor[across]) / pitch), Math.abs(point[along] - anchor[along])]
-        : [Math.hypot(point[0] - anchor[0], point[1] - anchor[1]), 0];
-    const ordered = [...points].sort((a, b) => {
-        const [a1, a2] = order(a), [b1, b2] = order(b);
+    const order = (point: BubblePoint, from: BubblePoint): [number, number] => options.rowsAlong
+        ? [Math.round(Math.abs(point[across] - from[across]) / pitch), Math.abs(point[along] - from[along])]
+        : [Math.hypot(point[0] - from[0], point[1] - from[1]), 0];
+    const sorted = (list: BubblePoint[], from: BubblePoint) => [...list].sort((a, b) => {
+        const [a1, a2] = order(a, from), [b1, b2] = order(b, from);
         return a1 - b1 || a2 - b2 || a[1] - b[1] || a[0] - b[0];
     });
+    let ordered: BubblePoint[];
+    if (options.spreadParts && regions.length > 1) {
+        // Each part fills from its own middle, the parts taking turns.
+        const parts = regions.map((part) => points.filter((point) => regions.find((each) => fits(each, point, pitch / 2)) === part))
+            .map((list) => sorted(list, [list.reduce((sum, [x]) => sum + x, 0) / list.length, list.reduce((sum, [, y]) => sum + y, 0) / list.length]));
+        ordered = [];
+        for (let rank = 0; rank < Math.max(...parts.map((list) => list.length)); rank++) {
+            ordered.push(...parts.filter((list) => rank < list.length).map((list) => list[rank]));
+        }
+    } else {
+        ordered = sorted(points, anchor);
+    }
     const result = { points: ordered.slice(0, wanted), pitch };
     if (packed.size > 2000) {
         packed.clear();

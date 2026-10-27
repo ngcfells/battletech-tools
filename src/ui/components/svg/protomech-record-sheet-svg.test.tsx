@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import ProtoMech from "../../../classes/protomech";
 import ProtoMechRecordSheet from "../protomech-record-sheet";
 import ProtoMechRecordSheetSVG, { protoMechSheetUnits } from "./protomech-record-sheet-svg";
+import { edgeDistance, insideShape } from "./shape-bubbles";
 
 const sample = (name = "Delphyne-2"): ProtoMech => {
     const proto = new ProtoMech();
@@ -24,6 +25,38 @@ const sample = (name = "Delphyne-2"): ProtoMech => {
 
 const render = (protos: ProtoMech[], showDamage = false) =>
     renderToStaticMarkup(<ProtoMechRecordSheetSVG units={protoMechSheetUnits(protos)} showDamage={showDamage} />);
+
+describe("ProtoMech armor diagram (#589 follow-up: bubbles inside each part's shape)", () => {
+    // Each location's group: its shapes (two legs, or four) and its bubbles.
+    const location = (markup: string, unit: number, loc: string) => {
+        const group = new RegExp(`data-testid="proto-unit-${unit}-${loc}"[^>]*>(.*?)</g>`).exec(markup)![1];
+        return {
+            shapes: [...group.matchAll(/<polygon points="([^"]+)"/g)].map((match) => match[1].split(" ").map((pair) => pair.split(",").map(Number) as [number, number])),
+            bubbles: [...group.matchAll(/<circle cx="([\d.]+)" cy="([\d.]+)" r="([\d.]+)"/g)].map((match) => match.slice(1).map(Number)),
+        };
+    };
+
+    it.each([false, true])("packs every bubble inside its own part of the figure (quad: %s)", (quad) => {
+        const proto = sample();
+        if (quad) proto.setChassis("quad");
+        proto.setMainGun(true);
+        proto.setArmor("mainGun", 3);
+        const markup = render([proto]);
+        for (const loc of proto.getLocations()) {
+            const { shapes, bubbles } = location(markup, 1, loc);
+            expect(bubbles).toHaveLength(proto.getArmor(loc) + proto.getStructure(loc));
+            for (const [cx, cy, r] of bubbles) {
+                expect(shapes.some((shape) => insideShape(shape, [cx, cy]) && edgeDistance(shape, [cx, cy]) >= r)).toBe(true);
+            }
+        }
+        // A quad's legs location is four legs, each with its share of the bubbles.
+        const legs = location(markup, 1, "legs");
+        expect(legs.shapes).toHaveLength(quad ? 4 : 2);
+        for (const shape of legs.shapes) {
+            expect(legs.bubbles.filter(([cx, cy]) => insideShape(shape, [cx, cy])).length).toBeGreaterThan(1);
+        }
+    });
+});
 
 describe("ProtoMech record sheet", () => {
     it("prints a Point of five ProtoMechs with their hit location and critical hit tables", () => {

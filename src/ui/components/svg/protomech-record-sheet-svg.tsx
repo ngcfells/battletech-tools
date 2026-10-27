@@ -3,6 +3,7 @@ import { getUnitRulesets } from '../../../classes/unit-game-settings';
 import ProtoMech, { PROTOMECH_CRITICAL_BOXES } from '../../../classes/protomech';
 import type { ProtoMechLocation } from '../../../data/protomech-construction';
 import { DOC_HEIGHT, DOC_WIDTH, GRAY, INK, SHADE, blank, groupBox, sheetFooter, text, titleBanner, wrapText } from './record-sheet-svg-kit';
+import { packBubbles, shapePoints, type Shape } from './shape-bubbles';
 
 // A ProtoMech record sheet laid out like the Total Warfare and record sheet book ones: five ProtoMech blocks, a Point
 // to a page, each with the unit data and pilot data, the weapons inventory, the hit locations and critical hits, and
@@ -57,41 +58,50 @@ const torsoWeaponRoll = (proto: ProtoMech | undefined): [string, string | null][
 
 export default class ProtoMechRecordSheetSVG extends React.Component<IProtoMechRecordSheetSVGProps> {
     /** Our armor diagram: a rounded box for each location, laid out like a ProtoMech, holding its circles. */
+    // The armor diagram: a ProtoMech's figure, each location its own shape (both legs, or a quad's four, are one
+    // location), with its bubbles packed inside: structure in the middle, armor around it. Hits fill armor first.
     renderDiagram(index: number, entry: IProtoMechSheetUnit | undefined, dx: number, dy: number, dw: number): JSX.Element {
         const proto = entry?.proto;
         const quad = !!proto?.isQuad();
         const cx = dx + dw / 2;
-        const boxes: { location: ProtoMechLocation; label: string; x: number; y: number; w: number; h: number }[] = [
-            { location: "head", label: "Head", x: cx - 55, y: dy + 22, w: 110, h: 62 },
-            { location: "mainGun", label: "Main Gun", x: cx + 70, y: dy + 22, w: 95, h: 62 },
-            { location: "torso", label: "Torso", x: cx - 85, y: dy + 112, w: 170, h: 140 },
+        const at = (points: [number, number][]): Shape => points.map(([x, y]): [number, number] => [cx + x, dy + y]);
+        const flip = (points: [number, number][]): [number, number][] => points.map(([x, y]): [number, number] => [-x, y]).reverse();
+        const leg = (left: number, width: number): Shape => at([[left, 280], [left + width, 280], [left + width - 10, 370], [left + 10, 370]]);
+        const arm: [number, number][] = [[-172, 112], [-94, 112], [-104, 252], [-162, 252]];
+        const parts: { location: ProtoMechLocation; label: string; labelAt: [number, number]; shapes: Shape[] }[] = [
+            { location: "head", label: "Head", labelAt: [0, 17], shapes: [at([[-35, 22], [35, 22], [55, 40], [55, 68], [40, 84], [-40, 84], [-55, 68], [-55, 40]])] },
+            { location: "mainGun", label: "Main Gun", labelAt: [117, 17], shapes: [at([[70, 24], [165, 38], [165, 68], [70, 82]])] },
+            { location: "torso", label: "Torso", labelAt: [0, 107], shapes: [at([[-85, 112], [85, 112], [70, 252], [-70, 252]])] },
             ...(quad ? [] : [
-                { location: "la" as ProtoMechLocation, label: "Left Arm", x: cx - 172, y: dy + 112, w: 78, h: 140 },
-                { location: "ra" as ProtoMechLocation, label: "Right Arm", x: cx + 94, y: dy + 112, w: 78, h: 140 },
+                { location: "la" as ProtoMechLocation, label: "Left Arm", labelAt: [-133, 107] as [number, number], shapes: [at(arm)] },
+                { location: "ra" as ProtoMechLocation, label: "Right Arm", labelAt: [133, 107] as [number, number], shapes: [at(flip(arm))] },
             ]),
-            { location: "legs", label: quad ? "Legs (all four)" : "Legs", x: quad ? cx - 165 : cx - 100, y: dy + 280, w: quad ? 330 : 200, h: 90 },
+            {
+                location: "legs", label: quad ? "Legs (all four)" : "Legs", labelAt: [0, 275],
+                shapes: quad ? [0, 1, 2, 3].map((i) => leg(-165 + i * 84, 78)) : [leg(-100, 88), leg(12, 88)],
+            },
         ];
         return (
             <g>
-                {boxes.map((box) => {
-                    const present = !proto || proto.getLocations().includes(box.location);
-                    const armor = proto ? proto.getArmor(box.location) : 0;
-                    const structure = proto ? proto.getStructure(box.location) : 0;
-                    const damage = proto && this.props.showDamage ? proto.getLocationDamage(entry!.unit, box.location) : 0;
-                    const total = armor + structure;
-                    const pitch = total > 0 ? Math.min(18, Math.sqrt(((box.w - 8) * (box.h - 8)) / total)) : 18;
-                    const cols = Math.max(1, Math.floor((box.w - 8) / pitch));
-                    const rows = Math.ceil(total / cols);
-                    const left = box.x + (box.w - Math.min(total, cols) * pitch) / 2;
-                    const top = box.y + (box.h - rows * pitch) / 2;
+                {parts.map((part) => {
+                    const present = !proto || proto.getLocations().includes(part.location);
+                    const armor = proto ? proto.getArmor(part.location) : 0;
+                    const structure = proto ? proto.getStructure(part.location) : 0;
+                    const damage = proto && this.props.showDamage ? proto.getLocationDamage(entry!.unit, part.location) : 0;
+                    const { points, pitch } = packBubbles(part.shapes.map((shape) => ({ within: [shape] })), armor + structure, { maxPitch: 18, spreadParts: true });
+                    // Structure takes the bubbles nearest the middle; armor, hit first, the ones around them.
+                    const bubbles = [...points.slice(structure), ...points.slice(0, structure)];
                     return (
-                        <g key={box.location} data-testid={`proto-unit-${index + 1}-${box.location}`} data-armor={proto ? armor : undefined} data-structure={proto ? structure : undefined}>
-                            {text(box.x + box.w / 2, box.y - 5, box.label, { size: 14, weight: 700, anchor: "middle", fill: present ? INK : GRAY })}
-                            <rect x={box.x} y={box.y} width={box.w} height={box.h} rx={14} fill="white" stroke={present ? INK : GRAY} strokeWidth={2} strokeDasharray={present ? undefined : "6 4"} />
-                            {Array.from({ length: total }, (_, point) => {
+                        <g key={part.location} data-testid={`proto-unit-${index + 1}-${part.location}`} data-armor={proto ? armor : undefined} data-structure={proto ? structure : undefined}>
+                            {text(cx + part.labelAt[0], dy + part.labelAt[1], part.label, { size: 14, weight: 700, anchor: "middle", fill: present ? INK : GRAY })}
+                            {part.shapes.map((shape, i) => (
+                                <polygon key={i} points={shapePoints(shape)} fill="white" stroke={present ? INK : GRAY} strokeWidth={2} strokeLinejoin="round"
+                                    strokeDasharray={present ? undefined : "6 4"} />
+                            ))}
+                            {bubbles.map(([x, y], point) => {
                                 const hit = point < damage;
                                 return (
-                                    <circle key={point} cx={left + (point % cols + 0.5) * pitch} cy={top + (Math.floor(point / cols) + 0.5) * pitch} r={pitch / 2 - 2}
+                                    <circle key={point} cx={x} cy={y} r={pitch / 2 - 2}
                                         fill={hit ? INK : point < armor ? "white" : "rgb(170,170,170)"} stroke={INK} strokeWidth={1.2} data-hit={hit ? "filled" : undefined} />
                                 );
                             })}
