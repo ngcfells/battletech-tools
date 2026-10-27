@@ -13,7 +13,7 @@ import { loadMULListItems, MUL_SOURCE_LABELS } from '../../../../data/mul-list-i
 import { getMULASSearchResults } from '../../../../utils';
 import { countAbilityCodes, IAbilityCodeCount } from '../../../../utils/mulAbilities';
 import { getMULEraLabel } from '../../../../utils/mulUtilities';
-import { filterMULByRulesets, IMULSearchFilters } from '../../../../utils/mulSearchFilters';
+import { filterMULByRulesets, filterMULByStanding, IMULSearchFilters } from '../../../../utils/mulSearchFilters';
 import { IAppGlobals } from '../../../app-router';
 import MULSearchFilters from '../../../components/mul-search-filters';
 import SearchResultsPager from '../../../components/search-results-pager';
@@ -125,6 +125,7 @@ export default class AlphaStrikeAddUnitsView extends React.Component<IAlphaStrik
           abilitySearchTerm: settings.alphaStrikeAbilitySearchTerm,
           sources: settings.alphaStrikeMULSources,
           rulesets: settings.alphaStrikeSearchRulesets,
+          standings: settings.alphaStrikeSearchStandings,
         };
     }
 
@@ -144,6 +145,7 @@ export default class AlphaStrikeAddUnitsView extends React.Component<IAlphaStrik
         settings.alphaStrikeAbilitySearchTerm = filters.abilitySearchTerm;
         settings.alphaStrikeMULSources = filters.sources;
         settings.alphaStrikeSearchRulesets = filters.rulesets;
+        settings.alphaStrikeSearchStandings = filters.standings;
         this.props.appGlobals.saveAppSettings( settings );
 
         if( sourcesChanged ) {
@@ -190,6 +192,7 @@ export default class AlphaStrikeAddUnitsView extends React.Component<IAlphaStrik
         );
         // The live search knows nothing of Special Rulesets (#324): their units are left out here.
         data = filterMULByRulesets( data, this.props.appGlobals.appSettings.alphaStrikeSearchRulesets );
+        data = filterMULByStanding( data, this.props.appGlobals.appSettings.alphaStrikeSearchStandings );
 
         if(this.latestSearchId !== currentSearchId) {
           console.log("updateSearchResults: searchId mismatch, aborting");

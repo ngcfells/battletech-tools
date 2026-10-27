@@ -15,6 +15,8 @@ export interface IClassicDesignEntry<T> {
     fingerprint?: string;
     /** Another name the design is matched by, not a row of its own (an OmniMech's "model + configuration"). */
     alias?: boolean;
+    /** The MUL record the design was checked against, which may spell its name another way (#241). */
+    mulId?: number;
 }
 
 /** Each match key's designs, one per layout, earliest first. */
@@ -47,6 +49,13 @@ export function getMULMatchKeys(chassis: string, model: string): string[] {
     return keys.filter((key, index) => keys.indexOf(key) === index);
 }
 
+/** The key a MUL record's id is known by, beside its name keys: a design checked against it matches it by id. */
+export const getMULIdKey = (id: number): string => "#" + id;
+
+// The keys an entry is indexed by: its name keys, then its MUL record's id.
+const entryKeys = (entry: IClassicDesignEntry<unknown>): string[] =>
+    [...getMULMatchKeys(entry.chassis, entry.model), ...(entry.mulId ? [getMULIdKey(entry.mulId)] : [])];
+
 // A design without a fingerprint is taken for the same as any other under its key.
 const sameLayout = (a?: string, b?: string): boolean => a === undefined || b === undefined || a === b;
 
@@ -57,7 +66,7 @@ const sameLayout = (a?: string, b?: string): boolean => a === undefined || b ===
 export function buildClassicDesignIndex<T>(entries: IClassicDesignEntry<T>[]): ClassicDesignIndex<T> {
     const index: ClassicDesignIndex<T> = new Map();
     for (const entry of entries) {
-        for (const key of getMULMatchKeys(entry.chassis, entry.model)) {
+        for (const key of entryKeys(entry)) {
             const designs = index.get(key) ?? [];
             if (!designs.some((kept) => kept.design === entry.design || sameLayout(kept.fingerprint, entry.fingerprint))) {
                 designs.push({ design: entry.design, fingerprint: entry.fingerprint });
@@ -69,8 +78,8 @@ export function buildClassicDesignIndex<T>(entries: IClassicDesignEntry<T>[]): C
 }
 
 /** Every design a MUL entry matches, one per layout, the earliest first. */
-export function findClassicDesigns<T>(unit: Pick<IASMULUnit, "Name" | "Variant">, index: ClassicDesignIndex<T>): T[] {
-    for (const key of getMULMatchKeys(unit.Name ?? "", unit.Variant ?? "")) {
+export function findClassicDesigns<T>(unit: Pick<IASMULUnit, "Name" | "Variant"> & { Id?: number }, index: ClassicDesignIndex<T>): T[] {
+    for (const key of [...getMULMatchKeys(unit.Name ?? "", unit.Variant ?? ""), ...(unit.Id ? [getMULIdKey(unit.Id)] : [])]) {
         const designs = index.get(key);
         if (designs) {
             return designs.map((kept) => kept.design);
@@ -79,7 +88,7 @@ export function findClassicDesigns<T>(unit: Pick<IASMULUnit, "Name" | "Variant">
     return [];
 }
 
-export const findClassicDesign = <T>(unit: Pick<IASMULUnit, "Name" | "Variant">, index: ClassicDesignIndex<T>): T | null =>
+export const findClassicDesign = <T>(unit: Pick<IASMULUnit, "Name" | "Variant"> & { Id?: number }, index: ClassicDesignIndex<T>): T | null =>
     findClassicDesigns(unit, index)[0] ?? null;
 
 /**
@@ -88,7 +97,7 @@ export const findClassicDesign = <T>(unit: Pick<IASMULUnit, "Name" | "Variant">,
  */
 export function getDesignsOffMUL<T>(entries: IClassicDesignEntry<T>[], index: ClassicDesignIndex<T>, onMUL: (key: string) => boolean): IClassicDesignEntry<T>[] {
     return entries.filter((entry) => {
-        const keys = getMULMatchKeys(entry.chassis, entry.model);
+        const keys = entryKeys(entry);
         return !entry.alias && !keys.some(onMUL) && (index.get(keys[0]) ?? []).some((kept) => kept.design === entry.design);
     });
 }

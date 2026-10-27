@@ -28,5 +28,5 @@ export const getBundledMechEntries = (headers: IBundledDesignHeader[]): IClassic
         const fingerprint = config.layout;
         return [{ chassis: header.name, model: config.name, design, fingerprint }, { chassis: header.name, model: header.model + " " + config.name, design, fingerprint, alias: true }];
     }),
-    { chassis: header.name, model: header.model, design: { header, bv: header.bv }, fingerprint: header.layout, ...(header.configs ? { alias: true } : {}) },
+    { chassis: header.name, model: header.model, design: { header, bv: header.bv }, fingerprint: header.layout, ...(header.configs ? { alias: true } : {}), ...(header.mulId ? { mulId: header.mulId } : {}) },
 ]);

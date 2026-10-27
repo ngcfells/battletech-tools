@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildClassicDesignIndex, findClassicDesign, getMULMatchKeys, getMULAerospaceClass, isMULCapitalShip, isMULLargeAerospaceCraft } from "./classicMULMatch";
+import { buildClassicDesignIndex, findClassicDesign, getDesignsOffMUL, getMULIdKey, getMULMatchKeys, getMULAerospaceClass, isMULCapitalShip, isMULLargeAerospaceCraft } from "./classicMULMatch";
 
 describe("getMULMatchKeys", () => {
     it("drops quotes, parentheses and HTML entities so MUL and Skunk Werks spellings meet", () => {
@@ -42,6 +42,16 @@ describe("findClassicDesign", () => {
     it("returns null when no design matches", () => {
         const index = buildClassicDesignIndex([{ chassis: "Atlas", model: "AS7-D", design: "a" }]);
         expect(findClassicDesign(unit("Atlas", "AS7-K"), index)).toBeNull();
+    });
+
+    // #241: a bundled design checked against a MUL record that spells it another way is that record's design, listed
+    // once beside it rather than again off the MUL.
+    it("finds a design by the MUL record it was checked against, and does not list it off the MUL", () => {
+        const entries = [{ chassis: "Centurion", model: "CN9-YLW \"Yen Lo Wang\"", design: "ylw", mulId: 103752 }];
+        const index = buildClassicDesignIndex(entries);
+        expect(findClassicDesign({ ...unit("Centurion", "CN9-YLW \"Yen-lo-wang\""), Id: 103752 }, index)).toBe("ylw");
+        const mulKeys = new Set([...getMULMatchKeys("Centurion", "CN9-YLW \"Yen-lo-wang\""), getMULIdKey(103752)]);
+        expect(getDesignsOffMUL(entries, index, (key) => mulKeys.has(key))).toEqual([]);
     });
 });
 

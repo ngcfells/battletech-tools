@@ -1,5 +1,6 @@
 import { IASMULUnit } from "../../classes/alpha-strike-unit";
 import { DEFAULT_MUL_SOURCE_SELECTION, MULSourceSelection, normalizeMULSourceSelection } from "../../data/mul-list-items";
+import { normalizeStandingSelection, UNIT_STANDING_ORDER, UnitStanding } from "../../utils/unit-standing";
 import { ESaveDataMode } from "../../dataSaves";
 import { CUSTOM_HOMEBREW_RULES_LEVEL } from "../../data/rules-level-options";
 import { IMULSearchFilters, newMULSearchFilters } from "../../utils/mulSearchFilters";
@@ -40,6 +41,7 @@ export class AppSettings {
     // Special Rulesets (#324) the search follows.
     alphaStrikeSearchRulesets: Array<string> = [];
     alphaStrikeMULSources: MULSourceSelection = DEFAULT_MUL_SOURCE_SELECTION;
+    alphaStrikeSearchStandings: UnitStanding[] = UNIT_STANDING_ORDER;
     hideMPIntro: boolean = false;
 
     equipmentEditorFile: string = "";
@@ -113,6 +115,7 @@ export class AppSettings {
             }
 
             this.alphaStrikeMULSources = normalizeMULSourceSelection( io.alphaStrikeMULSources ) ?? DEFAULT_MUL_SOURCE_SELECTION;
+            this.alphaStrikeSearchStandings = normalizeStandingSelection( io.alphaStrikeSearchStandings ) ?? UNIT_STANDING_ORDER;
 
             if ( typeof( io.asValues ) !== "undefined" ) {
                 this.asValues = io.asValues;
@@ -140,6 +143,7 @@ export class AppSettings {
                     factions: Array.isArray( saved.factions ) ? saved.factions.filter( (id) => typeof id === "number" ) : [],
                     sources: normalizeMULSourceSelection( saved.sources ) ?? DEFAULT_MUL_SOURCE_SELECTION,
                     rulesets: Array.isArray( saved.rulesets ) ? saved.rulesets.filter( (id) => typeof id === "string" ) : [],
+                    standings: normalizeStandingSelection( saved.standings ) ?? UNIT_STANDING_ORDER,
                 });
             }
             if ( typeof( io.hideMPIntro ) !== "undefined" ) {
@@ -168,6 +172,7 @@ export class AppSettings {
             alphaStrikeSearchAbilities: this.alphaStrikeSearchAbilities,
             alphaStrikeSearchRulesets: this.alphaStrikeSearchRulesets,
             alphaStrikeMULSources: this.alphaStrikeMULSources,
+            alphaStrikeSearchStandings: this.alphaStrikeSearchStandings,
             hideMPIntro: this.hideMPIntro,
         
 
@@ -198,6 +203,7 @@ export interface IAppSettingsExport {
     alphaStrikeSearchRulesets?: Array<string>;
     // A "mul2+mul1"-style string in settings saved before the lists became checkboxes.
     alphaStrikeMULSources?: MULSourceSelection | string;
+    alphaStrikeSearchStandings?: unknown;
     hideMPIntro: boolean;
    
     equipmentEditorFile: string;

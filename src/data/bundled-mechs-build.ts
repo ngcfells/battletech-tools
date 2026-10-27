@@ -46,11 +46,63 @@ type Leave = (reason: string, detail?: string) => void;
 
 /**
  * A bundled design's standing, left out when canon: a file from an apocryphal folder (MegaMek's "Videogame
- * (Apocryphal)"), else what the gear's rules level makes it.
+ * (Apocryphal)"), else what the gear's rules level makes it. Canon is what the live MUL or MUL 1.0 lists, or an
+ * official FASA, FanPro or Catalyst record sheet (#241): Shrapnel, Field Manual pilot variants and the Classic
+ * MechWarrior: Dark Age sheets stay canon off the MUL, until a check of the record sheet books fails to find one.
  */
 export function getBundledStanding(file: string, unit: { getRequiredRulesLevel(): number }): { standing?: UnitStanding } {
     const standing = /apocryphal/i.test(file) ? "apocryphal" : getRulesLevelStanding(unit.getRequiredRulesLevel());
     return standing === "canon" ? {} : { standing };
+}
+
+/** A MUL record from the live MUL or MUL 1.0, not our own custom list. */
+export const isOfficialMULRecord = (unit: IASMULUnit | undefined): boolean => !!unit && unit.MulSource !== "custom";
+
+const squash = (text: string): string => text.toLowerCase().normalize("NFKD").replace(/[^a-z0-9]/g, "");
+// The quoted or bracketed name a model carries ("Yen Lo Wang", (Jasminda)), squashed.
+const nicknameOf = (text: string): string => squash(/["'“”‘’(]([^"'“”‘’()]+)["'“”‘’)]/.exec(text)?.[1] ?? "");
+// A model's code, its first word ("CN9-YLW2", none for "(Jasminda)"), with a letter O after a digit read as zero (SCP-1O).
+const codeOf = (model: string): string => {
+    const first = model.trim().split(/\s+/)[0] ?? "";
+    return /^["'“‘(]/.test(first) ? "" : squash(first).replace(/(?<=\d)o/g, "0");
+};
+const commonPrefix = (a: string, b: string): number => {
+    let length = 0;
+    while (length < a.length && a[length] === b[length]) length++;
+    return length;
+};
+
+/**
+ * The MUL record of a 'Mech whose name the MUL spells another way ("Yen-lo-wang", a SecurityMech suffix, ABS-5Y for
+ * ANB-5Y), among records of the same tonnage whose name holds the chassis's first word. A record matches on the same
+ * BV when the codes' numbers agree (or one has none, or both carry the same nickname); on the same code when this
+ * model names no pilot or nickname the record lacks; or on the same nickname when the numbers agree. Best first:
+ * BV, nickname, code, then the closest and shortest variant.
+ */
+export function findLooseMULMatch(chassis: string, model: string, tons: number, bv: number, units: IASMULUnit[]): IASMULUnit | undefined {
+    const root = squash(chassis.replace(/^["'“‘]+/, "").split(/[\s("'“‘]/)[0] ?? "");
+    if (!root) return undefined;
+    const code = codeOf(model);
+    const ownNickname = nicknameOf(model);
+    const anyNickname = nicknameOf(chassis + " " + model);
+    const digits = (text: string) => text.replace(/\D/g, "");
+    let best: { unit: IASMULUnit; rank: number[] } | undefined;
+    for (const unit of units) {
+        if (unit.Tonnage !== tons || !squash(unit.Name ?? "").includes(root)) continue;
+        const variant = unit.Variant ?? "";
+        const theirCode = codeOf(variant);
+        const theirNickname = nicknameOf(variant);
+        const sameNickname = anyNickname !== "" && anyNickname === theirNickname;
+        const numbersAgree = !digits(code) || !digits(theirCode) || digits(code) === digits(theirCode);
+        const byBV = bv > 0 && unit.BattleValue === bv && (numbersAgree || sameNickname);
+        const byNickname = sameNickname && numbersAgree;
+        const byCode = code !== "" && code === theirCode && (ownNickname === "" || ownNickname === theirNickname);
+        if (!byBV && !byNickname && !byCode) continue;
+        const rank = [+byBV, +byNickname, +byCode, commonPrefix(squash(model), squash(variant)), -variant.length];
+        const differs = best ? rank.findIndex((value, index) => value !== best!.rank[index]) : -1;
+        if (!best || (differs >= 0 && rank[differs] > best.rank[differs])) best = { unit, rank };
+    }
+    return best?.unit;
 }
 interface IKeptLayout { summary: IDesignSummary; name: string }
 
@@ -98,7 +150,7 @@ export function loadMULIndex(mulDir: string, test: (unit: IASMULUnit) => boolean
     for (const list of ["live", "mul1", "custom"]) {
         for (const file of fs.readdirSync(path.join(mulDir, list)).sort()) {
             for (const entry of untabulate(JSON.parse(fs.readFileSync(path.join(mulDir, list, file), "utf8"))) as IASMULUnit[]) {
-                const unit = list === "live" ? correctMULBattleValue(entry) : entry;
+                const unit = { ...(list === "live" ? correctMULBattleValue(entry) : entry), MulSource: list === "live" ? "mul2" as const : list as "mul1" | "custom" };
                 if (!test(unit)) continue;
                 for (const key of getMULMatchKeys(unit.Name ?? "", unit.Variant ?? "")) if (!index.has(key)) index.set(key, unit);
             }
@@ -165,6 +217,7 @@ function keepMatchingConfigurations(mech: BattleMech, xml: string, mul: Map<stri
 export function buildBundledMechs(sswDir: string, mulDir: string, megamekDir?: string): IBundledBuild {
     const mul = loadMULIndex(mulDir, isMULMech);
     const mul1ById = loadMUL1ById(mulDir, isMULMech);
+    const officialMechs = [...new Set(mul.values())].filter(isOfficialMULRecord);
     const kept: { header: Omit<IBundledDesignHeader, "id">; design: Record<string, unknown> }[] = [];
     const leftOut: IBundledBuild["leftOut"] = [];
     // The kept design each match key and MUL id belongs to, with its layouts, to tell a duplicate from a variant.
@@ -193,8 +246,14 @@ export function buildBundledMechs(sswDir: string, mulDir: string, megamekDir?: s
         const entries = getClassicMechEntries([mech]);
         const layoutOf = (design: BattleMech, name: string): IKeptLayout => ({ summary: summarizeDesign(design), name });
         const own = entries.map((entry) => ({ keys: getMULMatchKeys(entry.chassis, entry.model), layout: layoutOf(entry.design, entry.chassis + " " + entry.model) }));
+        const named = entries.map((entry) => ({ entry, unit: getMULMatchKeys(entry.chassis, entry.model).map((key) => mul.get(key)).find(Boolean) }));
+        // A 'Mech the MUL names another way is found by chassis, tonnage, BV and model code (#241).
+        const loose = !mulUnit && !info.omnimech && !named.some(({ unit }) => unit)
+            ? findLooseMULMatch(mech.getChassisName(), mech.getModelName(), mech.getTonnage(), mech.getBattleValue(), officialMechs) : undefined;
+        const listed = mulUnit || loose ? [{ entry: entries[entries.length - 1], unit: (mulUnit ?? loose)! }] : named.filter((match) => match.unit);
+        // One copy of each MUL record: a design checked against a record already taken, by any name, is a twin.
         const clash = own.flatMap(({ keys, layout }) => keys.map((key) => ({ layout, twin: taken.get(key) }))).find(({ twin }) => twin)
-            ?? (mulUnit && takenIds.has(mulUnit.Id) ? { layout: own[own.length - 1].layout, twin: takenIds.get(mulUnit.Id) } : undefined);
+            ?? listed.map(({ entry, unit }) => ({ layout: own[entries.indexOf(entry)].layout, twin: takenIds.get(unit!.Id) })).find(({ twin }) => twin);
         if (clash) {
             const { layout, twin } = clash as { layout: IKeptLayout; twin: IKeptLayout };
             // A duplicate names what it differs in; a different submodel waits for its renumbered model.
@@ -202,10 +261,7 @@ export function buildBundledMechs(sswDir: string, mulDir: string, megamekDir?: s
             leave(duplicate ? "duplicate of a design already kept" + (why ? ", differs only in " + why : "") : "different submodel, same name and model: " + why, twin.name);
             return;
         }
-        const matched = mulUnit
-            ? [{ entry: entries[entries.length - 1], unit: mulUnit }]
-            : entries.map((entry) => ({ entry, unit: getMULMatchKeys(entry.chassis, entry.model).map((key) => mul.get(key)).find(Boolean) }))
-                .filter((match) => match.unit && match.unit.BattleValue > 0);
+        const matched = listed.filter((match) => match.unit!.BattleValue > 0);
         const wrong = matched.filter(({ entry, unit }) => entry.design.getBattleValue() !== unit!.BattleValue);
         if (wrong.length > 0) {
             leave("BV differs from the MUL", wrong.map(({ entry, unit }) => `${entry.model}: BV ${entry.design.getBattleValue()}, MUL ${unit!.BattleValue}`).join("; ")); return;
@@ -230,7 +286,7 @@ export function buildBundledMechs(sswDir: string, mulDir: string, megamekDir?: s
             leave("does not survive the compact format"); return;
         }
         own.forEach(({ keys, layout }) => keys.forEach((key) => taken.set(key, layout)));
-        matched.forEach(({ entry, unit }) => takenIds.set(unit!.Id, own[entries.indexOf(entry)].layout));
+        listed.forEach(({ entry, unit }) => takenIds.set(unit!.Id, own[entries.indexOf(entry)].layout));
         const mulId = matched.find(({ entry }) => entry.design === mech)?.unit?.Id ?? matched[0]?.unit?.Id;
         kept.push({
             header: {

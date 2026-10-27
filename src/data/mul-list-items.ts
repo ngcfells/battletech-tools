@@ -1,5 +1,6 @@
 import type { IASMULUnit, MULSource } from "../classes/alpha-strike-unit";
-import { getLocalCustomMULUnits } from "./custom-mul-local";
+import { getLocalCustomMULUnits, saveLocalCustomMULUnits } from "./custom-mul-local";
+import { reconcileLocalCustomMUL } from "./custom-mul";
 import { correctMULBattleValue } from "./mul-bv-corrections";
 import { untabulate } from "../utils/packed-json";
 
@@ -200,11 +201,13 @@ export async function loadMULListItems(selection: MULSourceSelection = DEFAULT_M
 
     // Read fresh on every call (never cached) so entries saved in the Custom MUL Editor show up at once.
     // They come before the shared list so a local edit of a shared entry wins for its author.
+    // A local entry that duplicates a shared one is left out, and one whose Id a shared entry has since taken is
+    // given the next free Id here and saved (#241).
     if (sources.includes("custom")) {
-        const local = getLocalCustomMULUnits()
-            .filter(isMULListEntry)
-            .map((entry) => ({ ...entry, MulSource: "custom" as const }));
-        lists.splice(sources.indexOf("custom"), 0, local);
+        const at = sources.indexOf("custom");
+        const { records, shown, changed } = reconcileLocalCustomMUL(getLocalCustomMULUnits().filter(isMULListEntry), lists[at]);
+        if (changed) saveLocalCustomMULUnits(records);
+        lists.splice(at, 0, shown.map((entry) => ({ ...entry, MulSource: "custom" as const })));
     }
 
     const seen = new Set<string>();

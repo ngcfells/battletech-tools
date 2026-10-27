@@ -30,7 +30,7 @@ import { getBattleMechTroAdapter } from '../../../../classes/battlemech-tro';
 import { getUnitTroAdapter } from '../../../../classes/unit-tro';
 import type { TechnicalReadout } from '../../../../classes/technical-readout';
 import type { ITroUnitAdapter } from '../../../../data/technical-readout-interfaces';
-import { getMULAerospaceClass, MULAerospaceClass, buildClassicDesignIndex, ClassicDesignIndex, findClassicDesigns, getClassicMechEntries, getClassicUnitEntries, getDesignMULRecord, getDesignsOffMUL, getMULMatchKeys, IClassicDesignEntry, IDesignSummary, isMULCapitalShip, isMULLargeAerospaceCraft } from '../../../../utils/classicMULMatch';
+import { getMULAerospaceClass, MULAerospaceClass, buildClassicDesignIndex, ClassicDesignIndex, findClassicDesigns, getClassicMechEntries, getClassicUnitEntries, getDesignMULRecord, getDesignsOffMUL, getMULIdKey, getMULMatchKeys, IClassicDesignEntry, IDesignSummary, isMULCapitalShip, isMULLargeAerospaceCraft } from '../../../../utils/classicMULMatch';
 import { IMULSearchFilters } from '../../../../utils/mulSearchFilters';
 import { getMULEraLabel, getMULTypeLabel } from '../../../../utils/mulUtilities';
 import { paginate } from '../../../../utils/paginate';
@@ -153,7 +153,7 @@ export default class BattleMechAddMechDialog extends React.Component<IBattleMech
         void this.updateMULResults();
         // Every match key on any of the lists, ticked or not: a design one names is not "off the MUL".
         loadMULListItems( MUL_SOURCE_OPTIONS.map( (option) => option.value ) )
-            .then( (units) => this.setState({ mulKeys: new Set( units.filter( (unit) => CBT_MUL_TYPE_IDS.includes( unit.Type?.Id ) ).flatMap( (unit) => getMULMatchKeys( unit.Name ?? "", unit.Variant ?? "" ) ) ) }) )
+            .then( (units) => this.setState({ mulKeys: new Set( units.filter( (unit) => CBT_MUL_TYPE_IDS.includes( unit.Type?.Id ) ).flatMap( (unit) => [ ...getMULMatchKeys( unit.Name ?? "", unit.Variant ?? "" ), getMULIdKey( unit.Id ) ] ) ) }) )
             .catch( (error) => console.error("Unable to load the Master Unit List", error) );
         loadBundledMechIndex().then( (bundledMechs) => this.setState({ bundledMechs }) )
             .catch( (error) => console.error("Unable to load the bundled 'Mechs", error) );
@@ -239,7 +239,7 @@ export default class BattleMechAddMechDialog extends React.Component<IBattleMech
             const load = ( save: object ) => kind.load( JSON.stringify( save ) );
             const samples = getClassicUnitEntries( ( kind.bundled ? kind.bundled() : [] ).map( load ) );
             samples.forEach( (entry) => this.samples.add( entry.design ) );
-            const bundled = headers.map( (header) => ({ chassis: header.name, model: header.model, design: { type: kind.bundledType!, header } as UnitDesign, fingerprint: String( header.bv ) }) );
+            const bundled = headers.map( (header) => ({ chassis: header.name, model: header.model, design: { type: kind.bundledType!, header } as UnitDesign, fingerprint: String( header.bv ), mulId: header.mulId }) );
             const entries: IClassicDesignEntry<UnitDesign>[] = [ ...getClassicUnitEntries( saves.map( load ) ), ...samples ]
                 .map( (entry) => ({ ...entry, fingerprint: String( entry.design.getBattleValue() ) }) );
             entries.push( ...bundled );
@@ -395,8 +395,10 @@ export default class BattleMechAddMechDialog extends React.Component<IBattleMech
             }
         }
         rows.sort( (a, b) => getMULDisplayName( a.unit ).localeCompare( getMULDisplayName( b.unit ) ) );
-        this.rows = { key, rows };
-        return rows;
+        // The Standing filter goes by the row's own standing: a fan-made design of a canon MUL entry is fan-made.
+        const shown = rows.filter( (row) => filters.standings.includes( row.standing ) );
+        this.rows = { key, rows: shown };
+        return shown;
     }
 
     /** A bundled design's standing is in its header; a saved one's comes from its rules level, else `otherwise`. */

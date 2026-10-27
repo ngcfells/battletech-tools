@@ -8,6 +8,8 @@ import { getMULAerospaceRoles, getMULEraAliases, getMULEraIDs, getMULEraLabel, g
 import InputField from './form_elements/input_field';
 import { STALE_WARNING } from './game-settings-block';
 import SpecialRulesetsStep from './special-rulesets-step';
+import UnitStandingBadge from './unit-standing-badge';
+import { UNIT_STANDING_ORDER, UNIT_STANDINGS, UnitStanding } from '../../utils/unit-standing';
 import type { JSX } from "react";
 const Plus = FaPlus as any;
 const Trash = FaTrash as any;
@@ -67,6 +69,11 @@ export default class MULSearchFilters extends React.Component<IMULSearchFiltersP
     private toggleSource = ( source: MULSource, checked: boolean ): void => {
         const ticked = this.props.filters.sources.filter( (existing) => existing !== source ).concat( checked ? [source] : [] );
         this.change({ sources: MUL_SOURCE_OPTIONS.map( (option) => option.value ).filter( (value) => ticked.includes( value ) ) });
+    }
+
+    private toggleStanding = ( standing: UnitStanding, checked: boolean ): void => {
+        const ticked = this.props.filters.standings.filter( (existing) => existing !== standing ).concat( checked ? [standing] : [] );
+        this.change({ standings: UNIT_STANDING_ORDER.filter( (value) => ticked.includes( value ) ) });
     }
 
     render = (): JSX.Element => {
@@ -268,6 +275,32 @@ export default class MULSearchFilters extends React.Component<IMULSearchFiltersP
             <div className="small-text">
                 {MUL_SOURCE_OPTIONS.filter( (option) => filters.sources.includes( option.value ) ).map( (option) => option.description ).join( " " )}
                 {this.props.sourcesNote}
+            </div>
+        </div>
+    </div>
+    <div className="row">
+        <div className="col-md-12 text-center">
+            <div role="group" aria-label="Standing">
+                Standing:<br />
+                {UNIT_STANDING_ORDER.map( (standing) => {
+                    const checked = filters.standings.includes( standing );
+                    return (
+                        <label key={standing} title={UNIT_STANDINGS[standing].description} className="me-2">
+                            <input
+                                type="checkbox"
+                                name={this.props.idPrefix + "MULStandings"}
+                                value={standing}
+                                checked={checked}
+                                // At least one standing stays ticked, as with the unit lists.
+                                disabled={checked && filters.standings.length === 1}
+                                onChange={(event) => this.toggleStanding( standing, event.currentTarget.checked )}
+                            />&nbsp;<UnitStandingBadge standing={standing} />{UNIT_STANDINGS[standing].label}
+                        </label>
+                    );
+                })}
+            </div>
+            <div className="small-text">
+                Canon is what the Master Unit List or MUL 1.0 lists. A fan-made unit keeps its rules level: tick Canon alone for an event that takes only official units.
             </div>
         </div>
     </div>

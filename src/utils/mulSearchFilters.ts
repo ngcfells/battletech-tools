@@ -6,6 +6,7 @@ import { RulesEditionUnitType } from "../data/rules-editions";
 import { findSpecialRuleset, getRulesetConflict, ISpecialRuleset } from "../data/special-rulesets";
 import { btTechOptions } from "../data/tech-options";
 import { getMULAerospaceClass, MULAerospaceClass } from "./classicMULMatch";
+import { getMULRecordStanding, UNIT_STANDING_ORDER, UnitStanding } from "./unit-standing";
 import { getMULEraAliases, getMULEraLabel, MUL_ERA_ALIAS_OFFSET, mulEras } from "./mulUtilities";
 
 /** The filters of a Master Unit List search, shared by the Alpha Strike and Classic rosters. */
@@ -24,6 +25,8 @@ export interface IMULSearchFilters {
     sources: MULSourceSelection;
     /** Special Rulesets (#324): they trim the Tech, Type and Era lists and leave their units out of the results. */
     rulesets: string[];
+    /** The standings shown (canon, apocryphal, fan-made, munchkin): Canon alone for an event that takes only official units. */
+    standings: UnitStanding[];
 }
 
 export function newMULSearchFilters(overrides: Partial<IMULSearchFilters> = {}): IMULSearchFilters {
@@ -40,6 +43,7 @@ export function newMULSearchFilters(overrides: Partial<IMULSearchFilters> = {}):
         abilitySearchTerm: "",
         sources: DEFAULT_MUL_SOURCE_SELECTION,
         rulesets: [],
+        standings: UNIT_STANDING_ORDER,
         ...overrides,
     };
 }
@@ -148,4 +152,9 @@ export function filterMULByRulesets(units: IASMULUnit[], rulesets: string[]): IA
         return (!tags || tags.some((tag) => !removed.includes(tag)))
             && !(unitType && ticked(rulesets).some((ruleset) => ruleset.removesUnitTypes?.includes(unitType)));
     });
+}
+
+/** Leaves out the records whose standing is not ticked. */
+export function filterMULByStanding(units: IASMULUnit[], standings: UnitStanding[]): IASMULUnit[] {
+    return standings.length >= UNIT_STANDING_ORDER.length ? units : units.filter((unit) => standings.includes(getMULRecordStanding(unit)));
 }

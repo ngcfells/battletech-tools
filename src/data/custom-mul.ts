@@ -321,9 +321,23 @@ export function serializeCustomMULRecords(records: IASMULUnit[]): string {
     return stringifyTable(sorted);
 }
 
-// Adds or replaces (by MulUnitKey) `entries` in the shared list's current file text. An entry whose
-// Id is already used by a different unit (someone else's entry merged since this one was created)
-// gets the next free Id. Returns the new file text.
+// What makes two fan-made entries the same unit: name, variant and game values, whoever entered them and whatever Id
+// and key each was given.
+function customMULContent(record: IASMULUnit): string {
+    const keys = Object.keys(record).filter((key) => !["Id", "MulUnitKey", "CustomInfo", "MulSource"].includes(key)).sort();
+    return mulIdentity(record.Name, record.Variant) + "\u001f" + JSON.stringify(keys.map((key) => [key, record[key as keyof IASMULUnit]]));
+}
+
+/** Whether `entry` is the same unit as a record under another key: two people entering it and sharing it (#241). */
+export function isDuplicateCustomMULEntry(entry: IASMULUnit, records: IASMULUnit[]): boolean {
+    const content = customMULContent(entry);
+    return records.some((record) => record.MulUnitKey !== entry.MulUnitKey && customMULContent(record) === content);
+}
+
+// Adds or replaces (by MulUnitKey) `entries` in the shared list's current file text. An entry is first checked for a
+// duplicate of a unit already listed under another key, and left out if it is one; then an entry whose Id is already
+// used by a different unit (someone else's entry merged since this one was created) gets the next free Id. Returns
+// the new file text.
 export function mergeCustomMULEntries(currentFileText: string | null, entries: IASMULUnit[]): string {
     const parsed = currentFileText ? untabulate(JSON.parse(currentFileText)) : [];
     const records: IASMULUnit[] = Array.isArray(parsed) ? parsed : [];
@@ -334,9 +348,27 @@ export function mergeCustomMULEntries(currentFileText: string | null, entries: I
             records[index] = { ...entry, Id: records[index].Id };
             continue;
         }
+        if (isDuplicateCustomMULEntry(entry, records)) continue;
         const idTaken = records.some((record) => record.Id === entry.Id);
         records.push(idTaken ? { ...entry, Id: nextCustomMULId(records) } : entry);
     }
 
     return serializeCustomMULRecords(records);
+}
+
+/**
+ * This browser's own entries beside the shared list: a duplicate of a shared unit is left out of `shown`, and an
+ * entry whose Id a different shared unit has since taken gets the next Id free in this browser. `records` is every
+ * local entry, Ids corrected, for saving back; `changed` says whether an Id moved.
+ */
+export function reconcileLocalCustomMUL(local: IASMULUnit[], shared: IASMULUnit[]): { records: IASMULUnit[]; shown: IASMULUnit[]; changed: boolean } {
+    const records: IASMULUnit[] = [];
+    let changed = false;
+    for (const entry of local) {
+        const clash = shared.some((record) => record.Id === entry.Id && record.MulUnitKey !== entry.MulUnitKey)
+            || records.some((record) => record.Id === entry.Id);
+        changed ||= clash;
+        records.push(clash ? { ...entry, Id: nextCustomMULId([...shared, ...local, ...records]) } : entry);
+    }
+    return { records, shown: records.filter((entry) => !isDuplicateCustomMULEntry(entry, shared)), changed };
 }

@@ -229,6 +229,26 @@ describe("Classic roster Master Unit List search", () => {
         expect(group.members.map((member) => member.getName().trim())).toEqual(["Spider VTOLAM"]);
     }, 30_000);
 
+    // #241: ArtVees and VTOLAMs are fan-made whatever their rules level; an official-units-only event ticks Canon alone.
+    it("shows the ArtVees as fan-made and leaves them out when only Canon is ticked", async () => {
+        const appGlobals = makeAppGlobals();
+        appGlobals.appSettings.cbtMULSearch = newMULSearchFilters({ type: 19, term: "Falconet", sources: ["mul2", "custom"] });
+        render(
+            <MemoryRouter>
+                <BattleMechAddMechDialog appGlobals={appGlobals} currentForce={appGlobals.currentCBTForce!.groups[0]} currentForceIndex={0} onChange={vi.fn()} />
+            </MemoryRouter>
+        );
+        const add = await screen.findByRole("button", { name: /^Add Falconet ArtVee/ }, { timeout: 20_000 });
+        expect(add.closest("tr")!.querySelector(".unit-standing")!.textContent).toBe("Fan-made");
+        for (const standing of ["apocryphal", "custom", "munchkin"]) {
+            fireEvent.click(screen.getByRole("checkbox", { name: new RegExp("^\\W*" + { apocryphal: "Apocryphal", custom: "Fan-made", munchkin: "Munchkin" }[standing]) }));
+        }
+        expect(appGlobals.appSettings.cbtMULSearch.standings).toEqual(["canon"]);
+        await waitFor(() => expect(screen.queryByRole("button", { name: /^Add Falconet ArtVee/ })).toBeNull(), { timeout: 20_000 });
+        // The last standing ticked stays ticked.
+        expect((screen.getByRole("checkbox", { name: /^\W*Canon/ }) as HTMLInputElement).disabled).toBe(true);
+    }, 30_000);
+
     // Round 2: each other Classic type matches a saved design by name and lands in its own table in the group.
     const otherTypes: { label: string; type: number; saves: keyof IAppGlobals; table: keyof BattleMechGroup; make: (name: string, model: string) => { exportJSON(): string } }[] = [
         { label: "combat vehicle", type: 19, saves: "vehicleSaves", table: "vehicles", make: (name, model) => { const unit = new Vehicle(); unit.setName(name); unit.setModel(model); return unit; } },
