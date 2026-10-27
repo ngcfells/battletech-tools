@@ -3,7 +3,7 @@ import os from "node:os";
 import path from "node:path";
 import { expect, it } from "vitest";
 import type { IASMULUnit } from "../classes/alpha-strike-unit";
-import { buildBundledMechs, findLooseMULMatch, getBundledStanding, isOfficialMULRecord } from "./bundled-mechs-build";
+import { buildBundledMechs, findLooseMULMatch, getBundledStanding, getRenumberedModel, isOfficialMULRecord, loadCanonMechs } from "./bundled-mechs-build";
 
 // #241: canon is what the live MUL or MUL 1.0 lists. These records stand in for the MUL's own spellings of 'Mechs
 // that Skunk Werks names another way (found by a scan of the bundled designs without a MUL id).
@@ -41,7 +41,24 @@ it("finds the MUL record a 'Mech's other spelling stands for", () => {
     expect(find("Rifleman", "RFL-4D (Cyrus)", 60, 1428)).toBeUndefined();
 });
 
-it("marks a design no official MUL lists apocryphal, and keeps a worse standing its gear gives", () => {
+// #241: a different submodel under a kept design's name and model takes a free canon designation, else the next number.
+it("renames a different submodel to a free canon designation or the next number", () => {
+    const canon = [{ name: "Archer ARC-5S", tons: 70, bv: 1500 }, { name: "Archer ARC-6S", tons: 70, bv: 1650 }, { name: "Bane 12", tons: 100, bv: 3000 }];
+    const none = () => false;
+    expect(getRenumberedModel("Archer", "ARC-5S", 70, 1650, ["ARC-5S"], canon, none)).toBe("ARC-6S");
+    expect(getRenumberedModel("Archer", "ARC-5S", 70, 1650, ["ARC-5S"], canon, (model) => model === "ARC-6S")).toBe("ARC-5S 2");
+    expect(getRenumberedModel("Archer", "ARC-5S", 70, 1400, ["ARC-5S", "ARC-5S 2"], canon, none)).toBe("ARC-5S 3");
+    expect(getRenumberedModel("Bane", "2", 100, 2900, ["1", "2"], canon, none)).toBe("13");
+    expect(getRenumberedModel("Archer", "ARC-5S", 70, 1400, ["ARC-5S"], canon, (model) => model === "ARC-5S 2")).toBe("ARC-5S 3");
+});
+
+it("reads mordel's canon list, quotes and all", () => {
+    const file = path.join(fs.mkdtempSync(path.join(os.tmpdir(), "canon-mechs-")), "canon.csv");
+    fs.writeFileSync(file, 'name,tons,bv\n"""Battle Tripod"" R/H3L-2X",60,1972\r\n"Atlas AS7-D",100,1897\n');
+    expect(loadCanonMechs(file)).toEqual([{ name: '"Battle Tripod" R/H3L-2X', tons: 60, bv: 1972 }, { name: "Atlas AS7-D", tons: 100, bv: 1897 }]);
+});
+
+it("keeps a design from an official record sheet canon off the MUL, and a worse standing its gear gives", () => {
     const level = (rulesLevel: number) => ({ getRequiredRulesLevel: () => rulesLevel });
     expect(getBundledStanding("Shrapnel/Starhawk.ssw", level(1))).toEqual({});
     expect(getBundledStanding("megamek/Force Manuals/Davion/x.mtf", level(1))).toEqual({});

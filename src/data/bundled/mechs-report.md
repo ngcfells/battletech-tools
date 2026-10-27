@@ -1,6 +1,6 @@
 # Bundled 'Mechs: build report
 
-3514 designs kept, 4178 files left out.
+3552 designs kept (38 renamed), 4140 files left out.
 
 | Reason | Files |
 |---|---|
@@ -8,16 +8,16 @@
 | the import could not carry all of it over | 312 |
 | BV differs from the MUL | 201 |
 | no Master Unit List entry to check its BV against | 160 |
-| different submodel, same name and model: equipment | 152 |
-| different submodel, same name and model: ammo type | 105 |
-| different submodel, same name and model: actuators | 92 |
+| different submodel, same name and model: equipment | 138 |
+| different submodel, same name and model: ammo type | 97 |
 | import errors | 83 |
+| different submodel, same name and model: actuators | 80 |
 | configuration BV differs from the MUL | 39 |
 | duplicate of a design already kept, differs only in armor spread | 35 |
 | does not survive the compact format | 7 |
-| different submodel, same name and model: heat sinks placed | 6 |
 | duplicate of a design already kept, differs only in engine heat sinks in crit slots | 6 |
-| different submodel, same name and model: heat sinks | 5 |
+| different submodel, same name and model: heat sinks placed | 5 |
+| different submodel, same name and model: heat sinks | 2 |
 | duplicate of a design already kept, differs only in CASE placed | 1 |
 | import threw | 1 |
 | different submodel, same name and model: CASE | 1 |
@@ -152,12 +152,10 @@
 - `Operation Klondike/Highlander HGN-732 (Colleen).ssw`: import errors: 'Streak SRM-6 CP' is Clan equipment (Prototype Streak SRM 6 (Clan)) on an Inner Sphere design; the design needs Mixed Tech; '@ Streak SRM-6 CP' is Clan equipment (Streak SRM - Standard Ammo (C)) on an Inner Sphere design; the design needs Mixed Tech
 - `RS 3039u/Atlas AS7-D-DC.ssw`: import errors: Cannot import the Cockpit Command Console yet (TO:AUE p.112)
 - `RS 3039u/BattleMaster BLR-1G-DC.ssw`: import errors: Cannot import the Cockpit Command Console yet (TO:AUE p.112)
-- `RS 3039u/Javelin JVN-10F Fire Javelin.ssw`: different submodel, same name and model: equipment: Javelin JVN-10F (Shinto)
 - `RS 3039u/Orion ON1-V-DC.ssw`: import errors: Cannot import the Cockpit Command Console yet (TO:AUE p.112)
 - `RS 3050U/Clan Star League/Black Knight BL-9-KNT.ssw`: duplicate of a design already kept: Black Knight BL-9-KNT
 - `RS 3050U/Inner Sphere/Atlas AS7-K-DC.ssw`: import errors: Cannot import the Cockpit Command Console yet (TO:AUE p.112)
 - `RS 3050U/Inner Sphere/Atlas AS7-S2.ssw`: BV differs from the MUL: AS7-S2: BV 2389, MUL 2378
-- `RS 3050U/Inner Sphere/Atlas C.ssw`: different submodel, same name and model: ammo type: Atlas C
 - `RS 3050U/Inner Sphere/Awesome AWS-9Ma.ssw`: import errors: Cannot import the Cockpit Command Console yet (TO:AUE p.112)
 - `RS 3050U/Inner Sphere/Banshee BNC-6S.ssw`: BV differs from the MUL: BNC-6S: BV 1899, MUL 1889
 - `RS 3050U/Inner Sphere/Caesar CES-4S.ssw`: BV differs from the MUL: CES-4S: BV 1750, MUL 1739
@@ -218,7 +216,6 @@
 - `RS 3067/Bloodhound B3-HND.ssw`: BV differs from the MUL: B3-HND: BV 1006, MUL 1005
 - `RS 3067/Bowman 3.ssw`: BV differs from the MUL: 3: BV 2770, MUL 2767
 - `RS 3067/No-Dachi NDA-2KO.ssw`: BV differs from the MUL: NDA-2KO: BV 1759, MUL 1728
-- `RS 3067/Sha Yu SYU-2B.ssw`: different submodel, same name and model: actuators: Sha Yu SYU-2B (Russel)
 - `RS 3067/Vanquisher VQR-5V.ssw`: BV differs from the MUL: VQR-5V: BV 2334, MUL 2332
 - `RS 3075u/AoW/Battlemaster BLR-1Gbc.ssw`: import errors: Cannot import the Cockpit Command Console yet (TO:AUE p.112)
 - `RS 3075u/AoW/Battlemaster BLR-1Gc.ssw`: import errors: Cannot import the Cockpit Command Console yet (TO:AUE p.112)
@@ -226,7 +223,6 @@
 - `RS 3075u/AoW/Kiso ConstructionMech K-3N-KR4.ssw`: import errors: Cannot import the Cockpit Command Console yet (TO:AUE p.112)
 - `RS 3075u/AoW/Kiso ConstructionMech K-3N-KR5.ssw`: import errors: Cannot import the Cockpit Command Console yet (TO:AUE p.112)
 - `RS 3075u/AoW/Lumberjack LoggerMech LM4C.ssw`: BV differs from the MUL: LM4/C: BV 316, MUL 291
-- `RS 3075u/AoW/Patron LoaderMech PTN.ssw`: different submodel, same name and model: equipment: Patron LoaderMech PTN-1
 - `RS 3075u/AoW/Phoenix PX-1R.ssw`: BV differs from the MUL: PX-1R: BV 900, MUL 917
 - `RS 3075u/AoW/Quasit QUA-51M MilitiaMech.ssw`: BV differs from the MUL: QUA-51M MilitiaMech: BV 707, MUL 680
 - `RS 3075u/AoW/Quasit QUA-51P MilitiaMech.ssw`: BV differs from the MUL: QUA-51P MilitiaMech: BV 865, MUL 826
@@ -245,10 +241,7 @@
 - `RS 3085/PP/Goliath GOL-4S.ssw`: BV differs from the MUL: GOL-4S: BV 1923, MUL 1912
 - `RS 3085/PP/Goliath GOL-6H.ssw`: BV differs from the MUL: GOL-6H: BV 1681, MUL 1676
 - `RS 3085/PP/Longbow LGB-13NAIS.ssw`: BV differs from the MUL: LGB-13NAIS: BV 1806, MUL 1804
-- `RS 3085/PP/Marauder C.ssw`: different submodel, same name and model: heat sinks: Marauder C
-- `RS 3085/PP/Rifleman C.ssw`: different submodel, same name and model: heat sinks: Rifleman C
 - `RS 3085/PP/Shadow Hawk C.ssw`: BV differs from the MUL: C: BV 1260, MUL 1309
-- `RS 3085/PP/Thunderbolt C.ssw`: different submodel, same name and model: heat sinks: Thunderbolt C
 - `RS 3085/PP/Valkyrie VLK-QW5.ssw`: BV differs from the MUL: VLK-QW5: BV 689, MUL 701
 - `RS 3085/PP/Warhammer C.ssw`: BV differs from the MUL: C: BV 1668, MUL 1728
 - `RS 3085/PP/Wasp WSP-3L.ssw`: BV differs from the MUL: WSP-3L: BV 593, MUL 534
@@ -265,14 +258,11 @@
 - `RS 3145/Lyran Commonwealth/Firestarter FS9-M2.ssw`: duplicate of a design already kept: Firestarter FS9-M2
 - `RS 3145/Lyran Commonwealth/Zeus X ZEU-X.ssw`: BV differs from the MUL: ZEU-X: BV 2326, MUL 2119
 - `RS 3145/Lyran Commonwealth/Zeus X ZEU-X2.ssw`: BV differs from the MUL: ZEU-X2: BV 2120, MUL 1915
-- `RS 3145/Lyran Commonwealth/Zeus X ZEU-X3.ssw`: different submodel, same name and model: equipment: Zeus ZEU-X3
 - `RS 3145/Lyran Commonwealth/Zeus X ZEU-X4.ssw`: import errors: Cannot import the Cockpit Command Console yet (TO:AUE p.112)
 - `RS 3145/NTNU/Blade BLD-7R.ssw`: duplicate of a design already kept: Blade BLD-7R
 - `RS 3145/NTNU/Cougar X 2.ssw`: duplicate of a design already kept: Cougar X2
-- `RS 3145/NTNU/Cougar X 3.ssw`: different submodel, same name and model: actuators: Cougar X3
 - `RS 3145/NTNU/Cougar X.ssw`: duplicate of a design already kept: Cougar X
 - `RS 3145/NTNU/Fennec FEC-5CM.ssw`: BV differs from the MUL: FEC-5CM: BV 1498, MUL 1445
-- `RS 3145/NTNU/Ghost GST-50.ssw`: different submodel, same name and model: equipment: Ghost 
 - `RS 3145/NTNU/Grand Titan T-IT-N13M.ssw`: BV differs from the MUL: T-IT-N13M: BV 2533, MUL 2553
 - `RS 3145/NTNU/Legionnaire LGN-2K.ssw`: duplicate of a design already kept: Legionnaire LGN-2K
 - `RS 3145/NTNU/Ti Tsang TSG-10L.ssw`: BV differs from the MUL: TSG-10L: BV 1728, MUL 1730
@@ -281,8 +271,6 @@
 - `Recognition Guide/Vol 10/Archer ARC-2Rb.ssw`: duplicate of a design already kept: Archer ARC-2Rb
 - `Recognition Guide/Vol 10/Archer ARC-4M.ssw`: duplicate of a design already kept: Archer ARC-4M
 - `Recognition Guide/Vol 10/Archer ARC-5R.ssw`: BV differs from the MUL: ARC-5R: BV 1672, MUL 1674
-- `Recognition Guide/Vol 10/Archer ARC-5S.ssw`: different submodel, same name and model: ammo type: Archer ARC-5S
-- `Recognition Guide/Vol 10/Archer ARC-5W.ssw`: different submodel, same name and model: ammo type: Archer ARC-5W
 - `Recognition Guide/Vol 11/Horned Owl (Peregrine) 6.ssw`: BV differs from the MUL: 6: BV 1413, MUL 1475
 - `Recognition Guide/Vol 11/Horned Owl (Peregrine) 7 Shimafukuro.ssw`: duplicate of a design already kept: Horned Owl (Peregrine) 7 'Shimafukuro'
 - `Recognition Guide/Vol 11/Horned Owl (Peregrine) Shimafukuro 7.ssw`: duplicate of a design already kept: Horned Owl (Peregrine) 7 'Shimafukuro'
@@ -322,8 +310,6 @@
 - `Recognition Guide/Vol 17/Crusader CRD-4BR.ssw`: duplicate of a design already kept: Crusader CRD-4BR
 - `Recognition Guide/Vol 17/Crusader CRD-4D.ssw`: duplicate of a design already kept: Crusader CRD-4D
 - `Recognition Guide/Vol 17/Crusader CRD-4K.ssw`: duplicate of a design already kept: Crusader CRD-4K
-- `Recognition Guide/Vol 17/Crusader CRD-5M.ssw`: different submodel, same name and model: actuators: Crusader CRD-5M
-- `Recognition Guide/Vol 17/Crusader CRD-5S.ssw`: different submodel, same name and model: actuators: Crusader CRD-5S
 - `Recognition Guide/Vol 17/Kraken (Bane) 2.ssw`: duplicate of a design already kept: Bane (Kraken) 2
 - `Recognition Guide/Vol 17/Kraken (Bane) 3.ssw`: duplicate of a design already kept: Bane (Kraken) 3
 - `Recognition Guide/Vol 17/Kraken (Bane) 5.ssw`: duplicate of a design already kept: Bane (Kraken) 5
@@ -357,14 +343,9 @@
 - `Recognition Guide/Vol 26/Merlin MLN-1P.ssw`: BV differs from the MUL: MLN-1P: BV 1182, MUL 1181
 - `Recognition Guide/Vol 26/Naga II.ssw`: duplicate of a design already kept: Naga II  A
 - `Recognition Guide/Vol 2/Behemoth (Stone Rhino) 4.ssw`: duplicate of a design already kept: Stone Rhino (Behemoth) 4
-- `Recognition Guide/Vol 2/Behemoth (Stone Rhino) 5.ssw`: different submodel, same name and model: ammo type: Stone Rhino (Behemoth) 5
-- `Recognition Guide/Vol 2/Behemoth (Stone Rhino) 6.ssw`: different submodel, same name and model: actuators: Stone Rhino (Behemoth) 6
 - `Recognition Guide/Vol 2/Behemoth (Stone Rhino).ssw`: duplicate of a design already kept: Stone Rhino (Behemoth) 
-- `Recognition Guide/Vol 2/Ostscout OTT-7K.ssw`: different submodel, same name and model: actuators: Ostscout OTT-7K
 - `Recognition Guide/Vol 2/Sojourner.ssw`: duplicate of a design already kept: Sojourner  Prime
 - `Recognition Guide/Vol 2/Stone Rhino (Behemoth) 4.ssw`: duplicate of a design already kept: Stone Rhino (Behemoth) 4
-- `Recognition Guide/Vol 2/Stone Rhino (Behemoth) 5.ssw`: different submodel, same name and model: ammo type: Stone Rhino (Behemoth) 5
-- `Recognition Guide/Vol 2/Stone Rhino (Behemoth) 6.ssw`: different submodel, same name and model: actuators: Stone Rhino (Behemoth) 6
 - `Recognition Guide/Vol 2/Stone Rhino (Behemoth) 7.ssw`: duplicate of a design already kept: Behemoth (Stone Rhino) 7
 - `Recognition Guide/Vol 2/Stone Rhino (Behemoth) 8.ssw`: duplicate of a design already kept: Behemoth (Stone Rhino) 8
 - `Recognition Guide/Vol 2/Stone Rhino (Behemoth).ssw`: duplicate of a design already kept: Stone Rhino (Behemoth) 
@@ -382,20 +363,15 @@
 - `Recognition Guide/Vol 3/Shadow Cat III.ssw`: duplicate of a design already kept: Shadow Cat III  Prime
 - `Recognition Guide/Vol 4/Warhammer IIC 2.ssw`: duplicate of a design already kept: Warhammer IIC 2
 - `Recognition Guide/Vol 4/Warhammer IIC.ssw`: duplicate of a design already kept: Warhammer IIC 
-- `Recognition Guide/Vol 4/Wasp WSP-1S.ssw`: different submodel, same name and model: actuators: Wasp WSP-1S
-- `Recognition Guide/Vol 4/Wasp WSP-3M.ssw`: different submodel, same name and model: actuators: Wasp WSP-3M
-- `Recognition Guide/Vol 4/Wasp WSP-3W.ssw`: different submodel, same name and model: actuators: Wasp WSP-3W
 - `Recognition Guide/Vol 5/Conjurer (Hellhound) 7.ssw`: duplicate of a design already kept: Conjurer (Hellhound) 7
 - `Recognition Guide/Vol 5/Conjurer (Hellhound) 8.ssw`: duplicate of a design already kept: Conjurer (Hellhound) 8
 - `Recognition Guide/Vol 5/Conjurer (Hellhound).ssw`: duplicate of a design already kept: Conjurer (Hellhound) 
 - `Recognition Guide/Vol 5/Hellhound (Conjurer) 7.ssw`: duplicate of a design already kept: Conjurer (Hellhound) 7
 - `Recognition Guide/Vol 5/Hellhound (Conjurer) 8.ssw`: duplicate of a design already kept: Conjurer (Hellhound) 8
 - `Recognition Guide/Vol 5/Hellhound (Conjurer).ssw`: duplicate of a design already kept: Conjurer (Hellhound) 
-- `Recognition Guide/Vol 5/Marauder II MAD-5A.ssw`: different submodel, same name and model: ammo type: Marauder II MAD-5A
 - `Recognition Guide/Vol 5/Marauder II MAD-5B.ssw`: duplicate of a design already kept: Marauder II MAD-5B
 - `Recognition Guide/Vol 5/Marauder II MAD-5C.ssw`: duplicate of a design already kept: Marauder II MAD-5C
 - `Recognition Guide/Vol 5/Marauder II MAD-6C.ssw`: import errors: Cannot import the Cockpit Command Console yet (TO:AUE p.112)
-- `Recognition Guide/Vol 6/Marauder Bounty Hunter 3015.ssw`: different submodel, same name and model: equipment: Marauder (Bounty Hunter 3015)
 - `Recognition Guide/Vol 6/Marauder Bounty Hunter 3044.ssw`: duplicate of a design already kept: Marauder (Bounty Hunter 3044)
 - `Recognition Guide/Vol 6/Marauder Bounty Hunter 3138.ssw`: duplicate of a design already kept: Marauder (Bounty Hunter 3138)
 - `Recognition Guide/Vol 6/Marauder Bounty Hunter 3146.ssw`: duplicate of a design already kept: Marauder (Bounty Hunter 3146)
@@ -462,24 +438,17 @@
 - `TRI/Demeter WLD-1-M AgroMech MOD.ssw`: BV differs from the MUL: WLD-1-M AgroMech MOD: BV 332, MUL 327
 - `TRI/Harvester HVR-199 AgroMech.ssw`: BV differs from the MUL: HVR-199 AgroMech: BV 485, MUL 490
 - `TRI/Harvester HVR-199M-M AgroMech MOD.ssw`: BV differs from the MUL: HVR-199M-M AgroMech MOD: BV 406, MUL 438
-- `TRVA/Buster BC XV HaulerMech.ssw`: different submodel, same name and model: equipment: Buster HaulerMech BC XV
 - `TRVA/Buster BC XV-M HaulerMech MOD.ssw`: duplicate of a design already kept: Buster HaulerMech BC XV (AC)
-- `TRVA/Buster BC XV-M-B HaulerMech MOD.ssw`: different submodel, same name and model: equipment: Buster HaulerMech BC XV (PPC)
 - `TRVA/Buster HaulerMech XXI.ssw`: duplicate of a design already kept: Buster BC XXI HaulerMech
 - `TRVA/Copper SecurityMech CPK-65.ssw`: duplicate of a design already kept: Copper CPK-65 SecurityMech
-- `TRVA/Crosscut Loggermech ED-X4.ssw`: different submodel, same name and model: equipment: Crosscut ED-X4 LoggerMech
 - `TRVA/ForestryMech ED-X3.ssw`: duplicate of a design already kept: ForestryMech 
 - `TRVA/Harvester Ant KIC-3.ssw`: duplicate of a design already kept: Harvester Ant KIC-3 AgroMech
 - `TRVA/Harvester Ant KIC-3M AgroMech MOD.ssw`: duplicate of a design already kept: Harvester Ant KIC-3 (MG)
 - `TRVA/Harvester Ant KIC-3M-B AgroMech MOD.ssw`: duplicate of a design already kept: Harvester Ant KIC-3 (LRM)
-- `TRVA/Marco MR-8C ExplorerMech.ssw`: different submodel, same name and model: equipment: Marco MR-8C
-- `TRVA/Pompier GM-3A FireMech.ssw`: different submodel, same name and model: equipment: Pompier FireMech GM-3A
 - `TRVA/Powerman SC XI-M HaulerMech MOD.ssw`: duplicate of a design already kept: Powerman LoaderMech SC XI (Laser)
 - `TRVA/Powerman SC XI-M-B HaulerMech MOD.ssw`: duplicate of a design already kept: Powerman LoaderMech SC XI (SRM)
 - `TRVA/Powerman SC XV HaulerMech.ssw`: duplicate of a design already kept: Powerman Loadermech SC XV
 - `TRVA/Powerman SC XVI HaulerMech.ssw`: duplicate of a design already kept: Powerman Loadermech SC XVI
-- `TRVA/Uni Cargomech ATAE-70.ssw`: different submodel, same name and model: equipment: Uni ATAE-70 CargoMech
-- `TRVA/Vampyr Scavengermech SC-V-1.ssw`: different submodel, same name and model: equipment: Vampyr SC-V-1 SalvageMech
 - `Turning Points/DATP Liao/Harvester HVR-99 AgroMech.ssw`: duplicate of a design already kept: Harvester HVR-99 AgroMech
 - `Turning Points/DATP Liao/Mad Cat III Eve.ssw`: duplicate of a design already kept: Mad Cat III (Eve)
 - `Turning Points/DATP Liao/Yu Huang Carson.ssw`: duplicate of a design already kept: Yu Huang (Carson)
@@ -491,24 +460,17 @@
 - `Turning Points/OTP Falcon Incursion/Battlemaster BLR-3M (Rogers).ssw`: BV differs from the MUL: BLR-3M (Rogers): BV 1819, MUL 1818
 - `Turning Points/OTP Hanseatic Crusade/Rhino.ssw`: BV differs from the MUL: : BV 2056, MUL 2124
 - `Turning Points/OTP Red Corsair/Battlemaster BLR-1G (Red Corsair).ssw`: import errors: Cannot import the Cockpit Command Console yet (TO:AUE p.112)
-- `Turning Points/TP Tokasha/Fox CS-1.ssw`: different submodel, same name and model: actuators: Fox CS-1
-- `Turning Points/TP Tokasha/Lancelot C 2.ssw`: different submodel, same name and model: equipment: Lancelot C 2
-- `Turning Points/TP Tokasha/Lancelot C.ssw`: different submodel, same name and model: equipment: Lancelot C
-- `Turning Points/TP Tokasha/Minsk MNK-101.ssw`: different submodel, same name and model: ammo type: Minsk MNK-101
 - `XTRO/Corporations/Arbiter ARB-001.ssw`: duplicate of a design already kept: Arbiter ARB-001 SecurityMech
 - `XTRO/Gladiators/Crosscut ED-XX Ichabod.ssw`: import errors: Cannot mount a Torso-Mounted Cockpit on an IndustrialMech (TM p.69); Unallocated Criticals: 2; - ER Medium Laser (er-medium-laser); - Heat Sink (heat-sink)
 - `XTRO/Gladiators/Juggernaut JG-R9TX1 Leapin Lil.ssw`: BV differs from the MUL: JG-R9TX1 "Leapin' Lil": BV 1946, MUL 1951
 - `XTRO/Gunslingers/Thug Jose THG-11ECX.ssw`: import errors: Cannot import the Cockpit Command Console yet (TO:AUE p.112)
 - `XTRO/Gunslingers/Wyvern City WVN-5UX.ssw`: import errors: Cannot import the Cockpit Command Console yet (TO:AUE p.112)
 - `XTRO/Kurita/Wolf Trap WFT-2X Bear Trap.ssw`: duplicate of a design already kept: Wolf Trap (Tora) WFT-2X "Bear Trap"
-- `XTRO/Liao/Ti Tsang TSG-9DDC DDC.ssw`: different submodel, same name and model: actuators: Ti Ts'ang TSG-9DDC
 - `XTRO/Mercenaries/Wolfhound WLF-2X.ssw`: BV differs from the MUL: WLF-2X: BV 1842, MUL 1812
 - `XTRO/Periphery/Atlas AS7-00 (Jurn).ssw`: import errors: Cannot import the Cockpit Command Console yet (TO:AUE p.112); Cannot armor slot 4 of the hd
 - `XTRO/Phantoms/Warlord BLR-2XC.ssw`: import errors: Cannot import the Cockpit Command Console yet (TO:AUE p.112)
 - `XTRO/Pirates/Victor VTR-9K2 St.James.ssw`: duplicate of a design already kept: Victor VTR-9K2 (St.James)
 - `XTRO/Primitives IV/Xanthos XNT-2O.ssw`: duplicate of a design already kept: Xanthos XNT-2O
-- `XTRO/Primitives I/Ostwar OWR-2M.ssw`: different submodel, same name and model: heat sinks placed: Ostwar OWR-2M
-- `XTRO/Primitives V/Ymir BWP-X1 Bipedal Weapons Platform.ssw`: different submodel, same name and model: ammo type: Ymir BWP-X1 "Bipedal Weapons Platform"
 - `XTRO/Steiner/Stealth STH-5X.ssw`: BV differs from the MUL: STH-5X: BV 2155, MUL 2240
 - `XTRO/Succession Wars/Kiso K-3N-KRHQ CommandMech.ssw`: import errors: Cannot import the Cockpit Command Console yet (TO:AUE p.112)
 - `XTRO/Succession Wars/Super Griffin GRF-2N-X.ssw`: BV differs from the MUL: GRF-2N-X: BV 1269, MUL 1310
@@ -4202,3 +4164,46 @@
 - `megamek/XTRs/Succession Wars/Super Griffin GRF-2N-X.mtf`: the import could not carry all of it over: 'ISDoubleHeatSinkPrototype' is not converted yet; 'ISDoubleHeatSinkPrototype' is not converted yet; 'ISDoubleHeatSinkPrototype' is not converted yet; Cannot place 'LRM 10': its slots are split in a way not converted yet; Unallocated Criticals: 2; - Prototype Improved Jump Jets (jj-prototype-improved); - Prototype Improved Jump Jets (jj-prototype-improved)
 - `megamek/XTRs/Succession Wars/Super Wasp WSP-2A-X.mtf`: duplicate of a design already kept: Super Wasp WSP-2A-X
 - `megamek/XTRs/Succession Wars/Zeus ZEU-6Y.mtf`: duplicate of a design already kept: Zeus ZEU-6Y
+
+## Renamed
+
+Different submodels of a kept design, kept under a new model (#241).
+
+- `RS 3039u/Javelin JVN-10F Fire Javelin.ssw`: Javelin JVN-10F "Fire Javelin" -> Javelin JVN-10F "Fire Javelin" 2
+- `RS 3050U/Inner Sphere/Atlas C.ssw`: Atlas C -> Atlas C 4
+- `RS 3067/Sha Yu SYU-2B.ssw`: Sha Yu SYU-2B -> Sha Yu SYU-2B (Bulldog)
+- `RS 3075u/AoW/Patron LoaderMech PTN.ssw`: Patron LoaderMech PTN -> Patron LoaderMech PTN 2
+- `RS 3085/PP/Marauder C.ssw`: Marauder C -> Marauder C 2
+- `RS 3085/PP/Rifleman C.ssw`: Rifleman C -> Rifleman C 4
+- `RS 3085/PP/Thunderbolt C.ssw`: Thunderbolt C -> Thunderbolt C 3
+- `RS 3145/Lyran Commonwealth/Zeus X ZEU-X3.ssw`: Zeus X ZEU-X3 -> Zeus X ZEU-X3 2
+- `RS 3145/NTNU/Cougar X 3.ssw`: Cougar X 3 -> Cougar X 4
+- `RS 3145/NTNU/Ghost GST-50.ssw`: Ghost GST-50 -> Ghost GST-50 2
+- `Recognition Guide/Vol 10/Archer ARC-5S.ssw`: Archer ARC-5S -> Archer ARC-5S 2
+- `Recognition Guide/Vol 10/Archer ARC-5W.ssw`: Archer ARC-5W -> Archer ARC-5W 2
+- `Recognition Guide/Vol 17/Crusader CRD-5M.ssw`: Crusader CRD-5M -> Crusader CRD-5M 2
+- `Recognition Guide/Vol 17/Crusader CRD-5S.ssw`: Crusader CRD-5S -> Crusader CRD-5S 2
+- `Recognition Guide/Vol 2/Behemoth (Stone Rhino) 5.ssw`: Behemoth (Stone Rhino) 5 -> Behemoth (Stone Rhino) 9
+- `Recognition Guide/Vol 2/Behemoth (Stone Rhino) 6.ssw`: Behemoth (Stone Rhino) 6 -> Behemoth (Stone Rhino) 10
+- `Recognition Guide/Vol 2/Ostscout OTT-7K.ssw`: Ostscout OTT-7K -> Ostscout OTT-7K 2
+- `Recognition Guide/Vol 2/Stone Rhino (Behemoth) 5.ssw`: Stone Rhino (Behemoth) 5 -> Stone Rhino (Behemoth) 11
+- `Recognition Guide/Vol 2/Stone Rhino (Behemoth) 6.ssw`: Stone Rhino (Behemoth) 6 -> Stone Rhino (Behemoth) 12
+- `Recognition Guide/Vol 4/Wasp WSP-1S.ssw`: Wasp WSP-1S -> Wasp WSP-1S 2
+- `Recognition Guide/Vol 4/Wasp WSP-3M.ssw`: Wasp WSP-3M -> Wasp WSP-3M 2
+- `Recognition Guide/Vol 4/Wasp WSP-3W.ssw`: Wasp WSP-3W -> Wasp WSP-3W 2
+- `Recognition Guide/Vol 5/Marauder II MAD-5A.ssw`: Marauder II MAD-5A -> Marauder II MAD-5A 2
+- `Recognition Guide/Vol 6/Marauder Bounty Hunter 3015.ssw`: Marauder Bounty Hunter 3015 -> Marauder Bounty Hunter 3016
+- `TRVA/Buster BC XV HaulerMech.ssw`: Buster BC XV HaulerMech -> Buster BC XV HaulerMech 2
+- `TRVA/Buster BC XV-M-B HaulerMech MOD.ssw`: Buster BC XV-M-B HaulerMech MOD -> Buster BC XV-M-B HaulerMech MOD 2
+- `TRVA/Crosscut Loggermech ED-X4.ssw`: Crosscut LoggerMech ED-X4 -> Crosscut LoggerMech ED-X4 2
+- `TRVA/Marco MR-8C ExplorerMech.ssw`: Marco MR-8C ExplorerMech -> Marco MR-8C ExplorerMech 2
+- `TRVA/Pompier GM-3A FireMech.ssw`: Pompier GM-3A FireMech -> Pompier GM-3A FireMech 2
+- `TRVA/Uni Cargomech ATAE-70.ssw`: "Uni" CargoMech ATAE-70 -> "Uni" CargoMech ATAE-70 2
+- `TRVA/Vampyr Scavengermech SC-V-1.ssw`: "Vampyr" ScavengerMech SC-V-1 -> "Vampyr" ScavengerMech SC-V-1 2
+- `Turning Points/TP Tokasha/Fox CS-1.ssw`: Fox CS-1 -> Fox CS-1 2
+- `Turning Points/TP Tokasha/Lancelot C 2.ssw`: Lancelot C 2 -> Lancelot C 3
+- `Turning Points/TP Tokasha/Lancelot C.ssw`: Lancelot C -> Lancelot C 4
+- `Turning Points/TP Tokasha/Minsk MNK-101.ssw`: Minsk MNK-101 -> Minsk MNK-101 2
+- `XTRO/Liao/Ti Tsang TSG-9DDC DDC.ssw`: Ti Ts'ang TSG-9DDC DDC -> Ti Ts'ang TSG-9DDC DDC 2
+- `XTRO/Primitives I/Ostwar OWR-2M.ssw`: Ostwar OWR-2M -> Ostwar OWR-2M 2
+- `XTRO/Primitives V/Ymir BWP-X1 Bipedal Weapons Platform.ssw`: Ymir BWP-X1 "Bipedal Weapons Platform" -> Ymir BWP-X1 "Bipedal Weapons Platform" 2
