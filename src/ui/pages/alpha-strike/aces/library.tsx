@@ -414,12 +414,15 @@ export default class AcesLibraryPage extends React.Component<IAcesLibraryPagePro
             <fieldset className="fieldset" key={path.join( "." )}>
                 <legend>{title}</legend>
                 {this._text( "Condition", [ ...path, "condition" ], "If there are any [moved] enemies in 18\"" )}
+                {/* Rows as the cards print them: zone, target, movement, then the movement filters. */}
                 <div className="aces-inline">
                     {this._zone( "Zone", [ ...path, "zoneRings" ], [ ...path, "zoneKeyword" ] )}
+                </div>
+                <div className="aces-inline">
                     {this._check( "⌖ only targets in attack range", [ ...path, "targetInAttackRange" ] )}
-                    {this._check( "✔ only targets that moved", [ ...path, "targetMoved" ] )}
                     {this._check( "👁 only targets in line of sight", [ ...path, "targetInLOS" ] )}
                     {this._check( "⊘ only targets out of line of sight", [ ...path, "targetNoLOS" ] )}
+                    {this._check( "✔ only targets that moved", [ ...path, "targetMoved" ] )}
                     {this._select( "Then pick", [ ...path, "targetSelect" ], [
                         { id: "", label: "-" }, { id: "nearest", label: "Nearest" },
                         { id: "red", label: "Red list" }, { id: "yellow", label: "Yellow list" }, { id: "blue", label: "Blue list" },

@@ -137,8 +137,8 @@ export default class AcesCardReader extends React.Component<IAcesCardReaderProps
                         <th>Enemy</th>
                         <th>Distance (")</th>
                         <th>{combat ? "In LOS and range" : "Attackable after moving"}</th>
-                        {combat ? <th>TN</th> : <th>Moved</th>}
                         {askLOS ? <th>In line of sight</th> : null}
+                        {combat ? <th>TN</th> : <th>Moved</th>}
                         {combat ? <th>Already doomed</th> : null}
                     </tr>
                 </thead>
@@ -150,14 +150,14 @@ export default class AcesCardReader extends React.Component<IAcesCardReaderProps
                                 <td>{enemy.name}<br /><span className="aces-muted">A {enemy.stats.armor} S {enemy.stats.structure} TMM {enemy.stats.tmm}</span></td>
                                 <td><input type="number" className="aces-number" aria-label={"Distance to " + enemy.name} value={input.distance} onChange={( e ) => this._setInput( enemy.id, { distance: e.currentTarget.value } )} /></td>
                                 <td><input type="checkbox" aria-label={"Can attack " + enemy.name} checked={input.canAttack} onChange={( e ) => this._setInput( enemy.id, { canAttack: e.currentTarget.checked } )} /></td>
+                                {askLOS ? (
+                                    <td><input type="checkbox" aria-label={"Line of sight to " + enemy.name} checked={input.inLOS} onChange={( e ) => this._setInput( enemy.id, { inLOS: e.currentTarget.checked } )} /></td>
+                                ) : null}
                                 {combat ? (
                                     <td><input type="number" className="aces-number" aria-label={"Target Number against " + enemy.name} value={input.targetNumber} onChange={( e ) => this._setInput( enemy.id, { targetNumber: e.currentTarget.value } )} /></td>
                                 ) : (
                                     <td><input type="checkbox" aria-label={enemy.name + " moved"} checked={input.moved} onChange={( e ) => this._setInput( enemy.id, { moved: e.currentTarget.checked } )} /></td>
                                 )}
-                                {askLOS ? (
-                                    <td><input type="checkbox" aria-label={"Line of sight to " + enemy.name} checked={input.inLOS} onChange={( e ) => this._setInput( enemy.id, { inLOS: e.currentTarget.checked } )} /></td>
-                                ) : null}
                                 {combat ? (
                                     <td><input type="checkbox" aria-label={enemy.name + " doomed"} checked={input.doomed} onChange={( e ) => this._setInput( enemy.id, { doomed: e.currentTarget.checked } )} /></td>
                                 ) : null}

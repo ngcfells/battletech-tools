@@ -38,6 +38,19 @@ describe("Aces line-of-sight target filters (#591)", () => {
         expect( document.body.textContent ).toContain( "⊘ out of line of sight" );
     });
 
+    it("lists the line-of-sight chips before moved, as the cards print them (Rekikire)", () => {
+        render( <AcesColumnView title="Aggressive" column={{ ...newAcesBehaviorColumn(), targetInAttackRange: true, targetMoved: true, targetInLOS: true, targetNoLOS: true }} /> );
+        const text = document.body.textContent || "";
+        expect( text.indexOf( "👁 in line of sight" ) ).toBeLessThan( text.indexOf( "✔ moved" ) );
+        expect( text.indexOf( "⊘ out of line of sight" ) ).toBeLessThan( text.indexOf( "✔ moved" ) );
+    });
+
+    it("asks about line of sight before moved in the card reader", () => {
+        renderReader( missileBoat() );
+        const headers = Array.from( document.querySelectorAll( ".aces-reader-candidates th" ) ).map( ( th ) => th.textContent );
+        expect( headers.indexOf( "In line of sight" ) ).toBeLessThan( headers.indexOf( "Moved" ) );
+    });
+
     it("asks which enemies are in line of sight and targets one out of it", () => {
         renderReader( missileBoat() );
         fireEvent.click( screen.getByText( "True" ) );

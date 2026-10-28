@@ -38,6 +38,7 @@ import { generateScenarioTerrains, getTerrainById } from '../../../../data/alpha
 import { getAcesCampaigns, getAcesCardLibrary, getAcesGame, saveAcesGame } from '../../../../dataSaves';
 import AcesToHitCalculator from './_to-hit-calculator';
 import AcesCardReader, { IAcesReaderEnemy, IAcesReaderUnit } from './_card-reader';
+import AcesPlayerForceCards, { applyAcesPlayerForceRound } from './_player-force-cards';
 import { AcesCommandCardView } from './_aces-card-view';
 import AcesText from './_aces-text';
 import './aces.scss';
@@ -66,6 +67,7 @@ export default class AcesGamePage extends React.Component<IAcesGamePageProps, IA
             campaigns: [],
             forceSource: "current",
             showCards: false,
+            showPlayerCards: false,
             showSetup: true,
             showToHit: false,
             library: newAcesCardLibrary(),
@@ -497,6 +499,7 @@ export default class AcesGamePage extends React.Component<IAcesGamePageProps, IA
                     <span key={phase} className={"aces-phase" + ( phase === game.phase ? " current" : "" )}>{phaseLabels[phase]}</span>
                 ) )}
                 <button className="btn btn-primary btn-sm" onClick={() => this._update( ( g ) => {
+                    if( g.phase === "combat" ) applyAcesPlayerForceRound( this.props.appGlobals );
                     g.nextPhase();
                     // Damage lands at the start of the End Phase; carried infantry go down with their transport (Aces p.5).
                     for( const unit of g.getAutomatedUnits() ) {
@@ -1066,6 +1069,19 @@ export default class AcesGamePage extends React.Component<IAcesGamePageProps, IA
                                 ) : <p className="aces-muted">Show the cards to mark damage, heat and critical hits on the automated units.</p>}
                             </TextSection>
 
+                            <TextSection
+                                label="Your Force Cards"
+                                labelButton={
+                                    <button className="btn btn-secondary btn-sm" onClick={() => this.setState( { showPlayerCards: !this.state.showPlayerCards } )}>
+                                        {this.state.showPlayerCards ? "Hide" : "Show"}
+                                    </button>
+                                }
+                            >
+                                {this.state.showPlayerCards ? (
+                                    <AcesPlayerForceCards appGlobals={this.props.appGlobals} onChange={() => this.forceUpdate()} />
+                                ) : <p className="aces-muted">Show the cards to mark damage, heat and critical hits on your own force (the current Alpha Strike roster). Marks land at the End Phase.</p>}
+                            </TextSection>
+
                             <TextSection label="Game Log">
                                 <div className="aces-log">
                                     {game.log.length > 0 ? (
@@ -1092,6 +1108,7 @@ interface IAcesGamePageState {
     campaigns: { id: string, name: string }[];
     forceSource: string;
     showCards: boolean;
+    showPlayerCards: boolean;
     showSetup: boolean;
     showToHit: boolean;
     library: IAcesCardLibrary;

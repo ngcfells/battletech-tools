@@ -36,20 +36,19 @@ export const AcesRuleList = ( props: { rules: IAcesPriorityRule[], numbered?: bo
 
 export const AcesColumnView = ( props: { title: string, column: IAcesBehaviorColumn } ): JSX.Element => {
     const column = props.column;
+    // The target row in card order: range or line-of-sight icon, then moved, then nearest or the list.
     const chips: string[] = [];
     if( column.targetInAttackRange ) chips.push( "⌖ in attack range" );
-    if( column.targetMoved ) chips.push( "✔ moved" );
     if( column.targetInLOS ) chips.push( "👁 in line of sight" );
     if( column.targetNoLOS ) chips.push( "⊘ out of line of sight" );
+    if( column.targetMoved ) chips.push( "✔ moved" );
     if( column.targetSelect ) chips.push( column.targetSelect === "nearest" ? "nearest" : column.targetSelect.toUpperCase() + " list" );
     return (
         <div className="aces-card-column">
             <h5>{props.title}</h5>
             {column.condition ? <p className="aces-condition"><AcesText text={column.condition} /></p> : null}
-            <p>
-                <strong>Zone:</strong> {zoneText( column.zoneRings, column.zoneKeyword ) || "-"}
-                {chips.length > 0 ? <> · {chips.join( ", " )}</> : null}
-            </p>
+            <p><strong>Zone:</strong> {zoneText( column.zoneRings, column.zoneKeyword ) || "-"}</p>
+            {chips.length > 0 ? <p><strong>Target:</strong> {chips.join( ", " )}</p> : null}
             <p>
                 <strong>Move:</strong> {moveLabels[column.moveType]}
                 {column.altMoveType ? <> ({moveLabels[column.altMoveType]} <AcesText text={column.altMoveWhen} />)</> : null}
