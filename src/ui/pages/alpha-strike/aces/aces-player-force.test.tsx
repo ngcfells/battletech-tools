@@ -37,6 +37,7 @@ const appGlobals = ( force: AlphaStrikeForce | null ) => ( {
     appSettings: new AppSettings( null ),
     currentASForce: force,
     saveCurrentASForce: vi.fn(),
+    openConfirmDialog: vi.fn(),
 } as unknown as IAppGlobals );
 
 const renderCards = ( globals: IAppGlobals ) => render( <MemoryRouter><AcesPlayerForceCards appGlobals={globals} /></MemoryRouter> );
@@ -64,6 +65,26 @@ describe("Aces player force cards", () => {
         force.groups[0].members[0].setHeat( 2 );
         applyAcesPlayerForceRound( globals );
         expect( force.groups[0].members[0].currentHeat ).toBe( 2 );
+        expect( globals.saveCurrentASForce ).toHaveBeenCalledWith( force );
+    });
+
+    it("resets the whole force to full status after a confirm", () => {
+        const force = makeForce( "Locust", "Phoenix Hawk" );
+        const globals = appGlobals( force );
+        for( const unit of force.groups[0].members ) {
+            unit.setHeat( 3 );
+            unit.takeDamage( 2 );
+            unit.applyRound();
+        }
+        const { getByText } = renderCards( globals );
+        fireEvent.click( getByText( "Reset your force" ) );
+        expect( globals.openConfirmDialog ).toHaveBeenCalled();
+        const confirm = ( globals.openConfirmDialog as ReturnType<typeof vi.fn> ).mock.calls[0][4] as () => void;
+        confirm();
+        for( const unit of force.groups[0].members ) {
+            expect( unit.currentHeat ).toBe( 0 );
+            expect( unit.currentArmor.every( ( hit ) => !hit ) ).toBe( true );
+        }
         expect( globals.saveCurrentASForce ).toHaveBeenCalledWith( force );
     });
 

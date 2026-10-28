@@ -25,6 +25,24 @@ export default class AcesPlayerForceCards extends React.Component<IAcesPlayerFor
         if( this.props.onChange ) this.props.onChange();
     }
 
+    /** Repairs every unit of the roster, as the roster's own Reset does, so a new game needs no trip to the roster. */
+    private _reset = (): void => {
+        this.props.appGlobals.openConfirmDialog(
+            "Reset your force?",
+            "All units of your force (the current Alpha Strike roster) are repaired to full status.",
+            "Reset",
+            "Cancel",
+            () => {
+                const force = this.props.appGlobals.currentASForce;
+                if( !force ) return;
+                for( const group of force.groups ) {
+                    for( const unit of group.members ) unit.reset();
+                }
+                this._save();
+            },
+        );
+    }
+
     render = (): JSX.Element => {
         const force = this.props.appGlobals.currentASForce;
         const groups = force ? force.groups.filter( ( group ) => group.members.length > 0 ) : [];
@@ -38,6 +56,9 @@ export default class AcesPlayerForceCards extends React.Component<IAcesPlayerFor
         }
         return (
             <>
+                <div className="aces-inline">
+                    <button className="btn btn-secondary btn-sm" onClick={this._reset}>Reset your force</button>
+                </div>
                 {groups.map( ( group, groupIndex ) => (
                     <React.Fragment key={groupIndex}>
                         {groups.length > 1 ? <h4>{group.getName( groupIndex + 1 )}</h4> : null}
