@@ -1,4 +1,5 @@
 import {
+    acesStandardOverheatRows,
     IAcesBehaviorColumn,
     IAcesCard,
     newAcesBehaviorColumn,
@@ -398,7 +399,12 @@ export const parseAcesScanColumn = ( lines: { text: string, colours: ICardScanCo
  * line may carry the list-tag colour read from its pixels.
  */
 export const parseAcesScanCombat = ( targetLines: string[], overheatLines: string[], tags: ( TAcesColor | null )[] = [] ): IAcesCard["combat"] => {
-    const lines = targetLines.map( ( text, index ) => ( { text: trimEdges( text ), tag: tags[index] || null } ) ).filter( ( line ) => line.text !== "" );
+    // "If there are no enemies in [los]: use indirect fire special order card" is a reminder, not a target filter,
+    // and can wrap onto a second line.
+    const reminder = ( text: string ) => /no\s+enem|indirect|special\s+order/i.test( text );
+    const indirectIfNoLOS = [ ...targetLines, ...overheatLines ].some( ( text ) => /indirect|special\s+order/i.test( text ) );
+    overheatLines = overheatLines.filter( ( text ) => !reminder( text ) );
+    const lines = targetLines.map( ( text, index ) => ( { text: trimEdges( text ), tag: tags[index] || null } ) ).filter( ( line ) => line.text !== "" && !reminder( line.text ) );
     const zone = lines.find( ( line ) => isZoneLine( line.text ) );
     // Items as joinNumbered makes them, but the panel holds nothing else, so text before any number is item 1, and a
     // "command list" line is always its own item: its number often goes unread beside the tag.
@@ -422,9 +428,14 @@ export const parseAcesScanCombat = ( targetLines: string[], overheatLines: strin
         if( /^\W*If\s*TN/i.test( line ) || rows.length === 0 ) rows.push( line.replace( /^\W*/, "" ) );
         else rows[rows.length - 1] += " " + line;
     }
-    const overheat = rows.map( ( row ) => parseAcesOverheatLine( fixWords( row ).replace( /\s+/g, " " ) ) )
+    let overheat = rows.map( ( row ) => parseAcesOverheatLine( fixWords( row ).replace( /\s+/g, " " ) ) )
         .filter( ( row ) => row !== null ) as IAcesCard["combat"]["overheat"];
-    return { ...( zone ? parseZone( zone.text ) : { zoneRings: [], zoneKeyword: "" as const } ), filters: filters, overheat: overheat };
+    // Every card prints the same three OV rows but for four numbers: each row's TN and the second row's OV limit
+    // (Rekikire). When exactly four read, the rows are built from them, so OCR's garbled words cost nothing.
+    const ovText = fixWords( overheatLines.join( " " ) ).replace( /(\d)[0O]\s*V\b/g, "$1 OV" );
+    const numbers = ( ovText.match( /\d+/g ) || [] ).map( Number );
+    if( /TN/i.test( ovText ) && numbers.length === 4 ) overheat = acesStandardOverheatRows( numbers[0], numbers[1], numbers[2], numbers[3] );
+    return { ...( zone ? parseZone( zone.text ) : { zoneRings: [], zoneKeyword: "" as const } ), filters: filters, overheat: overheat, indirectIfNoLOS: indirectIfNoLOS };
 }
 
 /**

@@ -177,6 +177,8 @@ export default class Home extends React.Component<IHomeProps, IHomeState> {
                         <li>Alpha Strike cards whose stats aren't from Master Unit List 2.0 say NOT OFFICIAL, on screen and in print: units from MUL 1.0, the custom unit lists, the unit creators, and cards added from a photo as printed. Forces saved before today keep their units' marks by whether they came from the Master Unit List.</li>
                         <li>Aces game: a Your Force Cards section shows your current Alpha Strike roster in play, so you don't need the roster open in another tab, with a Reset your force button that repairs every unit for a new game. Thanks to Rekikire for the idea.</li>
                         <li>Aces cards: the line-of-sight target icons come before "moved", as the cards print them, and sit on their own row under the zone.</li>
+                        <li>Aces card reader: the Overheat rows are the same on every card but for four numbers, so the reader now picks out just the numbers and writes the rows from them, leaving far fewer words to correct. Thanks to Rekikire.</li>
+                        <li>Aces cards: a tick box for the Missile Boat's "If there are no enemies in line of sight: use the Indirect Fire special order card" line. In the game, when the unit falls back to indirect fire, the card reminds you to use that special order card. The card reader ticks it when it reads the line. Thanks to Rekikire.</li>
                       </ul>
                    </li>
                   <li>

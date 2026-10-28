@@ -183,6 +183,8 @@ export interface IAcesCombatSide {
     zoneKeyword: "" | "nearest" | "any";
     filters: IAcesPriorityRule[];
     overheat: IAcesOverheatRow[];
+    /** The card's "If there are no enemies in [los]: use indirect fire special order card" line (Missile Boat). */
+    indirectIfNoLOS: boolean;
 }
 
 export interface IAcesCard {
@@ -384,7 +386,7 @@ export const newAcesCard = (): IAcesCard => {
         aggressive: newAcesBehaviorColumn(),
         balanced: newAcesBehaviorColumn(),
         cautious: { ...newAcesBehaviorColumn(), zoneKeyword: "nearest" },
-        combat: { zoneRings: [], zoneKeyword: "", filters: [], overheat: [] },
+        combat: { zoneRings: [], zoneKeyword: "", filters: [], overheat: [], indirectIfNoLOS: false },
         source: null,
         sample: false,
         notes: "",
@@ -570,6 +572,7 @@ export const normalizeAcesCard = ( value: unknown ): IAcesCard | null => {
             zoneKeyword: oneOf( combat.zoneKeyword, [ "", "nearest", "any" ] as const, "" ),
             filters: arr( combat.filters, normalizeAcesPriorityRule ),
             overheat: arr( combat.overheat, normalizeOverheatRow ),
+            indirectIfNoLOS: bool( combat.indirectIfNoLOS ),
         },
         source: source( data.source ),
         sample: bool( data.sample ),
@@ -810,6 +813,16 @@ export const parseAcesOverheatLine = ( line: string ): IAcesOverheatRow | null =
         ovLimit: limit,
     };
 }
+
+/**
+ * The OV rows as every card prints them, where only the numbers change (Rekikire): the TN of each row and the OV
+ * limit of the second.
+ */
+export const acesStandardOverheatRows = ( maxTN: number, upToTN: number, ovLimit: number, noAttackTN: number ): IAcesOverheatRow[] => [
+    "If TN" + maxTN + " or less or if this unit is destroyed: Use maximum OV.",
+    "If TN" + upToTN + " or less and OV might let unit hit target's structure: Use up to " + ovLimit + " OV.",
+    "If TN" + noAttackTN + " or more and this unit has any heat: Don't attack.",
+].map( ( line ) => parseAcesOverheatLine( line ) as IAcesOverheatRow );
 
 /** Zone text: "12 18 24" (inches, closest first), "nearest" or "any". */
 export const parseAcesZone = ( text: string ): { zoneRings: number[], zoneKeyword: "" | "nearest" | "any" } => {

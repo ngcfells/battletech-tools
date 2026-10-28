@@ -313,6 +313,9 @@ export default class AcesCardReader extends React.Component<IAcesCardReaderProps
             return <>{out}</>;
         }
         out.push( <p key="target"><strong>{result.indirect ? "Indirect fire" : "Target: " + target!.name}</strong></p> );
+        if( result.indirect && card.combat.indirectIfNoLOS ) {
+            out.push( <p key="indirect-order"><strong>The card says:</strong> with no enemies in line of sight, use the Indirect Fire special order card.</p> );
+        }
 
         const damage = toNumber( this.state.damage );
         const ov = resolveAcesOverheat( card.combat.overheat, {

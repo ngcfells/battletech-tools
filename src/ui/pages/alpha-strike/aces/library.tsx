@@ -536,6 +536,7 @@ export default class AcesLibraryPage extends React.Component<IAcesLibraryPagePro
                     {this._zone( "Zone", [ "combat", "zoneRings" ], [ "combat", "zoneKeyword" ] )}
                     {this._lines( "Target filters, in order", [ "combat", "filters" ], parseAcesPriorityLine, formatAcesPriorityLine,
                         "\"[lowest] Armor\" ranks by a stat, \"[yellow] list\" uses the Command card, anything else you judge at the table. Start a line with ? if you can't read it." )}
+                    {this._check( "If there are no enemies in line of sight: use the Indirect Fire special order card", [ "combat", "indirectIfNoLOS" ] )}
                     {this._lines( "Overheat rows, top first", [ "combat", "overheat" ], parseAcesOverheatLine, ( row ) => row.text,
                         "Type them as printed, e.g. \"If TN6 or less and OV might let unit hit target's structure: Use up to 3 OV.\"" )}
                 </fieldset>

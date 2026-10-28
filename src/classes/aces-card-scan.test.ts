@@ -103,6 +103,33 @@ describe( "Aces card scan: combat side", () => {
         "If TN9 or more and this unit has any heat: Don't attack.",
     ];
 
+    // Every card prints the same OV rows but for four numbers (Rekikire), so garbled words don't matter.
+    it( "builds the standard OV rows from their four numbers, however the words read", () => {
+        const combat = parseAcesScanCombat( [ "1. Hit target's Rear" ], [
+            "lf TN5 or lass or if this umit is destroved: Use maximun OV,",
+            "If TN7 or lees and OV migbt let unit hit",
+            "targets structure: Use up to 20V.",
+            "lf TN9 or more and tbis unit has any heaf: Dont attack.",
+        ] );
+        expect( combat.overheat.map( ( row ) => row.text ) ).toEqual( [
+            "If TN5 or less or if this unit is destroyed: Use maximum OV.",
+            "If TN7 or less and OV might let unit hit target's structure: Use up to 2 OV.",
+            "If TN9 or more and this unit has any heat: Don't attack.",
+        ] );
+        expect( combat.overheat.map( ( row ) => [ row.tnAtMost, row.tnAtLeast, row.join, row.also, row.action, row.ovLimit ] ) ).toEqual( [
+            [ 5, null, "or", "destroyed", "max", null ],
+            [ 7, null, "and", "could-hit-structure", "up-to", 2 ],
+            [ null, 9, "and", "has-heat", "no-attack", null ],
+        ] );
+    } );
+
+    it( "reads the indirect fire reminder as a tick, not a target filter", () => {
+        const combat = parseAcesScanCombat( [ "1. [lowest] Armor", "If there are no enemies in [?]: use indirect", "fire special order card" ], [] );
+        expect( combat.indirectIfNoLOS ).toBe( true );
+        expect( combat.filters.map( ( rule ) => rule.text ) ).toEqual( [ "[lowest] Armor" ] );
+        expect( parseAcesScanCombat( [ "1. [lowest] Armor" ], [] ).indirectIfNoLOS ).toBe( false );
+    } );
+
     it( "reads Brawler 3/6, whose command-list number reads as 0", () => {
         const combat = parseAcesScanCombat( [ "~ 1.Hit target's Rear", "2.0 command list" ], brawlerOverheat, [ null, "yellow" ] );
         expect( combat.filters.map( ( rule ) => rule.text ) ).toEqual( [ "Hit target's Rear", "[yellow] command list" ] );

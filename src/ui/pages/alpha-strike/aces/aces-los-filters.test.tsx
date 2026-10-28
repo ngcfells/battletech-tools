@@ -59,6 +59,17 @@ describe("Aces line-of-sight target filters (#591)", () => {
         expect( screen.getByText( "Movement target: Locust" ) ).toBeTruthy();
     });
 
+    // Rekikire: the Missile Boat card's "no enemies in [los]: use indirect fire special order card" line, as a tick.
+    it("reminds the player of the Indirect Fire special order card when the card has the line", () => {
+        const card: IAcesCard = { ...missileBoat(), combat: { ...acesSampleSniper475.combat, indirectIfNoLOS: true } };
+        render(
+            <AcesCardReader phase="combat" card={card} commandCard={acesSampleMechWarriorC} resetKey="t" enemies={[]}
+                unit={{ name: "Longbow", isBattleMech: true, canJump: false, canIndirectFire: true, ovRating: 0, currentHeat: 0, fireControlHits: 0 }} />,
+        );
+        expect( screen.getByText( "Indirect fire" ) ).toBeTruthy();
+        expect( document.body.textContent ).toContain( "use the Indirect Fire special order card" );
+    });
+
     it("leaves the line-of-sight column out for a card without the filters", () => {
         renderReader( acesSampleSniper475 );
         expect( screen.queryByLabelText( "Line of sight to Locust" ) ).toBeNull();

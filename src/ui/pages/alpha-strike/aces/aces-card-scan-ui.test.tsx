@@ -31,6 +31,7 @@ beforeEach( () => {
             zoneRings: [ 24 ], zoneKeyword: "",
             filters: [ { text: "Hit target's Rear" }, { text: "[yellow] command list", color: "yellow" } ],
             overheat: [],
+            indirectIfNoLOS: false,
         },
         warnings: [ "Check the priority number: OCR can mix up 1 and 7 in the card's font." ],
     } as IAcesScanResult;

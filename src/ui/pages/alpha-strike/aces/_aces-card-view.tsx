@@ -78,6 +78,7 @@ export const AcesCardView = ( props: { card: IAcesCard } ): JSX.Element => {
                 <h5>Combat <span className="aces-priority">{card.combatPriority === null ? "---" : String( card.combatPriority ).padStart( 3, "0" )}</span></h5>
                 <p><strong>Zone:</strong> {zoneText( card.combat.zoneRings, card.combat.zoneKeyword ) || "-"}</p>
                 <AcesRuleList rules={card.combat.filters} />
+                {card.combat.indirectIfNoLOS ? <p>If there are no enemies in 👁 line of sight: use the Indirect Fire special order card.</p> : null}
                 {card.combat.overheat.length > 0 ? (
                     <>
                         <strong>Overheat</strong>
