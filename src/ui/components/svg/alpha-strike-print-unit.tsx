@@ -164,7 +164,11 @@ export default class AlphaStrikePrintUnitSVG extends React.Component<IAlphaStrik
                     {this.props.asUnit.currentPoints !== this.props.asUnit.basePoints ? (
                         <text x="-230" y="30" textAnchor="end" className='base small data-pair'><tspan>Base PV: </tspan>{this.props.asUnit.basePoints.toString().toUpperCase()}</text>
                     ) : null}
-                    
+                    {/* Stats from anywhere but MUL 2.0 (MUL 1.0, custom lists, the creators, a card photo) aren't official. */}
+                    {!this.props.asUnit.isOfficial() ? (
+                        <text data-testid="not-official" x="-6" y="108" textAnchor="end" fill="rgb(200,0,0)" stroke="rgb(255,255,255)" strokeWidth="4" paintOrder="stroke" fontFamily="sans-serif" fontWeight="bold" fontSize="26">NOT OFFICIAL</text>
+                    ) : null}
+
                 </g>
 
                 {/* Movement Box  */}

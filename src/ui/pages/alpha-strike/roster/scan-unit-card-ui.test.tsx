@@ -14,7 +14,7 @@ vi.mock( "../../../../classes/card-scan-browser", () => ( {
 } ) );
 
 const thugMUL = {
-    Id: 1, Name: "Thug", Variant: "THG-10E", Class: "BattleMech", BFType: "BM", BFSize: 4, BFTMM: 1, BFMove: "8\"",
+    Id: 1, MulSource: "mul2", Name: "Thug", Variant: "THG-10E", Class: "BattleMech", BFType: "BM", BFSize: 4, BFTMM: 1, BFMove: "8\"",
     Role: { Id: 110, Name: "Brawler", Image: "", SortOrder: 0 }, BFDamageShort: 3, BFDamageMedium: 3, BFDamageLong: 2, BFDamageExtreme: 0,
     BFOverheat: 1, BFArmor: 8, BFStructure: 6, BFAbilities: "SRM 1/1", BFPointValue: 39, Skill: 4,
     Type: { Id: 18, Name: "BattleMech", Image: "", SortOrder: 0 }, Technology: { Id: 1, Name: "Inner Sphere", Image: "", SortOrder: 0 },
@@ -62,6 +62,7 @@ describe( "Alpha Strike roster: add from a card photo", () => {
         fireEvent.click( screen.getByText( "Add Thug THG-10E" ) );
         expect( added.length ).toBe( 1 );
         expect( added[0].basePoints ).toBe( 39 );
+        expect( added[0].isOfficial() ).toBe( true );
     } );
 
     it( "shows a differing printing beside the MUL and adds whichever is chosen", async () => {
@@ -75,8 +76,10 @@ describe( "Alpha Strike roster: add from a card photo", () => {
         fireEvent.click( screen.getByLabelText( /checked these against the card/ ) );
         fireEvent.click( printed );
         expect( added[0].basePoints ).toBe( 41 );
+        expect( added[0].isOfficial() ).toBe( false );
         fireEvent.click( screen.getByText( "Use the MUL's" ) );
         expect( added[1].basePoints ).toBe( 39 );
+        expect( added[1].isOfficial() ).toBe( true );
     } );
 
     it( "adds a card the MUL doesn't list as printed, after it's checked and edited", async () => {

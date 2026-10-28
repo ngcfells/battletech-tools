@@ -359,6 +359,8 @@ export const alphaStrikeScanRecord = ( scan: IAlphaStrikeScanResult, base: IASMU
     record.BFStructure = +scan.structure || 0;
     record.BFAbilities = scan.specials;
     record.BFPointValue = +scan.pv || 0;
+    // Read from a photo, so not the MUL's stats even when it started from them: its card says Not Official.
+    record.MulSource = "custom";
     return record;
 }
 

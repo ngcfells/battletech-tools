@@ -209,6 +209,8 @@ export interface IAlphaStrikeUnitExport {
     class: string;
     costCR: number;
     mulID: number;
+    /** The unit list the stats came from: mul2, mul1 or custom; empty for the creators and older saves. */
+    mulSource?: string;
     currentHeat: number;
     damage: IAlphaStrikeDamage;
     variant: string;
@@ -318,6 +320,8 @@ export class AlphaStrikeUnit {
     public jumpMove: number = 0;
 
     public mulID: number = 0;
+    /** The unit list the stats came from (mul2, mul1, custom); empty for the creators and saves from before it was kept. */
+    public mulSource: string = "";
 
     public abilities: string[] = [];
 
@@ -381,6 +385,14 @@ export class AlphaStrikeUnit {
         this._pilot.gunnery = nv;
     }
 
+    /**
+     * Whether the card's stats are official: from MUL 2.0. A save from before the list was kept counts when it has a
+     * MUL id, as only MUL units had one; the creators' units don't.
+     */
+    public isOfficial(): boolean {
+        return this.mulSource ? this.mulSource === "mul2" : this.mulID > 0;
+    }
+
     public importMUL( incomingMechData: IASMULUnit ) {
 
         if( typeof(incomingMechData) !== "undefined" && incomingMechData !== null ) {
@@ -404,6 +416,7 @@ export class AlphaStrikeUnit {
             this.rulesLevel = getRulesLevelFromMULRules(incomingMechData.Rules);
 
             this.mulID = incomingMechData.Id;
+            this.mulSource = incomingMechData.MulSource ?? "";
 
             this.tonnage = +incomingMechData.Tonnage;
 
@@ -528,6 +541,7 @@ export class AlphaStrikeUnit {
             this.costCR = incomingMechData.costCR / 1;
 
             this.mulID = incomingMechData.mulID / 1;
+            this.mulSource = incomingMechData.mulSource ?? "";
 
             this.imageURL = incomingMechData.imageURL;
 
@@ -1985,6 +1999,7 @@ export class AlphaStrikeUnit {
             class:  this.class?? "",
             costCR:  this.costCR,
             mulID:  this.mulID,
+            mulSource:  this.mulSource,
             currentHeat:  _currentHeat,
             damage:  this.damage,
             variant:  this.variant,
