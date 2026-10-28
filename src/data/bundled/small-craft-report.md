@@ -1,14 +1,14 @@
 # Bundled Small Craft and DropShips: build report
 
-95 designs kept, 153 files left out.
+100 designs kept, 148 files left out.
 
 | Reason | Files |
 |---|---|
 | no Master Unit List entry to check its BV against | 71 |
-| BV differs from the MUL | 57 |
+| BV differs from the MUL | 56 |
 | the import could not carry all of it over | 17 |
-| BV differs from MegaMek's (the MUL gives none) | 5 |
 | import failed | 2 |
+| BV differs from MegaMek's (the MUL gives none) | 1 |
 | does not survive the compact format | 1 |
 
 ## Left out
@@ -16,8 +16,6 @@
 - `dropships/HBHK/Gaajian System Patrol Boat (2485).blk`: BV differs from the MUL: BV 3426, MUL 3351
 - `dropships/HBHK/Gaajian System Patrol Boat (3060).blk`: BV differs from the MUL: BV 3674, MUL 3592
 - `dropships/HBHK/Hoshiryokou Tug Boat.blk`: no Master Unit List entry to check its BV against
-- `dropships/HBMPS/Princess Luxury Liner (Cargo).blk`: BV differs from MegaMek's (the MUL gives none): BV 1062, MegaMek 1061
-- `dropships/HBMPS/Princess Luxury Liner.blk`: BV differs from MegaMek's (the MUL gives none): BV 1062, MegaMek 1061
 - `dropships/Historicals/Liberation of Terra I and II/Lee (BattleMech Carrier).blk`: BV differs from the MUL: BV 15063, MUL 14393
 - `dropships/Historicals/Liberation of Terra I and II/M3 Drone CASPAR.blk`: the import could not carry all of it over: "ImprovedCasparDroneControlSystem" has no match in this catalog and was left off.; "SDSSelfDestructSystem" has no match in this catalog and was left off.
 - `dropships/Historicals/Liberation of Terra I and II/Model 96C 'Howdah' .blk`: the import could not carry all of it over: "AutoTacticalAnalysisComputer:SIZE:20.0" has no match in this catalog and was left off.; Transport bay "artsasfbay" is not one this builder has and was left off.
@@ -101,7 +99,7 @@
 - `dropships/TRO3067/IS/Nekohono'o.blk`: BV differs from the MUL: BV 31246, MUL 31231
 - `dropships/TRO3067/IS/Overlord A3.blk`: BV differs from the MUL: BV 25592, MUL 24600
 - `dropships/TRO3067/IS/Overlord A3A.blk`: BV differs from the MUL: BV 20933, MUL 18624
-- `dropships/TRO3067/IS/Union-X (3065).blk`: BV differs from the MUL: BV 7613, MUL 7356
+- `dropships/TRO3067/IS/Union-X (3065).blk`: BV differs from the MUL: BV 7577, MUL 7356
 - `dropships/TRO3067/IS/Union-X (3071).blk`: BV differs from the MUL: BV 9320, MUL 9300
 - `dropships/TRO3075/Age of War/Colossus Mk I.blk`: BV differs from the MUL: BV 7144, MUL 7084
 - `dropships/TRO3075/Age of War/Colossus.blk`: BV differs from the MUL: BV 7356, MUL 7296
@@ -118,7 +116,7 @@
 - `dropships/TRO3085/Cutting Edge/Clan/Aesir Assault Dropship.blk`: the import could not carry all of it over: "ISSmallNavalCommScannerSuite" has no match in this catalog and was left off.
 - `dropships/TRO3085/Cutting Edge/Clan/Vanir Assault Dropship.blk`: the import could not carry all of it over: "ISSmallNavalCommScannerSuite" has no match in this catalog and was left off.
 - `dropships/TRO3085/Cutting Edge/IS/Interdictor Pocket Warship (Sub-Capital).blk`: no Master Unit List entry to check its BV against
-- `dropships/TRO3085/Cutting Edge/IS/Interdictor Pocket Warship.blk`: BV differs from MegaMek's (the MUL gives none): BV 20687, MegaMek 20648
+- `dropships/TRO3085/Cutting Edge/IS/Interdictor Pocket Warship.blk`: BV differs from MegaMek's (the MUL gives none): BV 20670, MegaMek 20648
 - `dropships/TRO3085/ONN/Nekohono'o (SCL).blk`: does not survive the compact format
 - `dropships/TRO3085/Supplemental/Tiamat Pocket Warship.blk`: BV differs from the MUL: BV 50670, MUL 50146
 - `dropships/TRO3145/Marik/Seleucus Infantry Transport.blk`: BV differs from the MUL: BV 7757, MUL 7306
@@ -158,11 +156,8 @@
 - `smallcraft/TRO 3075/Lyonesse Escort.blk`: BV differs from the MUL: BV 2122, MUL 2106
 - `smallcraft/TRO 3085/Ares Attack Craft Mark IX.blk`: no Master Unit List entry to check its BV against
 - `smallcraft/TRO 3145/Liao/Zhen Niao.blk`: the import could not carry all of it over: "ISHypersprectralImager" has no match in this catalog and was left off.
-- `smallcraft/TRO 3145/Merc/Condottiere Assault Craft.blk`: BV differs from the MUL: BV 2039, MUL 2054
 - `smallcraft/TRO 3145/Merc/NL-45 Gunboat.blk`: no Master Unit List entry to check its BV against
 - `smallcraft/TRO 3145/Steiner/Wurger Assault Craft.blk`: no Master Unit List entry to check its BV against
 - `smallcraft/XTRO/Pirates/S7-P Scarab.blk`: the import could not carry all of it over: "ISBoobyTrap" has no match in this catalog and was left off.
-- `smallcraft/XTRO/Primitives II/Ares Assault Craft Mk.III.blk`: BV differs from MegaMek's (the MUL gives none): BV 1358, MegaMek 1369
-- `smallcraft/XTRO/Primitives II/Ares Close Assault Landing Craft Mk.II.blk`: BV differs from MegaMek's (the MUL gives none): BV 1537, MegaMek 1549
 - `smallcraft/XTRO/Primitives IV/Intrepid Assault Craft (2331).blk`: BV differs from the MUL: BV 1249, MUL 1357
 - `smallcraft/XTRO/Primitives IV/Intrepid Assault Craft (2478).blk`: no Master Unit List entry to check its BV against

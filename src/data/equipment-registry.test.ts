@@ -735,6 +735,11 @@ describe("rotary autocannon aerospace heat and CASE mounting (issues 29, 30)", (
             expect(items().find((item) => item.tag === `clan-autocannon-rac-${size}`)?.heatAero).toBe(items().find((item) => item.tag === `rotary-ac-${size}`)?.heatAero);
         }
     });
+    it("gives every LRM 15 and LRT 15 its ground heat in aerospace play: the weapons table prints one heat (TW p.303)", () => {
+        const launchers = items().filter((item) => !item.isAmmo && /\bLR[MT] 15\b/.test(item.name) && item.heatAero !== undefined);
+        expect(launchers.length).toBeGreaterThan(10);
+        for (const item of launchers) expect(item.heatAero, item.tag).toBe(item.heat);
+    });
     it("keeps CASE off Small Craft and DropShips (TM p.210: they may not carry CASE)", () => {
         const caseItem = items().find((item) => item.tag === "case")!;
         expect(caseItem.space.smallCraft).toBe(-1);

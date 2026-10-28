@@ -3104,11 +3104,16 @@ export default class Vehicle implements IGameSettingsUnit {
         // Sea Skimmer Hydrofoil, BV 288.)
         const rearIsFront = arcBV("front") < arcBV("rear");
         const isHalved = (item: IEquipmentItem) => item.location === (rearIsFront ? "front" : "rear");
+        // Fire control adjusts heavy weapons and their ammunition only: "players need not adjust light and medium
+        // weapons" (TM p.316), and equipment is no weapon.
+        const isLight = (item: IEquipmentItem) => !!findSupportVehicleLightWeapon(item.tag);
         let weaponBV = 0;
+        let unadjustedBV = 0;
         const weaponBVByTag: Record<string, number> = {};
         for (const item of offensiveWeapons) {
             const value = baseWeaponBV(item) * (isHalved(item) ? 0.5 : 1);
-            weaponBV += value;
+            if (isLight(item)) unadjustedBV += value;
+            else weaponBV += value;
             // Ammunition caps at the unmodified value of its weapons: no fire control, computer or arc (TM p.307).
             weaponBVByTag[item.tag] = (weaponBVByTag[item.tag] ?? 0)
                 + getLauncherBattleValueWithoutFireControl(item, () => getUnitCatalogRecords(this._tech.tag, { battleArmorScale: true }), this._tech.tag);
@@ -3116,7 +3121,7 @@ export default class Vehicle implements IGameSettingsUnit {
         }
         for (const item of offensiveEquipment) {
             const value = (item.battleValue || 0) + this._mastMountBV(item);
-            weaponBV += value;
+            unadjustedBV += value;
             log += `+ ${escapeLogText(item.name)} (${escapeLogText(item.location || "unallocated")}, equipment) = ${value.toFixed(2)}<br />`;
         }
 
@@ -3138,9 +3143,10 @@ export default class Vehicle implements IGameSettingsUnit {
             if (fireControl.bvMultiplier !== 1) {
                 weaponBV *= fireControl.bvMultiplier;
                 ammoBV *= fireControl.bvMultiplier;
-                log += `Weapons and ammunition x ${fireControl.bvMultiplier} (${fireControl.name === "None" ? "no fire control" : escapeLogText(fireControl.name)})<br />`;
+                log += `Heavy weapons and ammunition x ${fireControl.bvMultiplier} (${fireControl.name === "None" ? "no fire control" : escapeLogText(fireControl.name)})<br />`;
             }
         }
+        weaponBV += unadjustedBV;
 
         const weightBV = this._tonnage / 2;
         let offensive = weaponBV + ammoBV + weightBV;

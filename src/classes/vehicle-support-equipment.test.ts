@@ -159,6 +159,19 @@ describe("Light and Medium weapons and pintles on Small Support Vehicles (TM pp.
         expect(vehicle.getSupportVehicleMinimumCrew()).toBe(1);
     });
 
+    it("takes the fire control multiplier off heavy weapons only, not Light and Medium weapons or equipment (TM p.316)", () => {
+        const bv = (build: (vehicle: Vehicle) => void, fireControl: string): number => {
+            const vehicle = jeep();
+            build(vehicle);
+            vehicle.setSupportVehicleFireControl(fireControl);
+            return vehicle.getBattleValue();
+        };
+        const light = (vehicle: Vehicle) => { vehicle.addLightWeapon("inf-support-pulse-laser", "front"); };
+        expect(bv(light, "none")).toBe(bv(light, "advanced"));
+        const truck = (vehicle: Vehicle) => { vehicle.setTonnage(20); add(vehicle, "chainsaw", 1, "front"); };
+        expect(bv(truck, "none")).toBe(bv(truck, "advanced"));
+    });
+
     it("keeps Light and Medium weapons off vehicles of 5 tons or more, and pintles off naval vehicles", () => {
         const truck = supportVehicle("wheeled", 10);
         expect(truck.addLightWeapon("inf-support-pulse-laser", "front")).toBeNull();

@@ -15,9 +15,9 @@ import { BundledUnitType, loadBundledIndex, loadBundledUnitDesign } from "./bund
 const dataDir = path.resolve(__dirname, "bundled");
 
 // Pinned so a growing data set is a deliberate change.
-const DESIGNS: Record<BundledUnitType, number> = { "battle-armor": 912, "protomechs": 62, "small-craft": 95, "support-vehicles": 79, "vehicles": 1063 };
+const DESIGNS: Record<BundledUnitType, number> = { "battle-armor": 912, "protomechs": 62, "small-craft": 100, "support-vehicles": 85, "vehicles": 1063 };
 // Each type's index and chunks together, in bytes, with a little room.
-const MAX_BYTES: Record<BundledUnitType, number> = { "battle-armor": 1_360_000, "protomechs": 180_000, "small-craft": 480_000, "support-vehicles": 410_000, "vehicles": 3_380_000 };
+const MAX_BYTES: Record<BundledUnitType, number> = { "battle-armor": 1_360_000, "protomechs": 180_000, "small-craft": 500_000, "support-vehicles": 430_000, "vehicles": 3_380_000 };
 
 describe("bundled units other than 'Mechs", () => {
     // A clean MegaMek file the MUL lacks gets a record of its own in the custom unit list, credited to MegaMek, and is

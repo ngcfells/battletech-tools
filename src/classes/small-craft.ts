@@ -1044,13 +1044,37 @@ export default class SmallCraft implements IGameSettingsUnit {
         const bin = this._equipmentList.find((item) => item.uuid === uuid && item.isAmmo);
         if (!bin || !this.canSetAmmoBinTons(bin)) return 0;
         bin.weight = wholeNumber(tons, 1, MAX_DROPSHIP_AMMO_BIN_TONS);
+        delete bin.carriedShots;
         this._calc();
         return bin.weight;
     }
 
+    /**
+     * Sets the rounds a DropShip bin carries: its mass is rounded up to the whole ton "regardless of the number of
+     * rounds carried" (TM p.194). Returns the rounds kept; 0 when the bin cannot be set.
+     */
+    public setAmmoBinCarriedShots(uuid: string | undefined, shots: number): number {
+        const bin = this._equipmentList.find((item) => item.uuid === uuid && item.isAmmo);
+        const shotsPerTon = bin ? this.getAmmoBinShotsPerTon(bin) : 0;
+        if (!bin || !this.canSetAmmoBinTons(bin) || !(shotsPerTon > 0) || !(shots > 0)) return 0;
+        const tons = this.setAmmoBinTons(bin.uuid, Math.ceil(shots / shotsPerTon - 1e-9));
+        const full = Math.floor(tons * shotsPerTon + 1e-6);
+        const wanted = Math.min(Math.floor(shots), full);
+        if (wanted < full) bin.carriedShots = wanted;
+        this._calc();
+        return wanted;
+    }
+
     /** Shots a bin holds as bought. */
     public getAmmoBinShots(ammo: IEquipmentItem): number {
-        return Math.floor(this.getAmmoBinShotsPerTon(ammo) * (ammo.weight || 0) + 1e-6);
+        const full = Math.floor(this.getAmmoBinShotsPerTon(ammo) * (ammo.weight || 0) + 1e-6);
+        return ammo.carriedShots !== undefined ? Math.min(ammo.carriedShots, full) : full;
+    }
+
+    /** Tons of rounds a bin carries: its mass, or the share of it a DropShip bin's rounds fill (TM p.194). */
+    private _ammoRoundTons(ammo: IEquipmentItem): number {
+        const shotsPerTon = this.getAmmoBinShotsPerTon(ammo);
+        return ammo.carriedShots !== undefined && shotsPerTon > 0 ? this.getAmmoBinShots(ammo) / shotsPerTon : ammo.weight || 0;
     }
 
     /** The record sheet's ammunition: each kind once per bay arc, with its shots ("IS Gauss Ammo (Nose) 96"). */
@@ -1231,7 +1255,7 @@ export default class SmallCraft implements IGameSettingsUnit {
             seen.add(weapon.tag);
             const count = this._equipmentList.filter((item) => !item.isAmmo && item.tag === weapon.tag).length;
             const shots = this._equipmentList.filter((item) => item.isAmmo && getCompatibleAmmo(weapon, item))
-                .reduce((sum, ammo) => sum + getWeaponShotsPerTon(weapon, ammo) * (ammo.weight || 0), 0);
+                .reduce((sum, ammo) => sum + getWeaponShotsPerTon(weapon, ammo) * this._ammoRoundTons(ammo), 0);
             const needed = count * SMALL_CRAFT_MIN_TURNS_OF_FIRE * SmallCraft._shotsPerTurn(weapon);
             if (shots < needed) shortfalls.push({ name: weapon.name, shots: Math.floor(shots), needed });
         }
@@ -1472,7 +1496,7 @@ export default class SmallCraft implements IGameSettingsUnit {
         for (const item of this._equipmentList) {
             if (item.isAmmo) {
                 const fed = weapons.find((weapon) => weapon.battleValueDefensive && getCompatibleAmmo(weapon, item));
-                if (fed) amsAmmoBV += getAmmoBattleValuePerTon(fed, item) * (item.weight || 0);
+                if (fed) amsAmmoBV += getAmmoBattleValuePerTon(fed, item) * this._ammoRoundTons(item);
             } else if (item.battleValueDefensive) {
                 defensive += item.battleValue || 0;
                 if (item.weaponType?.includes("AMS")) amsBV += item.battleValue || 0;
@@ -1528,7 +1552,7 @@ export default class SmallCraft implements IGameSettingsUnit {
             const ammoBVByTag: Record<string, number> = {};
             for (const ammo of this._equipmentList.filter((item) => item.isAmmo)) {
                 const fed = offensiveWeapons.find((weapon) => getCompatibleAmmo(weapon, ammo));
-                if (fed) ammoBVByTag[fed.tag] = (ammoBVByTag[fed.tag] ?? 0) + getAmmoBattleValuePerTon(fed, ammo) * (ammo.weight || 0);
+                if (fed) ammoBVByTag[fed.tag] = (ammoBVByTag[fed.tag] ?? 0) + getAmmoBattleValuePerTon(fed, ammo) * this._ammoRoundTons(ammo);
             }
             for (const [tag, value] of Object.entries(ammoBVByTag)) {
                 const capped = Math.min(value, weaponBVByTag[tag] ?? 0);
@@ -1564,7 +1588,7 @@ export default class SmallCraft implements IGameSettingsUnit {
                     if (runningHeat >= efficiency) overheated = true;
                 }
                 const arcName = item.location && item.location !== "hull" ? this.getArcName(item.location as SmallCraftArc) : "no arc";
-                log += `+ ${escapeLogText(item.name)} (${escapeLogText(arcName)}) = ${value.toFixed(2)}`
+                log += `+ ${escapeLogText(item.name)} (${escapeLogText(arcName)}, Heat ${heat}) = ${value.toFixed(2)}`
                     + `${isHalved(item) ? " (weaker of nose and rear x 0.5)" : ""}${halved ? " (over Heat Efficiency x 0.5)" : ""}<br />`;
             }
         }
@@ -1637,7 +1661,7 @@ export default class SmallCraft implements IGameSettingsUnit {
             const fed = inBay.find((weapon) => weapon.tag === ammo.feedsWeaponTag) ?? inBay[0]
                 ?? offensiveWeapons.find((weapon) => getCompatibleAmmo(weapon, ammo));
             if (!fed) continue;
-            const value = getAmmoBattleValuePerTon(fed, ammo) * (ammo.weight || 0);
+            const value = getAmmoBattleValuePerTon(fed, ammo) * this._ammoRoundTons(ammo);
             ammoBVByTag[fed.tag] = (ammoBVByTag[fed.tag] ?? 0) + value;
             if ((ammo.location ?? "") in arcBV) {
                 const byArc = ammoBVByTagArc[fed.tag] = ammoBVByTagArc[fed.tag] ?? {};
@@ -1778,7 +1802,7 @@ export default class SmallCraft implements IGameSettingsUnit {
         const sameWeapons = this._equipmentList.filter((item) => !item.isAmmo && item.tag === weapon.tag).length;
         const shots = this._equipmentList
             .filter((item) => item.isAmmo && getCompatibleAmmo(weapon, item))
-            .reduce((sum, ammo) => sum + getWeaponShotsPerTon(weapon, ammo) * (ammo.weight || 0), 0);
+            .reduce((sum, ammo) => sum + getWeaponShotsPerTon(weapon, ammo) * this._ammoRoundTons(ammo), 0);
         if (shots <= 0) return 0;
         return shots / sameWeapons >= 10 ? 1 : 0.75;
     }
@@ -2256,6 +2280,7 @@ export default class SmallCraft implements IGameSettingsUnit {
                 tag: item.tag, location: item.location, uuid: item.uuid,
                 ...(this.canSetAmmoBinShots(item) && (item.weight || 0) < 1 ? { shots: this.getAmmoBinShots(item) } : {}),
                 ...(this.canSetAmmoBinTons(item) && (item.weight || 0) > 1 ? { tons: item.weight } : {}),
+                ...(this.canSetAmmoBinTons(item) && item.carriedShots !== undefined ? { carriedShots: item.carriedShots } : {}),
                 ...(item.isAmmo && item.feedsWeaponTag ? { feedsWeaponTag: item.feedsWeaponTag } : {}),
             })),
             capitalWeapons: this._capitalWeapons.map((mount) => ({ tag: mount.weapon.tag, location: mount.location, uuid: mount.uuid, shots: { ...mount.shots } })),
@@ -2368,6 +2393,7 @@ export default class SmallCraft implements IGameSettingsUnit {
             if (entries.length > MAX_SMALL_CRAFT_EQUIPMENT) issue(`Kept the first ${MAX_SMALL_CRAFT_EQUIPMENT} of ${entries.length} equipment entries`);
             const pendingShots: { uuid: string | undefined; shots: number }[] = [];
             const pendingTons: { uuid: string | undefined; tons: number }[] = [];
+            const pendingCarried: { uuid: string | undefined; shots: number }[] = [];
             for (const entry of entries.slice(0, MAX_SMALL_CRAFT_EQUIPMENT)) {
                 if (!isPlainObject(entry) || typeof entry.tag !== "string") {
                     issue("Skipped an equipment entry that could not be read");
@@ -2382,6 +2408,7 @@ export default class SmallCraft implements IGameSettingsUnit {
                 this._equipmentList.push(item);
                 if (item.isAmmo && typeof entry.shots === "number" && Number.isFinite(entry.shots)) pendingShots.push({ uuid: item.uuid, shots: entry.shots });
                 if (item.isAmmo && typeof entry.tons === "number" && Number.isFinite(entry.tons)) pendingTons.push({ uuid: item.uuid, tons: entry.tons });
+                if (item.isAmmo && typeof entry.carriedShots === "number" && Number.isFinite(entry.carriedShots)) pendingCarried.push({ uuid: item.uuid, shots: entry.carriedShots });
                 if (item.isAmmo && typeof entry.feedsWeaponTag === "string") item.feedsWeaponTag = entry.feedsWeaponTag.slice(0, 80);
             }
             this._capitalWeapons = [];
@@ -2399,6 +2426,7 @@ export default class SmallCraft implements IGameSettingsUnit {
             this._hadBattleArmorEquipment = this.defaultsToFractionalAccounting();
             for (const pending of pendingShots) this.setAmmoBinShots(pending.uuid, pending.shots);
             for (const pending of pendingTons) this.setAmmoBinTons(pending.uuid, pending.tons);
+            for (const pending of pendingCarried) this.setAmmoBinCarriedShots(pending.uuid, pending.shots);
 
             this._crew = Math.floor(savedNumber(saved.crew, this.getBaseCrew(), 0, this._maxPeople()));
             this._officers = Math.floor(savedNumber(saved.officers, 0, 0, this._maxPeople()));

@@ -37,6 +37,8 @@ const CHASSIS_MODS: Record<string, string> = {
 };
 
 const FIRE_CONTROL: Record<string, string> = { basicfirecontrol: "basic", advancedfirecontrol: "advanced" };
+/** Every line of every equipment block. */
+const allEquipmentLines = (file: IBlkFile): string[] => Object.keys(file.blocks).filter((tag) => tag.endsWith(" equipment")).flatMap((tag) => file.blocks[tag]);
 
 /** Lines that only mark a mount and carry no equipment of their own. */
 const MARKERS = new Set(["pintleturret", "sponsonturret"]);
@@ -223,14 +225,14 @@ export const importSupportVehicleBlk = (text: string): ISupportVehicleBlkResult 
     if (engine) vehicle.setSupportVehicleEngine(engine);
     else issues.push(`Engine type ${blkValue(file, "engine_type") || "(none given)"} is not one this builder has; the default used.`);
 
-    // Chassis modifications and fire control come from the body; set them before movement and equipment.
+    // Chassis modifications come from the body, fire control from any block; set them before movement and equipment.
     const bodyLines = blkLines(file, "body equipment");
     for (const line of bodyLines) {
         const mod = CHASSIS_MODS[key(line.replace(/:.*$/, ""))];
         if (mod) vehicle.setSupportVehicleChassisModification(mod, true);
-        const fireControl = FIRE_CONTROL[key(line)];
-        if (fireControl) vehicle.setSupportVehicleFireControl(fireControl);
     }
+    const fireControl = allEquipmentLines(file).map((line) => FIRE_CONTROL[key(line)]).find(Boolean);
+    if (fireControl) vehicle.setSupportVehicleFireControl(fireControl);
     if (bodyLines.some((line) => key(line) === "omnichassismod")) vehicle.setOmni(true);
     const cruise = numberOf(file, "cruiseMP");
     vehicle.setCruiseMP(cruise);
@@ -439,14 +441,14 @@ export const importFixedWingSupportBlk = (text: string): IFixedWingSupportBlkRes
         if (value) fighter.setSupportTechRating(part, value);
         else issues.push(`The file gives no ${part} tech rating; the builder's default used.`);
     }
-    // Chassis modifications and fire control come from the body; set them before the engine and thrust.
+    // Chassis modifications come from the body, fire control from any block; set them before the engine and thrust.
     const bodyLines = blkLines(file, "body equipment");
     for (const line of bodyLines) {
         const mod = CHASSIS_MODS[key(line.replace(/:.*$/, ""))];
         if (mod && mod !== "omni") fighter.setSupportChassisModification(mod, true);
-        const fireControl = FIRE_CONTROL[key(line)];
-        if (fireControl) fighter.setSupportFireControl(fireControl);
     }
+    const fireControl = allEquipmentLines(file).map((line) => FIRE_CONTROL[key(line)]).find(Boolean);
+    if (fireControl) fighter.setSupportFireControl(fireControl);
     if (bodyLines.some((line) => key(line) === "omnichassismod")) fighter.setOmni(true);
     const engine = ENGINES[blkValue(file, "engine_type")];
     if (engine && fighter.getAvailableSupportEngines().some((option) => option.tag === engine)) fighter.setSupportEngine(engine);

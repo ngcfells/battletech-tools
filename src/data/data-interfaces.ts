@@ -390,6 +390,8 @@ export interface IEquipmentItem extends ICatalogStanding {
     linkedWeaponTags?: string[];
     /** Ammunition bins in a unit: tag of the weapon this bin is loaded for. */
     feedsWeaponTag?: string;
+    /** A DropShip bin: rounds carried when fewer than its whole tons hold; its mass still rounds up (TM p.194). */
+    carriedShots?: number;
     /** @deprecated Legacy field; read only to import older records. Use roundsPerTon (ammo) or shotsPerTon (weapons). */
     ammoPerTon?: number;
     minAmmoTons?: number;

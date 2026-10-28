@@ -33,6 +33,11 @@ describe("MegaMek Support Vehicle import", () => {
         expect(issues).toEqual(["\"No Such Gun\" has no match in this catalog and was left off."]);
     });
 
+    it("reads fire control wherever the file lists it (Brunel Dump Truck AC20 lists it in the Rear block)", () => {
+        const { vehicle } = importSupportVehicleBlk(tank.replace("<Front Equipment>", "<Rear Equipment>\nBasic Fire Control\n</Rear Equipment>\n<Front Equipment>"));
+        expect(vehicle?.getSupportVehicleFireControl()).toBe("basic");
+    });
+
     it("brings the file's quirks across, on the weapon it names", () => {
         const { vehicle, issues } = importSupportVehicleBlk(`${tank}\n<quirks>\nlow_profile\n</quirks>\n<weaponQuirks>\naccurate:FR:0:Machine Gun\n</weaponQuirks>`);
         const gun = vehicle!.getEquipmentList().find((item) => item.tag === "machine-gun")!;

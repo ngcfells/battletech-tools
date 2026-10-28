@@ -1,13 +1,13 @@
 # Bundled Support Vehicles: build report
 
-79 designs kept, 146 files left out.
+85 designs kept, 140 files left out.
 
 | Reason | Files |
 |---|---|
 | the import could not carry all of it over | 51 |
 | no Master Unit List entry to check its BV against | 46 |
 | BV differs from the MUL | 37 |
-| BV differs from MegaMek's (the MUL gives none) | 12 |
+| BV differs from MegaMek's (the MUL gives none) | 6 |
 
 ## Left out
 
@@ -21,7 +21,7 @@
 - `vehicles/3075 Support tanks/HMRV (Hazardous Materials Recovery Vehicle) DeConAid Trailer.blk`: BV differs from the MUL: BV 268, MUL 296
 - `vehicles/3075 Support tanks/HMRV (Hazardous Materials Recovery Vehicle) Oppie O-65.blk`: the import could not carry all of it over: "ISMineSweeper" has no match in this catalog and was left off.
 - `vehicles/3075 Support tanks/HMRV (Hazardous Materials Recovery Vehicle) Oppie O-66.blk`: the import could not carry all of it over: "ISMineSweeper" has no match in this catalog and was left off.
-- `vehicles/3075 Support tanks/HMRV (Hazardous Materials Recovery Vehicle) Salvage Bed.blk`: BV differs from the MUL: BV 714, MUL 606
+- `vehicles/3075 Support tanks/HMRV (Hazardous Materials Recovery Vehicle) Salvage Bed.blk`: BV differs from the MUL: BV 715, MUL 606
 - `vehicles/3075 Support tanks/Jifty Transportable Field Repair Unit JI-50 (Hoist).blk`: no Master Unit List entry to check its BV against
 - `vehicles/3075 Support tanks/Jifty Transportable Field Repair Unit JI-50 (MG).blk`: no Master Unit List entry to check its BV against
 - `vehicles/3075 Support tanks/Jifty Transportable Field Repair Unit JI-50 (ML).blk`: no Master Unit List entry to check its BV against
@@ -61,16 +61,14 @@
 - `vehicles/HB HM/Hector Road Train Trailer Module (Passenger).blk`: the import could not carry all of it over: Transport "infantrybay" is not one this builder has and was left off.
 - `vehicles/HB HM/Hector Road Train Trailer Module (Refrigerated).blk`: no Master Unit List entry to check its BV against
 - `vehicles/HB HM/Hector Road Train Trailer Module.blk`: no Master Unit List entry to check its BV against
-- `vehicles/HB HM/Ibex RV (Militarized LDGR).blk`: BV differs from MegaMek's (the MUL gives none): BV 33, MegaMek 36
 - `vehicles/HB HM/Ibex RV (Militarized MG).blk`: BV differs from MegaMek's (the MUL gives none): BV 33, MegaMek 26
 - `vehicles/Hist Reunification War/Wayland Mobile Base.blk`: the import could not carry all of it over: "ISMobileFieldBase" has no match in this catalog and was left off.
-- `vehicles/Operation Klondike/Brunel Dump Truck AC20.blk`: BV differs from MegaMek's (the MUL gives none): BV 908, MegaMek 969
 - `vehicles/Operation Klondike/Brunel Dump Truck LRM.blk`: BV differs from MegaMek's (the MUL gives none): BV 1330, MegaMek 965
 - `vehicles/ProtoTypes/Lexan Surveillance VTOL.blk`: the import could not carry all of it over: "Small Laser" cannot go in the turret and was mounted unplaced.; "Small Laser" cannot go in the turret and was mounted unplaced.; "ISReconCamera" cannot go in the turret and was mounted unplaced.
 - `vehicles/ProtoTypes/Nishikigoi Support Aircraft Koi.blk`: BV differs from the MUL: BV 1953, MUL 2017
 - `vehicles/TOS/Granada/Auxiliary Defense Tank ADT-1.blk`: the import could not carry all of it over: "Rifle (Cannon, Medium)" has no match in this catalog and was left off.; Ammunition "IS Ammo Medium Rifle" has no weapon or no match in this catalog and was left off.; Ammunition "IS Ammo Medium Rifle" has no weapon or no match in this catalog and was left off.
 - `vehicles/TOS/Tortuga/Debbie 'The Warcrime Wagon'.blk`: BV differs from the MUL: BV 232, MUL 43
-- `vehicles/TOS/Tortuga/Outrider.blk`: BV differs from the MUL: BV 16, MUL 5
+- `vehicles/TOS/Tortuga/Outrider.blk`: BV differs from the MUL: BV 17, MUL 5
 - `vehicles/TRO Irregulars/Smalls/Hoverbike (Laser).blk`: BV differs from the MUL: BV 50, MUL 45
 - `vehicles/TRO Irregulars/Smalls/Hoverbike (MG).blk`: BV differs from the MUL: BV 43, MUL 38
 - `vehicles/TRO Irregulars/Smalls/Hoverbike.blk`: BV differs from the MUL: BV 47, MUL 42
@@ -97,7 +95,6 @@
 - `vehicles/TRO Vehicle Annex/Rail/TGV Omni Railcar Primary (Luxury).blk`: no Master Unit List entry to check its BV against
 - `vehicles/TRO Vehicle Annex/Rail/TGV Omni Railcar Primary Configuration.blk`: no Master Unit List entry to check its BV against
 - `vehicles/TRO Vehicle Annex/Tracked/Cellco Ranger UPU-3000.blk`: the import could not carry all of it over: "HHSearchlight" has no match in this catalog and was left off.; "HHSearchlight" has no match in this catalog and was left off.; "HHSearchlight" has no match in this catalog and was left off.
-- `vehicles/TRO Vehicle Annex/Tracked/Corx Mobile Tunnel Miner.blk`: BV differs from MegaMek's (the MUL gives none): BV 311, MegaMek 313
 - `vehicles/TRO Vehicle Annex/Tracked/Croyle Systems Cortez Series N.blk`: the import could not carry all of it over: "HHSearchlight" has no match in this catalog and was left off.; "HHSearchlight" has no match in this catalog and was left off.; "HHSearchlight" has no match in this catalog and was left off.; "HHSearchlight" has no match in this catalog and was left off.; "HHSearchlight" has no match in this catalog and was left off.; "HHSearchlight" has no match in this catalog and was left off.; "HHSearchlight" has no match in this catalog and was left off.; "HHSearchlight" has no match in this catalog and was left off.; "HHSearchlight" has no match in this catalog and was left off.; "HHSearchlight" has no match in this catalog and was left off.; "HHSearchlight" has no match in this catalog and was left off.; "HHSearchlight" has no match in this catalog and was left off.; Transport "infantrybay" is not one this builder has and was left off.
 - `vehicles/TRO Vehicle Annex/Tracked/Galaport Ground Trailer.blk`: no Master Unit List entry to check its BV against
 - `vehicles/TRO Vehicle Annex/Tracked/Gienah-Durapaq Elite Land Train (Tractor) Series 3.blk`: no Master Unit List entry to check its BV against
@@ -106,9 +103,6 @@
 - `vehicles/TRO Vehicle Annex/Tracked/Hesiod Utility Vehicle (Cargo).blk`: no Master Unit List entry to check its BV against
 - `vehicles/TRO Vehicle Annex/Tracked/Hesiod Utility Vehicle (Crane).blk`: no Master Unit List entry to check its BV against
 - `vehicles/TRO Vehicle Annex/Tracked/Hesiod Utility Vehicle (Harvester).blk`: no Master Unit List entry to check its BV against
-- `vehicles/TRO Vehicle Annex/Tracked/Kallon UL-series Construction Vehicle UL-10 'Backhoe'.blk`: BV differs from MegaMek's (the MUL gives none): BV 26, MegaMek 27
-- `vehicles/TRO Vehicle Annex/Tracked/Kallon UL-series Construction Vehicle UL-11 'Rock Cutter'.blk`: BV differs from MegaMek's (the MUL gives none): BV 25, MegaMek 26
-- `vehicles/TRO Vehicle Annex/Tracked/Kallon UL-series Construction Vehicle UL-12 'Chainsaw'.blk`: BV differs from MegaMek's (the MUL gives none): BV 26, MegaMek 27
 - `vehicles/TRO Vehicle Annex/Tracked/Kallon UL-series Construction Vehicle UL-14 'Dual Bulldozer'.blk`: BV differs from MegaMek's (the MUL gives none): BV 22, MegaMek 40
 - `vehicles/TRO Vehicle Annex/Tracked/Limpet Half-Track.blk`: the import could not carry all of it over: "HHSearchlight" has no match in this catalog and was left off.; "InfantryAssaultRifle(PT):SIZE:10.0" has no match in this catalog and was left off.; "InfantryAssaultRifle(PT):SIZE:10.0" has no match in this catalog and was left off.; "InfantryStandardSRM:SIZE:1.0" has no match in this catalog and was left off.
 - `vehicles/TRO Vehicle Annex/Tracked/Luciano White Wolverine.blk`: no Master Unit List entry to check its BV against

@@ -423,6 +423,39 @@ describe("DropShip weapon bays", () => {
     });
 });
 
+describe("DropShip ammunition by the round (TM p.194)", () => {
+    const build = (carried?: number) => {
+        const ship = new SmallCraft();
+        ship.setCraftType("dropShip");
+        ship.setTonnage(3000);
+        ship.addEquipmentFromTag("autocannon-standard-d", "nose");
+        const bin = ship.addEquipmentFromTag("ammo-ac-20-standard", "nose")!;
+        if (carried !== undefined) ship.setAmmoBinCarriedShots(bin.uuid, carried);
+        return { ship, bin: ship.getEquipmentList().find((item) => item.uuid === bin.uuid)! };
+    };
+
+    it("rounds the mass up to the whole ton but keeps the rounds carried, for the sheet and the Battle Value", () => {
+        const full = build();
+        const { ship, bin } = build(2);
+        // "Must round up the mass of any ammunition to the nearest ton regardless of the number of rounds carried."
+        expect(bin.weight).toBe(1);
+        expect(ship.getAmmoBinShots(bin)).toBe(2);
+        expect(ship.getAmmoSheetLines().join()).toMatch(/ 2$/);
+        // AC/20 ammunition is 22 BV a ton (TM p.317): 2 of 5 rounds count 8.8 of it.
+        expect(full.ship.getBattleValueLog()).toMatch(/= 22\.00/);
+        expect(ship.getBattleValueLog()).toMatch(/= 8\.80/);
+    });
+
+    it("saves the rounds, and a whole-ton change of the bin fills it", () => {
+        const { ship, bin } = build(2);
+        const copy = new SmallCraft();
+        copy.importJSON(ship.exportJSON());
+        expect(copy.getAmmoBinShots(copy.getEquipmentList().find((item) => item.isAmmo)!)).toBe(2);
+        ship.setAmmoBinTons(bin.uuid, 2);
+        expect(ship.getAmmoBinShots(bin)).toBe(10);
+    });
+});
+
 describe("Small Craft quirk targets: weapon bays (CO p.225)", () => {
     it("offers its bays, not its single weapons, as quirk targets", () => {
         const craft = new SmallCraft();

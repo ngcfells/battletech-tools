@@ -337,13 +337,14 @@ export const importSmallCraftBlk = (text: string): ISmallCraftBlkResult => {
         // A DropShip keeps each line as one bin in the bays of its arc (TM p.195); other craft carry a ton an item.
         if (ammo && dropShip) {
             const bin = craft.addEquipmentFromTag(ammo.tag, arc);
-            if (bin) added = craft.setAmmoBinTons(bin.uuid, tons) || 1;
             // One kind of round may feed launchers of several sizes in a bay: the bin keeps the one its line names.
             if (bin && weapon) bin.feedsWeaponTag = weapon.tag;
+            // The mass rounds up to the whole ton; the bin keeps the rounds the line gives (TM p.194).
+            if (bin) added = (shots > 0 ? craft.setAmmoBinCarriedShots(bin.uuid, shots) : 0) || craft.setAmmoBinTons(bin.uuid, tons) || 1;
         }
         else for (let ton = 0; ammo && ton < tons; ton++) if (craft.addEquipmentFromTag(ammo.tag, arc)) added++;
         if (!ammo || added === 0) issues.push(`Ammunition "${raw}" has no weapon or no match in this catalog and was left off.`);
-        else if (line.half) notes.push(`"${raw}" is a half-ton bin; carried as a full ton.`);
+        else if (line.half && !dropShip) notes.push(`"${raw}" is a half-ton bin; carried as a full ton.`);
     }
     // Capital ammunition goes to a launcher that fires it, one in the same arc first; an "AR10" line to an AR-10.
     for (const ammo of pendingCapitalAmmo) {
