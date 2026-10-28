@@ -74,6 +74,15 @@
         font-size: .9rem;
     }
 
+    // The player's card photo, as large as the page allows, for reading the small print against the form.
+    .aces-scan-photo {
+        display: block;
+        width: 100%;
+        max-width: 60rem;
+        height: auto;
+        margin-bottom: .5rem;
+    }
+
     table td, table th {
         vertical-align: middle;
     }

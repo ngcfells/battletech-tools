@@ -52,6 +52,7 @@ import { getAcesSampleLibrary } from '../../../../data/aces-card-samples';
 import { acesDecks, ACES_BOOK, ACES_SS_BOOK } from '../../../../data/aces-rules';
 import { acesBehaviorLabel } from '../../../../classes/aces-engine';
 import { getAcesCardLibrary, saveAcesCardLibrary } from '../../../../dataSaves';
+import { applyAcesScanToCard, TAcesScanSide } from '../../../../classes/aces-card-scan';
 import { generateUUID } from '../../../../utils/generateUUID';
 import { AcesCardView, AcesCommandCardView, AcesScenarioView, AcesSpecialOrderView } from './_aces-card-view';
 import './aces.scss';
@@ -145,6 +146,9 @@ export default class AcesLibraryPage extends React.Component<IAcesLibraryPagePro
             buffers: {},
             json: null,
             message: "",
+            scans: [],
+            scanning: false,
+            scanChecked: false,
         }
 
         this.props.appGlobals.makeDocumentTitle("Aces Card Library");
@@ -153,6 +157,80 @@ export default class AcesLibraryPage extends React.Component<IAcesLibraryPagePro
     componentDidMount = async () => {
         const library = await getAcesCardLibrary( this.props.appGlobals.appSettings );
         this.setState({ library: library });
+    }
+
+    componentDidUpdate = () => {
+        // The photos go with the draft they were read into.
+        if( !this.state.draft && this.state.scans.length > 0 ) {
+            this.state.scans.forEach( ( scan ) => URL.revokeObjectURL( scan.photo ) );
+            this.setState({ scans: [], scanChecked: false });
+        }
+    }
+
+    componentWillUnmount = () => {
+        this.state.scans.forEach( ( scan ) => URL.revokeObjectURL( scan.photo ) );
+    }
+
+    /* ----- card photo scan ----- */
+
+    private _scanPhoto = async ( e: React.ChangeEvent<HTMLInputElement> ) => {
+        const input = e.currentTarget;
+        const file = input.files && input.files[0];
+        if( !file || !this.state.draft ) return;
+        const photo = URL.createObjectURL( file );
+        this.setState({ scanning: true });
+        let scan: IAcesCardScan;
+        try {
+            // Loaded on demand, with tesseract, so the library page stays small for everyone else.
+            const { scanAcesCardPhoto } = await import( '../../../../classes/aces-card-scan-browser' );
+            const result = await scanAcesCardPhoto( file );
+            scan = { photo: photo, side: result.side, warnings: result.warnings };
+            if( result.side && this.state.draft ) {
+                this.setState({ draft: applyAcesScanToCard( this.state.draft as IAcesCard, result ), buffers: {}, json: null });
+            }
+        } catch( err ) {
+            scan = { photo: photo, side: null, warnings: [ "The photo couldn't be read (" + ( err instanceof Error ? err.message : String( err ) ) + "). The text reader downloads its English data the first time, so it needs a connection once." ] };
+        }
+        input.value = "";
+        if( !this.state.draft ) {
+            URL.revokeObjectURL( photo );
+            this.setState({ scanning: false });
+            return;
+        }
+        this.setState({ scans: [ ...this.state.scans, scan ], scanning: false, scanChecked: false });
+    }
+
+    private _renderScan = (): JSX.Element => {
+        return (
+            <fieldset className="fieldset aces-scan">
+                <legend>Read a card from a photo</legend>
+                <p className="aces-muted">
+                    Photograph one side of the card straight on, filling the frame, and the text is read into the form
+                    below for you to check. Do each side separately. The photo stays on your device.
+                </p>
+                <label>
+                    Photo of the Movement or Combat side:{" "}
+                    <input type="file" accept="image/*" disabled={this.state.scanning} style={{ width: "auto" }} onChange={this._scanPhoto} />
+                </label>
+                {this.state.scanning ? <p><strong>Reading the card...</strong> This takes a little while, longer the first time.</p> : null}
+                {this.state.scans.map( ( scan, index ) => (
+                    <div key={index} className="aces-scan-result">
+                        <p>
+                            <strong>{scan.side === "movement" ? "Movement side" : scan.side === "combat" ? "Combat side" : "Not read"}</strong>
+                            {scan.side ? ": filled in below. Check every line against the photo; OCR gets some words and icons wrong, and [?] marks an icon it couldn't place." : null}
+                        </p>
+                        {scan.warnings.length > 0 ? <ul className="aces-issue-error">{scan.warnings.map( ( warning, warningIndex ) => <li key={warningIndex}>{warning}</li> )}</ul> : null}
+                        <a href={scan.photo} target="_blank" rel="noopener noreferrer"><img className="aces-scan-photo" src={scan.photo} alt={"Your photo of the card's " + ( scan.side || "" ) + " side"} /></a>
+                    </div>
+                ) )}
+                {this.state.scans.some( ( scan ) => scan.side ) ? (
+                    <label className="aces-check">
+                        <input type="checkbox" checked={this.state.scanChecked} onChange={( e ) => this.setState({ scanChecked: e.currentTarget.checked })} />
+                        {" "}I've checked the form against my photos
+                    </label>
+                ) : null}
+            </fieldset>
+        );
     }
 
     private _saveLibrary = ( library: IAcesCardLibrary, message: string = "" ) => {
@@ -563,6 +641,7 @@ export default class AcesLibraryPage extends React.Component<IAcesLibraryPagePro
         const draft = this.state.draft!;
         const kind = this.state.kind;
         const issues = validate( kind, draft );
+        const unchecked = this.state.scans.some( ( scan ) => scan.side ) && !this.state.scanChecked;
         let form: JSX.Element;
         let preview: JSX.Element;
         switch( kind ) {
@@ -585,7 +664,7 @@ export default class AcesLibraryPage extends React.Component<IAcesLibraryPagePro
         return (
             <TextSection label={( this.state.draftIsNew ? "New " : "Edit " ) + kindLabels[kind].replace( /s$/, "" )}>
                 <div className="aces-inline">
-                    <button className="btn btn-primary btn-sm" onClick={this._saveDraft}>Save</button>
+                    <button className="btn btn-primary btn-sm" disabled={unchecked} title={unchecked ? "Check the scanned card against your photo first" : undefined} onClick={this._saveDraft}>Save</button>
                     <button className="btn btn-secondary btn-sm" onClick={() => this.setState( { draft: null, buffers: {}, json: null } )}>Cancel</button>
                     <button className="btn btn-secondary btn-sm" onClick={() => this.setState( { json: this.state.json === null ? JSON.stringify( draft, null, 2 ) : null } )}>
                         {this.state.json === null ? "Edit as JSON" : "Back to the form"}
@@ -594,6 +673,7 @@ export default class AcesLibraryPage extends React.Component<IAcesLibraryPagePro
                 {issues.length > 0 ? (
                     <ul className="aces-issue-error">{issues.map( ( issue, index ) => <li key={index}>{issue}</li> )}</ul>
                 ) : <p className="aces-muted">The card reader can use this record.</p>}
+                {kind === "cards" && this.state.json === null ? this._renderScan() : null}
                 <div className="row">
                     <div className="col-lg-7">
                         {this.state.json !== null ? (
@@ -706,4 +786,15 @@ interface IAcesLibraryPageState {
     buffers: { [path: string]: string };
     json: string | null;
     message: string;
+    /** Photos read into the card being edited, shown beside the form until it's saved or dropped. */
+    scans: IAcesCardScan[];
+    scanning: boolean;
+    /** A scanned card can't be saved until the player says they checked it against the photo. */
+    scanChecked: boolean;
+}
+
+interface IAcesCardScan {
+    photo: string;
+    side: TAcesScanSide | null;
+    warnings: string[];
 }
