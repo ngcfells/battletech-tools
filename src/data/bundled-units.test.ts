@@ -15,9 +15,9 @@ import { BundledUnitType, loadBundledIndex, loadBundledUnitDesign } from "./bund
 const dataDir = path.resolve(__dirname, "bundled");
 
 // Pinned so a growing data set is a deliberate change.
-const DESIGNS: Record<BundledUnitType, number> = { "battle-armor": 912, "protomechs": 62, "small-craft": 31, "support-vehicles": 28, "vehicles": 1044 };
+const DESIGNS: Record<BundledUnitType, number> = { "battle-armor": 912, "protomechs": 62, "small-craft": 95, "support-vehicles": 79, "vehicles": 1063 };
 // Each type's index and chunks together, in bytes, with a little room.
-const MAX_BYTES: Record<BundledUnitType, number> = { "battle-armor": 1_360_000, "protomechs": 180_000, "small-craft": 150_000, "support-vehicles": 150_000, "vehicles": 3_300_000 };
+const MAX_BYTES: Record<BundledUnitType, number> = { "battle-armor": 1_360_000, "protomechs": 180_000, "small-craft": 480_000, "support-vehicles": 410_000, "vehicles": 3_380_000 };
 
 describe("bundled units other than 'Mechs", () => {
     // A clean MegaMek file the MUL lacks gets a record of its own in the custom unit list, credited to MegaMek, and is
@@ -80,6 +80,36 @@ describe("bundled units other than 'Mechs", () => {
             const { builds, customRecords } = buildBundledUnits(megamek, mul);
             expect(customRecords).toEqual([]);
             expect(builds.vehicles.headers.map((header) => header.mulId)).toEqual([100191, 1, 2]);
+        } finally {
+            fs.rmSync(root, { recursive: true, force: true });
+        }
+    }, 60_000);
+
+    // The MUL lists some units with no BV: ours is checked against MegaMek's for the file instead (megamek-bv.json).
+    it("checks a unit the MUL gives no BV against MegaMek's BV for the file", () => {
+        const tank = (name: string) => [
+            ["UnitType", "Tank"], ["Name", name], ["Model", ""], ["year", "3060"], ["type", "IS Level 2"], ["motion_type", "Tracked"], ["cruiseMP", "4"],
+            ["engine_type", "0"], ["armor_type", "0"], ["armor", "10\n10\n10\n10"], ["Front Equipment", "Medium Laser"], ["Right Equipment", ""], ["Left Equipment", ""],
+            ["Rear Equipment", ""], ["Body Equipment", ""], ["tonnage", "20.0"],
+        ].map(([tag, value]) => `<${tag}>\n${value}\n</${tag}>`).join("\n");
+        const root = fs.mkdtempSync(path.join(os.tmpdir(), "bundled-units-"));
+        try {
+            const megamek = path.join(root, "unit_files");
+            fs.mkdirSync(path.join(megamek, "vehicles"), { recursive: true });
+            for (const name of ["Kept Tank", "Wrong Tank", "Unrated Tank"]) fs.writeFileSync(path.join(megamek, "vehicles", name + ".blk"), tank(name));
+            const mul = path.join(root, "mul");
+            for (const list of ["live", "mul1", "custom"]) fs.mkdirSync(path.join(mul, list), { recursive: true });
+            const entry = (Id: number, Name: string) => ({ Id, Name, Variant: null, BattleValue: 0, Tonnage: 20, Technology: { Name: "Inner Sphere" }, Type: { Id: 19 } });
+            fs.writeFileSync(path.join(mul, "live", "units.json"), JSON.stringify([entry(1, "Kept Tank"), entry(2, "Wrong Tank"), entry(3, "Unrated Tank")]));
+            // Our BV, from the report on a wrong MegaMek BV.
+            const ours = buildBundledUnits(megamek, mul, undefined, { "vehicles/Kept Tank.blk": -1 }).builds.vehicles.leftOut;
+            const reported = /BV (\d+), MegaMek/.exec(ours.find((left) => left.file === "vehicles/Kept Tank.blk")!.detail)![1];
+            const { builds } = buildBundledUnits(megamek, mul, undefined, { "vehicles/Kept Tank.blk": +reported, "vehicles/Wrong Tank.blk": +reported + 1 });
+            expect(builds.vehicles.headers.map((header) => [header.name, header.bv, header.mulId])).toEqual([["Kept Tank", +reported, 1]]);
+            expect(builds.vehicles.leftOut.map((left) => [left.file, left.reason])).toEqual([
+                ["vehicles/Unrated Tank.blk", "its Master Unit List entry gives no BV, and MegaMek's is not recorded"],
+                ["vehicles/Wrong Tank.blk", "BV differs from MegaMek's (the MUL gives none)"],
+            ]);
         } finally {
             fs.rmSync(root, { recursive: true, force: true });
         }

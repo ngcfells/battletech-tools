@@ -1,24 +1,15 @@
 # Bundled Combat Vehicles: build report
 
-1044 designs kept, 173 files left out.
+1063 designs kept, 154 files left out.
 
 | Reason | Files |
 |---|---|
 | BV differs from the MUL | 114 |
 | the import could not carry all of it over | 40 |
-| its Master Unit List entry gives no BV to check against | 19 |
 
 ## Left out
 
-- `vehicles/2750 IS Land/Puma Assault Tank PAT-001.blk`: its Master Unit List entry gives no BV to check against: MUL 100377
-- `vehicles/2750 IS Land/Puma Assault Tank PAT-002.blk`: its Master Unit List entry gives no BV to check against: MUL 107179
-- `vehicles/3025 IS Land/Ground Car.blk`: its Master Unit List entry gives no BV to check against: MUL 100959
-- `vehicles/3025 IS Land/Heavy Transport B1.blk`: its Master Unit List entry gives no BV to check against: MUL 102475
-- `vehicles/3025 IS Land/Hover Scout.blk`: its Master Unit List entry gives no BV to check against: MUL 103527
 - `vehicles/3025 IS Land/Jeep.blk`: the import could not carry all of it over: "ISOffRoadChassis" has no match in this catalog and was left off.
-- `vehicles/3025 IS Land/Jet Sled.blk`: its Master Unit List entry gives no BV to check against: MUL 107011
-- `vehicles/3025 IS Land/Speeder.blk`: its Master Unit List entry gives no BV to check against: MUL 102225
-- `vehicles/3025 IS Land/Weapons Carrier A (LL).blk`: its Master Unit List entry gives no BV to check against: MUL 104044
 - `vehicles/3039u/Condor Heavy Hover Tank (Davion).blk`: BV differs from the MUL: BV 577, MUL 592
 - `vehicles/3039u/Condor Heavy Hover Tank.blk`: BV differs from the MUL: BV 653, MUL 965
 - `vehicles/3039u/Hetzer Wheeled Assault Gun (Scout).blk`: BV differs from the MUL: BV 544, MUL 553
@@ -90,11 +81,6 @@
 - `vehicles/3085u/ONN/Vedette Medium Tank (Cell).blk`: BV differs from the MUL: BV 730, MUL 731
 - `vehicles/3085u/ONN/Yellow Jacket Gunship (PPC).blk`: BV differs from the MUL: BV 758, MUL 582
 - `vehicles/3085u/Supplemental/Bokkusu Support Trailer.blk`: the import could not carry all of it over: "ISMobileFieldBase" has no match in this catalog and was left off.
-- `vehicles/3085u/Supplemental/Manta Fast Attack Submarine (Support).blk`: its Master Unit List entry gives no BV to check against: MUL 101815
-- `vehicles/3085u/Supplemental/Manta Fast Attack Submarine.blk`: its Master Unit List entry gives no BV to check against: MUL 104341
-- `vehicles/3085u/Supplemental/Moray Heavy Attack Submarine (Original).blk`: its Master Unit List entry gives no BV to check against: MUL 104803
-- `vehicles/3085u/Supplemental/Moray Heavy Attack Submarine.blk`: its Master Unit List entry gives no BV to check against: MUL 106442
-- `vehicles/3085u/Supplemental/Tenmaku Command Trailer.blk`: its Master Unit List entry gives no BV to check against: MUL 102623
 - `vehicles/3145/Kurita/Kamakiri Attack VTOL (Gauss).blk`: the import could not carry all of it over: The file's armor does not fit this vehicle's locations.
 - `vehicles/3145/Kurita/Kamakiri Attack VTOL.blk`: the import could not carry all of it over: The file's armor does not fit this vehicle's locations.
 - `vehicles/3145/Liao/Shun Transport VTOL.blk`: the import could not carry all of it over: The file's armor does not fit this vehicle's locations.
@@ -120,18 +106,12 @@
 - `vehicles/3150/Bardiche Heavy Strike Tank C.blk`: the import could not carry all of it over: "ISMineSweeper" has no match in this catalog and was left off.
 - `vehicles/3150/Galleon Light Tank GAL-105.blk`: the import could not carry all of it over: "ISERMediumLaser(ST)" could not go in a sponson turret.; "ISERMediumLaser(ST)" could not go in a sponson turret.
 - `vehicles/3150/Shun Transport VTOL (Support).blk`: the import could not carry all of it over: The file's armor does not fit this vehicle's locations.
-- `vehicles/FM DC/Arrow IV Carrier.blk`: its Master Unit List entry gives no BV to check against: MUL 103185
 - `vehicles/Golden Century/Rhino Fire Support Tank EC.blk`: BV differs from the MUL: BV 1674, MUL 1679
 - `vehicles/Golden Century/Zephyr Hovertank EC.blk`: the import could not carry all of it over: Ammunition "CLImpAmmoSRM6" has no weapon or no match in this catalog and was left off.; Ammunition "CLImpAmmoSRM6" has no weapon or no match in this catalog and was left off.
-- `vehicles/Hist LOT II/Vector (Attack).blk`: its Master Unit List entry gives no BV to check against: MUL 105697
-- `vehicles/Hist LOT II/Vector EW.blk`: its Master Unit List entry gives no BV to check against: MUL 105264
-- `vehicles/Hist LOT II/Vector Scout.blk`: its Master Unit List entry gives no BV to check against: MUL 108441
 - `vehicles/ProtoTypes/Bandit Mk II.blk`: BV differs from the MUL: BV 738, MUL 770
 - `vehicles/ProtoTypes/Garuda Heavy VTOL.blk`: the import could not carry all of it over: The file's armor does not fit this vehicle's locations.
-- `vehicles/ProtoTypes/Hephaestus (AP) Jump Tank.blk`: its Master Unit List entry gives no BV to check against: MUL 100592
 - `vehicles/ProtoTypes/Hiryo Armored Infantry Transport BloodHound.blk`: BV differs from the MUL: BV 528, MUL 504
 - `vehicles/ProtoTypes/Hunter Light Support Tank (Amphibious).blk`: BV differs from the MUL: BV 648, MUL 639
-- `vehicles/ProtoTypes/Nuberu Anti Aircraft Tank 2 Numantia.blk`: its Master Unit List entry gives no BV to check against: MUL 102103
 - `vehicles/ProtoTypes/Scorpion Light Tank (Minesweeper).blk`: the import could not carry all of it over: "ISMineSweeper" has no match in this catalog and was left off.
 - `vehicles/ProtoTypes/Vidar Heavy Defense Tank.blk`: BV differs from the MUL: BV 1458, MUL 1396
 - `vehicles/ProtoTypes/Warrior S-9 Stealth Helicopter.blk`: BV differs from the MUL: BV 688, MUL 668

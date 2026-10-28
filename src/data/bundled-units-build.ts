@@ -13,6 +13,7 @@ import type Vehicle from "../classes/vehicle";
 import { untabulate } from "../utils/packed-json";
 import { getBundledStanding, IBundledBuild, loadMULIndex, seedRandom } from "./bundled-mechs-build";
 import { BundledUnit, BundledUnitType, getBundledUnitClass } from "./bundled-units";
+import MEGAMEK_BV from "./megamek-bv.json";
 import { buildCustomMULRecord, CUSTOM_MUL_ID_START, CUSTOM_MUL_KEY_PREFIX, CUSTOM_RULES_LEVELS, ICustomMULForm, serializeCustomMULRecords } from "./custom-mul";
 import { vehicleMULForm } from "./sample-mul";
 
@@ -169,7 +170,8 @@ export function prepareUnitFile(job: IUnitJob): IPreparedUnit {
  * carry; the rest are matched by name. `prepare` gives each file's prepared design (the build runner's workers and
  * cache); by default each is prepared here.
  */
-export function buildBundledUnits(megamekDir: string, mulDir: string, prepare: (job: IUnitJob) => IPreparedUnit = prepareUnitFile): { builds: Record<BundledUnitType, IBundledBuild>; customRecords: IASMULUnit[] } {
+export function buildBundledUnits(megamekDir: string, mulDir: string, prepare: (job: IUnitJob) => IPreparedUnit = prepareUnitFile,
+    sourceBVs: Record<string, number> = MEGAMEK_BV): { builds: Record<BundledUnitType, IBundledBuild>; customRecords: IASMULUnit[] } {
     const types = Object.keys(BLK_KINDS) as BundledUnitType[];
     const mul1 = new Map<number, IASMULUnit>();
     for (const file of fs.readdirSync(path.join(mulDir, "mul1"))) {
@@ -228,8 +230,14 @@ export function buildBundledUnits(megamekDir: string, mulDir: string, prepare: (
             customRecords.push(match);
         }
         if (!match) { leave("no Master Unit List entry to check its BV against"); continue; }
-        if (!(match.BattleValue > 0)) { leave("its Master Unit List entry gives no BV to check against", `MUL ${match.Id}`); continue; }
-        if (unit.bv !== match.BattleValue) { leave("BV differs from the MUL", `BV ${unit.bv}, MUL ${match.BattleValue}`); continue; }
+        if (match.BattleValue > 0) {
+            if (unit.bv !== match.BattleValue) { leave("BV differs from the MUL", `BV ${unit.bv}, MUL ${match.BattleValue}`); continue; }
+        } else {
+            // The MUL lists it with no BV: MegaMek's for the file is the check (scripts/megamek-bv.mjs records it).
+            const source = sourceBVs[file.name];
+            if (source === undefined) { leave("its Master Unit List entry gives no BV, and MegaMek's is not recorded", `MUL ${match.Id}`); continue; }
+            if (unit.bv !== source) { leave("BV differs from MegaMek's (the MUL gives none)", `BV ${unit.bv}, MegaMek ${source}`); continue; }
+        }
         if (!unit.survives) { leave("does not survive the compact format"); continue; }
         job.taken.add(keys[0]);
         const { name, model, cost, rulesLevel, year, standing } = unit.header!;
