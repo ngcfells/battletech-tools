@@ -167,6 +167,41 @@ export default class Home extends React.Component<IHomeProps, IHomeState> {
                   <ul className="news">
                   <li>
                   <h3>
+                      <strong>October 28th, 2026</strong> - Read a card from a photo, Not Official marks, and your force in the Aces game
+                    </h3>
+                    <h4>Author - NGCFells</h4>
+                      <ul>
+                        <li>For players who find the cards' small print hard to read, the app can read a photo of your own printed card. The reader isn't perfect: it misreads some letters, numbers and icons, so check everything it fills in against your card. The photo never leaves your device, and no card text ships with the app.</li>
+                        <li>Alpha Strike Roster: Add from a Card Photo, on the Add Units page. If the Master Unit List lists the unit and agrees with the card, its unit is added. If the card's values differ (an older printing, or a misread), the two show side by side and you choose. A custom, or a unit printed elsewhere, is read into a form to check and add as printed.</li>
+                        <li>Aces card library: the card editor reads a photo of either side of a card into the form, to be checked before it can be saved.</li>
+                        <li>Alpha Strike cards whose stats aren't from Master Unit List 2.0 say NOT OFFICIAL, on screen and in print: units from MUL 1.0, the custom unit lists, the unit creators, and cards added from a photo as printed. Forces saved before today keep their units' marks by whether they came from the Master Unit List.</li>
+                        <li>Aces game: a Your Force Cards section shows your current Alpha Strike roster in play, so you don't need the roster open in another tab, with a Reset your force button that repairs every unit for a new game. Thanks to Rekikire for the idea.</li>
+                        <li>Aces cards: the line-of-sight target icons come before "moved", as the cards print them, and sit on their own row under the zone.</li>
+                      </ul>
+                   </li>
+                  <li>
+                  <h3>
+                      <strong>October 27th, 2026</strong> - Record sheet bubbles in each unit's own shape, 983 bundled Combat Vehicles, and a faster start
+                    </h3>
+                    <h4>Author - NGCFells</h4>
+                      <ul>
+                        <li>Record sheets: armor and structure bubbles are packed inside each location's own shape. A vehicle's sections are cut from its hull, an aerospace craft's arcs are its wings, nose and tail, and a ProtoMech is drawn as a figure. 'Mech bubbles fill each location from the center out.</li>
+                        <li>Superheavy 'Mechs (up to 200 tons) no longer run out of armor or structure bubbles, and a sheet never shows more armor than the rules allow a location. Eight 'Mech bubbles that toggled or showed the wrong point are fixed, and small bubbles draw as rings, not black dots.</li>
+                        <li>The app opens faster: the first download is about a tenth of its old size, and unit types load as they're needed.</li>
+                        <li>The bundled record sheets behind the Master Unit List search add 983 Combat Vehicles, plus Support Vehicles, Small Craft and DropShips, each matching its Master Unit List Battle Value, or MegaMek's where the Master Unit List gives none. MegaMek vehicles the Master Unit List lacks are in the custom units, credited to MegaMek.</li>
+                        <li>Vehicle Battle Value: stealth armor, VTOL jet boosters and superchargers, machine gun arrays, drones, the VTOL mast mount, and support vehicle fire control (heavy weapons only, <i>TechManual</i> p.316).</li>
+                        <li>Cockpit Command Console for 'Mechs: 3 tons and a head slot beside the cockpit (<i>Tactical Operations: Advanced Units &amp; Equipment</i> pp.112-113), and it imports from Skunk Werks and MegaMek files.</li>
+                        <li>Superheavy and tripod 'Mechs import from MegaMek files, with the superheavy engine Battle Value table, Radical Heat Sinks and the Klondike rocket launchers: 3600 bundled 'Mechs.</li>
+                        <li>mordel.net is a third source of 'Mech files, after Skunk Werks and MegaMek, for canon 'Mechs neither has.</li>
+                        <li>Canon means listed on the Master Unit List or printed on an official record sheet. The "Custom" standing is now "Fan-made", shown beside the rules level, and both roster searches can filter by standing.</li>
+                        <li>Two designs with the same name and model but different gear are kept as separate models, each with its own designation.</li>
+                        <li>LRM 15 launchers make 5 heat, not 6, as <i>Total Warfare</i> p.303 prints.</li>
+                        <li>Aces cards: the line-of-sight target icons ("in line of sight", "out of line of sight") can be entered and are used in play.</li>
+                        <li>Battle Armor and the JumpShip/WarShip creator have their own menu icons.</li>
+                      </ul>
+                   </li>
+                  <li>
+                  <h3>
                       <strong>October 26th, 2026</strong> - One game settings block and Special Rulesets, 690 more bundled 'Mechs, IndustrialMech Battle Values, and printing from the roster
                     </h3>
                     <h4>Author - NGCFells</h4>
@@ -190,6 +225,10 @@ export default class Home extends React.Component<IHomeProps, IHomeState> {
                         <li>Alpha Strike Roster: the Master Unit List search lists units as soon as it opens, with no filters set; it had shown none until a filter changed.</li>
                         <li>The eight sample VTOLAMs are in the custom units, as the ArtVees are: both roster searches find them when "Custom units" is ticked, each with its designer's credit, and the Classic Roster adds the sample design.</li>
                         <li>A 'Mech's Alpha Strike card shows minimal damage as 0*, not 0. Its LRM, SRM and AC specials need 10 or more points of damage at medium range, as the Master Unit List's do; minimal indirect fire is IF0*, and a special with no damage is left off, where the card had shown IF 0, SRM 0/0/0 or HEAT 0/0/0.</li>
+                        <li>Classic Roster: one Find Units list replaces the separate Master Unit List search and Skunk Werks import. It holds the Master Unit List and every design off it (your saved designs, the samples and the bundled designs), with a Source column, and lists a design with the same name, model and layout once.</li>
+                        <li>A standing badge (canon, apocryphal, custom, munchkin) beside each unit in both roster searches, with a legend.</li>
+                        <li>In the Clan Founding Years (2800-2840) a Clan 'Mech picks Clan or Star League structure, armor and heat sinks, which that era offers both of; Mixed Tech 'Mechs get the same choice wherever the versions differ. Clan vehicles may take Star League Ferro-Fibrous armor, and Clan fighters, Small Craft and DropShips Inner Sphere Ferro-Aluminum, in the years before the Clan versions.</li>
+                        <li>A battle armor bay on a Small Craft or DropShip starts with a door, and is flagged if it has none to share (<i>TechManual</i> p.196).</li>
                       </ul>
                    </li>
                   <li>
