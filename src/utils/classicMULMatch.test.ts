@@ -8,6 +8,15 @@ describe("getMULMatchKeys", () => {
         expect(getMULMatchKeys("Stalker", "STK-3F (Jamison)")).toEqual(getMULMatchKeys("Stalker", "STK-3F Jamison"));
     });
 
+    // MegaMek's "Mk I" and 'Warthog' are the MUL's "Mk. I" and "Warthog" (#241).
+    it("reads a nickname in single quotes as one in double quotes, and an abbreviation's period as none", () => {
+        expect(getMULMatchKeys("Bandit Hovercraft", "'Warthog'")).toEqual(getMULMatchKeys("Bandit Hovercraft", '"Warthog"'));
+        expect(getMULMatchKeys("Vedette Medium Tank", "'Doris' Delight'")).toEqual(getMULMatchKeys("Vedette Medium Tank", '"Doris\' Delight"'));
+        expect(getMULMatchKeys("Alacorn Heavy Tank", "Mk I")).toEqual(getMULMatchKeys("Alacorn Heavy Tank", "Mk. I"));
+        expect(getMULMatchKeys("Hunchback", "HBK-4G")).toEqual(["hunchback hbk-4g"]);
+        expect(getMULMatchKeys("Gauss Carrier", "O'Bannon 2.5")).toEqual(["gauss carrier o'bannon 2.5"]);
+    });
+
     it("gives a key for each name of a chassis with an alternate name in parentheses", () => {
         expect(getMULMatchKeys("Mad Cat (Timber Wolf)", "Prime")).toEqual([
             "mad cat timber wolf prime",

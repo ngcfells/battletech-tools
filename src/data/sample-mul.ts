@@ -18,7 +18,7 @@ export const ARTVEE_MUL_DATE = "2026-10-23T00:00:00.000Z";
 export const VTOLAM_MUL_ID_START = ARTVEE_MUL_ID_START + 100;
 export const VTOLAM_MUL_DATE = "2026-10-26T00:00:00.000Z";
 
-function getMULEraIdForYear(year: number): number {
+export function getMULEraIdForYear(year: number): number {
     return mulEras.find((era) => year >= era.yearStart && (era.yearEnd === null || year <= era.yearEnd))?.id ?? 0;
 }
 
@@ -31,32 +31,42 @@ function sampleRecord(form: ICustomMULForm, id: number, key: string, date: strin
     return buildCustomMULRecord(form, { id, key: `${CUSTOM_MUL_KEY_PREFIX}${key}`, createdAt: date }, date);
 }
 
+/** A vehicle's custom-list entry, from its own Battle Value and Alpha Strike conversion; credits are the caller's. */
+export function vehicleMULForm(vehicle: Vehicle): ICustomMULForm {
+    const stats = vehicle.getAlphaStrikeStats();
+    return {
+        ...emptyCustomMULForm(),
+        name: vehicle.getName(),
+        variant: vehicle.getModel(),
+        unitType: vehicle.isSupportVehicle() ? "Support Vehicle" : vehicle.isOmni() ? "OmniVehicle" : "Combat Vehicle",
+        technology: customTechnology(vehicle.getTech().name),
+        eraId: String(getMULEraIdForYear(vehicle.getEra().yearStart)),
+        tonnage: String(vehicle.getTonnage()),
+        battleValue: String(vehicle.getBattleValue()),
+        pointValue: String(stats.pointValue),
+        size: String(stats.size),
+        // Written the way Vehicle.getAlphaStrikeUnit() writes BFMove.
+        move: `${stats.movement}"${stats.movementType}` + (stats.jumpMovement ? `/${stats.jumpMovement}"j` : ""),
+        tmm: String(stats.tmm),
+        armor: String(stats.armor),
+        structure: String(stats.structure),
+        damageShort: stats.damageValues.short.minimal ? "0*" : String(stats.damageValues.short.damage),
+        damageMedium: stats.damageValues.medium.minimal ? "0*" : String(stats.damageValues.medium.damage),
+        damageLong: stats.damageValues.long.minimal ? "0*" : String(stats.damageValues.long.damage),
+        damageExtreme: stats.damageValues.extreme.minimal ? "0*" : String(stats.damageValues.extreme.damage),
+        abilities: stats.specialAbilities.join(","),
+    };
+}
+
 export function buildArtVeeMULRecords(): IASMULUnit[] {
     return ARTVEE_SAMPLES.map((sample, index) => {
         const vehicle = new Vehicle(JSON.stringify(sample.save));
-        const stats = vehicle.getAlphaStrikeStats();
         const form = {
-            ...emptyCustomMULForm(),
+            ...vehicleMULForm(vehicle),
             name: sample.save.name,
             variant: sample.save.model,
             unitType: "Combat Vehicle",
-            technology: customTechnology(vehicle.getTech().name),
             rules: "Experimental",
-            eraId: String(getMULEraIdForYear(vehicle.getEra().yearStart)),
-            tonnage: String(vehicle.getTonnage()),
-            battleValue: String(vehicle.getBattleValue()),
-            pointValue: String(stats.pointValue),
-            size: String(stats.size),
-            // Written the way Vehicle.getAlphaStrikeUnit() writes BFMove.
-            move: `${stats.movement}"${stats.movementType}` + (stats.jumpMovement ? `/${stats.jumpMovement}"j` : ""),
-            tmm: String(stats.tmm),
-            armor: String(stats.armor),
-            structure: String(stats.structure),
-            damageShort: stats.damageValues.short.minimal ? "0*" : String(stats.damageValues.short.damage),
-            damageMedium: stats.damageValues.medium.minimal ? "0*" : String(stats.damageValues.medium.damage),
-            damageLong: stats.damageValues.long.minimal ? "0*" : String(stats.damageValues.long.damage),
-            damageExtreme: stats.damageValues.extreme.minimal ? "0*" : String(stats.damageValues.extreme.damage),
-            abilities: stats.specialAbilities.join(","),
             author: "Jeff's BattleTech Tools",
             source: "ArtVee samples (Vehicle Creator, Custom Homebrew)",
             notes: "Custom Homebrew ArtVee (Artillery Vehicle), an idea put forward on the Star League Discord by kris (helvedes heste).",

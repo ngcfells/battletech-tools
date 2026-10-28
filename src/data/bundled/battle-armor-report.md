@@ -1,11 +1,11 @@
 # Bundled battle armor: build report
 
-820 designs kept, 368 files left out.
+912 designs kept, 276 files left out.
 
 | Reason | Files |
 |---|---|
-| no Master Unit List entry to check its BV against | 207 |
-| BV differs from the MUL | 146 |
+| BV differs from the MUL | 175 |
+| no Master Unit List entry to check its BV against | 86 |
 | the import could not carry all of it over | 15 |
 
 ## Left out
@@ -32,12 +32,6 @@
 - `battlearmor/3058Uu/Gnome BA (Upgrade) [MRR] (Sqd5).blk`: BV differs from the MUL: BV 549, MUL 526
 - `battlearmor/3058Uu/Gnome BA (Upgrade) [MRR] (Sqd6).blk`: BV differs from the MUL: BV 706, MUL 676
 - `battlearmor/3058Uu/Gray Death Std Suit [Laser] (Sqd5).blk`: BV differs from the MUL: BV 303, MUL 305
-- `battlearmor/3058Uu/Infiltrator Mk. I BA (Sqd4).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/3058Uu/Infiltrator Mk. I BA (Sqd5).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/3058Uu/Infiltrator Mk. I BA (Sqd6).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/3058Uu/Infiltrator Mk. II BA (Sqd4).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/3058Uu/Infiltrator Mk. II BA (Sqd5).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/3058Uu/Infiltrator Mk. II BA (Sqd6).blk`: no Master Unit List entry to check its BV against
 - `battlearmor/3058Uu/Kage Light BA [ECM] (Sqd4).blk`: BV differs from the MUL: BV 107, MUL 113
 - `battlearmor/3058Uu/Kage Light BA [ECM] (Sqd5).blk`: BV differs from the MUL: BV 144, MUL 153
 - `battlearmor/3058Uu/Kage Light BA [ECM] (Sqd6).blk`: BV differs from the MUL: BV 185, MUL 196
@@ -48,12 +42,9 @@
 - `battlearmor/3058Uu/Kanazuchi Assault BA [Battle Claw] (Sqd6).blk`: BV differs from the MUL: BV 644, MUL 605
 - `battlearmor/3058Uu/Salamander BA (Laser) (Sqd4).blk`: BV differs from the MUL: BV 293, MUL 292
 - `battlearmor/3075/Asura Med BA (SRM)(Sqd4).blk`: BV differs from the MUL: BV 221, MUL 211
-- `battlearmor/3075/Clan Med BA (Naval) (Bar) (Sqd4).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/3075/Clan Med BA (Naval) (Bar) (Sqd5).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/3075/Clan Med BA (Naval) (Bar) (Sqd6).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/3075/Clan Med BA (Volk) (Sqd4).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/3075/Clan Med BA (Volk) (Sqd5).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/3075/Clan Med BA (Volk) (Sqd6).blk`: no Master Unit List entry to check its BV against
+- `battlearmor/3075/Clan Med BA (Naval) (Bar) (Sqd4).blk`: BV differs from the MUL: BV 273, MUL 269
+- `battlearmor/3075/Clan Med BA (Naval) (Bar) (Sqd5).blk`: BV differs from the MUL: BV 368, MUL 362
+- `battlearmor/3075/Clan Med BA (Naval) (Bar) (Sqd6).blk`: BV differs from the MUL: BV 473, MUL 465
 - `battlearmor/3075/Grenadier BA (HK) [MagShot] (Sqd4).blk`: no Master Unit List entry to check its BV against
 - `battlearmor/3075/Grenadier BA (HK) [MagShot] (Sqd5).blk`: no Master Unit List entry to check its BV against
 - `battlearmor/3075/Grenadier BA (HK) [MagShot] (Sqd6).blk`: no Master Unit List entry to check its BV against
@@ -73,9 +64,7 @@
 - `battlearmor/3075/Grenadier BA [TAG] (Sqd5).blk`: no Master Unit List entry to check its BV against
 - `battlearmor/3075/Grenadier BA [TAG] (Sqd6).blk`: no Master Unit List entry to check its BV against
 - `battlearmor/3075/Nephilim Assault BA (Narc) (Sqd5).blk`: BV differs from the MUL: BV 552, MUL 522
-- `battlearmor/3075/Nephilim Assault BA [Plasma] (Sqd4).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/3075/Nephilim Assault BA [Plasma] (Sqd5).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/3075/Nephilim Assault BA [Plasma] (Sqd6).blk`: no Master Unit List entry to check its BV against
+- `battlearmor/3075/Nephilim Assault BA [Plasma] (Sqd4).blk`: BV differs from the MUL: BV 366, MUL 336
 - `battlearmor/3075/Nighthawk PA(L) Mk. XXII (Sqd4).blk`: BV differs from the MUL: BV 55, MUL 63
 - `battlearmor/3075/Nighthawk PA(L) Mk. XXII (Sqd5).blk`: BV differs from the MUL: BV 74, MUL 85
 - `battlearmor/3075/Nighthawk PA(L) Mk. XXII (Sqd6).blk`: BV differs from the MUL: BV 95, MUL 109
@@ -104,18 +93,11 @@
 - `battlearmor/3075/Tengu Heavy BA (VSP) (Sqd4).blk`: BV differs from the MUL: BV 252, MUL 268
 - `battlearmor/3075/Tengu Heavy BA (VSP) (Sqd5).blk`: BV differs from the MUL: BV 339, MUL 361
 - `battlearmor/3075/Tengu Heavy BA (VSP) (Sqd6).blk`: BV differs from the MUL: BV 436, MUL 464
-- `battlearmor/3075/Tornado PA(L) P12 (Sqd4).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/3075/Tornado PA(L) P12 (Sqd5).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/3075/Tornado PA(L) P12 (Sqd6).blk`: no Master Unit List entry to check its BV against
+- `battlearmor/3075/Tornado PA(L) P12 (Sqd5).blk`: BV differs from the MUL: BV 63, MUL 64
+- `battlearmor/3075/Tornado PA(L) P12 (Sqd6).blk`: BV differs from the MUL: BV 81, MUL 82
 - `battlearmor/3075/Trinity Med BA (Theseus RL)[LRR] (Sqd4).blk`: BV differs from the MUL: BV 251, MUL 203
 - `battlearmor/3075/Trinity Med BA (Theseus RL)[LRR] (Sqd5).blk`: BV differs from the MUL: BV 338, MUL 273
 - `battlearmor/3075/Trinity Med BA (Theseus RL)[LRR] (Sqd6).blk`: BV differs from the MUL: BV 435, MUL 352
-- `battlearmor/3075/Trinity Med BA (Ying Long)(Plasma) (Sqd4).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/3075/Trinity Med BA (Ying Long)(Plasma) (Sqd5).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/3075/Trinity Med BA (Ying Long)(Plasma) (Sqd6).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/3085u/Cutting Edge/Kopis Assault BA (Sqd4).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/3085u/Cutting Edge/Kopis Assault BA (Sqd5).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/3085u/Cutting Edge/Kopis Assault BA (Sqd6).blk`: no Master Unit List entry to check its BV against
 - `battlearmor/3085u/Cutting Edge/Thunderbird BA [ER Laser] (Sqd5).blk`: BV differs from the MUL: BV 404, MUL 495
 - `battlearmor/3085u/Cutting Edge/Thunderbird BA [ER Laser] (Sqd6).blk`: BV differs from the MUL: BV 519, MUL 636
 - `battlearmor/3085u/ONN/Afreet Med BA (Interdictor)(Sqd4).blk`: BV differs from the MUL: BV 196, MUL 189
@@ -128,12 +110,9 @@
 - `battlearmor/3085u/ONN/Trinity Med BA (Asterion Upgrade)[MRR] (Sqd4).blk`: BV differs from the MUL: BV 231, MUL 251
 - `battlearmor/3085u/ONN/Trinity Med BA (Asterion Upgrade)[MRR] (Sqd5).blk`: BV differs from the MUL: BV 311, MUL 338
 - `battlearmor/3085u/ONN/Trinity Med BA (Asterion Upgrade)[MRR] (Sqd6).blk`: BV differs from the MUL: BV 400, MUL 435
-- `battlearmor/3085u/ONN/Trinity Med BA (Theseus Sup) Killshot (Sqd4).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/3085u/ONN/Trinity Med BA (Theseus Sup) Killshot (Sqd5).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/3085u/ONN/Trinity Med BA (Theseus Sup) Killshot (Sqd6).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/3145/Clans/Black Wolf BA (LBX) (Sqd4).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/3145/Clans/Black Wolf BA (LBX) (Sqd5).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/3145/Clans/Black Wolf BA (LBX) (Sqd6).blk`: no Master Unit List entry to check its BV against
+- `battlearmor/3085u/ONN/Trinity Med BA (Theseus Sup) Killshot (Sqd4).blk`: BV differs from the MUL: BV 183, MUL 191
+- `battlearmor/3085u/ONN/Trinity Med BA (Theseus Sup) Killshot (Sqd5).blk`: BV differs from the MUL: BV 246, MUL 257
+- `battlearmor/3085u/ONN/Trinity Med BA (Theseus Sup) Killshot (Sqd6).blk`: BV differs from the MUL: BV 317, MUL 331
 - `battlearmor/3145/Clans/Constable Pacification Suit (ECM) (Sqd4).blk`: BV differs from the MUL: BV 130, MUL 123
 - `battlearmor/3145/Clans/Constable Pacification Suit (ECM) (Sqd5)).blk`: BV differs from the MUL: BV 175, MUL 166
 - `battlearmor/3145/Clans/Constable Pacification Suit (ECM) (Sqd6).blk`: BV differs from the MUL: BV 225, MUL 213
@@ -157,30 +136,12 @@
 - `battlearmor/3145/Liao/Shen Long BA Pop Up Mine (Sqd4).blk`: BV differs from the MUL: BV 268, MUL 241
 - `battlearmor/3145/Liao/Shen Long BA Pop Up Mine (Sqd5).blk`: BV differs from the MUL: BV 361, MUL 324
 - `battlearmor/3145/Liao/Shen Long BA Pop Up Mine (Sqd6).blk`: BV differs from the MUL: BV 464, MUL 416
-- `battlearmor/3145/Marik/Leonidas BA (David LGR) (Sqd4).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/3145/Marik/Leonidas BA (David LGR) (Sqd5).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/3145/Marik/Leonidas BA (David LGR) (Sqd6).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/3145/Marik/Leonidas BA (FireDrake) (Sqd4).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/3145/Marik/Leonidas BA (FireDrake) (Sqd5).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/3145/Marik/Leonidas BA (FireDrake) (Sqd6).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/3145/Marik/Leonidas BA (ImpSensors) (Sqd4).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/3145/Marik/Leonidas BA (ImpSensors) (Sqd5).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/3145/Marik/Leonidas BA (ImpSensors) (Sqd6).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/3145/Marik/Leonidas BA (Light TAG) (Sqd4).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/3145/Marik/Leonidas BA (Light TAG) (Sqd5).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/3145/Marik/Leonidas BA (Light TAG) (Sqd6).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/3145/Marik/Leonidas BA (MG) (Sqd4).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/3145/Marik/Leonidas BA (MG) (Sqd5).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/3145/Marik/Leonidas BA (MG) (Sqd6).blk`: no Master Unit List entry to check its BV against
 - `battlearmor/3145/Marik/Ogre BA (Interdictor) (Sqd4).blk`: BV differs from the MUL: BV 342, MUL 341
 - `battlearmor/3145/NTNU RS/Grenadier BA [Heavy Flamer] (Sqd4).blk`: no Master Unit List entry to check its BV against
 - `battlearmor/3145/NTNU RS/Grenadier BA [Heavy Flamer] (Sqd5).blk`: no Master Unit List entry to check its BV against
 - `battlearmor/3145/NTNU RS/Grenadier BA [Heavy Flamer] (Sqd6).blk`: no Master Unit List entry to check its BV against
 - `battlearmor/3145/NTNU RS/Ravager Assault BA (LRM) (Sqd5).blk`: BV differs from the MUL: BV 544, MUL 543
 - `battlearmor/3145/NTNU RS/Ravager Assault BA (LRM) (Sqd6).blk`: BV differs from the MUL: BV 700, MUL 699
-- `battlearmor/3145/NTNU RS/Sloth BA (Huntsman) (Sqd4).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/3145/NTNU RS/Sloth BA (Huntsman) (Sqd5).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/3145/NTNU RS/Sloth BA (Huntsman) (Sqd6).blk`: no Master Unit List entry to check its BV against
 - `battlearmor/3145/NTNU RS/Warg Assault BA (Reactive)(Sqd5).blk`: BV differs from the MUL: BV 758, MUL 756
 - `battlearmor/3145/Republic/Centaur BA (Sqd4).blk`: BV differs from the MUL: BV 273, MUL 269
 - `battlearmor/3145/Republic/Centaur BA (Sqd5).blk`: BV differs from the MUL: BV 367, MUL 362
@@ -188,36 +149,10 @@
 - `battlearmor/3145/Republic/Simian BA (HMG) (Sqd4).blk`: no Master Unit List entry to check its BV against
 - `battlearmor/3145/Republic/Simian BA (HMG) (Sqd5).blk`: no Master Unit List entry to check its BV against
 - `battlearmor/3145/Republic/Simian BA (HMG) (Sqd6).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/3145/Steiner/Fenrir II Assault BA (AI) (Sqd4).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/3145/Steiner/Fenrir II Assault BA (AI) (Sqd5).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/3145/Steiner/Fenrir II Assault BA (AI) (Sqd6).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/3145/Steiner/Fenrir II Assault BA (LRM) (Sqd4).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/3145/Steiner/Fenrir II Assault BA (LRM) (Sqd5).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/3145/Steiner/Fenrir II Assault BA (LRM) (Sqd6).blk`: no Master Unit List entry to check its BV against
+- `battlearmor/3145/Steiner/Fenrir II Assault BA (AI) (Sqd6).blk`: BV differs from the MUL: BV 595, MUL 592
 - `battlearmor/3145/Steiner/Fenrir II Assault BA (ML) (Sqd4).blk`: no Master Unit List entry to check its BV against
 - `battlearmor/3145/Steiner/Fenrir II Assault BA (ML) (Sqd5).blk`: no Master Unit List entry to check its BV against
 - `battlearmor/3145/Steiner/Fenrir II Assault BA (ML) (Sqd6).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/3145/Steiner/Fenrir II Assault BA (MRR) (Sqd4).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/3145/Steiner/Fenrir II Assault BA (MRR) (Sqd5).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/3145/Steiner/Fenrir II Assault BA (MRR) (Sqd6).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/3145/Steiner/Fenrir II Assault BA (SRM) (Sqd4).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/3145/Steiner/Fenrir II Assault BA (SRM) (Sqd5).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/3145/Steiner/Fenrir II Assault BA (SRM) (Sqd6).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/3145/Steiner/GD Infiltrator Suit (Firedrake) (Sqd4).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/3145/Steiner/GD Infiltrator Suit (Firedrake) (Sqd5).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/3145/Steiner/GD Infiltrator Suit (Firedrake) (Sqd6).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/3145/Steiner/GD Infiltrator Suit (ISensors) (Sqd4).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/3145/Steiner/GD Infiltrator Suit (ISensors) (Sqd5).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/3145/Steiner/GD Infiltrator Suit (ISensors) (Sqd6).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/3145/Steiner/GD Infiltrator Suit (Light TAG) (Sqd4).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/3145/Steiner/GD Infiltrator Suit (Light TAG) (Sqd5).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/3145/Steiner/GD Infiltrator Suit (Light TAG) (Sqd6).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/3145/Steiner/GD Infiltrator Suit (Mine) (Sqd4).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/3145/Steiner/GD Infiltrator Suit (Mine) (Sqd5).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/3145/Steiner/GD Infiltrator Suit (Mine) (Sqd6).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/3145/Steiner/GD Infiltrator Suit (Remote Sensors) (Sqd4).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/3145/Steiner/GD Infiltrator Suit (Remote Sensors) (Sqd5).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/3145/Steiner/GD Infiltrator Suit (Remote Sensors) (Sqd6).blk`: no Master Unit List entry to check its BV against
 - `battlearmor/3150/Cavalier II BA[PPC] (Sqd4).blk`: BV differs from the MUL: BV 311, MUL 293
 - `battlearmor/3150/Cavalier II BA[PPC] (Sqd5).blk`: BV differs from the MUL: BV 419, MUL 395
 - `battlearmor/3150/Cavalier II BA[PPC] (Sqd6).blk`: BV differs from the MUL: BV 539, MUL 507
@@ -250,9 +185,9 @@
 - `battlearmor/Golden Century/Water Elemental Mining Suit (Sqd4).blk`: no Master Unit List entry to check its BV against
 - `battlearmor/Golden Century/Water Elemental Mining Suit (Sqd6).blk`: no Master Unit List entry to check its BV against
 - `battlearmor/Jihad FR/Machina Domini Interface Armor.blk`: the import could not carry all of it over: 'BABattleMechNIU' is not in the battle armor equipment tables: left off.
-- `battlearmor/OTP/Fronc Reaches/TinStar BA (Sqd4).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/OTP/Fronc Reaches/TinStar BA (Sqd5).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/OTP/Fronc Reaches/TinStar BA (Sqd6).blk`: no Master Unit List entry to check its BV against
+- `battlearmor/OTP/Fronc Reaches/TinStar BA (Sqd4).blk`: BV differs from the MUL: BV 288, MUL 272
+- `battlearmor/OTP/Fronc Reaches/TinStar BA (Sqd5).blk`: BV differs from the MUL: BV 387, MUL 366
+- `battlearmor/OTP/Fronc Reaches/TinStar BA (Sqd6).blk`: BV differs from the MUL: BV 498, MUL 471
 - `battlearmor/ProtoTypes/Void Med BA Minelayer (Sqd4).blk`: BV differs from the MUL: BV 314, MUL 312
 - `battlearmor/Rec Guides ilClan/Vol 24/Elemental III BA [AP Gauss](Sqd4).blk`: BV differs from the MUL: BV 395, MUL 396
 - `battlearmor/Rec Guides ilClan/Vol 24/Elemental III BA [Flamer] (Sqd4).blk`: BV differs from the MUL: BV 267, MUL 266
@@ -271,9 +206,6 @@
 - `battlearmor/Rec Guides ilClan/Vol 30/Stormbird Battle Armor (Sqd6).blk`: BV differs from the MUL: BV 817, MUL 813
 - `battlearmor/Rec Guides ilClan/Vol 31/Callisto B BA [SRM](Sqd5).blk`: BV differs from the MUL: BV 532, MUL 533
 - `battlearmor/Rec Guides ilClan/Vol 31/Callisto B BA [SRM](Sqd6).blk`: BV differs from the MUL: BV 675, MUL 676
-- `battlearmor/Rec Guides ilClan/Vol 32/IS Standard Battle Armor [Magnetic](Sqd4).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/Rec Guides ilClan/Vol 32/IS Standard Battle Armor [Magnetic](Sqd5).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/Rec Guides ilClan/Vol 32/IS Standard Battle Armor [Magnetic](Sqd6).blk`: no Master Unit List entry to check its BV against
 - `battlearmor/TRO VA/Ailette Zero-G Engineering Exo (Sqd4).blk`: BV differs from the MUL: BV 6, MUL 20
 - `battlearmor/TRO VA/Ailette Zero-G Engineering Exo (Sqd5).blk`: BV differs from the MUL: BV 8, MUL 27
 - `battlearmor/TRO VA/Ailette Zero-G Engineering Exo (Sqd6).blk`: BV differs from the MUL: BV 10, MUL 35
@@ -283,9 +215,8 @@
 - `battlearmor/TRO VA/Gladiator Exo [BC ID]  (Sqd5).blk`: no Master Unit List entry to check its BV against
 - `battlearmor/TRO VA/Gladiator Exo [BC ID] (Sqd4).blk`: no Master Unit List entry to check its BV against
 - `battlearmor/TRO VA/Gladiator Exo [BC ID] (Sqd6).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/TRO VA/Gorilla Exo 'Falcata' (Sqd4).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/TRO VA/Gorilla Exo 'Falcata' (Sqd5).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/TRO VA/Gorilla Exo 'Falcata' (Sqd6).blk`: no Master Unit List entry to check its BV against
+- `battlearmor/TRO VA/Gorilla Exo 'Falcata' (Sqd5).blk`: BV differs from the MUL: BV 80, MUL 77
+- `battlearmor/TRO VA/Gorilla Exo 'Falcata' (Sqd6).blk`: BV differs from the MUL: BV 103, MUL 99
 - `battlearmor/TRO VA/Resgate PA(L) (Sup) (Sqd6).blk`: BV differs from the MUL: BV 163, MUL 203
 - `battlearmor/TRO VA/Salrilla Exo [Mine Clearance] (Sqd4).blk`: no Master Unit List entry to check its BV against
 - `battlearmor/TRO VA/Salrilla Exo [Mine Clearance] (Sqd5).blk`: no Master Unit List entry to check its BV against
@@ -303,40 +234,17 @@
 - `battlearmor/TRO VA/Tunnel Rat Mining Exo IV [BC-GL] (Sqd5).blk`: BV differs from the MUL: BV 69, MUL 60
 - `battlearmor/TRO VA/Tunnel Rat Mining Exo IV [BC-GL] (Sqd6).blk`: BV differs from the MUL: BV 88, MUL 77
 - `battlearmor/ToS/Kandersteg/Hantu AIX-210(Sqd6).blk`: BV differs from the MUL: BV 76, MUL 72
-- `battlearmor/XTRs/Comstar/Tornado PA(L) P17 Hurricane (Sqd4).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/XTRs/Comstar/Tornado PA(L) P17 Hurricane (Sqd5).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/XTRs/Comstar/Tornado PA(L) P17 Hurricane (Sqd6).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/XTRs/Gladiator/Gladiator Exo The Spider (Sqd4).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/XTRs/Gladiator/Gladiator Exo The Spider (Sqd5).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/XTRs/Gladiator/Gladiator Exo The Spider (Sqd6).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/XTRs/Gladiator/Gray Death Scout Suit The Willow Wisps (Sqd4).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/XTRs/Gladiator/Gray Death Scout Suit The Willow Wisps (Sqd5).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/XTRs/Gladiator/Gray Death Scout Suit The Willow Wisps (Sqd6).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/XTRs/Gladiator/IS Standard BA [Hive] (Sqd4).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/XTRs/Gladiator/IS Standard BA [Hive] (Sqd5).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/XTRs/Gladiator/IS Standard BA [Hive] (Sqd6).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/XTRs/Gladiator/Kanazuchi Assault BA Cyclops (Sqd4).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/XTRs/Gladiator/Kanazuchi Assault BA Cyclops (Sqd5).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/XTRs/Gladiator/Kanazuchi Assault BA Cyclops (Sqd6).blk`: no Master Unit List entry to check its BV against
+- `battlearmor/XTRs/Gladiator/Gray Death Scout Suit The Willow Wisps (Sqd4).blk`: BV differs from the MUL: BV 146, MUL 201
+- `battlearmor/XTRs/Gladiator/Gray Death Scout Suit The Willow Wisps (Sqd5).blk`: BV differs from the MUL: BV 197, MUL 271
+- `battlearmor/XTRs/Gladiator/Gray Death Scout Suit The Willow Wisps (Sqd6).blk`: BV differs from the MUL: BV 253, MUL 348
+- `battlearmor/XTRs/Gladiator/Kanazuchi Assault BA Cyclops (Sqd4).blk`: BV differs from the MUL: BV 558, MUL 630
+- `battlearmor/XTRs/Gladiator/Kanazuchi Assault BA Cyclops (Sqd5).blk`: BV differs from the MUL: BV 752, MUL 848
+- `battlearmor/XTRs/Gladiator/Kanazuchi Assault BA Cyclops (Sqd6).blk`: BV differs from the MUL: BV 967, MUL 1090
 - `battlearmor/XTRs/Kurita/Void Med BA Caltrop (Sqd4).blk`: BV differs from the MUL: BV 381, MUL 425
 - `battlearmor/XTRs/Kurita/Void Med BA Caltrop (Sqd5).blk`: BV differs from the MUL: BV 513, MUL 573
 - `battlearmor/XTRs/Kurita/Void Med BA Caltrop (Sqd6).blk`: BV differs from the MUL: BV 659, MUL 735
-- `battlearmor/XTRs/Marik/Longinus BA Hacked [David] (Sqd4).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/XTRs/Marik/Longinus BA Hacked [David] (Sqd5).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/XTRs/Marik/Longinus BA Hacked [David] (Sqd6).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/XTRs/Marik/Longinus BA Hacked [MG] (Sqd4).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/XTRs/Marik/Longinus BA Hacked [MG] (Sqd5).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/XTRs/Marik/Longinus BA Hacked [MG] (Sqd6).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/XTRs/Most Wanted/Djinn BA (Reflec) Terrorizer Flamer (Sqd4).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/XTRs/Most Wanted/Djinn BA (Reflec) Terrorizer Flamer (Sqd5).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/XTRs/Most Wanted/Djinn BA (Reflec) Terrorizer Flamer (Sqd6).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/XTRs/Most Wanted/Djinn BA (Reflec) Terrorizer MG (Sqd4).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/XTRs/Most Wanted/Djinn BA (Reflec) Terrorizer MG (Sqd5).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/XTRs/Most Wanted/Djinn BA (Reflec) Terrorizer MG (Sqd6).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/XTRs/Most Wanted/Djinn BA (Reflec) Terrorizer SL (Sqd4).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/XTRs/Most Wanted/Djinn BA (Reflec) Terrorizer SL (Sqd5).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/XTRs/Most Wanted/Djinn BA (Reflec) Terrorizer SL (Sqd6).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/XTRs/Most Wanted/Groundhog Exo Master Thief (Sqd1).blk`: no Master Unit List entry to check its BV against
+- `battlearmor/XTRs/Most Wanted/Djinn BA (Reflec) Terrorizer SL (Sqd4).blk`: BV differs from the MUL: BV 221, MUL 211
+- `battlearmor/XTRs/Most Wanted/Groundhog Exo Master Thief (Sqd1).blk`: BV differs from the MUL: BV 5, MUL 4
 - `battlearmor/XTRs/Phantoms/Purifier BA Terra APG (Sqd4).blk`: no Master Unit List entry to check its BV against
 - `battlearmor/XTRs/Phantoms/Purifier BA Terra APG (Sqd5).blk`: no Master Unit List entry to check its BV against
 - `battlearmor/XTRs/Phantoms/Purifier BA Terra APG (Sqd6).blk`: no Master Unit List entry to check its BV against
@@ -371,10 +279,10 @@
 - `battlearmor/XTRs/Republic I/Surat Solahma Suit (Grey Death) (Sqd4).blk`: BV differs from the MUL: BV 267, MUL 265
 - `battlearmor/XTRs/Republic I/Surat Solahma Suit (Grey Death) (Sqd5).blk`: BV differs from the MUL: BV 359, MUL 357
 - `battlearmor/XTRs/Republic I/Surat Solahma Suit (Grey Death) (Sqd6).blk`: BV differs from the MUL: BV 462, MUL 459
-- `battlearmor/XTRs/Royal Fantasy/Gnome BA 'Dwarf_.blk`: no Master Unit List entry to check its BV against
-- `battlearmor/XTRs/Royal Fantasy/Sylph BA 'TinkerBelle'.blk`: no Master Unit List entry to check its BV against
-- `battlearmor/XTRs/Royal Fantasy/Undine BA 'Sebastian'.blk`: no Master Unit List entry to check its BV against
-- `battlearmor/XTRs/Steiner/Fenrir BA Longshot (Sqd4).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/XTRs/Steiner/Fenrir BA Longshot (Sqd5).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/XTRs/Steiner/Fenrir BA Longshot (Sqd6).blk`: no Master Unit List entry to check its BV against
+- `battlearmor/XTRs/Royal Fantasy/Gnome BA 'Dwarf_.blk`: BV differs from the MUL: BV 162, MUL 276
+- `battlearmor/XTRs/Royal Fantasy/Sylph BA 'TinkerBelle'.blk`: BV differs from the MUL: BV 272, MUL 271
+- `battlearmor/XTRs/Royal Fantasy/Undine BA 'Sebastian'.blk`: BV differs from the MUL: BV 227, MUL 229
+- `battlearmor/XTRs/Steiner/Fenrir BA Longshot (Sqd4).blk`: BV differs from the MUL: BV 623, MUL 624
+- `battlearmor/XTRs/Steiner/Fenrir BA Longshot (Sqd5).blk`: BV differs from the MUL: BV 838, MUL 840
+- `battlearmor/XTRs/Steiner/Fenrir BA Longshot (Sqd6).blk`: BV differs from the MUL: BV 1078, MUL 1080
 - `battlearmor/XTRs/Steiner/Gray Death SA Prototype (Sqd4).blk`: BV differs from the MUL: BV 329, MUL 328

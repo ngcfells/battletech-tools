@@ -1,25 +1,25 @@
 # Bundled 'Mechs: build report
 
-3600 designs kept (38 renamed), 4116 files left out.
+3519 designs kept (38 renamed), 4205 files left out.
 
 | Reason | Files |
 |---|---|
-| duplicate of a design already kept | 3051 |
-| the import could not carry all of it over | 227 |
-| BV differs from the MUL | 206 |
+| duplicate of a design already kept | 3166 |
+| BV differs from the MUL | 211 |
+| the import could not carry all of it over | 168 |
 | no Master Unit List entry to check its BV against | 165 |
-| different submodel, same name and model: equipment | 134 |
-| different submodel, same name and model: ammo type | 102 |
-| different submodel, same name and model: actuators | 84 |
-| import errors | 49 |
-| configuration BV differs from the MUL | 39 |
-| duplicate of a design already kept, differs only in armor spread | 35 |
-| does not survive the compact format | 7 |
+| different submodel, same name and model: equipment | 158 |
+| different submodel, same name and model: ammo type | 112 |
+| different submodel, same name and model: actuators | 85 |
+| configuration BV differs from the MUL | 47 |
+| duplicate of a design already kept, differs only in armor spread | 36 |
+| import errors | 34 |
 | duplicate of a design already kept, differs only in engine heat sinks in crit slots | 6 |
+| does not survive the compact format | 6 |
 | different submodel, same name and model: heat sinks placed | 6 |
 | different submodel, same name and model: heat sinks | 2 |
+| BV differs from the MUL in every configuration | 1 |
 | duplicate of a design already kept, differs only in CASE placed | 1 |
-| import threw | 1 |
 | different submodel, same name and model: CASE | 1 |
 
 ## Left out
@@ -30,7 +30,7 @@
 - `BoT/Warhammer C.ssw`: BV differs from the MUL: C: BV 1746, MUL 1728
 - `Clan/Omni/Blood Asp (Star Adder).ssw`: configuration BV differs from the MUL: I: BV 2252, MUL 2242
 - `Clan/Omni/Fenris (Ice Ferret).ssw`: import errors: I: 'M-Pod' is Inner Sphere equipment (M-Pod) on a Clan design; the design needs Mixed Tech; I: 'M-Pod' is Inner Sphere equipment (M-Pod) on a Clan design; the design needs Mixed Tech; I: 'Bloodhound Active Probe' is Inner Sphere equipment (Bloodhound Active Probe) on a Clan design; the design needs Mixed Tech
-- `Clan/Omni/Fire Moth (Dasher).ssw`: import errors: R: 'M-Pod' is Inner Sphere equipment (M-Pod) on a Clan design; the design needs Mixed Tech; R: 'C3 Computer (Slave)' is Inner Sphere equipment (C3 Computer (Slave)) on a Clan design; the design needs Mixed Tech; T: '(CL) Streak SRM-4 (iOS)' is Inner Sphere equipment (Streak SRM 4 (I-OS)) on a Clan design; the design needs Mixed Tech
+- `Clan/Omni/Fire Moth (Dasher).ssw`: import errors: R: 'M-Pod' is Inner Sphere equipment (M-Pod) on a Clan design; the design needs Mixed Tech; R: 'C3 Computer (Slave)' is Inner Sphere equipment (C3 Computer (Slave)) on a Clan design; the design needs Mixed Tech
 - `Clan/Omni/Gargoyle (Man O War).ssw`: import errors: K: 'Hatchet' is Inner Sphere equipment (Hatchet) on a Clan design; the design needs Mixed Tech
 - `Clan/Omni/Hellbringer (Loki).ssw`: configuration BV differs from the MUL: D: BV 2145, MUL 2140
 - `Clan/Omni/Hellbringer (Loki).ssw`: configuration BV differs from the MUL: G: BV 1956, MUL 1943
@@ -38,14 +38,12 @@
 - `Clan/Omni/Ice Ferret (Fenris).ssw`: import errors: I: 'M-Pod' is Inner Sphere equipment (M-Pod) on a Clan design; the design needs Mixed Tech; I: 'M-Pod' is Inner Sphere equipment (M-Pod) on a Clan design; the design needs Mixed Tech; I: 'Bloodhound Active Probe' is Inner Sphere equipment (Bloodhound Active Probe) on a Clan design; the design needs Mixed Tech
 - `Clan/Omni/Kit Fox (Uller).ssw`: import errors: BLO: 'Improved C3 Computer' is Inner Sphere equipment (Improved C3 Computer) on a Clan design; the design needs Mixed Tech
 - `Clan/Omni/Mad Dog Mk III (Vulture Mk III).ssw`: import errors: BLO: 'Improved C3 Computer' is Inner Sphere equipment (Improved C3 Computer) on a Clan design; the design needs Mixed Tech
-- `Clan/Omni/Mist Lynx (Koshi).ssw`: import errors: Z: Cannot find any equipment named: 'Ammo (iATM-3)'; Z: Cannot find any equipment named: 'Ammo (iATM-3)'
+- `Clan/Omni/Mist Lynx (Koshi).ssw`: BV differs from the MUL: : BV 871, MUL 760
 - `Clan/Omni/Mongrel (Grendel).ssw`: configuration BV differs from the MUL: T: BV 1931, MUL 1936
 - `Clan/Omni/Nova (Black Hawk).ssw`: import errors: T: Cannot find any equipment named: 'Ammo (Medium Chemical Laser)'; T: Cannot find any equipment named: 'Ammo (Medium Chemical Laser)'; T: Cannot find any equipment named: 'Ammo (Medium Chemical Laser)'; T: Cannot find any equipment named: 'Ammo (Medium Chemical Laser)'; U: 'Sword' is Inner Sphere equipment (Sword) on a Clan design; the design needs Mixed Tech
 - `Clan/Omni/Skinwalker (Ryoken III).ssw`: import errors: Cannot import the cockpit type: 'Interface Cockpit'; Cannot find any gyro named: 'No Gyro'; A: Cannot import the cockpit type: 'Interface Cockpit'; A: Cannot find any gyro named: 'No Gyro'; A: Unallocated Criticals: 1; A: - Targeting Computer (Clan) (clan-targeting-computer); B: Cannot import the cockpit type: 'Interface Cockpit'; B: Cannot find any gyro named: 'No Gyro'; C: Cannot import the cockpit type: 'Interface Cockpit'; C: Cannot find any gyro named: 'No Gyro'; D: Cannot import the cockpit type: 'Interface Cockpit'; D: Cannot find any gyro named: 'No Gyro'; D: Unallocated Criticals: 1; D: - Clan Ultra AC/10 (clan-autocannon-uac-10); E: Cannot import the cockpit type: 'Interface Cockpit'; E: Cannot find any gyro named: 'No Gyro'; E: Unallocated Criticals: 4; E: - Standard Jump Jets (jj-standard); E: - Standard Jump Jets (jj-standard); E: - Standard Jump Jets (jj-standard); E: - Standard Jump Jets (jj-standard); F: Cannot import the cockpit type: 'Interface Cockpit'; F: Cannot find any gyro named: 'No Gyro'
-- `Clan/Omni/Stormcrow (Ryoken).ssw`: import errors: Z: Cannot find any equipment named: 'Ammo (iATM-9)'; Z: Cannot find any equipment named: 'Ammo (iATM-9)'; Z: Cannot find any equipment named: 'Ammo (iATM-9)'; Z: Cannot find any equipment named: 'Ammo (iATM-9)'; Z: Cannot find any equipment named: 'Ammo (iATM-9)'; Z: Cannot find any equipment named: 'Ammo (iATM-9)'
-- `Clan/Omni/Summoner (Thor).ssw`: import errors: Z: Cannot find any equipment named: 'Ammo (iATM-12)'; Z: Cannot find any equipment named: 'Ammo (iATM-12)'; Z: Cannot find any equipment named: 'Ammo (iATM-12)'
-- `Clan/Omni/Timber Wolf (Mad Cat).ssw`: import errors: Z: Cannot find any equipment named: 'Ammo (iATM-9)'; Z: Cannot find any equipment named: 'Ammo (iATM-9)'; Z: Cannot find any equipment named: 'Ammo (iATM-9)'; Z: Cannot find any equipment named: 'Ammo (iATM-9)'
-- `Clan/Omni/Viper (Dragonfly).ssw`: import errors: R: 'Bloodhound Active Probe' is Inner Sphere equipment (Bloodhound Active Probe) on a Clan design; the design needs Mixed Tech; U: 'Hatchet' is Inner Sphere equipment (Hatchet) on a Clan design; the design needs Mixed Tech; Z: Cannot find any equipment named: 'Ammo (iATM-3)'
+- `Clan/Omni/Timber Wolf (Mad Cat).ssw`: configuration BV differs from the MUL: U: BV 2508, MUL 2627
+- `Clan/Omni/Viper (Dragonfly).ssw`: import errors: R: 'Bloodhound Active Probe' is Inner Sphere equipment (Bloodhound Active Probe) on a Clan design; the design needs Mixed Tech; U: 'Hatchet' is Inner Sphere equipment (Hatchet) on a Clan design; the design needs Mixed Tech
 - `Clan/RecGuide/Vol 11/Horned Owl (Peregrine) 6.ssw`: BV differs from the MUL: 6: BV 1413, MUL 1475
 - `Clan/RecGuide/Vol 9/Vapor Eagle (Goshawk).ssw`: duplicate of a design already kept: Vapor Eagle (Goshawk) 
 - `Dossiers/Bounty Hunter/Shadow Hawk SHD-5H (Sandy).ssw`: duplicate of a design already kept: Shadow Hawk SHD-5D (Sandy)
@@ -83,20 +81,18 @@
 - `Omnis/Blackjack BJ2-O.ssw`: configuration BV differs from the MUL: C: BV 1189, MUL 1639
 - `Omnis/Butcherbird (Ion Sparrow).ssw`: duplicate of a design already kept: Ion Sparrow (Butcherbird)  Prime
 - `Omnis/Cauldron-Born (Ebon Jaguar).ssw`: duplicate of a design already kept: Ebon Jaguar (Cauldron-Born)  Prime
-- `Omnis/Celerity CLR-03-O.ssw`: import errors: A: '(CL) SRM-6 (iOS)' is Inner Sphere equipment (SRM 6 (I-OS)) on a Clan design; the design needs Mixed Tech; A: '(CL) SRM-6 (iOS)' is Inner Sphere equipment (SRM 6 (I-OS)) on a Clan design; the design needs Mixed Tech; A: Unallocated Criticals: 1; A: - SRM 6 (I-OS) (srm-6-ios)
 - `Omnis/Centurion CN11-O.ssw`: configuration BV differs from the MUL: Prime: BV 1236, file 1075
 - `Omnis/Centurion CN11-O.ssw`: configuration BV differs from the MUL: A: BV 1398, file 1207
 - `Omnis/Centurion CN11-O.ssw`: configuration BV differs from the MUL: B: BV 1430, file 1242
 - `Omnis/Centurion CN11-O.ssw`: configuration BV differs from the MUL: C: BV 1628, file 1489
 - `Omnis/Centurion CN11-O.ssw`: configuration BV differs from the MUL: E: BV 1515, file 1315
 - `Omnis/Centurion CN11-O.ssw`: BV differs from the MUL: CN11-O: BV 1177, MUL 1236
-- `Omnis/Crossbow.ssw`: import errors: T: '(CL) SRM-2 (iOS)' is Inner Sphere equipment (SRM 2 (I-OS)) on a Clan design; the design needs Mixed Tech; T: '(CL) SRM-2 (iOS)' is Inner Sphere equipment (SRM 2 (I-OS)) on a Clan design; the design needs Mixed Tech; T: '(CL) SRM-2 (iOS)' is Inner Sphere equipment (SRM 2 (I-OS)) on a Clan design; the design needs Mixed Tech; T: '(CL) SRM-2 (iOS)' is Inner Sphere equipment (SRM 2 (I-OS)) on a Clan design; the design needs Mixed Tech; T: '(CL) SRM-2 (iOS)' is Inner Sphere equipment (SRM 2 (I-OS)) on a Clan design; the design needs Mixed Tech; T: '(CL) SRM-2 (iOS)' is Inner Sphere equipment (SRM 2 (I-OS)) on a Clan design; the design needs Mixed Tech; T: '(CL) SRM-2 (iOS)' is Inner Sphere equipment (SRM 2 (I-OS)) on a Clan design; the design needs Mixed Tech; T: '(CL) SRM-2 (iOS)' is Inner Sphere equipment (SRM 2 (I-OS)) on a Clan design; the design needs Mixed Tech; T: '(CL) SRM-2 (iOS)' is Inner Sphere equipment (SRM 2 (I-OS)) on a Clan design; the design needs Mixed Tech; T: '(CL) SRM-2 (iOS)' is Inner Sphere equipment (SRM 2 (I-OS)) on a Clan design; the design needs Mixed Tech; T: '(CL) SRM-2 (iOS)' is Inner Sphere equipment (SRM 2 (I-OS)) on a Clan design; the design needs Mixed Tech; T: '(CL) SRM-2 (iOS)' is Inner Sphere equipment (SRM 2 (I-OS)) on a Clan design; the design needs Mixed Tech; T: '(CL) SRM-2 (iOS)' is Inner Sphere equipment (SRM 2 (I-OS)) on a Clan design; the design needs Mixed Tech; T: '(CL) SRM-2 (iOS)' is Inner Sphere equipment (SRM 2 (I-OS)) on a Clan design; the design needs Mixed Tech; T: '(CL) SRM-6 (iOS)' is Inner Sphere equipment (SRM 6 (I-OS)) on a Clan design; the design needs Mixed Tech; T: '(CL) SRM-6 (iOS)' is Inner Sphere equipment (SRM 6 (I-OS)) on a Clan design; the design needs Mixed Tech; T: Unallocated Criticals: 2; T: - SRM 6 (I-OS) (srm-6-ios); T: - SRM 6 (I-OS) (srm-6-ios)
+- `Omnis/Crossbow.ssw`: configuration BV differs from the MUL: D: BV 1144, MUL 1154
 - `Omnis/Daishi (Dire Wolf).ssw`: duplicate of a design already kept: Dire Wolf (Daishi)  Prime
-- `Omnis/Dasher (Fire Moth).ssw`: import errors: R: 'M-Pod' is Inner Sphere equipment (M-Pod) on a Clan design; the design needs Mixed Tech; R: 'C3 Computer (Slave)' is Inner Sphere equipment (C3 Computer (Slave)) on a Clan design; the design needs Mixed Tech; T: '(CL) Streak SRM-4 (iOS)' is Inner Sphere equipment (Streak SRM 4 (I-OS)) on a Clan design; the design needs Mixed Tech
+- `Omnis/Dasher (Fire Moth).ssw`: import errors: R: 'M-Pod' is Inner Sphere equipment (M-Pod) on a Clan design; the design needs Mixed Tech; R: 'C3 Computer (Slave)' is Inner Sphere equipment (C3 Computer (Slave)) on a Clan design; the design needs Mixed Tech
 - `Omnis/Deimos.ssw`: import errors: E: 'Radical Heat Sink' is Inner Sphere equipment (Radical Heat Sink System) on a Clan design; the design needs Mixed Tech
 - `Omnis/Deva C-DVA-O.ssw`: configuration BV differs from the MUL: Exanimus (U): BV 1674, file 1685
-- `Omnis/Dragonfly (Viper).ssw`: import errors: R: 'Bloodhound Active Probe' is Inner Sphere equipment (Bloodhound Active Probe) on a Clan design; the design needs Mixed Tech; U: 'Hatchet' is Inner Sphere equipment (Hatchet) on a Clan design; the design needs Mixed Tech; Z: Cannot find any equipment named: 'Ammo (iATM-3)'
-- `Omnis/Fire Falcon.ssw`: import errors: T: '(CL) SRM-4 (iOS)' is Inner Sphere equipment (SRM 4 (I-OS)) on a Clan design; the design needs Mixed Tech
+- `Omnis/Dragonfly (Viper).ssw`: import errors: R: 'Bloodhound Active Probe' is Inner Sphere equipment (Bloodhound Active Probe) on a Clan design; the design needs Mixed Tech; U: 'Hatchet' is Inner Sphere equipment (Hatchet) on a Clan design; the design needs Mixed Tech
 - `Omnis/Gladiator (Executioner).ssw`: duplicate of a design already kept: Executioner (Gladiator)  Prime
 - `Omnis/Gladiator-B (Executioner-B).ssw`: duplicate of a design already kept: Executioner-B (Gladiator-B)  Prime
 - `Omnis/Grendel (Mongrel).ssw`: configuration BV differs from the MUL: T: BV 1931, MUL 1936
@@ -106,36 +102,39 @@
 - `Omnis/Hauptmann HA1-O.ssw`: configuration BV differs from the MUL: C: BV 2333, file 2322
 - `Omnis/Hierofalcon.ssw`: configuration BV differs from the MUL: A: BV 1924, MUL 1963
 - `Omnis/Karhu.ssw`: import errors: 'Retractable Blade' is Inner Sphere equipment (Retractable Blade) on a Clan design; the design needs Mixed Tech; C: 'Retractable Blade' is Inner Sphere equipment (Retractable Blade) on a Clan design; the design needs Mixed Tech; (Syngman): 'Guardian ECM Suite' is Inner Sphere equipment (ECM Suite) on a Clan design; the design needs Mixed Tech; (Syngman): 'Beagle Active Probe' is Inner Sphere equipment (Beagle Active Probe) on a Clan design; the design needs Mixed Tech; (Syngman): 'C3 Computer (Slave)' is Inner Sphere equipment (C3 Computer (Slave)) on a Clan design; the design needs Mixed Tech; (Syngman): 'Retractable Blade' is Inner Sphere equipment (Retractable Blade) on a Clan design; the design needs Mixed Tech
-- `Omnis/Koshi (Mist Lynx).ssw`: import errors: Z: Cannot find any equipment named: 'Ammo (iATM-3)'; Z: Cannot find any equipment named: 'Ammo (iATM-3)'
-- `Omnis/Linebacker.ssw`: import errors: F: Cannot find any equipment named: 'Narc Missile Beacon (iOS)'
+- `Omnis/Koshi (Mist Lynx).ssw`: BV differs from the MUL: : BV 871, MUL 760
+- `Omnis/Linebacker.ssw`: import errors: F: '(CL) Narc Missile Beacon (iOS)' is Inner Sphere equipment (Narc Missile Beacon (I-OS)) on a Clan design; the design needs Mixed Tech; F: Unallocated Criticals: 1; F: - Narc Missile Beacon (I-OS) (narc-ios)
 - `Omnis/Loki (Hellbringer).ssw`: configuration BV differs from the MUL: D: BV 2145, MUL 2140
 - `Omnis/Loki (Hellbringer).ssw`: configuration BV differs from the MUL: G: BV 1956, MUL 1943
 - `Omnis/Loki (Hellbringer).ssw`: duplicate of a design already kept: Hellbringer (Loki)  Prime
 - `Omnis/Loki Mk II (Hellbringer Mk II).ssw`: duplicate of a design already kept: Hellbringer Mk II (Loki Mk II)  Prime
-- `Omnis/Mad Cat (Timber Wolf).ssw`: import errors: Z: Cannot find any equipment named: 'Ammo (iATM-9)'; Z: Cannot find any equipment named: 'Ammo (iATM-9)'; Z: Cannot find any equipment named: 'Ammo (iATM-9)'; Z: Cannot find any equipment named: 'Ammo (iATM-9)'
+- `Omnis/Mad Cat (Timber Wolf).ssw`: configuration BV differs from the MUL: U: BV 2508, MUL 2627
+- `Omnis/Mad Cat (Timber Wolf).ssw`: duplicate of a design already kept: Timber Wolf (Mad Cat)  Prime
 - `Omnis/Mad Cat Mk IV.ssw`: configuration BV differs from the MUL: Prime: BV 2681, MUL 2781
 - `Omnis/Man O War (Gargoyle).ssw`: import errors: K: 'Hatchet' is Inner Sphere equipment (Hatchet) on a Clan design; the design needs Mixed Tech
 - `Omnis/Masakari (Warhawk).ssw`: duplicate of a design already kept: Warhawk (Masakari)  Prime
 - `Omnis/Men Shen MS1-O.ssw`: configuration BV differs from the MUL: U: BV 1635, file 1725
 - `Omnis/Nobori-nin (Huntsman).ssw`: import errors: F: 'Radical Heat Sink' is Inner Sphere equipment (Radical Heat Sink System) on a Clan design; the design needs Mixed Tech; G: 'Retractable Blade' is Inner Sphere equipment (Retractable Blade) on a Clan design; the design needs Mixed Tech
 - `Omnis/Nova Cat.ssw`: configuration BV differs from the MUL: F: BV 2602, MUL 2706
-- `Omnis/Osteon.ssw`: import errors: Cannot find any equipment named: 'Ammo (iATM-9)'; Cannot find any equipment named: 'Ammo (iATM-9)'; Cannot find any equipment named: 'Ammo (iATM-9)'; Cannot find any equipment named: 'Ammo (iATM-9)'; Cannot find any equipment named: 'Ammo (iATM-9)'; Cannot find any equipment named: 'Ammo (iATM-9)'; Cannot find any equipment named: 'Ammo (iATM-9)'; Cannot find any equipment named: 'Ammo (iATM-9)'; Cannot find any equipment named: 'Ammo (iATM-9)'; Cannot find any equipment named: 'Ammo (iATM-9)'; Cannot find any equipment named: 'Ammo (iATM-9)'; Cannot find any equipment named: 'Ammo (iATM-9)'; Cannot find any equipment named: 'Ammo (iATM-9)'; B: 'Large Vibroblade' is Inner Sphere equipment (Vibroblade (Large)) on a Clan design; the design needs Mixed Tech; (Jaguar): 'Retractable Blade' is Inner Sphere equipment (Retractable Blade) on a Clan design; the design needs Mixed Tech
-- `Omnis/Pariah (Septicemia).ssw`: import errors: A-Z: Cannot find any equipment named: 'Ammo (iATM-12)'; A-Z: Cannot find any equipment named: 'Ammo (iATM-12)'; A-Z: Cannot find any equipment named: 'Ammo (iATM-12)'; A-Z: Cannot find any equipment named: 'Ammo (iATM-12)'; Z: Cannot find any equipment named: 'Ground Mobile HPG'; Z: Cannot find any equipment named: 'Ammo (iATM-12)'; Z: Cannot find any equipment named: 'Ammo (iATM-12)'; Z: Cannot find any equipment named: 'Ammo (iATM-12)'
+- `Omnis/Osteon.ssw`: import errors: B: 'Large Vibroblade' is Inner Sphere equipment (Vibroblade (Large)) on a Clan design; the design needs Mixed Tech; (Jaguar): 'Retractable Blade' is Inner Sphere equipment (Retractable Blade) on a Clan design; the design needs Mixed Tech
+- `Omnis/Pariah (Septicemia).ssw`: configuration BV differs from the MUL: US: BV 2298, MUL 2308
+- `Omnis/Pariah (Septicemia).ssw`: configuration BV differs from the MUL: UW: BV 1879, MUL 1913
 - `Omnis/Pouncer.ssw`: import errors: X: 'Lance' is Inner Sphere equipment (Lance) on a Clan design; the design needs Mixed Tech
 - `Omnis/Puma (Adder).ssw`: duplicate of a design already kept: Adder (Puma)  Prime
 - `Omnis/Regent.ssw`: configuration BV differs from the MUL: A: BV 3419, MUL 3412
 - `Omnis/Rime Otter.ssw`: import errors: C: 'Hatchet' is Inner Sphere equipment (Hatchet) on a Clan design; the design needs Mixed Tech
-- `Omnis/Ryoken (Stormcrow).ssw`: import errors: Z: Cannot find any equipment named: 'Ammo (iATM-9)'; Z: Cannot find any equipment named: 'Ammo (iATM-9)'; Z: Cannot find any equipment named: 'Ammo (iATM-9)'; Z: Cannot find any equipment named: 'Ammo (iATM-9)'; Z: Cannot find any equipment named: 'Ammo (iATM-9)'; Z: Cannot find any equipment named: 'Ammo (iATM-9)'
+- `Omnis/Ryoken (Stormcrow).ssw`: duplicate of a design already kept: Stormcrow (Ryoken)  Prime
 - `Omnis/Ryoken III (Skinwalker).ssw`: import errors: Cannot import the cockpit type: 'Interface Cockpit'; Cannot find any gyro named: 'No Gyro'; A: Cannot import the cockpit type: 'Interface Cockpit'; A: Cannot find any gyro named: 'No Gyro'; A: Unallocated Criticals: 1; A: - Targeting Computer (Clan) (clan-targeting-computer); B: Cannot import the cockpit type: 'Interface Cockpit'; B: Cannot find any gyro named: 'No Gyro'; C: Cannot import the cockpit type: 'Interface Cockpit'; C: Cannot find any gyro named: 'No Gyro'; D: Cannot import the cockpit type: 'Interface Cockpit'; D: Cannot find any gyro named: 'No Gyro'; D: Unallocated Criticals: 1; D: - Clan Ultra AC/10 (clan-autocannon-uac-10); E: Cannot import the cockpit type: 'Interface Cockpit'; E: Cannot find any gyro named: 'No Gyro'; E: Unallocated Criticals: 4; E: - Standard Jump Jets (jj-standard); E: - Standard Jump Jets (jj-standard); E: - Standard Jump Jets (jj-standard); E: - Standard Jump Jets (jj-standard); F: Cannot import the cockpit type: 'Interface Cockpit'; F: Cannot find any gyro named: 'No Gyro'
 - `Omnis/Sarath SRTH-1O.ssw`: import errors: B: 'Talons' is Clan equipment (Talons (Clan)) on an Inner Sphere design; the design needs Mixed Tech
-- `Omnis/Savage Coyote.ssw`: import errors: Z: Cannot find any equipment named: 'Ammo (iATM-12)'; Z: Cannot find any equipment named: 'Ammo (iATM-12)'; Z: Cannot find any equipment named: 'Ammo (iATM-12)'; Z: Cannot find any equipment named: 'Ammo (iATM-12)'
+- `Omnis/Savage Coyote.ssw`: configuration BV differs from the MUL: Z: BV 3026, MUL 3080
+- `Omnis/Savage Coyote.ssw`: configuration BV differs from the MUL: J: BV 2538, MUL 2554
 - `Omnis/Star Adder (Blood Asp).ssw`: configuration BV differs from the MUL: I: BV 2252, MUL 2242
 - `Omnis/Star Adder (Blood Asp).ssw`: duplicate of a design already kept: Blood Asp (Star Adder)  Prime
 - `Omnis/Stooping Hawk.ssw`: configuration BV differs from the MUL: F: BV 1974, MUL 1988
 - `Omnis/Tenshi TN-10-O.ssw`: configuration BV differs from the MUL: R: BV 2237, file 2183
-- `Omnis/Thor (Summoner).ssw`: import errors: Z: Cannot find any equipment named: 'Ammo (iATM-12)'; Z: Cannot find any equipment named: 'Ammo (iATM-12)'; Z: Cannot find any equipment named: 'Ammo (iATM-12)'
+- `Omnis/Thor (Summoner).ssw`: duplicate of a design already kept: Summoner (Thor)  Prime
 - `Omnis/Thor II (Grand Summoner).ssw`: duplicate of a design already kept: Grand Summoner (Thor II)  Prime
-- `Omnis/Turkina.ssw`: import errors: Z: Cannot find any equipment named: 'Ammo (iATM-12)'; Z: Cannot find any equipment named: 'Ammo (iATM-12)'; Z: Cannot find any equipment named: 'Ammo (iATM-12)'; Z: Cannot find any equipment named: 'Ammo (iATM-12)'; Z: Cannot find any equipment named: 'Ammo (iATM-12)'; Z: Cannot find any equipment named: 'Ammo (iATM-12)'; Z: Cannot find any equipment named: 'Ammo (iATM-12)'; Z: Cannot find any equipment named: 'Ammo (iATM-12)'; Z: Cannot find any equipment named: 'Ammo (iATM-12)'; Z: Cannot find any equipment named: 'Ammo (iATM-12)'
+- `Omnis/Turkina.ssw`: configuration BV differs from the MUL: U: BV 2520, MUL 2478
 - `Omnis/Uller (Kit Fox).ssw`: import errors: BLO: 'Improved C3 Computer' is Inner Sphere equipment (Improved C3 Computer) on a Clan design; the design needs Mixed Tech
 - `Omnis/Vandal.ssw`: configuration BV differs from the MUL: LI-OB: BV 1653, MUL 1666
 - `Omnis/Vandal.ssw`: duplicate of a design already kept: Vandal LI-O
@@ -394,7 +393,7 @@
 - `Recognition Guide/Vol 9/Vapor Eagle (Goshawk) 7.ssw`: duplicate of a design already kept: Vapor Eagle (Goshawk) 7
 - `Recognition Guide/Vol 9/Vapor Eagle (Goshawk).ssw`: duplicate of a design already kept: Vapor Eagle (Goshawk) 
 - `Shrapnel/Albatross ALB-5W.ssw`: BV differs from the MUL: ALB-5W: BV 2296, MUL 2370
-- `Shrapnel/Battle Cobra BTL-C-20.ssw`: import errors: I: Cannot find any equipment named: 'Ammo (iNarc (Explosive))'; I: Cannot find any equipment named: 'Ammo (iNarc (Explosive))'; I: Cannot find any equipment named: 'Ammo (iNarc (Explosive))'
+- `Shrapnel/Battle Cobra BTL-C-20.ssw`: BV differs from the MUL in every configuration: G: BV 1217, MUL 1593; H: BV 1305, MUL 1592; I: BV 1019, MUL 1385; J: BV 1269, MUL 1272
 - `Shrapnel/Centurion CN10-B.ssw`: duplicate of a design already kept: Centurion CN10-B
 - `Shrapnel/Gladiator GLD-7R_SF.ssw`: duplicate of a design already kept: Gladiator GLD-7R-SF
 - `Shrapnel/Grotesque (Mongrel).ssw`: different submodel, same name and model: ammo type: Mongrel (Grendel) 
@@ -457,7 +456,7 @@
 - `megamek/3025 CCE/Heavy/Thunderbolt TDR-5SS1.mtf`: no Master Unit List entry to check its BV against
 - `megamek/3025 CCE/Heavy/Warhammer WHM-6B.mtf`: no Master Unit List entry to check its BV against
 - `megamek/3025 CCE/Heavy/Warhammer WHM-6J.mtf`: no Master Unit List entry to check its BV against
-- `megamek/3025 CCE/Light/Javelin JVN-10U.mtf`: the import could not carry all of it over: Cannot find the ammunition 'IS Ammo SRTorpedo-6'; Cannot find the ammunition 'IS Ammo SRTorpedo-6'
+- `megamek/3025 CCE/Light/Javelin JVN-10U.mtf`: different submodel, same name and model: ammo type: Javelin JVN-10N
 - `megamek/3025 CCE/Light/Jenner JR7-Y.mtf`: no Master Unit List entry to check its BV against
 - `megamek/3025 CCE/Light/Locust LCT-1E2.mtf`: no Master Unit List entry to check its BV against
 - `megamek/3025 CCE/Light/Locust LCT-1P.mtf`: no Master Unit List entry to check its BV against
@@ -641,9 +640,9 @@
 - `megamek/3039u/Quickdraw QKD-4G.mtf`: duplicate of a design already kept: Quickdraw QKD-4G
 - `megamek/3039u/Quickdraw QKD-4H.mtf`: duplicate of a design already kept: Quickdraw QKD-4H
 - `megamek/3039u/Quickdraw QKD-5A.mtf`: duplicate of a design already kept: Quickdraw QKD-5A
-- `megamek/3039u/Raven RVN-1X.mtf`: the import could not carry all of it over: Cannot find any equipment named 'ISElectronicWarfareEquipment'
+- `megamek/3039u/Raven RVN-1X.mtf`: duplicate of a design already kept: Raven RVN-1X
 - `megamek/3039u/Raven RVN-2X.mtf`: duplicate of a design already kept: Raven RVN-2X
-- `megamek/3039u/Raven RVN-3X.mtf`: the import could not carry all of it over: Cannot find any equipment named 'ISElectronicWarfareEquipment'
+- `megamek/3039u/Raven RVN-3X.mtf`: duplicate of a design already kept: Raven RVN-3X
 - `megamek/3039u/Raven RVN-4X.mtf`: duplicate of a design already kept: Raven RVN-4X
 - `megamek/3039u/Rifleman RFL-3C.mtf`: duplicate of a design already kept: Rifleman RFL-3C
 - `megamek/3039u/Rifleman RFL-3N.mtf`: duplicate of a design already kept: Rifleman RFL-3N
@@ -769,7 +768,7 @@
 - `megamek/3050U/Catapult CPLT-C2.mtf`: different submodel, same name and model: ammo type: Catapult CPLT-C2
 - `megamek/3050U/Catapult CPLT-C3.mtf`: duplicate of a design already kept: Catapult CPLT-C3
 - `megamek/3050U/Catapult CPLT-C4C.mtf`: duplicate of a design already kept: Catapult CPLT-C4C
-- `megamek/3050U/Catapult CPLT-C5.mtf`: the import could not carry all of it over: Cannot find the ammunition 'ISArrowIVHomingAmmo'; Cannot find the ammunition 'ISArrowIVHomingAmmo'
+- `megamek/3050U/Catapult CPLT-C5.mtf`: duplicate of a design already kept: Catapult CPLT-C5
 - `megamek/3050U/Catapult CPLT-C6.mtf`: duplicate of a design already kept: Catapult CPLT-C6
 - `megamek/3050U/Catapult CPLT-H2.mtf`: duplicate of a design already kept: Catapult CPLT-H2
 - `megamek/3050U/Catapult CPLT-K2K.mtf`: duplicate of a design already kept: Catapult CPLT-K2K
@@ -1019,6 +1018,16 @@
 - `megamek/3050U/Loki (Hellbringer) F.mtf`: duplicate of a design already kept: Hellbringer (Loki)  F
 - `megamek/3050U/Loki (Hellbringer) H.mtf`: different submodel, same name and model: equipment: Hellbringer (Loki)  H
 - `megamek/3050U/Loki (Hellbringer) Prime.mtf`: different submodel, same name and model: equipment: Hellbringer (Loki)  Prime
+- `megamek/3050U/Mad Cat (Timber Wolf) A.mtf`: duplicate of a design already kept: Timber Wolf (Mad Cat)  A
+- `megamek/3050U/Mad Cat (Timber Wolf) B.mtf`: duplicate of a design already kept: Timber Wolf (Mad Cat)  B
+- `megamek/3050U/Mad Cat (Timber Wolf) C.mtf`: duplicate of a design already kept: Timber Wolf (Mad Cat)  C
+- `megamek/3050U/Mad Cat (Timber Wolf) D.mtf`: duplicate of a design already kept: Timber Wolf (Mad Cat)  D
+- `megamek/3050U/Mad Cat (Timber Wolf) E.mtf`: duplicate of a design already kept: Timber Wolf (Mad Cat)  E
+- `megamek/3050U/Mad Cat (Timber Wolf) F.mtf`: duplicate of a design already kept: Timber Wolf (Mad Cat)  F
+- `megamek/3050U/Mad Cat (Timber Wolf) H.mtf`: duplicate of a design already kept: Timber Wolf (Mad Cat)  H
+- `megamek/3050U/Mad Cat (Timber Wolf) Prime.mtf`: duplicate of a design already kept: Timber Wolf (Mad Cat)  Prime
+- `megamek/3050U/Mad Cat (Timber Wolf) Pryde.mtf`: duplicate of a design already kept: Timber Wolf (Mad Cat)  (Pryde)
+- `megamek/3050U/Mad Cat (Timber Wolf) S.mtf`: duplicate of a design already kept: Timber Wolf (Mad Cat)  S
 - `megamek/3050U/Man O' War (Gargoyle) C.mtf`: does not survive the compact format
 - `megamek/3050U/Masakari (Warhawk) A.mtf`: different submodel, same name and model: actuators: Warhawk (Masakari)  A
 - `megamek/3050U/Masakari (Warhawk) B.mtf`: duplicate of a design already kept: Warhawk (Masakari)  B
@@ -1073,6 +1082,16 @@
 - `megamek/3050U/Raven RVN-4LC.mtf`: duplicate of a design already kept: Raven RVN-4LC
 - `megamek/3050U/Raven RVN-SR.mtf`: duplicate of a design already kept: Raven RVN-SR "Shattered Raven"
 - `megamek/3050U/Raven RVN-SS.mtf`: duplicate of a design already kept: Raven RVN-SS "Shattered Raven"
+- `megamek/3050U/Ryoken (Stormcrow) (Kotare).mtf`: duplicate of a design already kept: Stormcrow (Ryoken)  (Kotare)
+- `megamek/3050U/Ryoken (Stormcrow) A.mtf`: duplicate of a design already kept: Stormcrow (Ryoken)  A
+- `megamek/3050U/Ryoken (Stormcrow) B.mtf`: duplicate of a design already kept: Stormcrow (Ryoken)  B
+- `megamek/3050U/Ryoken (Stormcrow) C.mtf`: duplicate of a design already kept: Stormcrow (Ryoken)  C
+- `megamek/3050U/Ryoken (Stormcrow) D.mtf`: duplicate of a design already kept: Stormcrow (Ryoken)  D
+- `megamek/3050U/Ryoken (Stormcrow) E.mtf`: duplicate of a design already kept: Stormcrow (Ryoken)  E
+- `megamek/3050U/Ryoken (Stormcrow) F.mtf`: duplicate of a design already kept: Stormcrow (Ryoken)  F
+- `megamek/3050U/Ryoken (Stormcrow) G.mtf`: different submodel, same name and model: equipment: Stormcrow (Ryoken)  G
+- `megamek/3050U/Ryoken (Stormcrow) H.mtf`: different submodel, same name and model: equipment: Stormcrow (Ryoken)  H
+- `megamek/3050U/Ryoken (Stormcrow) Prime.mtf`: different submodel, same name and model: equipment: Stormcrow (Ryoken)  Prime
 - `megamek/3050U/Sentinel STN-3L.mtf`: duplicate of a design already kept: Sentinel STN-3L
 - `megamek/3050U/Sentinel STN-3M.mtf`: different submodel, same name and model: heat sinks placed: Sentinel STN-3M
 - `megamek/3050U/Sentinel STN-4D.mtf`: duplicate of a design already kept: Sentinel STN-4D
@@ -1094,7 +1113,17 @@
 - `megamek/3050U/Stalker STK-6M.mtf`: duplicate of a design already kept: Stalker STK-6M
 - `megamek/3050U/Stalker STK-7D.mtf`: duplicate of a design already kept: Stalker STK-7D
 - `megamek/3050U/Stalker STK-8S.mtf`: duplicate of a design already kept: Stalker STK-8S
-- `megamek/3050U/Thor (Summoner) E.mtf`: BV differs from the MUL: E: BV 2573, MUL 2612
+- `megamek/3050U/Thor (Summoner) A.mtf`: duplicate of a design already kept: Summoner (Thor)  A
+- `megamek/3050U/Thor (Summoner) B.mtf`: duplicate of a design already kept: Summoner (Thor)  B
+- `megamek/3050U/Thor (Summoner) C.mtf`: duplicate of a design already kept: Summoner (Thor)  C
+- `megamek/3050U/Thor (Summoner) D.mtf`: duplicate of a design already kept: Summoner (Thor)  D
+- `megamek/3050U/Thor (Summoner) E.mtf`: duplicate of a design already kept: Summoner (Thor)  E
+- `megamek/3050U/Thor (Summoner) F.mtf`: duplicate of a design already kept: Summoner (Thor)  F
+- `megamek/3050U/Thor (Summoner) G.mtf`: duplicate of a design already kept: Summoner (Thor)  G
+- `megamek/3050U/Thor (Summoner) H.mtf`: duplicate of a design already kept: Summoner (Thor)  H
+- `megamek/3050U/Thor (Summoner) HH.mtf`: duplicate of a design already kept: Summoner (Thor)  HH
+- `megamek/3050U/Thor (Summoner) M.mtf`: duplicate of a design already kept: Summoner (Thor)  M
+- `megamek/3050U/Thor (Summoner) Prime.mtf`: duplicate of a design already kept: Summoner (Thor)  Prime
 - `megamek/3050U/Thorn THE-N.mtf`: duplicate of a design already kept: Thorn THE-N
 - `megamek/3050U/Thorn THE-N1.mtf`: duplicate of a design already kept: Thorn THE-N1
 - `megamek/3050U/Thorn THE-N2.mtf`: duplicate of a design already kept: Thorn THE-N2
@@ -1383,7 +1412,7 @@
 - `megamek/3055U/Tempest TMP-3MA.mtf`: duplicate of a design already kept: Tempest TMP-3MA
 - `megamek/3055U/Thunder THR-1L.mtf`: duplicate of a design already kept: Thunder THR-1L
 - `megamek/3055U/Thunder THR-2L.mtf`: duplicate of a design already kept: Thunder THR-2L
-- `megamek/3055U/Thunder THR-3L.mtf`: the import could not carry all of it over: Cannot find the ammunition 'ISArrowIVHomingAmmo'
+- `megamek/3055U/Thunder THR-3L.mtf`: different submodel, same name and model: ammo type: Thunder THR-3L
 - `megamek/3055U/Tsunami TS-P1.mtf`: duplicate of a design already kept: Tsunami TS-P1
 - `megamek/3055U/Tsunami TS-P1D.mtf`: duplicate of a design already kept: Tsunami TS-P1D
 - `megamek/3055U/Venom SDR-9K.mtf`: duplicate of a design already kept: Venom SDR-9K
@@ -1440,7 +1469,12 @@
 - `megamek/3058Uu/Chameleon CLN-7V.mtf`: duplicate of a design already kept: Chameleon CLN-7V
 - `megamek/3058Uu/Chameleon CLN-7W.mtf`: duplicate of a design already kept: Chameleon CLN-7W
 - `megamek/3058Uu/Chameleon CLN-7Z.mtf`: duplicate of a design already kept: Chameleon CLN-7Z
-- `megamek/3058Uu/Crossbow D.mtf`: import threw: TypeError: Cannot read properties of undefined (reading '#text')
+- `megamek/3058Uu/Crossbow A.mtf`: duplicate of a design already kept: Crossbow  A
+- `megamek/3058Uu/Crossbow B.mtf`: duplicate of a design already kept: Crossbow  B
+- `megamek/3058Uu/Crossbow C.mtf`: duplicate of a design already kept: Crossbow  C
+- `megamek/3058Uu/Crossbow D.mtf`: the import could not carry all of it over: Cannot place 'Clan Mech Mortar-8': its slots are split in a way not converted yet; Cannot place 'Clan Mech Mortar-8': its slots are split in a way not converted yet
+- `megamek/3058Uu/Crossbow H.mtf`: different submodel, same name and model: ammo type: Crossbow  H
+- `megamek/3058Uu/Crossbow Prime.mtf`: duplicate of a design already kept: Crossbow  Prime
 - `megamek/3058Uu/Devastator DVS-1D.mtf`: duplicate of a design already kept: Devastator DVS-1D
 - `megamek/3058Uu/Devastator DVS-2.mtf`: duplicate of a design already kept: Devastator DVS-2
 - `megamek/3058Uu/Devastator DVS-3.mtf`: duplicate of a design already kept: Devastator DVS-3
@@ -1465,6 +1499,13 @@
 - `megamek/3058Uu/Falcon Hawk FNHK-9K.mtf`: duplicate of a design already kept: Falcon Hawk FNHK-9K
 - `megamek/3058Uu/Falcon Hawk FNHK-9K1A.mtf`: duplicate of a design already kept: Falcon Hawk FNHK-9K1A
 - `megamek/3058Uu/Falcon Hawk FNHK-9K1B.mtf`: duplicate of a design already kept: Falcon Hawk FNHK-9K1B
+- `megamek/3058Uu/Fire Falcon A.mtf`: duplicate of a design already kept: Fire Falcon  A
+- `megamek/3058Uu/Fire Falcon B.mtf`: duplicate of a design already kept: Fire Falcon  B
+- `megamek/3058Uu/Fire Falcon C.mtf`: duplicate of a design already kept: Fire Falcon  C
+- `megamek/3058Uu/Fire Falcon D.mtf`: duplicate of a design already kept: Fire Falcon  D
+- `megamek/3058Uu/Fire Falcon E.mtf`: duplicate of a design already kept: Fire Falcon  E
+- `megamek/3058Uu/Fire Falcon H.mtf`: duplicate of a design already kept: Fire Falcon  H
+- `megamek/3058Uu/Fire Falcon Prime.mtf`: duplicate of a design already kept: Fire Falcon  Prime
 - `megamek/3058Uu/Firestarter FS9-O.mtf`: duplicate of a design already kept: Firestarter FS9-O
 - `megamek/3058Uu/Grendel (Mongrel) A.mtf`: duplicate of a design already kept: Mongrel (Grendel)  A
 - `megamek/3058Uu/Grendel (Mongrel) B.mtf`: duplicate of a design already kept: Mongrel (Grendel)  B
@@ -1527,7 +1568,7 @@
 - `megamek/3058Uu/Nightstar NSR-9SS.mtf`: duplicate of a design already kept: Nightstar NSR-9SS
 - `megamek/3058Uu/Nobori-nin (Huntsman) C.mtf`: BV differs from the MUL: C: BV 2189, MUL 2199
 - `megamek/3058Uu/Nobori-nin (Huntsman) Prime.mtf`: does not survive the compact format
-- `megamek/3058Uu/O-Bakemono OBK-M10.mtf`: the import could not carry all of it over: Cannot find the ammunition 'ISArrowIVHomingAmmo'; Cannot find the ammunition 'ISArrowIVHomingAmmo'; Cannot find the ammunition 'ISArrowIVHomingAmmo'
+- `megamek/3058Uu/O-Bakemono OBK-M10.mtf`: different submodel, same name and model: ammo type: O-Bakemono OBK-M10
 - `megamek/3058Uu/O-Bakemono OBK-M11.mtf`: duplicate of a design already kept: O-Bakemono OBK-M11
 - `megamek/3058Uu/O-Bakemono OBK-M12.mtf`: duplicate of a design already kept: O-Bakemono OBK-M12
 - `megamek/3058Uu/Owens OW-1.mtf`: duplicate of a design already kept: Owens OW-1
@@ -1581,7 +1622,12 @@
 - `megamek/3058Uu/Thunder Hawk TDK-7S.mtf`: duplicate of a design already kept: Thunder Hawk TDK-7S
 - `megamek/3058Uu/Thunder Hawk TDK-7X.mtf`: duplicate of a design already kept: Thunder Hawk TDK-7X
 - `megamek/3058Uu/Thunder Hawk TDK-7Y.mtf`: duplicate of a design already kept: Thunder Hawk TDK-7Y
-- `megamek/3058Uu/Turkina C.mtf`: does not survive the compact format
+- `megamek/3058Uu/Turkina A.mtf`: duplicate of a design already kept: Turkina  A
+- `megamek/3058Uu/Turkina B.mtf`: duplicate of a design already kept: Turkina  B
+- `megamek/3058Uu/Turkina C.mtf`: different submodel, same name and model: equipment: Turkina  C
+- `megamek/3058Uu/Turkina D.mtf`: duplicate of a design already kept: Turkina  D
+- `megamek/3058Uu/Turkina H.mtf`: duplicate of a design already kept: Turkina  H
+- `megamek/3058Uu/Turkina Prime.mtf`: duplicate of a design already kept: Turkina  Prime
 - `megamek/3060u/Arctic Fox AF1.mtf`: duplicate of a design already kept: Arctic Fox AF1
 - `megamek/3060u/Arctic Wolf 2.mtf`: different submodel, same name and model: ammo type: Arctic Wolf 2
 - `megamek/3060u/Arctic Wolf.mtf`: different submodel, same name and model: ammo type: Arctic Wolf 
@@ -1646,7 +1692,7 @@
 - `megamek/3060u/Helios HEL-C.mtf`: duplicate of a design already kept: Helios HEL-C
 - `megamek/3060u/Highlander IIC 2.mtf`: duplicate of a design already kept: Highlander IIC 2
 - `megamek/3060u/Highlander IIC.mtf`: duplicate of a design already kept: Highlander IIC 
-- `megamek/3060u/Icestorm 2.mtf`: the import could not carry all of it over: Cannot find any equipment named 'CLERFlamer'
+- `megamek/3060u/Icestorm 2.mtf`: duplicate of a design already kept: Icestorm 2
 - `megamek/3060u/Icestorm.mtf`: duplicate of a design already kept: Icestorm 
 - `megamek/3060u/Initiate INI-02.mtf`: duplicate of a design already kept: Initiate INI-02
 - `megamek/3060u/Initiate INI-04.mtf`: duplicate of a design already kept: Initiate INI-04
@@ -1720,9 +1766,9 @@
 - `megamek/3060u/Ursus.mtf`: duplicate of a design already kept: Ursus 
 - `megamek/3060u/Viking VKG-2F.mtf`: duplicate of a design already kept: Viking VKG-2F
 - `megamek/3060u/Viking VKG-2G.mtf`: duplicate of a design already kept: Viking VKG-2G
-- `megamek/3060u/Viking VKG-3A.mtf`: the import could not carry all of it over: Cannot find the ammunition 'ISArrowIVHomingAmmo'; Cannot find the ammunition 'ISArrowIVHomingAmmo'
+- `megamek/3060u/Viking VKG-3A.mtf`: duplicate of a design already kept: Viking VKG-3A
 - `megamek/3060u/Viking VKG-3W.mtf`: duplicate of a design already kept: Viking VKG-3W
-- `megamek/3060u/Wyvern IIC 2.mtf`: the import could not carry all of it over: Cannot find any equipment named 'CLERFlamer'
+- `megamek/3060u/Wyvern IIC 2.mtf`: duplicate of a design already kept: Wyvern IIC 2
 - `megamek/3060u/Wyvern IIC.mtf`: duplicate of a design already kept: Wyvern IIC 
 - `megamek/3060u/Yeoman YMN-10-OR.mtf`: duplicate of a design already kept: Yeoman YMN-10-OR
 - `megamek/3060u/Yeoman YMN-6Y.mtf`: duplicate of a design already kept: Yeoman YMN-6Y
@@ -1734,18 +1780,19 @@
 - `megamek/3067 Unabridged/Clan Meks/Arcas 3.mtf`: duplicate of a design already kept: Arcas 3
 - `megamek/3067 Unabridged/Clan Meks/Bowman 2.mtf`: different submodel, same name and model: equipment: Bowman 2
 - `megamek/3067 Unabridged/Clan Meks/Bowman 3.mtf`: BV differs from the MUL: 3: BV 2770, MUL 2767
-- `megamek/3067 Unabridged/Clan Meks/Bowman 4.mtf`: the import could not carry all of it over: Cannot find the ammunition 'CLArrowIVHomingAmmo'; Cannot find the ammunition 'CLArrowIVHomingAmmo'
-- `megamek/3067 Unabridged/Clan Meks/Bowman.mtf`: the import could not carry all of it over: Cannot find the ammunition 'CLArrowIVHomingAmmo'; Cannot find the ammunition 'CLArrowIVHomingAmmo'
+- `megamek/3067 Unabridged/Clan Meks/Bowman 4.mtf`: different submodel, same name and model: equipment: Bowman 4
+- `megamek/3067 Unabridged/Clan Meks/Bowman.mtf`: different submodel, same name and model: equipment: Bowman 
 - `megamek/3067 Unabridged/Clan Meks/Burrock 2.mtf`: duplicate of a design already kept: Burrock 2
 - `megamek/3067 Unabridged/Clan Meks/Crimson Langur D.mtf`: duplicate of a design already kept: Crimson Langur  D
 - `megamek/3067 Unabridged/Clan Meks/Crimson Langur E.mtf`: duplicate of a design already kept: Crimson Langur  E
-- `megamek/3067 Unabridged/Clan Meks/Hellfire 3.mtf`: the import could not carry all of it over: Cannot find any equipment named 'CLERFlamer'; Cannot find any equipment named 'CLERFlamer'
+- `megamek/3067 Unabridged/Clan Meks/Hellfire 3.mtf`: duplicate of a design already kept: Hellfire 3
 - `megamek/3067 Unabridged/Clan Meks/Lobo 2.mtf`: duplicate of a design already kept: Lobo 2
 - `megamek/3067 Unabridged/Clan Meks/Lobo 3.mtf`: duplicate of a design already kept: Lobo 3
 - `megamek/3067 Unabridged/Clan Meks/Mad Cat Mk II 2.mtf`: duplicate of a design already kept: Mad Cat Mk II 2
 - `megamek/3067 Unabridged/Clan Meks/Mad Cat Mk II 3.mtf`: duplicate of a design already kept: Mad Cat Mk II 3
 - `megamek/3067 Unabridged/Clan Meks/Pinion 3.mtf`: different submodel, same name and model: actuators: Pinion 3
 - `megamek/3067 Unabridged/Clan Meks/Rabid Coyote 2.mtf`: duplicate of a design already kept: Rabid Coyote 2
+- `megamek/3067 Unabridged/Clan Meks/Savage Coyote W.mtf`: different submodel, same name and model: equipment: Savage Coyote  W
 - `megamek/3067 Unabridged/Clan Meks/Scylla 2.mtf`: duplicate of a design already kept: Scylla 2
 - `megamek/3067 Unabridged/Clan Meks/Scylla 3.mtf`: duplicate of a design already kept: Scylla 3
 - `megamek/3067 Unabridged/Clan Meks/Solitaire 2.mtf`: duplicate of a design already kept: Solitaire 2
@@ -1859,6 +1906,10 @@
 - `megamek/3067/Red Shift RDS-2A.mtf`: duplicate of a design already kept: Red Shift RDS-2A
 - `megamek/3067/Red Shift RDS-2B.mtf`: duplicate of a design already kept: Red Shift RDS-2B
 - `megamek/3067/Sagittaire SGT-8R.mtf`: duplicate of a design already kept: Sagittaire SGT-8R
+- `megamek/3067/Savage Coyote A.mtf`: duplicate of a design already kept: Savage Coyote  A
+- `megamek/3067/Savage Coyote B.mtf`: different submodel, same name and model: ammo type: Savage Coyote  B
+- `megamek/3067/Savage Coyote C.mtf`: different submodel, same name and model: ammo type: Savage Coyote  C
+- `megamek/3067/Savage Coyote Prime.mtf`: duplicate of a design already kept: Savage Coyote  Prime
 - `megamek/3067/Scylla.mtf`: duplicate of a design already kept: Scylla 
 - `megamek/3067/Sha Yu SYU-2B.mtf`: different submodel, same name and model: actuators: Sha Yu SYU-2B (Russel)
 - `megamek/3067/Sha Yu SYU-4B.mtf`: duplicate of a design already kept: Sha Yu SYU-4B
@@ -1965,7 +2016,7 @@
 - `megamek/3075/Kyudo KY2-D-03.mtf`: different submodel, same name and model: actuators: Kyudo KY2-D-03
 - `megamek/3075/Legionnaire LGN-1X.mtf`: duplicate of a design already kept: Legionnaire LGN-1X
 - `megamek/3075/Legionnaire LGN-2D.mtf`: duplicate of a design already kept: Legionnaire LGN-2D
-- `megamek/3075/Legionnaire LGN-2XA.mtf`: the import could not carry all of it over: Cannot find the ammunition 'ISArrowIVHomingAmmo'
+- `megamek/3075/Legionnaire LGN-2XA.mtf`: duplicate of a design already kept: Legionnaire LGN-2XA
 - `megamek/3075/Legionnaire LGN-2XU.mtf`: duplicate of a design already kept: Legionnaire LGN-2XU
 - `megamek/3075/Lumberjack LM1A.mtf`: the import could not carry all of it over: Cannot find any equipment named 'Dumper'
 - `megamek/3075/Lumberjack LM4C.mtf`: the import could not carry all of it over: Cannot find any equipment named 'Dumper'; Cannot find any equipment named 'Dumper'
@@ -1986,6 +2037,11 @@
 - `megamek/3075/Ocelot.mtf`: duplicate of a design already kept: Ocelot 
 - `megamek/3075/Ostroc OSR-2Cb.mtf`: duplicate of a design already kept: Ostroc OSR-2Cb
 - `megamek/3075/Ostscout OTT-7Jb.mtf`: different submodel, same name and model: actuators: Ostscout OTT-7Jb
+- `megamek/3075/Pariah A.mtf`: duplicate of a design already kept: Pariah (Septicemia)  A
+- `megamek/3075/Pariah B.mtf`: different submodel, same name and model: equipment: Pariah (Septicemia)  B
+- `megamek/3075/Pariah C.mtf`: duplicate of a design already kept: Pariah (Septicemia)  C
+- `megamek/3075/Pariah D.mtf`: duplicate of a design already kept: Pariah (Septicemia)  D
+- `megamek/3075/Pariah Prime.mtf`: duplicate of a design already kept: Pariah (Septicemia)  Prime
 - `megamek/3075/Patriot PKM-2C.mtf`: different submodel, same name and model: ammo type: Patriot PKM-2C
 - `megamek/3075/Patriot PKM-2D.mtf`: duplicate of a design already kept: Patriot PKM-2D
 - `megamek/3075/Patriot PKM-2E.mtf`: duplicate of a design already kept: Patriot PKM-2E
@@ -2072,7 +2128,7 @@
 - `megamek/3085u/Cutting Edge/Flamberge 3.mtf`: duplicate of a design already kept: Flamberge 3
 - `megamek/3085u/Cutting Edge/Flamberge A.mtf`: duplicate of a design already kept: Flamberge  A
 - `megamek/3085u/Cutting Edge/Flamberge B.mtf`: different submodel, same name and model: equipment: Flamberge  B
-- `megamek/3085u/Cutting Edge/Flamberge C.mtf`: the import could not carry all of it over: Cannot find the ammunition 'CLArrowIVHomingAmmo'
+- `megamek/3085u/Cutting Edge/Flamberge C.mtf`: duplicate of a design already kept: Flamberge  C
 - `megamek/3085u/Cutting Edge/Flamberge Prime.mtf`: duplicate of a design already kept: Flamberge  Prime
 - `megamek/3085u/Cutting Edge/Fwltur FWL-3R SalvageMech.mtf`: duplicate of a design already kept: Fwltur FWL-3R SalvageMech
 - `megamek/3085u/Cutting Edge/Fwltur FWL-3V SalvageMech.mtf`: duplicate of a design already kept: Fwltur FWL-3V SalvageMech
@@ -2080,7 +2136,7 @@
 - `megamek/3085u/Cutting Edge/Gallant GLT-8-0.mtf`: duplicate of a design already kept: Gallant GLT-8-0
 - `megamek/3085u/Cutting Edge/Ghost GST-10.mtf`: duplicate of a design already kept: Ghost GST-10
 - `megamek/3085u/Cutting Edge/Ghost GST-11.mtf`: different submodel, same name and model: ammo type: Ghost GST-11
-- `megamek/3085u/Cutting Edge/Goshawk II 2.mtf`: the import could not carry all of it over: Cannot find any equipment named 'CLERFlamer'; Cannot find any equipment named 'CLERFlamer'
+- `megamek/3085u/Cutting Edge/Goshawk II 2.mtf`: duplicate of a design already kept: Goshawk II 2
 - `megamek/3085u/Cutting Edge/Goshawk II 3.mtf`: duplicate of a design already kept: Goshawk II 3
 - `megamek/3085u/Cutting Edge/Goshawk II.mtf`: duplicate of a design already kept: Goshawk II 
 - `megamek/3085u/Cutting Edge/Hatchetman HCT-6M.mtf`: duplicate of a design already kept: Hatchetman HCT-6M
@@ -2166,37 +2222,35 @@
 - `megamek/3085u/Cutting Edge/Yao Lien YOL-4C.mtf`: duplicate of a design already kept: Yao Lien YOL-4C
 - `megamek/3085u/ONN/Akuma AKU-2XC.mtf`: duplicate of a design already kept: Akuma AKU-2XC
 - `megamek/3085u/ONN/Albatross ALB-3Ur.mtf`: duplicate of a design already kept: Albatross ALB-3Ur
-- `megamek/3085u/ONN/Arctic Fox AF1U.mtf`: the import could not carry all of it over: Cannot find the ammunition 'IS Ammo LRTorpedo-10 Artemis-capable'
+- `megamek/3085u/ONN/Arctic Fox AF1U.mtf`: BV differs from the MUL: AF1U: BV 787, MUL 821
 - `megamek/3085u/ONN/Argus AGS-8DX.mtf`: duplicate of a design already kept: Argus AGS-8DX
-- `megamek/3085u/ONN/Avatar AV1-OU.mtf`: the import could not carry all of it over: Cannot find the ammunition 'IS Ammo SRTorpedo-4 Artemis-capable'; Cannot find the ammunition 'IS Ammo LRTorpedo-15 Artemis-capable'; Cannot find the ammunition 'IS Ammo LRTorpedo-15 Artemis-capable'; Cannot find the ammunition 'IS Ammo SRTorpedo-4 Artemis-capable'; Cannot find the ammunition 'IS Ammo LRTorpedo-15 Artemis-capable'; Cannot find the ammunition 'IS Ammo LRTorpedo-15 Artemis-capable'
+- `megamek/3085u/ONN/Avatar AV1-OU.mtf`: BV differs from the MUL: AV1-OU: BV 1281, MUL 1359
 - `megamek/3085u/ONN/Axman AXM-3Sr.mtf`: duplicate of a design already kept: Axman AXM-3Sr
-- `megamek/3085u/ONN/Balius U.mtf`: the import could not carry all of it over: Cannot find the ammunition 'Clan Ammo SRTorpedo-6'; Cannot find the ammunition 'Clan Ammo SRTorpedo-6'; Cannot find the ammunition 'Clan Ammo SRTorpedo-6'; Cannot find the ammunition 'Clan Ammo SRTorpedo-6'
+- `megamek/3085u/ONN/Balius U.mtf`: different submodel, same name and model: equipment: Balius  U
 - `megamek/3085u/ONN/Bandersnatch BNDR-01Ar.mtf`: duplicate of a design already kept: Bandersnatch BNDR-01Ar
 - `megamek/3085u/ONN/Banshee BNC-3Mr.mtf`: duplicate of a design already kept: Banshee BNC-3Mr
 - `megamek/3085u/ONN/Beowulf C.mtf`: no Master Unit List entry to check its BV against
-- `megamek/3085u/ONN/Blackjack BJ2-OU.mtf`: the import could not carry all of it over: Cannot find the ammunition 'IS Ammo LRTorpedo-5'; Cannot find the ammunition 'IS Ammo LRTorpedo-5'; Cannot find the ammunition 'IS Ammo LRTorpedo-5'
 - `megamek/3085u/ONN/Bushwacker BSW-S2r.mtf`: duplicate of a design already kept: Bushwacker BSW-S2r
 - `megamek/3085u/ONN/Catapult CPLT-C5A.mtf`: duplicate of a design already kept: Catapult CPLT-C5A
-- `megamek/3085u/ONN/Cauldron-Born (Ebon Jaguar) U.mtf`: the import could not carry all of it over: Cannot find the ammunition 'Clan Ammo LRTorpedo-15'; Cannot find the ammunition 'Clan Ammo LRTorpedo-15'
+- `megamek/3085u/ONN/Cauldron-Born (Ebon Jaguar) U.mtf`: different submodel, same name and model: equipment: Ebon Jaguar (Cauldron-Born)  U
 - `megamek/3085u/ONN/Centurion CN9-Ar.mtf`: duplicate of a design already kept: Centurion CN9-Ar
 - `megamek/3085u/ONN/Charger CGR-3Kr.mtf`: BV differs from the MUL: CGR-3Kr: BV 2121, MUL 2092
 - `megamek/3085u/ONN/Commando COM-2Dr.mtf`: duplicate of a design already kept: Commando COM-2Dr
-- `megamek/3085u/ONN/Crossbow U.mtf`: the import could not carry all of it over: Cannot find the ammunition 'Clan Ammo LRTorpedo-10'; Cannot find the ammunition 'Clan Ammo LRTorpedo-10'; Cannot find the ammunition 'Clan Ammo SRTorpedo-2'
+- `megamek/3085u/ONN/Crossbow U.mtf`: different submodel, same name and model: equipment: Crossbow  U
 - `megamek/3085u/ONN/Cyclops CP-11-B.mtf`: duplicate of a design already kept: Cyclops CP-11-B
 - `megamek/3085u/ONN/Cyclops CP-11-C2.mtf`: duplicate of a design already kept: Cyclops CP-11-C2
 - `megamek/3085u/ONN/Cyclops CP-11-C3.mtf`: duplicate of a design already kept: Cyclops CP-11-C3
 - `megamek/3085u/ONN/Daikyu DAI-01r.mtf`: duplicate of a design already kept: Daikyu DAI-01r
-- `megamek/3085u/ONN/Daishi (Dire Wolf) U.mtf`: the import could not carry all of it over: Cannot find the ammunition 'Clan Ammo SRTorpedo-6'; Cannot find the ammunition 'Clan Ammo SRTorpedo-6'; Cannot find the ammunition 'Clan Ammo SRTorpedo-6'; Cannot find the ammunition 'Clan Ammo SRTorpedo-6'
+- `megamek/3085u/ONN/Daishi (Dire Wolf) U.mtf`: different submodel, same name and model: equipment: Dire Wolf (Daishi)  U
 - `megamek/3085u/ONN/Dart DRT-6T.mtf`: duplicate of a design already kept: Dart DRT-6T
 - `megamek/3085u/ONN/Dervish DV-6Mr.mtf`: duplicate of a design already kept: Dervish DV-6Mr
-- `megamek/3085u/ONN/Deva C-DVA-OU Exanimus.mtf`: the import could not carry all of it over: Cannot find the ammunition 'IS Ammo LRTorpedo-15'; Cannot find the ammunition 'IS Ammo LRTorpedo-15'; Cannot find the ammunition 'IS Ammo LRTorpedo-15'; Cannot find the ammunition 'IS Ammo LRTorpedo-15'; Cannot find the ammunition 'IS Ammo LRTorpedo-15'; Cannot find the ammunition 'IS Ammo LRTorpedo-15'
 - `megamek/3085u/ONN/Dragon DRG-5Nr.mtf`: duplicate of a design already kept: Dragon DRG-5Nr
 - `megamek/3085u/ONN/Enfield END-6Sr.mtf`: duplicate of a design already kept: Enfield END-6Sr
 - `megamek/3085u/ONN/Enforcer III ENF-6Ma.mtf`: duplicate of a design already kept: Enforcer III ENF-6Ma
 - `megamek/3085u/ONN/Enforcer III ENF-7C3BS.mtf`: duplicate of a design already kept: Enforcer III ENF-7C3BS
 - `megamek/3085u/ONN/Fafnir FNR-5X.mtf`: duplicate of a design already kept: Fafnir FNR-5X
 - `megamek/3085u/ONN/Falconer FLC-9R.mtf`: duplicate of a design already kept: Falconer FLC-9R
-- `megamek/3085u/ONN/Fenris (Ice Ferret) U.mtf`: the import could not carry all of it over: Cannot find the ammunition 'Clan Ammo LRTorpedo-5'; Cannot find the ammunition 'Clan Ammo SRTorpedo-4'
+- `megamek/3085u/ONN/Fenris (Ice Ferret) U.mtf`: different submodel, same name and model: equipment: Fenris (Ice Ferret)  U
 - `megamek/3085u/ONN/Fireball ALM-10D.mtf`: duplicate of a design already kept: Fireball ALM-10D
 - `megamek/3085u/ONN/Gallowglas GAL-2GLSA.mtf`: duplicate of a design already kept: Gallowglas GAL-2GLSA
 - `megamek/3085u/ONN/Grand Dragon DRG-7KC.mtf`: duplicate of a design already kept: Grand Dragon DRG-7KC
@@ -2211,9 +2265,8 @@
 - `megamek/3085u/ONN/JagerMech JM7-C3BS.mtf`: duplicate of a design already kept: JagerMech JM7-C3BS
 - `megamek/3085u/ONN/Jenner JR7-C4.mtf`: duplicate of a design already kept: Jenner JR7-C4
 - `megamek/3085u/ONN/King Crab KGC-005r.mtf`: duplicate of a design already kept: King Crab KGC-005r
-- `megamek/3085u/ONN/Longbow LGB-8V.mtf`: the import could not carry all of it over: Cannot find the ammunition 'ISArrowIVHomingAmmo'; Cannot find the ammunition 'ISArrowIVHomingAmmo'; Cannot find the ammunition 'ISArrowIVHomingAmmo'; Cannot find the ammunition 'ISArrowIVHomingAmmo'
-- `megamek/3085u/ONN/Mad Cat (Timber Wolf) U.mtf`: the import could not carry all of it over: Cannot find the ammunition 'Clan Ammo LRTorpedo-15 Artemis-capable'; Cannot find the ammunition 'Clan Ammo LRTorpedo-15 Artemis-capable'
-- `megamek/3085u/ONN/Men Shen MS1-OU.mtf`: the import could not carry all of it over: Cannot find the ammunition 'IS Ammo SRTorpedo-4'
+- `megamek/3085u/ONN/Longbow LGB-8V.mtf`: duplicate of a design already kept: Longbow LGB-8V
+- `megamek/3085u/ONN/Mad Cat (Timber Wolf) U.mtf`: BV differs from the MUL: U: BV 2520, MUL 2627
 - `megamek/3085u/ONN/Mongoose MON-86.mtf`: duplicate of a design already kept: Mongoose MON-86
 - `megamek/3085u/ONN/Naginata NG-C3Ar.mtf`: duplicate of a design already kept: Naginata NG-C3Ar
 - `megamek/3085u/ONN/Nightsky NGS-6T.mtf`: duplicate of a design already kept: Nightsky NGS-6T
@@ -2221,25 +2274,22 @@
 - `megamek/3085u/ONN/Piranha 4.mtf`: different submodel, same name and model: ammo type: Piranha 4
 - `megamek/3085u/ONN/Quickdraw QKD-5Mr.mtf`: duplicate of a design already kept: Quickdraw QKD-5Mr
 - `megamek/3085u/ONN/Rakshasa MDG-1Ar.mtf`: duplicate of a design already kept: Rakshasa MDG-1Ar
-- `megamek/3085u/ONN/Raptor RTX1-OU.mtf`: the import could not carry all of it over: Cannot find the ammunition 'IS Ammo SRTorpedo-4'
 - `megamek/3085u/ONN/Raven RVN-4Lr.mtf`: duplicate of a design already kept: Raven RVN-4Lr
 - `megamek/3085u/ONN/Snake SNK-2Br.mtf`: duplicate of a design already kept: Snake SNK-2Br
 - `megamek/3085u/ONN/Spider SDR-7Kr.mtf`: duplicate of a design already kept: Spider SDR-7Kr
 - `megamek/3085u/ONN/Stalker STK-7C3BS.mtf`: duplicate of a design already kept: Stalker STK-7C3BS
 - `megamek/3085u/ONN/Starslayer STY-3Dr.mtf`: duplicate of a design already kept: Starslayer STY-3Dr
 - `megamek/3085u/ONN/Talon TLN-6W.mtf`: duplicate of a design already kept: Talon TLN-6W
-- `megamek/3085u/ONN/Templar TLR1-OU.mtf`: the import could not carry all of it over: Cannot find the ammunition 'IS Ammo LRTorpedo-10'; Cannot find the ammunition 'IS Ammo LRTorpedo-10'; Cannot find the ammunition 'IS Ammo SRTorpedo-6'
 - `megamek/3085u/ONN/Tessen TSN-1Cr.mtf`: duplicate of a design already kept: Tessen TSN-1Cr
-- `megamek/3085u/ONN/Thor (Summoner) U.mtf`: the import could not carry all of it over: Cannot find the ammunition 'Clan Ammo LRTorpedo-15'; Cannot find the ammunition 'Clan Ammo LRTorpedo-15'
+- `megamek/3085u/ONN/Thor (Summoner) U.mtf`: duplicate of a design already kept: Summoner (Thor)  U
 - `megamek/3085u/ONN/Turkina U.mtf`: BV differs from the MUL: U: BV 2520, MUL 2478
-- `megamek/3085u/ONN/Uller (Kit Fox) U.mtf`: the import could not carry all of it over: Cannot find the ammunition 'Clan Ammo LRTorpedo-5'; Cannot find the ammunition 'Clan Ammo LRTorpedo-5'; Cannot find the ammunition 'Clan Ammo LRTorpedo-5'; Cannot find the ammunition 'Clan Ammo LRTorpedo-5'
-- `megamek/3085u/ONN/UrbanMech UM-AIV.mtf`: the import could not carry all of it over: Cannot find the ammunition 'ISArrowIVHomingAmmo'
+- `megamek/3085u/ONN/UrbanMech UM-AIV.mtf`: duplicate of a design already kept: UrbanMech UM-AIV
 - `megamek/3085u/ONN/UrbanMech UM-R80.mtf`: duplicate of a design already kept: UrbanMech UM-R80
 - `megamek/3085u/ONN/Victor VTR-9Ka.mtf`: duplicate of a design already kept: Victor VTR-9Ka
 - `megamek/3085u/ONN/Victor VTR-Cr.mtf`: duplicate of a design already kept: Victor VTR-Cr
 - `megamek/3085u/ONN/Vindicator VND-3Lr.mtf`: duplicate of a design already kept: Vindicator VND-3Lr
 - `megamek/3085u/ONN/Vulcan VT-5Sr.mtf`: duplicate of a design already kept: Vulcan VT-5Sr
-- `megamek/3085u/ONN/Vulture (Mad Dog) U.mtf`: the import could not carry all of it over: Cannot find the ammunition 'Clan Ammo LRTorpedo-15 (Clan) Artemis V-capable'; Cannot find the ammunition 'Clan Ammo LRTorpedo-15 (Clan) Artemis V-capable'; Cannot find the ammunition 'Clan Ammo LRTorpedo-15 (Clan) Artemis V-capable'; Cannot find the ammunition 'Clan Ammo LRTorpedo-15 (Clan) Artemis V-capable'
+- `megamek/3085u/ONN/Vulture (Mad Dog) U.mtf`: different submodel, same name and model: ammo type: Mad Dog (Vulture)  U
 - `megamek/3085u/ONN/Warlord BLR-2Dr.mtf`: duplicate of a design already kept: Warlord BLR-2Dr
 - `megamek/3085u/Phoenix/Archer ARC-6S.mtf`: duplicate of a design already kept: Archer ARC-6S
 - `megamek/3085u/Phoenix/Archer ARC-6W.mtf`: duplicate of a design already kept: Archer ARC-6W
@@ -2489,7 +2539,7 @@
 - `megamek/3145/Clans/Warwolf C.mtf`: different submodel, same name and model: actuators: Warwolf  C
 - `megamek/3145/Clans/Warwolf H.mtf`: duplicate of a design already kept: Warwolf  H
 - `megamek/3145/Clans/Wulfen C.mtf`: BV differs from the MUL: C: BV 1536, MUL 1334
-- `megamek/3145/Davion/Antlion LK-3D.mtf`: the import could not carry all of it over: Cannot place 'Clan Mech Mortar-4': its slots are split in a way not converted yet; Cannot place 'Clan Mech Mortar-4': its slots are split in a way not converted yet; Cannot find the ammunition 'Clan Ammo SC Mortar-4'; Cannot find the ammunition 'Clan Ammo SC Mortar-4'; Cannot find the ammunition 'Clan Ammo SC Mortar-4'; Cannot find the ammunition 'Clan Ammo SC Mortar-4'; Cannot find the ammunition 'Clan Ammo SC Mortar-4'; Cannot find the ammunition 'Clan Ammo SC Mortar-4'
+- `megamek/3145/Davion/Antlion LK-3D.mtf`: the import could not carry all of it over: Cannot place 'Clan Mech Mortar-4': its slots are split in a way not converted yet; Cannot place 'Clan Mech Mortar-4': its slots are split in a way not converted yet
 - `megamek/3145/Davion/Atlas III AS7-D2.mtf`: duplicate of a design already kept: Atlas III AS7-D2
 - `megamek/3145/Davion/Atlas III AS7-D3.mtf`: duplicate of a design already kept: Atlas III AS7-D3
 - `megamek/3145/Davion/Black Knight BLK-NT-2Y.mtf`: duplicate of a design already kept: Black Knight BLK-NT-2Y
@@ -2502,15 +2552,15 @@
 - `megamek/3145/Davion/Hollander III BZK-D2.mtf`: duplicate of a design already kept: Hollander III BZK-D2
 - `megamek/3145/Davion/Hollander III BZK-D3.mtf`: duplicate of a design already kept: Hollander III BZK-D3
 - `megamek/3145/Davion/Prey Seeker PY-SR10.mtf`: duplicate of a design already kept: Prey Seeker PY-SR10
-- `megamek/3145/Davion/Scarecrow UCU-F4 Hobbled Scarecrow.mtf`: no Master Unit List entry to check its BV against
+- `megamek/3145/Davion/Scarecrow UCU-F4 Hobbled Scarecrow.mtf`: duplicate of a design already kept: Scarecrow UCU-F4r "Hobbled Scarecrow"
 - `megamek/3145/Davion/Scarecrow UCU-F4.mtf`: different submodel, same name and model: ammo type: Scarecrow UCU-F4
 - `megamek/3145/Davion/Templar III TLR2-O.mtf`: duplicate of a design already kept: Templar III TLR2-O
 - `megamek/3145/Davion/Templar III TLR2-OB.mtf`: BV differs from the MUL: TLR2-OB: BV 1919, MUL 1918
 - `megamek/3145/Davion/Vulpes VLP-1D.mtf`: duplicate of a design already kept: Vulpes VLP-1D
 - `megamek/3145/Kurita/Avalanche AVL-1O.mtf`: duplicate of a design already kept: Avalanche AVL-1O
 - `megamek/3145/Kurita/Avalanche AVL-1OA.mtf`: BV differs from the MUL: AVL-1OA: BV 1481, MUL 1484
-- `megamek/3145/Kurita/Dragon II DRG-11K.mtf`: the import could not carry all of it over: Cannot find the ammunition 'ISArrowIVClusterAmmo'
-- `megamek/3145/Kurita/Dragon II DRG-11R.mtf`: the import could not carry all of it over: Cannot find the ammunition 'CLArrowIVClusterAmmo'
+- `megamek/3145/Kurita/Dragon II DRG-11K.mtf`: different submodel, same name and model: ammo type: Dragon II DRG-11K
+- `megamek/3145/Kurita/Dragon II DRG-11R.mtf`: BV differs from the MUL: DRG-11R: BV 2302, MUL 2300
 - `megamek/3145/Kurita/Exhumer EXR-2X.mtf`: duplicate of a design already kept: Exhumer EXR-2X
 - `megamek/3145/Kurita/Exhumer EXR-3P.mtf`: duplicate of a design already kept: Exhumer EXR-3P
 - `megamek/3145/Kurita/Hatamoto-Godai HTM-30Z.mtf`: duplicate of a design already kept: Hatamoto-Godai HTM-30Z
@@ -2600,7 +2650,7 @@
 - `megamek/3145/NTNU RS/Cougar X 2.mtf`: no Master Unit List entry to check its BV against
 - `megamek/3145/NTNU RS/Cougar X 3.mtf`: the import could not carry all of it over: Unallocated Criticals: 2; - Double Heat Sink (heat-sink); - Double Heat Sink (heat-sink)
 - `megamek/3145/NTNU RS/Cougar X.mtf`: duplicate of a design already kept: Cougar X
-- `megamek/3145/NTNU RS/Crimson Hawk 4.mtf`: the import could not carry all of it over: Cannot find any equipment named 'CLHeavyFlamer'; Cannot find the ammunition 'CL Heavy Flamer Ammo'
+- `megamek/3145/NTNU RS/Crimson Hawk 4.mtf`: duplicate of a design already kept: Crimson Hawk 4
 - `megamek/3145/NTNU RS/Cuirass CDR-2BC.mtf`: no Master Unit List entry to check its BV against
 - `megamek/3145/NTNU RS/Cuirass CDR-2X.mtf`: duplicate of a design already kept: Cuirass CDR-2X
 - `megamek/3145/NTNU RS/Cygnus 4.mtf`: duplicate of a design already kept: Cygnus 4
@@ -2667,7 +2717,7 @@
 - `megamek/3145/NTNU RS/Shadow Hawk IIC 9.mtf`: duplicate of a design already kept: Shadow Hawk IIC 9
 - `megamek/3145/NTNU RS/Shen Yi SHY-5B.mtf`: different submodel, same name and model: actuators: Shen Yi SHY-5B
 - `megamek/3145/NTNU RS/Shockwave SKW-6H.mtf`: duplicate of a design already kept: Shockwave SKW-6H
-- `megamek/3145/NTNU RS/Shockwave SKW-8X.mtf`: the import could not carry all of it over: Cannot find any equipment named 'ISThumperCannon'; Cannot find the ammunition 'ISThumperCannonAmmo'
+- `megamek/3145/NTNU RS/Shockwave SKW-8X.mtf`: duplicate of a design already kept: Shockwave SKW-8X
 - `megamek/3145/NTNU RS/Sphinx 3.mtf`: duplicate of a design already kept: Sphinx 3
 - `megamek/3145/NTNU RS/Sphinx 4.mtf`: duplicate of a design already kept: Sphinx 4
 - `megamek/3145/NTNU RS/Spider SDR-10K.mtf`: duplicate of a design already kept: Spider SDR-10K
@@ -2692,6 +2742,7 @@
 - `megamek/3145/NTNU RS/Wasp WSP-3P.mtf`: duplicate of a design already kept: Wasp WSP-3P
 - `megamek/3145/NTNU RS/Xanthos XNT-6O.mtf`: BV differs from the MUL: XNT-6O: BV 2320, MUL 2300
 - `megamek/3145/NTNU RS/Xanthos XNT-7O.mtf`: different submodel, same name and model: ammo type: Xanthos XNT-7O
+- `megamek/3145/Republic/Celerity CLR-03-O.mtf`: duplicate of a design already kept: Celerity CLR-03-O
 - `megamek/3145/Republic/Celerity CLR-04-R.mtf`: duplicate of a design already kept: Celerity CLR-04-R
 - `megamek/3145/Republic/Celerity CLR-05-X.mtf`: duplicate of a design already kept: Celerity CLR-05-X
 - `megamek/3145/Republic/Doloire DLR-O.mtf`: different submodel, same name and model: ammo type: Doloire DLR-O
@@ -2759,6 +2810,7 @@
 - `megamek/Dark Age/Ryoken II Tassa.mtf`: duplicate of a design already kept: Ryoken II (Tassa)
 - `megamek/Dark Age/Yu Huang Carson.mtf`: duplicate of a design already kept: Yu Huang (Carson)
 - `megamek/Dossiers/Bounty Hunter/Javelin JVN-11D Farrell.mtf`: duplicate of a design already kept: Javelin JVN-11D (Farrell)
+- `megamek/Dossiers/Bounty Hunter/Mad Cat (Timber Wolf) (Bounty Hunter 2).mtf`: duplicate of a design already kept: Timber Wolf (Mad Cat)  (Bounty Hunter 2)
 - `megamek/Dossiers/Bounty Hunter/Phoenix Hawk PXH-4L Sante.mtf`: duplicate of a design already kept: Phoenix Hawk PXH-4L (Sante)
 - `megamek/Dossiers/Bounty Hunter/Shadow Hawk SHD-5D (Sandy).mtf`: duplicate of a design already kept: Shadow Hawk SHD-5D (Sandy)
 - `megamek/Dossiers/Jason Zaklan/Ti Ts'ang  Jason.mtf`: duplicate of a design already kept: Ti Ts'ang (Jason)
@@ -2842,7 +2894,7 @@
 - `megamek/Golden Century/Lupus Prime.mtf`: duplicate of a design already kept: Lupus  Prime
 - `megamek/Golden Century/Lynx C.mtf`: duplicate of a design already kept: Lynx C
 - `megamek/Golden Century/Masauwu.mtf`: different submodel, same name and model: ammo type: Masauwu 
-- `megamek/Golden Century/Minsk 2.mtf`: the import could not carry all of it over: Cannot place 'Clan Mech Mortar-4': its slots are split in a way not converted yet; Cannot find the ammunition 'Clan Ammo SC Mortar-4'; Cannot find the ammunition 'Clan Ammo SC Mortar-4'
+- `megamek/Golden Century/Minsk 2.mtf`: the import could not carry all of it over: Cannot place 'Clan Mech Mortar-4': its slots are split in a way not converted yet
 - `megamek/Golden Century/Minsk MNK-101.mtf`: different submodel, same name and model: ammo type: Minsk MNK-101
 - `megamek/Golden Century/Minsk.mtf`: different submodel, same name and model: equipment: Minsk 
 - `megamek/Golden Century/Mongoose C 2.mtf`: different submodel, same name and model: equipment: Mongoose C 2
@@ -2872,7 +2924,7 @@
 - `megamek/Golden Century/Woodsman A.mtf`: duplicate of a design already kept: Woodsman  A
 - `megamek/Golden Century/Woodsman B.mtf`: different submodel, same name and model: ammo type: Woodsman  B
 - `megamek/Golden Century/Woodsman C.mtf`: duplicate of a design already kept: Woodsman  C
-- `megamek/Golden Century/Woodsman D.mtf`: the import could not carry all of it over: Cannot place 'Clan Mech Mortar-4': its slots are split in a way not converted yet; Cannot place 'Clan Mech Mortar-4': its slots are split in a way not converted yet; Cannot find the ammunition 'Clan Ammo SC Mortar-4'; Cannot find the ammunition 'Clan Ammo SC Mortar-4'; Cannot find the ammunition 'Clan Ammo SC Mortar-4'; Cannot find the ammunition 'Clan Ammo SC Mortar-4'; Cannot find the ammunition 'Clan Ammo SC Mortar-4'; Cannot find the ammunition 'Clan Ammo SC Mortar-4'; Cannot find the ammunition 'Clan Ammo SC Mortar-4'; Cannot find the ammunition 'Clan Ammo SC Mortar-4'
+- `megamek/Golden Century/Woodsman D.mtf`: the import could not carry all of it over: Cannot place 'Clan Mech Mortar-4': its slots are split in a way not converted yet; Cannot place 'Clan Mech Mortar-4': its slots are split in a way not converted yet
 - `megamek/Golden Century/Woodsman Prime.mtf`: duplicate of a design already kept: Woodsman  Prime
 - `megamek/Gothic/Atlas AS7-H.mtf`: no Master Unit List entry to check its BV against
 - `megamek/Gothic/Firestarter FS9-HB.mtf`: no Master Unit List entry to check its BV against
@@ -2901,6 +2953,7 @@
 - `megamek/ISP2/Rampage RMP-5G.mtf`: different submodel, same name and model: ammo type: Rampage RMP-5G
 - `megamek/ISP3/Arana MilitiaMech ARA-S-1.mtf`: the import could not carry all of it over: Turret-mounted 'CLERMediumLaser' is not converted yet
 - `megamek/ISP3/Reptar EPT-C-1 MilitiaMech.mtf`: different submodel, same name and model: actuators: Reptar EPT-C-1
+- `megamek/ISP/Mad Cat (Timber Wolf) (Bounty Hunter).mtf`: duplicate of a design already kept: Timber Wolf (Mad Cat)  (Bounty Hunter)
 - `megamek/Iron Wind Metals/Thunderbolt IIC 2.mtf`: BV differs from the MUL: 2: BV 2177, MUL 2174
 - `megamek/Jihad Final Reckoning/'Gestalt' D2X-G.mtf`: the import could not carry all of it over: Cannot import the cockpit type: 'Interface Cockpit'; Cannot find any gyro named: 'None'; Unallocated Criticals: 3; - Heavy Ferro Fibrous (heavy-ferro-fibrous); - Heavy Ferro Fibrous (heavy-ferro-fibrous); - Angel ECM Suite (angel-ecm)
 - `megamek/Jihad Final Reckoning/Revenant UBM-1A.mtf`: BV differs from the MUL: UBM-1A: BV 826, MUL 784
@@ -2984,7 +3037,7 @@
 - `megamek/ProtoTypes/Dola DOL-1A1.mtf`: duplicate of a design already kept: Dola DOL-1A1
 - `megamek/ProtoTypes/Dola DOL-1A2 Yoh Ti Ts'angs.mtf`: BV differs from the MUL: DOL-1A2 'Yoh Ti Ts'angs': BV 791, MUL 826
 - `megamek/ProtoTypes/Grasshopper GHR-7P.mtf`: duplicate of a design already kept: Grasshopper GHR-7P
-- `megamek/ProtoTypes/Hatamoto-Kaeru HTM-35K.mtf`: the import could not carry all of it over: Cannot find the ammunition 'IS Ammo SRTorpedo-4'
+- `megamek/ProtoTypes/Hatamoto-Kaeru HTM-35K.mtf`: duplicate of a design already kept: Hatamoto-Kaeru HTM-35K
 - `megamek/ProtoTypes/Hunchback HBK-7R.mtf`: duplicate of a design already kept: Hunchback HBK-7R
 - `megamek/ProtoTypes/Incubus II.mtf`: duplicate of a design already kept: Incubus II 
 - `megamek/ProtoTypes/Legionnaire LGN-2F.mtf`: duplicate of a design already kept: Legionnaire LGN-2F
@@ -2997,7 +3050,7 @@
 - `megamek/ProtoTypes/Pendragon PDG-1R.mtf`: duplicate of a design already kept: Pendragon PDG-1R
 - `megamek/ProtoTypes/Quickdraw QKD-8P.mtf`: duplicate of a design already kept: Quickdraw QKD-8P
 - `megamek/ProtoTypes/Sarissa MN2-A SecurityMech.mtf`: duplicate of a design already kept: Sarissa MN2-A SecurityMech
-- `megamek/ProtoTypes/Spindrift Aquatic SecurityMech SDT-1A.mtf`: the import could not carry all of it over: Cannot find the ammunition 'IS Ammo SRTorpedo-6'
+- `megamek/ProtoTypes/Spindrift Aquatic SecurityMech SDT-1A.mtf`: duplicate of a design already kept, differs only in armor spread: Spindrift SDT-1A Aquatic SecurityMech
 - `megamek/ProtoTypes/Stiletto STO-6S.mtf`: the import could not carry all of it over: Turret-mounted 'ISERMediumLaser' is not converted yet; Turret-mounted 'ISERMediumLaser' is not converted yet
 - `megamek/ProtoTypes/Stinger IIC 2.mtf`: no Master Unit List entry to check its BV against
 - `megamek/ProtoTypes/Stinger IIC.mtf`: duplicate of a design already kept: Stinger IIC 
@@ -3005,7 +3058,7 @@
 - `megamek/ProtoTypes/Thunderbolt IIC.mtf`: different submodel, same name and model: equipment: Thunderbolt IIC 
 - `megamek/ProtoTypes/Ti Ts'ang DDC TSG9-DDC.mtf`: duplicate of a design already kept: Ti Ts'ang TSG-9DDC
 - `megamek/ProtoTypes/Trebuchet TBT-K7R.mtf`: BV differs from the MUL: TBT-K7R: BV 1415, MUL 1408
-- `megamek/ProtoTypes/Ursus 3.mtf`: the import could not carry all of it over: Cannot find any equipment named 'CLERFlamer'
+- `megamek/ProtoTypes/Ursus 3.mtf`: duplicate of a design already kept: Ursus 3
 - `megamek/ProtoTypes/Wolf Trap (Tora) WFT-2B.mtf`: duplicate of a design already kept: Wolf Trap WFT-2B
 - `megamek/ProtoTypes/Wolfhound WLF-2H.mtf`: duplicate of a design already kept: Wolfhound WLF-2H
 - `megamek/QuadVees/Arion.mtf`: the import could not carry all of it over: 'Mech configuration 'QuadVee' is not converted yet; 'motive: Track' is not converted yet; Location 'Front Left Leg' is not converted yet; Location 'Front Right Leg' is not converted yet; Location 'Rear Left Leg' is not converted yet; Location 'Rear Right Leg' is not converted yet; Cannot import the cockpit type: 'QuadVee Cockpit'
@@ -3062,13 +3115,12 @@
 - `megamek/Rec Guides ilClan/Vol 10/Vulture (Mad Dog) G.mtf`: duplicate of a design already kept: Mad Dog (Vulture)  G
 - `megamek/Rec Guides ilClan/Vol 10/Vulture (Mad Dog) I.mtf`: duplicate of a design already kept: Mad Dog (Vulture)  I
 - `megamek/Rec Guides ilClan/Vol 10/Vulture (Mad Dog) T.mtf`: duplicate of a design already kept: Mad Dog (Vulture)  T
-- `megamek/Rec Guides ilClan/Vol 10/Vulture (Mad Dog) V.mtf`: the import could not carry all of it over: Cannot find the ammunition 'CLArrowIVHomingAmmo'
+- `megamek/Rec Guides ilClan/Vol 10/Vulture (Mad Dog) V.mtf`: different submodel, same name and model: ammo type: Mad Dog (Vulture)  V
 - `megamek/Rec Guides ilClan/Vol 11/Butcherbird (Ion Sparrow) A.mtf`: duplicate of a design already kept: Ion Sparrow (Butcherbird)  A
 - `megamek/Rec Guides ilClan/Vol 11/Butcherbird (Ion Sparrow) B.mtf`: duplicate of a design already kept: Ion Sparrow (Butcherbird)  B
 - `megamek/Rec Guides ilClan/Vol 11/Butcherbird (Ion Sparrow) C.mtf`: duplicate of a design already kept: Ion Sparrow (Butcherbird)  C
 - `megamek/Rec Guides ilClan/Vol 11/Butcherbird (Ion Sparrow) D.mtf`: duplicate of a design already kept: Ion Sparrow (Butcherbird)  D
 - `megamek/Rec Guides ilClan/Vol 11/Butcherbird (Ion Sparrow) Prime.mtf`: duplicate of a design already kept: Ion Sparrow (Butcherbird)  Prime
-- `megamek/Rec Guides ilClan/Vol 11/Man O' War (Gargoyle) F.mtf`: the import could not carry all of it over: Cannot find any equipment named 'CLHeavyFlamer'; Cannot find the ammunition 'CL Heavy Flamer Ammo'
 - `megamek/Rec Guides ilClan/Vol 11/Man O' War (Gargoyle) T.mtf`: BV differs from the MUL: T: BV 1635, MUL 1632
 - `megamek/Rec Guides ilClan/Vol 11/Peregrine (Horned Owl) 2.mtf`: duplicate of a design already kept: Horned Owl (Peregrine) 2
 - `megamek/Rec Guides ilClan/Vol 11/Peregrine (Horned Owl) 3.mtf`: duplicate of a design already kept: Horned Owl (Peregrine) 3
@@ -3083,7 +3135,6 @@
 - `megamek/Rec Guides ilClan/Vol 11/Phoenix Hawk PXH-3S.mtf`: duplicate of a design already kept: Phoenix Hawk PXH-3S
 - `megamek/Rec Guides ilClan/Vol 11/Phoenix Hawk PXH-4M.mtf`: duplicate of a design already kept: Phoenix Hawk PXH-4M
 - `megamek/Rec Guides ilClan/Vol 11/Phoenix Hawk PXH-9.mtf`: duplicate of a design already kept: Phoenix Hawk PXH-9
-- `megamek/Rec Guides ilClan/Vol 11/Uller (Kit Fox) V.mtf`: the import could not carry all of it over: Cannot find the ammunition 'CLArrowIVHomingAmmo'
 - `megamek/Rec Guides ilClan/Vol 12/Axman AXM-5N.mtf`: duplicate of a design already kept: Axman AXM-5N
 - `megamek/Rec Guides ilClan/Vol 12/Black Knight BL-18-KNT.mtf`: duplicate of a design already kept: Black Knight BL-18-KNT
 - `megamek/Rec Guides ilClan/Vol 12/Carrion Crow A.mtf`: duplicate of a design already kept: Carrion Crow  A
@@ -3143,6 +3194,12 @@
 - `megamek/Rec Guides ilClan/Vol 15/Black Lanner J.mtf`: duplicate of a design already kept: Black Lanner  J
 - `megamek/Rec Guides ilClan/Vol 15/Black Lanner T.mtf`: duplicate of a design already kept: Black Lanner  T
 - `megamek/Rec Guides ilClan/Vol 15/Black Lanner X.mtf`: duplicate of a design already kept: Black Lanner  X
+- `megamek/Rec Guides ilClan/Vol 15/Fire Falcon F.mtf`: duplicate of a design already kept: Fire Falcon  F
+- `megamek/Rec Guides ilClan/Vol 15/Fire Falcon G.mtf`: duplicate of a design already kept: Fire Falcon  G
+- `megamek/Rec Guides ilClan/Vol 15/Fire Falcon I.mtf`: duplicate of a design already kept: Fire Falcon  I
+- `megamek/Rec Guides ilClan/Vol 15/Fire Falcon L.mtf`: duplicate of a design already kept: Fire Falcon  L
+- `megamek/Rec Guides ilClan/Vol 15/Fire Falcon R.mtf`: duplicate of a design already kept: Fire Falcon  R
+- `megamek/Rec Guides ilClan/Vol 15/Fire Falcon T.mtf`: duplicate of a design already kept: Fire Falcon  T
 - `megamek/Rec Guides ilClan/Vol 15/Phoenix Hawk IIC 10.mtf`: duplicate of a design already kept: Phoenix Hawk IIC 10
 - `megamek/Rec Guides ilClan/Vol 15/Phoenix Hawk IIC 2.mtf`: duplicate of a design already kept: Phoenix Hawk IIC 2
 - `megamek/Rec Guides ilClan/Vol 15/Phoenix Hawk IIC 9.mtf`: duplicate of a design already kept: Phoenix Hawk IIC 9
@@ -3181,10 +3238,20 @@
 - `megamek/Rec Guides ilClan/Vol 16/Stormwolf C.mtf`: different submodel, same name and model: equipment: Stormwolf  C
 - `megamek/Rec Guides ilClan/Vol 16/Stormwolf D.mtf`: duplicate of a design already kept: Stormwolf  D
 - `megamek/Rec Guides ilClan/Vol 16/Stormwolf Prime.mtf`: duplicate of a design already kept: Stormwolf  Prime
+- `megamek/Rec Guides ilClan/Vol 16/Turkina E.mtf`: duplicate of a design already kept: Turkina  E
+- `megamek/Rec Guides ilClan/Vol 16/Turkina M.mtf`: duplicate of a design already kept: Turkina  M
+- `megamek/Rec Guides ilClan/Vol 16/Turkina T.mtf`: duplicate of a design already kept: Turkina  T
+- `megamek/Rec Guides ilClan/Vol 16/Turkina X.mtf`: different submodel, same name and model: equipment: Turkina  X
 - `megamek/Rec Guides ilClan/Vol 17/Amarok 2.mtf`: duplicate of a design already kept: Amarok 2
 - `megamek/Rec Guides ilClan/Vol 17/Amarok 3.mtf`: duplicate of a design already kept: Amarok 3
 - `megamek/Rec Guides ilClan/Vol 17/Amarok.mtf`: duplicate of a design already kept: Amarok 
 - `megamek/Rec Guides ilClan/Vol 17/Banshee BNC-12S.mtf`: duplicate of a design already kept: Banshee BNC-12S
+- `megamek/Rec Guides ilClan/Vol 17/Crossbow E.mtf`: duplicate of a design already kept: Crossbow  E
+- `megamek/Rec Guides ilClan/Vol 17/Crossbow F.mtf`: duplicate of a design already kept: Crossbow  F
+- `megamek/Rec Guides ilClan/Vol 17/Crossbow G.mtf`: duplicate of a design already kept: Crossbow  G
+- `megamek/Rec Guides ilClan/Vol 17/Crossbow J.mtf`: different submodel, same name and model: equipment: Crossbow  J
+- `megamek/Rec Guides ilClan/Vol 17/Crossbow T.mtf`: duplicate of a design already kept: Crossbow  T
+- `megamek/Rec Guides ilClan/Vol 17/Crossbow W.mtf`: duplicate of a design already kept: Crossbow  W
 - `megamek/Rec Guides ilClan/Vol 17/Crusader CRD-3R (Crael).mtf`: duplicate of a design already kept: Crusader CRD-3R (Crael)
 - `megamek/Rec Guides ilClan/Vol 17/Crusader CRD-4BR.mtf`: duplicate of a design already kept: Crusader CRD-4BR
 - `megamek/Rec Guides ilClan/Vol 17/Crusader CRD-4D.mtf`: duplicate of a design already kept: Crusader CRD-4D
@@ -3264,7 +3331,7 @@
 - `megamek/Rec Guides ilClan/Vol 1/Pack Hunter 5.mtf`: duplicate of a design already kept: Pack Hunter 5
 - `megamek/Rec Guides ilClan/Vol 20/Hellion D.mtf`: duplicate of a design already kept: Hellion  D
 - `megamek/Rec Guides ilClan/Vol 20/Hellion E.mtf`: duplicate of a design already kept: Hellion  E
-- `megamek/Rec Guides ilClan/Vol 20/Hellion F.mtf`: the import could not carry all of it over: Cannot find any equipment named 'CLERFlamer'
+- `megamek/Rec Guides ilClan/Vol 20/Hellion F.mtf`: duplicate of a design already kept: Hellion  F
 - `megamek/Rec Guides ilClan/Vol 20/Hellion P.mtf`: duplicate of a design already kept: Hellion  P
 - `megamek/Rec Guides ilClan/Vol 20/Hellion T.mtf`: the import could not carry all of it over: Unallocated Criticals: 2; - Ferro Fibrous (ferro-fibrous); - Ferro Fibrous (ferro-fibrous)
 - `megamek/Rec Guides ilClan/Vol 20/Longbow LGB-0H.mtf`: duplicate of a design already kept: Longbow LGB-0H
@@ -3277,7 +3344,7 @@
 - `megamek/Rec Guides ilClan/Vol 20/Masakari (Warhawk) F.mtf`: duplicate of a design already kept: Warhawk (Masakari)  F
 - `megamek/Rec Guides ilClan/Vol 20/Masakari (Warhawk) G.mtf`: duplicate of a design already kept: Warhawk (Masakari)  G
 - `megamek/Rec Guides ilClan/Vol 20/Masakari (Warhawk) I.mtf`: duplicate of a design already kept: Warhawk (Masakari)  I
-- `megamek/Rec Guides ilClan/Vol 20/Masakari (Warhawk) L.mtf`: the import could not carry all of it over: Cannot find any equipment named 'CLERFlamer'
+- `megamek/Rec Guides ilClan/Vol 20/Masakari (Warhawk) L.mtf`: duplicate of a design already kept: Warhawk (Masakari)  L
 - `megamek/Rec Guides ilClan/Vol 20/Masakari (Warhawk) T.mtf`: duplicate of a design already kept: Warhawk (Masakari)  T
 - `megamek/Rec Guides ilClan/Vol 20/Mastodon A.mtf`: different submodel, same name and model: actuators: Mastodon  A
 - `megamek/Rec Guides ilClan/Vol 20/Mastodon B.mtf`: different submodel, same name and model: actuators: Mastodon  B
@@ -3329,7 +3396,7 @@
 - `megamek/Rec Guides ilClan/Vol 22/Jade Phoenix E.mtf`: duplicate of a design already kept: Jade Phoenix  E
 - `megamek/Rec Guides ilClan/Vol 22/Jade Phoenix Prime.mtf`: duplicate of a design already kept: Jade Phoenix  Prime
 - `megamek/Rec Guides ilClan/Vol 22/Night Gyr F.mtf`: duplicate of a design already kept: Night Gyr  F
-- `megamek/Rec Guides ilClan/Vol 22/Night Gyr G.mtf`: the import could not carry all of it over: Cannot find any equipment named 'CLERFlamer'; Cannot find any equipment named 'CLERFlamer'; Cannot find any equipment named 'CLERFlamer'
+- `megamek/Rec Guides ilClan/Vol 22/Night Gyr G.mtf`: duplicate of a design already kept: Night Gyr  G
 - `megamek/Rec Guides ilClan/Vol 22/Night Gyr T.mtf`: duplicate of a design already kept: Night Gyr  T
 - `megamek/Rec Guides ilClan/Vol 22/Night Gyr X.mtf`: duplicate of a design already kept: Night Gyr  X
 - `megamek/Rec Guides ilClan/Vol 23/Fujin RJN-301-F.mtf`: duplicate of a design already kept: Fujin RJN-301-F
@@ -3368,7 +3435,7 @@
 - `megamek/Rec Guides ilClan/Vol 24/Atlas AS8-KE.mtf`: duplicate of a design already kept: Atlas AS8-KE
 - `megamek/Rec Guides ilClan/Vol 24/Atlas AS8-S.mtf`: duplicate of a design already kept: Atlas AS8-S
 - `megamek/Rec Guides ilClan/Vol 24/Atlas C 2.mtf`: duplicate of a design already kept: Atlas C 2
-- `megamek/Rec Guides ilClan/Vol 24/Atlas C 3.mtf`: the import could not carry all of it over: Cannot find the ammunition 'CLArrowIVHomingAmmo'; Cannot find the ammunition 'CLArrowIVHomingAmmo'
+- `megamek/Rec Guides ilClan/Vol 24/Atlas C 3.mtf`: duplicate of a design already kept: Atlas C 3
 - `megamek/Rec Guides ilClan/Vol 24/Atlas C.mtf`: duplicate of a design already kept: Atlas C
 - `megamek/Rec Guides ilClan/Vol 24/Atlas II AS7-DK-H.mtf`: duplicate of a design already kept: Atlas II AS7-DK-H
 - `megamek/Rec Guides ilClan/Vol 24/Flashman FLS-10E.mtf`: duplicate of a design already kept: Flashman FLS-10E
@@ -3378,7 +3445,6 @@
 - `megamek/Rec Guides ilClan/Vol 25/Chameleon CLN-9V.mtf`: duplicate of a design already kept: Chameleon CLN-9V
 - `megamek/Rec Guides ilClan/Vol 25/Chameleon TRC-4B.mtf`: duplicate of a design already kept: Chameleon TRC-4B
 - `megamek/Rec Guides ilClan/Vol 25/Chameleon TRC-4C.mtf`: duplicate of a design already kept: Chameleon TRC-4C
-- `megamek/Rec Guides ilClan/Vol 25/Pouncer F.mtf`: the import could not carry all of it over: Cannot find any equipment named 'CLHeavyFlamer'; Cannot find any equipment named 'CLERFlamer'; Cannot find the ammunition 'CL Heavy Flamer Ammo'; Cannot find the ammunition 'CL Heavy Flamer Ammo'; Cannot find the ammunition 'CL Heavy Flamer Ammo'
 - `megamek/Rec Guides ilClan/Vol 25/Pouncer I.mtf`: the import could not carry all of it over: Unallocated Criticals: 1; - Ferro Fibrous (ferro-fibrous)
 - `megamek/Rec Guides ilClan/Vol 25/Vindicator VND-7L.mtf`: different submodel, same name and model: equipment: Vindicator VND-7L
 - `megamek/Rec Guides ilClan/Vol 25/Wraith TR5.mtf`: duplicate of a design already kept: Wraith TR5
@@ -3400,7 +3466,7 @@
 - `megamek/Rec Guides ilClan/Vol 27/Gunslinger GUN-3ERD.mtf`: duplicate of a design already kept: Gunslinger GUN-3ERD
 - `megamek/Rec Guides ilClan/Vol 27/Nightsky NGS-7S.mtf`: duplicate of a design already kept: Nightsky NGS-7S
 - `megamek/Rec Guides ilClan/Vol 27/Penetrator PTR-8D.mtf`: duplicate of a design already kept: Penetrator PTR-8D
-- `megamek/Rec Guides ilClan/Vol 27/Phantom F.mtf`: the import could not carry all of it over: Cannot find any equipment named 'CLHeavyFlamer'; Cannot find the ammunition 'CL Heavy Flamer Ammo'
+- `megamek/Rec Guides ilClan/Vol 27/Phantom F.mtf`: duplicate of a design already kept: Phantom  F
 - `megamek/Rec Guides ilClan/Vol 27/Phantom G.mtf`: duplicate of a design already kept: Phantom  G
 - `megamek/Rec Guides ilClan/Vol 27/Phantom I.mtf`: different submodel, same name and model: actuators: Phantom  I
 - `megamek/Rec Guides ilClan/Vol 27/Phantom J.mtf`: different submodel, same name and model: actuators: Phantom  J
@@ -3481,6 +3547,10 @@
 - `megamek/Rec Guides ilClan/Vol 3/Shadow Cat III B.mtf`: different submodel, same name and model: ammo type: Shadow Cat III  B
 - `megamek/Rec Guides ilClan/Vol 3/Shadow Cat III C.mtf`: different submodel, same name and model: ammo type: Shadow Cat III  C
 - `megamek/Rec Guides ilClan/Vol 3/Shadow Cat III Prime.mtf`: duplicate of a design already kept: Shadow Cat III  Prime
+- `megamek/Rec Guides ilClan/Vol 3/Thor (Summoner) AA.mtf`: different submodel, same name and model: actuators: Summoner (Thor)  AA
+- `megamek/Rec Guides ilClan/Vol 3/Thor (Summoner) J.mtf`: duplicate of a design already kept: Summoner (Thor)  J
+- `megamek/Rec Guides ilClan/Vol 3/Thor (Summoner) Q.mtf`: duplicate of a design already kept: Summoner (Thor)  Q
+- `megamek/Rec Guides ilClan/Vol 3/Thor (Summoner) T.mtf`: duplicate of a design already kept: Summoner (Thor)  T
 - `megamek/Rec Guides ilClan/Vol 4/Awesome AWS-11H.mtf`: duplicate of a design already kept: Awesome AWS-11H
 - `megamek/Rec Guides ilClan/Vol 4/Blackjack BJ-5.mtf`: duplicate of a design already kept: Blackjack BJ-5
 - `megamek/Rec Guides ilClan/Vol 4/Fenris (Ice Ferret) J.mtf`: BV differs from the MUL: J: BV 1739, MUL 1771
@@ -3502,7 +3572,10 @@
 - `megamek/Rec Guides ilClan/Vol 5/Hellhound (Conjurer) 8.mtf`: duplicate of a design already kept: Conjurer (Hellhound) 8
 - `megamek/Rec Guides ilClan/Vol 5/Hellhound (Conjurer).mtf`: duplicate of a design already kept: Conjurer (Hellhound) 
 - `megamek/Rec Guides ilClan/Vol 5/King Crab KGC-011.mtf`: different submodel, same name and model: ammo type: King Crab KGC-011
-- `megamek/Rec Guides ilClan/Vol 5/Mad Cat (Timber Wolf) M.mtf`: the import could not carry all of it over: Cannot find any equipment named 'CLHeavyFlamer'; Cannot find the ammunition 'CL Heavy Flamer Ammo'
+- `megamek/Rec Guides ilClan/Vol 5/Mad Cat (Timber Wolf) M.mtf`: duplicate of a design already kept: Timber Wolf (Mad Cat)  M
+- `megamek/Rec Guides ilClan/Vol 5/Mad Cat (Timber Wolf) N.mtf`: duplicate of a design already kept: Timber Wolf (Mad Cat)  N
+- `megamek/Rec Guides ilClan/Vol 5/Mad Cat (Timber Wolf) T.mtf`: duplicate of a design already kept: Timber Wolf (Mad Cat)  T
+- `megamek/Rec Guides ilClan/Vol 5/Mad Cat (Timber Wolf) W.mtf`: duplicate of a design already kept: Timber Wolf (Mad Cat)  W
 - `megamek/Rec Guides ilClan/Vol 5/Marauder II MAD-10D.mtf`: duplicate of a design already kept: Marauder II MAD-10D
 - `megamek/Rec Guides ilClan/Vol 5/Marauder II MAD-5A.mtf`: duplicate of a design already kept: Marauder II MAD-5A
 - `megamek/Rec Guides ilClan/Vol 5/Marauder II MAD-5B.mtf`: duplicate of a design already kept: Marauder II MAD-5B
@@ -3533,7 +3606,11 @@
 - `megamek/Rec Guides ilClan/Vol 6/Marauder Red Hunter.mtf`: duplicate of a design already kept: Marauder (Bounty Hunter 3146)
 - `megamek/Rec Guides ilClan/Vol 6/Nightstar NSR-10D.mtf`: duplicate of a design already kept: Nightstar NSR-10D
 - `megamek/Rec Guides ilClan/Vol 6/Raven RVN-5L.mtf`: duplicate of a design already kept: Raven RVN-5L
-- `megamek/Rec Guides ilClan/Vol 7/Koshi (Mist Lynx) L.mtf`: the import could not carry all of it over: Cannot find any equipment named 'CLHeavyFlamer'; Cannot find the ammunition 'CL Heavy Flamer Ammo'
+- `megamek/Rec Guides ilClan/Vol 7/Ryoken (Stormcrow) I.mtf`: duplicate of a design already kept: Stormcrow (Ryoken)  I
+- `megamek/Rec Guides ilClan/Vol 7/Ryoken (Stormcrow) J.mtf`: duplicate of a design already kept: Stormcrow (Ryoken)  J
+- `megamek/Rec Guides ilClan/Vol 7/Ryoken (Stormcrow) K.mtf`: duplicate of a design already kept: Stormcrow (Ryoken)  K
+- `megamek/Rec Guides ilClan/Vol 7/Ryoken (Stormcrow) P.mtf`: duplicate of a design already kept: Stormcrow (Ryoken)  P
+- `megamek/Rec Guides ilClan/Vol 7/Ryoken (Stormcrow) T.mtf`: duplicate of a design already kept: Stormcrow (Ryoken)  T
 - `megamek/Rec Guides ilClan/Vol 7/Vixen (Incubus) 2.mtf`: duplicate of a design already kept: Incubus (Vixen) 2
 - `megamek/Rec Guides ilClan/Vol 7/Vixen (Incubus) 3.mtf`: duplicate of a design already kept: Incubus (Vixen) 3
 - `megamek/Rec Guides ilClan/Vol 7/Vixen (Incubus) 7.mtf`: duplicate of a design already kept: Incubus (Vixen) 7
@@ -3806,7 +3883,7 @@
 - `megamek/TRO Vehicle Annex/Powerman SC XI-M-B LoaderMech MOD.mtf`: duplicate of a design already kept: Powerman LoaderMech SC XI (SRM)
 - `megamek/TRO Vehicle Annex/Powerman SC XV HaulerMech.mtf`: duplicate of a design already kept: Powerman Loadermech SC XV
 - `megamek/TRO Vehicle Annex/Powerman SC XVI HaulerMech.mtf`: duplicate of a design already kept: Powerman Loadermech SC XVI
-- `megamek/TRO Vehicle Annex/ScavengerMech SC-V SalvageMech.mtf`: the import could not carry all of it over: Cannot find any equipment named 'Fluid Suction System (Light - Mech)'
+- `megamek/TRO Vehicle Annex/ScavengerMech SC-V SalvageMech.mtf`: different submodel, same name and model: equipment: Scavenger SC-V SalvageMech
 - `megamek/TRO Vehicle Annex/ScavengerMech SC-V-M MilitiaMech.mtf`: duplicate of a design already kept: Scavenger SC-V-M MilitiaMech
 - `megamek/TRO Vehicle Annex/Shugosha LAW-QM1 Q-Mech.mtf`: the import could not carry all of it over: Cannot find any equipment named 'ISBoobyTrap'
 - `megamek/TRO Vehicle Annex/Shugosha LAW-QM2 Q-Mech.mtf`: the import could not carry all of it over: Cannot find any equipment named 'ISBoobyTrap'
@@ -3815,7 +3892,7 @@
 - `megamek/TRO Vehicle Annex/Uni ATAE-70 CargoMech.mtf`: the import could not carry all of it over: Cannot place the Environmental Sealing in the la; Cannot place the Environmental Sealing in the ra; Unallocated Criticals: 2; - Environmental Sealing (environmental-sealing); - Environmental Sealing (environmental-sealing)
 - `megamek/TRO Vehicle Annex/Uni ATAE-70 MilitiaMech.mtf`: the import could not carry all of it over: Cannot place the Environmental Sealing in the la; Cannot place the Environmental Sealing in the ra; Unallocated Criticals: 2; - Environmental Sealing (environmental-sealing); - Environmental Sealing (environmental-sealing)
 - `megamek/TRO Vehicle Annex/Uni ATAE-70T CargoMech.mtf`: different submodel, same name and model: equipment: Uni ATAE-70T CargoMech
-- `megamek/TRO Vehicle Annex/Vampyr SC-V-1 SalvageMech.mtf`: the import could not carry all of it over: Cannot find any equipment named 'Fluid Suction System (Light - Mech)'; Cannot place the Environmental Sealing in the la; Cannot place the Environmental Sealing in the ra; Unallocated Criticals: 2; - Environmental Sealing (environmental-sealing); - Environmental Sealing (environmental-sealing)
+- `megamek/TRO Vehicle Annex/Vampyr SC-V-1 SalvageMech.mtf`: the import could not carry all of it over: Cannot place the Environmental Sealing in the la; Cannot place the Environmental Sealing in the ra; Unallocated Criticals: 2; - Environmental Sealing (environmental-sealing); - Environmental Sealing (environmental-sealing)
 - `megamek/ToS/ToS Kaumberg/Commando COM-1AK.mtf`: BV differs from the MUL: COM-1AK: BV 549, MUL 533
 - `megamek/Total Chaos/Atlas II AS7-D-H (Devlin).mtf`: duplicate of a design already kept: Atlas II AS7-D-H (Devlin)
 - `megamek/Total Chaos/Awesome AWS-10KM (Cameron).mtf`: duplicate of a design already kept: Awesome AWS-10KM (Cameron)
@@ -3823,10 +3900,13 @@
 - `megamek/Tukayyid/Black Knight BL-9-KNT.mtf`: duplicate of a design already kept: Black Knight BL-9-KNT
 - `megamek/Tukayyid/Gladiator (Executioner) TC.mtf`: duplicate of a design already kept: Executioner (Gladiator)  TC
 - `megamek/Tukayyid/Loki (Hellbringer) M.mtf`: duplicate of a design already kept: Hellbringer (Loki)  M
+- `megamek/Tukayyid/Mad Cat (Timber Wolf) TC.mtf`: duplicate of a design already kept: Timber Wolf (Mad Cat)  TC
 - `megamek/Tukayyid/Marauder MAD-5CS.mtf`: duplicate of a design already kept: Marauder MAD-5CS
 - `megamek/Tukayyid/Phoenix Hawk PXH-1bC.mtf`: duplicate of a design already kept: Phoenix Hawk PXH-1bC
 - `megamek/Tukayyid/Puma (Adder) TC.mtf`: duplicate of a design already kept: Adder (Puma)  TC
 - `megamek/Tukayyid/Rifleman RFL-5CS.mtf`: duplicate of a design already kept: Rifleman RFL-5CS
+- `megamek/Tukayyid/Ryoken (Stormcrow) Attwater.mtf`: duplicate of a design already kept: Stormcrow (Ryoken)  (Attwater)
+- `megamek/Tukayyid/Ryoken (Stormcrow) TC.mtf`: duplicate of a design already kept: Stormcrow (Ryoken)  TC
 - `megamek/Tukayyid/Shadow Cat TC.mtf`: duplicate of a design already kept: Shadow Cat  TC
 - `megamek/Tukayyid/Shadow Hawk SHD-2Ht.mtf`: duplicate of a design already kept: Shadow Hawk SHD-2Ht
 - `megamek/Tukayyid/Vulture (Mad Dog) S.mtf`: duplicate of a design already kept: Mad Dog (Vulture)  S
@@ -3892,7 +3972,7 @@
 - `megamek/Urbanfest/UrbanKnight UM-DKX.mtf`: the import could not carry all of it over: Cannot find any equipment named 'ChainDrapeCape'; Cannot find any equipment named 'ChainDrapeCape'
 - `megamek/Urbanfest/Urbanmaster UM-S60.mtf`: no Master Unit List entry to check its BV against
 - `megamek/Videogame (Apocryphal)/Bull Shark BSK-M3.mtf`: the import could not carry all of it over: Cannot find the ammunition 'CLIMPAmmoAC5'
-- `megamek/Videogame (Apocryphal)/Bull Shark BSK-MAZ.mtf`: the import could not carry all of it over: Cannot find any equipment named 'ISThumperCannon'; Cannot find the ammunition 'ISThumperCannonAmmo'
+- `megamek/Videogame (Apocryphal)/Bull Shark BSK-MAZ.mtf`: no Master Unit List entry to check its BV against
 - `megamek/Videogame (Apocryphal)/Corsair COR-5R.mtf`: no Master Unit List entry to check its BV against
 - `megamek/Videogame (Apocryphal)/Corsair COR-5T.mtf`: no Master Unit List entry to check its BV against
 - `megamek/Videogame (Apocryphal)/Corsair COR-6R.mtf`: no Master Unit List entry to check its BV against
@@ -3923,12 +4003,21 @@
 - `megamek/WoR Supplemental/Cephalus D.mtf`: duplicate of a design already kept: Cephalus  D
 - `megamek/WoR Supplemental/Cephalus E.mtf`: duplicate of a design already kept: Cephalus  E
 - `megamek/WoR Supplemental/Cephalus Prime.mtf`: different submodel, same name and model: equipment: Cephalus  Prime
-- `megamek/WoR Supplemental/Cephalus U.mtf`: the import could not carry all of it over: Cannot find the ammunition 'Clan Ammo LRTorpedo-5'
-- `megamek/WoR Supplemental/Osteon A.mtf`: the import could not carry all of it over: Cannot place 'Clan Mech Mortar-8': its slots are split in a way not converted yet; Cannot place 'Clan Mech Mortar-8': its slots are split in a way not converted yet; Cannot find the ammunition 'Clan Ammo SC Mortar-8'; Cannot find the ammunition 'Clan Ammo SC Mortar-8'; Cannot find the ammunition 'Clan Ammo SC Mortar-8'; Cannot find the ammunition 'Clan Ammo SC Mortar-8'; Cannot find the ammunition 'Clan Ammo SC Mortar-8'; Cannot find the ammunition 'Clan Ammo SC Mortar-8'
-- `megamek/WoR Supplemental/Osteon U.mtf`: the import could not carry all of it over: Cannot find the ammunition 'Clan Ammo LRTorpedo-15 (Clan) Artemis V-capable'; Cannot find the ammunition 'Clan Ammo LRTorpedo-15 (Clan) Artemis V-capable'; Cannot find the ammunition 'Clan Ammo LRTorpedo-15 (Clan) Artemis V-capable'; Cannot find the ammunition 'Clan Ammo LRTorpedo-15 (Clan) Artemis V-capable'; Cannot find the ammunition 'Clan Ammo LRTorpedo-15 (Clan) Artemis V-capable'; Cannot find the ammunition 'Clan Ammo LRTorpedo-15 (Clan) Artemis V-capable'; Cannot find the ammunition 'Clan Ammo LRTorpedo-15 (Clan) Artemis V-capable'; Cannot find the ammunition 'Clan Ammo LRTorpedo-15 (Clan) Artemis V-capable'; Cannot find the ammunition 'Clan Ammo LRTorpedo-15 (Clan) Artemis V-capable'
+- `megamek/WoR Supplemental/Cephalus U.mtf`: different submodel, same name and model: equipment: Cephalus  U
+- `megamek/WoR Supplemental/Mad Cat (Timber Wolf) Z.mtf`: different submodel, same name and model: equipment: Timber Wolf (Mad Cat)  Z
+- `megamek/WoR Supplemental/Osteon A.mtf`: the import could not carry all of it over: Cannot place 'Clan Mech Mortar-8': its slots are split in a way not converted yet; Cannot place 'Clan Mech Mortar-8': its slots are split in a way not converted yet
+- `megamek/WoR Supplemental/Pariah (Septicemia) A-Z.mtf`: different submodel, same name and model: equipment: Pariah (Septicemia)  A-Z
+- `megamek/WoR Supplemental/Pariah (Septicemia) B-Z.mtf`: different submodel, same name and model: equipment: Pariah (Septicemia)  B-Z
+- `megamek/WoR Supplemental/Pariah (Septicemia) C-Z.mtf`: duplicate of a design already kept: Pariah (Septicemia)  C-Z
+- `megamek/WoR Supplemental/Pariah (Septicemia) D-Z.mtf`: duplicate of a design already kept: Pariah (Septicemia)  D-Z
+- `megamek/WoR Supplemental/Pariah (Septicemia) E.mtf`: different submodel, same name and model: equipment: Pariah (Septicemia)  E
+- `megamek/WoR Supplemental/Pariah (Septicemia) F.mtf`: duplicate of a design already kept: Pariah (Septicemia)  F
 - `megamek/WoR Supplemental/Pariah (Septicemia) US.mtf`: BV differs from the MUL: US: BV 2298, MUL 2308
-- `megamek/WoR Supplemental/Pariah (Septicemia) UW.mtf`: the import could not carry all of it over: Cannot find the ammunition 'Clan Ammo LRTorpedo-15'; Cannot find the ammunition 'Clan Ammo LRTorpedo-15'; Cannot find the ammunition 'Clan Ammo SRTorpedo-4'; Cannot find the ammunition 'Clan Ammo LRTorpedo-15'; Cannot find the ammunition 'Clan Ammo SRTorpedo-4'; Cannot find the ammunition 'Clan Ammo LRTorpedo-15'
+- `megamek/WoR Supplemental/Pariah (Septicemia) Z.mtf`: duplicate of a design already kept: Pariah (Septicemia)  Z
+- `megamek/WoR Supplemental/Ryoken (Stormcrow) Z.mtf`: different submodel, same name and model: equipment: Stormcrow (Ryoken)  Z
 - `megamek/WoR Supplemental/Savage Coyote Z.mtf`: BV differs from the MUL: Z: BV 3026, MUL 3080
+- `megamek/WoR Supplemental/Thor (Summoner) Z.mtf`: different submodel, same name and model: equipment: Summoner (Thor)  Z
+- `megamek/WoR Supplemental/Turkina Z.mtf`: duplicate of a design already kept: Turkina  Z
 - `megamek/Wolf and Blake/Archangel C-ANG-O Berith.mtf`: duplicate of a design already kept, differs only in armor spread: Archangel C-ANG-O (Berith)
 - `megamek/Wolf and Blake/BattleMaster BLR-4S Calvin II.mtf`: duplicate of a design already kept: Battlemaster BLR-4S (Calvin II)
 - `megamek/Wolf and Blake/BattleMaster BLR-4S Calvin.mtf`: duplicate of a design already kept: Battlemaster BLR-4S (Calvin)
@@ -3946,7 +4035,7 @@
 - `megamek/Wolf and Blake/Wolfhound WLF-4WA.mtf`: duplicate of a design already kept: Wolfhound WLF-4WA
 - `megamek/Wolf and Blake/Zeus X ZEU-9WD Stacy.mtf`: duplicate of a design already kept: Zeus-X ZEU-9WD (Stacy)
 - `megamek/XTRs/Boondocks/Merlin MLN-SX.mtf`: duplicate of a design already kept: Merlin MLN-SX
-- `megamek/XTRs/Boondocks/Spindrift Aquatic SecurityMech SDT-1.mtf`: the import could not carry all of it over: Patchwork armor is not converted yet; Cannot find the ammunition 'IS Ammo SRTorpedo-6'; Cannot find any armor named: 'Patchwork'
+- `megamek/XTRs/Boondocks/Spindrift Aquatic SecurityMech SDT-1.mtf`: the import could not carry all of it over: Patchwork armor is not converted yet; Cannot find any armor named: 'Patchwork'
 - `megamek/XTRs/Boondocks/Temax Cat Ninjabolt TMC-NB.mtf`: the import could not carry all of it over: 'Mech configuration 'Biped FrankenMek' is not converted yet; Cannot find any internal structure named: 'Hybrid'
 - `megamek/XTRs/Boondocks/Whitworth WTH-5S.mtf`: duplicate of a design already kept: Whitworth WTH-5S
 - `megamek/XTRs/Boondoggles/Liberator LIB-4T.mtf`: duplicate of a design already kept: Liberator LIB-4T
@@ -3956,9 +4045,8 @@
 - `megamek/XTRs/Caveat Emptor/Volkh VKH-68.mtf`: the import could not carry all of it over: Turret-mounted 'ISMediumXPulseLaser' is not converted yet
 - `megamek/XTRs/Caveat Emptor/Wasp WSP-3X.mtf`: the import could not carry all of it over: Compact heat sinks are not converted yet
 - `megamek/XTRs/Clans/Cougar-XR.mtf`: duplicate of a design already kept: Cougar-XR 
-- `megamek/XTRs/Clans/Ha Otoko-HR.mtf`: the import could not carry all of it over: Cannot place 'Clan Mech Mortar-8': its slots are split in a way not converted yet; Cannot place 'Clan Mech Mortar-8': its slots are split in a way not converted yet; Cannot find the ammunition 'Clan Ammo SC Mortar-8'; Cannot find the ammunition 'Clan Ammo SC Mortar-8'; Cannot find the ammunition 'Clan Ammo SC Mortar-8'; Cannot find the ammunition 'Clan Ammo SC Mortar-8'
+- `megamek/XTRs/Clans/Ha Otoko-HR.mtf`: the import could not carry all of it over: Cannot place 'Clan Mech Mortar-8': its slots are split in a way not converted yet; Cannot place 'Clan Mech Mortar-8': its slots are split in a way not converted yet
 - `megamek/XTRs/Clans/Kraken-XR.mtf`: duplicate of a design already kept: Kraken-XR 
-- `megamek/XTRs/Clans/Ursus PR.mtf`: the import could not carry all of it over: Cannot find any equipment named 'CLERFlamer'
 - `megamek/XTRs/ComStar/Beowulf BEO-X-7a.mtf`: duplicate of a design already kept: Beowulf BEO-X-7A
 - `megamek/XTRs/ComStar/Celerity CLR-02-X-D.mtf`: duplicate of a design already kept: Celerity CLR-02-X-D
 - `megamek/XTRs/ComStar/Exterminator EXT-6CS.mtf`: duplicate of a design already kept: Exterminator EXT-6CS
@@ -3987,7 +4075,7 @@
 - `megamek/XTRs/Gunslingers/Thug THG-11ECX (Jose).mtf`: BV differs from the MUL: THG-11ECX (Jose): BV 1720, MUL 1668
 - `megamek/XTRs/Gunslingers/Wyvern WVE-5UX City.mtf`: duplicate of a design already kept: Wyvern City WVN-5UX
 - `megamek/XTRs/Kurita/Banzai BNZ-X.mtf`: the import could not carry all of it over: Cannot find any equipment named 'ISBoobyTrap'
-- `megamek/XTRs/Kurita/Hatamoto-Kaeru HTM-35X.mtf`: the import could not carry all of it over: Cannot find the ammunition 'IS Ammo LRTorpedo-15'; Cannot find the ammunition 'IS Ammo LRTorpedo-15'; Cannot find the ammunition 'IS Ammo SRTorpedo-4'
+- `megamek/XTRs/Kurita/Hatamoto-Kaeru HTM-35X.mtf`: duplicate of a design already kept: Hatamoto-Kaeru HTM-35X
 - `megamek/XTRs/Kurita/Jenner JR10-X.mtf`: duplicate of a design already kept: Jenner JR10-X
 - `megamek/XTRs/Kurita/No-Dachi NDA-3X.mtf`: different submodel, same name and model: actuators: No-Dachi NDA-3X
 - `megamek/XTRs/Kurita/Wolf Trap (Tora) WFT-2X 'Bear Trap'.mtf`: different submodel, same name and model: actuators: Wolf Trap (Tora) WFT-2X "Bear Trap"
@@ -3996,7 +4084,7 @@
 - `megamek/XTRs/Liao/Raven X RVN-3X.mtf`: different submodel, same name and model: equipment: Raven X RVN-3X
 - `megamek/XTRs/Liao/Vindicator VND-3LD (Dao).mtf`: duplicate of a design already kept: Vindicator VND-3LD Dao
 - `megamek/XTRs/Marik/Awesome AWS-11M.mtf`: duplicate of a design already kept: Awesome AWS-11M
-- `megamek/XTRs/Marik/Hermes II HER-7S.mtf`: the import could not carry all of it over: Cannot find any equipment named 'CLERFlamer'
+- `megamek/XTRs/Marik/Hermes II HER-7S.mtf`: duplicate of a design already kept: Hermes II HER-7S
 - `megamek/XTRs/Marik/Jackal JA-KL-1579.mtf`: duplicate of a design already kept: Jackal JA-KL-1579
 - `megamek/XTRs/Marik/Orion ON3-MX.mtf`: duplicate of a design already kept: Orion ON3-MX
 - `megamek/XTRs/Marik/Pandarus LFA-1X.mtf`: duplicate of a design already kept: Pandarus LFA-1X
@@ -4004,7 +4092,7 @@
 - `megamek/XTRs/Mercenaries/Annihilator ANH-2AX.mtf`: duplicate of a design already kept: Annihilator ANH-2AX
 - `megamek/XTRs/Mercenaries/Grasshopper GHR-7X.mtf`: duplicate of a design already kept: Grasshopper GHR-7X
 - `megamek/XTRs/Mercenaries/Hoplite HOP-4X.mtf`: duplicate of a design already kept: Hoplite HOP-4X
-- `megamek/XTRs/Mercenaries/Schwerer Gustav.mtf`: the import could not carry all of it over: 'Mech configuration 'Biped FrankenMek' is not converted yet; Cannot find any equipment named 'ISThumperCannon'; Cannot find the ammunition 'ISThumperCannonAmmo'; Cannot find the ammunition 'ISThumperCannonAmmo'; Cannot find any internal structure named: 'Hybrid'
+- `megamek/XTRs/Mercenaries/Schwerer Gustav.mtf`: the import could not carry all of it over: 'Mech configuration 'Biped FrankenMek' is not converted yet; Cannot find any internal structure named: 'Hybrid'
 - `megamek/XTRs/Mercenaries/Wolfhound WLF-2X.mtf`: BV differs from the MUL: WLF-2X: BV 1837, MUL 1812
 - `megamek/XTRs/Most Wanted/Black Knight BL-X-KNT 'Red Reaper'.mtf`: duplicate of a design already kept: Black Knight BLK-X-KNT "Red Reaper"
 - `megamek/XTRs/Most Wanted/Fireball ALM-XF.mtf`: duplicate of a design already kept: Fireball ALM-XF
@@ -4055,6 +4143,7 @@
 - `megamek/XTRs/Primitives V/Trooper TP-1R.mtf`: different submodel, same name and model: equipment: Trooper TP-1R
 - `megamek/XTRs/Primitives V/Wolverine WVR-1R.mtf`: the import could not carry all of it over: Cannot find any equipment named 'ISPrototypeJumpJet'; Cannot find any equipment named 'ISPrototypeJumpJet'; Unallocated Criticals: 4; - Standard Jump Jets (jj-standard); - Standard Jump Jets (jj-standard); - Standard Jump Jets (jj-standard); - Standard Jump Jets (jj-standard)
 - `megamek/XTRs/Primitives V/Wolverine WVR-3R.mtf`: the import could not carry all of it over: Cannot find any equipment named 'ISPrototypeJumpJet'; Cannot find any equipment named 'ISPrototypeJumpJet'; Unallocated Criticals: 4; - Standard Jump Jets (jj-standard); - Standard Jump Jets (jj-standard); - Standard Jump Jets (jj-standard); - Standard Jump Jets (jj-standard)
+- `megamek/XTRs/Primitives V/Ymir BWP-X1.mtf`: different submodel, same name and model: ammo type: Ymir BWP-X1 "Bipedal Weapons Platform"
 - `megamek/XTRs/RISC/'Battle Tripod' R_H3L-2X.mtf`: no Master Unit List entry to check its BV against
 - `megamek/XTRs/RISC/'Harvester Tripod' R_H3L-3X.mtf`: no Master Unit List entry to check its BV against
 - `megamek/XTRs/RISC/'Scout Tripod' R_H3L-1X.mtf`: no Master Unit List entry to check its BV against
@@ -4110,7 +4199,7 @@
 - `megamek/XTRs/Steiner/Slagmaiden SLG-X.mtf`: duplicate of a design already kept: "Slagmaiden" SLG-X
 - `megamek/XTRs/Steiner/Stealth STH-5X.mtf`: BV differs from the MUL: STH-5X: BV 2155, MUL 2240
 - `megamek/XTRs/Steiner/Stiletto STO-6X.mtf`: the import could not carry all of it over: Turret-mounted 'ISERMediumLaser' is not converted yet; Turret-mounted 'ISERMediumLaser' is not converted yet
-- `megamek/XTRs/Succession Wars/Cataphract CTF-0X.mtf`: the import could not carry all of it over: Cannot find any equipment named 'ISElectronicWarfareEquipment'
+- `megamek/XTRs/Succession Wars/Cataphract CTF-0X.mtf`: different submodel, same name and model: equipment: Cataphract CTF-0X
 - `megamek/XTRs/Succession Wars/Flea FLE-14.mtf`: duplicate of a design already kept: Flea FLE-14
 - `megamek/XTRs/Succession Wars/Kiso K-3N-KRHQ CommandMech.mtf`: different submodel, same name and model: equipment: Kiso K-3N-KRHQ CommandMech
 - `megamek/XTRs/Succession Wars/Marauder MAD-4X.mtf`: the import could not carry all of it over: 'ISDoubleHeatSinkPrototype' is not converted yet; 'ISDoubleHeatSinkPrototype' is not converted yet; 'ISDoubleHeatSinkPrototype' is not converted yet; 'ISDoubleHeatSinkPrototype' is not converted yet; Cannot find any internal structure named: 'Endo-Steel Prototype'

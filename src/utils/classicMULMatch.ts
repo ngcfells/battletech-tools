@@ -29,8 +29,14 @@ function normalise(text: string): string {
         .replace(/&quot;/gi, '"')
         .replace(/&#39;|&apos;/gi, "'")
         .replace(/&amp;/gi, "&")
+        .replace(/[‘’]/g, "'")
+        .replace(/[“”]/g, '"')
         .toLowerCase()
         .replace(/["()]/g, " ")
+        // A quote opening or closing a word ('Warthog', Doris' Delight), not one inside it (O'Bannon).
+        .replace(/(^|\s)'+|'+(?=\s|$)/g, "$1 ")
+        // An abbreviation's period ("Mk. I"), not a decimal point.
+        .replace(/\.(?=\s|$)/g, "")
         .replace(/\s+/g, " ")
         .trim();
 }

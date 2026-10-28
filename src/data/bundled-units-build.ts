@@ -9,8 +9,12 @@ import { getBlkUnitKind, importBlkUnit } from "../classes/blk-unit-import";
 import { blkValue, parseBlkFile } from "../utils/blk-file";
 import { compactUnit, IBundledDesignHeader, loadBundledUnit } from "../utils/bundled-designs";
 import { getClassicUnitEntries, getMULMatchKeys, isMULCapitalShip, isMULLargeAerospaceCraft } from "../utils/classicMULMatch";
+import type Vehicle from "../classes/vehicle";
+import { untabulate } from "../utils/packed-json";
 import { getBundledStanding, IBundledBuild, loadMULIndex, seedRandom } from "./bundled-mechs-build";
 import { BundledUnit, BundledUnitType, getBundledUnitClass } from "./bundled-units";
+import { buildCustomMULRecord, CUSTOM_MUL_ID_START, CUSTOM_MUL_KEY_PREFIX, CUSTOM_RULES_LEVELS, ICustomMULForm, serializeCustomMULRecords } from "./custom-mul";
+import { vehicleMULForm } from "./sample-mul";
 
 export { DEFAULT_MEGAMEK_DIR, MEGAMEK_NOTICE } from "./bundled-mechs-build";
 
@@ -25,7 +29,8 @@ export const BLK_KINDS: Record<BundledUnitType, IBlkKind> = {
     "battle-armor": { title: "battle armor", mul: (unit) => unit.Type?.Id === 22 },
     "protomechs": { title: "ProtoMechs", mul: (unit) => unit.Type?.Id === 23 },
     "small-craft": { title: "Small Craft and DropShips", mul: (unit) => isMULLargeAerospaceCraft(unit) && !isMULCapitalShip(unit) },
-    "vehicles": { title: "Combat Vehicles", mul: (unit) => unit.Type?.Id === 19 },
+    // The MUL files some tanks (the Koryu Submarine, the Marsden MBT II (Primitive)) as Support Vehicles.
+    "vehicles": { title: "Combat Vehicles", mul: (unit) => [19, 24].includes(unit.Type?.Id) },
     "support-vehicles": { title: "Support Vehicles", mul: (unit) => [19, 24].includes(unit.Type?.Id) },
 };
 const isBundledType = (kind: string | null): kind is BundledUnitType => !!kind && kind in BLK_KINDS;
@@ -69,6 +74,45 @@ export interface IPreparedUnit {
     survives?: boolean;
     header?: Pick<IBundledDesignHeader, "name" | "model" | "cost" | "rulesLevel" | "year" | "standing">;
     design?: Record<string, unknown>;
+    /** A Combat Vehicle's custom unit list entry, for when the MUL has none. */
+    customForm?: ICustomMULForm;
+}
+
+/** The types whose files the MUL lacks are filed in the custom unit list, credited to MegaMek, and bundled. */
+const MEGAMEK_CUSTOM_TYPES: BundledUnitType[] = ["vehicles"];
+export const MEGAMEK_CUSTOM_KEY_PREFIX = CUSTOM_MUL_KEY_PREFIX + "MEGAMEK-";
+export const MEGAMEK_CUSTOM_ID_START = CUSTOM_MUL_ID_START + 10000;
+const MEGAMEK_CUSTOM_DATE = "2026-10-27T00:00:00.000Z";
+const looseKey = (key: string): string => key.replace(/[^a-z0-9]/g, "");
+
+/** MegaMek files that name a MUL unit another way, by MegaMek's name and model: the MUL id they are. */
+export const MEGAMEK_MUL_IDS: Record<string, number> = Object.fromEntries(([
+    ["Bandit Hovercraft", "Mk 2", 102443],
+    ["Browning Mobile HQ", "", 100191],
+    ["Browning Mobile HQ", "(Half Track)", 104491],
+    ["Coolant Truck", "135-K", 106317],
+    ["DI Multipurpose VTOL", "", 105119],
+    ["DI Multipurpose VTOL", "(Gunship)", 108135],
+    ["Eldingar Hover Sled", "'HumHov'", 108700],
+    ["Gun Trailer", "(Artillery/AA)", 101853],
+    ["Hephaestus Jump Tank", "(AP)", 100592],
+    ["Mobile Long Tom Artillery", "LT-MOB-25 (Support Carriage)", 103858],
+    ["Phalanx Support Tank", "(Production)", 104219],
+    ["Rommel Tank", "(Howitzer) Production", 106702],
+    ["Sokar Urban Combat Unit", "", 104507],
+] as [string, string, number][]).map(([name, model, id]) => [getMULMatchKeys(name, model)[0], id]));
+const isMegaMekCustom = (unit: IASMULUnit): boolean => !!unit.MulUnitKey?.startsWith(MEGAMEK_CUSTOM_KEY_PREFIX);
+
+function megaMekCustomForm(unit: Vehicle, job: IUnitJob, blk: NonNullable<ReturnType<typeof parseBlkFile>>): ICustomMULForm {
+    return {
+        ...vehicleMULForm(unit),
+        rules: CUSTOM_RULES_LEVELS[Math.min(getBlkRulesLevel(blkValue(blk, "type")), 3)],
+        role: blkValue(blk, "role") || "None",
+        dateIntroduced: blkValue(blk, "year"),
+        author: "MegaMek",
+        source: "MegaMek unit files",
+        notes: `Not on the Master Unit List; converted from MegaMek's ${job.name} (MegaMek Data, CC BY-NC-SA 4.0).`,
+    };
 }
 
 export function prepareUnitFile(job: IUnitJob): IPreparedUnit {
@@ -110,6 +154,7 @@ export function prepareUnitFile(job: IUnitJob): IPreparedUnit {
                 rulesLevel: getBlkRulesLevel(blkType), year: +blkValue(blk, "year") || 0, ...getBundledStanding(job.name, unit),
             },
             design,
+            ...(MEGAMEK_CUSTOM_TYPES.includes(type) ? { customForm: megaMekCustomForm(unit as Vehicle, job, blk) } : {}),
         };
     } finally {
         console.warn = warn;
@@ -124,15 +169,33 @@ export function prepareUnitFile(job: IUnitJob): IPreparedUnit {
  * carry; the rest are matched by name. `prepare` gives each file's prepared design (the build runner's workers and
  * cache); by default each is prepared here.
  */
-export function buildBundledUnits(megamekDir: string, mulDir: string, prepare: (job: IUnitJob) => IPreparedUnit = prepareUnitFile): Record<BundledUnitType, IBundledBuild> {
+export function buildBundledUnits(megamekDir: string, mulDir: string, prepare: (job: IUnitJob) => IPreparedUnit = prepareUnitFile): { builds: Record<BundledUnitType, IBundledBuild>; customRecords: IASMULUnit[] } {
     const types = Object.keys(BLK_KINDS) as BundledUnitType[];
     const mul1 = new Map<number, IASMULUnit>();
     for (const file of fs.readdirSync(path.join(mulDir, "mul1"))) {
         for (const unit of JSON.parse(fs.readFileSync(path.join(mulDir, "mul1", file), "utf8")) as IASMULUnit[]) mul1.set(unit.Id, unit);
     }
-    const work = Object.fromEntries(types.map((type) => [type, { kind: BLK_KINDS[type], mul: loadMULIndex(mulDir, BLK_KINDS[type].mul), taken: new Set<string>(),
+    // The custom list as it stands: an earlier build's MegaMek entries keep their ids; new ones take the next free.
+    const custom = fs.readdirSync(path.join(mulDir, "custom")).flatMap((file) => untabulate(JSON.parse(fs.readFileSync(path.join(mulDir, "custom", file), "utf8"))) as IASMULUnit[]);
+    const earlier = new Map(custom.filter(isMegaMekCustom).map((record) => [record.MulUnitKey, record]));
+    const usedIds = new Set(custom.map((record) => record.Id));
+    let nextId = MEGAMEK_CUSTOM_ID_START;
+    const customRecords: IASMULUnit[] = [];
+    // A MegaMek entry is ours, not a BV to check a file against.
+    const work = Object.fromEntries(types.map((type) => [type, { kind: BLK_KINDS[type], mul: loadMULIndex(mulDir, (unit) => !isMegaMekCustom(unit) && BLK_KINDS[type].mul(unit)), taken: new Set<string>(),
         kept: [] as { header: Omit<IBundledDesignHeader, "id">; design: Record<string, unknown> }[], leftOut: [] as IBundledBuild["leftOut"] }])) as
         Record<BundledUnitType, { kind: IBlkKind; mul: Map<string, IASMULUnit>; taken: Set<string>; kept: { header: Omit<IBundledDesignHeader, "id">; design: Record<string, unknown> }[]; leftOut: IBundledBuild["leftOut"] }>;
+    // Each type's MUL keys with only letters and digits left, for MegaMek's spellings ("Fulcrum Heavy HoverTank",
+    // "Darter Scout Car (SRM-2)"); a loose key two entries share matches neither.
+    const loose = Object.fromEntries(types.map((type) => {
+        const index = new Map<string, IASMULUnit | null>();
+        for (const [key, entry] of work[type].mul) {
+            const at = looseKey(key);
+            index.set(at, index.has(at) && index.get(at) !== entry ? null : entry);
+        }
+        return [type, index];
+    })) as Record<BundledUnitType, Map<string, IASMULUnit | null>>;
+    const ids = Object.fromEntries(types.map((type) => [type, new Map([...work[type].mul.values()].map((entry) => [entry.Id, entry]))])) as Record<BundledUnitType, Map<number, IASMULUnit>>;
     for (const file of listUnitJobs(megamekDir)) {
         const unit = prepare(file);
         if (!unit.type) continue;
@@ -145,8 +208,27 @@ export function buildBundledUnits(megamekDir: string, mulDir: string, prepare: (
         // read as a second chassis name.
         if (job.taken.has(keys[0])) { leave("duplicate of a design already kept"); continue; }
         const byId = unit.mulId ? mul1.get(unit.mulId) : undefined;
-        const match = (byId && job.kind.mul(byId) ? byId : undefined) ?? keys.map((key) => job.mul.get(key)).find(Boolean);
-        if (!match || !(match.BattleValue > 0)) { leave("no Master Unit List entry to check its BV against"); continue; }
+        const alias = MEGAMEK_MUL_IDS[keys[0]];
+        let match = (byId && job.kind.mul(byId) ? byId : undefined) ?? (alias ? ids[unit.type].get(alias) : undefined) ?? keys.map((key) => job.mul.get(key)).find(Boolean)
+            ?? keys.map((key) => loose[unit.type!].get(looseKey(key))).find(Boolean) ?? undefined;
+        if (!match && unit.customForm) {
+            if (!unit.survives) { leave("not on the MUL, and does not survive the compact format"); continue; }
+            if (!(unit.bv! > 0)) { leave("not on the MUL, and has no BV of its own"); continue; }
+            const key = MEGAMEK_CUSTOM_KEY_PREFIX + `${unit.customForm.name} ${unit.customForm.variant}`.toUpperCase().replace(/[^A-Z0-9]+/g, "-").replace(/^-|-$/g, "");
+            if (customRecords.some((record) => record.MulUnitKey === key)) { leave("its custom unit list key is taken", key); continue; }
+            const before = earlier.get(key);
+            let id = before?.Id;
+            if (!id) {
+                while (usedIds.has(nextId)) nextId++;
+                id = nextId;
+            }
+            usedIds.add(id);
+            const createdAt = before?.CustomInfo?.createdAt ?? MEGAMEK_CUSTOM_DATE;
+            match = buildCustomMULRecord(unit.customForm, { id, key, createdAt }, createdAt);
+            customRecords.push(match);
+        }
+        if (!match) { leave("no Master Unit List entry to check its BV against"); continue; }
+        if (!(match.BattleValue > 0)) { leave("its Master Unit List entry gives no BV to check against", `MUL ${match.Id}`); continue; }
         if (unit.bv !== match.BattleValue) { leave("BV differs from the MUL", `BV ${unit.bv}, MUL ${match.BattleValue}`); continue; }
         if (!unit.survives) { leave("does not survive the compact format"); continue; }
         job.taken.add(keys[0]);
@@ -159,9 +241,16 @@ export function buildBundledUnits(megamekDir: string, mulDir: string, prepare: (
             design: unit.design!,
         });
     }
-    return Object.fromEntries(types.map((type) => {
+    const builds = Object.fromEntries(types.map((type) => {
         const { kept, leftOut } = work[type];
         kept.sort((a, b) => (a.header.name + " " + a.header.model).localeCompare(b.header.name + " " + b.header.model));
         return [type, { headers: kept.map(({ header }, id) => ({ id, ...header })), designs: kept.map(({ design }) => design), leftOut }];
     })) as Record<BundledUnitType, IBundledBuild>;
+    return { builds, customRecords };
+}
+
+/** The custom unit list's file text with its MegaMek entries replaced by `records`; everyone else's are kept. */
+export function writeMegaMekCustomRecords(currentFileText: string | null, records: IASMULUnit[]): string {
+    const current = currentFileText ? untabulate(JSON.parse(currentFileText)) as IASMULUnit[] : [];
+    return serializeCustomMULRecords([...current.filter((record) => !isMegaMekCustom(record)), ...records]);
 }

@@ -1,11 +1,12 @@
 # Bundled Small Craft and DropShips: build report
 
-30 designs kept, 218 files left out.
+31 designs kept, 217 files left out.
 
 | Reason | Files |
 |---|---|
-| no Master Unit List entry to check its BV against | 150 |
-| BV differs from the MUL | 48 |
+| no Master Unit List entry to check its BV against | 71 |
+| its Master Unit List entry gives no BV to check against | 69 |
+| BV differs from the MUL | 57 |
 | the import could not carry all of it over | 17 |
 | import failed | 2 |
 | does not survive the compact format | 1 |
@@ -15,12 +16,12 @@
 - `dropships/HBHK/Gaajian System Patrol Boat (2485).blk`: BV differs from the MUL: BV 3426, MUL 3351
 - `dropships/HBHK/Gaajian System Patrol Boat (3060).blk`: BV differs from the MUL: BV 3674, MUL 3592
 - `dropships/HBHK/Hoshiryokou Tug Boat.blk`: no Master Unit List entry to check its BV against
-- `dropships/HBMPS/Aqueduct Liquid Carrier.blk`: no Master Unit List entry to check its BV against
-- `dropships/HBMPS/Princess Luxury Liner (Cargo).blk`: no Master Unit List entry to check its BV against
-- `dropships/HBMPS/Princess Luxury Liner.blk`: no Master Unit List entry to check its BV against
-- `dropships/Historicals/Liberation of Terra I and II/Lee (2756 Cargo).blk`: no Master Unit List entry to check its BV against
-- `dropships/Historicals/Liberation of Terra I and II/Lee (2756 Carrier).blk`: no Master Unit List entry to check its BV against
-- `dropships/Historicals/Liberation of Terra I and II/Lee (2756 Troop Transport).blk`: no Master Unit List entry to check its BV against
+- `dropships/HBMPS/Aqueduct Liquid Carrier.blk`: its Master Unit List entry gives no BV to check against: MUL 100036
+- `dropships/HBMPS/Princess Luxury Liner (Cargo).blk`: its Master Unit List entry gives no BV to check against: MUL 106044
+- `dropships/HBMPS/Princess Luxury Liner.blk`: its Master Unit List entry gives no BV to check against: MUL 101119
+- `dropships/Historicals/Liberation of Terra I and II/Lee (2756 Cargo).blk`: its Master Unit List entry gives no BV to check against: MUL 106701
+- `dropships/Historicals/Liberation of Terra I and II/Lee (2756 Carrier).blk`: its Master Unit List entry gives no BV to check against: MUL 108693
+- `dropships/Historicals/Liberation of Terra I and II/Lee (2756 Troop Transport).blk`: its Master Unit List entry gives no BV to check against: MUL 102164
 - `dropships/Historicals/Liberation of Terra I and II/Lee (BattleMech Carrier).blk`: BV differs from the MUL: BV 15063, MUL 14393
 - `dropships/Historicals/Liberation of Terra I and II/M3 Drone CASPAR.blk`: the import could not carry all of it over: "ImprovedCasparDroneControlSystem" has no match in this catalog and was left off.; "SDSSelfDestructSystem" has no match in this catalog and was left off.
 - `dropships/Historicals/Liberation of Terra I and II/Model 96C 'Howdah' .blk`: the import could not carry all of it over: "AutoTacticalAnalysisComputer:SIZE:20.0" has no match in this catalog and was left off.; Transport bay "artsasfbay" is not one this builder has and was left off.
@@ -29,9 +30,9 @@
 - `dropships/JHS - Terra/Cockatrice Monitor Platform (Drone).blk`: the import could not carry all of it over: "ImprovedCasparIIDroneControlSystem" has no match in this catalog and was left off.
 - `dropships/JHS - Terra/Dragau Assault Interceptor (CASPAR II Drone).blk`: the import could not carry all of it over: "CasparIIDroneControlSystem" has no match in this catalog and was left off.
 - `dropships/JHS - Terra/Tiamat Pocket Warship (CASPAR II Drone).blk`: the import could not carry all of it over: "CasparIIDroneControlSystem" has no match in this catalog and was left off.; Transport bay "artsasfbay" is not one this builder has and was left off.
-- `dropships/Jihad Secrets - Blake Documents/Trojan (Blockade Runner).blk`: no Master Unit List entry to check its BV against
+- `dropships/Jihad Secrets - Blake Documents/Trojan (Blockade Runner).blk`: its Master Unit List entry gives no BV to check against: MUL 104417
 - `dropships/Mingo.blk`: BV differs from the MUL: BV 1322, MUL 1290
-- `dropships/Other/Buccaneer Rezak.blk`: no Master Unit List entry to check its BV against
+- `dropships/Other/Buccaneer Rezak.blk`: its Master Unit List entry gives no BV to check against: MUL 102368
 - `dropships/Other/Lion (3052) (WD).blk`: no Master Unit List entry to check its BV against
 - `dropships/Other/Rose (Bara no Ryu) (Hive).blk`: BV differs from the MUL: BV 4098, MUL 4085
 - `dropships/Other/Union (3070).blk`: BV differs from the MUL: BV 4954, MUL 5094
@@ -57,13 +58,13 @@
 - `dropships/TRO3057R/Clan/Union C (2829) (Tank).blk`: no Master Unit List entry to check its BV against
 - `dropships/TRO3057R/Clan/Union C (2829).blk`: no Master Unit List entry to check its BV against
 - `dropships/TRO3057R/Clan/Union C (2840) (Cargo).blk`: no Master Unit List entry to check its BV against
-- `dropships/TRO3057R/IS/Achilles (2582).blk`: no Master Unit List entry to check its BV against
+- `dropships/TRO3057R/IS/Achilles (2582).blk`: its Master Unit List entry gives no BV to check against: MUL 104497
 - `dropships/TRO3057R/IS/Achilles (2721).blk`: no Master Unit List entry to check its BV against
 - `dropships/TRO3057R/IS/Achilles (2721b).blk`: no Master Unit List entry to check its BV against
-- `dropships/TRO3057R/IS/Achilles (3055).blk`: no Master Unit List entry to check its BV against
-- `dropships/TRO3057R/IS/Avenger (2816).blk`: no Master Unit List entry to check its BV against
-- `dropships/TRO3057R/IS/Avenger (3048).blk`: no Master Unit List entry to check its BV against
-- `dropships/TRO3057R/IS/Behemoth (2658).blk`: no Master Unit List entry to check its BV against
+- `dropships/TRO3057R/IS/Achilles (3055).blk`: its Master Unit List entry gives no BV to check against: MUL 107193
+- `dropships/TRO3057R/IS/Avenger (2816).blk`: its Master Unit List entry gives no BV to check against: MUL 105831
+- `dropships/TRO3057R/IS/Avenger (3048).blk`: its Master Unit List entry gives no BV to check against: MUL 104908
+- `dropships/TRO3057R/IS/Behemoth (2658).blk`: its Master Unit List entry gives no BV to check against: MUL 100656
 - `dropships/TRO3057R/IS/Behemoth (2782).blk`: no Master Unit List entry to check its BV against
 - `dropships/TRO3057R/IS/Buccaneer (2708).blk`: no Master Unit List entry to check its BV against
 - `dropships/TRO3057R/IS/Buccaneer (2709).blk`: no Master Unit List entry to check its BV against
@@ -71,66 +72,66 @@
 - `dropships/TRO3057R/IS/Cargo King (2790).blk`: no Master Unit List entry to check its BV against
 - `dropships/TRO3057R/IS/Cargomaster (2790).blk`: no Master Unit List entry to check its BV against
 - `dropships/TRO3057R/IS/Claymore (3054).blk`: no Master Unit List entry to check its BV against
-- `dropships/TRO3057R/IS/Condor (2801).blk`: no Master Unit List entry to check its BV against
+- `dropships/TRO3057R/IS/Condor (2801).blk`: its Master Unit List entry gives no BV to check against: MUL 101726
 - `dropships/TRO3057R/IS/Condor (3035)Dove.blk`: no Master Unit List entry to check its BV against
-- `dropships/TRO3057R/IS/Condor (3054).blk`: no Master Unit List entry to check its BV against
+- `dropships/TRO3057R/IS/Condor (3054).blk`: its Master Unit List entry gives no BV to check against: MUL 102507
 - `dropships/TRO3057R/IS/Condor (3079).blk`: no Master Unit List entry to check its BV against
-- `dropships/TRO3057R/IS/Confederate (2602).blk`: no Master Unit List entry to check its BV against
+- `dropships/TRO3057R/IS/Confederate (2602).blk`: its Master Unit List entry gives no BV to check against: MUL 100335
 - `dropships/TRO3057R/IS/Confederate (2602)Mech.blk`: no Master Unit List entry to check its BV against
-- `dropships/TRO3057R/IS/Excalibur (2786).blk`: no Master Unit List entry to check its BV against
-- `dropships/TRO3057R/IS/Excalibur (3056).blk`: no Master Unit List entry to check its BV against
-- `dropships/TRO3057R/IS/Fortress (2613).blk`: no Master Unit List entry to check its BV against
-- `dropships/TRO3057R/IS/Fortress (3058).blk`: no Master Unit List entry to check its BV against
-- `dropships/TRO3057R/IS/Fury (2638).blk`: no Master Unit List entry to check its BV against
-- `dropships/TRO3057R/IS/Fury (3056).blk`: no Master Unit List entry to check its BV against
-- `dropships/TRO3057R/IS/Gazelle (2531).blk`: no Master Unit List entry to check its BV against
-- `dropships/TRO3057R/IS/Gazelle (3055).blk`: no Master Unit List entry to check its BV against
-- `dropships/TRO3057R/IS/Gazelle (Heavy Vehicle).blk`: no Master Unit List entry to check its BV against
+- `dropships/TRO3057R/IS/Excalibur (2786).blk`: its Master Unit List entry gives no BV to check against: MUL 105695
+- `dropships/TRO3057R/IS/Excalibur (3056).blk`: its Master Unit List entry gives no BV to check against: MUL 107885
+- `dropships/TRO3057R/IS/Fortress (2613).blk`: its Master Unit List entry gives no BV to check against: MUL 103267
+- `dropships/TRO3057R/IS/Fortress (3058).blk`: its Master Unit List entry gives no BV to check against: MUL 107057
+- `dropships/TRO3057R/IS/Fury (2638).blk`: its Master Unit List entry gives no BV to check against: MUL 104875
+- `dropships/TRO3057R/IS/Fury (3056).blk`: its Master Unit List entry gives no BV to check against: MUL 107103
+- `dropships/TRO3057R/IS/Gazelle (2531).blk`: its Master Unit List entry gives no BV to check against: MUL 105249
+- `dropships/TRO3057R/IS/Gazelle (3055).blk`: its Master Unit List entry gives no BV to check against: MUL 105915
+- `dropships/TRO3057R/IS/Gazelle (Heavy Vehicle).blk`: its Master Unit List entry gives no BV to check against: MUL 102597
 - `dropships/TRO3057R/IS/Hamilcar (3054).blk`: no Master Unit List entry to check its BV against
 - `dropships/TRO3057R/IS/Hamilcar (3084).blk`: no Master Unit List entry to check its BV against
 - `dropships/TRO3057R/IS/Hannibal (3055).blk`: no Master Unit List entry to check its BV against
 - `dropships/TRO3057R/IS/Hercules (3053).blk`: no Master Unit List entry to check its BV against
-- `dropships/TRO3057R/IS/Intruder (2655).blk`: no Master Unit List entry to check its BV against
-- `dropships/TRO3057R/IS/Intruder (3056).blk`: no Master Unit List entry to check its BV against
+- `dropships/TRO3057R/IS/Intruder (2655).blk`: its Master Unit List entry gives no BV to check against: MUL 106462
+- `dropships/TRO3057R/IS/Intruder (3056).blk`: its Master Unit List entry gives no BV to check against: MUL 104779
 - `dropships/TRO3057R/IS/Kuan Ti (3055).blk`: no Master Unit List entry to check its BV against
-- `dropships/TRO3057R/IS/Leopard (2537).blk`: no Master Unit List entry to check its BV against
-- `dropships/TRO3057R/IS/Leopard (3056).blk`: no Master Unit List entry to check its BV against
-- `dropships/TRO3057R/IS/Leopard CV (2581).blk`: no Master Unit List entry to check its BV against
-- `dropships/TRO3057R/IS/Leopard CV (3054).blk`: no Master Unit List entry to check its BV against
-- `dropships/TRO3057R/IS/Lion (2595).blk`: no Master Unit List entry to check its BV against
+- `dropships/TRO3057R/IS/Leopard (2537).blk`: its Master Unit List entry gives no BV to check against: MUL 102155
+- `dropships/TRO3057R/IS/Leopard (3056).blk`: its Master Unit List entry gives no BV to check against: MUL 108442
+- `dropships/TRO3057R/IS/Leopard CV (2581).blk`: its Master Unit List entry gives no BV to check against: MUL 103369
+- `dropships/TRO3057R/IS/Leopard CV (3054).blk`: its Master Unit List entry gives no BV to check against: MUL 101855
+- `dropships/TRO3057R/IS/Lion (2595).blk`: its Master Unit List entry gives no BV to check against: MUL 103740
 - `dropships/TRO3057R/IS/Lung Wang (3055).blk`: no Master Unit List entry to check its BV against
-- `dropships/TRO3057R/IS/Mammoth (2658).blk`: no Master Unit List entry to check its BV against
+- `dropships/TRO3057R/IS/Mammoth (2658).blk`: its Master Unit List entry gives no BV to check against: MUL 107038
 - `dropships/TRO3057R/IS/Mammoth (2808).blk`: no Master Unit List entry to check its BV against
 - `dropships/TRO3057R/IS/Model 97 'Octopus' (3051).blk`: no Master Unit List entry to check its BV against
 - `dropships/TRO3057R/IS/Monarch (2759).blk`: no Master Unit List entry to check its BV against
-- `dropships/TRO3057R/IS/Mule 'Q-Ship'.blk`: no Master Unit List entry to check its BV against
+- `dropships/TRO3057R/IS/Mule 'Q-Ship'.blk`: BV differs from the MUL: BV 10882, MUL 20492
 - `dropships/TRO3057R/IS/Mule (2737).blk`: no Master Unit List entry to check its BV against
 - `dropships/TRO3057R/IS/Nagumo (3056).blk`: no Master Unit List entry to check its BV against
 - `dropships/TRO3057R/IS/Okinawa (3055).blk`: no Master Unit List entry to check its BV against
 - `dropships/TRO3057R/IS/Okinawa (3056).blk`: no Master Unit List entry to check its BV against
-- `dropships/TRO3057R/IS/Overlord (2762).blk`: no Master Unit List entry to check its BV against
+- `dropships/TRO3057R/IS/Overlord (2762).blk`: its Master Unit List entry gives no BV to check against: MUL 100580
 - `dropships/TRO3057R/IS/Overlord (2762b).blk`: no Master Unit List entry to check its BV against
 - `dropships/TRO3057R/IS/Overlord (2775) (Combined Arms).blk`: no Master Unit List entry to check its BV against
 - `dropships/TRO3057R/IS/Overlord (2809) (Klondike).blk`: no Master Unit List entry to check its BV against
 - `dropships/TRO3057R/IS/Overlord (2817) (Command).blk`: no Master Unit List entry to check its BV against
-- `dropships/TRO3057R/IS/Overlord (3056).blk`: no Master Unit List entry to check its BV against
+- `dropships/TRO3057R/IS/Overlord (3056).blk`: its Master Unit List entry gives no BV to check against: MUL 104450
 - `dropships/TRO3057R/IS/Rose (Bara no Ryu) (3054).blk`: no Master Unit List entry to check its BV against
-- `dropships/TRO3057R/IS/Seeker (2815).blk`: no Master Unit List entry to check its BV against
+- `dropships/TRO3057R/IS/Seeker (2815).blk`: its Master Unit List entry gives no BV to check against: MUL 108097
 - `dropships/TRO3057R/IS/Seeker (2815M).blk`: no Master Unit List entry to check its BV against
-- `dropships/TRO3057R/IS/Seeker (3054).blk`: no Master Unit List entry to check its BV against
-- `dropships/TRO3057R/IS/Titan (2647).blk`: no Master Unit List entry to check its BV against
+- `dropships/TRO3057R/IS/Seeker (3054).blk`: its Master Unit List entry gives no BV to check against: MUL 106755
+- `dropships/TRO3057R/IS/Titan (2647).blk`: its Master Unit List entry gives no BV to check against: MUL 103382
 - `dropships/TRO3057R/IS/Titan (2647b).blk`: no Master Unit List entry to check its BV against
-- `dropships/TRO3057R/IS/Triumph (2593).blk`: no Master Unit List entry to check its BV against
+- `dropships/TRO3057R/IS/Triumph (2593).blk`: its Master Unit List entry gives no BV to check against: MUL 103425
 - `dropships/TRO3057R/IS/Triumph (2593b).blk`: no Master Unit List entry to check its BV against
-- `dropships/TRO3057R/IS/Triumph (3057).blk`: no Master Unit List entry to check its BV against
+- `dropships/TRO3057R/IS/Triumph (3057).blk`: its Master Unit List entry gives no BV to check against: MUL 106225
 - `dropships/TRO3057R/IS/Union (2708) (Cargo).blk`: no Master Unit List entry to check its BV against
 - `dropships/TRO3057R/IS/Union (2708).blk`: BV differs from the MUL: BV 3972, MUL 3962
 - `dropships/TRO3057R/IS/Union (2708b).blk`: no Master Unit List entry to check its BV against
 - `dropships/TRO3057R/IS/Union (2709).blk`: no Master Unit List entry to check its BV against
 - `dropships/TRO3057R/IS/Union (2710).blk`: no Master Unit List entry to check its BV against
 - `dropships/TRO3057R/IS/Union (3055).blk`: BV differs from the MUL: BV 4987, MUL 4977
-- `dropships/TRO3057R/IS/Vengeance (2682).blk`: no Master Unit List entry to check its BV against
-- `dropships/TRO3057R/IS/Vengeance (3056).blk`: no Master Unit List entry to check its BV against
+- `dropships/TRO3057R/IS/Vengeance (2682).blk`: its Master Unit List entry gives no BV to check against: MUL 102576
+- `dropships/TRO3057R/IS/Vengeance (3056).blk`: its Master Unit List entry gives no BV to check against: MUL 108332
 - `dropships/TRO3067/Clan/Mercer (3065).blk`: BV differs from the MUL: BV 18910, MUL 18038
 - `dropships/TRO3067/Clan/Outpost (3063).blk`: BV differs from the MUL: BV 12306, MUL 12346
 - `dropships/TRO3067/IS/Assault Triumph (3082).blk`: BV differs from the MUL: BV 7676, MUL 7673
@@ -144,30 +145,29 @@
 - `dropships/TRO3067/IS/Union-X (3071).blk`: BV differs from the MUL: BV 9320, MUL 9300
 - `dropships/TRO3075/Age of War/Colossus Mk I.blk`: BV differs from the MUL: BV 7144, MUL 7084
 - `dropships/TRO3075/Age of War/Colossus.blk`: BV differs from the MUL: BV 7356, MUL 7296
-- `dropships/TRO3075/Age of War/Model 96 'Elephant' Mk I.blk`: no Master Unit List entry to check its BV against
-- `dropships/TRO3075/Age of War/Model 96 'Elephant'.blk`: no Master Unit List entry to check its BV against
-- `dropships/TRO3075/Age of War/Pentagon 'Pocket Warship'.blk`: no Master Unit List entry to check its BV against
+- `dropships/TRO3075/Age of War/Model 96 'Elephant' Mk I.blk`: BV differs from the MUL: BV 10501, MUL 10750
+- `dropships/TRO3075/Age of War/Model 96 'Elephant'.blk`: BV differs from the MUL: BV 11328, MUL 12887
+- `dropships/TRO3075/Age of War/Pentagon 'Pocket Warship'.blk`: BV differs from the MUL: BV 13165, MUL 15939
 - `dropships/TRO3075/Age of War/Vulture (2312).blk`: BV differs from the MUL: BV 1470, MUL 1497
 - `dropships/TRO3075/Age of War/Vulture (2405).blk`: BV differs from the MUL: BV 2489, MUL 2482
 - `dropships/TRO3075/Age of War/Vulture (Cargo).blk`: BV differs from the MUL: BV 2489, MUL 2482
 - `dropships/TRO3075/Cutting Edge/Aurora (BA).blk`: no Master Unit List entry to check its BV against
-- `dropships/TRO3075/Cutting Edge/Excalibur 'Pocket Warship'.blk`: no Master Unit List entry to check its BV against
-- `dropships/TRO3075/Cutting Edge/Leopard 'Pocket Warship'.blk`: no Master Unit List entry to check its BV against
-- `dropships/TRO3075/Cutting Edge/Mule 'Pocket Warship'.blk`: no Master Unit List entry to check its BV against
-- `dropships/TRO3075/Cutting Edge/Mule (Armored Pocket Warship).blk`: no Master Unit List entry to check its BV against
-- `dropships/TRO3075/Cutting Edge/Union 'Pocket Warship'.blk`: no Master Unit List entry to check its BV against
+- `dropships/TRO3075/Cutting Edge/Excalibur 'Pocket Warship'.blk`: BV differs from the MUL: BV 22431, MUL 30109
+- `dropships/TRO3075/Cutting Edge/Mule 'Pocket Warship'.blk`: BV differs from the MUL: BV 11697, MUL 21307
+- `dropships/TRO3075/Cutting Edge/Mule (Armored Pocket Warship).blk`: its Master Unit List entry gives no BV to check against: MUL 101798
+- `dropships/TRO3075/Cutting Edge/Union 'Pocket Warship'.blk`: BV differs from the MUL: BV 7209, MUL 9041
 - `dropships/TRO3085/Cutting Edge/Clan/Aesir Assault Dropship.blk`: the import could not carry all of it over: "ISSmallNavalCommScannerSuite" has no match in this catalog and was left off.
-- `dropships/TRO3085/Cutting Edge/Clan/Isegrim Assault DropShip.blk`: no Master Unit List entry to check its BV against
+- `dropships/TRO3085/Cutting Edge/Clan/Isegrim Assault DropShip.blk`: its Master Unit List entry gives no BV to check against: MUL 106338
 - `dropships/TRO3085/Cutting Edge/Clan/Vanir Assault Dropship.blk`: the import could not carry all of it over: "ISSmallNavalCommScannerSuite" has no match in this catalog and was left off.
-- `dropships/TRO3085/Cutting Edge/IS/Arondight Pocket Warship (Refit).blk`: no Master Unit List entry to check its BV against
-- `dropships/TRO3085/Cutting Edge/IS/Arondight Pocket Warship (SCC).blk`: no Master Unit List entry to check its BV against
-- `dropships/TRO3085/Cutting Edge/IS/Arondight Pocket Warship.blk`: no Master Unit List entry to check its BV against
-- `dropships/TRO3085/Cutting Edge/IS/Interdictor Pocket Warship (SCC).blk`: no Master Unit List entry to check its BV against
+- `dropships/TRO3085/Cutting Edge/IS/Arondight Pocket Warship (Refit).blk`: its Master Unit List entry gives no BV to check against: MUL 106318
+- `dropships/TRO3085/Cutting Edge/IS/Arondight Pocket Warship (SCC).blk`: its Master Unit List entry gives no BV to check against: MUL 106547
+- `dropships/TRO3085/Cutting Edge/IS/Arondight Pocket Warship.blk`: its Master Unit List entry gives no BV to check against: MUL 100722
+- `dropships/TRO3085/Cutting Edge/IS/Interdictor Pocket Warship (SCC).blk`: its Master Unit List entry gives no BV to check against: MUL 104604
 - `dropships/TRO3085/Cutting Edge/IS/Interdictor Pocket Warship (Sub-Capital).blk`: no Master Unit List entry to check its BV against
-- `dropships/TRO3085/Cutting Edge/IS/Interdictor Pocket Warship.blk`: no Master Unit List entry to check its BV against
-- `dropships/TRO3085/Cutting Edge/IS/Taihou Assault Dropship.blk`: no Master Unit List entry to check its BV against
+- `dropships/TRO3085/Cutting Edge/IS/Interdictor Pocket Warship.blk`: its Master Unit List entry gives no BV to check against: MUL 107835
+- `dropships/TRO3085/Cutting Edge/IS/Taihou Assault Dropship.blk`: its Master Unit List entry gives no BV to check against: MUL 107476
 - `dropships/TRO3085/ONN/Nekohono'o (SCL).blk`: does not survive the compact format
-- `dropships/TRO3085/Supplemental/Dragau II Assault Interceptor.blk`: no Master Unit List entry to check its BV against
+- `dropships/TRO3085/Supplemental/Dragau II Assault Interceptor.blk`: its Master Unit List entry gives no BV to check against: MUL 102742
 - `dropships/TRO3085/Supplemental/Tiamat Pocket Warship.blk`: BV differs from the MUL: BV 50670, MUL 50146
 - `dropships/TRO3145/Marik/Seleucus Infantry Transport.blk`: BV differs from the MUL: BV 7757, MUL 7306
 - `dropships/TRO3145/Merc/Nagasawa.blk`: no Master Unit List entry to check its BV against
@@ -178,16 +178,16 @@
 - `dropships/TRO3145/Republic/Duat Military Transport.blk`: BV differs from the MUL: BV 17643, MUL 16695
 - `dropships/TRO3145/Steiner/Trutzburg.blk`: BV differs from the MUL: BV 11583, MUL 11580
 - `dropships/TRO3150/Castrum Pocket WarShip.blk`: BV differs from the MUL: BV 67231, MUL 67223
-- `dropships/XTRs/Davion/Conquistador Blockade Runner.blk`: no Master Unit List entry to check its BV against
+- `dropships/XTRs/Davion/Conquistador Blockade Runner.blk`: BV differs from the MUL: BV 32272, MUL 31724
 - `dropships/XTRs/Kurita/Nekohonoo HQ.blk`: the import could not carry all of it over: "ISLargeNavalCommScannerSuite" has no match in this catalog and was left off.
-- `dropships/XTRs/Liao/Lung Wang Predator.blk`: no Master Unit List entry to check its BV against
+- `dropships/XTRs/Liao/Lung Wang Predator.blk`: BV differs from the MUL: BV 8069, MUL 7937
 - `dropships/XTRs/Periphery/Vengeance Pocket Warship Prototype.blk`: the import could not carry all of it over: "ISSmallNavalCommScannerSuite" has no match in this catalog and was left off.
-- `dropships/XTRs/Phantoms/Vampire II.blk`: no Master Unit List entry to check its BV against
+- `dropships/XTRs/Phantoms/Vampire II.blk`: its Master Unit List entry gives no BV to check against: MUL 106229
 - `dropships/XTRs/Pirates/Leopard PA.blk`: BV differs from the MUL: BV 6256, MUL 6220
 - `dropships/XTRs/Primitives III/Czar Dropship (Armored Carrier).blk`: no Master Unit List entry to check its BV against
 - `dropships/XTRs/Primitives III/Czar Dropship (Mech Carrier).blk`: no Master Unit List entry to check its BV against
-- `dropships/XTRs/Primitives III/Czar Dropship.blk`: no Master Unit List entry to check its BV against
-- `dropships/XTRs/Primitives II/Black Eagle Dropship.blk`: no Master Unit List entry to check its BV against
+- `dropships/XTRs/Primitives III/Czar Dropship.blk`: its Master Unit List entry gives no BV to check against: MUL 107537
+- `dropships/XTRs/Primitives II/Black Eagle Dropship.blk`: its Master Unit List entry gives no BV to check against: MUL 103335
 - `dropships/XTRs/Primitives IV/DroST IIa (2445).blk`: no Master Unit List entry to check its BV against
 - `dropships/XTRs/Primitives IV/DroST IIa (2470).blk`: no Master Unit List entry to check its BV against
 - `dropships/XTRs/Primitives IV/Drost IIb (2445).blk`: no Master Unit List entry to check its BV against
@@ -196,23 +196,23 @@
 - `dropships/XTRs/Steiner/Claymore Interceptor.blk`: BV differs from the MUL: BV 6750, MUL 6975
 - `smallcraft/HBHK/Dragonstar Assault Transport (3060).blk`: the import could not carry all of it over: Structural Integrity 6 is outside the rules; 8 used.
 - `smallcraft/HBHK/Dragonstar Assault Transport (PT).blk`: the import could not carry all of it over: Structural Integrity 6 is outside the rules; 8 used.
-- `smallcraft/HBHL/Mowang Courier.blk`: no Master Unit List entry to check its BV against
-- `smallcraft/HBHS/LC-100 Astrolux Star Yacht.blk`: no Master Unit List entry to check its BV against
-- `smallcraft/HBMPS/Tigress Close Patrol Craft TIG-15.blk`: no Master Unit List entry to check its BV against
+- `smallcraft/HBHL/Mowang Courier.blk`: its Master Unit List entry gives no BV to check against: MUL 107757
+- `smallcraft/HBHS/LC-100 Astrolux Star Yacht.blk`: its Master Unit List entry gives no BV to check against: MUL 106517
+- `smallcraft/HBMPS/Tigress Close Patrol Craft TIG-15.blk`: its Master Unit List entry gives no BV to check against: MUL 107471
 - `smallcraft/Prototypes/TIG-40 Foxhound.blk`: BV differs from the MUL: BV 3041, MUL 3452
 - `smallcraft/TRO 3057r/Ares Assault Craft Mark VII-C.blk`: no Master Unit List entry to check its BV against
 - `smallcraft/TRO 3057r/Ares Assault Craft Mark VII.blk`: no Master Unit List entry to check its BV against
-- `smallcraft/TRO 3057r/Bus S-7AC.blk`: no Master Unit List entry to check its BV against
-- `smallcraft/TRO 3057r/Dropshuttle K-1.blk`: no Master Unit List entry to check its BV against
-- `smallcraft/TRO 3057r/Dropshuttle K-1C.blk`: no Master Unit List entry to check its BV against
+- `smallcraft/TRO 3057r/Bus S-7AC.blk`: its Master Unit List entry gives no BV to check against: MUL 101377
+- `smallcraft/TRO 3057r/Dropshuttle K-1.blk`: its Master Unit List entry gives no BV to check against: MUL 101408
+- `smallcraft/TRO 3057r/Dropshuttle K-1C.blk`: its Master Unit List entry gives no BV to check against: MUL 106117
 - `smallcraft/TRO 3057r/Escape Pod.blk`: import failed: At 5 tons this is not a Small Craft, which weighs 100 to 200 tons (TM p.184).
 - `smallcraft/TRO 3057r/Life Boat.blk`: import failed: At 5 tons this is not a Small Craft, which weighs 100 to 200 tons (TM p.184).
-- `smallcraft/TRO 3057r/Long-Range Shuttlecraft KR-61.blk`: no Master Unit List entry to check its BV against
-- `smallcraft/TRO 3057r/Long-Range Shuttlecraft KR-61C.blk`: no Master Unit List entry to check its BV against
-- `smallcraft/TRO 3057r/NL-42 Battle Taxi.blk`: no Master Unit List entry to check its BV against
-- `smallcraft/TRO 3057r/S-7A Bus.blk`: no Master Unit List entry to check its BV against
-- `smallcraft/TRO 3057r/Shuttle ST-46.blk`: no Master Unit List entry to check its BV against
-- `smallcraft/TRO 3057r/Shuttle ST-46C.blk`: no Master Unit List entry to check its BV against
+- `smallcraft/TRO 3057r/Long-Range Shuttlecraft KR-61.blk`: its Master Unit List entry gives no BV to check against: MUL 102301
+- `smallcraft/TRO 3057r/Long-Range Shuttlecraft KR-61C.blk`: its Master Unit List entry gives no BV to check against: MUL 103414
+- `smallcraft/TRO 3057r/NL-42 Battle Taxi.blk`: its Master Unit List entry gives no BV to check against: MUL 103421
+- `smallcraft/TRO 3057r/S-7A Bus.blk`: its Master Unit List entry gives no BV to check against: MUL 100570
+- `smallcraft/TRO 3057r/Shuttle ST-46.blk`: its Master Unit List entry gives no BV to check against: MUL 104956
+- `smallcraft/TRO 3057r/Shuttle ST-46C.blk`: its Master Unit List entry gives no BV to check against: MUL 102845
 - `smallcraft/TRO 3075/Aquarius Escort M1.blk`: BV differs from the MUL: BV 2538, MUL 2568
 - `smallcraft/TRO 3075/Aquarius Escort W1.blk`: BV differs from the MUL: BV 2653, MUL 2698
 - `smallcraft/TRO 3075/Aquarius Escort.blk`: BV differs from the MUL: BV 2233, MUL 2263
@@ -225,8 +225,8 @@
 - `smallcraft/TRO 3145/Merc/NL-45 Gunboat.blk`: no Master Unit List entry to check its BV against
 - `smallcraft/TRO 3145/Steiner/Wurger Assault Craft.blk`: no Master Unit List entry to check its BV against
 - `smallcraft/XTRO/Pirates/S7-P Scarab.blk`: the import could not carry all of it over: "ISBoobyTrap" has no match in this catalog and was left off.
-- `smallcraft/XTRO/Primitives II/Ares Assault Craft Mk.III.blk`: no Master Unit List entry to check its BV against
-- `smallcraft/XTRO/Primitives II/Ares Close Assault Landing Craft Mk.II.blk`: no Master Unit List entry to check its BV against
-- `smallcraft/XTRO/Primitives II/Ares Landing Craft Mk I.blk`: no Master Unit List entry to check its BV against
+- `smallcraft/XTRO/Primitives II/Ares Assault Craft Mk.III.blk`: its Master Unit List entry gives no BV to check against: MUL 108291
+- `smallcraft/XTRO/Primitives II/Ares Close Assault Landing Craft Mk.II.blk`: its Master Unit List entry gives no BV to check against: MUL 103535
+- `smallcraft/XTRO/Primitives II/Ares Landing Craft Mk I.blk`: its Master Unit List entry gives no BV to check against: MUL 107351
 - `smallcraft/XTRO/Primitives IV/Intrepid Assault Craft (2331).blk`: BV differs from the MUL: BV 1249, MUL 1357
 - `smallcraft/XTRO/Primitives IV/Intrepid Assault Craft (2478).blk`: no Master Unit List entry to check its BV against
