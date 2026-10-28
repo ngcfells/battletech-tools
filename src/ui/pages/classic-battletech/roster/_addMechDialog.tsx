@@ -83,7 +83,7 @@ interface IClassicMULKind {
     // Designs that ship with the app, matched after the user's saves (like the Skunk Werks 'Mechs).
     bundled?: () => object[];
     // The bundled MegaMek designs of the kind (#241), matched last and imported only when one is opened.
-    bundledType?: BundledUnitType;
+    bundledTypes?: BundledUnitType[];
     // The blank record sheet the View button shows, drawn by the same components as Print Force.
     sheet: (unit: ClassicMULUnit) => JSX.Element;
     table: "vehicles" | "fighters" | "infantry" | "battleArmor" | "protoMechs" | "smallCraft" | "capitalShips";
@@ -93,12 +93,12 @@ interface IClassicMULKind {
 // other types match saved designs and go into their own table in the group.
 const CBT_MUL_MECH_TYPE_IDS = [18, 20];
 const CBT_MUL_KINDS: IClassicMULKind[] = [
-    { typeIDs: [19, 24], creator: "vehicle-creator", saves: (g) => g.vehicleSaves, load: (json) => new Vehicle( json ), table: "vehicles", sheet: (unit) => <VehicleRecordSheet vehicle={unit as Vehicle} />, bundled: () => ARTVEE_SAMPLES.map( (sample) => sample.save ), bundledType: "support-vehicles" },
+    { typeIDs: [19, 24], creator: "vehicle-creator", saves: (g) => g.vehicleSaves, load: (json) => new Vehicle( json ), table: "vehicles", sheet: (unit) => <VehicleRecordSheet vehicle={unit as Vehicle} />, bundled: () => ARTVEE_SAMPLES.map( (sample) => sample.save ), bundledTypes: ["vehicles", "support-vehicles"] },
     { typeIDs: [17], matches: (unit) => !isMULLargeAerospaceCraft( unit ), creator: "fighter-creator", saves: (g) => g.fighterSaves, load: (json) => new AerospaceFighter( json ), table: "fighters", sheet: (unit) => <FighterRecordSheet fighter={unit as AerospaceFighter} /> },
     { typeIDs: [21], creator: "infantry-creator", saves: (g) => g.infantrySaves, load: (json) => new InfantryPlatoon( json ), table: "infantry", sheet: (unit) => <InfantryRecordSheet platoons={[unit as InfantryPlatoon]} /> },
-    { typeIDs: [22], creator: "battle-armor-creator", saves: (g) => g.battleArmorSaves, load: (json) => new BattleArmor( json ), bundledType: "battle-armor", table: "battleArmor", sheet: (unit) => <BattleArmorRecordSheet squads={[unit as BattleArmor]} /> },
-    { typeIDs: [23], creator: "protomech-creator", saves: (g) => g.protoMechSaves, load: (json) => new ProtoMech( json ), bundledType: "protomechs", table: "protoMechs", sheet: (unit) => <ProtoMechRecordSheet proto={unit as ProtoMech} /> },
-    { typeIDs: [17], matches: (unit) => isMULLargeAerospaceCraft( unit ) && !isMULCapitalShip( unit ), creator: "small-craft-creator", saves: (g) => g.smallCraftSaves, load: (json) => new SmallCraft( json ), bundledType: "small-craft", table: "smallCraft", sheet: (unit) => <SmallCraftRecordSheet craft={unit as SmallCraft} /> },
+    { typeIDs: [22], creator: "battle-armor-creator", saves: (g) => g.battleArmorSaves, load: (json) => new BattleArmor( json ), bundledTypes: ["battle-armor"], table: "battleArmor", sheet: (unit) => <BattleArmorRecordSheet squads={[unit as BattleArmor]} /> },
+    { typeIDs: [23], creator: "protomech-creator", saves: (g) => g.protoMechSaves, load: (json) => new ProtoMech( json ), bundledTypes: ["protomechs"], table: "protoMechs", sheet: (unit) => <ProtoMechRecordSheet proto={unit as ProtoMech} /> },
+    { typeIDs: [17], matches: (unit) => isMULLargeAerospaceCraft( unit ) && !isMULCapitalShip( unit ), creator: "small-craft-creator", saves: (g) => g.smallCraftSaves, load: (json) => new SmallCraft( json ), bundledTypes: ["small-craft"], table: "smallCraft", sheet: (unit) => <SmallCraftRecordSheet craft={unit as SmallCraft} /> },
     { typeIDs: [17], matches: isMULCapitalShip, creator: "capital-ship-creator", saves: (g) => g.capitalShipSaves, load: (json) => new CapitalShip( json ), table: "capitalShips", sheet: (unit) => <CapitalShipRecordSheet ship={unit as CapitalShip} /> },
 ];
 const CBT_MUL_TYPE_IDS = Array.from( new Set( CBT_MUL_MECH_TYPE_IDS.concat( ...CBT_MUL_KINDS.map( (kind) => kind.typeIDs ) ) ) );
@@ -157,7 +157,7 @@ export default class BattleMechAddMechDialog extends React.Component<IBattleMech
             .catch( (error) => console.error("Unable to load the Master Unit List", error) );
         loadBundledMechIndex().then( (bundledMechs) => this.setState({ bundledMechs }) )
             .catch( (error) => console.error("Unable to load the bundled 'Mechs", error) );
-        for( const type of CBT_MUL_KINDS.flatMap( (kind) => kind.bundledType ? [kind.bundledType] : [] ) ) {
+        for( const type of CBT_MUL_KINDS.flatMap( (kind) => kind.bundledTypes ?? [] ) ) {
             loadBundledIndex( type ).then( (headers) => this.setState( (state) => ({ bundledUnits: { ...state.bundledUnits, [type]: headers } }) ) )
                 .catch( (error) => console.error("Unable to load the bundled " + type, error) );
         }
@@ -232,14 +232,14 @@ export default class BattleMechAddMechDialog extends React.Component<IBattleMech
     // design when their Battle Values agree.
     getUnitIndex = ( kind: IClassicMULKind ): IDesignPool<UnitDesign> => {
         const saves = kind.saves( this.props.appGlobals );
-        const headers = kind.bundledType ? this.state.bundledUnits[kind.bundledType] ?? [] : [];
+        const headers = ( kind.bundledTypes ?? [] ).flatMap( (type) => ( this.state.bundledUnits[type] ?? [] ).map( (header) => ({ type, header }) ) );
         const key = JSON.stringify( saves.map( (save) => String( save.uuid ) + String( save.lastUpdated ) ) ) + headers.length;
         let cached = this.unitIndexes.get( kind );
         if( !cached || cached.key !== key ) {
             const load = ( save: object ) => kind.load( JSON.stringify( save ) );
             const samples = getClassicUnitEntries( ( kind.bundled ? kind.bundled() : [] ).map( load ) );
             samples.forEach( (entry) => this.samples.add( entry.design ) );
-            const bundled = headers.map( (header) => ({ chassis: header.name, model: header.model, design: { type: kind.bundledType!, header } as UnitDesign, fingerprint: String( header.bv ), mulId: header.mulId }) );
+            const bundled = headers.map( ({ type, header }) => ({ chassis: header.name, model: header.model, design: { type, header } as UnitDesign, fingerprint: String( header.bv ), mulId: header.mulId }) );
             const entries: IClassicDesignEntry<UnitDesign>[] = [ ...getClassicUnitEntries( saves.map( load ) ), ...samples ]
                 .map( (entry) => ({ ...entry, fingerprint: String( entry.design.getBattleValue() ) }) );
             entries.push( ...bundled );

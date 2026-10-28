@@ -19,7 +19,8 @@ describe("the compact design format (#241)", () => {
             expect(reload.tro.export(), label).toEqual(mech.tro.export());
         }
         vi.restoreAllMocks();
-    });
+    // Every SSW fixture imported and reloaded: about 2 s alone, past the 5 s default under a full parallel run.
+    }, 30_000);
 
     it("keeps far less than a saved design", () => {
         const mech = new BattleMech();

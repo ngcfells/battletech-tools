@@ -75,6 +75,17 @@ describe("Ammunition explosions (TW p. 194)", () => {
         expect(tank.getInPlay().criticals.crewStunnedTurns).toBe(1);
         expect(tank.isDestroyed()).toBe(false);
     });
+
+    it("a Clan chassis has CASE built in; an Inner Sphere one only with CASE mounted (TM p.210)", () => {
+        const tank = build("tracked");
+        expect(tank.hasCASE()).toBe(false);
+        tank.setTech("clan");
+        expect(tank.hasCASE()).toBe(true);
+        tank.setTech("mclan");
+        expect(tank.hasCASE()).toBe(true);
+        tank.setTech("mis");
+        expect(tank.hasCASE()).toBe(false);
+    });
 });
 
 describe("Firing arcs and turrets (TW pp. 99, 104, 192)", () => {
@@ -338,5 +349,112 @@ describe("Attack resolution in the model", () => {
         expect(copy.getInPlay().surfaced).toBe(true);
         expect(copy.getTurretFacing("turret")).toBe(2);
         expect(copy.isBreached("left")).toBe(true);
+    });
+});
+
+describe("Combat Vehicle Battle Value (TM pp.315-317)", () => {
+    const plainLog = (vehicle: Vehicle) => vehicle.getBattleValueLog().replace(/<[^>]+>/g, "");
+    const defensiveFactor = (vehicle: Vehicle) => /Defensive Factor: [^=]*= ([\d.]+)/.exec(plainLog(vehicle))?.[1];
+    const speedMP = (vehicle: Vehicle) => /Speed Factor [\d.]+ \(MP (\d+)\)/.exec(plainLog(vehicle))?.[1];
+
+    // TM p.316: the highest potential target modifier, with the maximum effects of stealth armor (+2 at long range).
+    it("adds stealth armor's +2 to the target modifier for the Defensive Factor (Bolla Stealth Tank)", () => {
+        const tank = build("wheeled");
+        expect(defensiveFactor(tank)).toBe("1.30");
+        mount(tank, "ecm-suite", "body");
+        tank.setArmorType("vehicular-stealth");
+        expect(tank.getArmorType().tag).toBe("vehicular-stealth");
+        expect(defensiveFactor(tank)).toBe("1.50");
+    });
+
+    // TO:AUE pp.162, 194: the boosted speed, twice Cruising MP, gives the Speed and Defensive Factors.
+    it("rates a VTOL with a jet booster at twice its Cruising MP (Kestrel VTOL Scout)", () => {
+        const vtol = build("vtol");
+        expect(speedMP(vtol)).toBe("12");
+        mount(vtol, "vtol-jet-booster", "body");
+        expect(speedMP(vtol)).toBe("16");
+    });
+
+    // TM p.317: weapons, ammunition and equipment; industrial tools and grenade launchers carry their own BV.
+    it("counts offensive equipment: a backhoe and a vehicular grenade launcher (Engineering Vehicle)", () => {
+        const tank = build("tracked");
+        const before = tank.getBattleValue();
+        mount(tank, "backhoe", "turret");
+        mount(tank, "vehicular-grenade-launcher", "front");
+        expect(plainLog(tank)).toContain("Backhoe");
+        // 8 + 15 BV at Speed Factor 1.37 (Flank MP 8).
+        expect(Math.abs(tank.getBattleValue() - before - 23 * 1.37)).toBeLessThan(1);
+    });
+
+    // TM p.228: 0.67 x the BV of the (up to four) machine guns linked in its location.
+    it("rates a machine gun array at 0.67 of its linked machine guns (Magi Infantry Support Vehicle)", () => {
+        const tank = build("tracked");
+        for (let gun = 0; gun < 4; gun++) mount(tank, "machine-gun", "front");
+        mount(tank, "is-machine-gun-array", "front");
+        expect(plainLog(tank)).toContain("Machine Gun Array (front) = 13.40");
+    });
+
+    // TO:AUE p.157: a Supercharger boosts Flanking MP to twice Cruising MP, which counts for BV.
+    it("rates a supercharged vehicle at twice its Cruising MP (Hanse MBT)", () => {
+        const tank = build("tracked");
+        tank.setCruiseMP(4);
+        expect(speedMP(tank)).toBe("6");
+        mount(tank, "supercharger", "body");
+        expect(speedMP(tank)).toBe("8");
+    });
+
+    // TO:AUE p.194: each item in a VTOL Mast Mount (the Rotor location) costs 10 BV more.
+    it("adds 10 BV to each item in a mast mount (Donar Assault Helicopter)", () => {
+        const vtol = build("vtol");
+        vtol.setTech("clan");
+        mount(vtol, "vtol-mast-mount", "rotor");
+        mount(vtol, "clan-active-probe", "rotor");
+        expect(vtol.getEquipmentList().map((item) => `${item.tag}@${item.location}`)).toEqual(["vtol-mast-mount@rotor", "clan-active-probe@rotor"]);
+        expect(plainLog(vtol)).toContain("Defensive Equipment: Clan Active Probe = 22");
+    });
+
+    // TM p.101: a Tracked or Wheeled vehicle's hitch weighs nothing, takes 1 item slot and sits front or rear.
+    it("mounts a trailer hitch front or rear on a tracked or wheeled vehicle (J-27 Ordnance Transport)", () => {
+        const tank = build("tracked");
+        const offered = (vehicle: Vehicle) => vehicle.getAvailableEquipment().some((item) => item.tag === "trailer-hitch");
+        expect(offered(tank)).toBe(true);
+        expect(offered(build("hover"))).toBe(false);
+        const hitch = mount(tank, "trailer-hitch", "rear");
+        expect([hitch.location, hitch.weight, hitch.cbills, hitch.criticals ?? hitch.space.combatVehicle]).toEqual(["rear", 0, 0, 1]);
+        tank.setEquipmentLocation(hitch.uuid ?? "", "turret");
+        expect(tank.getEquipmentList()[0].location).toBe("rear");
+    });
+
+    // TM p.317: an unmotorized trailer finds its Speed Factor as if its Flanking MP were 1 (Gun Trailer, MUL BV 137).
+    it("counts an unmotorized trailer's Flanking MP as 1 for the Speed Factor", () => {
+        const trailer = build("tracked", 10);
+        trailer.setCruiseMP(0);
+        expect(trailer.getCruiseMP()).toBe(0);
+        expect(speedMP(trailer)).toBe("1");
+    });
+
+    // TO:AUE p.162: only a Mast Mount opens the rotor, and it takes no weapons, TAG or C3 masters.
+    it("keeps the rotor for a mast mount and the equipment it may hold", () => {
+        const vtol = build("vtol");
+        vtol.setTech("clan");
+        mount(vtol, "clan-active-probe", "rotor");
+        expect(vtol.getEquipmentList()[0].location).toBeUndefined();
+        mount(vtol, "vtol-mast-mount", "rotor");
+        vtol.setEquipmentLocation(vtol.getEquipmentList()[0].uuid ?? "", "rotor");
+        expect(vtol.getEquipmentList()[0].location).toBe("rotor");
+        mount(vtol, "clan-tag", "rotor");
+        mount(vtol, "er-medium-laser-clan", "rotor");
+        expect(vtol.getEquipmentList().slice(2).map((item) => item.location)).toEqual([undefined, undefined]);
+        vtol.removeEquipment(vtol.getEquipmentList()[1].uuid ?? "");
+        expect(vtol.getEquipmentList()[0].location).toBeUndefined();
+    });
+
+    // TO:AUE p.193: weapons x 0.8 (not their ammunition), the final BV x 0.95.
+    it("takes 0.8 of a drone's weapon BV and 0.95 of its total (Zephyr Hovertank (Omnidrone))", () => {
+        const tank = build("hover");
+        mount(tank, "medium-laser", "turret");
+        mount(tank, "drone-operating-system", "body");
+        expect(plainLog(tank)).toContain("Medium Laser (turret) = 36.80");
+        expect(plainLog(tank)).toMatch(/x 0\.95 \(Drone Operating System/);
     });
 });

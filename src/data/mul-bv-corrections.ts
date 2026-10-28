@@ -21,6 +21,11 @@ export const MUL_BV_CORRECTIONS: Record<number, { bv: number; source: string }> 
     // sheets print the BV with it. MUL: Battle Values v1.0 p.174 agrees for the KR4 but prints 959 for the KR5.
     100143: { bv: 954, source: "Kiso K-3N-KR4: RS:3075 record sheet, MUL: Battle Values v1.0 p.174 (live MUL 946)" },
     104760: { bv: 1091, source: "Kiso K-3N-KR5: RS:3075 record sheet (live MUL 1082; MUL: Battle Values v1.0 p.174 prints 959)" },
+    // #241. TO:AUE (4th printing) prices 'Mech Mortar ammo at 1/2/3/6 BV a ton (p.194 IS, p.197 Clan, page images
+    // checked); the MUL counts 1.2/2.4/3.6/7.2, as MegaMek does, with no printed source.
+    103887: { bv: 64, source: "Flatbed Truck (Mortar): TO:AUE p.194 (live MUL 65)" },
+    108544: { bv: 1759, source: "Gurzil Support Tank: TO:AUE p.197 (live MUL 1765)" },
+    103072: { bv: 507, source: "Mortar Carrier: TO:AUE p.194 (live MUL 517)" },
     108066: { bv: 2278, source: "Atlas AS7-S3-DC: Recognition Guide: ilClan Vol. 24 record sheet (live MUL 2276)" },
 };
 

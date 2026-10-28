@@ -1,0 +1,246 @@
+# Bundled Combat Vehicles: build report
+
+983 designs kept, 234 files left out.
+
+| Reason | Files |
+|---|---|
+| BV differs from the MUL | 98 |
+| no Master Unit List entry to check its BV against | 96 |
+| the import could not carry all of it over | 40 |
+
+## Left out
+
+- `vehicles/2750 IS Land/Puma Assault Tank PAT-001.blk`: no Master Unit List entry to check its BV against
+- `vehicles/2750 IS Land/Puma Assault Tank PAT-002.blk`: no Master Unit List entry to check its BV against
+- `vehicles/3025 IS Land/Ground Car.blk`: no Master Unit List entry to check its BV against
+- `vehicles/3025 IS Land/Heavy Transport B1.blk`: no Master Unit List entry to check its BV against
+- `vehicles/3025 IS Land/Hover Scout.blk`: no Master Unit List entry to check its BV against
+- `vehicles/3025 IS Land/Hover Tank.blk`: no Master Unit List entry to check its BV against
+- `vehicles/3025 IS Land/Jeep.blk`: the import could not carry all of it over: "ISOffRoadChassis" has no match in this catalog and was left off.
+- `vehicles/3025 IS Land/Jet Sled.blk`: no Master Unit List entry to check its BV against
+- `vehicles/3025 IS Land/MASH Truck (Small).blk`: no Master Unit List entry to check its BV against
+- `vehicles/3025 IS Land/Mobile Long Tom Artillery (Unofficial).blk`: no Master Unit List entry to check its BV against
+- `vehicles/3025 IS Land/Speeder.blk`: no Master Unit List entry to check its BV against
+- `vehicles/3025 IS Land/Weapons Carrier A (LL).blk`: no Master Unit List entry to check its BV against
+- `vehicles/3039u/Condor Heavy Hover Tank (Davion).blk`: BV differs from the MUL: BV 577, MUL 592
+- `vehicles/3039u/Condor Heavy Hover Tank.blk`: BV differs from the MUL: BV 653, MUL 965
+- `vehicles/3039u/Coolant Truck 135-K.blk`: no Master Unit List entry to check its BV against
+- `vehicles/3039u/Ferret Light Scout VTOL (Armor) Wild Weasel.blk`: no Master Unit List entry to check its BV against
+- `vehicles/3039u/Harasser Missile Platform (Mini-Peggy).blk`: no Master Unit List entry to check its BV against
+- `vehicles/3039u/Harasser Missile Platform Leaping Lisa.blk`: no Master Unit List entry to check its BV against
+- `vehicles/3039u/Hetzer Wheeled Assault Gun (Scout).blk`: BV differs from the MUL: BV 544, MUL 553
+- `vehicles/3039u/J-27 Ordnance Transport (Trailer).blk`: the import could not carry all of it over: Engine type 8 is not one this builder has.
+- `vehicles/3039u/K-27 Ordnance Transport (Killjoy).blk`: no Master Unit List entry to check its BV against
+- `vehicles/3039u/MASH Truck (ICE).blk`: no Master Unit List entry to check its BV against
+- `vehicles/3039u/MASH Truck.blk`: no Master Unit List entry to check its BV against
+- `vehicles/3039u/Mobile Long Tom (Ammo Carriage).blk`: the import could not carry all of it over: Engine type 8 is not one this builder has.; Ammunition "ISLongTomAmmo" has no weapon or no match in this catalog and was left off.; Ammunition "ISLongTomAmmo" has no weapon or no match in this catalog and was left off.; Ammunition "ISLongTomAmmo" has no weapon or no match in this catalog and was left off.; Ammunition "ISLongTomAmmo" has no weapon or no match in this catalog and was left off.; Ammunition "ISLongTomAmmo" has no weapon or no match in this catalog and was left off.
+- `vehicles/3039u/Mobile Long Tom (Support Carriage).blk`: no Master Unit List entry to check its BV against
+- `vehicles/3039u/Neptune Submarine (SRT).blk`: BV differs from the MUL: BV 1075, MUL 1337
+- `vehicles/3050U/Demon Tank (PPC).blk`: BV differs from the MUL: BV 855, MUL 836
+- `vehicles/3050U/Fury Command Tank (Original).blk`: BV differs from the MUL: BV 1206, MUL 1184
+- `vehicles/3050U/Rhino Fire Support Tank.blk`: BV differs from the MUL: BV 1463, MUL 1462
+- `vehicles/3050U/Thor Artillery Vehicle (C3i).blk`: BV differs from the MUL: BV 473, MUL 482
+- `vehicles/3050U/Thor Artillery Vehicle (Clan).blk`: BV differs from the MUL: BV 827, MUL 830
+- `vehicles/3050U/Zephyr Hovertank (LRM).blk`: BV differs from the MUL: BV 889, MUL 867
+- `vehicles/3050U/Zephyr Hovertank (Original).blk`: no Master Unit List entry to check its BV against
+- `vehicles/3058Uu/Alacorn Heavy Tank Mk III.blk`: no Master Unit List entry to check its BV against
+- `vehicles/3058Uu/Alacorn Heavy Tank Mk IV.blk`: no Master Unit List entry to check its BV against
+- `vehicles/3058Uu/Alacorn Heavy Tank Mk VI.blk`: no Master Unit List entry to check its BV against
+- `vehicles/3058Uu/Alacorn Heavy Tank Mk VII.blk`: no Master Unit List entry to check its BV against
+- `vehicles/3058Uu/Bandit (C) Hovercraft G.blk`: BV differs from the MUL: BV 979, MUL 915
+- `vehicles/3058Uu/Bandit (C) Hovercraft Prime.blk`: BV differs from the MUL: BV 1087, MUL 1054
+- `vehicles/3058Uu/Blizzard Hover Transport Black Blizzard.blk`: no Master Unit List entry to check its BV against
+- `vehicles/3058Uu/Cavalry Attack Helicopter (Infantry).blk`: BV differs from the MUL: BV 615, MUL 605
+- `vehicles/3058Uu/Hunter Light Support Tank Assault Hunter.blk`: no Master Unit List entry to check its BV against
+- `vehicles/3058Uu/Pegasus Scout Hover Tank (C3).blk`: BV differs from the MUL: BV 785, MUL 787
+- `vehicles/3058Uu/Saladin Assault Hover Tank (Ultra).blk`: BV differs from the MUL: BV 806, MUL 808
+- `vehicles/3058Uu/Vedette Medium Tank Doris Delight.blk`: no Master Unit List entry to check its BV against
+- `vehicles/3058Uu/Zhukov Heavy Tank (WoB).blk`: BV differs from the MUL: BV 983, MUL 939
+- `vehicles/3060u/Athena Combat Vehicle (HAG).blk`: BV differs from the MUL: BV 2397, MUL 2444
+- `vehicles/3060u/Flatbed Truck (AC).blk`: no Master Unit List entry to check its BV against
+- `vehicles/3060u/Gladius Medium Hover Tank Mk II.blk`: no Master Unit List entry to check its BV against
+- `vehicles/3060u/Gladius Medium Hover Tank.blk`: no Master Unit List entry to check its BV against
+- `vehicles/3060u/Huitzilopochtli Assault Tank 'Huey' (AAA).blk`: the import could not carry all of it over: Armor type 6 is not one this builder has for this vehicle.
+- `vehicles/3060u/Huitzilopochtli Assault Tank 'Huey'.blk`: no Master Unit List entry to check its BV against
+- `vehicles/3060u/Ishtar Heavy Fire Support Tank.blk`: BV differs from the MUL: BV 1393, MUL 1404
+- `vehicles/3060u/Ku Wheeled Assault Tank (IFV).blk`: no Master Unit List entry to check its BV against
+- `vehicles/3060u/Myrmidon Medium Tank Type 2.blk`: BV differs from the MUL: BV 1002, MUL 984
+- `vehicles/3060u/Schiltron Mobile Fire-Support Platform F.blk`: BV differs from the MUL: BV 1470, MUL 1466
+- `vehicles/3060u/Svantovit Infantry Fighting Vehicle (ATM).blk`: no Master Unit List entry to check its BV against
+- `vehicles/3067 Unabridged/Clan Vehicles/Enyo Strike Tank Sholef.blk`: no Master Unit List entry to check its BV against
+- `vehicles/3067 Unabridged/IS Vehicles/Glaive Medium Tank (MFB).blk`: the import could not carry all of it over: "ISMobileFieldBase" has no match in this catalog and was left off.
+- `vehicles/3067 Unabridged/IS Vehicles/Minion Advanced Tactical Vehicle Magshot.blk`: no Master Unit List entry to check its BV against
+- `vehicles/3067/3067 IS Land/Glory Heavy Fire Support Vehicle (Light Gauss).blk`: BV differs from the MUL: BV 1450, MUL 1452
+- `vehicles/3067/3067 IS Land/Glory Heavy Fire Support Vehicle.blk`: BV differs from the MUL: BV 1684, MUL 1686
+- `vehicles/3067/3067 IS Land/Main Gauche Light Support Tank (XL).blk`: BV differs from the MUL: BV 585, MUL 565
+- `vehicles/3067/3067 IS Land/Manteuffel Attack Tank B.blk`: BV differs from the MUL: BV 1491, MUL 1508
+- `vehicles/3075/Crow Scout Helicopter 'Dragonfly'.blk`: no Master Unit List entry to check its BV against
+- `vehicles/3075/DI Morgan Assault Tank (Gauss).blk`: BV differs from the MUL: BV 1621, MUL 1623
+- `vehicles/3075/Daimyo HQ 67-K.blk`: BV differs from the MUL: BV 561, MUL 583
+- `vehicles/3075/Daimyo HQ 67-K2.blk`: BV differs from the MUL: BV 620, MUL 647
+- `vehicles/3075/Daimyo HQ 67-R.blk`: BV differs from the MUL: BV 749, MUL 683
+- `vehicles/3075/Darter Scout Car (SRM-2).blk`: no Master Unit List entry to check its BV against
+- `vehicles/3075/Hiryo Armored Infantry Transport (LPPC).blk`: BV differs from the MUL: BV 708, MUL 686
+- `vehicles/3075/Hiryo Armored Infantry Transport (MRM).blk`: BV differs from the MUL: BV 666, MUL 644
+- `vehicles/3075/Hiryo Armored Infantry Transport.blk`: BV differs from the MUL: BV 687, MUL 665
+- `vehicles/3075/Korvin KRV-3.blk`: BV differs from the MUL: BV 792, MUL 809
+- `vehicles/3075/MIT23 MASH Vehicle.blk`: no Master Unit List entry to check its BV against
+- `vehicles/3075/Marsden II MBT II (Primitive).blk`: no Master Unit List entry to check its BV against
+- `vehicles/3075/Marsden II MBT II-A (LBX).blk`: BV differs from the MUL: BV 1013, MUL 1090
+- `vehicles/3075/Marsden II MBT II-A.blk`: BV differs from the MUL: BV 980, MUL 1054
+- `vehicles/3075/Marsden II MBT.blk`: BV differs from the MUL: BV 984, MUL 1056
+- `vehicles/3075/Mauna Kea Command Vessel (LRM).blk`: BV differs from the MUL: BV 1022, MUL 1005
+- `vehicles/3075/Mauna Kea Command Vessel (LRT).blk`: BV differs from the MUL: BV 1022, MUL 872
+- `vehicles/3075/Ripper Infantry Transport (Royal).blk`: BV differs from the MUL: BV 225, MUL 228
+- `vehicles/3075/SM Tank Destroyer SM1A.blk`: BV differs from the MUL: BV 1239, MUL 1214
+- `vehicles/3085u/Cutting Edge/Bolla Stealth Tank Dominus.blk`: BV differs from the MUL: BV 898, MUL 908
+- `vehicles/3085u/Cutting Edge/Chalchiuhtotolin Support Tank (Bombast Laser).blk`: BV differs from the MUL: BV 911, MUL 912
+- `vehicles/3085u/Cutting Edge/Chalchiuhtotolin Support Tank (Chemical Laser).blk`: BV differs from the MUL: BV 1180, MUL 1177
+- `vehicles/3085u/Cutting Edge/Chalchiuhtotolin Support Tank.blk`: BV differs from the MUL: BV 1056, MUL 1057
+- `vehicles/3085u/Cutting Edge/Demon Medium Tank (Rifle).blk`: the import could not carry all of it over: "Rifle (Cannon, Medium)" has no match in this catalog and was left off.; Ammunition "IS Ammo Medium Rifle" has no weapon or no match in this catalog and was left off.; Ammunition "IS Ammo Medium Rifle" has no weapon or no match in this catalog and was left off.
+- `vehicles/3085u/Cutting Edge/Eldingar Hover Sled (Streak).blk`: the import could not carry all of it over: Armor type 6 is not one this builder has for this vehicle.
+- `vehicles/3085u/Cutting Edge/Fensalir Combat WiGE (HAG).blk`: BV differs from the MUL: BV 2399, MUL 2356
+- `vehicles/3085u/Cutting Edge/Fensalir Combat WiGE (Infantry).blk`: BV differs from the MUL: BV 1424, MUL 1379
+- `vehicles/3085u/Cutting Edge/Fensalir Combat WiGE.blk`: BV differs from the MUL: BV 1687, MUL 1643
+- `vehicles/3085u/Cutting Edge/Joust Medium Tank BE701.blk`: BV differs from the MUL: BV 1074, MUL 1077
+- `vehicles/3085u/Cutting Edge/Kinnol MBT.blk`: BV differs from the MUL: BV 1226, MUL 1200
+- `vehicles/3085u/Cutting Edge/Maxim Mk II Transport (Infantry Support).blk`: no Master Unit List entry to check its BV against
+- `vehicles/3085u/Cutting Edge/Pandion Combat WiGE (C3).blk`: BV differs from the MUL: BV 387, MUL 373
+- `vehicles/3085u/Cutting Edge/Pandion Combat WiGE (Infantry).blk`: BV differs from the MUL: BV 521, MUL 507
+- `vehicles/3085u/Cutting Edge/Pandion Combat WiGE.blk`: BV differs from the MUL: BV 673, MUL 658
+- `vehicles/3085u/Cutting Edge/Prowler Multi-Terrain Vehicle (RAF).blk`: BV differs from the MUL: BV 680, MUL 679
+- `vehicles/3085u/Cutting Edge/Prowler Multi-Terrain Vehicle (WoB).blk`: BV differs from the MUL: BV 698, MUL 697
+- `vehicles/3085u/Cutting Edge/Ranger Armored Fighting Vehicle VV1.blk`: BV differs from the MUL: BV 644, MUL 604
+- `vehicles/3085u/Cutting Edge/Regulator II Hovertank (Stealth).blk`: BV differs from the MUL: BV 1029, MUL 971
+- `vehicles/3085u/Cutting Edge/Yasha VTOL Spectre.blk`: no Master Unit List entry to check its BV against
+- `vehicles/3085u/ONN/Drillson Heavy Hover Tank (Sealed).blk`: BV differs from the MUL: BV 914, MUL 870
+- `vehicles/3085u/ONN/Plainsman Medium Hovertank (Sealed).blk`: BV differs from the MUL: BV 665, MUL 632
+- `vehicles/3085u/ONN/Schrek PPC Carrier (Armor).blk`: BV differs from the MUL: BV 1005, MUL 1040
+- `vehicles/3085u/ONN/Vedette Medium Tank (Cell).blk`: BV differs from the MUL: BV 730, MUL 731
+- `vehicles/3085u/ONN/Yellow Jacket Gunship (PPC).blk`: BV differs from the MUL: BV 758, MUL 582
+- `vehicles/3085u/Supplemental/Bokkusu Support Trailer.blk`: the import could not carry all of it over: "ISMobileFieldBase" has no match in this catalog and was left off.
+- `vehicles/3085u/Supplemental/Manta Fast Attack Submarine (Support).blk`: no Master Unit List entry to check its BV against
+- `vehicles/3085u/Supplemental/Manta Fast Attack Submarine.blk`: no Master Unit List entry to check its BV against
+- `vehicles/3085u/Supplemental/Moray Heavy Attack Submarine (Original).blk`: no Master Unit List entry to check its BV against
+- `vehicles/3085u/Supplemental/Moray Heavy Attack Submarine.blk`: no Master Unit List entry to check its BV against
+- `vehicles/3085u/Supplemental/Tenmaku Command Trailer.blk`: no Master Unit List entry to check its BV against
+- `vehicles/3145/Kurita/Kamakiri Attack VTOL (Gauss).blk`: the import could not carry all of it over: The file's armor does not fit this vehicle's locations.
+- `vehicles/3145/Kurita/Kamakiri Attack VTOL.blk`: the import could not carry all of it over: The file's armor does not fit this vehicle's locations.
+- `vehicles/3145/Liao/Shun Transport VTOL.blk`: the import could not carry all of it over: The file's armor does not fit this vehicle's locations.
+- `vehicles/3145/Marik/Bardiche Heavy Strike Tank (Minesweeper).blk`: the import could not carry all of it over: "ISMineSweeper" has no match in this catalog and was left off.
+- `vehicles/3145/Marik/R10 Mechanized ICV (Coolant Truck).blk`: BV differs from the MUL: BV 411, MUL 355
+- `vehicles/3145/Merc/Cardinal Transport (RAF).blk`: the import could not carry all of it over: The file's armor does not fit this vehicle's locations.
+- `vehicles/3145/Merc/Cardinal Transport.blk`: the import could not carry all of it over: The file's armor does not fit this vehicle's locations.
+- `vehicles/3145/Merc/Trailers/Gun Trailer (Artillery AAA).blk`: no Master Unit List entry to check its BV against
+- `vehicles/3145/Merc/Trailers/Gun Trailer (Mjolnir).blk`: BV differs from the MUL: BV 500, MUL 502
+- `vehicles/3145/Merc/Trailers/Gun Trailer (Siege).blk`: BV differs from the MUL: BV 255, MUL 248
+- `vehicles/3145/Merc/Trailers/Gun Trailer (Sniper Cannon).blk`: no Master Unit List entry to check its BV against
+- `vehicles/3145/Merc/Trailers/Gun Trailer (Stronghold).blk`: BV differs from the MUL: BV 242, MUL 224
+- `vehicles/3145/NTNU/Balac Strike VTOL (Hybrid).blk`: BV differs from the MUL: BV 796, MUL 797
+- `vehicles/3145/NTNU/Eldingar Hover Sled (HumHov).blk`: no Master Unit List entry to check its BV against
+- `vehicles/3145/NTNU/Huitzilopochtli Assault Tank (LRM).blk`: the import could not carry all of it over: "CLAPGaussRifle(ST)" could not go in a sponson turret.; "CLAPGaussRifle(ST)" could not go in a sponson turret.
+- `vehicles/3145/NTNU/Huitzilopochtli Assault Tank (Streak).blk`: the import could not carry all of it over: "CLAPGaussRifle(ST)" could not go in a sponson turret.; "CLAPGaussRifle(ST)" could not go in a sponson turret.
+- `vehicles/3145/NTNU/MIT24 MASH Vehicle.blk`: no Master Unit List entry to check its BV against
+- `vehicles/3145/NTNU/Po II Heavy Tank (Gauss).blk`: BV differs from the MUL: BV 1211, MUL 1215
+- `vehicles/3145/Republic/Hawk Moth II Gunship.blk`: BV differs from the MUL: BV 910, MUL 928
+- `vehicles/3145/Steiner/DI Multipurpose VTOL (Gunship).blk`: no Master Unit List entry to check its BV against
+- `vehicles/3145/Steiner/DI Multipurpose VTOL.blk`: no Master Unit List entry to check its BV against
+- `vehicles/3145/Steiner/Gulltoppr OmniMonitor (A).blk`: BV differs from the MUL: BV 3668, MUL 3704
+- `vehicles/3145/Steiner/Gulltoppr OmniMonitor (B).blk`: BV differs from the MUL: BV 2861, MUL 2938
+- `vehicles/3145/Steiner/Gulltoppr OmniMonitor (Prime).blk`: BV differs from the MUL: BV 3151, MUL 3228
+- `vehicles/3145/Steiner/Kelswa Assault Tank.blk`: BV differs from the MUL: BV 1748, MUL 1632
+- `vehicles/3145/Steiner/Swallow Attack WIGE (Original).blk`: BV differs from the MUL: BV 1348, MUL 1408
+- `vehicles/3145/Steiner/Swallow Attack WIGE.blk`: BV differs from the MUL: BV 1253, MUL 1313
+- `vehicles/3150/Bardiche Heavy Strike Tank C.blk`: the import could not carry all of it over: "ISMineSweeper" has no match in this catalog and was left off.
+- `vehicles/3150/Galleon Light Tank GAL-105.blk`: the import could not carry all of it over: "ISERMediumLaser(ST)" could not go in a sponson turret.; "ISERMediumLaser(ST)" could not go in a sponson turret.
+- `vehicles/3150/Shun Transport VTOL (Support).blk`: the import could not carry all of it over: The file's armor does not fit this vehicle's locations.
+- `vehicles/FM DC/Arrow IV Carrier.blk`: no Master Unit List entry to check its BV against
+- `vehicles/Golden Century/Rhino Fire Support Tank EC.blk`: BV differs from the MUL: BV 1674, MUL 1679
+- `vehicles/Golden Century/Zephyr Hovertank EC.blk`: the import could not carry all of it over: Ammunition "CLImpAmmoSRM6" has no weapon or no match in this catalog and was left off.; Ammunition "CLImpAmmoSRM6" has no weapon or no match in this catalog and was left off.
+- `vehicles/Hist LOT II/Vector (Attack).blk`: no Master Unit List entry to check its BV against
+- `vehicles/Hist LOT II/Vector EW.blk`: no Master Unit List entry to check its BV against
+- `vehicles/Hist LOT II/Vector Scout.blk`: no Master Unit List entry to check its BV against
+- `vehicles/Hist LOT II/Weapon Carrier Tracked (AC20).blk`: no Master Unit List entry to check its BV against
+- `vehicles/Hist LOT II/Weapon Carrier Tracked (LB-10X).blk`: no Master Unit List entry to check its BV against
+- `vehicles/Hist LOT II/Weapon Carrier Tracked (Ultra5).blk`: no Master Unit List entry to check its BV against
+- `vehicles/ProtoTypes/Bandit Mk II.blk`: no Master Unit List entry to check its BV against
+- `vehicles/ProtoTypes/Fulcrum Heavy Hover Tank Hybrid.blk`: no Master Unit List entry to check its BV against
+- `vehicles/ProtoTypes/Garuda Heavy VTOL.blk`: the import could not carry all of it over: The file's armor does not fit this vehicle's locations.
+- `vehicles/ProtoTypes/Hephaestus (AP) Jump Tank.blk`: no Master Unit List entry to check its BV against
+- `vehicles/ProtoTypes/Hiryo Armored Infantry Transport BloodHound.blk`: no Master Unit List entry to check its BV against
+- `vehicles/ProtoTypes/Hunter Light Support Tank (Amphibious).blk`: BV differs from the MUL: BV 648, MUL 639
+- `vehicles/ProtoTypes/Nuberu Anti Aircraft Tank 2 Numantia.blk`: no Master Unit List entry to check its BV against
+- `vehicles/ProtoTypes/Nuberu Anti Aircraft Tank.blk`: no Master Unit List entry to check its BV against
+- `vehicles/ProtoTypes/Phalanx Support Tank (Production).blk`: no Master Unit List entry to check its BV against
+- `vehicles/ProtoTypes/Rommel Tank (Howitzer) Production.blk`: no Master Unit List entry to check its BV against
+- `vehicles/ProtoTypes/Scorpion Light Tank (Minesweeper).blk`: the import could not carry all of it over: "ISMineSweeper" has no match in this catalog and was left off.
+- `vehicles/ProtoTypes/Skulker Wheeled Scout Tank MK II.blk`: no Master Unit List entry to check its BV against
+- `vehicles/ProtoTypes/Sokar Urban Combat Unit.blk`: no Master Unit List entry to check its BV against
+- `vehicles/ProtoTypes/Vidar Heavy Defense Tank.blk`: BV differs from the MUL: BV 1458, MUL 1396
+- `vehicles/ProtoTypes/Warrior S-9 Stealth Helicopter.blk`: BV differs from the MUL: BV 688, MUL 668
+- `vehicles/Rec Guides ilClan/Vol 28/LT-MOB-25F (Ammunition Carriage).blk`: the import could not carry all of it over: Engine type 8 is not one this builder has.; Ammunition "ISLongTomAmmo" has no weapon or no match in this catalog and was left off.; Ammunition "ISLongTomAmmo" has no weapon or no match in this catalog and was left off.; Ammunition "ISLongTomAmmo" has no weapon or no match in this catalog and was left off.; Ammunition "ISLongTomAmmo" has no weapon or no match in this catalog and was left off.; Ammunition "ISLongTomAmmo" has no weapon or no match in this catalog and was left off.
+- `vehicles/Rec Guides ilClan/Vol 28/LT-MOB-25F (Ammunition Loader Carriage).blk`: the import could not carry all of it over: Engine type 8 is not one this builder has.; Ammunition "ISLongTomAmmo" has no weapon or no match in this catalog and was left off.; Ammunition "ISLongTomAmmo" has no weapon or no match in this catalog and was left off.
+- `vehicles/Rec Guides ilClan/Vol 28/LT-MOB-25F (Drone Command Carriage).blk`: the import could not carry all of it over: Engine type 8 is not one this builder has.
+- `vehicles/Rec Guides ilClan/Vol 28/LT-MOB-25F (Support Carriage).blk`: the import could not carry all of it over: Engine type 8 is not one this builder has.
+- `vehicles/Rec Guides ilClan/Vol 28/SturmFeur Heavy Tank (Support) 'Gilmore'.blk`: no Master Unit List entry to check its BV against
+- `vehicles/Rec Guides ilClan/Vol 28/SturmFeur Heavy Tank (WoB).blk`: BV differs from the MUL: BV 1596, MUL 1578
+- `vehicles/Rec Guides ilClan/Vol 28/Warrior Attack Helicopter H-7F.blk`: BV differs from the MUL: BV 294, MUL 303
+- `vehicles/Rec Guides ilClan/Vol 28/Whirlwind Scout Hover Tank (IFV).blk`: BV differs from the MUL: BV 756, MUL 667
+- `vehicles/Rec Guides ilClan/Vol 29/Browning Mobile HQ (Half Track).blk`: no Master Unit List entry to check its BV against
+- `vehicles/Rec Guides ilClan/Vol 29/Browning Mobile HQ.blk`: no Master Unit List entry to check its BV against
+- `vehicles/Rec Guides ilClan/Vol 30/Pike Support Vehicle (RAC) 'Assault Pike'.blk`: no Master Unit List entry to check its BV against
+- `vehicles/Rec Guides ilClan/Vol 31/Harrier Heavy Hover Tank (Re-Laser).blk`: BV differs from the MUL: BV 958, MUL 859
+- `vehicles/Rec Guides ilClan/Vol 31/MASH Truck (AMS).blk`: no Master Unit List entry to check its BV against
+- `vehicles/Rec Guides ilClan/Vol 32/Von Luckner Heavy Tank VNL-K65W.blk`: BV differs from the MUL: BV 1318, MUL 1319
+- `vehicles/Rec Guides ilClan/Vol 33/Harasser Missile Platform (Marian}.blk`: no Master Unit List entry to check its BV against
+- `vehicles/Rec Guides ilClan/Vol 33/Scorpion Light Tank (MRM).blk`: BV differs from the MUL: BV 393, MUL 469
+- `vehicles/Shrapnel/Vol 21/Giant Guardian.blk`: the import could not carry all of it over: "SmartRoboticControlSystem" has no match in this catalog and was left off.
+- `vehicles/Shrapnel/Vol 21/Main Guardian.blk`: the import could not carry all of it over: "SmartRoboticControlSystem" has no match in this catalog and was left off.
+- `vehicles/Shrapnel/Vol 21/Swift Guardian Tank.blk`: the import could not carry all of it over: "SmartRoboticControlSystem" has no match in this catalog and was left off.
+- `vehicles/Somerset Strikers/Packrat LRPV PKR-T5 (TOC).blk`: the import could not carry all of it over: "ISTankCockpitCommandConsole" has no match in this catalog and was left off.
+- `vehicles/Turning Points/HTP Galtor/Koryu Submarine (Civilian).blk`: no Master Unit List entry to check its BV against
+- `vehicles/Turning Points/HTP Galtor/Koryu Submarine (Military).blk`: no Master Unit List entry to check its BV against
+- `vehicles/Turning Points/JTP Atreus/Tokugawa Heavy Tank SD2.blk`: BV differs from the MUL: BV 961, MUL 991
+- `vehicles/Turning Points/TP Epsilon Eridani/Pollux II ADA Heavy Tank.blk`: BV differs from the MUL: BV 1192, MUL 1224
+- `vehicles/Turning Points/TP Helm/Weapons Troop Carrier (LRM).blk`: no Master Unit List entry to check its BV against
+- `vehicles/Urbanfest/Condor HoverBall.blk`: no Master Unit List entry to check its BV against
+- `vehicles/XTRs/Boondocks/Goblin Medium Tank X.blk`: BV differs from the MUL: BV 898, MUL 886
+- `vehicles/XTRs/Boondocks/Sea Hunter Maritime Tank.blk`: BV differs from the MUL: BV 556, MUL 570
+- `vehicles/XTRs/Comstar/Demon Tank CX-2.blk`: the import could not carry all of it over: "Medium Laser(ST)" could not go in a sponson turret.; "Medium Laser(ST)" could not go in a sponson turret.
+- `vehicles/XTRs/Comstar/Fury CX-17.blk`: the import could not carry all of it over: "ISTankCockpitCommandConsole" has no match in this catalog and was left off.
+- `vehicles/XTRs/Corporations/Partisan Hull Defense.blk`: BV differs from the MUL: BV 1097, MUL 1113
+- `vehicles/XTRs/Corporations/Sea Skimmer Hydrofoil Sniper.blk`: no Master Unit List entry to check its BV against
+- `vehicles/XTRs/Corporations/SturmFeur Kalki Cruise Missile Launcher.blk`: no Master Unit List entry to check its BV against
+- `vehicles/XTRs/Davion/Cavalry Attack Helicopter Cadence Rain.blk`: BV differs from the MUL: BV 485, MUL 568
+- `vehicles/XTRs/Gladiators/Bandit Warthog.blk`: no Master Unit List entry to check its BV against
+- `vehicles/XTRs/Gladiators/Manticore The Ballista.blk`: no Master Unit List entry to check its BV against
+- `vehicles/XTRs/Gladiators/Minion Advanced Tactical Vehicle Silver Bullet.blk`: no Master Unit List entry to check its BV against
+- `vehicles/XTRs/Gunslingers/Beagle Hover Scout (LRRP).blk`: BV differs from the MUL: BV 239, MUL 219
+- `vehicles/XTRs/Gunslingers/Cyrano Gunship (Fury).blk`: BV differs from the MUL: BV 591, MUL 594
+- `vehicles/XTRs/Kurita/Hiryo Armored Infantry Transport Hound.blk`: the import could not carry all of it over: "ISC3Sensors" has no match in this catalog and was left off.
+- `vehicles/XTRs/Kurita/Tokugawa Heavy Tank Yumi.blk`: BV differs from the MUL: BV 1125, MUL 1127
+- `vehicles/XTRs/Liao/Scorpion Light Tank Minesweeper.blk`: the import could not carry all of it over: "ISMineSweeper" has no match in this catalog and was left off.
+- `vehicles/XTRs/Marik/Galleon Light Tank Maxwell.blk`: BV differs from the MUL: BV 483, MUL 451
+- `vehicles/XTRs/Mercs/Kanga-X Jump Tank.blk`: BV differs from the MUL: BV 1363, MUL 1154
+- `vehicles/XTRs/Mercs/Schrek IIX PPC Carrier.blk`: BV differs from the MUL: BV 1407, MUL 1242
+- `vehicles/XTRs/Most Wanted/Hawk Moth Verwandlung.blk`: no Master Unit List entry to check its BV against
+- `vehicles/XTRs/Most Wanted/Karnov UR Transport (Heavy Stealth).blk`: the import could not carry all of it over: The file's armor does not fit this vehicle's locations.; "Machine Gun(ST)" cannot go in the right and was mounted unplaced.; "Machine Gun(ST)" could not go in a sponson turret.; "Machine Gun(ST)" cannot go in the left and was mounted unplaced.; "Machine Gun(ST)" could not go in a sponson turret.
+- `vehicles/XTRs/Phantoms/Ferret Light Scout VTOL (Fermi).blk`: no Master Unit List entry to check its BV against
+- `vehicles/XTRs/Phantoms/Hi-Scout Drone Carrier (Cunnington).blk`: the import could not carry all of it over: "ISC3Sensors" has no match in this catalog and was left off.; "ISC3Sensors" has no match in this catalog and was left off.; "ISC3Sensors" has no match in this catalog and was left off.
+- `vehicles/XTRs/Phantoms/Packrat Gespenst.blk`: no Master Unit List entry to check its BV against
+- `vehicles/XTRs/Phantoms/SM Tank Destroyer SM1 Telos.blk`: no Master Unit List entry to check its BV against
+- `vehicles/XTRs/Pirates/Anhur P-Stealth.blk`: BV differs from the MUL: BV 930, MUL 1035
+- `vehicles/XTRs/Pirates/Ontos Heavy Tank X.blk`: no Master Unit List entry to check its BV against
+- `vehicles/XTRs/Pirates/Striker Light Tank Wet.blk`: no Master Unit List entry to check its BV against
+- `vehicles/XTRs/Primitives III/Alacorn Heavy Tank Mk I.blk`: no Master Unit List entry to check its BV against
+- `vehicles/XTRs/Primitives III/Alacorn Heavy Tank Mk II.blk`: no Master Unit List entry to check its BV against
+- `vehicles/XTRs/RISC/J-27 Ordnance Transport (RISC).blk`: no Master Unit List entry to check its BV against
+- `vehicles/XTRs/RISC/J-27 Trailer (RISC) (Decoy).blk`: no Master Unit List entry to check its BV against
+- `vehicles/XTRs/RISC/J-27 Trailer (RISC) (Homing).blk`: no Master Unit List entry to check its BV against
+- `vehicles/XTRs/Republic I/Diggs Drone Control Tank.blk`: BV differs from the MUL: BV 655, MUL 785
+- `vehicles/XTRs/Republic I/Hexareme HQ Hovercraft.blk`: the import could not carry all of it over: "Light Machine Gun(ST)" could not go in a sponson turret.; "ISAntiMissileSystem(ST)" could not go in a sponson turret.; "Light Machine Gun(ST)" could not go in a sponson turret.; "ISAntiMissileSystem(ST)" could not go in a sponson turret.
+- `vehicles/XTRs/Republic I/Quaestor Mobile Tactical Command HQ.blk`: the import could not carry all of it over: "Machine Gun(ST)" could not go in a sponson turret.; "Machine Gun(ST)" could not go in a sponson turret.
+- `vehicles/XTRs/RetroTech/Nike Tank.blk`: the import could not carry all of it over: "Armored Chassis" has no match in this catalog and was left off.; "Advanced Fire Control" has no match in this catalog and was left off.
+- `vehicles/XTRs/Steiner/Centipede Scout Car Commando.blk`: BV differs from the MUL: BV 445, MUL 455
+- `vehicles/XTRs/Succession Wars/J. Edgar Light Hover Tank (Cell).blk`: the import could not carry all of it over: "Rifle (Cannon, Light)" has no match in this catalog and was left off.; Ammunition "IS Ammo Light Rifle" has no weapon or no match in this catalog and was left off.
+- `vehicles/XTRs/Succession Wars/Soarece Superheavy MBT.blk`: no Master Unit List entry to check its BV against

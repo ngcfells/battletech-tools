@@ -2,8 +2,7 @@ import React, { type JSX } from 'react';
 import { Link } from 'react-router';
 import { FaArrowCircleRight, FaFile, FaFolderOpen, FaSave, FaTrash } from "react-icons/fa";
 import SmallCraft, { ISmallCraftExport } from '../../../../classes/small-craft';
-import { importSmallCraftBlk } from '../../../../classes/small-craft-blk';
-import { MAX_BLK_FILE_LENGTH } from '../../../../utils/blk-file';
+import BlkImportSection from '../../../components/blk-import-section';
 import { IAppGlobals } from '../../../app-router';
 import { SmallCraftCreatorSideMenu } from '../../../components/creator-side-menus';
 import TextSection from '../../../components/text-section';
@@ -15,33 +14,17 @@ const FolderOpen = FaFolderOpen as any;
 const Save = FaSave as any;
 const Trash = FaTrash as any;
 
-export default class SmallCraftCreatorHome extends React.Component<IHomeProps, IHomeState> {
+export default class SmallCraftCreatorHome extends React.Component<IHomeProps> {
     constructor(props: IHomeProps) {
         super(props);
-        this.state = { importName: "", importIssues: null };
         this.props.appGlobals.makeDocumentTitle("Small Craft Creator");
     }
 
-    // Reads a MegaMek ".blk" Small Craft file into the editor, and lists what could not be carried over.
-    importFile = (e: React.ChangeEvent<HTMLInputElement>): void => {
-        const input = e.currentTarget;
-        const file = input.files && input.files[0];
-        if (!file) return;
-        if (file.size > MAX_BLK_FILE_LENGTH) {
-            this.setState({ importName: file.name, importIssues: ["The file is too large to be a unit file."] });
-            input.value = "";
-            return;
-        }
-        const reader = new FileReader();
-        reader.onload = () => {
-            const result = importSmallCraftBlk(typeof reader.result === "string" ? reader.result : "");
-            const craft = result.craft;
-            if (craft) this.replaceDesign(() => this.props.appGlobals.saveCurrentSmallCraft(craft));
-            this.setState({ importName: file.name, importIssues: result.craft ? [...result.notes, ...result.issues, ...result.craft.getIssues(4)] : result.issues, importLoaded: !!result.craft });
-        };
-        reader.onerror = () => this.setState({ importName: file.name, importIssues: ["The file could not be read."], importLoaded: false });
-        reader.readAsText(file);
-        input.value = "";
+    // A MegaMek file of the kind, read by the shared MegaMek reader.
+    loadBlk = (unit: unknown): string[] => {
+        const craft = unit as SmallCraft;
+        this.replaceDesign(() => this.props.appGlobals.saveCurrentSmallCraft(craft));
+        return craft.getIssues(4);
     }
 
     // Before the design is replaced, offer to save it first.
@@ -145,29 +128,7 @@ export default class SmallCraftCreatorHome extends React.Component<IHomeProps, I
                             </div>
                         </TextSection>
 
-                        <TextSection label="Import a MegaMek File">
-                            <p>
-                                Load a Small Craft from a MegaMek or MegaMekLab <code>.blk</code> file. The design replaces the one in the
-                                editor; save your current design first if you want to keep it.
-                            </p>
-                            <label>
-                                Choose a .blk file:{" "}
-                                <input type="file" accept=".blk,text/plain" data-testid="sc-import-file" style={{ width: "auto" }} onChange={this.importFile} aria-label="Choose a .blk file" />
-                            </label>
-                            {this.state.importIssues !== null ? (
-                                <div data-testid="sc-import-result">
-                                    <p><strong>{this.state.importName}</strong>: {this.state.importLoaded ? "loaded into the editor." : "not loaded."}</p>
-                                    {this.state.importIssues.length > 0 ? (
-                                        <ul className={this.state.importLoaded ? "" : "color-red"}>
-                                            {this.state.importIssues.map((issue, index) => <li key={index}>{issue}</li>)}
-                                        </ul>
-                                    ) : <p>Everything in the file was carried over, and the Small Craft is legal.</p>}
-                                </div>
-                            ) : null}
-                            <p className="smaller-text">
-                                The file's equipment names are matched to this catalog; anything without a match is left off and listed.
-                            </p>
-                        </TextSection>
+                        <BlkImportSection accept={["small-craft"]} testId="sc" onLoad={this.loadBlk} />
 
                         <TextSection
                             label="Your Saved Small Craft"
@@ -221,9 +182,3 @@ interface IHomeProps {
     appGlobals: IAppGlobals;
 }
 
-interface IHomeState {
-    importName: string;
-    /** What the last import reported; null before any import. */
-    importIssues: string[] | null;
-    importLoaded?: boolean;
-}

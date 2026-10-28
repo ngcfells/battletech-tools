@@ -6,7 +6,7 @@ import { getSSWXMLBasicInfo } from "../utils/getSSWXMLBasicInfo";
 import { importBattleArmorBlk } from "./battle-armor-blk";
 import { importProtoMechBlk } from "./protomech-blk";
 import { importSmallCraftBlk } from "./small-craft-blk";
-import { importSupportVehicleBlk, importFixedWingSupportBlk } from "./support-vehicle-blk";
+import { importSupportVehicleBlk, importFixedWingSupportBlk } from "./vehicle-blk";
 
 // BV survey for data rounds (design 2026-10-24-catalog-consolidation): every SSW 'Mech and every MegaMek battle armor,
 // ProtoMech, Small Craft, DropShip, support vehicle and fixed-wing support file, one "kind, file, BV" row each. Run with

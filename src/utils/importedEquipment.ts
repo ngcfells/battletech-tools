@@ -28,9 +28,13 @@ export interface IImportedEquipmentMatch {
 interface ICatalogIndex {
     primary: Map<string, IEquipmentItem[]>;
     any: Map<string, IEquipmentItem[]>;
+    /** By squashed identifier: the last pass, for names run together as MegaMek writes them. */
+    squashed: Map<string, IEquipmentItem[]>;
 }
 
 const key = (value: string): string => value.trim().toLowerCase();
+/** Letters and digits only, without an IS or Clan prefix: "CLLargeChemicalLaser" and "Large Chemical Laser" alike. */
+const squash = (value: string): string => value.toLowerCase().replace(/[^a-z0-9]/g, "").replace(/^(is|clan|cl)(?=[a-z])/, "");
 
 function add(map: Map<string, IEquipmentItem[]>, identifier: string | undefined, item: IEquipmentItem): void {
     if (!identifier || !identifier.trim()) {
@@ -65,20 +69,21 @@ function getIndex(catalog: EquipmentCatalog): ICatalogIndex {
                 }
                 let index = indexes.get(tier);
                 if (!index) {
-                    index = { primary: new Map(), any: new Map() };
+                    index = { primary: new Map(), any: new Map(), squashed: new Map() };
                     indexes.set(tier, index);
                 }
                 add(index.primary, item.name, item);
                 add(index.primary, item.tag, item);
                 for (const identifier of getEquipmentIdentifiers(item)) {
                     add(index.any, identifier, item);
+                    add(index.squashed, squash(identifier), item);
                 }
             }
         }
         // This browser's custom drafts (custom-content-local.ts) answer after the shared custom catalogs.
         let custom = indexes.get("custom");
         if (!custom) {
-            custom = { primary: new Map(), any: new Map() };
+            custom = { primary: new Map(), any: new Map(), squashed: new Map() };
             indexes.set("custom", custom);
         }
         for (const item of getLocalCustomEquipment()) {
@@ -89,7 +94,7 @@ function getIndex(catalog: EquipmentCatalog): ICatalogIndex {
             }
         }
     }
-    return indexes.get(catalog) ?? { primary: new Map(), any: new Map() };
+    return indexes.get(catalog) ?? { primary: new Map(), any: new Map(), squashed: new Map() };
 }
 
 /** Drops the lookup index so the next lookup sees newly registered local drafts. */
@@ -118,6 +123,13 @@ export function findImportedEquipment(name: string, faction: ImportFaction, mixe
         // A custom record whose tag names the other faction only matches a mixed-tech design.
         const item = findCatalogMatches(name, catalog, primaryOnly)
             .find((match) => catalog !== "custom" || mixedTech || customTagFaction(match.tag) !== otherFaction);
+        if (item) {
+            return { item, catalog };
+        }
+    }
+    // Last, the same catalogs by squashed name; never the custom ones, whose drafts may run names together freely.
+    for (const catalog of new Set(passes.map(([catalog]) => catalog).filter((catalog) => catalog !== "custom"))) {
+        const item = getIndex(catalog).squashed.get(squash(name))?.[0];
         if (item) {
             return { item, catalog };
         }

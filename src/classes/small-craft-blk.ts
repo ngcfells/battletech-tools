@@ -12,6 +12,7 @@ import { IBlkAmmoLine, findBlkAmmo, findBlkAmmoWeapon, parseBlkAmmoLine } from "
 import { findCapitalWeaponByName, getCapitalAmmoTags } from "../data/capital-weapon-helpers";
 import { ICapitalWeapon } from "../data/data-interfaces";
 import { applyBlkQuirks, IBlkImportedItem } from "../utils/blk-quirks";
+import { getBlkFireControlSuffix, getBlkFittedTag } from "../utils/blk-fire-control";
 
 // Reads a MegaMek Small Craft ".blk" file into a SmallCraft. The file names its equipment by MegaMek's lookup
 // names; the tables below pair those names with this catalog. Anything that has no match is left off and
@@ -61,14 +62,6 @@ const EQUIPMENT: Record<string, [string | null, string | null]> = {
     clecmsuite: [null, "clan-ecm-system"],
 };
 
-/** Launchers that the file fits with a fire control system listed on its own line. */
-// Fire control systems and PPC Capacitors: lines of their own that upgrade a weapon in the arc to the catalog's record
-// with them fitted. For aerospace units a capacitor is integral to its PPC (TO:AUE p.131).
-const FIRE_CONTROL: Record<string, string> = {
-    isartemisiv: "-artemis-iv", clartemisiv: "-artemis-iv", clartemisv: "-artemis-v", isapollo: "-apollo",
-    ppccapacitor: "-capacitor", isppccapacitor: "-capacitor",
-};
-
 // Ammunition lines: the weapon lookup name the round belongs to, and the kind of round where it is not the standard one.
 const AMMO: Record<string, { weapon: string; kind?: RegExp }> = {
     isammolrm5: { weapon: "lrm5" },
@@ -101,7 +94,7 @@ const ARMOR: Record<string, [string, string]> = {
 };
 
 // A file names its own equipment: keep "constructor" or "__proto__" from finding an inherited property.
-[EQUIPMENT, FIRE_CONTROL, AMMO, ARMOR].forEach((table) => Object.setPrototypeOf(table, null));
+[EQUIPMENT, AMMO, ARMOR].forEach((table) => Object.setPrototypeOf(table, null));
 
 const LOCATIONS: { block: string; arc: SmallCraftArc | "hull"; rear?: SmallCraftArc }[] = [
     { block: "nose equipment", arc: "nose" },
@@ -278,7 +271,9 @@ export const importSmallCraftBlk = (text: string): ISmallCraftBlkResult => {
                 pendingAmmo.push(name);
                 continue;
             }
-            if (FIRE_CONTROL[name]) {
+            // Fire control systems and PPC Capacitors upgrade a weapon in the arc (blk-fire-control); for aerospace
+            // units a capacitor is integral to its PPC (TO:AUE p.131).
+            if (getBlkFireControlSuffix(name)) {
                 pendingFireControl.push({ name, arc: location.arc, rear: location.rear });
                 continue;
             }
@@ -312,15 +307,11 @@ export const importSmallCraftBlk = (text: string): ISmallCraftBlkResult => {
     // A fire control system upgrades one launcher in its arc to the catalog's record for the fitted launcher: any
     // standard LRM, SRM, MML (TM p.207) or MRM the catalog has with the system; a capacitor one PPC. The file does not
     // mark the system "(R)" when its weapon faces the rear, so the arc's rear half is searched too.
-    const catalogTags = new Set([...getEquipmentRecordsByTech("is"), ...getEquipmentRecordsByTech("clan")].map((item) => item.tag));
-    // The record with the system fitted: "lrm-20" to "lrm-20-artemis-iv", "standard-ppc" to "ppc-capacitor".
-    const fitted = (tag: string, suffix: string): string | undefined => /-(artemis|apollo|capacitor)/.test(tag) ? undefined
-        : [tag + suffix, tag.replace(/^standard-/, "") + suffix].find((candidate) => catalogTags.has(candidate));
     for (const fireControl of pendingFireControl) {
-        const suffix = FIRE_CONTROL[fireControl.name];
+        const suffix = getBlkFireControlSuffix(fireControl.name)!;
         const launcher = craft.getEquipmentList().find((item) => (item.location === fireControl.arc || (!!fireControl.rear && item.location === fireControl.rear)) && !item.isAmmo
-            && !!fitted(item.tag, suffix));
-        const upgradedTag = launcher ? fitted(launcher.tag, suffix) : undefined;
+            && !!getBlkFittedTag(item.tag, suffix));
+        const upgradedTag = launcher ? getBlkFittedTag(launcher.tag, suffix) : undefined;
         const upgraded = launcher && upgradedTag ? craft.addEquipmentFromTag(upgradedTag, launcher.location) : null;
         if (launcher && upgraded) {
             craft.removeEquipment(launcher.uuid ?? "");

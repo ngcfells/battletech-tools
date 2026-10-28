@@ -354,6 +354,8 @@ export interface IEquipmentItem extends ICatalogStanding {
     battleValue?: number;
     /** Battle Value of a Clan unit carrying this item, where it differs from `battleValue` (TO:AUE p.197 lists Clan artillery apart). */
     battleValueClan?: number;
+    /** A mounted item built to the other tech base than its unit's, which prices `battleValueClan` items by their maker. */
+    builtTechBase?: "is" | "clan";
     battleValueDefensive?: boolean;
     battleValueOneShot?: number;
     heat: number;
@@ -494,6 +496,10 @@ export interface IEquipmentItem extends ICatalogStanding {
     industrialMechOnly?: boolean;
     /** 'Mech locations (short keys, e.g. "hd") the item must be placed in; unset = anywhere. */
     allowedLocations?: string[];
+    /** Vehicle locations the item must be placed in (a trailer hitch: front or rear, TM p.101); unset = anywhere. */
+    vehicleLocations?: string[];
+    /** Vehicle motive types that may mount the item (a trailer hitch: tracked or wheeled, TM p.101); unset = any. */
+    vehicleMotives?: string[];
     /** An industrial tool: arms only on a humanoid 'Mech, side torsos only on a four-legged one (TM pp.241-249). */
     armTool?: boolean;
     /** Only one item of this group may be mounted in a location (HarJel repair systems, IO:AE p.83). */

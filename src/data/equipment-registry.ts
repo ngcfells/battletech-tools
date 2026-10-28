@@ -238,7 +238,7 @@ export const isArtemisIVCapableLauncher = (tag: string): boolean => isArtemisCap
  * artillery) list a separate Clan value (TO:AUE p.197).
  */
 export function getItemBattleValue(item: IEquipmentItem, techTag?: string): number {
-    const clan = techTag === "clan" || techTag === "mclan";
+    const clan = item.builtTechBase ? item.builtTechBase === "clan" : techTag === "clan" || techTag === "mclan";
     return (clan && item.battleValueClan !== undefined ? item.battleValueClan : item.battleValue) || 0;
 }
 

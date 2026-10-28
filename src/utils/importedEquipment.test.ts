@@ -53,6 +53,15 @@ describe("findImportedEquipment", () => {
         expect(findCatalogMatches("Rivet Gun", "universal")[0]?.tag).toBe("nail-gun");
         expect(findCatalogMatches("Rivet Gun", "universal", true)).toEqual([]);
     });
+
+    it("last of all, reads MegaMek's run-together names: letters and digits only, without the IS or Clan prefix", () => {
+        expect(findImportedEquipment("CLLargeChemicalLaser", "clan")?.item.tag).toBe("clan-large-chemical-laser");
+        expect(findImportedEquipment("IS Mech Mortar-8", "is")?.item.tag).toBe("mech-mortar-8");
+        expect(findImportedEquipment("Clan Mech Mortar-8", "clan")?.item.tag).toBe("clan-mech-mortar-8");
+        expect(findImportedEquipment("CLHeavyFlamer", "clan")?.item.tag).toMatch(/heavy-flamer/);
+        // Never across the faction line for a design of one tech base.
+        expect(findImportedEquipment("CLLargeChemicalLaser", "is")).toBeNull();
+    });
 });
 
 describe("equipment catalogs", () => {

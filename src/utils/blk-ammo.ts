@@ -34,21 +34,27 @@ export interface IBlkAmmoLine {
 }
 
 /** Reads an ammunition line; null when the line is not ammunition. */
-export const parseBlkAmmoLine = (name: string): IBlkAmmoLine | null => {
-    if (!/ammo/i.test(name)) return null;
+export const parseBlkAmmoLine = (line: string): IBlkAmmoLine | null => {
+    // Narc and iNarc lines name their rounds "Pods" ("ISiNarc Pods").
+    if (!/ammo|\bpods$/i.test(line)) return null;
+    // Vehicle files run the words together ("ISArrowIVHomingAmmo", "CLLargeChemLaserAmmo").
+    const name = line.replace(/([a-z])([A-Z])/g, "$1 $2").replace(/([A-Z])([A-Z][a-z])/g, "$1 $2");
     const kind = lineKind(name);
     let weapon = name
         .replace(/\((clan|is)\)/ig, "")
         .replace(/\b(IS|Clan|CL)\b/g, "")
-        .replace(/ammo/ig, "")
+        .replace(/ammo|\bpods$/ig, "")
+        // "SC" is the shaped-charge round, the 'Mech Mortar's standard one.
+        .replace(/\bSC\b/g, "")
         .replace(/-\s*(half|full)\b/ig, "")
         .replace(/\b(artemis(\s*v)?|narc)[- ]capable\b/ig, "")
         .replace(/\b(cluster|slug|homing|standard)\b/ig, "");
     if (/\bmml/i.test(name)) weapon = weapon.replace(/\b(lrm|srm)\b/ig, "");
     if (/\batm/i.test(name)) weapon = weapon.replace(/\b(er|he)\b/ig, "");
     // "Hyper-Assault Gauss Rifle/20 Ammo" feeds the "Hyper-Assault Gauss 20", "AC/10 Primitive" the "Primitive Prototype AC/10".
-    const weaponKey = unprefixed(weapon).replace(/^hyperassaultgaussrifle/, "hyperassaultgauss").replace(/^(.+)primitive$/, "primitiveprototype$1");
-    return { weaponKey: WEAPON_ALIASES[weaponKey] ?? weaponKey, half: /-\s*half/i.test(name), kind };
+    const weaponKey = unprefixed(weapon).replace(/^hyperassaultgaussrifle/, "hyperassaultgauss").replace(/^(.+)primitive$/, "primitiveprototype$1")
+        .replace(/^(s|l)rtorpedo/, "$1rt").replace(/chemlaser/, "chemicallaser").replace(/^mortar/, "mechmortar");
+    return { weaponKey: WEAPON_ALIASES[weaponKey] ?? weaponKey, half: /-\s*half/i.test(line), kind };
 };
 
 const weaponKeys = (item: IEquipmentItem): string[] =>

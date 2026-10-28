@@ -4,16 +4,17 @@
 
 | Reason | Files |
 |---|---|
-| no Master Unit List entry to check its BV against | 144 |
-| BV differs from the MUL | 43 |
-| the import could not carry all of it over | 29 |
+| no Master Unit List entry to check its BV against | 150 |
+| BV differs from the MUL | 48 |
+| the import could not carry all of it over | 17 |
 | import failed | 2 |
+| does not survive the compact format | 1 |
 
 ## Left out
 
 - `dropships/HBHK/Gaajian System Patrol Boat (2485).blk`: BV differs from the MUL: BV 3426, MUL 3351
 - `dropships/HBHK/Gaajian System Patrol Boat (3060).blk`: BV differs from the MUL: BV 3674, MUL 3592
-- `dropships/HBHK/Hoshiryokou Tug Boat.blk`: the import could not carry all of it over: "ISNavalTugAdaptor" has no match in this catalog and was left off.
+- `dropships/HBHK/Hoshiryokou Tug Boat.blk`: no Master Unit List entry to check its BV against
 - `dropships/HBMPS/Aqueduct Liquid Carrier.blk`: no Master Unit List entry to check its BV against
 - `dropships/HBMPS/Princess Luxury Liner (Cargo).blk`: no Master Unit List entry to check its BV against
 - `dropships/HBMPS/Princess Luxury Liner.blk`: no Master Unit List entry to check its BV against
@@ -22,7 +23,7 @@
 - `dropships/Historicals/Liberation of Terra I and II/Lee (2756 Troop Transport).blk`: no Master Unit List entry to check its BV against
 - `dropships/Historicals/Liberation of Terra I and II/Lee (BattleMech Carrier).blk`: BV differs from the MUL: BV 15063, MUL 14393
 - `dropships/Historicals/Liberation of Terra I and II/M3 Drone CASPAR.blk`: the import could not carry all of it over: "ImprovedCasparDroneControlSystem" has no match in this catalog and was left off.; "SDSSelfDestructSystem" has no match in this catalog and was left off.
-- `dropships/Historicals/Liberation of Terra I and II/Model 96C 'Howdah' .blk`: the import could not carry all of it over: "ISNavalTugAdaptor" has no match in this catalog and was left off.; "AutoTacticalAnalysisComputer:SIZE:20.0" has no match in this catalog and was left off.; Transport bay "artsasfbay" is not one this builder has and was left off.
+- `dropships/Historicals/Liberation of Terra I and II/Model 96C 'Howdah' .blk`: the import could not carry all of it over: "AutoTacticalAnalysisComputer:SIZE:20.0" has no match in this catalog and was left off.; Transport bay "artsasfbay" is not one this builder has and was left off.
 - `dropships/Historicals/Liberation of Terra I and II/Pueblo (2673).blk`: the import could not carry all of it over: "ISSmallNavalCommScannerSuite" has no match in this catalog and was left off.
 - `dropships/Historicals/Wars of the Republic Era/Polaris.blk`: BV differs from the MUL: BV 16157, MUL 14615
 - `dropships/JHS - Terra/Cockatrice Monitor Platform (Drone).blk`: the import could not carry all of it over: "ImprovedCasparIIDroneControlSystem" has no match in this catalog and was left off.
@@ -100,7 +101,7 @@
 - `dropships/TRO3057R/IS/Lung Wang (3055).blk`: no Master Unit List entry to check its BV against
 - `dropships/TRO3057R/IS/Mammoth (2658).blk`: no Master Unit List entry to check its BV against
 - `dropships/TRO3057R/IS/Mammoth (2808).blk`: no Master Unit List entry to check its BV against
-- `dropships/TRO3057R/IS/Model 97 'Octopus' (3051).blk`: the import could not carry all of it over: "ISNavalTugAdaptor" has no match in this catalog and was left off.
+- `dropships/TRO3057R/IS/Model 97 'Octopus' (3051).blk`: no Master Unit List entry to check its BV against
 - `dropships/TRO3057R/IS/Monarch (2759).blk`: no Master Unit List entry to check its BV against
 - `dropships/TRO3057R/IS/Mule 'Q-Ship'.blk`: no Master Unit List entry to check its BV against
 - `dropships/TRO3057R/IS/Mule (2737).blk`: no Master Unit List entry to check its BV against
@@ -143,8 +144,8 @@
 - `dropships/TRO3067/IS/Union-X (3071).blk`: BV differs from the MUL: BV 9320, MUL 9300
 - `dropships/TRO3075/Age of War/Colossus Mk I.blk`: BV differs from the MUL: BV 7144, MUL 7084
 - `dropships/TRO3075/Age of War/Colossus.blk`: BV differs from the MUL: BV 7356, MUL 7296
-- `dropships/TRO3075/Age of War/Model 96 'Elephant' Mk I.blk`: the import could not carry all of it over: "ISNavalTugAdaptor" has no match in this catalog and was left off.
-- `dropships/TRO3075/Age of War/Model 96 'Elephant'.blk`: the import could not carry all of it over: "ISNavalTugAdaptor" has no match in this catalog and was left off.
+- `dropships/TRO3075/Age of War/Model 96 'Elephant' Mk I.blk`: no Master Unit List entry to check its BV against
+- `dropships/TRO3075/Age of War/Model 96 'Elephant'.blk`: no Master Unit List entry to check its BV against
 - `dropships/TRO3075/Age of War/Pentagon 'Pocket Warship'.blk`: no Master Unit List entry to check its BV against
 - `dropships/TRO3075/Age of War/Vulture (2312).blk`: BV differs from the MUL: BV 1470, MUL 1497
 - `dropships/TRO3075/Age of War/Vulture (2405).blk`: BV differs from the MUL: BV 2489, MUL 2482
@@ -164,21 +165,21 @@
 - `dropships/TRO3085/Cutting Edge/IS/Interdictor Pocket Warship (SCC).blk`: no Master Unit List entry to check its BV against
 - `dropships/TRO3085/Cutting Edge/IS/Interdictor Pocket Warship (Sub-Capital).blk`: no Master Unit List entry to check its BV against
 - `dropships/TRO3085/Cutting Edge/IS/Interdictor Pocket Warship.blk`: no Master Unit List entry to check its BV against
-- `dropships/TRO3085/Cutting Edge/IS/Taihou Assault Dropship.blk`: the import could not carry all of it over: "ISNC3" has no match in this catalog and was left off.
-- `dropships/TRO3085/ONN/Nekohono'o (SCL).blk`: the import could not carry all of it over: "ISNC3" has no match in this catalog and was left off.
+- `dropships/TRO3085/Cutting Edge/IS/Taihou Assault Dropship.blk`: no Master Unit List entry to check its BV against
+- `dropships/TRO3085/ONN/Nekohono'o (SCL).blk`: does not survive the compact format
 - `dropships/TRO3085/Supplemental/Dragau II Assault Interceptor.blk`: no Master Unit List entry to check its BV against
 - `dropships/TRO3085/Supplemental/Tiamat Pocket Warship.blk`: BV differs from the MUL: BV 50670, MUL 50146
 - `dropships/TRO3145/Marik/Seleucus Infantry Transport.blk`: BV differs from the MUL: BV 7757, MUL 7306
 - `dropships/TRO3145/Merc/Nagasawa.blk`: no Master Unit List entry to check its BV against
-- `dropships/TRO3145/NTNU RS/Achilles (3088).blk`: the import could not carry all of it over: "ISNC3" has no match in this catalog and was left off.
-- `dropships/TRO3145/NTNU RS/Dragau II (3097).blk`: the import could not carry all of it over: "ISNC3" has no match in this catalog and was left off.
-- `dropships/TRO3145/NTNU RS/Interdictor Pocket Warship (3115).blk`: the import could not carry all of it over: "ISNC3" has no match in this catalog and was left off.
-- `dropships/TRO3145/NTNU RS/Tiamat II (3112).blk`: the import could not carry all of it over: "ISNC3" has no match in this catalog and was left off.
-- `dropships/TRO3145/Republic/Duat Military Transport.blk`: the import could not carry all of it over: "ISDroneCarrierControlSystem:SIZE:6.0" has no match in this catalog and was left off.
+- `dropships/TRO3145/NTNU RS/Achilles (3088).blk`: BV differs from the MUL: BV 12212, MUL 12207
+- `dropships/TRO3145/NTNU RS/Dragau II (3097).blk`: no Master Unit List entry to check its BV against
+- `dropships/TRO3145/NTNU RS/Interdictor Pocket Warship (3115).blk`: BV differs from the MUL: BV 20970, MUL 26950
+- `dropships/TRO3145/NTNU RS/Tiamat II (3112).blk`: BV differs from the MUL: BV 45175, MUL 57241
+- `dropships/TRO3145/Republic/Duat Military Transport.blk`: BV differs from the MUL: BV 17643, MUL 16695
 - `dropships/TRO3145/Steiner/Trutzburg.blk`: BV differs from the MUL: BV 11583, MUL 11580
-- `dropships/TRO3150/Castrum Pocket WarShip.blk`: the import could not carry all of it over: "ISNC3" has no match in this catalog and was left off.
+- `dropships/TRO3150/Castrum Pocket WarShip.blk`: BV differs from the MUL: BV 67231, MUL 67223
 - `dropships/XTRs/Davion/Conquistador Blockade Runner.blk`: no Master Unit List entry to check its BV against
-- `dropships/XTRs/Kurita/Nekohonoo HQ.blk`: the import could not carry all of it over: "ISNC3" has no match in this catalog and was left off.; "ISLargeNavalCommScannerSuite" has no match in this catalog and was left off.
+- `dropships/XTRs/Kurita/Nekohonoo HQ.blk`: the import could not carry all of it over: "ISLargeNavalCommScannerSuite" has no match in this catalog and was left off.
 - `dropships/XTRs/Liao/Lung Wang Predator.blk`: no Master Unit List entry to check its BV against
 - `dropships/XTRs/Periphery/Vengeance Pocket Warship Prototype.blk`: the import could not carry all of it over: "ISSmallNavalCommScannerSuite" has no match in this catalog and was left off.
 - `dropships/XTRs/Phantoms/Vampire II.blk`: no Master Unit List entry to check its BV against

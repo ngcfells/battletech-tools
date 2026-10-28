@@ -52,4 +52,16 @@ describe("MegaMek .blk ammunition lines", () => {
         expect(roundFor("Clan Ammo SRM-6 (Clan) Narc-capable", "clan-srm-6")).toBe("ammo-clan-srm-narc");
         expect(roundFor("Clan Ammo LRM-20 (Clan) Narc-capable", "clan-lrm-20")).toBe("ammo-lrm-narc");
     });
+
+    it("reads MegaMek's run-together names, torpedoes, pods and shaped-charge mortar rounds (combat vehicles, #241)", () => {
+        expect(roundFor("ISArrowIVHomingAmmo", "arrow-iv-system")).toBe("ammo-is-arrow-iv-homing");
+        expect(roundFor("ISLongTomAmmo", "long-tom-artillery")).toBe("ammo-long-tom-standard");
+        expect(roundFor("IS Ammo SRTorpedo-6", "srt-6")).toMatch(/srt/);
+        expect(roundFor("IS Ammo LRTorpedo-20", "lrt-20")).toMatch(/lrt/);
+        expect(roundFor("ISiNarc Pods", "inarc")).toBe("ammo-is-inarc-standard");
+        expect(roundFor("ISNarc Pods", "narc")).toBe("ammo-is-narc-standard");
+        // TM: the 'Mech Mortar's standard round is the shaped (armor-piercing) charge.
+        expect(roundFor("IS Ammo SC Mortar-8", "mech-mortar-8")).toBe("ammo-mech-mortar-standard");
+        expect(roundFor("CLLargeChemLaserAmmo", "clan-large-chemical-laser")).toBe("ammo-clan-large-chemical-laser-standard");
+    });
 });

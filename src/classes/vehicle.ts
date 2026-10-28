@@ -93,6 +93,10 @@ export interface IVehicleEquipmentExport {
     size?: number;
     /** A half-ton bin of machine gun, nail gun or rivet gun ammunition (TM pp.107, 137). */
     halfTon?: boolean;
+    /** The launcher an ammunition bin is loaded for, where several mounted weapons could fire it. */
+    feedsWeaponTag?: string;
+    /** An item built to the other tech base, priced at that tech base's Battle Value (TO:AUE p.197). */
+    builtTechBase?: "is" | "clan";
     /** A Light or Medium weapon on a pintle (TM p.234). */
     pintle?: boolean;
     /** A side weapon in that side's sponson turret (TO p. 348). */
@@ -301,6 +305,9 @@ export const LARGE_NAVAL_CREW_BOXES = 6;
 
 /** The side locations whose weapons may go in that side's sponson turret (TO p. 348). */
 const SPONSON_SIDE_LOCATIONS: string[] = ["left", "right", "frontLeft", "frontRight", "rearLeft", "rearRight"];
+const VTOL_MAST_MOUNT = "vtol-mast-mount";
+// TAG and C3 masters may not go in a Mast Mount (TO:AUE p.162).
+const MAST_MOUNT_BARRED = ["is-tag", "clan-tag", "clan-light-tag", "prototype-tag", "c3-computer-master", "c3-boosted-master", "c3-emergency-master"];
 const VEHICLE_LOCATION_TAGS: VehicleLocation[] = ["front", "left", "right", "rear", "frontLeft", "frontRight", "rearLeft", "rearRight", "rotor", ...VEHICLE_TURRET_LOCATIONS];
 const MOTIVE_HIT_LEVELS: VehicleMotiveHit[] = ["minor", "moderate", "heavy", "immobilized"];
 const MOVEMENT_MODES: VehicleMovementMode[] = ["stationary", "cruise", "flank", "jump"];
@@ -2673,11 +2680,10 @@ export default class Vehicle implements IGameSettingsUnit {
         return this._equipmentList;
     }
 
-    // A mounted copy of a catalog item. Only this vehicle's own locations (never the rotor) are kept, and ids
-    // must be unique strings: saved data may hold anything.
+    // A mounted copy of a catalog item. Only this vehicle's own locations are kept (the rotor only for a Mast
+    // Mount and what it holds), and ids must be unique strings: saved data may hold anything.
     private _newEquipment(catalogItem: IEquipmentItem, location?: unknown, rear?: unknown, uuid?: unknown): IEquipmentItem {
-        const validLocation = typeof location === "string" && location !== "rotor"
-            && this.getLocations().some((loc) => loc.tag === location) ? location : undefined;
+        const validLocation = typeof location === "string" && this._canGoIn(catalogItem, location) ? location : undefined;
         const freshId = typeof uuid !== "string" || !uuid || this._equipmentList.some((item) => item.uuid === uuid);
         // A deep copy: mounted items never share nested data (ranges, Alpha Strike values) with each other.
         const equipment: IEquipmentItem = { ...copyCatalogRecord(catalogItem), location: validLocation, rear: rear === true, uuid: freshId ? generateUUID() : uuid as string };
@@ -2725,14 +2731,15 @@ export default class Vehicle implements IGameSettingsUnit {
     public removeEquipment(uuid: string): IEquipmentItem[] {
         this._podUUIDs.delete(uuid);
         this._equipmentList = this._equipmentList.filter((item) => item.uuid !== uuid);
+        this._unplaceRotorItems();
         this._calc();
         return this._equipmentList;
     }
 
     public setEquipmentLocation(uuid: string, location: string): IEquipmentItem[] {
         const item = this._equipmentList.find((equipment) => equipment.uuid === uuid);
-        // Equipment goes in the body locations or the turret, never the rotor.
-        if (location && (location === "rotor" || !this.getLocations().some((loc) => loc.tag === location))) {
+        // Equipment goes in the body locations or the turret; the rotor takes only a Mast Mount and what it holds.
+        if (location && (!item || !this._canGoIn(item, location))) {
             return this._equipmentList;
         }
         if (item) {
@@ -2742,6 +2749,7 @@ export default class Vehicle implements IGameSettingsUnit {
                 return this._equipmentList;
             }
             item.location = location;
+            this._unplaceRotorItems();
             // A pintle sits on a side; in the turret or unplaced, the weapon is off it (TM p.234).
             if (item.pintle && (!location || location === "turret")) item.pintle = false;
             // A sponson is on its side; off the side, the weapon is out of it.
@@ -2868,9 +2876,10 @@ export default class Vehicle implements IGameSettingsUnit {
         returnItems.sort((a, b) => (a.sort > b.sort ? 1 : a.sort < b.sort ? -1 : 0));
         // A custom record states its tech base: IS records go to IS and mixed vehicles, Clan records to Clan and
         // mixed vehicles. Universal records, and records that state none, go to everyone.
-        const byTechBase = returnItems.filter((item) => item.catalog !== "custom"
+        const byTechBase = returnItems.filter((item) => (item.catalog !== "custom"
             || (item.techBase !== "is" && item.techBase !== "clan")
-            || (item.techBase === "is" ? includeIS : includeClan));
+            || (item.techBase === "is" ? includeIS : includeClan))
+            && (!item.vehicleMotives || item.vehicleMotives.includes(this._motiveType.tag)));
         // Every item is offered only in its editions and at its level or above; custom items need Custom Homebrew.
         const offeredLevel = includeCustom ? Math.max(rulesLevel, CUSTOM_HOMEBREW_RULES_LEVEL) : rulesLevel;
         return byTechBase.filter((item) => isEquipmentOffered(item, this._rulesEdition, offeredLevel));
@@ -2938,6 +2947,40 @@ export default class Vehicle implements IGameSettingsUnit {
         return this._equipmentList.some((item) => item.variableFormula?.startsWith("targeting-computer"));
     }
 
+    /** Each item in a VTOL Mast Mount, which sits in the Rotor location, costs 10 BV more (TO:AUE p.194). */
+    private _mastMountBV(item: IEquipmentItem): number {
+        if (item.location !== "rotor" || item.isAmmo || item.tag === VTOL_MAST_MOUNT) return 0;
+        return this._hasMastMount() ? 10 : 0;
+    }
+
+    /** One of this vehicle's locations that takes the item: the rotor only for a Mast Mount and what it holds. */
+    private _canGoIn(item: IEquipmentItem, location: string): boolean {
+        if (!this.getLocations().some((loc) => loc.tag === location)) return false;
+        if (item.vehicleLocations && !item.vehicleLocations.includes(location)) return false;
+        return location !== "rotor" || this._canGoInRotor(item);
+    }
+
+    private _hasMastMount(): boolean {
+        return this._equipmentList.some((other) => other.tag === VTOL_MAST_MOUNT && other.location === "rotor");
+    }
+
+    /**
+     * The rotor holds a VTOL's Mast Mount and the items in it: equipment (types E and CE), but no TAG of any
+     * kind and, of C3, only slaves and C3i (TO:AUE p.162).
+     */
+    private _canGoInRotor(item: IEquipmentItem): boolean {
+        if (!this._motiveType.hasRotor) return false;
+        if (item.tag === VTOL_MAST_MOUNT) return true;
+        if (!this._hasMastMount() || item.isAmmo || !/^misc/i.test(item.category ?? "")) return false;
+        return !MAST_MOUNT_BARRED.includes(item.tag);
+    }
+
+    // Without a Mast Mount in the rotor, what it held comes off the rotor.
+    private _unplaceRotorItems(): void {
+        if (this._hasMastMount()) return;
+        for (const item of this._equipmentList) if (item.location === "rotor") item.location = undefined;
+    }
+
     private _isWeapon(item: IEquipmentItem): boolean {
         return !item.isAmmo && !item.isEquipment && !item.battleValueDefensive && (item.battleValue || 0) > 0;
     }
@@ -2996,15 +3039,15 @@ export default class Vehicle implements IGameSettingsUnit {
         let defensiveEquipmentBV = 0;
         let amsAmmoBV = 0;
         let amsBV = 0;
-        const weapons = this._equipmentList.filter((item) => !item.isAmmo);
         for (const item of this._equipmentList) {
             if (item.isAmmo) {
-                const fed = weapons.find((weapon) => weapon.battleValueDefensive && getCompatibleAmmo(weapon, item));
-                if (fed) amsAmmoBV += getAmmoBattleValuePerTon(fed, item) * item.weight;
+                const fed = this._binWeapon(item);
+                if (fed?.battleValueDefensive) amsAmmoBV += getAmmoBattleValuePerTon(fed, item) * item.weight;
             } else if (item.battleValueDefensive) {
-                defensiveEquipmentBV += item.battleValue || 0;
+                const value = (item.battleValue || 0) + this._mastMountBV(item);
+                defensiveEquipmentBV += value;
                 if (item.weaponType?.includes("AMS")) amsBV += item.battleValue || 0;
-                log += `+ Defensive Equipment: ${escapeLogText(item.name)} = ${item.battleValue || 0}<br />`;
+                log += `+ Defensive Equipment: ${escapeLogText(item.name)} = ${value}${this._mastMountBV(item) ? " (mast mount +10)" : ""}<br />`;
             }
         }
         defensiveEquipmentBV += Math.min(amsAmmoBV, amsBV);
@@ -3017,20 +3060,44 @@ export default class Vehicle implements IGameSettingsUnit {
         defensive *= typeModifier;
         log += ` = ${defensive.toFixed(2)}<br />`;
 
-        // An unmotorized Trailer counts as Flank MP 1 (TM p.308).
-        const flank = this._support?.engine === "none" ? 1 : this.getFlankMP();
+        // An unmotorized Trailer (a Support Vehicle with no engine, or a Combat Vehicle with no Cruising MP)
+        // counts as Flank MP 1 (TM pp.308, 317).
+        // A VTOL jet booster's boosted speed, twice Cruising MP, gives the Defensive and Speed Factors (TO:AUE pp.162, 194).
+        // A Supercharger likewise doubles Cruising MP (TO:AUE p.157).
+        const boosted = this._equipmentList.some((item) => item.tag === "vtol-jet-booster" || item.variableFormula === "supercharger") ? this.getCruiseMP() * 2 : 0;
+        const flank = this._support?.engine === "none" || this.getCruiseMP() === 0 ? 1 : Math.max(this.getFlankMP(), boosted);
         const airborne = this._motiveType.tag === "vtol" || this._motiveType.tag === "wige";
-        const runTMM = flank > 0 ? getMovementModifier(flank) + (airborne ? 1 : 0) : 0;
-        const jumpTMM = this._jumpMP > 0 ? getMovementModifier(this._jumpMP) + 1 : 0;
+        // The highest potential target modifier includes stealth armor's +2 at long range (TM p.316).
+        const stealth = /stealth/.test(this._armorType.tag) ? 2 : 0;
+        const runTMM = flank > 0 ? getMovementModifier(flank) + (airborne ? 1 : 0) + stealth : 0;
+        const jumpTMM = this._jumpMP > 0 ? getMovementModifier(this._jumpMP) + 1 + stealth : 0;
         const defensiveFactor = 1 + Math.max(runTMM, jumpTMM) / 10;
         defensive *= defensiveFactor;
-        log += `Defensive Factor: 1 + max(Flank TMM ${runTMM}${airborne ? " incl. +1 airborne" : ""}, Jump TMM ${jumpTMM}) / 10 = ${defensiveFactor.toFixed(2)} -> ${defensive.toFixed(2)}<br />`;
+        log += `Defensive Factor: 1 + max(Flank TMM ${runTMM}${airborne ? " incl. +1 airborne" : ""}, Jump TMM ${jumpTMM})`
+            + `${stealth ? " incl. +2 stealth armor" : ""}${boosted > this.getFlankMP() ? ` (jet booster, MP ${boosted})` : ""}`
+            + ` / 10 = ${defensiveFactor.toFixed(2)} -> ${defensive.toFixed(2)}<br />`;
 
         log += "<strong>OFFENSIVE BATTLE RATING</strong><br />";
         if (this.isArtVee()) log += "ArtVee: movement from Vehicle Mode; Siege Mode (0 MP) adds nothing (blended, IO:AE p.185)<br />";
         const hasTC = this.hasTargetingComputer();
-        const baseWeaponBV = (item: IEquipmentItem) => getItemBattleValue(item, this._tech.tag) * (hasTC && isTargetingComputerWeapon(item) ? 1.25 : 1);
-        const offensiveWeapons = this._equipmentList.filter((item) => this._isWeapon(item));
+        // "All weapons on a unit equipped with a Drone Remote Operating System multiply their BVs by 0.8" (TO:AUE p.193).
+        const drone = this._equipmentList.some((item) => item.variableFormula === "drone-operating-system");
+        const droneMultiplier = drone ? 0.8 : 1;
+        const baseWeaponBV = (item: IEquipmentItem): number => {
+            // A machine gun array is worth 0.67 x the (up to four) machine guns it links in its location (TM p.228).
+            if (item.linkedWeaponTags?.length) {
+                const linked = this._equipmentList.filter((other) => other !== item && other.location === item.location
+                    && item.linkedWeaponTags!.includes(other.tag)).slice(0, 4);
+                return linked.reduce((sum, gun) => sum + getItemBattleValue(gun, this._tech.tag), 0) * 0.67 * droneMultiplier;
+            }
+            return getItemBattleValue(item, this._tech.tag) * (hasTC && isTargetingComputerWeapon(item) ? 1.25 : 1) * droneMultiplier;
+        };
+        // A vehicular grenade launcher is rated as a weapon in its arc; other equipment with a BV (industrial tools,
+        // mine dispensers) adds in full (TM p.317, as MegaMek and the MUL count it).
+        const offensiveWeapons = this._equipmentList.filter((item) => this._isWeapon(item) || (!!item.linkedWeaponTags?.length && !item.isAmmo)
+            || (item.tag === "vehicular-grenade-launcher" && !item.battleValueDefensive));
+        const offensiveEquipment = this._equipmentList.filter((item) => item.isEquipment && !item.isAmmo && !item.battleValueDefensive
+            && ((item.battleValue || 0) > 0 || this._mastMountBV(item) > 0) && !offensiveWeapons.includes(item));
         const arcBV = (location: string) => offensiveWeapons.filter((item) => item.location === location).reduce((sum, item) => sum + baseWeaponBV(item), 0);
         // The weaker of the front and rear arcs counts half; side and turret weapons count in full.
         // (MegaMek also halves side weapons when the rear arc is stronger, but the MUL does not:
@@ -3047,11 +3114,16 @@ export default class Vehicle implements IGameSettingsUnit {
                 + getLauncherBattleValueWithoutFireControl(item, () => getUnitCatalogRecords(this._tech.tag, { battleArmorScale: true }), this._tech.tag);
             log += `+ ${escapeLogText(item.name)} (${escapeLogText(item.location || "unallocated")}) = ${value.toFixed(2)}${isHalved(item) ? " (rear arc x 0.5)" : ""}<br />`;
         }
+        for (const item of offensiveEquipment) {
+            const value = (item.battleValue || 0) + this._mastMountBV(item);
+            weaponBV += value;
+            log += `+ ${escapeLogText(item.name)} (${escapeLogText(item.location || "unallocated")}, equipment) = ${value.toFixed(2)}<br />`;
+        }
 
         const ammoBVByTag: Record<string, number> = {};
         for (const ammo of this._equipmentList.filter((item) => item.isAmmo)) {
-            const fed = offensiveWeapons.find((weapon) => getCompatibleAmmo(weapon, ammo));
-            if (!fed) continue;
+            const fed = this._binWeapon(ammo);
+            if (!fed || !offensiveWeapons.includes(fed)) continue;
             ammoBVByTag[fed.tag] = (ammoBVByTag[fed.tag] ?? 0) + getAmmoBattleValuePerTon(fed, ammo) * ammo.weight;
         }
         let ammoBV = 0;
@@ -3081,9 +3153,12 @@ export default class Vehicle implements IGameSettingsUnit {
         log += ` = ${offensive.toFixed(2)}<br />`;
 
         const robotic = this._roboticControl === "none" ? 1 : SRCS_BATTLE_VALUE_MULTIPLIER;
-        this._battleValue = Math.round((defensive + offensive) * robotic);
+        // A drone's final BV x 0.95 (TO:AUE p.193).
+        const droneFinal = drone ? 0.95 : 1;
+        this._battleValue = Math.round((defensive + offensive) * robotic * droneFinal);
         log += `<strong>Battle Value</strong>: ${defensive.toFixed(2)} + ${offensive.toFixed(2)}`
-            + `${robotic !== 1 ? ` x ${robotic} (Smart Robotic Control System, IO:AE p.187)` : ""} = ${this._battleValue} (provisional)<br />`;
+            + `${robotic !== 1 ? ` x ${robotic} (Smart Robotic Control System, IO:AE p.187)` : ""}`
+            + `${drone ? " x 0.95 (Drone Operating System, TO:AUE p.193)" : ""} = ${this._battleValue} (provisional)<br />`;
         this._calcLogBV = log;
     }
 
@@ -3909,8 +3984,12 @@ export default class Vehicle implements IGameSettingsUnit {
 
     // --- Ammunition (TW pp. 125, 194) ---
 
-    /** CASE (or CASE II) vents a vehicle's ammunition explosion through the rear armor (TW p. 194). */
+    /**
+     * CASE (or CASE II) vents a vehicle's ammunition explosion through the rear armor (TW p. 194). A Clan chassis has
+     * it built in wherever ammunition is stored (TM p.210).
+     */
     public hasCASE(): boolean {
+        if (this._tech.tag === "clan" || this._tech.tag === "mclan") return true;
         return this._equipmentList.some((item) => ["case", "case-ii", "clan-case-ii"].some((tag) => matchesTag(item, tag)));
     }
 
@@ -3929,6 +4008,22 @@ export default class Vehicle implements IGameSettingsUnit {
         const weapons = this._equipmentList.filter((item) => !item.isAmmo);
         return (ammo.feedsWeaponTag ? weapons.find((w) => equipmentMatchesIdentifier(w, ammo.feedsWeaponTag || "")) : undefined)
             ?? weapons.find((w) => getCompatibleAmmo(w, ammo));
+    }
+
+    /** Loads a bin for one launcher, as a ton of SRM rounds is loaded for an SRM 6 rather than an SRM 2 (TM p.303). */
+    public setAmmoBinWeapon(uuid: string, weaponTag: string): void {
+        const bin = this._equipmentList.find((item) => item.uuid === uuid && item.isAmmo);
+        if (!bin) return;
+        bin.feedsWeaponTag = weaponTag;
+        this._calc();
+    }
+
+    /** Marks an item as built to a tech base, as an Inner Sphere Sniper on a Clan vehicle (TO:AUE p.197). */
+    public setBuiltTechBase(uuid: string, techBase: "is" | "clan"): void {
+        const item = this._equipmentList.find((entry) => entry.uuid === uuid);
+        if (!item) return;
+        item.builtTechBase = techBase;
+        this._calc();
     }
 
     /** The weapon a bin feeds, for the sheet's Ammo line; undefined with no such weapon aboard. */
@@ -4910,6 +5005,8 @@ export default class Vehicle implements IGameSettingsUnit {
                 pod: this.isPodMounted(item.uuid) || undefined,
                 size: findSupportVehicleLightWeapon(item.tag) ? item.size : undefined,
                 halfTon: this.isHalfTonBin(item) || undefined,
+                feedsWeaponTag: item.isAmmo ? item.feedsWeaponTag : undefined,
+                builtTechBase: item.builtTechBase,
                 pintle: item.pintle || undefined,
                 sponson: this.isSponsonMounted(item) || undefined,
                 drones: item.variableFormula === "drone-carrier-control" ? item.controlledDrones : undefined,
@@ -5093,6 +5190,8 @@ export default class Vehicle implements IGameSettingsUnit {
                     item.weight = catalogItem.weight / 2;
                     item.cbills = catalogItem.cbills / 2;
                 }
+                if (item.isAmmo && typeof entry.feedsWeaponTag === "string") item.feedsWeaponTag = entry.feedsWeaponTag.slice(0, 80);
+                if (entry.builtTechBase === "is" || entry.builtTechBase === "clan") item.builtTechBase = entry.builtTechBase;
                 if (item.isModularArmor && typeof entry.currentAdditionalArmor === "number") {
                     item.currentAdditionalArmor = savedNumber(entry.currentAdditionalArmor, item.currentAdditionalArmor ?? 0, 0, item.additionalArmor ?? 10);
                 }

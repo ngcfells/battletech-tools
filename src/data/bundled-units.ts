@@ -15,7 +15,7 @@ import { BUNDLED_CHUNK_SIZE, IBundledDesignHeader, IBundledUnitClass, loadBundle
 */
 
 /** Each bundled type is a folder of chunks and an index under ./bundled, fetched the first time something needs it. */
-export type BundledType = "mechs" | "battle-armor" | "protomechs" | "small-craft" | "support-vehicles";
+export type BundledType = "mechs" | "battle-armor" | "protomechs" | "small-craft" | "support-vehicles" | "vehicles";
 
 type Loaders = Record<string, () => Promise<unknown>>;
 const indexLoaders = import.meta.glob("./bundled/*-index.json", { import: "default" }) as Loaders;
@@ -46,7 +46,7 @@ export type BundledUnitType = Exclude<BundledType, "mechs">;
 
 // Looked up when used: the classes and this module import each other through the unit data.
 export const getBundledUnitClass = (type: BundledUnitType): IBundledUnitClass<BundledUnit> =>
-    ({ "battle-armor": BattleArmor, "protomechs": ProtoMech, "small-craft": SmallCraft, "support-vehicles": Vehicle })[type];
+    ({ "battle-armor": BattleArmor, "protomechs": ProtoMech, "small-craft": SmallCraft, "support-vehicles": Vehicle, "vehicles": Vehicle })[type];
 
 /** Imports one bundled unit of a type other than 'Mechs. */
 export const loadBundledUnitDesign = async (type: BundledUnitType, header: Pick<IBundledDesignHeader, "id">): Promise<BundledUnit> =>

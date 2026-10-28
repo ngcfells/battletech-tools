@@ -5,10 +5,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import type { IASMULUnit } from "../classes/alpha-strike-unit";
-import { importBattleArmorBlk } from "../classes/battle-armor-blk";
-import { importProtoMechBlk } from "../classes/protomech-blk";
-import { importSmallCraftBlk } from "../classes/small-craft-blk";
-import { importSupportVehicleBlk } from "../classes/support-vehicle-blk";
+import { getBlkUnitKind, importBlkUnit } from "../classes/blk-unit-import";
 import { blkValue, parseBlkFile } from "../utils/blk-file";
 import { compactUnit, IBundledDesignHeader, loadBundledUnit } from "../utils/bundled-designs";
 import { getClassicUnitEntries, getMULMatchKeys, isMULCapitalShip, isMULLargeAerospaceCraft } from "../utils/classicMULMatch";
@@ -19,24 +16,19 @@ export { DEFAULT_MEGAMEK_DIR, MEGAMEK_NOTICE } from "./bundled-mechs-build";
 
 interface IBlkKind {
     title: string;
-    /** The file's UnitType, lower case. */
-    unitTypes: string[];
-    load: (text: string) => { unit: BundledUnit | null; issues: string[] };
     /** The Master Unit List entries of the type, as the Classic MUL search files them. */
     mul: (unit: IASMULUnit) => boolean;
 }
 
+// Each bundled type is a kind the shared MegaMek reader (importBlkUnit) gives, by the same name.
 export const BLK_KINDS: Record<BundledUnitType, IBlkKind> = {
-    "battle-armor": { title: "battle armor", unitTypes: ["battlearmor"], mul: (unit) => unit.Type?.Id === 22,
-        load: (text) => { const { suit, issues } = importBattleArmorBlk(text); return { unit: suit, issues }; } },
-    "protomechs": { title: "ProtoMechs", unitTypes: ["protomek", "protomech"], mul: (unit) => unit.Type?.Id === 23,
-        load: (text) => { const { proto, issues } = importProtoMechBlk(text); return { unit: proto, issues }; } },
-    "small-craft": { title: "Small Craft and DropShips", unitTypes: ["smallcraft", "dropship"],
-        mul: (unit) => isMULLargeAerospaceCraft(unit) && !isMULCapitalShip(unit),
-        load: (text) => { const { craft, issues } = importSmallCraftBlk(text); return { unit: craft, issues }; } },
-    "support-vehicles": { title: "Support Vehicles", unitTypes: ["supporttank", "largesupporttank", "supportvtol"], mul: (unit) => [19, 24].includes(unit.Type?.Id),
-        load: (text) => { const { vehicle, issues } = importSupportVehicleBlk(text); return { unit: vehicle, issues }; } },
+    "battle-armor": { title: "battle armor", mul: (unit) => unit.Type?.Id === 22 },
+    "protomechs": { title: "ProtoMechs", mul: (unit) => unit.Type?.Id === 23 },
+    "small-craft": { title: "Small Craft and DropShips", mul: (unit) => isMULLargeAerospaceCraft(unit) && !isMULCapitalShip(unit) },
+    "vehicles": { title: "Combat Vehicles", mul: (unit) => unit.Type?.Id === 19 },
+    "support-vehicles": { title: "Support Vehicles", mul: (unit) => [19, 24].includes(unit.Type?.Id) },
 };
+const isBundledType = (kind: string | null): kind is BundledUnitType => !!kind && kind in BLK_KINDS;
 
 /** MegaMek's rules levels ("IS Level 2", "Mixed (IS Chassis) Advanced") as Skunk Werks' (0 Introductory to 4). */
 export function getBlkRulesLevel(type: string): number {
@@ -82,9 +74,10 @@ export interface IPreparedUnit {
 export function prepareUnitFile(job: IUnitJob): IPreparedUnit {
     const text = fs.readFileSync(job.file, "utf8");
     const blk = parseBlkFile(text);
-    const type = blk ? (Object.keys(BLK_KINDS) as BundledUnitType[]).find((key) => BLK_KINDS[key].unitTypes.includes(blkValue(blk, "UnitType").toLowerCase())) : undefined;
+    const kind = getBlkUnitKind(text);
     const leaves: IPreparedUnit["leaves"] = [];
-    if (!blk || !type) return { leaves };
+    if (!blk || !isBundledType(kind)) return { leaves };
+    const type = kind;
     const leave = (reason: string, detail = "") => { leaves.push({ reason, detail }); };
     const { warn, log } = console;
     const random = Math.random;
@@ -92,13 +85,13 @@ export function prepareUnitFile(job: IUnitJob): IPreparedUnit {
     console.log = () => {};
     try {
         seedRandom(job.name);
-        let imported: ReturnType<IBlkKind["load"]>;
+        let imported: ReturnType<typeof importBlkUnit>;
         try {
-            imported = BLK_KINDS[type].load(text);
+            imported = importBlkUnit(text, [type]);
         } catch (error) {
             leave("import threw", String(error)); return { type, leaves, rejected: true };
         }
-        const unit = imported.unit;
+        const unit = imported.unit as BundledUnit | null;
         if (!unit) { leave("import failed", imported.issues.join("; ")); return { type, leaves, rejected: true }; }
         if (imported.issues.length > 0) { leave("the import could not carry all of it over", imported.issues.join("; ")); return { type, leaves, rejected: true }; }
         const Unit = getBundledUnitClass(type);

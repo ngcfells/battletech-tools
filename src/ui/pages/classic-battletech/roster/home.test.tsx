@@ -200,6 +200,23 @@ describe("Classic roster Master Unit List search", () => {
         expect(group.battleArmor.map((squad) => [squad.getName(), squad.getBattleValue()])).toEqual([["Achileus Light Battle Armor [David](Sqd4)", 189]]);
     }, 30_000);
 
+    it("views and adds the bundled MegaMek design for a MUL combat vehicle, with nothing saved", async () => {
+        const appGlobals = makeAppGlobals();
+        appGlobals.appSettings.cbtMULSearch = newMULSearchFilters({ type: 19, term: "Donar Assault Helicopter (Close Support)" });
+        const onChange = vi.fn();
+        render(
+            <MemoryRouter>
+                <BattleMechAddMechDialog appGlobals={appGlobals} currentForce={appGlobals.currentCBTForce!.groups[0]} currentForceIndex={0} onChange={onChange} />
+            </MemoryRouter>
+        );
+        fireEvent.click(await screen.findByRole("button", { name: "View Donar Assault Helicopter (Close Support)" }, { timeout: 20_000 }));
+        expect(await screen.findByRole("heading", { name: /^Viewing Donar Assault Helicopter/ }, { timeout: 20_000 })).toBeTruthy();
+        fireEvent.click(screen.getByRole("button", { name: "Add Donar Assault Helicopter (Close Support)" }));
+        await waitFor(() => expect(onChange).toHaveBeenCalledTimes(1), { timeout: 20_000 });
+        const group: BattleMechGroup = onChange.mock.calls[0][0];
+        expect(group.vehicles.map((vehicle) => [vehicle.getName(), vehicle.getModel(), vehicle.getBattleValue()])).toEqual([["Donar Assault Helicopter", "(Close Support)", 582]]);
+    }, 30_000);
+
     it("offers the creator for a MUL 'Mech with no Classic design", async () => {
         const appGlobals = makeAppGlobals();
         appGlobals.appSettings.cbtMULSearch = newMULSearchFilters({ type: 18, term: "Poseidon PSD-V2" });
