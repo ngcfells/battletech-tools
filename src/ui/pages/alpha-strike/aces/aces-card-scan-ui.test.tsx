@@ -10,8 +10,8 @@ import AcesLibraryPage from "./library";
 
 const scanResult: { current: IAcesScanResult } = { current: null as unknown as IAcesScanResult };
 
-vi.mock( "../../../../classes/aces-card-scan-browser", () => ( {
-    scanAcesCardPhoto: vi.fn( async () => scanResult.current ),
+vi.mock( "../../../../classes/card-scan-browser", () => ( {
+    scanCardPhoto: vi.fn( async () => scanResult.current ),
 } ) );
 
 vi.mock( "../../../../dataSaves", async ( original ) => ( {
@@ -66,6 +66,7 @@ describe( "Aces card scan in the library", () => {
         expect( container.querySelector( ".aces-scan-result strong" )!.textContent ).toBe( "Combat side" );
         expect( screen.getByText( /OCR can mix up 1 and 7/ ) ).toBeTruthy();
         expect( ( container.querySelector( ".aces-scan-photo" ) as HTMLImageElement ).src ).toContain( "blob:photo" );
+        expect( screen.getByText( "The card reader isn't perfect." ) ).toBeTruthy();
     } );
 
     it( "won't save a scanned card until it's been checked", async () => {

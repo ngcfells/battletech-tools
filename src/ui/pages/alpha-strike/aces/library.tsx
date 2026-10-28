@@ -52,7 +52,7 @@ import { getAcesSampleLibrary } from '../../../../data/aces-card-samples';
 import { acesDecks, ACES_BOOK, ACES_SS_BOOK } from '../../../../data/aces-rules';
 import { acesBehaviorLabel } from '../../../../classes/aces-engine';
 import { getAcesCardLibrary, saveAcesCardLibrary } from '../../../../dataSaves';
-import { applyAcesScanToCard, TAcesScanSide } from '../../../../classes/aces-card-scan';
+import { applyAcesScanToCard, scanAcesCard, TAcesScanSide } from '../../../../classes/aces-card-scan';
 import { generateUUID } from '../../../../utils/generateUUID';
 import { AcesCardView, AcesCommandCardView, AcesScenarioView, AcesSpecialOrderView } from './_aces-card-view';
 import './aces.scss';
@@ -182,8 +182,8 @@ export default class AcesLibraryPage extends React.Component<IAcesLibraryPagePro
         let scan: IAcesCardScan;
         try {
             // Loaded on demand, with tesseract, so the library page stays small for everyone else.
-            const { scanAcesCardPhoto } = await import( '../../../../classes/aces-card-scan-browser' );
-            const result = await scanAcesCardPhoto( file );
+            const { scanCardPhoto } = await import( '../../../../classes/card-scan-browser' );
+            const result = await scanCardPhoto( file, scanAcesCard );
             scan = { photo: photo, side: result.side, warnings: result.warnings };
             if( result.side && this.state.draft ) {
                 this.setState({ draft: applyAcesScanToCard( this.state.draft as IAcesCard, result ), buffers: {}, json: null });
@@ -207,6 +207,9 @@ export default class AcesLibraryPage extends React.Component<IAcesLibraryPagePro
                 <p className="aces-muted">
                     Photograph one side of the card straight on, filling the frame, and the text is read into the form
                     below for you to check. Do each side separately. The photo stays on your device.
+                </p>
+                <p className="aces-muted aces-scan-note">
+                    <strong>The card reader isn't perfect.</strong> It misreads some words, numbers and icons. Check every line of the form against your card before you save it.
                 </p>
                 <label>
                     Photo of the Movement or Combat side:{" "}

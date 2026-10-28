@@ -19,6 +19,7 @@ import MULSearchFilters from '../../../components/mul-search-filters';
 import SearchResultsPager from '../../../components/search-results-pager';
 import TextSection from '../../../components/text-section';
 import CurrentForceList from './_CurrentForceList';
+import ScanUnitCard from './_ScanUnitCard';
 import { generateUUID } from '../../../../utils/generateUUID';
 import { paginate } from '../../../../utils/paginate';
 import type { JSX } from "react";
@@ -532,6 +533,8 @@ export default class AlphaStrikeAddUnitsView extends React.Component<IAlphaStrik
 )}
 
                 </TextSection>
+
+<ScanUnitCard appGlobals={this.props.appGlobals} addToGroup={this.addToGroup} />
 
 {this.props.appGlobals.battleMechSaves && this.props.appGlobals.battleMechSaves.length > 0 ? (
     <TextSection

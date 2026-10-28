@@ -9,6 +9,7 @@ import {
     TAcesMoveType,
 } from "../data/aces-cards";
 import { acesDecks } from "../data/aces-rules";
+import { ICardScanColours, ICardScanIO, ICardScanLine, ICardScanRect, ICardScanWord, cardScanMargin } from "./card-scan-io";
 
 /*
  * Reads an Aces behavior card from a photo of the players' own card, for those who find the small print hard to
@@ -17,95 +18,8 @@ import { acesDecks } from "../data/aces-rules";
  * enemies" is always the not-moved icon). An icon that can't be placed is left as a visible "[?]" for the player
  * to fix: the result is a draft for review in the card editor, never saved unchecked.
  *
- * The OCR engine and the image are reached through IAcesScanIO, so the same steps run in the browser and in tests.
+ * The OCR engine and the image are reached through ICardScanIO (card-scan-io.ts).
  */
-
-export interface IAcesScanRect {
-    left: number;
-    top: number;
-    width: number;
-    height: number;
-}
-
-export interface IAcesScanBox {
-    x0: number;
-    y0: number;
-    x1: number;
-    y1: number;
-}
-
-export interface IAcesScanWord {
-    text: string;
-    bbox: IAcesScanBox;
-}
-
-export interface IAcesScanLine {
-    text: string;
-    bbox: IAcesScanBox;
-    words: IAcesScanWord[];
-}
-
-/** Share of a region's pixels in each icon colour, 0 to 1. */
-export interface IAcesScanColours {
-    red: number;
-    yellow: number;
-    blue: number;
-    green: number;
-}
-
-/**
- * How a region is read. "plain": the photo as it is, for finding the layout. "dark": black card text, everything
- * lighter (cream, gold, tags) dropped. "panel": as dark, for a cream panel whose border or header bar may edge
- * the crop. "bright": white text on the black bands (title, footer). "digits": the big white priority number,
- * digits only.
- */
-export type TAcesScanMode = "plain" | "dark" | "panel" | "bright" | "digits";
-
-export interface IAcesScanIO {
-    width: number;
-    height: number;
-    /** OCR of a region, boxes in whole-image pixels. scale (default 1) resizes the region first. */
-    recognize: ( rect: IAcesScanRect, mode: TAcesScanMode, scale?: number ) => Promise<IAcesScanLine[]>;
-    colours: ( rect: IAcesScanRect ) => IAcesScanColours;
-}
-
-/** White margin round a region before OCR; text touching the edge is often dropped. */
-export const acesScanMargin = 32;
-
-/**
- * Black-and-white copy of RGBA pixels for OCR, with a white margin. Dark text is a pixel whose brightest channel is
- * low, so coloured tags and the red flame drop out with the background; bright text is the reverse.
- */
-export const acesScanBinarize = ( data: ArrayLike<number>, width: number, height: number, mode: TAcesScanMode ): { data: Uint8ClampedArray<ArrayBuffer>, width: number, height: number } => {
-    const outWidth = width + acesScanMargin * 2;
-    const outHeight = height + acesScanMargin * 2;
-    const rv = new Uint8ClampedArray( outWidth * outHeight * 4 ).fill( 255 );
-    const ink = new Uint8Array( width * height );
-    const columnInk = new Array<number>( width ).fill( 0 );
-    const rowInk = new Array<number>( height ).fill( 0 );
-    for( let y = 0; y < height; y++ ) {
-        for( let x = 0; x < width; x++ ) {
-            const index = ( y * width + x ) * 4;
-            const r = data[index], g = data[index + 1], b = data[index + 2];
-            if( !( mode === "dark" || mode === "panel" ? Math.max( r, g, b ) < 115 : 0.299 * r + 0.587 * g + 0.114 * b > 200 ) ) continue;
-            ink[y * width + x] = 1;
-            columnInk[x]++;
-            rowInk[y]++;
-        }
-    }
-    // A panel's border or header bar caught at the crop's edge reads as solid ink and throws off the OCR's layout.
-    const edgeColumn = ( x: number ) => mode === "panel" && ( x < width * 0.08 || x >= width * 0.92 ) && columnInk[x] > height * 0.3;
-    const edgeRow = ( y: number ) => mode === "panel" && ( y < height * 0.12 || y >= height * 0.88 ) && rowInk[y] > width * 0.5;
-    for( let y = 0; y < height; y++ ) {
-        if( edgeRow( y ) ) continue;
-        for( let x = 0; x < width; x++ ) {
-            if( !ink[y * width + x] || edgeColumn( x ) ) continue;
-            const out = ( ( y + acesScanMargin ) * outWidth + x + acesScanMargin ) * 4;
-            rv[out] = rv[out + 1] = rv[out + 2] = 0;
-        }
-    }
-    return { data: rv, width: outWidth, height: outHeight };
-}
 
 export type TAcesScanSide = "movement" | "combat";
 
@@ -121,44 +35,11 @@ export interface IAcesScanResult {
     warnings: string[];
 }
 
-/* ----- colour sampling ----- */
-
-/** Icon colours from RGBA pixels. Tags and checks are strongly saturated; the card's cream and gold are not. */
-export const acesScanColoursFromPixels = ( data: ArrayLike<number> ): IAcesScanColours => {
-    const rv: IAcesScanColours = { red: 0, yellow: 0, blue: 0, green: 0 };
-    const count = Math.floor( data.length / 4 );
-    if( count === 0 ) return rv;
-    for( let index = 0; index < count; index++ ) {
-        const r = data[index * 4] / 255;
-        const g = data[index * 4 + 1] / 255;
-        const b = data[index * 4 + 2] / 255;
-        const max = Math.max( r, g, b );
-        const min = Math.min( r, g, b );
-        const delta = max - min;
-        if( max < 0.3 || delta / max < 0.6 ) continue;
-        let hue: number;
-        if( max === r ) hue = 60 * ( ( ( g - b ) / delta ) % 6 );
-        else if( max === g ) hue = 60 * ( ( b - r ) / delta + 2 );
-        else hue = 60 * ( ( r - g ) / delta + 4 );
-        if( hue < 0 ) hue += 360;
-        if( hue < 18 || hue >= 330 ) rv.red++;
-        // The gold condition boxes reach 0.6 saturation; the YELLOW tag is 0.8 and up.
-        else if( hue < 55 ) { if( delta / max >= 0.75 ) rv.yellow++; }
-        else if( hue >= 80 && hue < 170 ) rv.green++;
-        else if( hue >= 180 && hue < 260 ) rv.blue++;
-    }
-    rv.red /= count;
-    rv.yellow /= count;
-    rv.blue /= count;
-    rv.green /= count;
-    return rv;
-}
-
 const tagThreshold = 0.03;
 const checkThreshold = 0.01;
 
 /** The Command list tag in a region, if any. */
-export const acesScanTagColour = ( colours: IAcesScanColours ): TAcesColor | null => {
+export const acesScanTagColour = ( colours: ICardScanColours ): TAcesColor | null => {
     const ranked = ( [ "red", "yellow", "blue" ] as TAcesColor[] ).sort( ( a, b ) => colours[b] - colours[a] );
     return colours[ranked[0]] >= tagThreshold ? ranked[0] : null;
 }
@@ -189,19 +70,19 @@ const editDistance = ( a: string, b: string ): number => {
     return row[b.length];
 }
 
-const allWords = ( lines: IAcesScanLine[] ): IAcesScanWord[] => lines.reduce( ( rv, line ) => rv.concat( line.words ), [] as IAcesScanWord[] );
+const allWords = ( lines: ICardScanLine[] ): ICardScanWord[] => lines.reduce( ( rv, line ) => rv.concat( line.words ), [] as ICardScanWord[] );
 
 export interface IAcesScanLayout {
     side: TAcesScanSide;
-    header: IAcesScanRect;
-    footer: IAcesScanRect;
+    header: ICardScanRect;
+    footer: ICardScanRect;
     /** Movement: Aggressive, Balanced, Cautious. Combat: the TARGET column. */
-    columns: IAcesScanRect[];
+    columns: ICardScanRect[];
     /** Combat: the OV rows. */
-    overheat: IAcesScanRect | null;
+    overheat: ICardScanRect | null;
 }
 
-const clampRect = ( rect: IAcesScanRect, width: number, height: number ): IAcesScanRect => {
+const clampRect = ( rect: ICardScanRect, width: number, height: number ): ICardScanRect => {
     const left = Math.max( 0, Math.round( rect.left ) );
     const top = Math.max( 0, Math.round( rect.top ) );
     return {
@@ -213,7 +94,7 @@ const clampRect = ( rect: IAcesScanRect, width: number, height: number ): IAcesS
 }
 
 /** Finds the card's regions from a first OCR pass over the whole photo: the column headers or TARGET, and the footer. */
-export const findAcesCardLayout = ( lines: IAcesScanLine[], width: number, height: number ): IAcesScanLayout | null => {
+export const findAcesCardLayout = ( lines: ICardScanLine[], width: number, height: number ): IAcesScanLayout | null => {
     const words = allWords( lines );
     const footerWord = words.filter( ( word ) => /BATTLETECH|ACES|Topps|Rights/i.test( word.text ) && word.bbox.y0 > height * 0.6 )
         .sort( ( a, b ) => a.bbox.y0 - b.bbox.y0 )[0];
@@ -221,7 +102,7 @@ export const findAcesCardLayout = ( lines: IAcesScanLine[], width: number, heigh
 
     const names = [ "AGGRESSIVE", "BALANCED", "CAUTIOUS" ];
     const headers = names.map( ( name ) => words.find( ( word ) => fuzzyIs( word.text, name ) ) || null );
-    const found = headers.filter( ( word ) => word !== null ) as IAcesScanWord[];
+    const found = headers.filter( ( word ) => word !== null ) as ICardScanWord[];
     if( found.length >= 2 ) {
         const centres = headers.map( ( word ) => word ? ( word.bbox.x0 + word.bbox.x1 ) / 2 : null );
         // Columns are evenly spaced; fill one missing header from the other two.
@@ -247,7 +128,7 @@ export const findAcesCardLayout = ( lines: IAcesScanLine[], width: number, heigh
         };
     }
 
-    let target: IAcesScanWord | undefined = words.filter( ( word ) => fuzzyIs( word.text, "TARGET" ) ).sort( ( a, b ) => a.bbox.y0 - b.bbox.y0 )[0];
+    let target: ICardScanWord | undefined = words.filter( ( word ) => fuzzyIs( word.text, "TARGET" ) ).sort( ( a, b ) => a.bbox.y0 - b.bbox.y0 )[0];
     // TARGET is thin type over art and sometimes unread; the red COMBAT under the title still marks the side,
     // and TARGET then sits where it does on every combat card of a photo that fills the frame.
     if( !target && words.some( ( word ) => fuzzyIs( word.text, "COMBAT" ) && word.bbox.y0 < height * 0.3 ) )
@@ -443,7 +324,7 @@ const isNumberedStart = ( text: string ): boolean => {
 }
 
 /** One behavior column from its OCR lines, top to bottom, with the icon colours of each line. */
-export const parseAcesScanColumn = ( lines: { text: string, colours: IAcesScanColours }[] ): IAcesBehaviorColumn => {
+export const parseAcesScanColumn = ( lines: { text: string, colours: ICardScanColours }[] ): IAcesBehaviorColumn => {
     const column = newAcesBehaviorColumn();
     // Blank rows (all icons, no OCR text) are kept when they show a tag or a check.
     const texts = lines.map( ( line ) => ( { text: trimEdges( line.text ), colours: line.colours } ) )
@@ -550,14 +431,14 @@ export const parseAcesScanCombat = ( targetLines: string[], overheatLines: strin
  * Lines as the card prints them: noise (low confidence, the copyright footer) dropped, and pieces of one printed
  * row that OCR split, such as an item number and its text, joined left to right.
  */
-export const tidyAcesScanLines = ( lines: IAcesScanLine[] ): IAcesScanLine[] => {
+export const tidyAcesScanLines = ( lines: ICardScanLine[] ): ICardScanLine[] => {
     // Card art read as text comes back as one tall line; printed rows are all about the same height.
     const heights = lines.map( ( line ) => line.bbox.y1 - line.bbox.y0 ).sort( ( a, b ) => a - b );
     const rowHeight = heights.length > 0 ? heights[Math.floor( heights.length / 2 )] : 0;
     const kept = lines.filter( ( line ) => line.text.trim() !== ""
         && line.bbox.y1 - line.bbox.y0 <= rowHeight * 2.5
         && !/Topps|Company|Rights Reserved|©\s*20/i.test( line.text ) );
-    const rows: IAcesScanLine[] = [];
+    const rows: ICardScanLine[] = [];
     for( const line of kept.slice().sort( ( a, b ) => a.bbox.y0 - b.bbox.y0 ) ) {
         const row = rows.find( ( entry ) => {
             const overlap = Math.min( entry.bbox.y1, line.bbox.y1 ) - Math.max( entry.bbox.y0, line.bbox.y0 );
@@ -580,10 +461,10 @@ export const tidyAcesScanLines = ( lines: IAcesScanLine[] ): IAcesScanLine[] => 
 
 /* ----- the whole scan ----- */
 
-const linesIn = ( lines: IAcesScanLine[] ): string => lines.map( ( line ) => line.text ).join( " " );
+const linesIn = ( lines: ICardScanLine[] ): string => lines.map( ( line ) => line.text ).join( " " );
 
 /** A column's line with the colours of its full column width, so tags left or right of the OCR text count. */
-const columnLineRect = ( line: IAcesScanLine, column: IAcesScanRect ): IAcesScanRect => ( {
+const columnLineRect = ( line: ICardScanLine, column: ICardScanRect ): ICardScanRect => ( {
     left: column.left,
     top: line.bbox.y0,
     width: column.width,
@@ -594,11 +475,11 @@ const columnLineRect = ( line: IAcesScanLine, column: IAcesScanRect ): IAcesScan
  * Empty rows for the gaps between OCR lines a printed row could fill. A target row such as "⌖ ✔ YELLOW" is all
  * icons and often gives OCR nothing, but its colours still tell the list and the moved check.
  */
-const withBlankRows = ( lines: IAcesScanLine[], column: IAcesScanRect ): IAcesScanLine[] => {
+const withBlankRows = ( lines: ICardScanLine[], column: ICardScanRect ): ICardScanLine[] => {
     if( lines.length === 0 ) return lines;
     const heights = lines.map( ( line ) => line.bbox.y1 - line.bbox.y0 ).sort( ( a, b ) => a - b );
     const rowHeight = heights[Math.floor( heights.length / 2 )];
-    const rv: IAcesScanLine[] = [];
+    const rv: ICardScanLine[] = [];
     let previous = column.top;
     for( const line of lines ) {
         if( line.bbox.y0 - previous > rowHeight * 1.6 ) {
@@ -611,7 +492,7 @@ const withBlankRows = ( lines: IAcesScanLine[], column: IAcesScanRect ): IAcesSc
     return rv;
 }
 
-export const scanAcesCard = async ( io: IAcesScanIO ): Promise<IAcesScanResult> => {
+export const scanAcesCard = async ( io: ICardScanIO ): Promise<IAcesScanResult> => {
     const result: IAcesScanResult = {
         side: null, deck: "", deckId: "", cardNumber: "", priority: null, columns: [], combat: null, warnings: [],
     };
@@ -631,7 +512,7 @@ export const scanAcesCard = async ( io: IAcesScanIO ): Promise<IAcesScanResult> 
     // tried and the most common three-digit reading wins.
     const votes: { [value: string]: number } = {};
     for( const height of [ 30, 34, 38, 42 ] ) {
-        const digits = linesIn( await io.recognize( numberRect, "digits", Math.min( 1, height / ( numberRect.height + acesScanMargin * 2 ) ) ) ).replace( /\D/g, "" );
+        const digits = linesIn( await io.recognize( numberRect, "digits", Math.min( 1, height / ( numberRect.height + cardScanMargin * 2 ) ) ) ).replace( /\D/g, "" );
         if( digits.length === 3 ) votes[digits] = ( votes[digits] || 0 ) + 1;
     }
     const best = Object.keys( votes ).sort( ( a, b ) => votes[b] - votes[a] )[0];

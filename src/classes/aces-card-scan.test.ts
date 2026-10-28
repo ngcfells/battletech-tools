@@ -1,18 +1,18 @@
 import { describe, expect, it } from "vitest";
 import { acesSampleBrawler383 } from "../data/aces-card-samples";
 import {
-    acesScanBinarize, acesScanColoursFromPixels, acesScanMargin, acesScanTagColour, applyAcesScanToCard, findAcesCardLayout,
-    IAcesScanColours, IAcesScanIO, IAcesScanLine, IAcesScanRect, parseAcesScanColumn, parseAcesScanCombat, parseAcesScanFooter,
+    acesScanTagColour, applyAcesScanToCard, findAcesCardLayout, parseAcesScanColumn, parseAcesScanCombat, parseAcesScanFooter,
     parseAcesScanHeader, restoreAcesScanIcons, scanAcesCard, tidyAcesScanLines,
 } from "./aces-card-scan";
+import { cardScanBinarize, cardScanColoursFromPixels, cardScanMargin, ICardScanColours, ICardScanIO, ICardScanLine, ICardScanRect } from "./card-scan-io";
 
 // Line fixtures are real tesseract output from photos of the printed cards.
 
-const none: IAcesScanColours = { red: 0, yellow: 0, blue: 0, green: 0 };
+const none: ICardScanColours = { red: 0, yellow: 0, blue: 0, green: 0 };
 const plain = ( text: string ) => ( { text: text, colours: none } );
 
 /** An OCR line at whole-image coordinates, one word per space. */
-const line = ( text: string, x0: number, y0: number, x1: number, y1: number ): IAcesScanLine => {
+const line = ( text: string, x0: number, y0: number, x1: number, y1: number ): ICardScanLine => {
     const parts = text.split( " " );
     const step = ( x1 - x0 ) / parts.length;
     return {
@@ -173,24 +173,24 @@ describe( "Aces card scan: pixels", () => {
                 data.push( ...( ink ? [ 0, 0, 0, 255 ] : [ 240, 230, 200, 255 ] ) );
             }
         }
-        const at = ( image: { data: Uint8ClampedArray, width: number }, x: number, y: number ) => image.data[( ( y + acesScanMargin ) * image.width + x + acesScanMargin ) * 4];
-        const dark = acesScanBinarize( data, width, height, "dark" );
-        expect( dark.width ).toBe( width + acesScanMargin * 2 );
+        const at = ( image: { data: Uint8ClampedArray, width: number }, x: number, y: number ) => image.data[( ( y + cardScanMargin ) * image.width + x + cardScanMargin ) * 4];
+        const dark = cardScanBinarize( data, width, height, "dark" );
+        expect( dark.width ).toBe( width + cardScanMargin * 2 );
         expect( at( dark, 0, 5 ) ).toBe( 0 );
         expect( at( dark, 25, 10 ) ).toBe( 0 );
         expect( at( dark, 10, 10 ) ).toBe( 255 );
-        const panel = acesScanBinarize( data, width, height, "panel" );
+        const panel = cardScanBinarize( data, width, height, "panel" );
         expect( at( panel, 0, 5 ) ).toBe( 255 );
         expect( at( panel, 25, 10 ) ).toBe( 0 );
     } );
 
     it( "tells tag colours from the card's gold", () => {
-        expect( acesScanTagColour( acesScanColoursFromPixels( pixels( 100, [ 220, 30, 30 ] ) ) ) ).toBe( "red" );
-        expect( acesScanTagColour( acesScanColoursFromPixels( pixels( 100, [ 20, 140, 190 ] ) ) ) ).toBe( "blue" );
-        expect( acesScanTagColour( acesScanColoursFromPixels( pixels( 100, [ 250, 210, 10 ] ) ) ) ).toBe( "yellow" );
+        expect( acesScanTagColour( cardScanColoursFromPixels( pixels( 100, [ 220, 30, 30 ] ) ) ) ).toBe( "red" );
+        expect( acesScanTagColour( cardScanColoursFromPixels( pixels( 100, [ 20, 140, 190 ] ) ) ) ).toBe( "blue" );
+        expect( acesScanTagColour( cardScanColoursFromPixels( pixels( 100, [ 250, 210, 10 ] ) ) ) ).toBe( "yellow" );
         // The gold condition boxes are less saturated than a YELLOW tag.
-        expect( acesScanTagColour( acesScanColoursFromPixels( pixels( 100, [ 240, 190, 100 ] ) ) ) ).toBeNull();
-        expect( acesScanColoursFromPixels( pixels( 100, [ 40, 180, 60 ] ) ).green ).toBe( 1 );
+        expect( acesScanTagColour( cardScanColoursFromPixels( pixels( 100, [ 240, 190, 100 ] ) ) ) ).toBeNull();
+        expect( cardScanColoursFromPixels( pixels( 100, [ 40, 180, 60 ] ) ).green ).toBe( 1 );
     } );
 
     it( "drops tall art lines and the copyright, and joins pieces of a row", () => {
@@ -207,10 +207,10 @@ describe( "Aces card scan: pixels", () => {
 
 describe( "Aces card scan: whole card", () => {
     const width = 2084, height = 1500;
-    const within = ( rect: IAcesScanRect, y: number ) => y >= rect.top && y < rect.top + rect.height;
+    const within = ( rect: ICardScanRect, y: number ) => y >= rect.top && y < rect.top + rect.height;
 
     // Brawler 3/6 combat, as the OCR reads its regions.
-    const io: IAcesScanIO = {
+    const io: ICardScanIO = {
         width, height,
         recognize: async ( rect, mode ) => {
             if( mode === "plain" ) return [
@@ -233,6 +233,7 @@ describe( "Aces card scan: whole card", () => {
         },
         // The YELLOW tag sits on the command list row.
         colours: ( rect ) => rect.top > 600 && rect.top < 700 ? { ...none, yellow: 0.2 } : none,
+        pixels: () => [],
     };
 
     it( "scans Brawler 3/6 combat and fills a card for review", async () => {
@@ -256,7 +257,7 @@ describe( "Aces card scan: whole card", () => {
     } );
 
     it( "warns of a TN no roll could need", async () => {
-        const misread: IAcesScanIO = {
+        const misread: ICardScanIO = {
             ...io,
             recognize: async ( rect, mode, scale ) => {
                 const lines = await io.recognize( rect, mode, scale );
