@@ -79,6 +79,20 @@ describe("Aces card library", () => {
         expect( normalizeAcesCardLibrary( undefined ) ).toEqual( newAcesCardLibrary() );
     });
 
+    it("loads the line-of-sight target filters, off for cards saved before them (#591)", () => {
+        const library = getAcesSampleLibrary();
+        const saved = JSON.parse( JSON.stringify( library ) );
+        delete saved.cards[0].aggressive.targetInLOS;
+        delete saved.cards[0].aggressive.targetNoLOS;
+        saved.cards[0].balanced.targetInLOS = true;
+        saved.cards[0].cautious.targetNoLOS = true;
+        const loaded = normalizeAcesCardLibrary( saved );
+        expect( loaded.cards[0].aggressive.targetInLOS ).toBe( false );
+        expect( loaded.cards[0].aggressive.targetNoLOS ).toBe( false );
+        expect( loaded.cards[0].balanced.targetInLOS ).toBe( true );
+        expect( loaded.cards[0].cautious.targetNoLOS ).toBe( true );
+    });
+
     it("merges imports by id, replacing matches", () => {
         const base = getAcesSampleLibrary();
         const incoming = newAcesCardLibrary();

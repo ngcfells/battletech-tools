@@ -150,6 +150,10 @@ export interface IAcesBehaviorColumn {
     targetInAttackRange: boolean;
     /** ✔ filter: only enemies that have moved (Aces p.12). */
     targetMoved: boolean;
+    /** 👁 filter: only enemies the unit can see, "In line of sight" (Aces p.9). */
+    targetInLOS: boolean;
+    /** ⊘ filter: only enemies the unit cannot see, "No line of sight" (Aces p.9). */
+    targetNoLOS: boolean;
     /** Chip after the filters: a Command card color, "nearest", or nothing. */
     targetSelect: TAcesColor | "nearest" | "";
     moveType: TAcesMoveType;
@@ -359,6 +363,8 @@ export const newAcesBehaviorColumn = (): IAcesBehaviorColumn => {
         zoneKeyword: "",
         targetInAttackRange: false,
         targetMoved: false,
+        targetInLOS: false,
+        targetNoLOS: false,
         targetSelect: "",
         moveType: "ground",
         altMoveType: null,
@@ -521,6 +527,8 @@ export const normalizeAcesBehaviorColumn = ( value: unknown ): IAcesBehaviorColu
         zoneKeyword: oneOf( data.zoneKeyword, [ "", "nearest", "any" ] as const, "" ),
         targetInAttackRange: bool( data.targetInAttackRange ),
         targetMoved: bool( data.targetMoved ),
+        targetInLOS: bool( data.targetInLOS ),
+        targetNoLOS: bool( data.targetNoLOS ),
         targetSelect: oneOf( data.targetSelect, [ "", "nearest", "red", "yellow", "blue" ] as const, "" ),
         moveType: oneOf( data.moveType, acesMoveTypes, "ground" ),
         altMoveType: altMoveType,

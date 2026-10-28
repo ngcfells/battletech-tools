@@ -418,6 +418,8 @@ export default class AcesLibraryPage extends React.Component<IAcesLibraryPagePro
                     {this._zone( "Zone", [ ...path, "zoneRings" ], [ ...path, "zoneKeyword" ] )}
                     {this._check( "⌖ only targets in attack range", [ ...path, "targetInAttackRange" ] )}
                     {this._check( "✔ only targets that moved", [ ...path, "targetMoved" ] )}
+                    {this._check( "👁 only targets in line of sight", [ ...path, "targetInLOS" ] )}
+                    {this._check( "⊘ only targets out of line of sight", [ ...path, "targetNoLOS" ] )}
                     {this._select( "Then pick", [ ...path, "targetSelect" ], [
                         { id: "", label: "-" }, { id: "nearest", label: "Nearest" },
                         { id: "red", label: "Red list" }, { id: "yellow", label: "Yellow list" }, { id: "blue", label: "Blue list" },

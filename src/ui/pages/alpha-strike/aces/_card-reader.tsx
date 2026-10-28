@@ -50,11 +50,12 @@ interface ICandidateInput {
     distance: string;
     canAttack: boolean;
     moved: boolean;
+    inLOS: boolean;
     targetNumber: string;
     doomed: boolean;
 }
 
-const blankInput = (): ICandidateInput => ( { distance: "", canAttack: true, moved: false, targetNumber: "", doomed: false } );
+const blankInput = (): ICandidateInput => ( { distance: "", canAttack: true, moved: false, inLOS: true, targetNumber: "", doomed: false } );
 
 const toNumber = ( value: string ): number | null => value.trim() === "" || isNaN( +value ) ? null : +value;
 
@@ -103,6 +104,7 @@ export default class AcesCardReader extends React.Component<IAcesCardReaderProps
                 distance: toNumber( input.distance ),
                 canAttack: input.canAttack,
                 moved: input.moved,
+                inLOS: input.inLOS,
                 targetNumber: toNumber( input.targetNumber ),
                 doomed: input.doomed,
             };
@@ -115,10 +117,19 @@ export default class AcesCardReader extends React.Component<IAcesCardReaderProps
 
     /* ----- shared pieces ----- */
 
+    /** Line of sight is asked only when a column of this card (or its Special Order) filters targets by it. */
+    private _usesLOS = (): boolean => {
+        const card = this.props.card;
+        const columns = card ? [ card.aggressive, card.balanced, card.cautious ] : [];
+        if( this.props.behaviorOrder && this.props.behaviorOrder.column ) columns.push( this.props.behaviorOrder.column );
+        return columns.some( ( column ) => column.targetInLOS || column.targetNoLOS );
+    }
+
     private _renderCandidates = ( combat: boolean ): JSX.Element => {
         if( this.props.enemies.length === 0 ) {
             return <p className="aces-muted">No enemy units listed. Load your own force in the Alpha Strike roster to have them here.</p>;
         }
+        const askLOS = !combat && this._usesLOS();
         return (
             <table className="table tighter-padding aces-reader-candidates">
                 <thead>
@@ -127,6 +138,7 @@ export default class AcesCardReader extends React.Component<IAcesCardReaderProps
                         <th>Distance (")</th>
                         <th>{combat ? "In LOS and range" : "Attackable after moving"}</th>
                         {combat ? <th>TN</th> : <th>Moved</th>}
+                        {askLOS ? <th>In line of sight</th> : null}
                         {combat ? <th>Already doomed</th> : null}
                     </tr>
                 </thead>
@@ -143,6 +155,9 @@ export default class AcesCardReader extends React.Component<IAcesCardReaderProps
                                 ) : (
                                     <td><input type="checkbox" aria-label={enemy.name + " moved"} checked={input.moved} onChange={( e ) => this._setInput( enemy.id, { moved: e.currentTarget.checked } )} /></td>
                                 )}
+                                {askLOS ? (
+                                    <td><input type="checkbox" aria-label={"Line of sight to " + enemy.name} checked={input.inLOS} onChange={( e ) => this._setInput( enemy.id, { inLOS: e.currentTarget.checked } )} /></td>
+                                ) : null}
                                 {combat ? (
                                     <td><input type="checkbox" aria-label={enemy.name + " doomed"} checked={input.doomed} onChange={( e ) => this._setInput( enemy.id, { doomed: e.currentTarget.checked } )} /></td>
                                 ) : null}

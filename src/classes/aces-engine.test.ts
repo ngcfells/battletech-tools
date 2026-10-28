@@ -31,6 +31,7 @@ import {
     shouldAcesMakePhysicalAttack,
     shuffleAces,
 } from "./aces-engine";
+import { newAcesBehaviorColumn } from "../data/aces-cards";
 import { getAcesEffectivePriority, IAcesActivationInput } from "./aces-helpers";
 import { AlphaStrikeUnit } from "./alpha-strike-unit";
 
@@ -157,6 +158,24 @@ describe("Aces movement (Aces pp.11-17)", () => {
         expect( result.skipColumn ).toBe( true );
         const fallThrough = determineAcesBehavior( acesSampleSniper475, { balanced: false }, { skip: [ "aggressive" ] } );
         expect( fallThrough.behavior ).toBe( "cautious" );
+    });
+
+    it("keeps only enemies in line of sight for a [los] target, out of it for [nolos] (Aces p.9, #591)", () => {
+        const enemies = [
+            enemy( "seen", {}, { distance: 10, inLOS: true } ),
+            enemy( "hidden", {}, { distance: 20, inLOS: false } ),
+        ];
+        const scout = { ...newAcesBehaviorColumn(), zoneKeyword: "any" as const, targetInLOS: true };
+        expect( identifyAcesMovementTarget( scout, enemies, null ).target?.id ).toBe( "seen" );
+        const missileBoat = { ...newAcesBehaviorColumn(), zoneKeyword: "any" as const, targetNoLOS: true };
+        expect( identifyAcesMovementTarget( missileBoat, enemies, null ).target?.id ).toBe( "hidden" );
+    });
+
+    it("skips a column when a line-of-sight filter leaves nobody (#591)", () => {
+        const column = { ...newAcesBehaviorColumn(), zoneKeyword: "any" as const, targetNoLOS: true };
+        const result = identifyAcesMovementTarget( column, [ enemy( "a", {}, { inLOS: true } ) ], null );
+        expect( result.skipColumn ).toBe( true );
+        expect( result.trace.join( " " ) ).toContain( "line of sight" );
     });
 
     it("holds position with no enemies (Aces p.16)", () => {

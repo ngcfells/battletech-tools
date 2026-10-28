@@ -39,6 +39,8 @@ export const AcesColumnView = ( props: { title: string, column: IAcesBehaviorCol
     const chips: string[] = [];
     if( column.targetInAttackRange ) chips.push( "⌖ in attack range" );
     if( column.targetMoved ) chips.push( "✔ moved" );
+    if( column.targetInLOS ) chips.push( "👁 in line of sight" );
+    if( column.targetNoLOS ) chips.push( "⊘ out of line of sight" );
     if( column.targetSelect ) chips.push( column.targetSelect === "nearest" ? "nearest" : column.targetSelect.toUpperCase() + " list" );
     return (
         <div className="aces-card-column">

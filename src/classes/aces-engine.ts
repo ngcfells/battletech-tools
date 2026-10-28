@@ -156,6 +156,8 @@ export interface IAcesCandidate {
     moved?: boolean;
     /** The automated unit can attack it: after moving (Movement Phase) or now (Combat Phase). */
     canAttack?: boolean;
+    /** The automated unit can see it now (Aces p.9); unknown counts as neither seen nor unseen. */
+    inLOS?: boolean;
     /** Target Number against it (Combat Phase). */
     targetNumber?: number | null;
     /** Has already taken enough damage to be destroyed this turn (Aces p.18). */
@@ -348,8 +350,9 @@ const finishTarget = ( remaining: IAcesCandidate[], trace: string[], pending: IA
 
 /**
  * Identify the target for movement (Aces p.12). Filters first: ⌖ keeps enemies the unit can attack after moving,
- * ✔ keeps enemies that have moved; if either leaves nobody the column is skipped. Then the closest Zone, then the
- * color list or "nearest".
+ * ✔ keeps enemies that have moved; if either leaves nobody the column is skipped. The line-of-sight icons (Aces p.9)
+ * sit with them on some cards (Missile Boat, Scout): 👁 keeps enemies the unit can see, ⊘ those it cannot, and
+ * skip the column the same way. Then the closest Zone, then the color list or "nearest".
  */
 export const identifyAcesMovementTarget = (
     column: IAcesBehaviorColumn,
@@ -374,6 +377,20 @@ export const identifyAcesMovementTarget = (
         candidates = candidates.filter( ( candidate ) => candidate.moved || candidate.isObjective );
         if( candidates.length === 0 ) {
             trace.push( "No enemy has moved yet: skip this column." );
+            return { target: null, tied: [], skipColumn: true, noTargets: false, trace: trace, pending: null };
+        }
+    }
+    if( column.targetInLOS ) {
+        candidates = candidates.filter( ( candidate ) => candidate.inLOS === true );
+        if( candidates.length === 0 ) {
+            trace.push( "No enemy is in line of sight: skip this column." );
+            return { target: null, tied: [], skipColumn: true, noTargets: false, trace: trace, pending: null };
+        }
+    }
+    if( column.targetNoLOS ) {
+        candidates = candidates.filter( ( candidate ) => candidate.inLOS === false );
+        if( candidates.length === 0 ) {
+            trace.push( "Every enemy is in line of sight: skip this column." );
             return { target: null, tied: [], skipColumn: true, noTargets: false, trace: trace, pending: null };
         }
     }
