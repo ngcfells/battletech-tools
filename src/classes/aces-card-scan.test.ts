@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
+import { acesConditionPhrases, acesMovementFilterPhrases } from "../data/aces-card-phrases";
 import { acesSampleBrawler383 } from "../data/aces-card-samples";
 import {
-    acesScanOnesAndSevens, acesScanTagColour, applyAcesScanToCard, findAcesCardLayout, parseAcesScanColumn, parseAcesScanCombat, parseAcesScanFooter,
+    acesScanOnesAndSevens, acesScanTagColour, applyAcesScanToCard, findAcesCardLayout, matchAcesPhrase, parseAcesScanColumn, parseAcesScanCombat, parseAcesScanFooter,
     parseAcesScanHeader, restoreAcesScanIcons, scanAcesCard, tidyAcesScanLines,
 } from "./aces-card-scan";
 import { cardScanBinarize, cardScanColoursFromPixels, cardScanMargin, ICardScanColours, ICardScanIO, ICardScanLine, ICardScanRect } from "./card-scan-io";
@@ -56,6 +57,20 @@ describe( "Aces card scan: icons from wording", () => {
 
     it( "reads \"10 ✖ enemies\" as no", () => {
         expect( restoreAcesScanIcons( "10 EJ enemies in 12\"" ) ).toMatch( /^no \[\S+\] enemies in 12"$/ );
+    } );
+} );
+
+describe( "Aces card scan: card phrases", () => {
+    it( "sets a garbled line to the nearest printed phrase, keeping its numbers and colour", () => {
+        expect( matchAcesPhrase( "If there are any [?] enemies in 24\"", acesConditionPhrases ) ).toBe( "If there are any [moved] enemies in 24\"" );
+        expect( matchAcesPhrase( "the ideal [?] is [moved] and unit can move behlnd it", acesConditionPhrases, "red" ) )
+            .toBe( "If the ideal [red] is [moved] and unit can move behind it" );
+        expect( matchAcesPhrase( "6\" [spacing] targat", acesMovementFilterPhrases ) ).toBe( "6\" [spacing] target" );
+    } );
+    it( "keeps the line as read when no phrase is near, two tie, or a number is missing", () => {
+        expect( matchAcesPhrase( "something else entirely", acesMovementFilterPhrases ) ).toBe( "something else entirely" );
+        expect( matchAcesPhrase( "[?] target", acesMovementFilterPhrases ) ).toBe( "[?] target" );
+        expect( matchAcesPhrase( "If there are any [moved] enemies in", acesConditionPhrases ) ).toBe( "If there are any [moved] enemies in" );
     } );
 } );
 

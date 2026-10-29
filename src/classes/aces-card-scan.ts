@@ -9,6 +9,7 @@ import {
     TAcesColor,
     TAcesMoveType,
 } from "../data/aces-cards";
+import { acesConditionPhrases, acesMovementFilterPhrases } from "../data/aces-card-phrases";
 import { acesDecks } from "../data/aces-rules";
 import { ICardScanBox, ICardScanColours, ICardScanIO, ICardScanLine, ICardScanRect, ICardScanWord, TCardScanMode, cardScanInkBoxes, cardScanMargin } from "./card-scan-io";
 
@@ -496,7 +497,10 @@ export const parseAcesScanColumn = ( lines: { text: string, colours: ICardScanCo
         .map( ( line ) => restoreAcesScanIcons( line ) )
         // A filter is never a bare "target": its icon went unread.
         .map( ( line ) => /^\W*target\W*$/i.test( line ) ? "[?] target" : line )
-        .filter( ( line ) => /target|enem|all(y|ies)|cover|woods|sprint|behind|armor|damage|heat|terrain|building|water|elevation|hill/i.test( line ) );
+        .filter( ( line ) => /target|enem|all(y|ies)|cover|woods|sprint|behind|armor|damage|heat|terrain|building|water|elevation|hill/i.test( line ) )
+        // Each line set to the nearest printed filter, its numbers kept from the photo.
+        .map( ( line ) => matchAcesPhrase( line, acesMovementFilterPhrases ) );
+    if( column.condition ) column.condition = matchAcesPhrase( column.condition, acesConditionPhrases, conditionColour );
     return column;
 }
 
@@ -616,6 +620,77 @@ export const acesScanOnesAndSevens = ( digits: string, boxes: ICardScanBox[] ): 
         const box = glyphs[index];
         return ( box.x1 - box.x0 ) / ( box.y1 - box.y0 ) > 0.45 ? "7" : "1";
     } ).join( "" );
+}
+
+/* ----- the cards' own phrases ----- */
+
+const phraseColours = [ "blue", "red", "yellow" ];
+
+/** Words, numbers and [icon] tokens, without case or punctuation. */
+const phraseTokens = ( text: string ): string[] => ( text.toLowerCase().match( /\[[^\]]*\]|\{[nc]\}|\d+|[a-z']+/g ) || [] );
+
+/**
+ * The card phrase a read line is nearest to, with its {n} and {c} slots filled from the words they line up with;
+ * the line as read when no phrase is near enough, when two are equally near, or when a number slot lines up with no
+ * number (the number is the one part a phrase can't supply).
+ */
+export const matchAcesPhrase = ( text: string, phrases: string[], colour: string | null = null ): string => {
+    const read = phraseTokens( text );
+    if( read.length === 0 ) return text;
+    const costOf = ( slot: string, word: string ): number => {
+        if( slot === "{n}" ) return /^\d+$/.test( word ) ? 0 : 1;
+        if( slot === "[{c}]" ) return phraseColours.includes( word.replace( /[[\]]/g, "" ) ) || word === "[?]" ? 0 : 1;
+        // An icon OCR couldn't place is half a match for any icon.
+        if( /^\[/.test( slot ) && word === "[?]" ) return 0.5;
+        if( slot === word ) return 0;
+        if( /^[[{]/.test( slot ) || /^\[/.test( word ) ) return 1;
+        // A misread word costs by its wrong letters, so "behlnd" is nearly "behind".
+        const row = Array.from( { length: word.length + 1 }, ( _, j ) => j );
+        for( let i = 1; i <= slot.length; i++ ) {
+            let diagonal = row[0];
+            row[0] = i;
+            for( let j = 1; j <= word.length; j++ ) {
+                const above = row[j];
+                row[j] = Math.min( above + 1, row[j - 1] + 1, diagonal + ( slot[i - 1] === word[j - 1] ? 0 : 1 ) );
+                diagonal = above;
+            }
+        }
+        return Math.min( 1, row[word.length] / Math.max( slot.length, word.length ) * 2 );
+    };
+    const scored = phrases.map( ( phrase ) => {
+        const want = phraseTokens( phrase.replace( /\[\{c\}\]/g, "[{c}]" ) );
+        // Word-level edit distance, kept whole for the alignment.
+        const d: number[][] = Array.from( { length: want.length + 1 }, ( _, i ) => Array.from( { length: read.length + 1 }, ( __, j ) => i + j ) );
+        for( let i = 1; i <= want.length; i++ ) for( let j = 1; j <= read.length; j++ ) {
+            d[i][j] = Math.min( d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + costOf( want[i - 1], read[j - 1] ) );
+        }
+        const fills: string[] = [];
+        for( let i = want.length, j = read.length; i > 0; ) {
+            if( j > 0 && d[i][j] === d[i - 1][j - 1] + costOf( want[i - 1], read[j - 1] ) ) {
+                if( /^(\{n\}|\[\{c\}\])$/.test( want[i - 1] ) ) fills.unshift( costOf( want[i - 1], read[j - 1] ) === 0 ? read[j - 1] : "" );
+                i--; j--;
+            } else if( j > 0 && d[i][j] === d[i][j - 1] + 1 ) j--;
+            else {
+                if( /^(\{n\}|\[\{c\}\])$/.test( want[i - 1] ) ) fills.unshift( "" );
+                i--;
+            }
+        }
+        return { phrase, fills, score: 1 - d[want.length][read.length] / Math.max( want.length, read.length ) };
+    } ).sort( ( a, b ) => b.score - a.score );
+    const best = scored[0];
+    if( !best || best.score < 0.7 || ( scored[1] && scored[1].score === best.score ) ) return text;
+    let at = 0;
+    let missing = false;
+    const filled = best.phrase.replace( /\{n\}|\[\{c\}\]/g, ( slot ) => {
+        const fill = best.fills[at++] || "";
+        if( slot === "{n}" ) {
+            if( !fill ) missing = true;
+            return fill;
+        }
+        const named = fill.replace( /[[\]]/g, "" );
+        return "[" + ( phraseColours.includes( named ) ? named : colour || "?" ) + "]";
+    } );
+    return missing ? text : filled;
 }
 
 /* ----- the whole scan ----- */

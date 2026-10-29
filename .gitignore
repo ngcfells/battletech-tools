@@ -96,3 +96,7 @@ robots.txt
 !.github/
 !.github/workflows/
 !.github/workflows/*.yml
+
+# Local developer harnesses (Aces card photo reader runs, etc.); never committed
+src/zz-local/
+tools-local/
