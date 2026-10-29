@@ -167,6 +167,18 @@ export default class Home extends React.Component<IHomeProps, IHomeState> {
                   <ul className="news">
                   <li>
                   <h3>
+                      <strong>October 29th, 2026</strong> - A sharper Aces card reader, and 127 more bundled 'Mechs
+                    </h3>
+                    <h4>Author - NGCFells</h4>
+                      <ul>
+                        <li>Aces card reader: the conditions and movement filters repeat the same few phrases, changing only a number or colour, so each line read from the photo is matched to the nearest printed phrase and only the number or colour is taken from the photo. A line too far from every phrase stays as read for you to correct. Thanks to Rekikire for the idea.</li>
+                        <li>Aces card reader: a photo taken at a slant (up to 10 degrees) is straightened before it's read.</li>
+                        <li>Aces card reader: the moved check is read across a range of greens, so lighting and camera colour matter less. 1s and 7s in priority numbers are told apart by their shape, card numbers are found in dim footers, and the colour of the Armor lost icon is read. A last line cut off by the photo's edge is filled in with the cards' usual ending and flagged for you to check. Thanks to Rekikire for the test photos.</li>
+                        <li>Bundled 'Mechs: 127 'Mechs from MegaMek's files that the Master Unit List doesn't have now come with a record sheet and an entry in the custom unit list, at this app's own Battle Value, worked out by the rules and errata.</li>
+                      </ul>
+                  </li>
+                  <li>
+                  <h3>
                       <strong>October 28th, 2026</strong> - Read a card from a photo, Not Official marks, and your force in the Aces game
                     </h3>
                     <h4>Author - NGCFells</h4>
