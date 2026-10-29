@@ -96,6 +96,121 @@ describe( "Aces card scan: movement column", () => {
     } );
 } );
 
+// Rekikire's photos of Missile Boat and Scout (Hover) cards (IMG_0038 to IMG_0067), as tesseract read them.
+describe( "Aces card scan: Rekikire's photos", () => {
+    it( "reads \"has ⊘ any enemy\" with one icon, before \"any\"", () => {
+        expect( restoreAcesScanIcons( "If there are any ©] enemies in 24\", and no E3 enemies in 12\", and this unit has €2 any enemy" ) )
+            .toBe( "If there are any [moved] enemies in 24\", and no [notmoved] enemies in 12\", and this unit has [nolos] any enemy" );
+    } );
+
+    it( "drops stray marks where the cards print no icon", () => {
+        expect( restoreAcesScanIcons( "If there are any £2 enemies in 24\" and ~~ no E3 enemies in ¢ 12\"" ) ).toBe( "If there are any [moved] enemies in 24\" and no [notmoved] enemies in 12\"" );
+        expect( restoreAcesScanIcons( "~ fthere are any [yellow] enemies" ) ).toBe( "If there are any [yellow] enemies" );
+    } );
+
+    it( "mends run-together words", () => {
+        expect( restoreAcesScanIcons( "Ifthe ideal is £2 and unit can move behind it", { colour: "red", moved: true } ) ).toBe( "If the ideal [red] is [moved] and unit can move behind it" );
+        expect( restoreAcesScanIcons( "COvVervs enemies" ) ).toBe( "cover vs [highest] enemies" );
+        expect( restoreAcesScanIcons( "Ifthe ideal ba and unit can move behind it", { colour: "yellow", moved: true } ) ).toBe( "If the ideal [yellow] is [moved] and unit can move behind it" );
+    } );
+
+    it( "tells the eye from the closer arrows by their shape", () => {
+        expect( restoreAcesScanIcons( "© target" ) ).toBe( "[los] target" );
+        expect( restoreAcesScanIcons( "O® target" ) ).toBe( "[los] target" );
+        expect( restoreAcesScanIcons( "»{ target" ) ).toBe( "[closer] target" );
+        expect( restoreAcesScanIcons( "p< target" ) ).toBe( "[closer] target" );
+    } );
+
+    it( "reads the ▲ and ▼ read as letters", () => {
+        expect( restoreAcesScanIcons( "Aother enemies" ) ).toBe( "[highest] other enemies" );
+        expect( restoreAcesScanIcons( "in Yenemy €" ) ).toBe( "in [lowest] enemy [range]" );
+        expect( restoreAcesScanIcons( "A Armor lost" ) ).toBe( "[highest] Armor lost" );
+    } );
+
+    it( "starts a new filter at each printed item, number read or not", () => {
+        // 042 Cautious: "4." unread; 062 Cautious: "4. in" read as "ain".
+        const cautious = parseAcesScanColumn( [ "nearest", "[e)( if needed)", "1. ¥2 all enemies", "2.no €3 enemies in 16\"", "3. occupy woods", "»< target" ].map( plain ) );
+        expect( cautious.filters ).toEqual( [ "[nolos] all enemies", "no [notmoved] enemies in 16\"", "occupy woods", "[closer] target" ] );
+        const scout = parseAcesScanColumn( [ "nearest", "[©", "1. © target", "2.18\" £{) target", "3.target has no cover", "ain enemy €" ].map( plain ) );
+        expect( scout.filters ).toEqual( [ "[los] target", "18\" [spacing] target", "target has no cover", "in [lowest] enemy [range]" ] );
+        // 060 Aggressive: the ▲ before "other enemies" read as "4".
+        const aggressive = parseAcesScanColumn( [ "1. behind target", "2.in enemy €", "3. intervening woods vs", "4 other enemies" ].map( plain ) );
+        expect( aggressive.filters ).toEqual( [ "behind target", "in [lowest] enemy [range]", "intervening woods vs [highest] other enemies" ] );
+    } );
+
+    it( "joins a wrapped sprint filter", () => {
+        const column = parseAcesScanColumn( [ "nearest", "[6)([s)if there are no", "enemies in 36\")", "1.1f sprinting, ¢2", "all enemies", "2.20\" £) target" ].map( plain ) );
+        expect( column.filters ).toEqual( [ "If sprinting, [nolos] all enemies", "20\" [spacing] target" ] );
+    } );
+
+    it( "reads 058 Aggressive: its zone, and no stray OR in the condition", () => {
+        const column = parseAcesScanColumn( [
+            plain( "Ifthe ideal" ), { text: "is £2 and unit can", colours: { red: 0, yellow: 0.05, blue: 0, green: 0.05 } }, plain( ". move behind it" ),
+            plain( "; © 20\") 24\")" ), { text: "OR", colours: { red: 0, yellow: 0.1, blue: 0, green: 0.05 } }, plain( "[© Ifneeded)" ),
+            plain( "1. behind target" ),
+        ] );
+        expect( column.condition ).toBe( "If the ideal [yellow] is [moved] and unit can move behind it" );
+        expect( column.zoneRings ).toEqual( [ 20, 24 ] );
+        expect( column.targetSelect ).toBe( "yellow" );
+        expect( column.targetMoved ).toBe( true );
+        expect( column.altMoveType ).toBe( "jump" );
+    } );
+
+    it( "restores an unread top line, a lost \"is ✔\", and art read as filters", () => {
+        const moved = { red: 0, yellow: 0, blue: 0.05, green: 0.05 };
+        const top = parseAcesScanColumn( [ { text: "is 9 and unit can", colours: moved }, plain( "~ move behind it" ), plain( "20\") 30\")" ), plain( "1. behind target" ),
+            plain( "3.intervening woods vs" ), plain( "« nther enemies" ), plain( "WY TIE. LF ¥ THE OW.) ed" ) ] );
+        expect( top.condition ).toBe( "If the ideal [blue] is [moved] and unit can move behind it" );
+        expect( top.filters ).toEqual( [ "behind target", "intervening woods vs [highest] other enemies" ] );
+        expect( restoreAcesScanIcons( "If the ideal and unit can move behind it", { colour: "yellow", moved: true } ) ).toBe( "If the ideal [yellow] is [moved] and unit can move behind it" );
+    } );
+
+    it( "keeps a zone row whose ◎ reads as the copyright's ©", () => {
+        const rows = tidyAcesScanLines( [
+            line( "move behind it", 150, 634, 500, 686 ), line( ": © 20\") 24\")", 150, 700, 500, 750 ), line( "1. behind target", 150, 982, 500, 1033 ),
+            line( "2.in enemy €", 150, 1058, 500, 1117 ), line( "3. intervening woods vs", 150, 1152, 500, 1203 ),
+        ] );
+        expect( rows.map( ( row ) => row.text ) ).toContain( ": © 20\") 24\")" );
+    } );
+
+    it( "skips art read above the condition, and the zone icon read as a ring", () => {
+        const column = parseAcesScanColumn( [ "rr pRisy Wp", "Ifthe ideal", "is £2 and unit can", "move behind it", "46) © 24\") 30\")", "1.behind target" ].map( plain ) );
+        expect( column.condition ).toMatch( /^If the ideal/ );
+        expect( column.zoneRings ).toEqual( [ 24, 30 ] );
+    } );
+
+    it( "matches a deck name with a letter or two misread", () => {
+        expect( parseAcesScanHeader( "WHSSILE BOAT" ).deckId ).toBe( "missile-boat" );
+        expect( parseAcesScanHeader( "+/1SSILE BOAT" ).deckId ).toBe( "missile-boat" );
+        expect( parseAcesScanHeader( "-COUT (HOVER)" ) ).toEqual( { deck: "Scout (Hover)", deckId: "scout-hover", priority: null } );
+        expect( parseAcesScanHeader( "SZBUT (HOVER)" ).deckId ).toBe( "scout-hover" );
+        expect( parseAcesScanHeader( "~ 4UT (HOVER)" ).deckId ).toBe( "scout-hover" );
+    } );
+
+    it( "builds the OV rows from the TNs and the limit when other numbers creep in", () => {
+        // 039: "OV" read as "2V", "TN10" as "TNTO".
+        const combat = parseAcesScanCombat( [], [
+            "If TN4 or less or if this unit is destroyed: Use maximum OV.",
+            "If TNG or less and 2V might let unit hit target's structure: Use up to 1 OV.",
+            "If TNTO or ice ss 2 unit has any heat: Don't attack.",
+        ] );
+        expect( combat.overheat.map( ( row ) => [ row.tnAtMost, row.tnAtLeast, row.ovLimit ] ) ).toEqual( [ [ 4, null, null ], [ 6, null, 1 ], [ null, 10, null ] ] );
+    } );
+
+    it( "splits target filters OCR ran together, and drops a trailing mark", () => {
+        const combat = parseAcesScanCombat( [ "@6\") 24\")", "~ 1. Hit target's Rear 2. A Armor lost", "command list" ], [], [ null, null, "red" ] );
+        expect( combat.filters.map( ( rule ) => rule.text ) ).toEqual( [ "Hit target's Rear", "[highest] Armor lost", "[red] command list" ] );
+        const trailing = parseAcesScanCombat( [ "+ 1. Hit target's Rear ®", "2. Attacked by ally this turn" ], [] );
+        expect( trailing.filters.map( ( rule ) => rule.text ) ).toEqual( [ "Hit target's Rear", "Attacked by ally this turn" ] );
+    } );
+
+    it( "takes the ▲ of \"Armor lost\" from its colour when OCR reads nothing", () => {
+        const combat = parseAcesScanCombat( [ "1. Hit target's Rear", "2. Armor lost" ], [], [ null, "blue" ] );
+        expect( combat.filters.map( ( rule ) => rule.text ) ).toEqual( [ "Hit target's Rear", "[highest] Armor lost" ] );
+        expect( parseAcesScanCombat( [ "1. Armor lost" ], [] ).filters[0].text ).toBe( "[?] Armor lost" );
+    } );
+} );
+
 describe( "Aces card scan: combat side", () => {
     const brawlerOverheat = [
         "If TNS or less or if this unit is destroyed: Use maximum OV.",

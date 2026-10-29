@@ -42,9 +42,11 @@ export interface ICardScanColours {
  * lighter (cream, gold, tags) dropped. "panel": as dark, for a cream panel whose border or header bar may edge
  * the crop. "ink": as panel, and dark red text too (the values on Alpha Strike unit cards). "red": red lettering
  * only. "colour": red, orange and yellow lettering (unit card titles) over darker art. "bright": white text
- * on the black bands (title, footer). "digits": the big white priority number, digits only.
+ * on the black bands (title, footer). "digits": the big white priority number, digits only. "dim" and "dim-digits":
+ * as bright and digits, for a darker photo whose white print reads grey: the cut is set from the region's own
+ * brightest pixels.
  */
-export type TCardScanMode = "plain" | "dark" | "panel" | "ink" | "red" | "colour" | "heavy" | "bright" | "digits";
+export type TCardScanMode = "plain" | "dark" | "panel" | "ink" | "red" | "colour" | "heavy" | "bright" | "digits" | "dim" | "dim-digits";
 
 export interface ICardScanIO {
     width: number;
@@ -76,8 +78,8 @@ const hueOf = ( r: number, g: number, b: number ): { hue: number, saturation: nu
     return { hue: hue < 0 ? hue + 360 : hue, saturation: delta / max };
 }
 
-const isInk = ( r: number, g: number, b: number, mode: TCardScanMode ): boolean => {
-    if( mode === "bright" || mode === "digits" ) return 0.299 * r + 0.587 * g + 0.114 * b > 200;
+const isInk = ( r: number, g: number, b: number, mode: TCardScanMode, brightCut: number ): boolean => {
+    if( mode === "bright" || mode === "digits" || mode === "dim" || mode === "dim-digits" ) return 0.299 * r + 0.587 * g + 0.114 * b > brightCut;
     if( mode === "red" || mode === "colour" || mode === "heavy" ) {
         const colour = hueOf( r, g, b );
         if( !colour ) return false;
@@ -87,6 +89,18 @@ const isInk = ( r: number, g: number, b: number, mode: TCardScanMode ): boolean 
     if( Math.max( r, g, b ) < ( mode === "ink" ? 90 : 115 ) ) return true;
     // Printed red is strongly red and not light; the cards' pink-grey panels are neither.
     return mode === "ink" && r > 100 && r > g * 2 && r > b * 2 && 0.299 * r + 0.587 * g + 0.114 * b < 150;
+}
+
+/**
+ * The brightness cut for white print in a darker photo: a little under the region's brightest 1% of pixels (the
+ * print), and never so low the cards' gold comes through.
+ */
+const dimCut = ( data: ArrayLike<number>, count: number ): number => {
+    const levels = new Uint32Array( 256 );
+    for( let index = 0; index < count; index++ ) levels[Math.round( 0.299 * data[index * 4] + 0.587 * data[index * 4 + 1] + 0.114 * data[index * 4 + 2] )]++;
+    let seen = 0, level = 255;
+    for( ; level > 0 && seen < count * 0.01; level-- ) seen += levels[level];
+    return Math.max( 140, Math.min( 200, level * 0.92 ) );
 }
 
 /** Clears each connected blob of ink (pixel count and bounding box) that drop picks out. */
@@ -125,11 +139,12 @@ export const cardScanBinarize = ( data: ArrayLike<number>, width: number, height
     const ink = new Uint8Array( width * height );
     const columnInk = new Array<number>( width ).fill( 0 );
     const rowInk = new Array<number>( height ).fill( 0 );
+    const brightCut = mode === "dim" || mode === "dim-digits" ? dimCut( data, width * height ) : 200;
     for( let y = 0; y < height; y++ ) {
         for( let x = 0; x < width; x++ ) {
             const index = ( y * width + x ) * 4;
             const r = data[index], g = data[index + 1], b = data[index + 2];
-            if( !isInk( r, g, b, mode ) ) continue;
+            if( !isInk( r, g, b, mode, brightCut ) ) continue;
             ink[y * width + x] = 1;
             columnInk[x]++;
             rowInk[y]++;
@@ -223,16 +238,19 @@ export const cardScanColoursFromPixels = ( data: ArrayLike<number> ): ICardScanC
         const max = Math.max( r, g, b );
         const min = Math.min( r, g, b );
         const delta = max - min;
-        if( max < 0.3 || delta / max < 0.6 ) continue;
+        if( max < 0.25 || delta === 0 ) continue;
         let hue: number;
         if( max === r ) hue = 60 * ( ( ( g - b ) / delta ) % 6 );
         else if( max === g ) hue = 60 * ( ( b - r ) / delta + 2 );
         else hue = 60 * ( ( r - g ) / delta + 4 );
         if( hue < 0 ) hue += 360;
+        // The moved check is a dark, muted green (about 0.5 saturation, 0.3 to 0.5 value); nothing else on the cards
+        // is green at all.
+        if( hue >= 80 && hue < 170 ) { if( delta / max >= 0.35 ) rv.green++; continue; }
+        if( max < 0.3 || delta / max < 0.6 ) continue;
         if( hue < 18 || hue >= 330 ) rv.red++;
         // The gold condition boxes reach 0.6 saturation; the YELLOW tag is 0.8 and up.
         else if( hue < 55 ) { if( delta / max >= 0.75 ) rv.yellow++; }
-        else if( hue >= 80 && hue < 170 ) rv.green++;
         else if( hue >= 180 && hue < 260 ) rv.blue++;
     }
     rv.red /= count;

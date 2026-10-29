@@ -43,7 +43,7 @@ export const scanCardPhoto = async <T,>( file: Blob, scan: ( io: ICardScanIO ) =
                 canvas.height = rect.height;
                 canvas.getContext( "2d" )!.drawImage( photo, rect.left, rect.top, rect.width, rect.height, 0, 0, rect.width, rect.height );
             } else {
-                const clean = cardScanBinarize( pixels( rect ), rect.width, rect.height, mode === "digits" ? "bright" : mode );
+                const clean = cardScanBinarize( pixels( rect ), rect.width, rect.height, mode );
                 const full = document.createElement( "canvas" );
                 full.width = clean.width;
                 full.height = clean.height;
@@ -53,8 +53,9 @@ export const scanCardPhoto = async <T,>( file: Blob, scan: ( io: ICardScanIO ) =
                 canvas.getContext( "2d" )!.drawImage( full, 0, 0, canvas.width, canvas.height );
                 offset = cardScanMargin;
             }
-            const special = mode === "digits" || singleLine || !!charset;
-            if( special ) await worker.setParameters( { tessedit_char_whitelist: mode === "digits" ? "0123456789" : charset, tessedit_pageseg_mode: mode === "digits" || singleLine ? PSM.SINGLE_LINE : PSM.AUTO } );
+            const digits = mode === "digits" || mode === "dim-digits";
+            const special = digits || singleLine || !!charset;
+            if( special ) await worker.setParameters( { tessedit_char_whitelist: digits ? "0123456789" : charset, tessedit_pageseg_mode: digits || singleLine ? PSM.SINGLE_LINE : PSM.AUTO } );
             const { data } = await worker.recognize( canvas, {}, { blocks: true } );
             if( special ) await worker.setParameters( { tessedit_char_whitelist: "", tessedit_pageseg_mode: PSM.AUTO } );
             // Boxes back to whole-photo pixels.

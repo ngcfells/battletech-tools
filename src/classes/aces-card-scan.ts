@@ -106,6 +106,9 @@ export const findAcesCardLayout = ( lines: ICardScanLine[], width: number, heigh
     const found = headers.filter( ( word ) => word !== null ) as ICardScanWord[];
     if( found.length >= 2 ) {
         const centres = headers.map( ( word ) => word ? ( word.bbox.x0 + word.bbox.x1 ) / 2 : null );
+        // A header read in part ("ANCED" for BALANCED) has its centre off to one side; the middle column always sits
+        // halfway between the outer two.
+        if( centres[0] !== null && centres[2] !== null ) centres[1] = ( centres[0] + centres[2] ) / 2;
         // Columns are evenly spaced; fill one missing header from the other two.
         const known = centres.map( ( centre, index ) => ( { centre, index } ) ).filter( ( entry ) => entry.centre !== null ) as { centre: number, index: number }[];
         const step = ( known[known.length - 1].centre - known[0].centre ) / ( known[known.length - 1].index - known[0].index );
@@ -135,8 +138,9 @@ export const findAcesCardLayout = ( lines: ICardScanLine[], width: number, heigh
     if( !target && words.some( ( word ) => fuzzyIs( word.text, "COMBAT" ) && word.bbox.y0 < height * 0.3 ) )
         target = { text: "TARGET", bbox: { x0: width * 0.155, y0: height * 0.215, x1: width * 0.305, y1: height * 0.243 } };
     if( !target ) return null;
-    const wordWidth = target.bbox.x1 - target.bbox.x0;
     const rowHeight = target.bbox.y1 - target.bbox.y0;
+    // TARGET's widely spaced capitals run about six times their height; part of the word ("TARG") reads narrower.
+    const wordWidth = Math.max( target.bbox.x1 - target.bbox.x0, rowHeight * 6 );
     const boxLeft = target.bbox.x0 - wordWidth * 0.9;
     const boxWidth = wordWidth * 2.4;
     const tnWords = words.filter( ( word ) => /^TN\d+/i.test( word.text ) && word.bbox.y0 > target.bbox.y1 );
@@ -168,8 +172,27 @@ export const parseAcesScanHeader = ( text: string ): { deck: string, deckId: IAc
         const exact = acesDecks.find( ( entry ) => entry.name.toLowerCase() === name.toLowerCase() );
         return { deck: name, deckId: exact ? exact.id : deck.id, priority: priority };
     }
+    // A letter or two misread ("WHSSILE BOAT", "SZBUT (HOVER)"): the deck name the text holds with fewest edits.
+    const letters = upper.replace( /[^A-Z() ]/g, " " ).replace( /\s+/g, " " ).trim();
+    const near = acesDecks.map( ( entry ) => ( { entry, edits: editsWithin( letters, entry.name.toUpperCase() ) } ) )
+        .filter( ( match ) => match.edits <= Math.max( 1, Math.floor( match.entry.name.length * 0.3 ) ) )
+        .sort( ( a, b ) => a.edits / a.entry.name.length - b.edits / b.entry.name.length || b.entry.name.length - a.entry.name.length )[0];
+    if( near ) return { deck: near.entry.name, deckId: near.entry.id, priority: priority };
     const words = flat.replace( /\b\d+\b/g, "" ).replace( /[^A-Za-z() ]/g, "" ).trim();
     return { deck: titleCase( words ), deckId: "", priority: priority };
+}
+
+/** Fewest edits that turn some stretch of text into pattern (approximate substring match). */
+const editsWithin = ( text: string, pattern: string ): number => {
+    let row = Array.from( { length: pattern.length + 1 }, ( _, index ) => index );
+    let best = row[pattern.length];
+    for( let i = 1; i <= text.length; i++ ) {
+        const next = [ 0 ];
+        for( let j = 1; j <= pattern.length; j++ ) next[j] = Math.min( row[j] + 1, next[j - 1] + 1, row[j - 1] + ( text[i - 1] === pattern[j - 1] ? 0 : 1 ) );
+        row = next;
+        best = Math.min( best, row[pattern.length] );
+    }
+    return best;
 }
 
 const titleCase = ( text: string ): string => text.toLowerCase().replace( /(^|[\s(])([a-z])/g, ( _, lead, letter ) => lead + letter.toUpperCase() );
@@ -196,7 +219,14 @@ const isJunk = ( word: string ): boolean => {
 const fixWords = ( text: string ): string => {
     const digitFor: { [letter: string]: string } = { G: "6", O: "0", o: "0", S: "5", B: "8", I: "1", l: "1", Z: "2" };
     return text
-        .replace( /\bTN\s*([0-9GOoSBIlZ]{1,2})\b/g, ( _, value: string ) => "TN" + value.split( "" ).map( ( letter ) => digitFor[letter] || letter ).join( "" ) )
+        // A two-digit TN is 10 to 12, so its first digit is 1 however it reads ("TNTO").
+        .replace( /\bTN\s*([0-9GOoSBIlZT]{1,2})\b/g, ( _, value: string ) => "TN" + value.split( "" ).map( ( letter, index ) => value.length === 2 && index === 0 ? "1" : digitFor[letter] || letter ).join( "" ) )
+        .replace( /^(\W*)[Il1|]?f\s?(there|the)\b/, "$1If $2" )
+        .replace( /\b[Il1]f(there|the|needed)\b/g, "If $1" )
+        .replace( /\b1f\b/g, "If" )
+        .replace( /andunitcan/g, "and unit can" )
+        .replace( /behindit\b/g, "behind it" )
+        .replace( /targethasnocover/g, "target has no cover" )
         .replace( /\b0(?=[a-z])/g, "o" )
         .replace( /(?<=[a-z])0\b/g, "o" )
         .replace( /enemiesin\b/gi, "enemies in" )
@@ -205,8 +235,9 @@ const fixWords = ( text: string ): string => {
         .replace( /onlytotarget/gi, "only to target" )
         .replace( /\bthis tum\b/g, "this turn" )
         // "COVer", "cOver vs", "covervs": the cards print it lower case, or capitalised to open a line.
-        .replace( /\b([cC][oO0][vV][eE][rR])(vs)?\b/g, ( word: string, cover: string, vs: string | undefined ) => ( /^(cover|Cover)$/.test( cover ) ? cover : "cover" ) + ( vs ? " vs" : "" ) )
+        .replace( /\b([cC][oO0][vV]{1,2}[eE][rR])(vs)?\b/g, ( word: string, cover: string, vs: string | undefined ) => ( /^(cover|Cover)$/.test( cover ) ? cover : "cover" ) + ( vs ? " vs" : "" ) )
         .replace( /\bAmor\b/g, "Armor" )
+        .replace( /\b[no]ther\b/g, "other" )
         .replace( /([^A-Za-z0-9\s[\]()"'’.,]+)([A-Za-z]{2,})/g, "$1 $2" )
         .replace( /[”“]/g, "\"" )
         .replace( /°/g, "\"" );
@@ -219,29 +250,36 @@ const fixWords = ( text: string ): string => {
 export const restoreAcesScanIcons = ( text: string, hints: { colour?: TAcesColor | null, moved?: boolean } = {} ): string => {
     // "no ✖ enemies" often reads "10 ✖ enemies".
     const words = fixWords( text ).replace( /^(1?0|n0)\s+(?=(\S+\s+)?enem)/, "no " ).split( /\s+/ ).filter( ( word ) => word !== "" );
-    // One junk run is one icon. A bare number with no inch mark is an icon misread, except as a count ("in 2").
+    // One junk run is one icon (an entry starting "\u0000", followed by what OCR read for it, which hints at its
+    // shape). A bare number with no inch mark is an icon misread, except as a count ("in 2").
+    const isIcon = ( word: string | undefined ) => word !== undefined && word.startsWith( "\u0000" );
     const merged: string[] = [];
     words.forEach( ( word, index ) => {
         const bareNumber = /^\d+$/.test( word ) && !/^(in|to|than|up|of)$/i.test( words[index - 1] || "" );
         // An icon between "no ... enemies" can read as a short capital word ("no EJ enemies").
         const iconWord = /^[A-Z]{1,3}$/.test( word ) && /^(no|vs|any|in)$/i.test( words[index - 1] || "" ) && /^enem/i.test( words[index + 1] || "" );
+        // The ▲ and ▼ icons read as a capital glued to the next word: "Aother enemies", "Yenemy".
+        const glued = /^([AVYW])(other|enemy|enemies)$/.exec( word );
+        if( glued ) { merged.push( "\u0000" + glued[1], glued[2] ); return; }
         const junk = isJunk( word ) || bareNumber || iconWord;
-        if( junk && merged.length > 0 && merged[merged.length - 1] === "\u0000" ) return;
-        merged.push( junk ? "\u0000" : word );
+        if( junk && isIcon( merged[merged.length - 1] ) ) { merged[merged.length - 1] += word; return; }
+        merged.push( junk ? "\u0000" + word : word );
     } );
-    // The cards never print these phrases without their icon; coloured icons drop out with the background.
+    // The cards never print these phrases without their icon; coloured icons drop out with the background. "has ⊘
+    // any enemy" has its icon before "any", not after.
     for( let index = merged.length - 1; index > 0; index-- ) {
         const word = merged[index - 1].toLowerCase();
         const next = merged[index].toLowerCase();
-        if( /^(no|vs|any|in)$/.test( word ) && /^(enemies|enemy|other)$/.test( next ) ) merged.splice( index, 0, "\u0000" );
-        else if( word === "ideal" && next !== "\u0000" ) merged.splice( index, 0, "\u0000" );
+        if( /^(no|vs|any|in)$/.test( word ) && /^(enemies|enemy|other)$/.test( next ) && !( word === "any" && isIcon( merged[index - 2] ) ) ) merged.splice( index, 0, "\u0000" );
+        else if( word === "ideal" && !isIcon( next ) ) merged.splice( index, 0, "\u0000" );
     }
     // "in ▼ enemy ⌖": the attack-range icon ends the line.
-    if( merged.length >= 2 && merged[merged.length - 1].toLowerCase() === "enemy" && merged[merged.length - 3] === "\u0000" ) merged.push( "\u0000" );
+    if( merged.length >= 2 && merged[merged.length - 1].toLowerCase() === "enemy" && isIcon( merged[merged.length - 3] ) && ( merged[merged.length - 4] || "" ).toLowerCase() === "in" ) merged.push( "\u0000" );
     let colour = hints.colour || null;
     let moved = !!hints.moved;
     const rv = merged.map( ( word, index ) => {
-        if( word !== "\u0000" ) return word;
+        if( !isIcon( word ) ) return word;
+        const read = word.substring( 1 );
         const before = ( merged[index - 1] || "" ).toLowerCase();
         const after = merged.slice( index + 1, index + 4 ).join( " " ).toLowerCase();
         if( /^(enemies|enemy)\b/.test( after ) ) {
@@ -256,17 +294,26 @@ export const restoreAcesScanIcons = ( text: string, hints: { colour?: TAcesColor
         }
         if( /^other enemies/.test( after ) ) return "[highest]";
         if( /^all enemies/.test( after ) || /^any enemy/.test( after ) ) return "[nolos]";
+        // ▲ reads as A, ▼ as V, Y or W.
+        if( /^armor/.test( after ) ) return /^[VYW]/.test( read ) ? "[lowest]" : /^[A4]/.test( read ) ? "[highest]" : "[?]";
         if( /^(only to )?target/.test( after ) ) {
             if( inchWord.test( before ) ) return "[spacing]";
             if( /^only/.test( after ) ) return "[los]";
+            // The closer icon is two arrowheads ("»{", "p<", ")¢"); the eye is round ("©", "®", "O®").
+            if( /^[©®@oO0Q]+$/.test( read ) ) return "[los]";
             return "[closer]";
         }
         if( before === "enemy" && after === "" ) return "[range]";
         if( before === "ideal" && colour ) { const token = "[" + colour + "]"; colour = null; return token; }
         if( ( before === "is" || before === "are" ) && moved ) { moved = false; return "[moved]"; }
+        // Stray marks where the cards print no icon: before "no", before a distance, or ahead of the opening "If".
+        if( /^(no|if)$/i.test( merged[index + 1] || "" ) || inchWord.test( merged[index + 1] || "" ) ) return "";
         return "[?]";
     } );
-    return rv.join( " " ).replace( /\s+([,.:;)])/g, "$1" ).trim();
+    let joined = rv.filter( ( word ) => word !== "" ).join( " " ).replace( /\s+([,.:;)])/g, "$1" ).trim();
+    // "If the ideal ◇ is ✔ and unit can move behind it", with "is ✔" read as one short scrap ("ba") or not at all.
+    if( hints.moved ) joined = joined.replace( /(\bideal \[\w+\]) (?:(?!is\b)\S{1,3} )?(?=and unit)/, "$1 is [moved] " );
+    return joined;
 }
 
 /** Column-edge noise: rule-like stray characters or a lone "i" at either end of a line (icons are kept). */
@@ -274,24 +321,51 @@ const trimEdges = ( text: string ): string => {
     return text
         .replace( /^(\s*([|=~‘'`_\-.,:;]{1,2}|i)\s+)+/, "" )
         .replace( /(\s+([|=~‘'`_\-.,:;]{1,2}|i))+\s*$/, "" )
-        .replace( /^[|=~‘'`_\-.,:;]+\s*/, "" )
+        .replace( /^[|=~‘'`_\-.,:;"“]+\s*/, "" )
         .trim();
 }
+
+/** Items OCR ran together on one line, "1. Hit target's Rear 2. Armor lost", split at each item number. */
+const splitItems = ( lines: string[] ): string[] => lines.reduce( ( rv, line ) => rv.concat( line.split( /\s+(?=[1-9]\.\s?[A-Za-z[])/ ) ), [] as string[] );
+
+/**
+ * A line that carries on the item above it rather than starting a new one: the cards wrap only after "vs" (before
+ * "▲ other enemies") or a sprint condition's comma (before "⊘ all enemies").
+ */
+const continues = ( previous: string, line: string ): boolean => /(\bvs|,)\W{0,3}$/i.test( previous ) || /^\W{0,3}\S{0,2}\s*(other enemies|all enemies)\b/i.test( line );
 
 const numbered = /^\W{0,3}(\d)\s*(?:[.,:]\s*|\s+(?=[A-Za-z[])|(?=[a-z]))/;
 const zoneLine = /\d+\s*["”'’°]+\s*\)/;
 
 /**
  * Zone rings from a line of only numbers, inch marks and brackets, which OCR sometimes runs together: "©1624)" is
- * 16" and 24". Rings are 6" to 48", so a run of digits splits into pairs from the right.
+ * 16" and 24". Rings are 6" to 48" and print closest first, so a run of digits splits into rising rings; a ring's
+ * lost '")' can read as a 7 or 1 ("©6724\"" is 6" and 24").
  */
 const gluedRings = ( text: string ): number[] | null => {
     if( /[A-Za-z]{2,}/.test( text ) || !/\d/.test( text ) || !/[)"”'’°]/.test( text ) ) return null;
+    // The split of a run into rising rings, with as few misread marks as there must be.
+    const split = ( run: string, after: number, marks: number ): number[] | null => {
+        if( run === "" ) return [];
+        for( const size of [ 2, 1 ] ) {
+            const ring = +run.substring( 0, size );
+            if( run.length < size || ring < 6 || ring > 48 || ring <= after ) continue;
+            const rest = run.substring( size );
+            const plain = split( rest, ring, marks );
+            if( plain ) return [ ring, ...plain ];
+            const marked = marks > 0 && /^[71]/.test( rest ) ? split( rest.substring( 1 ), ring, marks - 1 ) : null;
+            if( marked ) return [ ring, ...marked ];
+        }
+        return null;
+    }
     const rv: number[] = [];
     for( const run of text.match( /\d+/g ) || [] ) {
-        for( let end = run.length; end > 0; end -= 2 ) rv.unshift( +run.substring( Math.max( 0, end - 2 ), end ) );
+        let rings: number[] | null = null;
+        for( let marks = 0; marks <= 2 && !rings; marks++ ) rings = split( run, rv.length > 0 ? rv[rv.length - 1] : 0, marks );
+        if( !rings ) return null;
+        rv.push( ...rings );
     }
-    return rv.length > 0 && rv.every( ( ring ) => ring >= 6 && ring <= 48 ) ? rv.sort( ( a, b ) => a - b ) : null;
+    return rv.length > 0 ? rv : null;
 }
 
 const parseZone = ( text: string ): { zoneRings: number[], zoneKeyword: "" | "nearest" | "any" } => {
@@ -299,6 +373,8 @@ const parseZone = ( text: string ): { zoneRings: number[], zoneKeyword: "" | "ne
     const marked = /\d+(?=\s*["”'’°]+\s*\))/.test( text ) && !/[A-Za-z]{2,}/.test( text );
     const rings = ( text.match( marked ? /\d+/g : /\d+(?=\s*["”'’°]+\s*\))/g ) || [] ).map( ( ring ) => +ring )
         .filter( ( ring ) => ring >= 6 && ring <= 48 );
+    // Rings print closest first; a number before a larger one's end is the zone icon misread ("46) 24") 30")").
+    while( rings.length > 1 && rings[0] >= rings[1] ) rings.shift();
     if( rings.length > 0 ) return { zoneRings: rings, zoneKeyword: "" };
     const glued = gluedRings( text );
     if( glued ) return { zoneRings: glued, zoneKeyword: "" };
@@ -308,13 +384,20 @@ const parseZone = ( text: string ): { zoneRings: number[], zoneKeyword: "" | "ne
 
 const isZoneLine = ( text: string ): boolean => zoneLine.test( text ) || gluedRings( text ) !== null || /^\W*(nearest|any)\W*$/i.test( text );
 
-/** Numbered lines with their wrapped continuations joined. Items count up from 1, so a stray digit is no new item. */
+/**
+ * Numbered lines with their wrapped continuations joined. Every other line is an item of its own, whether its number
+ * read or not ("4" for a ▲, "ain" for "4. in"), and lines with no words are dropped.
+ */
 const joinNumbered = ( lines: string[] ): string[] => {
     const rv: string[] = [];
-    for( const line of lines ) {
+    for( const line of splitItems( lines ) ) {
+        if( rv.length > 0 && continues( rv[rv.length - 1], line ) ) {
+            rv[rv.length - 1] += " " + line;
+            continue;
+        }
         const match = numbered.exec( line );
-        if( match && +match[1] === rv.length + 1 ) rv.push( line.substring( match[0].length ) );
-        else if( rv.length > 0 ) rv[rv.length - 1] += " " + line;
+        const text = ( match ? line.substring( match[0].length ) : line ).replace( /^a(?=in\b)/, "" );
+        if( /[A-Za-z]{2,}/.test( text ) ) rv.push( text );
     }
     return rv;
 }
@@ -330,6 +413,8 @@ export const parseAcesScanColumn = ( lines: { text: string, colours: ICardScanCo
     // Blank rows (all icons, no OCR text) are kept when they show a tag or a check.
     const texts = lines.map( ( line ) => ( { text: trimEdges( line.text ), colours: line.colours } ) )
         .filter( ( line ) => line.text !== "" || acesScanTagColour( line.colours ) !== null || line.colours.green >= checkThreshold );
+    // Art or the header's edge read above the condition: the condition opens with "If" on the next line.
+    if( texts.length > 1 && !/\bI[fl]|\bif/.test( texts[0].text ) && /^\W{0,2}[Il1|]?f\s?the/.test( texts[1].text ) ) texts.shift();
     // The alternative movement reads "(S if there are no ...)" or "(J if needed)"; a condition opens with "If".
     const isMoveRow = ( text: string ) => /if\s*needed|standstill/i.test( text ) || ( /if\s*there/i.test( text ) && !/^\W{0,2}If\b/.test( text ) );
     const zoneIndex = texts.findIndex( ( line ) => isZoneLine( line.text ) );
@@ -347,10 +432,13 @@ export const parseAcesScanColumn = ( lines: { text: string, colours: ICardScanCo
 
     // The condition wraps, so its icons are restored over the whole text.
     const conditionLines = texts.slice( 0, Math.max( 0, conditionEnd ) );
+    const conditionColour = conditionLines.map( ( line ) => acesScanTagColour( line.colours ) ).find( ( colour ) => colour ) || null;
     column.condition = restoreAcesScanIcons( conditionLines.map( ( line ) => line.text ).join( " " ), {
-        colour: conditionLines.map( ( line ) => acesScanTagColour( line.colours ) ).find( ( colour ) => colour ) || null,
+        colour: conditionColour,
         moved: conditionLines.some( ( line ) => line.colours.green >= checkThreshold ),
     } );
+    // The top line, hard against the header, can go unread; "is ✔ and unit can move behind it" only ever follows it.
+    if( /^is\b.*\bbehind it$/.test( column.condition ) ) column.condition = "If the ideal [" + ( conditionColour || "?" ) + "] " + column.condition;
 
     if( zoneIndex >= 0 ) {
         const zone = parseZone( texts[zoneIndex].text );
@@ -372,7 +460,7 @@ export const parseAcesScanColumn = ( lines: { text: string, colours: ICardScanCo
             moveRow = 1;
         }
     }
-    const moveText = middle.slice( moveRow ).map( ( line ) => line.text ).join( " " );
+    const moveText = fixWords( middle.slice( moveRow ).map( ( line ) => line.text ).join( " " ) );
     const moveColours = middle[moveRow] ? middle[moveRow].colours : null;
     if( /standstill/i.test( moveText ) ) {
         column.moveType = "standstill";
@@ -389,8 +477,10 @@ export const parseAcesScanColumn = ( lines: { text: string, colours: ICardScanCo
         }
     }
 
+    // Card art under a short column reads as lines of capitals; every filter uses a word from the cards' small set.
     column.filters = joinNumbered( texts.slice( firstNumbered >= 0 ? firstNumbered : texts.length ).map( ( line ) => line.text ) )
-        .map( ( line ) => restoreAcesScanIcons( line ) );
+        .map( ( line ) => restoreAcesScanIcons( line ) )
+        .filter( ( line ) => /target|enem|all(y|ies)|cover|woods|sprint|behind|armor|damage|heat|terrain|building|water|elevation|hill/i.test( line ) );
     return column;
 }
 
@@ -409,8 +499,9 @@ export const parseAcesScanCombat = ( targetLines: string[], overheatLines: strin
     // Items as joinNumbered makes them, but the panel holds nothing else, so text before any number is item 1, and a
     // "command list" line is always its own item: its number often goes unread beside the tag.
     const items: { text: string, tag: TAcesColor | null }[] = [];
-    for( const line of lines ) {
-        if( line === zone ) continue;
+    const split = lines.filter( ( line ) => line !== zone ).reduce( ( rv, line ) => rv.concat( splitItems( [ line.text ] ).map( ( text ) => ( { text, tag: line.tag } ) ) ), [] as typeof lines );
+    // A piece with no word in it is a stray mark (or a tag whose word didn't read, which the tag colour stands for).
+    for( const line of split.filter( ( piece, index ) => /[A-Za-z]{2,}/.test( piece.text ) || ( piece.tag && index === split.length - 1 ) ) ) {
         const match = numbered.exec( line.text );
         if( match && +match[1] === items.length + 1 ) items.push( { text: line.text.substring( match[0].length ), tag: line.tag } );
         else if( /\bcommand\s+list\b/i.test( line.text ) || items.length === 0 ) items.push( { text: line.text.replace( /^\W*\d?\W*/, "" ), tag: line.tag } );
@@ -418,8 +509,12 @@ export const parseAcesScanCombat = ( targetLines: string[], overheatLines: strin
     }
     const filters = items.map( ( item ) => {
         // "RED command list": the white-on-colour tag word never survives, so the colour comes from the pixels.
-        let restored = restoreAcesScanIcons( item.text ).replace( /^(\[\?\]\s*)?(\S{1,3}\s+)?(command\s+)?list$/i, "[?] command list" );
+        // No target filter ends in an icon but "in ▼ enemy ⌖", so an unplaced one at the end is a stray mark.
+        let restored = restoreAcesScanIcons( item.text ).replace( /\s*\[\?\]$/, "" ).replace( /^(\[\?\]\s*)?(\S{1,3}\s+)?(command\s+)?list$/i, "[?] command list" );
         if( item.tag && /^\[\?\]\s*command list$/i.test( restored ) ) restored = "[" + item.tag + "] command list";
+        // "▲ Armor lost": the blue ▲ often reads as nothing at all, but its colour shows (red would be ▼); the cards
+        // never print "Armor lost" without one.
+        if( /^(\[\?\]\s*)?Armor lost$/i.test( restored ) ) restored = ( item.tag === "blue" ? "[highest]" : item.tag === "red" ? "[lowest]" : "[?]" ) + " Armor lost";
         return parseAcesPriorityLine( restored );
     } );
     // OV rows can wrap; each one starts "If TN".
@@ -431,10 +526,18 @@ export const parseAcesScanCombat = ( targetLines: string[], overheatLines: strin
     let overheat = rows.map( ( row ) => parseAcesOverheatLine( fixWords( row ).replace( /\s+/g, " " ) ) )
         .filter( ( row ) => row !== null ) as IAcesCard["combat"]["overheat"];
     // Every card prints the same three OV rows but for four numbers: each row's TN and the second row's OV limit
-    // (Rekikire). When exactly four read, the rows are built from them, so OCR's garbled words cost nothing.
+    // (Rekikire). The rows are built from those, so OCR's garbled words cost nothing: the TNs follow "TN" and the
+    // limit sits in "up to N OV". Failing those, exactly four numbers in the text are taken in order. A third TN
+    // that won't read is left 0 for the player to fix (the scan warns of it).
     const ovText = fixWords( overheatLines.join( " " ) ).replace( /(\d)[0O]\s*V\b/g, "$1 OV" );
+    const tns = ( ovText.match( /\bTN\d{1,2}\b/g ) || [] ).map( ( tn ) => +tn.substring( 2 ) );
+    const limit = /\bup\s*to\s*([0-9IlOoSZ])\s*O?V/i.exec( ovText );
     const numbers = ( ovText.match( /\d+/g ) || [] ).map( Number );
-    if( /TN/i.test( ovText ) && numbers.length === 4 ) overheat = acesStandardOverheatRows( numbers[0], numbers[1], numbers[2], numbers[3] );
+    if( tns.length >= 2 && tns.length <= 3 && limit ) {
+        const digitFor: { [letter: string]: string } = { I: "1", l: "1", O: "0", o: "0", S: "5", Z: "2" };
+        const ovLimit = +( digitFor[limit[1]] || limit[1] );
+        overheat = acesStandardOverheatRows( tns[0], tns[1], ovLimit, tns.length === 3 ? tns[2] : 0 );
+    } else if( /TN/i.test( ovText ) && numbers.length === 4 ) overheat = acesStandardOverheatRows( numbers[0], numbers[1], numbers[2], numbers[3] );
     return { ...( zone ? parseZone( zone.text ) : { zoneRings: [], zoneKeyword: "" as const } ), filters: filters, overheat: overheat, indirectIfNoLOS: indirectIfNoLOS };
 }
 
@@ -446,9 +549,10 @@ export const tidyAcesScanLines = ( lines: ICardScanLine[] ): ICardScanLine[] => 
     // Card art read as text comes back as one tall line; printed rows are all about the same height.
     const heights = lines.map( ( line ) => line.bbox.y1 - line.bbox.y0 ).sort( ( a, b ) => a - b );
     const rowHeight = heights.length > 0 ? heights[Math.floor( heights.length / 2 )] : 0;
+    // The copyright's year has four digits; a zone row's ◎ also reads as "©", before a ring ("© 20\")").
     const kept = lines.filter( ( line ) => line.text.trim() !== ""
         && line.bbox.y1 - line.bbox.y0 <= rowHeight * 2.5
-        && !/Topps|Company|Rights Reserved|©\s*20/i.test( line.text ) );
+        && !/Topps|Company|Rights Reserved|©\s*20\d\d/i.test( line.text ) );
     const rows: ICardScanLine[] = [];
     for( const line of kept.slice().sort( ( a, b ) => a.bbox.y0 - b.bbox.y0 ) ) {
         const row = rows.find( ( entry ) => {
@@ -507,8 +611,14 @@ export const scanAcesCard = async ( io: ICardScanIO ): Promise<IAcesScanResult> 
     const result: IAcesScanResult = {
         side: null, deck: "", deckId: "", cardNumber: "", priority: null, columns: [], combat: null, warnings: [],
     };
-    const whole = await io.recognize( { left: 0, top: 0, width: io.width, height: io.height }, "plain" );
-    const layout = findAcesCardLayout( whole, io.width, io.height );
+    const everything = { left: 0, top: 0, width: io.width, height: io.height };
+    let whole = await io.recognize( everything, "plain" );
+    let layout = findAcesCardLayout( whole, io.width, io.height );
+    // The column headers are white on black and can be lost in a glare; read only the bright text and look again.
+    if( !layout ) {
+        whole = whole.concat( await io.recognize( everything, "bright" ) );
+        layout = findAcesCardLayout( whole, io.width, io.height );
+    }
     if( !layout ) {
         result.warnings.push( "Couldn't find the Aggressive / Balanced / Cautious headers or TARGET. Take the photo straight on, with one card filling the frame." );
         return result;
@@ -520,17 +630,30 @@ export const scanAcesCard = async ( io: ICardScanIO ): Promise<IAcesScanResult> 
     const numberRect = clampRect( { ...layout.header, left: layout.header.left + layout.header.width * 0.66, width: layout.header.width * 0.34 }, io.width, io.height );
     const header = parseAcesScanHeader( linesIn( await io.recognize( titleRect, "bright" ) ) );
     // OCR misreads very large digits, and the narrow 1 against 7 in this font; small sizes read best, so a few are
-    // tried and the most common three-digit reading wins.
+    // tried and the most common three-digit reading wins. A darker photo's white digits read grey, so failing that
+    // the cut is set from the number's own brightness.
     const votes: { [value: string]: number } = {};
-    for( const height of [ 30, 34, 38, 42 ] ) {
-        const digits = linesIn( await io.recognize( numberRect, "digits", Math.min( 1, height / ( numberRect.height + cardScanMargin * 2 ) ) ) ).replace( /\D/g, "" );
-        if( digits.length === 3 ) votes[digits] = ( votes[digits] || 0 ) + 1;
+    for( const mode of [ "digits", "dim-digits" ] as const ) {
+        if( Object.keys( votes ).length > 0 ) break;
+        for( const height of [ 30, 34, 38, 42 ] ) {
+            const digits = linesIn( await io.recognize( numberRect, mode, Math.min( 1, height / ( numberRect.height + cardScanMargin * 2 ) ) ) ).replace( /\D/g, "" );
+            if( digits.length === 3 ) votes[digits] = ( votes[digits] || 0 ) + 1;
+        }
     }
     const best = Object.keys( votes ).sort( ( a, b ) => votes[b] - votes[a] )[0];
-    result.deck = header.deck;
-    result.deckId = header.deckId;
-    result.priority = best !== undefined ? +best : header.priority;
-    result.cardNumber = parseAcesScanFooter( linesIn( await io.recognize( layout.footer, "bright" ) ) );
+    // The first pass over the whole photo often reads what the close crops miss: the title, the big number at the
+    // top right, and "4/6 Missile Boat" at the bottom left.
+    const top = whole.filter( ( line ) => line.bbox.y1 < io.height * 0.4 );
+    const bottom = whole.filter( ( line ) => line.bbox.y0 > io.height * 0.6 );
+    const footerText = linesIn( await io.recognize( layout.footer, "bright" ) );
+    const named = [ header, parseAcesScanHeader( linesIn( top ).replace( /\b\d+\b/g, "" ) ), parseAcesScanHeader( linesIn( bottom ).replace( /\d\s*\/\s*\d|©\s*\d+/g, "" ) ), parseAcesScanHeader( footerText.replace( /\d\s*\/\s*\d/g, "" ) ) ]
+        .find( ( entry ) => entry.deckId ) || header;
+    result.deck = named.deck;
+    result.deckId = named.deckId;
+    const wholeNumber = top.reduce( ( rv, line ) => rv.concat( line.words.filter( ( word ) => word.bbox.x0 > io.width * 0.55 && /^\(?\d{3}\)?$/.test( word.text ) ) ), [] as ICardScanWord[] )
+        .map( ( word ) => +word.text.replace( /\D/g, "" ) )[0];
+    result.priority = best !== undefined ? +best : header.priority !== null ? header.priority : wholeNumber !== undefined ? wholeNumber : null;
+    result.cardNumber = parseAcesScanFooter( footerText ) || parseAcesScanFooter( linesIn( bottom ).replace( /©\s*\d+/g, "" ) );
     result.warnings.push( result.priority === null ? "Priority number not read." : "Check the priority number: OCR can mix up 1 and 7 in the card's font." );
     if( !result.deck ) result.warnings.push( "Deck name not read." );
     if( !result.cardNumber ) result.warnings.push( "Card number (e.g. 2/6) not read." );
@@ -549,7 +672,10 @@ export const scanAcesCard = async ( io: ICardScanIO ): Promise<IAcesScanResult> 
         const tagBand = { ...panel, left: panel.left + panel.width * 0.08, width: panel.width * 0.6 };
         const tags = targetLines.map( ( line ) => acesScanTagColour( io.colours( columnLineRect( line, tagBand ) ) ) );
         result.combat = parseAcesScanCombat( targetLines.map( ( line ) => line.text ), overheatLines.map( ( line ) => line.text ), tags );
-        if( result.combat.overheat.length === 0 ) result.warnings.push( "No OV rows read." );
+        // The indirect fire box sits over the art, outside both crops; the whole-photo pass reads it well.
+        if( /indirect\s*fire|special\s*order/i.test( linesIn( whole ) ) ) result.combat.indirectIfNoLOS = true;
+        // Some decks (Scout (Hover)) print no OV rows at all.
+        if( result.combat.overheat.length === 0 && /\bTN\s*\d|\bOV\b/.test( linesIn( whole ) + " " + linesIn( overheatLines ) ) ) result.warnings.push( "No OV rows read." );
         // No roll needs less than 2, so a TN under that is a misread digit (often 9 or 6 read as 0).
         if( result.combat.overheat.some( ( row ) => ( row.tnAtMost !== null && row.tnAtMost < 2 ) || ( row.tnAtLeast !== null && row.tnAtLeast < 2 ) ) )
             result.warnings.push( "Check the TN numbers in the OV rows: one didn't read as a real target number." );
