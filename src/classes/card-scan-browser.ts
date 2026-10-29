@@ -2,7 +2,7 @@
  * Reading a photo of a printed card in the browser: the photo goes on a canvas, regions are cropped and cleaned
  * there, and tesseract.js reads them. Nothing leaves the device but the one-time download of tesseract's English data.
  */
-import { cardScanBinarize, cardScanColoursFromPixels, cardScanMargin, ICardScanIO, ICardScanLine, ICardScanRect, TCardScanMode } from "./card-scan-io";
+import { cardScanBinarize, cardScanColoursFromPixels, cardScanMargin, cardScanRotate, cardScanSkew, ICardScanIO, ICardScanLine, ICardScanRect, TCardScanMode } from "./card-scan-io";
 
 /** The scan's layout rules were tuned on cards about this wide, so every photo is scaled to it. */
 const cardWidth = 2000;
@@ -16,7 +16,20 @@ const loadPhoto = async ( file: Blob ): Promise<HTMLCanvasElement> => {
         const canvas = document.createElement( "canvas" );
         canvas.width = cardWidth;
         canvas.height = Math.round( image.naturalHeight * cardWidth / image.naturalWidth );
-        canvas.getContext( "2d" )!.drawImage( image, 0, 0, canvas.width, canvas.height );
+        const context = canvas.getContext( "2d", { willReadFrequently: true } )!;
+        context.drawImage( image, 0, 0, canvas.width, canvas.height );
+        // A photo taken at a slant is straightened first: the layout rules look for level rows.
+        const photo = context.getImageData( 0, 0, canvas.width, canvas.height );
+        const skew = cardScanSkew( photo.data, photo.width, photo.height );
+        if( skew === 0 ) return canvas;
+        const level = cardScanRotate( photo.data, photo.width, photo.height, skew );
+        const turned = document.createElement( "canvas" );
+        turned.width = level.width;
+        turned.height = level.height;
+        turned.getContext( "2d" )!.putImageData( new ImageData( level.data, level.width, level.height ), 0, 0 );
+        // Back to the card width the rules expect.
+        canvas.height = Math.round( level.height * cardWidth / level.width );
+        canvas.getContext( "2d" )!.drawImage( turned, 0, 0, canvas.width, canvas.height );
         return canvas;
     } finally {
         URL.revokeObjectURL( url );

@@ -5,7 +5,7 @@ import {
     acesScanOnesAndSevens, acesScanTagColour, applyAcesScanToCard, findAcesCardLayout, matchAcesPhrase, parseAcesScanColumn, parseAcesScanCombat, parseAcesScanFooter,
     parseAcesScanHeader, restoreAcesScanIcons, scanAcesCard, tidyAcesScanLines,
 } from "./aces-card-scan";
-import { cardScanBinarize, cardScanColoursFromPixels, cardScanMargin, ICardScanColours, ICardScanIO, ICardScanLine, ICardScanRect } from "./card-scan-io";
+import { cardScanBinarize, cardScanColoursFromPixels, cardScanMargin, cardScanRotate, cardScanSkew, ICardScanColours, ICardScanIO, ICardScanLine, ICardScanRect } from "./card-scan-io";
 
 // Line fixtures are real tesseract output from photos of the printed cards.
 
@@ -464,5 +464,32 @@ describe( "Aces card scan: whole card", () => {
         const scan = await scanAcesCard( { ...io, recognize: async () => [] } );
         expect( scan.side ).toBeNull();
         expect( scan.warnings.length ).toBe( 1 );
+    } );
+} );
+
+describe( "Card photo straightening", () => {
+    // White with black text-like bars, sloping by the given degrees down to the right.
+    const lines = ( degrees: number ) => {
+        const width = 800, height = 600, data = new Uint8ClampedArray( width * height * 4 ).fill( 255 );
+        const slope = Math.tan( degrees * Math.PI / 180 );
+        for( let row = 100; row < 500; row += 40 ) for( let x = 100; x < 700; x++ ) for( let t = 0; t < 8; t++ ) {
+            const y = Math.round( row + t + ( x - 400 ) * slope );
+            if( ( x % 50 ) < 40 ) data.fill( 0, ( y * width + x ) * 4, ( y * width + x ) * 4 + 3 );
+        }
+        return { data, width, height };
+    };
+    it( "measures a slanted photo's slope and levels it", () => {
+        for( const degrees of [ 4, -6.5 ] ) {
+            const photo = lines( degrees );
+            const skew = cardScanSkew( photo.data, photo.width, photo.height );
+            expect( Math.abs( skew - degrees ) ).toBeLessThanOrEqual( 0.5 );
+            const level = cardScanRotate( photo.data, photo.width, photo.height, skew );
+            expect( Math.abs( cardScanSkew( level.data, level.width, level.height ) ) ).toBeLessThanOrEqual( 0.5 );
+        }
+    } );
+    it( "leaves a level photo, and one with no lines, alone", () => {
+        const level = lines( 0 );
+        expect( cardScanSkew( level.data, level.width, level.height ) ).toBe( 0 );
+        expect( cardScanSkew( new Uint8ClampedArray( 400 * 300 * 4 ).fill( 255 ), 400, 300 ) ).toBe( 0 );
     } );
 } );

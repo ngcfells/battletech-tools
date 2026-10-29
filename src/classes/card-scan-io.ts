@@ -238,6 +238,70 @@ export const cardScanRows = ( io: ICardScanIO, rect: ICardScanRect, mode: TCardS
     } );
 }
 
+/**
+ * How far a photo's text lines slope, in degrees (positive runs down to the right), up to 10 either way; 0 when
+ * the photo is already level to half a degree or shows no clear lines. The dark pixels are sheared at each trial
+ * angle and the one that stacks them into the sharpest rows wins.
+ */
+export const cardScanSkew = ( data: ArrayLike<number>, width: number, height: number ): number => {
+    // A copy about 400 pixels wide is plenty to see the lines and quick to shear.
+    const step = Math.max( 1, Math.round( width / 400 ) );
+    const dark: [ number, number ][] = [];
+    for( let y = 0; y < height; y += step ) for( let x = 0; x < width; x += step ) {
+        const at = ( y * width + x ) * 4;
+        if( data[at] * 0.299 + data[at + 1] * 0.587 + data[at + 2] * 0.114 < 100 ) dark.push( [ x / step, y / step ] );
+    }
+    if( dark.length < 200 ) return 0;
+    const rows = Math.ceil( height / step ) + Math.ceil( width / step );
+    const sharpness = ( degrees: number ): number => {
+        const slope = Math.tan( degrees * Math.PI / 180 );
+        const counts = new Float64Array( rows * 2 + 1 );
+        for( const [ x, y ] of dark ) counts[Math.round( y - x * slope ) + rows]++;
+        return counts.reduce( ( sum, count ) => sum + count * count, 0 );
+    };
+    let best = 0;
+    let bestScore = sharpness( 0 );
+    const level = bestScore;
+    for( let degrees = -10; degrees <= 10; degrees += 0.25 ) {
+        const score = sharpness( degrees );
+        if( score > bestScore ) {
+            best = degrees;
+            bestScore = score;
+        }
+    }
+    return Math.abs( best ) < 0.5 || bestScore < level * 1.02 ? 0 : best;
+}
+
+/**
+ * The photo turned by -degrees about its centre (undoing cardScanSkew's slope), on a canvas grown to hold it all,
+ * the new corners white.
+ */
+export const cardScanRotate = ( data: ArrayLike<number>, width: number, height: number, degrees: number ): { data: Uint8ClampedArray<ArrayBuffer>, width: number, height: number } => {
+    const angle = -degrees * Math.PI / 180;
+    const cos = Math.cos( angle );
+    const sin = Math.sin( angle );
+    const outWidth = Math.ceil( Math.abs( width * cos ) + Math.abs( height * sin ) );
+    const outHeight = Math.ceil( Math.abs( width * sin ) + Math.abs( height * cos ) );
+    const out = new Uint8ClampedArray( outWidth * outHeight * 4 ).fill( 255 );
+    for( let y = 0; y < outHeight; y++ ) for( let x = 0; x < outWidth; x++ ) {
+        // Each new pixel from the source point that turns onto it, blended from the four around it.
+        const dx = x - outWidth / 2;
+        const dy = y - outHeight / 2;
+        const sx = dx * cos + dy * sin + width / 2;
+        const sy = -dx * sin + dy * cos + height / 2;
+        const x0 = Math.floor( sx );
+        const y0 = Math.floor( sy );
+        if( x0 < 0 || y0 < 0 || x0 >= width - 1 || y0 >= height - 1 ) continue;
+        const ax = sx - x0;
+        const ay = sy - y0;
+        for( let c = 0; c < 4; c++ ) {
+            const at = ( px: number, py: number ) => data[( py * width + px ) * 4 + c];
+            out[( y * outWidth + x ) * 4 + c] = ( at( x0, y0 ) * ( 1 - ax ) + at( x0 + 1, y0 ) * ax ) * ( 1 - ay ) + ( at( x0, y0 + 1 ) * ( 1 - ax ) + at( x0 + 1, y0 + 1 ) * ax ) * ay;
+        }
+    }
+    return { data: out, width: outWidth, height: outHeight };
+}
+
 /** Icon colours from RGBA pixels. Tags and checks are strongly saturated; the card's cream and gold are not. */
 export const cardScanColoursFromPixels = ( data: ArrayLike<number> ): ICardScanColours => {
     const rv: ICardScanColours = { red: 0, yellow: 0, blue: 0, green: 0 };
