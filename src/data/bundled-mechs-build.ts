@@ -15,7 +15,6 @@ import { stringifyTable, untabulate } from "../utils/packed-json";
 import { getRulesLevelStanding, UnitStanding } from "../utils/unit-standing";
 import { getSSWXMLBasicInfo, parseSSWXML } from "../utils/getSSWXMLBasicInfo";
 import { buildCustomMULRecord, CUSTOM_MUL_ID_START, CUSTOM_MUL_KEY_PREFIX, CUSTOM_RULES_LEVELS, ICustomMULForm, serializeCustomMULRecords } from "./custom-mul";
-import MEGAMEK_BV from "./megamek-bv.json";
 import { mechMULForm } from "./sample-mul";
 
 export const DEFAULT_SSW_DIR = "C:/repo/battletech-tools/WorkingData_DEV/SSWdata";
@@ -123,8 +122,8 @@ export function writeMegaMekCustomRecords(currentFileText: string | null, record
 /** MegaMek's rules level ("rules level:3") as the custom list's: 1 Introductory to 4 Experimental, 5 Unofficial. */
 const mtfRulesLevel = (text: string): string => CUSTOM_RULES_LEVELS[Math.min(Math.max(+(/^rules level:\s*(\d)/im.exec(text)?.[1] ?? 2) - 1, 0), 3)];
 
-/** The key megamek-bv.json files a MegaMek 'Mech under: its path under unit_files. */
-export const megaMekBVKey = (jobName: string): string => jobName.replace(/^megamek\//, "meks/");
+/** A MegaMek 'Mech file's path under MegaMek's unit_files. */
+const megaMekFilePath = (jobName: string): string => jobName.replace(/^megamek\//, "meks/");
 
 const squash = (text: string): string => text.toLowerCase().normalize("NFKD").replace(/[^a-z0-9]/g, "");
 // The quoted or bracketed name a model carries ("Yen Lo Wang", (Jasminda)), squashed.
@@ -388,7 +387,7 @@ function megaMekMechForm(mech: BattleMech, job: IMechJob, mtf: string): ICustomM
         dateIntroduced: /^era:\s*(\d+)/im.exec(mtf)?.[1] ?? "",
         author: "MegaMek",
         source: "MegaMek unit files",
-        notes: `Not on the Master Unit List; converted from MegaMek's ${megaMekBVKey(job.name)} (MegaMek Data, CC BY-NC-SA 4.0).`,
+        notes: `Not on the Master Unit List; converted from MegaMek's ${megaMekFilePath(job.name)} (MegaMek Data, CC BY-NC-SA 4.0). BV is this tool's own, by the rules and errata.`,
     };
 }
 
@@ -481,7 +480,7 @@ export function prepareMechFile(job: IMechJob, { mul, mul1ById }: IMechMUL, mode
  * bundled-build-runner.ts); by default each is prepared here, one after another.
  */
 export function buildBundledMechs(sswDir: string, mulDir: string, megamekDir?: string, canon: ICanonMech[] = [], mordelDir?: string,
-    prepare?: (job: IMechJob) => IPreparedMech, sourceBVs: Record<string, number> = MEGAMEK_BV): IBundledBuild & { customRecords: IASMULUnit[] } {
+    prepare?: (job: IMechJob) => IPreparedMech): IBundledBuild & { customRecords: IASMULUnit[] } {
     const indexes = loadMechMUL(mulDir);
     const customIds = loadMegaMekCustomIds(mulDir, isMULMech);
     const customRecords: IASMULUnit[] = [];
@@ -541,13 +540,11 @@ export function buildBundledMechs(sswDir: string, mulDir: string, megamekDir?: s
         if (wrong.length > 0) {
             leave("BV differs from the MUL", wrong.map(({ entry, unit }) => `${entry.model}: BV ${entry.bv}, MUL ${unit!.BattleValue}`).join("; ")); return false;
         }
-        // A MegaMek 'Mech the MUL lacks is checked against MegaMek's own BV (scripts/megamek-bv.mjs records it) and
-        // filed in the custom unit list.
+        // A MegaMek 'Mech the MUL lacks is filed in the custom unit list at our own BV, which the rules, books and
+        // errata certify; no other tool's figure is the check.
         let customRecord: IASMULUnit | null = null;
         if (matched.length === 0 && listed.length === 0 && design.customForm && !renaming) {
-            const source = sourceBVs[megaMekBVKey(job.name)];
-            if (source === undefined) { leave("not on the Master Unit List, and MegaMek's BV is not recorded"); return false; }
-            if (bv !== source) { leave("BV differs from MegaMek's (not on the MUL)", `BV ${bv}, MegaMek ${source}`); return false; }
+            if (!(bv > 0)) { leave("not on the MUL, and has no BV of its own"); return false; }
             if (!design.survives) { leave("does not survive the compact format"); return false; }
             customRecord = makeMegaMekCustomRecord(design.customForm, customIds, customRecords);
             if (!customRecord) { leave("its custom unit list key is taken"); return false; }

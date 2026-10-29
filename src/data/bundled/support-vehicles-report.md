@@ -1,17 +1,15 @@
 # Bundled Support Vehicles: build report
 
-85 designs kept, 140 files left out.
+91 designs kept, 134 files left out.
 
 | Reason | Files |
 |---|---|
 | the import could not carry all of it over | 51 |
 | no Master Unit List entry to check its BV against | 46 |
 | BV differs from the MUL | 37 |
-| BV differs from MegaMek's (the MUL gives none) | 6 |
 
 ## Left out
 
-- `vehicles/3025 IS Land/Air Car.blk`: BV differs from MegaMek's (the MUL gives none): BV 154, MegaMek 75
 - `vehicles/3039u/Hi-Scout Drone (PathTrak).blk`: BV differs from the MUL: BV 15, MUL 36
 - `vehicles/3075 Support tanks/Buffel VII Engineering Support Vehicle (Cargo).blk`: the import could not carry all of it over: "ISMineSweeper" has no match in this catalog and was left off.
 - `vehicles/3075 Support tanks/Buffel VII Engineering Support Vehicle Reverse.blk`: the import could not carry all of it over: "ISMineSweeper" has no match in this catalog and was left off.
@@ -61,9 +59,7 @@
 - `vehicles/HB HM/Hector Road Train Trailer Module (Passenger).blk`: the import could not carry all of it over: Transport "infantrybay" is not one this builder has and was left off.
 - `vehicles/HB HM/Hector Road Train Trailer Module (Refrigerated).blk`: no Master Unit List entry to check its BV against
 - `vehicles/HB HM/Hector Road Train Trailer Module.blk`: no Master Unit List entry to check its BV against
-- `vehicles/HB HM/Ibex RV (Militarized MG).blk`: BV differs from MegaMek's (the MUL gives none): BV 33, MegaMek 26
 - `vehicles/Hist Reunification War/Wayland Mobile Base.blk`: the import could not carry all of it over: "ISMobileFieldBase" has no match in this catalog and was left off.
-- `vehicles/Operation Klondike/Brunel Dump Truck LRM.blk`: BV differs from MegaMek's (the MUL gives none): BV 1330, MegaMek 965
 - `vehicles/ProtoTypes/Lexan Surveillance VTOL.blk`: the import could not carry all of it over: "Small Laser" cannot go in the turret and was mounted unplaced.; "Small Laser" cannot go in the turret and was mounted unplaced.; "ISReconCamera" cannot go in the turret and was mounted unplaced.
 - `vehicles/ProtoTypes/Nishikigoi Support Aircraft Koi.blk`: BV differs from the MUL: BV 1953, MUL 2017
 - `vehicles/TOS/Granada/Auxiliary Defense Tank ADT-1.blk`: the import could not carry all of it over: "Rifle (Cannon, Medium)" has no match in this catalog and was left off.; Ammunition "IS Ammo Medium Rifle" has no weapon or no match in this catalog and was left off.; Ammunition "IS Ammo Medium Rifle" has no weapon or no match in this catalog and was left off.
@@ -103,7 +99,6 @@
 - `vehicles/TRO Vehicle Annex/Tracked/Hesiod Utility Vehicle (Cargo).blk`: no Master Unit List entry to check its BV against
 - `vehicles/TRO Vehicle Annex/Tracked/Hesiod Utility Vehicle (Crane).blk`: no Master Unit List entry to check its BV against
 - `vehicles/TRO Vehicle Annex/Tracked/Hesiod Utility Vehicle (Harvester).blk`: no Master Unit List entry to check its BV against
-- `vehicles/TRO Vehicle Annex/Tracked/Kallon UL-series Construction Vehicle UL-14 'Dual Bulldozer'.blk`: BV differs from MegaMek's (the MUL gives none): BV 22, MegaMek 40
 - `vehicles/TRO Vehicle Annex/Tracked/Limpet Half-Track.blk`: the import could not carry all of it over: "HHSearchlight" has no match in this catalog and was left off.; "InfantryAssaultRifle(PT):SIZE:10.0" has no match in this catalog and was left off.; "InfantryAssaultRifle(PT):SIZE:10.0" has no match in this catalog and was left off.; "InfantryStandardSRM:SIZE:1.0" has no match in this catalog and was left off.
 - `vehicles/TRO Vehicle Annex/Tracked/Luciano White Wolverine.blk`: no Master Unit List entry to check its BV against
 - `vehicles/TRO Vehicle Annex/Tracked/Magellan Series Four.blk`: no Master Unit List entry to check its BV against
@@ -112,8 +107,6 @@
 - `vehicles/TRO Vehicle Annex/Tracked/Rumbler-HT.blk`: the import could not carry all of it over: "HHSearchlight" has no match in this catalog and was left off.; "InfantryHRR:SIZE:1.0" has no match in this catalog and was left off.
 - `vehicles/TRO Vehicle Annex/VTOL/Blackstone Baronet Passenger VTOL.blk`: no Master Unit List entry to check its BV against
 - `vehicles/TRO Vehicle Annex/VTOL/Blackstone Pegasus Passenger VTOL.blk`: no Master Unit List entry to check its BV against
-- `vehicles/TRO Vehicle Annex/VTOL/Cascatelle Firefighting VTOL.blk`: BV differs from MegaMek's (the MUL gives none): BV 157, MegaMek 183
-- `vehicles/TRO Vehicle Annex/VTOL/Lexan Oceanic Luxury VTOL Series VI.blk`: BV differs from MegaMek's (the MUL gives none): BV 162, MegaMek 193
 - `vehicles/TRO Vehicle Annex/VTOL/Peacekeeper SWAT Carrier.blk`: the import could not carry all of it over: "Searchlight" cannot go in the right and was mounted unplaced.; "Searchlight" cannot go in the left and was mounted unplaced.
 - `vehicles/TRO Vehicle Annex/Wheeled/Aston-Martin Fiver Roadster.blk`: no Master Unit List entry to check its BV against
 - `vehicles/TRO Vehicle Annex/Wheeled/Aston-Martin Fiver Traveler.blk`: no Master Unit List entry to check its BV against

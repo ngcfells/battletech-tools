@@ -1,6 +1,6 @@
 # Bundled Small Craft and DropShips: build report
 
-100 designs kept, 148 files left out.
+101 designs kept, 147 files left out.
 
 | Reason | Files |
 |---|---|
@@ -8,7 +8,6 @@
 | BV differs from the MUL | 56 |
 | the import could not carry all of it over | 17 |
 | import failed | 2 |
-| BV differs from MegaMek's (the MUL gives none) | 1 |
 | does not survive the compact format | 1 |
 
 ## Left out
@@ -116,7 +115,6 @@
 - `dropships/TRO3085/Cutting Edge/Clan/Aesir Assault Dropship.blk`: the import could not carry all of it over: "ISSmallNavalCommScannerSuite" has no match in this catalog and was left off.
 - `dropships/TRO3085/Cutting Edge/Clan/Vanir Assault Dropship.blk`: the import could not carry all of it over: "ISSmallNavalCommScannerSuite" has no match in this catalog and was left off.
 - `dropships/TRO3085/Cutting Edge/IS/Interdictor Pocket Warship (Sub-Capital).blk`: no Master Unit List entry to check its BV against
-- `dropships/TRO3085/Cutting Edge/IS/Interdictor Pocket Warship.blk`: BV differs from MegaMek's (the MUL gives none): BV 20670, MegaMek 20648
 - `dropships/TRO3085/ONN/Nekohono'o (SCL).blk`: does not survive the compact format
 - `dropships/TRO3085/Supplemental/Tiamat Pocket Warship.blk`: BV differs from the MUL: BV 50670, MUL 50146
 - `dropships/TRO3145/Marik/Seleucus Infantry Transport.blk`: BV differs from the MUL: BV 7757, MUL 7306

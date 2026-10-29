@@ -1,6 +1,6 @@
 # Bundled 'Mechs: build report
 
-3637 designs kept (38 renamed), 4087 files left out.
+3646 designs kept (38 renamed), 4078 files left out.
 
 | Reason | Files |
 |---|---|
@@ -14,7 +14,6 @@
 | no Master Unit List entry to check its BV against | 38 |
 | duplicate of a design already kept, differs only in armor spread | 36 |
 | import errors | 34 |
-| BV differs from MegaMek's (not on the MUL) | 9 |
 | duplicate of a design already kept, differs only in engine heat sinks in crit slots | 6 |
 | does not survive the compact format | 6 |
 | different submodel, same name and model: heat sinks placed | 6 |
@@ -2876,9 +2875,6 @@
 - `megamek/Golden Century/Woodsman C.mtf`: duplicate of a design already kept: Woodsman  C
 - `megamek/Golden Century/Woodsman D.mtf`: the import could not carry all of it over: Cannot place 'Clan Mech Mortar-4': its slots are split in a way not converted yet; Cannot place 'Clan Mech Mortar-4': its slots are split in a way not converted yet
 - `megamek/Golden Century/Woodsman Prime.mtf`: duplicate of a design already kept: Woodsman  Prime
-- `megamek/Gothic/Firestarter FS9-HB.mtf`: BV differs from MegaMek's (not on the MUL): BV 528, MegaMek 754
-- `megamek/Gothic/King Crab KGC-0KP.mtf`: BV differs from MegaMek's (not on the MUL): BV 1820, MegaMek 1893
-- `megamek/Gothic/Marauder MAD-3H.mtf`: BV differs from MegaMek's (not on the MUL): BV 1141, MegaMek 1396
 - `megamek/HBMPS/Rock Hound AM-PRM-RH7 'Rock Possum' ProspectorMech.mtf`: different submodel, same name and model: equipment: "Rock Possum" ProspectorMech AM-PRM-RH7
 - `megamek/HBMPS/Rock Hound AM-PRM-RH7 ProspectorMech.mtf`: duplicate of a design already kept: "Rock Hound" ProspectorMech AM-PRM-RH7
 - `megamek/HBMPS/Rock Hound AM-PRM-RH7A 'Rock Otter' ProspectorMech.mtf`: duplicate of a design already kept: "Rock Otter" ProspectorMech AM-PRM-RH7A
@@ -3609,7 +3605,6 @@
 - `megamek/Rec Guides ilClan/Vol 9/Valkyrie VLK-QD.mtf`: duplicate of a design already kept: Valkyrie VLK-QD
 - `megamek/Rec Guides ilClan/Vol 9/Valkyrie VLK-QD6.mtf`: duplicate of a design already kept: Valkyrie VLK-QD6
 - `megamek/Rec Guides ilClan/Vol 9/Valkyrie VLK-QDD.mtf`: duplicate of a design already kept: Valkyrie VLK-QDD
-- `megamek/Shrapnel/Gothic/Phoenix Hawk 'Hammer Hawk' PXH-1S.mtf`: BV differs from MegaMek's (not on the MUL): BV 908, MegaMek 1080
 - `megamek/Shrapnel/Gothic/Phoenix Hawk PXH-1GU 'Special'.mtf`: different submodel, same name and model: ammo type: Phoenix Hawk PXH-1b "Special"
 - `megamek/Shrapnel/Vol 10/Hel HL-1.mtf`: duplicate of a design already kept: Hel HL-1
 - `megamek/Shrapnel/Vol 10/Hel HL-2.mtf`: duplicate of a design already kept: Hel HL-2
@@ -3883,9 +3878,6 @@
 - `megamek/Turning Points/TP Irian/Marauder II MAD-6S.mtf`: duplicate of a design already kept: Marauder II MAD-6S
 - `megamek/Urbanfest/UrbanKnight UM-DKX.mtf`: the import could not carry all of it over: Cannot find any equipment named 'ChainDrapeCape'; Cannot find any equipment named 'ChainDrapeCape'
 - `megamek/Videogame (Apocryphal)/Bull Shark BSK-M3.mtf`: the import could not carry all of it over: Cannot find the ammunition 'CLIMPAmmoAC5'
-- `megamek/Videogame (Apocryphal)/Corsair COR-6R.mtf`: BV differs from MegaMek's (not on the MUL): BV 1630, MegaMek 1636
-- `megamek/Videogame (Apocryphal)/Sun Spider C.mtf`: BV differs from MegaMek's (not on the MUL): BV 2525, MegaMek 2541
-- `megamek/Videogame (Apocryphal)/Sun Spider Vanguard.mtf`: BV differs from MegaMek's (not on the MUL): BV 2030, MegaMek 2044
 - `megamek/WoR Supplemental/Cephalus A.mtf`: different submodel, same name and model: equipment: Cephalus  A
 - `megamek/WoR Supplemental/Cephalus B.mtf`: duplicate of a design already kept: Cephalus  B
 - `megamek/WoR Supplemental/Cephalus C.mtf`: duplicate of a design already kept: Cephalus  C
@@ -4033,10 +4025,8 @@
 - `megamek/XTRs/Primitives V/Wolverine WVR-1R.mtf`: the import could not carry all of it over: Cannot find any equipment named 'ISPrototypeJumpJet'; Cannot find any equipment named 'ISPrototypeJumpJet'; Unallocated Criticals: 4; - Standard Jump Jets (jj-standard); - Standard Jump Jets (jj-standard); - Standard Jump Jets (jj-standard); - Standard Jump Jets (jj-standard)
 - `megamek/XTRs/Primitives V/Wolverine WVR-3R.mtf`: the import could not carry all of it over: Cannot find any equipment named 'ISPrototypeJumpJet'; Cannot find any equipment named 'ISPrototypeJumpJet'; Unallocated Criticals: 4; - Standard Jump Jets (jj-standard); - Standard Jump Jets (jj-standard); - Standard Jump Jets (jj-standard); - Standard Jump Jets (jj-standard)
 - `megamek/XTRs/Primitives V/Ymir BWP-X1.mtf`: different submodel, same name and model: ammo type: Ymir BWP-X1 "Bipedal Weapons Platform"
-- `megamek/XTRs/RISC/BattleAxe BKX-RISC.mtf`: BV differs from MegaMek's (not on the MUL): BV 2391, MegaMek 2415
 - `megamek/XTRs/RISC/Emperor EMP-6X.mtf`: the import could not carry all of it over: Cannot find any equipment named 'ISSuperCooledMyomer'; Cannot find any equipment named 'ISSuperCooledMyomer'; Cannot find any equipment named 'ISSuperCooledMyomer'; Cannot find any equipment named 'ISSuperCooledMyomer'; Cannot find any equipment named 'ISSuperCooledMyomer'; Cannot find any equipment named 'ISSuperCooledMyomer'; Unallocated Criticals: 6; - Triple-Strength Myomer (tsm); - Triple-Strength Myomer (tsm); - Triple-Strength Myomer (tsm); - Triple-Strength Myomer (tsm); - Triple-Strength Myomer (tsm); - Triple-Strength Myomer (tsm)
 - `megamek/XTRs/RISC/Excalibur EXC-B2-RISC.mtf`: the import could not carry all of it over: Cannot find any equipment named 'ISSuperCooledMyomer'; Cannot find any equipment named 'ISSuperCooledMyomer'; Cannot find any equipment named 'ISSuperCooledMyomer'; Cannot find any equipment named 'ISSuperCooledMyomer'; Cannot find any equipment named 'ISSuperCooledMyomer'; Cannot find any equipment named 'ISSuperCooledMyomer'; Unallocated Criticals: 6; - Triple-Strength Myomer (tsm); - Triple-Strength Myomer (tsm); - Triple-Strength Myomer (tsm); - Triple-Strength Myomer (tsm); - Triple-Strength Myomer (tsm); - Triple-Strength Myomer (tsm)
-- `megamek/XTRs/RISC/Mad Cat Mk IV PR RISC.mtf`: BV differs from MegaMek's (not on the MUL): BV 2847, MegaMek 2876
 - `megamek/XTRs/RISC/Malice MAL-Y-SH-RISC.mtf`: the import could not carry all of it over: Cannot find any equipment named 'ISSuperCooledMyomer'; Cannot find any equipment named 'ISSuperCooledMyomer'; Cannot find any equipment named 'ISSuperCooledMyomer'
 - `megamek/XTRs/RISC/Templar TLR1-ORISC.mtf`: the import could not carry all of it over: Cannot find any equipment named 'ISRISCLaserPulseModule'; Cannot find any equipment named 'ISRISCLaserPulseModule'
 - `megamek/XTRs/RISC/Wendigo-XR.mtf`: the import could not carry all of it over: Cannot find any equipment named 'ISRISCLaserPulseModule'; Cannot find any equipment named 'ISRISCLaserPulseModule'; Cannot find any equipment named 'ISSuperCooledMyomer'; Cannot find any equipment named 'ISRISCLaserPulseModule'; Cannot find any equipment named 'ISRISCLaserPulseModule'; Cannot find any equipment named 'ISSuperCooledMyomer'; Cannot find any equipment named 'ISSuperCooledMyomer'; Cannot find any equipment named 'ISSuperCooledMyomer'; Cannot find any equipment named 'ISSuperCooledMyomer'; Cannot find any equipment named 'ISSuperCooledMyomer'; Unallocated Criticals: 6; - Triple-Strength Myomer (tsm); - Triple-Strength Myomer (tsm); - Triple-Strength Myomer (tsm); - Triple-Strength Myomer (tsm); - Triple-Strength Myomer (tsm); - Triple-Strength Myomer (tsm)
