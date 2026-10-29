@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { acesSampleBrawler383 } from "../data/aces-card-samples";
 import {
-    acesScanTagColour, applyAcesScanToCard, findAcesCardLayout, parseAcesScanColumn, parseAcesScanCombat, parseAcesScanFooter,
+    acesScanOnesAndSevens, acesScanTagColour, applyAcesScanToCard, findAcesCardLayout, parseAcesScanColumn, parseAcesScanCombat, parseAcesScanFooter,
     parseAcesScanHeader, restoreAcesScanIcons, scanAcesCard, tidyAcesScanLines,
 } from "./aces-card-scan";
 import { cardScanBinarize, cardScanColoursFromPixels, cardScanMargin, ICardScanColours, ICardScanIO, ICardScanLine, ICardScanRect } from "./card-scan-io";
@@ -177,6 +177,25 @@ describe( "Aces card scan: Rekikire's photos", () => {
         const column = parseAcesScanColumn( [ "rr pRisy Wp", "Ifthe ideal", "is £2 and unit can", "move behind it", "46) © 24\") 30\")", "1.behind target" ].map( plain ) );
         expect( column.condition ).toMatch( /^If the ideal/ );
         expect( column.zoneRings ).toEqual( [ 24, 30 ] );
+    } );
+
+    it( "reads a misread inch mark glued to a ring as a mark, since rings are even", () => {
+        const column = parseAcesScanColumn( [ "If the ideal", "is £2 and unit can", "move behind it", "67\") 24\")", "1.behind target" ].map( plain ) );
+        expect( column.zoneRings ).toEqual( [ 6, 24 ] );
+    } );
+
+    it( "finishes a list cut off after vs, reads \"it there are\", and marks a bare target's lost icon", () => {
+        const column = parseAcesScanColumn( [ "it there are", "no enemies in", "© 24\") 30\")", "1. target", "2. intervening woods vs" ].map( plain ) );
+        expect( column.condition ).toMatch( /^If there are/ );
+        expect( column.filters ).toEqual( [ "[?] target", "intervening woods vs [highest] other enemies" ] );
+    } );
+
+    it( "tells a 7 from a 1 by its width, with a 7's bar broken from its stem", () => {
+        const box = ( x0: number, y0: number, w: number, h: number ) => ( { x0: x0, y0: y0, x1: x0 + w, y1: y0 + h } );
+        const ink = [ box( 248, 0, 63, 125 ), box( 334, 0, 70, 127 ), box( 425, 0, 61, 45 ), box( 436, 40, 46, 87 ), box( 474, 3, 3, 0 ) ];
+        expect( acesScanOnesAndSevens( "131", ink ) ).toBe( "737" );
+        expect( acesScanOnesAndSevens( "717", [ box( 0, 0, 60, 120 ), box( 100, 0, 20, 120 ), box( 200, 0, 60, 120 ) ] ) ).toBe( "717" );
+        expect( acesScanOnesAndSevens( "17", [ box( 0, 0, 60, 120 ) ] ) ).toBe( "17" );
     } );
 
     it( "matches a deck name with a letter or two misread", () => {

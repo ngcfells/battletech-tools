@@ -185,6 +185,18 @@ export const cardScanBinarize = ( data: ArrayLike<number>, width: number, height
     return { data: rv, width: outWidth, height: outHeight };
 }
 
+/** The boxes (region pixels) of each connected blob of ink in a region, cleaned as for OCR in the given mode. */
+export const cardScanInkBoxes = ( io: ICardScanIO, rect: ICardScanRect, mode: TCardScanMode ): ICardScanBox[] => {
+    const clean = cardScanBinarize( io.pixels( rect ), rect.width, rect.height, mode );
+    const ink = new Uint8Array( rect.width * rect.height );
+    for( let y = 0; y < rect.height; y++ ) for( let x = 0; x < rect.width; x++ ) {
+        if( clean.data[( ( y + cardScanMargin ) * clean.width + x + cardScanMargin ) * 4] === 0 ) ink[y * rect.width + x] = 1;
+    }
+    const rv: ICardScanBox[] = [];
+    dropBlobs( ink, rect.width, rect.height, ( _count, box ) => { rv.push( { ...box } ); return false; } );
+    return rv;
+}
+
 /**
  * The text rows in a region, as whole-image rects: runs of rows holding ink once the region is cleaned as for OCR.
  * Runs closer than gap pixels merge (a letter's parts), and runs shorter than minHeight are dropped (specks, rules).

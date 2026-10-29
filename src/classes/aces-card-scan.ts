@@ -10,7 +10,7 @@ import {
     TAcesMoveType,
 } from "../data/aces-cards";
 import { acesDecks } from "../data/aces-rules";
-import { ICardScanColours, ICardScanIO, ICardScanLine, ICardScanRect, ICardScanWord, cardScanMargin } from "./card-scan-io";
+import { ICardScanBox, ICardScanColours, ICardScanIO, ICardScanLine, ICardScanRect, ICardScanWord, TCardScanMode, cardScanInkBoxes, cardScanMargin } from "./card-scan-io";
 
 /*
  * Reads an Aces behavior card from a photo of the players' own card, for those who find the small print hard to
@@ -222,6 +222,7 @@ const fixWords = ( text: string ): string => {
         // A two-digit TN is 10 to 12, so its first digit is 1 however it reads ("TNTO").
         .replace( /\bTN\s*([0-9GOoSBIlZT]{1,2})\b/g, ( _, value: string ) => "TN" + value.split( "" ).map( ( letter, index ) => value.length === 2 && index === 0 ? "1" : digitFor[letter] || letter ).join( "" ) )
         .replace( /^(\W*)[Il1|]?f\s?(there|the)\b/, "$1If $2" )
+        .replace( /^(\W*)[Ii][tl]\s+(there are)\b/, "$1If $2" )
         .replace( /\b[Il1]f(there|the|needed)\b/g, "If $1" )
         .replace( /\b1f\b/g, "If" )
         .replace( /andunitcan/g, "and unit can" )
@@ -349,7 +350,8 @@ const gluedRings = ( text: string ): number[] | null => {
         if( run === "" ) return [];
         for( const size of [ 2, 1 ] ) {
             const ring = +run.substring( 0, size );
-            if( run.length < size || ring < 6 || ring > 48 || ring <= after ) continue;
+            // Zone rings on the cards are even inches.
+            if( run.length < size || ring < 6 || ring > 48 || ring % 2 !== 0 || ring <= after ) continue;
             const rest = run.substring( size );
             const plain = split( rest, ring, marks );
             if( plain ) return [ ring, ...plain ];
@@ -371,8 +373,9 @@ const gluedRings = ( text: string ): number[] | null => {
 const parseZone = ( text: string ): { zoneRings: number[], zoneKeyword: "" | "nearest" | "any" } => {
     // A ring line is only numbers and marks, so once one ring reads cleanly the others count even where OCR lost the inch mark ("6') 24)").
     const marked = /\d+(?=\s*["”'’°]+\s*\))/.test( text ) && !/[A-Za-z]{2,}/.test( text );
-    const rings = ( text.match( marked ? /\d+/g : /\d+(?=\s*["”'’°]+\s*\))/g ) || [] ).map( ( ring ) => +ring )
-        .filter( ( ring ) => ring >= 6 && ring <= 48 );
+    // A number that is no ring is two glued together, or one with its mark misread ("67\")" is 6" and a 7 for '")').
+    const rings = ( text.match( marked ? /\d+/g : /\d+(?=\s*["”'’°]+\s*\))/g ) || [] )
+        .reduce( ( rv, run ) => rv.concat( gluedRings( run + ")" ) || [] ), [] as number[] );
     // Rings print closest first; a number before a larger one's end is the zone icon misread ("46) 24") 30")").
     while( rings.length > 1 && rings[0] >= rings[1] ) rings.shift();
     if( rings.length > 0 ) return { zoneRings: rings, zoneKeyword: "" };
@@ -478,8 +481,12 @@ export const parseAcesScanColumn = ( lines: { text: string, colours: ICardScanCo
     }
 
     // Card art under a short column reads as lines of capitals; every filter uses a word from the cards' small set.
+    // A list ending "vs" lost its last line under the photo's edge; the cards only ever go on "▲ other enemies".
     column.filters = joinNumbered( texts.slice( firstNumbered >= 0 ? firstNumbered : texts.length ).map( ( line ) => line.text ) )
+        .map( ( line, index, lines ) => index === lines.length - 1 && /\bvs\W*$/.test( line ) ? line.replace( /\W*$/, "" ) + " other enemies" : line )
         .map( ( line ) => restoreAcesScanIcons( line ) )
+        // A filter is never a bare "target": its icon went unread.
+        .map( ( line ) => /^\W*target\W*$/i.test( line ) ? "[?] target" : line )
         .filter( ( line ) => /target|enem|all(y|ies)|cover|woods|sprint|behind|armor|damage|heat|terrain|building|water|elevation|hill/i.test( line ) );
     return column;
 }
@@ -574,6 +581,29 @@ export const tidyAcesScanLines = ( lines: ICardScanLine[] ): ICardScanLine[] => 
     return rows;
 }
 
+/**
+ * The priority number's 1s and 7s told apart by shape, which OCR can't do in the card's font: a 7 is as wide as the
+ * other digits (about 0.6 of its height), a 1 a narrow stroke. The digits are the three tallest blobs of white ink;
+ * if three don't stand out the reading is kept.
+ */
+export const acesScanOnesAndSevens = ( digits: string, boxes: ICardScanBox[] ): string => {
+    const highest = Math.max( 0, ...boxes.map( ( box ) => box.y1 - box.y0 ) );
+    // A photo can break a 7's bar from its stem, so pieces that overlap side to side are one glyph.
+    const pieces: ICardScanBox[] = [];
+    for( const box of boxes.filter( ( box ) => box.y1 - box.y0 >= highest * 0.25 ).sort( ( a, b ) => a.x0 - b.x0 ) ) {
+        const last = pieces[pieces.length - 1];
+        if( last && box.x0 < last.x1 ) pieces[pieces.length - 1] = { x0: last.x0, y0: Math.min( last.y0, box.y0 ), x1: Math.max( last.x1, box.x1 ), y1: Math.max( last.y1, box.y1 ) };
+        else pieces.push( box );
+    }
+    const tallest = Math.max( 0, ...pieces.map( ( box ) => box.y1 - box.y0 ) );
+    const glyphs = pieces.filter( ( box ) => box.y1 - box.y0 >= tallest * 0.75 );    if( glyphs.length !== digits.length ) return digits;
+    return digits.split( "" ).map( ( digit, index ) => {
+        if( digit !== "1" && digit !== "7" ) return digit;
+        const box = glyphs[index];
+        return ( box.x1 - box.x0 ) / ( box.y1 - box.y0 ) > 0.45 ? "7" : "1";
+    } ).join( "" );
+}
+
 /* ----- the whole scan ----- */
 
 const linesIn = ( lines: ICardScanLine[] ): string => lines.map( ( line ) => line.text ).join( " " );
@@ -633,14 +663,17 @@ export const scanAcesCard = async ( io: ICardScanIO ): Promise<IAcesScanResult> 
     // tried and the most common three-digit reading wins. A darker photo's white digits read grey, so failing that
     // the cut is set from the number's own brightness.
     const votes: { [value: string]: number } = {};
+    let numberMode: TCardScanMode = "digits";
     for( const mode of [ "digits", "dim-digits" ] as const ) {
         if( Object.keys( votes ).length > 0 ) break;
+        numberMode = mode;
         for( const height of [ 30, 34, 38, 42 ] ) {
             const digits = linesIn( await io.recognize( numberRect, mode, Math.min( 1, height / ( numberRect.height + cardScanMargin * 2 ) ) ) ).replace( /\D/g, "" );
             if( digits.length === 3 ) votes[digits] = ( votes[digits] || 0 ) + 1;
         }
     }
-    const best = Object.keys( votes ).sort( ( a, b ) => votes[b] - votes[a] )[0];
+    let best = Object.keys( votes ).sort( ( a, b ) => votes[b] - votes[a] )[0];
+    if( best !== undefined && /[17]/.test( best ) ) best = acesScanOnesAndSevens( best, cardScanInkBoxes( io, numberRect, numberMode ) );
     // The first pass over the whole photo often reads what the close crops miss: the title, the big number at the
     // top right, and "4/6 Missile Boat" at the bottom left.
     const top = whole.filter( ( line ) => line.bbox.y1 < io.height * 0.4 );
