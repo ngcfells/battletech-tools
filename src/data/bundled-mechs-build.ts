@@ -14,6 +14,9 @@ import { getClassicMechEntries, getMULMatchKeys } from "../utils/classicMULMatch
 import { stringifyTable, untabulate } from "../utils/packed-json";
 import { getRulesLevelStanding, UnitStanding } from "../utils/unit-standing";
 import { getSSWXMLBasicInfo, parseSSWXML } from "../utils/getSSWXMLBasicInfo";
+import { buildCustomMULRecord, CUSTOM_MUL_ID_START, CUSTOM_MUL_KEY_PREFIX, CUSTOM_RULES_LEVELS, ICustomMULForm, serializeCustomMULRecords } from "./custom-mul";
+import MEGAMEK_BV from "./megamek-bv.json";
+import { mechMULForm } from "./sample-mul";
 
 export const DEFAULT_SSW_DIR = "C:/repo/battletech-tools/WorkingData_DEV/SSWdata";
 export const DEFAULT_MEGAMEK_DIR = "C:/repo/megamek/megamek/data/mekfiles/unit_files";
@@ -56,7 +59,7 @@ export const BUNDLED_MECHS_NOTICE = COPYRIGHT_NOTICE + "Converted from " + SSW_C
 
 const MECH_CLASSES = ["BattleMech", "IndustrialMech"];
 const MECH_TYPE_IDS = [18, 20];
-const isMULMech = (unit: IASMULUnit) => MECH_CLASSES.includes(unit.Class) || MECH_TYPE_IDS.includes(unit.Type?.Id);
+export const isMULMech = (unit: IASMULUnit): boolean => MECH_CLASSES.includes(unit.Class) || MECH_TYPE_IDS.includes(unit.Type?.Id);
 type Leave = (reason: string, detail?: string) => void;
 
 /**
@@ -72,6 +75,56 @@ export function getBundledStanding(file: string, unit: { getRequiredRulesLevel()
 
 /** A MUL record from the live MUL or MUL 1.0, not our own custom list. */
 export const isOfficialMULRecord = (unit: IASMULUnit | undefined): boolean => !!unit && unit.MulSource !== "custom";
+
+// MegaMek files the MUL lacks are filed in the custom unit list under MegaMek's name (#595 for 'Mechs). Each build
+// writes its own: the units build its types, the 'Mech build its 'Mechs.
+export const MEGAMEK_CUSTOM_KEY_PREFIX = CUSTOM_MUL_KEY_PREFIX + "MEGAMEK-";
+export const MEGAMEK_CUSTOM_ID_START = CUSTOM_MUL_ID_START + 10000;
+export const MEGAMEK_CUSTOM_DATE = "2026-10-27T00:00:00.000Z";
+export const isMegaMekCustom = (unit: IASMULUnit): boolean => !!unit.MulUnitKey?.startsWith(MEGAMEK_CUSTOM_KEY_PREFIX);
+
+/** The custom unit list's MegaMek entries of one build (`ours`) and the ids they hold, to keep or reuse. */
+export interface IMegaMekCustomIds {
+    earlier: Map<string, IASMULUnit>;
+    used: Set<number>;
+    next: number;
+}
+
+export function loadMegaMekCustomIds(mulDir: string, ours: (unit: IASMULUnit) => boolean): IMegaMekCustomIds {
+    const custom = fs.readdirSync(path.join(mulDir, "custom")).flatMap((file) => untabulate(JSON.parse(fs.readFileSync(path.join(mulDir, "custom", file), "utf8"))) as IASMULUnit[]);
+    return { earlier: new Map(custom.filter((record) => isMegaMekCustom(record) && ours(record)).map((record) => [record.MulUnitKey ?? "", record])),
+        used: new Set(custom.map((record) => record.Id)), next: MEGAMEK_CUSTOM_ID_START };
+}
+
+/**
+ * A MegaMek file's custom unit list entry, keeping the id and date an earlier build gave it; null when another file
+ * already took its key.
+ */
+export function makeMegaMekCustomRecord(form: ICustomMULForm, ids: IMegaMekCustomIds, records: IASMULUnit[]): IASMULUnit | null {
+    const key = MEGAMEK_CUSTOM_KEY_PREFIX + `${form.name} ${form.variant}`.toUpperCase().replace(/[^A-Z0-9]+/g, "-").replace(/^-|-$/g, "");
+    if (records.some((record) => record.MulUnitKey === key)) return null;
+    const before = ids.earlier.get(key);
+    let id = before?.Id;
+    if (!id) {
+        while (ids.used.has(ids.next)) ids.next++;
+        id = ids.next;
+    }
+    ids.used.add(id);
+    const createdAt = before?.CustomInfo?.createdAt ?? MEGAMEK_CUSTOM_DATE;
+    return buildCustomMULRecord(form, { id, key, createdAt }, createdAt);
+}
+
+/** The custom unit list's file text with one build's MegaMek entries (`ours`) replaced by `records`; the rest are kept. */
+export function writeMegaMekCustomRecords(currentFileText: string | null, records: IASMULUnit[], ours: (unit: IASMULUnit) => boolean): string {
+    const current = currentFileText ? untabulate(JSON.parse(currentFileText)) as IASMULUnit[] : [];
+    return serializeCustomMULRecords([...current.filter((record) => !(isMegaMekCustom(record) && ours(record))), ...records]);
+}
+
+/** MegaMek's rules level ("rules level:3") as the custom list's: 1 Introductory to 4 Experimental, 5 Unofficial. */
+const mtfRulesLevel = (text: string): string => CUSTOM_RULES_LEVELS[Math.min(Math.max(+(/^rules level:\s*(\d)/im.exec(text)?.[1] ?? 2) - 1, 0), 3)];
+
+/** The key megamek-bv.json files a MegaMek 'Mech under: its path under unit_files. */
+export const megaMekBVKey = (jobName: string): string => jobName.replace(/^megamek\//, "meks/");
 
 const squash = (text: string): string => text.toLowerCase().normalize("NFKD").replace(/[^a-z0-9]/g, "");
 // The quoted or bracketed name a model carries ("Yen Lo Wang", (Jasminda)), squashed.
@@ -307,6 +360,8 @@ export interface IPreparedMech {
     survives?: boolean;
     header?: Pick<IBundledDesignHeader, "cost" | "rulesLevel" | "year" | "tech" | "configs" | "layout" | "standing">;
     design?: Record<string, unknown>;
+    /** A MegaMek file's custom unit list entry, for when the MUL has none. */
+    customForm?: ICustomMULForm;
 }
 
 /** The MUL indexes a build reads, loaded once a process. */
@@ -315,13 +370,27 @@ export interface IMechMUL {
     mul1ById: Map<number, IASMULUnit>;
 }
 
-export const loadMechMUL = (mulDir: string): IMechMUL => ({ mul: loadMULIndex(mulDir, isMULMech), mul1ById: loadMUL1ById(mulDir, isMULMech) });
+// A MegaMek entry is ours, written from the file, not a BV to check the file against.
+export const loadMechMUL = (mulDir: string): IMechMUL => ({ mul: loadMULIndex(mulDir, (unit) => isMULMech(unit) && !isMegaMekCustom(unit)), mul1ById: loadMUL1ById(mulDir, isMULMech) });
 
 const hashText = (text: string): string => {
     let hash = 0x811c9dc5;
     for (let index = 0; index < text.length; index++) hash = Math.imul(hash ^ text.charCodeAt(index), 0x01000193);
     return (hash >>> 0).toString(16) + ":" + text.length;
 };
+
+function megaMekMechForm(mech: BattleMech, job: IMechJob, mtf: string): ICustomMULForm {
+    const role = /^role:\s*(.+)$/im.exec(mtf)?.[1].trim();
+    return {
+        ...mechMULForm(mech),
+        rules: mtfRulesLevel(mtf),
+        ...(role ? { role } : {}),
+        dateIntroduced: /^era:\s*(\d+)/im.exec(mtf)?.[1] ?? "",
+        author: "MegaMek",
+        source: "MegaMek unit files",
+        notes: `Not on the Master Unit List; converted from MegaMek's ${megaMekBVKey(job.name)} (MegaMek Data, CC BY-NC-SA 4.0).`,
+    };
+}
 
 /** Imports a file and runs the checks that need no other file. `model` renames it first (a renumbered submodel). */
 export function prepareMechFile(job: IMechJob, { mul, mul1ById }: IMechMUL, model?: string): IPreparedMech {
@@ -334,7 +403,7 @@ export function prepareMechFile(job: IMechJob, { mul, mul1ById }: IMechMUL, mode
     console.log = () => {};
     try {
         seedRandom(job.name);
-        let mech: BattleMech, xml: string, mulUnitId: number | undefined;
+        let mech: BattleMech, xml: string, mulUnitId: number | undefined, mtf = "";
         if (job.source === "ssw") {
             xml = fs.readFileSync(job.file, "utf8");
             if (!getSSWXMLBasicInfo(xml)) { leave("not a Skunk Werks 'Mech file"); return { leaves, rejected: true }; }
@@ -347,6 +416,7 @@ export function prepareMechFile(job: IMechJob, { mul, mul1ById }: IMechMUL, mode
             if (mech.sswImportErrors.length > 0) { leave("import errors", mech.sswImportErrors.join("; ")); return { leaves, rejected: true }; }
         } else {
             const text = withIndustrialCockpit(job.name, fs.readFileSync(job.file, "utf8"));
+            mtf = text;
             const byId = mul1ById.get(Number(/^mul id:\s*(\d+)/m.exec(text)?.[1]));
             mulUnitId = byId && byId.BattleValue > 0 ? byId.Id : undefined;
             let imported: ReturnType<typeof importBattleMechMtf>;
@@ -396,6 +466,8 @@ export function prepareMechFile(job: IMechJob, { mul, mul1ById }: IMechMUL, mode
                 ...(configs ? { configs } : {}), layout: getMechFingerprint(mech), ...getBundledStanding(job.name, mech),
             },
             design,
+            // An OmniMech's configurations would each need an entry; only single designs are filed for now.
+            ...(job.source === "megamek" && configurations.length < 2 ? { customForm: megaMekMechForm(mech, job, mtf) } : {}),
         };
     } finally {
         console.warn = warn;
@@ -409,8 +481,10 @@ export function prepareMechFile(job: IMechJob, { mul, mul1ById }: IMechMUL, mode
  * bundled-build-runner.ts); by default each is prepared here, one after another.
  */
 export function buildBundledMechs(sswDir: string, mulDir: string, megamekDir?: string, canon: ICanonMech[] = [], mordelDir?: string,
-    prepare?: (job: IMechJob) => IPreparedMech): IBundledBuild {
+    prepare?: (job: IMechJob) => IPreparedMech, sourceBVs: Record<string, number> = MEGAMEK_BV): IBundledBuild & { customRecords: IASMULUnit[] } {
     const indexes = loadMechMUL(mulDir);
+    const customIds = loadMegaMekCustomIds(mulDir, isMULMech);
+    const customRecords: IASMULUnit[] = [];
     const { mul, mul1ById } = indexes;
     const prepared = prepare ?? ((job: IMechJob) => prepareMechFile(job, indexes));
     const officialMechs = [...new Set(mul.values())].filter(isOfficialMULRecord);
@@ -467,13 +541,25 @@ export function buildBundledMechs(sswDir: string, mulDir: string, megamekDir?: s
         if (wrong.length > 0) {
             leave("BV differs from the MUL", wrong.map(({ entry, unit }) => `${entry.model}: BV ${entry.bv}, MUL ${unit!.BattleValue}`).join("; ")); return false;
         }
-        if (matched.length === 0 && job.source !== "ssw") { leave("no Master Unit List entry to check its BV against"); return false; }
+        // A MegaMek 'Mech the MUL lacks is checked against MegaMek's own BV (scripts/megamek-bv.mjs records it) and
+        // filed in the custom unit list.
+        let customRecord: IASMULUnit | null = null;
+        if (matched.length === 0 && listed.length === 0 && design.customForm && !renaming) {
+            const source = sourceBVs[megaMekBVKey(job.name)];
+            if (source === undefined) { leave("not on the Master Unit List, and MegaMek's BV is not recorded"); return false; }
+            if (bv !== source) { leave("BV differs from MegaMek's (not on the MUL)", `BV ${bv}, MegaMek ${source}`); return false; }
+            if (!design.survives) { leave("does not survive the compact format"); return false; }
+            customRecord = makeMegaMekCustomRecord(design.customForm, customIds, customRecords);
+            if (!customRecord) { leave("its custom unit list key is taken"); return false; }
+        }
+        if (matched.length === 0 && job.source !== "ssw" && !customRecord) { leave("no Master Unit List entry to check its BV against"); return false; }
         // An OmniMech's configurations were checked one by one.
-        if (matched.length === 0 && !design.omnimech && bv !== design.fileBV) { leave("BV differs from the file (no MUL entry)", `BV ${bv}, file ${design.fileBV}`); return false; }
+        if (matched.length === 0 && !customRecord && !design.omnimech && bv !== design.fileBV) { leave("BV differs from the file (no MUL entry)", `BV ${bv}, file ${design.fileBV}`); return false; }
         if (!design.survives) { leave("does not survive the compact format"); return false; }
         own.forEach(({ keys, layout }) => keys.forEach((key) => taken.set(key, layout)));
         listed.forEach(({ entry, unit }) => takenIds.set(unit!.Id, own[entries.indexOf(entry)].layout));
-        const mulId = matched.find(({ entry }) => entry.base)?.unit?.Id ?? matched[0]?.unit?.Id;
+        if (customRecord) customRecords.push(customRecord);
+        const mulId = customRecord?.Id ?? matched.find(({ entry }) => entry.base)?.unit?.Id ?? matched[0]?.unit?.Id;
         const sourceUrl = job.source === "mordel" ? getMordelUnitUrl(job.name) : undefined;
         const { cost, rulesLevel, year, tech, configs, layout, standing } = design.header!;
         kept.push({
@@ -490,7 +576,7 @@ export function buildBundledMechs(sswDir: string, mulDir: string, megamekDir?: s
         keep(job, prepared(job), (reason, detail = "") => leftOut.push({ file: job.name, reason, detail }));
     }
     kept.sort((a, b) => (a.header.name + " " + a.header.model).localeCompare(b.header.name + " " + b.header.model));
-    return { headers: kept.map(({ header }, id) => ({ id, ...header })), designs: kept.map(({ design }) => design), leftOut, renamed };
+    return { headers: kept.map(({ header }, id) => ({ id, ...header })), designs: kept.map(({ design }) => design), leftOut, renamed, customRecords };
 }
 
 /** One record a line, so a rebuild's diff shows which designs changed. */

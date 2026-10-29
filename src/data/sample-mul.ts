@@ -91,43 +91,52 @@ function vtolamCredit(sampleName: string): { author: string; notes: string } {
 
 const DAMAGE_RANGES = ["short", "medium", "long", "extreme"] as const;
 
+/** A 'Mech's custom-list entry, from its own Battle Value and Alpha Strike conversion; credits are the caller's. */
+export function mechMULForm(mech: BattleMech): ICustomMULForm {
+    const unit = mech.calcAlphaStrike();
+    const damage = Object.fromEntries(DAMAGE_RANGES.map((range) => {
+        const minimal = unit.damage[`${range}Minimal`];
+        return [range, minimal ? "0*" : String(unit.damage[range])];
+    })) as Record<typeof DAMAGE_RANGES[number], string>;
+    const moves = unit.move.filter((move) => move.move > 0);
+    return {
+        ...emptyCustomMULForm(),
+        name: mech.getChassisName(),
+        variant: mech.getModelName(),
+        unitType: mech.isIndustrialMech() ? "IndustrialMech" : "BattleMech",
+        technology: customTechnology(mech.getTech().name),
+        role: unit.role,
+        eraId: String(getMULEraIdForYear(mech.getEra().yearStart)),
+        tonnage: String(mech.getTonnage()),
+        battleValue: String(mech.getBattleValue()),
+        pointValue: String(unit.basePoints),
+        size: String(unit.size),
+        // The MUL's style: 16"/16"j.
+        move: moves.map((move) => `${move.move}"${move.type}`).join("/"),
+        // As the vehicle conversion does, from the ground move.
+        tmm: String(groundTMM(moves[0]?.move ?? 0)),
+        armor: String(unit.armor),
+        structure: String(unit.structure),
+        damageShort: damage.short,
+        damageMedium: damage.medium,
+        damageLong: damage.long,
+        damageExtreme: damage.extreme,
+        overheat: String(unit.overheat),
+        // The MUL writes "SRM1/1", not the creator's "SRM 1/1/1" spacing.
+        abilities: ([] as string[]).concat(unit.abilities).flatMap((codes) => codes.split(","))
+            .map((code) => code.trim().replace(/\s+/g, "")).filter((code) => code).join(","),
+    };
+}
+
 export function buildVTOLAMMULRecords(): IASMULUnit[] {
     return VTOLAM_SAMPLES.map((sample, index) => {
         const save = sample.save as { name: string; model: string };
-        const mech = new BattleMech(JSON.stringify(sample.save));
-        const unit = mech.calcAlphaStrike();
-        const damage = Object.fromEntries(DAMAGE_RANGES.map((range) => {
-            const minimal = unit.damage[`${range}Minimal`];
-            return [range, minimal ? "0*" : String(unit.damage[range])];
-        })) as Record<typeof DAMAGE_RANGES[number], string>;
-        const moves = unit.move.filter((move) => move.move > 0);
         const form = {
-            ...emptyCustomMULForm(),
+            ...mechMULForm(new BattleMech(JSON.stringify(sample.save))),
             name: save.name,
             variant: save.model,
             unitType: "BattleMech",
-            technology: customTechnology(mech.getTech().name),
             rules: "Experimental",
-            role: unit.role,
-            eraId: String(getMULEraIdForYear(mech.getEra().yearStart)),
-            tonnage: String(mech.getTonnage()),
-            battleValue: String(mech.getBattleValue()),
-            pointValue: String(unit.basePoints),
-            size: String(unit.size),
-            // The MUL's style: 16"/16"j.
-            move: moves.map((move) => `${move.move}"${move.type}`).join("/"),
-            // As the vehicle conversion does, from the ground move.
-            tmm: String(groundTMM(moves[0]?.move ?? 0)),
-            armor: String(unit.armor),
-            structure: String(unit.structure),
-            damageShort: damage.short,
-            damageMedium: damage.medium,
-            damageLong: damage.long,
-            damageExtreme: damage.extreme,
-            overheat: String(unit.overheat),
-            // The MUL writes "SRM1/1", not the creator's "SRM 1/1/1" spacing.
-            abilities: ([] as string[]).concat(unit.abilities).flatMap((codes) => codes.split(","))
-                .map((code) => code.trim().replace(/\s+/g, "")).filter((code) => code).join(","),
             ...vtolamCredit(sample.name),
             source: "VTOLAM samples ('Mech Creator, Custom Homebrew)",
         };

@@ -14,10 +14,10 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { isMainThread, parentPort, Worker, workerData } from "node:worker_threads";
 import {
-    buildBundledMechs, DEFAULT_MEGAMEK_DIR, DEFAULT_MORDEL_DIR, DEFAULT_SSW_DIR, IBundledBuild, listMechJobs, loadCanonMechs,
-    loadMechMUL, MEGAMEK_NOTICE, prepareMechFile, writeBundledDesigns, writeBundledMechs,
+    buildBundledMechs, DEFAULT_MEGAMEK_DIR, DEFAULT_MORDEL_DIR, DEFAULT_SSW_DIR, IBundledBuild, isMULMech, listMechJobs, loadCanonMechs,
+    loadMechMUL, MEGAMEK_NOTICE, prepareMechFile, writeBundledDesigns, writeBundledMechs, writeMegaMekCustomRecords,
 } from "./bundled-mechs-build";
-import { BLK_KINDS, buildBundledUnits, IPreparedUnit, listUnitJobs, prepareUnitFile, writeMegaMekCustomRecords } from "./bundled-units-build";
+import { BLK_KINDS, buildBundledUnits, IPreparedUnit, listUnitJobs, prepareUnitFile, writeMegaMekCustomRecords as writeUnitCustomRecords } from "./bundled-units-build";
 import type { BundledUnitType } from "./bundled-units";
 import { CUSTOM_MUL_FILE_PATH } from "./custom-mul";
 
@@ -52,7 +52,10 @@ const TARGETS: Record<string, ITarget> = {
             const build = buildBundledMechs(SSW_DIR, MUL_DIR, path.join(MEGAMEK_DIR, "meks"), loadCanonMechs(path.join(ROOT, "src/data/mordel/canon-mechs.csv")),
                 MORDEL_DIR, prepared as Parameters<typeof buildBundledMechs>[5]);
             writeBundledMechs(build, DATA_DIR);
-            return describeBuild("'Mechs", build);
+            // The MegaMek 'Mechs the MUL lacks, filed in the custom unit list under MegaMek's name (#595).
+            const customFile = path.join(ROOT, CUSTOM_MUL_FILE_PATH);
+            fs.writeFileSync(customFile, writeMegaMekCustomRecords(fs.readFileSync(customFile, "utf8"), build.customRecords, isMULMech));
+            return describeBuild("'Mechs", build) + `\n${build.customRecords.length} MegaMek 'Mech entries in the custom unit list`;
         },
     },
     units: {
@@ -62,7 +65,7 @@ const TARGETS: Record<string, ITarget> = {
             const { builds, customRecords } = buildBundledUnits(MEGAMEK_DIR, MUL_DIR, prepared as (job: IJob) => IPreparedUnit);
             // The files the MUL lacks, filed in the custom unit list under MegaMek's name.
             const customFile = path.join(ROOT, CUSTOM_MUL_FILE_PATH);
-            fs.writeFileSync(customFile, writeMegaMekCustomRecords(fs.readFileSync(customFile, "utf8"), customRecords));
+            fs.writeFileSync(customFile, writeUnitCustomRecords(fs.readFileSync(customFile, "utf8"), customRecords));
             return Object.entries(builds).map(([type, build]) => {
                 const { title } = BLK_KINDS[type as BundledUnitType];
                 writeBundledDesigns(type, title, MEGAMEK_NOTICE, build, DATA_DIR);

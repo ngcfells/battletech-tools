@@ -10,14 +10,16 @@ import { blkValue, parseBlkFile } from "../utils/blk-file";
 import { compactUnit, IBundledDesignHeader, loadBundledUnit } from "../utils/bundled-designs";
 import { getClassicUnitEntries, getMULMatchKeys, isMULCapitalShip, isMULLargeAerospaceCraft } from "../utils/classicMULMatch";
 import type Vehicle from "../classes/vehicle";
-import { untabulate } from "../utils/packed-json";
-import { getBundledStanding, IBundledBuild, loadMULIndex, seedRandom } from "./bundled-mechs-build";
+import {
+    getBundledStanding, IBundledBuild, isMegaMekCustom, isMULMech, loadMegaMekCustomIds, loadMULIndex, makeMegaMekCustomRecord, seedRandom,
+    writeMegaMekCustomRecords as writeCustomRecords,
+} from "./bundled-mechs-build";
 import { BundledUnit, BundledUnitType, getBundledUnitClass } from "./bundled-units";
 import MEGAMEK_BV from "./megamek-bv.json";
-import { buildCustomMULRecord, CUSTOM_MUL_ID_START, CUSTOM_MUL_KEY_PREFIX, CUSTOM_RULES_LEVELS, ICustomMULForm, serializeCustomMULRecords } from "./custom-mul";
+import { CUSTOM_RULES_LEVELS, ICustomMULForm } from "./custom-mul";
 import { vehicleMULForm } from "./sample-mul";
 
-export { DEFAULT_MEGAMEK_DIR, MEGAMEK_NOTICE } from "./bundled-mechs-build";
+export { DEFAULT_MEGAMEK_DIR, MEGAMEK_CUSTOM_ID_START, MEGAMEK_CUSTOM_KEY_PREFIX, MEGAMEK_NOTICE } from "./bundled-mechs-build";
 
 interface IBlkKind {
     title: string;
@@ -81,9 +83,8 @@ export interface IPreparedUnit {
 
 /** The types whose files the MUL lacks are filed in the custom unit list, credited to MegaMek, and bundled. */
 const MEGAMEK_CUSTOM_TYPES: BundledUnitType[] = ["vehicles"];
-export const MEGAMEK_CUSTOM_KEY_PREFIX = CUSTOM_MUL_KEY_PREFIX + "MEGAMEK-";
-export const MEGAMEK_CUSTOM_ID_START = CUSTOM_MUL_ID_START + 10000;
-const MEGAMEK_CUSTOM_DATE = "2026-10-27T00:00:00.000Z";
+/** The units build's MegaMek entries: every type but the 'Mechs, which the 'Mech build files. */
+const isOurs = (unit: IASMULUnit): boolean => !isMULMech(unit);
 const looseKey = (key: string): string => key.replace(/[^a-z0-9]/g, "");
 
 /** MegaMek files that name a MUL unit another way, by MegaMek's name and model: the MUL id they are. */
@@ -102,7 +103,6 @@ export const MEGAMEK_MUL_IDS: Record<string, number> = Object.fromEntries(([
     ["Rommel Tank", "(Howitzer) Production", 106702],
     ["Sokar Urban Combat Unit", "", 104507],
 ] as [string, string, number][]).map(([name, model, id]) => [getMULMatchKeys(name, model)[0], id]));
-const isMegaMekCustom = (unit: IASMULUnit): boolean => !!unit.MulUnitKey?.startsWith(MEGAMEK_CUSTOM_KEY_PREFIX);
 
 function megaMekCustomForm(unit: Vehicle, job: IUnitJob, blk: NonNullable<ReturnType<typeof parseBlkFile>>): ICustomMULForm {
     return {
@@ -178,10 +178,7 @@ export function buildBundledUnits(megamekDir: string, mulDir: string, prepare: (
         for (const unit of JSON.parse(fs.readFileSync(path.join(mulDir, "mul1", file), "utf8")) as IASMULUnit[]) mul1.set(unit.Id, unit);
     }
     // The custom list as it stands: an earlier build's MegaMek entries keep their ids; new ones take the next free.
-    const custom = fs.readdirSync(path.join(mulDir, "custom")).flatMap((file) => untabulate(JSON.parse(fs.readFileSync(path.join(mulDir, "custom", file), "utf8"))) as IASMULUnit[]);
-    const earlier = new Map(custom.filter(isMegaMekCustom).map((record) => [record.MulUnitKey, record]));
-    const usedIds = new Set(custom.map((record) => record.Id));
-    let nextId = MEGAMEK_CUSTOM_ID_START;
+    const customIds = loadMegaMekCustomIds(mulDir, isOurs);
     const customRecords: IASMULUnit[] = [];
     // A MegaMek entry is ours, not a BV to check a file against.
     const work = Object.fromEntries(types.map((type) => [type, { kind: BLK_KINDS[type], mul: loadMULIndex(mulDir, (unit) => !isMegaMekCustom(unit) && BLK_KINDS[type].mul(unit)), taken: new Set<string>(),
@@ -216,17 +213,9 @@ export function buildBundledUnits(megamekDir: string, mulDir: string, prepare: (
         if (!match && unit.customForm) {
             if (!unit.survives) { leave("not on the MUL, and does not survive the compact format"); continue; }
             if (!(unit.bv! > 0)) { leave("not on the MUL, and has no BV of its own"); continue; }
-            const key = MEGAMEK_CUSTOM_KEY_PREFIX + `${unit.customForm.name} ${unit.customForm.variant}`.toUpperCase().replace(/[^A-Z0-9]+/g, "-").replace(/^-|-$/g, "");
-            if (customRecords.some((record) => record.MulUnitKey === key)) { leave("its custom unit list key is taken", key); continue; }
-            const before = earlier.get(key);
-            let id = before?.Id;
-            if (!id) {
-                while (usedIds.has(nextId)) nextId++;
-                id = nextId;
-            }
-            usedIds.add(id);
-            const createdAt = before?.CustomInfo?.createdAt ?? MEGAMEK_CUSTOM_DATE;
-            match = buildCustomMULRecord(unit.customForm, { id, key, createdAt }, createdAt);
+            const record = makeMegaMekCustomRecord(unit.customForm, customIds, customRecords);
+            if (!record) { leave("its custom unit list key is taken"); continue; }
+            match = record;
             customRecords.push(match);
         }
         if (!match) { leave("no Master Unit List entry to check its BV against"); continue; }
@@ -257,8 +246,5 @@ export function buildBundledUnits(megamekDir: string, mulDir: string, prepare: (
     return { builds, customRecords };
 }
 
-/** The custom unit list's file text with its MegaMek entries replaced by `records`; everyone else's are kept. */
-export function writeMegaMekCustomRecords(currentFileText: string | null, records: IASMULUnit[]): string {
-    const current = currentFileText ? untabulate(JSON.parse(currentFileText)) as IASMULUnit[] : [];
-    return serializeCustomMULRecords([...current.filter((record) => !isMegaMekCustom(record)), ...records]);
-}
+/** The custom unit list's file text with this build's MegaMek entries replaced by `records`; the rest are kept. */
+export const writeMegaMekCustomRecords = (currentFileText: string | null, records: IASMULUnit[]): string => writeCustomRecords(currentFileText, records, isOurs);

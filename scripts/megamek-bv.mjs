@@ -16,8 +16,12 @@ const UNIT_FILES = "data/mekfiles/unit_files/";
 
 const files = fs.readdirSync(BUNDLED).filter((file) => file.endsWith("-report.md"))
     .flatMap((file) => fs.readFileSync(path.join(BUNDLED, file), "utf8").split("\n"))
-    .map((line) => /^- `([^`]+)`: its Master Unit List entry gives no BV, and MegaMek's is not recorded/.exec(line)?.[1])
-    .filter(Boolean);
+    .map((line) => /^- `([^`]+)`: (?:its Master Unit List entry gives no BV, and MegaMek's is not recorded|not on the Master Unit List, and MegaMek's BV is not recorded)/.exec(line)?.[1])
+    .filter(Boolean)
+    // The 'Mech report names MegaMek's 'Mech files "megamek/…", under unit_files' meks folder (#595); mordel.net's
+    // files aren't MegaMek's to rate.
+    .filter((file) => !file.startsWith("mordel/"))
+    .map((file) => file.replace(/^megamek\//, "meks/"));
 if (files.length === 0) {
     console.log("No unit file is waiting for MegaMek's BV.");
     process.exit(0);

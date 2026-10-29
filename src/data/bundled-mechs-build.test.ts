@@ -3,7 +3,10 @@ import os from "node:os";
 import path from "node:path";
 import { expect, it } from "vitest";
 import type { IASMULUnit } from "../classes/alpha-strike-unit";
-import { buildBundledMechs, findLooseMULMatch, getBundledStanding, getMordelUnitUrl, getRenumberedModel, isOfficialMULRecord, loadCanonMechs } from "./bundled-mechs-build";
+import { untabulate } from "../utils/packed-json";
+import {
+    buildBundledMechs, findLooseMULMatch, getBundledStanding, getMordelUnitUrl, getRenumberedModel, isMULMech, isOfficialMULRecord, loadCanonMechs, writeMegaMekCustomRecords,
+} from "./bundled-mechs-build";
 
 // #241: canon is what the live MUL or MUL 1.0 lists. These records stand in for the MUL's own spellings of 'Mechs
 // that Skunk Werks names another way (found by a scan of the bundled designs without a MUL id).
@@ -105,6 +108,45 @@ it("keeps a mordel.net file as source mordel, after MegaMek's for the same unit"
         const both = buildBundledMechs(ssw, path.resolve(__dirname, "mul"), path.join(root, "megamek"), [], path.join(root, "mordel"));
         expect(both.headers.map((header) => [header.source, header.sourceUrl])).toEqual([["megamek", undefined]]);
         expect(both.leftOut).toEqual([expect.objectContaining({ file: "mordel/23454/Dola DOL-1A2.mtf", reason: "duplicate of a design already kept" })]);
+    } finally {
+        fs.rmSync(root, { recursive: true, force: true });
+    }
+}, 120_000);
+
+// #595: a MegaMek 'Mech the MUL lacks is checked against MegaMek's BV for the file, filed in the custom unit list
+// credited to MegaMek, and bundled under that entry; a rebuild keeps its id, and the units build's entries stay.
+it("files a MegaMek 'Mech the MUL lacks in the custom unit list, checked against MegaMek's BV", () => {
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), "bundled-mechs-build-"));
+    const ssw = path.join(root, "ssw"), megamek = path.join(root, "megamek"), mul = path.join(root, "mul");
+    for (const dir of [ssw, path.join(megamek, "Custom"), ...["live", "mul1", "custom"].map((list) => path.join(mul, list))]) fs.mkdirSync(dir, { recursive: true });
+    const text = fs.readFileSync(path.resolve(__dirname, "../utils/__fixtures__/mordel-dola-dol-1a2.mtf"), "utf8")
+        .replace(/^chassis:.*$/m, "chassis:Testmech").replace(/^model:.*$/m, "model:TST-1");
+    fs.writeFileSync(path.join(megamek, "Custom", "Testmech TST-1.mtf"), text);
+    const file = "meks/Custom/Testmech TST-1.mtf";
+    try {
+        const unrated = buildBundledMechs(ssw, mul, megamek, [], undefined, undefined, {});
+        expect(unrated.leftOut).toEqual([{ file: "megamek/Custom/Testmech TST-1.mtf", reason: "not on the Master Unit List, and MegaMek's BV is not recorded", detail: "" }]);
+        expect(unrated.customRecords).toEqual([]);
+        expect(buildBundledMechs(ssw, mul, megamek, [], undefined, undefined, { [file]: 1 }).leftOut[0].reason).toBe("BV differs from MegaMek's (not on the MUL)");
+
+        const first = buildBundledMechs(ssw, mul, megamek, [], undefined, undefined, { [file]: 826 });
+        const [entry] = first.customRecords;
+        expect(first.leftOut).toEqual([]);
+        expect(first.customRecords).toHaveLength(1);
+        expect([entry.MulUnitKey, entry.Name, entry.Variant, entry.Type?.Id, entry.Role?.Name, entry.BattleValue, entry.CustomInfo?.author])
+            .toEqual(["CUSTOM-MEGAMEK-TESTMECH-TST-1", "Testmech", "TST-1", 18, "Scout", 826, "MegaMek"]);
+        expect(entry.BFPointValue).toBeGreaterThan(0);
+        expect(first.headers.map((header) => [header.name, header.model, header.bv, header.mulId, header.source])).toEqual([["Testmech", "TST-1", 826, entry.Id, "megamek"]]);
+
+        // Written beside a units-build entry, then rebuilt: the 'Mech keeps its id, and the vehicle stays.
+        const vehicle = { ...entry, Id: 950001, MulUnitKey: "CUSTOM-MEGAMEK-TEST-TANK", Name: "Test Tank", Class: "Combat Vehicle", Type: { Id: 19, Name: "Combat Vehicle" } } as IASMULUnit;
+        const customFile = path.join(mul, "custom", "custom-units.json");
+        fs.writeFileSync(customFile, writeMegaMekCustomRecords(writeMegaMekCustomRecords(null, [vehicle], (unit) => !isMULMech(unit)), [{ ...entry, Id: 912345 }], isMULMech));
+        const second = buildBundledMechs(ssw, mul, megamek, [], undefined, undefined, { [file]: 826 });
+        expect(second.customRecords.map((record) => record.Id)).toEqual([912345]);
+        expect(second.headers.map((header) => header.mulId)).toEqual([912345]);
+        const written = untabulate(JSON.parse(writeMegaMekCustomRecords(fs.readFileSync(customFile, "utf8"), [], isMULMech))) as IASMULUnit[];
+        expect(written.map((record) => record.Name)).toEqual(["Test Tank"]);
     } finally {
         fs.rmSync(root, { recursive: true, force: true });
     }
