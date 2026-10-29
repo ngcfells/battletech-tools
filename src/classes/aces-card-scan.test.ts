@@ -185,9 +185,24 @@ describe( "Aces card scan: Rekikire's photos", () => {
     } );
 
     it( "finishes a list cut off after vs, reads \"it there are\", and marks a bare target's lost icon", () => {
-        const column = parseAcesScanColumn( [ "it there are", "no enemies in", "© 24\") 30\")", "1. target", "2. intervening woods vs" ].map( plain ) );
+        const warnings: string[] = [];
+        const column = parseAcesScanColumn( [ "it there are", "no enemies in", "© 24\") 30\")", "1. target", "2. intervening woods vs" ].map( plain ), warnings );
         expect( column.condition ).toMatch( /^If there are/ );
         expect( column.filters ).toEqual( [ "[?] target", "intervening woods vs [highest] other enemies" ] );
+        expect( warnings.join( " " ) ).toMatch( /cut off and guessed/ );
+    } );
+
+    it( "still reads an odd ring when no even split fits, and two-digit card numbers", () => {
+        const column = parseAcesScanColumn( [ "If the ideal", "is £2 and unit can", "move behind it", "15\") 21\")", "1.behind target" ].map( plain ) );
+        expect( column.zoneRings ).toEqual( [ 15, 21 ] );
+        expect( parseAcesScanFooter( "2/10 Striker" ) ).toBe( "2/10" );
+        expect( parseAcesScanFooter( "A. 416 Scout (Hover)" ) ).toBe( "4/6" );
+        expect( parseAcesScanFooter( "© 2025 The Topps" ) ).toBe( "" );
+    } );
+
+    it( "takes Armor lost's icon from another read of the photo when the colour is unknown", () => {
+        expect( parseAcesScanCombat( [ "6\") 24\")", "1. Hit target's Rear", "2. Armor lost" ], [], [], "2. A Armor lost" ).filters[1].text ).toBe( "[highest] Armor lost" );
+        expect( parseAcesScanCombat( [ "6\") 24\")", "1. Hit target's Rear", "2. Armor lost" ], [] ).filters[1].text ).toBe( "[?] Armor lost" );
     } );
 
     it( "tells a 7 from a 1 by its width, with a 7's bar broken from its stem", () => {

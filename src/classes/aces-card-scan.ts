@@ -199,8 +199,11 @@ const titleCase = ( text: string ): string => text.toLowerCase().replace( /(^|[\
 
 /** Card number from the footer, "2/6 Missile Boat". */
 export const parseAcesScanFooter = ( text: string ): string => {
-    const match = /(\d)\s*\/\s*(\d)/.exec( text );
-    return match ? match[1] + "/" + match[2] : "";
+    // Decks run to ten cards ("2/10").
+    const match = /(\d{1,2})\s*\/\s*(\d{1,2})/.exec( text )
+        // The slash can read as a 1 or l, before the deck name: "416 Scout (Hover)" is 4/6.
+        || /\b([1-9])[1lI|\\]([1-9])\s+(?=[A-Z])/.exec( text );
+    return match && +match[1] <= +match[2] ? match[1] + "/" + match[2] : "";
 }
 
 /* ----- card text ----- */
@@ -346,16 +349,16 @@ const zoneLine = /\d+\s*["”'’°]+\s*\)/;
 const gluedRings = ( text: string ): number[] | null => {
     if( /[A-Za-z]{2,}/.test( text ) || !/\d/.test( text ) || !/[)"”'’°]/.test( text ) ) return null;
     // The split of a run into rising rings, with as few misread marks as there must be.
-    const split = ( run: string, after: number, marks: number ): number[] | null => {
+    // The rings known so far are all even inches, so an even split wins; an odd ring is still taken if nothing even fits.
+    const split = ( run: string, after: number, marks: number, even: boolean ): number[] | null => {
         if( run === "" ) return [];
         for( const size of [ 2, 1 ] ) {
             const ring = +run.substring( 0, size );
-            // Zone rings on the cards are even inches.
-            if( run.length < size || ring < 6 || ring > 48 || ring % 2 !== 0 || ring <= after ) continue;
+            if( run.length < size || ring < 6 || ring > 48 || ( even && ring % 2 !== 0 ) || ring <= after ) continue;
             const rest = run.substring( size );
-            const plain = split( rest, ring, marks );
+            const plain = split( rest, ring, marks, even );
             if( plain ) return [ ring, ...plain ];
-            const marked = marks > 0 && /^[71]/.test( rest ) ? split( rest.substring( 1 ), ring, marks - 1 ) : null;
+            const marked = marks > 0 && /^[71]/.test( rest ) ? split( rest.substring( 1 ), ring, marks - 1, even ) : null;
             if( marked ) return [ ring, ...marked ];
         }
         return null;
@@ -363,7 +366,7 @@ const gluedRings = ( text: string ): number[] | null => {
     const rv: number[] = [];
     for( const run of text.match( /\d+/g ) || [] ) {
         let rings: number[] | null = null;
-        for( let marks = 0; marks <= 2 && !rings; marks++ ) rings = split( run, rv.length > 0 ? rv[rv.length - 1] : 0, marks );
+        for( const even of [ true, false ] ) for( let marks = 0; marks <= 2 && !rings; marks++ ) rings = split( run, rv.length > 0 ? rv[rv.length - 1] : 0, marks, even );
         if( !rings ) return null;
         rv.push( ...rings );
     }
@@ -411,7 +414,7 @@ const isNumberedStart = ( text: string ): boolean => {
 }
 
 /** One behavior column from its OCR lines, top to bottom, with the icon colours of each line. */
-export const parseAcesScanColumn = ( lines: { text: string, colours: ICardScanColours }[] ): IAcesBehaviorColumn => {
+export const parseAcesScanColumn = ( lines: { text: string, colours: ICardScanColours }[], warnings: string[] = [] ): IAcesBehaviorColumn => {
     const column = newAcesBehaviorColumn();
     // Blank rows (all icons, no OCR text) are kept when they show a tag or a check.
     const texts = lines.map( ( line ) => ( { text: trimEdges( line.text ), colours: line.colours } ) )
@@ -481,9 +484,15 @@ export const parseAcesScanColumn = ( lines: { text: string, colours: ICardScanCo
     }
 
     // Card art under a short column reads as lines of capitals; every filter uses a word from the cards' small set.
-    // A list ending "vs" lost its last line under the photo's edge; the cards only ever go on "▲ other enemies".
+    // A list ending "vs" lost its last line under the photo's edge. "▲ other enemies" is the usual ending, so it's
+    // filled in, but "vs target" also prints, so the player is asked to check.
     column.filters = joinNumbered( texts.slice( firstNumbered >= 0 ? firstNumbered : texts.length ).map( ( line ) => line.text ) )
-        .map( ( line, index, lines ) => index === lines.length - 1 && /\bvs\W*$/.test( line ) ? line.replace( /\W*$/, "" ) + " other enemies" : line )
+        .map( ( line, index, lines ) => {
+            if( index < lines.length - 1 || !/\bvs\W*$/.test( line ) ) return line;
+            const guessed = line.replace( /\W*$/, "" ) + " [highest] other enemies";
+            warnings.push( "The last line of \"" + guessed + "\" was cut off and guessed: check it against the card." );
+            return guessed;
+        } )
         .map( ( line ) => restoreAcesScanIcons( line ) )
         // A filter is never a bare "target": its icon went unread.
         .map( ( line ) => /^\W*target\W*$/i.test( line ) ? "[?] target" : line )
@@ -493,9 +502,9 @@ export const parseAcesScanColumn = ( lines: { text: string, colours: ICardScanCo
 
 /**
  * The combat side: zone and numbered target filters from the TARGET column, OV rows from the band below. Each target
- * line may carry the list-tag colour read from its pixels.
+ * line may carry the list-tag colour read from its pixels; otherRead is the text of another pass over the photo.
  */
-export const parseAcesScanCombat = ( targetLines: string[], overheatLines: string[], tags: ( TAcesColor | null )[] = [] ): IAcesCard["combat"] => {
+export const parseAcesScanCombat = ( targetLines: string[], overheatLines: string[], tags: ( TAcesColor | null )[] = [], otherRead = "" ): IAcesCard["combat"] => {
     // "If there are no enemies in [los]: use indirect fire special order card" is a reminder, not a target filter,
     // and can wrap onto a second line.
     const reminder = ( text: string ) => /no\s+enem|indirect|special\s+order/i.test( text );
@@ -521,7 +530,12 @@ export const parseAcesScanCombat = ( targetLines: string[], overheatLines: strin
         if( item.tag && /^\[\?\]\s*command list$/i.test( restored ) ) restored = "[" + item.tag + "] command list";
         // "▲ Armor lost": the blue ▲ often reads as nothing at all, but its colour shows (red would be ▼); the cards
         // never print "Armor lost" without one.
-        if( /^(\[\?\]\s*)?Armor lost$/i.test( restored ) ) restored = ( item.tag === "blue" ? "[highest]" : item.tag === "red" ? "[lowest]" : "[?]" ) + " Armor lost";
+        // Failing that, another read of the photo may have caught the icon as a letter ("A Armor lost").
+        if( /^(\[\?\]\s*)?Armor lost$/i.test( restored ) ) {
+            const seen = /\b([AVYW])\s*Armor lost/.exec( otherRead );
+            const icon = item.tag === "blue" ? "[highest]" : item.tag === "red" ? "[lowest]" : seen ? ( seen[1] === "A" ? "[highest]" : "[lowest]" ) : "[?]";
+            restored = icon + " Armor lost";
+        }
         return parseAcesPriorityLine( restored );
     } );
     // OV rows can wrap; each one starts "If TN".
@@ -687,6 +701,14 @@ export const scanAcesCard = async ( io: ICardScanIO ): Promise<IAcesScanResult> 
         .map( ( word ) => +word.text.replace( /\D/g, "" ) )[0];
     result.priority = best !== undefined ? +best : header.priority !== null ? header.priority : wholeNumber !== undefined ? wholeNumber : null;
     result.cardNumber = parseAcesScanFooter( footerText ) || parseAcesScanFooter( linesIn( bottom ).replace( /©\s*\d+/g, "" ) );
+    // The footer prints light grey, under the bright cut in a dim photo; glare on the logo beside it would set the
+    // dim cut too high, so only its left half is read.
+    if( !result.cardNumber ) {
+        const left = { ...layout.footer, width: Math.round( layout.footer.width * 0.5 ) };
+        for( const scale of [ 1, 2 ] ) {
+            if( !result.cardNumber ) result.cardNumber = parseAcesScanFooter( linesIn( await io.recognize( left, "dim", scale ) ) );
+        }
+    }
     result.warnings.push( result.priority === null ? "Priority number not read." : "Check the priority number: OCR can mix up 1 and 7 in the card's font." );
     if( !result.deck ) result.warnings.push( "Deck name not read." );
     if( !result.cardNumber ) result.warnings.push( "Card number (e.g. 2/6) not read." );
@@ -694,7 +716,7 @@ export const scanAcesCard = async ( io: ICardScanIO ): Promise<IAcesScanResult> 
     if( layout.side === "movement" ) {
         for( const rect of layout.columns ) {
             const lines = tidyAcesScanLines( await io.recognize( rect, "panel" ) );
-            result.columns.push( parseAcesScanColumn( withBlankRows( lines, rect ).map( ( line ) => ( { text: line.text, colours: io.colours( columnLineRect( line, rect ) ) } ) ) ) );
+            result.columns.push( parseAcesScanColumn( withBlankRows( lines, rect ).map( ( line ) => ( { text: line.text, colours: io.colours( columnLineRect( line, rect ) ) } ) ), result.warnings ) );
         }
         result.warnings.push( "The black target icons (⌖ in attack range, 👁 in line of sight, ⊘ out of line of sight) aren't read: tick them by hand." );
     } else {
@@ -704,13 +726,24 @@ export const scanAcesCard = async ( io: ICardScanIO ): Promise<IAcesScanResult> 
         const panel = layout.columns[0];
         const tagBand = { ...panel, left: panel.left + panel.width * 0.08, width: panel.width * 0.6 };
         const tags = targetLines.map( ( line ) => acesScanTagColour( io.colours( columnLineRect( line, tagBand ) ) ) );
-        result.combat = parseAcesScanCombat( targetLines.map( ( line ) => line.text ), overheatLines.map( ( line ) => line.text ), tags );
+        result.combat = parseAcesScanCombat( targetLines.map( ( line ) => line.text ), overheatLines.map( ( line ) => line.text ), tags, linesIn( whole ) );
+        // A TN that didn't read (shown as under 2) gets one closer read of each OV row on its own.
+        const badTN = ( combat: IAcesCard["combat"] ) => combat.overheat.some( ( row ) => ( row.tnAtMost !== null && row.tnAtMost < 2 ) || ( row.tnAtLeast !== null && row.tnAtLeast < 2 ) );
+        if( layout.overheat && badTN( result.combat ) ) {
+            const band = layout.overheat;
+            const rows: string[] = [];
+            for( let row = 0; row < 3; row++ ) {
+                rows.push( linesIn( await io.recognize( { ...band, top: Math.round( band.top + band.height * row / 3 ), height: Math.round( band.height / 3 ) }, "dark", 2 ) ) );
+            }
+            const closer = parseAcesScanCombat( targetLines.map( ( line ) => line.text ), rows, tags, linesIn( whole ) );
+            if( closer.overheat.length >= result.combat.overheat.length && !badTN( closer ) ) result.combat.overheat = closer.overheat;
+        }
         // The indirect fire box sits over the art, outside both crops; the whole-photo pass reads it well.
         if( /indirect\s*fire|special\s*order/i.test( linesIn( whole ) ) ) result.combat.indirectIfNoLOS = true;
         // Some decks (Scout (Hover)) print no OV rows at all.
         if( result.combat.overheat.length === 0 && /\bTN\s*\d|\bOV\b/.test( linesIn( whole ) + " " + linesIn( overheatLines ) ) ) result.warnings.push( "No OV rows read." );
         // No roll needs less than 2, so a TN under that is a misread digit (often 9 or 6 read as 0).
-        if( result.combat.overheat.some( ( row ) => ( row.tnAtMost !== null && row.tnAtMost < 2 ) || ( row.tnAtLeast !== null && row.tnAtLeast < 2 ) ) )
+        if( badTN( result.combat ) )
             result.warnings.push( "Check the TN numbers in the OV rows: one didn't read as a real target number." );
     }
     const unknown = JSON.stringify( result ).split( "[?]" ).length - 1;
