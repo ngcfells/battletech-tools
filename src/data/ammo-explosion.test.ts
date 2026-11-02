@@ -40,6 +40,13 @@ describe("ammunition explosion rules", () => {
         expect(getAmmoExplosionRules("total-warfare", "infantry")).toBeUndefined();
         expect(explode("total-warfare", "infantry", [bin(5)], ac20)).toBeUndefined();
     });
+
+    it("has no ruling for a ProtoMech, whose crits never hit ammunition and which tracks no heat (TW p.186, BMR p.55, TM p.86)", () => {
+        for (const edition of ["total-warfare", "master-rules-revised"]) {
+            expect(getAmmoExplosionRules(edition, "protomech")).toBeUndefined();
+            expect(explode(edition, "protomech", [bin(5)], ac20)).toBeUndefined();
+        }
+    });
 });
 
 describe("ammunition explosion damage", () => {

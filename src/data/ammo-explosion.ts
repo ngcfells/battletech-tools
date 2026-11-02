@@ -48,6 +48,7 @@ export const AMMO_EXPLOSION_RULES: Record<string, Partial<Record<RulesEditionUni
         // CASE II reduces a fighter's explosion to 1 point (TO:AUE p.111); small craft cannot mount it.
         fighter: { scope: "bin", pilotDamage: 1, damageDivisor: { none: 10, case: 20 }, minDamage: 1, cap: { "case-ii": 1 }, cite: "TW p.161, TO:AUE p.111" },
         "small-craft": { scope: "bin", pilotDamage: 1, damageDivisor: { none: 10 }, minDamage: 1, cite: "TW p.161" },
+        // No protomech record: its crits never hit ammunition (TW p.186, BMR p.55) and it vents heat like a vehicle (TM p.86).
     },
     "core-rulebook": {
         // Excess over the cap blows out armor (CRB pp.96-97, 207); the MechWarrior takes 1 hit (CRB p.107).
