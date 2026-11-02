@@ -29,6 +29,8 @@ export default defineConfig(({ command, mode }) => {
             // raised only enough for the missile catalog, one 501 kB module the bundler cannot split (#589).
             chunkSizeWarningLimit: 510,
             rolldownOptions: {
+                // The plugin-timing note only reports a slow machine (it came and went between identical builds).
+                checks: { bundlerTimings: false },
                 output: {
                     codeSplitting: {
                         // The big equipment catalogs get a chunk each, so their shared chunk stays under the size
