@@ -18,7 +18,7 @@
       %PUBLIC_URL%). It is replaced with the configured base path at build time.
       Only files inside the `public` folder can be referenced this way.
     -->
-    <title>Jeff's BattleTech Tools ilClan Edition - BETA</title>
+    <title>Jeff's BattleTech Tools IIC</title>
     <link rel="apple-touch-icon" href="/battletech-tools/favicons/apple-touch-icon.png">
 
     <link rel="icon" type="image/png" sizes="512x512"  href="/battletech-tools/favicons/android-chrome-512x512.png">
@@ -51,7 +51,7 @@
 
 
     </script>
-    <script type="module" crossorigin src="/battletech-tools/assets/index-BxkrN2lB.js"></script>
+    <script type="module" crossorigin src="/battletech-tools/assets/index-vtmz6-J-.js"></script>
     <link rel="modulepreload" crossorigin href="/battletech-tools/assets/rolldown-runtime-BCiCTKAo.js">
     <link rel="modulepreload" crossorigin href="/battletech-tools/assets/sanitized-html-duSqaeDS.js">
     <link rel="modulepreload" crossorigin href="/battletech-tools/assets/generateUUID-CXkTd280.js">
@@ -59,72 +59,10 @@
     <link rel="modulepreload" crossorigin href="/battletech-tools/assets/tag-match-DOLtLUPg.js">
     <link rel="modulepreload" crossorigin href="/battletech-tools/assets/era-options-B9bw8t8y.js">
     <link rel="modulepreload" crossorigin href="/battletech-tools/assets/mulUtilities-CMNtwFbl.js">
-    <link rel="stylesheet" crossorigin href="/battletech-tools/assets/index-GiWwklYk.css">
+    <link rel="stylesheet" crossorigin href="/battletech-tools/assets/index-DT8DZH7T.css">
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
-  <!-- beta-issues-button -->
-<style>
-li.beta-issues{margin-left:auto!important;align-self:center;list-style:none}
-li.beta-issues + li.logo{margin-left:0!important}
-li.beta-issues a.beta-issues-button{display:block;background:#c0392b!important;color:#fff!important;font-weight:700;font-size:.8rem;
-padding:.4rem .75rem;border-radius:.5rem!important;margin:0 .5rem!important;min-height:0!important;white-space:nowrap;text-decoration:none}
-li.beta-issues a.beta-issues-button:hover{background:#e74c3c!important}
-li.beta-ideas{align-self:center;list-style:none}
-li.beta-ideas + li.logo{margin-left:0!important}
-li.beta-ideas a.beta-ideas-button{display:block;background:#2471a3!important;color:#fff!important;font-weight:700;font-size:.8rem;
-padding:.4rem .75rem;border-radius:.5rem!important;margin:0 .5rem 0 0!important;min-height:0!important;white-space:nowrap;text-decoration:none}
-li.beta-ideas a.beta-ideas-button:hover{background:#2e86c1!important}
-</style>
-<script>
-(function(){
-  function button(cls,href,title,text){
-    var li=document.createElement("li");li.className=cls;
-    var a=document.createElement("a");a.className=cls+"-button";a.href=href;
-    a.target="_blank";a.rel="noopener noreferrer";a.title=title;
-    a.textContent=text;li.appendChild(a);return li;
-  }
-  function add(){
-    var logo=document.querySelector("header.topmenu ul.main-menu > li.logo");
-    if(!logo||logo.parentNode.querySelector("li.beta-issues"))return;
-    var ideas=button("beta-ideas","https://github.com/ngcfells/battletech-tools/issues/new?labels=enhancement","We are the beta test: see the ideas and suggest one on GitHub","Beta: Ideas/Suggestions");
-    var issues=button("beta-issues","https://github.com/ngcfells/battletech-tools/issues/new?labels=bug","We are the beta test: report a problem on GitHub","Beta: Report an Issue");
-    logo.parentNode.insertBefore(ideas,logo);logo.parentNode.insertBefore(issues,ideas);
-  }
-  new MutationObserver(add).observe(document.documentElement,{childList:true,subtree:true});
-  add();
-})();
-</script>
-<style>
-.kofi-tip{margin:1rem 0;padding:.75rem 1rem;border:1px solid #72a4f2;border-radius:.5rem;text-align:center}
-.kofi-tip p{margin:0 0 .5rem}
-</style>
-<script type='text/javascript' src='https://storage.ko-fi.com/cdn/widget/Widget_2.js'></script>
-<script>
-// Ko-fi tip button beside NGCFells in About > Current Maintainers. kofiwidget2.draw() uses document.writeln, which
-// would wipe the loaded app, so the same button HTML goes in through getHTML(). Hidden on every other route.
-(function(){
-  var ready=false;
-  function isAbout(){return /^\/battletech-tools\/about\/?$/.test(location.pathname);}
-  function place(){
-    var box=document.querySelector(".kofi-tip");
-    if(box){box.style.display=isAbout()?"":"none";}
-    if(!isAbout()||box||typeof kofiwidget2==="undefined")return;
-    var link=document.querySelector('main.content a[href="https://github.com/ngcfells"]');
-    if(!link)return;
-    if(!ready){kofiwidget2.init('Tips', '#72a4f2', 'M5K429C47U');ready=true;}
-    box=document.createElement("div");box.className="kofi-tip";
-    var note=document.createElement("p");note.textContent="If you would like to help cover costs of development please click here.";
-    var button=document.createElement("div");button.innerHTML=kofiwidget2.getHTML();
-    box.appendChild(note);box.appendChild(button);
-    link.parentNode.insertBefore(box,link.nextSibling);
-  }
-  new MutationObserver(place).observe(document.documentElement,{childList:true,subtree:true});
-  window.addEventListener("popstate",place);
-  window.addEventListener("load",place);
-  place();
-})();
-</script>
-</body>
+  </body>
 </html>
