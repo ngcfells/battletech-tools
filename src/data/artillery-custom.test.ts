@@ -16,8 +16,10 @@ const ammo = (tag: string): IEquipmentItem => {
     if (!found) throw new Error(`no ammo ${tag}`);
     return found;
 };
+// The combo guns; the catalog also holds other custom artillery (the Solaris7 Nuclear Pulse Cannon, #301).
+const comboGuns = artilleryCustom.filter((item) => !!item.comboArtilleryTag);
 const gun = (tag: string): IEquipmentItem => {
-    const found = artilleryCustom.find((item) => item.tag === tag);
+    const found = comboGuns.find((item) => item.tag === tag);
     if (!found) throw new Error(`no gun ${tag}`);
     return found;
 };
@@ -39,7 +41,7 @@ describe("ArtVee combo guns", () => {
     });
 
     it("carries the Vehicle Mode AC profile with +1/+2/+3 range (ArtVee design 2026-10-20)", () => {
-        expect(artilleryCustom).toHaveLength(6);
+        expect(comboGuns).toHaveLength(6);
         for (const row of rows) {
             for (const tag of [`custom-artvee-${row.name}-combo`, `custom-clan-artvee-${row.name}-combo`]) {
                 const item = gun(tag);
@@ -94,7 +96,7 @@ describe("ArtVee combo guns", () => {
     });
 
     it("is Custom Homebrew and vehicle-only", () => {
-        for (const item of artilleryCustom) {
+        for (const item of comboGuns) {
             expect(getEquipmentRulesLevel(item)).toBe(6);
             expect(item.catalog).toBe("custom");
             expect(item.space.battlemech).toBe(-1);

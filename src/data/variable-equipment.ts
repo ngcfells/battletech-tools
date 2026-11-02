@@ -45,7 +45,8 @@ export type VariableEquipmentFormula =
     | "naval-c3"
     | "naval-tug-adaptor"
     | "light-sail"
-    | "mech-turret";
+    | "mech-turret"
+    | "modular-c3";
 
 export interface IVariableEquipmentContext {
     /** Unit tonnage. */
@@ -281,6 +282,12 @@ export function sizeVariableEquipment(
             const weight = Math.max(0.5, roundUpHalfTon(ctx.size ?? 1));
             const perTon = formula === "cargo-liquid" ? 100 : formula === "cargo-insulated" ? 250 : 0;
             return { weight, slots: Math.ceil(weight - 1e-9), cbills: perTon * weight, battleValue: 0 };
+        }
+        // Custom Homebrew (Solaris7 forum, misc-custom.ts): 1 ton for one linked unit, half a ton for each more, up to 11;
+        // slots as a cargo bay's, 250,000 C-bills a ton (the C3 slave's).
+        case "modular-c3": {
+            const weight = 1 + 0.5 * (Math.min(11, Math.max(1, ctx.size ?? 1)) - 1);
+            return { weight, slots: Math.ceil(weight - 1e-9), cbills: 250000 * weight, battleValue: 0 };
         }
     }
     return null;

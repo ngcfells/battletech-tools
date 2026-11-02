@@ -262,5 +262,32 @@ export const ballisticCustom: IEquipmentItem[] = [
         shotsPerTon: 2, ammoTypes: ["ammo-custom-railgun-captain-standard"], minAmmoTons: 1, explosive: true, weaponType: ["DB"], techRating: "e",
         book: "http://solaris7.com/thread/railgun-varient/", page: 0, rulesLevel: 7,
         alphaStrike: { heat: 0, rangeShort: 0, rangeMedium: 0, rangeLong: 0, rangeExtreme: 0, tc: false, notes: ["Custom equipment: no Alpha Strike conversion"] }
+    },
+    // Solaris7 forum ideas (#301, 'LosTech custom weapons', April 2020): the big light autocannons. Weights are Lycaon's (about
+    // a third off, as the Light AC/2 and AC/5 are), ranges Prince's. Custom Homebrew: they trade the AC/10's and AC/20's
+    // reach for 4 tons, as the canon light autocannons do. Heat, shots a ton and the half-size slots follow those (TM p.208);
+    // cost is the AC's plus the 25,000 C-bills the LAC/2 and LAC/5 add. BV fitted to canon weapons of the same reach.
+    {
+        name: "Light Autocannon/10", tag: "custom-light-ac-10", techBase: "is", catalog: "custom", altNames: ["LAC/10"], sort: "Light Autocannon/10", category: "Ballistic Weapons",
+        notes: "Custom Homebrew from the Solaris7 forum ('LosTech custom weapons', April 2020): Prince's idea, with medium laser range; Lycaon set it at 8 tons. "
+            + "Not printed in the thread: 3 heat, 10 shots a ton and 4 slots follow the AC/10 as the canon Light AC/5 follows the AC/5 (TM p.208); 225,000 C-bills "
+            + "and the Light AC/5's dates and tech rating. BV 89 is the AC/20's 8.9 a point of damage at a long range of 9 (178 for 20). Standard rounds only.",
+        damage: 10, damageAero: 10, accuracyModifier: 0, cbills: 225000, prototype: 3062, introduced: 3068, extinct: null, reintroduced: null, battleValue: 89, heat: 3, heatAero: 3, weight: 8,
+        range: { min: 0, short: 3, medium: 6, long: 9 }, space: { battlemech: 4, protomech: -1, combatVehicle: 1, supportVehicle: 4, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 },
+        shotsPerTon: 10, ammoTypes: ["ammo-custom-light-ac-10-standard"], minAmmoTons: 1, explosive: false, weaponType: ["DB", "S"], techRating: "d",
+        book: "http://solaris7.com/thread/lostech-custom-weapons/", page: 0, rulesLevel: 6, rangeAero: "s",
+        alphaStrike: { heat: 0, rangeShort: 0, rangeMedium: 0, rangeLong: 0, rangeExtreme: 0, tc: false, notes: ["Custom equipment: no Alpha Strike conversion"] }
+    },
+    {
+        name: "Light Autocannon/20", tag: "custom-light-ac-20", techBase: "is", catalog: "custom", altNames: ["LAC/20"], sort: "Light Autocannon/20", category: "Ballistic Weapons",
+        notes: "Custom Homebrew from the Solaris7 forum ('LosTech custom weapons', April 2020): Prince's idea at 2/4/6, for fast Mediums such as the Legionnaire "
+            + "and Blitzkrieg; Lycaon set it at 10 tons. Not printed in the thread: 7 heat, 5 shots a ton and 5 slots follow the AC/20 as the canon Light AC/5 "
+            + "follows the AC/5 (TM p.208); 325,000 C-bills and the Light AC/5's dates and tech rating. BV 160 is the Medium Pulse Laser's 8 a point of damage "
+            + "at a long range of 6 (48 for 6). Standard rounds only.",
+        damage: 20, damageAero: 20, accuracyModifier: 0, cbills: 325000, prototype: 3062, introduced: 3068, extinct: null, reintroduced: null, battleValue: 160, heat: 7, heatAero: 7, weight: 10,
+        range: { min: 0, short: 2, medium: 4, long: 6 }, space: { battlemech: 5, protomech: -1, combatVehicle: 1, supportVehicle: 5, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 },
+        shotsPerTon: 5, ammoTypes: ["ammo-custom-light-ac-20-standard"], minAmmoTons: 1, explosive: false, weaponType: ["DB", "S"], techRating: "d",
+        book: "http://solaris7.com/thread/lostech-custom-weapons/", page: 0, rulesLevel: 6, rangeAero: "s",
+        alphaStrike: { heat: 0, rangeShort: 0, rangeMedium: 0, rangeLong: 0, rangeExtreme: 0, tc: false, notes: ["Custom equipment: no Alpha Strike conversion"] }
     }
 ];

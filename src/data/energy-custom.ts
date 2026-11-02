@@ -246,5 +246,67 @@ export const energyCustom: IEquipmentItem[] = [
         range: { min: 0, short: 5, medium: 10, long: 15 }, space: { battlemech: 5, protomech: -1, combatVehicle: 1, supportVehicle: 5, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 },
         shotsPerTon: 0, minAmmoTons: 0, explosive: true, weaponType: ["DE"], techRating: "d", book: "http://solaris7.com/thread/lostech-custom-weapons/", page: 0, rulesLevel: 6,
         alphaStrike: { heat: 0, rangeShort: 0, rangeMedium: 0, rangeLong: 0, rangeExtreme: 0, tc: false, notes: ["Custom equipment: no Alpha Strike conversion"] }
+    },
+    {
+        // Solaris7 forum idea (#301, 'Inner Sphere Chemical Lasers', November 2018): Prince's 'light' class; the 'heavy' class is a
+        // capital-scale anti-orbital gun with no statistics and is not entered. Captain ruled out the artillery fire (lasers fly
+        // straight). Prince meant it to be "munchy", but 15 tons for 10 damage trails the Gauss Rifle (15 tons, 15 damage) even
+        // with no heat, and its ammunition is a bomb: Custom Homebrew.
+        name: "Light Chemical Laser (IS)", tag: "custom-is-light-chemical-laser", techBase: "is", catalog: "custom", sort: "laser, chemical, light, is", category: "Energy Weapons",
+        notes: "Custom Homebrew by Prince, Solaris7 forum ('Inner Sphere Chemical Lasers', November 2018): a Succession Wars chemical laser built to fight "
+            + "orbital bombardment, 15 tons and 10-12 slots, needing no fusion engine and no heat sinks, about 5 charges a ton. Direct fire only. Every hit "
+            + "also rolls for a critical hit on the location struck, as the beam goes through. Its ammunition is catastrophic (see the ammunition). "
+            + "First built about 2850 (Free Worlds League), in general use 2880, lost about 2950 after the Holy Shroud, rediscovered about 3085. "
+            + "Not printed in the thread: damage 10 is one point of capital damage (Prince: 'calculated as capital'; the Sub-Capital Laser /1's, SO); "
+            + "the 10 slots are the low end of his range; ranges, cost per ton and tech rating are the Clan Large Chemical Laser's (TO:AUE p.132), "
+            + "225,000 C-bills. BV 123 is the AC/10's 12.3 a point of damage at a long range of 15.",
+        damage: 10, damageAero: 10, accuracyModifier: 0, cbills: 225000, prototype: 2850, introduced: 2880, extinct: 2950, reintroduced: 3085, battleValue: 123, heat: 0, heatAero: 0, weight: 15,
+        range: { min: 0, short: 5, medium: 10, long: 15 }, space: { battlemech: 10, protomech: -1, combatVehicle: 1, supportVehicle: 10, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 },
+        shotsPerTon: 5, ammoTypes: ["ammo-custom-is-light-chemical-laser-standard"], ammoBattleValue: 15, minAmmoTons: 1, explosive: false, weaponType: ["DE"], techRating: "e",
+        book: "http://solaris7.com/thread/inner-sphere-chemical-lasers/", page: 0, rulesLevel: 6, rangeAero: "m",
+        alphaStrike: { heat: 0, rangeShort: 0, rangeMedium: 0, rangeLong: 0, rangeExtreme: 0, tc: false, notes: ["Custom equipment: no Alpha Strike conversion"] }
+    },
+    {
+        // Solaris7 forum idea (#301, 'LosTech custom weapons', April 2020): Lonely Coyote's rotary laser, recalled by Thunder. Of its
+        // three sizes only one is remembered, 5 tons and 2 slots, "possibly a Rotary Laser-3": a small chemical laser (3 damage)
+        // on rotary barrels. Custom Homebrew: the Rotary AC rules on the Clan Small Chemical Laser.
+        name: "Rotary Small Chemical Laser", tag: "custom-rotary-small-chemical-laser", techBase: "clan", catalog: "custom", sort: "laser, chemical, small, rotary", category: "Energy Weapons",
+        notes: "Custom Homebrew from the Solaris7 forum ('LosTech custom weapons', April 2020): Lonely Coyote's rotary chemical laser, 5 tons and 2 slots "
+            + "(Thunder's notes), a hybrid energy and ammunition weapon whose barrels cool in turn for a higher rate of fire. Fires as a Rotary AC: one, "
+            + "two, four or six shots, heat and ammunition multiplied by the shots, the Missile Hits Table column saying how many hit, jamming on 2 (two "
+            + "shots), 2-3 (four) or 2-4 (six) (BMR(R) pp.132-133). Not printed in the thread: damage, heat, ranges, dates and ammunition are the Clan "
+            + "Small Chemical Laser's (TO:AUE p.132); BV 25 and 22,000 C-bills are that laser's 7 BV and 10,000 C-bills times the Rotary AC/5's over the "
+            + "AC/5's (247/70 and 275,000/125,000).",
+        damage: 3, damageAero: 12, accuracyModifier: 0, cbills: 22000, prototype: 3059, introduced: 3083, extinct: null, reintroduced: null, battleValue: 25, heat: 1, heatAero: 6, weight: 5,
+        range: { min: 0, short: 1, medium: 2, long: 3 }, space: { battlemech: 2, protomech: -1, combatVehicle: 1, supportVehicle: 2, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 },
+        shotsPerTon: 60, ammoTypes: ["ammo-clan-small-chemical-laser-standard"], ammoBattleValue: 4, minAmmoTons: 1, explosive: false, weaponType: ["DE"], techRating: "e", isRotary: true,
+        book: "http://solaris7.com/thread/lostech-custom-weapons/", page: 0, rulesLevel: 6, rangeAero: "s",
+        alphaStrike: { heat: 0, rangeShort: 0, rangeMedium: 0, rangeLong: 0, rangeExtreme: 0, tc: false, notes: ["Custom equipment: no Alpha Strike conversion"] }
+    },
+    // Solaris7 forum idea (#301, 'LosTech custom weapons', April 2020): Thunder's Megaton Cannon (medium lasers linked to hit one spot,
+    // 4 tons and 3 slots for 15 damage) and Prince's laser bracket, which Lycaon held to one weapon type, at most four, rolled on the
+    // cluster table "as an outgrowth of the Machine Gun array". Custom Homebrew: the Machine Gun Array's rules on lasers, at the weight
+    // of one linked laser as the array weighs one machine gun (Thunder's 4 tons for three medium lasers), a quarter of its cost, its dates.
+    {
+        name: "Laser Array (Small)", tag: "custom-small-laser-array", techBase: "is", catalog: "custom", sort: "laser, array, small", category: "Energy Weapons",
+        notes: "Custom Homebrew from the Solaris7 forum ('LosTech custom weapons', April 2020): links two to four Small Lasers in its location and fires them "
+            + "as one cluster weapon, as a Machine Gun Array does (TM p.228): one to-hit roll, the Missile Hits Table for how many hit. BV is 0.67 times the "
+            + "linked lasers'.",
+        damage: 3, damageAero: 3, accuracyModifier: 0, cbills: 2813, prototype: 3066, introduced: 3068, extinct: null, reintroduced: null, battleValue: 0, heat: 0, heatAero: 0, weight: 0.5,
+        range: { min: 0, short: 1, medium: 2, long: 3 }, space: { battlemech: 1, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 },
+        shotsPerTon: 0, minAmmoTons: 0, explosive: false, weaponType: ["DE"], techRating: "e", linkedWeaponTags: ["small-laser"],
+        book: "http://solaris7.com/thread/lostech-custom-weapons/", page: 0, rulesLevel: 6,
+        alphaStrike: { heat: 0, rangeShort: 0, rangeMedium: 0, rangeLong: 0, rangeExtreme: 0, tc: false, notes: ["Array damage is carried by its linked lasers"] }
+    },
+    {
+        name: "Laser Array (Medium)", tag: "custom-medium-laser-array", techBase: "is", catalog: "custom", altNames: ["Megaton Cannon"], sort: "laser, array, medium", category: "Energy Weapons",
+        notes: "Custom Homebrew from the Solaris7 forum ('LosTech custom weapons', April 2020): Thunder's Megaton Cannon. Links two to four Medium Lasers in its "
+            + "location and fires them as one cluster weapon, as a Machine Gun Array does (TM p.228): one to-hit roll, the Missile Hits Table for how many hit. "
+            + "BV is 0.67 times the linked lasers'.",
+        damage: 5, damageAero: 5, accuracyModifier: 0, cbills: 10000, prototype: 3066, introduced: 3068, extinct: null, reintroduced: null, battleValue: 0, heat: 0, heatAero: 0, weight: 1,
+        range: { min: 0, short: 3, medium: 6, long: 9 }, space: { battlemech: 1, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 },
+        shotsPerTon: 0, minAmmoTons: 0, explosive: false, weaponType: ["DE"], techRating: "e", linkedWeaponTags: ["medium-laser"],
+        book: "http://solaris7.com/thread/lostech-custom-weapons/", page: 0, rulesLevel: 6,
+        alphaStrike: { heat: 0, rangeShort: 0, rangeMedium: 0, rangeLong: 0, rangeExtreme: 0, tc: false, notes: ["Array damage is carried by its linked lasers"] }
     }
 ];

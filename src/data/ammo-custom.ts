@@ -1096,4 +1096,48 @@ export const ammoCustom: IEquipmentItem[] = [
         prototype: 3051, catalog: "custom", rulesLevel: 7,
         notes: "2 rounds a ton (Captain, Solaris7 forum, July 2018). BV 154 a ton, an eighth of the gun's (see ballistic-custom.ts). Not printed: cost, dates, tech rating and explosiveness are the Heavy Gauss Rifle ammunition's (20,000 C-bills, does not explode)."
     },
+    // Solaris7 forum idea weapons (#301): their rounds, BV an eighth of the weapon's as above.
+    {
+        isAmmo: true, isSpecialAmmo: false, name: "Light Autocannon/10 - Standard Ammo", altNames: ["LAC/10 - Standard Ammo"], tag: "ammo-custom-light-ac-10-standard", techBase: "is", altTags: [],
+        sort: "ammo, light autocannon/010, standard", category: "Ammunition", cbills: 6000, introduced: 3068, extinct: null, reintroduced: null, battleValue: 11,
+        heat: 0, heatAero: 0, weight: 1, range: { min: 0, short: 3, medium: 6, long: 9 },
+        space: { battlemech: 1, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 },
+        roundsPerTon: 10, explosive: true, techRating: "c", book: "http://solaris7.com/thread/lostech-custom-weapons/", page: 0,
+        alphaStrike: { specialAbility: [], heat: 0, rangeShort: 0, rangeMedium: 0, rangeLong: 0, rangeExtreme: 0, tc: false, notes: ["Custom equipment: no Alpha Strike effect"] },
+        prototype: 3062, catalog: "custom", rulesLevel: 6,
+        notes: "10 rounds a ton and 6,000 C-bills, the AC/10's; BV 11 a ton, an eighth of the gun's (see ballistic-custom.ts). Dates and tech rating are the Light AC/5 ammunition's."
+    },
+    {
+        isAmmo: true, isSpecialAmmo: false, name: "Light Autocannon/20 - Standard Ammo", altNames: ["LAC/20 - Standard Ammo"], tag: "ammo-custom-light-ac-20-standard", techBase: "is", altTags: [],
+        sort: "ammo, light autocannon/020, standard", category: "Ammunition", cbills: 10000, introduced: 3068, extinct: null, reintroduced: null, battleValue: 20,
+        heat: 0, heatAero: 0, weight: 1, range: { min: 0, short: 2, medium: 4, long: 6 },
+        space: { battlemech: 1, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 },
+        roundsPerTon: 5, explosive: true, techRating: "c", book: "http://solaris7.com/thread/lostech-custom-weapons/", page: 0,
+        alphaStrike: { specialAbility: [], heat: 0, rangeShort: 0, rangeMedium: 0, rangeLong: 0, rangeExtreme: 0, tc: false, notes: ["Custom equipment: no Alpha Strike effect"] },
+        prototype: 3062, catalog: "custom", rulesLevel: 6,
+        notes: "5 rounds a ton and 10,000 C-bills, the AC/20's; BV 20 a ton, an eighth of the gun's (see ballistic-custom.ts). Dates and tech rating are the Light AC/5 ammunition's."
+    },
+    {
+        isAmmo: true, isSpecialAmmo: false, name: "Light Chemical Laser - Standard Ammo (IS)", altNames: ["IS Light Chemical Laser Charges"], tag: "ammo-custom-is-light-chemical-laser-standard", techBase: "is", altTags: [],
+        sort: "ammo, light chemical laser, standard, is", category: "Ammunition", cbills: 30000, introduced: 2880, extinct: 2950, reintroduced: 3085, battleValue: 15,
+        heat: 0, heatAero: 0, weight: 1, range: { min: 0, short: 5, medium: 10, long: 15 },
+        space: { battlemech: 1, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 },
+        roundsPerTon: 5, explosive: true, techRating: "e", book: "http://solaris7.com/thread/inner-sphere-chemical-lasers/", page: 0,
+        alphaStrike: { specialAbility: [], heat: 0, rangeShort: 0, rangeMedium: 0, rangeLong: 0, rangeExtreme: 0, tc: false, notes: ["Custom equipment: no Alpha Strike effect"] },
+        prototype: 2850, catalog: "custom", rulesLevel: 6,
+        notes: "About 5 chemical charges a ton (Prince, Solaris7 forum, November 2018). A hit on the bin explodes as usual (50 points a full ton) and also sets "
+            + "the unit's hex on fire, and each adjacent hex takes a chemical attack (toxic chlorine and peroxides). BV 15 a ton, an eighth of the laser's "
+            + "(see energy-custom.ts); cost and tech rating are the Clan Large Chemical Laser ammunition's (TO:AUE p.132)."
+    },
+    {
+        isAmmo: true, isSpecialAmmo: false, name: "Nuclear Pulse Cannon - Standard Ammo", altNames: ["Nuclear Pulse Charges"], tag: "ammo-custom-nuclear-pulse-cannon-standard", techBase: "is", altTags: [],
+        sort: "ammo, nuclear pulse cannon, standard", category: "Ammunition", cbills: 500000, introduced: 2600, extinct: 2830, reintroduced: 3044, battleValue: 53,
+        heat: 0, heatAero: 0, weight: 1, range: { min: 0, short: 0, medium: 0, long: 0 },
+        space: { battlemech: 1, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 },
+        roundsPerTon: 3, explosive: true, techRating: "f", book: "http://solaris7.com/thread/custom-senario-weapon-comments-and-criticisms-needed/", page: 0,
+        alphaStrike: { specialAbility: [], heat: 0, rangeShort: 0, rangeMedium: 0, rangeLong: 0, rangeExtreme: 0, tc: false, notes: ["Custom equipment: no Alpha Strike effect"] },
+        prototype: 2593, catalog: "custom", rulesLevel: 7,
+        notes: "3 nuclear charges a ton (Prince, Solaris7 forum, July 2018). BV 53 a ton, an eighth of the cannon's (see artillery-custom.ts). Not printed: "
+            + "cost, dates and tech rating are the Arrow IV Davy Crockett-M round's (500,000 C-bills, IO:AE p.168)."
+    },
 ];

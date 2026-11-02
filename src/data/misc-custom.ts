@@ -78,4 +78,44 @@ export const miscCustom: IEquipmentItem[] = [
         shotsPerTon: 0, minAmmoTons: 0, explosive: false, weaponType: [], techRating: "d", book: "Custom", page: 0, rulesLevel: 6,
         alphaStrike: { heat: 0, rangeShort: 0, rangeMedium: 0, rangeLong: 0, rangeExtreme: 0, tc: false, notes: ["Custom equipment: no Alpha Strike effect outside hull scenarios"] }
     },
+    // Solaris7 forum ideas (#301, 'LosTech custom weapons', April 2020), each Custom Homebrew on its nearest canon device.
+    {
+        name: "'Mech Periscope", tag: "custom-mech-periscope", techBase: "universal", catalog: "custom", altNames: ["Mech Periscope", "Sensor Mast"], sort: "equipment, periscope", category: "Custom Equipment",
+        notes: "Custom Homebrew from the Solaris7 forum ('LosTech custom weapons', April 2020): Thunder's sensor mast, 1 ton and 1 slot, so a 'Mech can see over "
+            + "cover and spot for its own indirect fire; Thunder and Prince preferred it to a drone. Works as the VTOL Mast Mount does (TO:AUE p.162): the 'Mech "
+            + "spots and traces line of sight for spotting as if 1 level higher than it stands; it cannot make direct-fire attacks from the mast. One a unit. "
+            + "Not printed in the thread: cost, dates, tech rating and BV 0 are the VTOL Mast Mount's.",
+        damage: 0, damageAero: 0, accuracyModifier: 0, cbills: 50000, introduced: 1950, extinct: null, reintroduced: null,
+        battleValue: 0, heat: 0, heatAero: 0, weight: 1,
+        range: { min: 0, short: 0, medium: 0, long: 0 }, space: { battlemech: 1, protomech: -1, combatVehicle: -1, supportVehicle: -1, aerospaceFighter: -1, smallCraft: -1, dropShip: -1 },
+        maxPerUnit: 1, shotsPerTon: 0, minAmmoTons: 0, explosive: false, weaponType: [], techRating: "c", book: "http://solaris7.com/thread/lostech-custom-weapons/", page: 0, rulesLevel: 6,
+        alphaStrike: { heat: 0, rangeShort: 0, rangeMedium: 0, rangeLong: 0, rangeExtreme: 0, tc: false, notes: ["Custom equipment: no Alpha Strike conversion"] }
+    },
+    {
+        name: "Chaff Pod 2.0", tag: "custom-chaff-pod-2", techBase: "is", catalog: "custom", sort: "equipment, pod, chaff, 2.0", category: "Custom Equipment",
+        notes: "Custom Homebrew by Prince, Solaris7 forum ('LosTech custom weapons', April 2020): the Chaff Pod crossed with the Vehicular Grenade Launcher, a "
+            + "single SRM-style tube, still 1 ton. Holds 4 pods (the low end of Prince's 4-5); each does what a Chaff Pod does (light smoke, an ECM bubble and "
+            + "anti-missile cover for one turn, TO:AUE p.111) in the unit's hex or one adjacent hex, so it can block line of sight. An unfired pod explodes "
+            + "for 3 points a pod if the launcher takes a critical hit. Not printed in the thread: 1 slot, dates and tech rating are the Chaff Pod's; BV 76 and "
+            + "8,000 C-bills are its 19 and 2,000 for each of the 4 pods.",
+        damage: 0, damageAero: 0, accuracyModifier: 0, cbills: 8000, prototype: 3069, introduced: 3079, extinct: null, reintroduced: null,
+        battleValue: 76, battleValueDefensive: true, heat: 0, heatAero: 0, weight: 1,
+        range: { min: 0, short: 1, medium: 0, long: 0 }, space: { battlemech: 1, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 },
+        shotsPerTon: 0, minAmmoTons: 0, explosive: true, weaponType: [], techRating: "c", book: "http://solaris7.com/thread/lostech-custom-weapons/", page: 0, rulesLevel: 6,
+        alphaStrike: { heat: 0, rangeShort: 0, rangeMedium: 0, rangeLong: 0, rangeExtreme: 0, tc: false, notes: ["Custom equipment: no Alpha Strike conversion"] }
+    },
+    {
+        name: "Modular C3", tag: "custom-modular-c3", techBase: "is", catalog: "custom", sort: "equipment, c3, modular", category: "Custom Equipment",
+        notes: "Custom Homebrew by Prince, Solaris7 forum ('LosTech custom weapons', April 2020): an outgrowth of the Improved C3 Computer, like an Inner Sphere "
+            + "Nova CEWS without its ECM. The 1-ton base, a C3 slave's weight, shares targeting with 1 other unit; each half ton more adds another, up to 11 "
+            + "(6 tons, a 12-unit network). Every unit in the network mounts one. Links need line of sight and are named at the start of each Initiative "
+            + "Phase, so the network can change who it connects to; otherwise as the Improved C3 Computer (BMR(R) p.135). Network BV applies to the whole force. "
+            + "Not printed in the thread: 1 slot a ton or fraction (as a cargo bay), 250,000 C-bills a ton (the C3 slave's), and the Improved C3's dates and tech rating.",
+        damage: 0, damageAero: 0, accuracyModifier: 0, cbills: 250000, prototype: 3052, introduced: 3062, extinct: null, reintroduced: null,
+        battleValue: 0, heat: 0, heatAero: 0, weight: 1,
+        range: { min: 0, short: 0, medium: 0, long: 0 }, space: { battlemech: 1, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: -1, smallCraft: -1, dropShip: -1 },
+        variableSize: true, variableFormula: "modular-c3", sizeLabel: "Linked units", sizeMax: 11, size: 1,
+        shotsPerTon: 0, minAmmoTons: 0, explosive: false, weaponType: [], techRating: "e", book: "http://solaris7.com/thread/lostech-custom-weapons/", page: 0, rulesLevel: 6,
+        alphaStrike: { heat: 0, rangeShort: 0, rangeMedium: 0, rangeLong: 0, rangeExtreme: 0, tc: false, notes: ["Custom equipment: no Alpha Strike conversion"] }
+    },
 ];

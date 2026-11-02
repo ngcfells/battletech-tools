@@ -633,5 +633,20 @@ export const missileCustom: IEquipmentItem[] = [
             notes: ["IF1"]
         },
         heatAero: 4
+    },
+    {
+        // Solaris7 forum idea (#301, 'LosTech custom weapons', April 2020): Thunder's "Gauss enhanced Narc Launcher" (10 tons, 6 slots,
+        // fires beacons to longer ranges) as Lycaon recast it: an ER-iNarc firing the iNarc's pods, scaled as the ELRM is from the LRM,
+        // with a minimum range of 2 or 3. Custom Homebrew: double the iNarc's weight for its reach, and it cannot pod a close target.
+        name: "ER Improved Narc Launcher", tag: "custom-er-inarc", techBase: "is", catalog: "custom", altNames: ["ER-iNarc", "Gauss Narc Launcher"], sort: "missile, narc, improved, er", category: "Missile Weapons",
+        notes: "Custom Homebrew from the Solaris7 forum ('LosTech custom weapons', April 2020): fires every Improved Narc pod (homing, ECM, explosive, haywire, "
+            + "Nemesis) and follows the iNarc's rules (TM p.233). 10 tons and 6 slots are Thunder's; minimum range 3 is the top of Lycaon's 2 or 3. Not printed in "
+            + "the thread: ranges 7/14/27 and BV 111 are the iNarc's (4/9/15, BV 75) times the Extended LRM 10's over the LRM 10's (12/22/38 over 7/14/21, BV 133 "
+            + "over 90; TO:AUE p.139), cost is twice the iNarc's as the ELRM 10's is the LRM 10's, and dates and tech rating are the iNarc's.",
+        damage: 0, damageAero: 0, accuracyModifier: 0, cbills: 500000, prototype: 3054, introduced: 3062, extinct: null, reintroduced: null, battleValue: 111, heat: 0, heatAero: 0, weight: 10,
+        range: { min: 3, short: 7, medium: 14, long: 27 }, space: { battlemech: 6, protomech: -1, combatVehicle: 1, supportVehicle: 6, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 },
+        shotsPerTon: 4, ammoTypes: ["ammo-is-inarc-standard"], minAmmoTons: 1, explosive: false, weaponType: [], techRating: "e",
+        book: "http://solaris7.com/thread/lostech-custom-weapons/", page: 0, rulesLevel: 6, rangeAero: "",
+        alphaStrike: { specialAbility: ["INARC"], heat: 0, rangeShort: 0, rangeMedium: 0, rangeLong: 0, rangeExtreme: 0, tc: false, notes: ["Custom equipment: no Alpha Strike conversion"] }
     }
 ];
