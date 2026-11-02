@@ -226,5 +226,35 @@ export const ballisticCustom: IEquipmentItem[] = [
         page: 0,
         rulesLevel: 6,
         alphaStrike: { heat: 8, rangeShort: 0, rangeMedium: 0, rangeLong: 0, rangeExtreme: 0, tc: false, notes: ["UAC"] }
+    },
+    // Solaris7 forum railguns (#301), both Munchkin: the thread is tagged "munchtek", and each outclasses the Heavy Gauss
+    // Rifle (18 t, 25 damage, 4/6/13/20) on damage, range or both. What a post does not print comes from that rifle (TM p.219).
+    {
+        name: "Railgun (Nightstalker666)", tag: "custom-railgun-nightstalker666", techBase: "universal", catalog: "custom", sort: "railgun, nightstalker666", category: "Ballistic Weapons",
+        notes: "Munchkin by Nightstalker666, Solaris7 forum ('Railgun varient', July 2018), a one-of-a-kind prototype. His 22 July revision doubles the weight "
+            + "to 20 tons and 8 slots and sets the heat at 12; damage, range, ammunition and cost are his first post's. The 25 points are armor-piercing and do not "
+            + "transfer to another location, except from a destroyed front torso to its rear. It cannot fire indirectly. An ammunition hit does only 2 damage a round "
+            + "unless a laser or PPC caused it; heat, flamers and infernos do not set it off. BV 704 (88 a ton of ammunition) is Thunder's figure from the Heavy Metal "
+            + "custom weapon tool. Not printed in the thread: dates and tech rating are the Heavy Gauss Rifle's (prototype 3051, available 3061, tech E).",
+        damage: 25, damageAero: 25, accuracyModifier: 0, cbills: 2500000, prototype: 3051, introduced: 3061, extinct: null, reintroduced: null, battleValue: 704, heat: 12, heatAero: 12, weight: 20,
+        range: { min: 6, short: 12, medium: 25, long: 39, extreme: 50 }, space: { battlemech: 8, protomech: -1, combatVehicle: 1, supportVehicle: 8, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 },
+        shotsPerTon: 16, ammoTypes: ["ammo-custom-railgun-nightstalker666-standard"], minAmmoTons: 1, explosive: false, weaponType: ["DB"], techRating: "e",
+        book: "http://solaris7.com/thread/railgun-varient/", page: 0, rulesLevel: 7,
+        alphaStrike: { heat: 0, rangeShort: 0, rangeMedium: 0, rangeLong: 0, rangeExtreme: 0, tc: false, notes: ["Custom equipment: no Alpha Strike conversion"] }
+    },
+    {
+        name: "Railgun (Captain)", tag: "custom-railgun-captain", techBase: "universal", catalog: "custom", sort: "railgun, captain", category: "Ballistic Weapons",
+        notes: "Munchkin by Captain, Solaris7 forum ('Railgun varient', July 2018), after the MekTek railgun of MechWarrior 4: Mercenaries. A critical hit on it "
+            + "explodes like a 60-point ammunition explosion. Firing it from a 'Mech below the Super-Heavy class forces an immediate Piloting Skill Roll: +1 for an "
+            + "Assault 'Mech, +2 for a Heavy, doubled if the 'Mech moved this turn; a Medium fails automatically. A Super-Heavy that moves and fires it rolls with no "
+            + "modifier. Its 22 'Mech slots take one whole side: all 12 of a side torso and the 10 left in the arm on that side once the lower arm and hand "
+            + "actuators are removed (user ruling 2026-11-02; the post gives no placement). "
+            + "Not printed in the thread: cost, Battle Value, dates and tech rating are the Heavy Gauss Rifle's (500,000 C-bills, BV 346, prototype 3051, available 3061, tech E).",
+        damage: 50, damageAero: 50, accuracyModifier: 0, cbills: 500000, prototype: 3051, introduced: 3061, extinct: null, reintroduced: null, battleValue: 346, heat: 5, heatAero: 5, weight: 30,
+        range: { min: 10, short: 11, medium: 22, long: 33 }, space: { battlemech: 22, protomech: -1, combatVehicle: 1, supportVehicle: 22, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 },
+        spreadSlots: true, spreadLocations: "one-side",
+        shotsPerTon: 2, ammoTypes: ["ammo-custom-railgun-captain-standard"], minAmmoTons: 1, explosive: true, weaponType: ["DB"], techRating: "e",
+        book: "http://solaris7.com/thread/railgun-varient/", page: 0, rulesLevel: 7,
+        alphaStrike: { heat: 0, rangeShort: 0, rangeMedium: 0, rangeLong: 0, rangeExtreme: 0, tc: false, notes: ["Custom equipment: no Alpha Strike conversion"] }
     }
 ];

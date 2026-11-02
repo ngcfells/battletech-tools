@@ -268,7 +268,7 @@ export interface IAmmoProfile {
 export type EngineRequirement = "fusion" | "fusion-or-fission" | "ice-or-fuel-cell";
 
 /** The 'Mech locations a spread item's slots go in (see IEquipmentItem.spreadLocations). */
-export type SpreadLocations = "all" | "all-but-head" | "limbs-and-side-torsos" | "legs" | "side-torsos" | "torsos";
+export type SpreadLocations = "all" | "all-but-head" | "limbs-and-side-torsos" | "legs" | "side-torsos" | "torsos" | "one-side";
 
 export interface IEquipmentItem extends ICatalogStanding {
     catalog?: "is" | "clan" | "custom" | "universal";
@@ -447,6 +447,7 @@ export interface IEquipmentItem extends ICatalogStanding {
     /**
      * Where a spread item's slots go on a 'Mech, shared out evenly among those locations: every location, every one but
      * the head, the limbs and side torsos, the legs, or the side torsos. A Tripod adds its third leg's share (IO:AE p.159).
+     * "one-side" is not shared out: one side torso and the arm on that side, as many slots in each as fit.
      */
     spreadLocations?: SpreadLocations;
     /** Label for a user-chosen size on the installed item (e.g. "Jump MP"); its value is `size`. */

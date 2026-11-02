@@ -2321,8 +2321,15 @@ export class BattleMech {
             case "legs": return legs;
             case "side-torsos": return ["lt", "rt"];
             case "torsos": return ["lt", "ct", "rt"];
+            case "one-side": return ["lt", "rt", ...arms];
         }
         return null;
+    }
+
+    /** A "one-side" spread item's locations on the other side from `location` (left: lt, la; right: rt, ra). */
+    private _getOtherSideLocations(item: IEquipmentItem, location: string): string[] {
+        if (item.spreadLocations !== "one-side") return [];
+        return (this._getSpreadLocations(item) ?? []).filter(other => other[0] !== location[0]);
     }
 
     /**
@@ -2339,10 +2346,10 @@ export class BattleMech {
         return this.getCriticalSlots(slots);
     }
 
-    /** Most slots of a spread item one location may hold: its slots shared out evenly. */
+    /** Most slots of a spread item one location may hold: its slots shared out evenly ("one-side": as many as fit). */
     private _getSpreadSlotsPerLocation(item: IEquipmentItem): number {
         const spreadLocations = this._getSpreadLocations(item);
-        return spreadLocations ? Math.ceil(this.getSpreadSlotCount(item) / spreadLocations.length) : Infinity;
+        return spreadLocations && item.spreadLocations !== "one-side" ? Math.ceil(this.getSpreadSlotCount(item) / spreadLocations.length) : Infinity;
     }
 
     /**
@@ -6889,8 +6896,10 @@ export class BattleMech {
             ["armor", this._armorType], ["structure", this._selectedInternalStructure], ["engine", this._engineType],
             ["gyro", this._gyro], ["heatSink", this._heatSinkType], ["jumpJet", this._jumpJetType], ["myomer", this._myomerType],
         ];
-        if (components.some(([kind, record]) => isCustomComponent(kind, record as never))) {
-            level = Math.max(level, CUSTOM_HOMEBREW_RULES_LEVEL);
+        for (const [kind, record] of components) {
+            if (isCustomComponent(kind, record as never)) {
+                level = Math.max(level, CUSTOM_HOMEBREW_RULES_LEVEL, (record as { rulesLevel?: number }).rulesLevel ?? 0);
+            }
         }
         // Primitive 'Mech construction is Advanced (IO:AE p.116).
         if (this._primitive) level = Math.max(level, 3);
@@ -7820,6 +7829,10 @@ export class BattleMech {
             }
             if (crowded.length > 0) {
                 violations.push(`${item.name}: at most ${perLocation} slot${perLocation === 1 ? "" : "s"} in a location (${crowded.join(", ").toUpperCase()}).`);
+            }
+            const [first] = byLocation.keys();
+            if (first && this._getOtherSideLocations(item, first).some(location => byLocation.has(location))) {
+                violations.push(`${item.name}: one side only (a side torso and the arm on that side).`);
             }
         });
         if (mounted.some(item => item.tag === BattleMech.C3_REMOTE_SENSOR_TAG) && mounted.some(item => BattleMech._isC3iSystem(item))) {
@@ -9991,6 +10004,8 @@ export class BattleMech {
             if (!spreadLocations.includes(destLoc)) return false;
             const held = (getCriticalArray(destLoc) ?? []).filter(slot => slot?.obj && !slot.placeholder && (slot.obj as IEquipmentItem).tag === spreadItem.tag).length;
             if (held >= this._getSpreadSlotsPerLocation(spreadItem)) return false;
+            const holds = (location: string) => (getCriticalArray(location) ?? []).some(slot => slot?.obj && !slot.placeholder && (slot.obj as IEquipmentItem).tag === spreadItem.tag);
+            if (this._getOtherSideLocations(spreadItem, destLoc).some(holds)) return false;
         }
         // PATHWAY A: ADVANCED ITEM SPLIT ALLOCATION PROCESSING (e.g., Critical Item splits across multiple parts)
         if (split_location && split_location.length > 0) {

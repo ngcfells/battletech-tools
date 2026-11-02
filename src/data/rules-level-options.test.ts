@@ -51,13 +51,16 @@ describe("Rules levels", () => {
         expect(visibleAt(MUNCHKIN_RULES_LEVEL)).toEqual([true, true, true, true]);
     });
 
-    it("offer custom equipment in the 'Mech builder at Custom Homebrew and Munchkin, not at Apocryphal", () => {
+    it("offer custom equipment in the 'Mech builder at Custom Homebrew and Munchkin, not at Apocryphal; Munchkin records at Munchkin only", () => {
         const mech = new BattleMech();
-        const customCount = (level: number) => mech.getAvailableEquipment(level >= CUSTOM_HOMEBREW_RULES_LEVEL, level)
-            .filter(record => record.catalog === "custom").length;
-        expect(customCount(APOCRYPHAL_RULES_LEVEL)).toBe(0);
-        expect(customCount(CUSTOM_HOMEBREW_RULES_LEVEL)).toBeGreaterThan(0);
-        expect(customCount(MUNCHKIN_RULES_LEVEL)).toBe(customCount(CUSTOM_HOMEBREW_RULES_LEVEL));
+        const custom = (level: number) => mech.getAvailableEquipment(level >= CUSTOM_HOMEBREW_RULES_LEVEL, level)
+            .filter(record => record.catalog === "custom");
+        expect(custom(APOCRYPHAL_RULES_LEVEL).length).toBe(0);
+        expect(custom(CUSTOM_HOMEBREW_RULES_LEVEL).length).toBeGreaterThan(0);
+        expect(custom(CUSTOM_HOMEBREW_RULES_LEVEL).filter(record => record.rulesLevel === MUNCHKIN_RULES_LEVEL)).toEqual([]);
+        const munchkinOnly = custom(MUNCHKIN_RULES_LEVEL).filter(record => record.rulesLevel === MUNCHKIN_RULES_LEVEL).length;
+        expect(munchkinOnly).toBeGreaterThan(0);
+        expect(custom(MUNCHKIN_RULES_LEVEL).length).toBe(custom(CUSTOM_HOMEBREW_RULES_LEVEL).length + munchkinOnly);
     });
 
     it("lift the tonnage limits at Custom Homebrew and Munchkin only", () => {

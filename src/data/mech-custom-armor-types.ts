@@ -15,4 +15,36 @@ import { IArmorType } from "./data-interfaces";
  */
 
 export const mechCustomArmorTypes: IArmorType[] = [
+	{
+		// Solaris7 forum (#301). Munchkin: 1.5 times standard armor with no slots beats every canon armor, and its author
+		// called it "munchtek" ("end boss armor", Prince).
+		name: "Nanotube Armor",
+		tag: "custom-nanotube-armor",
+		techBase: "universal",
+		rulesLevel: 7,
+		unitTypes: {
+			battlemech: true,
+			protomech: false,
+			combatVehicle: false,
+			supportVehicle: false,
+			aerospaceFighter: false,
+			smallCraft: false,
+			dropShip: false,
+			battleArmor: false,
+			jumpShip: false,
+			warShip: false
+		},
+		crits: { clan: 0, is: 0 },
+		armorMultiplier: { clan: 24, is: 24 },
+		costMultiplier: 75000,
+		// Not printed: Ferro-Fibrous's dates (Prince suggested it grew out of Ferro-Fibrous).
+		introduced: 2571,
+		extinct: 2810,
+		reintroduced: 3040,
+		book: "http://solaris7.com/thread/nanotube-armor-plating/",
+		page: 0,
+		notes: "Munchkin by Nightstalker666, Solaris7 forum ('Nanotube armor plating', November 2018): 24 armor points a ton, no critical slots, 75,000 C-bills a ton. "
+			+ "Made only in specialized plants, five times as costly and ten times slower than other armor factories. The drawbacks he asked about (an extra point "
+			+ "of damage per 5 or 10 ballistic damage, an extra critical hit) were never settled and are not applied. Not printed: dates are Ferro-Fibrous's."
+	}
 ];
