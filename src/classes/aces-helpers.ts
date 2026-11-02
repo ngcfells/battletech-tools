@@ -15,6 +15,7 @@ import {
     ACES_MOVE_LAST_PRIORITY,
     TAcesDeckId,
 } from "../data/aces-rules";
+import { IAcesCommandOrder } from "../data/aces-cards";
 import { AlphaStrikeUnit } from "./alpha-strike-unit";
 
 /*
@@ -467,12 +468,29 @@ export const suggestAcesDeckForUnit = ( unit: AlphaStrikeUnit, hasScouringSands:
  * Initiative (Aces p.32)
  * ------------------------------------------------------------------------------------------------------------- */
 
+/**
+ * The Initiative modifier ordered by a Command card: the "+N" or "-N" in an Initiative-phase order that names
+ * Initiative. The orders are read from printed or scanned text, so this is a best-effort read (#604).
+ */
+export const acesCommandInitiativeModifier = ( orders: IAcesCommandOrder[] ): number => {
+    let rv = 0;
+    for( const order of orders ) {
+        if( order.phase !== "initiative" || !/initiative/i.test( order.text ) ) continue;
+        const match = order.text.replace( /\u2212/g, "-" ).match( /([+-])\s?(\d+)/ );
+        if( match ) rv += ( match[1] === "-" ? -1 : 1 ) * parseInt( match[2], 10 );
+    }
+    return rv;
+}
+
 export const getAcesInitiativeModifiers = (
     wonLastTurn: boolean,
     commanderDestroyed: boolean,
     campaign: boolean,
+    commandOrder: number = 0,
 ): IAcesModifier[] => {
     const rv: IAcesModifier[] = [];
+    // The automated force's Command card can order an Initiative modifier (#604).
+    if( commandOrder !== 0 ) rv.push( { label: "Command card Initiative order", value: commandOrder } );
     // The winner's penalty is a campaign rule (Aces p.32).
     if( campaign && wonLastTurn ) rv.push( { label: "Won Initiative last turn", value: ACES_INITIATIVE_LAST_WINNER_MODIFIER } );
     // A lost commander affects Initiative in any Aces game (Aces pp.32, 39).

@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+    acesCommandInitiativeModifier,
     calculateAcesToHit,
     getAcesCrippledReasons,
     getAcesEffectivePriority,
@@ -270,5 +271,16 @@ describe("Aces Initiative (Aces p.32)", () => {
         expect( getAcesInitiativeModifiers( true, false, true ).map( ( mod ) => mod.value ) ).toEqual( [ -2 ] );
         expect( getAcesInitiativeModifiers( true, false, false ) ).toEqual( [] );
         expect( getAcesInitiativeModifiers( true, true, true ).reduce( ( total, mod ) => total + mod.value, 0 ) ).toBe( -4 );
+    });
+
+    // Rekikire: the Command card's Initiative order (+2) never reached the roll (#604). Made-up wording, not card text.
+    it("reads a +N or -N Initiative order from the Command card", () => {
+        const order = ( phase: "initiative" | "movement", text: string ) => ( { phase: phase, text: text, token: null, tokenRank: [], behavior: null, filter: "" } );
+        expect( acesCommandInitiativeModifier( [ order( "initiative", "Add +2 to the Initiative roll." ) ] ) ).toBe( 2 );
+        expect( acesCommandInitiativeModifier( [ order( "initiative", "Initiative -1" ) ] ) ).toBe( -1 );
+        expect( acesCommandInitiativeModifier( [ order( "initiative", "Initiative \u22121" ) ] ) ).toBe( -1 );
+        expect( acesCommandInitiativeModifier( [ order( "initiative", "Assign the MOVE LAST token to your unit with ([highest] PV)." ) ] ) ).toBe( 0 );
+        expect( acesCommandInitiativeModifier( [ order( "movement", "+2 Initiative" ) ] ) ).toBe( 0 );
+        expect( getAcesInitiativeModifiers( false, false, false, 2 ) ).toEqual( [ { label: "Command card Initiative order", value: 2 } ] );
     });
 });

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { acesSampleBattleROMReview, acesSampleSniper475, getAcesSampleLibrary } from "../data/aces-card-samples";
+import { acesSampleBattleROMReview, acesSampleSniper475, acesSampleStarCaptainB, getAcesSampleLibrary } from "../data/aces-card-samples";
 import { AcesGame } from "./aces-game";
 import AlphaStrikeForce from "./alpha-strike-force";
 import { AlphaStrikeUnit } from "./alpha-strike-unit";
@@ -172,6 +172,20 @@ describe("Aces game: card library, sorties, dice and transport", () => {
         const copy = new AcesGame( JSON.parse( JSON.stringify( game.export() ) ) );
         expect( copy.rollInitiative() ).toEqual( game.rollInitiative() );
         expect( copy.rng ).toEqual( game.rng );
+    });
+
+    it("adds the Command card's Initiative order to the automated force's roll (#604)", () => {
+        const card = { ...acesSampleStarCaptainB, orders: [ ...acesSampleStarCaptainB.orders, { phase: "initiative" as const, text: "Add +2 to the Initiative roll.", token: null, tokenRank: [], behavior: null, filter: "" } ] };
+        const game = makeGame( [ makeUnit( "A", "Brawler", 30 ) ] );
+        game.rng = { seed: 99, calls: 0 };
+        const copy = new AcesGame( JSON.parse( JSON.stringify( game.export() ) ) );
+        expect( game.getInitiativeModifiers( "automated", card ).map( ( mod ) => mod.value ) ).toEqual( [ 2 ] );
+        expect( game.getInitiativeModifiers( "player", card ) ).toEqual( [] );
+        const plain = copy.rollInitiative();
+        const withOrder = game.rollInitiative( card );
+        expect( withOrder.automated ).toBe( plain.automated + 2 );
+        expect( withOrder.player ).toBe( plain.player );
+        expect( game.log.some( ( line ) => line.includes( "Command card Initiative order +2" ) ) ).toBe( true );
     });
 
     it("loads a version 1 save with the new fields defaulted", () => {

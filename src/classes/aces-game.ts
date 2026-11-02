@@ -1,7 +1,8 @@
-import { IAcesCard, IAcesCardLibrary, IAcesScenario, IAcesScenarioObjective, IAcesWaypoint } from "../data/aces-cards";
+import { IAcesCard, IAcesCardLibrary, IAcesCommandCard, IAcesScenario, IAcesScenarioObjective, IAcesWaypoint } from "../data/aces-cards";
 import { acesDecks, ACES_CARDS_PER_DECK, getAcesDeck, TAcesDeckId } from "../data/aces-rules";
 import { generateUUID } from "../utils/generateUUID";
 import {
+    acesCommandInitiativeModifier,
     getAcesCrippledReasonsForUnit,
     getAcesFrontLoadedMoveOrder,
     getAcesInitiativeModifiers,
@@ -392,10 +393,12 @@ export class AcesGame {
         }
     }
 
-    public getInitiativeModifiers( side: TAcesSide ): IAcesModifier[] {
+    /** The Command card is the face-up card from the players' library, when they entered one. */
+    public getInitiativeModifiers( side: TAcesSide, commandCard: IAcesCommandCard | null = null ): IAcesModifier[] {
         const campaign = this.campaignId !== "";
         const commanderDestroyed = side === "player" ? this.playerCommanderDestroyed : this.isAutomatedCommanderDestroyed();
-        return getAcesInitiativeModifiers( this.lastInitiativeWinner === side, commanderDestroyed, campaign );
+        const commandOrder = side === "automated" && commandCard ? acesCommandInitiativeModifier( commandCard.orders ) : 0;
+        return getAcesInitiativeModifiers( this.lastInitiativeWinner === side, commanderDestroyed, campaign, commandOrder );
     }
 
     public isAutomatedCommanderDestroyed(): boolean {
@@ -418,8 +421,9 @@ export class AcesGame {
      * Rolls Initiative for both sides with the Aces modifiers (Aces p.32), rerolling ties. Players who roll their
      * own dice set the winner by hand instead.
      */
-    public rollInitiative(): { player: number, automated: number, winner: TAcesSide } {
-        const total = ( side: TAcesSide ) => this.roll2D6() + this.getInitiativeModifiers( side ).reduce( ( sum, modifier ) => sum + modifier.value, 0 );
+    public rollInitiative( commandCard: IAcesCommandCard | null = null ): { player: number, automated: number, winner: TAcesSide } {
+        const modifiers = ( side: TAcesSide ) => this.getInitiativeModifiers( side, commandCard );
+        const total = ( side: TAcesSide ) => this.roll2D6() + modifiers( side ).reduce( ( sum, modifier ) => sum + modifier.value, 0 );
         let player = total( "player" );
         let automated = total( "automated" );
         while( player === automated ) {
@@ -427,7 +431,11 @@ export class AcesGame {
             automated = total( "automated" );
         }
         const winner: TAcesSide = player > automated ? "player" : "automated";
-        this.addLog( "Initiative roll: players " + player + ", automated force " + automated + "." );
+        const listed = ( side: TAcesSide ) => {
+            const list = modifiers( side ).map( ( modifier ) => modifier.label + " " + ( modifier.value > 0 ? "+" : "" ) + modifier.value );
+            return list.length > 0 ? " (" + list.join( ", " ) + ")" : "";
+        };
+        this.addLog( "Initiative roll: players " + player + listed( "player" ) + ", automated force " + automated + listed( "automated" ) + "." );
         this.setInitiativeWinner( winner );
         return { player: player, automated: automated, winner: winner };
     }

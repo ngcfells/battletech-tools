@@ -522,7 +522,7 @@ export default class AcesGamePage extends React.Component<IAcesGamePageProps, IA
             <>
                 <div className="row">
                     {sides.map( ( side ) => {
-                        const modifiers = game.getInitiativeModifiers( side );
+                        const modifiers = game.getInitiativeModifiers( side, this._commandCard() );
                         return (
                             <div className="col-6" key={side}>
                                 <h4>{side === "player" ? "Players" : "Automated force"}</h4>
@@ -555,7 +555,7 @@ export default class AcesGamePage extends React.Component<IAcesGamePageProps, IA
                             {[ "A", "B", "C", "D", "E" ].map( ( letter ) => <option key={letter} value={letter}>{letter}</option> )}
                         </select>
                     </label>
-                    <button className="btn btn-primary btn-sm" onClick={() => this._update( ( g ) => { g.rollInitiative(); } )}>Roll Initiative</button>
+                    <button className="btn btn-primary btn-sm" onClick={() => this._update( ( g ) => { g.rollInitiative( this._commandCard() ); } )}>Roll Initiative</button>
                 </div>
                 {this._renderCommandOrders( "initiative" )}
                 <p className="aces-muted">
