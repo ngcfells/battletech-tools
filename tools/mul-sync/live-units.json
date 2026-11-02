@@ -1016319,6 +1016319,541 @@
         "TRO": "RGv1",
         "ImageUrl": "https://i.ibb.co/gvYpr3f/rifleman-rg.png"
       }
+    },
+    "1RH4SYBUO5": {
+      "summaryHash": "[\"Hollander\",\"BZK-W4\",1,4,8,1,35,18,920,3070,5,[6],null]",
+      "detailScrapedAt": "2026-11-02T13:02:38.919Z",
+      "record": {
+        "Id": 108712,
+        "MulUnitKey": "1RH4SYBUO5",
+        "Name": "Hollander",
+        "Variant": "BZK-W4",
+        "Class": "BattleMech",
+        "Tonnage": 35,
+        "BattleValue": 920,
+        "BFPointValue": 18,
+        "DateIntroduced": "3070",
+        "Role": {
+          "Id": 8,
+          "Name": "Sniper",
+          "Image": null,
+          "SortOrder": 0
+        },
+        "Technology": {
+          "Id": 1,
+          "Name": "Inner Sphere",
+          "Image": null,
+          "SortOrder": 0
+        },
+        "Type": {
+          "Id": 18,
+          "Name": "BattleMech",
+          "Image": null,
+          "SortOrder": 0
+        },
+        "SubTypeId": 4,
+        "BFType": "BM",
+        "EraId": 14,
+        "EraStart": 3068,
+        "Availability": [
+          {
+            "EraId": 14,
+            "FactionIds": [
+              32,
+              47
+            ]
+          },
+          {
+            "EraId": 15,
+            "FactionIds": [
+              54
+            ]
+          },
+          {
+            "EraId": 16,
+            "FactionIds": [
+              34,
+              40,
+              54,
+              56
+            ]
+          },
+          {
+            "EraId": 254,
+            "FactionIds": [
+              54
+            ]
+          },
+          {
+            "EraId": 257,
+            "FactionIds": [
+              34,
+              54
+            ]
+          }
+        ],
+        "BFOverheat": 0,
+        "BFDamageShort": 2,
+        "BFDamageMedium": 2,
+        "BFDamageLong": 2,
+        "BFDamageExtreme": 0,
+        "BFSize": 1,
+        "BFMove": "10\"",
+        "BFTMM": 2,
+        "BFArmor": 2,
+        "BFStructure": 1,
+        "BFDamageShortMin": false,
+        "BFDamageMediumMin": false,
+        "BFDamageLongMin": false,
+        "BFDamageExtremeMin": false,
+        "BFAbilities": "SRCH",
+        "BFThreshold": 0,
+        "ImageUrl": "https://masterunitlist.battletech.com/point-backs/unit-art/manual/hollander-a13054.webp"
+      }
+    },
+    "6KR5VSZ73M": {
+      "summaryHash": "[\"Rakshasa\",\"MDG-3D\",1,4,8,3,75,43,2100,3148,7,[6,30],null]",
+      "detailScrapedAt": "2026-11-02T13:02:54.180Z",
+      "record": {
+        "Id": 108713,
+        "MulUnitKey": "6KR5VSZ73M",
+        "Name": "Rakshasa",
+        "Variant": "MDG-3D",
+        "Class": "BattleMech",
+        "Tonnage": 75,
+        "BattleValue": 2100,
+        "BFPointValue": 43,
+        "DateIntroduced": "3148",
+        "Role": {
+          "Id": 8,
+          "Name": "Sniper",
+          "Image": null,
+          "SortOrder": 0
+        },
+        "Technology": {
+          "Id": 3,
+          "Name": "Mixed",
+          "Image": null,
+          "SortOrder": 0
+        },
+        "Type": {
+          "Id": 18,
+          "Name": "BattleMech",
+          "Image": null,
+          "SortOrder": 0
+        },
+        "SubTypeId": 4,
+        "BFType": "BM",
+        "EraId": 16,
+        "EraStart": 3131,
+        "Availability": [
+          {
+            "EraId": 16,
+            "FactionIds": [
+              29
+            ]
+          },
+          {
+            "EraId": 257,
+            "FactionIds": [
+              29
+            ]
+          }
+        ],
+        "BFOverheat": 1,
+        "BFDamageShort": 3,
+        "BFDamageMedium": 4,
+        "BFDamageLong": 3,
+        "BFDamageExtreme": 0,
+        "BFSize": 3,
+        "BFMove": "10\"",
+        "BFTMM": 2,
+        "BFArmor": 7,
+        "BFStructure": 3,
+        "BFDamageShortMin": false,
+        "BFDamageMediumMin": false,
+        "BFDamageLongMin": false,
+        "BFDamageExtremeMin": false,
+        "BFAbilities": "IF 1,SRCH",
+        "BFThreshold": 0,
+        "ImageUrl": "https://masterunitlist.battletech.com/point-backs/unit-art/manual/rakshasa-972832.webp"
+      }
+    },
+    "7BBQ3QGKZW": {
+      "summaryHash": "[\"Vulture Mk IV (Mad Dog Mk IV)\",\"E\",1,19,4,2,60,51,2151,3140,7,[6,11,17,29,52,67,79],null]",
+      "detailScrapedAt": "2026-11-02T13:03:05.802Z",
+      "record": {
+        "Id": 108714,
+        "MulUnitKey": "7BBQ3QGKZW",
+        "Name": "Vulture Mk IV (Mad Dog Mk IV)",
+        "Variant": "E",
+        "Class": "BattleMech",
+        "Tonnage": 60,
+        "BattleValue": 2151,
+        "BFPointValue": 51,
+        "DateIntroduced": "3140",
+        "Role": {
+          "Id": 4,
+          "Name": "Juggernaut",
+          "Image": null,
+          "SortOrder": 0
+        },
+        "Technology": {
+          "Id": 2,
+          "Name": "Clan",
+          "Image": null,
+          "SortOrder": 0
+        },
+        "Type": {
+          "Id": 18,
+          "Name": "BattleMech",
+          "Image": null,
+          "SortOrder": 0
+        },
+        "SubTypeId": 19,
+        "BFType": "BM",
+        "EraId": 16,
+        "EraStart": 3131,
+        "Availability": [
+          {
+            "EraId": 16,
+            "FactionIds": [
+              5,
+              13,
+              15,
+              27,
+              29,
+              30,
+              31,
+              34,
+              38,
+              39,
+              43,
+              46,
+              48,
+              53,
+              54,
+              63,
+              80
+            ]
+          },
+          {
+            "EraId": 257,
+            "FactionIds": [
+              5,
+              13,
+              15,
+              20,
+              27,
+              29,
+              30,
+              31,
+              34,
+              38,
+              39,
+              43,
+              46,
+              48,
+              53,
+              54,
+              63,
+              76,
+              79,
+              80,
+              81,
+              82,
+              83,
+              190
+            ]
+          }
+        ],
+        "BFOverheat": 1,
+        "BFDamageShort": 6,
+        "BFDamageMedium": 6,
+        "BFDamageLong": 0,
+        "BFDamageExtreme": 0,
+        "BFSize": 3,
+        "BFMove": "10\"",
+        "BFTMM": 2,
+        "BFArmor": 6,
+        "BFStructure": 3,
+        "BFDamageShortMin": false,
+        "BFDamageMediumMin": false,
+        "BFDamageLongMin": false,
+        "BFDamageExtremeMin": false,
+        "BFAbilities": "CASE,CR,ECM,LPRB,OMNI,RCN,SRCH",
+        "BFThreshold": 0,
+        "ImageUrl": "https://masterunitlist.battletech.com/point-backs/unit-art/manual/vulture-iv-beda89.webp"
+      }
+    },
+    "AKMA24LEK4": {
+      "summaryHash": "[\"Uziel\",\"UZL-9S\",1,4,6,1,50,36,1558,3108,10,[56],null]",
+      "detailScrapedAt": "2026-11-02T13:03:20.437Z",
+      "record": {
+        "Id": 108715,
+        "MulUnitKey": "AKMA24LEK4",
+        "Name": "Uziel",
+        "Variant": "UZL-9S",
+        "Class": "BattleMech",
+        "Tonnage": 50,
+        "BattleValue": 1558,
+        "BFPointValue": 36,
+        "DateIntroduced": "3108",
+        "Role": {
+          "Id": 6,
+          "Name": "Skirmisher",
+          "Image": null,
+          "SortOrder": 0
+        },
+        "Technology": {
+          "Id": 1,
+          "Name": "Inner Sphere",
+          "Image": null,
+          "SortOrder": 0
+        },
+        "Type": {
+          "Id": 18,
+          "Name": "BattleMech",
+          "Image": null,
+          "SortOrder": 0
+        },
+        "SubTypeId": 4,
+        "BFType": "BM",
+        "EraId": 254,
+        "EraStart": 3101,
+        "Availability": [
+          {
+            "EraId": 16,
+            "FactionIds": [
+              29,
+              30,
+              34,
+              40,
+              53,
+              54,
+              55,
+              56,
+              57,
+              58,
+              59
+            ]
+          },
+          {
+            "EraId": 254,
+            "FactionIds": [
+              29,
+              34,
+              40,
+              53,
+              54,
+              55,
+              56,
+              57,
+              58,
+              59
+            ]
+          },
+          {
+            "EraId": 257,
+            "FactionIds": [
+              29,
+              30,
+              53,
+              54,
+              83
+            ]
+          }
+        ],
+        "BFOverheat": 0,
+        "BFDamageShort": 3,
+        "BFDamageMedium": 3,
+        "BFDamageLong": 2,
+        "BFDamageExtreme": 0,
+        "BFSize": 2,
+        "BFMove": "12\"/16\"j",
+        "BFTMM": 2,
+        "BFArmor": 4,
+        "BFStructure": 2,
+        "BFDamageShortMin": false,
+        "BFDamageMediumMin": false,
+        "BFDamageLongMin": false,
+        "BFDamageExtremeMin": false,
+        "BFAbilities": "JMPS 1",
+        "BFThreshold": 0,
+        "ImageUrl": "https://masterunitlist.battletech.com/point-backs/unit-art/manual/uziel-c030ba.webp"
+      }
+    },
+    "JNFBBVZMDW": {
+      "summaryHash": "[\"Mad Cat Mk II\",\"7\",1,4,3,2,90,54,3207,3142,7,[6,29],null]",
+      "detailScrapedAt": "2026-11-02T13:03:33.147Z",
+      "record": {
+        "Id": 108716,
+        "MulUnitKey": "JNFBBVZMDW",
+        "Name": "Mad Cat Mk II",
+        "Variant": "7",
+        "Class": "BattleMech",
+        "Tonnage": 90,
+        "BattleValue": 3207,
+        "BFPointValue": 54,
+        "DateIntroduced": "3142",
+        "Role": {
+          "Id": 3,
+          "Name": "Brawler",
+          "Image": null,
+          "SortOrder": 0
+        },
+        "Technology": {
+          "Id": 2,
+          "Name": "Clan",
+          "Image": null,
+          "SortOrder": 0
+        },
+        "Type": {
+          "Id": 18,
+          "Name": "BattleMech",
+          "Image": null,
+          "SortOrder": 0
+        },
+        "SubTypeId": 4,
+        "BFType": "BM",
+        "EraId": 16,
+        "EraStart": 3131,
+        "Availability": [
+          {
+            "EraId": 16,
+            "FactionIds": [
+              5,
+              17,
+              27,
+              29,
+              30,
+              40,
+              53,
+              54,
+              55,
+              56,
+              57,
+              58,
+              59,
+              63,
+              70,
+              80
+            ]
+          },
+          {
+            "EraId": 257,
+            "FactionIds": [
+              5,
+              20,
+              27,
+              29,
+              30,
+              53,
+              54,
+              63,
+              79,
+              80,
+              82,
+              83
+            ]
+          }
+        ],
+        "BFOverheat": 1,
+        "BFDamageShort": 7,
+        "BFDamageMedium": 7,
+        "BFDamageLong": 5,
+        "BFDamageExtreme": 0,
+        "BFSize": 4,
+        "BFMove": "8\"/6\"j",
+        "BFTMM": 1,
+        "BFArmor": 8,
+        "BFStructure": 5,
+        "BFDamageShortMin": false,
+        "BFDamageMediumMin": false,
+        "BFDamageLongMin": false,
+        "BFDamageExtremeMin": false,
+        "BFAbilities": "CASE,SRCH",
+        "BFThreshold": 0,
+        "ImageUrl": "https://masterunitlist.battletech.com/point-backs/unit-art/manual/mad-cat-ii-edecab.webp"
+      }
+    },
+    "SBGURW663B": {
+      "summaryHash": "[\"Solitaire\",\"3\",1,4,9,2,25,36,1608,3106,10,[6,29],null]",
+      "detailScrapedAt": "2026-11-02T13:03:48.211Z",
+      "record": {
+        "Id": 108717,
+        "MulUnitKey": "SBGURW663B",
+        "Name": "Solitaire",
+        "Variant": "3",
+        "Class": "BattleMech",
+        "Tonnage": 25,
+        "BattleValue": 1608,
+        "BFPointValue": 36,
+        "DateIntroduced": "3106",
+        "Role": {
+          "Id": 9,
+          "Name": "Striker",
+          "Image": null,
+          "SortOrder": 0
+        },
+        "Technology": {
+          "Id": 2,
+          "Name": "Clan",
+          "Image": null,
+          "SortOrder": 0
+        },
+        "Type": {
+          "Id": 18,
+          "Name": "BattleMech",
+          "Image": null,
+          "SortOrder": 0
+        },
+        "SubTypeId": 4,
+        "BFType": "BM",
+        "EraId": 254,
+        "EraStart": 3101,
+        "Availability": [
+          {
+            "EraId": 16,
+            "FactionIds": [
+              39,
+              63
+            ]
+          },
+          {
+            "EraId": 254,
+            "FactionIds": [
+              39,
+              63
+            ]
+          },
+          {
+            "EraId": 257,
+            "FactionIds": [
+              39,
+              63,
+              79
+            ]
+          }
+        ],
+        "BFOverheat": 0,
+        "BFDamageShort": 3,
+        "BFDamageMedium": 3,
+        "BFDamageLong": 0,
+        "BFDamageExtreme": 0,
+        "BFSize": 1,
+        "BFMove": "26\"",
+        "BFTMM": 4,
+        "BFArmor": 3,
+        "BFStructure": 1,
+        "BFDamageShortMin": false,
+        "BFDamageMediumMin": false,
+        "BFDamageLongMin": false,
+        "BFDamageExtremeMin": false,
+        "BFAbilities": "CASE,SRCH",
+        "BFThreshold": 0,
+        "ImageUrl": "https://masterunitlist.battletech.com/point-backs/unit-art/manual/solitaire-b2fd5c.webp"
+      }
     }
   }
 }
