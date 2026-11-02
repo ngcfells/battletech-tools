@@ -195,6 +195,17 @@ describe("Fighter damage and critical hits (TW pp.238-240)", () => {
         expect(cased.addEquipmentFromTag("case")).not.toBeNull();
         cased.explodeAmmunition();
         expect(cased.getInPlay().structureDamage).toBe(5);
+
+        // AeroTech 2 sends the full 100 to the SI, or one shot's 10 with CASE (AT2 p.13); it is not yet selectable.
+        const at2 = armed();
+        (at2 as any)._rulesEdition = "aerotech-2";
+        at2.explodeAmmunition();
+        expect(at2.getInPlay().structureDamage).toBe(100);
+        const at2Cased = armed();
+        (at2Cased as any)._rulesEdition = "aerotech-2";
+        at2Cased.addEquipmentFromTag("case");
+        at2Cased.explodeAmmunition();
+        expect(at2Cased.getInPlay().structureDamage).toBe(10);
         expect(cased.isDestroyed()).toBe(false);
     });
 

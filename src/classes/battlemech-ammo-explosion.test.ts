@@ -109,10 +109,33 @@ describe("'Mech ammunition explosions (Total Warfare)", () => {
 });
 
 describe("'Mech ammunition explosions on an edition's own critical hit roll", () => {
-    it("explodes the bin on the Battledroids roll too, by Total Warfare until its own record is entered", () => {
+    it("leaves the bin alone on the Battledroids roll, where only heat explodes ammunition (BD pp.13, 19)", () => {
         const mech = build({ edition: "battledroids" });
-        const { log } = explode(mech, 1);
-        expect(log).toContain("AC/10 - Standard Ammo explodes for 10 damage.");
+        const { log, bin } = explode(mech, 1);
+        expect(log.join(" ")).not.toContain("explode");
+        expect(lost(mech, "lt", "structure")).toBe(0);
+        expect(mech.getAmmoBinRemaining(bin)).toBe(1);
+    });
+
+    it("explodes every bin in the location from BattleTech 2nd Edition to 4th (BT2 p.25, BT4 p.24)", () => {
+        for (const edition of ["battletech-2nd-edition", "battletech-3rd-edition", "battletech-4th-edition"]) {
+            const mech = build({ edition });
+            const other = placeIn(mech, "ammo-ac-10-standard", "lt", "leftTorso").item;
+            other.currentAmmo = 1;
+            const { log, bin } = explode(mech, 1);
+            // 2 shots x 10 across both bins: the side torso's 12, then 8 into the center torso.
+            expect(lost(mech, "lt", "structure")).toBe(12);
+            expect(lost(mech, "ct", "structure")).toBe(8);
+            expect(mech.getAmmoBinRemaining(other)).toBe(0);
+            expect(mech.getAmmoBinRemaining(bin)).toBe(0);
+            expect(log).toContain("AC/10 - Standard Ammo, AC/10 - Standard Ammo explode for 20 damage.");
+        }
+    });
+
+    it("explodes only the bin hit under the Master Rules (BMR p.36)", () => {
+        const mech = build({ edition: "master-rules" });
+        placeIn(mech, "ammo-ac-10-standard", "lt", "leftTorso").item.currentAmmo = 1;
+        explode(mech, 1);
         expect(lost(mech, "lt", "structure")).toBe(10);
     });
 });

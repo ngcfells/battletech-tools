@@ -16,7 +16,7 @@ import { IArmorType, ICockpitType, ICriticalLocations, IEngineOption, IEngineTyp
 import { btEraOptions, findEraByTag, getClosestEraForTech, getEraForYear, getErasForTech } from "../data/era-options";
 import { mechArmorTypes } from "../data/mech-armor-types";
 import { findAllByName, findByTag, matchesTag } from "../data/tag-match";
-import { AmmoExplosionProtection, getAmmoExplosion } from "../data/ammo-explosion";
+import { AmmoExplosionProtection, getAmmoExplosion, getAmmoExplosionRules } from "../data/ammo-explosion";
 import { ComponentRecord, getComponentRecords, getComponentTiers, isCustomComponent } from "../data/custom-component-registry";
 import type { CustomComponentKind, ISSWUnresolvedItem } from "../data/custom-content-types";
 import { getCockpitType } from "../data/mech-cockpit-types";
@@ -6204,11 +6204,17 @@ export class BattleMech {
      * location with CASE vents it; damage over the edition's cap may strip armor where it stops. Returns the log lines.
      */
     private _onSlotHit(location: string, slot: ICriticalSlot | null | undefined): string[] {
-        const bin = this._equipmentList.find(item => item.uuid === slot?.uuid && item.isAmmo && item.explosive);
+        const explosive = (uuid: string | undefined) => this._equipmentList.find(item => item.uuid === uuid && item.isAmmo && item.explosive);
+        const bin = explosive(slot?.uuid);
+        const rules = getAmmoExplosionRules(this._rulesEdition, "mech");
+        if (!bin || rules?.heatOnly) return [];
+        // Every bin in the location explodes from BT2 to BT4 (BT2 p.25, BT4 p.24).
+        const slots: (ICriticalSlot | null | undefined)[] = (this._criticals as any)[BattleMech.MECH_LOCATION_MAP[location]] ?? [];
+        const bins = rules?.scope === "location" ? [...new Set(slots.map(item => explosive(item?.uuid)).filter(item => item !== undefined))] : [bin];
         const protection = this._ammoExplosionProtection(location);
-        const explosion = bin && getAmmoExplosion(this._rulesEdition, "mech", [bin], item => this.getAmmoBinWeapon(item) ?? undefined, item => this.getAmmoBinRemaining(item), protection);
-        if (!bin || !explosion?.baseDamage) return [];
-        bin.currentAmmo = 0;
+        const explosion = getAmmoExplosion(this._rulesEdition, "mech", bins, item => this.getAmmoBinWeapon(item) ?? undefined, item => this.getAmmoBinRemaining(item), protection);
+        if (!explosion?.baseDamage) return [];
+        for (const item of bins) item.currentAmmo = 0;
         const vents = (at: string) => this._ammoExplosionProtection(at) !== "none";
         this.takeDamage(explosion.damage, location, false, { structureOnly: true, ventAt: vents });
         let at = location;
@@ -6223,7 +6229,7 @@ export class BattleMech {
             this._calc();
         }
         const vented = protection === "none" ? [] : [`${protection === "case" ? "CASE" : "CASE II"} vents the rest.`];
-        return [`${bin.name} explodes for ${explosion.baseDamage} damage.`, ...vented, ...explosion.log];
+        return [`${bins.map(item => item.name).join(", ")} explode${bins.length > 1 ? "" : "s"} for ${explosion.baseDamage} damage.`, ...vented, ...explosion.log];
     }
 
     /** A head or limb blown off: its armor and internal structure are gone. */

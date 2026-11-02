@@ -76,6 +76,26 @@ describe("Ammunition explosions (TW p. 194)", () => {
         expect(tank.isDestroyed()).toBe(false);
     });
 
+    it("destroys the vehicle in the editions before Total Warfare; with CASE the rear armor blows out and the crew survive (CT p.30)", () => {
+        // These editions are not yet selectable for a vehicle, so the edition is set directly.
+        const tank = build("tracked");
+        mount(tank, "machine-gun", "front");
+        mount(tank, "ammo-machine-gun-standard", "body");
+        (tank as any)._rulesEdition = "citytech";
+        expect(tank.applyCriticalHit("ammunition", "left")).toContain("the vehicle explodes (CT p.30)");
+        expect(tank.isDestroyed()).toBe(true);
+        expect(tank.getDestroyedReason()).toBe("ammunition exploded");
+
+        const cased = build("tracked");
+        mount(cased, "machine-gun", "front");
+        mount(cased, "ammo-machine-gun-standard", "body");
+        mount(cased, "case", "body");
+        (cased as any)._rulesEdition = "master-rules";
+        expect(cased.applyCriticalHit("ammunition", "left")).toContain("CASE blows out the rear armor and the crew survive (BMR p.126)");
+        expect(cased.getArmorRemaining("rear")).toBe(0);
+        expect(cased.isDestroyed()).toBe(true);
+    });
+
     it("a Clan chassis has CASE built in; an Inner Sphere one only with CASE mounted (TM p.210)", () => {
         const tank = build("tracked");
         expect(tank.hasCASE()).toBe(false);

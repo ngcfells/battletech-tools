@@ -7,8 +7,17 @@ export type AmmoExplosionProtection = "none" | "case" | "case-ii";
 
 /** How an edition explodes one unit type's ammunition. Fields are added only where the books differ. */
 export interface IAmmoExplosionRules {
-    /** The bin hit explodes, or all the ammunition aboard (in a building, all in the hex). */
-    scope: "bin" | "all";
+    /**
+     * What explodes: the bin hit, every bin in the location hit, all the ammunition of the weapon whose ammunition
+     * explodes from heat, or all the ammunition aboard (in a building, all in the hex).
+     */
+    scope: "bin" | "location" | "weapon" | "all";
+    /** A critical hit on ammunition does nothing; only heat explodes it. */
+    heatOnly?: boolean;
+    /** The explosion destroys the unit outright; with CASE it blows out the rear armor and the crew survive. */
+    destroysUnit?: boolean;
+    /** With this protection the unit takes one shot's damage, and the rest of the ammunition is lost. */
+    oneShot?: AmmoExplosionProtection[];
     /** Damage to the MechWarrior or pilot, which CASE and CASE II do not prevent; 0 for none. */
     pilotDamage: number;
     /** The damage is divided by this, by protection, rounding down. */
@@ -57,6 +66,70 @@ export const AMMO_EXPLOSION_RULES: Record<string, Partial<Record<RulesEditionUni
             cite: "CRB pp.96, 107",
         },
     },
+    // Earlier editions, each checked on the page image. CASE vents as in TW: the excess the earlier books send to
+    // the armor of the destroyed location changes nothing (BTC p.118, BTC:RoW p.115). No book before TW gives
+    // infantry, battle armor (BTr, CTr) or buildings an ammunition explosion.
+    battledroids: {
+        // A critical hit on ammunition has no effect; heat explodes the most destructive rack (BD pp.13, 18-19).
+        mech: { scope: "bin", pilotDamage: 2, heatOnly: true, cite: "BD pp.13, 19" },
+    },
+    "battletech-2nd-edition": {
+        mech: { scope: "location", pilotDamage: 2, cite: "BT2 p.25" },
+    },
+    "battletech-manual": {
+        mech: { scope: "location", pilotDamage: 2, cite: "BTM p.24" },
+        // "Ammo/Plant Hit (vehicle explodes)" on the 1D6 critical hit table, as in every book before TW.
+        vehicle: { scope: "all", pilotDamage: 0, destroysUnit: true, cite: "BTM p.34" },
+        // Heat explodes all of the most destructive ammunition type at full force. Conventional fighter pilots
+        // take no damage (BTM p.53, BTC p.78); the tool does not tell them apart.
+        fighter: { scope: "weapon", pilotDamage: 1, cite: "BTM pp.53, 71" },
+    },
+    "battletech-compendium": {
+        mech: { scope: "location", pilotDamage: 2, cite: "BTC p.30" },
+        vehicle: { scope: "all", pilotDamage: 0, destroysUnit: true, cite: "BTC p.42" },
+        fighter: { scope: "weapon", pilotDamage: 1, cite: "BTC pp.78, 100" },
+    },
+    "battletech-3rd-edition": {
+        mech: { scope: "location", pilotDamage: 2, cite: "BT3 p.29" },
+    },
+    "compendium-rules-of-warfare": {
+        mech: { scope: "location", pilotDamage: 2, cite: "BTC:RoW p.43" },
+        vehicle: { scope: "all", pilotDamage: 0, destroysUnit: true, cite: "BTC:RoW p.63" },
+    },
+    "battletech-4th-edition": {
+        mech: { scope: "location", pilotDamage: 2, cite: "BT4 p.24" },
+    },
+    "master-rules": {
+        mech: { scope: "bin", pilotDamage: 2, cite: "BMR p.36" },
+        vehicle: { scope: "all", pilotDamage: 0, destroysUnit: true, cite: "BMR p.126" },
+    },
+    "master-rules-revised": {
+        mech: { scope: "bin", pilotDamage: 2, cite: "BMR(R) p.37" },
+        vehicle: { scope: "all", pilotDamage: 0, destroysUnit: true, cite: "BMR(R) p.58" },
+    },
+    "classic-battletech-box-set": {
+        mech: { scope: "bin", pilotDamage: 2, cite: "CBT p.30" },
+    },
+    citytech: {
+        vehicle: { scope: "all", pilotDamage: 0, destroysUnit: true, cite: "CT p.30" },
+    },
+    "citytech-2nd-edition": {
+        vehicle: { scope: "all", pilotDamage: 0, destroysUnit: true, cite: "CT2 p.44" },
+    },
+    aerotech: {
+        // The 1986 book has no small craft.
+        fighter: { scope: "weapon", pilotDamage: 1, cite: "AT pp.6, 26" },
+    },
+    // Heat only. The full damage reaches the SI, and a fighter's CASE lets one shot through. AT2R's optional
+    // ammunition critical hits are not built.
+    "aerotech-2": {
+        fighter: { scope: "bin", pilotDamage: 1, oneShot: ["case"], cite: "AT2 p.13" },
+        "small-craft": { scope: "bin", pilotDamage: 1, cite: "AT2 p.13" },
+    },
+    "aerotech-2-revised": {
+        fighter: { scope: "bin", pilotDamage: 1, oneShot: ["case"], cite: "AT2R p.21" },
+        "small-craft": { scope: "bin", pilotDamage: 1, cite: "AT2R p.21" },
+    },
 };
 
 export function getAmmoExplosionRules(editionTag: string | undefined, unitType: RulesEditionUnitType): IAmmoExplosionRules | undefined {
@@ -87,14 +160,16 @@ export function getAmmoExplosion(
     const rules = getAmmoExplosionRules(editionTag, unitType);
     if (!rules) return undefined;
     let baseDamage = 0;
+    let shot = 0;
     for (const bin of bins) {
         if (bin.variableFormula === "extended-fuel-tank") baseDamage += 40 * bin.weight;
         const weapon = bin.isAmmo && bin.explosive ? binWeapon(bin) : undefined;
         if (!weapon) continue;
         const shots = Math.max(0, shotsLeft(bin));
+        if (shots > 0) shot = Math.max(shot, getAmmoDamagePerShot(weapon));
         baseDamage += bin.battleArmorScale ? getBattleArmorScaleExplosionDamage(shots * (bin.kgPerShot ?? 0) / 1000) : shots * getAmmoDamagePerShot(weapon);
     }
-    let damage = baseDamage;
+    let damage = rules.oneShot?.includes(protection) ? Math.min(shot, baseDamage) : baseDamage;
     const divisor = rules.damageDivisor?.[protection] ?? rules.damageDivisor?.none;
     if (divisor && damage > 0) damage = Math.max(rules.minDamage ?? 0, Math.floor(damage / divisor));
     damage = Math.min(damage, rules.cap?.[protection] ?? Infinity);
@@ -104,7 +179,8 @@ export function getAmmoExplosion(
 
 /**
  * A failed heat Avoid Roll's explosion (TW p.161): the bin with the most destructive ammunition per shot explodes,
- * and the rest of that weapon's ammunition is destroyed with no more damage. `spent` is every bin lost. Gauss and
+ * and the rest of that weapon's ammunition is destroyed with no more damage, or explodes with it where the edition's
+ * scope is "weapon" (AT p.26). `spent` is every bin lost. Gauss and
  * other inert ammunition never explode. Undefined when no explosive ammunition is left. The unit applies the damage
  * to its SI and the pilot damage to its pilot or crew.
  */
@@ -118,9 +194,11 @@ export function getHeatAmmoExplosion(
 ): (IAmmoExplosion & { bin: IEquipmentItem; spent: IEquipmentItem[] }) | undefined {
     const live = bins.filter((bin) => bin.isAmmo && bin.explosive && shotsLeft(bin) > 0 && binWeapon(bin));
     const bin = live.reduce<IEquipmentItem | undefined>((best, item) => !best || getAmmoDamagePerShot(binWeapon(item)!) > getAmmoDamagePerShot(binWeapon(best)!) ? item : best, undefined);
-    const explosion = bin && getAmmoExplosion(editionTag, unitType, [bin], binWeapon, shotsLeft, protection);
+    const spent = live.filter((item) => bin && binWeapon(item) === binWeapon(bin));
+    const scope = getAmmoExplosionRules(editionTag, unitType)?.scope;
+    const explosion = bin && getAmmoExplosion(editionTag, unitType, scope === "weapon" ? spent : [bin], binWeapon, shotsLeft, protection);
     if (!explosion) return undefined;
-    const log = [`${bin!.name} explodes: ${explosion.damage} damage to the Structural Integrity (${explosion.rules.cite})`, ...explosion.log];
+    const log = [`${scope === "weapon" ? spent.map((item) => item.name).join(", ") : bin!.name} explodes: ${explosion.damage} damage to the Structural Integrity (${explosion.rules.cite})`, ...explosion.log];
     if (explosion.rules.pilotDamage > 0) log.push("Make a Consciousness Roll (TW p.41)");
-    return { ...explosion, log, bin: bin!, spent: live.filter((item) => binWeapon(item) === binWeapon(bin!)) };
+    return { ...explosion, log, bin: bin!, spent };
 }

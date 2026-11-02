@@ -1,5 +1,5 @@
 import { generateUUID } from "../utils/generateUUID";
-import { getAmmoExplosion } from "../data/ammo-explosion";
+import { getAmmoExplosion, getAmmoExplosionRules } from "../data/ammo-explosion";
 import { IGameSettingsUnit, UnitGameSettings } from "./unit-game-settings";
 import { chooseEra } from "../data/era-choice";
 import { copyCatalogRecord, findUnitCatalogRecord, getUnitCatalogRecords } from "../data/equipment-lookup";
@@ -4434,6 +4434,12 @@ export default class Vehicle implements IGameSettingsUnit {
             case "ammunition": {
                 const damage = this.getAmmunitionExplosionDamage();
                 const cased = this.hasCASE();
+                const rules = getAmmoExplosionRules(this._rulesEdition, "vehicle");
+                if (rules?.destroysUnit) {
+                    c.ammoExploded = true;
+                    if (cased) this._inPlay.armorDamage.rear = this._armorAllocation.rear ?? 0;
+                    return `${name}: the vehicle explodes${cased ? "; CASE blows out the rear armor and the crew survive" : ""} (${rules.cite})`;
+                }
                 this.applyAmmunitionExplosion(location, damage, cased);
                 return cased
                     ? `${name}: all ammunition explodes for ${damage} damage; CASE vents it into the rear armor (excess ignored) and stuns the crew`
@@ -4749,11 +4755,12 @@ export default class Vehicle implements IGameSettingsUnit {
     /**
      * Destroyed: all internal structure in one location (including a turret, never a VTOL rotor) is
      * gone (TW p. 128), a Fuel Tank explosion or Turret Blown Off (TW p. 195), a hover vehicle
-     * immobilized over deep water (TW p. 193), or Crew Killed (destroyed for victory, TW p. 194).
+     * immobilized over deep water (TW p. 193), Crew Killed (destroyed for victory, TW p. 194), or an ammunition
+     * explosion in an edition where it destroys the vehicle (CT p.30).
      */
     public isDestroyed(): boolean {
         const c = this._inPlay.criticals;
-        if (c.crewKilled || c.fuelTankHit || c.turretBlownOff) return true;
+        if (c.crewKilled || c.fuelTankHit || c.turretBlownOff || this._ammoDestroyedVehicle()) return true;
         if (this.isSunk() || this._inPlay.crashDestroyed) return true;
         // A Large Naval Vessel survives the loss of a turret (TO:AUE p.27).
         const largeNaval = this.isLargeNavalVessel();
@@ -4767,10 +4774,16 @@ export default class Vehicle implements IGameSettingsUnit {
         if (c.crewKilled) return "crew killed";
         if (c.fuelTankHit) return "fuel tank exploded";
         if (c.turretBlownOff) return "turret blown off";
+        if (this._ammoDestroyedVehicle()) return "ammunition exploded";
         if (this.isSunk()) return "sank";
         if (this._inPlay.crashDestroyed === "exploded") return "exploded";
         if (this._inPlay.crashDestroyed === "water") return "crashed into water";
         return this.isDestroyed() ? "internal structure destroyed" : null;
+    }
+
+    // An ammunition explosion destroys the vehicle in the editions before TW ("vehicle explodes", CT p.30).
+    private _ammoDestroyedVehicle(): boolean {
+        return this._inPlay.criticals.ammoExploded && !!getAmmoExplosionRules(this._rulesEdition, "vehicle")?.destroysUnit;
     }
 
     /** A hover vehicle immobilized over Depth 1 or deeper water sinks (TW p. 193). */

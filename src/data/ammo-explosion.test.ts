@@ -41,6 +41,27 @@ describe("ammunition explosion rules", () => {
         expect(explode("total-warfare", "infantry", [bin(5)], ac20)).toBeUndefined();
     });
 
+    it("gives every earlier edition a 'Mech record of its own, the MechWarrior taking 2", () => {
+        const scopes = {
+            battledroids: "bin", "battletech-2nd-edition": "location", "battletech-manual": "location", "battletech-compendium": "location",
+            "battletech-3rd-edition": "location", "compendium-rules-of-warfare": "location", "battletech-4th-edition": "location",
+            "master-rules": "bin", "master-rules-revised": "bin", "classic-battletech-box-set": "bin",
+        };
+        for (const [edition, scope] of Object.entries(scopes)) {
+            expect(getAmmoExplosionRules(edition, "mech")).toMatchObject({ scope, pilotDamage: 2 });
+            expect(getAmmoExplosionRules(edition, "mech")).not.toBe(getAmmoExplosionRules("total-warfare", "mech"));
+        }
+        // Battledroids explodes ammunition by heat only (BD pp.13, 19).
+        expect(getAmmoExplosionRules("battledroids", "mech")?.heatOnly).toBe(true);
+    });
+
+    it("destroys a vehicle outright in every edition before Total Warfare (CT p.30 to BMR(R) p.58)", () => {
+        for (const edition of ["citytech", "citytech-2nd-edition", "battletech-manual", "battletech-compendium", "compendium-rules-of-warfare", "master-rules", "master-rules-revised"]) {
+            expect(getAmmoExplosionRules(edition, "vehicle")).toMatchObject({ scope: "all", destroysUnit: true });
+        }
+        expect(getAmmoExplosionRules("total-warfare", "vehicle")?.destroysUnit).toBeUndefined();
+    });
+
     it("has no ruling for a ProtoMech, whose crits never hit ammunition and which tracks no heat (TW p.186, BMR p.55, TM p.86)", () => {
         for (const edition of ["total-warfare", "master-rules-revised"]) {
             expect(getAmmoExplosionRules(edition, "protomech")).toBeUndefined();
@@ -94,6 +115,14 @@ describe("ammunition explosion damage", () => {
         expect(explode("total-warfare", "vehicle", [tank, baScale], ac20)?.damage).toBe(100);
     });
 
+    it("sends an AeroTech 2 fighter's full damage to the SI, but one shot's with CASE (AT2 p.13, AT2R p.21)", () => {
+        for (const edition of ["aerotech-2", "aerotech-2-revised"]) {
+            expect(explode(edition, "fighter", [bin(10)], ac10)).toMatchObject({ baseDamage: 100, damage: 100 });
+            expect(explode(edition, "fighter", [bin(10)], ac10, "case")?.damage).toBe(10);
+            expect(explode(edition, "small-craft", [bin(6)], lrm20)?.damage).toBe(120);
+        }
+    });
+
     it("logs the pilot's damage with the rule's citation", () => {
         expect(explode("total-warfare", "mech", [bin(5)], ac20)?.log).toEqual(["The MechWarrior takes 2 damage (TW p.125, TO:AUE p.111)"]);
         expect(explode("total-warfare", "fighter", [bin(5)], ac20)?.log).toEqual(["The pilot takes 1 damage (TW p.161, TO:AUE p.111)"]);
@@ -111,6 +140,16 @@ describe("heat-triggered ammunition explosion (TW p.161)", () => {
         const explosion = getHeatAmmoExplosion("total-warfare", "fighter", [mgBin, ac10First, ac10Second], weapons, shots);
         expect(explosion).toMatchObject({ bin: ac10First, damage: 10 });
         expect(explosion?.spent).toEqual([ac10First, ac10Second]);
+    });
+
+    it("explodes all of that weapon's ammunition at full force in AeroTech (AT p.26, BTM p.71, BTC p.100)", () => {
+        const mgBin = bin(200), ac10First = bin(10), ac10Second = bin(4);
+        const weapons = fed([[mgBin, mg], [ac10First, ac10], [ac10Second, ac10]]);
+        for (const edition of ["aerotech", "battletech-manual", "battletech-compendium"]) {
+            const explosion = getHeatAmmoExplosion(edition, "fighter", [mgBin, ac10First, ac10Second], weapons, shots);
+            expect(explosion).toMatchObject({ bin: ac10First, damage: 140 });
+            expect(explosion?.spent).toEqual([ac10First, ac10Second]);
+        }
     });
 
     it("skips spent and inert bins, such as Gauss ammunition, and finds nothing when none is left", () => {
