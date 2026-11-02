@@ -75,6 +75,18 @@ describe("ammunition explosion damage", () => {
         expect(explode("total-warfare", "small-craft", [bin(6)], lrm20)?.damage).toBe(12);
     });
 
+    it("divides a building hex's damage by 10 with CASE, rounding down, with no minimum (TO:AR p.118)", () => {
+        expect(explode("total-warfare", "building", [bin(5)], ac20)?.damage).toBe(100);
+        expect(explode("total-warfare", "building", [bin(5)], ac20, "case")).toMatchObject({ baseDamage: 100, damage: 10 });
+        expect(explode("total-warfare", "building", [bin(1)], { damage: 5 } as IEquipmentItem, "case")?.damage).toBe(0);
+    });
+
+    it("counts an extended fuel tank as 40 a ton (TM p.244) and battle-armor-scale ammo by weight left (GoO p.54)", () => {
+        const tank = { variableFormula: "extended-fuel-tank", weight: 2 } as IEquipmentItem;
+        const baScale = { isAmmo: true, explosive: true, battleArmorScale: true, kgPerShot: 125, currentAmmo: 2 } as IEquipmentItem;
+        expect(explode("total-warfare", "vehicle", [tank, baScale], ac20)?.damage).toBe(100);
+    });
+
     it("logs the pilot's damage with the rule's citation", () => {
         expect(explode("total-warfare", "mech", [bin(5)], ac20)?.log).toEqual(["The MechWarrior takes 2 damage (TW p.125, TO:AUE p.111)"]);
         expect(explode("total-warfare", "fighter", [bin(5)], ac20)?.log).toEqual(["The pilot takes 1 damage (TW p.161, TO:AUE p.111)"]);

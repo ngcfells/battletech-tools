@@ -1,5 +1,5 @@
 import { generateUUID } from "../utils/generateUUID";
-import { getAmmoDamagePerShot } from "../data/ammo-explosion";
+import { getAmmoExplosion } from "../data/ammo-explosion";
 import { IGameSettingsUnit, UnitGameSettings } from "./unit-game-settings";
 import { chooseEra } from "../data/era-choice";
 import { findUnitCatalogRecord, copyCatalogRecord } from "../data/equipment-lookup";
@@ -1835,16 +1835,14 @@ export default class Building implements IGameSettingsUnit {
 
 
     /**
-     * The damage of all the explosive ammunition left in a hex: each bin's shots times the Damage Value of one
-     * shot (TO:AR p.118; TW p.125). A bin with no weapon on the building to fire it cannot be valued.
+     * The damage of all the explosive ammunition left in a hex, by the edition's rules: each bin's shots times the
+     * Damage Value of one shot, divided by 10 with CASE (TO:AR p.118; TW p.125). A bin with no weapon on the
+     * building to fire it cannot be valued.
      */
-    public getAmmunitionExplosionDamage(hex: number): number {
-        let total = 0;
-        for (const bin of this._equipment.filter((mount) => mount.hex === hex && mount.item.isAmmo && mount.item.explosive)) {
-            const weapon = this._binWeapon(bin);
-            if (weapon) total += this.getAmmoShots(bin.item.uuid || "") * getAmmoDamagePerShot(weapon);
-        }
-        return total;
+    public getAmmunitionExplosionDamage(hex: number, cased: boolean = false): number {
+        const bins = this._equipment.filter((mount) => mount.hex === hex);
+        return getAmmoExplosion(this._rulesEdition, "building", bins.map((mount) => mount.item), (item) => this._binWeapon(bins.find((mount) => mount.item === item)!),
+            (item) => this.getAmmoShots(item.uuid || ""), cased ? "case" : "none")?.damage ?? 0;
     }
 
     /**
@@ -1908,7 +1906,7 @@ export default class Building implements IGameSettingsUnit {
             const bins = this._equipment.filter((mount) => mount.hex === hex && mount.item.isAmmo && this.getAmmoShots(mount.item.uuid || "") > 0);
             if (bins.length === 0 || state.ammoExploded) return none("ammunition");
             const rated = this.getAmmunitionExplosionDamage(hex);
-            const damage = this.hasCASE(hex) ? Math.floor(rated / 10) : rated;
+            const damage = this.getAmmunitionExplosionDamage(hex, this.hasCASE(hex));
             state.ammoExploded = true;
             return [
                 `${head}. All the hex's ammunition is lost: ${rated} damage${damage !== rated ? `, ${damage} with CASE` : ""}`,

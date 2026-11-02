@@ -1,3 +1,4 @@
+import { getBattleArmorScaleExplosionDamage } from "./battle-armor-scale-equipment";
 import { IEquipmentItem } from "./data-interfaces";
 import { DEFAULT_RULES_EDITION, RulesEditionUnitType } from "./rules-editions";
 
@@ -10,8 +11,10 @@ export interface IAmmoExplosionRules {
     scope: "bin" | "all";
     /** Damage to the MechWarrior or pilot, which CASE and CASE II do not prevent; 0 for none. */
     pilotDamage: number;
-    /** Aerospace damage is divided by this, by protection, rounding down, at least 1 (TW p.161). */
+    /** The damage is divided by this, by protection, rounding down. */
     damageDivisor?: Partial<Record<AmmoExplosionProtection, number>>;
+    /** The least damage left after the divisor (aerospace: 1, TW p.161). */
+    minDamage?: number;
     /** The most damage reaching internal structure (or SI), by protection; the unit vents the rest. */
     cap?: Partial<Record<AmmoExplosionProtection, number>>;
     /**
@@ -41,10 +44,10 @@ export const AMMO_EXPLOSION_RULES: Record<string, Partial<Record<RulesEditionUni
         // CASE vents what is left after the location (TW p.125); CASE II lets 1 point through (TO:AUE p.111).
         mech: { scope: "bin", pilotDamage: 2, cap: { "case-ii": 1 }, excessToArmor: { "case-ii": "half" }, cite: "TW p.125, TO:AUE p.111" },
         vehicle: { scope: "all", pilotDamage: 0, cite: "TW p.194" },
-        building: { scope: "all", pilotDamage: 0, cite: "TO:AR p.119" },
+        building: { scope: "all", pilotDamage: 0, damageDivisor: { case: 10 }, cite: "TO:AR p.118" },
         // CASE II reduces a fighter's explosion to 1 point (TO:AUE p.111); small craft cannot mount it.
-        fighter: { scope: "bin", pilotDamage: 1, damageDivisor: { none: 10, case: 20 }, cap: { "case-ii": 1 }, cite: "TW p.161, TO:AUE p.111" },
-        "small-craft": { scope: "bin", pilotDamage: 1, damageDivisor: { none: 10 }, cite: "TW p.161" },
+        fighter: { scope: "bin", pilotDamage: 1, damageDivisor: { none: 10, case: 20 }, minDamage: 1, cap: { "case-ii": 1 }, cite: "TW p.161, TO:AUE p.111" },
+        "small-craft": { scope: "bin", pilotDamage: 1, damageDivisor: { none: 10 }, minDamage: 1, cite: "TW p.161" },
     },
     "core-rulebook": {
         // Excess over the cap blows out armor (CRB pp.96-97, 207); the MechWarrior takes 1 hit (CRB p.107).
@@ -68,8 +71,9 @@ export function getAmmoDamagePerShot(weapon: IEquipmentItem): number {
 
 /**
  * An ammunition explosion of `bins`: each explosive bin's shots left times one shot's Damage Value. A bin with no
- * weapon aboard to fire it cannot be valued and is left out. Undefined when the edition has no ruling for the unit
- * type. The unit applies the damage to its own locations.
+ * weapon aboard to fire it cannot be valued and is left out. Battle-armor-scale ammunition does 20 a quarter-ton left
+ * (Ghosts of Obeedah p.54) and an extended fuel tank 40 a ton (TM p.244). Undefined when the edition has no ruling
+ * for the unit type. The unit applies the damage to its own locations.
  */
 export function getAmmoExplosion(
     editionTag: string | undefined,
@@ -82,13 +86,16 @@ export function getAmmoExplosion(
     const rules = getAmmoExplosionRules(editionTag, unitType);
     if (!rules) return undefined;
     let baseDamage = 0;
-    for (const bin of bins.filter((item) => item.isAmmo && item.explosive)) {
-        const weapon = binWeapon(bin);
-        if (weapon) baseDamage += Math.max(0, shotsLeft(bin)) * getAmmoDamagePerShot(weapon);
+    for (const bin of bins) {
+        if (bin.variableFormula === "extended-fuel-tank") baseDamage += 40 * bin.weight;
+        const weapon = bin.isAmmo && bin.explosive ? binWeapon(bin) : undefined;
+        if (!weapon) continue;
+        const shots = Math.max(0, shotsLeft(bin));
+        baseDamage += bin.battleArmorScale ? getBattleArmorScaleExplosionDamage(shots * (bin.kgPerShot ?? 0) / 1000) : shots * getAmmoDamagePerShot(weapon);
     }
     let damage = baseDamage;
     const divisor = rules.damageDivisor?.[protection] ?? rules.damageDivisor?.none;
-    if (divisor && damage > 0) damage = Math.max(1, Math.floor(damage / divisor));
+    if (divisor && damage > 0) damage = Math.max(rules.minDamage ?? 0, Math.floor(damage / divisor));
     damage = Math.min(damage, rules.cap?.[protection] ?? Infinity);
     const log = rules.pilotDamage > 0 ? [`The ${unitType === "mech" ? "MechWarrior" : "pilot"} takes ${rules.pilotDamage} damage (${rules.cite})`] : [];
     return { rules, baseDamage, damage, log };

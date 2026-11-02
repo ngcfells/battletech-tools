@@ -1,5 +1,5 @@
 import { generateUUID } from "../utils/generateUUID";
-import { getAmmoDamagePerShot } from "../data/ammo-explosion";
+import { getAmmoExplosion } from "../data/ammo-explosion";
 import { IGameSettingsUnit, UnitGameSettings } from "./unit-game-settings";
 import { chooseEra } from "../data/era-choice";
 import { copyCatalogRecord, findUnitCatalogRecord, getUnitCatalogRecords } from "../data/equipment-lookup";
@@ -53,7 +53,6 @@ import { ARTVEE_CONVERSION_EQUIPMENT } from "../data/combat-vehicle-chassis-modi
 import { CUSTOM_HOMEBREW_RULES_LEVEL, EXPERIMENTAL_RULES_LEVEL, getItemBattleValue, getLauncherBattleValueWithoutFireControl, equipmentMatchesIdentifier, getAmmoBattleValuePerTon, getBattleArmorScaleListByTech, getCompatibleAmmo, getDatesAvailability, getEquipmentListByTech, getEquipmentRulesLevel, mustUseStarLeagueVersion, starLeagueVersionInEra, getWeaponShotsPerTon, isEquipmentOffered, isUnderUnitLimit, getTechDatesAvailability } from "../data/equipment-registry";
 import { isTargetingComputerWeapon, roundUpHalfTon, sizeTargetingComputers, sizeVariableEquipment } from "../data/variable-equipment";
 import { getFractionalArmorTonsPerPoint, getFractionalEngineWeight, roundUpToKilogram } from "../data/fractional-accounting";
-import { getBattleArmorScaleExplosionDamage } from "../data/battle-armor-scale-equipment";
 import { getWeaponExplosionDamage } from "../data/weapon-explosions";
 import { findByTag, matchesTag } from "../data/tag-match";
 import { getMovementModifier } from "../utils";
@@ -4075,22 +4074,12 @@ export default class Vehicle implements IGameSettingsUnit {
     }
 
     public getAmmunitionExplosionDamage(): number {
-        if (this._inPlay.criticals.ammoExploded) return 0;
-        let total = 0;
-        for (const ammo of this._equipmentList.filter((item) => item.isAmmo && item.explosive)) {
-            const weapon = this._binWeapon(ammo);
-            if (!weapon) continue;
-            const shots = ammo.currentAmmo ?? this._fullBinShots(ammo);
-            if (ammo.battleArmorScale) {
-                // 20 points per quarter-ton left, whatever the weapon (Ghosts of Obeedah p.54).
-                total += getBattleArmorScaleExplosionDamage(Math.max(0, shots) * (ammo.kgPerShot ?? 0) / 1000);
-                continue;
-            }
-            total += Math.max(0, shots) * getAmmoDamagePerShot(weapon);
-        }
-        // Extended fuel tanks are treated as ammo bins: 40 points per ton of tank (TM p.244).
-        for (const tank of this._equipmentList.filter((item) => item.variableFormula === "extended-fuel-tank")) total += 40 * tank.weight;
-        return total;
+        return this._inPlay.criticals.ammoExploded ? 0 : this._ammoExplosionDamage(this._equipmentList);
+    }
+
+    // The explosion of `bins` (ammunition and extended fuel tanks) by the edition's rules (TW p.194).
+    private _ammoExplosionDamage(bins: IEquipmentItem[]): number {
+        return getAmmoExplosion(this._rulesEdition, "vehicle", bins, (ammo) => this._binWeapon(ammo), (ammo) => ammo.currentAmmo ?? this._fullBinShots(ammo))?.damage ?? 0;
     }
 
     public getArmorRemaining(location: VehicleLocation): number {
@@ -4501,13 +4490,8 @@ export default class Vehicle implements IGameSettingsUnit {
                 return `${name}: roll 2D6; on 8+ it is ignored, otherwise -1 Cruising MP`;
             case "ammunition": {
                 const bins = this._ammoInLocation(location);
-                let damage = 0;
-                for (const ammo of bins.filter((item) => item.isAmmo && item.explosive)) {
-                    const weapon = this._binWeapon(ammo);
-                    if (weapon) damage += Math.max(0, ammo.currentAmmo ?? this._fullBinShots(ammo)) * getAmmoDamagePerShot(weapon);
-                    ammo.currentAmmo = 0;
-                }
-                for (const tank of bins.filter((item) => item.variableFormula === "extended-fuel-tank")) damage += 40 * tank.weight;
+                const damage = this._ammoExplosionDamage(bins);
+                for (const ammo of bins.filter((item) => item.isAmmo && item.explosive)) ammo.currentAmmo = 0;
                 c.ammoHits += 1;
                 const cased = this.hasCASE();
                 if (cased) {
