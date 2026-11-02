@@ -155,7 +155,8 @@ export function convertMtfToSSW(file: IMtfFile): { xml: string; issues: string[]
     for (const key of ["lam", "motive"]) if (value(file, key)) issues.push(`'${key}: ${value(file, key)}' is not converted yet`);
 
     // Chassis components.
-    const engine = /^(\d+)\s+(.+?)\s*(\((Clan|IS)\))?\s*Engine\s*(\((Clan|IS)\))?$/i.exec(value(file, "engine"));
+    // MegaMek writes "Large XXL" over rating 400; a large engine is its type at that rating (TO:AUE p.119).
+    const engine = /^(\d+)\s+(?:Large\s+)?(.+?)\s*(\((Clan|IS)\))?\s*Engine\s*(\((Clan|IS)\))?$/i.exec(value(file, "engine"));
     const engineName = engine ? ENGINES[engine[2].trim()] : undefined;
     if (!engine || !engineName) issues.push(`Engine '${value(file, "engine")}' is not converted yet`);
     // An engine of the design's own tech base carries no marker: SSW writes its tech base all the same.

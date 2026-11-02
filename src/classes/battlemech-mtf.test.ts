@@ -330,6 +330,14 @@ describe("MegaMek 'Mech import", () => {
         expect(mech!.getJumpSpeed()).toBe(2);
     });
 
+    // The Sasquatch SQS-TH-002 and Kuma 3: MegaMek names a large engine "Large", ours is the same type rated over 400 (TO:AUE p.119).
+    it("reads large XXL engines as XXL engines rated over 400", () => {
+        const large = (engine: string) => convertMtfToSSW(parseMtfFile(brawler.replace("engine:250 Fusion Engine", engine))!);
+        expect(large("engine:425 Large XXL Engine").issues.filter((issue) => /engine/i.test(issue))).toEqual([]);
+        expect(large("engine:425 Large XXL Engine").xml).toContain(`<engine rating="425" techbase="0">XXL Engine</engine>`);
+        expect(large("engine:420 Large XXL (Clan) Engine").xml).toContain(`<engine rating="420" techbase="1">XXL Engine</engine>`);
+    });
+
     // The Skinwalker (Ryoken III): an interface cockpit with no gyro. MegaMek packs the engine into center torso
     // slots 1-6; the gyro's slots are free for other items (IO:AE p.110).
     it("reads an interface cockpit with no gyro", () => {

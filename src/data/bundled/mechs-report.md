@@ -4,10 +4,10 @@
 
 | Reason | Files |
 |---|---|
-| duplicate of a design already kept | 3170 |
+| duplicate of a design already kept | 3174 |
 | BV differs from the MUL | 223 |
 | different submodel, same name and model: equipment | 162 |
-| the import could not carry all of it over | 144 |
+| the import could not carry all of it over | 140 |
 | different submodel, same name and model: ammo type | 115 |
 | different submodel, same name and model: actuators | 86 |
 | configuration BV differs from the MUL | 53 |
@@ -1350,8 +1350,8 @@
 - `megamek/3055U/Salamander PPR-6T.mtf`: duplicate of a design already kept: Salamander PPR-6T
 - `megamek/3055U/Salamander PPR-7S.mtf`: duplicate of a design already kept: Salamander PPR-7S
 - `megamek/3055U/Sasquatch SQS-TH-001.mtf`: duplicate of a design already kept: Sasquatch SQS-TH-001
-- `megamek/3055U/Sasquatch SQS-TH-002.mtf`: the import could not carry all of it over: Engine '425 Large XXL Engine' is not converted yet; Cannot find any engine named: ''
-- `megamek/3055U/Sasquatch SQS-TH-003.mtf`: the import could not carry all of it over: Engine '425 Large XXL Engine' is not converted yet; Cannot find any engine named: ''
+- `megamek/3055U/Sasquatch SQS-TH-002.mtf`: duplicate of a design already kept: Sasquatch SQS-TH-002
+- `megamek/3055U/Sasquatch SQS-TH-003.mtf`: duplicate of a design already kept: Sasquatch SQS-TH-003
 - `megamek/3055U/Scarabus SCB-9A.mtf`: duplicate of a design already kept: Scarabus SCB-9A
 - `megamek/3055U/Scarabus SCB-9T.mtf`: duplicate of a design already kept: Scarabus SCB-9T
 - `megamek/3055U/Silver Fox SVR-5X.mtf`: duplicate of a design already kept: Silver Fox SVR-5X
@@ -2106,7 +2106,7 @@
 - `megamek/3085u/Cutting Edge/Hellstar 3.mtf`: duplicate of a design already kept: Hellstar 3
 - `megamek/3085u/Cutting Edge/Hellstar.mtf`: duplicate of a design already kept: Hellstar 
 - `megamek/3085u/Cutting Edge/Kuma 2.mtf`: duplicate of a design already kept: Kuma 2
-- `megamek/3085u/Cutting Edge/Kuma 3.mtf`: the import could not carry all of it over: Engine '420 Large XXL (Clan) Engine' is not converted yet; Cannot find any engine named: ''
+- `megamek/3085u/Cutting Edge/Kuma 3.mtf`: duplicate of a design already kept: Kuma 3
 - `megamek/3085u/Cutting Edge/Kuma.mtf`: duplicate of a design already kept: Kuma 
 - `megamek/3085u/Cutting Edge/Mangonel MNL-3L.mtf`: duplicate of a design already kept: Mangonel MNL-3L
 - `megamek/3085u/Cutting Edge/Mangonel MNL-3W.mtf`: duplicate of a design already kept: Mangonel MNL-3W
@@ -2268,7 +2268,7 @@
 - `megamek/3085u/Phoenix/BattleMaster BLR-4L.mtf`: duplicate of a design already kept: Battlemaster BLR-4L
 - `megamek/3085u/Phoenix/BattleMaster BLR-4S.mtf`: duplicate of a design already kept: Battlemaster BLR-4S
 - `megamek/3085u/Phoenix/BattleMaster BLR-5M.mtf`: duplicate of a design already kept: Battlemaster BLR-5M
-- `megamek/3085u/Phoenix/BattleMaster BLR-6X.mtf`: the import could not carry all of it over: Engine '425 Large XXL Engine' is not converted yet; Cannot find any engine named: ''
+- `megamek/3085u/Phoenix/BattleMaster BLR-6X.mtf`: duplicate of a design already kept: BattleMaster BLR-6X
 - `megamek/3085u/Phoenix/BattleMaster BLR-CM.mtf`: duplicate of a design already kept: Battlemaster BLR-CM
 - `megamek/3085u/Phoenix/BattleMaster BLR-K3.mtf`: duplicate of a design already kept: Battlemaster BLR-K3
 - `megamek/3085u/Phoenix/BattleMaster BLR-K4.mtf`: duplicate of a design already kept: Battlemaster BLR-K4
