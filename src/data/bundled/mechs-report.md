@@ -6,10 +6,10 @@
 |---|---|
 | duplicate of a design already kept | 3166 |
 | BV differs from the MUL | 214 |
-| the import could not carry all of it over | 163 |
-| different submodel, same name and model: equipment | 158 |
+| different submodel, same name and model: equipment | 162 |
+| the import could not carry all of it over | 158 |
 | different submodel, same name and model: ammo type | 112 |
-| different submodel, same name and model: actuators | 85 |
+| different submodel, same name and model: actuators | 86 |
 | configuration BV differs from the MUL | 47 |
 | no Master Unit List entry to check its BV against | 38 |
 | duplicate of a design already kept, differs only in armor spread | 36 |
@@ -4003,9 +4003,9 @@
 - `megamek/XTRs/Primitives II/Crossbow CRS-X.mtf`: different submodel, same name and model: actuators: Crossbow CRS-X
 - `megamek/XTRs/Primitives II/Gladiator GLD-1R.mtf`: different submodel, same name and model: equipment: Gladiator GLD-1R
 - `megamek/XTRs/Primitives II/Icarus ICR-1X.mtf`: different submodel, same name and model: equipment: Icarus ICR-1X
-- `megamek/XTRs/Primitives II/Wasp WSP-1.mtf`: the import could not carry all of it over: Cannot find any equipment named 'ISPrototypeJumpJet'; Cannot find any equipment named 'ISPrototypeJumpJet'; Cannot find any equipment named 'ISPrototypeJumpJet'; Cannot find any equipment named 'ISPrototypeJumpJet'; Cannot find any equipment named 'ISPrototypeJumpJet'; Unallocated Criticals: 5; - Standard Jump Jets (jj-standard); - Standard Jump Jets (jj-standard); - Standard Jump Jets (jj-standard); - Standard Jump Jets (jj-standard); - Standard Jump Jets (jj-standard)
+- `megamek/XTRs/Primitives II/Wasp WSP-1.mtf`: different submodel, same name and model: equipment: Wasp WSP-1
 - `megamek/XTRs/Primitives IV/Emperor EMP-1A.mtf`: different submodel, same name and model: equipment: Emperor EMP-1A
-- `megamek/XTRs/Primitives IV/Griffin GRF-1A.mtf`: the import could not carry all of it over: Cannot find any equipment named 'ISPrototypeJumpJet'; Cannot find any equipment named 'ISPrototypeJumpJet'; Cannot find any equipment named 'ISPrototypeJumpJet'; Unallocated Criticals: 3; - Standard Jump Jets (jj-standard); - Standard Jump Jets (jj-standard); - Standard Jump Jets (jj-standard)
+- `megamek/XTRs/Primitives IV/Griffin GRF-1A.mtf`: different submodel, same name and model: equipment: Griffin GRF-1A
 - `megamek/XTRs/Primitives IV/Rifleman RFL-1N.mtf`: different submodel, same name and model: equipment: Rifleman RFL-1N
 - `megamek/XTRs/Primitives IV/Rifleman RFL-2N.mtf`: duplicate of a design already kept: Rifleman RFL-2N
 - `megamek/XTRs/Primitives IV/Swordsman SWD-1.mtf`: different submodel, same name and model: equipment: Swordsman SWD-1
@@ -4019,10 +4019,10 @@
 - `megamek/XTRs/Primitives I/Shadow Hawk SHD-1R.mtf`: different submodel, same name and model: equipment: Shadow Hawk SHD-1R
 - `megamek/XTRs/Primitives V/Orion ON1-C.mtf`: different submodel, same name and model: equipment: Orion ON1-C
 - `megamek/XTRs/Primitives V/Orion ON1-H.mtf`: different submodel, same name and model: equipment: Orion ON1-H
-- `megamek/XTRs/Primitives V/Phoenix PX-1R.mtf`: the import could not carry all of it over: Cannot find any equipment named 'ISPrototypeJumpJet'; Cannot find any equipment named 'ISPrototypeJumpJet'; Cannot find any equipment named 'ISPrototypeJumpJet'; Unallocated Criticals: 3; - Standard Jump Jets (jj-standard); - Standard Jump Jets (jj-standard); - Standard Jump Jets (jj-standard)
+- `megamek/XTRs/Primitives V/Phoenix PX-1R.mtf`: different submodel, same name and model: equipment: Phoenix PX-1R
 - `megamek/XTRs/Primitives V/Trooper TP-1R.mtf`: different submodel, same name and model: equipment: Trooper TP-1R
-- `megamek/XTRs/Primitives V/Wolverine WVR-1R.mtf`: the import could not carry all of it over: Cannot find any equipment named 'ISPrototypeJumpJet'; Cannot find any equipment named 'ISPrototypeJumpJet'; Unallocated Criticals: 4; - Standard Jump Jets (jj-standard); - Standard Jump Jets (jj-standard); - Standard Jump Jets (jj-standard); - Standard Jump Jets (jj-standard)
-- `megamek/XTRs/Primitives V/Wolverine WVR-3R.mtf`: the import could not carry all of it over: Cannot find any equipment named 'ISPrototypeJumpJet'; Cannot find any equipment named 'ISPrototypeJumpJet'; Unallocated Criticals: 4; - Standard Jump Jets (jj-standard); - Standard Jump Jets (jj-standard); - Standard Jump Jets (jj-standard); - Standard Jump Jets (jj-standard)
+- `megamek/XTRs/Primitives V/Wolverine WVR-1R.mtf`: different submodel, same name and model: equipment: Wolverine WVR-1R
+- `megamek/XTRs/Primitives V/Wolverine WVR-3R.mtf`: different submodel, same name and model: actuators: Wolverine WVR-3R
 - `megamek/XTRs/Primitives V/Ymir BWP-X1.mtf`: different submodel, same name and model: ammo type: Ymir BWP-X1 "Bipedal Weapons Platform"
 - `megamek/XTRs/RISC/Emperor EMP-6X.mtf`: the import could not carry all of it over: Cannot find any equipment named 'ISSuperCooledMyomer'; Cannot find any equipment named 'ISSuperCooledMyomer'; Cannot find any equipment named 'ISSuperCooledMyomer'; Cannot find any equipment named 'ISSuperCooledMyomer'; Cannot find any equipment named 'ISSuperCooledMyomer'; Cannot find any equipment named 'ISSuperCooledMyomer'; Unallocated Criticals: 6; - Triple-Strength Myomer (tsm); - Triple-Strength Myomer (tsm); - Triple-Strength Myomer (tsm); - Triple-Strength Myomer (tsm); - Triple-Strength Myomer (tsm); - Triple-Strength Myomer (tsm)
 - `megamek/XTRs/RISC/Excalibur EXC-B2-RISC.mtf`: the import could not carry all of it over: Cannot find any equipment named 'ISSuperCooledMyomer'; Cannot find any equipment named 'ISSuperCooledMyomer'; Cannot find any equipment named 'ISSuperCooledMyomer'; Cannot find any equipment named 'ISSuperCooledMyomer'; Cannot find any equipment named 'ISSuperCooledMyomer'; Cannot find any equipment named 'ISSuperCooledMyomer'; Unallocated Criticals: 6; - Triple-Strength Myomer (tsm); - Triple-Strength Myomer (tsm); - Triple-Strength Myomer (tsm); - Triple-Strength Myomer (tsm); - Triple-Strength Myomer (tsm); - Triple-Strength Myomer (tsm)

@@ -320,6 +320,16 @@ describe("MegaMek 'Mech import", () => {
         expect(mech!.getInternalStructureWeight()).toBe(2.5);
     });
 
+    // The Wasp WSP-1: primitive prototype jump jets, standard jet mass and slots (IO:AE pp.114, 211).
+    it("reads primitive prototype jump jets", () => {
+        const prototype = brawler.replace("jump mp:0", "jump mp:2")
+            .replace("Right Torso:\nMedium Laser\n-Empty-\n-Empty-", "Right Torso:\nMedium Laser\nISPrototypeJumpJet\nISPrototypeJumpJet");
+        const { mech, issues } = importBattleMechMtf(prototype);
+        expect(issues).toEqual([]);
+        expect(mech!.getJumpJetType().tag).toBe("primitive-prototype");
+        expect(mech!.getJumpSpeed()).toBe(2);
+    });
+
     it("finds MegaMek's prototype rocket launchers (Crosscut ED-X2)", () => {
         // One, two and three slots.
         for (const [size, slots] of [[10, 1], [15, 2], [20, 3]]) {

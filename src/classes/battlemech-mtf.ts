@@ -55,7 +55,8 @@ const HEAT_SINKS: Record<string, string> = { "Single": "Single Heat Sink", "Doub
 /** Jump jet slot names, their SSW type and slots a jet. */
 const JUMP_JETS: Record<string, [string, number]> = {
     "Jump Jet": ["Standard Jump Jet", 1], "Improved Jump Jet": ["Improved Jump Jet", 2],
-    "ISPrototypeImprovedJumpJet": ["Prototype Improved Jump Jet", 2], "UMU": ["Mech UMU", 1],
+    "ISPrototypeImprovedJumpJet": ["Prototype Improved Jump Jet", 2], "ISPrototypeJumpJet": ["Primitive Prototype Jump Jet", 1],
+    "UMU": ["Mech UMU", 1],
 };
 const FIXED_SLOTS = new Set(["Shoulder", "Upper Arm Actuator", "Lower Arm Actuator", "Hand Actuator", "Hip", "Upper Leg Actuator",
     "Lower Leg Actuator", "Foot Actuator", "Life Support", "Sensors", "Cockpit", "Fusion Engine", "Fuel Cell Engine", "Gyro", "-Empty-"]);

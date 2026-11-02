@@ -134,7 +134,7 @@ export const mechJumpJetTypes: IJumpJet[] = [
 
 	// Primitive prototype jump jets (IO:AE p.114): the mass, slots, mounting rules and heat of standard jump
 	// jets. A 'Mech that jumps with them makes a Piloting Skill Roll at +3 to avoid falling when it lands.
-	// No cost is printed; the standard jump jet rate is used.
+	// Cost: TT x 200 x Jump^2, the standard jump jet rate (IO:AE p.211).
 	{
 		name: "Primitive Prototype Jump Jets",
 		tag: "primitive-prototype",
