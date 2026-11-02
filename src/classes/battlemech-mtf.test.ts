@@ -350,6 +350,16 @@ describe("MegaMek 'Mech import", () => {
         expect(mech!.getBattleValue()).toBe(Math.round(plain!.getBattleValue() * 1.3));
     });
 
+    // MegaMek writes the Smart Robotic Control System as a "nocrit" line (Revenant UBM-1A).
+    it("reads a Smart Robotic Control System", () => {
+        for (const [line, tag] of [["SmartRoboticControlSystem:None", "srcs"], ["ImprovedSmartRoboticControlSystem:None", "srcs-improved"]]) {
+            const { mech, issues } = importBattleMechMtf(brawler.replace("myomer:Standard", `myomer:Standard\nnocrit:${line}`));
+            expect(issues).toEqual([]);
+            expect(mech!.getCockpitType().tag).toBe("standard");
+            expect(mech!.getRoboticControl().tag).toBe(tag);
+        }
+    });
+
     it("finds MegaMek's prototype rocket launchers (Crosscut ED-X2)", () => {
         // One, two and three slots.
         for (const [size, slots] of [[10, 1], [15, 2], [20, 3]]) {

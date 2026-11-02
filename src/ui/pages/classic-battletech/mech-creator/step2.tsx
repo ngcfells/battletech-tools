@@ -106,6 +106,14 @@ export default class MechCreatorStep2 extends React.Component<IHomeProps, IHomeS
       }
     }
 
+    setRoboticControl = ( event: React.FormEvent<HTMLSelectElement>): void => {
+      if( this.props.appGlobals.currentBattleMech ) {
+        const currentMech = this.props.appGlobals.currentBattleMech;
+        currentMech.setRoboticControl( event.currentTarget.value );
+        this.props.appGlobals.saveCurrentBattleMech( currentMech );
+      }
+    }
+
     render = (): JSX.Element => {
       if(!this.props.appGlobals.currentBattleMech) {
         return <></>
@@ -326,6 +334,30 @@ export default class MechCreatorStep2 extends React.Component<IHomeProps, IHomeS
                                     />{" "}
                                     {availabilityOptionLabel(console)}: 3 tons, 1 head slot
                                   </label>
+                                );
+                              })()}
+                              {(() => {
+                                const mech = this.props.appGlobals.currentBattleMech;
+                                const systems = mech.getAvailableRoboticControls(mechRulesLevel(this.props.appGlobals));
+                                if( systems.length < 2 && mech.getRoboticControl().tag === "none" ) return null;
+                                const skills = mech.getRoboticSkills();
+                                return (
+                                  <div data-testid="robotic-control-option">
+                                    <label className="d-block">
+                                      Robotic Control (Advanced):{" "}
+                                      <select value={mech.getRoboticControl().tag} onChange={this.setRoboticControl}>
+                                        {systems.map( (system) => (
+                                          <option key={system.tag} value={system.tag}>{system.name}</option>
+                                        ))}
+                                      </select>
+                                    </label>
+                                    {skills ? (
+                                      <p className="smaller-text">
+                                        {mech.getRoboticControlWeight()} t on top of the cockpit; the 'Mech fights at Gunnery {skills.gunnery} /
+                                        Piloting {skills.piloting}, and its Battle Value is multiplied by 0.85 (IO:AE pp.134-135, 187).
+                                      </p>
+                                    ) : null}
+                                  </div>
                                 );
                               })()}
                             </EditionChoice>

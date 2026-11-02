@@ -2464,6 +2464,15 @@ describe("SSW unresolved items", () => {
         expect(mech.getSSWUnresolved()).toEqual([expect.objectContaining({ kind: "cockpit", name: "Widget Cockpit" })]);
     });
 
+    // Skunk Werks' "Robotic Cockpit" (Revenant UBM-1A): a standard cockpit with a Smart Robotic Control System.
+    it("reads a Robotic Cockpit as a standard cockpit with an SRCS", () => {
+        const mech = new BattleMech();
+        mech.importSSWXML(griffin().replace(">Standard Cockpit</type>", ">Robotic Cockpit</type>"));
+        expect(mech.getSSWUnresolved()).toEqual([]);
+        expect(mech.getCockpitType().tag).toBe("standard");
+        expect(mech.getRoboticControl().tag).toBe("srcs");
+    });
+
     it("a clean import has no unresolved items, and occupancy marks the PPC's three slots", () => {
         const mech = new BattleMech();
         mech.importSSWXML(griffin());
@@ -5914,6 +5923,41 @@ describe("Batch 41 cockpit selection and IndustrialMech fire control (TM pp.69, 
         expect([copy.getCockpitType().tag, copy.getGyro().tag]).toEqual(["interface", "none"]);
         expect(mech.setCockpitType("standard").tag).toBe("standard");
         expect(mech.getChassisEquipmentViolations()).toContain("Only a 'Mech with an interface cockpit may be built without a gyro.");
+    });
+
+    // IO:AE pp.134-135 (weight, Skills), p.187 (BV x0.85), p.215 (cost). JFR pp.142-143, 147 printed it first (quads
+    // only, BV x0.95); IO, the newer book in the same edition, supersedes it.
+    it("fits a Smart Robotic Control System on top of the cockpit", () => {
+        const mech = build();
+        const systems = () => mech.getAvailableRoboticControls(3).map(system => system.tag);
+        expect(systems()).toEqual(["none", "srcs", "srcs-improved"]);
+        expect(mech.getAvailableRoboticControls(2).map(system => system.tag)).toEqual(["none"]);
+        const standard = Number(/Rounded from ([\d.]+)/.exec(mech.getBVCalcHTML())?.[1]);
+        const tons = mech.getCurrentTonnage();
+        expect(mech.setRoboticControl("srcs").tag).toBe("srcs");
+        // 5 percent of 50 tons, on top of the 3-ton cockpit; the 'Mech fights at Gunnery 5, Piloting 9.
+        expect(mech.getRoboticControlWeight()).toBe(2.5);
+        expect(mech.getCockpitWeight()).toBe(3);
+        expect(mech.getCurrentTonnage()).toBe(tons + 2.5);
+        expect(mech.getRoboticSkills()).toEqual({ gunnery: 5, piloting: 9 });
+        expect(mech.getBattleValue()).toBe(Math.round(standard * 0.85));
+        expect(mech.getRequiredRulesLevel()).toBeGreaterThanOrEqual(3);
+        expect(mech.getCBillCalcHTML()).toContain("30,000");
+        // The Improved grade: another 2 percent, and 1 better at each Skill.
+        mech.setRoboticControl("srcs-improved");
+        expect(mech.getRoboticControlWeight()).toBe(3.5);
+        expect(mech.getRoboticSkills()).toEqual({ gunnery: 4, piloting: 8 });
+        // Saved and loaded again.
+        const copy = new BattleMech();
+        copy.importJSON(mech.exportJSON());
+        expect(copy.getRoboticControl().tag).toBe("srcs-improved");
+        // An IndustrialMech has no Improved grade, and worse Skills.
+        const industrial = build({ structure: "industrial" });
+        expect(industrial.getAvailableRoboticControls(3).map(system => system.tag)).toEqual(["none", "srcs"]);
+        industrial.setRoboticControl("srcs-improved");
+        expect(industrial.getRoboticControl().tag).toBe("none");
+        industrial.setRoboticControl("srcs");
+        expect(industrial.getRoboticSkills()).toEqual({ gunnery: 7, piloting: 9 });
     });
 
     it("gives an IndustrialMech its own cockpit, with Advanced Fire Control as the 200,000 C-bill option", () => {

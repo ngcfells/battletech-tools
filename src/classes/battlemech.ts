@@ -20,6 +20,10 @@ import { AmmoExplosionProtection, getAmmoExplosion, getAmmoExplosionRules } from
 import { ComponentRecord, getComponentRecords, getComponentTiers, isCustomComponent } from "../data/custom-component-registry";
 import type { CustomComponentKind, ISSWUnresolvedItem } from "../data/custom-content-types";
 import { getCockpitType } from "../data/mech-cockpit-types";
+import {
+    getRoboticControlCost, getRoboticControlSystem, getRoboticControlSystemsFor, getRoboticControlWeight, getRoboticSkills,
+    IRoboticControlSystem, RoboticControlTag, RoboticUnitType, SRCS_BATTLE_VALUE_MULTIPLIER, SRCS_RULES_LEVEL,
+} from "../data/robotic-control-systems";
 import { btMechTonnages } from "../data/mech-tonnages";
 import { DEFAULT_RULES_EDITION, editionEngineHoldsHeatSinks, getEditionJumpJetWeight, getEditionPlayRules, getEditionStats, getEditionStructure, getEquipmentForEdition, getRulesEdition, isEarlierRulesEdition, isInRulesEdition, isOfferedInEdition, getRecordOfferIssue } from "../data/rules-editions";
 import { APOCRYPHAL_RULES_LEVEL, CUSTOM_HOMEBREW_RULES_LEVEL, EXPERIMENTAL_RULES_LEVEL, getItemBattleValue, getLauncherBattleValueWithoutFireControl, equipmentMatchesIdentifier, getWeaponAmmoFamilies, getEquipmentRulesLevel, ARTEMIS_FIRE_CONTROL, isArtemisCapableLauncher, isEquipmentOffered, isOmniFixedOnly, getAlphaStrikeEquipmentDisplayAbilityCodes, getAmmoBattleValuePerTon, getAmmoFamily, getAmmoRoundsPerTon, getCompatibleAmmo, getDatesAvailability, getEquipmentListByTech, getEquipmentListForChassis, mustUseStarLeagueVersion, starLeagueVersionInEra, getWeaponShotsPerTon, getBattleArmorScaleListByTech, getEquipmentCatalogDefinitions, getEquipmentOfferIssue, getTechDatesAvailability, isPostPrimitiveTechnology, servesTechBase } from "../data/equipment-registry";
@@ -562,6 +566,8 @@ export class BattleMech {
     private _torsoMountedCockpit: boolean = false;
     /** BattleMech Interface Cockpit (IO:AE p.110). */
     private _interfaceCockpit: boolean = false;
+    /** Smart Robotic Control System on top of the cockpit (IO:AE p.134); "none" for a piloted 'Mech. */
+    private _roboticControl: RoboticControlTag = "none";
     // IndustrialMechs: the Advanced Fire Control cockpit enhancement (TM p.69). An option, off by default.
     private _advancedFireControl: boolean = false;
     // A Cockpit Command Console beside the cockpit (TO:AUE p.112). An option, off by default.
@@ -696,6 +702,7 @@ export class BattleMech {
         this._rulesLevel = undefined;
         this._rulesets = [];
         this._advancedFireControl = false;
+        this._roboticControl = "none";
         this._commandConsole = false;
         this._patchworkArmor = {};
         this._frankenMech = false;
@@ -1481,6 +1488,10 @@ export class BattleMech {
             finalBattleValue *= cockpitBVMultiplier;
             this._calcLogBV += `${this.getCockpitType().name} Penalty Applied: Total multiplied by ${cockpitBVMultiplier} -> Intermediate BV: ${finalBattleValue.toFixed(2)}<br />`;
         }
+        if (this._roboticControl !== "none") {
+            finalBattleValue *= SRCS_BATTLE_VALUE_MULTIPLIER;
+            this._calcLogBV += `${this.getRoboticControl().name} (IO:AE p.187): Total multiplied by ${SRCS_BATTLE_VALUE_MULTIPLIER} -> Intermediate BV: ${finalBattleValue.toFixed(2)}<br />`;
+        }
 
         // Equipment that multiplies the final BV, once per kind (RISC Heat Sink Override Kit x1.01, IO:AE p.190).
         const finalMultipliers = new Map<string, IEquipmentItem>();
@@ -1667,6 +1678,11 @@ export class BattleMech {
             const console = getCockpitType("command-console");
             this._calcLogCBill += "<tr><td><strong>" + console.name + "</strong></td><td>" + addCommas(console.cost) + "</td></tr>\n";
             cbillDryTotal += console.cost;
+        }
+        if (this._roboticControl !== "none") {
+            const robotic = getRoboticControlCost(this._roboticControl, this.getRoboticControlWeight());
+            this._calcLogCBill += "<tr><td><strong>" + this.getRoboticControl().name + "</strong></td><td>" + addCommas(robotic) + "</td></tr>\n";
+            cbillDryTotal += robotic;
         }
 
         // Life Support
@@ -2202,6 +2218,45 @@ export class BattleMech {
         if (superheavy) return getCockpitType(this.isIndustrialMech() && !this._advancedFireControl ? "superheavy-industrial" : "superheavy");
         if (this.isIndustrialMech()) return getCockpitType(this._advancedFireControl ? "industrial-advanced-fire-control" : "industrial");
         return getCockpitType(this._torsoMountedCockpit ? "torso-mounted" : this._smallCockpit ? "small" : this._interfaceCockpit ? "interface" : "standard");
+    }
+
+    private _roboticUnitType(): RoboticUnitType { return this.isIndustrialMech() ? "industrialmech" : "battlemech"; }
+
+    /** The Smart Robotic Control System (IO:AE pp.134-135), or "none" for a piloted 'Mech. */
+    public getRoboticControl(): IRoboticControlSystem { return getRoboticControlSystem(this._roboticControl); }
+
+    /** Robotic control systems this 'Mech may mount, under its rules edition and at this rules level. */
+    public getAvailableRoboticControls(rulesLevel: number = 2): IRoboticControlSystem[] {
+        return getRoboticControlSystemsFor(this._roboticUnitType())
+            .filter(system => system.tag === "none" || this.isOfferedInEdition(system, rulesLevel));
+    }
+
+    /**
+     * Fits a Smart Robotic Control System on top of the cockpit (IO:AE pp.134-135), or "none" for a piloted 'Mech.
+     * The pilot then takes the system's Gunnery and Piloting Skills. A system the 'Mech cannot mount is ignored.
+     */
+    public setRoboticControl(tag: string): IRoboticControlSystem {
+        const wanted = getRoboticControlSystem(tag);
+        const fits = getRoboticControlSystemsFor(this._roboticUnitType()).some(system => system.tag === wanted.tag);
+        this._roboticControl = fits && this.isInRulesEdition(wanted) ? wanted.tag : "none";
+        const skills = this.getRoboticSkills();
+        if (skills) {
+            this._pilot.gunnery = skills.gunnery;
+            this._pilot.piloting = skills.piloting;
+        }
+        this._calc();
+        return this.getRoboticControl();
+    }
+
+    /** Gunnery and Piloting Skills of a robotic 'Mech (IO:AE p.135); null when piloted. */
+    public getRoboticSkills(): { gunnery: number; piloting: number } | null {
+        return getRoboticSkills(this._roboticUnitType(), this._roboticControl);
+    }
+
+    /** Tons the SRCS adds to the cockpit: 5 percent of the 'Mech, 7 for the Improved grade, up to the half ton (IO:AE p.135). */
+    public getRoboticControlWeight(): number {
+        return getRoboticControlWeight(this._roboticUnitType(), this._roboticControl, this._tonnage,
+            weight => this.usesFractionalAccounting() ? roundUpToKilogram(weight) : Math.ceil(weight * 2) / 2);
     }
 
     /** An IndustrialMech: a 'Mech built on industrial internal structure (TM p.66). */
@@ -3801,6 +3856,9 @@ export class BattleMech {
         if (this.hasCommandConsole()) {
             const console = getCockpitType("command-console");
             this._weights.push({ name: console.name, weight: console.weight });
+        }
+        if (this.getRoboticControlWeight() > 0) {
+            this._weights.push({ name: this.getRoboticControl().name, weight: this.getRoboticControlWeight() });
         }
 
         // LAM/QuadVee conversion equipment is 10% of mass, rounded up to a whole ton
@@ -6912,6 +6970,7 @@ export class BattleMech {
         if (this._primitive) level = Math.max(level, 3);
         level = Math.max(level, this.getCockpitType().rulesLevel ?? 0);
         if (this.hasCommandConsole()) level = Math.max(level, getCockpitType("command-console").rulesLevel ?? 0);
+        if (this._roboticControl !== "none") level = Math.max(level, SRCS_RULES_LEVEL);
         // An IndustrialMech with BattleMech armor is Experimental (TO:AUE p.92); the Dark Age armors are
         // "only under Experimental Mixed-Tech rules" (IO:AE p.82).
         const armorTypes = this.isPatchworkArmor()
@@ -8555,6 +8614,9 @@ export class BattleMech {
             exportObject.features.push( "torso_cockpit" );
         if( this._interfaceCockpit)
             exportObject.features.push( "interface_cockpit" );
+        // Smart Robotic Control System (IO:AE p.134): its tag, "srcs" or "srcs-improved".
+        if( this._roboticControl !== "none" )
+            exportObject.features.push( this._roboticControl );
         // IndustrialMech cockpit with the Advanced Fire Control enhancement (TM p.69).
         if( this._advancedFireControl)
             exportObject.features.push( "afc" );
@@ -8996,6 +9058,8 @@ export class BattleMech {
                     this._torsoMountedCockpit = true;
                 if( importObject.features.indexOf( "interface_cockpit" ) > -1)
                     this._interfaceCockpit = true;
+                this._roboticControl = importObject.features.indexOf( "srcs-improved" ) > -1 ? "srcs-improved"
+                    : importObject.features.indexOf( "srcs" ) > -1 ? "srcs" : "none";
 
                 // IndustrialMech cockpit with Advanced Fire Control
                 if( importObject.features.indexOf( "afc" ) > -1)
@@ -13509,6 +13573,10 @@ export class BattleMech {
                     this._torsoMountedCockpit = true;
                 } else if( cockpitType === "Interface Cockpit" ) {
                     this._interfaceCockpit = true;
+                } else if( cockpitType === "Robotic Cockpit" || cockpitType === "Robotic Cockpit (Improved)" ) {
+                    // A standard cockpit with a Smart Robotic Control System (IO:AE p.134). Skunk Werks has no Improved
+                    // grade; the MegaMek import writes "(Improved)" for MegaMek's ImprovedSmartRoboticControlSystem.
+                    this._roboticControl = cockpitType === "Robotic Cockpit" ? "srcs" : "srcs-improved";
                 } else if( cockpitType === "Industrial w/ Adv. FC" ) {
                     // The IndustrialMech cockpit follows the internal structure; Advanced Fire Control is a choice (TM p.69).
                     this._advancedFireControl = true;

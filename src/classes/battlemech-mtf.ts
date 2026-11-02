@@ -185,7 +185,10 @@ export function convertMtfToSSW(file: IMtfFile): { xml: string; issues: string[]
     // MegaMek gives an IndustrialMech with Advanced Fire Control a BattleMech cockpit, and writes no line for a Standard
     // one (its Mek.hasAdvancedFireControl); Skunk Werks names it "Industrial w/ Adv. FC" (#371). A Command Console is
     // a BattleMech cockpit there too, so an IndustrialMech with one has Advanced Fire Control.
-    const sswCockpit = industrial && /^((standard|primitive) cockpit|command console)$/i.test(cockpit) ? "Industrial w/ Adv. FC"
+    // MegaMek writes a Smart Robotic Control System as a "nocrit" line; Skunk Werks calls it a "Robotic Cockpit".
+    const srcs = (file.values["nocrit"] ?? []).map((line) => line.split(":")[0]).find((name) => /^(Improved)?SmartRoboticControlSystem$/i.test(name));
+    const sswCockpit = srcs && !industrial && /^standard cockpit$/i.test(cockpit) ? (/^improved/i.test(srcs) ? "Robotic Cockpit (Improved)" : "Robotic Cockpit")
+        : industrial && /^((standard|primitive) cockpit|command console)$/i.test(cockpit) ? "Industrial w/ Adv. FC"
         : cockpit === "Command Console" ? "Standard Cockpit"
         // Tripods and superheavy 'Mechs have a mandatory cockpit (IO:AE pp.128, 156): the import takes it from the chassis.
         : /^(superheavy (tripod )?|tripod )cockpit$/i.test(cockpit) ? "Standard Cockpit" : cockpit;

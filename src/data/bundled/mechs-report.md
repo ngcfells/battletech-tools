@@ -5,7 +5,7 @@
 | Reason | Files |
 |---|---|
 | duplicate of a design already kept | 3170 |
-| BV differs from the MUL | 222 |
+| BV differs from the MUL | 223 |
 | different submodel, same name and model: equipment | 162 |
 | the import could not carry all of it over | 144 |
 | different submodel, same name and model: ammo type | 115 |
@@ -13,7 +13,7 @@
 | configuration BV differs from the MUL | 53 |
 | no Master Unit List entry to check its BV against | 38 |
 | duplicate of a design already kept, differs only in armor spread | 36 |
-| import errors | 31 |
+| import errors | 30 |
 | duplicate of a design already kept, differs only in engine heat sinks in crit slots | 6 |
 | does not survive the compact format | 6 |
 | different submodel, same name and model: heat sinks placed | 6 |
@@ -66,7 +66,7 @@
 - `MWDA/Zeus ZEU-X2.ssw`: BV differs from the MUL: ZEU-X2: BV 2120, MUL 1915
 - `Misc/Gestalt D2X-G.ssw`: BV differs from the MUL: D2X-G: BV 2329, MUL 2392
 - `Misc/Pulverizer PUL-2V.ssw`: import errors: '(IS) Enhanced ER PPC' is Clan equipment (Enhanced PPC) on an Inner Sphere design; the design needs Mixed Tech
-- `Misc/Revenant UBM-1A.ssw`: import errors: Cannot import the cockpit type: 'Robotic Cockpit'
+- `Misc/Revenant UBM-1A.ssw`: BV differs from the MUL: UBM-1A: BV 702, MUL 784
 - `Misc/Stag II STG-24G.ssw`: import errors: '(IS) Enhanced ER PPC' is Clan equipment (Enhanced PPC) on an Inner Sphere design; the design needs Mixed Tech
 - `Misc/Vanquisher VQR-5V.ssw`: BV differs from the MUL: VQR-5V: BV 2334, MUL 2332
 - `Omnis/Alpha Wolf.ssw`: import errors: B: Cannot find any equipment named: 'Ammo (SRM-6 (Artemis V))'; B: Cannot find any equipment named: 'Ammo (SRM-6 (Artemis V))'
@@ -2901,7 +2901,7 @@
 - `megamek/ISP/Mad Cat (Timber Wolf) (Bounty Hunter).mtf`: duplicate of a design already kept: Timber Wolf (Mad Cat)  (Bounty Hunter)
 - `megamek/Iron Wind Metals/Thunderbolt IIC 2.mtf`: BV differs from the MUL: 2: BV 2177, MUL 2174
 - `megamek/Jihad Final Reckoning/'Gestalt' D2X-G.mtf`: BV differs from the MUL: D2X-G: BV 2329, MUL 2392
-- `megamek/Jihad Final Reckoning/Revenant UBM-1A.mtf`: BV differs from the MUL: UBM-1A: BV 826, MUL 784
+- `megamek/Jihad Final Reckoning/Revenant UBM-1A.mtf`: BV differs from the MUL: UBM-1A: BV 702, MUL 784
 - `megamek/Jihad Secrets/Malak C-MK-OS Caelestis.mtf`: BV differs from the MUL: C-MK-OS Caelestis: BV 1121, MUL 1125
 - `megamek/Jihad Secrets/Mercury II MCY-100.mtf`: duplicate of a design already kept: Mercury II MCY-100
 - `megamek/Jihad Secrets/Pulverizer PUL-2V.mtf`: duplicate of a design already kept: Pulverizer PUL-2V
