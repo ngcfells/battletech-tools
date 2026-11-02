@@ -93,5 +93,23 @@ export const mechGyroTypes: IGyro[] = [
 		reintroduced: null,
 		book: "TM",
 		page: 219
+	},
+	{
+		// "A BattleMech with an interface cockpit may be constructed without a gyro, in which case the usual Gyro
+		// slots ... are treated as empty" (IO:AE p.110). Dated with the interface cockpit; MegaMek names it "None".
+		name: "No Gyro",
+		tag: "none",
+		techBase: "universal",
+		editions: ["total-warfare", "battlemech-manual", "core-rulebook"],
+		altNames: ["None"],
+		weight_multiplier: 0,
+		criticals: 0,
+		costMultiplier: 0,
+		prototype: 3074,
+		introduced: null,
+		extinct: null,
+		reintroduced: null,
+		book: "IO:AE",
+		page: 110
 	}
 ];

@@ -330,6 +330,26 @@ describe("MegaMek 'Mech import", () => {
         expect(mech!.getJumpSpeed()).toBe(2);
     });
 
+    // The Skinwalker (Ryoken III): an interface cockpit with no gyro. MegaMek packs the engine into center torso
+    // slots 1-6; the gyro's slots are free for other items (IO:AE p.110).
+    it("reads an interface cockpit with no gyro", () => {
+        const gestalt = brawler.replace("myomer:Standard", "myomer:Standard\ncockpit:Interface Cockpit\ngyro:None")
+            .replace(/(Center Torso:\n)(?:.*\n){10}/, "$1" + "Fusion Engine\n".repeat(6) + "Medium Laser\n" + "-Empty-\n".repeat(3))
+            .replace("Cockpit\n-Empty-\nSensors", "Cockpit\nCockpit\nSensors");
+        const { mech, issues } = importBattleMechMtf(gestalt);
+        expect(issues).toEqual([]);
+        expect(mech!.getCockpitType().tag).toBe("interface");
+        expect(mech!.getGyro().tag).toBe("none");
+        expect(mech!.getCockpitWeight()).toBe(4);
+        expect(mech!.getGyroWeight()).toBe(0);
+        expect(mech!.getChassisEquipmentViolations()).toEqual([]);
+        // The cockpit's second slot is head slot 4.
+        expect(mech!.getCriticalOccupancy("hd")).toEqual([true, true, true, true, true, true]);
+        // Final BV x1.30 (IO:AE p.199); the gyro still adds tonnage x 0.5, as MegaMek counts it.
+        const { mech: plain } = importBattleMechMtf(brawler.replace("Right Torso:\nMedium Laser\n-Empty-", "Right Torso:\nMedium Laser\nMedium Laser"));
+        expect(mech!.getBattleValue()).toBe(Math.round(plain!.getBattleValue() * 1.3));
+    });
+
     it("finds MegaMek's prototype rocket launchers (Crosscut ED-X2)", () => {
         // One, two and three slots.
         for (const [size, slots] of [[10, 1], [15, 2], [20, 3]]) {

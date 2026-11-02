@@ -1,19 +1,19 @@
 # Bundled 'Mechs: build report
 
-3648 designs kept (38 renamed), 4076 files left out.
+3650 designs kept (38 renamed), 4080 files left out.
 
 | Reason | Files |
 |---|---|
-| duplicate of a design already kept | 3166 |
-| BV differs from the MUL | 214 |
+| duplicate of a design already kept | 3170 |
+| BV differs from the MUL | 222 |
 | different submodel, same name and model: equipment | 162 |
-| the import could not carry all of it over | 158 |
-| different submodel, same name and model: ammo type | 112 |
+| the import could not carry all of it over | 144 |
+| different submodel, same name and model: ammo type | 115 |
 | different submodel, same name and model: actuators | 86 |
-| configuration BV differs from the MUL | 47 |
+| configuration BV differs from the MUL | 53 |
 | no Master Unit List entry to check its BV against | 38 |
 | duplicate of a design already kept, differs only in armor spread | 36 |
-| import errors | 34 |
+| import errors | 31 |
 | duplicate of a design already kept, differs only in engine heat sinks in crit slots | 6 |
 | does not survive the compact format | 6 |
 | different submodel, same name and model: heat sinks placed | 6 |
@@ -41,7 +41,10 @@
 - `Clan/Omni/Mist Lynx (Koshi).ssw`: BV differs from the MUL: : BV 871, MUL 760
 - `Clan/Omni/Mongrel (Grendel).ssw`: configuration BV differs from the MUL: T: BV 1931, MUL 1936
 - `Clan/Omni/Nova (Black Hawk).ssw`: import errors: T: Cannot find any equipment named: 'Ammo (Medium Chemical Laser)'; T: Cannot find any equipment named: 'Ammo (Medium Chemical Laser)'; T: Cannot find any equipment named: 'Ammo (Medium Chemical Laser)'; T: Cannot find any equipment named: 'Ammo (Medium Chemical Laser)'; U: 'Sword' is Inner Sphere equipment (Sword) on a Clan design; the design needs Mixed Tech
-- `Clan/Omni/Skinwalker (Ryoken III).ssw`: import errors: Cannot import the cockpit type: 'Interface Cockpit'; Cannot find any gyro named: 'No Gyro'; A: Cannot import the cockpit type: 'Interface Cockpit'; A: Cannot find any gyro named: 'No Gyro'; A: Unallocated Criticals: 1; A: - Targeting Computer (Clan) (clan-targeting-computer); B: Cannot import the cockpit type: 'Interface Cockpit'; B: Cannot find any gyro named: 'No Gyro'; C: Cannot import the cockpit type: 'Interface Cockpit'; C: Cannot find any gyro named: 'No Gyro'; D: Cannot import the cockpit type: 'Interface Cockpit'; D: Cannot find any gyro named: 'No Gyro'; D: Unallocated Criticals: 1; D: - Clan Ultra AC/10 (clan-autocannon-uac-10); E: Cannot import the cockpit type: 'Interface Cockpit'; E: Cannot find any gyro named: 'No Gyro'; E: Unallocated Criticals: 4; E: - Standard Jump Jets (jj-standard); E: - Standard Jump Jets (jj-standard); E: - Standard Jump Jets (jj-standard); E: - Standard Jump Jets (jj-standard); F: Cannot import the cockpit type: 'Interface Cockpit'; F: Cannot find any gyro named: 'No Gyro'
+- `Clan/Omni/Skinwalker (Ryoken III).ssw`: configuration BV differs from the MUL: A: BV 3500, MUL 3777
+- `Clan/Omni/Skinwalker (Ryoken III).ssw`: configuration BV differs from the MUL: B: BV 2725, MUL 2851
+- `Clan/Omni/Skinwalker (Ryoken III).ssw`: configuration BV differs from the MUL: D: BV 2545, MUL 2483
+- `Clan/Omni/Skinwalker (Ryoken III).ssw`: configuration BV differs from the MUL: E: BV 3107, MUL 3102
 - `Clan/Omni/Timber Wolf (Mad Cat).ssw`: configuration BV differs from the MUL: U: BV 2508, MUL 2627
 - `Clan/Omni/Viper (Dragonfly).ssw`: import errors: R: 'Bloodhound Active Probe' is Inner Sphere equipment (Bloodhound Active Probe) on a Clan design; the design needs Mixed Tech; U: 'Hatchet' is Inner Sphere equipment (Hatchet) on a Clan design; the design needs Mixed Tech
 - `Clan/RecGuide/Vol 11/Horned Owl (Peregrine) 6.ssw`: BV differs from the MUL: 6: BV 1413, MUL 1475
@@ -61,7 +64,7 @@
 - `MWDA/Mad Cat III.ssw`: BV differs from the MUL: : BV 2061, MUL 2400
 - `MWDA/Zeus ZEU-X.ssw`: BV differs from the MUL: ZEU-X: BV 2326, MUL 2119
 - `MWDA/Zeus ZEU-X2.ssw`: BV differs from the MUL: ZEU-X2: BV 2120, MUL 1915
-- `Misc/Gestalt D2X-G.ssw`: import errors: Cannot import the cockpit type: 'Interface Cockpit'; Cannot find any gyro named: 'No Gyro'; Cannot place the Void Signature System in the ct; Unallocated Criticals: 3; - Heavy Ferro Fibrous (heavy-ferro-fibrous); - Angel ECM Suite (angel-ecm); - Void Signature System (void-signature-system)
+- `Misc/Gestalt D2X-G.ssw`: BV differs from the MUL: D2X-G: BV 2329, MUL 2392
 - `Misc/Pulverizer PUL-2V.ssw`: import errors: '(IS) Enhanced ER PPC' is Clan equipment (Enhanced PPC) on an Inner Sphere design; the design needs Mixed Tech
 - `Misc/Revenant UBM-1A.ssw`: import errors: Cannot import the cockpit type: 'Robotic Cockpit'
 - `Misc/Stag II STG-24G.ssw`: import errors: '(IS) Enhanced ER PPC' is Clan equipment (Enhanced PPC) on an Inner Sphere design; the design needs Mixed Tech
@@ -124,7 +127,9 @@
 - `Omnis/Regent.ssw`: configuration BV differs from the MUL: A: BV 3419, MUL 3412
 - `Omnis/Rime Otter.ssw`: import errors: C: 'Hatchet' is Inner Sphere equipment (Hatchet) on a Clan design; the design needs Mixed Tech
 - `Omnis/Ryoken (Stormcrow).ssw`: duplicate of a design already kept: Stormcrow (Ryoken)  Prime
-- `Omnis/Ryoken III (Skinwalker).ssw`: import errors: Cannot import the cockpit type: 'Interface Cockpit'; Cannot find any gyro named: 'No Gyro'; A: Cannot import the cockpit type: 'Interface Cockpit'; A: Cannot find any gyro named: 'No Gyro'; A: Unallocated Criticals: 1; A: - Targeting Computer (Clan) (clan-targeting-computer); B: Cannot import the cockpit type: 'Interface Cockpit'; B: Cannot find any gyro named: 'No Gyro'; C: Cannot import the cockpit type: 'Interface Cockpit'; C: Cannot find any gyro named: 'No Gyro'; D: Cannot import the cockpit type: 'Interface Cockpit'; D: Cannot find any gyro named: 'No Gyro'; D: Unallocated Criticals: 1; D: - Clan Ultra AC/10 (clan-autocannon-uac-10); E: Cannot import the cockpit type: 'Interface Cockpit'; E: Cannot find any gyro named: 'No Gyro'; E: Unallocated Criticals: 4; E: - Standard Jump Jets (jj-standard); E: - Standard Jump Jets (jj-standard); E: - Standard Jump Jets (jj-standard); E: - Standard Jump Jets (jj-standard); F: Cannot import the cockpit type: 'Interface Cockpit'; F: Cannot find any gyro named: 'No Gyro'
+- `Omnis/Ryoken III (Skinwalker).ssw`: configuration BV differs from the MUL: B: BV 2725, MUL 2851
+- `Omnis/Ryoken III (Skinwalker).ssw`: configuration BV differs from the MUL: E: BV 3107, MUL 3102
+- `Omnis/Ryoken III (Skinwalker).ssw`: duplicate of a design already kept: Skinwalker (Ryoken III)  Prime
 - `Omnis/Sarath SRTH-1O.ssw`: import errors: B: 'Talons' is Clan equipment (Talons (Clan)) on an Inner Sphere design; the design needs Mixed Tech
 - `Omnis/Savage Coyote.ssw`: configuration BV differs from the MUL: Z: BV 3026, MUL 3080
 - `Omnis/Savage Coyote.ssw`: configuration BV differs from the MUL: J: BV 2538, MUL 2554
@@ -2895,7 +2900,7 @@
 - `megamek/ISP3/Reptar EPT-C-1 MilitiaMech.mtf`: different submodel, same name and model: actuators: Reptar EPT-C-1
 - `megamek/ISP/Mad Cat (Timber Wolf) (Bounty Hunter).mtf`: duplicate of a design already kept: Timber Wolf (Mad Cat)  (Bounty Hunter)
 - `megamek/Iron Wind Metals/Thunderbolt IIC 2.mtf`: BV differs from the MUL: 2: BV 2177, MUL 2174
-- `megamek/Jihad Final Reckoning/'Gestalt' D2X-G.mtf`: the import could not carry all of it over: Cannot import the cockpit type: 'Interface Cockpit'; Cannot find any gyro named: 'None'; Unallocated Criticals: 3; - Heavy Ferro Fibrous (heavy-ferro-fibrous); - Heavy Ferro Fibrous (heavy-ferro-fibrous); - Angel ECM Suite (angel-ecm)
+- `megamek/Jihad Final Reckoning/'Gestalt' D2X-G.mtf`: BV differs from the MUL: D2X-G: BV 2329, MUL 2392
 - `megamek/Jihad Final Reckoning/Revenant UBM-1A.mtf`: BV differs from the MUL: UBM-1A: BV 826, MUL 784
 - `megamek/Jihad Secrets/Malak C-MK-OS Caelestis.mtf`: BV differs from the MUL: C-MK-OS Caelestis: BV 1121, MUL 1125
 - `megamek/Jihad Secrets/Mercury II MCY-100.mtf`: duplicate of a design already kept: Mercury II MCY-100
@@ -3358,13 +3363,12 @@
 - `megamek/Rec Guides ilClan/Vol 23/Star Crusader B.mtf`: duplicate of a design already kept: Star Crusader  B
 - `megamek/Rec Guides ilClan/Vol 23/Star Crusader Prime.mtf`: duplicate of a design already kept: Star Crusader  Prime
 - `megamek/Rec Guides ilClan/Vol 23/Star Python.mtf`: duplicate of a design already kept: Star Python 
-- `megamek/Rec Guides ilClan/Vol 24/(Ryoken III) Skinwalker A.mtf`: the import could not carry all of it over: Cannot import the cockpit type: 'Interface Cockpit'; Cannot find any gyro named: 'None'; Unallocated Criticals: 1; - Targeting Computer (Clan) (clan-targeting-computer)
-- `megamek/Rec Guides ilClan/Vol 24/(Ryoken III) Skinwalker B.mtf`: the import could not carry all of it over: Cannot import the cockpit type: 'Interface Cockpit'; Cannot find any gyro named: 'None'
-- `megamek/Rec Guides ilClan/Vol 24/(Ryoken III) Skinwalker C.mtf`: the import could not carry all of it over: Cannot import the cockpit type: 'Interface Cockpit'; Cannot find any gyro named: 'None'
-- `megamek/Rec Guides ilClan/Vol 24/(Ryoken III) Skinwalker D.mtf`: the import could not carry all of it over: Cannot import the cockpit type: 'Interface Cockpit'; Cannot find any gyro named: 'None'; Unallocated Criticals: 1; - Clan Ultra AC/10 (clan-autocannon-uac-10)
-- `megamek/Rec Guides ilClan/Vol 24/(Ryoken III) Skinwalker E.mtf`: the import could not carry all of it over: Cannot import the cockpit type: 'Interface Cockpit'; Cannot find any gyro named: 'None'; Unallocated Criticals: 4; - Standard Jump Jets (jj-standard); - Standard Jump Jets (jj-standard); - Standard Jump Jets (jj-standard); - Standard Jump Jets (jj-standard)
-- `megamek/Rec Guides ilClan/Vol 24/(Ryoken III) Skinwalker F.mtf`: the import could not carry all of it over: Cannot import the cockpit type: 'Interface Cockpit'; Cannot find any gyro named: 'None'
-- `megamek/Rec Guides ilClan/Vol 24/(Ryoken III) Skinwalker Prime.mtf`: the import could not carry all of it over: Cannot import the cockpit type: 'Interface Cockpit'; Cannot find any gyro named: 'None'
+- `megamek/Rec Guides ilClan/Vol 24/(Ryoken III) Skinwalker A.mtf`: BV differs from the MUL: A: BV 3500, MUL 3777
+- `megamek/Rec Guides ilClan/Vol 24/(Ryoken III) Skinwalker C.mtf`: duplicate of a design already kept: Skinwalker (Ryoken III)  C
+- `megamek/Rec Guides ilClan/Vol 24/(Ryoken III) Skinwalker D.mtf`: BV differs from the MUL: D: BV 2545, MUL 2483
+- `megamek/Rec Guides ilClan/Vol 24/(Ryoken III) Skinwalker E.mtf`: BV differs from the MUL: E: BV 3107, MUL 3102
+- `megamek/Rec Guides ilClan/Vol 24/(Ryoken III) Skinwalker F.mtf`: duplicate of a design already kept: Skinwalker (Ryoken III)  F
+- `megamek/Rec Guides ilClan/Vol 24/(Ryoken III) Skinwalker Prime.mtf`: duplicate of a design already kept: Skinwalker (Ryoken III)  Prime
 - `megamek/Rec Guides ilClan/Vol 24/Alpha Wolf A.mtf`: BV differs from the MUL: A: BV 3435, MUL 3359
 - `megamek/Rec Guides ilClan/Vol 24/Annihilator ANH-5W.mtf`: different submodel, same name and model: ammo type: Annihilator ANH-5W
 - `megamek/Rec Guides ilClan/Vol 24/Atlas AS7-K-DC.mtf`: duplicate of a design already kept: Atlas AS7-K-DC
@@ -4032,12 +4036,12 @@
 - `megamek/XTRs/Republic III/Goshawk II RISC.mtf`: BV differs from the MUL: RISC: BV 1888, MUL 1886
 - `megamek/XTRs/Republic III/Lich UABM-2R.mtf`: the import could not carry all of it over: Cannot find any equipment named 'HarJel Repair Systems (HarJel II)'; Cannot find any equipment named 'HarJel Repair Systems (HarJel II)'; Cannot find any equipment named 'HarJel Repair Systems (HarJel II)'
 - `megamek/XTRs/Republic III/Osprey OSP-36.mtf`: BV differs from the MUL: OSP-36: BV 1450, MUL 1532
-- `megamek/XTRs/Republic III/Parash 3.mtf`: the import could not carry all of it over: Cannot import the cockpit type: 'Interface Cockpit'; Cannot find any gyro named: 'None'; Unallocated Criticals: 2; - Standard Jump Jets (jj-standard); - Bloodhound Active Probe (bloodhound-active-probe)
-- `megamek/XTRs/Republic III/Ryoken III-XP A.mtf`: the import could not carry all of it over: Cannot import the cockpit type: 'Interface Cockpit'; Cannot find any gyro named: 'None'; Unallocated Criticals: 4; - Triple-Strength Myomer (tsm); - Triple-Strength Myomer (tsm); - Triple-Strength Myomer (tsm); - Radical Heat Sink System (radical-heat-sink-system)
-- `megamek/XTRs/Republic III/Ryoken III-XP B.mtf`: the import could not carry all of it over: Cannot import the cockpit type: 'Interface Cockpit'; Cannot find any gyro named: 'None'; Unallocated Criticals: 4; - Triple-Strength Myomer (tsm); - Triple-Strength Myomer (tsm); - Triple-Strength Myomer (tsm); - Improved Heavy Medium Laser (clan-improved-heavy-medium-laser)
-- `megamek/XTRs/Republic III/Ryoken III-XP C.mtf`: the import could not carry all of it over: Cannot import the cockpit type: 'Interface Cockpit'; Cannot find any gyro named: 'None'; Unallocated Criticals: 4; - Triple-Strength Myomer (tsm); - Triple-Strength Myomer (tsm); - Triple-Strength Myomer (tsm); - Targeting Computer (Clan) (clan-targeting-computer)
-- `megamek/XTRs/Republic III/Ryoken III-XP D.mtf`: the import could not carry all of it over: Cannot import the cockpit type: 'Interface Cockpit'; Cannot find any gyro named: 'None'; Unallocated Criticals: 4; - Triple-Strength Myomer (tsm); - Triple-Strength Myomer (tsm); - Triple-Strength Myomer (tsm); - ER Micro Laser (er-micro-laser)
-- `megamek/XTRs/Republic III/Ryoken III-XP Prime.mtf`: the import could not carry all of it over: Cannot import the cockpit type: 'Interface Cockpit'; Cannot find any gyro named: 'None'; Unallocated Criticals: 4; - Triple-Strength Myomer (tsm); - Triple-Strength Myomer (tsm); - Triple-Strength Myomer (tsm); - SRM - Standard Ammo (ammo-srm-standard)
+- `megamek/XTRs/Republic III/Parash 3.mtf`: BV differs from the MUL: 3: BV 1785, MUL 1753
+- `megamek/XTRs/Republic III/Ryoken III-XP A.mtf`: BV differs from the MUL: A: BV 3915, MUL 3777
+- `megamek/XTRs/Republic III/Ryoken III-XP B.mtf`: different submodel, same name and model: ammo type: Skinwalker (Ryoken III) B
+- `megamek/XTRs/Republic III/Ryoken III-XP C.mtf`: different submodel, same name and model: ammo type: Skinwalker (Ryoken III)  C
+- `megamek/XTRs/Republic III/Ryoken III-XP D.mtf`: BV differs from the MUL: D: BV 2533, MUL 2483
+- `megamek/XTRs/Republic III/Ryoken III-XP Prime.mtf`: different submodel, same name and model: ammo type: Skinwalker (Ryoken III)  Prime
 - `megamek/XTRs/Republic III/Triskelion TRK-4V.mtf`: BV differs from the MUL: TRK-4V: BV 2702, MUL 2837
 - `megamek/XTRs/Republic II/Awesome AWS-11R.mtf`: duplicate of a design already kept: Awesome AWS-11R
 - `megamek/XTRs/Republic II/Blade BLD-XR.mtf`: duplicate of a design already kept: Blade BLD-XR

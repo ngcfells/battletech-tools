@@ -18,7 +18,7 @@ function mech(): BattleMech {
 describe("a Torso-Mounted Cockpit", () => {
     it("is offered beside the Standard and Small cockpits, and moves the cockpit out of the head", () => {
         const unit = mech();
-        expect(unit.getAvailableCockpits(4).map((cockpit) => cockpit.tag)).toEqual(["standard", "small", "torso-mounted"]);
+        expect(unit.getAvailableCockpits(4).map((cockpit) => cockpit.tag)).toEqual(["standard", "small", "torso-mounted", "interface"]);
         // It is Experimental (TO:AUE p.112).
         expect(unit.getAvailableCockpits(3).find((cockpit) => cockpit.tag === "torso-mounted")?.available).toBe(false);
         expect(unit.setCockpitType("torso-mounted").tag).toBe("torso-mounted");

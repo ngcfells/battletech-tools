@@ -219,6 +219,7 @@ const ENGINES: Record<string, string> = {
 };
 const GYROS: Record<string, string> = {
     "Standard Gyro": "standard", "Extra-Light Gyro": "xl", "Compact Gyro": "compact", "Heavy-Duty Gyro": "heavy-duty",
+    "No Gyro": "none",
 };
 const STRUCTURES: Record<string, string> = {
     "Standard Structure": "standard", "Endo-Steel": "endo-steel", "Endo-Steel Prototype": "endo-steel-prototype", "Endo-Composite": "endo-composite",

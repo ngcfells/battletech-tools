@@ -50,7 +50,7 @@ const ARMORS: Record<string, string> = {
     "Primitive Commercial": "Commercial Armor",
 };
 // A superheavy 'Mech's gyro follows from its tonnage (IO:AE p.156): the import takes it as a standard one.
-const GYROS: Record<string, string> = { "": "Standard Gyro", "XL Gyro": "Extra-Light Gyro", "Heavy Duty Gyro": "Heavy-Duty Gyro", "Superheavy Gyro": "Standard Gyro" };
+const GYROS: Record<string, string> = { "": "Standard Gyro", "XL Gyro": "Extra-Light Gyro", "Heavy Duty Gyro": "Heavy-Duty Gyro", "Superheavy Gyro": "Standard Gyro", "None": "No Gyro" };
 const HEAT_SINKS: Record<string, string> = { "Single": "Single Heat Sink", "Double": "Double Heat Sink", "Laser": "Laser Heat Sink", "Compact": "Compact Heat Sink" };
 /** Jump jet slot names, their SSW type and slots a jet. */
 const JUMP_JETS: Record<string, [string, number]> = {

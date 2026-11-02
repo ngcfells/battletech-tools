@@ -2458,10 +2458,10 @@ describe("SSW unresolved items", () => {
     });
 
     it("reports an unknown cockpit", () => {
-        const xml = griffin().replace(">Standard Cockpit</type>", ">Interface Cockpit</type>");
+        const xml = griffin().replace(">Standard Cockpit</type>", ">Widget Cockpit</type>");
         const mech = new BattleMech();
         mech.importSSWXML(xml);
-        expect(mech.getSSWUnresolved()).toEqual([expect.objectContaining({ kind: "cockpit", name: "Interface Cockpit" })]);
+        expect(mech.getSSWUnresolved()).toEqual([expect.objectContaining({ kind: "cockpit", name: "Widget Cockpit" })]);
     });
 
     it("a clean import has no unresolved items, and occupancy marks the PPC's three slots", () => {
@@ -2890,7 +2890,7 @@ describe("Batch 8 cockpit catalog", () => {
             expect([item.book, item.page], item.tag).toEqual(pages[item.tag]);
         }
         expect(mechCockpitTypes.filter(item => item.constructionStatus === "implemented").map(item => item.tag).sort())
-            .toEqual(["command-console", "industrial", "industrial-advanced-fire-control", "primitive", "primitive-industrial", "primitive-industrial-advanced-fire-control", "quadvee", "small", "standard", "superheavy", "superheavy-industrial", "superheavy-tripod", "torso-mounted", "tripod"]);
+            .toEqual(["command-console", "industrial", "industrial-advanced-fire-control", "interface", "primitive", "primitive-industrial", "primitive-industrial-advanced-fire-control", "quadvee", "small", "standard", "superheavy", "superheavy-industrial", "superheavy-tripod", "torso-mounted", "tripod"]);
         // Small (TM p.304) and Torso-Mounted (TO:AUE p.193) cockpits multiply the final BV by 0.95.
         expect(cockpit("small")?.bvMultiplier).toBe(0.95);
         expect(cockpit("torso-mounted")?.bvMultiplier).toBe(0.95);
@@ -5873,9 +5873,9 @@ describe("Batch 41 cockpit selection and IndustrialMech fire control (TM pp.69, 
     const add = (mech: BattleMech, tag: string) => mech.addEquipmentFromTag(tag, "is", "", false, undefined, "", false, [], undefined, undefined);
 
     it("offers the cockpits the chassis may mount", () => {
-        expect(choices(build())).toEqual(["standard", "small", "torso-mounted"]);
+        expect(choices(build())).toEqual(["standard", "small", "torso-mounted", "interface"]);
         // The Small Cockpit is a 3060 prototype, in production from 3067 (Inner Sphere).
-        expect(choices(build({ era: "late-sw-rn" }))).toEqual(["standard", "small (no)", "torso-mounted (no)"]);
+        expect(choices(build({ era: "late-sw-rn" }))).toEqual(["standard", "small (no)", "torso-mounted (no)", "interface (no)"]);
         expect(choices(build({ structure: "industrial" }))).toEqual(["industrial", "industrial-advanced-fire-control"]);
         expect(choices(build({ type: "tripod" }))).toEqual(["tripod"]);
         expect(choices(build({ type: "quadvee", tech: "clan" }))).toEqual(["quadvee"]);
@@ -5894,6 +5894,26 @@ describe("Batch 41 cockpit selection and IndustrialMech fire control (TM pp.69, 
         // A cockpit the chassis cannot mount is refused.
         expect(mech.setCockpitType("tripod").tag).toBe("standard");
         expect(mech.setCockpitType("industrial").tag).toBe("standard");
+    });
+
+    it("mounts the interface cockpit, and only it may go without a gyro (IO:AE p.110)", () => {
+        const mech = build();
+        const noGyro = () => mech.getAvailableGyros(4).find(gyro => gyro.tag === "none")?.available;
+        expect(noGyro()).toBe(false);
+        const standard = Number(/Rounded from ([\d.]+)/.exec(mech.getBVCalcHTML())?.[1]);
+        expect(mech.setCockpitType("interface")).toMatchObject({ tag: "interface", weight: 4, cost: 1500000 });
+        expect(mech.getBattleValue()).toBe(Math.round(standard * 1.3));
+        expect(mech.canMountCommandConsole()).toBe(false);
+        expect(noGyro()).toBe(true);
+        mech.setGyroType("none");
+        expect(mech.getGyroWeight()).toBe(0);
+        expect(mech.getChassisEquipmentViolations()).toEqual([]);
+        // Saved and loaded again.
+        const copy = new BattleMech();
+        copy.importJSON(mech.exportJSON());
+        expect([copy.getCockpitType().tag, copy.getGyro().tag]).toEqual(["interface", "none"]);
+        expect(mech.setCockpitType("standard").tag).toBe("standard");
+        expect(mech.getChassisEquipmentViolations()).toContain("Only a 'Mech with an interface cockpit may be built without a gyro.");
     });
 
     it("gives an IndustrialMech its own cockpit, with Advanced Fire Control as the 200,000 C-bill option", () => {

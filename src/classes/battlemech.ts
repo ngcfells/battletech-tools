@@ -560,6 +560,8 @@ export class BattleMech {
     private _smallCockpit: boolean = false;
     /** Torso-Mounted Cockpit (TO:AUE p.112). */
     private _torsoMountedCockpit: boolean = false;
+    /** BattleMech Interface Cockpit (IO:AE p.110). */
+    private _interfaceCockpit: boolean = false;
     // IndustrialMechs: the Advanced Fire Control cockpit enhancement (TM p.69). An option, off by default.
     private _advancedFireControl: boolean = false;
     // A Cockpit Command Console beside the cockpit (TO:AUE p.112). An option, off by default.
@@ -721,6 +723,7 @@ export class BattleMech {
         this.setJumpJetType( "standard" );
         this._smallCockpit = false;
         this._torsoMountedCockpit = false;
+        this._interfaceCockpit = false;
         this._criticalAllocationTable = [];
         this._calc();
     }
@@ -2198,7 +2201,7 @@ export class BattleMech {
         // A superheavy IndustrialMech takes the superheavy BattleMech cockpit when it has Advanced Fire Control.
         if (superheavy) return getCockpitType(this.isIndustrialMech() && !this._advancedFireControl ? "superheavy-industrial" : "superheavy");
         if (this.isIndustrialMech()) return getCockpitType(this._advancedFireControl ? "industrial-advanced-fire-control" : "industrial");
-        return getCockpitType(this._torsoMountedCockpit ? "torso-mounted" : this._smallCockpit ? "small" : "standard");
+        return getCockpitType(this._torsoMountedCockpit ? "torso-mounted" : this._smallCockpit ? "small" : this._interfaceCockpit ? "interface" : "standard");
     }
 
     /** An IndustrialMech: a 'Mech built on industrial internal structure (TM p.66). */
@@ -2214,7 +2217,7 @@ export class BattleMech {
     /**
      * Cockpits this chassis may mount. Tripods, QuadVees and superheavy 'Mechs have one mandatory
      * cockpit; an IndustrialMech chooses whether to add Advanced Fire Control (TM p.69); any other
-     * 'Mech chooses between the Standard, Small (TM p.52) and Torso-Mounted (TO:AUE p.112) cockpits.
+     * 'Mech chooses between the Standard, Small (TM p.52), Torso-Mounted (TO:AUE p.112) and Interface (IO:AE p.110) cockpits.
      */
     public getAvailableCockpits(rulesLevel: number = 2): ICockpitType[] {
         const current = this.getCockpitType();
@@ -2226,7 +2229,7 @@ export class BattleMech {
             : mandatory ? [current.tag]
             : superheavyIndustrial ? ["superheavy-industrial", "superheavy"]
             : this.isIndustrialMech() ? ["industrial", "industrial-advanced-fire-control"]
-            : ["standard", "small", "torso-mounted"];
+            : ["standard", "small", "torso-mounted", "interface"];
         return tags.map(tag => {
             // Copies: the availability marks are this 'Mech's, not the shared table's (issue 35).
             const cockpit = { ...getCockpitType(tag) };
@@ -2242,9 +2245,10 @@ export class BattleMech {
     /** Choose one of the cockpits offered by getAvailableCockpits(); anything else is ignored. */
     public setCockpitType(tag: string): ICockpitType {
         if (this.getAvailableCockpits().some(cockpit => cockpit.tag === tag)) {
-            if (tag === "standard" || tag === "small" || tag === "torso-mounted") {
+            if (tag === "standard" || tag === "small" || tag === "torso-mounted" || tag === "interface") {
                 this._smallCockpit = tag === "small";
                 this._torsoMountedCockpit = tag === "torso-mounted";
+                this._interfaceCockpit = tag === "interface";
             }
             if (tag === "industrial" || tag === "industrial-advanced-fire-control") this._advancedFireControl = tag !== "industrial";
             if (tag === "primitive-industrial" || tag === "primitive-industrial-advanced-fire-control") this._advancedFireControl = tag !== "primitive-industrial";
@@ -3196,7 +3200,7 @@ export class BattleMech {
         html += "" + this.getHeatSyncName().padEnd(col1Padding, " " ) + "" + this.getHeatSinks().toString().padEnd(col2Padding, " " ) + "" + this.getHeatSinksWeight() + "\n";
         html += "" + this.getGyroName().padEnd(col1Padding + col2Padding, " " ) + "" + this.getGyroWeight() + "\n";
 
-        if( this._smallCockpit || this._torsoMountedCockpit ) {
+        if( this._smallCockpit || this._torsoMountedCockpit || this._interfaceCockpit ) {
             html += this.getCockpitType().name.padEnd(col1Padding + col2Padding, " " ) + "" + this.getCockpitWeight() + "\n";
         } else {
             html += "Cockpit".padEnd(col1Padding + col2Padding, " " ) + "" + this.getCockpitWeight() + "\n";
@@ -3500,7 +3504,7 @@ export class BattleMech {
         html += "<tr><td colspan=\"1\">" + esc(this.getHeatSyncName()) + "</td><td class=\"text-center\" colspan=\"2\">" + this.getHeatSinks() + "</td><td class=\"text-center\" colspan=\"1\">" + this.getHeatSinksWeight() + "</td></tr>";
         html += "<tr><td colspan=\"3\">" + esc(this.getGyroName()) + "</td><td class=\"text-center\" colspan=\"1\">" + this.getGyroWeight() + "</td></tr>";
 
-        if( this._smallCockpit || this._torsoMountedCockpit ) {
+        if( this._smallCockpit || this._torsoMountedCockpit || this._interfaceCockpit ) {
             html += "<tr><td colspan=\"3\">" + esc(this.getCockpitType().name) + "</td><td class=\"text-center\" colspan=\"1\">" + this.getCockpitWeight() + "</td></tr>";
         } else {
             html += "<tr><td colspan=\"3\">Cockpit</td><td class=\"text-center\" colspan=\"1\">" + this.getCockpitWeight() + "</td></tr>";
@@ -3781,7 +3785,7 @@ export class BattleMech {
                 name: this.getCockpitType().name,
                 weight: this.getCockpitWeight()
             });
-        } else if( this._smallCockpit || this._torsoMountedCockpit ) {
+        } else if( this._smallCockpit || this._torsoMountedCockpit || this._interfaceCockpit ) {
             this._cockpitWeight = this.getCockpitType().weight;
             this._weights.push({
                 name: this.getCockpitType().name,
@@ -4311,10 +4315,11 @@ export class BattleMech {
         } else {
             this._addCriticalItem( "life-support", "Life Support", 1, "hd", 0);
             this._addCriticalItem( "sensors", "Sensors", 1, "hd", 1);
+            // The interface cockpit "takes one extra Cockpit critical slot" (IO:AE p.110): slot 4, as MegaMek places it.
             this._addCriticalItem(
                 cockpitTag,
                 cockpitName,
-                1,
+                this._interfaceCockpit ? 2 : 1,
                 "hd",
                 2
             );
@@ -7655,6 +7660,9 @@ export class BattleMech {
         if (this.getCockpitType().tag === "interface" && this.getArmoredComponentRecords().some(armored => BattleMech._isCockpitRecord(armored.record.tag))) {
             violations.push("The interface cockpit cannot be protected with component armor.");
         }
+        if (this._gyro.tag === "none" && this.getCockpitType().tag !== "interface") {
+            violations.push("Only a 'Mech with an interface cockpit may be built without a gyro.");
+        }
         if (!this._isArmorLegalForChassis(this._armorType)) {
             violations.push(this._primitive
                 ? `A Primitive 'Mech cannot mount ${this._armorType.name}.`
@@ -8545,6 +8553,8 @@ export class BattleMech {
             exportObject.features.push( "sm_cockpit" );
         if( this._torsoMountedCockpit)
             exportObject.features.push( "torso_cockpit" );
+        if( this._interfaceCockpit)
+            exportObject.features.push( "interface_cockpit" );
         // IndustrialMech cockpit with the Advanced Fire Control enhancement (TM p.69).
         if( this._advancedFireControl)
             exportObject.features.push( "afc" );
@@ -8984,6 +8994,8 @@ export class BattleMech {
                     this._smallCockpit = true;
                 if( importObject.features.indexOf( "torso_cockpit" ) > -1)
                     this._torsoMountedCockpit = true;
+                if( importObject.features.indexOf( "interface_cockpit" ) > -1)
+                    this._interfaceCockpit = true;
 
                 // IndustrialMech cockpit with Advanced Fire Control
                 if( importObject.features.indexOf( "afc" ) > -1)
@@ -10587,6 +10599,8 @@ export class BattleMech {
             gyro.availableAsPrototype = availability.asPrototype;
             gyro.available = availability.available && this.isOfferedInEdition(gyro, rulesLevel) && !(gyro.innerSphereOnly && this.getTech().tag === "clan")
                 && (!this.isLAM() || this._isLAMLegalGyro(gyro.tag))
+                // Only an interface cockpit lets a 'Mech go without a gyro (IO:AE p.110).
+                && (gyro.tag !== "none" || this.getCockpitType().tag === "interface")
                 // IndustrialMechs and Primitive 'Mechs take the standard gyro only (TM p.69; IO:AE p.116).
                 && (!this._hasBasicChassis() || gyro.tag === "standard");
 
@@ -11196,6 +11210,7 @@ export class BattleMech {
             this._heatSinkType = findByTag(mechHeatSinkTypes, "single") ?? this._heatSinkType;
             this._smallCockpit = false;
             this._torsoMountedCockpit = false;
+            this._interfaceCockpit = false;
             // The structure setter sizes the internal structure for the tonnage.
             this.setInternalStructureType(this._selectedInternalStructure.tag);
         }
@@ -13492,6 +13507,8 @@ export class BattleMech {
                     this._smallCockpit = true;
                 } else if( cockpitType === "Torso-Mounted Cockpit" ) {
                     this._torsoMountedCockpit = true;
+                } else if( cockpitType === "Interface Cockpit" ) {
+                    this._interfaceCockpit = true;
                 } else if( cockpitType === "Industrial w/ Adv. FC" ) {
                     // The IndustrialMech cockpit follows the internal structure; Advanced Fire Control is a choice (TM p.69).
                     this._advancedFireControl = true;
@@ -13687,10 +13704,10 @@ export class BattleMech {
 
                 this._installSSWLocatedSystems( jObj.mech.baseloadout );
                 this._installSSWCockpitSystems( jObj.mech.cockpit?.type );
-                // The Small and Torso-Mounted cockpits replace a BattleMech's standard cockpit (TM p.52; TO:AUE p.112);
-                // an IndustrialMech mounts its own (TM p.69), so SSW's choice cannot be kept (#46).
-                if( this.isIndustrialMech() && ( this._smallCockpit || this._torsoMountedCockpit ) ) {
-                    this._sswImportErrors.push( "Cannot mount a " + ( this._smallCockpit ? "Small" : "Torso-Mounted" )
+                // The Small, Torso-Mounted and Interface cockpits replace a BattleMech's standard cockpit (TM p.52;
+                // TO:AUE p.112; IO:AE p.110); an IndustrialMech mounts its own (TM p.69), so SSW's choice cannot be kept (#46).
+                if( this.isIndustrialMech() && ( this._smallCockpit || this._torsoMountedCockpit || this._interfaceCockpit ) ) {
+                    this._sswImportErrors.push( "Cannot mount a " + ( this._smallCockpit ? "Small" : this._torsoMountedCockpit ? "Torso-Mounted" : "Interface" )
                         + " Cockpit on an IndustrialMech (TM p.69)" );
                 }
 
