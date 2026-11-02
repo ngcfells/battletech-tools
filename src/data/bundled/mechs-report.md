@@ -1,12 +1,12 @@
 # Bundled 'Mechs: build report
 
-3646 designs kept (38 renamed), 4078 files left out.
+3647 designs kept (38 renamed), 4077 files left out.
 
 | Reason | Files |
 |---|---|
 | duplicate of a design already kept | 3166 |
 | BV differs from the MUL | 211 |
-| the import could not carry all of it over | 168 |
+| the import could not carry all of it over | 167 |
 | different submodel, same name and model: equipment | 158 |
 | different submodel, same name and model: ammo type | 112 |
 | different submodel, same name and model: actuators | 85 |
@@ -945,7 +945,6 @@
 - `megamek/3050U/Jenner JR7-C.mtf`: duplicate of a design already kept, differs only in armor spread: Jenner JR7-C
 - `megamek/3050U/Jenner JR7-C2.mtf`: duplicate of a design already kept: Jenner JR7-C2
 - `megamek/3050U/Jenner JR7-C3.mtf`: duplicate of a design already kept: Jenner JR7-C3
-- `megamek/3050U/Jenner JR7-K Grace.mtf`: the import could not carry all of it over: Cannot find any internal structure named: 'Endo-Steel Prototype'; Cannot find any armor named: 'Prototype Ferro-Fibrous'
 - `megamek/3050U/Jenner JR7-K.mtf`: duplicate of a design already kept, differs only in armor spread: Jenner JR7-K
 - `megamek/3050U/Katana (Crockett) CRK-5003-2.mtf`: duplicate of a design already kept: Katana (Crockett) CRK-5003-2
 - `megamek/3050U/Katana (Crockett) CRK-5003-C.mtf`: duplicate of a design already kept: Katana (Crockett) CRK-5003-C
@@ -3673,10 +3672,10 @@
 - `megamek/Snords Irregulars/Hybrid Rifleman RFL-3N (Sneede II).mtf`: the import could not carry all of it over: 'Mech configuration 'Biped FrankenMek' is not converted yet
 - `megamek/Snords Irregulars/Hybrid Rifleman RFL-3N (Sneede).mtf`: the import could not carry all of it over: 'Mech configuration 'Biped FrankenMek' is not converted yet
 - `megamek/Spotlight On/Hellion Keshik/Awesome C.mtf`: duplicate of a design already kept: Awesome C
-- `megamek/Starterbook Sword and Dragon/Black Knight BL-6-KNT Ian.mtf`: the import could not carry all of it over: 'ISDoubleHeatSinkPrototype' is not converted yet; 'ISDoubleHeatSinkPrototype' is not converted yet; Cannot find any armor named: 'Prototype Ferro-Fibrous'
+- `megamek/Starterbook Sword and Dragon/Black Knight BL-6-KNT Ian.mtf`: the import could not carry all of it over: 'ISDoubleHeatSinkPrototype' is not converted yet; 'ISDoubleHeatSinkPrototype' is not converted yet
 - `megamek/Starterbook Sword and Dragon/Cataphract CTF-2X George.mtf`: the import could not carry all of it over: 'ISDoubleHeatSinkPrototype' is not converted yet; 'ISDoubleHeatSinkPrototype' is not converted yet
-- `megamek/Starterbook Sword and Dragon/Grand Dragon DRG-5K Emory.mtf`: the import could not carry all of it over: 'ISDoubleHeatSinkPrototype' is not converted yet; 'ISDoubleHeatSinkPrototype' is not converted yet; Cannot find any internal structure named: 'Endo-Steel Prototype'
-- `megamek/Starterbook Sword and Dragon/Hatamoto-Chi HTM-27T Daniel.mtf`: the import could not carry all of it over: Cannot find the ammunition 'IS LB 10-X Cluster Ammo'; Cannot find the ammunition 'IS LB 10-X AC Ammo'; Cannot find the ammunition 'IS LB 10-X Cluster Ammo'; Cannot find the ammunition 'IS LB 10-X AC Ammo'; Cannot find any internal structure named: 'Endo-Steel Prototype'
+- `megamek/Starterbook Sword and Dragon/Grand Dragon DRG-5K Emory.mtf`: the import could not carry all of it over: 'ISDoubleHeatSinkPrototype' is not converted yet; 'ISDoubleHeatSinkPrototype' is not converted yet
+- `megamek/Starterbook Sword and Dragon/Hatamoto-Chi HTM-27T Daniel.mtf`: the import could not carry all of it over: Cannot find the ammunition 'IS LB 10-X Cluster Ammo'; Cannot find the ammunition 'IS LB 10-X AC Ammo'; Cannot find the ammunition 'IS LB 10-X Cluster Ammo'; Cannot find the ammunition 'IS LB 10-X AC Ammo'
 - `megamek/Starterbook Sword and Dragon/Hatchetman HCT-3F Austin.mtf`: the import could not carry all of it over: Cannot find the ammunition 'IS LB 10-X Cluster Ammo'; Cannot find the ammunition 'IS LB 10-X AC Ammo'
 - `megamek/Starterbook Sword and Dragon/Hunchback HBK-4G Shakir.mtf`: BV differs from the MUL: HBK-4G (Shakir): BV 957, MUL 968
 - `megamek/Starterpack Sword and Dragon/Black Knight BL-10-KNT Ross.mtf`: duplicate of a design already kept: Black Knight BL-10-KNT (Ross)
@@ -4075,7 +4074,7 @@
 - `megamek/XTRs/Succession Wars/Cataphract CTF-0X.mtf`: different submodel, same name and model: equipment: Cataphract CTF-0X
 - `megamek/XTRs/Succession Wars/Flea FLE-14.mtf`: duplicate of a design already kept: Flea FLE-14
 - `megamek/XTRs/Succession Wars/Kiso K-3N-KRHQ CommandMech.mtf`: different submodel, same name and model: equipment: Kiso K-3N-KRHQ CommandMech
-- `megamek/XTRs/Succession Wars/Marauder MAD-4X.mtf`: the import could not carry all of it over: 'ISDoubleHeatSinkPrototype' is not converted yet; 'ISDoubleHeatSinkPrototype' is not converted yet; 'ISDoubleHeatSinkPrototype' is not converted yet; 'ISDoubleHeatSinkPrototype' is not converted yet; Cannot find any internal structure named: 'Endo-Steel Prototype'
+- `megamek/XTRs/Succession Wars/Marauder MAD-4X.mtf`: the import could not carry all of it over: 'ISDoubleHeatSinkPrototype' is not converted yet; 'ISDoubleHeatSinkPrototype' is not converted yet; 'ISDoubleHeatSinkPrototype' is not converted yet; 'ISDoubleHeatSinkPrototype' is not converted yet
 - `megamek/XTRs/Succession Wars/Super Griffin GRF-2N-X.mtf`: the import could not carry all of it over: 'ISDoubleHeatSinkPrototype' is not converted yet; 'ISDoubleHeatSinkPrototype' is not converted yet; 'ISDoubleHeatSinkPrototype' is not converted yet; Cannot place 'LRM 10': its slots are split in a way not converted yet; Unallocated Criticals: 2; - Prototype Improved Jump Jets (jj-prototype-improved); - Prototype Improved Jump Jets (jj-prototype-improved)
 - `megamek/XTRs/Succession Wars/Super Wasp WSP-2A-X.mtf`: duplicate of a design already kept: Super Wasp WSP-2A-X
 - `megamek/XTRs/Succession Wars/Zeus ZEU-6Y.mtf`: duplicate of a design already kept: Zeus ZEU-6Y

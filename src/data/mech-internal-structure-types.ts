@@ -267,6 +267,30 @@ export const mechInternalStructureTypes: IInternalStructure[] = [
     }
   },
   {
+    // Age of War prototype (IO:AE p.65): Inner Sphere endo steel in 2 more slots; 'Mechs only, TT÷20 tons,
+    // 4,800 x TT C-bills (IO:AE p.211). Ends at production in 2487; recovered as a prototype in 3035 (IO:AE p.97).
+    name: "Endo-Steel Prototype",
+    tag: "endo-steel-prototype",
+    techBase: "universal",
+    editions: ["total-warfare", "battlemech-manual", "core-rulebook"],
+    book: "IO:AE",
+    page: 65,
+    prototype: 2471,
+    introduced: null,
+    extinct: 2487,
+    reintroduced: 3035,
+    crits: { clan: 0, is: 16 },
+    cost: 4800,
+    innerSphereOnly: true,
+    perMechType: {
+      biped: generateStructuresForType('biped'),
+      quad: generateStructuresForType('quad'),
+      tripod: generateStructuresForType('tripod'),
+      lam: generateStructuresForType('lam'),
+      quadvee: generateStructuresForType('quadvee'),
+    }
+  },
+  {
     name: "Endo-Composite",
     tag: "endo-composite",
     techBase: "universal",

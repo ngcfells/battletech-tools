@@ -221,7 +221,7 @@ const GYROS: Record<string, string> = {
     "Standard Gyro": "standard", "Extra-Light Gyro": "xl", "Compact Gyro": "compact", "Heavy-Duty Gyro": "heavy-duty",
 };
 const STRUCTURES: Record<string, string> = {
-    "Standard Structure": "standard", "Endo-Steel": "endo-steel", "Endo-Composite": "endo-composite",
+    "Standard Structure": "standard", "Endo-Steel": "endo-steel", "Endo-Steel Prototype": "endo-steel-prototype", "Endo-Composite": "endo-composite",
     "Composite Structure": "composite", "Reinforced Structure": "reinforced", "Industrial Structure": "industrial",
     // A Primitive 'Mech's structure is the standard or industrial one with the Primitive flag.
     "Primitive Structure": "standard", "Primitive Industrial Structure": "industrial",

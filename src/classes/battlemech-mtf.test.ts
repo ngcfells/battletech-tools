@@ -286,6 +286,24 @@ describe("MegaMek 'Mech import", () => {
         expect(mech!.getInternalStructureType()).toBe("industrial");
     });
 
+    // The Jenner JR7-K Grace: Age of War prototype endo steel and ferro-fibrous, 16 slots each (IO:AE pp.65-66, 211).
+    it("reads prototype endo steel structure and prototype ferro-fibrous armor", () => {
+        const prototype = brawler.replace("structure:IS Standard", "structure:IS Endo Steel Prototype")
+            .replace("armor:Standard(Inner Sphere)", "armor:Ferro-Fibrous Prototype(Inner Sphere)")
+            .replace(/(Left Torso:\n(?:.*\n){4})(?:-Empty-\n){8}/, "$1" + "IS Endo Steel Prototype\n".repeat(8))
+            .replace(/(Right Torso:\nMedium Laser\n)(?:-Empty-\n){11}/, "$1" + "IS Endo Steel Prototype\n".repeat(8) + "IS Ferro-Fibrous Prototype\n".repeat(3))
+            .replace(/(Center Torso:\n(?:.*\n){10})(?:-Empty-\n){2}/, "$1" + "IS Ferro-Fibrous Prototype\n".repeat(2))
+            .replace(/(Right Arm:\n(?:.*\n){5})(?:-Empty-\n){7}/, "$1" + "IS Ferro-Fibrous Prototype\n".repeat(7))
+            .replace(/(Left Leg:\n(?:.*\n){4})(?:-Empty-\n){2}/, "$1" + "IS Ferro-Fibrous Prototype\n".repeat(2))
+            .replace(/(Right Leg:\n(?:.*\n){4})(?:-Empty-\n){2}/, "$1" + "IS Ferro-Fibrous Prototype\n".repeat(2));
+        const { mech, issues } = importBattleMechMtf(prototype);
+        expect(issues).toEqual([]);
+        expect(mech!.getInternalStructureType()).toBe("endo-steel-prototype");
+        expect(mech!.getArmorType()).toBe("ferro-fibrous-prototype");
+        // Half the standard structure weight, like production endo steel (IO:AE p.211: TT÷20).
+        expect(mech!.getInternalStructureWeight()).toBe(2.5);
+    });
+
     it("finds MegaMek's prototype rocket launchers (Crosscut ED-X2)", () => {
         // One, two and three slots.
         for (const [size, slots] of [[10, 1], [15, 2], [20, 3]]) {

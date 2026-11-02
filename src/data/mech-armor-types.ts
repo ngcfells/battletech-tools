@@ -809,6 +809,7 @@ export const mechArmorTypes: IArmorType[] = [
 	{
 		name: "Ferro-Fibrous Prototype",
 		tag: "ferro-fibrous-prototype",
+		altNames: ["Prototype Ferro-Fibrous"],
 		techBase: "universal",
 		editions: ["total-warfare", "battlemech-manual", "core-rulebook"],
 		combatVehicleSlots: { is: 3 },

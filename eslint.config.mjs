@@ -11,7 +11,7 @@ export default tseslint.config(
         ignores: [
             "build", "cli-tools", "node_modules", "battletech-tools", "coverage", "playwright-report", "test-results",
             // local-only environments/working folders that some contributors keep in the repo root
-            ".venv", "venv", "**/*_DEV/**", ".superpowers",
+            ".venv", "venv", "**/*_DEV/**", ".superpowers", "src/zz-local", "tools-local",
         ],
     },
     js.configs.recommended,

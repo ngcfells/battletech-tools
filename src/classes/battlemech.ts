@@ -2451,6 +2451,7 @@ export class BattleMech {
         const factors: Record<string, { base: number, superheavy: number }> = {
             "standard": { base: 0.1, superheavy: 0.2 },
             "endo-steel": { base: 0.05, superheavy: 0.1 },
+            "endo-steel-prototype": { base: 0.05, superheavy: 0.1 },
             "endo-composite": { base: 0.075, superheavy: 0.15 },
             "composite": { base: 0.05, superheavy: 0.05 },
             "reinforced": { base: 0.2, superheavy: 0.2 },

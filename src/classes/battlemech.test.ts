@@ -2597,12 +2597,16 @@ describe("Batch 5 internal structure catalog", () => {
         expect(structure("reinforced")?.clanDates?.prototype).toBe(3065);
         expect(structure("industrial")?.prototype).toBe(2300);
         expect(structure("industrial")?.introduced).toBe(2350);
+        // Age of War prototype 2471, ends at production in 2487, recovered as a prototype in 3035 (IO:AE pp.65, 97).
+        const prototype = structure("endo-steel-prototype");
+        expect([prototype?.prototype, prototype?.introduced, prototype?.extinct, prototype?.reintroduced]).toEqual([2471, null, 2487, 3035]);
     });
 
     it("cites a book and page for every structure", () => {
         const pages: Record<string, [string, number]> = {
             standard: ["TM", 225], "endo-steel": ["TM", 224], industrial: ["TM", 224],
             composite: ["TO:AUE", 154], "endo-composite": ["TO:AUE", 154], reinforced: ["TO:AUE", 155],
+            "endo-steel-prototype": ["IO:AE", 65],
         };
         for (const item of mechInternalStructureTypes) {
             expect([item.book, item.page], item.tag).toEqual(pages[item.tag]);
@@ -4754,7 +4758,7 @@ describe("Batch 22 Superheavy 'Mech structure types (IO:AE p.155)", () => {
     const available = (mech: BattleMech) => mech.getAvailableInternalStructures(4).filter(item => item.available).map(item => item.tag).sort();
 
     it("offers only standard, endo steel, endo-composite and industrial structure above 100 tons", () => {
-        expect(available(build(100))).toEqual(["composite", "endo-composite", "endo-steel", "industrial", "reinforced", "standard"]);
+        expect(available(build(100))).toEqual(["composite", "endo-composite", "endo-steel", "endo-steel-prototype", "industrial", "reinforced", "standard"]);
         expect(available(build(150))).toEqual(["endo-composite", "endo-steel", "industrial", "standard"]);
     });
 
