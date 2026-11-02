@@ -9,6 +9,7 @@ import { AcesGame, acesPhases, getAcesAbilityValue, TAcesPhase } from '../../../
 import {
     applyAcesCriticalToUnit,
     chooseAcesTokenUnit,
+    acesSupportOnlyIfStructure,
     evaluateAcesStrategy,
     getAcesDestroyObjectiveStats,
     getAcesOrdersForPhase,
@@ -591,6 +592,7 @@ export default class AcesGamePage extends React.Component<IAcesGamePageProps, IA
                             return (
                                 <li key={index}>
                                     <AcesText text={order.text} />
+                                    {order.filter ? <>{" "}<strong><AcesText text={order.filter} /></strong></> : null}
                                     {choice ? (
                                         <>
                                             {" "}<span className="aces-muted">{choice.trace[choice.trace.length - 1]}</span>
@@ -763,7 +765,7 @@ export default class AcesGamePage extends React.Component<IAcesGamePageProps, IA
                 <summary>Support attacks (<em>Aces</em> p.20)</summary>
                 <p className="aces-muted">After all automated units attack: emplacements, then artillery, then Battlefield Support cards, lowest Target Number first.</p>
                 {card.supportOrders ? <p><AcesText text={card.supportOrders} /></p> : null}
-                {card.supportOnlyIfStructure ? <p>Battlefield Support is only spent when its damage gets through the target's armor.</p> : null}
+                {acesSupportOnlyIfStructure( card ) ? <p>Battlefield Support is only spent when its damage gets through the target's armor.</p> : null}
             </details>
         );
     }

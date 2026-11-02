@@ -640,9 +640,15 @@ export const orderAcesSupportCards = <T extends IAcesSupportCard>( cards: T[] ):
     } );
 }
 
+/** The Command card's support orders say Battlefield Support is only spent when it will hit structure. */
+export const acesSupportOnlyIfStructure = ( commandCard: IAcesCommandCard | null ): boolean => {
+    if( !commandCard ) return false;
+    return commandCard.supportOnlyIfStructure || /hit[^.]*structure/i.test( commandCard.supportOrders );
+}
+
 /** Support order check: a card that must hit structure is played only when its damage gets through the armor. */
 export const acesSupportCardAllowed = ( commandCard: IAcesCommandCard | null, damage: number, targetArmor: number ): boolean => {
-    if( !commandCard || !commandCard.supportOnlyIfStructure ) return true;
+    if( !acesSupportOnlyIfStructure( commandCard ) ) return true;
     return damage > targetArmor;
 }
 
@@ -705,6 +711,10 @@ export const evaluateAcesStrategy = (
 ): IAcesStrategyResult => {
     const trace: string[] = [];
     for( const row of card.strategy ) {
+        if( row.auto === "maintain" ) {
+            trace.push( acesTextToPlain( row.text ) + ": card " + card.letter + " stays." );
+            return { letter: null, pending: null, trace: trace };
+        }
         let value: boolean | null | undefined = answers[row.letter];
         if( row.auto === "objective-complete" ) value = auto.objectiveComplete;
         if( row.auto === "enemy-no-armor" ) value = auto.enemyWithNoArmor;

@@ -3,6 +3,7 @@ import {
     acesDeckIdFromName,
     acesLines,
     acesTextToPlain,
+    formatAcesCommandOrderLine,
     formatAcesDeckOrderLine,
     formatAcesObjectiveLine,
     formatAcesPriorityLine,
@@ -140,6 +141,22 @@ describe("Aces typed lines (library editor)", () => {
             expect( parseAcesStrategyLine( row.letter + " | " + row.text ) ).toEqual( row );
         }
         expect( acesLines( "a\n\n b \r\nc" ) ).toEqual( [ "a", "b", "c" ] );
+    });
+
+    it("keeps an order's movement filter, phase-less orders and 'Maintain this strategy' (#602)", () => {
+        const filterLine = "movement | When your crippled units use Forced Withdrawal, add the following movement filter | 0. cover vs [highest] enemies";
+        const order = parseAcesCommandOrderLine( filterLine )!;
+        expect( order.behavior ).toBeNull();
+        expect( order.filter ).toBe( "0. cover vs [highest] enemies" );
+        expect( formatAcesCommandOrderLine( order ) ).toBe( filterLine );
+        expect( parseAcesCommandOrderLine( "movement | All units use Aggressive | aggressive" )!.filter ).toBe( "" );
+        const plain = parseAcesCommandOrderLine( "For the rest of the sortie, all units are in Forced Withdrawal" )!;
+        expect( plain.phase ).toBe( "any" );
+        expect( plain.text ).toBe( "For the rest of the sortie, all units are in Forced Withdrawal" );
+        expect( formatAcesCommandOrderLine( plain ) ).toBe( "any | For the rest of the sortie, all units are in Forced Withdrawal" );
+        const maintain = parseAcesStrategyLine( "Maintain this strategy" )!;
+        expect( maintain.auto ).toBe( "maintain" );
+        expect( validateAcesCommandCard( { ...acesSampleStarCaptainB, strategy: [ maintain ] } ) ).toEqual( [] );
     });
 
     it("reads sortie lines the way the tutorial sample stores them (Aces SS pp.4-5)", () => {

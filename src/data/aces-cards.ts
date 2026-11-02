@@ -219,9 +219,12 @@ export interface IAcesCommandOrder {
     tokenRank: IAcesPriorityRule[];
     /** An order that overrides behavior for the phase (Aces p.11). */
     behavior: TAcesBehavior | null;
+    /** A movement filter the order adds, printed text with icon tokens, e.g. "0. cover vs [highest] enemies". */
+    filter: string;
 }
 
-export type TAcesStrategyAuto = "" | "objective-complete" | "enemy-no-armor";
+/** "maintain": a row with no condition ("Maintain this strategy"), so the current card stays. */
+export type TAcesStrategyAuto = "" | "objective-complete" | "enemy-no-armor" | "maintain";
 
 export interface IAcesStrategyRow {
     letter: string;
@@ -589,6 +592,7 @@ const normalizeOrder = ( value: unknown ): IAcesCommandOrder | null => {
         token: data.token === "move-first" || data.token === "move-last" ? data.token : null,
         tokenRank: arr( data.tokenRank, normalizeAcesPriorityRule ),
         behavior: acesBehaviorIds.indexOf( data.behavior as TAcesBehavior ) > -1 ? data.behavior as TAcesBehavior : null,
+        filter: str( data.filter ),
     };
 }
 
@@ -598,7 +602,7 @@ const normalizeStrategyRow = ( value: unknown ): IAcesStrategyRow | null => {
     return {
         letter: data.letter,
         text: data.text,
-        auto: oneOf( data.auto, [ "", "objective-complete", "enemy-no-armor" ] as const, "" ),
+        auto: oneOf( data.auto, [ "", "objective-complete", "enemy-no-armor", "maintain" ] as const, "" ),
     };
 }
 
@@ -837,12 +841,14 @@ export const formatAcesZone = ( zoneRings: number[], zoneKeyword: "" | "nearest"
 }
 
 /**
- * A Command card order line: "phase | printed text | behavior". Move First / Move Last orders are recognized from
- * the text and their ranking read from the parenthesized list, e.g. "(▲M Damage, ▲PV)".
+ * A Command card order line: "phase | printed text | behavior or movement filter". A line with no "|" is an order
+ * for any phase. Move First / Move Last orders are recognized from the text and their ranking read from the
+ * parenthesized list, e.g. "(▲M Damage, ▲PV)".
  */
 export const parseAcesCommandOrderLine = ( line: string ): IAcesCommandOrder | null => {
     const parts = line.split( "|" ).map( ( part ) => part.trim() );
-    if( parts.length < 2 || !parts[1] ) return null;
+    if( parts.length === 1 ) parts.unshift( "any" );
+    if( !parts[1] ) return null;
     const phases: TAcesOrderPhase[] = [ "initiative", "movement", "combat", "end", "any" ];
     const phase = phases.indexOf( parts[0].toLowerCase() as TAcesOrderPhase ) > -1 ? parts[0].toLowerCase() as TAcesOrderPhase : "any";
     const text = parts[1];
@@ -851,17 +857,23 @@ export const parseAcesCommandOrderLine = ( line: string ): IAcesCommandOrder | n
     if( /move\s+last/i.test( text ) ) token = "move-last";
     const list = /\(([^)]*)\)/.exec( text );
     const tokenRank = token && list ? list[1].split( "," ).map( ( item ) => parseAcesPriorityLine( item ) ) : [];
-    const behavior = parts[2] && acesBehaviorIds.indexOf( parts[2].toLowerCase() as TAcesBehavior ) > -1 ? parts[2].toLowerCase() as TAcesBehavior : null;
-    return { phase: phase, text: text, token: token, tokenRank: tokenRank, behavior: behavior };
+    const extra = parts.slice( 2 ).join( " | " );
+    const behavior = acesBehaviorIds.indexOf( extra.toLowerCase() as TAcesBehavior ) > -1 ? extra.toLowerCase() as TAcesBehavior : null;
+    return { phase: phase, text: text, token: token, tokenRank: tokenRank, behavior: behavior, filter: behavior ? "" : extra };
 }
 
 export const formatAcesCommandOrderLine = ( order: IAcesCommandOrder ): string => {
-    return order.phase + " | " + order.text + ( order.behavior ? " | " + order.behavior : "" );
+    const extra = order.behavior || order.filter;
+    return order.phase + " | " + order.text + ( extra ? " | " + extra : "" );
 }
 
-/** A strategy decision line: "letter | condition". The app answers "objective is complete" and "no armor" rows. */
+/**
+ * A strategy decision line: "letter | condition". The app answers "objective is complete" and "no armor" rows. A line
+ * with no "|" ("Maintain this strategy") keeps the current card.
+ */
 export const parseAcesStrategyLine = ( line: string ): IAcesStrategyRow | null => {
     const parts = line.split( "|" ).map( ( part ) => part.trim() );
+    if( parts.length === 1 && parts[0] ) return { letter: "", text: parts[0], auto: "maintain" };
     if( parts.length < 2 || !/^[A-Za-z]$/.test( parts[0] ) ) return null;
     let auto: TAcesStrategyAuto = "";
     if( /objective\s+is\s+complete/i.test( parts[1] ) ) auto = "objective-complete";
@@ -979,7 +991,7 @@ export const validateAcesCommandCard = ( card: IAcesCommandCard ): string[] => {
         if( card[color].length === 0 ) rv.push( "The " + color + " target list is empty." );
     }
     for( const row of card.strategy ) {
-        if( !/^[A-Z]$/.test( row.letter ) ) rv.push( "Strategy row \"" + row.text + "\" needs a card letter." );
+        if( row.auto !== "maintain" && !/^[A-Z]$/.test( row.letter ) ) rv.push( "Strategy row \"" + row.text + "\" needs a card letter." );
     }
     return rv;
 }

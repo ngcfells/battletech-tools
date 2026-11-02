@@ -214,6 +214,7 @@ export const acesSampleStarCaptainB: IAcesCommandCard = {
                 { text: "[highest] PV", stat: "pv", direction: "highest" },
             ],
             behavior: null,
+            filter: "",
         },
     ],
     red: [
@@ -284,6 +285,7 @@ export const acesSampleMechWarriorC: IAcesCommandCard = {
                 { text: "[highest] MV", stat: "mv", direction: "highest" },
             ],
             behavior: null,
+            filter: "",
         },
     ],
     red: [

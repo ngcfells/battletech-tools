@@ -102,7 +102,7 @@ export const AcesCommandCardView = ( props: { card: IAcesCommandCard } ): JSX.El
                 {card.sample ? <span className="aces-muted"> sample</span> : null}
             </div>
             {card.orders.length > 0 ? (
-                <ul>{card.orders.map( ( order, index ) => <li key={index}><em>{order.phase}:</em> <AcesText text={order.text} /></li> )}</ul>
+                <ul>{card.orders.map( ( order, index ) => <li key={index}><em>{order.phase}:</em> <AcesText text={order.text} />{order.filter ? <> <AcesText text={order.filter} /></> : null}</li> )}</ul>
             ) : null}
             <div className="aces-card-columns">
                 <div className="aces-card-column aces-red"><h5>Red</h5><AcesRuleList rules={card.red} /></div>

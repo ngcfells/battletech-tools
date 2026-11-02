@@ -298,6 +298,17 @@ describe("Aces Command cards (Aces pp.8, 21)", () => {
         expect( evaluateAcesStrategy( card, { D: false, C: true }, { objectiveComplete: false, enemyWithNoArmor: false } ).letter ).toBe( "C" );
         expect( evaluateAcesStrategy( card, { D: false, C: false, A: false }, { objectiveComplete: false, enemyWithNoArmor: false } ).letter ).toBeNull();
     });
+
+    it("keeps the current card on a 'Maintain this strategy' row, and reads the structure rule from the support text (#602)", () => {
+        const card = { ...acesSampleStarCaptainB, letter: "E", strategy: [ { letter: "", text: "Maintain this strategy", auto: "maintain" as const } ] };
+        const result = evaluateAcesStrategy( card, {}, { objectiveComplete: false, enemyWithNoArmor: false } );
+        expect( result.pending ).toBeNull();
+        expect( result.letter ).toBeNull();
+        expect( result.trace[result.trace.length - 1] ).toBe( "Maintain this strategy: card E stays." );
+        const textOnly = { ...acesSampleStarCaptainB, supportOnlyIfStructure: false };
+        expect( acesSupportCardAllowed( textOnly, 3, 3 ) ).toBe( false );
+        expect( acesSupportCardAllowed( { ...textOnly, supportOrders: "Spend up to 2 Battlefield Support cards." }, 3, 3 ) ).toBe( true );
+    });
 });
 
 describe("Aces rules switch: critical hits (Aces pp.4-6)", () => {

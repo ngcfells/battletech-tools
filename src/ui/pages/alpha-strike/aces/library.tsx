@@ -554,7 +554,7 @@ export default class AcesLibraryPage extends React.Component<IAcesLibraryPagePro
                     {this._text( "Card", [ "cardNumber" ], "2/10" )}
                 </div>
                 {this._lines( "Orders", [ "orders" ], parseAcesCommandOrderLine, formatAcesCommandOrderLine,
-                    "phase | printed text | behavior override (optional). Move First / Move Last orders are recognized, with their ranking in parentheses." )}
+                    "One line per order: phase | printed text | behavior or movement filter (optional), e.g. \"movement | ... add the following movement filter | 0. cover vs [highest] enemies\". A line with no phase applies to every phase; enter a multi-part order as one line per part. Move First / Move Last orders are recognized, with their ranking in parentheses." )}
                 <div className="aces-inline aces-top">
                     {this._lines( "Red list", [ "red" ], parseAcesPriorityLine, formatAcesPriorityLine )}
                     {this._lines( "Yellow list", [ "yellow" ], parseAcesPriorityLine, formatAcesPriorityLine )}
@@ -563,15 +563,14 @@ export default class AcesLibraryPage extends React.Component<IAcesLibraryPagePro
                 <fieldset className="fieldset">
                     <legend>Support (back of the card)</legend>
                     {this._text( "Support orders", [ "supportOrders" ] )}
-                    {this._check( "Only spend Battlefield Support when it would hit structure", [ "supportOnlyIfStructure" ] )}
                     {this._zone( "Emplacement Zone", [ "emplacementZoneRings" ], null )}
                     <div className="aces-inline aces-top">
                         {this._lines( "Emplacements", [ "emplacements" ], parseAcesPriorityLine, formatAcesPriorityLine )}
                         {this._lines( "Artillery", [ "artillery" ], parseAcesPriorityLine, formatAcesPriorityLine )}
                         {this._lines( "Battlefield Support", [ "bsp" ], parseAcesPriorityLine, formatAcesPriorityLine )}
                     </div>
-                    {this._lines( "Strategy decisions", [ "strategy" ], parseAcesStrategyLine, ( row ) => row.letter + " | " + row.text,
-                        "letter | condition, top row first. The app answers \"objective is complete\" and \"no armor\" rows itself." )}
+                    {this._lines( "Strategy decisions", [ "strategy" ], parseAcesStrategyLine, ( row ) => row.auto === "maintain" ? row.text : row.letter + " | " + row.text,
+                        "letter | condition, top row first. The app answers \"objective is complete\" and \"no armor\" rows itself. A card with no decisions: type \"Maintain this strategy\"." )}
                 </fieldset>
             </>
         );
