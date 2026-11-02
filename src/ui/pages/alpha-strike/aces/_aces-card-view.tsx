@@ -109,9 +109,9 @@ export const AcesCommandCardView = ( props: { card: IAcesCommandCard } ): JSX.El
                 <div className="aces-card-column aces-yellow"><h5>Yellow</h5><AcesRuleList rules={card.yellow} /></div>
                 <div className="aces-card-column aces-blue"><h5>Blue</h5><AcesRuleList rules={card.blue} /></div>
             </div>
-            {card.supportOrders || card.emplacements.length > 0 || card.artillery.length > 0 || card.bsp.length > 0 ? (
+            {card.supportOrders ? <p className="aces-condition"><AcesText text={card.supportOrders} /></p> : null}
+            {card.emplacements.length > 0 || card.artillery.length > 0 || card.bsp.length > 0 ? (
                 <div className="aces-card-columns">
-                    {card.supportOrders ? <p className="aces-condition">{card.supportOrders}</p> : null}
                     {card.emplacements.length > 0 ? (
                         <div className="aces-card-column"><h5>Emplacements {formatAcesZone( card.emplacementZoneRings, "" ) ? "(" + zoneText( card.emplacementZoneRings, "" ) + ")" : ""}</h5><AcesRuleList rules={card.emplacements} /></div>
                     ) : null}
