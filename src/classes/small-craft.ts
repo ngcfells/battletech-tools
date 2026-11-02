@@ -8,6 +8,7 @@ import { IAssignedQuirk, IQuirkTargets, QuirkUnitType } from "../data/quirk-inte
 import { getQuirkIssues, getQuirkTargets, quirkBayTarget } from "../data/quirk-registry";
 import { QuirkList } from "./quirk-list";
 import { DEFAULT_RULES_EDITION, getSelectableRulesEditionTag, isEarlierRulesEdition } from "../data/rules-editions";
+import { getHeatAmmoExplosion } from "../data/ammo-explosion";
 import { ADVANCED_RULES_LEVEL } from "../data/rules-level-options";
 import { aerospaceArmorTypes, getAerospaceArmorDates, getAerospaceArmorPointsPerTon, getAerospaceArmorTechBase, isStarLeagueVersion } from "../data/aerospace-armor-types";
 import { mechHeatSinkTypes } from "../data/mech-heat-sink-types";
@@ -175,6 +176,8 @@ export interface ISmallCraftInPlay {
     heat: number;
     firedWeapons: string[];
     pendingWeaponCriticals: ISmallCraftPendingWeaponCritical[];
+    /** uuids of ammunition bins lost to explosions. Shots fired are not tracked, so any other bin is full. */
+    explodedAmmo: string[];
 }
 
 const emptyArmor = (): ISmallCraftArmorAllocation => ({ nose: 0, left: 0, right: 0, aft: 0 });
@@ -182,7 +185,7 @@ const emptyQuarters = (): ISmallCraftQuarters => ({ firstClass: 0, secondClass: 
 const newInPlay = (): ISmallCraftInPlay => ({
     armorDamage: emptyArmor(), structureDamage: 0, avionics: 0, engine: 0, fcs: 0, sensors: 0, crewHits: 0, leftThruster: 0, rightThruster: 0,
     gear: false, lifeSupport: false, doorsDamaged: 0, cargoLostPercent: 0, fuelExploded: false, kfBoom: false, dockingCollar: "working", destroyedWeapons: [], heat: 0, firedWeapons: [],
-    pendingWeaponCriticals: [],
+    pendingWeaponCriticals: [], explodedAmmo: [],
 });
 
 export interface ISmallCraftEquipmentExport {
@@ -1028,10 +1031,14 @@ export default class SmallCraft implements IGameSettingsUnit {
 
     /** Shots in one full ton of a bin's ammunition, for the weapon it feeds; 0 with no such weapon aboard. */
     public getAmmoBinShotsPerTon(ammo: IEquipmentItem): number {
-        if (!ammo.isAmmo) return 0;
-        const weapons = this._equipmentList.filter((item) => !item.isAmmo && getCompatibleAmmo(item, ammo));
-        const weapon = weapons.find((item) => item.tag === ammo.feedsWeaponTag) ?? weapons[0];
+        const weapon = this._binWeapon(ammo);
         return weapon ? getWeaponShotsPerTon(weapon, ammo) : 0;
+    }
+
+    private _binWeapon(ammo: IEquipmentItem): IEquipmentItem | undefined {
+        if (!ammo.isAmmo) return undefined;
+        const weapons = this._equipmentList.filter((item) => !item.isAmmo && getCompatibleAmmo(item, ammo));
+        return weapons.find((item) => item.tag === ammo.feedsWeaponTag) ?? weapons[0];
     }
 
     /** A DropShip buys its ammunition by the whole ton, a bin of one or more tons in a bay (TM p.194). */
@@ -2088,7 +2095,20 @@ export default class SmallCraft implements IGameSettingsUnit {
             || play.fcs > 0 || play.sensors > 0 || play.crewHits > 0 || play.leftThruster > 0 || play.rightThruster > 0 || play.gear
             || play.lifeSupport || play.doorsDamaged > 0 || play.cargoLostPercent > 0 || play.fuelExploded
             || play.kfBoom || play.dockingCollar !== "working"
-            || play.destroyedWeapons.length > 0 || play.heat > 0;
+            || play.destroyedWeapons.length > 0 || play.heat > 0 || play.explodedAmmo.length > 0;
+    }
+
+    /** A failed ammunition explosion Avoid Roll in the Heat Phase: the damage goes to the SI, as for a fighter (TW p.161). */
+    public explodeAmmunition(): string[] {
+        if (this.isDropShip()) return ["Large Craft run at zero net heat: no ammunition explodes from heat (TW p.161)"];
+        const play = this._inPlay;
+        const explosion = getHeatAmmoExplosion(this._rulesEdition, "small-craft", this._equipmentList, (bin) => this._binWeapon(bin),
+            (bin) => play.explodedAmmo.includes(bin.uuid ?? "") ? 0 : this.getAmmoBinShots(bin));
+        if (!explosion) return ["No explosive ammunition left to explode"];
+        play.explodedAmmo.push(...explosion.spent.map((bin) => bin.uuid ?? ""));
+        play.structureDamage += explosion.damage;
+        play.crewHits = Math.min(6, play.crewHits + explosion.rules.pilotDamage);
+        return explosion.log;
     }
 
     /** Safe Thrust now: 1 less for each engine hit (TW p.240). */
@@ -2240,6 +2260,7 @@ export default class SmallCraft implements IGameSettingsUnit {
                 inPlay: {
                     ...this._inPlay, armorDamage: { ...this._inPlay.armorDamage }, destroyedWeapons: [...this._inPlay.destroyedWeapons],
                     firedWeapons: [...this._inPlay.firedWeapons], pendingWeaponCriticals: this._inPlay.pendingWeaponCriticals.map((entry) => ({ ...entry })),
+                    explodedAmmo: [...this._inPlay.explodedAmmo],
                 },
             }),
             version: 1,
@@ -2324,6 +2345,8 @@ export default class SmallCraft implements IGameSettingsUnit {
             const facing = SMALL_CRAFT_FACINGS.find((candidate) => candidate === entry.facing);
             if (facing) this._inPlay.pendingWeaponCriticals.push({ facing, chooser: entry.chooser === "attacking" ? "attacking" : "controlling" });
         }
+        const exploded = Array.isArray(inPlay.explodedAmmo) ? inPlay.explodedAmmo.slice(0, MAX_SMALL_CRAFT_EQUIPMENT) : [];
+        this._inPlay.explodedAmmo = exploded.filter((uuid): uuid is string => typeof uuid === "string" && this._equipmentList.some((item) => item.isAmmo && item.uuid === uuid));
     }
 
     /** Problems found in the last import: fields that were invalid and replaced, or entries that were dropped. */

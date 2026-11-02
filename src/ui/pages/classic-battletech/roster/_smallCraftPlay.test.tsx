@@ -60,3 +60,27 @@ describe("Small Craft play panel: weapon bays (TM pp.195, 199; user ruling 2026-
         expect(built.isWeaponDestroyed(large.uuid ?? "")).toBe(false);
     });
 });
+
+describe("Small Craft play panel: heat-triggered ammunition explosion (TW p.161)", () => {
+    const hot = (dropShip: boolean): SmallCraft => {
+        const built = craft();
+        if (dropShip) built.setCraftType("dropShip");
+        built.addEquipmentFromTag("srm-6", "nose");
+        expect(built.addEquipmentFromTag("ammo-srm-standard")).not.toBeNull();
+        built.setHeat(19);
+        return built;
+    };
+
+    it("explodes the ammunition on a failed Avoid Roll", () => {
+        const built = hot(false);
+        render(<SmallCraftPlayPanel craft={built} onChange={vi.fn()} />);
+        fireEvent.click(screen.getByRole("button", { name: "Failed Avoid Roll: Explode Ammunition" }));
+        expect(built.getInPlay().structureDamage).toBeGreaterThan(0);
+        expect(screen.getByText(/SRM.* explodes/)).toBeTruthy();
+    });
+
+    it("offers no explosion on a DropShip, which runs at zero net heat", () => {
+        render(<SmallCraftPlayPanel craft={hot(true)} onChange={vi.fn()} />);
+        expect(screen.queryByRole("button", { name: "Failed Avoid Roll: Explode Ammunition" })).toBeNull();
+    });
+});

@@ -46,6 +46,12 @@ export default class SmallCraftPlayPanel extends React.Component<ISmallCraftPlay
         this._changed();
     }
 
+    explodeAmmo = (): void => {
+        const lines = this.props.craft.explodeAmmunition();
+        this.setState({ log: [...lines, ...this.state.log].slice(0, 40) });
+        this._changed();
+    }
+
     // Clicking a pip marks damage up to it; clicking the last damaged pip clears it.
     toggleArmor = (diagramFacing: string, index: number): void => {
         const craft = this.props.craft;
@@ -232,6 +238,9 @@ export default class SmallCraftPlayPanel extends React.Component<ISmallCraftPlay
                             onChange={(e) => { craft.setHeat(+e.currentTarget.value || 0); this._changed(); }} />
                     </label>
                     <button className="btn btn-primary btn-sm" onClick={this.applyHeat}>End Turn: Apply Heat</button>
+                    {!craft.isDropShip() && heatTriggers.some((trigger) => trigger.name === "Ammunition explosion") ? (
+                        <>&nbsp;<button className="btn btn-danger btn-sm" onClick={this.explodeAmmo} disabled={craft.isDestroyed()}>Failed Avoid Roll: Explode Ammunition</button></>
+                    ) : null}
                     <p className="small-text">Tick the bays fired this turn below: a bay fires all its working weapons together (TM p. 199). A Small Craft tracks heat as a fighter does (TW p. 161).</p>
                 </fieldset>
 

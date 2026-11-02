@@ -165,6 +165,39 @@ describe("Fighter damage and critical hits (TW pp.238-240)", () => {
         expect(conventional.applyHeatPhase()).toEqual(["Conventional fighters do not track heat"]);
     });
 
+    it("explodes the most destructive ammunition on a failed heat Avoid Roll: the Slayer example (TW p.161)", () => {
+        const armed = (): AerospaceFighter => {
+            const fighter = slayer();
+            fighter.addEquipmentFromTag("autocannon-standard-c", "nose");
+            fighter.addEquipmentFromTag("machine-gun", "nose");
+            fighter.addEquipmentFromTag("ammo-machine-gun-standard");
+            fighter.addEquipmentFromTag("ammo-ac-10-standard");
+            return fighter;
+        };
+        const fighter = armed();
+        expect(fighter.getStructuralIntegrity()).toBe(8);
+        // 10 shots x 10 damage / 10 = 10 against SI 8, and the pilot takes 1.
+        const log = fighter.explodeAmmunition();
+        expect(log.join(" | ")).toContain("AC/10");
+        expect(log.join(" | ")).toContain("10 damage to the Structural Integrity");
+        expect(log.join(" | ")).toContain("The pilot takes 1 damage");
+        expect(fighter.getInPlay().structureDamage).toBe(10);
+        expect(fighter.getInPlay().pilotHits).toBe(1);
+        expect(fighter.isDestroyed()).toBe(true);
+        // The spent AC/10 bin stays spent through a save, so the machine gun ammunition goes next.
+        const saved = new AerospaceFighter(fighter.exportJSON());
+        expect(saved.getInPlay().explodedAmmo).toEqual(fighter.getInPlay().explodedAmmo);
+        expect(saved.explodeAmmunition().join(" | ")).toContain("MG - Standard Ammo explodes");
+        expect(saved.explodeAmmunition()).toEqual(["No explosive ammunition left to explode"]);
+
+        // With CASE the damage is divided by 20 instead: 5, and the Slayer survives.
+        const cased = armed();
+        expect(cased.addEquipmentFromTag("case")).not.toBeNull();
+        cased.explodeAmmunition();
+        expect(cased.getInPlay().structureDamage).toBe(5);
+        expect(cased.isDestroyed()).toBe(false);
+    });
+
     it("keeps pilot and damage through a save, joins a roster group, and survives a hostile save", () => {
         const fighter = slayer();
         fighter.getPilot().gunnery = 3;

@@ -100,3 +100,26 @@ export function getAmmoExplosion(
     const log = rules.pilotDamage > 0 ? [`The ${unitType === "mech" ? "MechWarrior" : "pilot"} takes ${rules.pilotDamage} damage (${rules.cite})`] : [];
     return { rules, baseDamage, damage, log };
 }
+
+/**
+ * A failed heat Avoid Roll's explosion (TW p.161): the bin with the most destructive ammunition per shot explodes,
+ * and the rest of that weapon's ammunition is destroyed with no more damage. `spent` is every bin lost. Gauss and
+ * other inert ammunition never explode. Undefined when no explosive ammunition is left. The unit applies the damage
+ * to its SI and the pilot damage to its pilot or crew.
+ */
+export function getHeatAmmoExplosion(
+    editionTag: string | undefined,
+    unitType: RulesEditionUnitType,
+    bins: IEquipmentItem[],
+    binWeapon: (bin: IEquipmentItem) => IEquipmentItem | undefined,
+    shotsLeft: (bin: IEquipmentItem) => number,
+    protection: AmmoExplosionProtection = "none",
+): (IAmmoExplosion & { bin: IEquipmentItem; spent: IEquipmentItem[] }) | undefined {
+    const live = bins.filter((bin) => bin.isAmmo && bin.explosive && shotsLeft(bin) > 0 && binWeapon(bin));
+    const bin = live.reduce<IEquipmentItem | undefined>((best, item) => !best || getAmmoDamagePerShot(binWeapon(item)!) > getAmmoDamagePerShot(binWeapon(best)!) ? item : best, undefined);
+    const explosion = bin && getAmmoExplosion(editionTag, unitType, [bin], binWeapon, shotsLeft, protection);
+    if (!explosion) return undefined;
+    const log = [`${bin!.name} explodes: ${explosion.damage} damage to the Structural Integrity (${explosion.rules.cite})`, ...explosion.log];
+    if (explosion.rules.pilotDamage > 0) log.push("Make a Consciousness Roll (TW p.41)");
+    return { ...explosion, log, bin: bin!, spent: live.filter((item) => binWeapon(item) === binWeapon(bin!)) };
+}

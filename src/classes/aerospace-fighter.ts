@@ -9,6 +9,7 @@ import { getQuirkIssues, getQuirkTargets } from "../data/quirk-registry";
 import { QuirkList } from "./quirk-list";
 import { getAlphaStrikeQuirks } from "../utils/quirk-effects";
 import { DEFAULT_RULES_EDITION, getSelectableRulesEditionTag } from "../data/rules-editions";
+import { AmmoExplosionProtection, getHeatAmmoExplosion } from "../data/ammo-explosion";
 import { aerospaceArmorTypes, getAerospaceArmorDates, getAerospaceArmorPointsPerTon, getAerospaceArmorTechBase, isStarLeagueVersion } from "../data/aerospace-armor-types";
 import { mechEngineOptions } from "../data/mech-engine-options";
 import { mechEngineTypes } from "../data/mech-engine-types";
@@ -158,6 +159,8 @@ export interface IFighterInPlay {
     firedWeapons: string[];
     /** Weapon critical hits waiting for a player to choose the weapon. */
     pendingWeaponCriticals: IFighterPendingWeaponCritical[];
+    /** uuids of ammunition bins lost to explosions. Shots fired are not tracked, so any other bin is full. */
+    explodedAmmo: string[];
 }
 
 export interface IFighterPendingWeaponCritical {
@@ -179,7 +182,7 @@ export const FIGHTER_HEAT_TRIGGERS: { name: string; levels: number[] }[] = [
 const newFighterInPlay = (): IFighterInPlay => ({
     armorDamage: { nose: 0, leftWing: 0, rightWing: 0, aft: 0 },
     structureDamage: 0, avionics: 0, engine: 0, fcs: 0, sensors: 0, gear: false, heatSinks: 0, pilotHits: 0, bombsLost: 0,
-    fuelExploded: false, storesDropped: false, destroyedWeapons: [], heat: 0, firedWeapons: [], pendingWeaponCriticals: [],
+    fuelExploded: false, storesDropped: false, destroyedWeapons: [], heat: 0, firedWeapons: [], pendingWeaponCriticals: [], explodedAmmo: [],
 });
 
 /** Critical hits that are counted in boxes, and how many boxes each has. */
@@ -1833,9 +1836,7 @@ export default class AerospaceFighter implements IGameSettingsUnit {
         }
         defensive += Math.min(amsAmmoBV, amsBV);
 
-        // Clan fighters are taken to have CASE; an Inner Sphere one needs to mount it (TM p.302).
-        const hasCASE = this.getChassisTechBase() === "clan" || this._equipmentList.some((item) => /(^|-)case(-|$)/.test(item.tag));
-        if (!hasCASE) {
+        if (this._ammoExplosionProtection() === "none") {
             const explosiveTypes = new Set(this._equipmentList.filter((item) => item.isAmmo && item.explosive).map((item) => item.tag)).size;
             const gaussWeapons = weapons.filter((item) => /gauss|(^|-)hag(-|$)/.test(item.tag)).length;
             const penalty = explosiveTypes * 15 + gaussWeapons;
@@ -2499,7 +2500,25 @@ export default class AerospaceFighter implements IGameSettingsUnit {
         const play = this._inPlay;
         return this.getCurrentArmor() < this.getTotalArmorPoints() || play.structureDamage > 0 || play.avionics > 0 || play.engine > 0
             || play.fcs > 0 || play.sensors > 0 || play.gear || play.heatSinks > 0 || play.pilotHits > 0 || play.fuelExploded
-            || play.destroyedWeapons.length > 0 || play.heat > 0;
+            || play.destroyedWeapons.length > 0 || play.heat > 0 || play.explodedAmmo.length > 0;
+    }
+
+    /** Clan fighters are taken to have CASE; an Inner Sphere one needs to mount it (TM p.302). */
+    private _ammoExplosionProtection(): AmmoExplosionProtection {
+        if (this._equipmentList.some((item) => item.tag === "case-ii" || item.tag === "clan-case-ii")) return "case-ii";
+        return this.getChassisTechBase() === "clan" || this._equipmentList.some((item) => item.tag === "case" || item.tag === "case-prototype") ? "case" : "none";
+    }
+
+    /** A failed ammunition explosion Avoid Roll in the Heat Phase: the damage goes to the SI (TW p.161). */
+    public explodeAmmunition(): string[] {
+        const play = this._inPlay;
+        const explosion = getHeatAmmoExplosion(this._rulesEdition, "fighter", this._equipmentList, (bin) => this._binWeapon(bin),
+            (bin) => play.explodedAmmo.includes(bin.uuid ?? "") ? 0 : this.getAmmoBinShots(bin), this._ammoExplosionProtection());
+        if (!explosion) return ["No explosive ammunition left to explode"];
+        play.explodedAmmo.push(...explosion.spent.map((bin) => bin.uuid ?? ""));
+        play.structureDamage += explosion.damage;
+        play.pilotHits = Math.min(6, play.pilotHits + explosion.rules.pilotDamage);
+        return explosion.log;
     }
 
     /** Safe Thrust now: less the external stores still carried and 2 per engine hit (TW pp.240, 247). */
@@ -2669,6 +2688,7 @@ export default class AerospaceFighter implements IGameSettingsUnit {
                 inPlay: {
                     ...this._inPlay, armorDamage: { ...this._inPlay.armorDamage }, destroyedWeapons: [...this._inPlay.destroyedWeapons],
                     firedWeapons: [...this._inPlay.firedWeapons], pendingWeaponCriticals: this._inPlay.pendingWeaponCriticals.map((entry) => ({ ...entry })),
+                    explodedAmmo: [...this._inPlay.explodedAmmo],
                 },
             }),
             uuid: this._uuid,
@@ -2742,6 +2762,8 @@ export default class AerospaceFighter implements IGameSettingsUnit {
             const arc = FIGHTER_ARCS.find((candidate) => candidate.tag === entry.arc);
             if (arc) this._inPlay.pendingWeaponCriticals.push({ arc: arc.tag, chooser: entry.chooser === "attacking" ? "attacking" : "controlling" });
         }
+        const exploded = Array.isArray(inPlay.explodedAmmo) ? inPlay.explodedAmmo.slice(0, MAX_FIGHTER_EQUIPMENT) : [];
+        this._inPlay.explodedAmmo = exploded.filter((uuid): uuid is string => typeof uuid === "string" && this._equipmentList.some((item) => item.isAmmo && item.uuid === uuid));
     }
 
     /** Problems found in the last import: fields that were invalid and replaced, or entries that were dropped. */

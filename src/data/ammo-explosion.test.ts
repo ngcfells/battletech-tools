@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getAmmoDamagePerShot, getAmmoExplosion, getAmmoExplosionRules } from "./ammo-explosion";
+import { getAmmoDamagePerShot, getAmmoExplosion, getAmmoExplosionRules, getHeatAmmoExplosion } from "./ammo-explosion";
 import { IEquipmentItem } from "./data-interfaces";
 
 const ac20 = { name: "AC/20", damage: 20 } as IEquipmentItem;
@@ -91,5 +91,25 @@ describe("ammunition explosion damage", () => {
         expect(explode("total-warfare", "mech", [bin(5)], ac20)?.log).toEqual(["The MechWarrior takes 2 damage (TW p.125, TO:AUE p.111)"]);
         expect(explode("total-warfare", "fighter", [bin(5)], ac20)?.log).toEqual(["The pilot takes 1 damage (TW p.161, TO:AUE p.111)"]);
         expect(explode("total-warfare", "vehicle", [bin(5)], ac20)?.log).toEqual([]);
+    });
+});
+
+describe("heat-triggered ammunition explosion (TW p.161)", () => {
+    const mg = { name: "Machine Gun", damage: 2 } as IEquipmentItem;
+    const fed = (bins: [IEquipmentItem, IEquipmentItem][]) => (item: IEquipmentItem) => bins.find(([candidate]) => candidate === item)?.[1];
+
+    it("explodes the most destructive ammunition per shot, and the rest of that weapon's ammunition goes with it", () => {
+        const mgBin = bin(200), ac10First = bin(10), ac10Second = bin(10);
+        const weapons = fed([[mgBin, mg], [ac10First, ac10], [ac10Second, ac10]]);
+        const explosion = getHeatAmmoExplosion("total-warfare", "fighter", [mgBin, ac10First, ac10Second], weapons, shots);
+        expect(explosion).toMatchObject({ bin: ac10First, damage: 10 });
+        expect(explosion?.spent).toEqual([ac10First, ac10Second]);
+    });
+
+    it("skips spent and inert bins, such as Gauss ammunition, and finds nothing when none is left", () => {
+        const gaussBin = bin(8, false), mgBin = bin(200), spentBin = bin(0);
+        const weapons = fed([[gaussBin, { damage: 15 } as IEquipmentItem], [mgBin, mg], [spentBin, ac10]]);
+        expect(getHeatAmmoExplosion("total-warfare", "fighter", [gaussBin, mgBin, spentBin], weapons, shots)?.bin).toBe(mgBin);
+        expect(getHeatAmmoExplosion("total-warfare", "fighter", [gaussBin, spentBin], weapons, shots)).toBeUndefined();
     });
 });

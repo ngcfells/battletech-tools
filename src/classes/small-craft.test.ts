@@ -269,6 +269,22 @@ describe("Small Craft in play (Total Warfare pp.237-240)", () => {
         expect(craft.getInPlay().heat).toBe(12);
         expect(log.join(" ")).toContain("Random movement");
     });
+
+    it("explodes its most destructive ammunition on a failed heat Avoid Roll, as a fighter does (TW p.161)", () => {
+        const craft = buildAquarius();
+        // SRM 6 (12 a shot) beats LRM 10: 15 shots x 12 / 10 = 18 against SI 8; both SRM bins are lost.
+        const log = craft.explodeAmmunition();
+        expect(log.join(" ")).toContain("SRM");
+        expect(craft.getInPlay().structureDamage).toBe(18);
+        expect(craft.getInPlay().crewHits).toBe(1);
+        expect(craft.getInPlay().explodedAmmo).toHaveLength(2);
+        expect(craft.isDestroyed()).toBe(true);
+        // A DropShip is Large Craft: zero net heat, so no heat explosion (TW p.161).
+        const dropShip = buildAquarius();
+        dropShip.setCraftType("dropShip");
+        expect(dropShip.explodeAmmunition()).toEqual(["Large Craft run at zero net heat: no ammunition explodes from heat (TW p.161)"]);
+        expect(dropShip.getInPlay().structureDamage).toBe(0);
+    });
 });
 
 describe("Small Craft fire full weapon bays (TM pp.195, 199; user ruling 2026-10-22)", () => {

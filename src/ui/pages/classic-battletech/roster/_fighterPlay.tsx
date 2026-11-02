@@ -42,6 +42,12 @@ export default class FighterPlayPanel extends React.Component<IFighterPlayPanelP
         this._changed();
     }
 
+    explodeAmmo = (): void => {
+        const lines = this.props.fighter.explodeAmmunition();
+        this.setState({ log: [...lines, ...this.state.log].slice(0, 40) });
+        this._changed();
+    }
+
     // Clicking a pip marks damage up to it; clicking the last damaged pip clears it.
     toggleArmor = (arc: FighterArc, index: number): void => {
         const fighter = this.props.fighter;
@@ -220,6 +226,9 @@ export default class FighterPlayPanel extends React.Component<IFighterPlayPanelP
                                 onChange={(e) => { fighter.setHeat(+e.currentTarget.value || 0); this._changed(); }} />
                         </label>
                         <button className="btn btn-primary btn-sm" onClick={this.applyHeat}>End Turn: Apply Heat</button>
+                        {heatTriggers.some((trigger) => trigger.name === "Ammunition explosion") ? (
+                            <>&nbsp;<button className="btn btn-danger btn-sm" onClick={this.explodeAmmo} disabled={fighter.isDestroyed()}>Failed Avoid Roll: Explode Ammunition</button></>
+                        ) : null}
                         <p className="small-text">Tick the weapons fired this turn below. Each engine hit adds 2 heat a turn (TW p. 240).</p>
                     </fieldset>
                 ) : <p className="small-text">Conventional fighters have no Heat Scale (TM p. 193).</p>}
