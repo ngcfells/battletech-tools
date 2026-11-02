@@ -1,4 +1,5 @@
 import { generateUUID } from "../utils/generateUUID";
+import { getAmmoDamagePerShot } from "../data/ammo-explosion";
 import { IGameSettingsUnit, UnitGameSettings } from "./unit-game-settings";
 import { chooseEra } from "../data/era-choice";
 import { findUnitCatalogRecord, copyCatalogRecord } from "../data/equipment-lookup";
@@ -1832,11 +1833,6 @@ export default class Building implements IGameSettingsUnit {
         else delete this._inPlay.ammoUsed[uuid];
     }
 
-    private static _damagePerShot(weapon: IEquipmentItem): number {
-        if (weapon.damageClusters && weapon.damagePerCluster) return weapon.damageClusters * weapon.damagePerCluster;
-        if (typeof weapon.damage === "number") return weapon.damage;
-        return weapon.damage?.short ?? 0;
-    }
 
     /**
      * The damage of all the explosive ammunition left in a hex: each bin's shots times the Damage Value of one
@@ -1846,7 +1842,7 @@ export default class Building implements IGameSettingsUnit {
         let total = 0;
         for (const bin of this._equipment.filter((mount) => mount.hex === hex && mount.item.isAmmo && mount.item.explosive)) {
             const weapon = this._binWeapon(bin);
-            if (weapon) total += this.getAmmoShots(bin.item.uuid || "") * Building._damagePerShot(weapon);
+            if (weapon) total += this.getAmmoShots(bin.item.uuid || "") * getAmmoDamagePerShot(weapon);
         }
         return total;
     }

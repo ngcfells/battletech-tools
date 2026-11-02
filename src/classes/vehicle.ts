@@ -1,4 +1,5 @@
 import { generateUUID } from "../utils/generateUUID";
+import { getAmmoDamagePerShot } from "../data/ammo-explosion";
 import { IGameSettingsUnit, UnitGameSettings } from "./unit-game-settings";
 import { chooseEra } from "../data/era-choice";
 import { copyCatalogRecord, findUnitCatalogRecord, getUnitCatalogRecords } from "../data/equipment-lookup";
@@ -3999,11 +4000,6 @@ export default class Vehicle implements IGameSettingsUnit {
         return this._equipmentList.some((item) => ["case", "case-ii", "clan-case-ii"].some((tag) => matchesTag(item, tag)));
     }
 
-    private static _damagePerShot(weapon: IEquipmentItem): number {
-        if (weapon.damageClusters && weapon.damagePerCluster) return weapon.damageClusters * weapon.damagePerCluster;
-        if (typeof weapon.damage === "number") return weapon.damage;
-        return weapon.damage?.short ?? 0;
-    }
 
     /**
      * The damage of all explosive ammunition carried: each bin's shots left (a full bin's shots when not
@@ -4090,7 +4086,7 @@ export default class Vehicle implements IGameSettingsUnit {
                 total += getBattleArmorScaleExplosionDamage(Math.max(0, shots) * (ammo.kgPerShot ?? 0) / 1000);
                 continue;
             }
-            total += Math.max(0, shots) * Vehicle._damagePerShot(weapon);
+            total += Math.max(0, shots) * getAmmoDamagePerShot(weapon);
         }
         // Extended fuel tanks are treated as ammo bins: 40 points per ton of tank (TM p.244).
         for (const tank of this._equipmentList.filter((item) => item.variableFormula === "extended-fuel-tank")) total += 40 * tank.weight;
@@ -4508,7 +4504,7 @@ export default class Vehicle implements IGameSettingsUnit {
                 let damage = 0;
                 for (const ammo of bins.filter((item) => item.isAmmo && item.explosive)) {
                     const weapon = this._binWeapon(ammo);
-                    if (weapon) damage += Math.max(0, ammo.currentAmmo ?? this._fullBinShots(ammo)) * Vehicle._damagePerShot(weapon);
+                    if (weapon) damage += Math.max(0, ammo.currentAmmo ?? this._fullBinShots(ammo)) * getAmmoDamagePerShot(weapon);
                     ammo.currentAmmo = 0;
                 }
                 for (const tank of bins.filter((item) => item.variableFormula === "extended-fuel-tank")) damage += 40 * tank.weight;
