@@ -64,6 +64,11 @@ body {
 
 .icon-links {
   display: flex;
+  // Wrap onto more rows on narrow screens instead of running past the panel. Wide screens keep one row:
+  // wrapping stops the links shrinking, which would split the Classic home's ten links over two rows.
+  @media (max-width: 1199.98px) {
+    flex-wrap: wrap;
+  }
 
   a {
     margin: 1rem;

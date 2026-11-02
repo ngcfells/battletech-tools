@@ -394,37 +394,39 @@ export default class AcesGamePage extends React.Component<IAcesGamePageProps, IA
                             <input type="text" placeholder="Name on your Command card" value={game.commandDeck} onChange={( e ) => { const value = e.currentTarget.value; this._update( ( g ) => { g.commandDeck = value; } ); }} />
                         </label>
                     </div>
-                    <table className="table tighter-padding">
-                        <thead>
-                            <tr><th>Deck</th><th>Copies owned</th><th>Units using it</th><th>Cards each</th></tr>
-                        </thead>
-                        <tbody>
-                            {acesDecks.filter( ( deck ) => deck.product === "Aces" || game.hasScouringSands ).map( ( deck ) => {
-                                const units = game.getUnitsUsingDeck( deck.id );
-                                const cards = units.length > 0 ? game.getUnitState( units[0].uuid ).cardsInDeck : null;
-                                return (
-                                    <tr key={deck.id}>
-                                        <td>{deck.name}</td>
-                                        <td>
-                                            <input
-                                                type="number"
-                                                className="aces-number"
-                                                aria-label={`${deck.name} decks owned`}
-                                                min={0}
-                                                value={game.getDecksOwned( deck.id )}
-                                                onChange={( e ) => {
-                                                    const value = Math.max( 0, +e.currentTarget.value || 0 );
-                                                    this._update( ( g ) => { g.decksOwned[deck.id] = value; g.dealDeck( deck.id ); } );
-                                                }}
-                                            />
-                                        </td>
-                                        <td>{units.length}</td>
-                                        <td>{cards === null ? "-" : cards}</td>
-                                    </tr>
-                                );
-                            } )}
-                        </tbody>
-                    </table>
+                    <div className="table-responsive">
+                        <table className="table tighter-padding">
+                            <thead>
+                                <tr><th>Deck</th><th>Copies owned</th><th>Units using it</th><th>Cards each</th></tr>
+                            </thead>
+                            <tbody>
+                                {acesDecks.filter( ( deck ) => deck.product === "Aces" || game.hasScouringSands ).map( ( deck ) => {
+                                    const units = game.getUnitsUsingDeck( deck.id );
+                                    const cards = units.length > 0 ? game.getUnitState( units[0].uuid ).cardsInDeck : null;
+                                    return (
+                                        <tr key={deck.id}>
+                                            <td>{deck.name}</td>
+                                            <td>
+                                                <input
+                                                    type="number"
+                                                    className="aces-number"
+                                                    aria-label={`${deck.name} decks owned`}
+                                                    min={0}
+                                                    value={game.getDecksOwned( deck.id )}
+                                                    onChange={( e ) => {
+                                                        const value = Math.max( 0, +e.currentTarget.value || 0 );
+                                                        this._update( ( g ) => { g.decksOwned[deck.id] = value; g.dealDeck( deck.id ); } );
+                                                    }}
+                                                />
+                                            </td>
+                                            <td>{units.length}</td>
+                                            <td>{cards === null ? "-" : cards}</td>
+                                        </tr>
+                                    );
+                                } )}
+                            </tbody>
+                        </table>
+                    </div>
                 </fieldset>
 
                 <fieldset className="fieldset">
@@ -864,104 +866,106 @@ export default class AcesGamePage extends React.Component<IAcesGamePageProps, IA
         if( phase === "combat" ) units = [ ...game.getCombatQueue(), ...units.filter( ( unit ) => game.getCombatQueue().indexOf( unit ) === -1 ) ];
 
         return (
-            <table className="table tighter-padding">
-                <thead>
-                    <tr>
-                        <th>Unit</th>
-                        <th>Deck</th>
-                        {phase === "initiative" || phase === "movement" ? <th>Move priority</th> : null}
-                        {phase === "initiative" || phase === "movement" ? <th>Token</th> : null}
-                        {phase === "combat" ? <th>Combat priority</th> : null}
-                        <th>Orders</th>
-                        <th><span className="visually-hidden">Actions</span></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {units.map( ( unit ) => {
-                        const state = game.getUnitState( unit.uuid );
-                        const wrecked = unit.isWrecked();
-                        const deck = state.deckId ? getAcesDeck( state.deckId ) : null;
-                        return (
-                            <tr key={unit.uuid} className={wrecked ? "aces-muted" : ""}>
-                                <td>
-                                    {unitName( unit )}
-                                    <br /><span className="aces-muted">{unit.type} {unit.role ? "- " + unit.role : ""} - {unit.currentPoints || unit.basePoints} PV{wrecked ? " - destroyed" : ""}</span>
-                                </td>
-                                <td>
-                                    <select aria-label={`${unitName( unit )} deck`} value={state.deckId} onChange={( e ) => { const value = e.currentTarget.value as TAcesDeckId | ""; this._update( ( g ) => g.setUnitDeck( unit.uuid, value ) ); }}>
-                                        <option value="">None</option>
-                                        {acesDecks.filter( ( entry ) => entry.product === "Aces" || game.hasScouringSands || entry.id === state.deckId ).map( ( entry ) => (
-                                            <option key={entry.id} value={entry.id}>{entry.name}</option>
-                                        ) )}
-                                    </select>
-                                    {deck ? <><br /><span className="aces-muted">Card {Math.min( state.cardsCycled + 1, state.cardsInDeck )} of {state.cardsInDeck}</span></> : null}
-                                </td>
-                                {phase === "initiative" || phase === "movement" ? (
+            <div className="table-responsive">
+                <table className="table tighter-padding">
+                    <thead>
+                        <tr>
+                            <th>Unit</th>
+                            <th>Deck</th>
+                            {phase === "initiative" || phase === "movement" ? <th>Move priority</th> : null}
+                            {phase === "initiative" || phase === "movement" ? <th>Token</th> : null}
+                            {phase === "combat" ? <th>Combat priority</th> : null}
+                            <th>Orders</th>
+                            <th><span className="visually-hidden">Actions</span></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {units.map( ( unit ) => {
+                            const state = game.getUnitState( unit.uuid );
+                            const wrecked = unit.isWrecked();
+                            const deck = state.deckId ? getAcesDeck( state.deckId ) : null;
+                            return (
+                                <tr key={unit.uuid} className={wrecked ? "aces-muted" : ""}>
                                     <td>
-                                        <input type="number" className="aces-number" aria-label={`${unitName( unit )} movement priority`} disabled={state.cardIds.length > 0} title={state.cardIds.length > 0 ? "Taken from the unit's top card" : undefined} value={state.movePriority === null ? "" : state.movePriority} onChange={( e ) => { const value = this._number( e.currentTarget.value ); this._update( () => { state.movePriority = value; } ); }} />
+                                        {unitName( unit )}
+                                        <br /><span className="aces-muted">{unit.type} {unit.role ? "- " + unit.role : ""} - {unit.currentPoints || unit.basePoints} PV{wrecked ? " - destroyed" : ""}</span>
                                     </td>
-                                ) : null}
-                                {phase === "initiative" || phase === "movement" ? (
                                     <td>
-                                        <select aria-label={`${unitName( unit )} priority token`} value={state.token || ""} onChange={( e ) => { const value = ( e.currentTarget.value || null ) as TAcesPriorityToken | null; this._update( ( g ) => { g.assignToken( unit.uuid, value ); } ); }}>
+                                        <select aria-label={`${unitName( unit )} deck`} value={state.deckId} onChange={( e ) => { const value = e.currentTarget.value as TAcesDeckId | ""; this._update( ( g ) => g.setUnitDeck( unit.uuid, value ) ); }}>
                                             <option value="">None</option>
-                                            <option value="move-first">Move First</option>
-                                            <option value="move-last">Move Last</option>
+                                            {acesDecks.filter( ( entry ) => entry.product === "Aces" || game.hasScouringSands || entry.id === state.deckId ).map( ( entry ) => (
+                                                <option key={entry.id} value={entry.id}>{entry.name}</option>
+                                            ) )}
                                         </select>
+                                        {deck ? <><br /><span className="aces-muted">Card {Math.min( state.cardsCycled + 1, state.cardsInDeck )} of {state.cardsInDeck}</span></> : null}
                                     </td>
-                                ) : null}
-                                {phase === "combat" ? (
+                                    {phase === "initiative" || phase === "movement" ? (
+                                        <td>
+                                            <input type="number" className="aces-number" aria-label={`${unitName( unit )} movement priority`} disabled={state.cardIds.length > 0} title={state.cardIds.length > 0 ? "Taken from the unit's top card" : undefined} value={state.movePriority === null ? "" : state.movePriority} onChange={( e ) => { const value = this._number( e.currentTarget.value ); this._update( () => { state.movePriority = value; } ); }} />
+                                        </td>
+                                    ) : null}
+                                    {phase === "initiative" || phase === "movement" ? (
+                                        <td>
+                                            <select aria-label={`${unitName( unit )} priority token`} value={state.token || ""} onChange={( e ) => { const value = ( e.currentTarget.value || null ) as TAcesPriorityToken | null; this._update( ( g ) => { g.assignToken( unit.uuid, value ); } ); }}>
+                                                <option value="">None</option>
+                                                <option value="move-first">Move First</option>
+                                                <option value="move-last">Move Last</option>
+                                            </select>
+                                        </td>
+                                    ) : null}
+                                    {phase === "combat" ? (
+                                        <td>
+                                            <input type="number" className="aces-number" aria-label={`${unitName( unit )} combat priority`} disabled={state.cardIds.length > 0} title={state.cardIds.length > 0 ? "Taken from the unit's top card" : undefined} value={state.combatPriority === null ? "" : state.combatPriority} onChange={( e ) => { const value = this._number( e.currentTarget.value ); this._update( () => { state.combatPriority = value; } ); }} />
+                                        </td>
+                                    ) : null}
                                     <td>
-                                        <input type="number" className="aces-number" aria-label={`${unitName( unit )} combat priority`} disabled={state.cardIds.length > 0} title={state.cardIds.length > 0 ? "Taken from the unit's top card" : undefined} value={state.combatPriority === null ? "" : state.combatPriority} onChange={( e ) => { const value = this._number( e.currentTarget.value ); this._update( () => { state.combatPriority = value; } ); }} />
+                                        <label title="Forced Withdrawal (Aces p.16)"><input type="checkbox" checked={state.forcedWithdrawal} onChange={( e ) => { const value = e.currentTarget.checked; this._update( () => { state.forcedWithdrawal = value; if( value ) state.token = null; } ); }} /> FW</label>{" "}
+                                        <label title="Fleeing"><input type="checkbox" checked={state.fleeing} onChange={( e ) => { const value = e.currentTarget.checked; this._update( () => { state.fleeing = value; if( value ) state.token = null; } ); }} /> Fleeing</label>{" "}
+                                        <label title="Can't move this turn (e.g. Crew Stunned)"><input type="checkbox" checked={state.cannotMove} onChange={( e ) => { const value = e.currentTarget.checked; this._update( () => { state.cannotMove = value; if( value ) state.token = null; } ); }} /> Can't move</label>{" "}
+                                        <label title="Emplacements don't use Aces decks (Aces p.31)"><input type="checkbox" checked={state.isEmplacement} onChange={( e ) => { const value = e.currentTarget.checked; this._update( ( g ) => { state.isEmplacement = value; g.assignDecks(); } ); }} /> Emplacement</label>
+                                        {this._renderTransport( unit, phase )}
                                     </td>
-                                ) : null}
-                                <td>
-                                    <label title="Forced Withdrawal (Aces p.16)"><input type="checkbox" checked={state.forcedWithdrawal} onChange={( e ) => { const value = e.currentTarget.checked; this._update( () => { state.forcedWithdrawal = value; if( value ) state.token = null; } ); }} /> FW</label>{" "}
-                                    <label title="Fleeing"><input type="checkbox" checked={state.fleeing} onChange={( e ) => { const value = e.currentTarget.checked; this._update( () => { state.fleeing = value; if( value ) state.token = null; } ); }} /> Fleeing</label>{" "}
-                                    <label title="Can't move this turn (e.g. Crew Stunned)"><input type="checkbox" checked={state.cannotMove} onChange={( e ) => { const value = e.currentTarget.checked; this._update( () => { state.cannotMove = value; if( value ) state.token = null; } ); }} /> Can't move</label>{" "}
-                                    <label title="Emplacements don't use Aces decks (Aces p.31)"><input type="checkbox" checked={state.isEmplacement} onChange={( e ) => { const value = e.currentTarget.checked; this._update( ( g ) => { state.isEmplacement = value; g.assignDecks(); } ); }} /> Emplacement</label>
-                                    {this._renderTransport( unit, phase )}
-                                </td>
-                                <td>
-                                    {( phase === "movement" && !state.moved ) || ( phase === "combat" && !state.attacked ) ? (
-                                        !wrecked && !state.isEmplacement && !state.transportedBy ? (
-                                            <><button className="btn btn-secondary btn-sm" onClick={() => this.setState( { readerUUID: unit.uuid } )}>Read card</button>{" "}</>
-                                        ) : null
-                                    ) : null}
-                                    {( phase === "combat" || phase === "end" ) && !wrecked ? (
-                                        <>
-                                            <button className="btn btn-secondary btn-sm" onClick={() => this._rollCritical( unit )}>Critical hit</button>{" "}
-                                            {game.ruleset === "aces" && ( unit.type.toUpperCase() === "CV" || unit.type.toUpperCase() === "SV" ) ? (
-                                                <><button className="btn btn-secondary btn-sm" onClick={() => this._rollMotive( unit )}>Motive roll</button>{" "}</>
-                                            ) : null}
-                                        </>
-                                    ) : null}
-                                    {phase === "movement" && !wrecked && !state.isEmplacement && !state.cannotMove ? (
-                                        <button className={"btn btn-sm " + ( state.moved ? "btn-secondary" : "btn-primary" )} onClick={() => this._update( ( g ) => g.markMoved( unit.uuid, !state.moved ) )}>
-                                            {state.moved ? "Undo move" : "Moved"}
-                                        </button>
-                                    ) : null}
-                                    {phase === "combat" && !wrecked ? (
-                                        state.attacked ? (
-                                            <span className="aces-muted">Attacked</span>
-                                        ) : (
-                                            <button className="btn btn-primary btn-sm" onClick={() => this._update( ( g ) => {
-                                                if( state.deckId && !state.isEmplacement ) {
-                                                    g.cycleCard( unit.uuid );
-                                                } else {
-                                                    state.attacked = true;
-                                                }
-                                            } )}>
-                                                {state.deckId && !state.isEmplacement ? "Attacked, cycle card" : "Attacked"}
+                                    <td>
+                                        {( phase === "movement" && !state.moved ) || ( phase === "combat" && !state.attacked ) ? (
+                                            !wrecked && !state.isEmplacement && !state.transportedBy ? (
+                                                <><button className="btn btn-secondary btn-sm" onClick={() => this.setState( { readerUUID: unit.uuid } )}>Read card</button>{" "}</>
+                                            ) : null
+                                        ) : null}
+                                        {( phase === "combat" || phase === "end" ) && !wrecked ? (
+                                            <>
+                                                <button className="btn btn-secondary btn-sm" onClick={() => this._rollCritical( unit )}>Critical hit</button>{" "}
+                                                {game.ruleset === "aces" && ( unit.type.toUpperCase() === "CV" || unit.type.toUpperCase() === "SV" ) ? (
+                                                    <><button className="btn btn-secondary btn-sm" onClick={() => this._rollMotive( unit )}>Motive roll</button>{" "}</>
+                                                ) : null}
+                                            </>
+                                        ) : null}
+                                        {phase === "movement" && !wrecked && !state.isEmplacement && !state.cannotMove ? (
+                                            <button className={"btn btn-sm " + ( state.moved ? "btn-secondary" : "btn-primary" )} onClick={() => this._update( ( g ) => g.markMoved( unit.uuid, !state.moved ) )}>
+                                                {state.moved ? "Undo move" : "Moved"}
                                             </button>
-                                        )
-                                    ) : null}
-                                </td>
-                            </tr>
-                        );
-                    } )}
-                </tbody>
-            </table>
+                                        ) : null}
+                                        {phase === "combat" && !wrecked ? (
+                                            state.attacked ? (
+                                                <span className="aces-muted">Attacked</span>
+                                            ) : (
+                                                <button className="btn btn-primary btn-sm" onClick={() => this._update( ( g ) => {
+                                                    if( state.deckId && !state.isEmplacement ) {
+                                                        g.cycleCard( unit.uuid );
+                                                    } else {
+                                                        state.attacked = true;
+                                                    }
+                                                } )}>
+                                                    {state.deckId && !state.isEmplacement ? "Attacked, cycle card" : "Attacked"}
+                                                </button>
+                                            )
+                                        ) : null}
+                                    </td>
+                                </tr>
+                            );
+                        } )}
+                    </tbody>
+                </table>
+            </div>
         );
     }
 
