@@ -167,6 +167,29 @@ export default class Home extends React.Component<IHomeProps, IHomeState> {
                   <ul className="news">
                   <li>
                   <h3>
+                      <strong>November 2nd, 2026</strong> - Ammunition explosions by edition, Aces fixes, and equipment from the Solaris7 forum
+                    </h3>
+                    <h4>Author - NGCFells</h4>
+                      <ul>
+                        <li>Ammunition explosions now follow the edition you play, for 'Mechs, vehicles, buildings, fighters and small craft: a critical hit rolled on an ammunition bin explodes it, and CASE and CASE II protect as that edition says. Fighters and small craft can also lose ammunition to a failed heat Avoid Roll. ProtoMechs have no ammunition explosion rule: their critical hits never reach ammunition.</li>
+                        <li>DropShips in play run at zero net heat, with no Heat Scale or heat Avoid Rolls.</li>
+                        <li>Aces: the Initiative roller adds the Command card's Initiative order; printed cards put Support orders on their own line above the Emplacements columns; on phones, icon links wrap and tracker tables scroll sideways.</li>
+                        <li>New custom equipment from the Solaris7 forum, each record naming its author and thread, with anything the posts didn't give taken from the nearest canon item. At Custom Homebrew: Captain's Inner Sphere Heavy Laser, the Light Autocannon/10 and /20, the ER Improved Narc Launcher, the Inner Sphere Light Chemical Laser, the Rotary Small Chemical Laser, Small and Medium Laser Arrays, the 'Mech Periscope, Chaff Pod 2.0 and the Modular C3 (sized by how many units it links).</li>
+                        <li>At Munchkin, for games that want them: Nightstalker666's and Captain's railguns (Captain's takes one whole side of a 'Mech, side torso and arm), nanotube armor, and Prince's Nuclear Pulse Cannon. Thanks to Captain, Nightstalker666, Prince, Thunder, Lycaon and the late Lonely Coyote.</li>
+                        <li>The weekly Master Unit List update.</li>
+                      </ul>
+                  </li>
+                  <li>
+                  <h3>
+                      <strong>November 1st, 2026</strong> - Aces Command card form fix
+                    </h3>
+                    <h4>Author - NGCFells</h4>
+                      <ul>
+                        <li>Aces: the Command card form keeps movement filter orders, orders with no phase, and Maintain this strategy.</li>
+                      </ul>
+                  </li>
+                  <li>
+                  <h3>
                       <strong>October 29th, 2026</strong> - A sharper Aces card reader, and 127 more bundled 'Mechs
                     </h3>
                     <h4>Author - NGCFells</h4>
