@@ -61,8 +61,9 @@ const FIXED_SLOTS = new Set(["Shoulder", "Upper Arm Actuator", "Lower Arm Actuat
     "Lower Leg Actuator", "Foot Actuator", "Life Support", "Sensors", "Cockpit", "Fusion Engine", "Fuel Cell Engine", "Gyro", "-Empty-"]);
 const ARMOR_SLOT = /Ferro|Stealth|Reactive|Reflective|Lamellor|Ballistic-Reinforced|Impact-Resistant|Anti-Penetrative|Heat-Dissipating|Hardened/i;
 const STRUCTURE_SLOT = /Endo|Composite/i;
-// Heat sinks, not the Radical Heat Sink System (equipment, IO:AE p.185).
-const HEAT_SINK_SLOT = /^(?!Radical).*(HeatSink|Heat Sink)/i;
+// Heat sinks, not the Radical Heat Sink System (equipment, IO:AE p.185) or prototype doubles (equipment beside single
+// heat sinks, IO:AE p.65).
+const HEAT_SINK_SLOT = /^(?!Radical|.*Prototype).*(HeatSink|Heat Sink)/i;
 // Systems with a slot in several locations: SSW's <multislot name> (one location per slot).
 const MULTISLOTS: [RegExp, string][] = [
     [/^Environmental Sealing/i, "Environmental Sealing"], [/^Tracks$/i, "Tracks"], [/Blue ?Shield/i, "Blue Shield PFD"],
@@ -239,7 +240,6 @@ export function convertMtfToSSW(file: IMtfFile): { xml: string; issues: string[]
                 index++; continue;
             }
             if (HEAT_SINK_SLOT.test(name)) {
-                if (/prototype/i.test(name)) issues.push(`'${name}' is not converted yet`);
                 // Each sink lists its own slots (a mixed-tech 'Mech can carry both IS and Clan doubles).
                 const per = /double/i.test(name) ? (/^(CL|Clan)/i.test(name) ? slotsOf(2) : /^IS/i.test(name) ? slotsOf(3) : sinkSlots) : /laser/i.test(name) ? slotsOf(2) : 1;
                 let run = 1;
@@ -336,6 +336,8 @@ export function convertMtfToSSW(file: IMtfFile): { xml: string; issues: string[]
         items.push({ record: round, name: ammo.name, rear: ammo.rear, pod: ammo.pod, tons: 0, half: line.half, places: [{ loc: ammo.loc, index: ammo.index, count: 1 }] });
     }
 
+    // MegaMek's "heat sinks" line counts the prototype doubles too: they are equipment here.
+    const sinkCount = Math.max(0, +(sinks?.[1] ?? 0) - items.filter((item) => (item.record.heatDissipation ?? 0) > 0).length);
     const tech = (record: IEquipmentItem) => record.techBase === "clan" || /^clan|-clan$|clan_/.test(record.tag) ? "(CL) " : "(IS) ";
     const equipment = items.map((item) => {
         const name = (item.rear ? "(R) " : "") + tech(item.record) + item.record.tag + (item.half ? " (1/2)" : "");
@@ -371,11 +373,11 @@ export function convertMtfToSSW(file: IMtfFile): { xml: string; issues: string[]
 <cockpit><type${ejection}${value(file, "cockpit") === "Command Console" ? ` commandconsole="TRUE"` : ""}>${xml(sswCockpit)}</type></cockpit>
 ${myomer && !/^standard$/i.test(myomer) ? `<enhancement techbase="${clan ? 1 : 0}"><type>${/industrial/i.test(myomer) ? "Industrial TSM" : "TSM"}</type>${myomerSlots.join("")}</enhancement>` : ""}
 <armor techbase="${armor ? (armor[2] === "Clan" ? 1 : 0) : 2}"><type>${xml(armorName)}</type>${armorValues.join("")}${armorSlots.join("")}</armor>
-${/omnime(k|ch)/i.test(config) ? `<omnibase heatsinks="${Math.max(0, +(sinks?.[1] ?? 0) - podSinks)}" jumpjets="${Math.max(0, (jetType === "Mech UMU" ? jetSlotsAt.length : jumpMP) - podJets)}" />` : ""}
+${/omnime(k|ch)/i.test(config) ? `<omnibase heatsinks="${Math.max(0, sinkCount - podSinks)}" jumpjets="${Math.max(0, (jetType === "Mech UMU" ? jetSlotsAt.length : jumpMP) - podJets)}" />` : ""}
 <baseloadout${fcs}>
 ${quad ? "" : `<actuators lla="${actuators.la.lla ? "TRUE" : "FALSE"}" lh="${actuators.la.lh ? "TRUE" : "FALSE"}" rla="${actuators.ra.lla ? "TRUE" : "FALSE"}" rh="${actuators.ra.lh ? "TRUE" : "FALSE"}"/>`}
 <clancase>${mixed && faction === "clan" ? "TRUE" : "FALSE"}</clancase>
-<heatsinks number="${sinks?.[1] ?? 0}" techbase="${sinkClan ? 1 : 0}"><type>${sinkType ?? ""}</type>${sinkSlotsAt.join("")}</heatsinks>
+<heatsinks number="${sinkCount}" techbase="${sinkClan ? 1 : 0}"><type>${sinkType ?? ""}</type>${sinkSlotsAt.join("")}</heatsinks>
 ${jetSlotsAt.length > 0 || jumpMP > 0 ? `<jumpjets number="${jetType === "Mech UMU" ? jetSlotsAt.length : jumpMP}"><type>${jetType || "Standard Jump Jet"}</type>${jetSlotsAt.join("")}</jumpjets>` : ""}
 ${equipment.join("\n")}
 ${Object.entries(multislots).map(([name, list]) => `<multislot name="${name}">${list.join("")}</multislot>`).join("\n")}

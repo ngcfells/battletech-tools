@@ -216,6 +216,22 @@ describe("MegaMek 'Mech import", () => {
         expect(mech!.getHeatSinks()).toBe(11);
     });
 
+    // Prototype double heat sinks go beside single heat sinks, never in the engine (IO:AE p.65). MegaMek counts them
+    // in its "heat sinks" line: the Black Knight BL-6-KNT Ian lists 15 Single, three of them prototype doubles.
+    it("reads prototype double heat sinks as equipment beside the single heat sinks", () => {
+        const prototype = brawler.replace("heat sinks:11 Double", "heat sinks:12 Single")
+            .replace(location("Left Torso", ...fill(3, "ISDoubleHeatSink"), "Medium Laser").join("\n"),
+                location("Left Torso", ...fill(6, "ISDoubleHeatSinkPrototype"), "Medium Laser").join("\n"));
+        const { mech, issues } = importBattleMechMtf(prototype);
+        expect(issues).toEqual([]);
+        expect(mech!.getHeatSinksType()).toBe("single");
+        expect(mech!.getHeatSinks()).toBe(10);
+        expect(mech!.getInstalledEquipment().filter((item) => item.tag === "prototype-double-heat-sink")).toHaveLength(2);
+        expect(mech!.getHeatDissipation()).toBe(14);
+        expect(mech!.getHeatSinksWeight()).toBe(0);
+        expect(mech!.getChassisEquipmentViolations()).toEqual([]);
+    });
+
     // "For Superheavy 'Mechs, use the Superheavy Engine Type BV Modifier Table in place of the standard Battle Value
     // modifiers" (IO:AE pp.187-188): Inner Sphere XL 0.75 and Light 0.825, where a 'Mech takes 0.5 and 0.75.
     it.each([["XL", 0.75], ["Light", 0.825]])("rates a superheavy 'Mech's %s engine from the superheavy table (IO:AE p.188)", (engine, modifier) => {

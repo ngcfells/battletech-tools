@@ -1773,7 +1773,8 @@ export default class AerospaceFighter implements IGameSettingsUnit {
         const text = `${item.tag} ${item.name}`.toLowerCase();
         const rotary = /rotary|\brac\b/.test(text);
         const ultra = !rotary && /ultra|\buac\b/.test(text);
-        const heat = rotary || ultra ? item.heat ?? 0 : item.heatAero ?? item.heat ?? 0;
+        // Prototype lasers count their IO:AE p.189 heat ("for heat efficiency calculations").
+        const heat = item.battleValueHeat ?? (rotary || ultra ? item.heat ?? 0 : item.heatAero ?? item.heat ?? 0);
         if (item.isOneShot) return heat * 0.25;
         if (rotary) return heat * 6;
         if (ultra) return heat * 2;

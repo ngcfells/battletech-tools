@@ -358,6 +358,8 @@ export interface IEquipmentItem extends ICatalogStanding {
     builtTechBase?: "is" | "clan";
     battleValueDefensive?: boolean;
     battleValueOneShot?: number;
+    /** Heat counted for Battle Value heat efficiency in place of its heat (IO:AE p.189: Prototype ER Large Laser 13). */
+    battleValueHeat?: number;
     heat: number;
     heatAero: number;
     weight: number;

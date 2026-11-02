@@ -94,10 +94,23 @@ describe("Double Heat Sinks (Freezers) beside single heat sinks (IO:AE pp.65, 96
         expect(unit.getJumpJetType().tag).toBe("prototype-improved");
     });
 
-    it("go only with single heat sinks", () => {
-        const unit = mech("double");
-        add(unit, "freezer-double-heat-sink", "lt");
-        expect(unit.getChassisEquipmentViolations()).toContain("Double Heat Sinks (Freezers) combine only with single heat sinks (IO:AE p.65).");
+    it.each([["freezer-double-heat-sink", "Double Heat Sink (Freezers)"], ["prototype-double-heat-sink", "Double Heat Sink (Prototype)"]])(
+        "%s go only with single heat sinks", (tag, name) => {
+            const unit = mech("double");
+            add(unit, tag, "lt");
+            expect(unit.getChassisEquipmentViolations()).toContain(`${name} combines only with single heat sinks (IO:AE p.65).`);
+        });
+});
+
+// "Count as N heat for heat efficiency calculations" (IO:AE p.189, Alternate Era Battle Value Table).
+describe("prototype lasers count their Battle Value heat from IO:AE p.189", () => {
+    it.each([["prototype-er-large-laser", 13, 136], ["prototype-small-pulse-laser", 4, 11], ["prototype-medium-pulse-laser", 7, 43],
+        ["prototype-large-pulse-laser", 13, 108], ["recovered-prototype-medium-pulse-laser", 7, 43]])("%s: %i heat, %i BV", (tag, heat, bv) => {
+        const unit = mech();
+        const laser = add(unit, tag, "ra");
+        unit.getBattleValue();
+        expect(unit.calcLogBV).toContain(`Total Weapon Heat Breakdown:</strong> ${heat} = ${heat}.00`);
+        expect(laser?.battleValue).toBe(bv);
     });
 });
 

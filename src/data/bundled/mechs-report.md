@@ -1,12 +1,12 @@
 # Bundled 'Mechs: build report
 
-3647 designs kept (38 renamed), 4077 files left out.
+3648 designs kept (38 renamed), 4076 files left out.
 
 | Reason | Files |
 |---|---|
 | duplicate of a design already kept | 3166 |
-| BV differs from the MUL | 211 |
-| the import could not carry all of it over | 167 |
+| BV differs from the MUL | 214 |
+| the import could not carry all of it over | 163 |
 | different submodel, same name and model: equipment | 158 |
 | different submodel, same name and model: ammo type | 112 |
 | different submodel, same name and model: actuators | 85 |
@@ -3672,12 +3672,12 @@
 - `megamek/Snords Irregulars/Hybrid Rifleman RFL-3N (Sneede II).mtf`: the import could not carry all of it over: 'Mech configuration 'Biped FrankenMek' is not converted yet
 - `megamek/Snords Irregulars/Hybrid Rifleman RFL-3N (Sneede).mtf`: the import could not carry all of it over: 'Mech configuration 'Biped FrankenMek' is not converted yet
 - `megamek/Spotlight On/Hellion Keshik/Awesome C.mtf`: duplicate of a design already kept: Awesome C
-- `megamek/Starterbook Sword and Dragon/Black Knight BL-6-KNT Ian.mtf`: the import could not carry all of it over: 'ISDoubleHeatSinkPrototype' is not converted yet; 'ISDoubleHeatSinkPrototype' is not converted yet
-- `megamek/Starterbook Sword and Dragon/Cataphract CTF-2X George.mtf`: the import could not carry all of it over: 'ISDoubleHeatSinkPrototype' is not converted yet; 'ISDoubleHeatSinkPrototype' is not converted yet
-- `megamek/Starterbook Sword and Dragon/Grand Dragon DRG-5K Emory.mtf`: the import could not carry all of it over: 'ISDoubleHeatSinkPrototype' is not converted yet; 'ISDoubleHeatSinkPrototype' is not converted yet
+- `megamek/Starterbook Sword and Dragon/Black Knight BL-6-KNT Ian.mtf`: BV differs from the MUL: BL-6-KNT (Ian): BV 1861, MUL 1830
+- `megamek/Starterbook Sword and Dragon/Cataphract CTF-2X George.mtf`: BV differs from the MUL: CTF-2X (George): BV 1337, MUL 1311
+- `megamek/Starterbook Sword and Dragon/Grand Dragon DRG-5K Emory.mtf`: BV differs from the MUL: DRG-5K (Emory): BV 1394, MUL 1431
 - `megamek/Starterbook Sword and Dragon/Hatamoto-Chi HTM-27T Daniel.mtf`: the import could not carry all of it over: Cannot find the ammunition 'IS LB 10-X Cluster Ammo'; Cannot find the ammunition 'IS LB 10-X AC Ammo'; Cannot find the ammunition 'IS LB 10-X Cluster Ammo'; Cannot find the ammunition 'IS LB 10-X AC Ammo'
 - `megamek/Starterbook Sword and Dragon/Hatchetman HCT-3F Austin.mtf`: the import could not carry all of it over: Cannot find the ammunition 'IS LB 10-X Cluster Ammo'; Cannot find the ammunition 'IS LB 10-X AC Ammo'
-- `megamek/Starterbook Sword and Dragon/Hunchback HBK-4G Shakir.mtf`: BV differs from the MUL: HBK-4G (Shakir): BV 957, MUL 968
+- `megamek/Starterbook Sword and Dragon/Hunchback HBK-4G Shakir.mtf`: BV differs from the MUL: HBK-4G (Shakir): BV 952, MUL 968
 - `megamek/Starterpack Sword and Dragon/Black Knight BL-10-KNT Ross.mtf`: duplicate of a design already kept: Black Knight BL-10-KNT (Ross)
 - `megamek/Starterpack Sword and Dragon/Cataphract CTF-3X Sara.mtf`: duplicate of a design already kept: Cataphract CTF-3X (Sara)
 - `megamek/Starterpack Sword and Dragon/Enforcer ENF-5D Daniel.mtf`: duplicate of a design already kept: Enforcer ENF-5D (Daniel)
@@ -4074,8 +4074,7 @@
 - `megamek/XTRs/Succession Wars/Cataphract CTF-0X.mtf`: different submodel, same name and model: equipment: Cataphract CTF-0X
 - `megamek/XTRs/Succession Wars/Flea FLE-14.mtf`: duplicate of a design already kept: Flea FLE-14
 - `megamek/XTRs/Succession Wars/Kiso K-3N-KRHQ CommandMech.mtf`: different submodel, same name and model: equipment: Kiso K-3N-KRHQ CommandMech
-- `megamek/XTRs/Succession Wars/Marauder MAD-4X.mtf`: the import could not carry all of it over: 'ISDoubleHeatSinkPrototype' is not converted yet; 'ISDoubleHeatSinkPrototype' is not converted yet; 'ISDoubleHeatSinkPrototype' is not converted yet; 'ISDoubleHeatSinkPrototype' is not converted yet
-- `megamek/XTRs/Succession Wars/Super Griffin GRF-2N-X.mtf`: the import could not carry all of it over: 'ISDoubleHeatSinkPrototype' is not converted yet; 'ISDoubleHeatSinkPrototype' is not converted yet; 'ISDoubleHeatSinkPrototype' is not converted yet; Cannot place 'LRM 10': its slots are split in a way not converted yet; Unallocated Criticals: 2; - Prototype Improved Jump Jets (jj-prototype-improved); - Prototype Improved Jump Jets (jj-prototype-improved)
+- `megamek/XTRs/Succession Wars/Super Griffin GRF-2N-X.mtf`: the import could not carry all of it over: Cannot place 'LRM 10': its slots are split in a way not converted yet; Unallocated Criticals: 2; - Prototype Improved Jump Jets (jj-prototype-improved); - Prototype Improved Jump Jets (jj-prototype-improved)
 - `megamek/XTRs/Succession Wars/Super Wasp WSP-2A-X.mtf`: duplicate of a design already kept: Super Wasp WSP-2A-X
 - `megamek/XTRs/Succession Wars/Zeus ZEU-6Y.mtf`: duplicate of a design already kept: Zeus ZEU-6Y
 - `mordel/3499/Vulture Mk IV (Mad Dog Mk IV) A.mtf`: duplicate of a design already kept: Vulture Mk IV  A
