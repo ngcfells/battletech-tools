@@ -37,6 +37,7 @@ export default defineConfig(({ command, mode }) => {
                         groups: [
                             {
                                 name: (id: string) => id.replace(/\\/g, "/").split("/").pop()!.replace(/\.ts$/, ""),
+                                debugName: "equipment-catalogs",
                                 test: /src[\\/]data[\\/](equipment-(missile|misc|ballistic|energy)|ammo)\.ts$/,
                             },
                         ],

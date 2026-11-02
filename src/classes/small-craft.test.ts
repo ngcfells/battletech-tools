@@ -285,6 +285,21 @@ describe("Small Craft in play (Total Warfare pp.237-240)", () => {
         expect(dropShip.explodeAmmunition()).toEqual(["Large Craft run at zero net heat: no ammunition explodes from heat (TW p.161)"]);
         expect(dropShip.getInPlay().structureDamage).toBe(0);
     });
+
+    it("runs a DropShip at zero net heat: a fired arc adds all its heat, and going over allows one arc and a Control Roll (TW p.161)", () => {
+        const ship = buildAquarius();
+        ship.setCraftType("dropShip");
+        ship.setWeaponFired(ship.getArcFiringBays("nose")[0].items[0].uuid ?? "", true);
+        expect(ship.getHeatGeneratedThisTurn()).toBe(ship.getArcHeat("nose"));
+        expect(ship.applyHeatPhase().join(" ")).not.toContain("Avoid Roll");
+        expect(ship.getInPlay().heat).toBe(0);
+        ship.setAdditionalHeatSinks(0);
+        for (const item of ship.getEquipmentList()) ship.setWeaponFired(item.uuid ?? "", true);
+        const over = ship.getHeatGeneratedThisTurn() - ship.getHeatDissipation();
+        expect(over).toBeGreaterThan(0);
+        expect(ship.applyHeatPhase()[1]).toBe(`${over} heat over what the heat sinks dissipate: it may fire only one arc this turn, with a Control Roll at +${Math.ceil(over / 100)} (TW p.161)`);
+        expect(ship.getInPlay().heat).toBe(0);
+    });
 });
 
 describe("Small Craft fire full weapon bays (TM pp.195, 199; user ruling 2026-10-22)", () => {

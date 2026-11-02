@@ -1954,8 +1954,15 @@ export default class SmallCraft implements IGameSettingsUnit {
         for (const item of this.getArcFiringBays(arc)[index]?.items ?? []) this.setWeaponFired(item.uuid ?? "", fired);
     }
 
-    /** Heat this turn will add: the weapons marked as fired. */
+    /**
+     * Heat this turn will add: the weapons marked as fired. A DropShip is Large Craft: firing any weapon in an arc
+     * generates the full heat of the arc (TW p.161; AT2R p.22).
+     */
     public getHeatGeneratedThisTurn(): number {
+        if (this.isDropShip()) {
+            return SMALL_CRAFT_ARCS.filter((arc) => this.getArcItems(arc).some((item) => this.isWeaponFired(item.uuid ?? "")))
+                .reduce((sum, arc) => sum + this.getArcHeat(arc), 0);
+        }
         return this._equipmentList.filter((item) => this.isWeaponFired(item.uuid ?? ""))
             .reduce((sum, item) => sum + (item.heatAero ?? item.heat ?? 0), 0);
     }
@@ -1964,11 +1971,19 @@ export default class SmallCraft implements IGameSettingsUnit {
 
     /**
      * The Heat Phase: add this turn's heat, take off what the heat sinks dissipate, and list the Avoid Rolls the
-     * new heat level calls for (TW p.161). The weapons are cleared for the next turn.
+     * new heat level calls for (TW p.161). The weapons are cleared for the next turn. A DropShip runs at zero net
+     * heat: nothing builds up, and going over its dissipation allows one arc and a Control Roll (TW p.161).
      */
     public applyHeatPhase(): string[] {
         const generated = this.getHeatGeneratedThisTurn();
         const dissipated = this.getHeatDissipation();
+        if (this.isDropShip()) {
+            this._inPlay.firedWeapons = [];
+            const over = generated - dissipated;
+            const log = [`Heat Phase: ${generated} generated, ${dissipated} dissipated: Large Craft run at zero net heat (TW p.161)`];
+            if (over > 0) log.push(`${over} heat over what the heat sinks dissipate: it may fire only one arc this turn, with a Control Roll at +${Math.ceil(over / 100)} (TW p.161)`);
+            return log;
+        }
         const before = this._inPlay.heat;
         this.setHeat(before + generated - dissipated);
         this._inPlay.firedWeapons = [];

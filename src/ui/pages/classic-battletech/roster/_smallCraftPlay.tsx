@@ -78,13 +78,15 @@ export default class SmallCraftPlayPanel extends React.Component<ISmallCraftPlay
         const weapons = craft.getEquipmentList().filter((item) => !item.isAmmo && item.location && item.location !== "hull" && !craft.isBayWeapon(item));
         const bays = SMALL_CRAFT_ARCS.flatMap((arc) => craft.getArcFiringBays(arc).map((bay, index) => ({ arc, index, bay })));
         const pending = craft.getPendingWeaponCritical();
-        const heatTriggers = SMALL_CRAFT_HEAT_TRIGGERS.filter((trigger) => trigger.levels.some((level) => play.heat >= level));
+        // Large Craft run at zero net heat (TW p.161): no Heat Scale, so no heat Avoid Rolls.
+        const heatTriggers = craft.isDropShip() ? [] : SMALL_CRAFT_HEAT_TRIGGERS.filter((trigger) => trigger.levels.some((level) => play.heat >= level));
+        const heatOver = craft.getHeatGeneratedThisTurn() - craft.getHeatDissipation();
         const armor = craft.getArmorAllocation();
         const thresholds = craft.getDamageThresholds();
 
         return (
             <div className="fighter-play" data-testid="small-craft-play">
-                <h3>{smallCraftName(craft)} <small>({craft.getShapeName()} Small Craft, {craft.getTonnage()} tons)</small></h3>
+                <h3>{smallCraftName(craft)} <small>({craft.getShapeName()} {craft.getCraftTypeName()}, {craft.getTonnage()} tons)</small></h3>
                 {craft.isDestroyed() ? <h3 className="color-red text-center">DESTROYED</h3>
                     : craft.isEngineDestroyed() ? <h3 className="color-red text-center">ENGINE DESTROYED</h3> : null}
                 <p data-testid="small-craft-play-status">
@@ -222,26 +224,33 @@ export default class SmallCraftPlayPanel extends React.Component<ISmallCraftPlay
 
                 <fieldset className="fieldset" data-testid="small-craft-heat">
                     <legend>Heat</legend>
-                    <p className={play.heat >= 5 ? "color-red" : ""}>
-                        <strong>Heat Scale</strong>: {play.heat} &nbsp;|&nbsp;
-                        <strong>This turn</strong>: +{craft.getHeatGeneratedThisTurn()} generated, -{craft.getHeatDissipation()} dissipated
-                    </p>
+                    {craft.isDropShip() ? (
+                        <p className={heatOver > 0 ? "color-red" : ""}>
+                            <strong>This turn</strong>: {craft.getHeatGeneratedThisTurn()} generated, {craft.getHeatDissipation()} dissipated
+                            {heatOver > 0 ? ` (${heatOver} over: only one arc may fire, with a Control Roll at +${Math.ceil(heatOver / 100)})` : ""}
+                        </p>
+                    ) : (
+                        <p className={play.heat >= 5 ? "color-red" : ""}>
+                            <strong>Heat Scale</strong>: {play.heat} &nbsp;|&nbsp;
+                            <strong>This turn</strong>: +{craft.getHeatGeneratedThisTurn()} generated, -{craft.getHeatDissipation()} dissipated
+                        </p>
+                    )}
                     {heatTriggers.length ? (
                         <p className="small-text">
                             Avoid Rolls at this heat: {heatTriggers.map((trigger) => `${trigger.name} (${trigger.levels.filter((level) => play.heat >= level).pop()}+)`).join(", ")}.
                             The Avoid numbers are on the record sheet's Heat Scale (TW p. 161).
                         </p>
                     ) : null}
-                    <label>
+                    {craft.isDropShip() ? null : <label>
                         Set heat:
                         <input type="number" aria-label="Current heat" min={0} max={200} value={play.heat}
                             onChange={(e) => { craft.setHeat(+e.currentTarget.value || 0); this._changed(); }} />
-                    </label>
+                    </label>}
                     <button className="btn btn-primary btn-sm" onClick={this.applyHeat}>End Turn: Apply Heat</button>
-                    {!craft.isDropShip() && heatTriggers.some((trigger) => trigger.name === "Ammunition explosion") ? (
+                    {heatTriggers.some((trigger) => trigger.name === "Ammunition explosion") ? (
                         <>&nbsp;<button className="btn btn-danger btn-sm" onClick={this.explodeAmmo} disabled={craft.isDestroyed()}>Failed Avoid Roll: Explode Ammunition</button></>
                     ) : null}
-                    <p className="small-text">Tick the bays fired this turn below: a bay fires all its working weapons together (TM p. 199). A Small Craft tracks heat as a fighter does (TW p. 161).</p>
+                    <p className="small-text">Tick the bays fired this turn below: a bay fires all its working weapons together (TM p. 199). {craft.isDropShip() ? "A DropShip runs at zero net heat: firing any weapon in an arc generates the arc's full heat (TW p. 161)." : "A Small Craft tracks heat as a fighter does (TW p. 161)."}</p>
                 </fieldset>
 
                 <h4>Weapons</h4>
