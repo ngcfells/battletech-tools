@@ -16,6 +16,7 @@ import { IArmorType, ICockpitType, ICriticalLocations, IEngineOption, IEngineTyp
 import { btEraOptions, findEraByTag, getClosestEraForTech, getEraForYear, getErasForTech } from "../data/era-options";
 import { mechArmorTypes } from "../data/mech-armor-types";
 import { findAllByName, findByTag, matchesTag } from "../data/tag-match";
+import { AmmoExplosionProtection, getAmmoExplosion } from "../data/ammo-explosion";
 import { ComponentRecord, getComponentRecords, getComponentTiers, isCustomComponent } from "../data/custom-component-registry";
 import type { CustomComponentKind, ISSWUnresolvedItem } from "../data/custom-content-types";
 import { getCockpitType } from "../data/mech-cockpit-types";
@@ -6069,7 +6070,7 @@ export class BattleMech {
                 log.push(`Line ${label}, ${name}: already hit.`);
             } else {
                 this.toggleCritical(normalized, index);
-                log.push(`Line ${label}: ${name} is hit.`);
+                log.push(`Line ${label}: ${name} is hit.`, ...this._onSlotHit(normalized, slots[named]));
             }
             return log;
         }
@@ -6154,7 +6155,7 @@ export class BattleMech {
                 while (named > 0 && slots[named]?.placeholder) named--;
                 this.toggleCritical(normalized, index);
                 const label = twelve ? `${first <= 3 ? "1-3" : "4-6"}, ${index % 6 + 1}` : `${index + 1}`;
-                log.push(`Line ${label}: ${slots[named]?.name ?? "that line"} is hit.`);
+                log.push(`Line ${label}: ${slots[named]?.name ?? "that line"} is hit.`, ...this._onSlotHit(normalized, slots[named]));
                 break;
             }
         }
@@ -6188,6 +6189,41 @@ export class BattleMech {
             ? this.getPatchworkLocations().map(location => this.getPatchworkArmorType(location.key).tag)
             : [this._armorType.tag];
         return armorTags.includes(slot.tag) || slot.tag === this._selectedInternalStructure.tag;
+    }
+
+    /** What protects a location from an ammunition explosion: CASE II, else CASE or Clan CASE (TW p.134; TO:AUE p.111). */
+    private _ammoExplosionProtection(location: string): AmmoExplosionProtection {
+        const slots: (ICriticalSlot | null | undefined)[] = (this._criticals as any)[BattleMech.MECH_LOCATION_MAP[location]] ?? [];
+        if (slots.some(slot => matchesTag(slot, "case-ii") || matchesTag(slot, "clan-case-ii"))) return "case-ii";
+        return this.hasClanCASE() || slots.some(slot => matchesTag(slot, "case") || matchesTag(slot, "case-prototype")) ? "case" : "none";
+    }
+
+    /**
+     * A rolled critical hit on a slot: explosive ammunition there explodes by the edition's rules (TW p.125; TO:AUE
+     * p.111; CRB pp.96-97). The damage starts on the location's internal structure and transfers inward until a
+     * location with CASE vents it; damage over the edition's cap may strip armor where it stops. Returns the log lines.
+     */
+    private _onSlotHit(location: string, slot: ICriticalSlot | null | undefined): string[] {
+        const bin = this._equipmentList.find(item => item.uuid === slot?.uuid && item.isAmmo && item.explosive);
+        const protection = this._ammoExplosionProtection(location);
+        const explosion = bin && getAmmoExplosion(this._rulesEdition, "mech", [bin], item => this.getAmmoBinWeapon(item) ?? undefined, item => this.getAmmoBinRemaining(item), protection);
+        if (!bin || !explosion?.baseDamage) return [];
+        bin.currentAmmo = 0;
+        const vents = (at: string) => this._ammoExplosionProtection(at) !== "none";
+        this.takeDamage(explosion.damage, location, false, { structureOnly: true, ventAt: vents });
+        let at = location;
+        while (!this._locationHasStructure(at) && !vents(at) && at !== "ct" && at !== "hd") at = this._moveDamageLocationIn(at, false);
+        const excess = explosion.baseDamage - explosion.damage;
+        const toArmor = explosion.rules.excessToArmor?.[protection];
+        if (excess > 0 && toArmor !== undefined && this._locationHasStructure(at)) {
+            const torso = ["ct", "lt", "rt"].includes(at);
+            const original: number = (this._armorAllocation as any)[BattleMech.MECH_LOCATION_MAP[at]] ?? 0;
+            const points = toArmor === "all" ? Infinity : toArmor === "half" ? (torso ? excess : Math.ceil(original / 2)) : Math.min(excess, toArmor);
+            this._takeArmorDamageAtLocation(torso ? at + "r" : at, points);
+            this._calc();
+        }
+        const vented = protection === "none" ? [] : [`${protection === "case" ? "CASE" : "CASE II"} vents the rest.`];
+        return [`${bin.name} explodes for ${explosion.baseDamage} damage.`, ...vented, ...explosion.log];
     }
 
     /** A head or limb blown off: its armor and internal structure are gone. */
@@ -9449,6 +9485,8 @@ export class BattleMech {
         amount: number,
         location: string,
         rear: boolean,
+        // An ammunition explosion: it skips armor (TW p.125), and a location where `ventAt` holds (CASE) stops it.
+        { structureOnly = false, ventAt = () => false }: { structureOnly?: boolean, ventAt?: (location: string) => boolean } = {},
     ): IDamageResults[] {
 
         const rv: IDamageResults[] = [];
@@ -9458,11 +9496,12 @@ export class BattleMech {
         // let armorDamage = true;
         // let structureDamage = false;
 
-        let locationHasArmor = this._locationHasArmor(location);
+        let locationHasArmor = !structureOnly && this._locationHasArmor(location);
         let locationHasStructure = this._locationHasStructure(location);
         while(
             !locationHasStructure &&
             !locationHasArmor &&
+            !ventAt(location) &&
             location !== "ct" &&
             location !== "ctr" &&
             location !== "hd"
@@ -9470,7 +9509,7 @@ export class BattleMech {
 
             location = this._moveDamageLocationIn( location, rear );
 
-            locationHasArmor = this._locationHasArmor(location);
+            locationHasArmor = !structureOnly && this._locationHasArmor(location);
             locationHasStructure = this._locationHasStructure(location);
         }
 
@@ -9482,6 +9521,7 @@ export class BattleMech {
                 remainderDamage = this._takeStructureDamageAtLocation( location, remainderDamage )
                 while(
                     remainderDamage > 0 &&
+                    !ventAt(location) &&
                     location !== "ct" &&
                     location !== "ctr" &&
                     location !== "hd"
@@ -9495,6 +9535,7 @@ export class BattleMech {
             let remainderDamage = this._takeStructureDamageAtLocation( location, amount )
             while(
                 remainderDamage > 0 &&
+                !ventAt(location) &&
                 location !== "ct" &&
                 location !== "ctr" &&
                 location !== "hd"

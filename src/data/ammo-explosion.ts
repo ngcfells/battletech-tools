@@ -14,6 +14,12 @@ export interface IAmmoExplosionRules {
     damageDivisor?: Partial<Record<AmmoExplosionProtection, number>>;
     /** The most damage reaching internal structure (or SI), by protection; the unit vents the rest. */
     cap?: Partial<Record<AmmoExplosionProtection, number>>;
+    /**
+     * Where damage over the cap goes, by protection, if the 'Mech location it stops in survives: up to this many points
+     * of its armor (a torso's rear armor), "all" its armor, or "half" a limb's or the head's original armor, rounding
+     * up (a torso's rear armor takes the excess). Without an entry the excess is lost.
+     */
+    excessToArmor?: Partial<Record<AmmoExplosionProtection, number | "all" | "half">>;
     cite: string;
 }
 
@@ -33,7 +39,7 @@ export interface IAmmoExplosion {
 export const AMMO_EXPLOSION_RULES: Record<string, Partial<Record<RulesEditionUnitType, IAmmoExplosionRules>>> = {
     "total-warfare": {
         // CASE vents what is left after the location (TW p.125); CASE II lets 1 point through (TO:AUE p.111).
-        mech: { scope: "bin", pilotDamage: 2, cap: { "case-ii": 1 }, cite: "TW p.125, TO:AUE p.111" },
+        mech: { scope: "bin", pilotDamage: 2, cap: { "case-ii": 1 }, excessToArmor: { "case-ii": "half" }, cite: "TW p.125, TO:AUE p.111" },
         vehicle: { scope: "all", pilotDamage: 0, cite: "TW p.194" },
         building: { scope: "all", pilotDamage: 0, cite: "TO:AR p.119" },
         // CASE II reduces a fighter's explosion to 1 point (TO:AUE p.111); small craft cannot mount it.
@@ -42,7 +48,10 @@ export const AMMO_EXPLOSION_RULES: Record<string, Partial<Record<RulesEditionUni
     },
     "core-rulebook": {
         // Excess over the cap blows out armor (CRB pp.96-97, 207); the MechWarrior takes 1 hit (CRB p.107).
-        mech: { scope: "bin", pilotDamage: 1, cap: { none: 20, case: 10, "case-ii": 1 }, cite: "CRB pp.96, 107" },
+        mech: {
+            scope: "bin", pilotDamage: 1, cap: { none: 20, case: 10, "case-ii": 1 }, excessToArmor: { none: "all", case: 10, "case-ii": 10 },
+            cite: "CRB pp.96, 107",
+        },
     },
 };
 

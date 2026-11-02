@@ -87,7 +87,8 @@ describe("vehicle armor diagram (beta feedback 2026-10-21)", () => {
                 expect(edgeDistance(shape, [cx, cy])).toBeGreaterThanOrEqual(r - 0.2);
             }
         }
-    });
+    // The 2000-ton hull checks thousands of bubbles: past the 5s default under a full-suite load.
+    }, 20_000);
 
     it("draws pips large enough to read and mark", () => {
         const vehicle = tank("tracked", 50, true);
