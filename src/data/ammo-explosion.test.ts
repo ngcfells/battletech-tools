@@ -3,14 +3,17 @@ import { getAmmoDamagePerShot, getAmmoExplosion, getAmmoExplosionRules } from ".
 import { IEquipmentItem } from "./data-interfaces";
 
 const ac20 = { name: "AC/20", damage: 20 } as IEquipmentItem;
+const ac10 = { name: "AC/10", damage: 10 } as IEquipmentItem;
 const lrm20 = { name: "LRM 20", damageClusters: 20, damagePerCluster: 1 } as IEquipmentItem;
 const bin = (shots: number, explosive = true) => ({ isAmmo: true, explosive, currentAmmo: shots }) as IEquipmentItem;
 const weaponFor = (weapon: IEquipmentItem | undefined) => () => weapon;
 const shots = (item: IEquipmentItem) => item.currentAmmo ?? 0;
+const explode = (edition: string, type: Parameters<typeof getAmmoExplosion>[1], bins: IEquipmentItem[], weapon: IEquipmentItem | undefined, protection?: "none" | "case" | "case-ii") =>
+    getAmmoExplosion(edition, type, bins, weaponFor(weapon), shots, protection);
 
 describe("ammunition explosion rules", () => {
-    it("explodes the bin hit on a Total Warfare 'Mech, the MechWarrior taking 2", () => {
-        expect(getAmmoExplosionRules("total-warfare", "mech")).toMatchObject({ scope: "bin", pilotDamage: 2, verified: true });
+    it("explodes the bin hit on a Total Warfare 'Mech, the MechWarrior taking 2 (TW p.125)", () => {
+        expect(getAmmoExplosionRules("total-warfare", "mech")).toMatchObject({ scope: "bin", pilotDamage: 2 });
     });
 
     it("explodes all the ammunition aboard a vehicle or in a building hex, hurting no pilot", () => {
@@ -18,24 +21,24 @@ describe("ammunition explosion rules", () => {
         expect(getAmmoExplosionRules("total-warfare", "building")).toMatchObject({ scope: "all", pilotDamage: 0 });
     });
 
-    it("divides aerospace explosions by 10, the pilot taking 1", () => {
-        for (const type of ["fighter", "small-craft"] as const) {
-            expect(getAmmoExplosionRules("total-warfare", type)).toMatchObject({ scope: "bin", pilotDamage: 1, damageDivisor: 10 });
-        }
+    it("injures a fighter or small craft pilot 1 point (TW p.161)", () => {
+        expect(getAmmoExplosionRules("total-warfare", "fighter")).toMatchObject({ scope: "bin", pilotDamage: 1 });
+        expect(getAmmoExplosionRules("total-warfare", "small-craft")).toMatchObject({ scope: "bin", pilotDamage: 1 });
     });
 
-    it("caps a Core Rulebook 'Mech explosion at 20 / 10 / 1, the MechWarrior taking 1", () => {
-        expect(getAmmoExplosionRules("core-rulebook", "mech")).toMatchObject({ pilotDamage: 1, cap: { none: 20, case: 10, caseII: 1 } });
+    it("gives the Core Rulebook MechWarrior 1 hit (CRB p.107)", () => {
+        expect(getAmmoExplosionRules("core-rulebook", "mech")).toMatchObject({ pilotDamage: 1 });
     });
 
     it("falls back to Total Warfare for an edition with no record of its own", () => {
         expect(getAmmoExplosionRules("battlemech-manual", "mech")).toBe(getAmmoExplosionRules("total-warfare", "mech"));
+        expect(getAmmoExplosionRules("core-rulebook", "building")).toBe(getAmmoExplosionRules("total-warfare", "building"));
         expect(getAmmoExplosionRules(undefined, "vehicle")).toBe(getAmmoExplosionRules("total-warfare", "vehicle"));
     });
 
     it("has no ruling, so no explosion, for infantry", () => {
         expect(getAmmoExplosionRules("total-warfare", "infantry")).toBeUndefined();
-        expect(getAmmoExplosion("total-warfare", "infantry", [bin(5)], weaponFor(ac20), shots)).toBeUndefined();
+        expect(explode("total-warfare", "infantry", [bin(5)], ac20)).toBeUndefined();
     });
 });
 
@@ -47,19 +50,34 @@ describe("ammunition explosion damage", () => {
     });
 
     it("totals the shots left in each explosive bin, skipping spent, inert and unfed ones", () => {
-        expect(getAmmoExplosion("total-warfare", "mech", [bin(5)], weaponFor(ac20), shots)?.damage).toBe(100);
-        expect(getAmmoExplosion("total-warfare", "vehicle", [bin(2), bin(3), bin(0), bin(9, false)], weaponFor(ac20), shots)?.damage).toBe(100);
-        expect(getAmmoExplosion("total-warfare", "mech", [bin(5)], weaponFor(undefined), shots)?.damage).toBe(0);
+        expect(explode("total-warfare", "mech", [bin(5)], ac20)).toMatchObject({ baseDamage: 100, damage: 100 });
+        expect(explode("total-warfare", "vehicle", [bin(2), bin(3), bin(0), bin(9, false)], ac20)?.damage).toBe(100);
+        expect(explode("total-warfare", "mech", [bin(5)], undefined)?.damage).toBe(0);
     });
 
-    it("divides aerospace damage by 10, rounding down, at least 1", () => {
-        expect(getAmmoExplosion("total-warfare", "fighter", [bin(6)], weaponFor(lrm20), shots)?.damage).toBe(12);
-        expect(getAmmoExplosion("total-warfare", "fighter", [bin(1)], weaponFor({ damage: 5 } as IEquipmentItem), shots)?.damage).toBe(1);
+    it("lets CASE vent a Total Warfare 'Mech's excess, but only 1 point past CASE II (TW p.125, TO:AUE p.111)", () => {
+        expect(explode("total-warfare", "mech", [bin(5)], ac20, "case")?.damage).toBe(100);
+        expect(explode("total-warfare", "mech", [bin(5)], ac20, "case-ii")).toMatchObject({ baseDamage: 100, damage: 1 });
     });
 
-    it("logs the pilot's damage, and notes rules not checked against the book", () => {
-        expect(getAmmoExplosion("total-warfare", "mech", [bin(5)], weaponFor(ac20), shots)?.log).toEqual(["The MechWarrior takes 2 damage (TW p.125)"]);
-        expect(getAmmoExplosion("total-warfare", "vehicle", [bin(5)], weaponFor(ac20), shots)?.log).toEqual([]);
-        expect(getAmmoExplosion("core-rulebook", "mech", [bin(5)], weaponFor(ac20), shots)?.log).toContain("(rules not verified for BattleTech Core Rulebook)");
+    it("caps a Core Rulebook 'Mech's structure damage at 20 / 10 / 1 (CRB p.96)", () => {
+        expect(explode("core-rulebook", "mech", [bin(5)], ac20)).toMatchObject({ baseDamage: 100, damage: 20 });
+        expect(explode("core-rulebook", "mech", [bin(5)], ac20, "case")?.damage).toBe(10);
+        expect(explode("core-rulebook", "mech", [bin(5)], ac20, "case-ii")?.damage).toBe(1);
+        expect(explode("core-rulebook", "mech", [bin(1)], ac10)?.damage).toBe(10);
+    });
+
+    it("divides a fighter's damage by 10, by 20 with CASE, at least 1, and to 1 with CASE II (TW p.161)", () => {
+        expect(explode("total-warfare", "fighter", [bin(10)], ac10)?.damage).toBe(10);
+        expect(explode("total-warfare", "fighter", [bin(10)], ac10, "case")?.damage).toBe(5);
+        expect(explode("total-warfare", "fighter", [bin(10)], ac10, "case-ii")?.damage).toBe(1);
+        expect(explode("total-warfare", "fighter", [bin(1)], { damage: 5 } as IEquipmentItem)?.damage).toBe(1);
+        expect(explode("total-warfare", "small-craft", [bin(6)], lrm20)?.damage).toBe(12);
+    });
+
+    it("logs the pilot's damage with the rule's citation", () => {
+        expect(explode("total-warfare", "mech", [bin(5)], ac20)?.log).toEqual(["The MechWarrior takes 2 damage (TW p.125, TO:AUE p.111)"]);
+        expect(explode("total-warfare", "fighter", [bin(5)], ac20)?.log).toEqual(["The pilot takes 1 damage (TW p.161, TO:AUE p.111)"]);
+        expect(explode("total-warfare", "vehicle", [bin(5)], ac20)?.log).toEqual([]);
     });
 });
