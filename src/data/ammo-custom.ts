@@ -1078,22 +1078,22 @@ export const ammoCustom: IEquipmentItem[] = [
     // Solaris7 forum railgun rounds (#301), Munchkin like their guns (ballistic-custom.ts).
     {
         isAmmo: true, isSpecialAmmo: false, name: "Railgun (Nightstalker666) - Standard Ammo", altNames: [], tag: "ammo-custom-railgun-nightstalker666-standard", techBase: "universal", altTags: [],
-        sort: "ammo, railgun (nightstalker666), standard", category: "Ammunition", cbills: 400000, introduced: 3061, extinct: null, reintroduced: null, battleValue: 88,
+        sort: "ammo, railgun (nightstalker666), standard", category: "Ammunition", cbills: 400000, introduced: 3061, extinct: null, reintroduced: null, battleValue: 83,
         heat: 0, heatAero: 0, weight: 1, range: { min: 6, short: 12, medium: 25, long: 39, extreme: 50 },
         space: { battlemech: 1, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 },
         roundsPerTon: 16, explosive: true, techRating: "e", book: "http://solaris7.com/thread/railgun-varient/", page: 0,
         alphaStrike: { specialAbility: [], heat: 0, rangeShort: 0, rangeMedium: 0, rangeLong: 0, rangeExtreme: 0, tc: false, notes: ["Custom equipment: no Alpha Strike effect"] },
         prototype: 3051, catalog: "custom", rulesLevel: 7,
-        notes: "Caseless, pulse-ignited rounds (Nightstalker666, Solaris7 forum, July 2018): 16 a ton at 400,000 C-bills, BV 88 a ton (Thunder's figure). A hit on the bin does 2 damage a round unless a laser or PPC caused it. Dates and tech rating are the Heavy Gauss Rifle ammunition's."
+        notes: "Caseless, pulse-ignited rounds (Nightstalker666, Solaris7 forum, July 2018): 16 a ton at 400,000 C-bills. BV 83 a ton, an eighth of the gun's (see ballistic-custom.ts). A hit on the bin does 2 damage a round unless a laser or PPC caused it. Dates and tech rating are the Heavy Gauss Rifle ammunition's."
     },
     {
         isAmmo: true, isSpecialAmmo: false, name: "Railgun (Captain) - Standard Ammo", altNames: [], tag: "ammo-custom-railgun-captain-standard", techBase: "universal", altTags: [],
-        sort: "ammo, railgun (captain), standard", category: "Ammunition", cbills: 20000, introduced: 3061, extinct: null, reintroduced: null, battleValue: 43,
+        sort: "ammo, railgun (captain), standard", category: "Ammunition", cbills: 20000, introduced: 3061, extinct: null, reintroduced: null, battleValue: 154,
         heat: 0, heatAero: 0, weight: 1, range: { min: 10, short: 11, medium: 22, long: 33 },
         space: { battlemech: 1, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 },
         roundsPerTon: 2, explosive: false, techRating: "e", book: "http://solaris7.com/thread/railgun-varient/", page: 0,
         alphaStrike: { specialAbility: [], heat: 0, rangeShort: 0, rangeMedium: 0, rangeLong: 0, rangeExtreme: 0, tc: false, notes: ["Custom equipment: no Alpha Strike effect"] },
         prototype: 3051, catalog: "custom", rulesLevel: 7,
-        notes: "2 rounds a ton (Captain, Solaris7 forum, July 2018). Not printed: cost, Battle Value, dates, tech rating and explosiveness are the Heavy Gauss Rifle ammunition's (20,000 C-bills, BV 43, does not explode)."
+        notes: "2 rounds a ton (Captain, Solaris7 forum, July 2018). BV 154 a ton, an eighth of the gun's (see ballistic-custom.ts). Not printed: cost, dates, tech rating and explosiveness are the Heavy Gauss Rifle ammunition's (20,000 C-bills, does not explode)."
     },
 ];

@@ -239,9 +239,10 @@ export const energyCustom: IEquipmentItem[] = [
         notes: "Custom Homebrew by Captain, Solaris7 forum ('LosTech custom weapons', April 2020): a Word of Blake reverse-engineered Clan Heavy Large Laser, "
             + "wrapped in radiation-absorbing layers and cooling jackets, so it has no to-hit penalty. A critical hit on it causes a catastrophic meltdown: "
             + "25 damage to the location it is mounted in and another critical hit roll on that location. "
-            + "Not printed in the thread: cost, Battle Value, dates and tech rating are the Binary Laser Cannon's (TO:AUE p.131), which shares its weight, heat and ranges "
-            + "and was reintroduced by the Word of Blake: 200,000 C-bills, BV 222, available 3077, tech D; vehicle and aerospace slots follow the canon lasers.",
-        damage: 16, damageAero: 16, accuracyModifier: 0, cbills: 200000, introduced: 3077, extinct: null, reintroduced: null, battleValue: 222, heat: 16, heatAero: 16, weight: 9,
+            + "Not printed in the thread: cost, dates and tech rating are the Binary Laser Cannon's (TO:AUE p.131), which shares its weight, heat and ranges "
+            + "and was reintroduced by the Word of Blake: 200,000 C-bills, available 3077, tech D; vehicle and aerospace slots follow the canon lasers. "
+            + "BV 296 is that cannon's 18.5 a point of damage (222 for 12) for 16 damage.",
+        damage: 16, damageAero: 16, accuracyModifier: 0, cbills: 200000, introduced: 3077, extinct: null, reintroduced: null, battleValue: 296, heat: 16, heatAero: 16, weight: 9,
         range: { min: 0, short: 5, medium: 10, long: 15 }, space: { battlemech: 5, protomech: -1, combatVehicle: 1, supportVehicle: 5, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 },
         shotsPerTon: 0, minAmmoTons: 0, explosive: true, weaponType: ["DE"], techRating: "d", book: "http://solaris7.com/thread/lostech-custom-weapons/", page: 0, rulesLevel: 6,
         alphaStrike: { heat: 0, rangeShort: 0, rangeMedium: 0, rangeLong: 0, rangeExtreme: 0, tc: false, notes: ["Custom equipment: no Alpha Strike conversion"] }

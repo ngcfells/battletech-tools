@@ -23,18 +23,18 @@ describe("Solaris7 forum equipment (#301)", () => {
         expect(laser.space.battlemech).toBe(5);
         expect(getEquipmentRulesLevel(laser)).toBe(CUSTOM_HOMEBREW_RULES_LEVEL);
         expect(laser.notes).toContain("25 damage to the location");
-        // Not printed: the Binary Laser Cannon's (TO:AUE p.131) cost, BV, dates and tech rating.
-        expect(laser).toMatchObject({ cbills: 200000, battleValue: 222, introduced: 3077, techRating: "d" });
+        // Not printed: the Binary Laser Cannon's (TO:AUE p.131) cost, dates and tech rating; BV scaled from its 18.5 a point.
+        expect(laser).toMatchObject({ cbills: 200000, battleValue: 296, introduced: 3077, techRating: "d" });
         expect(laser.book).toBe("http://solaris7.com/thread/lostech-custom-weapons/");
     });
 
     it("Railgun (Nightstalker666): 20 tons, 8 slots, 25 damage, 12 heat, 16 shots a ton, Munchkin", () => {
         const gun = find(ballisticCustom, "custom-railgun-nightstalker666") as typeof ballisticCustom[number];
         const ammo = find(ammoCustom, "ammo-custom-railgun-nightstalker666-standard") as typeof ammoCustom[number];
-        expect(gun).toMatchObject({ weight: 20, damage: 25, heat: 12, cbills: 2500000, battleValue: 704 });
+        expect(gun).toMatchObject({ weight: 20, damage: 25, heat: 12, cbills: 2500000, battleValue: 660 });
         expect(gun.range).toEqual({ min: 6, short: 12, medium: 25, long: 39, extreme: 50 });
         expect(gun.space.battlemech).toBe(8);
-        expect(ammo).toMatchObject({ roundsPerTon: 16, cbills: 400000, battleValue: 88, explosive: true });
+        expect(ammo).toMatchObject({ roundsPerTon: 16, cbills: 400000, battleValue: 83, explosive: true });
         expect(getCompatibleAmmo(gun, ammo)).toBe(true);
         expect(getWeaponShotsPerTon(gun, ammo)).toBe(16);
         expect(getEquipmentRulesLevel(gun)).toBe(MUNCHKIN_RULES_LEVEL);
@@ -48,7 +48,8 @@ describe("Solaris7 forum equipment (#301)", () => {
         expect(gun).toMatchObject({ weight: 30, damage: 50, heat: 5, explosive: true, spreadSlots: true, spreadLocations: "one-side" });
         expect(gun.range).toEqual({ min: 10, short: 11, medium: 22, long: 33 });
         expect(gun.space).toMatchObject({ battlemech: 22, protomech: -1, combatVehicle: 1, supportVehicle: 22, aerospaceFighter: 1 });
-        expect(ammo.roundsPerTon).toBe(2);
+        expect(ammo).toMatchObject({ roundsPerTon: 2, battleValue: 154 });
+        expect(gun.battleValue).toBe(1230);
         expect(getWeaponShotsPerTon(gun, ammo)).toBe(2);
         expect(getEquipmentRulesLevel(gun)).toBe(MUNCHKIN_RULES_LEVEL);
         expect(gun.notes).toContain("60-point");
