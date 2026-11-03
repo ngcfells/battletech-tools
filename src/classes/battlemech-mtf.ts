@@ -48,6 +48,7 @@ const ARMORS: Record<string, string> = {
     "Heat-Dissipating": "Heat-Dissipating Armor", "Anti-Penetrative Ablation": "Ablation Armor", "Ferro-Fibrous Prototype": "Prototype Ferro-Fibrous",
     // A Primitive IndustrialMech's commercial armor: SSW names it Commercial Armor (Patron PTN LoaderMech).
     "Primitive Commercial": "Commercial Armor",
+    "Patchwork": "Patchwork Armor",
 };
 // A superheavy 'Mech's gyro follows from its tonnage (IO:AE p.156): the import takes it as a standard one.
 const GYROS: Record<string, string> = { "": "Standard Gyro", "XL Gyro": "Extra-Light Gyro", "Heavy Duty Gyro": "Heavy-Duty Gyro", "Superheavy Gyro": "Standard Gyro", "None": "No Gyro" };
@@ -165,8 +166,7 @@ export function convertMtfToSSW(file: IMtfFile): { xml: string; issues: string[]
     const structureName = STRUCTURES[value(file, "structure").replace(/^(IS|Clan) /i, "")] ?? value(file, "structure");
     // MegaMek writes "Standard(Inner Sphere)", mordel.net "Standard (IS)".
     const armor = /^(.+?)\s*\((Clan|Inner Sphere|IS)\)$/.exec(value(file, "armor"));
-    const armorName = armor ? ARMORS[armor[1]] ?? armor[1] : value(file, "armor");
-    if (/patchwork/i.test(armorName)) issues.push("Patchwork armor is not converted yet");
+    const armorName = ARMORS[armor?.[1] ?? value(file, "armor")] ?? armor?.[1] ?? value(file, "armor");
     const sinks = /^(\d+)\s+(IS |Clan )?(\w+)$/i.exec(value(file, "heat sinks"));
     const sinkType = sinks ? HEAT_SINKS[sinks[3]] : undefined;
     if (!sinks || !sinkType) issues.push(`Heat sinks '${value(file, "heat sinks")}' are not converted yet`);
@@ -357,7 +357,10 @@ export function convertMtfToSSW(file: IMtfFile): { xml: string; issues: string[]
         const loc = ARMOR_LOCATIONS[key.replace(/ armor$/, "").toUpperCase()];
         if (!loc) issues.push(`Armor location '${key}' is not converted yet`);
         const points = /(\d+)$/.exec(list[0])?.[1] ?? "0";
-        return loc ? `<${loc}>${points}</${loc}>` : "";
+        // Patchwork: MegaMek names each location's armor ("IS Reactive(Inner Sphere):26"); SSW puts it on the element.
+        const patch = /^(?:(?:IS|Clan) )?(.+?)\((Clan|Inner Sphere)\):\d+$/.exec(list[0]);
+        const type = patch ? ` type="${xml(ARMORS[patch[1]] ?? patch[1])}" techbase="${patch[2] === "Clan" ? 1 : 0}"` : "";
+        return loc ? `<${loc}${type}>${points}</${loc}>` : "";
     });
     const jumpMP = +value(file, "jump mp") || 0;
     const tb = (tag: string | undefined) => tag === undefined ? "2" : /clan/i.test(tag) ? "1" : "0";

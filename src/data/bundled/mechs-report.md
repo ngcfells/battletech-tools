@@ -1,13 +1,13 @@
 # Bundled 'Mechs: build report
 
-3650 designs kept (38 renamed), 4080 files left out.
+3653 designs kept (38 renamed), 4077 files left out.
 
 | Reason | Files |
 |---|---|
-| duplicate of a design already kept | 3174 |
+| duplicate of a design already kept | 3176 |
 | BV differs from the MUL | 223 |
 | different submodel, same name and model: equipment | 162 |
-| the import could not carry all of it over | 140 |
+| the import could not carry all of it over | 135 |
 | different submodel, same name and model: ammo type | 115 |
 | different submodel, same name and model: actuators | 86 |
 | configuration BV differs from the MUL | 53 |
@@ -2747,8 +2747,6 @@
 - `megamek/3145/Steiner/Ursa URA-2A.mtf`: duplicate of a design already kept: Ursa URA-2A
 - `megamek/3145/Steiner/Ursa URA-2C.mtf`: duplicate of a design already kept: Ursa URA-2C
 - `megamek/3145/Steiner/Viking IIC.mtf`: duplicate of a design already kept: Viking IIC 
-- `megamek/3145/Steiner/Zeus X ZEU-X.mtf`: the import could not carry all of it over: Patchwork armor is not converted yet; Cannot find any armor named: 'Patchwork'
-- `megamek/3145/Steiner/Zeus X ZEU-X2.mtf`: the import could not carry all of it over: Patchwork armor is not converted yet; Cannot find any armor named: 'Patchwork'
 - `megamek/3145/Steiner/Zeus X ZEU-X3.mtf`: different submodel, same name and model: equipment: Zeus ZEU-X3
 - `megamek/3145/Steiner/Zeus X ZEU-X4.mtf`: duplicate of a design already kept: Zeus X ZEU-X4
 - `megamek/3150/Prey Seeker PY-SR30.mtf`: BV differs from the MUL: PY-SR30: BV 349, MUL 331
@@ -3919,12 +3917,11 @@
 - `megamek/Wolf and Blake/Wolfhound WLF-4WA.mtf`: duplicate of a design already kept: Wolfhound WLF-4WA
 - `megamek/Wolf and Blake/Zeus X ZEU-9WD Stacy.mtf`: duplicate of a design already kept: Zeus-X ZEU-9WD (Stacy)
 - `megamek/XTRs/Boondocks/Merlin MLN-SX.mtf`: duplicate of a design already kept: Merlin MLN-SX
-- `megamek/XTRs/Boondocks/Spindrift Aquatic SecurityMech SDT-1.mtf`: the import could not carry all of it over: Patchwork armor is not converted yet; Cannot find any armor named: 'Patchwork'
+- `megamek/XTRs/Boondocks/Spindrift Aquatic SecurityMech SDT-1.mtf`: duplicate of a design already kept: Spindrift SDT-1 Aquatic SecurityMech
 - `megamek/XTRs/Boondocks/Temax Cat Ninjabolt TMC-NB.mtf`: the import could not carry all of it over: 'Mech configuration 'Biped FrankenMek' is not converted yet; Cannot find any internal structure named: 'Hybrid'
 - `megamek/XTRs/Boondocks/Whitworth WTH-5S.mtf`: duplicate of a design already kept: Whitworth WTH-5S
 - `megamek/XTRs/Boondoggles/Liberator LIB-4T.mtf`: duplicate of a design already kept: Liberator LIB-4T
 - `megamek/XTRs/Boondoggles/Ostscout IIC.mtf`: different submodel, same name and model: equipment: Ostscout IIC 
-- `megamek/XTRs/Caveat Emptor/Aquagladius AQS-5 MAM.mtf`: the import could not carry all of it over: Patchwork armor is not converted yet; Cannot find any armor named: 'Patchwork'
 - `megamek/XTRs/Caveat Emptor/Uni ATAE-70 ArtilleryMech.mtf`: the import could not carry all of it over: Cannot place 'ISThumper': its slots are split in a way not converted yet; Cannot place 'ISThumper': its slots are split in a way not converted yet; Cannot place 'ISThumper': its slots are split in a way not converted yet
 - `megamek/XTRs/Caveat Emptor/Volkh VKH-68.mtf`: the import could not carry all of it over: Turret-mounted 'ISMediumXPulseLaser' is not converted yet
 - `megamek/XTRs/Caveat Emptor/Wasp WSP-3X.mtf`: the import could not carry all of it over: Compact heat sinks are not converted yet
@@ -3995,7 +3992,7 @@
 - `megamek/XTRs/Pirates/Daimyo DMO-1K2 Al-Shahab.mtf`: duplicate of a design already kept: Daimyo DMO-1K2 (al-Shahab)
 - `megamek/XTRs/Pirates/Dervish DV-8D2 Lightbringer.mtf`: duplicate of a design already kept: Dervish DV-8D2 "Lightbringer"
 - `megamek/XTRs/Pirates/Hellspawn HSN-7D2 Halperin.mtf`: duplicate of a design already kept: Hellspawn HSN-7D2 (Halperin)
-- `megamek/XTRs/Pirates/Victor VTR-9K2 St. James.mtf`: the import could not carry all of it over: Patchwork armor is not converted yet; Cannot find any armor named: 'Patchwork'
+- `megamek/XTRs/Pirates/Victor VTR-9K2 St. James.mtf`: duplicate of a design already kept: Victor VTR-9K2 (St.James)
 - `megamek/XTRs/Primitives III/Bellerophon BEL-1X.mtf`: different submodel, same name and model: actuators: Bellerophon BEL-1X
 - `megamek/XTRs/Primitives III/Dervish DV-1S.mtf`: different submodel, same name and model: equipment: Dervish DV-1S
 - `megamek/XTRs/Primitives III/Eisenfaust EFT-2.mtf`: different submodel, same name and model: actuators: Eisenfaust EFT-2

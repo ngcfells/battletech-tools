@@ -338,6 +338,22 @@ describe("MegaMek 'Mech import", () => {
         expect(large("engine:420 Large XXL (Clan) Engine").xml).toContain(`<engine rating="420" techbase="1">XXL Engine</engine>`);
     });
 
+    // The Zeus X ZEU-X and Spindrift SDT-1: MegaMek writes "armor:Patchwork" and names each location's armor type and
+    // tech base on its armor line; SSW writes them on the location element (TO:AUE p.189).
+    it("reads patchwork armor's type in each location", () => {
+        const patchwork = brawler.replace("armor:Standard(Inner Sphere)", "armor:Patchwork")
+            .replace(/^(LA|RA) armor:/gm, "$1 armor:IS Hardened(Inner Sphere):")
+            .replace(/^(LT|RT|CT|LL|RL) armor:/gm, "$1 armor:IS Standard(Inner Sphere):")
+            .replace(/^HD armor:/m, "HD armor:Clan Standard(Clan):");
+        const { mech, issues } = importBattleMechMtf(patchwork);
+        expect(issues).toEqual([]);
+        expect(mech!.isPatchworkArmor()).toBe(true);
+        expect(mech!.getPatchworkArmorType("leftArm").tag).toBe("hardened");
+        expect(mech!.getPatchworkArmorType("centerTorso").tag).toBe("standard");
+        expect(mech!.getPatchworkArmorType("head").tag).toBe("standard");
+        expect(mech!.getArmorAllocation().leftArm).toBe(14);
+    });
+
     // The Skinwalker (Ryoken III): an interface cockpit with no gyro. MegaMek packs the engine into center torso
     // slots 1-6; the gyro's slots are free for other items (IO:AE p.110).
     it("reads an interface cockpit with no gyro", () => {
