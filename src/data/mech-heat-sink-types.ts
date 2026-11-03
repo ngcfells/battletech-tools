@@ -83,6 +83,7 @@ export const mechHeatSinkTypes: IHeatSync[] = [
 	{
 		name: "Laser",
 		tag: "laser",
+		rulesLevel: 3,
 		editions: ["total-warfare", "battlemech-manual", "core-rulebook"],
 		altNames: ["Laser Heat Sink"],
 		dissipation: 2,
@@ -124,6 +125,7 @@ export const mechHeatSinkTypes: IHeatSync[] = [
 	{
 		name: "Double (Freezers)",
 		tag: "double-freezers",
+		rulesLevel: 4,
 		editions: ["total-warfare", "battlemech-manual", "core-rulebook"],
 		dissipation: 2,
 		crits: {
@@ -144,6 +146,7 @@ export const mechHeatSinkTypes: IHeatSync[] = [
 	{
 		name: "Compact",
 		tag: "compact",
+		rulesLevel: 4,
 		editions: ["total-warfare", "battlemech-manual", "core-rulebook"],
 		altNames: ["Compact Heat Sink", "1 Compact Heat Sink", "2 Compact Heat Sinks"],
 		dissipation: 1,

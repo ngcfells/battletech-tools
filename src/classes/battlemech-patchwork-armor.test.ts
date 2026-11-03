@@ -58,13 +58,13 @@ describe("Patchwork Armor: availability (TO:AUE p.189)", () => {
     });
 
     it("offers a location only the armor types legal for the unit", () => {
-        const battleMech = tags(patchwork().getAvailablePatchworkArmorTypes(3));
+        const battleMech = tags(patchwork().getAvailablePatchworkArmorTypes(4));
         expect(battleMech).toEqual(expect.arrayContaining(["standard", "ferro-fibrous", "light-ferro-fibrous", "heavy-ferro-fibrous", "stealth-basic", "hardened", "laser-reflective", "reactive"]));
         // "Modular Armor is treated as an item, not as armor"; Ferro-Lamellor is Clan armor; Commercial and Industrial are IndustrialMech armor.
         for (const tag of ["patchwork", "modular", "ferro-lamellor", "commercial", "industrial", "primitive", "ferro-fibrous-prototype"]) {
             expect(battleMech, tag).not.toContain(tag);
         }
-        expect(tags(patchwork({ tech: "clan" }).getAvailablePatchworkArmorTypes(3)))
+        expect(tags(patchwork({ tech: "clan" }).getAvailablePatchworkArmorTypes(4)))
             .toEqual(["standard", "ferro-fibrous", "hardened", "laser-reflective", "reactive", "ferro-lamellor", "heat-dissipating"]);
         expect(tags(patchwork({ structure: "industrial" }).getAvailablePatchworkArmorTypes(3)))
             .toEqual(["standard", "industrial", "commercial"]);

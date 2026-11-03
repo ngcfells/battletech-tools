@@ -83,6 +83,7 @@ export const mechJumpJetTypes: IJumpJet[] = [
 	{
 		name:  "UMU (Underwater Maneuvering Units)",
 		tag: "umu",
+		rulesLevel: 4,
 		techBase: "universal",
 		editions: ["total-warfare", "battlemech-manual", "core-rulebook"],
 		altNames: ["Mech UMU"],

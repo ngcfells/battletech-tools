@@ -11,7 +11,13 @@ import {
 } from "./rules-editions";
 import { getEquipmentCatalogDefinitions, getEquipmentOfferIssue, getEquipmentRulesLevel, isEquipmentOffered } from "./equipment-registry";
 import { APOCRYPHAL_RULES_LEVEL, CUSTOM_HOMEBREW_RULES_LEVEL } from "./rules-level-options";
-import { mechEngineTypes } from "./mech-engine-types";
+import { mechEngineTypes, mechLargeEngineTypes } from "./mech-engine-types";
+import { mechArmorTypes } from "./mech-armor-types";
+import { mechGyroTypes } from "./mech-gyro-types";
+import { mechHeatSinkTypes } from "./mech-heat-sink-types";
+import { mechInternalStructureTypes } from "./mech-internal-structure-types";
+import { mechJumpJetTypes } from "./mech-jump-jet-types";
+import { mechMyomerTypes } from "./mech-myomer-types";
 import { BattleMech } from "../classes/battlemech";
 
 const isEquipmentWithinRulesLevel = (item: IEquipmentItem, rulesLevel: number): boolean => {
@@ -146,6 +152,36 @@ describe("equipment edition standing", () => {
             expect(mech.isOfferedInEdition(engine("xl"), 2), edition).toBe(true);
             expect(mech.isOfferedInEdition(engine("standard"), 1), edition).toBe(true);
         }
+    });
+
+    it("'Mech parts carry their TO:AUE / IO:AE rules level (#613)", () => {
+        const mech = new BattleMech();
+        mech.setRulesEdition("total-warfare");
+        const parts: [string, { tag: string, rulesLevel?: number }[], number][] = [
+            ["hardened", mechArmorTypes, 4], ["reactive", mechArmorTypes, 4], ["laser-reflective", mechArmorTypes, 4],
+            ["impact-resistant", mechArmorTypes, 3], ["xxl", mechEngineTypes, 4], ["large-standard", mechLargeEngineTypes, 4],
+            ["reinforced", mechInternalStructureTypes, 4], ["laser", mechHeatSinkTypes, 3], ["compact", mechHeatSinkTypes, 4],
+            ["umu", mechJumpJetTypes, 4], ["risc-super-cooled-myomer", mechMyomerTypes, 4],
+        ];
+        for (const [tag, records, level] of parts) {
+            const part = records.find((record) => record.tag === tag)!;
+            expect(part, tag).toBeDefined();
+            expect(mech.isOfferedInEdition(part, level - 1), tag).toBe(false);
+            expect(mech.isOfferedInEdition(part, level), tag).toBe(true);
+        }
+        // TechManual parts stay Standard.
+        expect(mech.isOfferedInEdition(mechGyroTypes.find((gyro) => gyro.tag === "xl")!, 2)).toBe(true);
+        expect(mech.isOfferedInEdition(mechArmorTypes.find((armor) => armor.tag === "ferro-fibrous")!, 2)).toBe(true);
+
+        // The design's required level counts its parts.
+        mech.setTech("mis");
+        expect(mech.getRequiredRulesLevel()).toBeLessThanOrEqual(2);
+        mech.setArmorType("hardened");
+        expect(mech.getArmorType()).toBe("hardened");
+        expect(mech.getRequiredRulesLevel()).toBe(4);
+        mech.setArmorType("standard");
+        mech.setHeatSinksType("laser");
+        expect(mech.getRequiredRulesLevel()).toBe(3);
     });
 
     it("the new filter only adds level hiding", () => {

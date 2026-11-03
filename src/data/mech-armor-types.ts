@@ -226,6 +226,7 @@ export const mechArmorTypes: IArmorType[] = [
 	{
 		name: "Vehicular Stealth Armor",
 		tag: "vehicular-stealth",
+		rulesLevel: 4,
 		techBase: "universal",
 		editions: ["total-warfare", "battlemech-manual", "core-rulebook"],
 		patchwork: { slots: {}, vehicleSlots: { is: 1 }, tonsPerPoint: { is: 0.0625 } },
@@ -264,6 +265,7 @@ export const mechArmorTypes: IArmorType[] = [
 	{
 		name: "Hardened Armor",
 		tag: "hardened",
+		rulesLevel: 4,
 		techBase: "universal",
 		editions: ["total-warfare", "battlemech-manual", "core-rulebook"],
 		patchwork: { slots: { is: 0, clan: 0 }, vehicleSlots: { is: 0, clan: 0 }, tonsPerPoint: { is: 0.1250, clan: 0.1250 } },
@@ -303,6 +305,7 @@ export const mechArmorTypes: IArmorType[] = [
 	{
 		name: "Laser Reflective Armor",
 		tag: "laser-reflective",
+		rulesLevel: 4,
 		techBase: "universal",
 		editions: ["total-warfare", "battlemech-manual", "core-rulebook"],
 		altNames: ["Laser-Reflective"],
@@ -343,6 +346,7 @@ export const mechArmorTypes: IArmorType[] = [
 	{
 		name: "Reactive Armor",
 		tag: "reactive",
+		rulesLevel: 4,
 		techBase: "universal",
 		editions: ["total-warfare", "battlemech-manual", "core-rulebook"],
 		patchwork: { slots: { is: 2, clan: 1 }, vehicleSlots: { is: 1, clan: 1 }, tonsPerPoint: { is: 0.0625, clan: 0.0625 } },
@@ -379,6 +383,7 @@ export const mechArmorTypes: IArmorType[] = [
 	{
 		name: "Ferro-Lamellor Armor",
 		tag: "ferro-lamellor",
+		rulesLevel: 4,
 		techBase: "universal",
 		editions: ["total-warfare", "battlemech-manual", "core-rulebook"],
 		altNames: ["Ferro-Lamellor"],
@@ -418,6 +423,7 @@ export const mechArmorTypes: IArmorType[] = [
 	{
 		name: "Ballistic-Reinforced Armor",
 		tag: "ballistic-reinforced",
+		rulesLevel: 3,
 		techBase: "universal",
 		editions: ["total-warfare", "battlemech-manual", "core-rulebook"],
 		patchwork: { slots: { is: 2 }, vehicleSlots: { is: 1 }, tonsPerPoint: { is: 0.0833 } },
@@ -595,6 +601,7 @@ export const mechArmorTypes: IArmorType[] = [
 	{
 		name: "Modular Armor",
 		tag: "modular",
+		rulesLevel: 4,
 		techBase: "universal",
 		editions: ["total-warfare", "battlemech-manual", "core-rulebook"],
 		constructionStatus: "implemented",
@@ -704,6 +711,7 @@ export const mechArmorTypes: IArmorType[] = [
 	{
 		name: "Patchwork Armor",
 		tag: "patchwork",
+		rulesLevel: 3,
 		techBase: "universal",
 		editions: ["total-warfare", "battlemech-manual", "core-rulebook"],
 		altNames: ["Patchwork Armor Setup"],
@@ -775,6 +783,7 @@ export const mechArmorTypes: IArmorType[] = [
 	{
 		name: "Electric Discharge ProtoMech (EDP) Armor",
 		tag: "protomech-edp",
+		rulesLevel: 4,
 		techBase: "universal",
 		editions: ["total-warfare", "battlemech-manual", "core-rulebook"],
 		unitTypes: {
@@ -829,6 +838,7 @@ export const mechArmorTypes: IArmorType[] = [
 	{
 		name: "Heat-Dissipating Armor",
 		tag: "heat-dissipating",
+		rulesLevel: 3,
 		techBase: "universal",
 		editions: ["total-warfare", "battlemech-manual", "core-rulebook"],
 		patchwork: { slots: { is: 1, clan: 1 }, tonsPerPoint: { is: 0.1000, clan: 0.1000 } },
@@ -848,6 +858,7 @@ export const mechArmorTypes: IArmorType[] = [
 	{
 		name: "Impact-Resistant Armor",
 		tag: "impact-resistant",
+		rulesLevel: 3,
 		techBase: "universal",
 		editions: ["total-warfare", "battlemech-manual", "core-rulebook"],
 		patchwork: { slots: { is: 2 }, tonsPerPoint: { is: 0.0714 } },
@@ -865,6 +876,7 @@ export const mechArmorTypes: IArmorType[] = [
 	{
 		name: "Anti-Penetrative Ablation Armor",
 		tag: "anti-penetrative-ablation",
+		rulesLevel: 3,
 		techBase: "universal",
 		altNames: ["Ablation Armor"],
 		editions: ["total-warfare", "battlemech-manual", "core-rulebook"],

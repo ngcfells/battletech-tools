@@ -294,6 +294,7 @@ export const mechInternalStructureTypes: IInternalStructure[] = [
   {
     name: "Endo-Composite",
     tag: "endo-composite",
+    rulesLevel: 4,
     techBase: "universal",
     editions: ["total-warfare", "battlemech-manual", "core-rulebook"],
     book: "TO:AUE",
@@ -316,6 +317,7 @@ export const mechInternalStructureTypes: IInternalStructure[] = [
   {
     name: "Reinforced",
     tag: "reinforced",
+    rulesLevel: 4,
     techBase: "universal",
     editions: ["total-warfare", "battlemech-manual", "core-rulebook"],
     altNames: ["Reinforced Structure"],
@@ -340,6 +342,7 @@ export const mechInternalStructureTypes: IInternalStructure[] = [
   {
     name: "Composite",
     tag: "composite",
+    rulesLevel: 4,
     techBase: "universal",
     editions: ["total-warfare", "battlemech-manual", "core-rulebook"],
     altNames: ["Composite Structure"],

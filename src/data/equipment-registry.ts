@@ -284,9 +284,10 @@ export function isUnderUnitLimit(item: IEquipmentItem, installed: readonly (IEqu
 
 /**
  * The rules level an item needs. Unset is Standard: only the technology of 3025 is Introductory (How the Core
- * Rulebooks Work p.2), and those records say `rulesLevel: 1`.
+ * Rulebooks Work p.2), and those records say `rulesLevel: 1`. 'Mech part records (armor, engine, gyro and so on)
+ * are graded the same way.
  */
-export function getEquipmentRulesLevel(item: IEquipmentItem): number {
+export function getEquipmentRulesLevel(item: Partial<Pick<IEquipmentItem, "rulesLevel" | "catalog" | "category" | "book" | "introduced" | "prototype">>): number {
     let level = typeof item.rulesLevel === "number" ? item.rulesLevel : STANDARD_RULES_LEVEL;
     if (item.catalog === "custom" || item.category === "Custom Equipment" || item.book === "Custom") {
         level = Math.max(level, CUSTOM_HOMEBREW_RULES_LEVEL);

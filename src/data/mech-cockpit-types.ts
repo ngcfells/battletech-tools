@@ -207,6 +207,7 @@ export const mechCockpitTypes: ICockpitType[] = [
 	{
 		name: "Direct Neural Interface Cockpit Modification",
 		tag: "direct-neural-interface",
+		rulesLevel: 3,
 		editions: ["total-warfare", "battlemech-manual", "core-rulebook"],
 		weight: 0,
 		cost: 250000,
@@ -224,6 +225,7 @@ export const mechCockpitTypes: ICockpitType[] = [
 	{
 		name: "Damage Interrupt Circuit",
 		tag: "damage-interrupt-circuit",
+		rulesLevel: 4,
 		editions: ["total-warfare", "battlemech-manual", "core-rulebook"],
 		weight: 0,
 		cost: 150,
@@ -241,6 +243,7 @@ export const mechCockpitTypes: ICockpitType[] = [
 	{
 		name: "SLDF Advanced Neurohelmet",
 		tag: "sldf-advanced-neurohelmet",
+		rulesLevel: 3,
 		editions: ["total-warfare", "battlemech-manual", "core-rulebook"],
 		weight: 0,
 		cost: 5000,
@@ -258,6 +261,8 @@ export const mechCockpitTypes: ICockpitType[] = [
 	{
 		name: "Enhanced Imaging (EI) Interface",
 		tag: "enhanced-imaging-interface",
+		// EI prints no level of its own; it falls under the Experimental augmented warrior rules (IO:AE p.68).
+		rulesLevel: 4,
 		editions: ["total-warfare", "battlemech-manual", "core-rulebook"],
 		weight: 0,
 		cost: 1500000,
@@ -274,6 +279,7 @@ export const mechCockpitTypes: ICockpitType[] = [
 	{
 		name: "Virtual Reality Piloting Pod",
 		tag: "virtual-reality-piloting-pod",
+		rulesLevel: 4,
 		editions: ["total-warfare", "battlemech-manual", "core-rulebook"],
 		weight: 3,
 		cost: 1250000,

@@ -7111,13 +7111,16 @@ export class BattleMech {
         }
         if (this.isOmniLAM() || this.isVTOLAM()) level = Math.max(level, CUSTOM_HOMEBREW_RULES_LEVEL);
         // A custom or draft chassis component (custom-component-registry.ts) is homebrew.
-        const components: [CustomComponentKind, { tag: string } | null | undefined][] = [
+        const components: [CustomComponentKind, { tag: string, rulesLevel?: number } | null | undefined][] = [
             ["armor", this._armorType], ["structure", this._selectedInternalStructure], ["engine", this._engineType],
             ["gyro", this._gyro], ["heatSink", this._heatSinkType], ["jumpJet", this._jumpJetType], ["myomer", this._myomerType],
         ];
         for (const [kind, record] of components) {
             if (isCustomComponent(kind, record as never)) {
-                level = Math.max(level, CUSTOM_HOMEBREW_RULES_LEVEL, (record as { rulesLevel?: number }).rulesLevel ?? 0);
+                level = Math.max(level, CUSTOM_HOMEBREW_RULES_LEVEL, record?.rulesLevel ?? 0);
+            } else if (record && (kind !== "jumpJet" || this.getJumpJetCount() > 0)) {
+                // Advanced and Experimental parts (TO:AUE, IO:AE), graded as equipment is.
+                level = Math.max(level, getEquipmentRulesLevel(record));
             }
         }
         // Primitive 'Mech construction is Advanced (IO:AE p.116).
@@ -7131,6 +7134,7 @@ export class BattleMech {
             ? this.getPatchworkLocations().map(location => this.getPatchworkArmorType(location.key))
             : [this._armorType];
         if (armorTypes.some(armor => this._isIndustrialMechExperimentalArmor(armor))) level = Math.max(level, EXPERIMENTAL_RULES_LEVEL);
+        for (const armor of armorTypes) level = Math.max(level, getEquipmentRulesLevel(armor));
         // Patchwork Armor is an "advanced construction option" (TO:AUE p.189).
         if (this.isPatchworkArmor()) level = Math.max(level, 3);
         // Non-Fusion BattleMechs are Experimental (TO:AUE p.120), and Custom Homebrew before Total Warfare.

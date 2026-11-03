@@ -93,6 +93,7 @@ export const mechMyomerTypes: IMyomerType[] = [
 	{
 		name: "Super-Cooled Myomer",
 		tag: "risc-super-cooled-myomer",
+		rulesLevel: 4,
 		editions: ["total-warfare", "battlemech-manual", "core-rulebook"],
 		criticals: 6,
 		costPerTon: 10000,

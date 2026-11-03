@@ -250,7 +250,10 @@ describe("BattleMech armor technology availability", () => {
         mixedClanMech.setTech("mclan");
         mixedClanMech.setEra("ilClan");
         const mixedArmorTags = mixedClanMech.getAvailableArmorTypes().filter(armor => armor.available).map(armor => armor.tag);
-        expect(mixedArmorTags).toEqual(expect.arrayContaining(["standard", "ferro-fibrous", "light-ferro-fibrous", "heavy-ferro-fibrous", "stealth-basic", "ferro-lamellor"]));
+        expect(mixedArmorTags).toEqual(expect.arrayContaining(["standard", "ferro-fibrous", "light-ferro-fibrous", "heavy-ferro-fibrous", "stealth-basic"]));
+        // Ferro-Lamellor is Experimental (TO:AUE p.92).
+        expect(mixedArmorTags).not.toContain("ferro-lamellor");
+        expect(mixedClanMech.getAvailableArmorTypes(4).filter(armor => armor.available).map(armor => armor.tag)).toContain("ferro-lamellor");
         expect(mixedArmorTags).not.toContain("modular");
         expect(mixedArmorTags).not.toContain("patchwork");
         expect(mixedArmorTags).not.toContain("ferro-aluminum");
@@ -1119,8 +1122,9 @@ describe("BattleMech engine construction", () => {
             const mech = build(50, 5, "standard", tech, era);
             return mech.getAvailableJumpJets(rulesLevel).filter(jj => jj.available).map(jj => jj.tag);
         };
-        expect(jumpJets("is", "civil-war")).toEqual(["standard", "umu"]); // UMU 3066
-        expect(jumpJets("is", "jihad")).toEqual(["standard", "improved", "umu"]);
+        expect(jumpJets("is", "civil-war")).toEqual(["standard"]);
+        expect(jumpJets("is", "civil-war", 4)).toContain("umu"); // UMU 3066, Experimental (TO:AUE p.107)
+        expect(jumpJets("is", "jihad")).toEqual(["standard", "improved"]);
         expect(jumpJets("clan", "civil-war", 4)).toEqual(["standard", "improved", "umu"]); // Clan prototype 3060
 
         const mech = build(50, 5, "standard", "is", "jihad");
@@ -1240,8 +1244,9 @@ describe("BattleMech heat sink and gyro availability", () => {
     });
 
     it("offers Laser heat sinks to Clans and prototype doubles only at Experimental (TO:AUE p.129, IO:AE)", () => {
-        expect(heatSink("clan", "clan-inv", "laser").available).toBe(true);
-        expect(heatSink("is", "clan-inv", "laser").available).toBe(false);
+        expect(heatSink("clan", "clan-inv", "laser").available).toBe(false); // Advanced (TO:AUE p.129)
+        expect(heatSink("clan", "clan-inv", "laser", 3).available).toBe(true);
+        expect(heatSink("is", "clan-inv", "laser", 3).available).toBe(false);
         expect(heatSink("is", "age-of-war", "double-prototype").available).toBe(false);
         expect(heatSink("is", "age-of-war", "double-prototype", 4).availableAsPrototype).toBe(true);
         expect(heatSink("is", "late-sw-rn", "double-freezers", 4).available).toBe(true);
@@ -1261,8 +1266,9 @@ describe("BattleMech heat sink and gyro availability", () => {
     });
 
     it("weighs and slots Compact heat sinks two per slot with doubled engine capacity (TO:AUE p.128)", () => {
-        expect(heatSink("is", "jihad", "compact").available).toBe(true);
-        expect(heatSink("clan", "jihad", "compact").available).toBe(false);
+        expect(heatSink("is", "jihad", "compact").available).toBe(false); // Experimental (TO:AUE p.128)
+        expect(heatSink("is", "jihad", "compact", 4).available).toBe(true);
+        expect(heatSink("clan", "jihad", "compact", 4).available).toBe(false);
         expect(heatSink("is", "clan-inv", "compact", 4).availableAsPrototype).toBe(true);
 
         const mech = new BattleMech();
