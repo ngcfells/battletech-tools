@@ -1,11 +1,11 @@
 # Bundled 'Mechs: build report
 
-3672 designs kept (38 renamed), 4058 files left out.
+3674 designs kept (38 renamed), 4056 files left out.
 
 | Reason | Files |
 |---|---|
 | duplicate of a design already kept | 3176 |
-| BV differs from the MUL | 230 |
+| BV differs from the MUL | 228 |
 | different submodel, same name and model: equipment | 162 |
 | different submodel, same name and model: ammo type | 115 |
 | the import could not carry all of it over | 93 |
@@ -3654,8 +3654,6 @@
 - `megamek/Shrapnel/vol 19/Dragon Fire DGR-7K.mtf`: duplicate of a design already kept: Dragon Fire DGR-7K
 - `megamek/Shrapnel/vol 19/Dragon Fire DGR-9D.mtf`: duplicate of a design already kept: Dragon Fire DGR-9D
 - `megamek/Shrapnel/vol 19/Grotesque (Mongrel) Prime.mtf`: different submodel, same name and model: ammo type: Mongrel (Grendel)  Prime
-- `megamek/Snords Irregulars/Hybrid Rifleman RFL-3N (Sneede II).mtf`: BV differs from the MUL: RFL-3N (Sneede II): BV 2165, MUL 2198
-- `megamek/Snords Irregulars/Hybrid Rifleman RFL-3N (Sneede).mtf`: BV differs from the MUL: RFL-3N (Sneede): BV 1248, MUL 1269
 - `megamek/Spotlight On/Hellion Keshik/Awesome C.mtf`: duplicate of a design already kept: Awesome C
 - `megamek/Starterbook Sword and Dragon/Black Knight BL-6-KNT Ian.mtf`: BV differs from the MUL: BL-6-KNT (Ian): BV 1861, MUL 1830
 - `megamek/Starterbook Sword and Dragon/Cataphract CTF-2X George.mtf`: BV differs from the MUL: CTF-2X (George): BV 1337, MUL 1311
@@ -3901,7 +3899,7 @@
 - `megamek/Wolf and Blake/Zeus X ZEU-9WD Stacy.mtf`: duplicate of a design already kept: Zeus-X ZEU-9WD (Stacy)
 - `megamek/XTRs/Boondocks/Merlin MLN-SX.mtf`: duplicate of a design already kept: Merlin MLN-SX
 - `megamek/XTRs/Boondocks/Spindrift Aquatic SecurityMech SDT-1.mtf`: duplicate of a design already kept: Spindrift SDT-1 Aquatic SecurityMech
-- `megamek/XTRs/Boondocks/Temax Cat Ninjabolt TMC-NB.mtf`: BV differs from the MUL: TMC-NB: BV 1490, MUL 1475
+- `megamek/XTRs/Boondocks/Temax Cat Ninjabolt TMC-NB.mtf`: BV differs from the MUL: TMC-NB: BV 1481, MUL 1475
 - `megamek/XTRs/Boondocks/Whitworth WTH-5S.mtf`: duplicate of a design already kept: Whitworth WTH-5S
 - `megamek/XTRs/Boondoggles/Liberator LIB-4T.mtf`: duplicate of a design already kept: Liberator LIB-4T
 - `megamek/XTRs/Boondoggles/Ostscout IIC.mtf`: different submodel, same name and model: equipment: Ostscout IIC 

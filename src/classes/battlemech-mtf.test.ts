@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { convertMtfToSSW, importBattleMechMtf, parseMtfFile } from "./battlemech-mtf";
+import { convertMtfToSSW, correctMtfDesign, importBattleMechMtf, parseMtfFile } from "./battlemech-mtf";
 
 // Synthetic MegaMek files: the shape of a MegaMekLab save, with made-up designs.
 const location = (name: string, ...slots: string[]): string[] =>
@@ -434,6 +434,21 @@ describe("MegaMek 'Mech import", () => {
         expect(endoTorso.mech!.getInternalStructureType()).toBe("endo-steel");
         expect(endoTorso.mech!.getFrankenMechLocationStructureSlots("centerTorso")).toBe(1);
         expect(endoTorso.mech!.getUnallocatedCritCount()).toBe(0);
+    });
+
+    // A bundled design whose MegaMek file differs from its newest printed sheet is corrected on import, by chassis
+    // and model, from MTF_DESIGN_CORRECTIONS (each line cited).
+    it("corrects a design from its printed sheet", () => {
+        const file = parseMtfFile(brawler)!;
+        correctMtfDesign(file, { "Test Brawler TB-2": { values: { "rtr armor": "3", "la armor": "9" }, source: "test" } });
+        expect(file.values["rtr armor"]).toEqual(["3"]);
+        expect(file.values["la armor"]).toEqual(["9"]);
+        const other = parseMtfFile(brawler)!;
+        correctMtfDesign(other, { "Test Brawler TB-3": { values: { "la armor": "9" }, source: "test" } });
+        expect(other.values["la armor"]).toEqual(parseMtfFile(brawler)!.values["la armor"]);
+        // The import applies the table: the Temax Cat's right rear torso is 6 on XTRO:Boondocks p.6 (MegaMek has 8).
+        const temax = brawler.replace("chassis:Test Brawler", "chassis:Temax Cat Ninjabolt").replace("model:TB-2", "model:TMC-NB");
+        expect(importBattleMechMtf(temax).mech!.getArmorAllocation().rightTorsoRear).toBe(6);
     });
 
     // The Skinwalker (Ryoken III): an interface cockpit with no gyro. MegaMek packs the engine into center torso
