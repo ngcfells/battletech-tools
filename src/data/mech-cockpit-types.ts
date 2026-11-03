@@ -19,6 +19,7 @@ export const mechCockpitTypes: ICockpitType[] = [
 	{
 		name: "Cockpit",
 		tag: "standard",
+		rulesLevel: 1,
 		techBase: "universal",
 		editions: ["battledroids", "battletech-2nd-edition", "battletech-manual", "battletech-compendium", "battletech-3rd-edition", "compendium-rules-of-warfare", "battletech-4th-edition", "master-rules", "master-rules-revised", "total-warfare", "battlemech-manual", "core-rulebook"],
 		weight: 3,

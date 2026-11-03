@@ -95,6 +95,11 @@ export interface IRulesEdition {
     /** The edition's rulebook prints no prices, for equipment or for a finished unit. */
     noPrices?: boolean;
     /**
+     * An earlier edition graded as Total Warfare is: Level 1 is the technology of 3025, Level 2 the rest (BMR p.6,
+     * BMR(R) p.6), so its records take their `rulesLevel` unless `editionLevels` says otherwise.
+     */
+    gradedLikeTotalWarfare?: boolean;
+    /**
      * An earlier edition whose rules let Clan and Inner Sphere technology be mixed on one chassis. Whether it has
      * the Clan technology base at all follows from its Clan equipment (`editionStats`).
      */
@@ -352,6 +357,7 @@ export const btRulesEditions: IRulesEdition[] = [
         book: "BMR",
         complete: true,
         ammoTonsFor: "class",
+        gradedLikeTotalWarfare: true,
         // Designs are built "factory-built" with one technology base; custom modifications may mix Clan and Inner
         // Sphere technology on a chassis (BMR pp.87, 108).
         mixedTech: true,
@@ -373,7 +379,7 @@ export const btRulesEditions: IRulesEdition[] = [
             "Component prices: the BattleMech Costs Table prices the cockpit, life support, sensors, musculature, skeleton, actuators, engine, gyro, jump jets, heat sinks and armor by formula, with x.25 for an OmniMech and a final multiplier of 1 + tonnage / 100 (BMR p.136); only the fixed prices are entered.",
             "Clan CASE: no weight and no critical slots, in every Clan location that holds explosive ammunition or equipment (BMR pp.117, 126); the catalogs have no record for it.",
             "OmniMech and OmniVehicle pods: a design fixes its structure, engine and armor and leaves tonnage and space for pods (BMR pp.114, 120).",
-            "Flare LRMs: fired at a hex to light it and everything within 3 hexes, for the launcher's size divided by 5 turns (BMR p.130); the catalogs have no record for them.",
+            "Flare LRMs: fired at a hex to light it and everything within 3 hexes, for the launcher's size divided by 5 turns (BMR p.130); the ammunition is in the catalogs (`ammo-lrm-flare`), the lighting is not played out.",
             "Narc Explosive Pods for the Clan launcher: the price list serves both technology bases (BMR pp.133, 138); the catalogs have an Inner Sphere record only.",
             "Mines: conventional, command-detonated and vibrabomb fields are placed before play; Thunder LRMs and the Clan Arrow IV FASCAM round lay conventional fields (BMR pp.80-81, 132).",
             "Vehicle parts: control components, lift, rotor and diving equipment, turrets, power amplifiers and fusion shielding are percentages of the vehicle, not items; a vehicle carries 5 items plus 1 for every 5 full tons (BMR pp.118-119).",
@@ -393,6 +399,7 @@ export const btRulesEditions: IRulesEdition[] = [
         book: "BMR(R)",
         complete: true,
         ammoTonsFor: "class",
+        gradedLikeTotalWarfare: true,
         // As in the Master Rules: custom modifications may mix Clan and Inner Sphere technology (BMR(R) pp.89, 115).
         mixedTech: true,
         // A rulebook only, as the Master Rules was: no 'Mech record listings. The construction example is again the
@@ -416,7 +423,7 @@ export const btRulesEditions: IRulesEdition[] = [
             "ProtoMechs: 2 to 9 tons, built from their own tables and priced by their own cost table (BMR(R) pp.54-55, 124-126, 150); they are fixed designs here, not built from the catalogs.",
             "Clan CASE: no weight and no critical slots, in every Clan location that holds explosive ammunition or equipment (BMR(R) pp.123, 136); the catalogs have no record for it.",
             "OmniMech and OmniVehicle pods: a design fixes its structure, engine and armor and leaves tonnage and space for pods (BMR(R) pp.120, 129).",
-            "Flare LRMs: fired at a hex to light it and everything within 3 hexes, for the launcher's size divided by 5 turns (BMR(R) p.141); the catalogs have no record for them.",
+            "Flare LRMs: fired at a hex to light it and everything within 3 hexes, for the launcher's size divided by 5 turns (BMR(R) p.141); the ammunition is in the catalogs (`ammo-lrm-flare`), the lighting is not played out.",
             "Incendiary autocannon ammunition: 2 more points against unarmored infantry, fires on 5+, a +1 night modifier, and an explosion if the autocannon takes a critical hit in a turn it fired the rounds; 2 x normal (BMR(R) pp.133, 151). The catalogs have no record for it.",
             "Narc Explosive Pods for the Clan launcher: the one Narc munition Clan units may use (BMR(R) pp.146, 151); the catalogs have an Inner Sphere record only.",
             "Rocket launcher reloads: the price list's Ammo Cost for a rocket launcher is its reload after a mission (BMR(R) pp.140, 151); it is noted on the launchers, which carry no ammunition.",
@@ -533,13 +540,14 @@ export function getRecordEditions(record: IEditionRecord): string[] {
 
 /**
  * The rules level at which this record is canon in `editionTag`: its own `editionLevels` entry, else 0 in an earlier
- * edition (the box sets are not graded by level) and the record's `rulesLevel` from the default edition on.
+ * edition (the box sets are not graded by level) and the record's `rulesLevel` in one graded like Total Warfare and
+ * from the default edition on.
  */
 export function getRecordLevelInEdition(record: IEditionRecord, editionTag: string): number {
     if (record.editionLevels !== undefined && editionTag in record.editionLevels) {
         return record.editionLevels[editionTag];
     }
-    return isEarlierRulesEdition(editionTag) ? 0 : (record.rulesLevel ?? 0);
+    return isEarlierRulesEdition(editionTag) && !getRulesEdition(editionTag).gradedLikeTotalWarfare ? 0 : (record.rulesLevel ?? 0);
 }
 
 /**

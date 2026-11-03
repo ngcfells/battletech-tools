@@ -525,7 +525,7 @@ describe("Primitive BattleMechs (IO:AE pp.116-118)", () => {
 
     it("is Advanced rules", () => {
         expect(mackie().getRequiredRulesLevel()).toBe(3);
-        expect(build({ era: "age-of-war" }).getRequiredRulesLevel()).toBe(0);
+        expect(build({ era: "age-of-war" }).getRequiredRulesLevel()).toBe(1);
     });
 
     it("survives a save and reload", () => {

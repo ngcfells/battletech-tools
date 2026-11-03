@@ -15,7 +15,7 @@ import { artilleryCustom } from "./artillery-custom";
 import { ammoApocryphal, artilleryApocryphal } from "./hailstorm-apocryphal";
 import { ammoCatalog } from "./ammo";
 import { isUniversalEquipment } from "./universal-equipment";
-import { APOCRYPHAL_RULES_LEVEL, CUSTOM_HOMEBREW_RULES_LEVEL, EXPERIMENTAL_RULES_LEVEL, MUNCHKIN_RULES_LEVEL } from "./rules-level-options";
+import { APOCRYPHAL_RULES_LEVEL, CUSTOM_HOMEBREW_RULES_LEVEL, EXPERIMENTAL_RULES_LEVEL, MUNCHKIN_RULES_LEVEL, STANDARD_RULES_LEVEL } from "./rules-level-options";
 import { getBattleArmorScaleEquipment } from "./battle-armor-scale-equipment";
 import { getRecordOfferIssue } from "./rules-editions";
 
@@ -184,7 +184,7 @@ export function calculateShotsPerTon(totalRoundsPerTon: number, launcherSize: nu
     return Math.ceil(totalRoundsPerTon / launcherSize);
 }
 
-export { APOCRYPHAL_RULES_LEVEL, CUSTOM_HOMEBREW_RULES_LEVEL, EXPERIMENTAL_RULES_LEVEL, MUNCHKIN_RULES_LEVEL };
+export { APOCRYPHAL_RULES_LEVEL, CUSTOM_HOMEBREW_RULES_LEVEL, EXPERIMENTAL_RULES_LEVEL, MUNCHKIN_RULES_LEVEL, STANDARD_RULES_LEVEL };
 
 /**
  * 'Mech equipment an OmniMech must build into its base chassis: it can never be pod-mounted.
@@ -282,8 +282,12 @@ export function isUnderUnitLimit(item: IEquipmentItem, installed: readonly (IEqu
     return !item.maxPerUnit || installed.filter((other) => (other?.maxPerUnitGroup ?? other?.tag) === limitKey).length < item.maxPerUnit;
 }
 
+/**
+ * The rules level an item needs. Unset is Standard: only the technology of 3025 is Introductory (How the Core
+ * Rulebooks Work p.2), and those records say `rulesLevel: 1`.
+ */
 export function getEquipmentRulesLevel(item: IEquipmentItem): number {
-    let level = typeof item.rulesLevel === "number" ? item.rulesLevel : 0;
+    let level = typeof item.rulesLevel === "number" ? item.rulesLevel : STANDARD_RULES_LEVEL;
     if (item.catalog === "custom" || item.category === "Custom Equipment" || item.book === "Custom") {
         level = Math.max(level, CUSTOM_HOMEBREW_RULES_LEVEL);
     }

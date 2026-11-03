@@ -2001,6 +2001,7 @@ export const ammoCatalog: IEquipmentItem[] = [
             "master-rules-revised": { book: "BMR(R)", page: 121, weight: 1, shotsPerTon: 45, cbills: 1000, notes: "At least 1 ton for each class of launcher or ballistic weapon; none for one-shot weapons (BMR(R) p.120)." },
         },
         clanDates: { prototype: 2290, introduced: 2300, extinct: 2850, reintroduced: null },
+        rulesLevel: 1,
     },
     {
         isAmmo: true,
@@ -2287,6 +2288,7 @@ export const ammoCatalog: IEquipmentItem[] = [
             "master-rules-revised": { book: "BMR(R)", page: 121, weight: 1, shotsPerTon: 20, cbills: 4500, notes: "At least 1 ton for each class of launcher or ballistic weapon; none for one-shot weapons (BMR(R) p.120)." },
         },
         clanDates: { prototype: 2240, introduced: 2250, extinct: 2850, reintroduced: null },
+        rulesLevel: 1,
     },
     {
         isAmmo: true,
@@ -2568,6 +2570,7 @@ export const ammoCatalog: IEquipmentItem[] = [
             "master-rules-revised": { book: "BMR(R)", page: 121, weight: 1, shotsPerTon: 10, cbills: 6000, notes: "At least 1 ton for each class of launcher or ballistic weapon; none for one-shot weapons (BMR(R) p.120)." },
         },
         clanDates: { prototype: 2443, introduced: 2460, extinct: 2850, reintroduced: null },
+        rulesLevel: 1,
     },
     {
         isAmmo: true,
@@ -2849,6 +2852,7 @@ export const ammoCatalog: IEquipmentItem[] = [
             "master-rules-revised": { book: "BMR(R)", page: 121, weight: 1, shotsPerTon: 5, cbills: 10000, notes: "At least 1 ton for each class of launcher or ballistic weapon; none for one-shot weapons (BMR(R) p.120)." },
         },
         clanDates: { prototype: 2488, introduced: 2500, extinct: 2850, reintroduced: null },
+        rulesLevel: 1,
     },
     {
         isAmmo: true,
@@ -8462,6 +8466,7 @@ export const ammoCatalog: IEquipmentItem[] = [
             "master-rules": { book: "BMR", page: 115, weight: 1, cbills: 30000, notes: "Shots per ton by launcher: 24 (LRM 5), 12 (LRM 10), 8 (LRM 15), 6 (LRM 20). At least 1 ton for each class of launcher or ballistic weapon; none for one-shot weapons (BMR p.114)." },
             "master-rules-revised": { book: "BMR(R)", page: 121, weight: 1, cbills: 30000, notes: "Shots per ton by launcher: 24 (LRM 5), 12 (LRM 10), 8 (LRM 15), 6 (LRM 20). At least 1 ton for each class of launcher or ballistic weapon; none for one-shot weapons (BMR(R) p.120)." },
         },
+        rulesLevel: 1,
     },
     {
         isAmmo: true,
@@ -8601,6 +8606,7 @@ export const ammoCatalog: IEquipmentItem[] = [
             "master-rules": { book: "BMR", page: 115, weight: 1, shotsPerTon: 200, cbills: 1000, notes: "At least 1/2 ton for machine guns (BMR p.114)." },
             "master-rules-revised": { book: "BMR(R)", page: 121, weight: 1, shotsPerTon: 200, cbills: 1000, notes: "At least 1/2 ton for machine guns (BMR(R) p.120)." },
         },
+        rulesLevel: 1,
     },
     {
         isAmmo: true,
@@ -8711,6 +8717,7 @@ export const ammoCatalog: IEquipmentItem[] = [
             "master-rules": { book: "BMR", page: 115, weight: 1, cbills: 27000, notes: "Shots per ton by launcher: 50 (SRM 2), 25 (SRM 4), 15 (SRM 6). At least 1 ton for each class of launcher or ballistic weapon; none for one-shot weapons (BMR p.114)." },
             "master-rules-revised": { book: "BMR(R)", page: 122, weight: 1, cbills: 27000, notes: "Shots per ton by launcher: 50 (SRM 2), 25 (SRM 4), 15 (SRM 6). At least 1 ton for each class of launcher or ballistic weapon; none for one-shot weapons (BMR(R) p.120)." },
         },
+        rulesLevel: 1,
     },
     {
         isAmmo: true,
@@ -8996,6 +9003,7 @@ export const ammoCatalog: IEquipmentItem[] = [
             "master-rules": { book: "BMR", page: 115, weight: 1, shotsPerTon: 20, cbills: 1000 },
             "master-rules-revised": { book: "BMR(R)", page: 121, weight: 1, shotsPerTon: 20, cbills: 1000 },
         },
+        rulesLevel: 1,
     },
     {
         isAmmo: true,

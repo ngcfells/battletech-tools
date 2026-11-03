@@ -90,7 +90,7 @@ describe("Custom Homebrew infantry weapons", () => {
     it("keeps its level when a Support Vehicle mounts it as a Light weapon", () => {
         const item = buildSupportVehicleLightWeapon(findInfantryWeapon(carbine)!);
         expect(getEquipmentRulesLevel(item)).toBe(6);
-        expect(getEquipmentRulesLevel(buildSupportVehicleLightWeapon(findInfantryWeapon("inf-laser-rifle")!))).toBe(0);
+        expect(getEquipmentRulesLevel(buildSupportVehicleLightWeapon(findInfantryWeapon("inf-laser-rifle")!))).toBe(2);
     });
 
     it("is not in production before 3100", () => {

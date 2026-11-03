@@ -1534,8 +1534,8 @@ describe("Chassis rules levels, provisional BV, and cost multipliers", () => {
             mech.setTonnage(tonnage);
             return mech.getRequiredRulesLevel();
         };
-        expect(level("biped")).toBe(0);
-        expect(level("quad")).toBe(0);
+        expect(level("biped")).toBe(1);
+        expect(level("quad")).toBe(1);
         expect(level("tripod")).toBe(3);
         expect(level("quadvee")).toBe(3);
         expect(level("lam")).toBe(4);

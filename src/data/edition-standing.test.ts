@@ -11,6 +11,8 @@ import {
 } from "./rules-editions";
 import { getEquipmentCatalogDefinitions, getEquipmentOfferIssue, getEquipmentRulesLevel, isEquipmentOffered } from "./equipment-registry";
 import { APOCRYPHAL_RULES_LEVEL, CUSTOM_HOMEBREW_RULES_LEVEL } from "./rules-level-options";
+import { mechEngineTypes } from "./mech-engine-types";
+import { BattleMech } from "../classes/battlemech";
 
 const isEquipmentWithinRulesLevel = (item: IEquipmentItem, rulesLevel: number): boolean => {
     const level = getEquipmentRulesLevel(item);
@@ -125,6 +127,25 @@ describe("equipment edition standing", () => {
             expect(getEquipmentOfferIssue(flare, edition, 5), edition).toBeNull();
         }
         expect(flare.apocryphalIn!["total-warfare"].source).toBe("TM errata v4.1 p.18");
+    });
+
+    // Level 1 / Introductory is the technology of 3025 (BMR p.6, BMR(R) p.6; How the Core Rulebooks Work p.2).
+    it("Level 1 and Introductory offer only 3025 technology", () => {
+        const find = (tag: string) => getEquipmentCatalogDefinitions().flatMap((definition) => definition.equipment).find((item) => item.tag === tag)!;
+        const engine = (tag: string) => mechEngineTypes.find((record) => record.tag === tag)!;
+        const mech = new BattleMech();
+        for (const edition of ["master-rules", "master-rules-revised", "total-warfare"]) {
+            mech.setRulesEdition(edition);
+            for (const tag of ["er-large-laser", "ammo-is-lrm-swarm-i"]) {
+                expect(getEquipmentOfferIssue(find(tag), edition, 1), `${tag} ${edition}`).toBe("level");
+                expect(getEquipmentOfferIssue(find(tag), edition, 2), `${tag} ${edition}`).toBeNull();
+            }
+            expect(getEquipmentOfferIssue(find("medium-laser"), edition, 1), edition).toBeNull();
+            expect(getEquipmentOfferIssue(find("ammo-lrm-standard"), edition, 1), edition).toBeNull();
+            expect(mech.isOfferedInEdition(engine("xl"), 1), edition).toBe(false);
+            expect(mech.isOfferedInEdition(engine("xl"), 2), edition).toBe(true);
+            expect(mech.isOfferedInEdition(engine("standard"), 1), edition).toBe(true);
+        }
     });
 
     it("the new filter only adds level hiding", () => {
