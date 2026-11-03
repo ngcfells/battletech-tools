@@ -180,6 +180,9 @@ export default class Home extends React.Component<IHomeProps, IHomeState> {
                         <li>New in the 'Mech creator: the Interface Cockpit with No Gyro, the Smart Robotic Control System, prototype double heat sinks and prototype endo steel structure.</li>
                         <li>Where a MegaMek file differs from the newest printed record sheet, importing it now gives the printed design: Shorty Sneede's two Hybrid Riflemen (ForcePack Record Sheets: Snord's Irregulars) and the Temax Cat (XTRO: Boondocks).</li>
                         <li>QuadVees can now use any armor and internal structure a quad can, and their tracks or wheels are now included in weight and cost.</li>
+                        <li>Bundled units are now matched to the right Master Unit List entry when two entries share an alternate name: the Ryoken III (Skinwalker) and the Ryoken III-XP each get their own, and 9 battle armor designs, the Procyon and the Condor Heavy Hover Tank are now matched.</li>
+                        <li>The Skinwalker E shows its printed Battle Value of 3,107 (Recognition Guide: ilClan 24), where the live Master Unit List still says 3,102.</li>
+                        <li>ProtoMech quad melee weapon systems now count the ProtoMech's base Frenzy damage in their Battle Value (Interstellar Operations: Alternate Eras p.190): the Basilisk (Quad) is 258, as printed in The Wars of Reaving.</li>
                         <li>The weekly Master Unit List update.</li>
                       </ul>
                   </li>
