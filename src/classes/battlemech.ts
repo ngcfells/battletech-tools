@@ -10,7 +10,7 @@ import { getBattleMechTroAdapter } from "./battlemech-tro";
 import { isSSWNoMake, readSSWTechnicalReadout } from "../utils/ssw-technical-readout";
 import { ITechnicalReadoutExport } from "../data/technical-readout-interfaces";
 import { getAlphaStrikeQuirks, getQuirkHeatGenerated, getQuirkWeaponHeat } from "../utils/quirk-effects";
-import { getEditionSkillMultipliers, getSkillMultiplier } from "../data/skill-multipliers";
+import { getBattleValueFor, getEditionSkillMultipliers, getSkillMultiplier } from "../data/battle-value";
 import { battlemechLocations } from "../data/battlemech-locations";
 import { IArmorType, ICockpitType, ICriticalLocations, IEngineOption, IEngineType, IEquipmentItem, IGyro, IHeatSync, IInternalStructure, IInternalStructurePerTon, IJumpJet, IMyomerType, IResolvedInternalStructure, ISplitLocation, ITechDates } from "../data/data-interfaces";
 import { btEraOptions, findEraByTag, getClosestEraForTech, getEraForYear, getErasForTech } from "../data/era-options";
@@ -2020,9 +2020,9 @@ export class BattleMech {
         }
     }
 
-    public getBattleValue() {
+    public getBattleValue(edition: string = this._rulesEdition): number {
         this._refreshBattleValue();
-        return this._battleValue;
+        return getBattleValueFor(edition, "mech", { bv2: () => this._battleValue });
     }
 
     public getPilotAdjustedBattleValue() {

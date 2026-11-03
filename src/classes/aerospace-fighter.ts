@@ -20,7 +20,7 @@ import { CUSTOM_HOMEBREW_RULES_LEVEL, getArtemisLauncherBattleValue, getLauncher
 import { getFractionalAerospaceArmorTonsPerPoint, getFractionalEngineWeight, roundUpToKilogram } from "../data/fractional-accounting";
 import { AlphaStrikeUnit, IASMULUnit } from "./alpha-strike-unit";
 import Pilot, { IPilot } from "./pilot";
-import { getSkillMultiplier } from "../data/skill-multipliers";
+import { getBattleValueFor, getSkillMultiplier } from "../data/battle-value";
 import {
     getRoboticControlCost, getRoboticControlSystem, getRoboticControlSystemsFor, getRoboticControlWeight, getRoboticSkills,
     IRoboticControlSystem, RoboticControlTag, RoboticUnitType, SRCS_BATTLE_VALUE_MULTIPLIER, SRCS_RULES_LEVEL,
@@ -1753,8 +1753,8 @@ export default class AerospaceFighter implements IGameSettingsUnit {
 
     // Battle Value and cost -----------------------------------------------------------------------------------
 
-    public getBattleValue(): number { return this._battleValue; }
-    public getBattleValueLog(): string { return this._calcLogBV; }
+    public getBattleValue(edition: string = this._rulesEdition): number { return getBattleValueFor(edition, "fighter", { bv2: () => this._battleValue }); }
+    public getBattleValueLog(edition: string = this._rulesEdition): string { return getBattleValueFor(edition, "fighter", { bv2: () => this._calcLogBV }); }
     public getCBillCost(): number { return this._cost; }
     public getCBillCostLog(): string { return this._calcLogCost; }
 

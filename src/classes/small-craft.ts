@@ -17,7 +17,7 @@ import { btEraOptions, findEraByTag, getClosestEraForTech, getErasForTech } from
 import { CUSTOM_HOMEBREW_RULES_LEVEL, getArtemisLauncherBattleValue, getLauncherBattleValueWithoutFireControl, EXPERIMENTAL_RULES_LEVEL, getAmmoBattleValuePerTon, getBattleArmorScaleListByTech, getCompatibleAmmo, getEquipmentListByTech, getEquipmentRulesLevel, getWeaponShotsPerTon, isEquipmentOffered, isUnderUnitLimit, getDatesAvailability, getTechDatesAvailability, isPostPrimitiveTechnology } from "../data/equipment-registry";
 import { getFractionalAerospaceArmorTonsPerPoint, roundUpToKilogram } from "../data/fractional-accounting";
 import Pilot, { IPilot } from "./pilot";
-import { getSkillMultiplier } from "../data/skill-multipliers";
+import { getBattleValueFor, getSkillMultiplier } from "../data/battle-value";
 import { isTargetingComputerWeapon, sizeTonnageScaledEquipment } from "../data/variable-equipment";
 import { findByTag } from "../data/tag-match";
 import { IWeaponBay, capitalBayWeapon, groupWeaponBays, standardBayWeapon } from "../data/weapon-bays";
@@ -1435,8 +1435,8 @@ export default class SmallCraft implements IGameSettingsUnit {
 
     // Battle Value and cost -----------------------------------------------------------------------------------
 
-    public getBattleValue(): number { return this._battleValue; }
-    public getBattleValueLog(): string { return this._calcLogBV; }
+    public getBattleValue(edition: string = this._rulesEdition): number { return getBattleValueFor(edition, "small-craft", { bv2: () => this._battleValue }); }
+    public getBattleValueLog(edition: string = this._rulesEdition): string { return getBattleValueFor(edition, "small-craft", { bv2: () => this._calcLogBV }); }
     public getCBillCost(): number { return this._cost; }
     public getCBillCostLog(): string { return this._calcLogCost; }
 

@@ -10,7 +10,7 @@ import { getQuirkIssues, getQuirkTargets } from "../data/quirk-registry";
 import { QuirkList } from "./quirk-list";
 import { getAlphaStrikeQuirks } from "../utils/quirk-effects";
 import { DEFAULT_RULES_EDITION, getSelectableRulesEditionTag } from "../data/rules-editions";
-import { getSkillMultiplier } from "../data/skill-multipliers";
+import { getBattleValueFor, getSkillMultiplier } from "../data/battle-value";
 import { getComboArtillery } from "../data/artillery-custom";
 import {
     getDamageGroupings, getDualTurretHit, getFacingAfterFallDirection, getLargeNavalVesselHitLocation, getSuperheavyVehicleHitLocation, getVehicleCriticalEffect,
@@ -3293,12 +3293,12 @@ export default class Vehicle implements IGameSettingsUnit {
             + ` = <strong>${this._cost.toLocaleString()}</strong> (provisional)`;
     }
 
-    public getBattleValue(): number {
-        return this._battleValue;
+    public getBattleValue(edition: string = this._rulesEdition): number {
+        return getBattleValueFor(edition, "vehicle", { bv2: () => this._battleValue });
     }
 
-    public getBattleValueLog(): string {
-        return this._calcLogBV;
+    public getBattleValueLog(edition: string = this._rulesEdition): string {
+        return getBattleValueFor(edition, "vehicle", { bv2: () => this._calcLogBV });
     }
 
     public getCBillCost(): number {

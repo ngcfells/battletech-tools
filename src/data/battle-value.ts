@@ -1,4 +1,81 @@
-import { DEFAULT_RULES_EDITION, btRulesEditions } from "./rules-editions";
+import { DEFAULT_RULES_EDITION, RulesEditionUnitType, btRulesEditions, getRulesEdition } from "./rules-editions";
+
+/**
+ * Battle Value by rules edition: the scheme each edition uses for each unit type (BV1 from the Master Rules, BV2 from
+ * the TechManual), and the skill multipliers. Research and rulings: docs/superpowers/plans/2026-11-03-edition-aware-bv.md.
+ */
+
+export type BattleValueScheme = "none" | "bv1" | "bv2";
+/** Unit types with a Battle Value of their own (buildings have none here yet). */
+export type BattleValueUnitType = Exclude<RulesEditionUnitType, "building">;
+
+export interface IBattleValueRules {
+    scheme: BattleValueScheme;
+    /** Where the rules are printed, errata included. */
+    source: string;
+    /** BV1 not entered yet for this unit type: BV2 is worked out and shown alone. */
+    pending?: true;
+}
+
+const NO_BATTLE_VALUE: IBattleValueRules = { scheme: "none", source: "No Battle Value system before the BattleTech Master Rules (1998)" };
+
+const bv1 = (source: string): IBattleValueRules => ({ scheme: "bv1", source, pending: true });
+// AT2 pp.53-54 and AT2R p.81 print the same steps; each reads its own edition's equipment BVs (plan, segment 2).
+const AT2 = bv1("AeroTech 2 pp.53-54 (with BMR equipment BVs); AT2 errata 1.2 bomb BVs");
+const AT2R = bv1("AeroTech 2, Revised Edition pp.81-82 (with BMR(R) equipment BVs)");
+const BV2: IBattleValueRules = { scheme: "bv2", source: "TechManual pp.302-319, replaced by Battle Value v4.1 (2024) and TM errata v8.0 tables pp.315-319" };
+
+/**
+ * Battle Value rules by edition tag, then unit type. An edition not listed reads the newest edition before it that is
+ * (the CBT box set reads BMR(R); the BattleMech Manual and Core Rulebook read Total Warfare); a unit type an edition
+ * leaves out has no Battle Value in it.
+ */
+export const BV_RULES: Record<string, Partial<Record<BattleValueUnitType, IBattleValueRules>>> = {
+    "master-rules": {
+        mech: bv1("BattleTech Master Rules pp.139-145; FanPro BMR errata p.12"),
+        vehicle: bv1("BattleTech Master Rules pp.141-142; FanPro BMR errata p.12"),
+        fighter: AT2, "small-craft": AT2, "capital-ship": AT2,
+        infantry: bv1("BattleTech Master Rules p.142 (table); FanPro BMR errata p.12"),
+        "battle-armor": bv1("BattleTech Master Rules p.142 (table)"),
+    },
+    "master-rules-revised": {
+        mech: bv1("BattleTech Master Rules, Revised Edition pp.152-159; Maximum Tech pp.90-92 (Level 3)"),
+        vehicle: bv1("BattleTech Master Rules, Revised Edition pp.154-155; Maximum Tech p.92 (Level 3)"),
+        fighter: AT2R, "small-craft": AT2R, "capital-ship": AT2R,
+        protomech: bv1("BattleTech Master Rules, Revised Edition pp.155-156"),
+        infantry: bv1("BattleTech Master Rules, Revised Edition pp.155-156 (table); Maximum Tech p.93 (Level 3)"),
+        // Newer than, and replacing, the BMR(R) p.155 battle armor rows.
+        "battle-armor": bv1("Classic BattleTech Companion pp.187-191"),
+    },
+    "total-warfare": {
+        mech: BV2, vehicle: BV2, fighter: BV2, "small-craft": BV2, infantry: BV2, "battle-armor": BV2, protomech: BV2,
+        "capital-ship": { scheme: "bv2", source: "Strategic Operations: Advanced Aerospace pp.148-149" },
+    },
+};
+
+/** The Battle Value rules `unitType` follows under `edition`. An unknown edition reads the default edition's. */
+export const getBattleValueRules = (edition: string | undefined, unitType: BattleValueUnitType): IBattleValueRules => {
+    const at = btRulesEditions.indexOf(getRulesEdition(edition));
+    const listed = btRulesEditions.slice(0, at + 1).reverse().find((entry) => Object.prototype.hasOwnProperty.call(BV_RULES, entry.tag));
+    return (listed && BV_RULES[listed.tag][unitType]) || NO_BATTLE_VALUE;
+};
+
+/** Runs a unit's BV1 method under a BV1 edition once that unit type's BV1 is entered, and its BV2 method otherwise. */
+export const getBattleValueFor = <T>(edition: string | undefined, unitType: BattleValueUnitType, methods: { bv1?: () => T; bv2: () => T }): T => {
+    const rules = getBattleValueRules(edition, unitType);
+    return (rules.scheme === "bv1" && !rules.pending && methods.bv1 ? methods.bv1 : methods.bv2)();
+};
+
+/**
+ * The one Battle Value text for every display (plan ruling 1): a BV2 edition shows its BV, a BV1 edition "1,234 (BV2:
+ * 1,456)", and an edition with no Battle Value, or whose BV1 is not entered yet for the unit type, "— (BV2: 1,456)".
+ */
+export const formatBattleValue = (unit: { getBattleValue(edition?: string): number }, unitType: BattleValueUnitType, edition: string | undefined): string => {
+    const rules = getBattleValueRules(edition, unitType);
+    if (rules.scheme === "bv2") return unit.getBattleValue(edition).toLocaleString("en-US");
+    const bv2 = unit.getBattleValue(DEFAULT_RULES_EDITION).toLocaleString("en-US");
+    return `${rules.scheme === "bv1" && !rules.pending ? unit.getBattleValue(edition).toLocaleString("en-US") : "—"} (BV2: ${bv2})`;
+};
 
 /**
  * Battle Value skill multipliers, by rules edition. Every table here is indexed [Gunnery][Piloting]: rows are the

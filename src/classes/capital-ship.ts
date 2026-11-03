@@ -14,7 +14,7 @@ import { btTechOptions } from "../data/tech-options";
 import { btEraOptions, findEraByTag, getClosestEraForTech, getErasForTech } from "../data/era-options";
 import SmallCraft from "./small-craft";
 import Pilot, { IPilot } from "./pilot";
-import { getSkillMultiplier } from "../data/skill-multipliers";
+import { getBattleValueFor, getSkillMultiplier } from "../data/battle-value";
 import { CAPITAL_MISSILE_CRITICAL_CHANCE, CAPITAL_SHIP_CRITICAL_NAMES, CapitalShipAttackDirection, ICapitalShipHit, getCapitalShipHitLocation } from "../data/capital-ship-hit-tables";
 import { CUSTOM_HOMEBREW_RULES_LEVEL, getArtemisLauncherBattleValue, getItemBattleValue, getAmmoBattleValuePerTon, getCompatibleAmmo, getEquipmentRulesLevel, getEffectiveIntroduction, getEquipmentListByTech, getWeaponShotsPerTon, isEquipmentOffered, isUnderUnitLimit, getTechDatesAvailability } from "../data/equipment-registry";
 import { findByTag } from "../data/tag-match";
@@ -1220,8 +1220,8 @@ export default class CapitalShip implements IGameSettingsUnit {
     public getCBillCost(): number { return this._cost; }
     public getCBillCostLog(): string { return this._calcLogCost; }
 
-    public getBattleValue(): number { return this._battleValue; }
-    public getBattleValueLog(): string { return this._calcLogBV; }
+    public getBattleValue(edition: string = this._rulesEdition): number { return getBattleValueFor(edition, "capital-ship", { bv2: () => this._battleValue }); }
+    public getBattleValueLog(edition: string = this._rulesEdition): string { return getBattleValueFor(edition, "capital-ship", { bv2: () => this._calcLogBV }); }
 
     /** A launcher with Artemis IV counts 20 percent more than the plain launcher (TM p.312), with Artemis V 30 percent (TO:AUE p.197). */
     private _weaponBaseBV(item: IEquipmentItem): number {

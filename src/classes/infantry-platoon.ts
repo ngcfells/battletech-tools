@@ -8,7 +8,7 @@ import { btEraOptions, findEraByTag, getErasForTech } from "../data/era-options"
 import { IEras } from "../data/data-interfaces";
 import { DEFAULT_RULES_EDITION, getSelectableRulesEditionTag } from "../data/rules-editions";
 import { IInfantryArmor, INFANTRY_ARMOR_RULES_LEVEL, INFANTRY_STEALTH_SYSTEMS, findInfantryArmor, infantryArmor } from "../data/infantry-armor";
-import { getSkillMultiplier } from "../data/skill-multipliers";
+import { getBattleValueFor, getSkillMultiplier } from "../data/battle-value";
 import { AlphaStrikeUnit, IASMULUnit } from "./alpha-strike-unit";
 
 // Conventional infantry platoon construction (TechManual pp.144-155), Battle Value (TM p.309) and cost (TM pp.276, 282).
@@ -683,20 +683,9 @@ export default class InfantryPlatoon implements IGameSettingsUnit {
         return { value, log };
     }
 
-    /**
-     * Battle Value methods by rules edition tag. Only the TechManual's is entered so far; an edition's own method
-     * is added here as that edition's rules are entered, and no caller changes.
-     */
-    private _battleValueMethods: Record<string, () => { value: number; log: string[] }> = {
-        [DEFAULT_RULES_EDITION]: () => this._calcBattleValue(),
-    };
-    /** The edition whose method works out the Battle Value: the one asked for, or the default where it has none entered. */
-    public getBattleValueEdition(edition: string = DEFAULT_RULES_EDITION): string {
-        return Object.prototype.hasOwnProperty.call(this._battleValueMethods, edition) ? edition : DEFAULT_RULES_EDITION;
-    }
-    public getBattleValue(edition?: string): number { return this._battleValueMethods[this.getBattleValueEdition(edition)]().value; }
+    public getBattleValue(edition: string = this._rulesEdition): number { return getBattleValueFor(edition, "infantry", { bv2: () => this._calcBattleValue() }).value; }
     /** The calculation, one plain-text line per step. */
-    public getBattleValueLog(edition?: string): string[] { return this._battleValueMethods[this.getBattleValueEdition(edition)]().log; }
+    public getBattleValueLog(edition: string = this._rulesEdition): string[] { return getBattleValueFor(edition, "infantry", { bv2: () => this._calcBattleValue() }).log; }
 
     /**
      * The rules edition's skill multiplier (TechManual p.315 by default). Under the TechManual, mechanized platoons

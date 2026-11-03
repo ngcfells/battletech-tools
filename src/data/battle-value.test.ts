@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { btRulesEditions } from "./rules-editions";
-import { SKILL_MULTIPLIERS_BY_EDITION, getEditionSkillMultipliers, getEditionsWithSkillMultipliers, getSkillMultiplier } from "./skill-multipliers";
+import { SKILL_MULTIPLIERS_BY_EDITION, formatBattleValue, getBattleValueFor, getBattleValueRules, getEditionSkillMultipliers, getEditionsWithSkillMultipliers, getSkillMultiplier } from "./battle-value";
 
 describe("Battle Value skill multipliers by rules edition", () => {
     it("only lists editions that exist, each with a square table whose Gunnery 4 / Piloting 5 entry is 1", () => {
@@ -59,5 +59,33 @@ describe("Battle Value skill multipliers by rules edition", () => {
         }
         expect(getSkillMultiplier(3, 4, "mech", "toString")).toBeNull();
         expect(getEditionSkillMultipliers("__proto__")).toBeNull();
+    });
+});
+
+describe("Battle Value rules by rules edition", () => {
+    it("reads each edition's scheme, falling back to the newest edition before it that has one", () => {
+        expect(getBattleValueRules("battletech-4th-edition", "mech").scheme).toBe("none");
+        expect(getBattleValueRules("master-rules", "mech")).toMatchObject({ scheme: "bv1", source: expect.stringContaining("pp.139-145") });
+        expect(getBattleValueRules("master-rules", "protomech").scheme).toBe("none");
+        expect(getBattleValueRules("master-rules-revised", "fighter").source).toContain("AeroTech 2, Revised Edition");
+        expect(getBattleValueRules("classic-battletech-box-set", "mech")).toBe(getBattleValueRules("master-rules-revised", "mech"));
+        expect(getBattleValueRules("total-warfare", "vehicle").scheme).toBe("bv2");
+        expect(getBattleValueRules("core-rulebook", "mech")).toBe(getBattleValueRules("total-warfare", "mech"));
+        expect(getBattleValueRules("toString", "mech")).toBe(getBattleValueRules("total-warfare", "mech"));
+    });
+
+    it("runs BV2 until a unit type's BV1 is entered", () => {
+        const methods = { bv2: () => 2 };
+        expect(getBattleValueFor("total-warfare", "mech", methods)).toBe(2);
+        expect(getBattleValueFor("master-rules", "mech", methods)).toBe(2);
+        expect(getBattleValueFor("battletech-4th-edition", "mech", methods)).toBe(2);
+    });
+
+    it("formats the selected edition's BV with BV2 beside it (plan ruling 1)", () => {
+        const unit = { getBattleValue: (edition?: string) => edition === "total-warfare" ? 1456 : 1234 };
+        expect(formatBattleValue(unit, "mech", "total-warfare")).toBe("1,456");
+        expect(formatBattleValue(unit, "mech", "battletech-4th-edition")).toBe("— (BV2: 1,456)");
+        // No BV1 is entered yet, so no BV1 figure is shown.
+        expect(formatBattleValue(unit, "mech", "master-rules")).toBe("— (BV2: 1,456)");
     });
 });

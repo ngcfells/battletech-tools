@@ -6,7 +6,7 @@ import { BattleMech } from "./battlemech";
 import { importBattleArmorBlk } from "./battle-armor-blk";
 import { importProtoMechBlk } from "./protomech-blk";
 import { importSmallCraftBlk } from "./small-craft-blk";
-import { getSkillMultiplier } from "../data/skill-multipliers";
+import { getSkillMultiplier } from "../data/battle-value";
 import { DEFAULT_RULES_EDITION } from "../data/rules-editions";
 import { customTagFaction } from "../utils/customTags";
 import { AppSettings } from "../ui/classes/app_settings";

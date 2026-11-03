@@ -47,7 +47,7 @@ import {
     protoMechEquipment,
     protoMechMissiles,
 } from "../data/protomech-construction";
-import { getSkillMultiplier } from "../data/skill-multipliers";
+import { getBattleValueFor, getSkillMultiplier } from "../data/battle-value";
 import { findByTag } from "../data/tag-match";
 import { getMovementModifier } from "../utils";
 import { AlphaStrikeUnit, IASMULUnit } from "./alpha-strike-unit";
@@ -1017,8 +1017,8 @@ export default class ProtoMech implements IGameSettingsUnit {
         log.push(`Battle Value: ${round2(defensive)} + ${round2(offensive)} = ${round2(defensive + offensive)}, or ${value}`);
         return { value, log };
     }
-    public getBattleValue(): number { return this._calcBattleValue().value; }
-    public getBattleValueLog(): string[] { return this._calcBattleValue().log; }
+    public getBattleValue(edition: string = this._rulesEdition): number { return getBattleValueFor(edition, "protomech", { bv2: () => this._calcBattleValue() }).value; }
+    public getBattleValueLog(edition: string = this._rulesEdition): string[] { return getBattleValueFor(edition, "protomech", { bv2: () => this._calcBattleValue() }).log; }
     public getPointBattleValue(): number { return this.getBattleValue() * this._pointSize; }
     /** ProtoMechs have no Piloting Skill; the multiplier is read from the Piloting 5 column. */
     public getSkillMultiplier(edition?: string): number { return getSkillMultiplier(this._gunnery, 5, "protomech", edition) ?? 1; }

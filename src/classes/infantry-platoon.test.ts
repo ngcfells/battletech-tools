@@ -654,12 +654,10 @@ describe("Rulings on infantry (user, 2026-10-07)", () => {
         expect(new InfantryPlatoon(platoon.exportJSON()).getAntiMechSkill()).toBe(3);
     });
 
-    it("works out Battle Value by rules edition, falling back to the default where an edition has no method entered", () => {
+    it("works out Battle Value by rules edition, falling back to BV2 where the edition's BV1 is not entered", () => {
         const platoon = darrell();
-        expect(platoon.getBattleValueEdition()).toBe("total-warfare");
-        expect(platoon.getBattleValueEdition("master-rules")).toBe("total-warfare");
-        expect(platoon.getBattleValueEdition("constructor")).toBe("total-warfare");
         expect(platoon.getBattleValue("master-rules")).toBe(platoon.getBattleValue());
+        expect(platoon.getBattleValue("constructor")).toBe(platoon.getBattleValue());
         // The skill multiplier is the edition's own: Master Rules reads the 5 column for all infantry.
         platoon.setGunnery(3);
         expect(platoon.getSkillAdjustedBattleValue("master-rules")).toBe(Math.round(platoon.getBattleValue() * 1.2));
