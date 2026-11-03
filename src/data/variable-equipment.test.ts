@@ -55,6 +55,8 @@ describe("variable equipment sizing", () => {
         expect(sizeVariableEquipment("jump-booster", { ...ctx, size: 2 })).toMatchObject({ weight: 7.5, slots: 4, cbills: 150000 });
         expect(sizeVariableEquipment("jump-booster", { ...ctx, size: 2, isQuad: true })?.slots).toBe(8);
         expect(sizeVariableEquipment("tracks", ctx)).toMatchObject({ weight: 7.5, slots: 2, cbills: 150000 });
+        // QuadVee Wheels: 15% (half ton), (750 x rating x tonnage) / 75 (IO:AE pp.128, 181).
+        expect(sizeVariableEquipment("quadvee-wheels", { ...ctx, isQuad: true })).toMatchObject({ weight: 11.5, slots: 4, cbills: 225000 });
         // 7.5 tons rounds up to 8: "Round this figure up to the nearest full ton" (TM p.70).
         expect(sizeVariableEquipment("environmental-sealing", ctx)).toMatchObject({ weight: 8, slots: 8, cbills: 16875 });
         // 10 percent of the engine weight, rounded up to the half ton; a slot per ton, rounded up (TM p.244).

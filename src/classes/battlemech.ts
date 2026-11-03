@@ -1958,6 +1958,12 @@ export class BattleMech {
             cbillDryTotal += armoredComponentSlots * 150000;
         }
 
+        const motiveGear = this._quadVeeMotiveGear();
+        if( motiveGear ) {
+            this._calcLogCBill += "<tr><td><strong>" + motiveGear.name + "</strong></td><td>" + addCommas( motiveGear.cbills ) + "</td></tr>\n";
+            cbillDryTotal += motiveGear.cbills;
+        }
+
         // Conversion equipment: LAM_TYPE_RULES, or QuadVee x0.5, of "WSC", the weapons, equipment and structure, read as
         // the whole dry cost so far, as the books' worked examples do ("structural, weapon, and equipment costs":
         // LAMs IO p.186, IO:AE p.180; QuadVees IO p.187, IO:AE p.181; user ruling 2026-10-26).
@@ -3804,10 +3810,6 @@ export class BattleMech {
                 if (item && isOmniFixedOnly(item)) item.omniFixed = true;
             }
         }
-        if (typeTag === "quadvee") {
-            this._armorType = findByTag(mechArmorTypes, "standard") ?? mechArmorTypes[0];
-            this._selectedInternalStructure = findByTag(mechInternalStructureTypes, "standard") ?? mechInternalStructureTypes[0];
-        }
 
         // Running heat; an earlier edition's own Heat Point Table where it has one (Battledroids: 1, BD p.12).
         const editionMoveHeat = getEditionPlayRules(this._rulesEdition)?.moveHeat;
@@ -3868,6 +3870,8 @@ export class BattleMech {
                 name: "QuadVee Conversion / Motive Package",
                 weight: Math.ceil(this._tonnage * 0.1)
             });
+            const motiveGear = this._quadVeeMotiveGear()!;
+            this._weights.push({ name: motiveGear.name, weight: motiveGear.weight });
         } else if (typeTag === "lam") {
             const rules = LAM_TYPE_RULES[this._lamType];
             const step = rules.halfTon ? 2 : 1;
@@ -5753,9 +5757,6 @@ export class BattleMech {
         if (armorTag === "stealth") {
             armorTag = "stealth-basic";
         }
-        if (this.isQuadVee() && armorTag !== "standard") {
-            return this._armorType;
-        }
         if (this.isLAM() && !this._isLAMLegalComponent("armor", armorTag)) {
             return this._armorType;
         }
@@ -6004,9 +6005,6 @@ export class BattleMech {
     public setInternalStructureType(
         isTag: string,
     ) {
-        if (this.isQuadVee() && isTag !== "standard") {
-            return this._selectedInternalStructure;
-        }
         if (this.isLAM() && !this._isLAMLegalComponent("structure", isTag)) {
             return this._selectedInternalStructure;
         }
@@ -10433,6 +10431,14 @@ export class BattleMech {
         };
     }
 
+    /** A QuadVee's Tracks or Wheels, in the slots beside its conversion equipment (IO:AE pp.128, 181). */
+    private _quadVeeMotiveGear(): { name: string; weight: number; cbills: number } | null {
+        if (!this.isQuadVee()) return null;
+        const wheeled = this._quadVeeMotive === "wheeled";
+        const size = sizeVariableEquipment(wheeled ? "quadvee-wheels" : "tracks", this._variableEquipmentContext())!;
+        return { name: wheeled ? "QuadVee Wheels" : "QuadVee Tracks", weight: size.weight, cbills: size.cbills };
+    }
+
     /** A copy of a variable-size catalog item sized for this 'Mech (for pickers); other items are returned as-is. */
     public sizeEquipmentForUnit(item: IEquipmentItem): IEquipmentItem {
         if (!item.variableFormula) return item;
@@ -10972,9 +10978,7 @@ export class BattleMech {
 
     private _isFrankenMechDonorStructure(structureTag: string): boolean {
         if (!BattleMech.FRANKENMECH_STRUCTURE_TAGS.includes(structureTag)) return false;
-        const structure = findByTag(mechInternalStructureTypes, structureTag);
-        if (!structure) return false;
-        return !this.isQuadVee() || structure.tag === "standard";
+        return !!findByTag(mechInternalStructureTypes, structureTag);
     }
 
     /** Sets where one location came from. Values the location may not take are ignored. */
@@ -13469,9 +13473,13 @@ export class BattleMech {
             if( jObj.mech.motive_type && jObj.mech.motive_type === "Quad" ) {
                 this.setMechType("quad");
             }
-            // SSW writes no tripods; a converted MegaMek file does (battlemech-mtf.ts).
+            // SSW writes no tripods or QuadVees; a converted MegaMek file does (battlemech-mtf.ts).
             if( jObj.mech.motive_type === "Tripod" ) {
                 this.setMechType("tripod");
+            }
+            if( /^QuadVee (Tracks|Wheels)$/.test( String( jObj.mech.motive_type ) ) ) {
+                this.setMechType("quadvee");
+                this.setQuadVeeMotive( / Wheels$/.test( jObj.mech.motive_type ) ? "wheeled" : "tracked" );
             }
             if( jObj.mech["@_model" ] ) {
                 this.setModel( jObj.mech["@_model"] );

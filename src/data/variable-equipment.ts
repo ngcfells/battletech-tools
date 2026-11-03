@@ -31,6 +31,7 @@ export type VariableEquipmentFormula =
     | "partial-wing-clan"
     | "jump-booster"
     | "tracks"
+    | "quadvee-wheels"
     | "environmental-sealing"
     | "extended-fuel-tank"
     | "aes-arm"
@@ -219,6 +220,9 @@ export function sizeVariableEquipment(
         // TM p.249: 10% of tonnage (half ton), one slot per leg; cost 500 x rating x tonnage / 75.
         case "tracks":
             return { weight: roundUpHalfTon(t * 0.1), slots: ctx.isQuad ? 4 : 2, cbills: Math.ceil(500 * ctx.engineRating * t / 75), battleValue: 0 };
+        // IO:AE pp.128, 181: a QuadVee's Wheels, 15% of tonnage (half ton) in the Tracks' slots; (750 x rating x tonnage) / 75.
+        case "quadvee-wheels":
+            return { weight: roundUpHalfTon(t * 0.15), slots: 4, cbills: Math.ceil(750 * ctx.engineRating * t / 75), battleValue: 0 };
         // TM pp.70, 216 (IndustrialMechs): 10% of tonnage, "rounded up to the nearest full ton"; one slot in each
         // of 8 locations; 225 x tonnage C-bills (TM p.278).
         case "environmental-sealing":

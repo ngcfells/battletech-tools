@@ -1,13 +1,13 @@
 # Bundled 'Mechs: build report
 
-3655 designs kept (38 renamed), 4075 files left out.
+3668 designs kept (38 renamed), 4062 files left out.
 
 | Reason | Files |
 |---|---|
 | duplicate of a design already kept | 3176 |
 | BV differs from the MUL | 227 |
 | different submodel, same name and model: equipment | 162 |
-| the import could not carry all of it over | 129 |
+| the import could not carry all of it over | 116 |
 | different submodel, same name and model: ammo type | 115 |
 | different submodel, same name and model: actuators | 86 |
 | configuration BV differs from the MUL | 53 |
@@ -3004,19 +3004,6 @@
 - `megamek/ProtoTypes/Ursus 3.mtf`: duplicate of a design already kept: Ursus 3
 - `megamek/ProtoTypes/Wolf Trap (Tora) WFT-2B.mtf`: duplicate of a design already kept: Wolf Trap WFT-2B
 - `megamek/ProtoTypes/Wolfhound WLF-2H.mtf`: duplicate of a design already kept: Wolfhound WLF-2H
-- `megamek/QuadVees/Arion.mtf`: the import could not carry all of it over: 'Mech configuration 'QuadVee' is not converted yet; 'motive: Track' is not converted yet; Location 'Front Left Leg' is not converted yet; Location 'Front Right Leg' is not converted yet; Location 'Rear Left Leg' is not converted yet; Location 'Rear Right Leg' is not converted yet; Cannot import the cockpit type: 'QuadVee Cockpit'
-- `megamek/QuadVees/Boreas A.mtf`: the import could not carry all of it over: 'Mech configuration 'QuadVee OmniMek' is not converted yet; 'motive: Track' is not converted yet; Location 'Front Left Leg' is not converted yet; Location 'Front Right Leg' is not converted yet; Location 'Rear Left Leg' is not converted yet; Location 'Rear Right Leg' is not converted yet; Cannot import the cockpit type: 'QuadVee Cockpit'
-- `megamek/QuadVees/Boreas B.mtf`: the import could not carry all of it over: 'Mech configuration 'QuadVee OmniMek' is not converted yet; 'motive: Track' is not converted yet; Location 'Front Left Leg' is not converted yet; Location 'Front Right Leg' is not converted yet; Location 'Rear Left Leg' is not converted yet; Location 'Rear Right Leg' is not converted yet; Cannot import the cockpit type: 'QuadVee Cockpit'
-- `megamek/QuadVees/Boreas C.mtf`: the import could not carry all of it over: 'Mech configuration 'QuadVee OmniMek' is not converted yet; 'motive: Track' is not converted yet; Location 'Front Left Leg' is not converted yet; Location 'Front Right Leg' is not converted yet; Location 'Rear Left Leg' is not converted yet; Location 'Rear Right Leg' is not converted yet; Cannot import the cockpit type: 'QuadVee Cockpit'
-- `megamek/QuadVees/Boreas D.mtf`: the import could not carry all of it over: 'Mech configuration 'QuadVee OmniMek' is not converted yet; 'motive: Track' is not converted yet; Location 'Front Left Leg' is not converted yet; Location 'Front Right Leg' is not converted yet; Location 'Rear Left Leg' is not converted yet; Location 'Rear Right Leg' is not converted yet; Cannot import the cockpit type: 'QuadVee Cockpit'
-- `megamek/QuadVees/Boreas Prime.mtf`: the import could not carry all of it over: 'Mech configuration 'QuadVee OmniMek' is not converted yet; 'motive: Track' is not converted yet; Location 'Front Left Leg' is not converted yet; Location 'Front Right Leg' is not converted yet; Location 'Rear Left Leg' is not converted yet; Location 'Rear Right Leg' is not converted yet; Cannot import the cockpit type: 'QuadVee Cockpit'
-- `megamek/QuadVees/Cyllaros.mtf`: the import could not carry all of it over: 'Mech configuration 'QuadVee' is not converted yet; 'motive: Track' is not converted yet; Location 'Front Left Leg' is not converted yet; Location 'Front Right Leg' is not converted yet; Location 'Rear Left Leg' is not converted yet; Location 'Rear Right Leg' is not converted yet; Cannot import the cockpit type: 'QuadVee Cockpit'
-- `megamek/QuadVees/Harpagos.mtf`: the import could not carry all of it over: 'Mech configuration 'QuadVee' is not converted yet; 'motive: Track' is not converted yet; Location 'Front Left Leg' is not converted yet; Location 'Front Right Leg' is not converted yet; Location 'Rear Left Leg' is not converted yet; Location 'Rear Right Leg' is not converted yet; Cannot import the cockpit type: 'QuadVee Cockpit'
-- `megamek/QuadVees/Notos A.mtf`: the import could not carry all of it over: 'Mech configuration 'QuadVee OmniMek' is not converted yet; 'motive: Wheel' is not converted yet; Location 'Front Left Leg' is not converted yet; Location 'Front Right Leg' is not converted yet; Location 'Rear Left Leg' is not converted yet; Location 'Rear Right Leg' is not converted yet; Cannot import the cockpit type: 'QuadVee Cockpit'
-- `megamek/QuadVees/Notos B.mtf`: the import could not carry all of it over: 'Mech configuration 'QuadVee OmniMek' is not converted yet; 'motive: Wheel' is not converted yet; Location 'Front Left Leg' is not converted yet; Location 'Front Right Leg' is not converted yet; Location 'Rear Left Leg' is not converted yet; Location 'Rear Right Leg' is not converted yet; Cannot import the cockpit type: 'QuadVee Cockpit'
-- `megamek/QuadVees/Notos C.mtf`: the import could not carry all of it over: 'Mech configuration 'QuadVee OmniMek' is not converted yet; 'motive: Wheel' is not converted yet; Location 'Front Left Leg' is not converted yet; Location 'Front Right Leg' is not converted yet; Location 'Rear Left Leg' is not converted yet; Location 'Rear Right Leg' is not converted yet; Cannot import the cockpit type: 'QuadVee Cockpit'
-- `megamek/QuadVees/Notos D.mtf`: the import could not carry all of it over: 'Mech configuration 'QuadVee OmniMek' is not converted yet; 'motive: Wheel' is not converted yet; Location 'Front Left Leg' is not converted yet; Location 'Front Right Leg' is not converted yet; Location 'Rear Left Leg' is not converted yet; Location 'Rear Right Leg' is not converted yet; Cannot import the cockpit type: 'QuadVee Cockpit'
-- `megamek/QuadVees/Notos Prime.mtf`: the import could not carry all of it over: 'Mech configuration 'QuadVee OmniMek' is not converted yet; 'motive: Wheel' is not converted yet; Location 'Front Left Leg' is not converted yet; Location 'Front Right Leg' is not converted yet; Location 'Rear Left Leg' is not converted yet; Location 'Rear Right Leg' is not converted yet; Cannot import the cockpit type: 'QuadVee Cockpit'
 - `megamek/RS Succession Wars/Javelin JVN-10A.mtf`: duplicate of a design already kept: Javelin JVN-10A
 - `megamek/RS Succession Wars/Thunderbolt TDR-5D.mtf`: duplicate of a design already kept: Thunderbolt TDR-5D
 - `megamek/RS Succession Wars/Zeus ZEU-6A.mtf`: duplicate of a design already kept: Zeus ZEU-6A

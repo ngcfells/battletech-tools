@@ -84,6 +84,20 @@ const tripod = brawler.replace("Config:Biped", "Config:Tripod").replace("walk mp
     .replace("RL armor:18", "RL armor:18\nCL armor:16") + "\n"
     + location("Center Leg", "Hip", "Upper Leg Actuator", "Lower Leg Actuator", "Foot Actuator", "Medium Laser").join("\n");
 
+// A Clan QuadVee (IO:AE pp.127-128): MegaMek's motive line, QuadVee cockpit in head slots 3-4, and Conversion Gear and
+// Tracks in every leg; endo steel and ferro-fibrous like the Arion.
+const quadVeeLeg = ["Hip", "Upper Leg Actuator", "Lower Leg Actuator", "Foot Actuator", "Conversion Gear", "Tracks"];
+const quadVee = quad.replace("Config:Quad", "Config:QuadVee").replace("techbase:Inner Sphere", "techbase:Clan")
+    .replace("structure:IS Standard", "structure:Clan Endo Steel").replace("armor:Standard(Inner Sphere)", "armor:Ferro-Fibrous(Clan)")
+    .replace("walk mp:5", "walk mp:5\nmotive:Track\ncockpit:QuadVee Cockpit")
+    .replace(/(Front|Rear) (Left|Right) Leg:\nHip\nUpper Leg Actuator\nLower Leg Actuator\nFoot Actuator\n-Empty-\n-Empty-/g,
+        (_, end, side) => `${end} ${side} Leg:\n${quadVeeLeg.join("\n")}`)
+    .replace("Large Laser\nLarge Laser\n-Empty-\n-Empty-\n-Empty-\n-Empty-\n-Empty-\n-Empty-\n-Empty-",
+        "CLERMediumLaser\n" + fill(7, "Clan Endo Steel").join("\n") + "\n-Empty-")
+    .replace("Large Laser\nLarge Laser\n-Empty-\n-Empty-\n-Empty-\n-Empty-\n-Empty-\n-Empty-\n-Empty-",
+        "CLERMediumLaser\n" + fill(7, "Clan Ferro-Fibrous").join("\n") + "\n-Empty-")
+    .replace("Head:\nLife Support\nSensors\nCockpit\n-Empty-", "Head:\nLife Support\nSensors\nCockpit\nCockpit");
+
 describe("MegaMek 'Mech import", () => {
     it("rejects what is not a MegaMek 'Mech file", () => {
         expect(parseMtfFile("")).toBeNull();
@@ -277,6 +291,22 @@ describe("MegaMek 'Mech import", () => {
         expect(mech!.getArmorAllocation().centerLeg).toBe(16);
         expect(mech!.getInstalledEquipment().filter((item) => item.tag === "medium-laser" && item.location === "cl")).toHaveLength(1);
         const omni = convertMtfToSSW(parseMtfFile(tripod.replace("Config:Tripod", "Config:Tripod OmniMek"))!);
+        expect(omni.issues).toEqual([]);
+        expect(omni.xml).toContain(`omnimech="TRUE"`);
+    });
+
+    it("reads a QuadVee: tracks or wheels, its cockpit, and its legs' conversion gear", () => {
+        const { mech, issues } = importBattleMechMtf(quadVee);
+        expect(issues).toEqual([]);
+        expect(mech!.isQuadVee()).toBe(true);
+        expect(mech!.getQuadVeeMotive()).toBe("tracked");
+        expect(mech!.getArmorType()).toMatch(/ferro/);
+        expect(mech!.getInternalStructureType()).toMatch(/endo/);
+        expect(mech!.getInstalledEquipment().filter((item) => item.tag === "er-medium-laser-clan")).toHaveLength(2);
+        const wheeled = importBattleMechMtf(quadVee.replace("motive:Track", "motive:Wheel").replace(/\nTracks\n/g, "\nQuadVee Wheels\n"));
+        expect(wheeled.issues).toEqual([]);
+        expect(wheeled.mech!.getQuadVeeMotive()).toBe("wheeled");
+        const omni = convertMtfToSSW(parseMtfFile(quadVee.replace("Config:QuadVee", "Config:QuadVee OmniMek"))!);
         expect(omni.issues).toEqual([]);
         expect(omni.xml).toContain(`omnimech="TRUE"`);
     });

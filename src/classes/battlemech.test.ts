@@ -570,13 +570,15 @@ describe("LAM and QuadVee chassis rules", () => {
         expect(mech.getAvailableGyros(4).find(gyro => gyro.tag === "xl")?.available).toBe(false);
     });
 
-    it("restricts QuadVees to standard armor and internal structure", () => {
+    // "QuadVee follow all the same construction rules as four-legged 'Mechs" and limit neither (IO p.134, IO:AE p.128);
+    // the Arion mounts endo steel and ferro-fibrous.
+    it("lets QuadVees take any armor and internal structure a quad may", () => {
         const mech = new BattleMech();
         mech.setType("quadvee");
         mech.setArmorType("ferro-fibrous");
         mech.setInternalStructureType("endo-steel");
-        expect(mech.getArmorType()).toBe("standard");
-        expect(mech.getInternalStructureType()).toBe("standard");
+        expect(mech.getArmorType()).toBe("ferro-fibrous");
+        expect(mech.getInternalStructureType()).toBe("endo-steel");
     });
 
     it("persists the QuadVee tracked or wheeled motive selection", () => {
@@ -645,12 +647,28 @@ describe("LAM and QuadVee chassis rules", () => {
         expect(criticals.centerTorso.some(item => item?.tag === "multi-pilot-cockpit")).toBe(false);
     });
 
-    it("accounts for QuadVee conversion weight and dual cockpit weight", () => {
+    // 20 tons: conversion 2, tracks 2, and the 4-ton cockpit 1 more than the standard 3 (IO:AE p.128).
+    it("accounts for QuadVee conversion, tracks and dual cockpit weight", () => {
         const biped = new BattleMech();
         const quadvee = new BattleMech();
         quadvee.setType("quadvee");
 
-        expect(quadvee.getCurrentTonnage() - biped.getCurrentTonnage()).toBe(3);
+        expect(quadvee.getCurrentTonnage() - biped.getCurrentTonnage()).toBe(5);
+    });
+
+    // Tracks 10% and Wheels 15% of the mass, rounded up to the half ton (IO:AE p.128). Tracks cost as 'Mech Tracks
+    // (500 x ER x TT / 75, TM p.278); Wheels (750 x ER x TT) / 75 (IO:AE p.181).
+    it("weighs and prices a QuadVee's tracks or wheels", () => {
+        const quadvee = new BattleMech();
+        quadvee.setType("quadvee");
+        quadvee.setTonnage(35);
+        quadvee.setWalkSpeed(6);
+        const motive = () => quadvee.getWeightBreakdown().find(entry => /^QuadVee (Tracks|Wheels)$/.test(entry.name));
+        expect(motive()).toEqual({ name: "QuadVee Tracks", weight: 3.5 });
+        expect(quadvee.getCBillCalcHTML()).toContain(">" + (500 * 210 * 35 / 75).toLocaleString("en-US") + "<");
+        quadvee.setQuadVeeMotive("wheeled");
+        expect(motive()).toEqual({ name: "QuadVee Wheels", weight: 5.5 });
+        expect(quadvee.getCBillCalcHTML()).toContain(">" + (750 * 210 * 35 / 75).toLocaleString("en-US") + "<");
     });
 
     // IO:AE p.108 (LAM) / p.128 (QuadVee): conversion equipment is 10% of mass, rounded up to a whole ton.
