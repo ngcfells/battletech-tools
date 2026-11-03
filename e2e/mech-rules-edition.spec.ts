@@ -146,17 +146,19 @@ test("offers flare LRM ammo by edition and rules level", async ({ page }) => {
     // The add dialog's rows; the installed list below it keeps the ton already added.
     const row = (name: string) => page.getByRole("dialog").getByRole("row").filter({ has: page.getByRole("cell", { name, exact: true }) });
     const flare = row("LRM - Flare Ammo");
-    const levelAndFilter = async (edition: string, level: string) => {
+    const levelAndFilter = async (edition: string, level: string, mounted = true) => {
         await page.goto("classic-battletech/mech-creator/step1");
         await page.getByLabel("Rules Edition").selectOption(edition);
         await page.getByLabel("Rules Level").selectOption(level);
         await page.goto("classic-battletech/mech-creator/step5");
         await page.getByTitle("Open the add dialog").first().click();
         await page.getByPlaceholder("Filter Equipment").fill("LRM");
+        // The mounted LRM 5 survives a level or edition change, so its ammo is listed without Show all.
+        if (mounted) await expect(row("LRM - Standard Ammo")).not.toHaveCount(0);
         await page.getByLabel(/Show all ammunition/).check();
         await expect(row("LRM - Standard Ammo")).not.toHaveCount(0);
     };
-    await levelAndFilter("master-rules-revised", "2");
+    await levelAndFilter("master-rules-revised", "2", false);
     await row("LRM 5").getByRole("button", { name: "Add" }).first().click();
     await expect(flare).toHaveCount(1);
     await flare.getByRole("button", { name: "Add" }).first().click();

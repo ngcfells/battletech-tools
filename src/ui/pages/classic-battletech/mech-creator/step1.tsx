@@ -124,12 +124,15 @@ export default class MechCreatorStep1 extends React.Component<IHomeProps, IHomeS
     updateGameSettings = ( settings: IGameSettings, step: GameSettingStep | "rulesets" ): void => {
       const currentMech = this.props.appGlobals.currentBattleMech;
       if( !currentMech ) return;
+      const switched = settings.edition !== currentMech.getGameSettings( settings.rulesLevel ).edition;
       currentMech.applyGameSettings( settings );
       // A Clan tech base has no superheavy tonnages (IO:AE p.154).
       // A way back to an edition may restore another level: clamp at the design's own.
       this.clampTonnageToChassisRules(currentMech, mechRulesLevel(this.props.appGlobals));
-      // The clamp finishes an edition switch; an undo of the switch still brings back the design as it was.
-      currentMech.settleRulesEditionSwitch();
+      // The clamp finishes an edition switch; an undo of the switch still brings back the design as it was. Only a
+      // switch settles: settling after any other change would take edits made since the switch for none, and going
+      // back would drop them.
+      if( switched ) currentMech.settleRulesEditionSwitch();
       rememberRulesLevel( this.props.appGlobals, settings, step );
       this.props.appGlobals.saveCurrentBattleMech( currentMech );
       this.setState({ updated: !this.state.updated });
