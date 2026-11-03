@@ -10,7 +10,7 @@ import { getBattleMechTroAdapter } from "./battlemech-tro";
 import { isSSWNoMake, readSSWTechnicalReadout } from "../utils/ssw-technical-readout";
 import { ITechnicalReadoutExport } from "../data/technical-readout-interfaces";
 import { getAlphaStrikeQuirks, getQuirkHeatGenerated, getQuirkWeaponHeat } from "../utils/quirk-effects";
-import { getBattleValueFor, getBattleValueSkillEdition, getSkillMultiplier } from "../data/battle-value";
+import { IBattleValueTagShare, getBattleValueFor, getBattleValueSkillEdition, getBattleValueTagShare, getSkillMultiplier } from "../data/battle-value";
 import { battlemechLocations } from "../data/battlemech-locations";
 import { IArmorType, ICockpitType, ICriticalLocations, IEngineOption, IEngineType, IEquipmentItem, IGyro, IHeatSync, IInternalStructure, IInternalStructurePerTon, IJumpJet, IMyomerType, IResolvedInternalStructure, ISplitLocation, ITechDates } from "../data/data-interfaces";
 import { btEraOptions, findEraByTag, getClosestEraForTech, getEraForYear, getErasForTech } from "../data/era-options";
@@ -2025,11 +2025,19 @@ export class BattleMech {
         return getBattleValueFor(edition, "mech", { bv2: () => this._battleValue });
     }
 
-    /** Battle Value adjusted for skill under `edition`, read on the skill table that goes with that BV (plan ruling 2). */
-    public getPilotAdjustedBattleValue(edition: string = this._rulesEdition): number {
+    /**
+     * Battle Value adjusted for skill under `edition`, read on the skill table that goes with that BV (plan ruling 2).
+     * `forceBonus` is the force adjustments (TAG) it adds before skill.
+     */
+    public getPilotAdjustedBattleValue(edition: string = this._rulesEdition, forceBonus: number = 0): number {
         this._refreshBattleValue();
-        if (edition === this._rulesEdition) return this._pilotAdjustedBattleValue;
-        return Math.round(this.getBattleValue(edition) * (getSkillMultiplier(this._pilot?.gunnery ?? 4, this._pilot?.piloting ?? 5, "mech", getBattleValueSkillEdition(edition, "mech")) ?? 1));
+        if (edition === this._rulesEdition && !forceBonus) return this._pilotAdjustedBattleValue;
+        return Math.round((this.getBattleValue(edition) + forceBonus) * (getSkillMultiplier(this._pilot?.gunnery ?? 4, this._pilot?.piloting ?? 5, "mech", getBattleValueSkillEdition(edition, "mech")) ?? 1));
+    }
+
+    /** This unit's part in its force's TAG adjustment under `edition` (BV v4.1 p.23; TO:AUE p.198). */
+    public getBattleValueTagShare(edition: string = this._rulesEdition): IBattleValueTagShare {
+        return getBattleValueTagShare(edition, this._equipmentList, (bin) => this.getAmmoBinWeapon(bin));
     }
 
     public getAlphaStrikeValue() {

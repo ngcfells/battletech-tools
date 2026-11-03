@@ -279,7 +279,7 @@ export class BattleMechForce {
     /** The force's skill-adjusted Battle Value under its edition, as the roster shows it (plan ruling 1). */
     public getBattleValueText(): string {
         const types = [...new Set(this.groups.flatMap((group) => group.getBattleValueUnitTypes()))];
-        return formatBattleValue((edition) => this.groups.reduce((total, group) => total + group.getTotalBattleValue(edition), 0), types, this.rulesEdition);
+        return formatBattleValue((edition) => this.groups.reduce((total, group) => total + group.getTotalBattleValue(edition, this.groups), 0), types, this.rulesEdition);
     }
 
     getTech(): string {

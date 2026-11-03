@@ -133,10 +133,18 @@ export class BattleMechGroup {
 		this.lastUpdated = new Date();
 	}
 
-	/** The group's skill-adjusted Battle Value under `edition` (each unit's own edition when left out). */
-	public getTotalBattleValue(edition?: string): number {
+	/** The units that take part in a force's TAG adjustment (battle-value.ts `getBattleValueTagShare`). */
+	private _tagUnits() { return [...this.members, ...this.vehicles, ...this.fighters, ...this.smallCraft]; }
+
+	/**
+	 * The group's skill-adjusted Battle Value under `edition` (each unit's own edition when left out). Each TAG carrier
+	 * adds the guided ammo in `force` (the force's groups; this group alone when left out) before skill.
+	 */
+	public getTotalBattleValue(edition?: string, force: BattleMechGroup[] = [this]): number {
         const sum = <T>(units: T[], battleValue: (unit: T) => number) => units.reduce((total, unit) => total + battleValue(unit), 0);
-        return sum([...this.members, ...this.vehicles, ...this.fighters, ...this.smallCraft, ...this.capitalShips], (unit) => unit.getPilotAdjustedBattleValue(edition))
+        const guided = sum(force.flatMap((group) => group._tagUnits()), (unit) => unit.getBattleValueTagShare(edition).ammo);
+        return sum(this._tagUnits(), (unit) => unit.getPilotAdjustedBattleValue(edition, unit.getBattleValueTagShare(edition).times * guided))
+            + sum(this.capitalShips, (ship) => ship.getPilotAdjustedBattleValue(edition))
             + sum([...this.infantry, ...this.battleArmor], (unit) => unit.getSkillAdjustedBattleValue(edition))
             + sum(this.protoMechs, (point) => point.getSkillAdjustedPointBattleValue(edition));
     }
@@ -148,9 +156,9 @@ export class BattleMechGroup {
         return lists.filter(([, units]) => units.length > 0).map(([type]) => type);
     }
 
-    /** The group's skill-adjusted Battle Value text under `edition` (plan ruling 1). */
-    public getBattleValueText(edition: string): string {
-        return formatBattleValue((bvEdition) => this.getTotalBattleValue(bvEdition), this.getBattleValueUnitTypes(), edition);
+    /** The group's skill-adjusted Battle Value text under `edition` (plan ruling 1), in `force` (see getTotalBattleValue). */
+    public getBattleValueText(edition: string, force?: BattleMechGroup[]): string {
+        return formatBattleValue((bvEdition) => this.getTotalBattleValue(bvEdition, force), this.getBattleValueUnitTypes(), edition);
     }
 
 	public getTotalTons(): number {

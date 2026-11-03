@@ -10,7 +10,7 @@ import { getQuirkIssues, getQuirkTargets } from "../data/quirk-registry";
 import { QuirkList } from "./quirk-list";
 import { getAlphaStrikeQuirks } from "../utils/quirk-effects";
 import { DEFAULT_RULES_EDITION, getSelectableRulesEditionTag } from "../data/rules-editions";
-import { getBattleValueFor, getBattleValueSkillEdition, getSkillMultiplier } from "../data/battle-value";
+import { IBattleValueTagShare, getBattleValueFor, getBattleValueSkillEdition, getBattleValueTagShare, getSkillMultiplier } from "../data/battle-value";
 import { getComboArtillery } from "../data/artillery-custom";
 import {
     getDamageGroupings, getDualTurretHit, getFacingAfterFallDirection, getLargeNavalVesselHitLocation, getSuperheavyVehicleHitLocation, getVehicleCriticalEffect,
@@ -4947,14 +4947,20 @@ export default class Vehicle implements IGameSettingsUnit {
     /**
      * Battle Value adjusted for gunnery and driving skill, by the rules edition's BV Skill Multiplier Table
      * (TechManual p. 315 by default). An edition with no table leaves the Battle Value as it is.
+     * `forceBonus` is the force adjustments (TAG) it adds before skill.
      */
-    public getPilotAdjustedBattleValue(edition?: string): number {
+    public getPilotAdjustedBattleValue(edition?: string, forceBonus: number = 0): number {
         // A robotic vehicle fights at its control system's Skills (IO:AE p.187).
         const skills = this.getRoboticSkills();
         const gunnery = skills?.gunnery ?? this._pilot?.gunnery ?? 4;
         const piloting = skills?.piloting ?? this._pilot?.piloting ?? 5;
         const multiplier = getSkillMultiplier(gunnery, piloting, "vehicle", getBattleValueSkillEdition(edition ?? this._rulesEdition, "vehicle")) ?? 1;
-        return Math.round(this.getBattleValue(edition) * multiplier);
+        return Math.round((this.getBattleValue(edition) + forceBonus) * multiplier);
+    }
+
+    /** This unit's part in its force's TAG adjustment under `edition` (BV v4.1 p.23; TO:AUE p.198). */
+    public getBattleValueTagShare(edition: string = this._rulesEdition): IBattleValueTagShare {
+        return getBattleValueTagShare(edition, this._equipmentList, (bin) => this.getAmmoBinWeapon(bin));
     }
 
     public export(noInPlayVariables: boolean = false): IVehicleExport {

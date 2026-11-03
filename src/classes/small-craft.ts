@@ -17,7 +17,7 @@ import { btEraOptions, findEraByTag, getClosestEraForTech, getErasForTech } from
 import { CUSTOM_HOMEBREW_RULES_LEVEL, getArtemisLauncherBattleValue, getLauncherBattleValueWithoutFireControl, EXPERIMENTAL_RULES_LEVEL, getAmmoBattleValuePerTon, getBattleArmorScaleListByTech, getCompatibleAmmo, getEquipmentListByTech, getEquipmentRulesLevel, getWeaponShotsPerTon, isEquipmentOffered, isUnderUnitLimit, getDatesAvailability, getTechDatesAvailability, isPostPrimitiveTechnology } from "../data/equipment-registry";
 import { getFractionalAerospaceArmorTonsPerPoint, roundUpToKilogram } from "../data/fractional-accounting";
 import Pilot, { IPilot } from "./pilot";
-import { getBattleValueFor, getBattleValueSkillEdition, getSkillMultiplier } from "../data/battle-value";
+import { IBattleValueTagShare, getBattleValueFor, getBattleValueSkillEdition, getBattleValueTagShare, getSkillMultiplier } from "../data/battle-value";
 import { isTargetingComputerWeapon, sizeTonnageScaledEquipment } from "../data/variable-equipment";
 import { findByTag } from "../data/tag-match";
 import { IWeaponBay, capitalBayWeapon, groupWeaponBays, standardBayWeapon } from "../data/weapon-bays";
@@ -1925,9 +1925,15 @@ export default class SmallCraft implements IGameSettingsUnit {
         return this._pilot;
     }
 
-    public getPilotAdjustedBattleValue(edition?: string): number {
+    /** Battle Value adjusted for skill under `edition`. `forceBonus` is the force adjustments (TAG) it adds before skill. */
+    public getPilotAdjustedBattleValue(edition?: string, forceBonus: number = 0): number {
         const multiplier = getSkillMultiplier(this._pilot?.gunnery ?? 4, this._pilot?.piloting ?? 5, "fighter", getBattleValueSkillEdition(edition ?? this._rulesEdition, "small-craft")) ?? 1;
-        return Math.round(this.getBattleValue(edition) * multiplier);
+        return Math.round((this.getBattleValue(edition) + forceBonus) * multiplier);
+    }
+
+    /** This unit's part in its force's TAG adjustment under `edition` (BV v4.1 p.23; TO:AUE p.198). */
+    public getBattleValueTagShare(edition: string = this._rulesEdition): IBattleValueTagShare {
+        return getBattleValueTagShare(edition, this._equipmentList, (bin) => this._binWeapon(bin));
     }
 
     public getInPlay(): ISmallCraftInPlay { return this._inPlay; }

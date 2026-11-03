@@ -20,7 +20,7 @@ import { CUSTOM_HOMEBREW_RULES_LEVEL, getArtemisLauncherBattleValue, getLauncher
 import { getFractionalAerospaceArmorTonsPerPoint, getFractionalEngineWeight, roundUpToKilogram } from "../data/fractional-accounting";
 import { AlphaStrikeUnit, IASMULUnit } from "./alpha-strike-unit";
 import Pilot, { IPilot } from "./pilot";
-import { getBattleValueFor, getBattleValueForceRules, getBattleValueSkillEdition, getSkillMultiplier } from "../data/battle-value";
+import { IBattleValueTagShare, getBattleValueFor, getBattleValueForceRules, getBattleValueSkillEdition, getBattleValueTagShare, getSkillMultiplier } from "../data/battle-value";
 import {
     getRoboticControlCost, getRoboticControlSystem, getRoboticControlSystemsFor, getRoboticControlWeight, getRoboticSkills,
     IRoboticControlSystem, RoboticControlTag, RoboticUnitType, SRCS_BATTLE_VALUE_MULTIPLIER, SRCS_RULES_LEVEL,
@@ -2362,15 +2362,22 @@ export default class AerospaceFighter implements IGameSettingsUnit {
     /**
      * Battle Value adjusted for gunnery and piloting skill (TM p.315 skill multipliers, as for 'Mechs), with the
      * external stores carried added first where the edition's force adjustments say so (BV v4.1 p.23).
+     * `forceBonus` is the force adjustments (TAG) it adds before skill.
      */
-    public getPilotAdjustedBattleValue(edition?: string): number {
+    public getPilotAdjustedBattleValue(edition?: string, forceBonus: number = 0): number {
         const tag = edition ?? this._rulesEdition;
         // A drone fights at its control system's Skills (IO:AE p.187).
         const skills = this.getRoboticSkills();
         const multiplier = getSkillMultiplier(skills?.gunnery ?? this._pilot?.gunnery ?? 4, skills?.piloting ?? this._pilot?.piloting ?? 5, "fighter", getBattleValueSkillEdition(tag, "fighter")) ?? 1;
         const stores = getBattleValueForceRules(tag)?.externalStores
             ? this._externalStores.reduce((sum, store) => sum + (this._storeRecord(store.tag)?.battleValue ?? 0) * store.count, 0) : 0;
-        return Math.round((this.getBattleValue(edition) + stores) * multiplier);
+        return Math.round((this.getBattleValue(edition) + stores + forceBonus) * multiplier);
+    }
+
+    /** This unit's part in its force's TAG adjustment under `edition` (BV v4.1 p.23; TO:AUE p.198). */
+    public getBattleValueTagShare(edition: string = this._rulesEdition): IBattleValueTagShare {
+        return getBattleValueTagShare(edition, this._equipmentList, (bin) => this._binWeapon(bin),
+            this._externalStores.map((store) => ({ item: this._storeRecord(store.tag), count: store.count })));
     }
 
     public getInPlay(): IFighterInPlay { return this._inPlay; }

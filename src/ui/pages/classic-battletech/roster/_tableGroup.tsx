@@ -515,7 +515,7 @@ export default class BattleMechTableGroup extends React.Component<IBattleMechTab
 <td colSpan={this.props.showEdit ? 4 : 3} className="text-center">
     {this.props.appGlobals.currentCBTForce.groups[this.props.bmGroupIndex].getTotalTons()} Tons - {this.props.appGlobals.currentCBTForce.groups[this.props.bmGroupIndex].getTech()}
 </td>
-<td colSpan={2} className="text-right">BV: {this.props.appGlobals.currentCBTForce.groups[this.props.bmGroupIndex].getBattleValueText(this.props.appGlobals.currentCBTForce?.rulesEdition ?? DEFAULT_RULES_EDITION)}</td>
+<td colSpan={2} className="text-right">BV: {this.props.appGlobals.currentCBTForce.groups[this.props.bmGroupIndex].getBattleValueText(this.props.appGlobals.currentCBTForce?.rulesEdition ?? DEFAULT_RULES_EDITION, this.props.appGlobals.currentCBTForce.groups)}</td>
 </tr>
 </tfoot>
 

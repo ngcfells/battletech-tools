@@ -1,3 +1,5 @@
+import { IEquipmentItem } from "./data-interfaces";
+import { getAmmoBattleValuePerTon } from "./equipment-registry";
 import { DEFAULT_RULES_EDITION, RulesEditionUnitType, btRulesEditions, getRulesEdition } from "./rules-editions";
 
 /**
@@ -88,8 +90,10 @@ export interface IBattleValueForceRules {
 export const BV_FORCE_RULES: Record<string, IBattleValueForceRules> = {
     "total-warfare": {
         source: "Battle Value v4.1 p.23 (TM p.315); TO:AUE p.198",
+        // Air-launched Arrow IV homing bombs count too (user ruling, 2026-11-03).
         tagAmmo: ["ammo-is-lrm-semi-guided", "ammo-is-enhanced-lrm-semi-guided", "ammo-is-arrow-iv-homing", "ammo-clan-arrow-iv-homing",
-            "ammo-long-tom-copperhead", "ammo-sniper-copperhead", "ammo-thumper-copperhead", "ammo-is-mech-mortar-guided"],
+            "ammo-long-tom-copperhead", "ammo-sniper-copperhead", "ammo-thumper-copperhead", "ammo-is-mech-mortar-guided",
+            "ammo-is-bomb-arrow-iv-homing", "ammo-clan-bomb-arrow-iv-homing"],
         c3: { kind: "network", percent: 5, boostedPercent: 7 },
         externalStores: true,
     },
@@ -103,6 +107,30 @@ export const BV_FORCE_RULES: Record<string, IBattleValueForceRules> = {
 export const getBattleValueForceRules = (edition: string | undefined): IBattleValueForceRules | undefined => {
     const listed = getListedEdition(edition, BV_FORCE_RULES);
     return listed ? BV_FORCE_RULES[listed] : undefined;
+};
+
+/** TAG, Light TAG and C3 masters: each adds the force's TAG-guided ammo to its unit's BV (BV v4.1 p.23; TO:AUE p.198). */
+const TAG_DESIGNATORS = ["is-tag", "prototype-tag", "clan-tag", "clan-light-tag", "c3-computer-master", "c3-boosted-master", "c3-emergency-master"];
+
+/** A unit's part in its force's TAG adjustment: how many times it adds the force's guided ammo BV, and the BV of the guided ammo it carries. */
+export interface IBattleValueTagShare { times: number; ammo: number }
+
+/**
+ * A unit's TAG share under `edition`: once for each designator it carries (TO:AUE p.198), half each when all are
+ * rear-mounted (v4.1 p.23). Each ton of guided ammo counts its BV for the launcher it feeds (semi-guided LRM ammo
+ * takes the launcher's); `stores` are a fighter's bombs, each counting its own BV (user ruling, 2026-11-03).
+ */
+export const getBattleValueTagShare = (edition: string | undefined, equipment: IEquipmentItem[], binWeapon: (bin: IEquipmentItem) => IEquipmentItem | null | undefined,
+    stores: Array<{ item: IEquipmentItem | undefined; count: number }> = []): IBattleValueTagShare => {
+    const tagAmmo = getBattleValueForceRules(edition)?.tagAmmo ?? [];
+    const designators = tagAmmo.length > 0 ? equipment.filter((item) => !item.isAmmo && TAG_DESIGNATORS.includes(item.tag)) : [];
+    const rearOnly = designators.every((item) => item.rear || item.location === "rear" || item.location === "aft");
+    const bins = equipment.filter((item) => item.isAmmo && tagAmmo.includes(item.tag));
+    return {
+        times: designators.length * (rearOnly ? 0.5 : 1),
+        ammo: bins.reduce((sum, bin) => sum + getAmmoBattleValuePerTon(binWeapon(bin) ?? null, bin) * (bin.weight || 0), 0)
+            + stores.reduce((sum, store) => sum + (store.item && tagAmmo.includes(store.item.tag) ? (store.item.battleValue || 0) * store.count : 0), 0),
+    };
 };
 
 /** True once `edition` works out a BV1 of its own for `unitType` (its BV1 record is entered, not pending). */
