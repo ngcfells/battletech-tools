@@ -167,6 +167,16 @@ export default class Home extends React.Component<IHomeProps, IHomeState> {
                   <ul className="news">
                   <li>
                   <h3>
+                      <strong>November 3rd, 2026</strong> - Aces card reader and SSW import fixes
+                    </h3>
+                    <h4>Author - NGCFells</h4>
+                      <ul>
+                        <li>Aces: the card photo reader knows more of the cards' condition, movement and combat filter wording, thanks to Rekikire's typed card list.</li>
+                        <li>Where an SSW file differs from the newest printed record sheet, importing it now gives the printed design too: the Zeus X ZEU-X and ZEU-X2 get their patchwork armor (Record Sheets: Dark Age), and the Skinwalker B gets its Improved Heavy Medium Lasers (Recognition Guide: ilClan 24).</li>
+                      </ul>
+                  </li>
+                  <li>
+                  <h3>
                       <strong>November 2nd, 2026</strong> - Ammunition explosions by edition, Aces fixes, equipment from the Solaris7 forum, and 28 more bundled 'Mechs
                     </h3>
                     <h4>Author - NGCFells</h4>
