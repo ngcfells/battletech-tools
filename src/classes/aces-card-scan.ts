@@ -9,7 +9,7 @@ import {
     TAcesColor,
     TAcesMoveType,
 } from "../data/aces-cards";
-import { acesConditionPhrases, acesMovementFilterPhrases } from "../data/aces-card-phrases";
+import { acesCombatFilterPhrases, acesConditionPhrases, acesMovementFilterPhrases } from "../data/aces-card-phrases";
 import { acesDecks } from "../data/aces-rules";
 import { ICardScanBox, ICardScanColours, ICardScanIO, ICardScanLine, ICardScanRect, ICardScanWord, TCardScanMode, cardScanInkBoxes, cardScanMargin } from "./card-scan-io";
 
@@ -540,6 +540,8 @@ export const parseAcesScanCombat = ( targetLines: string[], overheatLines: strin
             const icon = item.tag === "blue" ? "[highest]" : item.tag === "red" ? "[lowest]" : seen ? ( seen[1] === "A" ? "[highest]" : "[lowest]" ) : "[?]";
             restored = icon + " Armor lost";
         }
+        // Set to the nearest printed line, but only with every icon read: the phrase would fill an unread one in.
+        if( !/\[\?\]/.test( restored ) ) restored = matchAcesPhrase( restored, acesCombatFilterPhrases, item.tag );
         return parseAcesPriorityLine( restored );
     } );
     // OV rows can wrap; each one starts "If TN".

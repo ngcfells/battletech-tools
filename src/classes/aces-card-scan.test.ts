@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { acesConditionPhrases, acesMovementFilterPhrases } from "../data/aces-card-phrases";
+import { acesCombatFilterPhrases, acesConditionPhrases, acesMovementFilterPhrases } from "../data/aces-card-phrases";
 import { acesSampleBrawler383 } from "../data/aces-card-samples";
 import {
     acesScanOnesAndSevens, acesScanTagColour, applyAcesScanToCard, findAcesCardLayout, matchAcesPhrase, parseAcesScanColumn, parseAcesScanCombat, parseAcesScanFooter,
@@ -71,6 +71,21 @@ describe( "Aces card scan: card phrases", () => {
         expect( matchAcesPhrase( "something else entirely", acesMovementFilterPhrases ) ).toBe( "something else entirely" );
         expect( matchAcesPhrase( "[?] target", acesMovementFilterPhrases ) ).toBe( "[?] target" );
         expect( matchAcesPhrase( "If there are any [moved] enemies in", acesConditionPhrases ) ).toBe( "If there are any [moved] enemies in" );
+    } );
+    it( "knows the phrases of Rekikire's typed card library", () => {
+        expect( matchAcesPhrase( "If this unit has more armar than the damage ratinq of any enemy in 30\"", acesConditionPhrases ) )
+            .toBe( "If this unit has more armor than the damage rating of any enemy in 30\"" );
+        expect( matchAcesPhrase( "If unit can rnove behind nearest [moved] enemy", acesConditionPhrases ) ).toBe( "If unit can move behind nearest [moved] enemy" );
+        expect( matchAcesPhrase( "cover vs [highest] enemies (avoid watar)", acesMovementFilterPhrases ) ).toBe( "cover vs [highest] enemies (avoid water)" );
+        expect( matchAcesPhrase( "onto highest elevatlon (use [jump] if needed)", acesMovementFilterPhrases ) ).toBe( "onto highest elevation (use [jump] if needed)" );
+        expect( matchAcesPhrase( "Hit targets Raar", acesCombatFilterPhrases ) ).toBe( "Hit target's Rear" );
+        expect( matchAcesPhrase( "Attacked by aliy this turn", acesCombatFilterPhrases ) ).toBe( "Attacked by ally this turn" );
+    } );
+    it( "has no two phrases that read the same", () => {
+        const words = ( phrase: string ) => ( phrase.toLowerCase().match( /\[[^\]]*\]|\{[nc]\}|\d+|[a-z']+/g ) || [] ).join( " " );
+        for( const list of [ acesConditionPhrases, acesMovementFilterPhrases, acesCombatFilterPhrases ] ) {
+            expect( new Set( list.map( words ) ).size ).toBe( list.length );
+        }
     } );
 } );
 
@@ -220,6 +235,11 @@ describe( "Aces card scan: Rekikire's photos", () => {
         expect( parseAcesScanCombat( [ "6\") 24\")", "1. Hit target's Rear", "2. Armor lost" ], [] ).filters[1].text ).toBe( "[?] Armor lost" );
     } );
 
+    it( "sets a garbled target line to the nearest printed one", () => {
+        const combat = parseAcesScanCombat( [ "6\") 24\")", "1. Hit targets Raar", "2. Attacked by aliy this turn" ], [] );
+        expect( combat.filters.map( ( filter ) => filter.text ) ).toEqual( [ "Hit target's Rear", "Attacked by ally this turn" ] );
+    } );
+
     it( "tells a 7 from a 1 by its width, with a 7's bar broken from its stem", () => {
         const box = ( x0: number, y0: number, w: number, h: number ) => ( { x0: x0, y0: y0, x1: x0 + w, y1: y0 + h } );
         const ink = [ box( 248, 0, 63, 125 ), box( 334, 0, 70, 127 ), box( 425, 0, 61, 45 ), box( 436, 40, 46, 87 ), box( 474, 3, 3, 0 ) ];
@@ -308,7 +328,7 @@ describe( "Aces card scan: combat side", () => {
         // The first tag is the red rule under the zone, not a list.
         const combat = parseAcesScanCombat( [ "@6') 24)", "1. Hit ittarget's Rear", "+ command list" ], [], [ "red", null, "blue" ] );
         expect( combat.zoneRings ).toEqual( [ 6, 24 ] );
-        expect( combat.filters.map( ( rule ) => rule.text ) ).toEqual( [ "Hit ittarget's Rear", "[blue] command list" ] );
+        expect( combat.filters.map( ( rule ) => rule.text ) ).toEqual( [ "Hit target's Rear", "[blue] command list" ] );
     } );
 
     it( "takes text before any number as the first filter", () => {
