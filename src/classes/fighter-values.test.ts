@@ -138,6 +138,11 @@ describe("OmniFighters, external stores and VSTOL", () => {
         // Stores are neither construction weight nor part of the fighter's own Battle Value.
         expect(fighter.getCurrentTonnage()).toBe(weight);
         expect(fighter.getBattleValue()).toBe(value);
+        // They join its BV before skill (BV v4.1 p.23): 17 cluster x 13 + 3 standard x 12 = 257, x 1.2 at 3/5.
+        fighter.getPilot().gunnery = 3;
+        expect(fighter.getPilotAdjustedBattleValue()).toBe(Math.round((value + 257) * 1.2));
+        // The Core Rulebook's force adjustments (p.220) have no external stores.
+        expect(fighter.getPilotAdjustedBattleValue("core-rulebook")).toBe(Math.round(value * 1.2));
 
         const copy = new AerospaceFighter(fighter.exportJSON());
         expect(copy.getExternalStores().map((store) => [store.tag, store.count])).toEqual([["ammo-bomb-cluster", 17], ["ammo-bomb-standard", 3]]);

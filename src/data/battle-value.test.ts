@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { DEFAULT_RULES_EDITION, btRulesEditions } from "./rules-editions";
-import { SKILL_MULTIPLIERS_BY_EDITION, formatBattleValue, getBattleValueFor, getBattleValueRules, getBattleValueSkillEdition, getEditionSkillMultipliers, getEditionsWithSkillMultipliers, getSkillMultiplier } from "./battle-value";
+import { SKILL_MULTIPLIERS_BY_EDITION, formatBattleValue, getBattleValueFor, getBattleValueForceRules,getBattleValueRules, getBattleValueSkillEdition, getEditionSkillMultipliers, getEditionsWithSkillMultipliers, getSkillMultiplier } from "./battle-value";
 
 describe("Battle Value skill multipliers by rules edition", () => {
     it("only lists editions that exist, each with a square table whose Gunnery 4 / Piloting 5 entry is 1", () => {
@@ -90,6 +90,17 @@ describe("Battle Value rules by rules edition", () => {
         // A force total: BV2 when every unit type in it is BV2, and no BV1 figure until every one has one.
         expect(formatBattleValue(battleValue, ["mech", "vehicle"], "total-warfare")).toBe("1,456");
         expect(formatBattleValue(battleValue, ["mech", "protomech"], "master-rules")).toBe("— (BV2: 1,456)");
+    });
+
+    it("reads each edition's force adjustments: TM/v4.1 with the TO:AUE addendum, and the Core Rulebook's own C3", () => {
+        const tw = getBattleValueForceRules("total-warfare");
+        expect(tw).toMatchObject({ externalStores: true, c3: { kind: "network", percent: 5, boostedPercent: 7 } });
+        expect(tw?.tagAmmo).toEqual(expect.arrayContaining(["ammo-is-lrm-semi-guided", "ammo-is-arrow-iv-homing", "ammo-thumper-copperhead"]));
+        expect(getBattleValueForceRules("battlemech-manual")).toBe(tw);
+        expect(getBattleValueForceRules("core-rulebook")).toMatchObject({ c3: { kind: "per-unit", twoUnits: 10, perExtraUnit: 5, cap: 40, boostedFlat: 5 } });
+        expect(getBattleValueForceRules("core-rulebook")?.externalStores).toBeFalsy();
+        // BV1's force adjustments come with 'Mech BV1 (round 2).
+        expect(getBattleValueForceRules("master-rules")).toBeUndefined();
     });
 
     it("pairs each BV with its skill table: the edition's own for BV1, the TechManual's for BV2 (plan ruling 2)", () => {

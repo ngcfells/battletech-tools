@@ -65,6 +65,46 @@ export const getBattleValueRules = (edition: string | undefined, unitType: Battl
     return (listed && BV_RULES[listed][unitType]) || NO_BATTLE_VALUE;
 };
 
+/** A C3 network's BV: a share of the whole network's BV added to each member, or a percent of each member's own. */
+export type BattleValueC3Rule =
+    | { kind: "network"; percent: number; boostedPercent: number }
+    | { kind: "per-unit"; twoUnits: number; perExtraUnit: number; cap: number; boostedFlat: number };
+
+/** Battle force adjustments, applied in this order before skill (BV v4.1 p.23; TO:AUE p.198). */
+export interface IBattleValueForceRules {
+    source: string;
+    /** Ammo whose tons in the force add their BV to each unit with TAG, Light TAG or a C3 master (half if rear-only). */
+    tagAmmo?: string[];
+    c3: BattleValueC3Rule;
+    /** A fighter's external stores join its BV before skill. */
+    externalStores?: true;
+}
+
+/**
+ * Force adjustments by edition tag, read like `BV_RULES`. TO:AUE p.198 adds Arrow IV homing, Copperhead and
+ * semi-guided mortar ammo to TAG, one bonus per TAG carried, and boosted C3 at 7 percent. The Core Rulebook p.220
+ * lists only C3: +10% to each unit of a two-unit network, +5% per unit beyond, at most +40%, boosted +5% on top.
+ */
+export const BV_FORCE_RULES: Record<string, IBattleValueForceRules> = {
+    "total-warfare": {
+        source: "Battle Value v4.1 p.23 (TM p.315); TO:AUE p.198",
+        tagAmmo: ["ammo-is-lrm-semi-guided", "ammo-is-enhanced-lrm-semi-guided", "ammo-is-arrow-iv-homing", "ammo-clan-arrow-iv-homing",
+            "ammo-long-tom-copperhead", "ammo-sniper-copperhead", "ammo-thumper-copperhead", "ammo-is-mech-mortar-guided"],
+        c3: { kind: "network", percent: 5, boostedPercent: 7 },
+        externalStores: true,
+    },
+    "core-rulebook": {
+        source: "BattleTech Core Rulebook p.220",
+        c3: { kind: "per-unit", twoUnits: 10, perExtraUnit: 5, cap: 40, boostedFlat: 5 },
+    },
+};
+
+/** The force adjustments under `edition`; none before the TechManual (BV1's come with 'Mech BV1). */
+export const getBattleValueForceRules = (edition: string | undefined): IBattleValueForceRules | undefined => {
+    const listed = getListedEdition(edition, BV_FORCE_RULES);
+    return listed ? BV_FORCE_RULES[listed] : undefined;
+};
+
 /** True once `edition` works out a BV1 of its own for `unitType` (its BV1 record is entered, not pending). */
 const worksOutBv1 = (edition: string | undefined, unitType: BattleValueUnitType): boolean => {
     const rules = getBattleValueRules(edition, unitType);

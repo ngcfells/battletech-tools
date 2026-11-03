@@ -20,7 +20,7 @@ import { CUSTOM_HOMEBREW_RULES_LEVEL, getArtemisLauncherBattleValue, getLauncher
 import { getFractionalAerospaceArmorTonsPerPoint, getFractionalEngineWeight, roundUpToKilogram } from "../data/fractional-accounting";
 import { AlphaStrikeUnit, IASMULUnit } from "./alpha-strike-unit";
 import Pilot, { IPilot } from "./pilot";
-import { getBattleValueFor, getBattleValueSkillEdition, getSkillMultiplier } from "../data/battle-value";
+import { getBattleValueFor, getBattleValueForceRules, getBattleValueSkillEdition, getSkillMultiplier } from "../data/battle-value";
 import {
     getRoboticControlCost, getRoboticControlSystem, getRoboticControlSystemsFor, getRoboticControlWeight, getRoboticSkills,
     IRoboticControlSystem, RoboticControlTag, RoboticUnitType, SRCS_BATTLE_VALUE_MULTIPLIER, SRCS_RULES_LEVEL,
@@ -2359,12 +2359,18 @@ export default class AerospaceFighter implements IGameSettingsUnit {
         return this._pilot;
     }
 
-    /** Battle Value adjusted for gunnery and piloting skill (TM p.315 skill multipliers, as for 'Mechs). */
+    /**
+     * Battle Value adjusted for gunnery and piloting skill (TM p.315 skill multipliers, as for 'Mechs), with the
+     * external stores carried added first where the edition's force adjustments say so (BV v4.1 p.23).
+     */
     public getPilotAdjustedBattleValue(edition?: string): number {
+        const tag = edition ?? this._rulesEdition;
         // A drone fights at its control system's Skills (IO:AE p.187).
         const skills = this.getRoboticSkills();
-        const multiplier = getSkillMultiplier(skills?.gunnery ?? this._pilot?.gunnery ?? 4, skills?.piloting ?? this._pilot?.piloting ?? 5, "fighter", getBattleValueSkillEdition(edition ?? this._rulesEdition, "fighter")) ?? 1;
-        return Math.round(this.getBattleValue(edition) * multiplier);
+        const multiplier = getSkillMultiplier(skills?.gunnery ?? this._pilot?.gunnery ?? 4, skills?.piloting ?? this._pilot?.piloting ?? 5, "fighter", getBattleValueSkillEdition(tag, "fighter")) ?? 1;
+        const stores = getBattleValueForceRules(tag)?.externalStores
+            ? this._externalStores.reduce((sum, store) => sum + (this._storeRecord(store.tag)?.battleValue ?? 0) * store.count, 0) : 0;
+        return Math.round((this.getBattleValue(edition) + stores) * multiplier);
     }
 
     public getInPlay(): IFighterInPlay { return this._inPlay; }
