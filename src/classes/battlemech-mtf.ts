@@ -2,12 +2,14 @@
 // building (chassis, equipment and slot placement in one place); its TRO text and quirks are read as a BLK file's.
 // MegaMek's equipment names are on the catalog records (altNames), as findImportedEquipment expects (#118, #241).
 import { IEquipmentItem } from "../data/data-interfaces";
+import { mechInternalStructureTypes } from "../data/mech-internal-structure-types";
+import { findAllByName } from "../data/tag-match";
 import { findBlkAmmo, findBlkAmmoWeapon, parseBlkAmmoLine } from "../utils/blk-ammo";
 import { IBlkFile } from "../utils/blk-file";
 import { applyBlkQuirks, IBlkImportedItem } from "../utils/blk-quirks";
 import { readBlkTechnicalReadout } from "../utils/blk-technical-readout";
 import { findImportedEquipment, ImportFaction } from "../utils/importedEquipment";
-import { BattleMech } from "./battlemech";
+import { BattleMech, IFrankenMechDonor } from "./battlemech";
 
 /** Largest file read, in characters. */
 export const MAX_MTF_FILE_LENGTH = 400000;
@@ -138,7 +140,7 @@ interface IMtfItem {
  * Converts a MegaMek 'Mech file into an SSW save: what the SSW import reads. Issues name what could not be
  * carried over; a file with issues should not be trusted as converted.
  */
-export function convertMtfToSSW(file: IMtfFile): { xml: string; issues: string[]; quad: boolean } {
+export function convertMtfToSSW(file: IMtfFile): { xml: string; issues: string[]; quad: boolean; frankenMech?: Record<string, Partial<IFrankenMechDonor>> } {
     const issues: string[] = [];
     const config = value(file, "config");
     const techbase = value(file, "techbase");
@@ -147,7 +149,8 @@ export function convertMtfToSSW(file: IMtfFile): { xml: string; issues: string[]
     const faction: ImportFaction = clan || /clan chassis/i.test(techbase) ? "clan" : "is";
     const quad = /^quad/i.test(config) && !/quadvee/i.test(config);
     const tripod = /^tripod/i.test(config);
-    if (!/^(biped|quad|tripod)( omnime(k|ch))?$/i.test(config)) issues.push(`'Mech configuration '${config}' is not converted yet`);
+    if (!/^(biped|quad|tripod)( omnime(k|ch)| frankenme(k|ch))?$/i.test(config)) issues.push(`'Mech configuration '${config}' is not converted yet`);
+    const franken = /frankenme(k|ch)$/i.test(config);
     const locations = quad ? QUAD_LOCATIONS : tripod ? TRIPOD_LOCATIONS : BIPED_LOCATIONS;
     const tons = +value(file, "mass");
     // A superheavy 'Mech's items take half their slots, rounded up (IO:AE p.155); MegaMek lists them so.
@@ -162,8 +165,10 @@ export function convertMtfToSSW(file: IMtfFile): { xml: string; issues: string[]
     if (!engine || !engineName) issues.push(`Engine '${value(file, "engine")}' is not converted yet`);
     // An engine of the design's own tech base carries no marker: SSW writes its tech base all the same.
     const engineTech = engine?.[4] ?? engine?.[6] ?? (faction === "clan" ? "Clan" : "IS");
-    const structureTech = /^clan /i.test(value(file, "structure")) ? "1" : /^is /i.test(value(file, "structure")) ? "0" : "2";
-    const structureName = STRUCTURES[value(file, "structure").replace(/^(IS|Clan) /i, "")] ?? value(file, "structure");
+    // A FrankenMech's "Hybrid" structure is the center torso's, which sets the 'Mech's own (CO p.213).
+    const structureLine = /^hybrid$/i.test(value(file, "structure")) ? value(file, "ct structure").split(":")[0] : value(file, "structure");
+    const structureTech = /^clan /i.test(structureLine) ? "1" : /^is /i.test(structureLine) ? "0" : "2";
+    const structureName = STRUCTURES[structureLine.replace(/^(IS|Clan) /i, "")] ?? structureLine;
     // MegaMek writes "Standard(Inner Sphere)", mordel.net "Standard (IS)".
     const armor = /^(.+?)\s*\((Clan|Inner Sphere|IS)\)$/.exec(value(file, "armor"));
     const armorName = ARMORS[armor?.[1] ?? value(file, "armor")] ?? armor?.[1] ?? value(file, "armor");
@@ -197,6 +202,7 @@ export function convertMtfToSSW(file: IMtfFile): { xml: string; issues: string[]
     // The slots: each location's equipment, in runs of one item's slots.
     const items: IMtfItem[] = [];
     const structureSlots: string[] = [];
+    const frankenSlots: Record<string, number> = {};
     const armorSlots: string[] = [];
     const sinkSlotsAt: string[] = [];
     const jetSlotsAt: string[] = [];
@@ -262,7 +268,11 @@ export function convertMtfToSSW(file: IMtfFile): { xml: string; issues: string[]
                 continue;
             }
             if (/Triple Strength Myomer|^TSM$/i.test(name)) { myomerSlots.push(place(loc, index)); index++; continue; }
-            if (STRUCTURE_SLOT.test(name)) { structureSlots.push(place(loc, index)); index++; continue; }
+            if (STRUCTURE_SLOT.test(name)) {
+                // A FrankenMech location keeps its donor's structure slots (CO pp.212-213).
+                if (franken) frankenSlots[loc] = (frankenSlots[loc] ?? 0) + 1; else structureSlots.push(place(loc, index));
+                index++; continue;
+            }
             if (ARMOR_SLOT.test(name)) { armorSlots.push(place(loc, index)); index++; continue; }
             const multi = MULTISLOTS.find(([test]) => test.test(name));
             if (multi) { (multislots[multi[1]] ??= []).push(place(loc, index)); index++; continue; }
@@ -395,7 +405,18 @@ ${armAES.join("")}${legAES.length > 0 ? `<leg_aes>${legAES.join("")}</leg_aes>` 
 ${armoredSlots.length > 0 ? `<armored_locations>${armoredSlots.join("")}</armored_locations>` : ""}
 </baseloadout>
 </mech>`;
-    return { xml: out, issues, quad };
+    // A FrankenMech's donors: "LA structure:IS Endo Steel:65", or the tonnage alone for the 'Mech's own structure.
+    const frankenMech = franken ? Object.fromEntries(Object.entries(file.values).filter(([key]) => / structure$/.test(key)).map(([key, list]) => {
+        const loc = ARMOR_LOCATIONS[key.replace(/ structure$/, "").toUpperCase()];
+        const parts = list[0].split(":");
+        const type = parts.length > 1 ? parts[0] : structureLine;
+        const record = findAllByName(mechInternalStructureTypes, STRUCTURES[type.replace(/^(IS|Clan) /i, "")] ?? type)[0];
+        if (!loc || !record) issues.push(`FrankenMech location '${key}: ${list[0]}' is not converted yet`);
+        const donor: Partial<IFrankenMechDonor> = { tonnage: +parts[parts.length - 1], structure: record?.tag, structureSlots: frankenSlots[loc] };
+        if (/^(IS|Clan) /i.test(type)) donor.structureTechBase = /^clan /i.test(type) ? "clan" : "is";
+        return [(quad ? QUAD_CRIT_TABLE : CRIT_TABLE)[loc], donor];
+    })) : undefined;
+    return { xml: out, issues, quad, frankenMech };
 }
 
 /** The file's fluff, production lines and quirks, laid out as a BLK file's blocks. */
@@ -417,10 +438,20 @@ const asBlkFile = (file: IMtfFile): IBlkFile => {
 export function importBattleMechMtf(text: string): { mech: BattleMech | null; issues: string[]; xml: string } {
     const file = parseMtfFile(text);
     if (!file) return { mech: null, issues: ["Not a MegaMek 'Mech file"], xml: "" };
-    const { xml: sswXml, issues, quad } = convertMtfToSSW(file);
+    const { xml: sswXml, issues, quad, frankenMech } = convertMtfToSSW(file);
     const mech = new BattleMech();
     mech.importSSWXML(sswXml);
-    issues.push(...mech.sswImportErrors);
+    // Skunk Werks has no FrankenMechs: set the donors on the imported 'Mech. Its structure slots are placed again
+    // location by location, so the import's count of unplaced slots is taken afterwards.
+    if (frankenMech) {
+        issues.push(...mech.sswImportErrors.filter((error) => !/^(Unallocated Criticals: |- )/.test(error)));
+        if (!mech.setFrankenMech(true)) issues.push("This 'Mech cannot be a FrankenMech");
+        for (const [locationKey, donor] of Object.entries(frankenMech)) mech.setFrankenMechDonor(locationKey, donor);
+        const unallocated = mech.getUnallocatedCriticals();
+        if (unallocated.length > 0) issues.push(`Unallocated Criticals: ${unallocated.length}`, ...unallocated.map((crit) => `- ${crit.name} (${crit.tag})`));
+    } else {
+        issues.push(...mech.sswImportErrors);
+    }
     const blk = asBlkFile(file);
     mech.tro.import(readBlkTechnicalReadout(blk));
     // A weapon quirk names its weapon by slot: the item in that slot (or the multi-slot item it is part of).

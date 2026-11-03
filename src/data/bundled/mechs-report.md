@@ -1,13 +1,13 @@
 # Bundled 'Mechs: build report
 
-3653 designs kept (38 renamed), 4077 files left out.
+3655 designs kept (38 renamed), 4075 files left out.
 
 | Reason | Files |
 |---|---|
 | duplicate of a design already kept | 3176 |
-| BV differs from the MUL | 223 |
+| BV differs from the MUL | 227 |
 | different submodel, same name and model: equipment | 162 |
-| the import could not carry all of it over | 135 |
+| the import could not carry all of it over | 129 |
 | different submodel, same name and model: ammo type | 115 |
 | different submodel, same name and model: actuators | 86 |
 | configuration BV differs from the MUL | 53 |
@@ -3671,8 +3671,8 @@
 - `megamek/Shrapnel/vol 19/Dragon Fire DGR-7K.mtf`: duplicate of a design already kept: Dragon Fire DGR-7K
 - `megamek/Shrapnel/vol 19/Dragon Fire DGR-9D.mtf`: duplicate of a design already kept: Dragon Fire DGR-9D
 - `megamek/Shrapnel/vol 19/Grotesque (Mongrel) Prime.mtf`: different submodel, same name and model: ammo type: Mongrel (Grendel)  Prime
-- `megamek/Snords Irregulars/Hybrid Rifleman RFL-3N (Sneede II).mtf`: the import could not carry all of it over: 'Mech configuration 'Biped FrankenMek' is not converted yet
-- `megamek/Snords Irregulars/Hybrid Rifleman RFL-3N (Sneede).mtf`: the import could not carry all of it over: 'Mech configuration 'Biped FrankenMek' is not converted yet
+- `megamek/Snords Irregulars/Hybrid Rifleman RFL-3N (Sneede II).mtf`: BV differs from the MUL: RFL-3N (Sneede II): BV 2165, MUL 2198
+- `megamek/Snords Irregulars/Hybrid Rifleman RFL-3N (Sneede).mtf`: BV differs from the MUL: RFL-3N (Sneede): BV 1248, MUL 1269
 - `megamek/Spotlight On/Hellion Keshik/Awesome C.mtf`: duplicate of a design already kept: Awesome C
 - `megamek/Starterbook Sword and Dragon/Black Knight BL-6-KNT Ian.mtf`: BV differs from the MUL: BL-6-KNT (Ian): BV 1861, MUL 1830
 - `megamek/Starterbook Sword and Dragon/Cataphract CTF-2X George.mtf`: BV differs from the MUL: CTF-2X (George): BV 1337, MUL 1311
@@ -3918,7 +3918,7 @@
 - `megamek/Wolf and Blake/Zeus X ZEU-9WD Stacy.mtf`: duplicate of a design already kept: Zeus-X ZEU-9WD (Stacy)
 - `megamek/XTRs/Boondocks/Merlin MLN-SX.mtf`: duplicate of a design already kept: Merlin MLN-SX
 - `megamek/XTRs/Boondocks/Spindrift Aquatic SecurityMech SDT-1.mtf`: duplicate of a design already kept: Spindrift SDT-1 Aquatic SecurityMech
-- `megamek/XTRs/Boondocks/Temax Cat Ninjabolt TMC-NB.mtf`: the import could not carry all of it over: 'Mech configuration 'Biped FrankenMek' is not converted yet; Cannot find any internal structure named: 'Hybrid'
+- `megamek/XTRs/Boondocks/Temax Cat Ninjabolt TMC-NB.mtf`: BV differs from the MUL: TMC-NB: BV 1490, MUL 1475
 - `megamek/XTRs/Boondocks/Whitworth WTH-5S.mtf`: duplicate of a design already kept: Whitworth WTH-5S
 - `megamek/XTRs/Boondoggles/Liberator LIB-4T.mtf`: duplicate of a design already kept: Liberator LIB-4T
 - `megamek/XTRs/Boondoggles/Ostscout IIC.mtf`: different submodel, same name and model: equipment: Ostscout IIC 
@@ -3973,7 +3973,7 @@
 - `megamek/XTRs/Mercenaries/Annihilator ANH-2AX.mtf`: duplicate of a design already kept: Annihilator ANH-2AX
 - `megamek/XTRs/Mercenaries/Grasshopper GHR-7X.mtf`: duplicate of a design already kept: Grasshopper GHR-7X
 - `megamek/XTRs/Mercenaries/Hoplite HOP-4X.mtf`: duplicate of a design already kept: Hoplite HOP-4X
-- `megamek/XTRs/Mercenaries/Schwerer Gustav.mtf`: the import could not carry all of it over: 'Mech configuration 'Biped FrankenMek' is not converted yet; Cannot find any internal structure named: 'Hybrid'
+- `megamek/XTRs/Mercenaries/Schwerer Gustav.mtf`: BV differs from the MUL: : BV 1643, MUL 1796
 - `megamek/XTRs/Mercenaries/Wolfhound WLF-2X.mtf`: BV differs from the MUL: WLF-2X: BV 1837, MUL 1812
 - `megamek/XTRs/Most Wanted/Black Knight BL-X-KNT 'Red Reaper'.mtf`: duplicate of a design already kept: Black Knight BLK-X-KNT "Red Reaper"
 - `megamek/XTRs/Most Wanted/Fireball ALM-XF.mtf`: duplicate of a design already kept: Fireball ALM-XF
@@ -4062,8 +4062,6 @@
 - `megamek/XTRs/Royal Fantasy/Agrotera AGT-UA _Ariel_.mtf`: the import could not carry all of it over: Cannot find any equipment named 'HarJel Repair Systems (HarJel III)'; Cannot find any equipment named 'HarJel Repair Systems (HarJel III)'; Cannot find any equipment named 'HarJel Repair Systems (HarJel III)'
 - `megamek/XTRs/Royal Fantasy/Buccaneer BCN-6PX _Pan_.mtf`: BV differs from the MUL: BCN-6PX 'Pan': BV 1384, MUL 1490
 - `megamek/XTRs/Royal Fantasy/Celerity CLR-03OMM _Rajah_.mtf`: BV differs from the MUL: CLR-03OMM 'Rajah': BV 272, MUL 278
-- `megamek/XTRs/Royal Fantasy/Hunchback HBK-LGN-Pin 'Anastasia'.mtf`: the import could not carry all of it over: 'Mech configuration 'Biped FrankenMek' is not converted yet; Cannot find any internal structure named: 'Hybrid'
-- `megamek/XTRs/Royal Fantasy/Hunchback HBK-LGN-Pin 'Drizella'.mtf`: the import could not carry all of it over: 'Mech configuration 'Biped FrankenMek' is not converted yet; Cannot find any internal structure named: 'Hybrid'
 - `megamek/XTRs/Royal Fantasy/Tessen TSN-X4R _Rapunzel_.mtf`: the import could not carry all of it over: Cannot find any equipment named 'ISC3Sensors'; Cannot find any equipment named 'ISRISCLaserPulseModule'
 - `megamek/XTRs/Royal Fantasy/Trebuchet TBT-7MM _Merida_.mtf`: BV differs from the MUL: TBT-7MM 'Merida': BV 2024, MUL 2028
 - `megamek/XTRs/Steiner/Axman AXM-6X.mtf`: duplicate of a design already kept: Axman AXM-6X

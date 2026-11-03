@@ -354,6 +354,30 @@ describe("MegaMek 'Mech import", () => {
         expect(mech!.getArmorAllocation().leftArm).toBe(14);
     });
 
+    // The Hybrid Rifleman and Temax Cat: MegaMek writes a FrankenMech's donors as "LA structure:IS Endo Steel:65", or
+    // with the tonnage alone when the location has the 'Mech's own structure (CO pp.212-213).
+    it("reads a FrankenMech's donor for each location", () => {
+        const franken = brawler.replace("Config:Biped", "Config:Biped FrankenMek").replace("structure:IS Standard", "structure:Hybrid\n"
+            + "LA structure:IS Endo Steel:65\nRA structure:Standard:50\nLT structure:50\nRT structure:50\nCT structure:Standard:50\n"
+            + "HD structure:50\nLL structure:60\nRL structure:60")
+            .replace(/(Left Arm:\n(?:.*\n){7})-Empty-\n-Empty-\n/, "$1IS Endo Steel\nIS Endo Steel\n");
+        const { mech, issues } = importBattleMechMtf(franken);
+        expect(issues).toEqual([]);
+        expect(mech!.isFrankenMech()).toBe(true);
+        expect(mech!.getInternalStructureType()).toBe("standard");
+        expect(mech!.getFrankenMechDonor("leftArm")).toMatchObject({ tonnage: 65, structure: "endo-steel", structureTechBase: "is", structureSlots: 2 });
+        expect(mech!.getFrankenMechDonor("rightArm")).toMatchObject({ tonnage: 50, structure: "standard" });
+        expect(mech!.getFrankenMechDonor("leftLeg")).toMatchObject({ tonnage: 60, structure: "standard" });
+        expect(mech!.getFrankenMechLocationStructureSlots("leftArm")).toBe(2);
+        // The Hunchback 'Drizella': an endo steel center torso takes its own slot, not the whole 'Mech's 14.
+        const endoTorso = importBattleMechMtf(franken.replace("CT structure:Standard:50", "CT structure:IS Endo Steel:50")
+            .replace(/(Center Torso:\n(?:.*\n){10})-Empty-\n/, "$1IS Endo Steel\n"));
+        expect(endoTorso.issues).toEqual([]);
+        expect(endoTorso.mech!.getInternalStructureType()).toBe("endo-steel");
+        expect(endoTorso.mech!.getFrankenMechLocationStructureSlots("centerTorso")).toBe(1);
+        expect(endoTorso.mech!.getUnallocatedCritCount()).toBe(0);
+    });
+
     // The Skinwalker (Ryoken III): an interface cockpit with no gyro. MegaMek packs the engine into center torso
     // slots 1-6; the gyro's slots are free for other items (IO:AE p.110).
     it("reads an interface cockpit with no gyro", () => {
