@@ -10,7 +10,7 @@ import { getBattleMechTroAdapter } from "./battlemech-tro";
 import { isSSWNoMake, readSSWTechnicalReadout } from "../utils/ssw-technical-readout";
 import { ITechnicalReadoutExport } from "../data/technical-readout-interfaces";
 import { getAlphaStrikeQuirks, getQuirkHeatGenerated, getQuirkWeaponHeat } from "../utils/quirk-effects";
-import { BattleValueC3Type, IBattleValueTagShare, getBattleValueC3Type, getBattleValueEdition, getBattleValueFor, getBattleValueSkillEdition, getBattleValueTagShare, getPrintedItemBattleValue, getSkillMultiplier, getSpeedFactor } from "../data/battle-value";
+import { BattleValueC3Type, IBattleValueTagShare, getAmmoBattleValueMultiplier, getBattleValueC3Type, getBattleValueEdition, getBattleValueFor, getBattleValueRules, getBattleValueSkillEdition, getBattleValueTagShare, getPrintedItemBattleValue, getSkillMultiplier, getSpeedFactor } from "../data/battle-value";
 import { battlemechLocations } from "../data/battlemech-locations";
 import { IArmorType, ICockpitType, ICriticalLocations, IEngineOption, IEngineType, IEquipmentItem, IGyro, IHeatSync, IInternalStructure, IInternalStructurePerTon, IJumpJet, IMyomerType, IResolvedInternalStructure, ISplitLocation, ITechDates } from "../data/data-interfaces";
 import { btEraOptions, findEraByTag, getClosestEraForTech, getEraForYear, getErasForTech } from "../data/era-options";
@@ -1540,7 +1540,9 @@ export class BattleMech {
     private _setPilotAdjustedBattleValue(): void {
         // Fetch raw pilot credentials with safe default constraints
         const gunnery = this._pilot?.gunnery ?? 4;
-        const piloting = this._pilot?.piloting ?? 5;
+        // Level 3 BV1: a small (compact) or torso-mounted cockpit reads the Piloting Skill 1 worse (Maximum Tech pp.61, 91).
+        const cockpitPenalty = getBattleValueRules(this._rulesEdition, "mech").levelThree && ["small", "torso-mounted"].includes(this.getCockpitType().tag);
+        const piloting = cockpitPenalty ? Math.min(7, (this._pilot?.piloting ?? 5) + 1) : this._pilot?.piloting ?? 5;
         let skillMultiplier = 1.0;
         const matrixMultiplier = getSkillMultiplier(gunnery, piloting, "mech", getBattleValueSkillEdition(this._rulesEdition, "mech"));
         if (matrixMultiplier !== null) {
@@ -1587,54 +1589,80 @@ export class BattleMech {
         // AMS (with its ammo), A-Pods and ECM; an active probe is offensive here (BMR(R) p.152).
         const isDefensive = (item: IEquipmentItem) => item.battleValueDefensive === true && !/probe/.test(item.tag);
         // A weapon's BV, or with `weapon` an ammo bin's per ton, from the edition's tables; the catalog's BV2 otherwise.
+        // Maximum Tech's Level 3 rules (pp.90-92), where the edition has them.
+        const levelThree = getBattleValueRules(edition, "mech").levelThree;
+        const clan = this._tech.tag === "clan" || this._tech.tag === "mclan";
         const valueOf = (item: IEquipmentItem, weapon?: IEquipmentItem): number => {
-            const printed = getPrintedItemBattleValue(weapon ?? item, edition, weapon ? "ammoBattleValue" : "battleValue");
-            if (printed !== undefined) return printed;
+            // Special ammunition is worth a multiple of the standard ammo's BV (Maximum Tech p.91).
+            const multiplier = weapon ? getAmmoBattleValueMultiplier(item, edition) : 1;
+            const printed = getPrintedItemBattleValue(weapon ?? item, edition, weapon ? "ammoBattleValue" : "battleValue", clan);
+            if (printed !== undefined) return printed * multiplier;
             const bv2 = weapon ? getAmmoBattleValuePerTon(weapon, item) : getItemBattleValue(item, this._tech.tag);
             if (bv2) note(`${this._escapeLogText(item.name)}: not in the ${getRulesEdition(statsEdition).name} tables, BV2 figure ${bv2} used`);
-            return bv2;
+            return bv2 * multiplier;
         };
-        note(`<strong>BV1 (${getRulesEdition(statsEdition).name})</strong>`);
+        note(`<strong>BV1 (${getRulesEdition(statsEdition).name}${levelThree ? `; ${levelThree.source}` : ""})</strong>`);
 
-        // Step 1: Defensive Battle Rating (BMR(R) pp.152-153).
-        const structureFactor = ({ xl: 0.75, light: 1.125, clan_xl: 1.125 } as Record<string, number>)[this._engineType.tag] ?? 1.5;
+        // Step 1: Defensive Battle Rating (BMR(R) pp.152-153). Level 3 engines read their own multiplier, reinforced
+        // structure counts double and composite half (Maximum Tech pp.91-92).
+        const structureFactor = (levelThree?.engines[(this.getLargeEngineType() ?? this._engineType).tag]
+            ?? ({ xl: 0.75, light: 1.125, clan_xl: 1.125 } as Record<string, number>)[this._engineType.tag] ?? 1.5)
+            * (levelThree ? ({ reinforced: 2, composite: 0.5 } as Record<string, number>)[this.getInternalStructureType()] ?? 1 : 1);
         let defensiveGear = 0;
         for (const item of this._equipmentList) {
             const fed = isAmmo(item) ? this.getAmmoBinWeapon(item) : null;
             if (fed && isDefensive(fed)) defensiveGear += valueOf(item, fed) * item.weight;
             else if (!isAmmo(item) && isDefensive(item)) defensiveGear += valueOf(item);
         }
+        if (levelThree) {
+            // Heavy-duty gyro +30, command console +25, 5 a slot of component armor; a torso-mounted cockpit adds the
+            // center torso armor, front and rear, x 2 (Maximum Tech pp.91-92).
+            const centerTorsoArmor = this.getCockpitType().tag === "torso-mounted" ? (this._armorAllocation.centerTorso ?? 0) + (this._armorAllocation.centerTorsoRear ?? 0) : 0;
+            defensiveGear += (this.getGyro().tag === "heavy-duty" ? 30 : 0) + (this.hasCommandConsole() ? 25 : 0)
+                + 5 * this.getArmoredComponentRecords().reduce((sum, armored) => sum + armored.slots, 0) + centerTorsoArmor * 2;
+        }
         // 20 a ton of explosive ammo, a Gauss rifle counting as a ton. Clan: center torso, legs and head; Inner Sphere
-        // XL engine: anywhere; otherwise also a side torso without CASE, or an arm without CASE there or inward.
+        // XL engine: anywhere; otherwise also a side torso without CASE, or an arm without CASE there or inward. Level 3:
+        // CASE II protects as CASE does, and ammo it covers costs 5 a ton (Maximum Tech p.92).
         const innerSphereXL = ((this.getLargeEngineType() ?? this._engineType).criticals?.[this.getEngineTechBase()]?.lt ?? 0) >= 3;
-        const hasCase = (loc: string) => this.hasClanCASE() || ((this._criticals as any)[BattleMech.MECH_LOCATION_MAP[loc]] || [])
-            .some((critical: any) => matchesTag(critical, "case") || matchesTag(critical, "case-prototype"));
+        const caseIn = (loc: string, tags: string[]) => ((this._criticals as any)[BattleMech.MECH_LOCATION_MAP[loc]] || [])
+            .some((critical: any) => tags.some(tag => matchesTag(critical, tag)));
+        const caseII = (loc: string) => !!levelThree && caseIn(loc, ["case-ii", "clan-case-ii"]);
+        const hasCase = (loc: string) => this.hasClanCASE() || caseIn(loc, ["case", "case-prototype"]) || caseII(loc);
         const inward: Record<string, string> = { la: "lt", ra: "rt" };
         const penalised = (loc: string) => innerSphereXL || !["lt", "rt", "la", "ra"].includes(loc)
             || (!hasCase(loc) && !(inward[loc] && hasCase(inward[loc])));
         let explosive = 0;
         for (const item of this._equipmentList) {
             const tons = BattleMech._isExplosiveAmmoSlot(item) ? item.weight : BattleMech._isExplosiveComponent(item) && item.gauss ? 1 : 0;
-            if (tons > 0 && item.location && BattleMech.MECH_LOCATION_MAP[item.location] && penalised(item.location)) explosive += 20 * tons;
+            if (tons > 0 && item.location && BattleMech.MECH_LOCATION_MAP[item.location] && penalised(item.location)) explosive += (caseII(item.location) ? 5 : 20) * tons;
         }
         // Maximum potential heat: every weapon but the rear-firing ones (Ultra x 2, Streak / 2), plus running or
         // jumping, whichever is hotter; Stealth armor +10 (in the movement heat).
         const firing = this._equipmentList.filter(item => !isAmmo(item) && !isDefensive(item));
         const heatOf = (item: IEquipmentItem) => (getEditionStats(item, statsEdition)?.heat ?? item.heat ?? 0) * (item.isUltra ? 2 : item.isStreak ? 0.5 : 1);
         const maxHeat = firing.filter(item => !item.rear).reduce((sum, item) => sum + heatOf(item), 0) + this.getMaxMovementHeat();
-        const sinkCapacity = this.getHeatSinks() * this._heatSinkType.dissipation + this.getEquipmentHeatDissipation();
+        // Level 3: each coolant pod adds 1 (Maximum Tech p.92).
+        const sinkCapacity = this.getHeatSinks() * this._heatSinkType.dissipation + this.getEquipmentHeatDissipation()
+            + (levelThree ? this._equipmentList.filter(item => item?.coolantPod).length : 0);
         const heatPenalty = Math.max(0, maxHeat - sinkCapacity) * 5;
-        const armor = this.getTotalArmor() * 2;
+        // Level 3: hardened armor points count x 4, patchwork ones too (Maximum Tech pp.90-91).
+        const hardened = !levelThree ? 0 : this.isPatchworkArmor()
+            ? this.getPatchworkLocations().reduce((sum, location) => sum + (this.getPatchworkArmorType(location.key)?.tag === "hardened" ? this._getPatchworkLocationPoints(location.key) : 0), 0)
+            : this._armorType.tag === "hardened" ? this.getTotalArmor() : 0;
+        const armor = (this.getTotalArmor() + hardened) * 2;
         const structure = this._totalInternalStructurePoints * structureFactor;
         // The subtractions cannot take the total below 1.
         const subtotal = Math.max(1, armor + structure + this.getTonnage() + defensiveGear - explosive - heatPenalty);
-        note(`Armor ${this.getTotalArmor()} x 2 = ${armor} + Internal Structure ${this._totalInternalStructurePoints} x ${structureFactor} = ${structure} + Tonnage ${this.getTonnage()} + Defensive Equipment ${defensiveGear} - Explosive Ammo ${explosive} - Heat (${maxHeat} - ${sinkCapacity}) x 5 = ${heatPenalty}: ${subtotal}`);
+        note(`Armor ${this.getTotalArmor()}${hardened ? ` + Hardened ${hardened}` : ""} x 2 = ${armor} + Internal Structure ${this._totalInternalStructurePoints} x ${structureFactor} = ${structure} + Tonnage ${this.getTonnage()} + Defensive Equipment ${defensiveGear} - Explosive Ammo ${explosive} - Heat (${maxHeat} - ${sinkCapacity}) x 5 = ${heatPenalty}: ${subtotal}`);
         // Defensive Movement Factor: the BMR(R) p.25 modifiers (Total Warfare's up to +4), +1 more for jumping; MASC and TSM count.
         const tmm = (mp: number) => Math.min(getMovementModifier(mp), 4);
         const jump = this.getBVJumpSpeed();
         const movementModifier = Math.max(tmm(this.getBVRunSpeed()), jump > 0 ? tmm(jump) + 1 : 0);
-        const defensive = subtotal * (1 + movementModifier / 10);
-        note(`Defensive Battle Rating: ${subtotal} x ${1 + movementModifier / 10} (TMM +${movementModifier}) = ${defensive}`);
+        // Level 3: a null-signature system adds 0.5 (Maximum Tech p.92).
+        const movementFactor = 1 + movementModifier / 10 + (levelThree && this._equipmentList.some(item => matchesTag(item, "null-signature-system")) ? 0.5 : 0);
+        const defensive = subtotal * movementFactor;
+        note(`Defensive Battle Rating: ${subtotal} x ${movementFactor} (TMM +${movementModifier}) = ${defensive}`);
 
         // Step 2: Offensive Battle Rating (BMR(R) pp.153-154). Rear weapons count half, unless they outweigh the rest.
         const weapons = firing.map(item => ({ item, bv: valueOf(item) })).filter(entry => entry.bv > 0);

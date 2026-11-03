@@ -6886,4 +6886,68 @@ describe("Battle Value worked examples (BV v4.1 pp.3-7)", () => {
         placeIn(mech, "ammo-is-ultra-ac-10-standard", "rt", "rightTorso");
         expect(mech.getBattleValue("master-rules-revised")).toBe(1427);
     });
+
+    // Maximum Tech's Level 3 BV1 (pp.90-92) on the Enforcer III above: Defensive 377.25 x 1.3, Offensive 936.71889. The
+    // Level 3 rules belong to BMR(R); under BMR the 'Mech keeps 1,427.
+    describe("Maximum Tech Level 3 BV1 (pp.90-92)", () => {
+        const enforcer3 = (structure = "endo-steel", engine = "xl", armor = "standard") => {
+            const mech = build(50, 5, armor, 10, [9, 24, 7, 19, 5, 19, 5, 16, 16, 20, 20], structure, engine);
+            mech.setHeatSinksType("double");
+            mech.setAdditionalHeatSinks(2);
+            mech.setJumpSpeed(5);
+            for (const tag of ["er-large-laser", "autocannon-ultra-c", "er-small-laser"]) add(mech, tag);
+            placeIn(mech, "ammo-is-ultra-ac-10-standard", "rt", "rightTorso");
+            placeIn(mech, "ammo-is-ultra-ac-10-standard", "rt", "rightTorso");
+            return mech;
+        };
+
+        it("takes 5 a ton for ammo behind CASE II: (377.25 + 30) x 1.3", () => {
+            const mech = enforcer3();
+            placeIn(mech, "case-ii", "rt", "rightTorso");
+            expect(mech.getBattleValue("master-rules-revised")).toBe(1466);
+            expect(mech.getBattleValue("master-rules")).toBe(1427);
+        });
+
+        it("adds 30 for a heavy-duty gyro and 25 for a command console: (377.25 + 55) x 1.3", () => {
+            const mech = enforcer3();
+            mech.setGyroTypeByName("Heavy Duty Gyro");
+            mech.setCommandConsole(true);
+            expect(mech.getBattleValue("master-rules-revised")).toBe(1499);
+        });
+
+        it("doubles reinforced structure and reads the engine table: XXL 83 x 0.5", () => {
+            expect(enforcer3("reinforced").getBattleValue("master-rules-revised")).toBe(1508);
+            // The XXL also doubles the jumping heat (5 -> 10): max heat 32, so 331.5 x 1.3 + 429.625 x 2.02.
+            expect(enforcer3("endo-steel", "xxl").getBattleValue("master-rules-revised")).toBe(1299);
+        });
+
+        it("counts hardened armor x 4 with 1 Running MP less: 697.25 x 1.3 + 463.72 x 1.89", () => {
+            expect(enforcer3("endo-steel", "xl", "hardened").getBattleValue("master-rules-revised")).toBe(1783);
+        });
+
+        it("adds the center torso armor x 2 for a torso-mounted cockpit, and reads Piloting 1 worse for skill", () => {
+            const mech = enforcer3();
+            mech.setCockpitType("torso-mounted");
+            expect(mech.getBattleValue("master-rules-revised")).toBe(1508);
+            mech.setRulesEdition("master-rules-revised");
+            // 4/5 reads the 4/6 column: 1,508 x 0.95.
+            expect(mech.getPilotAdjustedBattleValue()).toBe(1433);
+        });
+
+        it("adds 1 to the heat sink capacity for each coolant pod", () => {
+            const mech = enforcer3();
+            add(mech, "coolant-pod");
+            expect(mech.getBattleValue("master-rules-revised")).toBe(1452);
+        });
+
+        it("multiplies special ammo BV: armor-piercing x 6 (Enforcer ENF-4R, ammo 15 -> 90)", () => {
+            const mech = build(50, 4, "standard", 9, [9, 23, 4, 17, 3, 17, 3, 14, 14, 20, 20], "standard");
+            mech.setAdditionalHeatSinks(2);
+            mech.setJumpSpeed(4);
+            for (const tag of ["large-laser", "autocannon-standard-c", "small-laser"]) add(mech, tag);
+            placeIn(mech, "ammo-is-ac-10-armor-piercing", "rt", "rightTorso");
+            expect(mech.getBattleValue("master-rules-revised")).toBe(1002);
+            expect(mech.getBattleValue("master-rules")).toBe(895);
+        });
+    });
 });

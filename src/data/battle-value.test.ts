@@ -138,6 +138,18 @@ describe("BV1 equipment values (BMR pp.142-144; BMR(R) pp.156-158)", () => {
         expect(getItemBattleValue(record("gauss-rifle-heavy"), "master-rules-revised")).toBe(346);
     });
 
+    it("reads Maximum Tech's Level 3 values (p.90) under BMR(R) only, Artemis V at the launcher's x 1.3", () => {
+        expect(getItemBattleValue(record("er_large_pulse_laser"), "master-rules-revised")).toBe(271);
+        expect(getItemBattleValue(record("er_large_pulse_laser"), "master-rules")).toBe(272);
+        expect(getItemBattleValue(record("er_large_pulse_laser"), "total-warfare")).toBe(272);
+        expect(getItemBattleValue(record("thunderbolt-15"), "master-rules-revised", "ammoBattleValue")).toBe(26);
+        expect(getItemBattleValue(record("thunderbolt-15-os"), "master-rules-revised")).toBe(46);
+        expect(getItemBattleValue(record("long-tom-cannon"), "classic-battletech-box-set")).toBe(348);
+        expect(getItemBattleValue(record("vehicular-grenade-launcher"), "master-rules-revised")).toBe(4);
+        expect(getItemBattleValue(record("vehicular-grenade-launcher"), "master-rules-revised", "battleValue", true)).toBe(1);
+        expect(getItemBattleValue(record("clan-lrm-10-artemis-v"), "master-rules-revised")).toBeCloseTo(141.7);
+    });
+
     it("gives torpedoes the BV of the missile launcher of their range (user ruling, 2026-11-03)", () => {
         expect(getItemBattleValue(record("lrt-15"), "master-rules")).toBe(136);
         expect(getItemBattleValue(record("srt-6"), "master-rules-revised", "ammoBattleValue")).toBe(7);

@@ -1,5 +1,5 @@
 import { IEquipmentItem } from "./data-interfaces";
-import { getAmmoBattleValuePerTon } from "./equipment-registry";
+import { ARTEMIS_FIRE_CONTROL, getAmmoBattleValuePerTon, getEquipmentCatalogDefinitions } from "./equipment-registry";
 import { DEFAULT_RULES_EDITION, RulesEditionUnitType, btRulesEditions, getEditionStats, getRulesEdition } from "./rules-editions";
 
 /**
@@ -17,7 +17,44 @@ export interface IBattleValueRules {
     source: string;
     /** BV1 not entered yet for this unit type: BV2 is worked out and shown alone. */
     pending?: true;
+    /** Level 3 additions to the edition's BV1 (Maximum Tech). */
+    levelThree?: IBattleValueLevelThree;
 }
+
+/** Maximum Tech's Level 3 BV1 tables (pp.90-91); its other rules are steps in each unit's BV1. */
+export interface IBattleValueLevelThree {
+    source: string;
+    /** p.90: BV, then ammo BV per ton, by tag (one-shot rows: the slash figure). */
+    items: Record<string, [number, number?]>;
+    /** p.90 Clan table, where it prints another BV than the Inner Sphere one. */
+    clanItems: Record<string, number>;
+    /** p.91 Special Ammunition: ammo BV multiplier by ammo tag; the rest (caseless, tracer, smoke...) x 1. */
+    ammo: Array<[RegExp, number]>;
+    /** p.91 Engine Multipliers: the internal structure multiplier by engine tag, replacing x 1.5 as an XL engine's does. */
+    engines: Record<string, number>;
+}
+
+const MAX_TECH: IBattleValueLevelThree = {
+    source: "Maximum Tech pp.90-92",
+    items: {
+        "er-ppc-capacitor": [321], "ppc-capacitor": [247], "is-laser-ams": [105], "clan-laser-ams": [105],
+        "large-x-pulse-laser": [178], "medium-x-pulse-laser": [71], "small-x-pulse-laser": [21],
+        "er_large_pulse_laser": [271], "er_medium_pulse_laser": [116], "er_small_pulse_laser": [36],
+        "vehicular-grenade-launcher": [4], "heavy-flamer": [20, 3], "autocannon-light-2": [30, 3], "autocannon-light-5": [62, 5],
+        "long-tom-cannon": [348, 48], "sniper-cannon": [115, 16], "thumper-cannon": [58, 7],
+        "thunderbolt-5": [64, 8], "thunderbolt-10": [127, 16], "thunderbolt-15": [229, 26], "thunderbolt-20": [305, 35],
+        "thunderbolt-5-os": [13], "thunderbolt-10-os": [25], "thunderbolt-15-os": [46], "thunderbolt-20-os": [61],
+        "streak-lrm-5": [87, 11], "streak-lrm-10": [173, 22], "streak-lrm-15": [260, 32], "streak-lrm-20": [346, 43],
+        "streak-lrm-5-os": [17], "streak-lrm-10-os": [35], "streak-lrm-15-os": [52], "streak-lrm-20-os": [69],
+        "angel-ecm": [100], "bloodhound-active-probe": [25],
+    },
+    clanItems: { "vehicular-grenade-launcher": 1 },
+    // Semi-guided LRM x 6 only beside a friendly TAG unit (a force rule); flare missiles (x .05) are not built.
+    ammo: [[/-ac-\d+-armor-piercing$/, 6], [/-lb-\d+x-cluster$/, 0.75], [/-ac-\d+-flechette$/, 0.5],
+        [/-(srm-frag|lrm-fragmentation)$/, 0.5], [/-lrm-swarm-i$/, 1.5]],
+    engines: { "large-standard": 1.125, "large-ice": 1.125, clan_xxl: 0.75, "large-clan_xl": 0.75, "large-clan_xxl": 0.5,
+        xxl: 0.5, "large-xl": 0.75, "large-xxl": 0.375 },
+};
 
 const NO_BATTLE_VALUE: IBattleValueRules = { scheme: "none", source: "No Battle Value system before the BattleTech Master Rules (1998)" };
 
@@ -41,7 +78,7 @@ export const BV_RULES: Record<string, Partial<Record<BattleValueUnitType, IBattl
         "battle-armor": bv1("BattleTech Master Rules p.142 (table)"),
     },
     "master-rules-revised": {
-        mech: bv1("BattleTech Master Rules, Revised Edition pp.152-159; Maximum Tech pp.90-92 (Level 3)", true),
+        mech: { ...bv1("BattleTech Master Rules, Revised Edition pp.152-159; Maximum Tech pp.90-92 (Level 3)", true), levelThree: MAX_TECH },
         vehicle: bv1("BattleTech Master Rules, Revised Edition pp.154-155; Maximum Tech p.92 (Level 3)"),
         fighter: AT2R, "small-craft": AT2R, "capital-ship": AT2R,
         protomech: bv1("BattleTech Master Rules, Revised Edition pp.155-156"),
@@ -162,15 +199,31 @@ export const getBattleValueC3Share = (edition: string | undefined, type: BattleV
  * An item's BV, or a weapon's ammo BV per ton, as `edition` prints it (BV1: BMR pp.142-144, BMR(R) pp.156-158); the
  * catalog's BV2 figure where the edition prints none.
  */
-export const getItemBattleValue = (item: IEquipmentItem, edition: string | undefined, field: "battleValue" | "ammoBattleValue" = "battleValue"): number | undefined =>
-    getPrintedItemBattleValue(item, edition, field) ?? item[field];
+export const getItemBattleValue = (item: IEquipmentItem, edition: string | undefined, field: "battleValue" | "ammoBattleValue" = "battleValue", clan = false): number | undefined =>
+    getPrintedItemBattleValue(item, edition, field, clan) ?? item[field];
 
 /** The edition whose tables `edition` reads its Battle Values from (the CBT box set reads BMR(R)'s). */
 export const getBattleValueEdition = (edition: string | undefined): string => getListedEdition(edition, BV_RULES) ?? getRulesEdition(edition).tag;
 
-/** An item's BV, or a weapon's ammo BV per ton, only where `edition`'s tables print one. */
-export const getPrintedItemBattleValue = (item: IEquipmentItem, edition: string | undefined, field: "battleValue" | "ammoBattleValue" = "battleValue"): number | undefined =>
-    getEditionStats(item, getBattleValueEdition(edition))?.[field];
+/**
+ * An item's BV, or a weapon's ammo BV per ton, only where `edition`'s tables print one (`clan`: on a Clan unit), its
+ * Level 3 tables included. An Artemis V launcher is its launcher's x 1.3 (Maximum Tech p.90).
+ */
+export const getPrintedItemBattleValue = (item: IEquipmentItem, edition: string | undefined, field: "battleValue" | "ammoBattleValue" = "battleValue", clan = false): number | undefined => {
+    const printed = getEditionStats(item, getBattleValueEdition(edition))?.[field];
+    const levelThree = getBattleValueRules(edition, "mech").levelThree;
+    if (printed !== undefined || !levelThree) return printed;
+    const value = (clan && field === "battleValue" ? levelThree.clanItems[item.tag] : undefined) ?? levelThree.items[item.tag]?.[field === "battleValue" ? 0 : 1];
+    const artemisV = ARTEMIS_FIRE_CONTROL.find((system) => system.suffix === "-artemis-v")!;
+    if (value !== undefined || !item.tag.endsWith(artemisV.suffix)) return value;
+    const launcher = getEquipmentCatalogDefinitions().flatMap((definition) => definition.equipment).find((record) => record.tag === item.tag.slice(0, -artemisV.suffix.length));
+    const launcherValue = launcher && getPrintedItemBattleValue(launcher, edition, field, clan);
+    return launcherValue === undefined ? undefined : launcherValue * (field === "battleValue" ? artemisV.battleValueMultiplier : 1);
+};
+
+/** Maximum Tech's special ammunition multiplier (p.91) for an ammo bin under `edition`: 1 without its Level 3 rules. */
+export const getAmmoBattleValueMultiplier = (ammo: IEquipmentItem, edition: string | undefined): number =>
+    getBattleValueRules(edition, "mech").levelThree?.ammo.find(([pattern]) => pattern.test(ammo.tag))?.[1] ?? 1;
 
 /** Speed Factor: ((MP - 5) / 10 + 1) ^ 1.2 to two places, the curve both BV1 (BMR(R) p.154) and BV2 (TM p.316) tabulate. */
 export const getSpeedFactor = (mp: number): number => Number.isFinite(mp) ? Math.round(Math.pow(1 + (mp - 5) / 10, 1.2) * 100) / 100 : 0.44;
