@@ -8,7 +8,7 @@ import { btEraOptions, findEraByTag, getErasForTech } from "../data/era-options"
 import { IEras } from "../data/data-interfaces";
 import { DEFAULT_RULES_EDITION, getSelectableRulesEditionTag } from "../data/rules-editions";
 import { IInfantryArmor, INFANTRY_ARMOR_RULES_LEVEL, INFANTRY_STEALTH_SYSTEMS, findInfantryArmor, infantryArmor } from "../data/infantry-armor";
-import { getBattleValueFor, getSkillMultiplier } from "../data/battle-value";
+import { getBattleValueFor, getBattleValueSkillEdition, getSkillMultiplier } from "../data/battle-value";
 import { AlphaStrikeUnit, IASMULUnit } from "./alpha-strike-unit";
 
 // Conventional infantry platoon construction (TechManual pp.144-155), Battle Value (TM p.309) and cost (TM pp.276, 282).
@@ -694,7 +694,7 @@ export default class InfantryPlatoon implements IGameSettingsUnit {
      */
     public getSkillMultiplier(edition?: string): number {
         // Any other platoon without usable kits reads Anti-'Mech 8, "which cannot be improved" (BV v4.1 p.23, #609).
-        return getSkillMultiplier(this._gunnery, this.getAntiMechSkill(), this.isMechanized() ? "mechanized-infantry" : "infantry", edition) ?? 1;
+        return getSkillMultiplier(this._gunnery, this.getAntiMechSkill(), this.isMechanized() ? "mechanized-infantry" : "infantry", getBattleValueSkillEdition(edition ?? this._rulesEdition, "infantry")) ?? 1;
     }
     public getSkillAdjustedBattleValue(edition?: string): number { return roundNormally(this.getBattleValue(edition) * this.getSkillMultiplier(edition)); }
 

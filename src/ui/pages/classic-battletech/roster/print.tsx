@@ -23,6 +23,8 @@ import { buildingSummary } from "./_buildingGroupTable";
 import { fighterName } from "./_fighterGroupTable";
 import { smallCraftName } from "./_smallCraftGroupTable";
 import { capitalShipName } from "./_capitalShipGroupTable";
+import { formatBattleValue } from '../../../../data/battle-value';
+import { DEFAULT_RULES_EDITION } from '../../../../data/rules-editions';
 const ArrowCircleLeft = FaArrowCircleLeft as any;
 const PrintIcon = FaPrint as any;
 
@@ -91,7 +93,7 @@ export default class ClassicBattleTechRosterPrint extends React.Component<IPrint
                 <td className="text-center"><strong># Units:</strong> {this.props.appGlobals.currentCBTForce.getTotalUnits()}</td>
                 <td className="text-center"><strong>Tons:</strong> {this.props.appGlobals.currentCBTForce.getTotalTons()}</td>
                 <td className="text-center"><strong>Tech:</strong> {this.props.appGlobals.currentCBTForce.getTech()}</td>
-                <td className="text-center"><strong>Total BV2:</strong> {this.props.appGlobals.currentCBTForce.getTotalBV2()}</td>
+                <td className="text-center"><strong>Total BV:</strong> {this.props.appGlobals.currentCBTForce.getBattleValueText()}</td>
               </tr>
             </tbody>
           </table>
@@ -101,7 +103,7 @@ export default class ClassicBattleTechRosterPrint extends React.Component<IPrint
             <strong># Units:</strong> {this.props.appGlobals.currentCBTForce.getTotalUnits()}<br />
             <strong>Tons:</strong> {this.props.appGlobals.currentCBTForce.getTotalTons()}<br />
             <strong>Tech:</strong> {this.props.appGlobals.currentCBTForce.getTech()}<br />
-            <strong>Total BV2:</strong> {this.props.appGlobals.currentCBTForce.getTotalBV2()}</p> */}
+            <strong>Total BV:</strong> {this.props.appGlobals.currentCBTForce.getBattleValueText()}</p> */}
             {this.props.appGlobals.currentCBTForce.groups.map( (group, groupIndex) => {
               return (
                 <div className="group" key={groupIndex}>
@@ -122,7 +124,7 @@ export default class ClassicBattleTechRosterPrint extends React.Component<IPrint
                           &nbsp;|&nbsp;
                           {group.getTotalTons()} Tons - {group.getTech()}
                           &nbsp;|&nbsp;
-                          Group BV2: {group.getTotaBV2()}
+                          Group BV: {group.getBattleValueText(this.props.appGlobals.currentCBTForce?.rulesEdition ?? DEFAULT_RULES_EDITION)}
                         </th>
                       </tr>
                       <tr>
@@ -142,10 +144,10 @@ export default class ClassicBattleTechRosterPrint extends React.Component<IPrint
                         MW Gunnery
                         </th>
                         <th className="min-width no-wrap">
-                          Base BV2
+                          Base BV
                         </th>
                         <th className="min-width no-wrap">
-                          Adjusted BV2
+                          Adjusted BV
                         </th>
                       </tr>
                     </thead>
@@ -169,10 +171,10 @@ export default class ClassicBattleTechRosterPrint extends React.Component<IPrint
                           {unit.pilot.gunnery}
                         </td>
                         <td className="min-width no-wrap text-center">
-                          {unit.getBattleValue()}
+                          {formatBattleValue((edition) => unit.getBattleValue(edition), "mech", this.props.appGlobals.currentCBTForce?.rulesEdition)}
                         </td>
                         <td className="min-width no-wrap text-right">
-                          {unit.getPilotAdjustedBattleValue()}
+                          {formatBattleValue((edition) => unit.getPilotAdjustedBattleValue(edition), "mech", this.props.appGlobals.currentCBTForce?.rulesEdition)}
                         </td>
                       </tr>
                     </tbody>
@@ -197,10 +199,10 @@ export default class ClassicBattleTechRosterPrint extends React.Component<IPrint
                           {vehicle.getPilot().gunnery}
                         </td>
                         <td className="min-width no-wrap text-center">
-                          {vehicle.getBattleValue()}
+                          {formatBattleValue((edition) => vehicle.getBattleValue(edition), "vehicle", this.props.appGlobals.currentCBTForce?.rulesEdition)}
                         </td>
                         <td className="min-width no-wrap text-right">
-                          {vehicle.getPilotAdjustedBattleValue()}
+                          {formatBattleValue((edition) => vehicle.getPilotAdjustedBattleValue(edition), "vehicle", this.props.appGlobals.currentCBTForce?.rulesEdition)}
                         </td>
                       </tr>
                     </tbody>
@@ -224,10 +226,10 @@ export default class ClassicBattleTechRosterPrint extends React.Component<IPrint
                           {fighter.getPilot().gunnery}
                         </td>
                         <td className="min-width no-wrap text-center">
-                          {fighter.getBattleValue()}
+                          {formatBattleValue((edition) => fighter.getBattleValue(edition), "fighter", this.props.appGlobals.currentCBTForce?.rulesEdition)}
                         </td>
                         <td className="min-width no-wrap text-right">
-                          {fighter.getPilotAdjustedBattleValue()}
+                          {formatBattleValue((edition) => fighter.getPilotAdjustedBattleValue(edition), "fighter", this.props.appGlobals.currentCBTForce?.rulesEdition)}
                         </td>
                       </tr>
                     </tbody>
@@ -251,10 +253,10 @@ export default class ClassicBattleTechRosterPrint extends React.Component<IPrint
                           {craft.getPilot().gunnery}
                         </td>
                         <td className="min-width no-wrap text-center">
-                          {craft.getBattleValue()}
+                          {formatBattleValue((edition) => craft.getBattleValue(edition), "small-craft", this.props.appGlobals.currentCBTForce?.rulesEdition)}
                         </td>
                         <td className="min-width no-wrap text-right">
-                          {craft.getPilotAdjustedBattleValue()}
+                          {formatBattleValue((edition) => craft.getPilotAdjustedBattleValue(edition), "small-craft", this.props.appGlobals.currentCBTForce?.rulesEdition)}
                         </td>
                       </tr>
                     </tbody>
@@ -278,10 +280,10 @@ export default class ClassicBattleTechRosterPrint extends React.Component<IPrint
                           {ship.getPilot().gunnery}
                         </td>
                         <td className="min-width no-wrap text-center">
-                          {ship.getBattleValue()}
+                          {formatBattleValue((edition) => ship.getBattleValue(edition), "capital-ship", this.props.appGlobals.currentCBTForce?.rulesEdition)}
                         </td>
                         <td className="min-width no-wrap text-right">
-                          {ship.getPilotAdjustedBattleValue()}
+                          {formatBattleValue((edition) => ship.getPilotAdjustedBattleValue(edition), "capital-ship", this.props.appGlobals.currentCBTForce?.rulesEdition)}
                         </td>
                       </tr>
                     </tbody>
@@ -305,10 +307,10 @@ export default class ClassicBattleTechRosterPrint extends React.Component<IPrint
                           {platoon.getGunnery()}
                         </td>
                         <td className="min-width no-wrap text-center">
-                          {platoon.getBattleValue()}
+                          {formatBattleValue((edition) => platoon.getBattleValue(edition), "infantry", this.props.appGlobals.currentCBTForce?.rulesEdition)}
                         </td>
                         <td className="min-width no-wrap text-right">
-                          {platoon.getSkillAdjustedBattleValue()}
+                          {formatBattleValue((edition) => platoon.getSkillAdjustedBattleValue(edition), "infantry", this.props.appGlobals.currentCBTForce?.rulesEdition)}
                         </td>
                       </tr>
                     </tbody>
@@ -332,10 +334,10 @@ export default class ClassicBattleTechRosterPrint extends React.Component<IPrint
                           {squad.getGunnery()}
                         </td>
                         <td className="min-width no-wrap text-center">
-                          {squad.getBattleValue()}
+                          {formatBattleValue((edition) => squad.getBattleValue(edition), "battle-armor", this.props.appGlobals.currentCBTForce?.rulesEdition)}
                         </td>
                         <td className="min-width no-wrap text-right">
-                          {squad.getSkillAdjustedBattleValue()}
+                          {formatBattleValue((edition) => squad.getSkillAdjustedBattleValue(edition), "battle-armor", this.props.appGlobals.currentCBTForce?.rulesEdition)}
                         </td>
                       </tr>
                     </tbody>
@@ -359,10 +361,10 @@ export default class ClassicBattleTechRosterPrint extends React.Component<IPrint
                           {point.getGunnery()}
                         </td>
                         <td className="min-width no-wrap text-center">
-                          {point.getPointBattleValue()}
+                          {formatBattleValue((edition) => point.getPointBattleValue(edition), "protomech", this.props.appGlobals.currentCBTForce?.rulesEdition)}
                         </td>
                         <td className="min-width no-wrap text-right">
-                          {point.getSkillAdjustedPointBattleValue()}
+                          {formatBattleValue((edition) => point.getSkillAdjustedPointBattleValue(edition), "protomech", this.props.appGlobals.currentCBTForce?.rulesEdition)}
                         </td>
                       </tr>
                     </tbody>

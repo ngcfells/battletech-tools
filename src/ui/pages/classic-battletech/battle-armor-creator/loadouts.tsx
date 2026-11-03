@@ -11,6 +11,7 @@ import TextSection from '../../../components/text-section';
 import UIPage from '../../../components/ui-page';
 import BattleArmorStatusBar from './_statusBar';
 import { unitRulesLevel } from '../../../components/game-settings-block';
+import { formatBattleValue } from '../../../../data/battle-value';
 const ArrowCircleLeft = FaArrowCircleLeft as any;
 const ArrowCircleRight = FaArrowCircleRight as any;
 const Plus = FaPlus as any;
@@ -120,7 +121,7 @@ export default class BattleArmorCreatorLoadouts extends React.Component<ILoadout
                                                 ))}
                                                 <p data-testid="ba-loadout-values">
                                                     <strong>Weight</strong>: {refit.getWeight()} of {refit.getWeightClass().maxWeight} kg &nbsp;|&nbsp;
-                                                    <strong>Battle Value</strong>: {refit.getBattleValue()} &nbsp;|&nbsp;
+                                                    <strong>Battle Value</strong>: {formatBattleValue((edition) => refit.getBattleValue(edition), "battle-armor", refit.getRulesEdition())} &nbsp;|&nbsp;
                                                     <strong>Cost</strong>: {refit.getCBillCost().toLocaleString("en-US")} C-bills
                                                 </p>
                                                 {issues.length > 0 ? (

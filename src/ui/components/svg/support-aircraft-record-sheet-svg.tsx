@@ -3,7 +3,7 @@ import { getUnitRulesets } from '../../../classes/unit-game-settings';
 import { FighterLocation } from '../../../classes/aerospace-fighter';
 import { ADVANCED_AEROSPACE_CREW_HITS } from '../../../data/aerospace-record-sheet';
 import { AIRSHIP_VELOCITY_TABLE } from '../../../data/support-aircraft';
-import { aerospaceInventoryRows } from '../aerospace-sheet-blocks';
+import { aerospaceInventoryRows, aerospaceSheetBattleValue } from '../aerospace-sheet-blocks';
 import { weaponQuirkSuffix } from '../quirk-sheet-block';
 import { getRulesLevelName } from '../rules-level-print';
 import { largeCraftCrewBox, notesBox, unitDataBox, velocityRecordBox } from './aerospace-record-sheet-svg-blocks';
@@ -77,7 +77,7 @@ export default class SupportAircraftRecordSheetSVG extends FighterRecordSheetSVG
             locationKey: this.satellite ? "Loc.: N Nose, L Left, R Right, A Aft, FU Fuselage" : "Loc.: N Nose, LW Left Wing, RW Right Wing, A Aft, FU Fuselage",
             ammo: ammo.length ? ammo.join(", ") : "",
             cost: craft.getCBillCost(),
-            bv: this.props.showPilot ? `${craft.getBattleValue()} (${craft.getPilotAdjustedBattleValue()} adj.)` : craft.getBattleValue(),
+            bv: aerospaceSheetBattleValue(craft, "fighter", this.props.showPilot),
         });
     }
 

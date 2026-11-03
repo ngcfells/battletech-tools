@@ -20,7 +20,7 @@ import { CUSTOM_HOMEBREW_RULES_LEVEL, getArtemisLauncherBattleValue, getLauncher
 import { getFractionalAerospaceArmorTonsPerPoint, getFractionalEngineWeight, roundUpToKilogram } from "../data/fractional-accounting";
 import { AlphaStrikeUnit, IASMULUnit } from "./alpha-strike-unit";
 import Pilot, { IPilot } from "./pilot";
-import { getBattleValueFor, getSkillMultiplier } from "../data/battle-value";
+import { getBattleValueFor, getBattleValueSkillEdition, getSkillMultiplier } from "../data/battle-value";
 import {
     getRoboticControlCost, getRoboticControlSystem, getRoboticControlSystemsFor, getRoboticControlWeight, getRoboticSkills,
     IRoboticControlSystem, RoboticControlTag, RoboticUnitType, SRCS_BATTLE_VALUE_MULTIPLIER, SRCS_RULES_LEVEL,
@@ -2363,8 +2363,8 @@ export default class AerospaceFighter implements IGameSettingsUnit {
     public getPilotAdjustedBattleValue(edition?: string): number {
         // A drone fights at its control system's Skills (IO:AE p.187).
         const skills = this.getRoboticSkills();
-        const multiplier = getSkillMultiplier(skills?.gunnery ?? this._pilot?.gunnery ?? 4, skills?.piloting ?? this._pilot?.piloting ?? 5, "fighter", edition) ?? 1;
-        return Math.round(this._battleValue * multiplier);
+        const multiplier = getSkillMultiplier(skills?.gunnery ?? this._pilot?.gunnery ?? 4, skills?.piloting ?? this._pilot?.piloting ?? 5, "fighter", getBattleValueSkillEdition(edition ?? this._rulesEdition, "fighter")) ?? 1;
+        return Math.round(this.getBattleValue(edition) * multiplier);
     }
 
     public getInPlay(): IFighterInPlay { return this._inPlay; }

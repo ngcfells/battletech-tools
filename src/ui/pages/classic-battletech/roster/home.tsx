@@ -18,6 +18,9 @@ import { fighterName } from './_fighterGroupTable';
 import { smallCraftName } from './_smallCraftGroupTable';
 import { capitalShipName } from './_capitalShipGroupTable';
 import { buildingSummary } from './_buildingGroupTable';
+import { formatBattleValue } from '../../../../data/battle-value';
+import { DEFAULT_RULES_EDITION } from '../../../../data/rules-editions';
+import RulesEditionSelect from '../../../components/rules-edition-select';
 const Dice = FaDice as any;
 const Print = FaPrint as any;
 const Heart = FaHeart as any;
@@ -62,6 +65,14 @@ export default class BattleMechRosterHome extends React.Component<IHomeProps, IH
     setQuirksInPlay = ( newValue: boolean ): void => {
       if( this.props.appGlobals.currentCBTForce) {
         this.props.appGlobals.currentCBTForce.quirksInPlay = newValue;
+        this.props.appGlobals.saveCurrentCBTForce( this.props.appGlobals.currentCBTForce );
+      }
+    }
+
+    // The rules edition being played: the force's Battle Values follow it (edition-aware BV plan, ruling 3).
+    setRulesEdition = ( newValue: string ): void => {
+      if( this.props.appGlobals.currentCBTForce) {
+        this.props.appGlobals.currentCBTForce.rulesEdition = newValue;
         this.props.appGlobals.saveCurrentCBTForce( this.props.appGlobals.currentCBTForce );
       }
     }
@@ -213,6 +224,12 @@ export default class BattleMechRosterHome extends React.Component<IHomeProps, IH
           {this.props.appGlobals.currentCBTForce && this.props.appGlobals.currentCBTForce.getTotalUnits() > 0 ? (
             <div className="row">
               <div className="col-12">
+                <RulesEditionSelect
+                  unitType="mech"
+                  value={this.props.appGlobals.currentCBTForce.rulesEdition}
+                  onChange={this.setRulesEdition}
+                />
+                <p className="smaller-text">Battle Values follow this edition. An edition with BV1 shows BV2 beside it, and one with no Battle Value shows only BV2.</p>
                 <InputCheckbox
                   label="Space forces in this game"
                   description="Tracks space turns (6 ground turns each) and anti-orbital shots in Play Mode"
@@ -268,7 +285,7 @@ export default class BattleMechRosterHome extends React.Component<IHomeProps, IH
                   <strong>Total Groups</strong>: {this.props.appGlobals.currentCBTForce.getTotalGroups()}&nbsp;|&nbsp;
                   <strong>Total Units</strong>: {this.props.appGlobals.currentCBTForce.getTotalUnits()}&nbsp;|&nbsp;
                   <strong>Total Tons</strong>: {this.props.appGlobals.currentCBTForce.getTotalTons()}&nbsp;|&nbsp;
-                  <strong>Total BV2</strong>: {this.props.appGlobals.currentCBTForce.getTotalBV2()}
+                  <strong>Total BV</strong>: {this.props.appGlobals.currentCBTForce.getBattleValueText()}
 
                 </p>
                 ) : null}
@@ -347,7 +364,7 @@ export default class BattleMechRosterHome extends React.Component<IHomeProps, IH
                   <strong>Total Groups</strong>: {this.props.appGlobals.currentCBTForce.getTotalGroups()}&nbsp;|&nbsp;
                   <strong>Total Units</strong>: {this.props.appGlobals.currentCBTForce.getTotalUnits()}&nbsp;|&nbsp;
                   <strong>Total Tons</strong>: {this.props.appGlobals.currentCBTForce.getTotalTons()}&nbsp;|&nbsp;
-                  <strong>Total BV2</strong>: {this.props.appGlobals.currentCBTForce.getTotalBV2()}
+                  <strong>Total BV</strong>: {this.props.appGlobals.currentCBTForce.getBattleValueText()}
 
                 </p>
                 ) : null}
@@ -406,8 +423,8 @@ export default class BattleMechRosterHome extends React.Component<IHomeProps, IH
         </tr>
       </thead>
       {favGroup.members.map( (mechObj, mechIndex) => {
-            const pilotBV2 = mechObj.getPilotAdjustedBattleValue();
-            const baseBV2 = mechObj.getBattleValue();
+            const pilotBV2 = formatBattleValue((edition) => mechObj.getPilotAdjustedBattleValue(edition), "mech", this.props.appGlobals.currentCBTForce?.rulesEdition);
+            const baseBV2 = formatBattleValue((edition) => mechObj.getBattleValue(edition), "mech", this.props.appGlobals.currentCBTForce?.rulesEdition);
 
             return (
                 <tbody key={mechIndex}>
@@ -451,7 +468,7 @@ export default class BattleMechRosterHome extends React.Component<IHomeProps, IH
               <td className="min-width no-wrap text-center small-text">{vehicle.getTech().name}</td>
               <td className="min-width no-wrap text-center">{vehicle.getPilot().piloting}</td>
               <td className="min-width no-wrap text-center">{vehicle.getPilot().gunnery}</td>
-              <td className="min-width no-wrap text-center">{vehicle.getPilotAdjustedBattleValue()}</td>
+              <td className="min-width no-wrap text-center">{formatBattleValue((edition) => vehicle.getPilotAdjustedBattleValue(edition), "vehicle", this.props.appGlobals.currentCBTForce?.rulesEdition)}</td>
           </tr>
           </tbody>
       ))}
@@ -466,7 +483,7 @@ export default class BattleMechRosterHome extends React.Component<IHomeProps, IH
               <td className="min-width no-wrap text-center small-text">{fighter.getTech().name}</td>
               <td className="min-width no-wrap text-center">{fighter.getPilot().piloting}</td>
               <td className="min-width no-wrap text-center">{fighter.getPilot().gunnery}</td>
-              <td className="min-width no-wrap text-center">{fighter.getPilotAdjustedBattleValue()}</td>
+              <td className="min-width no-wrap text-center">{formatBattleValue((edition) => fighter.getPilotAdjustedBattleValue(edition), "fighter", this.props.appGlobals.currentCBTForce?.rulesEdition)}</td>
           </tr>
           </tbody>
       ))}
@@ -481,7 +498,7 @@ export default class BattleMechRosterHome extends React.Component<IHomeProps, IH
               <td className="min-width no-wrap text-center small-text">{craft.getTech().name}</td>
               <td className="min-width no-wrap text-center">{craft.getPilot().piloting}</td>
               <td className="min-width no-wrap text-center">{craft.getPilot().gunnery}</td>
-              <td className="min-width no-wrap text-center">{craft.getPilotAdjustedBattleValue()}</td>
+              <td className="min-width no-wrap text-center">{formatBattleValue((edition) => craft.getPilotAdjustedBattleValue(edition), "small-craft", this.props.appGlobals.currentCBTForce?.rulesEdition)}</td>
           </tr>
           </tbody>
       ))}
@@ -496,7 +513,7 @@ export default class BattleMechRosterHome extends React.Component<IHomeProps, IH
               <td className="min-width no-wrap text-center small-text">{ship.getTech().name}</td>
               <td className="min-width no-wrap text-center">{ship.getPilot().piloting}</td>
               <td className="min-width no-wrap text-center">{ship.getPilot().gunnery}</td>
-              <td className="min-width no-wrap text-center">{ship.getPilotAdjustedBattleValue()}</td>
+              <td className="min-width no-wrap text-center">{formatBattleValue((edition) => ship.getPilotAdjustedBattleValue(edition), "capital-ship", this.props.appGlobals.currentCBTForce?.rulesEdition)}</td>
           </tr>
           </tbody>
       ))}
@@ -511,7 +528,7 @@ export default class BattleMechRosterHome extends React.Component<IHomeProps, IH
               <td className="min-width no-wrap text-center small-text">{platoon.getTechName()}</td>
               <td className="min-width no-wrap text-center">{platoon.canMakeAntiMechAttacks() ? platoon.getAntiMechSkill() : "-"}</td>
               <td className="min-width no-wrap text-center">{platoon.getGunnery()}</td>
-              <td className="min-width no-wrap text-center">{platoon.getSkillAdjustedBattleValue()}</td>
+              <td className="min-width no-wrap text-center">{formatBattleValue((edition) => platoon.getSkillAdjustedBattleValue(edition), "infantry", this.props.appGlobals.currentCBTForce?.rulesEdition)}</td>
           </tr>
           </tbody>
       ))}
@@ -526,7 +543,7 @@ export default class BattleMechRosterHome extends React.Component<IHomeProps, IH
               <td className="min-width no-wrap text-center small-text">{squad.getTechName()}</td>
               <td className="min-width no-wrap text-center">{squad.getCapabilities().swarm || squad.getCapabilities().leg ? squad.getAntiMechSkill() : "-"}</td>
               <td className="min-width no-wrap text-center">{squad.getGunnery()}</td>
-              <td className="min-width no-wrap text-center">{squad.getSkillAdjustedBattleValue()}</td>
+              <td className="min-width no-wrap text-center">{formatBattleValue((edition) => squad.getSkillAdjustedBattleValue(edition), "battle-armor", this.props.appGlobals.currentCBTForce?.rulesEdition)}</td>
           </tr>
           </tbody>
       ))}
@@ -541,7 +558,7 @@ export default class BattleMechRosterHome extends React.Component<IHomeProps, IH
               <td className="min-width no-wrap text-center small-text">{point.getTechName()}</td>
               <td className="min-width no-wrap text-center">-</td>
               <td className="min-width no-wrap text-center">{point.getGunnery()}</td>
-              <td className="min-width no-wrap text-center">{point.getSkillAdjustedPointBattleValue()}</td>
+              <td className="min-width no-wrap text-center">{formatBattleValue((edition) => point.getSkillAdjustedPointBattleValue(edition), "protomech", this.props.appGlobals.currentCBTForce?.rulesEdition)}</td>
           </tr>
           </tbody>
       ))}
@@ -595,7 +612,7 @@ export default class BattleMechRosterHome extends React.Component<IHomeProps, IH
 <td colSpan={4} className="text-center">
     {favGroup.getTotalTons()} Tons - {favGroup.getTech()}
 </td>
-<td colSpan={1} className="no-wrap text-right">BV2: {favGroup.getTotaBV2()}</td>
+<td colSpan={1} className="no-wrap text-right">BV: {favGroup.getBattleValueText(this.props.appGlobals.currentCBTForce?.rulesEdition ?? DEFAULT_RULES_EDITION)}</td>
 </tr>
 </tfoot>
     </table>

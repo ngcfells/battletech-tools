@@ -1,4 +1,5 @@
 import React, { type JSX } from 'react';
+import { aerospaceSheetBattleValue } from '../aerospace-sheet-blocks';
 import { getUnitRulesets } from '../../../classes/unit-game-settings';
 import SmallCraft from '../../../classes/small-craft';
 import { AEROSPACE_FIGHTER_CRITICAL_BLOCK } from '../../../data/aerospace-record-sheet';
@@ -75,7 +76,7 @@ export default class SmallCraftRecordSheetSVG extends React.Component<ISmallCraf
             locationTitle: "Arc",
             locationKey: `Arc: ${key}`,
             cost: craft.getCBillCost(),
-            bv: this.props.showPilot ? `${craft.getBattleValue()} (${craft.getPilotAdjustedBattleValue()} adj.)` : craft.getBattleValue(),
+            bv: aerospaceSheetBattleValue(craft, "small-craft", this.props.showPilot),
         });
     }
 

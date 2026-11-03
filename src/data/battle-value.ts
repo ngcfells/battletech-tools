@@ -53,28 +53,51 @@ export const BV_RULES: Record<string, Partial<Record<BattleValueUnitType, IBattl
     },
 };
 
-/** The Battle Value rules `unitType` follows under `edition`. An unknown edition reads the default edition's. */
-export const getBattleValueRules = (edition: string | undefined, unitType: BattleValueUnitType): IBattleValueRules => {
+/** The newest edition at or before `edition` that `table` lists. An unknown edition reads the default edition's. */
+const getListedEdition = (edition: string | undefined, table: Record<string, unknown>): string | undefined => {
     const at = btRulesEditions.indexOf(getRulesEdition(edition));
-    const listed = btRulesEditions.slice(0, at + 1).reverse().find((entry) => Object.prototype.hasOwnProperty.call(BV_RULES, entry.tag));
-    return (listed && BV_RULES[listed.tag][unitType]) || NO_BATTLE_VALUE;
+    return btRulesEditions.slice(0, at + 1).reverse().find((entry) => Object.prototype.hasOwnProperty.call(table, entry.tag))?.tag;
 };
 
-/** Runs a unit's BV1 method under a BV1 edition once that unit type's BV1 is entered, and its BV2 method otherwise. */
-export const getBattleValueFor = <T>(edition: string | undefined, unitType: BattleValueUnitType, methods: { bv1?: () => T; bv2: () => T }): T => {
-    const rules = getBattleValueRules(edition, unitType);
-    return (rules.scheme === "bv1" && !rules.pending && methods.bv1 ? methods.bv1 : methods.bv2)();
+/** The Battle Value rules `unitType` follows under `edition`. An unknown edition reads the default edition's. */
+export const getBattleValueRules = (edition: string | undefined, unitType: BattleValueUnitType): IBattleValueRules => {
+    const listed = getListedEdition(edition, BV_RULES);
+    return (listed && BV_RULES[listed][unitType]) || NO_BATTLE_VALUE;
 };
+
+/** True once `edition` works out a BV1 of its own for `unitType` (its BV1 record is entered, not pending). */
+const worksOutBv1 = (edition: string | undefined, unitType: BattleValueUnitType): boolean => {
+    const rules = getBattleValueRules(edition, unitType);
+    return rules.scheme === "bv1" && !rules.pending;
+};
+
+/** Does `edition` have a Battle Value system for `unitType`? The first is in the Master Rules (BV_RULES). */
+export const editionHasBattleValue = (edition: string | undefined, unitType: BattleValueUnitType = "mech"): boolean =>
+    getBattleValueRules(edition, unitType).scheme !== "none";
+
+/**
+ * The skill table edition that goes with the Battle Value `edition` works out for `unitType` (plan ruling 2): its own
+ * (or the newest before it, as the box set reads BMR(R)'s) once its BV1 is entered, and the TechManual's for BV2.
+ */
+export const getBattleValueSkillEdition = (edition: string | undefined, unitType: BattleValueUnitType): string =>
+    (worksOutBv1(edition, unitType) && getListedEdition(edition, SKILL_MULTIPLIERS_BY_EDITION)) || DEFAULT_RULES_EDITION;
+
+/** Runs a unit's BV1 method under a BV1 edition once that unit type's BV1 is entered, and its BV2 method otherwise. */
+export const getBattleValueFor = <T>(edition: string | undefined, unitType: BattleValueUnitType, methods: { bv1?: () => T; bv2: () => T }): T =>
+    (worksOutBv1(edition, unitType) && methods.bv1 ? methods.bv1 : methods.bv2)();
 
 /**
  * The one Battle Value text for every display (plan ruling 1): a BV2 edition shows its BV, a BV1 edition "1,234 (BV2:
- * 1,456)", and an edition with no Battle Value, or whose BV1 is not entered yet for the unit type, "— (BV2: 1,456)".
+ * 1,456)", and an edition with no Battle Value, or whose BV1 is not entered yet, "— (BV2: 1,456)". `battleValue` gives
+ * the base or skill-adjusted BV under an edition, so each figure reads its own skill table (ruling 2). A force total
+ * lists each unit type in it and shows a BV1 figure only once every one of them has one.
  */
-export const formatBattleValue = (unit: { getBattleValue(edition?: string): number }, unitType: BattleValueUnitType, edition: string | undefined): string => {
-    const rules = getBattleValueRules(edition, unitType);
-    if (rules.scheme === "bv2") return unit.getBattleValue(edition).toLocaleString("en-US");
-    const bv2 = unit.getBattleValue(DEFAULT_RULES_EDITION).toLocaleString("en-US");
-    return `${rules.scheme === "bv1" && !rules.pending ? unit.getBattleValue(edition).toLocaleString("en-US") : "—"} (BV2: ${bv2})`;
+export const formatBattleValue = (battleValue: (edition: string) => number, unitType: BattleValueUnitType | BattleValueUnitType[], edition: string | undefined): string => {
+    const types = Array.isArray(unitType) ? unitType : [unitType];
+    const tag = getRulesEdition(edition).tag;
+    if (types.every((type) => getBattleValueRules(tag, type).scheme === "bv2")) return battleValue(tag).toLocaleString("en-US");
+    const bv2 = battleValue(DEFAULT_RULES_EDITION).toLocaleString("en-US");
+    return `${types.length > 0 && types.every((type) => worksOutBv1(tag, type)) ? battleValue(tag).toLocaleString("en-US") : "—"} (BV2: ${bv2})`;
 };
 
 /**

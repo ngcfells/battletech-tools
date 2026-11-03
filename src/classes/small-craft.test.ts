@@ -426,7 +426,7 @@ describe("Small Craft in a roster group", () => {
         const craft = buildAquarius();
         craft.resolveAttack(7, "nose", 12, { criticalRolls: [2] });
         group.smallCraft.push(craft);
-        expect(group.getTotaBV2()).toBe(2233);
+        expect(group.getTotalBattleValue()).toBe(2233);
         expect(group.getTotalTons()).toBe(200);
         expect(group.getTotalUnits()).toBe(1);
         expect(group.isUnderStrength()).toBe(true);

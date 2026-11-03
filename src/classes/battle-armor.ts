@@ -26,7 +26,7 @@ import { IBattleArmorArmorType, IEras } from "../data/data-interfaces";
 import { btEraOptions, findEraByTag, getErasForTech } from "../data/era-options";
 import { IInfantryWeapon, findInfantryWeapon, infantryWeapons } from "../data/infantry-weapons";
 import { EXPERIMENTAL_RULES_LEVEL } from "../data/rules-level-options";
-import { getBattleValueFor, getSkillMultiplier } from "../data/battle-value";
+import { getBattleValueFor, getBattleValueSkillEdition, getSkillMultiplier } from "../data/battle-value";
 import { AlphaStrikeUnit, IASMULUnit } from "./alpha-strike-unit";
 
 // Battle armor construction (TechManual pp.160-173), Battle Value (TM pp.310-311, 316) and cost (TM pp.276, 281, 296-298);
@@ -1355,8 +1355,8 @@ export default class BattleArmor implements IGameSettingsUnit {
     public getSuitBattleValue(): number { return this._calcBattleValue().suit; }
     public getBattleValue(edition: string = this._rulesEdition): number { return getBattleValueFor(edition, "battle-armor", { bv2: () => this._calcBattleValue() }).squad; }
     public getBattleValueLog(edition: string = this._rulesEdition): string[] { return getBattleValueFor(edition, "battle-armor", { bv2: () => this._calcBattleValue() }).log; }
-    public getSkillMultiplier(edition?: string): number { return getSkillMultiplier(this._gunnery, this._antiMech, "battle-armor", edition) ?? 1; }
-    public getSkillAdjustedBattleValue(edition?: string): number { return roundNormally(this.getBattleValue() * this.getSkillMultiplier(edition)); }
+    public getSkillMultiplier(edition?: string): number { return getSkillMultiplier(this._gunnery, this._antiMech, "battle-armor", getBattleValueSkillEdition(edition ?? this._rulesEdition, "battle-armor")) ?? 1; }
+    public getSkillAdjustedBattleValue(edition?: string): number { return roundNormally(this.getBattleValue(edition) * this.getSkillMultiplier(edition)); }
 
     // Cost (TM pp.276, 281, 296-298)
 

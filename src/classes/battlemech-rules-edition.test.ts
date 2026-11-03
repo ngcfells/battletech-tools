@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { getAvailableTonnagesForMechType, getTonnageBoundsForMechType } from "../data/mech-tonnages";
 import { mechTypeOptions } from "../data/mech-type-options";
-import { DEFAULT_RULES_EDITION, editionHasBattleValue, editionHasPrices, getRulesEdition, getSelectableRulesEditions, isEarlierRulesEdition } from "../data/rules-editions";
+import { DEFAULT_RULES_EDITION, editionHasPrices, getRulesEdition, getSelectableRulesEditions, isEarlierRulesEdition } from "../data/rules-editions";
+import { editionHasBattleValue } from "../data/battle-value";
 import { getTargetToHitFromWeapon } from "../utils";
 import { BattleMech } from "./battlemech";
 
@@ -284,7 +285,7 @@ describe("Rules edition selector", () => {
     it("knows which editions have Battle Value and prices", () => {
         const tags = ["battledroids", "battletech-2nd-edition", "battletech-manual", "battletech-compendium", "battletech-3rd-edition",
             "compendium-rules-of-warfare", "battletech-4th-edition", "master-rules", "master-rules-revised", "total-warfare", "core-rulebook"];
-        expect(tags.map(editionHasBattleValue)).toEqual([false, false, false, false, false, false, false, true, true, true, true]);
+        expect(tags.map((tag) => editionHasBattleValue(tag))).toEqual([false, false, false, false, false, false, false, true, true, true, true]);
         expect(tags.map(editionHasPrices)).toEqual([false, false, true, true, false, true, false, true, true, true, true]);
     });
 

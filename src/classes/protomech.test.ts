@@ -432,7 +432,7 @@ describe("ProtoMech Points in a roster group", () => {
         point.setPointSize(4);
         point.applyDamage(1, "head", 2);
         group.protoMechs.push(point);
-        expect(group.getTotaBV2()).toBe(316 * 4);
+        expect(group.getTotalBattleValue()).toBe(316 * 4);
         expect(group.getTotalTons()).toBe(36);
         expect(group.getTotalUnits()).toBe(1);
         expect(group.getTech()).toBe("Clan");

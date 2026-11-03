@@ -2,6 +2,7 @@
 import React, { type JSX } from 'react';
 import { BattleMech, IGATOR } from '../../../classes/battlemech';
 import { CONST_HIGHLIGHT_COLOR } from '../../../configVars';
+import { formatBattleValue, getBattleValueRules } from '../../../data/battle-value';
 import { editionHasPrices } from '../../../data/rules-editions';
 import { breakLines } from '../../../utils/breakLines';
 import BattleTechLogo from '../battletech-logo';
@@ -131,11 +132,14 @@ export default class BattleMechSVG extends React.Component<IBattleMechSVGProps, 
         eraLine1 = eraLine1.trim();
         eraLine2 = eraLine2.trim();
 
-        let battleValue = this.props.mechData.getBattleValue().toString();
-        const adjustedBattleValue = this.props.mechData.getPilotAdjustedBattleValue().toString();
-        let battleValueLabel = "BattleValue (BV2)"
+        // The 'Mech's edition's BV; a BV1 edition prints BV2 beside it (plan ruling 1).
+        const bvEdition = mech.getRulesEdition();
+        let battleValue = formatBattleValue((edition) => mech.getBattleValue(edition), "mech", bvEdition);
+        const adjustedBattleValue = formatBattleValue((edition) => mech.getPilotAdjustedBattleValue(edition), "mech", bvEdition);
+        const scheme = getBattleValueRules(bvEdition, "mech").scheme === "bv2" ? " (BV2)" : "";
+        let battleValueLabel = "BattleValue" + scheme;
         if( battleValue !== adjustedBattleValue ) {
-            battleValueLabel = "Adjusted / Base BV (BV2)"
+            battleValueLabel = "Adjusted / Base BV" + scheme;
             battleValue = "with pilot: " + adjustedBattleValue + " / base: " + battleValue + "";
         }
 

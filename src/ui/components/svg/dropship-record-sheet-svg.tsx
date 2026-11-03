@@ -4,7 +4,7 @@ import SmallCraft from '../../../classes/small-craft';
 import { AEROSPACE_FIGHTER_CRITICAL_BLOCK } from '../../../data/aerospace-record-sheet';
 import { SMALL_CRAFT_ARCS, SmallCraftArc } from '../../../data/small-craft-construction';
 import { weaponBayName } from '../../../data/weapon-bays';
-import { IAerospaceInventoryRow, aerospaceInventoryRows } from '../aerospace-sheet-blocks';
+import { aerospaceInventoryRows, aerospaceSheetBattleValue, IAerospaceInventoryRow } from '../aerospace-sheet-blocks';
 import { bayQuirkSuffix, getUnitQuirkSheetLines, weaponQuirkSuffix } from '../quirk-sheet-block';
 import { getRulesLevelName } from '../rules-level-print';
 import { ICriticalTrack, criticalDamageBox, heatPerArcBox, largeCraftCrewBox, notesBox, unitDataBox, velocityRecordBox } from './aerospace-record-sheet-svg-blocks';
@@ -115,7 +115,7 @@ export default class DropShipRecordSheetSVG extends React.Component<IDropShipRec
             locationKey: `Arc: ${key}. (C): capital weapons, capital-scale values.`,
             ammo: ammo.join(", ") || "none",
             cost: craft.getCBillCost(),
-            bv: this.props.showPilot ? `${craft.getBattleValue()} (${craft.getPilotAdjustedBattleValue()} adj.)` : craft.getBattleValue(),
+            bv: aerospaceSheetBattleValue(craft, "small-craft", this.props.showPilot),
         });
     }
 

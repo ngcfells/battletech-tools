@@ -219,7 +219,7 @@ describe("Fighter damage and critical hits (TW pp.238-240)", () => {
         const group = new BattleMechGroup();
         group.fighters.push(fighter);
         expect(group.getTotalUnits()).toBe(1);
-        expect(group.getTotaBV2()).toBe(fighter.getPilotAdjustedBattleValue());
+        expect(group.getTotalBattleValue()).toBe(fighter.getPilotAdjustedBattleValue());
         expect(group.getTotalTons()).toBe(80);
         expect(group.isUnderStrength()).toBe(true);
 

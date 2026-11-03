@@ -10,7 +10,7 @@ import { getQuirkIssues, getQuirkTargets } from "../data/quirk-registry";
 import { QuirkList } from "./quirk-list";
 import { getAlphaStrikeQuirks } from "../utils/quirk-effects";
 import { DEFAULT_RULES_EDITION, getSelectableRulesEditionTag } from "../data/rules-editions";
-import { getBattleValueFor, getSkillMultiplier } from "../data/battle-value";
+import { getBattleValueFor, getBattleValueSkillEdition, getSkillMultiplier } from "../data/battle-value";
 import { getComboArtillery } from "../data/artillery-custom";
 import {
     getDamageGroupings, getDualTurretHit, getFacingAfterFallDirection, getLargeNavalVesselHitLocation, getSuperheavyVehicleHitLocation, getVehicleCriticalEffect,
@@ -4953,8 +4953,8 @@ export default class Vehicle implements IGameSettingsUnit {
         const skills = this.getRoboticSkills();
         const gunnery = skills?.gunnery ?? this._pilot?.gunnery ?? 4;
         const piloting = skills?.piloting ?? this._pilot?.piloting ?? 5;
-        const multiplier = getSkillMultiplier(gunnery, piloting, "vehicle", edition) ?? 1;
-        return Math.round(this._battleValue * multiplier);
+        const multiplier = getSkillMultiplier(gunnery, piloting, "vehicle", getBattleValueSkillEdition(edition ?? this._rulesEdition, "vehicle")) ?? 1;
+        return Math.round(this.getBattleValue(edition) * multiplier);
     }
 
     public export(noInPlayVariables: boolean = false): IVehicleExport {

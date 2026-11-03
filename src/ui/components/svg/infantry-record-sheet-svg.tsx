@@ -1,4 +1,5 @@
 import React, { type JSX } from 'react';
+import { formatBattleValue } from '../../../data/battle-value';
 import { getUnitRulesets } from '../../../classes/unit-game-settings';
 import InfantryPlatoon, { INFANTRY_SPECIAL_FEATURES } from '../../../classes/infantry-platoon';
 import {
@@ -154,7 +155,7 @@ export default class InfantryRecordSheetSVG extends React.Component<IInfantryRec
                         {text(rx, y + 239, "Modifier:", { size: 18, weight: 700 })}
                         {ranges}
                         {notes.map((note, i) => text(rx, y + 266 + i * 15, note, { size: 13, fill: GRAY }, `n${i}`))}
-                        {field(rx, y + h - 14, "BV:", platoon ? `${platoon.getBattleValue()}${lines.length > 1 ? " (whole platoon)" : ""}` : "", rx + 45, 120)}
+                        {field(rx, y + h - 14, "BV:", platoon ? `${formatBattleValue((edition) => platoon.getBattleValue(edition), "infantry", platoon.getRulesEdition())}${lines.length > 1 ? " (whole platoon)" : ""}` : "", rx + 45, 120)}
                         {field(rx + 330, y + h - 14, "Transport Wt:", platoon ? `${platoon.getWeight(troopers)} tons` : "", rx + 475, 120)}
                         {field(rx + 720, y + h - 14, "Movement MP:", platoon?.getMP(), rx + 870, 60)}
                         {field(rx + 1000, y + h - 14, "Type:", platoon ? `${platoon.getMotive().moveType}${platoon.isMoveOrFire() ? ", Move or Shoot" : ""}` : "", rx + 1070, 300)}

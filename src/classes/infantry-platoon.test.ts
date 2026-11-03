@@ -404,7 +404,7 @@ describe("Infantry platoons in play (Total Warfare pp.215-217)", () => {
         const group = new BattleMechGroup();
         group.infantry.push(copy);
         expect(group.isUnderStrength()).toBe(true);
-        expect(group.getTotaBV2()).toBe(copy.getSkillAdjustedBattleValue());
+        expect(group.getTotalBattleValue()).toBe(copy.getSkillAdjustedBattleValue());
         expect(group.getTotalUnits()).toBe(1);
         expect(group.getTech()).toBe("Inner Sphere");
         const reloaded = new BattleMechGroup(JSON.parse(JSON.stringify(group.export())));
@@ -658,8 +658,9 @@ describe("Rulings on infantry (user, 2026-10-07)", () => {
         const platoon = darrell();
         expect(platoon.getBattleValue("master-rules")).toBe(platoon.getBattleValue());
         expect(platoon.getBattleValue("constructor")).toBe(platoon.getBattleValue());
-        // The skill multiplier is the edition's own: Master Rules reads the 5 column for all infantry.
+        // The BV shown is BV2 until infantry BV1 is entered, so it reads the TechManual table (plan ruling 2).
         platoon.setGunnery(3);
-        expect(platoon.getSkillAdjustedBattleValue("master-rules")).toBe(Math.round(platoon.getBattleValue() * 1.2));
+        expect(platoon.getSkillAdjustedBattleValue("master-rules")).toBe(platoon.getSkillAdjustedBattleValue("total-warfare"));
+        expect(platoon.getSkillMultiplier("master-rules")).toBe(platoon.getSkillMultiplier("total-warfare"));
     });
 });

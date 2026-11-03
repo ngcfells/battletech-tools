@@ -9,6 +9,7 @@ import QuirkPicker from '../../../components/quirk-picker';
 import TextSection from '../../../components/text-section';
 import UIPage from '../../../components/ui-page';
 import { unitRulesLevel } from '../../../components/game-settings-block';
+import { formatBattleValue } from '../../../../data/battle-value';
 const ArrowCircleLeft = FaArrowCircleLeft as any;
 
 export default class CapitalShipCreatorSummary extends React.Component<ISummaryProps> {
@@ -48,7 +49,7 @@ export default class CapitalShipCreatorSummary extends React.Component<ISummaryP
                                 <strong>Tech</strong>: {ship.getTech().name} &nbsp;|&nbsp;
                                 <strong>Era</strong>: {ship.getEra().name} &nbsp;|&nbsp;
                                 <strong>Cost</strong>: {ship.getCBillCost().toLocaleString("en-US")} C-bills &nbsp;|&nbsp;
-                                <strong>Battle Value</strong>: <span data-testid="cs-bv">{ship.getBattleValue().toLocaleString("en-US")}</span>
+                                <strong>Battle Value</strong>: <span data-testid="cs-bv">{formatBattleValue((edition) => ship.getBattleValue(edition), "capital-ship", ship.getRulesEdition())}</span>
                             </p>
                             <p>
                                 <strong>Thrust</strong>: {ship.isWarShip() ? `${ship.getSafeThrust()} safe / ${ship.getMaxThrust()} max` : "station-keeping"} &nbsp;|&nbsp;

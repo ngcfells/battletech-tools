@@ -319,9 +319,10 @@ describe("Vehicle play mode: save and roster", () => {
         pilot.piloting = 4;
         tank.setPilot(pilot);
         expect(tank.getPilotAdjustedBattleValue()).toBe(Math.round(tank.getBattleValue() * 1.32));
-        // Master Rules p.144 gives 1.25 for the same crew; the 1987 Manual has no Battle Value to adjust.
-        expect(tank.getPilotAdjustedBattleValue("master-rules")).toBe(Math.round(tank.getBattleValue() * 1.25));
-        expect(tank.getPilotAdjustedBattleValue("battletech-manual")).toBe(tank.getBattleValue());
+        // Vehicle BV1 is not entered yet, so the Master Rules and the 1987 Manual (no Battle Value) show BV2, which
+        // reads the TechManual table (plan ruling 2), not Master Rules p.144's 1.25.
+        expect(tank.getPilotAdjustedBattleValue("master-rules")).toBe(Math.round(tank.getBattleValue() * 1.32));
+        expect(tank.getPilotAdjustedBattleValue("battletech-manual")).toBe(Math.round(tank.getBattleValue() * 1.32));
     });
 
     it("groups carry vehicles in totals and in saves; older saves without vehicles still load", () => {
@@ -330,7 +331,7 @@ describe("Vehicle play mode: save and roster", () => {
         group.vehicles.push(tank);
         expect(group.getTotalUnits()).toBe(1);
         expect(group.getTotalTons()).toBe(50);
-        expect(group.getTotaBV2()).toBe(tank.getBattleValue());
+        expect(group.getTotalBattleValue()).toBe(tank.getBattleValue());
         const reloaded = new BattleMechGroup(group.export());
         expect(reloaded.vehicles.length).toBe(1);
 

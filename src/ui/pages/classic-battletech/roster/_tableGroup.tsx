@@ -18,6 +18,8 @@ import ProtoMechGroupTable from './_protoMechGroupTable';
 import BattledroidsGroupTable from './_battledroidsGroupTable';
 import BuildingGroupTable from './_buildingGroupTable';
 import type { JSX } from "react";
+import { formatBattleValue } from '../../../../data/battle-value';
+import { DEFAULT_RULES_EDITION } from '../../../../data/rules-editions';
 const Edit = FaEdit as any;
 const Trash = FaTrash as any;
 
@@ -260,7 +262,7 @@ export default class BattleMechTableGroup extends React.Component<IBattleMechTab
         title={"Editing " + this.state.editingUnit.model}
         onSave={this.saveUnit}
     >
-        <div className="small-text">Here you may edit the Mech Nickname, Mechwarrior name, and skills. Skill changes Will display both base amd adjusted BV2.</div>
+        <div className="small-text">Here you may edit the Mech Nickname, Mechwarrior name, and skills. Skill changes will display both base and adjusted BV.</div>
         <InputField
             label="'Mech Nickname"
             value={this.state.editingUnit.nickname}
@@ -329,12 +331,12 @@ export default class BattleMechTableGroup extends React.Component<IBattleMechTab
             </div>
             <div className="col-md-6">
                 <fieldset className="fieldset">
-                    <legend>Pilot Adjusted BV2</legend>
+                    <legend>Pilot Adjusted BV</legend>
                     <div>
-                        <strong>Base BV2</strong>: {this.state.editingUnit.getBattleValue()}
+                        <strong>Base BV</strong>: {formatBattleValue((edition) => this.state.editingUnit?.getBattleValue(edition) ?? 0, "mech", this.props.appGlobals.currentCBTForce?.rulesEdition)}
                     </div>
                     <div>
-                        <strong>Adjusted BV2</strong>: {this.state.editingUnit.getPilotAdjustedBattleValue()}
+                        <strong>Adjusted BV</strong>: {formatBattleValue((edition) => this.state.editingUnit?.getPilotAdjustedBattleValue(edition) ?? 0, "mech", this.props.appGlobals.currentCBTForce?.rulesEdition)}
                     </div>
 
                 </fieldset>
@@ -403,8 +405,8 @@ export default class BattleMechTableGroup extends React.Component<IBattleMechTab
     {this.props.appGlobals.currentCBTForce.groups[this.props.bmGroupIndex].members.length > 0 ? (
       <>
         {this.props.appGlobals.currentCBTForce.groups[this.props.bmGroupIndex].members.map( (mechObj, mechIndex) => {
-            const pilotBV2 = mechObj.getPilotAdjustedBattleValue();
-            const baseBV2 = mechObj.getBattleValue();
+            const pilotBV2 = formatBattleValue((edition) => mechObj.getPilotAdjustedBattleValue(edition), "mech", this.props.appGlobals.currentCBTForce?.rulesEdition);
+            const baseBV2 = formatBattleValue((edition) => mechObj.getBattleValue(edition), "mech", this.props.appGlobals.currentCBTForce?.rulesEdition);
 
             return (
                 <tbody key={mechIndex}>
@@ -513,7 +515,7 @@ export default class BattleMechTableGroup extends React.Component<IBattleMechTab
 <td colSpan={this.props.showEdit ? 4 : 3} className="text-center">
     {this.props.appGlobals.currentCBTForce.groups[this.props.bmGroupIndex].getTotalTons()} Tons - {this.props.appGlobals.currentCBTForce.groups[this.props.bmGroupIndex].getTech()}
 </td>
-<td colSpan={2} className="text-right">BV2: {this.props.appGlobals.currentCBTForce.groups[this.props.bmGroupIndex].getTotaBV2()}</td>
+<td colSpan={2} className="text-right">BV: {this.props.appGlobals.currentCBTForce.groups[this.props.bmGroupIndex].getBattleValueText(this.props.appGlobals.currentCBTForce?.rulesEdition ?? DEFAULT_RULES_EDITION)}</td>
 </tr>
 </tfoot>
 

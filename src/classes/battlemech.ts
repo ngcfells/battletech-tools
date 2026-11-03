@@ -10,7 +10,7 @@ import { getBattleMechTroAdapter } from "./battlemech-tro";
 import { isSSWNoMake, readSSWTechnicalReadout } from "../utils/ssw-technical-readout";
 import { ITechnicalReadoutExport } from "../data/technical-readout-interfaces";
 import { getAlphaStrikeQuirks, getQuirkHeatGenerated, getQuirkWeaponHeat } from "../utils/quirk-effects";
-import { getBattleValueFor, getEditionSkillMultipliers, getSkillMultiplier } from "../data/battle-value";
+import { getBattleValueFor, getBattleValueSkillEdition, getSkillMultiplier } from "../data/battle-value";
 import { battlemechLocations } from "../data/battlemech-locations";
 import { IArmorType, ICockpitType, ICriticalLocations, IEngineOption, IEngineType, IEquipmentItem, IGyro, IHeatSync, IInternalStructure, IInternalStructurePerTon, IJumpJet, IMyomerType, IResolvedInternalStructure, ISplitLocation, ITechDates } from "../data/data-interfaces";
 import { btEraOptions, findEraByTag, getClosestEraForTech, getEraForYear, getErasForTech } from "../data/era-options";
@@ -1525,15 +1525,15 @@ export class BattleMech {
 
     /**
      * Applies pilot experience skill tracking multipliers to determine final deployment BV.
-     * Uses the 'Mech's rules edition's BV Skill Multiplier Table (TechManual p. 315 by default); an edition with
-     * no table of its own keeps the default edition's.
+     * Uses the skill table that goes with the 'Mech's edition's BV: that edition's own for a BV1 once entered, and
+     * the TechManual's (p. 315) for BV2 (plan ruling 2).
      */
     private _setPilotAdjustedBattleValue(): void {
         // Fetch raw pilot credentials with safe default constraints
         const gunnery = this._pilot?.gunnery ?? 4;
         const piloting = this._pilot?.piloting ?? 5;
         let skillMultiplier = 1.0;
-        const matrixMultiplier = getSkillMultiplier(gunnery, piloting, "mech", getEditionSkillMultipliers(this._rulesEdition) ? this._rulesEdition : DEFAULT_RULES_EDITION);
+        const matrixMultiplier = getSkillMultiplier(gunnery, piloting, "mech", getBattleValueSkillEdition(this._rulesEdition, "mech"));
         if (matrixMultiplier !== null) {
             skillMultiplier = matrixMultiplier;
         } else {
@@ -2025,9 +2025,11 @@ export class BattleMech {
         return getBattleValueFor(edition, "mech", { bv2: () => this._battleValue });
     }
 
-    public getPilotAdjustedBattleValue() {
+    /** Battle Value adjusted for skill under `edition`, read on the skill table that goes with that BV (plan ruling 2). */
+    public getPilotAdjustedBattleValue(edition: string = this._rulesEdition): number {
         this._refreshBattleValue();
-        return this._pilotAdjustedBattleValue;
+        if (edition === this._rulesEdition) return this._pilotAdjustedBattleValue;
+        return Math.round(this.getBattleValue(edition) * (getSkillMultiplier(this._pilot?.gunnery ?? 4, this._pilot?.piloting ?? 5, "mech", getBattleValueSkillEdition(edition, "mech")) ?? 1));
     }
 
     public getAlphaStrikeValue() {

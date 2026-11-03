@@ -4,6 +4,7 @@ import InfantryPlatoon from '../../../../classes/infantry-platoon';
 import { IAppGlobals } from '../../../app-router';
 import MULSearchButton from './_mulSearchButton';
 import StatBar from '../../../components/stat-bar';
+import { formatBattleValue } from '../../../../data/battle-value';
 const Trash = FaTrash as any;
 
 /**
@@ -86,8 +87,8 @@ export default class InfantryGroupTable extends React.Component<IInfantryGroupTa
                     </tr>
                 </thead>
                 {platoons.map( (platoon, index) => {
-                    const adjustedBV = platoon.getSkillAdjustedBattleValue();
-                    const baseBV = platoon.getBattleValue();
+                    const adjustedBV = formatBattleValue((edition) => platoon.getSkillAdjustedBattleValue(edition), "infantry", this.props.appGlobals.currentCBTForce?.rulesEdition);
+                    const baseBV = formatBattleValue((edition) => platoon.getBattleValue(edition), "infantry", this.props.appGlobals.currentCBTForce?.rulesEdition);
                     return (
                         <tbody key={platoon.getUUID()}>
                             <tr>

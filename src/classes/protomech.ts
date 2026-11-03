@@ -47,7 +47,7 @@ import {
     protoMechEquipment,
     protoMechMissiles,
 } from "../data/protomech-construction";
-import { getBattleValueFor, getSkillMultiplier } from "../data/battle-value";
+import { getBattleValueFor, getBattleValueSkillEdition, getSkillMultiplier } from "../data/battle-value";
 import { findByTag } from "../data/tag-match";
 import { getMovementModifier } from "../utils";
 import { AlphaStrikeUnit, IASMULUnit } from "./alpha-strike-unit";
@@ -1019,10 +1019,10 @@ export default class ProtoMech implements IGameSettingsUnit {
     }
     public getBattleValue(edition: string = this._rulesEdition): number { return getBattleValueFor(edition, "protomech", { bv2: () => this._calcBattleValue() }).value; }
     public getBattleValueLog(edition: string = this._rulesEdition): string[] { return getBattleValueFor(edition, "protomech", { bv2: () => this._calcBattleValue() }).log; }
-    public getPointBattleValue(): number { return this.getBattleValue() * this._pointSize; }
+    public getPointBattleValue(edition?: string): number { return this.getBattleValue(edition) * this._pointSize; }
     /** ProtoMechs have no Piloting Skill; the multiplier is read from the Piloting 5 column. */
-    public getSkillMultiplier(edition?: string): number { return getSkillMultiplier(this._gunnery, 5, "protomech", edition) ?? 1; }
-    public getSkillAdjustedBattleValue(edition?: string): number { return roundNormally(this.getBattleValue() * this.getSkillMultiplier(edition)); }
+    public getSkillMultiplier(edition?: string): number { return getSkillMultiplier(this._gunnery, 5, "protomech", getBattleValueSkillEdition(edition ?? this._rulesEdition, "protomech")) ?? 1; }
+    public getSkillAdjustedBattleValue(edition?: string): number { return roundNormally(this.getBattleValue(edition) * this.getSkillMultiplier(edition)); }
     public getSkillAdjustedPointBattleValue(edition?: string): number { return this.getSkillAdjustedBattleValue(edition) * this._pointSize; }
 
     // Cost (TM pp.279, 283, 285), without ammunition -----------------------------------------------------------

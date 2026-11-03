@@ -3,7 +3,7 @@ import { getUnitRulesets } from '../../../classes/unit-game-settings';
 import AerospaceFighter, { FighterLocation } from '../../../classes/aerospace-fighter';
 import { AEROSPACE_FIGHTER_CRITICAL_BLOCK, FIGHTER_RETURN_TABLE, GROUND_MAP_STRAIGHT_MOVEMENT } from '../../../data/aerospace-record-sheet';
 import { SUPPORT_VEHICLE_CHASSIS_MODIFICATIONS, SUPPORT_VEHICLE_FIRE_CONTROL } from '../../../data/support-vehicle-construction';
-import { aerospaceInventoryRows } from '../aerospace-sheet-blocks';
+import { aerospaceInventoryRows, aerospaceSheetBattleValue } from '../aerospace-sheet-blocks';
 import { getUnitQuirkSheetLines, weaponQuirkSuffix } from '../quirk-sheet-block';
 import { getRulesLevelName } from '../rules-level-print';
 import {
@@ -89,7 +89,7 @@ export default class FighterRecordSheetSVG extends React.Component<IFighterRecor
             ),
             locationKey: "Loc.: N Nose, LW Left Wing, RW Right Wing, A Aft, FU Fuselage",
             cost: fighter.getCBillCost(),
-            bv: this.props.showPilot ? `${fighter.getBattleValue()} (${fighter.getPilotAdjustedBattleValue()} adj.)` : fighter.getBattleValue(),
+            bv: aerospaceSheetBattleValue(fighter, "fighter", this.props.showPilot),
         });
     }
 

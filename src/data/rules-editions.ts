@@ -92,8 +92,6 @@ export interface IRulesEdition {
     torsoArmorSectionsApart?: boolean;
     /** Where the edition's game rules differ from Total Warfare's in what play mode works out; absent while not reviewed. */
     playRules?: IEditionPlayRules;
-    /** The edition has no Battle Value system: the first one is in the Master Rules. */
-    noBattleValue?: boolean;
     /** The edition's rulebook prints no prices, for equipment or for a finished unit. */
     noPrices?: boolean;
     /**
@@ -146,7 +144,6 @@ export const btRulesEditions: IRulesEdition[] = [
         // the Armor Diagram's 11 locations (BD p.25). The book's Stinger, Wasp, Phoenix Hawk, Archer and Marauder
         // fit only this way.
         torsoArmorSectionsApart: true,
-        noBattleValue: true,
         noPrices: true,
         levels: [
             { id: 0, name: "Basic Battledroids", book: "BD", page: 1 },
@@ -178,7 +175,6 @@ export const btRulesEditions: IRulesEdition[] = [
         ammoTonsFor: "launcher",
         // The Battledroids wording: 11 locations, each at twice its boxes (BT2 p.40).
         torsoArmorSectionsApart: true,
-        noBattleValue: true,
         noPrices: true,
         // BT2 pp.36-41, the fourteen record listings, and the training 'Mech of p.1.
         mechs: [
@@ -204,7 +200,6 @@ export const btRulesEditions: IRulesEdition[] = [
         ammoTonsFor: "launcher",
         // The Battledroids wording: eleven locations, each at twice its boxes (BTM p.80).
         torsoArmorSectionsApart: true,
-        noBattleValue: true,
         // A rulebook only: it prints no 'Mech record listings and names designs in passing (BTM pp.41, 74).
         mechs: [],
         // Units with their own construction rules (BTM pp.80-84) or tables (BTM pp.36, 50).
@@ -233,7 +228,6 @@ export const btRulesEditions: IRulesEdition[] = [
         book: "BTC",
         complete: true,
         ammoTonsFor: "launcher",
-        noBattleValue: true,
         // A rulebook only: it prints no 'Mech record listings and names designs in passing (BTC pp.56, 61, 104).
         mechs: [],
         // Units with their own construction rules (BTC pp.105, 122-127), tables (BTC pp.45-46) or record sheets.
@@ -265,7 +259,6 @@ export const btRulesEditions: IRulesEdition[] = [
         book: "BT3",
         complete: true,
         ammoTonsFor: "class",
-        noBattleValue: true,
         noPrices: true,
         // The four training scenarios name the fourteen 'Mechs of the box by chassis (BT3 pp.36-39); the model
         // codes are from the pregenerated record sheets (BT3 p.5: "the fourteen 'Mechs included in the basic
@@ -293,7 +286,6 @@ export const btRulesEditions: IRulesEdition[] = [
         book: "BTC:RoW",
         complete: true,
         ammoTonsFor: "class",
-        noBattleValue: true,
         // The Technical Readout sections (BTC:RoW pp.125-132), with a record sheet for each at the back of the
         // book. The Clan designs are headed by their Clan names, with the Inner Sphere designation beside them.
         mechs: [
@@ -334,7 +326,6 @@ export const btRulesEditions: IRulesEdition[] = [
         book: "BT4",
         complete: true,
         ammoTonsFor: "class",
-        noBattleValue: true,
         noPrices: true,
         // The box holds playing pieces for "twenty-four different BattleMech designs" (BT4 p.5). Only the
         // twenty the rulebook's scenarios name are listed (BT4 pp.36-39); the Assassin is named without a model
@@ -621,11 +612,6 @@ export function getEditionStats(record: IEditionRecord, editionTag: string): IEd
 /** The edition's own play rules, or undefined where play mode follows Total Warfare. */
 export function getEditionPlayRules(editionTag: string | undefined): IEditionPlayRules | undefined {
     return getRulesEdition(editionTag).playRules;
-}
-
-/** Does the edition have a Battle Value system? The first is in the Master Rules. */
-export function editionHasBattleValue(editionTag: string | undefined): boolean {
-    return !getRulesEdition(editionTag).noBattleValue;
 }
 
 /** Does the edition's rulebook print prices? */

@@ -1,4 +1,5 @@
 import React, { type JSX } from 'react';
+import { formatBattleValue } from '../../../data/battle-value';
 import { getUnitRulesets } from '../../../classes/unit-game-settings';
 import Vehicle from '../../../classes/vehicle';
 import { getArtVeeNotes } from '../../../classes/vehicle-artvee';
@@ -224,7 +225,7 @@ export default class VehicleRecordSheetSVG extends React.Component<IVehicleRecor
                 })}
                 {below}
                 {text(x + 20, y + h - 22, `Cost: ${vehicle.getCBillCost().toLocaleString("en-US")} C-bills`, { size: 26, weight: 700 })}
-                {text(x + w - 30, y + h - 22, `BV: ${vehicle.getBattleValue().toLocaleString("en-US")}`, { size: 26, weight: 700, anchor: "end" })}
+                {text(x + w - 30, y + h - 22, `BV: ${formatBattleValue((edition) => vehicle.getBattleValue(edition), "vehicle", vehicle.getRulesEdition())}`, { size: 26, weight: 700, anchor: "end" })}
             </>
         ));
     }

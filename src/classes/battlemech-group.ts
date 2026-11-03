@@ -1,4 +1,5 @@
 import { generateUUID } from "../utils/generateUUID";
+import { BattleValueUnitType, formatBattleValue } from "../data/battle-value";
 import { BattleMech, IBattleMechExport } from "./battlemech";
 import Vehicle, { IVehicleExport } from "./vehicle";
 import AerospaceFighter, { IAerospaceFighterExport } from "./aerospace-fighter";
@@ -132,35 +133,24 @@ export class BattleMechGroup {
 		this.lastUpdated = new Date();
 	}
 
-	public getTotaBV2(): number {
-        let rv = 0;
+	/** The group's skill-adjusted Battle Value under `edition` (each unit's own edition when left out). */
+	public getTotalBattleValue(edition?: string): number {
+        const sum = <T>(units: T[], battleValue: (unit: T) => number) => units.reduce((total, unit) => total + battleValue(unit), 0);
+        return sum([...this.members, ...this.vehicles, ...this.fighters, ...this.smallCraft, ...this.capitalShips], (unit) => unit.getPilotAdjustedBattleValue(edition))
+            + sum([...this.infantry, ...this.battleArmor], (unit) => unit.getSkillAdjustedBattleValue(edition))
+            + sum(this.protoMechs, (point) => point.getSkillAdjustedPointBattleValue(edition));
+    }
 
-        for( const unit of this.members ) {
-            rv += unit.getPilotAdjustedBattleValue();
-        }
-        for( const vehicle of this.vehicles ) {
-            rv += vehicle.getPilotAdjustedBattleValue();
-        }
-        for( const fighter of this.fighters ) {
-            rv += fighter.getPilotAdjustedBattleValue();
-        }
-        for( const craft of this.smallCraft ) {
-            rv += craft.getPilotAdjustedBattleValue();
-        }
-        for( const ship of this.capitalShips ) {
-            rv += ship.getPilotAdjustedBattleValue();
-        }
-        for( const platoon of this.infantry ) {
-            rv += platoon.getSkillAdjustedBattleValue();
-        }
-        for( const squad of this.battleArmor ) {
-            rv += squad.getSkillAdjustedBattleValue();
-        }
-        for( const point of this.protoMechs ) {
-            rv += point.getSkillAdjustedPointBattleValue();
-        }
+    /** The Battle Value unit types the group holds (buildings and Battledroids units have no BV). */
+    public getBattleValueUnitTypes(): BattleValueUnitType[] {
+        const lists: Array<[BattleValueUnitType, unknown[]]> = [["mech", this.members], ["vehicle", this.vehicles], ["fighter", this.fighters],
+            ["small-craft", this.smallCraft], ["capital-ship", this.capitalShips], ["infantry", this.infantry], ["battle-armor", this.battleArmor], ["protomech", this.protoMechs]];
+        return lists.filter(([, units]) => units.length > 0).map(([type]) => type);
+    }
 
-        return rv;
+    /** The group's skill-adjusted Battle Value text under `edition` (plan ruling 1). */
+    public getBattleValueText(edition: string): string {
+        return formatBattleValue((bvEdition) => this.getTotalBattleValue(bvEdition), this.getBattleValueUnitTypes(), edition);
     }
 
 	public getTotalTons(): number {

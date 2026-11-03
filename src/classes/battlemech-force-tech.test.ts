@@ -21,3 +21,21 @@ describe("Classic BattleTech force and group tech", () => {
         expect(force.getTech()).not.toBe("Mixed");
     });
 });
+
+// The roster's rules edition (edition-aware BV plan, ruling 3): its Battle Values follow the edition being played.
+describe("Classic BattleTech force rules edition", () => {
+    it("totals Battle Value under the force's edition, and saves only an edition other than the default", () => {
+        const force = new BattleMechForce();
+        const mech = new BattleMech();
+        force.groups[0].members.push(mech);
+        const bv2 = mech.getPilotAdjustedBattleValue("total-warfare").toLocaleString("en-US");
+        expect(force.getBattleValueText()).toBe(bv2);
+        expect(force.export().rulesEdition).toBeUndefined();
+
+        force.rulesEdition = "master-rules";
+        expect(force.getBattleValueText()).toBe(`— (BV2: ${bv2})`);
+        expect(force.groups[0].getBattleValueText(force.rulesEdition)).toBe(`— (BV2: ${bv2})`);
+        expect(new BattleMechForce(JSON.parse(JSON.stringify(force.export()))).rulesEdition).toBe("master-rules");
+        expect(new BattleMechForce({ ...force.export(), rulesEdition: "no-such-edition" }).rulesEdition).toBe("total-warfare");
+    });
+});

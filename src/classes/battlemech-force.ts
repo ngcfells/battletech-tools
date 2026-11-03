@@ -1,3 +1,5 @@
+import { formatBattleValue } from "../data/battle-value";
+import { DEFAULT_RULES_EDITION, getRulesEdition } from "../data/rules-editions";
 import { generateUUID } from "../utils/generateUUID";
 import { getCarrierInstalledUuids, getQuirkInitiative, IQuirkCarrier, IQuirkInitiative, normalizeGameYear } from "../utils/quirk-effects";
 import { BattleMech } from "./battlemech";
@@ -25,6 +27,8 @@ export interface ICBTForceExport {
     quirksInPlay?: boolean;
     /** "Game year": the year play checks quirks' years against. Missing in older saves. */
     gameYear?: number | null;
+    /** The rules edition being played, whose Battle Value the roster shows (plan ruling 3). Missing in older saves. */
+    rulesEdition?: string;
 }
 
 export class BattleMechForce {
@@ -53,6 +57,8 @@ export class BattleMechForce {
     public quirksInPlay: boolean = false;
     /** "Game year": play checks quirks' years against it; null for the start of each unit's era. */
     public gameYear: number | null = null;
+    /** The rules edition being played: the roster's Battle Values and totals follow it (plan ruling 3). */
+    public rulesEdition: string = DEFAULT_RULES_EDITION;
 
     constructor(importObj: ICBTForceExport | null = null ) {
         if( importObj ) {
@@ -121,6 +127,7 @@ export class BattleMechForce {
             spaceInPlay: this.spaceInPlay,
             quirksInPlay: this.quirksInPlay,
             gameYear: this.gameYear,
+            rulesEdition: this.rulesEdition === DEFAULT_RULES_EDITION ? undefined : this.rulesEdition,
         }
         if( this.spaceTracker.hasState() ) {
             returnValue.spaceTracker = this.spaceTracker.export();
@@ -207,6 +214,8 @@ export class BattleMechForce {
         this.spaceInPlay = importObj.spaceInPlay === true;
         this.quirksInPlay = !!importObj.quirksInPlay;
         this.gameYear = normalizeGameYear(importObj.gameYear);
+        // An unknown or missing edition reads the default one.
+        this.rulesEdition = getRulesEdition(importObj.rulesEdition).tag;
         this.syncQuirkPlayYear();
         this.spaceTracker = new SpaceTracker( importObj.spaceTracker );
 
@@ -267,14 +276,10 @@ export class BattleMechForce {
         return returnValue;
     }
 
-    public getTotalBV2(): number {
-        let returnValue: number = 0;
-
-        for( const group of this.groups ) {
-            returnValue += group.getTotaBV2();
-        }
-
-        return returnValue;
+    /** The force's skill-adjusted Battle Value under its edition, as the roster shows it (plan ruling 1). */
+    public getBattleValueText(): string {
+        const types = [...new Set(this.groups.flatMap((group) => group.getBattleValueUnitTypes()))];
+        return formatBattleValue((edition) => this.groups.reduce((total, group) => total + group.getTotalBattleValue(edition), 0), types, this.rulesEdition);
     }
 
     getTech(): string {
@@ -313,15 +318,5 @@ export class BattleMechForce {
 
     public getTotalGroups(): number {
         return this.groups.length;
-    }
-
-    public getTotaBV2(): number {
-        let rv = 0;
-
-        for( const group of this.groups ) {
-            rv += group.getTotaBV2();
-        }
-
-        return rv;
     }
 }

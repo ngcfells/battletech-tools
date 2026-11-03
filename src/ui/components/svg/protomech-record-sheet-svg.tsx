@@ -1,4 +1,5 @@
 import React, { type JSX } from 'react';
+import { formatBattleValue } from '../../../data/battle-value';
 import { getUnitRulesets } from '../../../classes/unit-game-settings';
 import ProtoMech, { PROTOMECH_CRITICAL_BOXES } from '../../../classes/protomech';
 import type { ProtoMechLocation } from '../../../data/protomech-construction';
@@ -159,7 +160,7 @@ export default class ProtoMechRecordSheetSVG extends React.Component<IProtoMechR
                             : field(x + 20, y + 170, "Walk/Run/Jump:", proto?.getMovementText(), x + 175, 150, "mp")}
                         {field(x + 20, y + 200, "Armor:", proto?.getArmorTypeName(), x + 90, 290, "armor")}
                         {field(x + 20, y + 230, "Frenzy:", proto ? `${proto.getFrenzyDamage()} damage` : "", x + 100, 80, "frenzy")}
-                        {field(x + 210, y + 230, "BV:", proto?.getBattleValue(), x + 255, 100, "bv")}
+                        {field(x + 210, y + 230, "BV:", proto ? formatBattleValue((edition) => proto.getBattleValue(edition), "protomech", proto.getRulesEdition()) : undefined, x + 255, 100, "bv")}
                         {field(x + 20, y + 260, "Cost:", proto ? `${proto.getCBillCost().toLocaleString("en-US")} C-bills` : "", x + 80, 200, "cost")}
                         <g>
                             <rect x={x + 15} y={pilotY} width={380} height={135} rx={12} fill="white" stroke={INK} strokeWidth={2} />

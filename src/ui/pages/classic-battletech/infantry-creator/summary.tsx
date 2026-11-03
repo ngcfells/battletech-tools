@@ -6,6 +6,7 @@ import { IAppGlobals } from '../../../app-router';
 import { InfantryCreatorSideMenu } from '../../../components/creator-side-menus';
 import TextSection from '../../../components/text-section';
 import UIPage from '../../../components/ui-page';
+import { formatBattleValue } from '../../../../data/battle-value';
 const ArrowCircleLeft = FaArrowCircleLeft as any;
 
 export default class InfantryCreatorSummary extends React.Component<ISummaryProps> {
@@ -48,7 +49,7 @@ export default class InfantryCreatorSummary extends React.Component<ISummaryProp
                                 <strong>Type</strong>: {platoon.getMotive().name} conventional infantry &nbsp;|&nbsp;
                                 <strong>Tech</strong>: {platoon.isClan() ? "Clan" : "Inner Sphere"} ({platoon.getFormation().name}) &nbsp;|&nbsp;
                                 <strong>Troopers</strong>: {platoon.getTroopers()} ({platoon.getSquads()} squads of {platoon.getSquadSize()}) &nbsp;|&nbsp;
-                                <strong>Battle Value</strong>: {platoon.getBattleValue()} &nbsp;|&nbsp;
+                                <strong>Battle Value</strong>: {formatBattleValue((edition) => platoon.getBattleValue(edition), "infantry", platoon.getRulesEdition())} &nbsp;|&nbsp;
                                 <strong>Cost</strong>: {cost === null ? "not listed" : `${cost.toLocaleString("en-US")} C-bills`}
                             </p>
                             <p>
@@ -67,7 +68,7 @@ export default class InfantryCreatorSummary extends React.Component<ISummaryProp
                                 <strong>Gunnery</strong>: {platoon.getGunnery()} &nbsp;|&nbsp;
                                 <strong>Anti-'Mech</strong>: {platoon.canMakeAntiMechAttacks() ? platoon.getAntiMechSkill() : "no Anti-'Mech attacks"} &nbsp;|&nbsp;
                                 <strong>Infantry Armor</strong>: {platoon.getArmor() ? `${platoon.getArmor()?.name} (damage divisor ${platoon.getDamageDivisor()})` : "None"} &nbsp;|&nbsp;
-                                <strong>Skill-Adjusted Battle Value</strong>: {platoon.getSkillAdjustedBattleValue()} (x {platoon.getSkillMultiplier().toFixed(2)})
+                                <strong>Skill-Adjusted Battle Value</strong>: {formatBattleValue((edition) => platoon.getSkillAdjustedBattleValue(edition), "infantry", platoon.getRulesEdition())} (x {platoon.getSkillMultiplier().toFixed(2)})
                             </p>
                             {features.length > 0 ? (
                                 <ul>

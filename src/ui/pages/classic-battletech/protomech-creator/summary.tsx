@@ -6,6 +6,7 @@ import { IAppGlobals } from '../../../app-router';
 import { ProtoMechCreatorSideMenu } from '../../../components/creator-side-menus';
 import TextSection from '../../../components/text-section';
 import UIPage from '../../../components/ui-page';
+import { formatBattleValue } from '../../../../data/battle-value';
 const ArrowCircleLeft = FaArrowCircleLeft as any;
 
 export default class ProtoMechCreatorSummary extends React.Component<ISummaryProps> {
@@ -45,7 +46,7 @@ export default class ProtoMechCreatorSummary extends React.Component<ISummaryPro
                                 <strong>Type</strong>: {proto.getWeightClassName()} ProtoMech, {proto.getTons()} tons, {proto.getChassisName()} &nbsp;|&nbsp;
                                 <strong>Tech</strong>: {proto.getTechName()} &nbsp;|&nbsp;
                                 <strong>Era</strong>: {proto.getEra().name} &nbsp;|&nbsp;
-                                <strong>Battle Value</strong>: {proto.getBattleValue()}{point > 1 ? ` (Point of ${point}: ${proto.getPointBattleValue()})` : ""} &nbsp;|&nbsp;
+                                <strong>Battle Value</strong>: {formatBattleValue((edition) => proto.getBattleValue(edition), "protomech", proto.getRulesEdition())}{point > 1 ? ` (Point of ${point}: ${proto.getPointBattleValue()})` : ""} &nbsp;|&nbsp;
                                 <strong>Cost</strong>: {proto.getCBillCost().toLocaleString("en-US")} C-bills{point > 1 ? ` (Point: ${proto.getPointCBillCost().toLocaleString("en-US")})` : ""}
                             </p>
                             <p>
@@ -58,7 +59,7 @@ export default class ProtoMechCreatorSummary extends React.Component<ISummaryPro
                             </p>
                             <p>
                                 <strong>Gunnery</strong>: {proto.getGunnery()} &nbsp;|&nbsp;
-                                <strong>Skill-Adjusted Battle Value</strong>: {proto.getSkillAdjustedBattleValue()} (x {proto.getSkillMultiplier().toFixed(2)}){point > 1 ? `, Point ${proto.getSkillAdjustedPointBattleValue()}` : ""} &nbsp;|&nbsp;
+                                <strong>Skill-Adjusted Battle Value</strong>: {formatBattleValue((edition) => proto.getSkillAdjustedBattleValue(edition), "protomech", proto.getRulesEdition())} (x {proto.getSkillMultiplier().toFixed(2)}){point > 1 ? `, Point ${proto.getSkillAdjustedPointBattleValue()}` : ""} &nbsp;|&nbsp;
                                 <strong>Frenzy attack</strong>: {proto.getFrenzyDamage()} damage &nbsp;|&nbsp;
                                 <strong>Rules level needed</strong>: {proto.getRequiredRulesLevel() <= 2 ? "Standard" : proto.getRequiredRulesLevel() === 3 ? "Advanced" : "Experimental"}
                             </p>

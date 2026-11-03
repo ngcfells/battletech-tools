@@ -5,6 +5,7 @@ import Vehicle from '../../../../classes/vehicle';
 import { IAppGlobals } from '../../../app-router';
 import MULSearchButton from './_mulSearchButton';
 import StatBar from '../../../components/stat-bar';
+import { formatBattleValue } from '../../../../data/battle-value';
 const Trash = FaTrash as any;
 
 /**
@@ -99,8 +100,8 @@ export default class VehicleGroupTable extends React.Component<IVehicleGroupTabl
                 </thead>
                 {vehicles.map( (vehicle, index) => {
                     const pilot = vehicle.getPilot();
-                    const pilotBV = vehicle.getPilotAdjustedBattleValue();
-                    const baseBV = vehicle.getBattleValue();
+                    const pilotBV = formatBattleValue((edition) => vehicle.getPilotAdjustedBattleValue(edition), "vehicle", this.props.appGlobals.currentCBTForce?.rulesEdition);
+                    const baseBV = formatBattleValue((edition) => vehicle.getBattleValue(edition), "vehicle", this.props.appGlobals.currentCBTForce?.rulesEdition);
                     return (
                         <tbody key={vehicle.getUUID()}>
                             <tr>

@@ -17,7 +17,7 @@ import { btEraOptions, findEraByTag, getClosestEraForTech, getErasForTech } from
 import { CUSTOM_HOMEBREW_RULES_LEVEL, getArtemisLauncherBattleValue, getLauncherBattleValueWithoutFireControl, EXPERIMENTAL_RULES_LEVEL, getAmmoBattleValuePerTon, getBattleArmorScaleListByTech, getCompatibleAmmo, getEquipmentListByTech, getEquipmentRulesLevel, getWeaponShotsPerTon, isEquipmentOffered, isUnderUnitLimit, getDatesAvailability, getTechDatesAvailability, isPostPrimitiveTechnology } from "../data/equipment-registry";
 import { getFractionalAerospaceArmorTonsPerPoint, roundUpToKilogram } from "../data/fractional-accounting";
 import Pilot, { IPilot } from "./pilot";
-import { getBattleValueFor, getSkillMultiplier } from "../data/battle-value";
+import { getBattleValueFor, getBattleValueSkillEdition, getSkillMultiplier } from "../data/battle-value";
 import { isTargetingComputerWeapon, sizeTonnageScaledEquipment } from "../data/variable-equipment";
 import { findByTag } from "../data/tag-match";
 import { IWeaponBay, capitalBayWeapon, groupWeaponBays, standardBayWeapon } from "../data/weapon-bays";
@@ -1926,8 +1926,8 @@ export default class SmallCraft implements IGameSettingsUnit {
     }
 
     public getPilotAdjustedBattleValue(edition?: string): number {
-        const multiplier = getSkillMultiplier(this._pilot?.gunnery ?? 4, this._pilot?.piloting ?? 5, "fighter", edition) ?? 1;
-        return Math.round(this._battleValue * multiplier);
+        const multiplier = getSkillMultiplier(this._pilot?.gunnery ?? 4, this._pilot?.piloting ?? 5, "fighter", getBattleValueSkillEdition(edition ?? this._rulesEdition, "small-craft")) ?? 1;
+        return Math.round(this.getBattleValue(edition) * multiplier);
     }
 
     public getInPlay(): ISmallCraftInPlay { return this._inPlay; }

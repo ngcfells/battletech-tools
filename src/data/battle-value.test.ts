@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { btRulesEditions } from "./rules-editions";
-import { SKILL_MULTIPLIERS_BY_EDITION, formatBattleValue, getBattleValueFor, getBattleValueRules, getEditionSkillMultipliers, getEditionsWithSkillMultipliers, getSkillMultiplier } from "./battle-value";
+import { DEFAULT_RULES_EDITION, btRulesEditions } from "./rules-editions";
+import { SKILL_MULTIPLIERS_BY_EDITION, formatBattleValue, getBattleValueFor, getBattleValueRules, getBattleValueSkillEdition, getEditionSkillMultipliers, getEditionsWithSkillMultipliers, getSkillMultiplier } from "./battle-value";
 
 describe("Battle Value skill multipliers by rules edition", () => {
     it("only lists editions that exist, each with a square table whose Gunnery 4 / Piloting 5 entry is 1", () => {
@@ -82,10 +82,20 @@ describe("Battle Value rules by rules edition", () => {
     });
 
     it("formats the selected edition's BV with BV2 beside it (plan ruling 1)", () => {
-        const unit = { getBattleValue: (edition?: string) => edition === "total-warfare" ? 1456 : 1234 };
-        expect(formatBattleValue(unit, "mech", "total-warfare")).toBe("1,456");
-        expect(formatBattleValue(unit, "mech", "battletech-4th-edition")).toBe("— (BV2: 1,456)");
+        const battleValue = (edition: string) => edition === "total-warfare" ? 1456 : 1234;
+        expect(formatBattleValue(battleValue, "mech", "total-warfare")).toBe("1,456");
+        expect(formatBattleValue(battleValue, "mech", "battletech-4th-edition")).toBe("— (BV2: 1,456)");
         // No BV1 is entered yet, so no BV1 figure is shown.
-        expect(formatBattleValue(unit, "mech", "master-rules")).toBe("— (BV2: 1,456)");
+        expect(formatBattleValue(battleValue, "mech", "master-rules")).toBe("— (BV2: 1,456)");
+        // A force total: BV2 when every unit type in it is BV2, and no BV1 figure until every one has one.
+        expect(formatBattleValue(battleValue, ["mech", "vehicle"], "total-warfare")).toBe("1,456");
+        expect(formatBattleValue(battleValue, ["mech", "protomech"], "master-rules")).toBe("— (BV2: 1,456)");
+    });
+
+    it("pairs each BV with its skill table: the edition's own for BV1, the TechManual's for BV2 (plan ruling 2)", () => {
+        expect(getBattleValueSkillEdition("total-warfare", "mech")).toBe(DEFAULT_RULES_EDITION);
+        expect(getBattleValueSkillEdition("core-rulebook", "mech")).toBe(DEFAULT_RULES_EDITION);
+        // BV1 is not entered yet, so the BV shown is BV2 and the TechManual table goes with it.
+        expect(getBattleValueSkillEdition("master-rules", "mech")).toBe(DEFAULT_RULES_EDITION);
     });
 });

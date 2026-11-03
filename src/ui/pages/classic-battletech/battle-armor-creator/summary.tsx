@@ -8,6 +8,7 @@ import QuirkPicker from '../../../components/quirk-picker';
 import TextSection from '../../../components/text-section';
 import UIPage from '../../../components/ui-page';
 import { unitRulesLevel } from '../../../components/game-settings-block';
+import { formatBattleValue } from '../../../../data/battle-value';
 const ArrowCircleLeft = FaArrowCircleLeft as any;
 
 export default class BattleArmorCreatorSummary extends React.Component<ISummaryProps> {
@@ -50,7 +51,7 @@ export default class BattleArmorCreatorSummary extends React.Component<ISummaryP
                                 <strong>Tech</strong>: {suit.getTechName()} &nbsp;|&nbsp;
                                 <strong>Era</strong>: {suit.getEra().name} &nbsp;|&nbsp;
                                 <strong>Troopers</strong>: {suit.getSquadSize()} &nbsp;|&nbsp;
-                                <strong>Battle Value</strong>: {suit.getBattleValue()} ({suit.getSuitBattleValue()} a suit) &nbsp;|&nbsp;
+                                <strong>Battle Value</strong>: {formatBattleValue((edition) => suit.getBattleValue(edition), "battle-armor", suit.getRulesEdition())} ({suit.getSuitBattleValue()} a suit) &nbsp;|&nbsp;
                                 <strong>Cost</strong>: {suit.getCBillCost().toLocaleString("en-US")} C-bills ({suit.getSuitCost().toLocaleString("en-US")} a suit)
                             </p>
                             <p>
@@ -64,7 +65,7 @@ export default class BattleArmorCreatorSummary extends React.Component<ISummaryP
                                 <strong>Mechanized battle armor</strong>: {capabilities.mechanized ? "Yes" : "No"} &nbsp;|&nbsp;
                                 <strong>Gunnery</strong>: {suit.getGunnery()} &nbsp;|&nbsp;
                                 <strong>Anti-'Mech</strong>: {suit.getAntiMechSkill()} &nbsp;|&nbsp;
-                                <strong>Skill-Adjusted Battle Value</strong>: {suit.getSkillAdjustedBattleValue()} (x {suit.getSkillMultiplier().toFixed(2)})
+                                <strong>Skill-Adjusted Battle Value</strong>: {formatBattleValue((edition) => suit.getSkillAdjustedBattleValue(edition), "battle-armor", suit.getRulesEdition())} (x {suit.getSkillMultiplier().toFixed(2)})
                             </p>
                             {capabilities.notes.length + notes.length > 0 ? (
                                 <ul className="smaller-text">
@@ -89,7 +90,7 @@ export default class BattleArmorCreatorSummary extends React.Component<ISummaryP
                                                         <td>{suit.getLoadouts()[index].name}</td>
                                                         <td>{[...changed, ...arms].join("; ")}</td>
                                                         <td className="text-right">{refit.getWeight()} kg</td>
-                                                        <td className="text-right">{refit.getBattleValue()}</td>
+                                                        <td className="text-right">{formatBattleValue((edition) => refit.getBattleValue(edition), "battle-armor", refit.getRulesEdition())}</td>
                                                         <td className="text-right">{refit.getCBillCost().toLocaleString("en-US")}</td>
                                                         <td>{formatBattleArmorASDamage(card.damageValues.short)}/{formatBattleArmorASDamage(card.damageValues.medium)}/{formatBattleArmorASDamage(card.damageValues.long)}, {card.pointValue} points</td>
                                                     </tr>

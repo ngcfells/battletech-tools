@@ -14,7 +14,7 @@ import { btTechOptions } from "../data/tech-options";
 import { btEraOptions, findEraByTag, getClosestEraForTech, getErasForTech } from "../data/era-options";
 import SmallCraft from "./small-craft";
 import Pilot, { IPilot } from "./pilot";
-import { getBattleValueFor, getSkillMultiplier } from "../data/battle-value";
+import { getBattleValueFor, getBattleValueSkillEdition, getSkillMultiplier } from "../data/battle-value";
 import { CAPITAL_MISSILE_CRITICAL_CHANCE, CAPITAL_SHIP_CRITICAL_NAMES, CapitalShipAttackDirection, ICapitalShipHit, getCapitalShipHitLocation } from "../data/capital-ship-hit-tables";
 import { CUSTOM_HOMEBREW_RULES_LEVEL, getArtemisLauncherBattleValue, getItemBattleValue, getAmmoBattleValuePerTon, getCompatibleAmmo, getEquipmentRulesLevel, getEffectiveIntroduction, getEquipmentListByTech, getWeaponShotsPerTon, isEquipmentOffered, isUnderUnitLimit, getTechDatesAvailability } from "../data/equipment-registry";
 import { findByTag } from "../data/tag-match";
@@ -1407,8 +1407,8 @@ export default class CapitalShip implements IGameSettingsUnit {
 
     /** Battle Value adjusted for the crew's skills, with the multipliers Small Craft use. */
     public getPilotAdjustedBattleValue(edition?: string): number {
-        const multiplier = getSkillMultiplier(this._pilot.gunnery ?? 4, this._pilot.piloting ?? 5, "fighter", edition) ?? 1;
-        return Math.round(this._battleValue * multiplier);
+        const multiplier = getSkillMultiplier(this._pilot.gunnery ?? 4, this._pilot.piloting ?? 5, "fighter", getBattleValueSkillEdition(edition ?? this._rulesEdition, "capital-ship")) ?? 1;
+        return Math.round(this.getBattleValue(edition) * multiplier);
     }
 
     public getInPlay(): ICapitalShipInPlay { return this._inPlay; }

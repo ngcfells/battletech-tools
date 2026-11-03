@@ -9,6 +9,7 @@ import SanitizedHTML from '../../../components/sanitized-html';
 import { formatVehicleASDamage } from '../../../../classes/vehicle';
 import { getArtVeeIssues, getArtVeeWarnings } from '../../../../classes/vehicle-artvee';
 import { unitRulesLevel } from '../../../components/game-settings-block';
+import { formatBattleValue } from '../../../../data/battle-value';
 
 export default class VehicleCreatorSummary extends React.Component<ISummaryProps, ISummaryState> {
     constructor(props: ISummaryProps) {
@@ -43,7 +44,7 @@ export default class VehicleCreatorSummary extends React.Component<ISummaryProps
                             </p>
 
                             <p>
-                                <strong>Battle Value</strong>: {vehicle.getBattleValue()} &nbsp;|&nbsp;
+                                <strong>Battle Value</strong>: {formatBattleValue((edition) => vehicle.getBattleValue(edition), "vehicle", vehicle.getRulesEdition())} &nbsp;|&nbsp;
                                 <strong>C-Bill Cost</strong>: {vehicle.getCBillCost().toLocaleString()}
                             </p>
 

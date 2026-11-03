@@ -9,6 +9,7 @@ import QuirkPicker from '../../../components/quirk-picker';
 import TextSection from '../../../components/text-section';
 import UIPage from '../../../components/ui-page';
 import { unitRulesLevel } from '../../../components/game-settings-block';
+import { formatBattleValue } from '../../../../data/battle-value';
 const ArrowCircleLeft = FaArrowCircleLeft as any;
 
 export default class SmallCraftCreatorSummary extends React.Component<ISummaryProps> {
@@ -49,7 +50,7 @@ export default class SmallCraftCreatorSummary extends React.Component<ISummaryPr
                                 <strong>Type</strong>: {craft.getShapeName()} Small Craft, {craft.getTonnage()} tons &nbsp;|&nbsp;
                                 <strong>Tech</strong>: {craft.getTech().name} &nbsp;|&nbsp;
                                 <strong>Era</strong>: {craft.getEra().name} &nbsp;|&nbsp;
-                                <strong>Battle Value</strong>: {craft.getBattleValue()} &nbsp;|&nbsp;
+                                <strong>Battle Value</strong>: {formatBattleValue((edition) => craft.getBattleValue(edition), "small-craft", craft.getRulesEdition())} &nbsp;|&nbsp;
                                 <strong>Cost</strong>: {craft.getCBillCost().toLocaleString("en-US")} C-bills
                             </p>
                             <p>

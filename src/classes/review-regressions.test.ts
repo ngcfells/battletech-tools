@@ -15,7 +15,9 @@ import { IEquipmentItem } from "../data/data-interfaces";
 
 // Findings from the review of the unit-builder bundle (upstream PR #115), each fixed and pinned here.
 describe("review findings", () => {
-    it("a 'Mech's skill-adjusted Battle Value uses its own rules edition's table (BMR p.144 against TM p.315)", () => {
+    // Edition-aware BV plan, ruling 2: a BV1 figure reads its edition's table (BMR p.144), a BV2 figure TM p.315's.
+    // 'Mech BV1 is not entered yet, so a Master Rules 'Mech shows BV2 and reads the TM table.
+    it("a 'Mech's skill-adjusted Battle Value reads the skill table that goes with the BV it shows", () => {
         const mech = new BattleMech();
         mech.setTonnage(50);
         mech.setWalkSpeed(4);
@@ -28,7 +30,8 @@ describe("review findings", () => {
         mech.setPilotGunnery(3);
         const multiplier = getSkillMultiplier(3, 4, "mech", "master-rules")!;
         expect(multiplier).not.toBe(getSkillMultiplier(3, 4, "mech", DEFAULT_RULES_EDITION));
-        expect(mech.getPilotAdjustedBattleValue()).toBe(Math.round(mech.getBattleValue() * multiplier));
+        expect(mech.getPilotAdjustedBattleValue()).toBe(Math.round(mech.getBattleValue() * getSkillMultiplier(3, 4, "mech", DEFAULT_RULES_EDITION)!));
+        expect(mech.getPilotAdjustedBattleValue("total-warfare")).toBe(mech.getPilotAdjustedBattleValue());
     });
 
     it("reset() clears the rules edition with the rest of the design", () => {

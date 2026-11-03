@@ -9,6 +9,7 @@ import QuirkPicker from '../../../components/quirk-picker';
 import TextSection from '../../../components/text-section';
 import UIPage from '../../../components/ui-page';
 import { unitRulesLevel } from '../../../components/game-settings-block';
+import { formatBattleValue } from '../../../../data/battle-value';
 const ArrowCircleLeft = FaArrowCircleLeft as any;
 
 export default class FighterCreatorSummary extends React.Component<ISummaryProps> {
@@ -49,7 +50,7 @@ export default class FighterCreatorSummary extends React.Component<ISummaryProps
                                 <strong>Tech</strong>: {fighter.getTech().name} &nbsp;|&nbsp;
                                 <strong>Era</strong>: {fighter.getEra().name} &nbsp;|&nbsp;
                                 <strong>Tonnage</strong>: {fighter.getTonnage()} &nbsp;|&nbsp;
-                                <strong>Battle Value</strong>: {fighter.getBattleValue()} &nbsp;|&nbsp;
+                                <strong>Battle Value</strong>: {formatBattleValue((edition) => fighter.getBattleValue(edition), "fighter", fighter.getRulesEdition())} &nbsp;|&nbsp;
                                 <strong>Cost</strong>: {fighter.getCBillCost().toLocaleString("en-US")} C-bills
                             </p>
                             <p>

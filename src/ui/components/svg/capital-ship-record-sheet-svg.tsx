@@ -3,7 +3,7 @@ import { getUnitRulesets } from '../../../classes/unit-game-settings';
 import CapitalShip from '../../../classes/capital-ship';
 import { AdvancedAerospaceArc, AdvancedAerospaceFacing } from '../../../data/advanced-aerospace-construction';
 import { ADVANCED_AEROSPACE_CREW_HITS, ADVANCED_AEROSPACE_CRITICAL_BLOCK } from '../../../data/aerospace-record-sheet';
-import { IAerospaceInventoryRow, aerospaceInventoryRows } from '../aerospace-sheet-blocks';
+import { aerospaceInventoryRows, aerospaceSheetBattleValue, IAerospaceInventoryRow } from '../aerospace-sheet-blocks';
 import { bayQuirkSuffix, getUnitQuirkSheetLines } from '../quirk-sheet-block';
 import { getRulesLevelName } from '../rules-level-print';
 import { ICriticalTrack, criticalDamageBox, heatPerArcBox, largeCraftCrewBox, notesBox, unitDataBox, velocityRecordBox } from './aerospace-record-sheet-svg-blocks';
@@ -130,7 +130,7 @@ export default class CapitalShipRecordSheetSVG extends React.Component<ICapitalS
             locationKey: `Arc: ${key}. Standard bays: capital scale (standard scale). (C): capital weapons.`,
             ammo: ammo.join(", ") || "none",
             cost: ship.getCBillCost(),
-            bv: this.props.showPilot ? `${ship.getBattleValue().toLocaleString("en-US")} (${ship.getPilotAdjustedBattleValue().toLocaleString("en-US")} adj.)` : ship.getBattleValue().toLocaleString("en-US"),
+            bv: aerospaceSheetBattleValue(ship, "capital-ship", this.props.showPilot),
         });
     }
 

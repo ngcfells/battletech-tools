@@ -4,6 +4,7 @@ import ProtoMech, { PROTOMECH_POINT_SIZE } from '../../../../classes/protomech';
 import { IAppGlobals } from '../../../app-router';
 import MULSearchButton from './_mulSearchButton';
 import StatBar from '../../../components/stat-bar';
+import { formatBattleValue } from '../../../../data/battle-value';
 const Trash = FaTrash as any;
 
 /**
@@ -85,8 +86,8 @@ export default class ProtoMechGroupTable extends React.Component<IProtoMechGroup
                     </tr>
                 </thead>
                 {points.map( (point, index) => {
-                    const adjustedBV = point.getSkillAdjustedPointBattleValue();
-                    const baseBV = point.getPointBattleValue();
+                    const adjustedBV = formatBattleValue((edition) => point.getSkillAdjustedPointBattleValue(edition), "protomech", this.props.appGlobals.currentCBTForce?.rulesEdition);
+                    const baseBV = formatBattleValue((edition) => point.getPointBattleValue(edition), "protomech", this.props.appGlobals.currentCBTForce?.rulesEdition);
                     return (
                         <tbody key={point.getUUID()}>
                             <tr>
@@ -103,7 +104,7 @@ export default class ProtoMechGroupTable extends React.Component<IProtoMechGroup
                                 ) : null}
                                 <td>
                                     {point.getDisplayName()}
-                                    <div className='small-text'>{point.getTons()}-ton {point.getChassisName()} ProtoMech, {point.getMovementText()}; {point.getBattleValue()} BV each</div>
+                                    <div className='small-text'>{point.getTons()}-ton {point.getChassisName()} ProtoMech, {point.getMovementText()}; {formatBattleValue((edition) => point.getBattleValue(edition), "protomech", this.props.appGlobals.currentCBTForce?.rulesEdition)} BV each</div>
                                 </td>
                                 <td className="min-width no-wrap text-center">
                                     {this.props.showEdit ? (

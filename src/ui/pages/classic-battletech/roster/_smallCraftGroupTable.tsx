@@ -5,6 +5,7 @@ import Pilot from '../../../../classes/pilot';
 import { IAppGlobals } from '../../../app-router';
 import StatBar from '../../../components/stat-bar';
 import MULSearchButton from './_mulSearchButton';
+import { formatBattleValue } from '../../../../data/battle-value';
 const Trash = FaTrash as any;
 
 /**
@@ -99,8 +100,8 @@ export default class SmallCraftGroupTable extends React.Component<ISmallCraftGro
                 </thead>
                 {crafts.map( (craft, index) => {
                     const pilot = craft.getPilot();
-                    const pilotBV = craft.getPilotAdjustedBattleValue();
-                    const baseBV = craft.getBattleValue();
+                    const pilotBV = formatBattleValue((edition) => craft.getPilotAdjustedBattleValue(edition), "small-craft", this.props.appGlobals.currentCBTForce?.rulesEdition);
+                    const baseBV = formatBattleValue((edition) => craft.getBattleValue(edition), "small-craft", this.props.appGlobals.currentCBTForce?.rulesEdition);
                     return (
                         <tbody key={craft.getUUID()}>
                             <tr>

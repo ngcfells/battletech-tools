@@ -550,7 +550,7 @@ describe("Buildings in play", () => {
         building.setName("Battery Kenyon");
         group.buildings.push(building);
         expect(group.getTotalUnits()).toBe(1);
-        expect(group.getTotaBV2()).toBe(0);
+        expect(group.getTotalBattleValue()).toBe(0);
         expect(group.getTotalTons()).toBe(0);
         expect(group.getTech()).toBe(building.getTech().name);
         expect(group.isUnderStrength()).toBe(false);
