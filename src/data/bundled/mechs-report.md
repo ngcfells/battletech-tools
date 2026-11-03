@@ -1,17 +1,17 @@
 # Bundled 'Mechs: build report
 
-3668 designs kept (38 renamed), 4062 files left out.
+3672 designs kept (38 renamed), 4058 files left out.
 
 | Reason | Files |
 |---|---|
 | duplicate of a design already kept | 3176 |
-| BV differs from the MUL | 227 |
+| BV differs from the MUL | 230 |
 | different submodel, same name and model: equipment | 162 |
-| the import could not carry all of it over | 116 |
 | different submodel, same name and model: ammo type | 115 |
+| the import could not carry all of it over | 93 |
 | different submodel, same name and model: actuators | 86 |
+| no Master Unit List entry to check its BV against | 54 |
 | configuration BV differs from the MUL | 53 |
-| no Master Unit List entry to check its BV against | 38 |
 | duplicate of a design already kept, differs only in armor spread | 36 |
 | import errors | 30 |
 | duplicate of a design already kept, differs only in engine heat sinks in crit slots | 6 |
@@ -2822,8 +2822,6 @@
 - `megamek/Force Manuals/Mercs/Scorpion SCP-1N (Wendall 2).mtf`: no Master Unit List entry to check its BV against
 - `megamek/Force Packs/Davion/Gunsmith CH11-NG-A.mtf`: different submodel, same name and model: equipment: Gunsmith CH11-NG
 - `megamek/Force Packs/Third Star League/Kintaro KTO-22.mtf`: the import could not carry all of it over: Cannot find the ammunition 'ISiNarc Explosive Pods'
-- `megamek/Force Packs/UrbanLAM/UrbanMech LAM S-UM-1XLA.mtf`: the import could not carry all of it over: 'Mech configuration 'LAM' is not converted yet; 'lam: Standard' is not converted yet; Cannot find any equipment named 'Landing Gear'; Cannot find any equipment named 'Avionics'; Cannot find any equipment named 'Landing Gear'; Cannot find any equipment named 'Avionics'; Cannot find any equipment named 'Landing Gear'; Cannot find any equipment named 'Avionics'
-- `megamek/Force Packs/UrbanLAM/UrbanMech LAM UM-A07.mtf`: the import could not carry all of it over: 'Mech configuration 'LAM' is not converted yet; 'lam: Standard' is not converted yet; Cannot find any equipment named 'Landing Gear'; Cannot find any equipment named 'Avionics'; Cannot find any equipment named 'Landing Gear'; Cannot find any equipment named 'Avionics'; Cannot find any equipment named 'Landing Gear'; Cannot find any equipment named 'Avionics'
 - `megamek/Golden Century/Cestus CTS-6Y-EC.mtf`: the import could not carry all of it over: Cannot find the ammunition 'CLImpGaussAmmo'; Cannot find the ammunition 'CLImpGaussAmmo'; Cannot find the ammunition 'CLImpGaussAmmo'; Cannot find the ammunition 'CLImpGaussAmmo'
 - `megamek/Golden Century/Coyotl A.mtf`: duplicate of a design already kept: Coyotl  A
 - `megamek/Golden Century/Coyotl B.mtf`: duplicate of a design already kept: Coyotl  B
@@ -2904,27 +2902,25 @@
 - `megamek/Jihad Secrets/Mercury II MCY-100.mtf`: duplicate of a design already kept: Mercury II MCY-100
 - `megamek/Jihad Secrets/Pulverizer PUL-2V.mtf`: duplicate of a design already kept: Pulverizer PUL-2V
 - `megamek/Jihad Secrets/Stag ST-14G.mtf`: different submodel, same name and model: actuators: Stag STG-14G
-- `megamek/LAMS/Phoenix Hawk LAM Mk I PHX-HK1.mtf`: the import could not carry all of it over: 'Mech configuration 'LAM' is not converted yet; 'lam: Standard' is not converted yet; Cannot find any equipment named 'Landing Gear'; Cannot find any equipment named 'Avionics'; Cannot find any equipment named 'Landing Gear'; Cannot find any equipment named 'Avionics'; Cannot find any equipment named 'Landing Gear'; Cannot find any equipment named 'Avionics'
-- `megamek/LAMS/Phoenix Hawk LAM Mk I PHX-HK1R.mtf`: the import could not carry all of it over: 'Mech configuration 'LAM' is not converted yet; 'lam: Standard' is not converted yet; Cannot find any equipment named 'Landing Gear'; Cannot find any equipment named 'Avionics'; Cannot find any equipment named 'Landing Gear'; Cannot find any equipment named 'Avionics'; Cannot find any equipment named 'Landing Gear'; Cannot find any equipment named 'Avionics'
-- `megamek/LAMS/Phoenix Hawk LAM PHX-HK1RB.mtf`: the import could not carry all of it over: 'Mech configuration 'LAM' is not converted yet; 'lam: Standard' is not converted yet; Cannot find any equipment named 'Landing Gear'; Cannot find any equipment named 'Avionics'; Cannot find any equipment named 'Landing Gear'; Cannot find any equipment named 'Avionics'; Cannot find any equipment named 'Landing Gear'; Cannot find any equipment named 'Avionics'
-- `megamek/LAMS/Phoenix Hawk LAM PHX-HK2.mtf`: the import could not carry all of it over: 'Mech configuration 'LAM' is not converted yet; 'lam: Standard' is not converted yet; Cannot find any equipment named 'Landing Gear'; Cannot find any equipment named 'Avionics'; Cannot find any equipment named 'Landing Gear'; Cannot find any equipment named 'Avionics'; Cannot find any equipment named 'Landing Gear'; Cannot find any equipment named 'Avionics'
-- `megamek/LAMS/Phoenix Hawk LAM PHX-HK2M.mtf`: the import could not carry all of it over: 'Mech configuration 'LAM' is not converted yet; 'lam: Standard' is not converted yet; Cannot find any equipment named 'Landing Gear'; Cannot find any equipment named 'Avionics'; Cannot find any equipment named 'Landing Gear'; Cannot find any equipment named 'Avionics'; Cannot find any equipment named 'Landing Gear'; Cannot find any equipment named 'Avionics'
-- `megamek/LAMS/Pwwka S-PW-1LAM.mtf`: the import could not carry all of it over: 'Mech configuration 'LAM' is not converted yet; 'lam: Standard' is not converted yet; Cannot find any equipment named 'Landing Gear'; Cannot find any equipment named 'Avionics'; Cannot find any equipment named 'Landing Gear'; Cannot find any equipment named 'Avionics'; Cannot find any equipment named 'Landing Gear'; Cannot find any equipment named 'Avionics'
-- `megamek/LAMS/Screamer LAM SCR-1X-LAM.mtf`: the import could not carry all of it over: 'Mech configuration 'LAM' is not converted yet; 'lam: Standard' is not converted yet; Cannot find any equipment named 'Landing Gear'; Cannot find any equipment named 'Avionics'; Cannot find any equipment named 'Landing Gear'; Cannot find any equipment named 'Avionics'; Cannot find any equipment named 'Landing Gear'; Cannot find any equipment named 'Avionics'
-- `megamek/LAMS/Shadow Hawk LAM SHD-X1.mtf`: the import could not carry all of it over: 'Mech configuration 'LAM' is not converted yet; 'lam: Bimodal' is not converted yet; Cannot find any equipment named 'Landing Gear'; Cannot find any equipment named 'Avionics'; Cannot find any equipment named 'Landing Gear'; Cannot find any equipment named 'Avionics'; Cannot find any equipment named 'Landing Gear'; Cannot find any equipment named 'Avionics'
-- `megamek/LAMS/Shadow Hawk LAM SHD-X2.mtf`: the import could not carry all of it over: 'Mech configuration 'LAM' is not converted yet; 'lam: Bimodal' is not converted yet; Cannot find any equipment named 'Landing Gear'; Cannot find any equipment named 'Avionics'; Cannot find any equipment named 'Landing Gear'; Cannot find any equipment named 'Avionics'; Cannot find any equipment named 'Landing Gear'; Cannot find any equipment named 'Avionics'
-- `megamek/LAMS/Stinger LAM Mk I STG-A1.mtf`: the import could not carry all of it over: 'Mech configuration 'LAM' is not converted yet; 'lam: Standard' is not converted yet; Cannot find any equipment named 'Landing Gear'; Cannot find any equipment named 'Avionics'; Cannot find any equipment named 'Landing Gear'; Cannot find any equipment named 'Avionics'; Cannot find any equipment named 'Landing Gear'; Cannot find any equipment named 'Avionics'
-- `megamek/LAMS/Stinger LAM STG-A10.mtf`: the import could not carry all of it over: 'Mech configuration 'LAM' is not converted yet; 'lam: Standard' is not converted yet; Cannot find any equipment named 'Landing Gear'; Cannot find any equipment named 'Avionics'; Cannot find any equipment named 'Landing Gear'; Cannot find any equipment named 'Avionics'; Cannot find any equipment named 'Landing Gear'; Cannot find any equipment named 'Avionics'
-- `megamek/LAMS/Stinger LAM STG-A5.mtf`: the import could not carry all of it over: 'Mech configuration 'LAM' is not converted yet; 'lam: Standard' is not converted yet; Cannot find any equipment named 'Landing Gear'; Cannot find any equipment named 'Avionics'; Cannot find any equipment named 'Landing Gear'; Cannot find any equipment named 'Avionics'; Cannot find any equipment named 'Landing Gear'; Cannot find any equipment named 'Avionics'
-- `megamek/LAMS/Waneta S-WN-1LAM.mtf`: the import could not carry all of it over: 'Mech configuration 'LAM' is not converted yet; 'lam: Standard' is not converted yet; Cannot find any equipment named 'Landing Gear'; Cannot find any equipment named 'Avionics'; Cannot find any equipment named 'Landing Gear'; Cannot find any equipment named 'Avionics'; Cannot find any equipment named 'Landing Gear'; Cannot find any equipment named 'Avionics'
-- `megamek/LAMS/Waneta S-WN-2LAM.mtf`: the import could not carry all of it over: 'Mech configuration 'LAM' is not converted yet; 'lam: Standard' is not converted yet; Cannot find any equipment named 'Landing Gear'; Cannot find any equipment named 'Avionics'; Cannot find any equipment named 'Landing Gear'; Cannot find any equipment named 'Avionics'; Cannot find any equipment named 'Landing Gear'; Cannot find any equipment named 'Avionics'
-- `megamek/LAMS/Wasp LAM Mk I WSP-100.mtf`: the import could not carry all of it over: 'Mech configuration 'LAM' is not converted yet; 'lam: Standard' is not converted yet; Cannot find any equipment named 'Landing Gear'; Cannot find any equipment named 'Avionics'; Cannot find any equipment named 'Landing Gear'; Cannot find any equipment named 'Avionics'; Cannot find any equipment named 'Landing Gear'; Cannot find any equipment named 'Avionics'
-- `megamek/LAMS/Wasp LAM Mk I WSP-100A.mtf`: the import could not carry all of it over: 'Mech configuration 'LAM' is not converted yet; 'lam: Standard' is not converted yet; Cannot find any equipment named 'Landing Gear'; Cannot find any equipment named 'Avionics'; Cannot find any equipment named 'Landing Gear'; Cannot find any equipment named 'Avionics'; Cannot find any equipment named 'Landing Gear'; Cannot find any equipment named 'Avionics'
-- `megamek/LAMS/Wasp LAM Mk I WSP-100b.mtf`: the import could not carry all of it over: 'Mech configuration 'LAM' is not converted yet; 'lam: Standard' is not converted yet; Cannot find any equipment named 'Landing Gear'; Cannot find any equipment named 'Avionics'; Cannot find any equipment named 'Landing Gear'; Cannot find any equipment named 'Avionics'; Cannot find any equipment named 'Landing Gear'; Cannot find any equipment named 'Avionics'
-- `megamek/LAMS/Wasp LAM WSP-105.mtf`: the import could not carry all of it over: 'Mech configuration 'LAM' is not converted yet; 'lam: Standard' is not converted yet; Cannot find any equipment named 'Landing Gear'; Cannot find any equipment named 'Avionics'; Cannot find any equipment named 'Landing Gear'; Cannot find any equipment named 'Avionics'; Cannot find any equipment named 'Landing Gear'; Cannot find any equipment named 'Avionics'
-- `megamek/LAMS/Wasp LAM WSP-105M.mtf`: the import could not carry all of it over: 'Mech configuration 'LAM' is not converted yet; 'lam: Standard' is not converted yet; Cannot find any equipment named 'Landing Gear'; Cannot find any equipment named 'Avionics'; Cannot find any equipment named 'Landing Gear'; Cannot find any equipment named 'Avionics'; Cannot find any equipment named 'Landing Gear'; Cannot find any equipment named 'Avionics'
-- `megamek/LAMS/Wasp LAM WSP-110.mtf`: the import could not carry all of it over: 'Mech configuration 'LAM' is not converted yet; 'lam: Standard' is not converted yet; Cannot find any equipment named 'Landing Gear'; Cannot find any equipment named 'Avionics'; Cannot find any equipment named 'Landing Gear'; Cannot find any equipment named 'Avionics'; Cannot find any equipment named 'Landing Gear'; Cannot find any equipment named 'Avionics'
-- `megamek/LAMS/Yurei S-YR-1LAM.mtf`: the import could not carry all of it over: 'Mech configuration 'LAM' is not converted yet; 'lam: Standard' is not converted yet; Cannot find any equipment named 'Landing Gear'; Cannot find any equipment named 'Avionics'; Cannot find any equipment named 'Landing Gear'; Cannot find any equipment named 'Avionics'; Cannot find any equipment named 'Landing Gear'; Cannot find any equipment named 'Avionics'
+- `megamek/LAMS/Phoenix Hawk LAM Mk I PHX-HK1.mtf`: no Master Unit List entry to check its BV against
+- `megamek/LAMS/Phoenix Hawk LAM Mk I PHX-HK1R.mtf`: no Master Unit List entry to check its BV against
+- `megamek/LAMS/Phoenix Hawk LAM PHX-HK1RB.mtf`: no Master Unit List entry to check its BV against
+- `megamek/LAMS/Phoenix Hawk LAM PHX-HK2M.mtf`: no Master Unit List entry to check its BV against
+- `megamek/LAMS/Pwwka S-PW-1LAM.mtf`: BV differs from the MUL: S-PW-1LAM: BV 1668, MUL 1638
+- `megamek/LAMS/Screamer LAM SCR-1X-LAM.mtf`: BV differs from the MUL: SCR-1X-LAM: BV 1475, MUL 1144
+- `megamek/LAMS/Shadow Hawk LAM SHD-X1.mtf`: no Master Unit List entry to check its BV against
+- `megamek/LAMS/Shadow Hawk LAM SHD-X2.mtf`: no Master Unit List entry to check its BV against
+- `megamek/LAMS/Stinger LAM Mk I STG-A1.mtf`: no Master Unit List entry to check its BV against
+- `megamek/LAMS/Stinger LAM STG-A10.mtf`: no Master Unit List entry to check its BV against
+- `megamek/LAMS/Stinger LAM STG-A5.mtf`: no Master Unit List entry to check its BV against
+- `megamek/LAMS/Waneta S-WN-1LAM.mtf`: no Master Unit List entry to check its BV against
+- `megamek/LAMS/Waneta S-WN-2LAM.mtf`: BV differs from the MUL: S-WN-2LAM: BV 2760, MUL 2713
+- `megamek/LAMS/Wasp LAM Mk I WSP-100.mtf`: no Master Unit List entry to check its BV against
+- `megamek/LAMS/Wasp LAM Mk I WSP-100A.mtf`: no Master Unit List entry to check its BV against
+- `megamek/LAMS/Wasp LAM Mk I WSP-100b.mtf`: no Master Unit List entry to check its BV against
+- `megamek/LAMS/Wasp LAM WSP-105.mtf`: no Master Unit List entry to check its BV against
+- `megamek/LAMS/Wasp LAM WSP-105M.mtf`: no Master Unit List entry to check its BV against
+- `megamek/LAMS/Wasp LAM WSP-110.mtf`: no Master Unit List entry to check its BV against
 - `megamek/Operation Klondike/Annihilator ANH-1G.mtf`: duplicate of a design already kept: Annihilator ANH-1G
 - `megamek/Operation Klondike/Annihilator ANH-1X.mtf`: duplicate of a design already kept: Annihilator ANH-1X
 - `megamek/Operation Klondike/Annihilator Bryan Gausszilla.mtf`: duplicate of a design already kept: Annihilator C "Gausszilla"

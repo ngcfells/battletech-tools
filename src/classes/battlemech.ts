@@ -13473,7 +13473,12 @@ export class BattleMech {
             if( jObj.mech.motive_type && jObj.mech.motive_type === "Quad" ) {
                 this.setMechType("quad");
             }
-            // SSW writes no tripods or QuadVees; a converted MegaMek file does (battlemech-mtf.ts).
+            // SSW writes no tripods, QuadVees or LAMs; a converted MegaMek file does (battlemech-mtf.ts).
+            const lamMotive = /^(Standard|Bimodal) LAM$/.exec( String( jObj.mech.motive_type ) );
+            if( lamMotive ) {
+                this.setMechType("lam");
+                this.setLAMType( lamMotive[1] );
+            }
             if( jObj.mech.motive_type === "Tripod" ) {
                 this.setMechType("tripod");
             }

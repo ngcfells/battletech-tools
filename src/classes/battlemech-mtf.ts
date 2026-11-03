@@ -151,7 +151,11 @@ export function convertMtfToSSW(file: IMtfFile): { xml: string; issues: string[]
     const quad = /^quad/i.test(config);
     const quadVee = /^quadvee/i.test(config);
     const tripod = /^tripod/i.test(config);
-    if (!/^(biped|quad|quadvee|tripod)( omnime(k|ch)| frankenme(k|ch))?$/i.test(config)) issues.push(`'Mech configuration '${config}' is not converted yet`);
+    // A LAM is a biped written as its type, "Standard LAM" or "Bimodal LAM" (IO:AE pp.100, 108).
+    const lam = /^lam$/i.test(config);
+    const lamType = /^(standard|bimodal)$/i.exec(value(file, "lam"))?.[1];
+    if (lam && !lamType) issues.push(`LAM type '${value(file, "lam")}' is not converted yet`);
+    if (!/^(biped|quad|quadvee|tripod|lam)( omnime(k|ch)| frankenme(k|ch))?$/i.test(config)) issues.push(`'Mech configuration '${config}' is not converted yet`);
     const franken = /frankenme(k|ch)$/i.test(config);
     const locations = quad ? QUAD_LOCATIONS : tripod ? TRIPOD_LOCATIONS : BIPED_LOCATIONS;
     const tons = +value(file, "mass");
@@ -160,7 +164,7 @@ export function convertMtfToSSW(file: IMtfFile): { xml: string; issues: string[]
     const slotsOf = (slots: number) => superheavy ? Math.ceil(slots / 2) : slots;
     const wheeled = /^wheel$/i.test(value(file, "motive"));
     if (quadVee && !wheeled && !/^track$/i.test(value(file, "motive"))) issues.push(`QuadVee motive '${value(file, "motive")}' is not converted yet`);
-    for (const key of quadVee ? ["lam"] : ["lam", "motive"]) if (value(file, key)) issues.push(`'${key}: ${value(file, key)}' is not converted yet`);
+    for (const key of [...lam ? [] : ["lam"], ...quadVee ? [] : ["motive"]]) if (value(file, key)) issues.push(`'${key}: ${value(file, key)}' is not converted yet`);
 
     // Chassis components.
     // MegaMek writes "Large XXL" over rating 400; a large engine is its type at that rating (TO:AUE p.119).
@@ -241,7 +245,9 @@ export function convertMtfToSSW(file: IMtfFile): { xml: string; issues: string[]
             if (slot.armored) armoredSlots.push(place(loc, index));
             if (slot.turret) issues.push(`Turret-mounted '${name}' is not converted yet`);
             // A QuadVee's conversion equipment and Tracks or Wheels: the chassis places them in every leg (IO:AE p.128).
-            if (FIXED_SLOTS.has(name) || quadVee && /^(Conversion Gear|Tracks|QuadVee Wheels)$/i.test(name)) {
+            // A LAM's Landing Gear and Avionics: the chassis places them in the torsos and head (IO:AE p.108).
+            if (FIXED_SLOTS.has(name) || quadVee && /^(Conversion Gear|Tracks|QuadVee Wheels)$/i.test(name)
+                || lam && /^(Landing Gear|Avionics)$/i.test(name)) {
                 if ((loc === "la" || loc === "ra") && !quad) {
                     if (name === "Lower Arm Actuator") actuators[loc].lla = true;
                     if (name === "Hand Actuator") actuators[loc].lh = true;
@@ -389,7 +395,7 @@ export function convertMtfToSSW(file: IMtfFile): { xml: string; issues: string[]
 <mech_type>${mechType}</mech_type>
 <techbase manufacturer="" location="">${sswTech}</techbase>
 <year>${xml(value(file, "era"))}</year>
-<motive_type>${quadVee ? `QuadVee ${wheeled ? "Wheels" : "Tracks"}` : quad ? "Quad" : tripod ? "Tripod" : "Biped"}</motive_type>
+<motive_type>${quadVee ? `QuadVee ${wheeled ? "Wheels" : "Tracks"}` : lam ? `${lamType ?? "Standard"} LAM` : quad ? "Quad" : tripod ? "Tripod" : "Biped"}</motive_type>
 <structure techbase="${structureTech}"><type>${xml(structureName)}</type>${structureSlots.join("")}</structure>
 <engine rating="${engine?.[1] ?? 0}" techbase="${tb(engineTech)}">${xml(engineName ?? "")}</engine>
 <gyro techbase="2">${xml(gyro)}</gyro>

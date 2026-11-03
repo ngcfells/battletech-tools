@@ -84,6 +84,22 @@ const tripod = brawler.replace("Config:Biped", "Config:Tripod").replace("walk mp
     .replace("RL armor:18", "RL armor:18\nCL armor:16") + "\n"
     + location("Center Leg", "Hip", "Upper Leg Actuator", "Lower Leg Actuator", "Foot Actuator", "Medium Laser").join("\n");
 
+// A LAM (IO:AE p.108): MegaMek's "lam" line, Landing Gear in the center and side torsos, and Avionics in the side
+// torsos and head slot 4, like the Shadow Hawk LAM SHD-X1.
+const lam = [
+    "chassis:Test Flyer", "model:TF-1L", "Config:LAM", "techbase:Inner Sphere", "era:2690", "rules level:4", "mass:50",
+    "engine:250 Fusion Engine", "structure:IS Standard", "myomer:Standard", "lam:Standard", "heat sinks:10 Single",
+    "walk mp:5", "jump mp:3", "armor:Standard(Inner Sphere)", ...armor([10, 10, 12, 12, 15, 9, 12, 12, 3, 3, 4]), "",
+    ...location("Left Arm", "Shoulder", "Upper Arm Actuator", "Lower Arm Actuator", "Hand Actuator"),
+    ...location("Right Arm", "Shoulder", "Upper Arm Actuator", "Lower Arm Actuator", "Hand Actuator", "Medium Laser"),
+    ...location("Left Torso", "Landing Gear", "Avionics", "Jump Jet", "Medium Laser"),
+    ...location("Right Torso", "Landing Gear", "Avionics", "Jump Jet"),
+    ...location("Center Torso", ...fill(3, "Fusion Engine"), ...fill(4, "Gyro"), ...fill(3, "Fusion Engine"), "Landing Gear", "Jump Jet"),
+    ...location("Head", "Life Support", "Sensors", "Cockpit", "Avionics", "Sensors", "Life Support"),
+    ...location("Left Leg", "Hip", "Upper Leg Actuator", "Lower Leg Actuator", "Foot Actuator"),
+    ...location("Right Leg", "Hip", "Upper Leg Actuator", "Lower Leg Actuator", "Foot Actuator"),
+].join("\n");
+
 // A Clan QuadVee (IO:AE pp.127-128): MegaMek's motive line, QuadVee cockpit in head slots 3-4, and Conversion Gear and
 // Tracks in every leg; endo steel and ferro-fibrous like the Arion.
 const quadVeeLeg = ["Hip", "Upper Leg Actuator", "Lower Leg Actuator", "Foot Actuator", "Conversion Gear", "Tracks"];
@@ -309,6 +325,18 @@ describe("MegaMek 'Mech import", () => {
         const omni = convertMtfToSSW(parseMtfFile(quadVee.replace("Config:QuadVee", "Config:QuadVee OmniMek"))!);
         expect(omni.issues).toEqual([]);
         expect(omni.xml).toContain(`omnimech="TRUE"`);
+    });
+
+    it("reads a LAM: Standard or Bimodal, with the chassis's landing gear and avionics", () => {
+        const { mech, issues } = importBattleMechMtf(lam);
+        expect(issues).toEqual([]);
+        expect(mech!.isLAM()).toBe(true);
+        expect(mech!.getLAMType()).toBe("standard");
+        expect(mech!.getJumpJetCount()).toBe(3);
+        expect(mech!.getInstalledEquipment().filter((item) => item.tag === "medium-laser")).toHaveLength(2);
+        const bimodal = importBattleMechMtf(lam.replace("lam:Standard", "lam:Bimodal"));
+        expect(bimodal.issues).toEqual([]);
+        expect(bimodal.mech!.getLAMType()).toBe("bimodal");
     });
 
     // mordel.net writes "Industrial" for MegaMek's "Industrial Cockpit" (Rock Hound AM-PRM-RH7C).
