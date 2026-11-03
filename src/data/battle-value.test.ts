@@ -135,9 +135,16 @@ describe("BV1 equipment values (BMR pp.142-144; BMR(R) pp.156-158)", () => {
         expect(getItemBattleValue(record("gauss-rifle-heavy"), "master-rules-revised")).toBe(346);
     });
 
-    it("prints a BV for every weapon each Master Rules edition includes, torpedoes and melee weapons aside", () => {
-        // LRT/SRT are in neither table; hatchet and sword BVs come from their damage (BMR p.143).
-        const unprinted = /^(clan-)?(lrt|srt)-|^melee-/;
+    it("gives torpedoes the BV of the missile launcher of their range (user ruling, 2026-11-03)", () => {
+        expect(getItemBattleValue(record("lrt-15"), "master-rules")).toBe(136);
+        expect(getItemBattleValue(record("srt-6"), "master-rules-revised", "ammoBattleValue")).toBe(7);
+        expect(getItemBattleValue(record("clan-lrt-20-os"), "master-rules")).toBe(44);
+        expect(getItemBattleValue(record("clan-srt-2"), "master-rules-revised")).toBe(21);
+    });
+
+    it("has a BV for every weapon each Master Rules edition includes, melee weapons aside", () => {
+        // Hatchet and sword BVs come from their damage (BMR p.143).
+        const unprinted = /^melee-/;
         for (const edition of ["master-rules", "master-rules-revised"]) {
             const missing = weapons
                 .filter((item) => item.editionStats && edition in item.editionStats && !unprinted.test(item.tag) && getEditionStats(item, edition)?.battleValue === undefined)
