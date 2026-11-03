@@ -495,6 +495,17 @@ export interface IEquipmentItem extends ICatalogStanding {
     maxPerUnit?: number;
     /** Items sharing a group count together against `maxPerUnit` (the two RISC Viral Jammers: one of any type). */
     maxPerUnitGroup?: string;
+    /** A targeting and tracking system's to-hit effects (Maximum Tech p.59). */
+    targetingSystem?: {
+        /** Short / Medium / Long range modifiers in place of +0 / +2 / +4. */
+        ranges?: [number, number, number];
+        /** Modifier on attacks against airborne targets, then against the rest. */
+        airborne?: [number, number];
+        /** No secondary-target modifier; this one against targets outside the front arc. */
+        offFrontArc?: number;
+        /** Set in the End Phase to the long- or short-range system's modifiers, or to normal. */
+        variableRange?: true;
+    };
     /**
      * HarJel repair systems: multiplier on the armor Battle Value of the location the item sits in,
      * stacking with the armor type's own (IO:AE p.185). Each slot also takes 1 off the Defensive BV.

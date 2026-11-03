@@ -101,6 +101,7 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
 
             setTargetDialog: null,
             targetData: null,
+            targetingRangeSetting: "normal",
             viewGATOR: null,
 
             takeDamageDialog: null,
@@ -977,6 +978,7 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
           setMovementDialog: null,
           takeDamageDialog: null,
           targetData: targetData,
+          targetingRangeSetting: currentBM.targetingRangeSetting,
         })
       }
 
@@ -989,6 +991,10 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
         e.preventDefault();
       }
 
+      // Cancel puts back the variable-range setting the dialog opened with.
+      if( this.state.setTargetDialog ) {
+        this.state.setTargetDialog.targetingRangeSetting = this.state.targetingRangeSetting;
+      }
       this.setState({
         setTargetDialog: null,
         targetData: null,
@@ -2078,6 +2084,22 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
   className="modal-xl"
   title={this.state.setTargetDialog.getName() + " Target Selection"}
 >
+  {this.state.setTargetDialog.equipmentList.some(item => item.targetingSystem?.variableRange) ? (
+    <label className="text-center full-width">
+      Variable-Range Targeting (set in the End Phase; Maximum Tech p.59):{" "}
+      <select
+        value={this.state.setTargetDialog.targetingRangeSetting}
+        onChange={(e) => {
+          this.state.setTargetDialog!.targetingRangeSetting = e.currentTarget.value as BattleMech["targetingRangeSetting"];
+          this.forceUpdate();
+        }}
+      >
+        <option value="normal">Normal</option>
+        <option value="long">Long-Range</option>
+        <option value="short">Short-Range</option>
+      </select>
+    </label>
+  ) : null}
   {this.state.targetData ? (
     <div className="row">
       <div className="col-md">
@@ -2100,20 +2122,20 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
             <InputCheckbox
               label="Primary"
               checked={this.state.targetData.a.primary}
-              description="Secondary targets are -1 to hit, or -2 in rear arc"
+              description="Secondary targets are +1 to hit, or +2 in rear arc"
               onChange={(e) => this.updatePrimary(e, "a")}
             />
             <InputCheckbox
               label="Rear Arc"
               checked={this.state.targetData.a.inRearArc}
-              description="Secondary targets are -1 to hit, or -2 in rear arc"
+              description="Secondary targets are +1 to hit, or +2 in rear arc"
               onChange={(e) => this.updateRearArc(e, "a")}
             />
-            {quirksInPlay ? (
+            {quirksInPlay || this.state.setTargetDialog.getTargetingSystem()?.targetingSystem?.airborne ? (
               <InputCheckbox
                 label="Airborne"
                 checked={!!this.state.targetData.a.airborne}
-                description="Airborne, not grounded: an aerospace unit, a VTOL or a 'Mech on a combat drop, but not a jumping 'Mech. For Anti-Aircraft Targeting (CO p.225)."
+                description="Airborne, not grounded: an aerospace unit, a VTOL or a 'Mech on a combat drop, but not a jumping 'Mech. For Anti-Aircraft Targeting (CO p.225; Maximum Tech p.59)."
                 onChange={(e) => this.updateTargetAirborne(e, "a")}
               />
             ) : null}
@@ -2175,20 +2197,20 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
             <InputCheckbox
               label="Primary"
               checked={this.state.targetData.b.primary}
-              description="Secondary targets are -1 to hit, or -2 in rear arc"
+              description="Secondary targets are +1 to hit, or +2 in rear arc"
               onChange={(e) => this.updatePrimary(e, "b")}
             />
             <InputCheckbox
               label="Rear Arc"
               checked={this.state.targetData.b.inRearArc}
-              description="Secondary targets are -1 to hit, or -2 in rear arc"
+              description="Secondary targets are +1 to hit, or +2 in rear arc"
               onChange={(e) => this.updateRearArc(e, "b")}
             />
-            {quirksInPlay ? (
+            {quirksInPlay || this.state.setTargetDialog.getTargetingSystem()?.targetingSystem?.airborne ? (
               <InputCheckbox
                 label="Airborne"
                 checked={!!this.state.targetData.b.airborne}
-                description="Airborne, not grounded: an aerospace unit, a VTOL or a 'Mech on a combat drop, but not a jumping 'Mech. For Anti-Aircraft Targeting (CO p.225)."
+                description="Airborne, not grounded: an aerospace unit, a VTOL or a 'Mech on a combat drop, but not a jumping 'Mech. For Anti-Aircraft Targeting (CO p.225; Maximum Tech p.59)."
                 onChange={(e) => this.updateTargetAirborne(e, "b")}
               />
             ) : null}
@@ -2252,20 +2274,20 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
             <InputCheckbox
               label="Primary"
               checked={this.state.targetData.c.primary}
-              description="Secondary targets are -1 to hit, or -2 in rear arc"
+              description="Secondary targets are +1 to hit, or +2 in rear arc"
               onChange={(e) => this.updatePrimary(e, "c")}
             />
             <InputCheckbox
               label="Rear Arc"
               checked={this.state.targetData.c.inRearArc}
-              description="Secondary targets are -1 to hit, or -2 in rear arc"
+              description="Secondary targets are +1 to hit, or +2 in rear arc"
               onChange={(e) => this.updateRearArc(e, "c")}
             />
-            {quirksInPlay ? (
+            {quirksInPlay || this.state.setTargetDialog.getTargetingSystem()?.targetingSystem?.airborne ? (
               <InputCheckbox
                 label="Airborne"
                 checked={!!this.state.targetData.c.airborne}
-                description="Airborne, not grounded: an aerospace unit, a VTOL or a 'Mech on a combat drop, but not a jumping 'Mech. For Anti-Aircraft Targeting (CO p.225)."
+                description="Airborne, not grounded: an aerospace unit, a VTOL or a 'Mech on a combat drop, but not a jumping 'Mech. For Anti-Aircraft Targeting (CO p.225; Maximum Tech p.59)."
                 onChange={(e) => this.updateTargetAirborne(e, "c")}
               />
             ) : null}
@@ -3551,6 +3573,8 @@ interface IPlayState {
   setTargetDialog: BattleMech | null;
 
   targetData: ICombinedTargetData | null;
+  /** The unit's variable-range targeting setting when the target dialog opened. */
+  targetingRangeSetting: BattleMech["targetingRangeSetting"];
   targetWeaponSelection: IEquipmentItem[];
   viewGATOR: IGATOR | null;
 

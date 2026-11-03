@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { getTargetToHitFromWeapon } from "../utils";
-import { BattleMech } from "./battlemech";
+import { BattleMech, ITargetToHit } from "./battlemech";
 import { BattleMechForce } from "./battlemech-force";
 
 // Design quirks in Classic play (quirks design, plan 3): applied only with the game's "Use design quirks" switch on.
@@ -59,6 +59,48 @@ describe("quirk to-hit in the GATOR", () => {
         const mech = mechWith("medium-laser");
         mech.quirks.add({ tag: "quirk-sensor-ghosts" });
         expect(getTargetToHitFromWeapon(mech, 0, { ...SHORT_RANGE, range: 30 }, null, true).finalToHit).toBe(-1);
+    });
+});
+
+// Maximum Tech p.59: the targeting and tracking systems' range, anti-aircraft and multi-target modifiers.
+describe("targeting and tracking systems in the GATOR (Maximum Tech p.59)", () => {
+    // A medium laser (3/6/9), rear-mounted for a target in the rear arc; the list sorts, so find it by tag.
+    const toHit = (target: ITargetToHit, ...tags: string[]) => {
+        const mech = mechWith(...tags);
+        mech.addEquipmentFromTag("medium-laser", "is", "rt", target.inRearArc, undefined, "a", false, [], undefined, undefined);
+        return getTargetToHitFromWeapon(mech, mech.equipmentList.findIndex(item => item.tag === "medium-laser"), target);
+    };
+    const bands = (mech: BattleMech) => [1, 5, 9].map(range => getTargetToHitFromWeapon(mech, mech.equipmentList.findIndex(item => item.tag === "medium-laser"), { ...SHORT_RANGE, range }).rangeModifier);
+
+    it("reads the long- and short-range systems' range modifiers, and the VRTS setting", () => {
+        expect(bands(mechWith("medium-laser"))).toEqual([0, 2, 4]);
+        expect(bands(mechWith("medium-laser", "targeting-long-range"))).toEqual([1, 2, 3]);
+        expect(bands(mechWith("medium-laser", "targeting-short-range"))).toEqual([-1, 2, 5]);
+        const vrts = mechWith("medium-laser", "targeting-variable-range");
+        expect(bands(vrts)).toEqual([0, 2, 4]);
+        vrts.targetingRangeSetting = "short";
+        expect(bands(vrts)).toEqual([-1, 2, 5]);
+        vrts.targetingRangeSetting = "long";
+        const copy = new BattleMech();
+        copy.importJSON(vrts.exportJSON());
+        expect(bands(copy)).toEqual([1, 2, 3]);
+    });
+
+    it("gives anti-aircraft targeting -2 against airborne targets and +1 against the rest", () => {
+        const plain = toHit(SHORT_RANGE).finalToHit;
+        expect(toHit(SHORT_RANGE, "targeting-anti-aircraft").finalToHit).toBe(plain + 1);
+        const airborne = toHit({ ...SHORT_RANGE, airborne: true }, "targeting-anti-aircraft");
+        expect([airborne.finalToHit, airborne.otherModifiersExplanation]).toEqual([plain - 2, "Anti-Aircraft Targeting (-2)"]);
+    });
+
+    it("drops the secondary-target modifier with Multi-Trac: +1 outside the front arc, none with Multi-Trac II", () => {
+        const secondary = { ...SHORT_RANGE, primary: false };
+        const rear = { ...secondary, inRearArc: true };
+        const plain = toHit(SHORT_RANGE).finalToHit;
+        expect([toHit(secondary).finalToHit, toHit(rear).finalToHit]).toEqual([plain + 1, plain + 2]);
+        expect(toHit(secondary).otherModifiersExplanation).toBe("Secondary Target In Front Arc (+1)");
+        expect([toHit(secondary, "targeting-multi-trac").finalToHit, toHit(rear, "targeting-multi-trac").finalToHit]).toEqual([plain, plain + 1]);
+        expect([toHit(secondary, "targeting-multi-trac-ii").finalToHit, toHit(rear, "targeting-multi-trac-ii").finalToHit]).toEqual([plain, plain]);
     });
 });
 

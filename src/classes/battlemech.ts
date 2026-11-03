@@ -249,6 +249,7 @@ export interface IBattleMechExport {
 
     selectedMech?: boolean;
     currentMovementMode?: string;
+    targetingRangeSetting?: "long" | "short";
     currentToHitMovementModifier?: number;
     currentTargetModifier?: number;
     currentTargetJumpingMP?: number;
@@ -438,6 +439,8 @@ export class BattleMech {
 
     public lastUpdated = new Date();
     public currentMovementMode: string = "n";
+    /** A variable-range targeting system's End Phase setting (Maximum Tech p.59). */
+    public targetingRangeSetting: "normal" | "long" | "short" = "normal";
     public currentToHitMovementModifier: number = 0;
     public currentTargetModifier: number = 0;
     public currentTargetJumpingMP: number = 0;
@@ -1638,10 +1641,12 @@ export class BattleMech {
             if (tons > 0 && item.location && BattleMech.MECH_LOCATION_MAP[item.location] && penalised(item.location)) explosive += (caseII(item.location) ? 5 : 20) * tons;
         }
         // Maximum potential heat: every weapon but the rear-firing ones (Ultra x 2, Streak / 2), plus running or
-        // jumping, whichever is hotter; Stealth armor +10 (in the movement heat).
+        // jumping, whichever is hotter; Stealth armor +10 (in the movement heat). Level 3: with Multi-Trac II the rear
+        // weapons count in the heat and at full value (Maximum Tech p.91).
+        const multiTracII = !!levelThree && this._equipmentList.some(item => matchesTag(item, "targeting-multi-trac-ii"));
         const firing = this._equipmentList.filter(item => !isAmmo(item) && !isDefensive(item));
         const heatOf = (item: IEquipmentItem) => (getEditionStats(item, statsEdition)?.heat ?? item.heat ?? 0) * (item.isUltra ? 2 : item.isStreak ? 0.5 : 1);
-        const maxHeat = firing.filter(item => !item.rear).reduce((sum, item) => sum + heatOf(item), 0) + this.getMaxMovementHeat();
+        const maxHeat = firing.filter(item => multiTracII || !item.rear).reduce((sum, item) => sum + heatOf(item), 0) + this.getMaxMovementHeat();
         // Level 3: each coolant pod adds 1 (Maximum Tech p.92).
         const sinkCapacity = this.getHeatSinks() * this._heatSinkType.dissipation + this.getEquipmentHeatDissipation()
             + (levelThree ? this._equipmentList.filter(item => item?.coolantPod).length : 0);
@@ -1668,11 +1673,12 @@ export class BattleMech {
         const weapons = firing.map(item => ({ item, bv: valueOf(item) })).filter(entry => entry.bv > 0);
         const rearBV = weapons.reduce((sum, entry) => sum + (entry.item.rear ? entry.bv : 0), 0);
         const rearIsFront = rearBV > weapons.reduce((sum, entry) => sum + (entry.item.rear ? 0 : entry.bv), 0);
-        const arc = (item: IEquipmentItem) => !!item.rear === rearIsFront ? 1 : 0.5;
+        const arc = (item: IEquipmentItem) => multiTracII || !!item.rear === rearIsFront ? 1 : 0.5;
         const weaponBV = weapons.reduce((sum, entry) => sum + entry.bv * arc(entry.item), 0);
-        // A targeting computer: 20% of the weapons it links, rear ones halved, no ammo (BMR(R) p.153, p.121).
-        const computerBV = this.hasTargetingComputer()
-            ? 0.2 * weapons.reduce((sum, entry) => sum + (isTargetingComputerWeapon(entry.item) ? entry.bv * arc(entry.item) : 0), 0) : 0;
+        // A targeting computer: 20% of the weapons it links, rear ones halved, no ammo (BMR(R) p.153, p.121). Level 3:
+        // a variable-range targeting system adds 10% "in the same way" (Maximum Tech p.91).
+        const computerShare = (this.hasTargetingComputer() ? 0.2 : 0) + (levelThree && this._equipmentList.some(item => matchesTag(item, "targeting-variable-range")) ? 0.1 : 0);
+        const computerBV = computerShare * weapons.reduce((sum, entry) => sum + (isTargetingComputerWeapon(entry.item) ? entry.bv * arc(entry.item) : 0), 0);
         let ammoBV = 0;
         for (const item of this._equipmentList.filter(isAmmo)) {
             const fed = this.getAmmoBinWeapon(item);
@@ -2594,7 +2600,8 @@ export class BattleMech {
 
     /**
      * Systems that may not share a 'Mech, or need another: AES (TO:AUE p.91), the Chameleon shield (p.112), the
-     * Null-Signature (p.148) and Void-Signature (p.161) systems, and Stealth Armor's ECM suite (TM p.213).
+     * Null-Signature (p.148) and Void-Signature (p.161) systems, Stealth Armor's ECM suite (TM p.213) and the targeting
+     * and tracking systems (Maximum Tech p.58).
      */
     private _systemConflictViolations(mounted: IEquipmentItem[]): string[] {
         const violations: string[] = [];
@@ -2617,6 +2624,8 @@ export class BattleMech {
         conflict(nss, [computer, c3, stealth], "TO:AUE p.148");
         conflict(vss, [computer, c3, stealth, chameleon, nss], "TO:AUE p.161");
         conflict(chameleon, [stealth], "TO:AUE p.112");
+        // One targeting and tracking system to a 'Mech (`maxPerUnit`), and a targeting or C3 computer counts as one.
+        conflict(find(item => item.maxPerUnitGroup === "targeting-system"), [computer, c3], "Maximum Tech p.58");
         const fullHeadEjection = find(item => item.tag === "full-head-ejection-system" || item.tag === "clan-full-head-ejection-system");
         if (fullHeadEjection && this.getCockpitType().tag === "torso-mounted") {
             violations.push(`${fullHeadEjection.name} cannot be combined with a Torso-Mounted Cockpit (TO:AUE p.116).`);
@@ -8735,6 +8744,7 @@ export class BattleMech {
             exportObject.criticalDamage = this.criticalDamage;
             exportObject.currentHeat = _currentHeat;
             exportObject.currentMovementMode =_currentMovementMode;
+            if( this.targetingRangeSetting !== "normal" ) exportObject.targetingRangeSetting = this.targetingRangeSetting;
             exportObject.currentTargetJumpingMP =_currentTargetJumpingMP;
             exportObject.currentTargetModifier =_currentTargetModifier;
             exportObject.currentToHitMovementModifier =_currentToHitMovementModifier;
@@ -9016,6 +9026,7 @@ export class BattleMech {
         if( importObject && importObject.currentMovementMode ) {
             this.currentMovementMode = importObject.currentMovementMode;
         }
+        this.targetingRangeSetting = importObject?.targetingRangeSetting ?? "normal";
 
         if( importObject && importObject.currentTargetModifier ) {
             this.currentTargetModifier = importObject.currentTargetModifier;
@@ -10788,6 +10799,17 @@ export class BattleMech {
     /** Whether a targeting computer is installed (TM p.238). */
     public hasTargetingComputer(): boolean {
         return this._equipmentList.some(item => item?.variableFormula?.startsWith("targeting-computer"));
+    }
+
+    /**
+     * The targeting and tracking system whose to-hit effects apply: the mounted one, or for a variable-range system
+     * set to long or short, that system's record (Maximum Tech p.59).
+     */
+    public getTargetingSystem(): IEquipmentItem | undefined {
+        const system = this._equipmentList.find(item => item?.targetingSystem);
+        if (!system?.targetingSystem?.variableRange || this.targetingRangeSetting === "normal") return system;
+        const tag = `targeting-${this.targetingRangeSetting}-range`;
+        return this.getEquipmentList(this._tech.tag).find(item => item.tag === tag) ?? system;
     }
 
     /** Equipment whose BV counts toward the defensive rating (TM p.302: AMS, ECM, active probes, pods). */

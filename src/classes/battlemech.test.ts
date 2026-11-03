@@ -6974,5 +6974,36 @@ describe("Battle Value worked examples (BV v4.1 pp.3-7)", () => {
             // Defensive 412.5 x 1.2 = 495. Weapons 302 + ammo 0.3, heat 12 of 18: X 201.53, Y 50.38, x 1.63 = 410.62.
             expect([standard.getBattleValue("master-rules-revised"), flare.getBattleValue("master-rules-revised")]).toEqual([913, 906]);
         });
+
+        // p.87: Sensors cost tonnage x 10,000 with VRTS and x 5,000 with Multi-Trac II, so the record carries the rest.
+        it("prices VRTS sensors at tonnage x 10,000 (Max Tech p.87)", () => {
+            const mech = enforcer3();
+            placeIn(mech, "targeting-variable-range", "hd", "head");
+            const vrts = mech.getInstalledEquipment().find(item => item.tag === "targeting-variable-range")!;
+            expect([vrts.weight, vrts.cbills + 2000 * 50]).toEqual([0.5, 500000]);
+            const multiTrac = enforcer3();
+            placeIn(multiTrac, "targeting-multi-trac-ii", "hd", "head");
+            expect(multiTrac.getInstalledEquipment().find(item => item.tag === "targeting-multi-trac-ii")!.cbills + 2000 * 50).toBe(250000);
+        });
+
+        // p.91: VRTS adds 10% of the weapons as a targeting computer does. Weapons 433 + 43.3 + ammo 58 = 534.3; heat 27
+        // of 24: X 474.93, Y 29.68, x 2.02 = 1,019.33; + 490.425 = 1,509.75.
+        it("adds 10% of the weapons for VRTS (ENF-6M hand-worked)", () => {
+            const mech = enforcer3();
+            placeIn(mech, "targeting-variable-range", "hd", "head");
+            expect(mech.getBattleValue("master-rules-revised")).toBe(1510);
+            expect(mech.getBattleValue("master-rules")).toBe(1427);
+        });
+
+        // p.91: with Multi-Trac II a rear medium laser counts whole (46, not 23) and in the heat (27 + 3). Defensive
+        // (377.25 - 15) x 1.3 = 470.925; weapons 479 + ammo 58 = 537, heat 30 of 24: X 429.6, Y 53.7, x 2.02 = 976.27.
+        // Without it: defensive 490.425, weapons 456 + 58 = 514, X 456.89, Y 28.56, x 2.02 = 980.60.
+        it("counts rear weapons whole for Multi-Trac II (hand-worked rear-laser 'Mech)", () => {
+            const mech = enforcer3();
+            mech.addEquipmentFromTag("medium-laser", "is", "", true, undefined, "", false, [], undefined, undefined);
+            const before = mech.getBattleValue("master-rules-revised");
+            placeIn(mech, "targeting-multi-trac-ii", "hd", "head");
+            expect([before, mech.getBattleValue("master-rules-revised")]).toEqual([1471, 1447]);
+        });
     });
 });

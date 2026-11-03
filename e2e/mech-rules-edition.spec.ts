@@ -174,6 +174,35 @@ test("offers flare LRM ammo by edition and rules level", async ({ page }) => {
     expect(errors).toEqual([]);
 });
 
+// Maximum Tech p.59: the targeting and tracking systems are Level 3 (Advanced) of BMR(R), one to a 'Mech (p.58).
+test("offers the Maximum Tech targeting systems under BMR(R) Advanced, one to a 'Mech", async ({ page }) => {
+    const errors: string[] = [];
+    page.on("pageerror", (error) => errors.push(error.stack ?? error.message));
+    const row = (name: string) => page.getByRole("dialog").getByRole("row").filter({ has: page.getByRole("cell", { name, exact: true }) });
+    const openAt = async (level: string) => {
+        await page.goto("classic-battletech/mech-creator/step1");
+        await page.getByLabel("Rules Edition").selectOption("master-rules-revised");
+        await page.getByLabel("Rules Level").selectOption(level);
+        await page.goto("classic-battletech/mech-creator/step5");
+        await page.getByTitle("Open the add dialog").first().click();
+        await page.getByPlaceholder("Filter Equipment").fill("Targeting");
+    };
+    await openAt("2");
+    await expect(row("Variable-Range Targeting")).toHaveCount(0);
+    await openAt("3");
+    for (const name of ["Long-Range Targeting", "Short-Range Targeting", "Variable-Range Targeting", "Anti-Aircraft Targeting", "Multi-Trac Targeting", "Multi-Trac II Targeting"]) {
+        await expect(row(name), name).toHaveCount(1);
+    }
+    await row("Variable-Range Targeting").getByRole("button", { name: "Add" }).first().click();
+    await expect(row("Long-Range Targeting").getByRole("button", { name: "Add" })).toHaveCount(0);
+    await page.getByRole("button", { name: "Close" }).first().click();
+    await expect(page.getByText("Variable-Range Targeting").first()).toBeVisible();
+    // Placed in the head (its one allowed location): the record sheet's critical table shows it.
+    await page.goto("classic-battletech/mech-creator/summary");
+    await expect(page.locator("svg").getByText(/Variable-Range Targeting/).first()).toBeAttached();
+    expect(errors).toEqual([]);
+});
+
 // A field the edition's rulebook does not have is not shown: Battledroids has one engine, one gyro, one armor, no
 // eras and no OmniMechs. Total Warfare keeps them all.
 test("Battledroids hides the fields its rulebook does not have", async ({ page }) => {

@@ -22,6 +22,8 @@ export type VariableEquipmentFormula =
     | "claw"
     | "talons"
     | "spikes"
+    | "variable-range-targeting"
+    | "multi-trac-ii"
     | "masc-is"
     | "masc-clan"
     | "supercharger"
@@ -190,6 +192,11 @@ export function sizeVariableEquipment(
         // TO:AUE p.103: 0.5 t, 1 slot per location, 50 C-bills per unit ton.
         case "spikes":
             return { weight: 0.5, slots: 1, cbills: Math.ceil(t * 50), battleValue: 4 };
+        // Maximum Tech p.59: 0.5 t, 1 head slot. p.87: Sensors cost tonnage x 10,000 (VRTS) or x 5,000 (Multi-Trac II)
+        // instead of x 2,000, so the system carries the difference.
+        case "variable-range-targeting":
+        case "multi-trac-ii":
+            return { weight: 0.5, slots: 1, cbills: t * (formula === "variable-range-targeting" ? 8000 : 3000), battleValue: 0 };
         // TM p.225: tonnage / 20 (IS) or / 25 (Clan), nearest whole ton, minimum 1; cost rating x tons x 1,000.
         case "masc-is":
         case "masc-clan": {

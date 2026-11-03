@@ -944,24 +944,41 @@ export function getTargetToHitFromWeapon(
                 gator.otherModifiers += heatModifier;
                 otherModifiersExplanation.push( "Heat (+" + heatModifier + ")" );
             }
+            // A targeting and tracking system: anti-aircraft, or Multi-Trac in place of the secondary-target modifier
+            // (Maximum Tech p.59).
+            const system = mech.getTargetingSystem();
+            const systemModifier = ( modifier: number, label: string ) => {
+                gator.finalToHit += modifier;
+                gator.otherModifiers += modifier;
+                otherModifiersExplanation.push( label + " (" + (modifier > 0 ? "+" : "") + modifier + ")" );
+            };
+            if( system?.targetingSystem?.airborne ) {
+                systemModifier( system.targetingSystem.airborne[target.airborne ? 0 : 1], system.name );
+            }
+            const offFrontArc = system?.targetingSystem?.offFrontArc;
+            if( offFrontArc !== undefined ) {
+                if( target.inRearArc && offFrontArc ) systemModifier( offFrontArc, system!.name + ", Target Outside The Front Arc" );
             // Battledroids has no modifier for a second target (BD pp.8-11, 15).
-            if( !target.primary && mech.getEditionPlayRules()?.secondaryTargetModifiers !== false ) {
+            } else if( !target.primary && mech.getEditionPlayRules()?.secondaryTargetModifiers !== false ) {
                 if( target.inRearArc ) {
                     otherModifiersExplanation.push( "Secondary Target In Rear Arc (+2)");
                     gator.otherModifiers += 2;
                     gator.finalToHit += 2;
                 } else {
-                    otherModifiersExplanation.push( "Secondary Target In Rear Arc (+1)");
+                    otherModifiersExplanation.push( "Secondary Target In Front Arc (+1)");
                     gator.otherModifiers += 1;
                     gator.finalToHit += 1;
                 }
             }
             gator.otherModifiersExplanation = otherModifiersExplanation.join(", ");
 
+            const [shortModifier, mediumModifier, longModifier] = system?.targetingSystem?.ranges ?? [0, 2, 4];
             if(
                 target.range <= weaponRange.short
             ) {
                 gator.rangeExplanation = "Short";
+                gator.finalToHit += shortModifier;
+                gator.rangeModifier = shortModifier;
 
                 if(
                     weaponRange.min
@@ -975,19 +992,19 @@ export function getTargetToHitFromWeapon(
                     if( target.range <= minRange ) {
                         const rangeModifier = minRange - target.range + 1;
                         gator.finalToHit += rangeModifier;
-                        gator.rangeModifier = rangeModifier;
+                        gator.rangeModifier += rangeModifier;
                         gator.rangeExplanation = "Minimum Range";
                     }
                 }
             } else if(
                 target.range <= weaponRange.medium
             ) {
-                gator.finalToHit += 2;
-                gator.rangeModifier = 2;
+                gator.finalToHit += mediumModifier;
+                gator.rangeModifier = mediumModifier;
                 gator.rangeExplanation = "Medium";
             } else if( target.range <= weaponRange.long ) {
-                gator.finalToHit += 4;
-                gator.rangeModifier = 4;
+                gator.finalToHit += longModifier;
+                gator.rangeModifier = longModifier;
                 gator.rangeExplanation = "Long";
             } else {
                 gator.finalToHit = -1;

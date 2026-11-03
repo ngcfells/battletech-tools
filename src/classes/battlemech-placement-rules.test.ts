@@ -218,6 +218,20 @@ describe("systems that exclude or need each other (TO:AUE pp.91, 112, 148, 161; 
         expect(violations(mech).join(" ")).toMatch(/Void Signature System cannot be combined with .*Null Signature System/);
     });
 
+    // Maximum Tech p.58: one targeting and tracking system to a 'Mech, and a targeting or C3 computer counts as one.
+    it("flags two targeting systems, or one with a targeting computer (Max Tech p.58)", () => {
+        const mech = build();
+        add(mech, "targeting-long-range");
+        expect(violations(mech)).toEqual([]);
+        add(mech, "targeting-anti-aircraft");
+        expect(violations(mech).join(" ")).toMatch(/Anti-Aircraft Targeting \/ Long-Range Targeting: 2 mounted; at most 1 allowed/);
+        const computer = build(undefined, "is", 50);
+        add(computer, "targeting-multi-trac");
+        add(computer, "targeting-computer");
+        add(computer, "c3-computer-slave");
+        expect(violations(computer)).toContain("Multi-Trac Targeting cannot be combined with Targeting Computer, C3 Computer (Slave) (Maximum Tech p.58).");
+    });
+
     it("has the Void-Signature System and Stealth Armor need an ECM suite", () => {
         const mech = build();
         add(mech, "void-signature-system");

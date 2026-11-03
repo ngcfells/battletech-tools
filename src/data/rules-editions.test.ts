@@ -164,7 +164,9 @@ describe("Rules editions", () => {
             if (record.editionStats[ordered[0]] === null) problems.push(`${label}: the first edition cannot be null`);
             for (const tag of ordered) {
                 const stats = record.editionStats[tag];
-                if (stats && stats.book !== books[tag]) problems.push(`${label}: ${tag} cites ${stats.book}`);
+                // Maximum Tech prints the Revised Edition's Level 3 rules.
+                const levelThree = tag === "master-rules-revised" && stats?.book === "MaxTech" && record.editionLevels?.[tag] === 3;
+                if (stats && stats.book !== books[tag] && !levelThree) problems.push(`${label}: ${tag} cites ${stats.book}`);
             }
         }
         expect(problems).toEqual([]);
@@ -1387,11 +1389,14 @@ describe("Rules editions: Master Rules, Revised Edition, complete", () => {
         stats.weight, stats.criticals, stats.shotsPerTon, stats.cbills];
     const row = (tag: string) => figures(find(tag).editionStats![TAG]!);
 
-    // The Revised Edition reprints the Master Rules and adds to it: nothing is dropped.
-    it("includes every Master Rules record and forty-five new ones", () => {
+    // The Revised Edition reprints the Master Rules and adds to it: nothing is dropped. Maximum Tech's Level 3
+    // records (six targeting and tracking systems so far, p.59) join it too.
+    it("includes every Master Rules record and forty-five new ones, plus Maximum Tech's", () => {
         const added = labelled.filter(entry => entry.record.introducedInEdition === TAG).map(entry => entry.label);
         expect(inEdition(TAG)).toEqual([...inEdition(BEFORE), ...added].sort());
-        expect(added).toHaveLength(45);
+        const maxTech = labelled.filter(({ record }) => record.editionStats?.[TAG]?.book === "MaxTech").map(entry => entry.label);
+        expect(maxTech).toHaveLength(6);
+        expect(added.filter(label => !maxTech.includes(label))).toHaveLength(45);
         expect(added).toEqual(expect.arrayContaining(["equipment gauss-rifle-heavy", "equipment rotary-ac-2", "equipment inarc",
             "equipment rocket-launcher-20", "equipment c3i-computer", "equipment targeting-computer", "equipment atm-12",
             "equipment ammo-is-ac-20-precision", "equipment ammo-is-lrm-thunder-active", "equipment ammo-is-arrow-iv-inferno",
@@ -1411,7 +1416,9 @@ describe("Rules editions: Master Rules, Revised Edition, complete", () => {
             return old && current && JSON.stringify(figures(old)) !== JSON.stringify(figures(current));
         }).map(entry => entry.label);
         expect(changed).toEqual(["equipment ammo-clan-arrow-iv-fascam"]);
-        const cited = labelled.filter(({ record }) => record.editionStats?.[TAG]).map(({ record }) => record.editionStats![TAG]!);
+        // Maximum Tech's Level 3 records cite their own book.
+        const cited = labelled.filter(({ record }) => record.editionStats?.[TAG]).map(({ record }) => record.editionStats![TAG]!)
+            .filter(stats => stats.book !== "MaxTech");
         expect(cited.every(stats => stats.book === "BMR(R)")).toBe(true);
         expect(cited.filter(stats => /BMR p/.test(stats.notes ?? ""))).toEqual([]);
     });

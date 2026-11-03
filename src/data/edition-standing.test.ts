@@ -135,6 +135,23 @@ describe("equipment edition standing", () => {
         expect(flare.apocryphalIn!["total-warfare"].source).toBe("TM errata v4.1 p.18");
     });
 
+    // Maximum Tech p.59: six targeting and tracking systems, Level 3 of BMR(R); VRTS and Multi-Trac II weigh half a
+    // ton in 1 head slot, the rest nothing. Total Warfare-era rules print none of them.
+    it("offers VRTS and Multi-Trac II under BMR(R) Advanced only, head only", () => {
+        const all = getEquipmentCatalogDefinitions().flatMap((definition) => definition.equipment);
+        for (const kind of ["long-range", "short-range", "variable-range", "anti-aircraft", "multi-trac", "multi-trac-ii"]) {
+            const item = all.find((entry) => entry.tag === `targeting-${kind}`)!;
+            const headed = kind === "variable-range" || kind === "multi-trac-ii";
+            expect([item?.weight, item?.space.battlemech, item?.allowedLocations, item?.editionStats?.["master-rules-revised"]?.page], kind)
+                .toEqual(headed ? [0.5, 1, ["hd"], 59] : [0, 0, undefined, 59]);
+            expect(getEquipmentOfferIssue(item, "master-rules-revised", 2), kind).toBe("level");
+            expect(getEquipmentOfferIssue(item, "master-rules-revised", 3), kind).toBeNull();
+            expect(getEquipmentOfferIssue(item, "master-rules", 5), kind).toBe("edition");
+            expect(getEquipmentOfferIssue(item, "total-warfare", 4), kind).toBe("edition");
+            expect(getEquipmentOfferIssue(item, "total-warfare", 5), kind).toBeNull();
+        }
+    });
+
     // Level 1 / Introductory is the technology of 3025 (BMR p.6, BMR(R) p.6; How the Core Rulebooks Work p.2).
     it("Level 1 and Introductory offer only 3025 technology", () => {
         const find = (tag: string) => getEquipmentCatalogDefinitions().flatMap((definition) => definition.equipment).find((item) => item.tag === tag)!;
