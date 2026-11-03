@@ -167,7 +167,7 @@ export default class Home extends React.Component<IHomeProps, IHomeState> {
                   <ul className="news">
                   <li>
                   <h3>
-                      <strong>November 2nd, 2026</strong> - Ammunition explosions by edition, Aces fixes, and equipment from the Solaris7 forum
+                      <strong>November 2nd, 2026</strong> - Ammunition explosions by edition, Aces fixes, equipment from the Solaris7 forum, and 22 more bundled 'Mechs
                     </h3>
                     <h4>Author - NGCFells</h4>
                       <ul>
@@ -176,6 +176,9 @@ export default class Home extends React.Component<IHomeProps, IHomeState> {
                         <li>Aces: the Initiative roller adds the Command card's Initiative order; printed cards put Support orders on their own line above the Emplacements columns; on phones, icon links wrap and tracker tables scroll sideways.</li>
                         <li>New custom equipment from the Solaris7 forum, each record naming its author and thread, with anything the posts didn't give taken from the nearest canon item. At Custom Homebrew: Captain's Inner Sphere Heavy Laser, the Light Autocannon/10 and /20, the ER Improved Narc Launcher, the Inner Sphere Light Chemical Laser, the Rotary Small Chemical Laser, Small and Medium Laser Arrays, the 'Mech Periscope, Chaff Pod 2.0 and the Modular C3 (sized by how many units it links).</li>
                         <li>At Munchkin, for games that want them: Nightstalker666's and Captain's railguns (Captain's takes one whole side of a 'Mech, side torso and arm), nanotube armor, and Prince's Nuclear Pulse Cannon. Thanks to Captain, Nightstalker666, Prince, Thunder, Lycaon and the late Lonely Coyote.</li>
+                        <li>22 more bundled 'Mechs from MegaMek's files, including all 13 QuadVees (Arion, Boreas, Cyllaros, Harpagos and Notos), FrankenMechs, and designs with prototype heat sinks, jump jets, endo steel and ferro-fibrous, Interface Cockpits, Robotic Cockpits, Large XXL engines and patchwork armor.</li>
+                        <li>New in the 'Mech creator: the Interface Cockpit with No Gyro, the Smart Robotic Control System, prototype double heat sinks and prototype endo steel structure.</li>
+                        <li>QuadVees can now use any armor and internal structure a quad can, and their tracks or wheels are now included in weight and cost.</li>
                         <li>The weekly Master Unit List update.</li>
                       </ul>
                   </li>
