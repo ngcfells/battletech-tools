@@ -704,8 +704,8 @@ export default class InfantryPlatoon implements IGameSettingsUnit {
      * An edition with no table gives 1.
      */
     public getSkillMultiplier(edition?: string): number {
-        // A platoon that cannot make Anti-'Mech attacks adjusts Gunnery only, as mechanized infantry do.
-        return getSkillMultiplier(this._gunnery, this.getAntiMechSkill(), this.canMakeAntiMechAttacks() ? "infantry" : "mechanized-infantry", edition) ?? 1;
+        // Any other platoon without usable kits reads Anti-'Mech 8, "which cannot be improved" (BV v4.1 p.23, #609).
+        return getSkillMultiplier(this._gunnery, this.getAntiMechSkill(), this.isMechanized() ? "mechanized-infantry" : "infantry", edition) ?? 1;
     }
     public getSkillAdjustedBattleValue(edition?: string): number { return roundNormally(this.getBattleValue(edition) * this.getSkillMultiplier(edition)); }
 

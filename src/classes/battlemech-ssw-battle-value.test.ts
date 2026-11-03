@@ -19,8 +19,9 @@ describe("SSW Battle Value (#46)", () => {
         expect(mech.getBattleValue()).toBe(817);
     });
 
-    it("counts no explosive slot for the B-Pod: Bloodhound B3-HND", () => {
-        expect(importFixture("bloodhound-b3-hnd").getBattleValue()).toBe(1006);
+    it("treats the B-Pod as a Gauss weapon for defensive BV, as the MUL does: Bloodhound B3-HND", () => {
+        // TM errata v8.0 item 8 (#608): -1 for each unprotected B-Pod slot.
+        expect(importFixture("bloodhound-b3-hnd").getBattleValue()).toBe(1005);
     });
 
     it("reads MASC from SSW's enhancement, and Hardened Armor costs 1 Running MP: Amarok 2", () => {

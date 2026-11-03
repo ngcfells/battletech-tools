@@ -739,9 +739,10 @@ export const btRulesExpansions: IRulesExpansion[] = [
     { tag: "clantroops", name: "ClanTroops", year: 1991, month: 12, book: "CTr", unitTypes: ["battle-armor"] },
     // CityTech, Second Edition (FASA 1608R): "Copyright © 1994".
     { tag: "citytech-2nd-edition", name: "CityTech, Second Edition", year: 1994, month: 12, book: "CT2", unitTypes: ["vehicle", "infantry", "building"] },
-    // AeroTech 2 (FASA 1718): "Copyright © 2000". Aerospace and conventional fighters, Small Craft, DropShips.
-    { tag: "aerotech-2", name: "AeroTech 2", year: 2000, book: "AT2", unitTypes: ["fighter", "small-craft"] },
-    // AeroTech 2, Revised Edition (FanPro 35011): "© 2004 WizKids". Adds JumpShips and WarShips.
+    // AeroTech 2 (FASA 1718): "Copyright © 2000". Aerospace and conventional fighters, Small Craft, DropShips,
+    // JumpShips and WarShips (contents; BV p.53).
+    { tag: "aerotech-2", name: "AeroTech 2", year: 2000, book: "AT2", unitTypes: ["fighter", "small-craft", "capital-ship"] },
+    // AeroTech 2, Revised Edition (FanPro 35011): "© 2004 WizKids". The same unit types as AT2, revised.
     { tag: "aerotech-2-revised", name: "AeroTech 2, Revised Edition", year: 2004, book: "AT2R", unitTypes: ["fighter", "small-craft", "capital-ship"] },
 ];
 

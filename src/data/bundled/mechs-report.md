@@ -1,12 +1,12 @@
 # Bundled 'Mechs: build report
 
-3673 designs kept (38 renamed), 4051 files left out.
+3686 designs kept (38 renamed), 4038 files left out.
 
 | Reason | Files |
 |---|---|
-| duplicate of a design already kept | 3179 |
-| BV differs from the MUL | 224 |
-| different submodel, same name and model: equipment | 165 |
+| duplicate of a design already kept | 3188 |
+| BV differs from the MUL | 200 |
+| different submodel, same name and model: equipment | 166 |
 | different submodel, same name and model: ammo type | 112 |
 | the import could not carry all of it over | 93 |
 | different submodel, same name and model: actuators | 87 |
@@ -17,8 +17,8 @@
 | duplicate of a design already kept, differs only in engine heat sinks in crit slots | 6 |
 | does not survive the compact format | 6 |
 | different submodel, same name and model: heat sinks placed | 6 |
+| BV differs from the file (no MUL entry) | 2 |
 | different submodel, same name and model: heat sinks | 2 |
-| BV differs from the file (no MUL entry) | 1 |
 | BV differs from the MUL in every configuration | 1 |
 | duplicate of a design already kept, differs only in CASE placed | 1 |
 | different submodel, same name and model: CASE | 1 |
@@ -33,7 +33,6 @@
 - `Clan/Omni/Fenris (Ice Ferret).ssw`: import errors: I: 'M-Pod' is Inner Sphere equipment (M-Pod) on a Clan design; the design needs Mixed Tech; I: 'M-Pod' is Inner Sphere equipment (M-Pod) on a Clan design; the design needs Mixed Tech; I: 'Bloodhound Active Probe' is Inner Sphere equipment (Bloodhound Active Probe) on a Clan design; the design needs Mixed Tech
 - `Clan/Omni/Fire Moth (Dasher).ssw`: import errors: R: 'M-Pod' is Inner Sphere equipment (M-Pod) on a Clan design; the design needs Mixed Tech; R: 'C3 Computer (Slave)' is Inner Sphere equipment (C3 Computer (Slave)) on a Clan design; the design needs Mixed Tech
 - `Clan/Omni/Gargoyle (Man O War).ssw`: import errors: K: 'Hatchet' is Inner Sphere equipment (Hatchet) on a Clan design; the design needs Mixed Tech
-- `Clan/Omni/Hellbringer (Loki).ssw`: configuration BV differs from the MUL: D: BV 2145, MUL 2140
 - `Clan/Omni/Hellbringer (Loki).ssw`: configuration BV differs from the MUL: G: BV 1956, MUL 1943
 - `Clan/Omni/Huntsman (Nobori-nin).ssw`: import errors: F: 'Radical Heat Sink' is Inner Sphere equipment (Radical Heat Sink System) on a Clan design; the design needs Mixed Tech; G: 'Retractable Blade' is Inner Sphere equipment (Retractable Blade) on a Clan design; the design needs Mixed Tech
 - `Clan/Omni/Ice Ferret (Fenris).ssw`: import errors: I: 'M-Pod' is Inner Sphere equipment (M-Pod) on a Clan design; the design needs Mixed Tech; I: 'M-Pod' is Inner Sphere equipment (M-Pod) on a Clan design; the design needs Mixed Tech; I: 'Bloodhound Active Probe' is Inner Sphere equipment (Bloodhound Active Probe) on a Clan design; the design needs Mixed Tech
@@ -53,7 +52,7 @@
 - `Golden Century/Devastator DVS-2-EC.ssw`: BV differs from the MUL: DVS-2-EC: BV 2844, MUL 2859
 - `Golden Century/Emperor EMP-6A-EC.ssw`: BV differs from the MUL: EMP-6A-EC: BV 2210, MUL 2165
 - `Golden Century/Excalibur EXC-B2b-EC.ssw`: BV differs from the MUL: EXC-B2b-EC: BV 2001, MUL 2008
-- `Golden Century/Minsk 2.ssw`: BV differs from the MUL: 2: BV 2364, MUL 2363
+- `Golden Century/Minsk 2.ssw`: BV differs from the MUL: 2: BV 2361, MUL 2363
 - `Golden Century/Starslayer STY-2C-EC.ssw`: BV differs from the MUL: STY-2C-EC: BV 1419, MUL 1407
 - `Golden Century/Vision Quest VQ-1NC.ssw`: BV differs from the MUL: VQ-1NC: BV 2401, MUL 2180
 - `MWDA/Firestarter FS9-M3.ssw`: BV differs from the MUL: FS9-M3: BV 827, MUL 866
@@ -63,7 +62,6 @@
 - `Misc/Pulverizer PUL-2V.ssw`: import errors: '(IS) Enhanced ER PPC' is Clan equipment (Enhanced PPC) on an Inner Sphere design; the design needs Mixed Tech
 - `Misc/Revenant UBM-1A.ssw`: BV differs from the MUL: UBM-1A: BV 702, MUL 784
 - `Misc/Stag II STG-24G.ssw`: import errors: '(IS) Enhanced ER PPC' is Clan equipment (Enhanced PPC) on an Inner Sphere design; the design needs Mixed Tech
-- `Misc/Vanquisher VQR-5V.ssw`: BV differs from the MUL: VQR-5V: BV 2334, MUL 2332
 - `Omnis/Alpha Wolf.ssw`: import errors: B: Cannot find any equipment named: 'Ammo (SRM-6 (Artemis V))'; B: Cannot find any equipment named: 'Ammo (SRM-6 (Artemis V))'
 - `Omnis/Arctic Fox AF1.ssw`: configuration BV differs from the MUL: U: BV 787, file 821
 - `Omnis/Arctic Wolf.ssw`: BV differs from the MUL: : BV 1641, MUL 1330
@@ -102,13 +100,13 @@
 - `Omnis/Karhu.ssw`: import errors: 'Retractable Blade' is Inner Sphere equipment (Retractable Blade) on a Clan design; the design needs Mixed Tech; C: 'Retractable Blade' is Inner Sphere equipment (Retractable Blade) on a Clan design; the design needs Mixed Tech; (Syngman): 'Guardian ECM Suite' is Inner Sphere equipment (ECM Suite) on a Clan design; the design needs Mixed Tech; (Syngman): 'Beagle Active Probe' is Inner Sphere equipment (Beagle Active Probe) on a Clan design; the design needs Mixed Tech; (Syngman): 'C3 Computer (Slave)' is Inner Sphere equipment (C3 Computer (Slave)) on a Clan design; the design needs Mixed Tech; (Syngman): 'Retractable Blade' is Inner Sphere equipment (Retractable Blade) on a Clan design; the design needs Mixed Tech
 - `Omnis/Koshi (Mist Lynx).ssw`: BV differs from the MUL: : BV 871, MUL 760
 - `Omnis/Linebacker.ssw`: import errors: F: '(CL) Narc Missile Beacon (iOS)' is Inner Sphere equipment (Narc Missile Beacon (I-OS)) on a Clan design; the design needs Mixed Tech; F: Unallocated Criticals: 1; F: - Narc Missile Beacon (I-OS) (narc-ios)
-- `Omnis/Loki (Hellbringer).ssw`: configuration BV differs from the MUL: D: BV 2145, MUL 2140
 - `Omnis/Loki (Hellbringer).ssw`: configuration BV differs from the MUL: G: BV 1956, MUL 1943
 - `Omnis/Loki (Hellbringer).ssw`: duplicate of a design already kept: Hellbringer (Loki)  Prime
 - `Omnis/Loki Mk II (Hellbringer Mk II).ssw`: duplicate of a design already kept: Hellbringer Mk II (Loki Mk II)  Prime
 - `Omnis/Mad Cat (Timber Wolf).ssw`: configuration BV differs from the MUL: U: BV 2508, MUL 2627
 - `Omnis/Mad Cat (Timber Wolf).ssw`: duplicate of a design already kept: Timber Wolf (Mad Cat)  Prime
 - `Omnis/Mad Cat Mk IV.ssw`: configuration BV differs from the MUL: Prime: BV 2681, MUL 2781
+- `Omnis/Malak C-MK-O.ssw`: configuration BV differs from the MUL: Comminus (C): BV 944, file 945
 - `Omnis/Man O War (Gargoyle).ssw`: import errors: K: 'Hatchet' is Inner Sphere equipment (Hatchet) on a Clan design; the design needs Mixed Tech
 - `Omnis/Masakari (Warhawk).ssw`: duplicate of a design already kept: Warhawk (Masakari)  Prime
 - `Omnis/Men Shen MS1-O.ssw`: configuration BV differs from the MUL: U: BV 1635, file 1725
@@ -129,6 +127,7 @@
 - `Omnis/Star Adder (Blood Asp).ssw`: configuration BV differs from the MUL: I: BV 2252, MUL 2242
 - `Omnis/Star Adder (Blood Asp).ssw`: duplicate of a design already kept: Blood Asp (Star Adder)  Prime
 - `Omnis/Stooping Hawk.ssw`: configuration BV differs from the MUL: F: BV 1974, MUL 1988
+- `Omnis/Sunder SD1-O.ssw`: configuration BV differs from the MUL: X: BV 1761, file 1763
 - `Omnis/Tenshi TN-10-O.ssw`: configuration BV differs from the MUL: R: BV 2237, file 2183
 - `Omnis/Thor (Summoner).ssw`: duplicate of a design already kept: Summoner (Thor)  Prime
 - `Omnis/Thor II (Grand Summoner).ssw`: duplicate of a design already kept: Grand Summoner (Thor II)  Prime
@@ -195,11 +194,8 @@
 - `RS 3055U/Vixen (Incubus) 4.ssw`: duplicate of a design already kept: Incubus (Vixen) 4
 - `RS 3055U/Vixen (Incubus) 5.ssw`: duplicate of a design already kept: Incubus (Vixen) 5
 - `RS 3055U/Vixen (Incubus).ssw`: duplicate of a design already kept: Incubus (Vixen) 
-- `RS 3060u/Shugenja SJA-8H.ssw`: BV differs from the MUL: SJA-8H: BV 1692, MUL 1691
-- `RS 3067/Bloodhound B3-HND.ssw`: BV differs from the MUL: B3-HND: BV 1006, MUL 1005
-- `RS 3067/Bowman 3.ssw`: BV differs from the MUL: 3: BV 2770, MUL 2767
 - `RS 3067/No-Dachi NDA-2KO.ssw`: BV differs from the MUL: NDA-2KO: BV 1759, MUL 1728
-- `RS 3067/Vanquisher VQR-5V.ssw`: BV differs from the MUL: VQR-5V: BV 2334, MUL 2332
+- `RS 3067/Vanquisher VQR-5V.ssw`: duplicate of a design already kept: Vanquisher VQR-5V
 - `RS 3075u/AoW/Gladiator GLD-1R (Keller).ssw`: BV differs from the MUL: GLD-1R (Keller): BV 1553, MUL 1517
 - `RS 3075u/AoW/Lumberjack LoggerMech LM4C.ssw`: BV differs from the MUL: LM4/C: BV 316, MUL 291
 - `RS 3075u/AoW/Phoenix PX-1R.ssw`: BV differs from the MUL: PX-1R: BV 900, MUL 917
@@ -213,22 +209,18 @@
 - `RS 3085/ONN/Charger CGR-3Kr.ssw`: BV differs from the MUL: CGR-3Kr: BV 2121, MUL 2092
 - `RS 3085/PP/Archer ARC-5R.ssw`: BV differs from the MUL: ARC-5R: BV 1672, MUL 1674
 - `RS 3085/PP/Archer C.ssw`: BV differs from the MUL: C: BV 1721, MUL 1811
-- `RS 3085/PP/Battlemaster BLR-10S.ssw`: BV differs from the MUL: BLR-10S: BV 1930, MUL 1927
-- `RS 3085/PP/Battlemaster BLR-10S2.ssw`: BV differs from the MUL: BLR-10S2: BV 1930, MUL 1927
 - `RS 3085/PP/Goliath GOL-3S.ssw`: BV differs from the MUL: GOL-3S: BV 1828, MUL 1792
 - `RS 3085/PP/Goliath GOL-4S.ssw`: BV differs from the MUL: GOL-4S: BV 1923, MUL 1912
-- `RS 3085/PP/Goliath GOL-6H.ssw`: BV differs from the MUL: GOL-6H: BV 1681, MUL 1676
-- `RS 3085/PP/Longbow LGB-13NAIS.ssw`: BV differs from the MUL: LGB-13NAIS: BV 1806, MUL 1804
 - `RS 3085/PP/Shadow Hawk C.ssw`: BV differs from the MUL: C: BV 1260, MUL 1309
+- `RS 3085/PP/Thunderbolt TDR-9Nr.ssw`: BV differs from the MUL: TDR-9Nr: BV 1632, MUL 1635
 - `RS 3085/PP/Valkyrie VLK-QW5.ssw`: BV differs from the MUL: VLK-QW5: BV 689, MUL 701
 - `RS 3085/PP/Warhammer C.ssw`: BV differs from the MUL: C: BV 1668, MUL 1728
 - `RS 3085/PP/Wasp WSP-3L.ssw`: BV differs from the MUL: WSP-3L: BV 593, MUL 534
-- `RS 3085/PP/Wolverine WVR-9K.ssw`: BV differs from the MUL: WVR-9K: BV 1420, MUL 1419
-- `RS 3085/Pack Hunter II.ssw`: BV differs from the MUL: : BV 1797, MUL 1794
 - `RS 3090/Deep Lord RCL-Z1M MilitiaMech.ssw`: BV differs from the MUL: RCL-Z1M MilitiaMech: BV 713, MUL 715
 - `RS 3090/Trebuchet TBT-K7R.ssw`: BV differs from the MUL: TBT-K7R: BV 1415, MUL 1408
-- `RS 3145/Draconis Combine/Dragon II DRG-11R.ssw`: BV differs from the MUL: DRG-11R: BV 2302, MUL 2300
 - `RS 3145/Federated Suns/Antlion LK-3D.ssw`: BV differs from the MUL: LK-3D: BV 854, MUL 859
+- `RS 3145/Federated Suns/Scarecrow UCU-F4.ssw`: BV differs from the MUL: UCU-F4: BV 1472, MUL 1475
+- `RS 3145/Federated Suns/Scarecrow UCU-F4r Hobbled Scarecrow.ssw`: BV differs from the file (no MUL entry): BV 1431, file 1433
 - `RS 3145/Free Worlds League/Anzu ZU-G60.ssw`: BV differs from the MUL: ZU-G60: BV 1503, MUL 1486
 - `RS 3145/Free Worlds League/Neanderthal NTL-AG.ssw`: BV differs from the MUL: NTL-AG: BV 2020, MUL 2024
 - `RS 3145/Lyran Commonwealth/Firestarter FS9-M2.ssw`: duplicate of a design already kept: Firestarter FS9-M2
@@ -303,7 +295,6 @@
 - `Recognition Guide/Vol 19/Rime Otter.ssw`: import errors: C: 'Hatchet' is Inner Sphere equipment (Hatchet) on a Clan design; the design needs Mixed Tech
 - `Recognition Guide/Vol 19/Scorpion SCP-10.ssw`: duplicate of a design already kept: Scorpion SCP-1O
 - `Recognition Guide/Vol 19/Scorpion SCP-1TB.ssw`: duplicate of a design already kept: Scorpion SCP-1TB
-- `Recognition Guide/Vol 1/Goliath C.ssw`: BV differs from the MUL: C: BV 2227, MUL 2222
 - `Recognition Guide/Vol 1/Griffin GRF-1DS.ssw`: duplicate of a design already kept: Griffin GRF-1DS
 - `Recognition Guide/Vol 1/Griffin GRF-3M.ssw`: duplicate of a design already kept: Griffin GRF-3M
 - `Recognition Guide/Vol 20/Mastodon.ssw`: duplicate of a design already kept: Mastodon  Prime
@@ -793,7 +784,6 @@
 - `megamek/3050U/Daishi (Dire Wolf) W.mtf`: duplicate of a design already kept: Dire Wolf (Daishi)  W
 - `megamek/3050U/Daishi (Dire Wolf) Widowmaker.mtf`: duplicate of a design already kept: Dire Wolf (Daishi)  'Widowmaker'
 - `megamek/3050U/Dasher (Fire Moth) B.mtf`: does not survive the compact format
-- `megamek/3050U/Dasher (Fire Moth) K.mtf`: BV differs from the MUL: K: BV 887, MUL 884
 - `megamek/3050U/Dasher (Fire Moth) Prime.mtf`: BV differs from the MUL: Prime: BV 1245, MUL 1251
 - `megamek/3050U/Dervish DV-7D.mtf`: duplicate of a design already kept: Dervish DV-7D
 - `megamek/3050U/Dervish DV-8D.mtf`: duplicate of a design already kept: Dervish DV-8D
@@ -970,7 +960,7 @@
 - `megamek/3050U/Loki (Hellbringer) A.mtf`: duplicate of a design already kept: Hellbringer (Loki)  A
 - `megamek/3050U/Loki (Hellbringer) B.mtf`: duplicate of a design already kept: Hellbringer (Loki)  B
 - `megamek/3050U/Loki (Hellbringer) C.mtf`: duplicate of a design already kept: Hellbringer (Loki)  C
-- `megamek/3050U/Loki (Hellbringer) D.mtf`: BV differs from the MUL: D: BV 2145, MUL 2140
+- `megamek/3050U/Loki (Hellbringer) D.mtf`: duplicate of a design already kept: Hellbringer (Loki)  D
 - `megamek/3050U/Loki (Hellbringer) E.mtf`: duplicate of a design already kept: Hellbringer (Loki)  E
 - `megamek/3050U/Loki (Hellbringer) F.mtf`: duplicate of a design already kept: Hellbringer (Loki)  F
 - `megamek/3050U/Loki (Hellbringer) H.mtf`: different submodel, same name and model: equipment: Hellbringer (Loki)  H
@@ -1563,7 +1553,6 @@
 - `megamek/3058Uu/Sunder SD1-O.mtf`: duplicate of a design already kept: Sunder SD1-O
 - `megamek/3058Uu/Sunder SD1-OB.mtf`: BV differs from the MUL: SD1-OB: BV 1557, MUL 1597
 - `megamek/3058Uu/Sunder SD1-OC.mtf`: BV differs from the MUL: SD1-OC: BV 1711, MUL 1735
-- `megamek/3058Uu/Sunder SD1-OX.mtf`: BV differs from the MUL: SD1-OX: BV 1763, MUL 1761
 - `megamek/3058Uu/Supernova 2.mtf`: duplicate of a design already kept: Supernova 2
 - `megamek/3058Uu/Supernova 3.mtf`: duplicate of a design already kept: Supernova 3
 - `megamek/3058Uu/Supernova 4.mtf`: duplicate of a design already kept: Supernova 4
@@ -1682,7 +1671,7 @@
 - `megamek/3060u/Sentry SNT-04.mtf`: duplicate of a design already kept: Sentry SNT-04
 - `megamek/3060u/Sentry SNT-W5.mtf`: duplicate of a design already kept: Sentry SNT-W5
 - `megamek/3060u/Shugenja SJA-7D.mtf`: duplicate of a design already kept: Shugenja SJA-7D
-- `megamek/3060u/Shugenja SJA-8H.mtf`: BV differs from the MUL: SJA-8H: BV 1692, MUL 1691
+- `megamek/3060u/Shugenja SJA-8H.mtf`: duplicate of a design already kept: Shugenja SJA-8H
 - `megamek/3060u/Sirocco SRC-3C.mtf`: different submodel, same name and model: equipment: Sirocco SRC-3C
 - `megamek/3060u/Sirocco SRC-5C.mtf`: different submodel, same name and model: equipment: Sirocco SRC-5C
 - `megamek/3060u/Sirocco SRC-6C.mtf`: different submodel, same name and model: equipment: Sirocco SRC-6C
@@ -1734,7 +1723,7 @@
 - `megamek/3060u/Yu Huang Y-H9GC.mtf`: duplicate of a design already kept: Yu Huang Y-H9GC
 - `megamek/3067 Unabridged/Clan Meks/Arcas 3.mtf`: duplicate of a design already kept: Arcas 3
 - `megamek/3067 Unabridged/Clan Meks/Bowman 2.mtf`: different submodel, same name and model: equipment: Bowman 2
-- `megamek/3067 Unabridged/Clan Meks/Bowman 3.mtf`: BV differs from the MUL: 3: BV 2770, MUL 2767
+- `megamek/3067 Unabridged/Clan Meks/Bowman 3.mtf`: duplicate of a design already kept: Bowman 3
 - `megamek/3067 Unabridged/Clan Meks/Bowman 4.mtf`: different submodel, same name and model: equipment: Bowman 4
 - `megamek/3067 Unabridged/Clan Meks/Bowman.mtf`: different submodel, same name and model: equipment: Bowman 
 - `megamek/3067 Unabridged/Clan Meks/Burrock 2.mtf`: duplicate of a design already kept: Burrock 2
@@ -1757,7 +1746,7 @@
 - `megamek/3067 Unabridged/IS Meks/Anubis ABS-4C.mtf`: duplicate of a design already kept: Anubis ABS-4C
 - `megamek/3067 Unabridged/IS Meks/Argus AGS-5D.mtf`: duplicate of a design already kept: Argus AGS-5D
 - `megamek/3067 Unabridged/IS Meks/Argus AGS-6F.mtf`: duplicate of a design already kept: Argus AGS-6F
-- `megamek/3067 Unabridged/IS Meks/Bloodhound B3-HND.mtf`: BV differs from the MUL: B3-HND: BV 1006, MUL 1005
+- `megamek/3067 Unabridged/IS Meks/Bloodhound B3-HND.mtf`: duplicate of a design already kept: Bloodhound B3-HND
 - `megamek/3067 Unabridged/IS Meks/Blue Flame BLF-40.mtf`: duplicate of a design already kept: Blue Flame BLF-40
 - `megamek/3067 Unabridged/IS Meks/Brigand LDT-X3.mtf`: duplicate of a design already kept: Brigand LDT-X3
 - `megamek/3067 Unabridged/IS Meks/Brigand LDT-X4.mtf`: duplicate of a design already kept: Brigand LDT-X4
@@ -1789,7 +1778,7 @@
 - `megamek/3067 Unabridged/IS Meks/Thanatos THS-4T.mtf`: duplicate of a design already kept: Thanatos TNS-4T
 - `megamek/3067 Unabridged/IS Meks/Thanatos THS-6S.mtf`: duplicate of a design already kept: Thanatos TNS-6S
 - `megamek/3067 Unabridged/IS Meks/Uziel UZL-8S.mtf`: duplicate of a design already kept: Uziel UZL-8S
-- `megamek/3067 Unabridged/IS Meks/Vanquisher VQR-5V.mtf`: BV differs from the MUL: VQR-5V: BV 2334, MUL 2332
+- `megamek/3067 Unabridged/IS Meks/Vanquisher VQR-5V.mtf`: duplicate of a design already kept: Vanquisher VQR-5V
 - `megamek/3067 Unabridged/IS Meks/Vanquisher VQR-7U.mtf`: duplicate of a design already kept: Vanquisher VQR-7U
 - `megamek/3067 Unabridged/IS Meks/Vanquisher VQR-7V.mtf`: duplicate of a design already kept: Vanquisher VQR-7V
 - `megamek/3067 Unabridged/IS Meks/Verfolger VR6-C.mtf`: duplicate of a design already kept: Verfolger VR6-C
@@ -1980,7 +1969,6 @@
 - `megamek/3075/Mackie MSK-7A.mtf`: different submodel, same name and model: actuators: Mackie MSK-7A
 - `megamek/3075/Mackie MSK-8B.mtf`: duplicate of a design already kept: Mackie MSK-8B
 - `megamek/3075/Mackie MSK-9H.mtf`: duplicate of a design already kept: Mackie MSK-9H
-- `megamek/3075/Malak C-MK-OC Comminus.mtf`: BV differs from the MUL: C-MK-OC Comminus: BV 945, MUL 944
 - `megamek/3075/Marauder MAD-1R.mtf`: duplicate of a design already kept: Marauder MAD-1R
 - `megamek/3075/Marauder MAD-2R.mtf`: duplicate of a design already kept: Marauder MAD-2R
 - `megamek/3075/Mongoose II MON-266.mtf`: duplicate of a design already kept: Mongoose II MON-266
@@ -2123,7 +2111,7 @@
 - `megamek/3085u/Cutting Edge/Ostwar OWR-3M.mtf`: duplicate of a design already kept: Ostwar OWR-3M
 - `megamek/3085u/Cutting Edge/Pack Hunter II 2.mtf`: duplicate of a design already kept: Pack Hunter II 2
 - `megamek/3085u/Cutting Edge/Pack Hunter II 3.mtf`: duplicate of a design already kept: Pack Hunter II 3
-- `megamek/3085u/Cutting Edge/Pack Hunter II.mtf`: BV differs from the MUL: : BV 1797, MUL 1794
+- `megamek/3085u/Cutting Edge/Pack Hunter II.mtf`: duplicate of a design already kept: Pack Hunter II 
 - `megamek/3085u/Cutting Edge/Panther PNT-10K2.mtf`: duplicate of a design already kept: Panther PNT-10K2
 - `megamek/3085u/Cutting Edge/Panther PNT-12K.mtf`: duplicate of a design already kept: Panther PNT-12K
 - `megamek/3085u/Cutting Edge/Panther PNT-12K2.mtf`: duplicate of a design already kept: Panther PNT-12K2
@@ -2253,8 +2241,8 @@
 - `megamek/3085u/Phoenix/Archer ARC-9K.mtf`: duplicate of a design already kept: Archer ARC-9K
 - `megamek/3085u/Phoenix/Archer ARC-9M.mtf`: duplicate of a design already kept: Archer ARC-9M
 - `megamek/3085u/Phoenix/Archer ARC-9W.mtf`: duplicate of a design already kept: Archer ARC-9W
-- `megamek/3085u/Phoenix/BattleMaster BLR-10S.mtf`: BV differs from the MUL: BLR-10S: BV 1930, MUL 1927
-- `megamek/3085u/Phoenix/BattleMaster BLR-10S2.mtf`: BV differs from the MUL: BLR-10S2: BV 1930, MUL 1927
+- `megamek/3085u/Phoenix/BattleMaster BLR-10S.mtf`: duplicate of a design already kept: Battlemaster BLR-10S
+- `megamek/3085u/Phoenix/BattleMaster BLR-10S2.mtf`: duplicate of a design already kept: Battlemaster BLR-10S2
 - `megamek/3085u/Phoenix/BattleMaster BLR-2C.mtf`: duplicate of a design already kept: BattleMaster BLR-2C
 - `megamek/3085u/Phoenix/BattleMaster BLR-3M.mtf`: duplicate of a design already kept: Battlemaster BLR-3M
 - `megamek/3085u/Phoenix/BattleMaster BLR-3S.mtf`: duplicate of a design already kept: Battlemaster BLR-3S
@@ -2278,7 +2266,7 @@
 - `megamek/3085u/Phoenix/Goliath GOL-4S.mtf`: BV differs from the MUL: GOL-4S: BV 1923, MUL 1912
 - `megamek/3085u/Phoenix/Goliath GOL-5D.mtf`: duplicate of a design already kept: Goliath GOL-5D
 - `megamek/3085u/Phoenix/Goliath GOL-5W.mtf`: duplicate of a design already kept: Goliath GOL-5W
-- `megamek/3085u/Phoenix/Goliath GOL-6H.mtf`: BV differs from the MUL: GOL-6H: BV 1681, MUL 1676
+- `megamek/3085u/Phoenix/Goliath GOL-6H.mtf`: different submodel, same name and model: equipment: Goliath GOL-6H
 - `megamek/3085u/Phoenix/Goliath GOL-6M.mtf`: the import could not carry all of it over: Turret-mounted 'ISGaussRifle' is not converted yet; Turret-mounted 'ISMML7' is not converted yet
 - `megamek/3085u/Phoenix/Griffin GRF-1DS.mtf`: duplicate of a design already kept: Griffin GRF-1DS
 - `megamek/3085u/Phoenix/Griffin GRF-3M.mtf`: duplicate of a design already kept: Griffin GRF-3M
@@ -2311,7 +2299,7 @@
 - `megamek/3085u/Phoenix/Longbow LGB-12C.mtf`: duplicate of a design already kept: Longbow LGB-12C
 - `megamek/3085u/Phoenix/Longbow LGB-12R.mtf`: duplicate of a design already kept: Longbow LGB-12R
 - `megamek/3085u/Phoenix/Longbow LGB-13C.mtf`: duplicate of a design already kept: Longbow LGB-13C
-- `megamek/3085u/Phoenix/Longbow LGB-13NAIS.mtf`: BV differs from the MUL: LGB-13NAIS: BV 1806, MUL 1804
+- `megamek/3085u/Phoenix/Longbow LGB-13NAIS.mtf`: duplicate of a design already kept: Longbow LGB-13NAIS
 - `megamek/3085u/Phoenix/Longbow LGB-14C.mtf`: duplicate of a design already kept: Longbow LGB-14C
 - `megamek/3085u/Phoenix/Marauder II Bounty Hunter.mtf`: duplicate of a design already kept: Marauder II (Bounty Hunter)
 - `megamek/3085u/Phoenix/Marauder II C.mtf`: duplicate of a design already kept: Marauder II C
@@ -2421,7 +2409,7 @@
 - `megamek/3085u/Phoenix/Thunderbolt TDR-7SE.mtf`: duplicate of a design already kept: Thunderbolt TDR-7SE
 - `megamek/3085u/Phoenix/Thunderbolt TDR-9M.mtf`: duplicate of a design already kept: Thunderbolt TDR-9M
 - `megamek/3085u/Phoenix/Thunderbolt TDR-9NAIS.mtf`: duplicate of a design already kept: Thunderbolt TDR-9NAIS
-- `megamek/3085u/Phoenix/Thunderbolt TDR-9Nr.mtf`: duplicate of a design already kept: Thunderbolt TDR-9Nr
+- `megamek/3085u/Phoenix/Thunderbolt TDR-9Nr.mtf`: BV differs from the MUL: TDR-9Nr: BV 1632, MUL 1635
 - `megamek/3085u/Phoenix/Thunderbolt TDR-9T.mtf`: duplicate of a design already kept: Thunderbolt TDR-9T
 - `megamek/3085u/Phoenix/Valkyrie VLK-QD1.mtf`: duplicate of a design already kept: Valkyrie VLK-QD1
 - `megamek/3085u/Phoenix/Valkyrie VLK-QD2.mtf`: duplicate of a design already kept: Valkyrie VLK-QD2
@@ -2455,7 +2443,7 @@
 - `megamek/3085u/Phoenix/Wolverine WVR-8D.mtf`: duplicate of a design already kept: Wolverine WVR-8D
 - `megamek/3085u/Phoenix/Wolverine WVR-8K.mtf`: duplicate of a design already kept: Wolverine WVR-8K
 - `megamek/3085u/Phoenix/Wolverine WVR-9D.mtf`: duplicate of a design already kept: Wolverine WVR-9D
-- `megamek/3085u/Phoenix/Wolverine WVR-9K.mtf`: BV differs from the MUL: WVR-9K: BV 1420, MUL 1419
+- `megamek/3085u/Phoenix/Wolverine WVR-9K.mtf`: duplicate of a design already kept: Wolverine WVR-9K
 - `megamek/3085u/Phoenix/Wolverine WVR-9M.mtf`: duplicate of a design already kept: Wolverine WVR-9M
 - `megamek/3085u/Phoenix/Wolverine WVR-9W.mtf`: duplicate of a design already kept: Wolverine WVR-9W
 - `megamek/3085u/Phoenix/Wolverine WVR-9W2.mtf`: duplicate of a design already kept: Wolverine WVR-9W2
@@ -2506,15 +2494,14 @@
 - `megamek/3145/Davion/Hollander III BZK-D2.mtf`: duplicate of a design already kept: Hollander III BZK-D2
 - `megamek/3145/Davion/Hollander III BZK-D3.mtf`: duplicate of a design already kept: Hollander III BZK-D3
 - `megamek/3145/Davion/Prey Seeker PY-SR10.mtf`: duplicate of a design already kept: Prey Seeker PY-SR10
-- `megamek/3145/Davion/Scarecrow UCU-F4 Hobbled Scarecrow.mtf`: duplicate of a design already kept: Scarecrow UCU-F4r "Hobbled Scarecrow"
-- `megamek/3145/Davion/Scarecrow UCU-F4.mtf`: different submodel, same name and model: ammo type: Scarecrow UCU-F4
+- `megamek/3145/Davion/Scarecrow UCU-F4.mtf`: BV differs from the MUL: UCU-F4: BV 1472, MUL 1475
 - `megamek/3145/Davion/Templar III TLR2-O.mtf`: duplicate of a design already kept: Templar III TLR2-O
 - `megamek/3145/Davion/Templar III TLR2-OB.mtf`: BV differs from the MUL: TLR2-OB: BV 1919, MUL 1918
 - `megamek/3145/Davion/Vulpes VLP-1D.mtf`: duplicate of a design already kept: Vulpes VLP-1D
 - `megamek/3145/Kurita/Avalanche AVL-1O.mtf`: duplicate of a design already kept: Avalanche AVL-1O
 - `megamek/3145/Kurita/Avalanche AVL-1OA.mtf`: BV differs from the MUL: AVL-1OA: BV 1481, MUL 1484
 - `megamek/3145/Kurita/Dragon II DRG-11K.mtf`: different submodel, same name and model: ammo type: Dragon II DRG-11K
-- `megamek/3145/Kurita/Dragon II DRG-11R.mtf`: BV differs from the MUL: DRG-11R: BV 2302, MUL 2300
+- `megamek/3145/Kurita/Dragon II DRG-11R.mtf`: different submodel, same name and model: ammo type: Dragon II DRG-11R
 - `megamek/3145/Kurita/Exhumer EXR-2X.mtf`: duplicate of a design already kept: Exhumer EXR-2X
 - `megamek/3145/Kurita/Exhumer EXR-3P.mtf`: duplicate of a design already kept: Exhumer EXR-3P
 - `megamek/3145/Kurita/Hatamoto-Godai HTM-30Z.mtf`: duplicate of a design already kept: Hatamoto-Godai HTM-30Z
@@ -4068,7 +4055,7 @@
 - `mordel/38488/Ares ARS-V1D Hephaestus.mtf`: duplicate of a design already kept: Ares ARS-V1D Hephaestus
 - `mordel/3941/Seraph C-SRP-OR (Ravana).mtf`: BV differs from the MUL: C-SRP-OR (Ravana): BV 1957, MUL 1941
 - `mordel/4165/Kraken (Bane) XR.mtf`: BV differs from the MUL: XR: BV 3055, MUL 2894
-- `mordel/4241/Scarecrow UCU-F4r.mtf`: BV differs from the MUL: UCU-F4r: BV 1433, MUL 1472
+- `mordel/4241/Scarecrow UCU-F4r.mtf`: BV differs from the MUL: UCU-F4r: BV 1431, MUL 1472
 - `mordel/4447/Wyvern City WVE-5UX.mtf`: duplicate of a design already kept: Wyvern City WVN-5UX
 - `mordel/52185/Guillotine GLT-3N (Estriđsen).mtf`: no Master Unit List entry to check its BV against
 - `mordel/5278/Omega SHP-X4.mtf`: duplicate of a design already kept: Omega SHP-4X

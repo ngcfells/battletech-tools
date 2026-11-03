@@ -89,7 +89,10 @@ describe("Rules editions", () => {
             ["citytech-2nd-edition", 1994], ["aerotech-2", 2000], ["aerotech-2-revised", 2004],
         ]);
         expect(new Set(btRulesExpansions.map(expansion => expansion.book)).size).toBe(btRulesExpansions.length);
-        expect(btRulesExpansions.find(expansion => expansion.tag === "aerotech-2-revised")!.unitTypes).toContain("capital-ship");
+        // AT2 already builds and values DropShips, JumpShips and WarShips (contents; BV p.53).
+        for (const tag of ["aerotech-2", "aerotech-2-revised"]) {
+            expect(btRulesExpansions.find(expansion => expansion.tag === tag)!.unitTypes, tag).toContain("capital-ship");
+        }
         expect(getSelectableRulesExpansions("vehicle")).toEqual([]);
     });
 

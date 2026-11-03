@@ -641,10 +641,10 @@ describe("Rulings on infantry (user, 2026-10-07)", () => {
         expect(platoon.hasAntiMechKit()).toBe(false);
         expect(platoon.getWeight()).toBe(bareWeight);
         expect(platoon.getCBillCost()).toBe(Math.floor(bareCost + 28 * 1000 * 1.6 + 1e-6));
-        // Gunnery only, from the 5 column, as for mechanized infantry.
-        expect(platoon.getSkillMultiplier()).toBe(1);
+        // Anti-'Mech 8, which cannot be improved (BV v4.1 p.23, #609): the 8 column, not mechanized infantry's 5.
+        expect(platoon.getSkillMultiplier()).toBe(0.85);
         platoon.setGunnery(3);
-        expect(platoon.getSkillMultiplier()).toBe(1.2);
+        expect(platoon.getSkillMultiplier()).toBe(1.04);
         expect(platoon.getNotes().join(" | ")).toContain("add no weight, cost or skill");
 
         // Removing the armor brings the kits back.
