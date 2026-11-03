@@ -1,10 +1,10 @@
 # Bundled battle armor: build report
 
-912 designs kept, 276 files left out.
+921 designs kept, 267 files left out.
 
 | Reason | Files |
 |---|---|
-| BV differs from the MUL | 175 |
+| BV differs from the MUL | 166 |
 | no Master Unit List entry to check its BV against | 86 |
 | the import could not carry all of it over | 15 |
 
@@ -13,16 +13,10 @@
 - `battlearmor/3058Uu/Elemental BA (Headhunter) (Sqd4).blk`: the import could not carry all of it over: 'ISBAHeatSensor' is Inner Sphere equipment: left off.
 - `battlearmor/3058Uu/Elemental BA (Headhunter) (Sqd5).blk`: the import could not carry all of it over: 'ISBAHeatSensor' is Inner Sphere equipment: left off.
 - `battlearmor/3058Uu/Elemental BA (Headhunter) (Sqd6).blk`: the import could not carry all of it over: 'ISBAHeatSensor' is Inner Sphere equipment: left off.
-- `battlearmor/3058Uu/Elemental BA [APG] (Sqd5).blk`: BV differs from the MUL: BV 577, MUL 576
-- `battlearmor/3058Uu/Elemental BA [APG] (Sqd6).blk`: BV differs from the MUL: BV 742, MUL 740
 - `battlearmor/3058Uu/Elemental BA [ER Laser] (Sqd3).blk`: no Master Unit List entry to check its BV against
 - `battlearmor/3058Uu/Elemental BA [ER Laser] (Sqd4).blk`: no Master Unit List entry to check its BV against
 - `battlearmor/3058Uu/Elemental BA [ER Laser] (Sqd5).blk`: no Master Unit List entry to check its BV against
 - `battlearmor/3058Uu/Elemental BA [ER Laser] (Sqd6).blk`: no Master Unit List entry to check its BV against
-- `battlearmor/3058Uu/Elemental BA [Flamer] (Sqd4).blk`: BV differs from the MUL: BV 300, MUL 299
-- `battlearmor/3058Uu/Elemental BA [Flamer] (Sqd5).blk`: BV differs from the MUL: BV 404, MUL 291
-- `battlearmor/3058Uu/Elemental BA [MicroPL] (Sqd4).blk`: BV differs from the MUL: BV 356, MUL 272
-- `battlearmor/3058Uu/Elemental BA [MicroPL] (Sqd5).blk`: BV differs from the MUL: BV 480, MUL 366
 - `battlearmor/3058Uu/Elemental Battle Armor (Headhunter)(Sqd3).blk`: the import could not carry all of it over: 'ISBAHeatSensor' is Inner Sphere equipment: left off.
 - `battlearmor/3058Uu/Fenrir BA [VSP] (Sqd4).blk`: BV differs from the MUL: BV 194, MUL 189
 - `battlearmor/3058Uu/Fenrir BA [VSP] (Sqd5).blk`: BV differs from the MUL: BV 261, MUL 255
@@ -39,7 +33,6 @@
 - `battlearmor/3058Uu/Kage Light BA [Laser] (Sqd4).blk`: BV differs from the MUL: BV 116, MUL 126
 - `battlearmor/3058Uu/Kage Light BA [MG] (Sqd4).blk`: BV differs from the MUL: BV 111, MUL 117
 - `battlearmor/3058Uu/Kanazuchi Assault BA (Upgrade) [Battle Claw] (Sqd5).blk`: BV differs from the MUL: BV 470, MUL 471
-- `battlearmor/3058Uu/Kanazuchi Assault BA [Battle Claw] (Sqd6).blk`: BV differs from the MUL: BV 644, MUL 605
 - `battlearmor/3058Uu/Salamander BA (Laser) (Sqd4).blk`: BV differs from the MUL: BV 293, MUL 292
 - `battlearmor/3075/Asura Med BA (SRM)(Sqd4).blk`: BV differs from the MUL: BV 221, MUL 211
 - `battlearmor/3075/Clan Med BA (Naval) (Bar) (Sqd4).blk`: BV differs from the MUL: BV 273, MUL 269
@@ -98,8 +91,6 @@
 - `battlearmor/3075/Trinity Med BA (Theseus RL)[LRR] (Sqd4).blk`: BV differs from the MUL: BV 251, MUL 203
 - `battlearmor/3075/Trinity Med BA (Theseus RL)[LRR] (Sqd5).blk`: BV differs from the MUL: BV 338, MUL 273
 - `battlearmor/3075/Trinity Med BA (Theseus RL)[LRR] (Sqd6).blk`: BV differs from the MUL: BV 435, MUL 352
-- `battlearmor/3085u/Cutting Edge/Thunderbird BA [ER Laser] (Sqd5).blk`: BV differs from the MUL: BV 404, MUL 495
-- `battlearmor/3085u/Cutting Edge/Thunderbird BA [ER Laser] (Sqd6).blk`: BV differs from the MUL: BV 519, MUL 636
 - `battlearmor/3085u/ONN/Afreet Med BA (Interdictor)(Sqd4).blk`: BV differs from the MUL: BV 196, MUL 189
 - `battlearmor/3085u/ONN/Afreet Med BA (Interdictor)(Sqd5).blk`: BV differs from the MUL: BV 264, MUL 255
 - `battlearmor/3085u/ONN/Afreet Med BA (Interdictor)(Sqd6).blk`: BV differs from the MUL: BV 339, MUL 327

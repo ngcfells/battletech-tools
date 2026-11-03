@@ -1,11 +1,11 @@
 # Bundled ProtoMechs: build report
 
-62 designs kept, 24 files left out.
+64 designs kept, 22 files left out.
 
 | Reason | Files |
 |---|---|
-| BV differs from the MUL | 16 |
-| no Master Unit List entry to check its BV against | 8 |
+| BV differs from the MUL | 15 |
+| no Master Unit List entry to check its BV against | 7 |
 
 ## Left out
 
@@ -16,12 +16,10 @@
 - `protomeks/3075/Basilisk.blk`: BV differs from the MUL: BV 318, MUL 319
 - `protomeks/3075/Orc 2.blk`: BV differs from the MUL: BV 171, MUL 170
 - `protomeks/3075/Procyon 3.blk`: BV differs from the MUL: BV 161, MUL 163
-- `protomeks/3075/Procyon.blk`: BV differs from the MUL: BV 178, MUL 237
 - `protomeks/3075/Triton 2.blk`: BV differs from the MUL: BV 272, MUL 274
 - `protomeks/3075/Triton 4.blk`: BV differs from the MUL: BV 205, MUL 207
 - `protomeks/ProtoTypes/SvartAlfa Ultra.blk`: BV differs from the MUL: BV 536, MUL 540
-- `protomeks/WoR/Basilisk ProtoMech (Quad) B.blk`: no Master Unit List entry to check its BV against
-- `protomeks/WoR/Basilisk ProtoMech (Quad).blk`: BV differs from the MUL: BV 255, MUL 237
+- `protomeks/WoR/Basilisk ProtoMech (Quad).blk`: BV differs from the MUL: BV 255, MUL 258
 - `protomeks/WoR/Boggart Ultraheavy ProtoMech 2.blk`: no Master Unit List entry to check its BV against
 - `protomeks/WoR/Boggart Ultraheavy ProtoMech.blk`: no Master Unit List entry to check its BV against
 - `protomeks/WoR/Centaur Z.blk`: BV differs from the MUL: BV 183, MUL 179

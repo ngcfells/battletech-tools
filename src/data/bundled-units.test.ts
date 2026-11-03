@@ -15,7 +15,7 @@ import { BundledUnitType, loadBundledIndex, loadBundledUnitDesign } from "./bund
 const dataDir = path.resolve(__dirname, "bundled");
 
 // Pinned so a growing data set is a deliberate change.
-const DESIGNS: Record<BundledUnitType, number> = { "battle-armor": 912, "protomechs": 62, "small-craft": 101, "support-vehicles": 91, "vehicles": 1063 };
+const DESIGNS: Record<BundledUnitType, number> = { "battle-armor": 921, "protomechs": 64, "small-craft": 101, "support-vehicles": 91, "vehicles": 1064 };
 // Each type's index and chunks together, in bytes, with a little room.
 const MAX_BYTES: Record<BundledUnitType, number> = { "battle-armor": 1_360_000, "protomechs": 180_000, "small-craft": 500_000, "support-vehicles": 460_000, "vehicles": 3_380_000 };
 

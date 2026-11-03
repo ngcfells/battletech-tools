@@ -1,17 +1,16 @@
 # Bundled Combat Vehicles: build report
 
-1063 designs kept, 154 files left out.
+1064 designs kept, 153 files left out.
 
 | Reason | Files |
 |---|---|
-| BV differs from the MUL | 114 |
+| BV differs from the MUL | 113 |
 | the import could not carry all of it over | 40 |
 
 ## Left out
 
 - `vehicles/3025 IS Land/Jeep.blk`: the import could not carry all of it over: "ISOffRoadChassis" has no match in this catalog and was left off.
 - `vehicles/3039u/Condor Heavy Hover Tank (Davion).blk`: BV differs from the MUL: BV 577, MUL 592
-- `vehicles/3039u/Condor Heavy Hover Tank.blk`: BV differs from the MUL: BV 653, MUL 965
 - `vehicles/3039u/Hetzer Wheeled Assault Gun (Scout).blk`: BV differs from the MUL: BV 544, MUL 553
 - `vehicles/3039u/J-27 Ordnance Transport (Trailer).blk`: the import could not carry all of it over: Engine type 8 is not one this builder has.
 - `vehicles/3039u/Mobile Long Tom (Ammo Carriage).blk`: the import could not carry all of it over: Engine type 8 is not one this builder has.; Ammunition "ISLongTomAmmo" has no weapon or no match in this catalog and was left off.; Ammunition "ISLongTomAmmo" has no weapon or no match in this catalog and was left off.; Ammunition "ISLongTomAmmo" has no weapon or no match in this catalog and was left off.; Ammunition "ISLongTomAmmo" has no weapon or no match in this catalog and was left off.; Ammunition "ISLongTomAmmo" has no weapon or no match in this catalog and was left off.

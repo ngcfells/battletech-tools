@@ -89,6 +89,8 @@ const looseKey = (key: string): string => key.replace(/[^a-z0-9]/g, "");
 /** MegaMek files that name a MUL unit another way, by MegaMek's name and model: the MUL id they are. */
 export const MEGAMEK_MUL_IDS: Record<string, number> = Object.fromEntries(([
     ["Bandit Hovercraft", "Mk 2", 102443],
+    ["Basilisk ProtoMech (Quad)", "", 107613],
+    ["Basilisk ProtoMech (Quad)", "B", 104262],
     ["Browning Mobile HQ", "", 100191],
     ["Browning Mobile HQ", "(Half Track)", 104491],
     ["Coolant Truck", "135-K", 106317],

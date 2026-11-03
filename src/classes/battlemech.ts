@@ -982,7 +982,8 @@ export class BattleMech {
         // 1D. Gyro Points Modifier (TM p. 302)
         const gyroType = this.getGyro().tag;
         let gyroModifier = 0.5;
-        // A Superheavy 'Mech's gyro counts as a standard gyro for BV (IO:AE p.187).
+        // A Superheavy 'Mech's gyro, and a gyroless interface-cockpit 'Mech's missing one, count as a standard gyro
+        // for BV (IO:AE p.187).
         if (gyroType === "heavy-duty" && this.getTonnage() <= 100) {
             gyroModifier = 1.0;
         }

@@ -5,7 +5,7 @@ import { expect, it } from "vitest";
 import type { IASMULUnit } from "../classes/alpha-strike-unit";
 import { untabulate } from "../utils/packed-json";
 import {
-    buildBundledMechs, findLooseMULMatch, getBundledStanding, getMordelUnitUrl, getRenumberedModel, isMULMech, isOfficialMULRecord, loadCanonMechs, writeMegaMekCustomRecords,
+    buildBundledMechs, findLooseMULMatch, getBundledStanding, getMordelUnitUrl, getRenumberedModel, isMULMech, isOfficialMULRecord, loadCanonMechs, loadMULIndex, writeMegaMekCustomRecords,
 } from "./bundled-mechs-build";
 
 // #241: canon is what the live MUL or MUL 1.0 lists. These records stand in for the MUL's own spellings of 'Mechs
@@ -86,6 +86,45 @@ it("takes MegaMek's one-configuration file for a duplicate of the kept OmniMech'
         const build = buildBundledMechs(ssw, path.resolve(__dirname, "mul"), path.join(root, "megamek"));
         expect(build.headers.map((header) => header.name)).toEqual(["Dire Wolf (Daishi)"]);
         expect(build.leftOut).toEqual([expect.objectContaining({ file: "megamek/3050U/Daishi (Dire Wolf) A.mtf", reason: expect.stringMatching(/^duplicate of a design already kept/) })]);
+    } finally {
+        fs.rmSync(root, { recursive: true, force: true });
+    }
+}, 120_000);
+
+// #109: the Ryoken III (Skinwalker) A of RG24 and the Ryoken III-XP (Skinwalker) A of XTR:RotS 3 are two MUL records
+// sharing the name Skinwalker; each name's own key beats another's alternate one, and an alternate key two names share
+// finds neither.
+it("finds no MUL record by an alternate name two records share", () => {
+    const mul = fs.mkdtempSync(path.join(os.tmpdir(), "bundled-mechs-mul-"));
+    for (const list of ["live", "mul1", "custom"]) fs.mkdirSync(path.join(mul, list));
+    fs.writeFileSync(path.join(mul, "live", "a.json"), JSON.stringify([
+        record(105538, "Ryoken III-XP (Skinwalker)", "A", 75, 3777), record(106647, "Ryoken III (Skinwalker)", "A", 75, 3500),
+        record(1, "Mad Cat (Timber Wolf)", "Prime", 75, 2737), record(2, "Timber Wolf", "Prime", 75, 2737),
+    ]));
+    fs.writeFileSync(path.join(mul, "mul1", "a.json"), JSON.stringify([record(106647, "Ryoken III (Skinwalker)", "A", 75, 3500)]));
+    try {
+        const index = loadMULIndex(mul, () => true);
+        expect(index.get("ryoken iii a")?.Id).toBe(106647);
+        expect(index.get("ryoken iii-xp a")?.Id).toBe(105538);
+        expect(index.has("skinwalker a")).toBe(false);
+        expect(index.get("timber wolf prime")?.Id).toBe(2);
+    } finally {
+        fs.rmSync(mul, { recursive: true, force: true });
+    }
+});
+
+it("keeps two MUL records' designs that share an alternate name", () => {
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), "bundled-mechs-build-"));
+    const ssw = path.join(root, "ssw"), megamek = path.join(root, "megamek", "RG");
+    for (const dir of [ssw, megamek]) fs.mkdirSync(dir, { recursive: true });
+    for (const [fixture, name] of [["ryoken-iii-skinwalker-b", "(Ryoken III) Skinwalker B"], ["ryoken-iii-xp-skinwalker-b", "Ryoken III-XP B"]]) {
+        fs.copyFileSync(path.resolve(__dirname, `../utils/__fixtures__/${fixture}.mtf`), path.join(megamek, name + ".mtf"));
+    }
+    try {
+        const build = buildBundledMechs(ssw, path.resolve(__dirname, "mul"), path.join(root, "megamek"));
+        expect(build.headers.map((header) => [header.name, header.model, header.bv])).toEqual([["Skinwalker (Ryoken III)", "B", 2851]]);
+        // Checked against its own record, not taken for the Ryoken III's twin.
+        expect(build.leftOut).toEqual([expect.objectContaining({ file: "megamek/RG/Ryoken III-XP B.mtf", detail: expect.stringMatching(/MUL 3613$/) })]);
     } finally {
         fs.rmSync(root, { recursive: true, force: true });
     }

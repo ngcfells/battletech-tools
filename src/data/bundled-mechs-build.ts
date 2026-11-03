@@ -171,7 +171,7 @@ export function findLooseMULMatch(chassis: string, model: string, tons: number, 
     }
     return best?.unit;
 }
-interface IKeptLayout { summary: IDesignSummary; name: string }
+interface IKeptLayout { summary: IDesignSummary; name: string; mulId?: number }
 
 /** A canon 'Mech on mordel.net's list: its name and model as one, tonnage and BV (src/data/mordel/canon-mechs.csv). */
 export interface ICanonMech { name: string; tons: number; bv: number }
@@ -250,12 +250,23 @@ const listFiles = (dir: string, extension: string): string[] => fs.readdirSync(d
 /** Every Master Unit List entry the test picks, by match key: live entries first, then MUL 1.0's, then our own. */
 export function loadMULIndex(mulDir: string, test: (unit: IASMULUnit) => boolean): Map<string, IASMULUnit> {
     const index = new Map<string, IASMULUnit>();
+    // The names each alternate key was given by, in either order ("Skinwalker (Ryoken III)" is "Ryoken III
+    // (Skinwalker)"): one name's own key beats it, and other names' find neither (#109: the Ryoken III and
+    // Ryoken III-XP are both "Skinwalker").
+    const alternates = new Map<string, string | null>();
     for (const list of ["live", "mul1", "custom"]) {
         for (const file of fs.readdirSync(path.join(mulDir, list)).sort()) {
             for (const entry of untabulate(JSON.parse(fs.readFileSync(path.join(mulDir, list, file), "utf8"))) as IASMULUnit[]) {
                 const unit = { ...(list === "live" ? correctMULBattleValue(entry) : entry), MulSource: list === "live" ? "mul2" as const : list as "mul1" | "custom" };
                 if (!test(unit)) continue;
-                for (const key of getMULMatchKeys(unit.Name ?? "", unit.Variant ?? "")) if (!index.has(key)) index.set(key, unit);
+                const [own, ...others] = getMULMatchKeys(unit.Name ?? "", unit.Variant ?? "");
+                const names = [...others].sort().join("|");
+                if (!index.has(own) || alternates.has(own)) { index.set(own, unit); alternates.delete(own); }
+                for (const key of others) {
+                    if (index.has(key) && !alternates.has(key)) continue;
+                    if (!alternates.has(key)) { index.set(key, unit); alternates.set(key, names); }
+                    else if (alternates.get(key) !== names) { index.delete(key); alternates.set(key, null); }
+                }
             }
         }
     }
@@ -513,8 +524,11 @@ export function buildBundledMechs(sswDir: string, mulDir: string, megamekDir?: s
         const loose = !mulUnit && !renaming && !design.omnimech && !named.some(({ unit }) => unit)
             ? findLooseMULMatch(chassis, model, tons, bv, officialMechs) : undefined;
         const listed = mulUnit || loose ? [{ entry: entries[entries.length - 1], unit: (mulUnit ?? loose)! }] : named.filter((match) => match.unit);
-        // One copy of each MUL record: a design checked against a record already taken, by any name, is a twin.
-        const clash = own.flatMap(({ keys, layout }) => keys.map((key) => ({ layout, twin: taken.get(key) }))).find(({ twin }) => twin)
+        const idOf = (index: number) => listed.find(({ entry }) => entry === entries[index])?.unit?.Id;
+        // One copy of each MUL record: a design checked against a record already taken, by any name, is a twin. An
+        // alternate name two records share is no twin (#109: Ryoken III and Ryoken III-XP are both "Skinwalker").
+        const clash = own.flatMap(({ keys, layout }, index) => keys.map((key, at) => ({ layout, twin: taken.get(key), id: at > 0 ? idOf(index) : undefined })))
+            .find(({ twin, id }) => twin && !(id && twin.mulId && id !== twin.mulId))
             ?? listed.map(({ entry, unit }) => ({ layout: own[entries.indexOf(entry)].layout, twin: takenIds.get(unit!.Id) })).find(({ twin }) => twin);
         if (clash) {
             const { layout, twin } = clash as { layout: IKeptLayout; twin: IKeptLayout };
@@ -554,7 +568,7 @@ export function buildBundledMechs(sswDir: string, mulDir: string, megamekDir?: s
         // An OmniMech's configurations were checked one by one.
         if (matched.length === 0 && !customRecord && !design.omnimech && bv !== design.fileBV) { leave("BV differs from the file (no MUL entry)", `BV ${bv}, file ${design.fileBV}`); return false; }
         if (!design.survives) { leave("does not survive the compact format"); return false; }
-        own.forEach(({ keys, layout }) => keys.forEach((key) => taken.set(key, layout)));
+        own.forEach(({ keys, layout }, index) => keys.forEach((key) => taken.set(key, { ...layout, mulId: idOf(index) })));
         listed.forEach(({ entry, unit }) => takenIds.set(unit!.Id, own[entries.indexOf(entry)].layout));
         if (customRecord) customRecords.push(customRecord);
         const mulId = customRecord?.Id ?? matched.find(({ entry }) => entry.base)?.unit?.Id ?? matched[0]?.unit?.Id;
