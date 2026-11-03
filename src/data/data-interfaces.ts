@@ -44,6 +44,9 @@ export interface IEditionStats {
     shotsPerTon?: number;
     /** Price in C-bills; for ammunition, the price of a ton. */
     cbills?: number;
+    /** Battle Value (BV1 in the Master Rules), and a weapon's ammo BV per ton, as the edition's table prints them. */
+    battleValue?: number;
+    ammoBattleValue?: number;
     /** Jump jets: tons per jump movement point for 'Mechs up to each tonnage. */
     weightByTonnage?: { upTo: number; tons: number }[];
     /**

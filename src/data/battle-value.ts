@@ -1,6 +1,6 @@
 import { IEquipmentItem } from "./data-interfaces";
 import { getAmmoBattleValuePerTon } from "./equipment-registry";
-import { DEFAULT_RULES_EDITION, RulesEditionUnitType, btRulesEditions, getRulesEdition } from "./rules-editions";
+import { DEFAULT_RULES_EDITION, RulesEditionUnitType, btRulesEditions, getEditionStats, getRulesEdition } from "./rules-editions";
 
 /**
  * Battle Value by rules edition: the scheme each edition uses for each unit type (BV1 from the Master Rules, BV2 from
@@ -157,6 +157,13 @@ export const getBattleValueC3Share = (edition: string | undefined, type: BattleV
     if (rule.kind === "network") return network * (type === "boosted" ? rule.boostedPercent : rule.percent) / 100;
     return own * (Math.min(rule.cap, rule.twoUnits + (members - 2) * rule.perExtraUnit) + (type === "boosted" ? rule.boostedFlat : 0)) / 100;
 };
+
+/**
+ * An item's BV, or a weapon's ammo BV per ton, as `edition` prints it (BV1: BMR pp.142-144, BMR(R) pp.156-158); the
+ * catalog's BV2 figure where the edition prints none.
+ */
+export const getItemBattleValue = (item: IEquipmentItem, edition: string | undefined, field: "battleValue" | "ammoBattleValue" = "battleValue"): number | undefined =>
+    getEditionStats(item, getRulesEdition(edition).tag)?.[field] ?? item[field];
 
 /** True once `edition` works out a BV1 of its own for `unitType` (its BV1 record is entered, not pending). */
 const worksOutBv1 = (edition: string | undefined, unitType: BattleValueUnitType): boolean => {

@@ -1,6 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { DEFAULT_RULES_EDITION, btRulesEditions } from "./rules-editions";
-import { SKILL_MULTIPLIERS_BY_EDITION, formatBattleValue, getBattleValueFor, getBattleValueForceRules,getBattleValueRules, getBattleValueSkillEdition, getEditionSkillMultipliers, getEditionsWithSkillMultipliers, getSkillMultiplier } from "./battle-value";
+import { DEFAULT_RULES_EDITION, btRulesEditions, getEditionStats } from "./rules-editions";
+import { SKILL_MULTIPLIERS_BY_EDITION, formatBattleValue, getBattleValueFor, getBattleValueForceRules, getBattleValueRules, getBattleValueSkillEdition, getEditionSkillMultipliers, getEditionsWithSkillMultipliers, getItemBattleValue, getSkillMultiplier } from "./battle-value";
+import { equipmentArtillery } from "./equipment-artillery";
+import { equipmentBallistic } from "./equipment-ballistic";
+import { equipmentEnergy } from "./equipment-energy";
+import { equipmentMisc } from "./equipment-misc";
+import { equipmentMissile } from "./equipment-missile";
 
 describe("Battle Value skill multipliers by rules edition", () => {
     it("only lists editions that exist, each with a square table whose Gunnery 4 / Piloting 5 entry is 1", () => {
@@ -108,5 +113,36 @@ describe("Battle Value rules by rules edition", () => {
         expect(getBattleValueSkillEdition("core-rulebook", "mech")).toBe(DEFAULT_RULES_EDITION);
         // BV1 is not entered yet, so the BV shown is BV2 and the TechManual table goes with it.
         expect(getBattleValueSkillEdition("master-rules", "mech")).toBe(DEFAULT_RULES_EDITION);
+    });
+});
+
+describe("BV1 equipment values (BMR pp.142-144; BMR(R) pp.156-158)", () => {
+    const weapons = [...equipmentEnergy, ...equipmentBallistic, ...equipmentMissile, ...equipmentArtillery];
+    const record = (tag: string) => [...weapons, ...equipmentMisc].find((item) => item.tag === tag)!;
+
+    it("reads the BV and ammo BV per ton each Master Rules edition prints, and the catalog's BV2 otherwise", () => {
+        expect(getItemBattleValue(record("clan-er-large-laser"), "master-rules")).toBe(249);
+        expect(getItemBattleValue(record("clan-er-large-laser"), "total-warfare")).toBe(248);
+        expect(getItemBattleValue(record("standard-gauss-rifle"), "master-rules-revised", "ammoBattleValue")).toBe(37);
+        expect(getItemBattleValue(record("clan-gauss-rifle"), "master-rules", "ammoBattleValue")).toBe(33);
+        expect(getItemBattleValue(record("long-tom-artillery"), "master-rules-revised")).toBe(171);
+        expect(getItemBattleValue(record("clan-ams"), "master-rules")).toBe(63);
+        expect(getItemBattleValue(record("lrm-20-os"), "master-rules")).toBe(36);
+        expect(getItemBattleValue(record("clan-lrm-10-artemis-iv"), "master-rules-revised")).toBeCloseTo(130.8);
+        // The box set reads BMR(R); BMR prints no Rotary AC, so BV2's figure stands there.
+        expect(getItemBattleValue(record("rotary-ac-5"), "classic-battletech-box-set")).toBe(247);
+        expect(getItemBattleValue(record("rotary-ac-5"), "master-rules-revised", "ammoBattleValue")).toBe(31);
+        expect(getItemBattleValue(record("gauss-rifle-heavy"), "master-rules-revised")).toBe(346);
+    });
+
+    it("prints a BV for every weapon each Master Rules edition includes, torpedoes and melee weapons aside", () => {
+        // LRT/SRT are in neither table; hatchet and sword BVs come from their damage (BMR p.143).
+        const unprinted = /^(clan-)?(lrt|srt)-|^melee-/;
+        for (const edition of ["master-rules", "master-rules-revised"]) {
+            const missing = weapons
+                .filter((item) => item.editionStats && edition in item.editionStats && !unprinted.test(item.tag) && getEditionStats(item, edition)?.battleValue === undefined)
+                .map((item) => item.tag);
+            expect(missing, edition).toEqual([]);
+        }
     });
 });
