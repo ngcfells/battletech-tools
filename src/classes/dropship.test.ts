@@ -551,3 +551,28 @@ describe("DropShip cruise missiles", () => {
         expect((result.craft as SmallCraft).getBattleValueLog()).toContain("Nose: weapons 601.00, heat 50");
     });
 });
+
+describe("DropShip Battle Value worked example (BV v4.1 pp.20-22)", () => {
+    // The Dragau II of the example (= TM p.314): 1,372 points of armor, SI 15, Safe Thrust 9, 122 double heat sinks (244),
+    // 6 AMS with 10 tons of rounds, 8 tons of heavy Gauss ammunition and 6 tons of LRM 15 ammunition in each wing.
+    it("values the Dragau II at 14,243: Defensive 3,762 + Offensive 4,852.1 x 2.16", () => {
+        const wing = ["(B) LRM 15", "LRM 15", "IS Ammo LRM-15 Artemis-capable:48", "ISArtemisIV", "ISArtemisIV", "(B) ISERPPC", "ISERPPC",
+            "(B) ISLargeVSPLaser", "ISLargeVSPLaser", "(R) (B) ISLargeVSPLaser", "(R) ISLargeVSPLaser"];
+        const result = importSmallCraftBlk([
+            "<UnitType>", "Dropship", "</UnitType>", "<Name>", "Dragau II", "</Name>", "<Model>", "", "</Model>", "<year>", "3085", "</year>",
+            "<type>", "IS Level 3", "</type>", "<motion_type>", "Aerodyne", "</motion_type>", "<designtype>", "1", "</designtype>",
+            "<SafeThrust>", "9", "</SafeThrust>", "<heatsinks>", "122", "</heatsinks>", "<sink_type>", "1", "</sink_type>", "<fuel>", "6960", "</fuel>",
+            "<armor_type>", "20", "</armor_type>", "<armor>", "444", "336", "336", "256", "</armor>",
+            "<Nose Equipment>", "(B) ISHeavyGaussRifle", "ISHeavyGaussRifle", "ISHeavyGauss Ammo:32",
+            "(B) Heavy PPC", "Heavy PPC", "Heavy PPC", "(B) Heavy PPC", "Heavy PPC", "Heavy PPC", "(B) ISAntiMissileSystem", "ISAntiMissileSystem", "ISAMS Ammo:48", "</Nose Equipment>",
+            "<Left Side Equipment>", ...wing, "</Left Side Equipment>",
+            "<Right Side Equipment>", ...wing, "</Right Side Equipment>",
+            "<Aft Equipment>", "(B) ISLargeVSPLaser", "ISLargeVSPLaser", "(B) ISERMediumLaser", "ISERMediumLaser",
+            "(B) ISAntiMissileSystem", "ISAntiMissileSystem", "ISAntiMissileSystem", "ISAntiMissileSystem", "ISAMS Ammo:72", "</Aft Equipment>",
+            "<structural_integrity>", "15", "</structural_integrity>", "<tonnage>", "2500.0", "</tonnage>", "<crew>", "13", "</crew>",
+        ].join(String.fromCharCode(10)));
+        const ship = result.craft as SmallCraft;
+        expect(result.issues).toEqual([]);
+        expect(ship.getBattleValue()).toBe(14243);
+    });
+});

@@ -6775,3 +6775,68 @@ describe("Artemis fire control records (TM p.303, TO:AUE pp.95, 197, 217)", () =
         expect(tagged("clan-lrm-15-artemis-iv").range.min).toBe(0);
     });
 });
+
+// BV v4.1 pp.3-7 (= TM pp.304-305) worked examples, built from each example's own inputs (plan gap 4).
+describe("Battle Value worked examples (BV v4.1 pp.3-7)", () => {
+    const build = (tonnage: number, walk: number, armorTag: string, armorTons: number, armor: number[], structure: string, engine = "standard") => {
+        const mech = new BattleMech();
+        mech.setTech("is");
+        mech.setEra("dark-ages");
+        mech.setTonnage(tonnage);
+        mech.setInternalStructureType(structure);
+        mech.setEngineType(engine);
+        mech.setWalkSpeed(walk);
+        mech.setArmorType(armorTag);
+        mech.setArmorWeight(armorTons);
+        // Head, CT, CT rear, LT, LT rear, RT, RT rear, LA, RA, LL, RL.
+        const [hd, ct, ctr, lt, ltr, rt, rtr, la, ra, ll, rl] = armor;
+        mech.setHeadArmor(hd);
+        mech.setCenterTorsoArmor(ct);
+        mech.setCenterTorsoRearArmor(ctr);
+        mech.setLeftTorsoArmor(lt);
+        mech.setLeftTorsoRearArmor(ltr);
+        mech.setRightTorsoArmor(rt);
+        mech.setRightTorsoRearArmor(rtr);
+        mech.setLeftArmArmor(la);
+        mech.setRightArmArmor(ra);
+        mech.setLeftLegArmor(ll);
+        mech.setRightLegArmor(rl);
+        return mech;
+    };
+    const add = (mech: BattleMech, tag: string) => mech.addEquipmentFromTag(tag, "is", "", false, undefined, "", false, [], undefined, undefined)!;
+    const placeIn = (mech: BattleMech, tag: string, location: string, key: string) => {
+        const item = add(mech, tag);
+        const from = mech.unallocatedCriticals.findIndex(critical => critical?.uuid === item.uuid);
+        expect(mech.moveCritical("un", from, location, mech.getCriticals()[key].findIndex(critical => !critical))).toBe(true);
+    };
+
+    it("values the MON-66 Mongoose at 758: Defensive 433.3 + Offensive 325.08", () => {
+        // 89 points of ferro-fibrous armor, 43 of endo steel, a Beagle, 10 single heat sinks, Running MP 12.
+        const mech = build(25, 8, "ferro-fibrous", 5, [9, 12, 4, 9, 3, 9, 3, 8, 8, 12, 12], "endo-steel");
+        for (const tag of ["medium-laser", "medium-laser", "medium-laser", "small-laser", "beagle-active-probe"]) add(mech, tag);
+        expect(mech.getTotalArmor()).toBe(89);
+        expect(mech.getBattleValue()).toBe(758);
+    });
+
+    it("values the TDR-10SE Thunderbolt at 2,008: Defensive 954.85 + Offensive 1,052.98", () => {
+        // 200 points of standard armor, 104 of endo steel, 12 double heat sinks, MASC, Jumping MP 4, a targeting computer.
+        const mech = build(65, 4, "standard", 12.5, [9, 29, 12, 22, 8, 22, 8, 20, 20, 25, 25], "endo-steel");
+        mech.setHeatSinksType("double");
+        mech.setAdditionalHeatSinks(2);
+        mech.setJumpSpeed(4);
+        for (const tag of ["lrm-10", "er-ppc", "er-medium-laser", "er-medium-laser", "er-medium-laser", "ecm-suite", "masc", "targeting-computer"]) add(mech, tag);
+        // The ton of LRM 10 ammunition sits in the left torso without CASE: -15.
+        placeIn(mech, "ammo-lrm-standard", "lt", "leftTorso");
+        expect(mech.getTotalArmor()).toBe(200);
+        expect(mech.getBattleValue()).toBe(2008);
+    });
+
+    it("values the WI-DM DemolitionMech at 380: Defensive 328.2 + Offensive 58 x 0.9", () => {
+        // 85 points of industrial armor, 58 of industrial structure, a fuel cell engine, 1 heat sink, Running MP 5.
+        const mech = build(35, 3, "industrial", 8, [9, 14, 4, 10, 3, 10, 3, 8, 8, 8, 8], "industrial", "cell");
+        mech.setAdditionalHeatSinks(1);
+        for (const tag of ["small-laser", "rock-cutter", "wrecking-ball"]) add(mech, tag);
+        expect(mech.getTotalArmor()).toBe(85);
+        expect(mech.getBattleValue()).toBe(380);
+    });
+});
