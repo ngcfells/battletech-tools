@@ -90,8 +90,9 @@ describe("Battle Value rules by rules edition", () => {
         const battleValue = (edition: string) => edition === "total-warfare" ? 1456 : 1234;
         expect(formatBattleValue(battleValue, "mech", "total-warfare")).toBe("1,456");
         expect(formatBattleValue(battleValue, "mech", "battletech-4th-edition")).toBe("— (BV2: 1,456)");
-        // No BV1 is entered yet, so no BV1 figure is shown.
-        expect(formatBattleValue(battleValue, "mech", "master-rules")).toBe("— (BV2: 1,456)");
+        expect(formatBattleValue(battleValue, "mech", "master-rules")).toBe("1,234 (BV2: 1,456)");
+        // Vehicle BV1 is not entered yet, so a force with vehicles shows no BV1 figure.
+        expect(formatBattleValue(battleValue, ["mech", "vehicle"], "master-rules")).toBe("— (BV2: 1,456)");
         // A force total: BV2 when every unit type in it is BV2, and no BV1 figure until every one has one.
         expect(formatBattleValue(battleValue, ["mech", "vehicle"], "total-warfare")).toBe("1,456");
         expect(formatBattleValue(battleValue, ["mech", "protomech"], "master-rules")).toBe("— (BV2: 1,456)");
@@ -111,8 +112,10 @@ describe("Battle Value rules by rules edition", () => {
     it("pairs each BV with its skill table: the edition's own for BV1, the TechManual's for BV2 (plan ruling 2)", () => {
         expect(getBattleValueSkillEdition("total-warfare", "mech")).toBe(DEFAULT_RULES_EDITION);
         expect(getBattleValueSkillEdition("core-rulebook", "mech")).toBe(DEFAULT_RULES_EDITION);
-        // BV1 is not entered yet, so the BV shown is BV2 and the TechManual table goes with it.
-        expect(getBattleValueSkillEdition("master-rules", "mech")).toBe(DEFAULT_RULES_EDITION);
+        expect(getBattleValueSkillEdition("master-rules", "mech")).toBe("master-rules");
+        // The box set reads BMR(R)'s BV1 and table; vehicle BV1 is not entered yet, so it shows BV2 with the TM table.
+        expect(getBattleValueSkillEdition("classic-battletech-box-set", "mech")).toBe("master-rules-revised");
+        expect(getBattleValueSkillEdition("master-rules", "vehicle")).toBe(DEFAULT_RULES_EDITION);
     });
 });
 

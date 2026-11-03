@@ -21,7 +21,7 @@ export interface IBattleValueRules {
 
 const NO_BATTLE_VALUE: IBattleValueRules = { scheme: "none", source: "No Battle Value system before the BattleTech Master Rules (1998)" };
 
-const bv1 = (source: string): IBattleValueRules => ({ scheme: "bv1", source, pending: true });
+const bv1 = (source: string, entered = false): IBattleValueRules => entered ? { scheme: "bv1", source } : { scheme: "bv1", source, pending: true };
 // AT2 pp.53-54 and AT2R p.81 print the same steps; each reads its own edition's equipment BVs (plan, segment 2).
 const AT2 = bv1("AeroTech 2 pp.53-54 (with BMR equipment BVs); AT2 errata 1.2 bomb BVs");
 const AT2R = bv1("AeroTech 2, Revised Edition pp.81-82 (with BMR(R) equipment BVs)");
@@ -34,14 +34,14 @@ const BV2: IBattleValueRules = { scheme: "bv2", source: "TechManual pp.302-319, 
  */
 export const BV_RULES: Record<string, Partial<Record<BattleValueUnitType, IBattleValueRules>>> = {
     "master-rules": {
-        mech: bv1("BattleTech Master Rules pp.139-145; FanPro BMR errata p.12"),
+        mech: bv1("BattleTech Master Rules pp.139-145; FanPro BMR errata p.12", true),
         vehicle: bv1("BattleTech Master Rules pp.141-142; FanPro BMR errata p.12"),
         fighter: AT2, "small-craft": AT2, "capital-ship": AT2,
         infantry: bv1("BattleTech Master Rules p.142 (table); FanPro BMR errata p.12"),
         "battle-armor": bv1("BattleTech Master Rules p.142 (table)"),
     },
     "master-rules-revised": {
-        mech: bv1("BattleTech Master Rules, Revised Edition pp.152-159; Maximum Tech pp.90-92 (Level 3)"),
+        mech: bv1("BattleTech Master Rules, Revised Edition pp.152-159; Maximum Tech pp.90-92 (Level 3)", true),
         vehicle: bv1("BattleTech Master Rules, Revised Edition pp.154-155; Maximum Tech p.92 (Level 3)"),
         fighter: AT2R, "small-craft": AT2R, "capital-ship": AT2R,
         protomech: bv1("BattleTech Master Rules, Revised Edition pp.155-156"),
@@ -163,7 +163,17 @@ export const getBattleValueC3Share = (edition: string | undefined, type: BattleV
  * catalog's BV2 figure where the edition prints none.
  */
 export const getItemBattleValue = (item: IEquipmentItem, edition: string | undefined, field: "battleValue" | "ammoBattleValue" = "battleValue"): number | undefined =>
-    getEditionStats(item, getRulesEdition(edition).tag)?.[field] ?? item[field];
+    getPrintedItemBattleValue(item, edition, field) ?? item[field];
+
+/** The edition whose tables `edition` reads its Battle Values from (the CBT box set reads BMR(R)'s). */
+export const getBattleValueEdition = (edition: string | undefined): string => getListedEdition(edition, BV_RULES) ?? getRulesEdition(edition).tag;
+
+/** An item's BV, or a weapon's ammo BV per ton, only where `edition`'s tables print one. */
+export const getPrintedItemBattleValue = (item: IEquipmentItem, edition: string | undefined, field: "battleValue" | "ammoBattleValue" = "battleValue"): number | undefined =>
+    getEditionStats(item, getBattleValueEdition(edition))?.[field];
+
+/** Speed Factor: ((MP - 5) / 10 + 1) ^ 1.2 to two places, the curve both BV1 (BMR(R) p.154) and BV2 (TM p.316) tabulate. */
+export const getSpeedFactor = (mp: number): number => Number.isFinite(mp) ? Math.round(Math.pow(1 + (mp - 5) / 10, 1.2) * 100) / 100 : 0.44;
 
 /** True once `edition` works out a BV1 of its own for `unitType` (its BV1 record is entered, not pending). */
 const worksOutBv1 = (edition: string | undefined, unitType: BattleValueUnitType): boolean => {

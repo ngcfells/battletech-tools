@@ -248,8 +248,8 @@ export default class MechCreatorStep1 extends React.Component<IHomeProps, IHomeS
                             <p className="smaller-text">
                               Built from the {getRulesEdition(this.props.appGlobals.currentBattleMech.getRulesEdition()).name} rulebook: only what it includes is offered,
                               with the weights, heat, ranges, damage{editionHasPrices(this.props.appGlobals.currentBattleMech.getRulesEdition()) ? ", critical slots and prices" : " and critical slots"} it prints.
-                              {editionHasBattleValue(this.props.appGlobals.currentBattleMech.getRulesEdition()) ? " Battle Value" : " This rulebook has no Battle Value: the one shown is the current rules' (BV2), for comparison. It"}
-                              {editionHasPrices(this.props.appGlobals.currentBattleMech.getRulesEdition()) ? (editionHasBattleValue(this.props.appGlobals.currentBattleMech.getRulesEdition()) ? " and total cost still follow the current rules." : " prints prices, but the total cost still follows the current rules.") : " prints no prices either, so the design has no cost."}
+                              {editionHasBattleValue(this.props.appGlobals.currentBattleMech.getRulesEdition()) ? " Battle Value is its BV1, with the current rules' (BV2) beside it." : " This rulebook has no Battle Value: the one shown is the current rules' (BV2), for comparison."}
+                              {editionHasPrices(this.props.appGlobals.currentBattleMech.getRulesEdition()) ? " It prints prices, but the total cost still follows the current rules." : " It prints no prices, so the design has no cost."}
                             </p>
                           ) : null}
                           {this.props.appGlobals.currentBattleMech.getRulesEditionIssues(shownLevel).length > 0 ? (

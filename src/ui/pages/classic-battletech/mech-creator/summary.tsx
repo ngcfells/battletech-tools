@@ -248,7 +248,7 @@ export default class MechCreatorSummary extends React.Component<IHomeProps, IHom
                             <div className="col-lg-4">
                               <h4 className="text-center">Battle Value</h4>
                               {getBattleValueRules(this.props.appGlobals.currentBattleMech.getRulesEdition(), "mech").scheme === "bv2" ? null : (
-                                <p className="smaller-text text-center">{getRulesEdition(this.props.appGlobals.currentBattleMech.getRulesEdition()).name} {editionHasBattleValue(this.props.appGlobals.currentBattleMech.getRulesEdition()) ? "uses BV1, which is not entered yet" : "has no Battle Value"}. This is the current rules' (BV2), for comparison.</p>
+                                <p className="smaller-text text-center">{getRulesEdition(this.props.appGlobals.currentBattleMech.getRulesEdition()).name} {editionHasBattleValue(this.props.appGlobals.currentBattleMech.getRulesEdition()) ? "uses BV1: its steps come first, then the current rules' (BV2), for comparison." : "has no Battle Value. This is the current rules' (BV2), for comparison."}</p>
                               )}
                               <div className="mech-tro some-padding">
                                 <SanitizedHTML html={this.props.appGlobals.currentBattleMech.calcLogBV} raw={true} />

@@ -35,8 +35,9 @@ describe("Classic BattleTech force rules edition", () => {
         expect(force.export().rulesEdition).toBeUndefined();
 
         force.rulesEdition = "master-rules";
-        expect(force.getBattleValueText()).toBe(`— (BV2: ${bv2})`);
-        expect(force.groups[0].getBattleValueText(force.rulesEdition)).toBe(`— (BV2: ${bv2})`);
+        const bv1 = mech.getPilotAdjustedBattleValue("master-rules").toLocaleString("en-US");
+        expect(force.getBattleValueText()).toBe(`${bv1} (BV2: ${bv2})`);
+        expect(force.groups[0].getBattleValueText(force.rulesEdition)).toBe(`${bv1} (BV2: ${bv2})`);
         expect(new BattleMechForce(JSON.parse(JSON.stringify(force.export()))).rulesEdition).toBe("master-rules");
         expect(new BattleMechForce({ ...force.export(), rulesEdition: "no-such-edition" }).rulesEdition).toBe("total-warfare");
     });

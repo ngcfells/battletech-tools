@@ -10,7 +10,7 @@ import { getBattleMechTroAdapter } from "./battlemech-tro";
 import { isSSWNoMake, readSSWTechnicalReadout } from "../utils/ssw-technical-readout";
 import { ITechnicalReadoutExport } from "../data/technical-readout-interfaces";
 import { getAlphaStrikeQuirks, getQuirkHeatGenerated, getQuirkWeaponHeat } from "../utils/quirk-effects";
-import { BattleValueC3Type, IBattleValueTagShare, getBattleValueC3Type, getBattleValueFor, getBattleValueSkillEdition, getBattleValueTagShare, getSkillMultiplier } from "../data/battle-value";
+import { BattleValueC3Type, IBattleValueTagShare, getBattleValueC3Type, getBattleValueEdition, getBattleValueFor, getBattleValueSkillEdition, getBattleValueTagShare, getPrintedItemBattleValue, getSkillMultiplier, getSpeedFactor } from "../data/battle-value";
 import { battlemechLocations } from "../data/battlemech-locations";
 import { IArmorType, ICockpitType, ICriticalLocations, IEngineOption, IEngineType, IEquipmentItem, IGyro, IHeatSync, IInternalStructure, IInternalStructurePerTon, IJumpJet, IMyomerType, IResolvedInternalStructure, ISplitLocation, ITechDates } from "../data/data-interfaces";
 import { btEraOptions, findEraByTag, getClosestEraForTech, getEraForYear, getErasForTech } from "../data/era-options";
@@ -626,6 +626,8 @@ export class BattleMech {
     private _cbillCost = "0";
     private _cbillCostWithAmmo = "0";
     private _battleValue = 0;
+    /** BV1 by edition, cleared with each recalculation. */
+    private _battleValue1 = new Map<string, number>();
     private _defensiveBattleRating = 0;
     private _offensiveBattleRating = 0;
     private _pilotAdjustedBattleValue = 0;
@@ -1518,6 +1520,13 @@ export class BattleMech {
 
         // Commit values into the master class structures
         this._battleValue = absoluteRoundedBV + bombBV;
+        // Under a BV1 edition its own steps come first in the log, then the BV2 ones for comparison (plan ruling 1).
+        this._battleValue1.clear();
+        getBattleValueFor(this._rulesEdition, "mech", { bv1: () => {
+            const steps: string[] = [];
+            this._battleValue1.set(this._rulesEdition, this._calcBattleValue1(this._rulesEdition, steps));
+            this._calcLogBV = steps.join("") + "<strong>BV2 (current rules), for comparison</strong><br />" + this._calcLogBV;
+        }, bv2: () => undefined });
 
         // Trigger secondary tracking updates for personnel/skills assignment
         this._setPilotAdjustedBattleValue();
@@ -1541,10 +1550,10 @@ export class BattleMech {
             this._calcLogBV += `[Pilot Data Alert] Skill rating layout (${gunnery}/${piloting}) falls outside standard matrix boundaries. Defaulting to 1.0x baseline modifier.<br />`;
         }
         // Calculate finalized personnel metrics and round to whole integer steps
-        const adjustedValueRaw = this._battleValue * skillMultiplier;
-        this._pilotAdjustedBattleValue = Math.round(adjustedValueRaw);
+        const baseBattleValue = this.getBattleValue();
+        this._pilotAdjustedBattleValue = Math.round(baseBattleValue * skillMultiplier);
         this._calcLogBV += `<strong>Pilot Adjusted BV:</strong> ${this._pilotAdjustedBattleValue} ` +
-            `(Base Unit BV: ${this._battleValue} x Skill Multiplier [G:${gunnery}/P:${piloting}]: ${skillMultiplier.toFixed(2)})<br />`;
+            `(Base Unit BV: ${baseBattleValue} x Skill Multiplier [G:${gunnery}/P:${piloting}]: ${skillMultiplier.toFixed(2)})<br />`;
     }
 
     /**
@@ -1564,11 +1573,112 @@ export class BattleMech {
             : this.getBVRunSpeed() + Math.round(Math.max(this.getBVJumpSpeed(), this.getUMUSpeed()) / 2);
 
         // Units without valid movement data (NaN/Infinity) fall back to the MP 0 factor instead of poisoning BV.
-        if (!Number.isFinite(speedFactorMP)) {
-            return 0.44;
-        }
+        return getSpeedFactor(speedFactorMP);
+    }
 
-        return Math.round(Math.pow(1 + (speedFactorMP - 5) / 10, 1.2) * 100) / 100;
+    /**
+     * BV1 (BMR pp.139-141 with the FanPro errata p.12; BMR(R) pp.152-154), from `edition`'s equipment tables (BMR
+     * pp.142-144, BMR(R) pp.156-158). Fractions are kept to the end. `log` collects the steps when given.
+     */
+    private _calcBattleValue1(edition: string, log?: string[]): number {
+        const note = (line: string) => log?.push(line + "<br />");
+        const statsEdition = getBattleValueEdition(edition);
+        const isAmmo = (item: IEquipmentItem) => item.isAmmo || item.tag.startsWith("ammo-");
+        // AMS (with its ammo), A-Pods and ECM; an active probe is offensive here (BMR(R) p.152).
+        const isDefensive = (item: IEquipmentItem) => item.battleValueDefensive === true && !/probe/.test(item.tag);
+        // A weapon's BV, or with `weapon` an ammo bin's per ton, from the edition's tables; the catalog's BV2 otherwise.
+        const valueOf = (item: IEquipmentItem, weapon?: IEquipmentItem): number => {
+            const printed = getPrintedItemBattleValue(weapon ?? item, edition, weapon ? "ammoBattleValue" : "battleValue");
+            if (printed !== undefined) return printed;
+            const bv2 = weapon ? getAmmoBattleValuePerTon(weapon, item) : getItemBattleValue(item, this._tech.tag);
+            if (bv2) note(`${this._escapeLogText(item.name)}: not in the ${getRulesEdition(statsEdition).name} tables, BV2 figure ${bv2} used`);
+            return bv2;
+        };
+        note(`<strong>BV1 (${getRulesEdition(statsEdition).name})</strong>`);
+
+        // Step 1: Defensive Battle Rating (BMR(R) pp.152-153).
+        const structureFactor = ({ xl: 0.75, light: 1.125, clan_xl: 1.125 } as Record<string, number>)[this._engineType.tag] ?? 1.5;
+        let defensiveGear = 0;
+        for (const item of this._equipmentList) {
+            const fed = isAmmo(item) ? this.getAmmoBinWeapon(item) : null;
+            if (fed && isDefensive(fed)) defensiveGear += valueOf(item, fed) * item.weight;
+            else if (!isAmmo(item) && isDefensive(item)) defensiveGear += valueOf(item);
+        }
+        // 20 a ton of explosive ammo, a Gauss rifle counting as a ton. Clan: center torso, legs and head; Inner Sphere
+        // XL engine: anywhere; otherwise also a side torso without CASE, or an arm without CASE there or inward.
+        const innerSphereXL = ((this.getLargeEngineType() ?? this._engineType).criticals?.[this.getEngineTechBase()]?.lt ?? 0) >= 3;
+        const hasCase = (loc: string) => this.hasClanCASE() || ((this._criticals as any)[BattleMech.MECH_LOCATION_MAP[loc]] || [])
+            .some((critical: any) => matchesTag(critical, "case") || matchesTag(critical, "case-prototype"));
+        const inward: Record<string, string> = { la: "lt", ra: "rt" };
+        const penalised = (loc: string) => innerSphereXL || !["lt", "rt", "la", "ra"].includes(loc)
+            || (!hasCase(loc) && !(inward[loc] && hasCase(inward[loc])));
+        let explosive = 0;
+        for (const item of this._equipmentList) {
+            const tons = BattleMech._isExplosiveAmmoSlot(item) ? item.weight : BattleMech._isExplosiveComponent(item) && item.gauss ? 1 : 0;
+            if (tons > 0 && item.location && BattleMech.MECH_LOCATION_MAP[item.location] && penalised(item.location)) explosive += 20 * tons;
+        }
+        // Maximum potential heat: every weapon but the rear-firing ones (Ultra x 2, Streak / 2), plus running or
+        // jumping, whichever is hotter; Stealth armor +10 (in the movement heat).
+        const firing = this._equipmentList.filter(item => !isAmmo(item) && !isDefensive(item));
+        const heatOf = (item: IEquipmentItem) => (getEditionStats(item, statsEdition)?.heat ?? item.heat ?? 0) * (item.isUltra ? 2 : item.isStreak ? 0.5 : 1);
+        const maxHeat = firing.filter(item => !item.rear).reduce((sum, item) => sum + heatOf(item), 0) + this.getMaxMovementHeat();
+        const sinkCapacity = this.getHeatSinks() * this._heatSinkType.dissipation + this.getEquipmentHeatDissipation();
+        const heatPenalty = Math.max(0, maxHeat - sinkCapacity) * 5;
+        const armor = this.getTotalArmor() * 2;
+        const structure = this._totalInternalStructurePoints * structureFactor;
+        // The subtractions cannot take the total below 1.
+        const subtotal = Math.max(1, armor + structure + this.getTonnage() + defensiveGear - explosive - heatPenalty);
+        note(`Armor ${this.getTotalArmor()} x 2 = ${armor} + Internal Structure ${this._totalInternalStructurePoints} x ${structureFactor} = ${structure} + Tonnage ${this.getTonnage()} + Defensive Equipment ${defensiveGear} - Explosive Ammo ${explosive} - Heat (${maxHeat} - ${sinkCapacity}) x 5 = ${heatPenalty}: ${subtotal}`);
+        // Defensive Movement Factor: the BMR(R) p.33 modifiers (Total Warfare's up to +4), +1 more for jumping; MASC and TSM count.
+        const tmm = (mp: number) => Math.min(getMovementModifier(mp), 4);
+        const jump = this.getBVJumpSpeed();
+        const movementModifier = Math.max(tmm(this.getBVRunSpeed()), jump > 0 ? tmm(jump) + 1 : 0);
+        const defensive = subtotal * (1 + movementModifier / 10);
+        note(`Defensive Battle Rating: ${subtotal} x ${1 + movementModifier / 10} (TMM +${movementModifier}) = ${defensive}`);
+
+        // Step 2: Offensive Battle Rating (BMR(R) pp.153-154). Rear weapons count half, unless they outweigh the rest.
+        const weapons = firing.map(item => ({ item, bv: valueOf(item) })).filter(entry => entry.bv > 0);
+        const rearBV = weapons.reduce((sum, entry) => sum + (entry.item.rear ? entry.bv : 0), 0);
+        const rearIsFront = rearBV > weapons.reduce((sum, entry) => sum + (entry.item.rear ? 0 : entry.bv), 0);
+        const arc = (item: IEquipmentItem) => !!item.rear === rearIsFront ? 1 : 0.5;
+        const weaponBV = weapons.reduce((sum, entry) => sum + entry.bv * arc(entry.item), 0);
+        // A targeting computer: 20% of the weapons it links, rear ones halved, no ammo (BMR(R) p.153, p.121).
+        const computerBV = this.hasTargetingComputer()
+            ? 0.2 * weapons.reduce((sum, entry) => sum + (isTargetingComputerWeapon(entry.item) ? entry.bv * arc(entry.item) : 0), 0) : 0;
+        let ammoBV = 0;
+        for (const item of this._equipmentList.filter(isAmmo)) {
+            const fed = this.getAmmoBinWeapon(item);
+            if (fed && !isDefensive(fed)) ammoBV += valueOf(item, fed) * item.weight;
+        }
+        let base = weaponBV + computerBV + ammoBV;
+        note(`Base Weapon Battle Rating: Weapons ${weaponBV} + Targeting Computer ${computerBV} + Ammo ${ammoBV} = ${base}`);
+        // Weapons that cannot be fired once the 'Mech overheats are worth half.
+        if (maxHeat > sinkCapacity) {
+            const x = sinkCapacity * base / maxHeat;
+            base = x + (base - x) / 2;
+            note(`Heat: X = ${sinkCapacity} x Base / ${maxHeat} = ${x}, Y = (Base - X) / 2: Modified Weapon Battle Rating ${base}`);
+        }
+        // Speed Factor MP: Running + Jumping, +1 with MASC, a Supercharger (Max Tech p.91) or TSM; Stealth armor +0.2.
+        const enhanced = this.hasTripleStrengthMyomer() || this._equipmentList.some(item => ["masc-is", "masc-clan", "supercharger"].includes(item?.variableFormula ?? ""));
+        const speedMP = this.getRunSpeed() + jump + (enhanced ? 1 : 0);
+        const speedFactor = getSpeedFactor(speedMP) + (this._armorType.tag === "stealth-basic" ? 0.2 : 0);
+        const offensive = base * speedFactor;
+        note(`Offensive Battle Rating: ${base} x Speed Factor ${speedFactor} (MP ${speedMP}) = ${offensive}`);
+
+        // Step 3: Final BV, rounded (BMR(R) p.154).
+        const battleValue = Math.round(defensive + offensive);
+        note(`<strong>BV1:</strong> ${battleValue} (rounded from ${defensive + offensive})`);
+        return battleValue;
+    }
+
+    /** BV1 under `edition`, worked out once per edition until the 'Mech changes. */
+    private _getBattleValue1(edition: string): number {
+        let battleValue = this._battleValue1.get(edition);
+        if (battleValue === undefined) {
+            battleValue = this._calcBattleValue1(edition);
+            this._battleValue1.set(edition, battleValue);
+        }
+        return battleValue;
     }
 
     public isQuad() {
@@ -2022,7 +2132,7 @@ export class BattleMech {
 
     public getBattleValue(edition: string = this._rulesEdition): number {
         this._refreshBattleValue();
-        return getBattleValueFor(edition, "mech", { bv2: () => this._battleValue });
+        return getBattleValueFor(edition, "mech", { bv1: () => this._getBattleValue1(edition), bv2: () => this._battleValue });
     }
 
     /**

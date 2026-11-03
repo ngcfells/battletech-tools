@@ -6778,9 +6778,9 @@ describe("Artemis fire control records (TM p.303, TO:AUE pp.95, 197, 217)", () =
 
 // BV v4.1 pp.3-7 (= TM pp.304-305) worked examples, built from each example's own inputs (plan gap 4).
 describe("Battle Value worked examples (BV v4.1 pp.3-7)", () => {
-    const build = (tonnage: number, walk: number, armorTag: string, armorTons: number, armor: number[], structure: string, engine = "standard") => {
+    const build = (tonnage: number, walk: number, armorTag: string, armorTons: number, armor: number[], structure: string, engine = "standard", tech = "is") => {
         const mech = new BattleMech();
-        mech.setTech("is");
+        mech.setTech(tech);
         mech.setEra("dark-ages");
         mech.setTonnage(tonnage);
         mech.setInternalStructureType(structure);
@@ -6803,9 +6803,9 @@ describe("Battle Value worked examples (BV v4.1 pp.3-7)", () => {
         mech.setRightLegArmor(rl);
         return mech;
     };
-    const add = (mech: BattleMech, tag: string) => mech.addEquipmentFromTag(tag, "is", "", false, undefined, "", false, [], undefined, undefined)!;
-    const placeIn = (mech: BattleMech, tag: string, location: string, key: string) => {
-        const item = add(mech, tag);
+    const add = (mech: BattleMech, tag: string, tech = "is") => mech.addEquipmentFromTag(tag, tech, "", false, undefined, "", false, [], undefined, undefined)!;
+    const placeIn = (mech: BattleMech, tag: string, location: string, key: string, tech = "is") => {
+        const item = add(mech, tag, tech);
         const from = mech.unallocatedCriticals.findIndex(critical => critical?.uuid === item.uuid);
         expect(mech.moveCritical("un", from, location, mech.getCriticals()[key].findIndex(critical => !critical))).toBe(true);
     };
@@ -6838,5 +6838,52 @@ describe("Battle Value worked examples (BV v4.1 pp.3-7)", () => {
         for (const tag of ["small-laser", "rock-cutter", "wrecking-ball"]) add(mech, tag);
         expect(mech.getTotalArmor()).toBe(85);
         expect(mech.getBattleValue()).toBe(380);
+    });
+
+    it("values the Goshawk at BV1 2,243 (BMR p.145 = BMR(R) p.159): Defensive 602.3875 + Offensive 1,640.72667", () => {
+        // The example's own inputs: 173 points of armor, 91 of structure on a Clan XL engine, 11 double heat sinks [22],
+        // Running MP 9, Jumping MP 6 (TRO 3055 prints 182 points of armor).
+        const mech = build(55, 6, "standard", 11, [9, 24, 8, 18, 6, 18, 6, 18, 18, 24, 24], "standard", "clan_xl", "clan");
+        mech.setHeatSinksType("double");
+        mech.setAdditionalHeatSinks(1);
+        mech.setJumpSpeed(6);
+        for (const tag of ["clan_large-pulse-laser", "clan_medium-pulse-laser", "clan_medium-pulse-laser", "clan_medium-pulse-laser",
+            "clan-machine-gun", "clan-machine-gun", "clan-machine-gun", "clan-machine-gun", "clan-streak-srm-2", "clan-streak-srm-2",
+            "clan-targeting-computer"]) add(mech, tag, "clan");
+        placeIn(mech, "ammo-clan-streak-srm-standard", "lt", "leftTorso", "clan");
+        // Half a ton of machine gun ammunition.
+        const bin = add(mech, "ammo-machine-gun-standard", "clan");
+        bin.weight = 0.5;
+        expect(mech.getTotalArmor()).toBe(173);
+        expect(mech.getHeatSinks()).toBe(11);
+        expect(mech.getBattleValue("master-rules-revised")).toBe(2243);
+        expect(mech.getBattleValue("master-rules")).toBe(2243);
+        // The box set reads BMR(R)'s BV1; under its own edition the cached skill-adjusted BV is the BV1 one.
+        expect(mech.getBattleValue("classic-battletech-box-set")).toBe(2243);
+        mech.setRulesEdition("master-rules-revised");
+        expect(mech.getPilotAdjustedBattleValue()).toBe(2243);
+        expect(mech.calcLogBV).toContain("BV1");
+    });
+
+    // Maximum Tech's BV1 lists (pp.94 on) follow BMR(R) to the point; loadouts from TRO 3025 / TRO 3060.
+    it("values the Enforcer ENF-4R at BV1 895 (Maximum Tech): one ton of ammo in a side torso without CASE", () => {
+        const mech = build(50, 4, "standard", 9, [9, 23, 4, 17, 3, 17, 3, 14, 14, 20, 20], "standard");
+        mech.setAdditionalHeatSinks(2);
+        mech.setJumpSpeed(4);
+        for (const tag of ["large-laser", "autocannon-standard-c", "small-laser"]) add(mech, tag);
+        placeIn(mech, "ammo-ac-10-standard", "rt", "rightTorso");
+        expect(mech.getBattleValue("master-rules-revised")).toBe(895);
+    });
+
+    it("values the Enforcer III ENF-6M at BV1 1,427 (Maximum Tech p.103): the printed IS Ultra AC/10 253", () => {
+        const mech = build(50, 5, "standard", 10, [9, 24, 7, 19, 5, 19, 5, 16, 16, 20, 20], "endo-steel", "xl");
+        mech.setHeatSinksType("double");
+        mech.setAdditionalHeatSinks(2);
+        mech.setJumpSpeed(5);
+        for (const tag of ["er-large-laser", "autocannon-ultra-c", "er-small-laser"]) add(mech, tag);
+        // Two tons in the right torso: an Inner Sphere XL engine costs -20 a ton anywhere.
+        placeIn(mech, "ammo-is-ultra-ac-10-standard", "rt", "rightTorso");
+        placeIn(mech, "ammo-is-ultra-ac-10-standard", "rt", "rightTorso");
+        expect(mech.getBattleValue("master-rules-revised")).toBe(1427);
     });
 });

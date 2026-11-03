@@ -167,10 +167,11 @@ export default class Home extends React.Component<IHomeProps, IHomeState> {
                   <ul className="news">
                   <li>
                   <h3>
-                      <strong>November 3rd, 2026</strong> - Aces card reader and SSW import fixes
+                      <strong>November 3rd, 2026</strong> - 'Mech BV1, Aces card reader and SSW import fixes
                     </h3>
                     <h4>Author - NGCFells</h4>
                       <ul>
+                        <li>Battle Value by rules edition: a 'Mech built under the <i>BattleTech Master Rules</i>, its Revised Edition or the Classic BattleTech box set now shows its BV1, worked out by that book's rules and equipment tables, with the current rules' BV2 beside it. It matches the Goshawk example in the book and the <i>Maximum Tech</i> BV lists. Other unit types show BV2 until their BV1 is in.</li>
                         <li>Aces: the card photo reader knows more of the cards' condition, movement and combat filter wording, thanks to Rekikire's typed card list.</li>
                         <li>Where an SSW file differs from the newest printed record sheet, importing it now gives the printed design too: the Zeus X ZEU-X and ZEU-X2 get their patchwork armor (Record Sheets: Dark Age), and the Skinwalker B gets its Improved Heavy Medium Lasers (Recognition Guide: ilClan 24).</li>
                       </ul>
