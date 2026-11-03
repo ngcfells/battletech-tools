@@ -42,6 +42,8 @@ describe("bundled 'Mechs", () => {
         expect([102180, 101073, 100319].map(bv)).toEqual([1227, 1234, 73]);
         // #171: Command Console designs at their record sheets' BV.
         expect([100143, 104760, 108066].map(bv)).toEqual([954, 1091, 2278]);
+        // #109: the Recognition Guide: ilClan Vol. 24 sheet prints 3,107 for the Skinwalker E (live MUL 3102).
+        expect(headers.find((header) => header.mulId === 103438)?.configs?.find((config) => config.name === "E")?.bv).toBe(3107);
         // MegaMek files with no cockpit line whose record sheets have a plain Industrial cockpit (no AFC).
         const byModel = (model: string) => headers.find((header) => header.model === model)?.bv;
         expect(["QUA-51T MilitiaMech", "HYN-4A SalvageMech", "HYN-4B SalvageMech"].map(byModel)).toEqual([670, 474, 398]);

@@ -2910,7 +2910,7 @@
 [2908,"Sirocco","SRC-3C",95,2154,10065900,1,3060,"Inner Sphere",104616,"ssw","327872a0",null,null,null],
 [2909,"Sirocco","SRC-5C",95,2107,10001550,1,3060,"Inner Sphere",105574,"ssw","6929ce3d",null,null,null],
 [2910,"Sirocco","SRC-6C",95,2202,12189450,1,3070,"Inner Sphere",101499,"ssw","869c3774",null,null,null],
-[2911,"Skinwalker (Ryoken III)","",55,2809,15310125,3,3147,"Clan",103438,"ssw","2e1fd127",{"$k":["name","bv","layout"],"$v":[["Prime",2809,"2e1fd127"],["A",3500,"c280f25e"],["C",3175,"9a558992"],["D",2545,"e34f9ca0"],["F",3704,"94b9533d"]]},null,null],
+[2911,"Skinwalker (Ryoken III)","",55,2809,15310125,3,3147,"Clan",103438,"ssw","2e1fd127",{"$k":["name","bv","layout"],"$v":[["Prime",2809,"2e1fd127"],["A",3500,"c280f25e"],["C",3175,"9a558992"],["D",2545,"e34f9ca0"],["E",3107,"10402428"],["F",3704,"94b9533d"]]},null,null],
 [2912,"Skinwalker (Ryoken III)","B",55,2851,23244188,0,0,"Clan",102002,"megamek","d123d250",null,null,null],
 [2913,"Sling","SL-1G",25,578,3223959,1,2766,"Inner Sphere",104906,"ssw","780a4253",null,null,null],
 [2914,"Sling","SL-1H",25,731,3341459,1,2766,"Inner Sphere",108157,"ssw","72a6efe0",null,null,null],

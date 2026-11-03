@@ -1,17 +1,17 @@
 # Bundled 'Mechs: build report
 
-3674 designs kept (38 renamed), 4054 files left out.
+3674 designs kept (38 renamed), 4052 files left out.
 
 | Reason | Files |
 |---|---|
-| duplicate of a design already kept | 3176 |
-| BV differs from the MUL | 229 |
+| duplicate of a design already kept | 3177 |
+| BV differs from the MUL | 228 |
 | different submodel, same name and model: equipment | 164 |
 | different submodel, same name and model: ammo type | 112 |
 | the import could not carry all of it over | 93 |
 | different submodel, same name and model: actuators | 86 |
 | no Master Unit List entry to check its BV against | 54 |
-| configuration BV differs from the MUL | 51 |
+| configuration BV differs from the MUL | 49 |
 | duplicate of a design already kept, differs only in armor spread | 36 |
 | import errors | 30 |
 | duplicate of a design already kept, differs only in engine heat sinks in crit slots | 6 |
@@ -42,7 +42,6 @@
 - `Clan/Omni/Mongrel (Grendel).ssw`: configuration BV differs from the MUL: T: BV 1931, MUL 1936
 - `Clan/Omni/Nova (Black Hawk).ssw`: import errors: T: Cannot find any equipment named: 'Ammo (Medium Chemical Laser)'; T: Cannot find any equipment named: 'Ammo (Medium Chemical Laser)'; T: Cannot find any equipment named: 'Ammo (Medium Chemical Laser)'; T: Cannot find any equipment named: 'Ammo (Medium Chemical Laser)'; U: 'Sword' is Inner Sphere equipment (Sword) on a Clan design; the design needs Mixed Tech
 - `Clan/Omni/Skinwalker (Ryoken III).ssw`: configuration BV differs from the MUL: B: BV 2725, MUL 2851
-- `Clan/Omni/Skinwalker (Ryoken III).ssw`: configuration BV differs from the MUL: E: BV 3107, MUL 3102
 - `Clan/Omni/Timber Wolf (Mad Cat).ssw`: configuration BV differs from the MUL: U: BV 2508, MUL 2627
 - `Clan/Omni/Viper (Dragonfly).ssw`: import errors: R: 'Bloodhound Active Probe' is Inner Sphere equipment (Bloodhound Active Probe) on a Clan design; the design needs Mixed Tech; U: 'Hatchet' is Inner Sphere equipment (Hatchet) on a Clan design; the design needs Mixed Tech
 - `Clan/RecGuide/Vol 11/Horned Owl (Peregrine) 6.ssw`: BV differs from the MUL: 6: BV 1413, MUL 1475
@@ -126,7 +125,6 @@
 - `Omnis/Rime Otter.ssw`: import errors: C: 'Hatchet' is Inner Sphere equipment (Hatchet) on a Clan design; the design needs Mixed Tech
 - `Omnis/Ryoken (Stormcrow).ssw`: duplicate of a design already kept: Stormcrow (Ryoken)  Prime
 - `Omnis/Ryoken III (Skinwalker).ssw`: configuration BV differs from the MUL: B: BV 2725, MUL 2851
-- `Omnis/Ryoken III (Skinwalker).ssw`: configuration BV differs from the MUL: E: BV 3107, MUL 3102
 - `Omnis/Ryoken III (Skinwalker).ssw`: duplicate of a design already kept: Skinwalker (Ryoken III)  Prime
 - `Omnis/Sarath SRTH-1O.ssw`: import errors: B: 'Talons' is Clan equipment (Talons (Clan)) on an Inner Sphere design; the design needs Mixed Tech
 - `Omnis/Savage Coyote.ssw`: configuration BV differs from the MUL: Z: BV 3026, MUL 3080
@@ -3345,7 +3343,7 @@
 - `megamek/Rec Guides ilClan/Vol 24/(Ryoken III) Skinwalker A.mtf`: different submodel, same name and model: equipment: Skinwalker (Ryoken III)  A
 - `megamek/Rec Guides ilClan/Vol 24/(Ryoken III) Skinwalker C.mtf`: duplicate of a design already kept: Skinwalker (Ryoken III)  C
 - `megamek/Rec Guides ilClan/Vol 24/(Ryoken III) Skinwalker D.mtf`: different submodel, same name and model: equipment: Skinwalker (Ryoken III)  D
-- `megamek/Rec Guides ilClan/Vol 24/(Ryoken III) Skinwalker E.mtf`: BV differs from the MUL: E: BV 3107, MUL 3102
+- `megamek/Rec Guides ilClan/Vol 24/(Ryoken III) Skinwalker E.mtf`: duplicate of a design already kept: Skinwalker (Ryoken III)  E
 - `megamek/Rec Guides ilClan/Vol 24/(Ryoken III) Skinwalker F.mtf`: duplicate of a design already kept: Skinwalker (Ryoken III)  F
 - `megamek/Rec Guides ilClan/Vol 24/(Ryoken III) Skinwalker Prime.mtf`: duplicate of a design already kept: Skinwalker (Ryoken III)  Prime
 - `megamek/Rec Guides ilClan/Vol 24/Alpha Wolf A.mtf`: BV differs from the MUL: A: BV 3435, MUL 3359

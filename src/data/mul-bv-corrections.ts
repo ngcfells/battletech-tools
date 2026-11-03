@@ -27,6 +27,8 @@ export const MUL_BV_CORRECTIONS: Record<number, { bv: number; source: string }> 
     108544: { bv: 1759, source: "Gurzil Support Tank: TO:AUE p.197 (live MUL 1765)" },
     103072: { bv: 507, source: "Mortar Carrier: TO:AUE p.194 (live MUL 517)" },
     108066: { bv: 2278, source: "Atlas AS7-S3-DC: Recognition Guide: ilClan Vol. 24 record sheet (live MUL 2276)" },
+    // #109. The printed sheet's 3,107 is TM + IO:AE (Clan ER PPC w/ Capacitor 548, IO:AE p.190) to the point.
+    105956: { bv: 3107, source: "Ryoken III (Skinwalker) E: Recognition Guide: ilClan Vol. 24 p.5 (live MUL 3102)" },
 };
 
 /** A live MUL entry with its Battle Value corrected, when the table has one. */
