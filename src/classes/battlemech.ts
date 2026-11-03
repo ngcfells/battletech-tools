@@ -1629,7 +1629,7 @@ export class BattleMech {
         // The subtractions cannot take the total below 1.
         const subtotal = Math.max(1, armor + structure + this.getTonnage() + defensiveGear - explosive - heatPenalty);
         note(`Armor ${this.getTotalArmor()} x 2 = ${armor} + Internal Structure ${this._totalInternalStructurePoints} x ${structureFactor} = ${structure} + Tonnage ${this.getTonnage()} + Defensive Equipment ${defensiveGear} - Explosive Ammo ${explosive} - Heat (${maxHeat} - ${sinkCapacity}) x 5 = ${heatPenalty}: ${subtotal}`);
-        // Defensive Movement Factor: the BMR(R) p.33 modifiers (Total Warfare's up to +4), +1 more for jumping; MASC and TSM count.
+        // Defensive Movement Factor: the BMR(R) p.25 modifiers (Total Warfare's up to +4), +1 more for jumping; MASC and TSM count.
         const tmm = (mp: number) => Math.min(getMovementModifier(mp), 4);
         const jump = this.getBVJumpSpeed();
         const movementModifier = Math.max(tmm(this.getBVRunSpeed()), jump > 0 ? tmm(jump) + 1 : 0);
