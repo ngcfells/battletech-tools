@@ -3,7 +3,7 @@
 // MegaMek's equipment names are on the catalog records (altNames), as findImportedEquipment expects (#118, #241).
 import { IEquipmentItem } from "../data/data-interfaces";
 import { mechInternalStructureTypes } from "../data/mech-internal-structure-types";
-import { MTF_DESIGN_CORRECTIONS } from "../data/mtf-design-corrections";
+import { DESIGN_CORRECTIONS } from "../data/mtf-design-corrections";
 import { findAllByName } from "../data/tag-match";
 import { findBlkAmmo, findBlkAmmoWeapon, parseBlkAmmoLine } from "../utils/blk-ammo";
 import { IBlkFile } from "../utils/blk-file";
@@ -109,7 +109,7 @@ const value = (file: IMtfFile, key: string): string => file.values[key]?.[0] ?? 
 const xml = (text: string): string => text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 
 /** Replaces the file's lines with its design's printed values, when the table has the design. */
-export const correctMtfDesign = (file: IMtfFile, corrections = MTF_DESIGN_CORRECTIONS): void => {
+export const correctMtfDesign = (file: IMtfFile, corrections = DESIGN_CORRECTIONS): void => {
     const correction = corrections[`${value(file, "chassis")} ${value(file, "model")}`.trim()];
     for (const [key, line] of Object.entries(correction?.values ?? {})) file.values[key] = [line];
 };

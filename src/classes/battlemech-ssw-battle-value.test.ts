@@ -118,7 +118,26 @@ describe("SSW Battle Value (#46)", () => {
         expect(mech.getArmoredComponentSlots()).toBe(18);
         expect(mech.getArmoredComponentWeight()).toBe(9);
         expect(mech.getArmorableComponents().find((component) => component.key === "engine")?.armored).toBe(true);
-        expect(mech.getBattleValue()).toBe(2120);
+        // The file's reactive armor everywhere is corrected to the printed patchwork (DESIGN_CORRECTIONS): SSW wrote 2,120.
+        expect(mech.getBattleValue()).toBe(1915);
+    });
+
+    // A design whose SSW file differs from its newest printed sheet is corrected on import, by name, model and
+    // configuration, from DESIGN_CORRECTIONS (each entry cited) (#607).
+    it("corrects an SSW design from its printed sheet: Zeus X ZEU-X2, Skinwalker B", () => {
+        const zeus = importFixture("zeus-x-zeu-x2");
+        expect(zeus.sswImportErrors).toEqual([]);
+        expect(zeus.getPatchworkArmorType("leftArm").tag).toBe("reactive");
+        expect(zeus.getPatchworkArmorType("centerTorso").tag).toBe("standard");
+        expect(zeus.getUnallocatedCriticals()).toEqual([]);
+
+        const skinwalker = importFixture("skinwalker-ryoken-iii");
+        expect(skinwalker.switchOmniConfiguration("B")).toBe(true);
+        expect(tags(skinwalker).filter((tag) => /heavy-medium-laser/.test(tag))).toEqual(Array(3).fill("clan-improved-heavy-medium-laser"));
+        expect(skinwalker.getBattleValue()).toBe(2851);
+        // Only B is listed: D keeps its own lasers and BV.
+        expect(skinwalker.switchOmniConfiguration("D")).toBe(true);
+        expect(skinwalker.getBattleValue()).toBe(2545);
     });
 
     it("counts 5% of the gyro's BV for each armored gyro slot: Hunchback HBK-7X-4", () => {

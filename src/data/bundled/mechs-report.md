@@ -1,23 +1,24 @@
 # Bundled 'Mechs: build report
 
-3674 designs kept (38 renamed), 4052 files left out.
+3673 designs kept (38 renamed), 4051 files left out.
 
 | Reason | Files |
 |---|---|
-| duplicate of a design already kept | 3177 |
-| BV differs from the MUL | 228 |
-| different submodel, same name and model: equipment | 164 |
+| duplicate of a design already kept | 3179 |
+| BV differs from the MUL | 224 |
+| different submodel, same name and model: equipment | 165 |
 | different submodel, same name and model: ammo type | 112 |
 | the import could not carry all of it over | 93 |
-| different submodel, same name and model: actuators | 86 |
+| different submodel, same name and model: actuators | 87 |
 | no Master Unit List entry to check its BV against | 54 |
-| configuration BV differs from the MUL | 49 |
+| configuration BV differs from the MUL | 47 |
 | duplicate of a design already kept, differs only in armor spread | 36 |
 | import errors | 30 |
 | duplicate of a design already kept, differs only in engine heat sinks in crit slots | 6 |
 | does not survive the compact format | 6 |
 | different submodel, same name and model: heat sinks placed | 6 |
 | different submodel, same name and model: heat sinks | 2 |
+| BV differs from the file (no MUL entry) | 1 |
 | BV differs from the MUL in every configuration | 1 |
 | duplicate of a design already kept, differs only in CASE placed | 1 |
 | different submodel, same name and model: CASE | 1 |
@@ -41,7 +42,6 @@
 - `Clan/Omni/Mist Lynx (Koshi).ssw`: BV differs from the MUL: : BV 871, MUL 760
 - `Clan/Omni/Mongrel (Grendel).ssw`: configuration BV differs from the MUL: T: BV 1931, MUL 1936
 - `Clan/Omni/Nova (Black Hawk).ssw`: import errors: T: Cannot find any equipment named: 'Ammo (Medium Chemical Laser)'; T: Cannot find any equipment named: 'Ammo (Medium Chemical Laser)'; T: Cannot find any equipment named: 'Ammo (Medium Chemical Laser)'; T: Cannot find any equipment named: 'Ammo (Medium Chemical Laser)'; U: 'Sword' is Inner Sphere equipment (Sword) on a Clan design; the design needs Mixed Tech
-- `Clan/Omni/Skinwalker (Ryoken III).ssw`: configuration BV differs from the MUL: B: BV 2725, MUL 2851
 - `Clan/Omni/Timber Wolf (Mad Cat).ssw`: configuration BV differs from the MUL: U: BV 2508, MUL 2627
 - `Clan/Omni/Viper (Dragonfly).ssw`: import errors: R: 'Bloodhound Active Probe' is Inner Sphere equipment (Bloodhound Active Probe) on a Clan design; the design needs Mixed Tech; U: 'Hatchet' is Inner Sphere equipment (Hatchet) on a Clan design; the design needs Mixed Tech
 - `Clan/RecGuide/Vol 11/Horned Owl (Peregrine) 6.ssw`: BV differs from the MUL: 6: BV 1413, MUL 1475
@@ -59,8 +59,6 @@
 - `MWDA/Firestarter FS9-M3.ssw`: BV differs from the MUL: FS9-M3: BV 827, MUL 866
 - `MWDA/Mad Cat III 2.ssw`: BV differs from the MUL: 2: BV 2095, MUL 1697
 - `MWDA/Mad Cat III.ssw`: BV differs from the MUL: : BV 2061, MUL 2400
-- `MWDA/Zeus ZEU-X.ssw`: BV differs from the MUL: ZEU-X: BV 2326, MUL 2119
-- `MWDA/Zeus ZEU-X2.ssw`: BV differs from the MUL: ZEU-X2: BV 2120, MUL 1915
 - `Misc/Gestalt D2X-G.ssw`: BV differs from the MUL: D2X-G: BV 2329, MUL 2392
 - `Misc/Pulverizer PUL-2V.ssw`: import errors: '(IS) Enhanced ER PPC' is Clan equipment (Enhanced PPC) on an Inner Sphere design; the design needs Mixed Tech
 - `Misc/Revenant UBM-1A.ssw`: BV differs from the MUL: UBM-1A: BV 702, MUL 784
@@ -124,7 +122,6 @@
 - `Omnis/Regent.ssw`: configuration BV differs from the MUL: A: BV 3419, MUL 3412
 - `Omnis/Rime Otter.ssw`: import errors: C: 'Hatchet' is Inner Sphere equipment (Hatchet) on a Clan design; the design needs Mixed Tech
 - `Omnis/Ryoken (Stormcrow).ssw`: duplicate of a design already kept: Stormcrow (Ryoken)  Prime
-- `Omnis/Ryoken III (Skinwalker).ssw`: configuration BV differs from the MUL: B: BV 2725, MUL 2851
 - `Omnis/Ryoken III (Skinwalker).ssw`: duplicate of a design already kept: Skinwalker (Ryoken III)  Prime
 - `Omnis/Sarath SRTH-1O.ssw`: import errors: B: 'Talons' is Clan equipment (Talons (Clan)) on an Inner Sphere design; the design needs Mixed Tech
 - `Omnis/Savage Coyote.ssw`: configuration BV differs from the MUL: Z: BV 3026, MUL 3080
@@ -235,8 +232,8 @@
 - `RS 3145/Free Worlds League/Anzu ZU-G60.ssw`: BV differs from the MUL: ZU-G60: BV 1503, MUL 1486
 - `RS 3145/Free Worlds League/Neanderthal NTL-AG.ssw`: BV differs from the MUL: NTL-AG: BV 2020, MUL 2024
 - `RS 3145/Lyran Commonwealth/Firestarter FS9-M2.ssw`: duplicate of a design already kept: Firestarter FS9-M2
-- `RS 3145/Lyran Commonwealth/Zeus X ZEU-X.ssw`: BV differs from the MUL: ZEU-X: BV 2326, MUL 2119
-- `RS 3145/Lyran Commonwealth/Zeus X ZEU-X2.ssw`: BV differs from the MUL: ZEU-X2: BV 2120, MUL 1915
+- `RS 3145/Lyran Commonwealth/Zeus X ZEU-X.ssw`: duplicate of a design already kept: Zeus ZEU-X
+- `RS 3145/Lyran Commonwealth/Zeus X ZEU-X2.ssw`: BV differs from the file (no MUL entry): BV 1915, file 2120; Zeus X ZEU-X2 renamed ZEU-X2 2, a different submodel (equipment) of Zeus ZEU-X2
 - `RS 3145/NTNU/Blade BLD-7R.ssw`: duplicate of a design already kept: Blade BLD-7R
 - `RS 3145/NTNU/Cougar X 2.ssw`: duplicate of a design already kept: Cougar X2
 - `RS 3145/NTNU/Cougar X.ssw`: duplicate of a design already kept: Cougar X
@@ -2743,6 +2740,8 @@
 - `megamek/3145/Steiner/Ursa URA-2A.mtf`: duplicate of a design already kept: Ursa URA-2A
 - `megamek/3145/Steiner/Ursa URA-2C.mtf`: duplicate of a design already kept: Ursa URA-2C
 - `megamek/3145/Steiner/Viking IIC.mtf`: duplicate of a design already kept: Viking IIC 
+- `megamek/3145/Steiner/Zeus X ZEU-X.mtf`: different submodel, same name and model: actuators: Zeus ZEU-X
+- `megamek/3145/Steiner/Zeus X ZEU-X2.mtf`: different submodel, same name and model: equipment: Zeus ZEU-X2
 - `megamek/3145/Steiner/Zeus X ZEU-X3.mtf`: different submodel, same name and model: equipment: Zeus ZEU-X3
 - `megamek/3145/Steiner/Zeus X ZEU-X4.mtf`: duplicate of a design already kept: Zeus X ZEU-X4
 - `megamek/3150/Prey Seeker PY-SR30.mtf`: BV differs from the MUL: PY-SR30: BV 349, MUL 331
@@ -3341,6 +3340,7 @@
 - `megamek/Rec Guides ilClan/Vol 23/Star Crusader Prime.mtf`: duplicate of a design already kept: Star Crusader  Prime
 - `megamek/Rec Guides ilClan/Vol 23/Star Python.mtf`: duplicate of a design already kept: Star Python 
 - `megamek/Rec Guides ilClan/Vol 24/(Ryoken III) Skinwalker A.mtf`: different submodel, same name and model: equipment: Skinwalker (Ryoken III)  A
+- `megamek/Rec Guides ilClan/Vol 24/(Ryoken III) Skinwalker B.mtf`: duplicate of a design already kept: Skinwalker (Ryoken III)  B
 - `megamek/Rec Guides ilClan/Vol 24/(Ryoken III) Skinwalker C.mtf`: duplicate of a design already kept: Skinwalker (Ryoken III)  C
 - `megamek/Rec Guides ilClan/Vol 24/(Ryoken III) Skinwalker D.mtf`: different submodel, same name and model: equipment: Skinwalker (Ryoken III)  D
 - `megamek/Rec Guides ilClan/Vol 24/(Ryoken III) Skinwalker E.mtf`: duplicate of a design already kept: Skinwalker (Ryoken III)  E

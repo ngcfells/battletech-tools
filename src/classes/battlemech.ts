@@ -46,6 +46,7 @@ import { adjustAlphaStrikeDamage, calculateAlphaStrikeValue, IAlphaStrikeExport,
 import { isAlphaStrikeAbilityCode } from "../data/alpha-strike-special-abilities";
 import { generateUUID } from "../utils/generateUUID";
 import { ISSWBasicInfo, parseSSWXML } from "../utils/getSSWXMLBasicInfo";
+import { correctSSWDesign } from "../data/mtf-design-corrections";
 import { findImportedEquipment, ImportFaction } from "../utils/importedEquipment";
 import { getMountedHeat, mateLaserInsulators } from "../data/laser-insulator";
 import { findIncompleteCustomContent, hasIncompleteCustomContent } from "../data/custom-content-incomplete";
@@ -13391,6 +13392,8 @@ export class BattleMech {
         ssw_xml: string
     ): void {
         const jObj = parseSSWXML(ssw_xml);
+        // A design whose file differs from its newest printed sheet gets the sheet's (#607).
+        correctSSWDesign( jObj );
         const omnimech = String( jObj?.mech?.["@_omnimech"] ?? "" ).toLowerCase().trim() === "true";
         const loadouts: any[] = omnimech ? ( [] as any[] ).concat( jObj.mech.loadout ?? [] ) : [];
         if( loadouts.length === 0 ) {
