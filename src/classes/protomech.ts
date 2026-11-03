@@ -932,9 +932,10 @@ export default class ProtoMech implements IGameSettingsUnit {
         if (missile) return missile.bv[(mount.tubes ?? 1) - 1] ?? 0;
         const special = this.getSpecial(mount);
         if (special) {
-            // The added Frenzy damage x 1.25 (TO:AUE p.199; IO:AE p.190).
+            // The added Frenzy damage x 1.25 (TO:AUE p.199). The quad system counts the base Frenzy damage too
+            // (IO:AE p.190 "Dmg x 1.25"; WoR p.210 Basilisk (Quad) 258; user ruling 2026-11-02).
             if (special.bv === "melee") return Math.ceil(this._tons / 5) * 1.25;
-            if (special.bv === "quad-melee") return 2 * Math.ceil(this._tons / 5) * 1.25;
+            if (special.bv === "quad-melee") return (getProtoMechFrenzyDamage(this._tons) + 2 * Math.ceil(this._tons / 5)) * 1.25;
             return special.bv;
         }
         return findCatalogItem(mount.tag)?.battleValue ?? 0;

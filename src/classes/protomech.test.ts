@@ -207,6 +207,15 @@ describe("ProtoMech Battle Value and cost", () => {
         expect(proto.getPointBattleValue()).toBe(316 * 5);
     });
 
+    it("values the quad melee system at the whole Frenzy damage x 1.25 (IO:AE p.190; user ruling 2026-11-02)", () => {
+        const proto = new ProtoMech();
+        proto.setTons(7);
+        proto.setChassis("quad");
+        proto.addMount("protomech-quad-melee-system", "torso");
+        // Base Frenzy 2 + the system's 2 x 2 = 6 damage, x 1.25.
+        expect(proto.getBattleValueLog()).toContain("ProtoMech Quad Melee Weapon System (Torso) = 7.5");
+    });
+
     it("costs the Delphyne-2 741,700 + 80,000 C-bills, x 1.09 (TM pp.279-285)", () => {
         expect(delphyne().getCBillCost()).toBe(Math.round(821700 * 1.09));
     });

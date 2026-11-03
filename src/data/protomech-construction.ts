@@ -254,7 +254,7 @@ export const protoMechEquipment: IProtoMechEquipment[] = [
     {
         tag: "protomech-quad-melee-system", editions: ["total-warfare"], techBase: "clan", name: "ProtoMech Quad Melee Weapon System", locations: ["torso"], chassis: ["quad"], kg: 1000, bv: "quad-melee", cost: 70000,
         rulesLevel: 3, introduced: 3072, prototype: null, book: "IO:AE", page: 61,
-        notes: "1 ton, torso of a Quad ProtoMech only. Adds 2 points to a Frenzy attack for every 5 tons of the ProtoMech or part of that. Battle Value: the added damage x 1.25 (IO:AE p.190).",
+        notes: "1 ton, torso of a Quad ProtoMech only. Adds 2 points to a Frenzy attack for every 5 tons of the ProtoMech or part of that. Battle Value: the base Frenzy damage plus the added damage, x 1.25 (IO:AE p.190; user ruling 2026-11-02).",
     },
     {
         tag: "protomech-fusillade", editions: ["total-warfare"], techBase: "clan", name: "Fusillade Launcher", locations: ["torso", "la", "ra", "mainGun"], chassis: ["biped", "quad", "glider"], kg: 1500, bv: 11, cost: 100000,

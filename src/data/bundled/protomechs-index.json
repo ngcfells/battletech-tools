@@ -1,7 +1,7 @@
 {"notice":"The data here is/may be copyrighted and NOT included in the GPLv3 license. Converted from MegaMek's unit files (https://github.com/MegaMek/megamek): MegaMek Data (C) 2025-2026 by The MegaMek Team, licensed under CC BY-NC-SA 4.0 (https://creativecommons.org/licenses/by-nc-sa/4.0/).","designs":{"$k":["id","name","model","tons","bv","cost","rulesLevel","year","tech","mulId","source"],"$v":[
 [0,"Basilisk 2","",7,237,776820,1,3064,"Clan",102219,"megamek"],
 [1,"Basilisk 3","",7,306,888073,1,3072,"Clan",107138,"megamek"],
-[2,"Basilisk ProtoMech (Quad) B","",7,218,813410,3,3072,"Clan",104262,"megamek"],
+[2,"Basilisk ProtoMech (Quad)","",7,258,857370,3,3072,"Clan",107613,"megamek"],
 [3,"Cecerops","",3,86,639270,1,3067,"Clan",106486,"megamek"],
 [4,"Cecerops 2","",3,109,640506,1,3067,"Clan",101123,"megamek"],
 [5,"Cecerops 3","",3,105,634094,1,3072,"Clan",100769,"megamek"],

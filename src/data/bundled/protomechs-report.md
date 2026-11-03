@@ -19,7 +19,7 @@
 - `protomeks/3075/Triton 2.blk`: BV differs from the MUL: BV 272, MUL 274
 - `protomeks/3075/Triton 4.blk`: BV differs from the MUL: BV 205, MUL 207
 - `protomeks/ProtoTypes/SvartAlfa Ultra.blk`: BV differs from the MUL: BV 536, MUL 540
-- `protomeks/WoR/Basilisk ProtoMech (Quad).blk`: BV differs from the MUL: BV 255, MUL 258
+- `protomeks/WoR/Basilisk ProtoMech (Quad) B.blk`: BV differs from the MUL: BV 223, MUL 218
 - `protomeks/WoR/Boggart Ultraheavy ProtoMech 2.blk`: no Master Unit List entry to check its BV against
 - `protomeks/WoR/Boggart Ultraheavy ProtoMech.blk`: no Master Unit List entry to check its BV against
 - `protomeks/WoR/Centaur Z.blk`: BV differs from the MUL: BV 183, MUL 179
