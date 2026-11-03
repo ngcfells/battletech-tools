@@ -49,9 +49,9 @@ const MAX_TECH: IBattleValueLevelThree = {
         "angel-ecm": [100], "bloodhound-active-probe": [25],
     },
     clanItems: { "vehicular-grenade-launcher": 1 },
-    // Semi-guided LRM x 6 only beside a friendly TAG unit (a force rule); flare missiles (x .05) are not built.
+    // Semi-guided LRM x 6 only beside a friendly TAG unit (a force rule).
     ammo: [[/-ac-\d+-armor-piercing$/, 6], [/-lb-\d+x-cluster$/, 0.75], [/-ac-\d+-flechette$/, 0.5],
-        [/-(srm-frag|lrm-fragmentation)$/, 0.5], [/-lrm-swarm-i$/, 1.5]],
+        [/-(srm-frag|lrm-fragmentation)$/, 0.5], [/-lrm-swarm-i$/, 1.5], [/-lrm-flare$/, 0.05]],
     engines: { "large-standard": 1.125, "large-ice": 1.125, clan_xxl: 0.75, "large-clan_xl": 0.75, "large-clan_xxl": 0.5,
         xxl: 0.5, "large-xl": 0.75, "large-xxl": 0.375 },
 };

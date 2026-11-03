@@ -139,6 +139,39 @@ test("going back to Battledroids restores the printed droid's specs", async ({ p
     await expect(page.getByRole("combobox", { name: /^Droid/ })).toHaveValue("grf-1n");
 });
 
+// BMR(R) p.141: flare LRMs are Level 2 (Standard); TM errata v4.1 p.18 removes them, so TW offers them as Apocryphal.
+test("offers flare LRM ammo by edition and rules level", async ({ page }) => {
+    const errors: string[] = [];
+    page.on("pageerror", (error) => errors.push(error.stack ?? error.message));
+    // The add dialog's rows; the installed list below it keeps the ton already added.
+    const row = (name: string) => page.getByRole("dialog").getByRole("row").filter({ has: page.getByRole("cell", { name, exact: true }) });
+    const flare = row("LRM - Flare Ammo");
+    const levelAndFilter = async (edition: string, level: string) => {
+        await page.goto("classic-battletech/mech-creator/step1");
+        await page.getByLabel("Rules Edition").selectOption(edition);
+        await page.getByLabel("Rules Level").selectOption(level);
+        await page.goto("classic-battletech/mech-creator/step5");
+        await page.getByTitle("Open the add dialog").first().click();
+        await page.getByPlaceholder("Filter Equipment").fill("LRM");
+        await page.getByLabel(/Show all ammunition/).check();
+        await expect(row("LRM - Standard Ammo")).not.toHaveCount(0);
+    };
+    await levelAndFilter("master-rules-revised", "2");
+    await row("LRM 5").getByRole("button", { name: "Add" }).first().click();
+    await expect(flare).toHaveCount(1);
+    await flare.getByRole("button", { name: "Add" }).first().click();
+    await page.getByRole("button", { name: "Close" }).first().click();
+    await expect(page.getByText("LRM - Flare Ammo").first()).toBeVisible();
+    await levelAndFilter("master-rules-revised", "1");
+    await expect(row("LRM 5")).not.toHaveCount(0);
+    await expect(flare).toHaveCount(0);
+    await levelAndFilter("total-warfare", "4");
+    await expect(flare).toHaveCount(0);
+    await levelAndFilter("total-warfare", "5");
+    await expect(flare).toHaveCount(1);
+    expect(errors).toEqual([]);
+});
+
 // A field the edition's rulebook does not have is not shown: Battledroids has one engine, one gyro, one armor, no
 // eras and no OmniMechs. Total Warfare keeps them all.
 test("Battledroids hides the fields its rulebook does not have", async ({ page }) => {

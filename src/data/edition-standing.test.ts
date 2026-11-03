@@ -113,6 +113,20 @@ describe("equipment edition standing", () => {
         expect(getEquipmentOfferIssue(buzzsaw, "total-warfare", 5)).toBeNull();
     });
 
+    // BMR p.130 / BMR(R) p.141: flare LRMs are Level 2; TM errata v4.1 p.18 removes them, so TW keeps them Apocryphal.
+    it("offers flare LRM ammo under BMR and BMR(R), apocryphal under TW", () => {
+        const flare = getEquipmentCatalogDefinitions().flatMap((definition) => definition.equipment).find((item) => item.tag === "ammo-lrm-flare")!;
+        for (const edition of ["master-rules", "master-rules-revised"]) {
+            expect(getEquipmentOfferIssue(flare, edition, 1), edition).toBe("level");
+            expect(getEquipmentOfferIssue(flare, edition, 2), edition).toBeNull();
+        }
+        for (const edition of ["total-warfare", "battlemech-manual", "core-rulebook"]) {
+            expect(getEquipmentOfferIssue(flare, edition, 4), edition).toBe("edition");
+            expect(getEquipmentOfferIssue(flare, edition, 5), edition).toBeNull();
+        }
+        expect(flare.apocryphalIn!["total-warfare"].source).toBe("TM errata v4.1 p.18");
+    });
+
     it("the new filter only adds level hiding", () => {
         const disagreements: string[] = [];
         for (const definition of getEquipmentCatalogDefinitions()) {

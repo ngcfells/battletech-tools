@@ -1254,7 +1254,7 @@ describe("Rules editions: Master Rules, complete", () => {
     // BMR p.5: the book supersedes the BattleTech Manual, the Compendium, The Rules of Warfare and the Fourth
     // Edition. It has no aerospace units, so the Compendium's bombs, Ferro-Aluminum armor and Land-Air BattleMechs
     // go, and BattleMechs now start at 20 tons (BMR p.109).
-    it("includes the earlier rulebooks' records less the aerospace ones, and sixty-seven new ones", () => {
+    it("includes the earlier rulebooks' records less the aerospace ones, and sixty-eight new ones", () => {
         const bombs = ["bomb-cluster", "bomb-inferno", "bomb-standard",
             ...["clan", "is"].flatMap(base => ["arrow-iv", "arrow-iv-homing", "tag", "thunder"].map(kind => `${base}-bomb-${kind}`))];
         const dropped = ["armor ferro-aluminum", ...bombs.map(kind => "equipment ammo-" + kind), "mech type lam", "tonnage 10", "tonnage 15"].sort();
@@ -1262,9 +1262,10 @@ describe("Rules editions: Master Rules, complete", () => {
         const added = labelled.filter(entry => entry.record.introducedInEdition === TAG).map(entry => entry.label);
         expect(earlier.filter(label => !inEdition(TAG).includes(label)).sort()).toEqual(dropped);
         expect(inEdition(TAG)).toEqual([...earlier.filter(label => !dropped.includes(label)), ...added].sort());
-        expect(added).toHaveLength(67);
+        expect(added).toHaveLength(68);
         expect(added).toEqual(expect.arrayContaining(["equipment mrm-40", "equipment gauss-rifle-light", "equipment melee-sword",
-            "equipment large-heavy-laser", "equipment er-micro-laser", "equipment clan-light-tag", "equipment lrt-5-os", "equipment ammo-is-lrm-semi-guided"]));
+            "equipment large-heavy-laser", "equipment er-micro-laser", "equipment clan-light-tag", "equipment lrt-5-os", "equipment ammo-is-lrm-semi-guided",
+            "equipment ammo-lrm-flare"]));
         const edition = getRulesEditions().find(entry => entry.tag === TAG)!;
         expect(edition.complete).toBe(true);
         expect(edition.mechs).toEqual([]);
@@ -1311,6 +1312,9 @@ describe("Rules editions: Master Rules, complete", () => {
         expect([price("ammo-lrm-standard"), price("ammo-srm-standard")]).toEqual([30000, 27000]);
         expect([price("ammo-is-lrm-fragmentation"), price("ammo-lrm-incendiary"), price("ammo-is-lrm-semi-guided"), price("ammo-is-lrm-swarm-i")])
             .toEqual([60000, 45000, 90000, 90000]);
+        // Flare LRMs cost "normal" in both Master Rules lists (BMR p.138, BMR(R) p.151); TM 2007 p.295 prints x 1 too.
+        expect([price("ammo-lrm-flare"), find("ammo-lrm-flare").editionStats!["master-rules-revised"]!.cbills, find("ammo-lrm-flare").cbills])
+            .toEqual([30000, 30000, 30000]);
         expect([price("ammo-is-srm-frag"), price("ammo-srm-inferno"), price("ammo-is-narc-explosive")]).toEqual([54000, 13500, 1500]);
         expect([price("ammo-ac-5-standard"), price("ammo-clan-light-machine-gun-standard")]).toEqual([4500, 500]);
     });

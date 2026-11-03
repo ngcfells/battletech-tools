@@ -4583,6 +4583,8 @@ describe("Batch 12c special munitions", () => {
         const expected: Record<string, [number | undefined, number | null, number | null, number | null, string, number]> = {
             "ammo-long-tom-cannon-fae": [3012, 3079, null, null, "IO:AE", 159],
             "ammo-lrm-incendiary": [2341, 2342, null, null, "TO:AUE", 182],
+            // TM 2007 pp.230, 295: removed by TM errata v4.1 p.18, so no TO:AUE or IO:AE row.
+            "ammo-lrm-flare": [undefined, 2377, 2790, 3054, "TM", 230],
             "ammo-lrm-smoke": [2341, 2342, null, null, "TO:AUE", 183],
             "ammo-sniper-cannon-fae": [3012, 3079, null, null, "IO:AE", 159],
             "ammo-srm-heatseeking": [2365, 2370, null, null, "TO:AUE", 181],
@@ -6948,6 +6950,23 @@ describe("Battle Value worked examples (BV v4.1 pp.3-7)", () => {
             placeIn(mech, "ammo-is-ac-10-armor-piercing", "rt", "rightTorso");
             expect(mech.getBattleValue("master-rules-revised")).toBe(1002);
             expect(mech.getBattleValue("master-rules")).toBe(895);
+        });
+
+        // An LRM 5 in the left torso feeds on a ton of flare missiles: ammo 6 x .05 under BMR(R) Level 3, 6 under BMR.
+        it("multiplies flare LRM ammo BV by .05 under BMR(R) Level 3 (Max Tech p.91), x 1 under BMR", () => {
+            const enforcer = (ammo: string) => {
+                const mech = build(50, 4, "standard", 9, [9, 23, 4, 17, 3, 17, 3, 14, 14, 20, 20], "standard");
+                mech.setAdditionalHeatSinks(2);
+                mech.setJumpSpeed(4);
+                for (const tag of ["large-laser", "autocannon-standard-c", "small-laser"]) add(mech, tag);
+                placeIn(mech, "lrm-5", "lt", "leftTorso");
+                placeIn(mech, ammo, "lt", "leftTorso");
+                return mech;
+            };
+            const [standard, flare] = [enforcer("ammo-lrm-standard"), enforcer("ammo-lrm-flare")];
+            expect(flare.getBattleValue("master-rules")).toBe(standard.getBattleValue("master-rules"));
+            // Defensive 412.5 x 1.2 = 495. Weapons 302 + ammo 0.3, heat 12 of 18: X 201.53, Y 50.38, x 1.63 = 410.62.
+            expect([standard.getBattleValue("master-rules-revised"), flare.getBattleValue("master-rules-revised")]).toEqual([913, 906]);
         });
     });
 });
