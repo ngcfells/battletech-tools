@@ -8,7 +8,7 @@ import MechViewPanel from '../../../components/mech-view-panel';
 import StandardModal from '../../../components/standard-modal';
 import StatBar from '../../../components/stat-bar';
 import BattleMechAddMechDialog from './_addMechDialog';
-import VehicleGroupTable from './_vehicleGroupTable';
+import VehicleGroupTable, { C3NetworkField } from './_vehicleGroupTable';
 import FighterGroupTable from './_fighterGroupTable';
 import SmallCraftGroupTable from './_smallCraftGroupTable';
 import CapitalShipGroupTable from './_capitalShipGroupTable';
@@ -436,7 +436,10 @@ export default class BattleMechTableGroup extends React.Component<IBattleMechTab
                                 <strong>Pilot:</strong> {mechObj.pilot.name}
                             </div>
                         ) : null}
-
+                        {this.props.appGlobals.currentCBTForce ? (
+                            <C3NetworkField force={this.props.appGlobals.currentCBTForce} unit={mechObj} edit={!!this.props.showEdit}
+                                onChange={() => this.props.appGlobals.currentCBTForce && this.props.appGlobals.saveCurrentCBTForce(this.props.appGlobals.currentCBTForce)} />
+                        ) : null}
                     </td>
                     <td className="min-width no-wrap text-center">{mechObj.getTonnage()}</td>
                     <td className="min-width no-wrap text-center small-text">{mechObj.getTech().name}</td>
@@ -515,7 +518,7 @@ export default class BattleMechTableGroup extends React.Component<IBattleMechTab
 <td colSpan={this.props.showEdit ? 4 : 3} className="text-center">
     {this.props.appGlobals.currentCBTForce.groups[this.props.bmGroupIndex].getTotalTons()} Tons - {this.props.appGlobals.currentCBTForce.groups[this.props.bmGroupIndex].getTech()}
 </td>
-<td colSpan={2} className="text-right">BV: {this.props.appGlobals.currentCBTForce.groups[this.props.bmGroupIndex].getBattleValueText(this.props.appGlobals.currentCBTForce?.rulesEdition ?? DEFAULT_RULES_EDITION, this.props.appGlobals.currentCBTForce.groups)}</td>
+<td colSpan={2} className="text-right">BV: {this.props.appGlobals.currentCBTForce.groups[this.props.bmGroupIndex].getBattleValueText(this.props.appGlobals.currentCBTForce?.rulesEdition ?? DEFAULT_RULES_EDITION, this.props.appGlobals.currentCBTForce.groups, this.props.appGlobals.currentCBTForce.c3Networks)}</td>
 </tr>
 </tfoot>
 

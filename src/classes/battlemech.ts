@@ -10,7 +10,7 @@ import { getBattleMechTroAdapter } from "./battlemech-tro";
 import { isSSWNoMake, readSSWTechnicalReadout } from "../utils/ssw-technical-readout";
 import { ITechnicalReadoutExport } from "../data/technical-readout-interfaces";
 import { getAlphaStrikeQuirks, getQuirkHeatGenerated, getQuirkWeaponHeat } from "../utils/quirk-effects";
-import { IBattleValueTagShare, getBattleValueFor, getBattleValueSkillEdition, getBattleValueTagShare, getSkillMultiplier } from "../data/battle-value";
+import { BattleValueC3Type, IBattleValueTagShare, getBattleValueC3Type, getBattleValueFor, getBattleValueSkillEdition, getBattleValueTagShare, getSkillMultiplier } from "../data/battle-value";
 import { battlemechLocations } from "../data/battlemech-locations";
 import { IArmorType, ICockpitType, ICriticalLocations, IEngineOption, IEngineType, IEquipmentItem, IGyro, IHeatSync, IInternalStructure, IInternalStructurePerTon, IJumpJet, IMyomerType, IResolvedInternalStructure, ISplitLocation, ITechDates } from "../data/data-interfaces";
 import { btEraOptions, findEraByTag, getClosestEraForTech, getEraForYear, getErasForTech } from "../data/era-options";
@@ -2038,6 +2038,11 @@ export class BattleMech {
     /** This unit's part in its force's TAG adjustment under `edition` (BV v4.1 p.23; TO:AUE p.198). */
     public getBattleValueTagShare(edition: string = this._rulesEdition): IBattleValueTagShare {
         return getBattleValueTagShare(edition, this._equipmentList, (bin) => this.getAmmoBinWeapon(bin));
+    }
+
+    /** The C3 system this unit joins a force's C3 network with, if any (BV v4.1 p.23). */
+    public getBattleValueC3Type(): BattleValueC3Type | undefined {
+        return getBattleValueC3Type(this._equipmentList);
     }
 
     public getAlphaStrikeValue() {
@@ -12512,6 +12517,8 @@ export class BattleMech {
     public get pilot(): IPilot {
         return this._pilot;
     }
+
+    public getUUID(): string { return this._uuid; }
 
     public get uuid(): string {
         return this._uuid;

@@ -1,5 +1,5 @@
 import { generateUUID } from "../utils/generateUUID";
-import { BattleValueUnitType, formatBattleValue } from "../data/battle-value";
+import { BattleValueUnitType, formatBattleValue, getBattleValueC3Share } from "../data/battle-value";
 import { BattleMech, IBattleMechExport } from "./battlemech";
 import Vehicle, { IVehicleExport } from "./vehicle";
 import AerospaceFighter, { IAerospaceFighterExport } from "./aerospace-fighter";
@@ -21,6 +21,9 @@ export const MAX_GROUP_BUILDINGS = 100;
 export const MAX_GROUP_BATTLE_ARMOR = 100;
 export const MAX_GROUP_PROTOMECHS = 100;
 export const MAX_GROUP_BATTLEDROIDS_UNITS = 100;
+
+/** The units that take part in a force's TAG and C3 adjustments. */
+type TagUnit = BattleMech | Vehicle | AerospaceFighter | SmallCraft;
 
 export interface ICBTGroupExport {
 	name: string;
@@ -134,16 +137,26 @@ export class BattleMechGroup {
 	}
 
 	/** The units that take part in a force's TAG adjustment (battle-value.ts `getBattleValueTagShare`). */
-	private _tagUnits() { return [...this.members, ...this.vehicles, ...this.fighters, ...this.smallCraft]; }
+	private _tagUnits(): TagUnit[] { return [...this.members, ...this.vehicles, ...this.fighters, ...this.smallCraft]; }
 
 	/**
-	 * The group's skill-adjusted Battle Value under `edition` (each unit's own edition when left out). Each TAG carrier
-	 * adds the guided ammo in `force` (the force's groups; this group alone when left out) before skill.
+	 * The group's skill-adjusted Battle Value under `edition` (each unit's own edition when left out). Before skill,
+	 * each TAG carrier adds the guided ammo in `force` (the force's groups; this group alone when left out), then each
+	 * C3 unit its network's share; `c3Networks` names each networked unit's network by its UUID.
 	 */
-	public getTotalBattleValue(edition?: string, force: BattleMechGroup[] = [this]): number {
+	public getTotalBattleValue(edition?: string, force: BattleMechGroup[] = [this], c3Networks: Record<string, string> = {}): number {
         const sum = <T>(units: T[], battleValue: (unit: T) => number) => units.reduce((total, unit) => total + battleValue(unit), 0);
         const guided = sum(force.flatMap((group) => group._tagUnits()), (unit) => unit.getBattleValueTagShare(edition).ammo);
-        return sum(this._tagUnits(), (unit) => unit.getPilotAdjustedBattleValue(edition, unit.getBattleValueTagShare(edition).times * guided))
+        const tagBonus = (unit: TagUnit) => unit.getBattleValueTagShare(edition).times * guided;
+        const withTag = (unit: TagUnit) => unit.getBattleValue(edition) + tagBonus(unit);
+        const networked = force.flatMap((group) => [...group.members, ...group.vehicles]).filter((unit) => c3Networks[unit.getUUID()] && unit.getBattleValueC3Type());
+        const c3Bonus = (unit: TagUnit) => {
+            const member = networked.find((entry) => entry === unit);
+            if (!member) return 0;
+            const network = networked.filter((entry) => c3Networks[entry.getUUID()] === c3Networks[member.getUUID()]);
+            return getBattleValueC3Share(edition, member.getBattleValueC3Type(), withTag(member), sum(network, withTag), network.length);
+        };
+        return sum(this._tagUnits(), (unit) => unit.getPilotAdjustedBattleValue(edition, tagBonus(unit) + c3Bonus(unit)))
             + sum(this.capitalShips, (ship) => ship.getPilotAdjustedBattleValue(edition))
             + sum([...this.infantry, ...this.battleArmor], (unit) => unit.getSkillAdjustedBattleValue(edition))
             + sum(this.protoMechs, (point) => point.getSkillAdjustedPointBattleValue(edition));
@@ -157,8 +170,8 @@ export class BattleMechGroup {
     }
 
     /** The group's skill-adjusted Battle Value text under `edition` (plan ruling 1), in `force` (see getTotalBattleValue). */
-    public getBattleValueText(edition: string, force?: BattleMechGroup[]): string {
-        return formatBattleValue((bvEdition) => this.getTotalBattleValue(bvEdition, force), this.getBattleValueUnitTypes(), edition);
+    public getBattleValueText(edition: string, force?: BattleMechGroup[], c3Networks?: Record<string, string>): string {
+        return formatBattleValue((bvEdition) => this.getTotalBattleValue(bvEdition, force, c3Networks), this.getBattleValueUnitTypes(), edition);
     }
 
 	public getTotalTons(): number {

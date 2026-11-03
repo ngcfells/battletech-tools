@@ -29,6 +29,8 @@ export interface ICBTForceExport {
     gameYear?: number | null;
     /** The rules edition being played, whose Battle Value the roster shows (plan ruling 3). Missing in older saves. */
     rulesEdition?: string;
+    /** Each networked unit's C3 network name, by unit UUID (BV v4.1 p.23). Missing in older saves and with no networks. */
+    c3Networks?: Record<string, string>;
 }
 
 export class BattleMechForce {
@@ -59,6 +61,8 @@ export class BattleMechForce {
     public gameYear: number | null = null;
     /** The rules edition being played: the roster's Battle Values and totals follow it (plan ruling 3). */
     public rulesEdition: string = DEFAULT_RULES_EDITION;
+    /** Each networked unit's C3 network name, by unit UUID: the units sharing a name form one network. */
+    public c3Networks: Record<string, string> = {};
 
     constructor(importObj: ICBTForceExport | null = null ) {
         if( importObj ) {
@@ -131,6 +135,12 @@ export class BattleMechForce {
         }
         if( this.spaceTracker.hasState() ) {
             returnValue.spaceTracker = this.spaceTracker.export();
+        }
+        // Only units still in the force keep their network.
+        const uuids = new Set(this.groups.flatMap((group) => [...group.members, ...group.vehicles].map((unit) => unit.getUUID())));
+        const c3Networks = Object.entries(this.c3Networks).filter(([uuid]) => uuids.has(uuid));
+        if( c3Networks.length > 0 ) {
+            returnValue.c3Networks = Object.fromEntries(c3Networks);
         }
 
         for( const group of this.groups) {
@@ -216,6 +226,12 @@ export class BattleMechForce {
         this.gameYear = normalizeGameYear(importObj.gameYear);
         // An unknown or missing edition reads the default one.
         this.rulesEdition = getRulesEdition(importObj.rulesEdition).tag;
+        this.c3Networks = {};
+        if( importObj.c3Networks && typeof importObj.c3Networks === "object" ) {
+            for( const [uuid, name] of Object.entries(importObj.c3Networks) ) {
+                if( typeof name === "string" && name ) this.setC3Network(uuid, name);
+            }
+        }
         this.syncQuirkPlayYear();
         this.spaceTracker = new SpaceTracker( importObj.spaceTracker );
 
@@ -276,10 +292,20 @@ export class BattleMechForce {
         return returnValue;
     }
 
+    /** Puts the unit with `uuid` in the C3 network `name` (an empty name takes it out of any network). */
+    public setC3Network(uuid: string, name: string): void {
+        if( name ) {
+            this.c3Networks[uuid] = name.slice(0, 20);
+        } else {
+            delete this.c3Networks[uuid];
+        }
+    }
+
     /** The force's skill-adjusted Battle Value under its edition, as the roster shows it (plan ruling 1). */
     public getBattleValueText(): string {
         const types = [...new Set(this.groups.flatMap((group) => group.getBattleValueUnitTypes()))];
-        return formatBattleValue((edition) => this.groups.reduce((total, group) => total + group.getTotalBattleValue(edition, this.groups), 0), types, this.rulesEdition);
+        return formatBattleValue((edition) => this.groups.reduce((total, group) => total + group.getTotalBattleValue(edition, this.groups, this.c3Networks), 0),
+            types, this.rulesEdition);
     }
 
     getTech(): string {

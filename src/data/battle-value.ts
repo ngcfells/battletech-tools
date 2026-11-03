@@ -133,6 +133,31 @@ export const getBattleValueTagShare = (edition: string | undefined, equipment: I
     };
 };
 
+/** C3 systems that join a network (TW p.131; TO:AUE p.110). C3i counts like standard C3 (CRB p.220). */
+export type BattleValueC3Type = "standard" | "boosted";
+const C3_SYSTEMS: Record<string, BattleValueC3Type> = {
+    "c3-computer-master": "standard", "c3-computer-slave": "standard", "c3-emergency-master": "standard", "c3i-computer": "standard",
+    "c3-boosted-master": "boosted", "c3-boosted-slave": "boosted",
+};
+
+/** The C3 system a unit networks with: boosted when it carries any boosted C3; undefined with none. */
+export const getBattleValueC3Type = (equipment: IEquipmentItem[]): BattleValueC3Type | undefined => {
+    const types = equipment.map((item) => C3_SYSTEMS[item.tag]).filter(Boolean);
+    return types.includes("boosted") ? "boosted" : types[0];
+};
+
+/**
+ * What a C3 network member adds before skill under `edition`: TM's percent of the network's total BV (`network`;
+ * each member by its own C3 type, TO:AUE p.198), or the CRB's percent of its own (`own`), growing with the network's
+ * `members` (p.220). A network of one adds nothing.
+ */
+export const getBattleValueC3Share = (edition: string | undefined, type: BattleValueC3Type | undefined, own: number, network: number, members: number): number => {
+    const rule = getBattleValueForceRules(edition)?.c3;
+    if (!rule || !type || members < 2) return 0;
+    if (rule.kind === "network") return network * (type === "boosted" ? rule.boostedPercent : rule.percent) / 100;
+    return own * (Math.min(rule.cap, rule.twoUnits + (members - 2) * rule.perExtraUnit) + (type === "boosted" ? rule.boostedFlat : 0)) / 100;
+};
+
 /** True once `edition` works out a BV1 of its own for `unitType` (its BV1 record is entered, not pending). */
 const worksOutBv1 = (edition: string | undefined, unitType: BattleValueUnitType): boolean => {
     const rules = getBattleValueRules(edition, unitType);

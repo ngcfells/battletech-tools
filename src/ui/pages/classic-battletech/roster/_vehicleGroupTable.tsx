@@ -6,7 +6,34 @@ import { IAppGlobals } from '../../../app-router';
 import MULSearchButton from './_mulSearchButton';
 import StatBar from '../../../components/stat-bar';
 import { formatBattleValue } from '../../../../data/battle-value';
+import { BattleMech } from '../../../../classes/battlemech';
+import { BattleMechForce } from '../../../../classes/battlemech-force';
 const Trash = FaTrash as any;
+
+const C3_NETWORK_NAMES = ["A", "B", "C", "D", "E", "F", "G", "H"];
+
+/** A C3 unit's network in its force (BV v4.1 p.23): a picker while editing, its name otherwise; nothing without C3. */
+export const C3NetworkField = (props: { force: BattleMechForce; unit: BattleMech | Vehicle; edit: boolean; onChange: () => void }): React.ReactNode => {
+    if( !props.unit.getBattleValueC3Type() ) {
+        return null;
+    }
+    const uuid = props.unit.getUUID();
+    const network = props.force.c3Networks[uuid] ?? "";
+    if( !props.edit ) {
+        return network ? <div className='small-text'><strong>C3 network:</strong> {network}</div> : null;
+    }
+    return (
+        <div className='small-text'>
+            <label>
+                C3 network:{" "}
+                <select value={network} onChange={(e) => { props.force.setC3Network(uuid, e.currentTarget.value); props.onChange(); }}>
+                    <option value="">None</option>
+                    {[...new Set([...C3_NETWORK_NAMES, network].filter(Boolean))].map((name) => <option key={name} value={name}>{name}</option>)}
+                </select>
+            </label>
+        </div>
+    );
+};
 
 /**
  * The combat vehicles in a Classic BattleTech roster group: add saved vehicles from the
@@ -134,6 +161,7 @@ export default class VehicleGroupTable extends React.Component<IVehicleGroupTabl
                                             <> &ndash; <strong>Commander:</strong> {pilot.name}</>
                                         ) : null}
                                     </div>
+                                    <C3NetworkField force={force} unit={vehicle} edit={!!this.props.showEdit} onChange={this._save} />
                                 </td>
                                 <td className="min-width no-wrap text-center">{vehicle.getTonnage()}</td>
                                 <td className="min-width no-wrap text-center small-text">{vehicle.getTech().name}{vehicle.isOmni() ? " (Omni)" : ""}</td>

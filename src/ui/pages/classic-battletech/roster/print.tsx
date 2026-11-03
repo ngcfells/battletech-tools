@@ -124,7 +124,7 @@ export default class ClassicBattleTechRosterPrint extends React.Component<IPrint
                           &nbsp;|&nbsp;
                           {group.getTotalTons()} Tons - {group.getTech()}
                           &nbsp;|&nbsp;
-                          Group BV: {group.getBattleValueText(this.props.appGlobals.currentCBTForce?.rulesEdition ?? DEFAULT_RULES_EDITION, this.props.appGlobals.currentCBTForce?.groups)}
+                          Group BV: {group.getBattleValueText(this.props.appGlobals.currentCBTForce?.rulesEdition ?? DEFAULT_RULES_EDITION, this.props.appGlobals.currentCBTForce?.groups, this.props.appGlobals.currentCBTForce?.c3Networks)}
                         </th>
                       </tr>
                       <tr>
