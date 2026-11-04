@@ -39,7 +39,7 @@ export interface IAntiOrbitalGun {
     unitUuid: string;
     unitName: string;
     weapon: IEquipmentItem;
-    /** The artillery piece the weapon fires as: the weapon itself, or an ArtVee combo gun's piece. */
+    /** The artillery piece the weapon fires as: the weapon itself, or an ArtVee ComboGun's piece. */
     piece: IEquipmentItem;
     /** The unit's anti-orbital bins. */
     bins: IEquipmentItem[];

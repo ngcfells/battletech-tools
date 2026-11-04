@@ -338,7 +338,7 @@ export interface IEquipmentItem extends ICatalogStanding {
      */
     munitionTypes?: string[];
     /**
-     * ArtVee combo guns: the tag of the canon artillery piece the weapon fires as in Siege Mode. The record's
+     * ArtVee ComboGuns: the tag of the canon artillery piece the weapon fires as in Siege Mode. The record's
      * own stats are the Vehicle Mode (autocannon) profile.
      */
     comboArtilleryTag?: string;

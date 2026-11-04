@@ -645,7 +645,7 @@ export default class VehicleCreatorStep1 extends React.Component<IStep1Props, IS
                                         <legend>ArtVee (Custom Homebrew)</legend>
                                         <p className="smaller-text">
                                             Conversion equipment: {vehicle.getArtVeeConversionWeight()} tons.
-                                            {" "}Variant: {getArtVeeVariant(vehicle) ? ARTVEE_VARIANT_LABELS[getArtVeeVariant(vehicle) as keyof typeof ARTVEE_VARIANT_LABELS] : "no combo gun yet"}.
+                                            {" "}Variant: {getArtVeeVariant(vehicle) ? ARTVEE_VARIANT_LABELS[getArtVeeVariant(vehicle) as keyof typeof ARTVEE_VARIANT_LABELS] : "no ComboGun yet"}.
                                         </p>
                                         {getArtVeeIssues(vehicle).map((issue) => (
                                             <p key={issue} className="smaller-text color-red" data-testid="artvee-issue">{issue}</p>

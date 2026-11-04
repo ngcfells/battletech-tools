@@ -22,7 +22,7 @@ export interface IArtVeeConversionEquipment {
     turretSlots: number;
     /** Added to the cost before the final multiplier: this fraction of the structural, weapon and equipment cost (no ammunition). */
     costFraction: number;
-    /** Same dates as the combo guns. */
+    /** Same dates as the ComboGuns. */
     dates: { is: ITechDates; clan: ITechDates };
     techRating: string;
     rulesLevel: number;
@@ -47,5 +47,5 @@ export const ARTVEE_CONVERSION_EQUIPMENT: IArtVeeConversionEquipment = {
     rulesLevel: 6,
     book: "Custom",
     page: 0,
-    description: "Lets a tracked Combat Vehicle transform between Vehicle Mode and Siege Mode, where its combo gun fires as artillery. Weighs 10% of the vehicle's tonnage, rounded up to the half ton; takes 2 body and 1 turret item slots.",
+    description: "Lets a tracked Combat Vehicle transform between Vehicle Mode and Siege Mode, where its ComboGun fires as artillery. Weighs 10% of the vehicle's tonnage, rounded up to the half ton; takes 2 body and 1 turret item slots.",
 };

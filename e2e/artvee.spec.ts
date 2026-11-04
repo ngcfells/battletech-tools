@@ -1,6 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 
-// ArtVee (Custom Homebrew) in the Vehicle Creator: offered at the Custom Homebrew level only, and it unlocks the combo guns.
+// ArtVee (Custom Homebrew) in the Vehicle Creator: offered at the Custom Homebrew level only, and it unlocks the ComboGuns.
 
 function watchErrors(page: Page): string[] {
     const errors: string[] = [];
@@ -11,7 +11,7 @@ function watchErrors(page: Page): string[] {
     return errors;
 }
 
-test("Vehicle Creator: the ArtVee toggle unlocks the combo guns at Custom Homebrew only", async ({ page }) => {
+test("Vehicle Creator: the ArtVee toggle unlocks the ComboGuns at Custom Homebrew only", async ({ page }) => {
     const errors = watchErrors(page);
     const option = page.getByTestId("artvee-option");
 
@@ -22,18 +22,18 @@ test("Vehicle Creator: the ArtVee toggle unlocks the combo guns at Custom Homebr
     await expect(option).toBeVisible();
     await expect(page.getByTestId("artvee")).toHaveCount(0);
 
-    // Without the toggle there is no combo gun to pick.
+    // Without the toggle there is no ComboGun to pick.
     await page.goto("classic-battletech/vehicle-creator/equipment-selection");
-    await page.getByPlaceholder("Filter Equipment").fill("Combo Gun");
-    await expect(page.getByText(/ArtVee Thumper Combo Gun/)).toHaveCount(0);
+    await page.getByPlaceholder("Filter Equipment").fill("ComboGun");
+    await expect(page.getByText(/ArtVee Thumper ComboGun/)).toHaveCount(0);
 
     await page.goto("classic-battletech/vehicle-creator/step1");
     await option.click();
-    await expect(page.getByTestId("artvee")).toContainText("no combo gun yet");
+    await expect(page.getByTestId("artvee")).toContainText("no ComboGun yet");
 
     await page.goto("classic-battletech/vehicle-creator/equipment-selection");
-    await page.getByPlaceholder("Filter Equipment").fill("Combo Gun");
-    await expect(page.getByText(/ArtVee Thumper Combo Gun/).first()).toBeVisible();
+    await page.getByPlaceholder("Filter Equipment").fill("ComboGun");
+    await expect(page.getByText(/ArtVee Thumper ComboGun/).first()).toBeVisible();
 
     // Level 4 hides the option (a design that is already an ArtVee keeps it, so it can be unticked).
     await page.goto("classic-battletech/vehicle-creator/step1");
@@ -55,8 +55,8 @@ test("Vehicle Creator: the record sheet shows both ArtVee modes", async ({ page 
     await page.getByTestId("artvee-option").click();
 
     await page.goto("classic-battletech/vehicle-creator/equipment-selection");
-    await page.getByPlaceholder("Filter Equipment").fill("ArtVee Thumper Combo Gun");
-    await page.getByRole("row").filter({ has: page.getByRole("cell", { name: "ArtVee Thumper Combo Gun", exact: true }) })
+    await page.getByPlaceholder("Filter Equipment").fill("ArtVee Thumper ComboGun");
+    await page.getByRole("row").filter({ has: page.getByRole("cell", { name: "ArtVee Thumper ComboGun", exact: true }) })
         .getByRole("button", { name: "Add" }).first().click();
 
     await page.goto("classic-battletech/vehicle-creator/record-sheet");

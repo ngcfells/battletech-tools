@@ -58,7 +58,7 @@ describe("anti-orbital guns", () => {
         expect(findAntiOrbitalGuns(forceWith(longTomTank("ammo-long-tom-standard")))).toEqual([]);
     });
 
-    it("counts an ArtVee's combo gun only in Siege Mode", () => {
+    it("counts an ArtVee's ComboGun only in Siege Mode", () => {
         const artVee = longTomArtVee();
         const force = forceWith(artVee);
         expect(findAntiOrbitalGuns(force)).toEqual([]);

@@ -27,9 +27,9 @@ function getNonProductionItems(vehicle: Vehicle): string[] {
 }
 
 describe("sample ArtVees", () => {
-    it("counts the Clan Long Tom combo gun at 560 in the Glyptodon's BV (ArtVee final review 2026-10-21)", () => {
+    it("counts the Clan Long Tom ComboGun at 560 in the Glyptodon's BV (ArtVee final review 2026-10-21)", () => {
         const sample = ARTVEE_SAMPLES.find((entry) => entry.id === "glyptodon")!;
-        expect(load(sample.save).getBattleValueLog()).toContain("ArtVee Long Tom Combo Gun (Clan) (turret) = 560.00");
+        expect(load(sample.save).getBattleValueLog()).toContain("ArtVee Long Tom ComboGun (Clan) (turret) = 560.00");
     });
 
     it("are the nine named designs", () => {
@@ -68,7 +68,7 @@ describe("sample ArtVees", () => {
             expect(vehicle.getTotalArmorPoints()).toBeGreaterThanOrEqual(vehicle.getMaxArmorPoints() / 2);
         });
 
-        it("carries at least 1 ton of AC-profile ammunition its combo gun accepts, and 1 ton of its artillery ammunition", () => {
+        it("carries at least 1 ton of AC-profile ammunition its ComboGun accepts, and 1 ton of its artillery ammunition", () => {
             const equipment = vehicle.getEquipmentList();
             const gun = equipment.find((item) => item.comboArtilleryTag)!;
             const acAmmo = equipment.filter((item) => item.isAmmo && gun.ammoTypes?.[1] === item.tag);

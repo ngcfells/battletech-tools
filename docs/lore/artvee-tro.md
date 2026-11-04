@@ -165,8 +165,8 @@ you will find Partisans attached when enemy air power is expected.
   direct the semi-guided rounds from the MAPs onto the target. Sometimes, WiGE, VTOLs, or even scout 'Mechs will be
   used instead.
 - **Answering return fire:** a MAP can go back to Vehicle Mode and leave at normal combat speed, so its crews do not
-  fear return fire the way other gunners do. They fire two to three volleys, convert immediately after, move two
-  kilometers, and start again.
+  fear return fire the way other gunners do. They typically fire three volleys, sometimes two, never four, then
+  convert immediately, move two kilometers, and start again.
 
 > *St. Jamais:* "Three volleys, and they run immediately after... A child with a stopwatch could read that drill. Put
 > one spotter on a battery and count, then watch the cowards fly."

@@ -633,7 +633,7 @@ export default class Vehicle implements IGameSettingsUnit {
     private _dualTurret: boolean = false;
     /** FrankenVehicle: the turret's donor; null on an ordinary vehicle. */
     private _frankenVehicle: IFrankenVehicle | null = null;
-    /** ArtVee: carries the conversion equipment and one combo gun (Custom Homebrew). */
+    /** ArtVee: carries the conversion equipment and one ComboGun (Custom Homebrew). */
     private _artVee: boolean = false;
     private _sponsonTurrets: boolean = false;
     private _omni: boolean = false;
@@ -1527,7 +1527,7 @@ export default class Vehicle implements IGameSettingsUnit {
         return true;
     }
 
-    /** Why a weapon can't fire in the ArtVee's current Mode, or null. Only the combo gun is Mode-limited. */
+    /** Why a weapon can't fire in the ArtVee's current Mode, or null. Only the ComboGun is Mode-limited. */
     public getArtVeeWeaponBlock(weapon: IEquipmentItem): string | null {
         if (!this._artVee || !weapon.comboArtilleryTag) return null;
         if (this.getArtVeeMode() !== "siege") return null;
@@ -2821,7 +2821,7 @@ export default class Vehicle implements IGameSettingsUnit {
     // hand-actuator-dependent equipment cannot be mounted on Combat Vehicles.
     private _isEquipmentAllowedForVehicle(item: IEquipmentItem): boolean {
         if (item.requiresHandActuator) return false;
-        // A combo gun needs the ArtVee conversion equipment (Custom Homebrew).
+        // A ComboGun needs the ArtVee conversion equipment (Custom Homebrew).
         if (item.comboArtilleryTag && !this._artVee) return false;
         if (item.trailerOnly && !this.isTrailer()) return false;
         if (item.excludedMotives?.includes(this._motiveType.tag)) return false;
@@ -4071,7 +4071,7 @@ export default class Vehicle implements IGameSettingsUnit {
         return ammo.isAmmo ? this._binWeapon(ammo) : undefined;
     }
 
-    // Shots in a ton of a bin for the weapon it feeds. An ArtVee combo gun's artillery ammunition counts as its
+    // Shots in a ton of a bin for the weapon it feeds. An ArtVee ComboGun's artillery ammunition counts as its
     // artillery piece's, so a special round's own shots a ton (3 anti-orbital rounds against 5 standard) carry over.
     private _binShotsPerTon(weapon: IEquipmentItem, ammo: IEquipmentItem): number {
         const piece = getComboArtillery(weapon);

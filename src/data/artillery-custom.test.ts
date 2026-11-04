@@ -16,7 +16,7 @@ const ammo = (tag: string): IEquipmentItem => {
     if (!found) throw new Error(`no ammo ${tag}`);
     return found;
 };
-// The combo guns; the catalog also holds other custom artillery (the Solaris7 Nuclear Pulse Cannon, #301).
+// The ComboGuns; the catalog also holds other custom artillery (the Solaris7 Nuclear Pulse Cannon, #301).
 const comboGuns = artilleryCustom.filter((item) => !!item.comboArtilleryTag);
 const gun = (tag: string): IEquipmentItem => {
     const found = comboGuns.find((item) => item.tag === tag);
@@ -30,8 +30,14 @@ const rows = [
     { name: "long-tom", piece: "long-tom-artillery", damage: 20, heat: 7, range: { min: 0, short: 4, medium: 8, long: 12 }, weight: 30, cbills: 450000, bv: 368, clanBv: 560, ac: "20", shots: 5 },
 ];
 
-describe("ArtVee combo guns", () => {
-    it("each combo gun fires as its canon artillery piece in Siege Mode", () => {
+describe("ArtVee ComboGuns", () => {
+    it("keeps the old Combo Gun spelling as an alternate name", () => {
+        for (const gun of comboGuns) {
+            expect(gun.altNames).toEqual([gun.name.replace("ComboGun", "Combo Gun")]);
+        }
+    });
+
+    it("each ComboGun fires as its canon artillery piece in Siege Mode", () => {
         for (const row of rows) {
             for (const tag of [`custom-artvee-${row.name}-combo`, `custom-clan-artvee-${row.name}-combo`]) {
                 expect(getComboArtillery(gun(tag))?.tag).toBe(row.piece);

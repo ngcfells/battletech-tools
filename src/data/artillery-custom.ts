@@ -3,7 +3,7 @@ import { equipmentBallistic } from "./equipment-ballistic";
 import { universalEquipment } from "./universal-equipment";
 
 /*
- * ArtVee design 2026-10-20 (Custom Homebrew): the combo guns, an artillery tube with a drop-in autocannon breech.
+ * ArtVee design 2026-10-20 (Custom Homebrew): the ComboGuns, an artillery tube with a drop-in autocannon breech.
  * In Vehicle Mode the gun fires as the autocannon (the top-level stats here, range +1/+2/+3 over the AC); in Siege
  * Mode it fires as the canon artillery piece named by `comboArtilleryTag`. Each bin feeds from either family.
  *
@@ -39,15 +39,16 @@ const comboRows: IComboGunRow[] = [
 
 function comboGun(row: IComboGunRow, techBase: "is" | "clan"): IEquipmentItem {
     const ac = isBallisticList.find((item) => item.tag === row.acTag);
-    if (!ac || ac.battleValue === undefined) throw new Error(`Combo gun: AC record ${row.acTag} not found`);
+    if (!ac || ac.battleValue === undefined) throw new Error(`ComboGun: AC record ${row.acTag} not found`);
     const piece = universalEquipment.find((item) => item.tag === row.pieceTag);
-    if (!piece || piece.battleValue === undefined) throw new Error(`Combo gun: artillery record ${row.pieceTag} not found`);
+    if (!piece || piece.battleValue === undefined) throw new Error(`ComboGun: artillery record ${row.pieceTag} not found`);
     const clan = techBase === "clan";
     // Clan standard AC ammunition is extinct from 2850, so the Clan gun feeds from its own breech rounds.
     const acAmmoTag = clan ? `ammo-custom-clan-artvee-ac-${row.acAmmo.replace("ac-", "")}` : `ammo-${row.acAmmo}-standard`;
     return {
         isAmmo: false,
-        name: `ArtVee ${row.label} Combo Gun${clan ? " (Clan)" : ""}`,
+        name: `ArtVee ${row.label} ComboGun${clan ? " (Clan)" : ""}`,
+        altNames: [`ArtVee ${row.label} Combo Gun${clan ? " (Clan)" : ""}`],
         tag: `custom-${clan ? "clan-" : ""}artvee-${row.name}-combo`,
         techBase,
         catalog: "custom",
@@ -55,7 +56,7 @@ function comboGun(row: IComboGunRow, techBase: "is" | "clan"): IEquipmentItem {
         sort: `artillery, artvee ${row.name} combo`,
         category: "Artillery Weapons",
         weaponType: ["ART"],
-        notes: `ArtVee combo gun (ArtVee design 2026-10-20): fires as ${ac.name} in Vehicle Mode and as the ${row.label} artillery piece in Siege Mode. Feeds from artillery and autocannon ammunition bins.`,
+        notes: `ArtVee ComboGun (ArtVee design 2026-10-20): fires as ${ac.name} in Vehicle Mode and as the ${row.label} artillery piece in Siege Mode. Feeds from artillery and autocannon ammunition bins.`,
         damage: row.damage,
         damageAero: row.damage,
         accuracyModifier: 0,
@@ -111,7 +112,7 @@ export const artilleryCustom: IEquipmentItem[] = [
     },
 ];
 
-/** The canon artillery piece a combo gun fires as in Siege Mode, or undefined for any other item. */
+/** The canon artillery piece a ComboGun fires as in Siege Mode, or undefined for any other item. */
 export function getComboArtillery(item: IEquipmentItem): IEquipmentItem | undefined {
     if (!item.comboArtilleryTag) return undefined;
     return universalEquipment.find((piece) => piece.tag === item.comboArtilleryTag);

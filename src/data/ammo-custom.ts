@@ -22,7 +22,7 @@ const isAmmoList = ammoCatalog.filter((item) => item.techBase !== "clan");
 
 /**
  * Clan ArtVee breech ammunition (ArtVee ruling 2026-10-21). Clan standard AC ammunition goes extinct in 2850, but the
- * Clans kept the ArtVee, so the combo guns need AC-profile rounds that stay in production. Every game stat is copied
+ * Clans kept the ArtVee, so the ComboGuns need AC-profile rounds that stay in production. Every game stat is copied
  * from the canon Inner Sphere standard AC ammunition record; only the identity, tech base and dates differ.
  */
 const clanBreechAmmo = (ac: "5" | "10" | "20"): IEquipmentItem => {

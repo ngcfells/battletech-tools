@@ -18,35 +18,35 @@ const VARIANT_BY_PIECE: Record<string, ArtVeeVariant> = {
     "long-tom-artillery": "long-tom",
 };
 
-/** Every combo gun mounted on the vehicle. */
+/** Every ComboGun mounted on the vehicle. */
 export function getArtVeeComboGuns(vehicle: Vehicle): IEquipmentItem[] {
     return vehicle.getEquipmentList().filter((item) => !!item.comboArtilleryTag);
 }
 
-/** The variant a single combo gun fixes; null with no combo gun, or with more than one. */
+/** The variant a single ComboGun fixes; null with no ComboGun, or with more than one. */
 export function getArtVeeVariant(vehicle: Vehicle): ArtVeeVariant | null {
     const guns = getArtVeeComboGuns(vehicle);
     if (guns.length !== 1) return null;
     return VARIANT_BY_PIECE[guns[0].comboArtilleryTag ?? ""] ?? null;
 }
 
-/** Construction errors. An ordinary vehicle has none unless it still mounts a combo gun. */
+/** Construction errors. An ordinary vehicle has none unless it still mounts a ComboGun. */
 export function getArtVeeIssues(vehicle: Vehicle): string[] {
     const guns = getArtVeeComboGuns(vehicle);
     if (!vehicle.isArtVee()) {
-        return guns.map((gun) => `${gun.name} is an ArtVee combo gun, but the vehicle is not an ArtVee`);
+        return guns.map((gun) => `${gun.name} is an ArtVee ComboGun, but the vehicle is not an ArtVee`);
     }
     const issues: string[] = [];
     const eraIssue = vehicle.getArtVeeEraIssue();
     if (eraIssue) issues.push(eraIssue);
     if (!ENGINES.includes(vehicle.getEngineType().tag)) issues.push("ArtVee needs an XL or XXL engine");
     if (getArtVeeVariant(vehicle) === "long-tom") {
-        if (vehicle.getCruiseMP() < 3) issues.push("ArtVee with a Long Tom combo gun needs at least 3 Cruising MP");
+        if (vehicle.getCruiseMP() < 3) issues.push("ArtVee with a Long Tom ComboGun needs at least 3 Cruising MP");
     } else if (vehicle.getCruiseMP() < 4) {
         issues.push("ArtVee needs at least 4 Cruising MP");
     }
-    if (guns.length !== 1) issues.push(`ArtVee needs exactly one combo gun (has ${guns.length})`);
-    else if (guns[0].location !== "turret") issues.push("ArtVee combo gun must be mounted in the turret");
+    if (guns.length !== 1) issues.push(`ArtVee needs exactly one ComboGun (has ${guns.length})`);
+    else if (guns[0].location !== "turret") issues.push("ArtVee ComboGun must be mounted in the turret");
     return issues;
 }
 
@@ -80,6 +80,6 @@ export function getArtVeeNotes(vehicle: Vehicle): string[] {
         if (code) alphaStrike.push(`Alpha Strike: ${code} in Siege Mode only; Siege Mode Move 0"`);
     }
     notes.push("Transforms in the Movement Phase before moving; it cannot move or fire that turn", ...alphaStrike);
-    // Identical combo guns share one line each.
+    // Identical ComboGuns share one line each.
     return [...new Set(notes)];
 }

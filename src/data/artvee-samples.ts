@@ -1,7 +1,7 @@
 import type { IVehicleExport } from "../classes/vehicle";
 
 /*
- * Sample ArtVees (Custom Homebrew): nine full vehicle designs, three combo guns in three patterns, loadable from the
+ * Sample ArtVees (Custom Homebrew): nine full vehicle designs, three ComboGuns in three patterns, loadable from the
  * Vehicle Creator's step 1 at the Custom Homebrew level. Every item is production technology in the sample's era
  * (the Armored Motive System is prototype only in these eras, so the Clan and MAP samples carry the creator's
  * "Armored Motive System recommended" advice). Clan standard AC ammunition is extinct from 2850, so the Clan samples

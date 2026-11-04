@@ -202,7 +202,7 @@ describe("ArtVee construction", () => {
         expect(vehicle.getCBillCost()).toBeGreaterThan(plain().getCBillCost());
     });
 
-    it("needs an XL or XXL engine, 4/6 (3/5 for the Long Tom), and one combo gun in the turret", () => {
+    it("needs an XL or XXL engine, 4/6 (3/5 for the Long Tom), and one ComboGun in the turret", () => {
         expect(getArtVeeIssues(thumperArtVee())).toEqual([]);
         expect(getArtVeeVariant(thumperArtVee())).toBe("thumper");
 
@@ -219,7 +219,7 @@ describe("ArtVee construction", () => {
         expect(getArtVeeVariant(longTom)).toBe("long-tom");
         expect(getArtVeeIssues(longTom)).toEqual([]);
         longTom.setCruiseMP(2);
-        expect(getArtVeeIssues(longTom)).toEqual(["ArtVee with a Long Tom combo gun needs at least 3 Cruising MP"]);
+        expect(getArtVeeIssues(longTom)).toEqual(["ArtVee with a Long Tom ComboGun needs at least 3 Cruising MP"]);
 
         const none = thumperArtVee();
         const gun = getArtVeeComboGuns(none)[0];
@@ -227,15 +227,15 @@ describe("ArtVee construction", () => {
         none.removeEquipment(gun.uuid as string);
         expect(getArtVeeComboGuns(none)).toEqual([]);
         expect(getArtVeeVariant(none)).toBeNull();
-        expect(getArtVeeIssues(none)).toEqual(["ArtVee needs exactly one combo gun (has 0)"]);
+        expect(getArtVeeIssues(none)).toEqual(["ArtVee needs exactly one ComboGun (has 0)"]);
 
         const two = thumperArtVee();
         two.addEquipmentFromTag("custom-artvee-sniper-combo", "turret");
         expect(getArtVeeVariant(two)).toBeNull();
-        expect(getArtVeeIssues(two)).toEqual(["ArtVee needs exactly one combo gun (has 2)"]);
+        expect(getArtVeeIssues(two)).toEqual(["ArtVee needs exactly one ComboGun (has 2)"]);
 
         const body = thumperArtVee({ location: "body" });
-        expect(getArtVeeIssues(body)).toEqual(["ArtVee combo gun must be mounted in the turret"]);
+        expect(getArtVeeIssues(body)).toEqual(["ArtVee ComboGun must be mounted in the turret"]);
     });
 
     it("warns below half armor and recommends Armored Motive when it is available", () => {
@@ -262,13 +262,13 @@ describe("ArtVee construction", () => {
         vehicle.setMotiveType("wheeled");
         expect(vehicle.isArtVee()).toBe(false);
         expect(getArtVeeComboGuns(vehicle)).toHaveLength(1);
-        expect(getArtVeeIssues(vehicle)).toContain("ArtVee Thumper Combo Gun is an ArtVee combo gun, but the vehicle is not an ArtVee");
+        expect(getArtVeeIssues(vehicle)).toContain("ArtVee Thumper ComboGun is an ArtVee ComboGun, but the vehicle is not an ArtVee");
         const heavy = thumperArtVee();
         heavy.setTonnage(110);
         expect(heavy.isArtVee()).toBe(false);
     });
 
-    it("refuses combo guns on a vehicle that is not an ArtVee", () => {
+    it("refuses ComboGuns on a vehicle that is not an ArtVee", () => {
         const offered = (vehicle: Vehicle): boolean => vehicle.getAvailableEquipment(true, 6).some((item) => item.tag === "custom-artvee-thumper-combo" && item.available);
         expect(offered(plain())).toBe(false);
         expect(offered(thumperArtVee())).toBe(true);
@@ -291,7 +291,7 @@ describe("ArtVee construction", () => {
         expect(plain().setArtVee(true, 5)).toBe(false);
     });
 
-    it("offers IS combo guns to IS vehicles, Clan ones to Clan vehicles, and both to mixed tech", () => {
+    it("offers IS ComboGuns to IS vehicles, Clan ones to Clan vehicles, and both to mixed tech", () => {
         const combos = (tech: string): string[] => {
             const vehicle = thumperArtVee();
             vehicle.setTech(tech);
@@ -316,7 +316,7 @@ describe("ArtVee construction", () => {
     it("rates the ArtVee once, blended as for LAMs (IO:AE p.185)", () => {
         const log = thumperArtVee().getBattleValueLog();
         expect(log).toContain("ArtVee: movement from Vehicle Mode; Siege Mode (0 MP) adds nothing (blended, IO:AE p.185)");
-        expect(log).toContain("+ ArtVee Thumper Combo Gun (turret) = 93.00");
+        expect(log).toContain("+ ArtVee Thumper ComboGun (turret) = 93.00");
         expect(log).toContain("+ Ammunition for custom-artvee-thumper-combo = 14.00");
         expect(plain().getBattleValueLog()).not.toContain("ArtVee:");
     });
@@ -442,7 +442,7 @@ describe("ArtVee construction", () => {
             expect(vehicle.getTurretFacing("turret")).toBe(3);
         });
 
-        it("fires the combo gun's AC profile only in Vehicle Mode, and nothing on a transformation turn", () => {
+        it("fires the ComboGun's AC profile only in Vehicle Mode, and nothing on a transformation turn", () => {
             const vehicle = thumperArtVee();
             const gun = combo(vehicle);
             expect(vehicle.getArtVeeWeaponBlock(gun)).toBeNull();
@@ -616,7 +616,7 @@ describe("ArtVee record sheet notes", () => {
         expect(vehicle.getAlphaStrikeStats().specialAbilities).toContain("ARS");
     });
 
-    it("notes two identical combo guns once", () => {
+    it("notes two identical ComboGuns once", () => {
         const vehicle = build();
         vehicle.addEquipmentFromTag("custom-artvee-thumper-combo", "front");
         const notes = getArtVeeNotes(vehicle);
