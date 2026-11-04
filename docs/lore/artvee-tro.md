@@ -1,18 +1,40 @@
-# Technical Readout: Combat Vehicle Overhaul (3085)
+# Technical Readout: Jeff's BattleTech Tools - Custom Creations
 
-Custom Homebrew (rules level 6), not canon. ArtVee concept by kris (helvedes heste). Stat blocks are taken from the
-app's nine sample designs; each one adds up to its tonnage.
+## Explination
+The idea behind this TRO is like many of the other fan-created ones floating out there... We have all these really cool
+ideas and designs, and we want to share them with the community... I am an archivist and creator at heart, so the
+purpose here is two-fold. One, as stated, to show you our own cool stuff... Things that never existed before this app
+built them. The other is to bring to light all of the really cool things people have built for this game that has been
+buried in the sands of time and fickleness of Fate. 
+We are actively digging, doing what is effectively web archeology, trying to find all that old (or new) stuff. We are
+looking anywhere and everywhere we can find, but the fact is, unfortunately we will never get it all as not all of is
+recoverable, not all of it was digitized. Far too many things have been lost... so if you have write ups, if you know of
+something that has been forgotten that isn't listed over on any of the big sites, of stuff that others would love (or hate),
+then let us know over on our Discord or submit an idea/enhancement request using the button if you are seeing this on the
+BETA edition.
 
-## Introduction
+I appreciate each and every one of you. I have been playing this game since 12/25/1984... I love that it is still going strong.
 
-Ask any gunner what kills gunners and you will hear one word: radar. A big gun fires, enemy radar finds it, and the
-return shells come down on the spot where the battery stood. For centuries the only cure was to shoot and run. The Star
-League trusted huge tracked guns like the Marksman, or fixed gun sites, and its crews fired and hoped they could move in
-time.
+~NGCFells 11/4/2026
+
+## Rules Information and Attribution
+
+### For the ArtVee / MAP units
+ArtVees are Custom Homebrew designs (rules level 6), not canon. The ArtVee concept by kris (helvedes heste), of the SLDF
+Discord, based on the StarCraft miniature they wanted to be able to use in BattleTech. Stat blocks are taken from the
+app's nine sample designs; each one adds up to its tonnage. Design diagrams are AI assisted... If anyone wants to draw some
+real ones up, they would be greatly appreciated.
+
+## ArtVee Introduction
+
+"Ask any gunner what kills gunners and you will hear one thing... RADAR. A big gun fires, enemy RADAR finds it, and the
+counter-battery fire comes down on the spot where the battery stood. For centuries the only cure was to shoot and run.
+The Star League trusted huge tracked guns like the Marksman, or fixed gun sites, and its crews fired and hoped they could
+move in time.
 
 The Artillery Vehicle, or ArtVee, ended that race. It kept up with heavy tank columns and fought at the front as a
-direct-fire tank. Then, in a single ten-second turn, it locked down as a siege gun. The SLDF Quartermaster Command had
-never owned anything so flexible. One unit could pin an enemy ridge under autocannon fire, switch to high-angle shells,
+direct-fire tank. Then, in ten seconds, it locked down as a siege gun. The SLDF Quartermaster Command had never owned
+anything so flexible, excepting LAMs. One unit could pin an enemy ridge under autocannon fire, switch to high-angle shells,
 and smash forts miles away. It asked for no separate transport train.
 
 The Inner Sphere lost the type by 2865. The Clans kept it. It came home in 3071 as the Mobile Artillery Platform, or MAP,
@@ -22,25 +44,39 @@ the Star League, three from the Clans and three from the Inner Sphere.
 Readers will find notes set beside the text. They are credited to Precentor Martial Cameron St. Jamais of the Word of
 Blake, who wrote them on the seized IrTech MAP file in 3072. ComStar intercepted that file the same year, and it now
 sits in the Republic Archives. St. Jamais died in December 3078, and his notes speak to nothing after 3072. I print them
-because no one ever looked at this machine with a colder eye.
+because no one ever looked at this machine with a colder eye."
 
 *Precentor David Vance, ComStar Bureau of Technology, 3085*
 
-> *St. Jamais:* An artillery piece that can leave. Every gunner in the Militia will ask me for one. A battery that can
-> run will run, and I have spent years building a line around Terra on the opposite idea.
+> *St. Jamais:* "An artillery piece that can leave. Rapidly... Every gunner in the Militia will ask me for one. A battery
+> that can run will run, and I have spent years building a line around Terra on the opposite idea."
 
-## How Conversion Works
+### How Conversion Works and Other Things
 
-An ArtVee does not run on two tracks. It runs on four split track pods, one at each corner, and each pod rides on a
-hinged arm. Crews call the hydraulic leg at the end of each arm the "Iron Knee". Most of the gear sits in the hull. The breech and barrel assembly sits in the turret. Destroy any of it and the vehicle
-stays in whichever Mode it was in, which is a bad day for a tank and a worse one for a gun.
+An ArtVee does not run on a standard motive methodology, whatever it uses, be it wheels or tracks, it has the ability to shift
+each quarter diagonally. This does not really assist it in turning under normal conditions, but skilled drivers can sometimes
+make risky manuevers that lift one diaganol pair in order to move as if they were a Bishop on a chess board. This is due to the
+fact that each quarter's motive mechanism is split into its own pod, one at each corner. Regardless if tracked or tyred,
+each pod, rides on a hinged arm that allows the motive pod to pivot out and lock in place for stability. At the end of each pod
+is an anchoring hydraulic leg, which crews have termed the "Iron Knee". The Iron Knee provides even more bracing, locking the
+unit in place utilizing the hydraulic pistons to insert a stabilizing rod into the ground. 
+
+Then when it is time to move again, the ArtVee applies the power from its extra-light or extra-extra-light fusion engine in order
+to retract safely and get converted back into the tank mode before any return fire arrives. Typically, most of the gear sits
+within the hull where it is safe and does not get in the way of the conversion mechanisms. Each ArtVee uses a specialized custom
+weapon that is a combination autocannon/artillery piece known colloquially as a ComboGun. The breech and barrel of this weapon
+assembly sits in the turret. Destroy any of the conversion equipment and the unit stays in whichever Mode it was in, which is a
+bad day for any tank and an even worse one for a gun tube.
 
 1. **The Lock Down.** The commander orders Siege Mode and the tracks lock. The four arms swing the pods out until the
-   vehicle makes an X when seen from above. An Iron Knee then drops at each corner and drives a spade into the ground.
-   The gun can fire in any direction, so the tank has to be braced on every side against the kick of artillery fire.
-2. **The Breech Swap.** The combo gun's breech slides along a double rail inside the turret. The automatic loader seals
+   vehicle makes an X when seen from above. Some models retract the motive mechanisms mostly underneath themselves to protect them.
+   Regardless, once in position, an Iron Knee then drops at each corner and drives a spade or spike into the ground. If the ground,
+   or enemy action, damages the spade/spike, it can be jettisoned to allow the ArtVee to convert. However, by doing so, the unit
+   will suffer a minor penalty in stability. The ComboGun can fire in any direction as it is turret mounted, so the unit has to be
+   braced on every side against the kick of artillery fire.
+3. **The Breech Swap.** The combo gun's breech slides along a double rail inside the turret. The automatic loader seals
    off the autocannon feed and connects the artillery rammer. Separate magazines feed the two kinds of round.
-3. **The Barrel Change.** The folding autocannon barrel tucks back into the turret, and magnetic stabilizers lock the
+4. **The Barrel Change.** The folding autocannon barrel tucks back into the turret, and magnetic stabilizers lock the
    rifled artillery tube in place. In Vehicle Mode that same barrel runs longer than a standard autocannon's, which is
    where the gun gets its extra reach.
 
@@ -50,19 +86,22 @@ In Siege Mode the turret can still turn a full 360 degrees.
 
 *A Falconet FLC-1 goes from Vehicle Mode to Siege Mode. Bureau of Technology drawing.*
 
-### The Blind Turn
+### The Blind Infinity
 
-Ask an ArtVee crew about their training and watch them wince. The conversion takes one full turn. The engine sends
-nearly all its power to the conversion gear, so the vehicle sits still and silent. It can neither move nor fire. Crews
-drill endlessly for "The Blind Turn": they pop smoke just before they halt, check the stabilizing gyros by hand, and
-ready the first shell.
+Ask an ArtVee crew about their training and watch them wince. The conversion takes ten seconds... Ten seconds of doing
+nothing, that may seem blindingly fast to the untrained, but when shells are incoming? Those ten seconds can feel like
+infinity... You have to be doing the exactly right thing at the right time whiel the engine sends nearly all its power
+to the conversion gear, so the weapons sit still and silent while everyone focuses on their tasks. The unit cannot move
+during the transition either... so if you are trying to run? Hope you change and hit the gas before things start blowing
+up around you. Crews drill endlessly for "The Blind Infinity": they pop smoke just before they halt, check the stabilizing
+gyros by hand, get into positions, and ready the first shell.
 
-> *St. Jamais:* Ten seconds, blind and silent, unable to answer. The file calls this an acceptable risk. I asked Mars
-> how long a Level II would need to find such a target. They told me less than ten seconds.
+> *St. Jamais:* "Ten seconds, blind and silent, unable to answer, unable to move. The file calls this an acceptable risk. I
+> asked Mars how long a Level II would need to find such a target. They told me, 'Much less than that.'"
 
-## From Golden Age to Jihad
+### From Golden Age to Jihad
 
-### The SLDF and the First Succession War
+#### The SLDF and the First Succession War
 
 The first ArtVee prototype rolled out in 2690, and production began in 2700. Light and medium patterns went straight to
 SLDF Regular Army line regiments, where they fought as battering rams alongside early LAMs. Only the heavy Culverin
@@ -70,10 +109,10 @@ served with independent artillery battalions. That front-line work ruined them i
 complex conversion gear was easy to damage. By 2865 the Inner Sphere's failing industry could no longer make the precise
 combo barrels. The last chassis were stripped for parts to keep plain autocannon tanks running.
 
-> *St. Jamais:* General Mechanics left us a parts catalog on Mars and nothing more. The Star League could build this
-> machine. We can only read about it. I would not say so to the Master.
+> *St. Jamais:* "General Mechanics left us a parts catalog on Mars and nothing more. The Star League could build this
+> machine. We can only read about it. I would not say so to the Master."
 
-### Clan Hell's Horses
+#### Clan Hell's Horses
 
 The design left with the SLDF on the Exodus in 2784. Most Clans saw artillery as dishonorable. Clan Hell's Horses kept
 the line alive by fighting its ArtVees in Vehicle Mode under zellbrigen, the Clan dueling rules. If a duel grew, or an
@@ -84,7 +123,7 @@ The Tokasha lines did not outlast the Wars of Reaving. When the Steel Vipers rea
 the Horses there held a single city. The Vipers stripped and bombarded what was left. By then the Clan's ArtVee crews
 had already gone to the Inner Sphere with the migration of 3070.
 
-### After the Reaving
+#### After the Reaving
 
 The Horses carried mobile factories into the Inner Sphere. ArtVee production started again at Csesztreg Industriplex
 Beta, their vehicle plant in the old Wolf Occupation Zone. In the Homeworlds, the Horses who stayed behind became Clan
@@ -97,7 +136,7 @@ Clan Wolf-in-Exile, the Horses' ally, has a handful of ArtVees it received as te
 Clan Wolf has only what it captured from the Horses. A few of those captured vehicles may have gone with the Goliath
 Scorpions to their Escorpión Imperio.
 
-### The IrTech Revelation
+#### The IrTech Revelation
 
 Irian declared against Atreus in June 3069. By 3072 the world and IrTech were in the hands of Blakist puppets, and rebel
 cells had grown up inside the company. In 3071 one cell pulled partial plans for the Hell's Horses' Pangolin from a
@@ -109,26 +148,29 @@ Blakist Irian fell on 8 December 3075. The retreating garrison destroyed several
 weapons, the MAP lines among them. IrTech restarted the Springald and Perrier at its Shiro III plant, which the Jihad
 never touched. With the design now out in the open, Blue Shot and Defiance took licenses after the war.
 
-> *St. Jamais:* Someone inside Irian copied a Militia data-core, and I learned of it from a production schedule: Irian
-> Security has ordered more gun carriages than Irian Security has crews. Irian anchors my line. I will have the names.
+> *St. Jamais:* "Someone inside Irian copied a Militia data-core, and I learned of it from a production schedule: Irian
+> Security has ordered more gun carriages than Irian Security has crews. Irian anchors my line. I *will* have the names!
 > Until then, leave the plant running. Whatever leaves that floor will show me where it goes, and who is waiting for
-> it.
+> it when it arrives."
 
-## Battle Plans and Tactics
+### Battle Plans and Tactics
 
-### The "Shield and Shell" Battery
+#### The "Shield and Shell"
 
-A standard MAP battery is four MAPs and two regular heavy tanks, usually Manticores or Pos.
+A standard MAP firing platoon is four MAPs and two regular heavy tanks, usually Manticores or Pos although occasionlly
+you will find Partisans attached when enemy air power is expected to be highly likely. 
 
-- **Spotters:** each battery works with fast hovercraft, such as the Pegasus or Fulcrum, carrying TAG.
+- **Spotters:** each firing platoon then works with fast hovercraft, such as the Pegasus or Fulcrum, carrying TAG to
+  direct the semi-guided rounds from the MAPs onto the target. Sometimes, WiGE, VTOLs, or even Scout Mechs will be
+  used instead.
 - **Answering return fire:** a MAP can go back to Vehicle Mode and leave at normal combat speed, so its crews do not
-  fear return fire the way older gunners did. They fire three volleys, convert on the fourth turn, move two kilometers
-  and start again.
+  fear return fire the way other gunners do. They fire two to three volleys, convert immediately after, move two
+  kilometers, and start again.
 
-> *St. Jamais:* Three volleys, and they run on the fourth turn. A child with a stopwatch could read that drill. Put
-> one spotter on a battery and count.
+> *St. Jamais:* "Three volleys, and they run immediately after... A child with a stopwatch could read that drill. Put
+> one spotter on a battery and count, then watch the cowards fly."
 
-## Builders and Factories
+### Builders and Factories
 
 | Gun variant | Era | Pattern | Manufacturer | Primary factory |
 | --- | --- | --- | --- | --- |
@@ -147,9 +189,10 @@ A standard MAP battery is four MAPs and two regular heavy tanks, usually Mantico
 The original Tokasha lines were lost in 3074 and the Irian lines in 3075. Johnston's New Syrtis plant went offline in
 the Taurian bombardment of 12 October 3076 and is still being rebuilt.
 
-> *St. Jamais:* Irian will hold. The line will hold. I have told the Master so, in those words.
+> *St. Jamais:* "Irian will hold. The line will hold. I have told the Master so in those exact words. Therefore, we
+> shall do so."
 
-### Production in 3085
+#### Production in 3085
 
 | Pattern | Builder | Factory | Notes |
 | --- | --- | --- | --- |
@@ -160,26 +203,28 @@ the Taurian bombardment of 12 October 3076 and is still being rebuilt.
 | Tormentum | Johnston Industries | Benet III | Expanded component site |
 | Tormentum | Defiance Industries | Hesperus II | Licensed |
 
-## Loose Ends
+### Notes and Loose Ends
 
-- **Inner Sphere caches:** a small cache of perfect Sakers turned up in 3065 inside the Taurian Concordat. The Word of
-  Blake quietly took it and tested the conversion ideas on those vehicles. That work is how the data-core later hacked
-  at IrTech came to exist.
-- **Superheavy ArtVees:** the Hailstorm has always been a towed gun, because its recoil would wreck any standard tracked
-  chassis, spades or no spades. It hits far harder than a Long Tom (35 points against 25) but reaches less than half as
-  far (12 mapsheets against 30). In 3085 the Republic Armored Corps has a design study on the drawing board to change
+- **Inner Sphere caches:** A small cache of Sakers in mint condition, turned up in 3065 unexpectedly inside the Taurian
+  Concordat. The Word of Blake quietly took everything from within that cache and tested the convertability of those
+  vehicles. That work is how the data-core later hacked at IrTech came to exist.
+- **Superheavy ArtVees:** The Hailstorm Artillery Tube has always been a towed gun, because its recoil would absolutely
+  wreck any standard tracked chassis, stabilizing spades or not. It hits far harder than a Long Tom but reaches less
+  than half as far (6 km vs 15 km). In 3085 the Republic Armored Corps has a design study on the drawing board to change
   that. The 130-ton tracked "Bricole" has the first superheavy hull with the mass to carry a Hailstorm combo gun under
   its own power. Its hardened hull and short, brutal reach suit its planned role as a moving coastal fort that breaks up
-  landings on the beach. (Not built yet: issue #178.)
+  landings on the beach. Unfortunately, it is still on the drawing board only at this time, although hopes for a prototype
+  coming soon are high.
 
 ---
 
-## Star League Defense Force
+### Star League Defense Force
 
-Three patterns served the SLDF, one for each gun. They came from three makers on three worlds, and all three were gone
-from the Inner Sphere by 2865. Any Star League ArtVee seen today is a cache find or a museum piece.
+Three patterns served the SLDF, one for each ComboGun type. They came from three makers on three worlds, and all three were gone
+from the Inner Sphere by 2865. Any Star League ArtVee seen today is a cache find, a museum piece, or something someone lovingly
+kept held together with baling wire, duct tape, and prayers.
 
-## Falconet ArtVee FLC-1
+#### Falconet ArtVee FLC-1
 
 ```text
 Mass: 55 tons
@@ -189,7 +234,7 @@ Cruising Speed: 43 kph
 Flank Speed: 65 kph
 Armor: Ferro-Fibrous
 Armament:
-  1 Thumper / AC/5 Combo Gun
+  1 Thumper / AC/5 ComboGun
   1 Small Pulse Laser
   2 Machine Guns
   1 Searchlight
@@ -200,33 +245,33 @@ Communications System: Dalban Commline
 Targeting and Tracking System: Dalban HiRez
 ```
 
-### Overview
+##### Overview
 
 The Falconet is the basic Light ArtVee, 55 tons of tracked vehicle built alongside early LAMs. It was General Mechanics'
 answer to a hard SLDF Regular Army request. The army wanted an artillery piece that could advance inside the screen of a
-medium armor lance with no escort of its own. The FLC-1 managed it with a two-mode breech that works as a direct-fire
+medium armor lance with no escort of its own. The FLC-1 managed it with a dual-mode breech that works as a direct-fire
 brawler or a fixed gun.
 
-### Capabilities
+##### Capabilities
 
-Everything on the Falconet serves its Thumper/AC-5 Combo Gun, carried in a fully turning turret. In Vehicle Mode the gun
+Everything on the Falconet serves its Thumper/AC-5 ComboGun, carried in a fully turning turret. In Vehicle Mode the gun
 works as a long-reach Autocannon/5 that punishes hovercraft on the flanks and screening infantry. Once the Iron Knees are
 down and Siege Mode is set, the breech locks in as a standard Thumper tube. General Mechanics knew how risky the
 conversion turn was and gave the chassis ten and a half tons of Ferro-Fibrous armor to cover it. Two front machine guns
 and a turret pulse laser sweep away anti-armor infantry.
 
-### Deployment
+##### Deployment
 
 The Falconet served across the SLDF regular forces through the 2700s, usually in mobile fire-support lances. Its light
 Thumper made it a favorite for city fighting and breakthrough work, where a Long Tom would do too much damage to
 everything nearby.
 
-### Notable Crews
+##### Notable Crews
 
-**Lieutenant Marcus "Grizzly" Harlan:** A vanguard commander in the 142nd Mechanized Infantry Division, Harlan met a
-rogue Draconis Combine Shadow Hawk at close range on Sendai. Harlan raked the 'Mech's cockpit with the pulse laser,
-popped the Buckler, and converted under the smoke. A Thumper shell finished the target at a range most gunners would
-call suicidal.
+**Lieutenant Marcus "Grizzly" Harlan:** A vanguard commander in the 142nd Mechanized Infantry Division, the Division du
+Aquitaine, Harlan met a rogue Draconis Combine Shadow Hawk at close range on Sendai. Harlan raked the 'Mech's cockpit
+with the pulse laser, popped the Buckler, and converted under the smoke. A Thumper shell finished the target at a range
+most gunners would call suicidal, and one that he called "justice."
 
 ```text
 Type: Falconet ArtVee FLC-1
@@ -258,7 +303,7 @@ Armor Factor (Ferro-Fibrous): 188            10.5
     Turret                    37
 
 Weapons and Ammo                  Location  Tonnage
-Thumper / AC/5 Combo Gun          Turret       15.0
+Thumper / AC/5 ComboGun           Turret       15.0
 Small Pulse Laser                 Turret        1.0
 Machine Gun                       Front         0.5
 Machine Gun                       Front         0.5
@@ -269,7 +314,7 @@ Ammo (AC/5) 20                    Body          1.0
 Ammo (Machine Gun) 200            Body          1.0
 ```
 
-## Saker ArtVee SKR-1
+#### Saker ArtVee SKR-1
 
 ```text
 Mass: 70 tons
@@ -279,7 +324,7 @@ Cruising Speed: 43 kph
 Flank Speed: 65 kph
 Armor: Ferro-Fibrous
 Armament:
-  1 Sniper / AC/10 Combo Gun
+  1 Sniper / AC/10 ComboGun
   1 Medium Pulse Laser
   2 Machine Guns
   1 Searchlight
@@ -290,31 +335,31 @@ Communications System: Dalban Commline
 Targeting and Tracking System: Dalban HiRez
 ```
 
-### Overview
+##### Overview
 
 The Falconet had barely reached the line when the Quartermaster Command asked for more. It wanted brigade-level
 artillery support that would not have to leave the line to give it. Blue Shot Weapons answered with the 70-ton Saker,
 the Star League's Medium ArtVee, named after the Renaissance cannon. The result was a heavily armored gun that could
 smash forts or duel medium BattleMechs.
 
-### Capabilities
+##### Capabilities
 
-The Saker's Sniper/AC-10 Combo Gun sits in a roomy, balanced turret. In Vehicle Mode it works as a long-reach
-Autocannon/10. In Siege Mode the tracks lock, the pods spread, the Iron Knees drop, and the breech becomes a pure Sniper tube. Eleven tons of
-Ferro-Fibrous armor let it take as much punishment as a line tank like the Patton or Manticore. A medium pulse laser,
-two machine guns and a rear Buckler smoke dispenser cover it during the conversion turn.
+The Saker's Sniper/AC-10 ComboGun sits in a roomy, balanced turret. In Vehicle Mode it works as a long-reach
+Autocannon/10. In Siege Mode the tracks lock, the pods spread, the Iron Knees drop, and the breech becomes a pure Sniper
+tube. Eleven tons of Ferro-Fibrous armor let it take as much punishment as a line tank like the Patton or Manticore.
+A medium pulse laser, two machine guns and a rear Buckler smoke dispenser cover it during the conversion turn.
 
-> *St. Jamais:* The Concordat never knew what it had. Perfect after three hundred years, and six months of our best
+> *St. Jamais:* "The Concordat never knew what it had. Perfect after three hundred years, and six months of our best
 > technicians learned how the gun changes and not why it does not shake itself apart. I ordered every result onto one
-> data-core. That error was mine, and it will be the last of its kind.
+> data-core. That error was mine, and it will be the last of its kind."
 
-### Deployment
+##### Deployment
 
-Sakers went to SLDF Heavy Mechanized Infantry regiments, where they formed mobile artillery lances. Crews prized them in
-the fighting to pacify the Periphery. Those precise combo barrels needed Star League depots, though, and the design was
-extinct in the Inner Sphere by 2865.
+Sakers went to SLDF Heavy Mechanized Infantry regiments, where they formed mobile artillery lances and fire platoons.
+Crews prized them in the fighting to pacify the Periphery. Those precise combo barrels needed Star League depots,
+though, and the design was extinct in the Inner Sphere by 2865 due to lack of parts and knowledge.
 
-### Notable Crews
+##### Notable Crews
 
 **Major Alistair Kessler:** Kessler, of the 3rd Regimental Combat Team, became a legend during the liberation of Terra.
 When a Rim Worlds heavy lance broke through the defensive line, Kessler pulled the battery into a tight wedge. The
@@ -351,7 +396,7 @@ Armor Factor (Ferro-Fibrous): 197            11.0
     Turret                    39
 
 Weapons and Ammo                  Location  Tonnage
-Sniper / AC/10 Combo Gun          Turret       20.0
+Sniper / AC/10 ComboGun           Turret       20.0
 Medium Pulse Laser                Turret        2.0
 Machine Gun                       Front         0.5
 Machine Gun                       Front         0.5
@@ -362,7 +407,7 @@ Ammo (AC/10) 10                   Body          1.0
 Ammo (Machine Gun) 200            Body          1.0
 ```
 
-## Culverin ArtVee CLV-1
+#### Culverin ArtVee CLV-1
 
 ```text
 Mass: 100 tons
@@ -372,7 +417,7 @@ Cruising Speed: 32 kph
 Flank Speed: 54 kph
 Armor: Ferro-Fibrous
 Armament:
-  1 Long Tom / AC/20 Combo Gun
+  1 Long Tom / AC/20 ComboGun
   1 Medium Pulse Laser
   2 Machine Guns
   1 'Mech Mortar-1
@@ -385,30 +430,32 @@ Communications System: Krupp Battlenet
 Targeting and Tracking System: Krupp Longsight
 ```
 
-### Overview
+##### Overview
 
 At 100 tons the Heavy Culverin is the largest ArtVee ever fielded. Krupp Stellar Technologies designed it so that siege
 lines would no longer sit helpless against planetary defense networks. Commanders could move Long Tom batteries straight
 through gaps in enemy forts with no separate escorts.
 
-### Capabilities
+##### Capabilities
 
-The main weapon is a turret Long Tom/AC-20 Combo Gun: a direct-fire Autocannon/20 in Vehicle Mode, a Long Tom in Siege
+The main weapon is a turret Long Tom/AC-20 ComboGun: a direct-fire Autocannon/20 in Vehicle Mode, a Long Tom in Siege
 Mode. Sixteen and a half tons of Ferro-Fibrous armor cover every side evenly. Close defense falls to a front 'Mech
 Mortar, two machine guns, a medium pulse laser and a rear grenade launcher.
 
-> *St. Jamais:* Krupp built these on Terra, on ground I now defend. I would trade a Division for twelve of them, and
-> there is not one left to trade for.
+> *St. Jamais:* "Krupp built these on Terra, on ground I now defend. I would trade a Division for twelve of them, and
+> there is not even one left to trade for."
 
-### Deployment
+##### Deployment
 
 Culverins went to elite SLDF independent artillery battalions. The type was extinct by 2865, after the Succession Wars
 destroyed its production lines and the last units were stripped for parts.
 
-### Notable Crews
+##### Notable Crews
 
-**Captain Cristobal "Astech" Draheim:** A master technician in the 11th Heavy Assault Regiment, Draheim was known for
-tuning his Culverin's conversion gears. He held a key crossroad during the liberation of Terra.
+**Captain Cristobal "Astech" Draheim:** A master technician in the 11th Heavy Assault Regiment who went Mustang due to a
+brevet field promotion that was later upheld, Draheim was known for tuning his Culverin's conversion gears. Possibly even
+overtuning them... The things he could have the crew of his Culverin do, and the maneuvers they made, have made legends of
+them all with stories still being told about them. They held a key crossroad during the liberation of Terra.
 
 ```text
 Type: Culverin ArtVee CLV-1
@@ -440,7 +487,7 @@ Armor Factor (Ferro-Fibrous): 295            16.5
     Turret                    59
 
 Weapons and Ammo                  Location  Tonnage
-Long Tom / AC/20 Combo Gun        Turret       30.0
+Long Tom / AC/20 ComboGun         Turret       30.0
 Medium Pulse Laser                Turret        2.0
 Machine Gun                       Front         0.5
 Machine Gun                       Front         0.5
@@ -456,12 +503,12 @@ Ammo ('Mech Mortar, AP)           Body          1.0
 
 ---
 
-## The Clans
+### The Clans
 
 Clan Hell's Horses alone kept faith with the ArtVee, and all three Clan patterns are theirs. Each comes in lighter than
 its Star League ancestor. Clan Stone Lion now builds them too, and a Diamond Shark merchant will quote you a price.
 
-## Pangolin ArtVee PNG-C
+#### Pangolin ArtVee PNG-C
 
 ```text
 Mass: 45 tons
@@ -471,7 +518,7 @@ Cruising Speed: 43 kph
 Flank Speed: 65 kph
 Armor: Clan Ferro-Fibrous
 Armament:
-  1 Clan Thumper / AC/5 Combo Gun
+  1 Clan Thumper / AC/5 ComboGun
   1 Clan Small Pulse Laser
   2 Clan Machine Guns
   1 Clan Flamer
@@ -481,32 +528,32 @@ Communications System: Horse Herald 4
 Targeting and Tracking System: Horse Spotter 2
 ```
 
-### Overview
+##### Overview
 
 When Nicholas Kerensky led the SLDF into exile, the ArtVee blueprints went with him. Most Clans saw artillery as an
 insult to honorable combat. Clan Hell's Horses saw a useful machine and rebuilt it as a 45-ton Light ArtVee, lighter than
 its Star League ancestor. The Pangolin takes its name from the armored animal that curls into a ball, just as the tank
 locks down into Siege Mode.
 
-### Capabilities
+##### Capabilities
 
 The Pangolin builds the combo gun from Clan parts, saving ten tons over the Falconet. Clan factories stopped making
 standard autocannon ammunition around 2850, so Horses technicians built a custom breech round for Vehicle Mode. Clan
 Ferro-Fibrous armor is spread evenly across every side to survive flank attacks. Two machine guns, a turret pulse laser
 and a rear flamer deal with Elementals trying to climb the hull during lock-down.
 
-> *St. Jamais:* The Horses reached Wolf space in 3070 with a gun the other Clans despise, and we lifted these numbers
+> *St. Jamais:* "The Horses reached Wolf space in 3070 with a gun the other Clans despise, and we lifted these numbers
 > from them in the confusion. A Clan that does not care what its cousins think is a Clan worth watching. Find out what
-> else they brought.
+> else they brought."
 
-### Deployment
+##### Deployment
 
 The Pangolin serves mainly with Hell's Horses clusters as a strong point in the attack. In Trials of Possession it
 advances with ProtoMechs, converts under fire, and breaks through defenses before the enemy can close.
 
-### Notable Crews
+##### Notable Crews
 
-**Star Commander Jael Cobb:** Cobb, a Horses vehicle warrior who won a Bloodname without ever piloting a 'Mech, defended
+**Star Commander Jael Cobb:** Cobb, a Horse's vehicle warrior who won a Bloodname without ever piloting a 'Mech, defended
 a Tokasha supply depot against an unauthorized Star Adder raid. Cobb backed the Pangolin into a gully and used high-angle
 Thumper fire to start rockslides. The rocks crushed the attackers, and Cobb never left Siege Mode.
 
@@ -540,7 +587,7 @@ Armor Factor (Clan Ferro-Fibrous): 115        6.0
     Turret                    23
 
 Weapons and Ammo                  Location  Tonnage
-Clan Thumper / AC/5 Combo Gun     Turret       15.0
+Clan Thumper / AC/5 ComboGun      Turret       15.0
 Clan Small Pulse Laser            Turret        1.0
 Clan Machine Gun                  Front        0.25
 Clan Machine Gun                  Front        0.25
@@ -550,7 +597,7 @@ Ammo (AC/5 Breech, Clan) 20       Body          1.0
 Ammo (Machine Gun) 200            Body          1.0
 ```
 
-## Archerfish ArtVee ARF-C
+#### Archerfish ArtVee ARF-C
 
 ```text
 Mass: 65 tons
@@ -560,7 +607,7 @@ Cruising Speed: 43 kph
 Flank Speed: 65 kph
 Armor: Clan Ferro-Fibrous
 Armament:
-  1 Clan Sniper / AC/10 Combo Gun
+  1 Clan Sniper / AC/10 ComboGun
   1 Clan Medium Pulse Laser
   2 Clan Machine Guns
   1 Clan 'Mech Mortar-1
@@ -571,26 +618,27 @@ Communications System: Horse Herald 4
 Targeting and Tracking System: Horse Spotter 2
 ```
 
-### Overview
+##### Overview
 
 Named after the fish that spits water to hit prey from a distance, the Archerfish was built to pin down the enemy at
 middle range. This 65-ton Medium ArtVee comes in five tons lighter than the Saker, and it fits a standard DropShip
 vehicle bay with no loss of structure or conversion gear.
 
-### Capabilities
+##### Capabilities
 
-The turret holds a Clan Sniper/AC-10 Combo Gun, protected by seven and a half tons of Clan Ferro-Fibrous armor. A front
+The turret holds a Clan Sniper/AC-10 ComboGun, protected by seven and a half tons of Clan Ferro-Fibrous armor. A front
 'Mech Mortar, two machine guns, a turret pulse laser and a rear flamer complete the design.
 
-### Deployment
+##### Deployment
 
 Archerfish serve in Hell's Horses Cavalry Clusters, where crews train to answer terrain ambushes by locking into Siege
 Mode.
 
-### Notable Crews
+##### Notable Crews
 
-**Star Captain Devon Cobb:** Cobb used exactly that drill against Clan Wolf. Armor-piercing mortar fire kept an OmniMech
-pinned under a rocky overhang. Cobb then walked Sniper shells onto the rock and brought it down on the target.
+**Star Captain Devon Amirault:** Amirault used exactly that drill mentioned above against Clan Wolf. Armor-piercing mortar
+fire kept an OmniMech pinned under a rocky overhang. Amirault then walked Sniper shells onto the rock and brought it down
+on the target crushing the 'Mech under it.
 
 ```text
 Type: Archerfish ArtVee ARF-C
@@ -622,7 +670,7 @@ Armor Factor (Clan Ferro-Fibrous): 144        7.5
     Turret                    28
 
 Weapons and Ammo                  Location  Tonnage
-Clan Sniper / AC/10 Combo Gun     Turret       20.0
+Clan Sniper / AC/10 ComboGun      Turret       20.0
 Clan Medium Pulse Laser           Turret        2.0
 Clan Machine Gun                  Front        0.25
 Clan Machine Gun                  Front        0.25
@@ -634,7 +682,7 @@ Ammo (Machine Gun) 200            Body          1.0
 Ammo ('Mech Mortar, AP)           Body          1.0
 ```
 
-## Glyptodon ArtVee GLY-C
+#### Glyptodon ArtVee GLY-C
 
 ```text
 Mass: 75 tons
@@ -644,7 +692,7 @@ Cruising Speed: 32 kph
 Flank Speed: 54 kph
 Armor: Clan Ferro-Fibrous
 Armament:
-  1 Clan Long Tom / AC/20 Combo Gun
+  1 Clan Long Tom / AC/20 ComboGun
   1 Clan Medium Pulse Laser
   2 Clan Machine Guns
   1 Clan Flamer
@@ -654,26 +702,26 @@ Communications System: Horse Herald 4
 Targeting and Tracking System: Horse Spotter 2
 ```
 
-### Overview
+##### Overview
 
 The Glyptodon shrinks the Long Tom platform into a lean chassis built to survive Clan trials at any range. It is the
 Horses' 75-ton Heavy ArtVee, twenty-five tons lighter than the Culverin. Its name comes from the great armored mammal of
 ancient Terra.
 
-### Capabilities
+##### Capabilities
 
-The turret Clan Long Tom/AC-20 Combo Gun works as a direct-fire Autocannon/20 in Vehicle Mode. Siege Mode anchors the
+The turret Clan Long Tom/AC-20 ComboGun works as a direct-fire Autocannon/20 in Vehicle Mode. Siege Mode anchors the
 vehicle for long-range artillery. Backup weapons are a turret medium pulse laser, two front machine guns and a rear
 flamer.
 
-### Deployment
+##### Deployment
 
 The Glyptodon stayed with the Hell's Horses until the Clan's 3070 drive into the Wolf Occupation Zone. There it surprised
 Inner Sphere observers by switching between direct fire and siege artillery.
 
-### Notable Crews
+##### Notable Crews
 
-**Star Commander Rena Cobb:** Cobb used both modes to drive off a Clan Ghost Bear assault on Tokasha, before the last
+**Star Commander Rena Dwelley:** Dwelley used both modes to drive off a Clan Ghost Bear assault on Tokasha, before the last
 Bears left for the Inner Sphere in 3060.
 
 ```text
@@ -706,7 +754,7 @@ Armor Factor (Clan Ferro-Fibrous): 172        9.0
     Turret                    34
 
 Weapons and Ammo                  Location  Tonnage
-Clan Long Tom / AC/20 Combo Gun   Turret       30.0
+Clan Long Tom / AC/20 ComboGun    Turret       30.0
 Clan Medium Pulse Laser           Turret        2.0
 Clan Machine Gun                  Front        0.25
 Clan Machine Gun                  Front        0.25
@@ -718,13 +766,13 @@ Ammo (Machine Gun) 200            Body          1.0
 
 ---
 
-## The Inner Sphere
+### The Inner Sphere
 
 The three MAP patterns came out of the Jihad in a hurry, built by frightened people with stolen data. They carry less
 armor than the old Star League guns and much less polish. They also roll off working assembly lines, which no Inner
 Sphere ArtVee had done in two centuries.
 
-## Springald ArtVee SPR-1M
+#### Springald ArtVee SPR-1M
 
 ```text
 Mass: 45 tons
@@ -734,7 +782,7 @@ Cruising Speed: 43 kph
 Flank Speed: 65 kph
 Armor: Ferro-Fibrous
 Armament:
-  1 Thumper / AC/5 Combo Gun
+  1 Thumper / AC/5 ComboGun
   1 Small Pulse Laser
   2 Light Machine Guns
 Manufacturer: Irian Technologies
@@ -743,7 +791,7 @@ Communications System: Irian E.A.R.
 Targeting and Tracking System: Irian Orion 5
 ```
 
-### Overview
+##### Overview
 
 In 3071 the Jihad was tearing apart normal battle lines. The rebel cells inside Irian Technologies wanted a mobile
 artillery piece that could dodge orbital strikes and fast cybernetic raiders. Working from data on the Pangolin, their
@@ -751,28 +799,28 @@ engineers copied the light chassis that could change modes and put this 45-ton L
 Named after the medieval torsion engine, the Springald was the first Mobile Artillery Platform to roll off Inner Sphere
 lines in two centuries.
 
-> *St. Jamais:* "Cybernetic raiders." So the League has begun to count them. The children of Gibson grow careless with
-> their survivors, and it is my Militia that answers for it. Frightened men in a hurry built this. Frightened men
-> build well.
+> *St. Jamais:* "*Cybernetic raiders*... or so the League has begun to call them. The children of Gibson grow careless
+> with their survivors, and it is my Militia that answers for it. Frightened men in a hurry built these. Apparently,
+> frightened men build well."
 
-### Capabilities
+##### Capabilities
 
 The Springald matches the Clan design's 45 tons with ordinary Inner Sphere factories, and it pays for that in
 protection: six tons of armor where the Falconet has ten and a half. Two Light Machine Guns with a full ton of ammunition
 guard against infantry ambushes. Its long-reach AC/5 can trade shots with medium armor, which helps it survive in dense
 terrain.
 
-### Deployment
+##### Deployment
 
 The Springald was smuggled to Free Worlds League planetary militias, and later to Coalition commands. It mostly serves
 in defensive screens. Crews bait Blakist Level IIs into chasing them in Vehicle Mode, then lead them into kill zones
-already aimed at by sister units in Siege Mode.
+already presighted by sister units in Siege Mode.
 
-### Notable Crews
+##### Notable Crews
 
 **Force Commander Elena Marik-Hayes:** Fighting with the resistance on Atreus, Marik-Hayes held up a Word of Blake
-vanguard for three days with one under-strength lance of Springalds. Her crews moved between ruined factories in
-Vehicle Mode and locked down to shell advancing troops. Their fire covered the retreat of an entire infantry regiment.
+vanguard for three days with one under-strength fire platoon of Springalds. Her crews moved between ruined factories
+in Vehicle Mode and locked down to shell advancing troops. Their fire covered the retreat of an entire infantry regiment.
 
 ```text
 Type: Springald ArtVee SPR-1M
@@ -804,7 +852,7 @@ Armor Factor (Ferro-Fibrous): 107             6.0
     Turret                    21
 
 Weapons and Ammo                  Location  Tonnage
-Thumper / AC/5 Combo Gun          Turret       15.0
+Thumper / AC/5 ComboGun           Turret       15.0
 Small Pulse Laser                 Turret        1.0
 Light Machine Gun                 Front         0.5
 Light Machine Gun                 Front         0.5
@@ -813,7 +861,7 @@ Ammo (AC/5) 20                    Body          1.0
 Ammo (Light MG) 200               Body          1.0
 ```
 
-## Perrier ArtVee PER-1M
+#### Perrier ArtVee PER-1M
 
 ```text
 Mass: 60 tons
@@ -823,7 +871,7 @@ Cruising Speed: 43 kph
 Flank Speed: 65 kph
 Armor: Ferro-Fibrous
 Armament:
-  1 Sniper / AC/10 Combo Gun
+  1 Sniper / AC/10 ComboGun
   2 Light Machine Guns
   1 Vehicle Flamer
   1 Smoker
@@ -833,29 +881,29 @@ Communications System: Irian E.A.R.
 Targeting and Tracking System: Irian Orion 5
 ```
 
-### Overview
+##### Overview
 
 As the Word of Blake's campaigns wore down regular line regiments, IrTech's rebel cells built a medium partner to the
 Springald on the same Irian lines. The result was the 60-ton Perrier, in service from 3071 and named after the medieval
 stone-throwing engine. It was made for guerrilla raids and city ambushes against enemy artillery.
 
-### Capabilities
+##### Capabilities
 
 The Perrier carries its Sniper/AC-10 Combo Gun on a 60-ton chassis and keeps a 4/6 speed with a Hermes 240 XL engine.
 Eight tons of Ferro-Fibrous armor let it take a volley from light raiders. To counter swarms of cybernetic infantry it
 mounts a Smoker along the rear hull. A one-ton fuel tank lets the crew hide a conversion or screen a firing base from
 spotters and laser-guided weapons. Two front Light Machine Guns and a vehicle flamer keep demolition teams away.
 
-> *St. Jamais:* "Guerrilla operations." Whoever drew this has stopped planning to hold a field and plans only to
-> outlast us. That troubles me more than the gun.
+> *St. Jamais:* "*Guerrilla operations.* Whoever drew this has stopped planning to hold a field and plans only to
+> outlast us. That troubles me more than the machines."
 
-### Deployment
+##### Deployment
 
 The Perrier reached resistance forces and planetary defense commands across the Free Worlds League and the Terran
 corridor. Under the Smoker's cloud, whole batteries could set up in city ruins, shell Blakist staging areas, and be gone
-before scouts could find them.
+before scouts could find them, leaving only drifting smoke and shell casings.
 
-### Notable Crews
+##### Notable Crews
 
 **Master Sergeant Kenneth Card:** Card fought with Devlin Stone's Coalition in the final push on Terra, and later joined
 the Republic's armor reserves. Cut off by a Blakist Level II, Card flooded three city blocks with smoke. From inside the
@@ -891,7 +939,7 @@ Armor Factor (Ferro-Fibrous): 143             8.0
     Turret                    28
 
 Weapons and Ammo                  Location  Tonnage
-Sniper / AC/10 Combo Gun          Turret       20.0
+Sniper / AC/10 ComboGun           Turret       20.0
 Light Machine Gun                 Front         0.5
 Light Machine Gun                 Front         0.5
 Vehicle Flamer                    Rear          0.5
@@ -902,7 +950,7 @@ Ammo (Light MG) 200               Body          1.0
 Smoker Fuel (50 hexes)            Body          1.0
 ```
 
-## Tormentum ArtVee TRM-1M
+#### Tormentum ArtVee TRM-1M
 
 ```text
 Mass: 75 tons
@@ -912,7 +960,7 @@ Cruising Speed: 32 kph
 Flank Speed: 54 kph
 Armor: Ferro-Fibrous
 Armament:
-  1 Long Tom / AC/20 Combo Gun
+  1 Long Tom / AC/20 ComboGun
   2 Machine Guns
   1 Vehicle Flamer
   1 Smoker
@@ -922,37 +970,38 @@ Communications System: Johnston Wide Band
 Targeting and Tracking System: Johnston Fire Eye
 ```
 
-### Overview
+##### Overview
 
 Word of Blake forces were leaning on fixed forts and dug-in cybernetic infantry, so Johnston Industries rushed this
 75-ton Heavy MAP into production on New Syrtis in 3071. It is 25 tons lighter than the old Culverin, which makes it
 easier to ship and gives the AFFS a fast answer to Blakist strong points. Its name is the Roman word for a torsion siege
 engine.
 
-### Capabilities
+##### Capabilities
 
-The Tormentum gives up ammunition for raw power, built around a turret Long Tom/AC-20 Combo Gun. A GM 225 XL engine
+The Tormentum gives up ammunition for raw power, built around a turret Long Tom/AC-20 ComboGun. A GM 225 XL engine
 gives a 3/5 speed that keeps up with heavy lances. In Vehicle Mode the gun is a long-reach autocannon that punches
 through heavy armor at middle range. A balanced 9.5-ton shell of Ferro-Fibrous armor lets it trade fire with front-line
 units. Two front machine guns and a rear vehicle flamer burn away battle armor. Like the Perrier, its main defense is a
 rear Smoker, which blinds enemy artillery spotters through its turn-long conversion.
 
-> *St. Jamais:* So the drawings did not stop at the League border. Irian leaks to Davion. The House Lords cannot agree
-> on a single frontier, yet their engineers pass each other blueprints. Add Johnston to the list.
+> *St. Jamais:* "So the drawings did not stop at the League border. Irian leaks to Davion. The House Lords cannot agree
+> on a single frontier, yet their engineers pass each other blueprints. Add Johnston to the list."
 
-### Deployment
+##### Deployment
 
 The Tormentum joined the AFFS in the late Jihad. From behind line units or inside suburbs, Tormentum batteries specialize
 in "shock and move". They lock down to flatten Blakist positions with Long Tom fire, then use their Smokers to cover the
 move. The Taurian bombardment of October 3076 took the Cilitren plant offline. Johnston then expanded its small parts
 site on Benet III to replace the lost production, and the Tormentum went with it.
 
-### Notable Crews
+##### Notable Crews
 
 **Leftenant Tally "Sprocket" Bell:** A Federated Suns field technician, Bell got a field promotion to command a Tormentum
 during the Twenty-second Militia's raid on Brusett in May 3075. When a Blakist Level II flanked the battery, Bell flooded
 the forest around it with smoke. Working by proximity radar inside the cloud, Bell's crew used the AC/20 to blow the leg
-off a Grim Reaper at point-blank range. That stalled the ambush until AFFS reinforcements secured the ridge.
+off a Grim Reaper at point-blank range. That stalled the ambush until AFFS reinforcements secured the ridge and kept the
+crew of the Tormentum with free drinks for months.
 
 ```text
 Type: Tormentum ArtVee TRM-1M
@@ -984,7 +1033,7 @@ Armor Factor (Ferro-Fibrous): 170             9.5
     Turret                    34
 
 Weapons and Ammo                  Location  Tonnage
-Long Tom / AC/20 Combo Gun        Turret       30.0
+Long Tom / AC/20 ComboGun         Turret       30.0
 Machine Gun                       Front         0.5
 Machine Gun                       Front         0.5
 Vehicle Flamer                    Rear          0.5
@@ -997,16 +1046,17 @@ Smoker Fuel (50 hexes)            Body          1.0
 
 ---
 
-## Design Notes
-
-These notes sit outside the readout's story.
+### Design Notes
 
 - **Names:** ArtVee is short for Artillery Vehicle, patterned on QuadVee. Several Inner Sphere powers call them MAPs
   (Mobile Artillery Platforms).
-- **Patterns:** three guns in three patterns. Star League names are gunpowder cannon classes, smallest to largest
-  (falconet, saker, culverin). Clan names are armored or spitting animals (the pangolin curls up as the tank locks down;
-  the archerfish strikes at range). MAP names are siege engines.
+- **Patterns:**
+-- ComboGuns come in three patterns.
+-- Star League ArtVee names are gunpowder cannon classes, smallest to largest (falconet, saker, culverin).
+-- Clan ArtVee names are armored or spitting animals (the pangolin curls up as the tank locks down; the archerfish
+   strikes at range).
+-- Inner Sphere MAP names are siege engines.
 - **Powerplant:** XL fusion, or XXL where the tech allows, because the engine has to power everything while the tank
   sits still. All nine patterns here use XL.
-- **Technology:** every pattern is production technology in its era, so none carries the prototype Armored Motive System
-  that the rules recommend.
+- **Technology:** every pattern is current production technology in its era, so none that we built as samples
+  currently carries the prototype Armored Motive System that the rules recommend to really give that armored siege feel.
