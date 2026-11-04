@@ -650,3 +650,153 @@ describe("Armless 'Mechs (Maximum Tech pp.62-63)", () => {
         expect(loaded.getMaxArmor()).toBe(mech.getMaxArmor());
     });
 });
+
+// Maximum Tech pp.80-81, 87, 92; TO:AUE p.105 (user rulings R2, R3, 2026-11-03): strapped-on cargo, so no design weight,
+// no slots, no cargo MP penalty; BV1 adds MP x 5 to the final BV, BV2 leaves the pack out.
+describe("Jump packs (Maximum Tech pp.80-81; TO:AUE p.105)", () => {
+    const BMRR = "master-rules-revised";
+    const pack = (edition: string, tonnage: number, walk: number, tons: number): BattleMech => {
+        const mech = build(edition, tonnage, walk);
+        mech.setJumpPackTons(tons);
+        return mech;
+    };
+
+    it("is offered at Level 3 under BMR(R) and Advanced under TW, not before the Revised Master Rules", () => {
+        expect(build(BMRR).getJumpPackOption(3).available).toBe(true);
+        expect(build(BMRR).getJumpPackOption(2).available).toBe(false);
+        expect(build("master-rules").getJumpPackOption(3).available).toBe(false);
+        expect(build("total-warfare").getJumpPackOption(3).available).toBe(true);
+        expect(build("total-warfare").getJumpPackOption(2).available).toBe(false);
+    });
+
+    it("follows the IO:AE p.29 dates under TW, while Maximum Tech prints none", () => {
+        const inEra = (edition: string, era: string) => {
+            const mech = build(edition);
+            mech.setEra(era);
+            return mech.getJumpPackOption(3).available;
+        };
+        expect(inEra("total-warfare", "star-league")).toBe(true);
+        expect(inEra("total-warfare", "clan-inv")).toBe(false);
+        expect(inEra(BMRR, "clan-inv")).toBe(true);
+    });
+
+    it("is barred from LAMs under TW, and goes when a 'Mech becomes one (IO:AE LAM construction)", () => {
+        const mech = pack("total-warfare", 55, 5, 4);
+        expect(mech.getJumpPackMP()).toBe(5);
+        mech.setMechType("lam");
+        expect(mech.getJumpPackOption(3).available).toBe(false);
+        expect(mech.getJumpPackTons()).toBe(0);
+        expect(mech.getJumpPackMP()).toBe(0);
+    });
+
+    it("reaches Clan designs through the Star League version before Clan production in 3083 (IO:AE p.29)", () => {
+        const mech = build("total-warfare");
+        mech.setTech("clan");
+        mech.setEra("clan-inv");
+        expect(mech.getJumpPackOption(3).available).toBe(true);
+        expect(mech.getJumpPackOption(3).availableAsPrototype).toBe(false);
+    });
+
+    it("is not offered above 100 tons, where the tables stop", () => {
+        expect(build("total-warfare", 120, 3).getJumpPackOption(3).available).toBe(false);
+    });
+
+    it("gives a 4-ton pack 8 / 4 / 2 MP by weight class under BMR(R) (Max Tech p.81)", () => {
+        expect(pack(BMRR, 55, 8, 4).getJumpPackMP()).toBe(8);
+        expect(pack(BMRR, 60, 8, 4).getJumpPackMP()).toBe(4);
+        expect(pack(BMRR, 90, 8, 4).getJumpPackMP()).toBe(2);
+    });
+
+    it("drops a fraction of a jump jet's weight under BMR(R)", () => {
+        expect(pack(BMRR, 60, 8, 1.5).getJumpPackMP()).toBe(1);
+    });
+
+    it("TO:AUE: 6 t on 55 t, Walk 6 = 6 MP, 72 fuel (TO:AUE p.105)", () => {
+        const mech = pack("total-warfare", 55, 6, 6);
+        expect(mech.getJumpPackMP()).toBe(6);
+        expect(mech.getJumpPackFuel()).toBe(72);
+    });
+
+    it("TO:AUE rounds MP up: 1.5 t on 90 t gives 1 MP, 9 fuel", () => {
+        const mech = pack("total-warfare", 90, 4, 1.5);
+        expect(mech.getJumpPackMP()).toBe(1);
+        expect(mech.getJumpPackFuel()).toBe(9);
+    });
+
+    it("caps pack MP at Walking MP", () => {
+        expect(pack(BMRR, 55, 3, 4).getJumpPackMP()).toBe(3);
+    });
+
+    it("carries fuel for MP x 2 hexes under BMR(R) (Max Tech p.80)", () => {
+        expect(pack(BMRR, 55, 5, 4).getJumpPackFuel()).toBe(10);
+    });
+
+    it("takes half-ton steps up to the 'Mech's tonnage, and no more than 20 tons under TW", () => {
+        expect(build(BMRR, 55, 5).getMaxJumpPackTons()).toBe(55);
+        expect(build("total-warfare", 55, 5).getMaxJumpPackTons()).toBe(20);
+        expect(pack("total-warfare", 55, 5, 30).getJumpPackTons()).toBe(20);
+        expect(pack(BMRR, 55, 5, 2.3).getJumpPackTons()).toBe(2.5);
+    });
+
+    it("cuts a pack down when the 'Mech shrinks below it", () => {
+        const mech = pack(BMRR, 55, 5, 40);
+        mech.setTonnage(30);
+        expect(mech.getJumpPackTons()).toBe(30);
+    });
+
+    it("is cargo: no design weight, slots, jump jets or walking penalty (R2)", () => {
+        const mech = build(BMRR, 55, 5);
+        const slots = () => JSON.stringify(mech.getCriticals()).replace(/"uuid":"[^"]*"/g, "");
+        const [remaining, criticals, walk] = [mech.getRemainingTonnage(), slots(), mech.getWalkSpeed()];
+        mech.setJumpPackTons(4);
+        expect(mech.getRemainingTonnage()).toBe(remaining);
+        expect(slots()).toBe(criticals);
+        expect(mech.getWalkSpeed()).toBe(walk);
+        expect(mech.getJumpSpeed()).toBe(0);
+    });
+
+    for (const edition of [BMRR, "total-warfare"]) {
+        it(`costs 20,000 a ton as equipment under ${edition} (Max Tech p.87; TO:AUE cost table)`, () => {
+            const mech = build(edition, 55, 5);
+            const cost = mech.getCBillCostNumeric();
+            mech.setJumpPackTons(6);
+            expect(mech.getCBillCostNumeric() - cost).toBe(6 * 20000 * 1.55);
+        });
+    }
+
+    it("adds pack MP x 5 to the final BV, no jump in the speed factor (Max Tech p.92)", () => {
+        const mech = build(BMRR, 55, 6);
+        const battleValue = mech.getBattleValue();
+        mech.setJumpPackTons(3);
+        expect(mech.getBattleValue()).toBe(battleValue + 30);
+        expect(mech.getBVCalcHTML()).toContain("Jump Pack 6 MP x 5");
+    });
+
+    it("leaves BV2 alone (R3: book-silent)", () => {
+        const mech = build("total-warfare", 55, 6);
+        const battleValue = mech.getBattleValue();
+        mech.setJumpPackTons(3);
+        expect(mech.getBattleValue()).toBe(battleValue);
+    });
+
+    it("grades the design Level 3 and flags a pack the edition lacks", () => {
+        const mech = pack(BMRR, 55, 5, 4);
+        expect(mech.getRequiredRulesLevel()).toBe(3);
+        mech.setRulesEdition("master-rules");
+        expect(mech.getRulesEditionIssues(3).join(" ")).toContain("Jump pack");
+    });
+
+    it("lists the pack in the TRO and survives a save and load", () => {
+        const mech = pack(BMRR, 55, 5, 4);
+        expect(mech.makeTROHTML()).toContain("Jump Pack (4 t)");
+        expect(mech.makeTROBBCode()).toContain("Jump Pack (4 t)");
+        const saved = mech.exportJSON();
+        expect(JSON.parse(saved).jumpPackTons).toBe(4);
+        expect(new BattleMech(saved).getJumpPackTons()).toBe(4);
+        expect(new BattleMech(saved).getJumpPackMP()).toBe(5);
+    });
+
+    it("leaves the save unchanged without a pack", () => {
+        expect(JSON.parse(build(BMRR).exportJSON())).not.toHaveProperty("jumpPackTons");
+    });
+});

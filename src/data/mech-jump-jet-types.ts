@@ -15,6 +15,44 @@ import { IJumpJet } from "./data-interfaces";
 * construction rules and give underwater MP instead: Inner Sphere 3066, Clan prototype 3061, Clan introduction 3072.
 */
 
+/**
+ * The 'Mech jump pack: strapped-on cargo, so not one of the jump jet types. It adds no design weight (plan ruling R2).
+ * Dates are IO:AE p.29's; Maximum Tech prints none, so BMR(R) offers it by edition and level alone.
+ */
+export const mechJumpPack: IJumpJet = {
+	name: "Jump Pack",
+	tag: "jump-pack",
+	rulesLevel: 3,
+	techBase: "universal",
+	editions: ["master-rules-revised", "total-warfare", "battlemech-manual", "core-rulebook"],
+	editionLevels: { "master-rules-revised": 3 },
+	weight_multiplier: { light: 0, medium: 0, heavy: 0, superheavy: 0 },
+	criticals: 0,
+	costMultiplier: 20000,
+	book: "TO:AUE",
+	page: 105,
+	packByTonnage: [
+		{ upTo: 5, mpPerTon: 10, fuelPerTon: 20 },
+		{ upTo: 19, mpPerTon: 5, fuelPerTon: 16 },
+		{ upTo: 59, mpPerTon: 2, fuelPerTon: 12 },
+		{ upTo: 89, mpPerTon: 1, fuelPerTon: 8 },
+		{ upTo: 100, mpPerTon: 0.5, fuelPerTon: 6 },
+	],
+	maxPackTons: 20,
+	prototype: 2430,
+	introduced: 2457,
+	extinct: 2840,
+	reintroduced: 3083,
+	clanDates: { prototype: 2839, introduced: 3083, extinct: null, reintroduced: null },
+	introducedInEdition: "master-rules-revised",
+	editionStats: {
+		"master-rules-revised": {
+			book: "MaxTech", page: 80, name: "BattleMech Jump Pack",
+			notes: "Level 3. One per 'Mech, of any weight up to its tonnage as unprotected cargo (BMR(R) p.77). MP from the BMR Jump Jet Weight Table, at most Walking MP; a part of a jet's weight gives no MP (the book is silent on fractions). No heat. Fuel for MP x 2 hexes, then dropped. Any rear torso hit destroys it (pp.80-81). 20,000 C-bills a ton (p.87). Slots: pp.85-86 print Crit. 4* (\"see special rules\"), but the special rules give none, cargo takes none, and the p.118 master table prints none, so it takes no slots. BV1: pack MP x 5 on the final BV (p.92).",
+		},
+	},
+};
+
 export const mechJumpJetTypes: IJumpJet[] = [
 	{
 		name: "Standard Jump Jets",

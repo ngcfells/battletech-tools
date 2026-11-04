@@ -784,6 +784,10 @@ export interface IJumpJet extends ICatalogStanding {
     minimumHeat?: number;
     /** Not available to a Clan tech base. */
     innerSphereOnly?: boolean;
+    /** Jump pack: Jumping MP and fuel points per pack ton for units up to each tonnage (TO:AUE p.105). */
+    packByTonnage?: { upTo: number; mpPerTon: number; fuelPerTon: number }[];
+    /** Jump pack: the heaviest pack that can be built. */
+    maxPackTons?: number;
     /** IO prototype year, when it precedes `introduced`; offered at the Experimental rules level. */
     prototype?: number;
     introduced: number | null;

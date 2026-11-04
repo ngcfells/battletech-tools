@@ -34,7 +34,7 @@ import { describeEngineRequirement, engineMeetsRequirement, FUSION_ENGINE_TAGS, 
 import { mechGyroTypes } from "../data/mech-gyro-types";
 import { mechHeatSinkTypes } from "../data/mech-heat-sink-types";
 import { mechInternalStructureTypes } from "../data/mech-internal-structure-types";
-import { mechJumpJetTypes } from "../data/mech-jump-jet-types";
+import { mechJumpJetTypes, mechJumpPack } from "../data/mech-jump-jet-types";
 import { mechMyomerTypes } from "../data/mech-myomer-types";
 import { armlessMechOption, mechTypeOptions } from "../data/mech-type-options";
 import { getTargetingComputerWeaponWeight, IVariableEquipmentContext, isTargetingComputerWeapon, sizeVariableEquipment } from "../data/variable-equipment";
@@ -310,6 +310,8 @@ export interface IBattleMechExport {
     introductoryRules?: boolean;
     is_type: string;
     jumpSpeed: number;
+    /** Tons of jump pack strapped on (Maximum Tech p.80; TO:AUE p.105). */
+    jumpPackTons?: number;
     lastUpdated: Date;
     location?: string;
     mechType: string;
@@ -589,6 +591,7 @@ export class BattleMech {
     // A Cockpit Command Console beside the cockpit (TO:AUE p.112). An option, off by default.
     private _commandConsole: boolean = false;
     private _armless: boolean = false;
+    private _jumpPackTons: number = 0;
     // Clan Enhanced Imaging in the cockpit (Maximum Tech pp.60-61; IO:AE p.69). An option, off by default.
     private _enhancedImaging: boolean = false;
     // Built under the Primitive 'Mech rules (IO:AE pp.116-118). With later equipment it is a RetroTech unit.
@@ -726,6 +729,7 @@ export class BattleMech {
         this._roboticControl = "none";
         this._commandConsole = false;
         this._armless = false;
+        this._jumpPackTons = 0;
         this._enhancedImaging = false;
         this._patchworkArmor = {};
         this._frankenMech = false;
@@ -1717,8 +1721,11 @@ export class BattleMech {
         note(`Offensive Battle Rating: ${base} x Speed Factor ${speedFactor} (MP ${speedMP}) = ${offensive}`);
 
         // Step 3: Final BV, rounded (BMR(R) p.154).
-        const battleValue = Math.round(defensive + offensive);
-        note(`<strong>BV1:</strong> ${battleValue} (rounded from ${defensive + offensive})`);
+        // Level 3: a jump pack is left out above and adds its MP x 5 here (Maximum Tech p.92).
+        const jumpPackMP = levelThree ? this.getJumpPackMP(edition) : 0;
+        if (jumpPackMP > 0) note(`Jump Pack ${jumpPackMP} MP x 5 = ${jumpPackMP * 5}`);
+        const battleValue = Math.round(defensive + offensive + jumpPackMP * 5);
+        note(`<strong>BV1:</strong> ${battleValue} (rounded from ${defensive + offensive + jumpPackMP * 5})`);
         return battleValue;
     }
 
@@ -2057,6 +2064,14 @@ export class BattleMech {
             const jumpJetCost = this._jumpJetType.costMultiplier;
             this._calcLogCBill += "<tr><td><strong>Jump Jets: " + jumpJetName  + "</strong><br /><span class=\"smaller-text\">" +  addCommas( jumpJetCost ) + " x (# Jump Jets [" +  numberOfJumpJets + "])<sup>2</sup> x Unit Tonnage [" + this.getTonnage() + "]</span></td><td>" +  addCommas( jumpJetCost * Math.pow( numberOfJumpJets, 2) *  this.getTonnage()  ) + "</td></tr>\n";
             cbillDryTotal += jumpJetCost * Math.pow( numberOfJumpJets, 2) *  this.getTonnage()  ;
+        }
+
+        // Jump Pack: priced with the equipment (Maximum Tech p.87; TO:AUE cost table).
+        const jumpPackTons = this.getJumpPackTons();
+        if( jumpPackTons > 0 ) {
+            const jumpPackCost = mechJumpPack.costMultiplier * jumpPackTons;
+            this._calcLogCBill += "<tr><td><strong>" + mechJumpPack.name + "</strong><br /><span class=\"smaller-text\">" +  addCommas( mechJumpPack.costMultiplier ) + " x Pack Tons [" + jumpPackTons + "]</span></td><td>" +  addCommas( jumpPackCost ) + "</td></tr>\n";
+            cbillDryTotal += jumpPackCost;
         }
 
         // Heat Sinks
@@ -2610,6 +2625,51 @@ export class BattleMech {
     /** Built without arms: chosen, and allowed by the chassis in force (Maximum Tech p.62). */
     public isArmless(): boolean {
         return this._armless && this.canBeArmless();
+    }
+
+    /** May this 'Mech carry a jump pack? The tables stop at 100 tons, and LAMs may not from IO:AE on (p.108). */
+    public canCarryJumpPack(): boolean {
+        return this._tonnage <= 100 && (this.usesEarlierRulesEdition() || !this.isLAM());
+    }
+
+    /** The jump pack as the movement step offers it. Only TO:AUE's rules have dates. */
+    public getJumpPackOption(rulesLevel: number = 2): IJumpJet {
+        const availability = this._techDatesAvailability(mechJumpPack, rulesLevel);
+        const inDate = this.usesEarlierRulesEdition() || availability.available;
+        return { ...mechJumpPack, availableAsPrototype: availability.asPrototype, available: this.canCarryJumpPack() && inDate && this.isOfferedInEdition(mechJumpPack, rulesLevel) };
+    }
+
+    /** The heaviest pack: cargo up to the 'Mech's own tonnage (BMR(R) p.77), and no more than 20 tons under TO:AUE (p.105). */
+    public getMaxJumpPackTons(): number {
+        return this.usesEarlierRulesEdition() ? this._tonnage : Math.min(this._tonnage, mechJumpPack.maxPackTons ?? this._tonnage);
+    }
+
+    public getJumpPackTons(): number {
+        return this.canCarryJumpPack() ? Math.min(this._jumpPackTons, this.getMaxJumpPackTons()) : 0;
+    }
+
+    /** Strap on a pack of `tons` in half-ton steps, 0 for none; returns the tons carried. */
+    public setJumpPackTons(tons: number): number {
+        this._jumpPackTons = Math.max(0, Math.round(+tons * 2) / 2);
+        this._calc();
+        return this.getJumpPackTons();
+    }
+
+    private _jumpPackRow() {
+        return mechJumpPack.packByTonnage?.find(row => this._tonnage <= row.upTo);
+    }
+
+    /** Pack Jumping MP, at most Walking MP: tons over the jet weight (Maximum Tech p.80), or TO:AUE's table rounded up (p.105). */
+    public getJumpPackMP(edition: string = this._rulesEdition): number {
+        const tons = this.getJumpPackTons();
+        const jetWeight = getEditionJumpJetWeight(mechJumpJetTypes[0], edition, this._tonnage);
+        const mp = jetWeight ? Math.floor(tons / jetWeight) : Math.ceil(tons * (this._jumpPackRow()?.mpPerTon ?? 0));
+        return Math.min(mp, this.getWalkSpeed());
+    }
+
+    /** Fuel: hexes under Maximum Tech (MP x 2, p.80), Fuel Points under TO:AUE (per pack ton, rounded up, p.105). */
+    public getJumpPackFuel(): number {
+        return this.usesEarlierRulesEdition() ? this.getJumpPackMP() * 2 : Math.ceil(this.getJumpPackTons() * (this._jumpPackRow()?.fuelPerTon ?? 0));
     }
 
     /** A hit on an arm that is not there "does no damage" and "does not transfer" (Maximum Tech p.62). */
@@ -3538,6 +3598,8 @@ export class BattleMech {
         html += "Walking".padStart(col1Padding - 10, " " ) + " " + this.getWalkSpeed().toString().padStart(3, " " ) + "\n";
         html += "Running".padStart(col1Padding - 10, " " ) + " " + this.getRunSpeed().toString().padStart(3, " " ) + "\n";
         html += "Jumping".padStart(col1Padding - 10, " " ) + " " + this.getJumpSpeed().toString().padStart(3, " " ) + "\n";
+        if( this.getJumpPackTons() > 0 )
+            html += `Jump Pack (${this.getJumpPackTons()} t)`.padStart(col1Padding - 10, " " ) + " " + this.getJumpPackMP().toString().padStart(3, " " ) + "\n";
         if( this.getMechanicalJumpBoosterSpeed() > 0 )
             html += "Jump Boosters".padStart(col1Padding - 10, " " ) + " " + this.getMechanicalJumpBoosterSpeed().toString().padStart(3, " " ) + "\n";
         if( this.getUMUSpeed() > 0 )
@@ -3848,6 +3910,8 @@ export class BattleMech {
         html += "<tr><td colspan=\"1\" class=\"text-right\">Walking</td><td class=\"text-center\" colspan=\"2\">" + this.getWalkSpeed() + "</td><td colspan=\"1\">&nbsp;</td></tr>";
         html += "<tr><td colspan=\"1\" class=\"text-right\">Running</td><td class=\"text-center\" colspan=\"2\">" + this.getRunSpeed() + "</td><td colspan=\"1\">&nbsp;</td></tr>";
         html += "<tr><td colspan=\"1\" class=\"text-right\">Jumping</td><td class=\"text-center\" colspan=\"2\">" + this.getJumpSpeed() + "</td><td colspan=\"1\">&nbsp;</td></tr>";
+        if( this.getJumpPackTons() > 0 )
+            html += "<tr><td colspan=\"1\" class=\"text-right\">Jump Pack (" + this.getJumpPackTons() + " t)</td><td class=\"text-center\" colspan=\"2\">" + this.getJumpPackMP() + "</td><td colspan=\"1\">&nbsp;</td></tr>";
         if( this.getMechanicalJumpBoosterSpeed() > 0 )
             html += "<tr><td colspan=\"1\" class=\"text-right\">Jump Boosters</td><td class=\"text-center\" colspan=\"2\">" + this.getMechanicalJumpBoosterSpeed() + "</td><td colspan=\"1\">&nbsp;</td></tr>";
         if( this.getUMUSpeed() > 0 )
@@ -6800,6 +6864,7 @@ export class BattleMech {
         if (this.hasCommandConsole()) check("Command Console", getCockpitType("command-console"));
         if (this.hasEnhancedImaging()) check("Enhanced Imaging", getCockpitType("enhanced-imaging-interface"));
         if (this.isArmless()) check("Chassis option", armlessMechOption);
+        if (this.getJumpPackTons() > 0) check("Jump pack", mechJumpPack);
         check("Internal structure", this._selectedInternalStructure);
         check("Armor", this.getArmorObj());
         check("Heat sinks", this._heatSinkType);
@@ -7253,6 +7318,7 @@ export class BattleMech {
         level = Math.max(level, this.getCockpitType().rulesLevel ?? 0);
         if (this.hasCommandConsole()) level = Math.max(level, getCockpitType("command-console").rulesLevel ?? 0);
         if (this.hasEnhancedImaging()) level = Math.max(level, graded(getCockpitType("enhanced-imaging-interface")));
+        if (this.getJumpPackTons() > 0) level = Math.max(level, graded(mechJumpPack));
         // Level 3 in Maximum Tech; apocryphal from TW on (plan ruling R4).
         if (this.isArmless()) level = Math.max(level, this.isOfferedInEdition(armlessMechOption, 3) ? 3 : APOCRYPHAL_RULES_LEVEL);
         if (this._roboticControl !== "none") level = Math.max(level, SRCS_RULES_LEVEL);
@@ -8848,6 +8914,7 @@ export class BattleMech {
             introductoryRules: this._introductoryRules,
             is_type: this.getInternalStructureType(),
             jumpSpeed: this._jumpSpeed,
+            ...(this.getJumpPackTons() > 0 ? { jumpPackTons: this.getJumpPackTons() } : {}),
             lastUpdated: this.lastUpdated,
             mechType: this._mechType.tag,
             quadVeeMotive: this._quadVeeMotive,
@@ -9289,6 +9356,7 @@ export class BattleMech {
 
             if( importObject.jumpSpeed)
                 this.setJumpSpeed(importObject.jumpSpeed);
+            this._jumpPackTons = importObject.jumpPackTons ?? 0;
 
             if( typeof(importObject.strictEra) !== "undefined" ) {
                 if( importObject.strictEra)

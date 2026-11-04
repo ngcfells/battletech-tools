@@ -229,6 +229,26 @@ test("offers Enhanced Imaging to Clan 'Mechs under BMR(R) Advanced", async ({ pa
     expect(errors).toEqual([]);
 });
 
+test("offers a jump pack under BMR(R) Advanced, saved across a reload", async ({ page }) => {
+    const errors: string[] = [];
+    page.on("pageerror", (error) => errors.push(error.stack ?? error.message));
+    const tons = page.getByTestId("jump-pack-tons");
+    await page.goto("classic-battletech/mech-creator");
+    await page.getByTitle("Click here to clear out your current 'mech and start over.").click();
+    await page.goto("classic-battletech/mech-creator/step1");
+    await page.getByLabel("Rules Edition").selectOption("master-rules-revised");
+    await page.getByLabel("Rules Level").selectOption("2");
+    await page.goto("classic-battletech/mech-creator/step2");
+    await expect(tons).toHaveCount(0);
+    await page.goto("classic-battletech/mech-creator/step1");
+    await page.getByLabel("Rules Level").selectOption("3");
+    await page.goto("classic-battletech/mech-creator/step2");
+    await tons.selectOption("4");
+    await page.reload();
+    await expect(tons).toHaveValue("4");
+    expect(errors).toEqual([]);
+});
+
 test("offers armless 'Mechs under BMR(R) Advanced, saved across a reload, and the later steps open", async ({ page }) => {
     const errors: string[] = [];
     page.on("pageerror", (error) => errors.push(error.stack ?? error.message));

@@ -56,6 +56,14 @@ export default class MechCreatorStep2 extends React.Component<IHomeProps, IHomeS
       }
     }
 
+    setJumpPackTons = ( event: React.FormEvent<HTMLSelectElement>): void => {
+      if( this.props.appGlobals.currentBattleMech ) {
+        const currentMech = this.props.appGlobals.currentBattleMech;
+        currentMech.setJumpPackTons( +event.currentTarget.value);
+        this.props.appGlobals.saveCurrentBattleMech( currentMech );
+      }
+    }
+
     setFrankenMechJumpJetClass = ( event: React.FormEvent<HTMLSelectElement>): void => {
       if( this.props.appGlobals.currentBattleMech ) {
         const currentMech = this.props.appGlobals.currentBattleMech;
@@ -268,6 +276,23 @@ export default class MechCreatorStep2 extends React.Component<IHomeProps, IHomeS
                               </select>
                             </label>
                           )}
+                          {(() => {
+                            const mech = this.props.appGlobals.currentBattleMech;
+                            const jumpPack = mech.getJumpPackOption(mechRulesLevel(this.props.appGlobals));
+                            if( !isOptionShown(jumpPack, mech.getJumpPackTons() > 0) ) return null;
+                            return (
+                              <label>
+                                {availabilityOptionLabel(jumpPack)} (tons):
+                                <select value={mech.getJumpPackTons()} onChange={this.setJumpPackTons} data-testid="jump-pack-tons">
+                                  <option value={0}>None</option>
+                                  {Array.from({ length: mech.getMaxJumpPackTons() * 2 }, (_, index) => (index + 1) / 2).map( (tons) => (
+                                    <option key={tons} value={tons}>{tons} t</option>
+                                  ))}
+                                </select>
+                                <span className="smaller-text"> {mech.getJumpPackMP()} MP, {mech.getJumpPackFuel()} {mech.usesEarlierRulesEdition() ? "hexes" : "fuel"}. Cargo: no design weight or slots.</span>
+                              </label>
+                            );
+                          })()}
                             <EditionChoice earlierEdition={this.props.appGlobals.currentBattleMech.usesEarlierRulesEdition()}>
                               <h3>Engine Type</h3>
                               {this.props.appGlobals.currentBattleMech.getTech().tag === "mis" || this.props.appGlobals.currentBattleMech.getTech().tag === "mclan" ? (
