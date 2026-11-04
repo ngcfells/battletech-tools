@@ -4,6 +4,7 @@ import BattledroidsUnit from "./battledroids-unit";
 import { BattleMech } from "./battlemech";
 import { BattleMechForce } from "./battlemech-force";
 import { BattleMechGroup } from "./battlemech-group";
+import { getSpeedFactor } from "../data/battle-value";
 import Vehicle from "./vehicle";
 
 // The Tech line on the printed Classic BattleTech force (issue 18 roster review).
@@ -121,5 +122,118 @@ describe("Classic BattleTech force rules edition", () => {
         expect(saved.c3Networks).toEqual({ [master.getUUID()]: "A", [boosted.getUUID()]: "A", [slave.getUUID()]: "A" });
         expect(new BattleMechForce(saved).c3Networks).toEqual(saved.c3Networks);
         expect(new BattleMechForce().export().c3Networks).toBeUndefined();
+    });
+
+    it("adds 200 to each homing Arrow IV and TAG unit of a BV1 force, before skill (BMR pp.143-144; BMR(R) pp.157-158)", () => {
+        const force = new BattleMechForce();
+        const spotter = new Vehicle();
+        spotter.addEquipmentFromTag("is-tag", "front");
+        const launcher = new Vehicle();
+        launcher.addEquipmentFromTag("arrow-iv-system", "front");
+        launcher.addEquipmentFromTag("ammo-is-arrow-iv-homing", "body");
+        const plain = new Vehicle();
+        const master = new Vehicle();
+        master.addEquipmentFromTag("c3-computer-master", "body");
+        force.groups[0].vehicles.push(launcher, plain);
+        const total = (edition: string) => force.groups[0].getTotalBattleValue(edition, force.groups);
+        const bmr = "master-rules";
+        const bmrr = "master-rules-revised";
+        const skilled = (edition: string, bonuses: Array<[Vehicle, number]>) => bonuses.reduce((sum, [unit, bonus]) => sum + unit.getPilotAdjustedBattleValue(edition, bonus), 0);
+
+        // Homing missiles with nothing to guide them add nothing.
+        expect(total(bmr)).toBe(skilled(bmr, [[launcher, 0], [plain, 0]]));
+        // A C3 master guides them only under the Revised Edition's note A (p.157).
+        force.groups[0].vehicles.push(master);
+        expect(total(bmr)).toBe(skilled(bmr, [[launcher, 0], [plain, 0], [master, 0]]));
+        expect(total(bmrr)).toBe(skilled(bmrr, [[launcher, 200], [plain, 0], [master, 200]]));
+        // Once per unit however many TAGs it has; the C3 master still counts beside TAG.
+        spotter.addEquipmentFromTag("is-tag", "turret");
+        force.groups[0].vehicles.push(spotter);
+        expect(total(bmr)).toBe(skilled(bmr, [[launcher, 200], [plain, 0], [master, 0], [spotter, 200]]));
+        expect(total(bmrr)).toBe(skilled(bmrr, [[launcher, 200], [plain, 0], [master, 200], [spotter, 200]]));
+    });
+
+    it("adds 35 percent of each unit's weapons to a complete BV1 C3 network (BMR p.143; BMR(R) p.157)", () => {
+        const force = new BattleMechForce();
+        const master = new Vehicle();
+        master.addEquipmentFromTag("c3-computer-master", "body");
+        master.addEquipmentFromTag("medium-laser", "front");
+        master.addEquipmentFromTag("medium-laser", "rear");
+        master.addEquipmentFromTag("arrow-iv-system", "front");
+        master.addEquipmentFromTag("is-ams", "front");
+        const slave = new Vehicle();
+        slave.addEquipmentFromTag("c3-computer-slave", "body");
+        slave.addEquipmentFromTag("lrm-10", "front");
+        slave.addEquipmentFromTag("ammo-is-lrm-10", "body");
+        const secondMaster = new Vehicle();
+        secondMaster.addEquipmentFromTag("c3-computer-master", "body");
+        secondMaster.addEquipmentFromTag("lrm-10", "front");
+        force.groups[0].vehicles.push(master, slave, secondMaster);
+        const edition = "master-rules-revised";
+        const total = () => force.groups[0].getTotalBattleValue(edition, force.groups, force.c3Networks);
+
+        // Medium laser 46 + rear 46 / 2, no artillery or AMS: 69 x .35 = 24; LRM 10 90 without its ammo: 31.5 rounds to 32.
+        expect(master.getBattleValueC3Part(edition).weapons).toBe(69);
+        expect(slave.getBattleValueC3Part(edition).weapons).toBe(90);
+        force.setC3Network(master.getUUID(), "A");
+        force.setC3Network(slave.getUUID(), "A");
+        expect(total()).toBe(master.getPilotAdjustedBattleValue(edition, 24) + slave.getPilotAdjustedBattleValue(edition, 32) + secondMaster.getPilotAdjustedBattleValue(edition));
+
+        // Two masters and no slave, or a lone unit, are not a complete network.
+        force.setC3Network(slave.getUUID(), "");
+        force.setC3Network(secondMaster.getUUID(), "A");
+        const unadjusted = master.getPilotAdjustedBattleValue(edition) + slave.getPilotAdjustedBattleValue(edition) + secondMaster.getPilotAdjustedBattleValue(edition);
+        expect(total()).toBe(unadjusted);
+
+        // Two Improved C3 Computers are.
+        const improved = [new Vehicle(), new Vehicle()];
+        improved.forEach((unit) => {
+            unit.addEquipmentFromTag("c3i-computer", "body");
+            unit.addEquipmentFromTag("medium-laser", "front");
+            force.groups[0].vehicles.push(unit);
+            force.setC3Network(unit.getUUID(), "B");
+        });
+        expect(total()).toBe(unadjusted + improved.reduce((sum, unit) => sum + unit.getPilotAdjustedBattleValue(edition, 16), 0));
+    });
+
+    it("counts semi-guided LRM ammo x 6 beside friendly TAG, not a C3 master (Maximum Tech p.91)", () => {
+        const force = new BattleMechForce();
+        const launcher = new BattleMech();
+        launcher.addEquipmentFromTag("lrm-10", "is", "", false, undefined, "", false, [], undefined, undefined);
+        launcher.addEquipmentFromTag("ammo-is-lrm-semi-guided", "is", "", false, undefined, "", false, [], undefined, undefined);
+        const master = new Vehicle();
+        master.addEquipmentFromTag("c3-computer-master", "body");
+        force.groups[0].members.push(launcher);
+        force.groups[0].vehicles.push(master);
+        const edition = "master-rules-revised";
+        const total = () => force.groups[0].getTotalBattleValue(edition, force.groups);
+        const plain = launcher.getPilotAdjustedBattleValue(edition) + master.getPilotAdjustedBattleValue(edition);
+        expect(total()).toBe(plain);
+
+        const spotter = new Vehicle();
+        spotter.addEquipmentFromTag("is-tag", "front");
+        force.groups[0].vehicles.push(spotter);
+        // One ton of LRM 10 ammo at 11 goes to 66: 55 more, times the Speed Factor.
+        const semiGuided = launcher.getBattleValueTagShare(edition).semiGuided ?? 0;
+        expect(Math.abs(semiGuided - 55 * getSpeedFactor(launcher.getRunSpeed()))).toBeLessThanOrEqual(1);
+        expect(total()).toBe(launcher.getPilotAdjustedBattleValue(edition, semiGuided) + master.getPilotAdjustedBattleValue(edition) + spotter.getPilotAdjustedBattleValue(edition));
+        // The Master Rules have no Level 3 ammo.
+        expect(launcher.getBattleValueTagShare("master-rules").semiGuided).toBeUndefined();
+    });
+
+    it("adds a command console's 200 once per side, after skill and outside any group (Maximum Tech p.91)", () => {
+        const force = new BattleMechForce();
+        force.rulesEdition = "master-rules-revised";
+        const consoles = [new BattleMech(), new BattleMech()];
+        force.groups[0].members.push(...consoles);
+        const units = consoles.reduce((sum, unit) => sum + unit.getPilotAdjustedBattleValue(force.rulesEdition), 0);
+        const twice = consoles.reduce((sum, unit) => sum + unit.getPilotAdjustedBattleValue("total-warfare"), 0);
+        expect(force.getBattleValueText()).toBe(`${units.toLocaleString("en-US")} (BV2: ${twice.toLocaleString("en-US")})`);
+
+        expect(consoles.every((unit) => unit.setCommandConsole(true))).toBe(true);
+        const withConsoles = consoles.reduce((sum, unit) => sum + unit.getPilotAdjustedBattleValue(force.rulesEdition), 0);
+        const bv2 = consoles.reduce((sum, unit) => sum + unit.getPilotAdjustedBattleValue("total-warfare"), 0);
+        expect(force.getBattleValueText()).toBe(`${(withConsoles + 200).toLocaleString("en-US")} (BV2: ${bv2.toLocaleString("en-US")})`);
+        expect(force.groups[0].getTotalBattleValue(force.rulesEdition, force.groups)).toBe(withConsoles);
     });
 });

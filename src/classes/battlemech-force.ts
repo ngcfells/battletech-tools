@@ -1,4 +1,4 @@
-import { formatBattleValue } from "../data/battle-value";
+import { formatBattleValue, getBattleValueRules } from "../data/battle-value";
 import { DEFAULT_RULES_EDITION, getRulesEdition } from "../data/rules-editions";
 import { generateUUID } from "../utils/generateUUID";
 import { getCarrierInstalledUuids, getQuirkInitiative, IQuirkCarrier, IQuirkInitiative, normalizeGameYear } from "../utils/quirk-effects";
@@ -301,11 +301,12 @@ export class BattleMechForce {
         }
     }
 
-    /** The force's skill-adjusted Battle Value under its edition, as the roster shows it (plan ruling 1). */
+    /** The force's skill-adjusted Battle Value under its edition, as the roster shows it (plan ruling 1); a command console counts once for the side. */
     public getBattleValueText(): string {
         const types = [...new Set(this.groups.flatMap((group) => group.getBattleValueUnitTypes()))];
-        return formatBattleValue((edition) => this.groups.reduce((total, group) => total + group.getTotalBattleValue(edition, this.groups, this.c3Networks), 0),
-            types, this.rulesEdition);
+        const hasConsole = this.groups.some((group) => group.members.some((unit) => unit.hasCommandConsole()));
+        return formatBattleValue((edition) => this.groups.reduce((total, group) => total + group.getTotalBattleValue(edition, this.groups, this.c3Networks), 0)
+            + (hasConsole ? getBattleValueRules(edition, "mech").levelThree?.commandConsole ?? 0 : 0), types, this.rulesEdition);
     }
 
     getTech(): string {

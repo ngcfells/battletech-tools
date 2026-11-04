@@ -1,5 +1,5 @@
 import { generateUUID } from "../utils/generateUUID";
-import { BattleValueUnitType, formatBattleValue, getBattleValueC3Share } from "../data/battle-value";
+import { BattleValueUnitType, formatBattleValue, getBattleValueC3Share, getBattleValueTagBonus } from "../data/battle-value";
 import { BattleMech, IBattleMechExport } from "./battlemech";
 import Vehicle, { IVehicleExport } from "./vehicle";
 import AerospaceFighter, { IAerospaceFighterExport } from "./aerospace-fighter";
@@ -146,15 +146,16 @@ export class BattleMechGroup {
 	 */
 	public getTotalBattleValue(edition?: string, force: BattleMechGroup[] = [this], c3Networks: Record<string, string> = {}): number {
         const sum = <T>(units: T[], battleValue: (unit: T) => number) => units.reduce((total, unit) => total + battleValue(unit), 0);
-        const guided = sum(force.flatMap((group) => group._tagUnits()), (unit) => unit.getBattleValueTagShare(edition).ammo);
-        const tagBonus = (unit: TagUnit) => unit.getBattleValueTagShare(edition).times * guided;
+        const shares = force.flatMap((group) => group._tagUnits()).map((unit) => unit.getBattleValueTagShare(edition));
+        const tagBonus = (unit: TagUnit) => getBattleValueTagBonus(edition, unit.getBattleValueTagShare(edition), shares);
         const withTag = (unit: TagUnit) => unit.getBattleValue(edition) + tagBonus(unit);
         const networked = force.flatMap((group) => [...group.members, ...group.vehicles]).filter((unit) => c3Networks[unit.getUUID()] && unit.getBattleValueC3Type());
         const c3Bonus = (unit: TagUnit) => {
             const member = networked.find((entry) => entry === unit);
             if (!member) return 0;
             const network = networked.filter((entry) => c3Networks[entry.getUUID()] === c3Networks[member.getUUID()]);
-            return getBattleValueC3Share(edition, member.getBattleValueC3Type(), withTag(member), sum(network, withTag), network.length);
+            return getBattleValueC3Share(edition, member.getBattleValueC3Type(), withTag(member), sum(network, withTag), network.length,
+                member.getBattleValueC3Part(edition).weapons, network.flatMap((entry) => entry.getBattleValueC3Part(edition).systems));
         };
         return sum(this._tagUnits(), (unit) => unit.getPilotAdjustedBattleValue(edition, tagBonus(unit) + c3Bonus(unit)))
             + sum(this.capitalShips, (ship) => ship.getPilotAdjustedBattleValue(edition))

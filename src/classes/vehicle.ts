@@ -10,7 +10,7 @@ import { getQuirkIssues, getQuirkTargets } from "../data/quirk-registry";
 import { QuirkList } from "./quirk-list";
 import { getAlphaStrikeQuirks } from "../utils/quirk-effects";
 import { DEFAULT_RULES_EDITION, getSelectableRulesEditionTag } from "../data/rules-editions";
-import { BattleValueC3Type, IBattleValueTagShare, getBattleValueC3Type, getBattleValueFor, getBattleValueSkillEdition, getBattleValueTagShare, getSkillMultiplier } from "../data/battle-value";
+import { BattleValueC3Type, IBattleValueC3Part, IBattleValueTagShare, getBattleValueC3Part, getBattleValueC3Type, getBattleValueFor, getBattleValueSkillEdition, getBattleValueTagShare, getSkillMultiplier } from "../data/battle-value";
 import { getComboArtillery } from "../data/artillery-custom";
 import {
     getDamageGroupings, getDualTurretHit, getFacingAfterFallDirection, getLargeNavalVesselHitLocation, getSuperheavyVehicleHitLocation, getVehicleCriticalEffect,
@@ -4966,6 +4966,11 @@ export default class Vehicle implements IGameSettingsUnit {
     /** The C3 system this unit joins a force's C3 network with, if any (BV v4.1 p.23). */
     public getBattleValueC3Type(): BattleValueC3Type | undefined {
         return getBattleValueC3Type(this._equipmentList);
+    }
+
+    /** This unit's C3 systems and weapon BV for a BV1 network. */
+    public getBattleValueC3Part(edition: string = this._rulesEdition): IBattleValueC3Part {
+        return getBattleValueC3Part(edition, this._equipmentList);
     }
 
     public export(noInPlayVariables: boolean = false): IVehicleExport {

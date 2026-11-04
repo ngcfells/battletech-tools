@@ -105,8 +105,12 @@ describe("Battle Value rules by rules edition", () => {
         expect(getBattleValueForceRules("battlemech-manual")).toBe(tw);
         expect(getBattleValueForceRules("core-rulebook")).toMatchObject({ c3: { kind: "per-unit", twoUnits: 10, perExtraUnit: 5, cap: 40, boostedFlat: 5 } });
         expect(getBattleValueForceRules("core-rulebook")?.externalStores).toBeFalsy();
-        // BV1's force adjustments come with 'Mech BV1 (round 2).
-        expect(getBattleValueForceRules("master-rules")).toBeUndefined();
+        // BV1: the Revised Edition's note A lets a C3 master guide homing missiles, the Master Rules' does not.
+        expect(getBattleValueForceRules("master-rules")).toMatchObject({ c3: { kind: "weapons", percent: 35 }, homingTag: { bonus: 200 } });
+        expect(getBattleValueForceRules("master-rules")?.homingTag?.designators).not.toContain("c3-computer-master");
+        expect(getBattleValueForceRules("master-rules-revised")?.homingTag?.designators).toContain("c3-computer-master");
+        expect(getBattleValueForceRules("classic-battletech-box-set")).toBe(getBattleValueForceRules("master-rules-revised"));
+        expect(getBattleValueForceRules("battletech-4th-edition")).toBeUndefined();
     });
 
     it("pairs each BV with its skill table: the edition's own for BV1, the TechManual's for BV2 (plan ruling 2)", () => {

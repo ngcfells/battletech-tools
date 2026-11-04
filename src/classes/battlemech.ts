@@ -10,7 +10,7 @@ import { getBattleMechTroAdapter } from "./battlemech-tro";
 import { isSSWNoMake, readSSWTechnicalReadout } from "../utils/ssw-technical-readout";
 import { ITechnicalReadoutExport } from "../data/technical-readout-interfaces";
 import { getAlphaStrikeQuirks, getQuirkHeatGenerated, getQuirkWeaponHeat } from "../utils/quirk-effects";
-import { BattleValueC3Type, IBattleValueTagShare, getAmmoBattleValueMultiplier, getBattleValueC3Type, getBattleValueEdition, getBattleValueFor, getBattleValueRules, getBattleValueSkillEdition, getBattleValueTagShare, getPrintedItemBattleValue, getSkillMultiplier, getSpeedFactor } from "../data/battle-value";
+import { BattleValueC3Type, IBattleValueC3Part, IBattleValueTagShare, getAmmoBattleValueMultiplier, getBattleValueC3Part, getBattleValueC3Type, getBattleValueEdition, getBattleValueFor, getBattleValueRules, getBattleValueSkillEdition, getBattleValueTagShare, getPrintedItemBattleValue, getSkillMultiplier, getSpeedFactor } from "../data/battle-value";
 import { battlemechLocations } from "../data/battlemech-locations";
 import { IArmorType, ICockpitType, ICriticalLocations, IEngineOption, IEngineType, IEquipmentItem, IGyro, IHeatSync, IInternalStructure, IInternalStructurePerTon, IJumpJet, IMechType, IMyomerType, IResolvedInternalStructure, ISplitLocation, ITechDates } from "../data/data-interfaces";
 import { btEraOptions, findEraByTag, getClosestEraForTech, getEraForYear, getErasForTech } from "../data/era-options";
@@ -1612,7 +1612,7 @@ export class BattleMech {
      * BV1 (BMR pp.139-141 with the FanPro errata p.12; BMR(R) pp.152-154), from `edition`'s equipment tables (BMR
      * pp.142-144, BMR(R) pp.156-158). Fractions are kept to the end. `log` collects the steps when given.
      */
-    private _calcBattleValue1(edition: string, log?: string[]): number {
+    private _calcBattleValue1(edition: string, log?: string[], tagged = false): number {
         const note = (line: string) => log?.push(line + "<br />");
         const statsEdition = getBattleValueEdition(edition);
         const isAmmo = (item: IEquipmentItem) => item.isAmmo || item.tag.startsWith("ammo-");
@@ -1624,7 +1624,7 @@ export class BattleMech {
         const clan = this._tech.tag === "clan" || this._tech.tag === "mclan";
         const valueOf = (item: IEquipmentItem, weapon?: IEquipmentItem): number => {
             // Special ammunition is worth a multiple of the standard ammo's BV (Maximum Tech p.91).
-            const multiplier = weapon ? getAmmoBattleValueMultiplier(item, edition) : 1;
+            const multiplier = weapon ? getAmmoBattleValueMultiplier(item, edition, tagged) : 1;
             const printed = getPrintedItemBattleValue(weapon ?? item, edition, weapon ? "ammoBattleValue" : "battleValue", clan);
             if (printed !== undefined) return printed * multiplier;
             const bv2 = weapon ? getAmmoBattleValuePerTon(weapon, item) : getItemBattleValue(item, this._tech.tag);
@@ -2233,12 +2233,19 @@ export class BattleMech {
 
     /** This unit's part in its force's TAG adjustment under `edition` (BV v4.1 p.23; TO:AUE p.198). */
     public getBattleValueTagShare(edition: string = this._rulesEdition): IBattleValueTagShare {
-        return getBattleValueTagShare(edition, this._equipmentList, (bin) => this.getAmmoBinWeapon(bin));
+        const share = getBattleValueTagShare(edition, this._equipmentList, (bin) => this.getAmmoBinWeapon(bin));
+        const semiGuided = this._equipmentList.some(item => getAmmoBattleValueMultiplier(item, edition, true) !== getAmmoBattleValueMultiplier(item, edition));
+        return semiGuided ? { ...share, semiGuided: this._calcBattleValue1(edition, undefined, true) - this.getBattleValue(edition) } : share;
     }
 
     /** The C3 system this unit joins a force's C3 network with, if any (BV v4.1 p.23). */
     public getBattleValueC3Type(): BattleValueC3Type | undefined {
         return getBattleValueC3Type(this._equipmentList);
+    }
+
+    /** This unit's C3 systems and weapon BV for a BV1 network. */
+    public getBattleValueC3Part(edition: string = this._rulesEdition): IBattleValueC3Part {
+        return getBattleValueC3Part(edition, this._equipmentList);
     }
 
     public getAlphaStrikeValue() {

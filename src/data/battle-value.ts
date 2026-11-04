@@ -28,10 +28,12 @@ export interface IBattleValueLevelThree {
     items: Record<string, [number, number?]>;
     /** p.90 Clan table, where it prints another BV than the Inner Sphere one. */
     clanItems: Record<string, number>;
-    /** p.91 Special Ammunition: ammo BV multiplier by ammo tag; the rest (caseless, tracer, smoke...) x 1. */
-    ammo: Array<[RegExp, number]>;
+    /** p.91 Special Ammunition: ammo BV multiplier by ammo tag, `tagged` ones only with TAG on their side; the rest (caseless, tracer, smoke...) x 1. */
+    ammo: Array<[pattern: RegExp, multiplier: number, tagged?: true]>;
     /** p.91 Engine Multipliers: the internal structure multiplier by engine tag, replacing x 1.5 as an XL engine's does. */
     engines: Record<string, number>;
+    /** p.91: a command console's BV for its side, added once after the total. */
+    commandConsole: number;
 }
 
 const MAX_TECH: IBattleValueLevelThree = {
@@ -49,11 +51,11 @@ const MAX_TECH: IBattleValueLevelThree = {
         "angel-ecm": [100], "bloodhound-active-probe": [25],
     },
     clanItems: { "vehicular-grenade-launcher": 1 },
-    // Semi-guided LRM x 6 only beside a friendly TAG unit (a force rule).
     ammo: [[/-ac-\d+-armor-piercing$/, 6], [/-lb-\d+x-cluster$/, 0.75], [/-ac-\d+-flechette$/, 0.5],
-        [/-(srm-frag|lrm-fragmentation)$/, 0.5], [/-lrm-swarm-i$/, 1.5], [/-lrm-flare$/, 0.05]],
+        [/-(srm-frag|lrm-fragmentation)$/, 0.5], [/-lrm-swarm-i$/, 1.5], [/-lrm-flare$/, 0.05], [/-lrm-semi-guided$/, 6, true]],
     engines: { "large-standard": 1.125, "large-ice": 1.125, clan_xxl: 0.75, "large-clan_xl": 0.75, "large-clan_xxl": 0.5,
         xxl: 0.5, "large-xl": 0.75, "large-xxl": 0.375 },
+    commandConsole: 200,
 };
 
 const NO_BATTLE_VALUE: IBattleValueRules = { scheme: "none", source: "No Battle Value system before the BattleTech Master Rules (1998)" };
@@ -104,27 +106,48 @@ export const getBattleValueRules = (edition: string | undefined, unitType: Battl
     return (listed && BV_RULES[listed][unitType]) || NO_BATTLE_VALUE;
 };
 
-/** A C3 network's BV: a share of the whole network's BV added to each member, or a percent of each member's own. */
+/** A C3 network's BV: a share of the whole network's BV added to each member, a percent of each member's own, or of each member's weapons. */
 export type BattleValueC3Rule =
     | { kind: "network"; percent: number; boostedPercent: number }
-    | { kind: "per-unit"; twoUnits: number; perExtraUnit: number; cap: number; boostedFlat: number };
+    | { kind: "per-unit"; twoUnits: number; perExtraUnit: number; cap: number; boostedFlat: number }
+    | { kind: "weapons"; percent: number };
 
 /** Battle force adjustments, applied in this order before skill (BV v4.1 p.23; TO:AUE p.198). */
 export interface IBattleValueForceRules {
     source: string;
     /** Ammo whose tons in the force add their BV to each unit with TAG, Light TAG or a C3 master (half if rear-only). */
     tagAmmo?: string[];
+    /** BV1: a flat bonus on each unit with homing Arrow IV or a designator, once the force has both. */
+    homingTag?: { bonus: number; ammo: string[]; designators: string[] };
     c3: BattleValueC3Rule;
     /** A fighter's external stores join its BV before skill. */
     externalStores?: true;
 }
 
+const TAGS = ["is-tag", "prototype-tag", "clan-tag", "clan-light-tag"];
+/** TAG, Light TAG and C3 masters: each adds the force's TAG-guided ammo to its unit's BV (BV v4.1 p.23; TO:AUE p.198). */
+const TAG_DESIGNATORS = [...TAGS, "c3-computer-master", "c3-boosted-master", "c3-emergency-master"];
+const HOMING_ARROW_IV = ["ammo-is-arrow-iv-homing", "ammo-clan-arrow-iv-homing"];
+const BV1_C3: BattleValueC3Rule = { kind: "weapons", percent: 35 };
+
 /**
- * Force adjustments by edition tag, read like `BV_RULES`. TO:AUE p.198 adds Arrow IV homing, Copperhead and
+ * Force adjustments by edition tag, read like `BV_RULES`. BV1 adds these to a unit's final BV, which skill then
+ * multiplies; "fighting group" reads as the force, like TAG and C3 below. TO:AUE p.198 adds Arrow IV homing, Copperhead and
  * semi-guided mortar ammo to TAG, one bonus per TAG carried, and boosted C3 at 7 percent. The Core Rulebook p.220
  * lists only C3: +10% to each unit of a two-unit network, +5% per unit beyond, at most +40%, boosted +5% on top.
  */
 export const BV_FORCE_RULES: Record<string, IBattleValueForceRules> = {
+    "master-rules": {
+        source: "BattleTech Master Rules pp.143-144, notes A and D",
+        homingTag: { bonus: 200, ammo: HOMING_ARROW_IV, designators: TAGS },
+        c3: BV1_C3,
+    },
+    "master-rules-revised": {
+        source: "BattleTech Master Rules, Revised Edition pp.157-158, notes A and D",
+        // Note A adds the C3 master.
+        homingTag: { bonus: 200, ammo: HOMING_ARROW_IV, designators: TAG_DESIGNATORS },
+        c3: BV1_C3,
+    },
     "total-warfare": {
         source: "Battle Value v4.1 p.23 (TM p.315); TO:AUE p.198",
         // Air-launched Arrow IV homing bombs count too (user ruling, 2026-11-03).
@@ -140,34 +163,53 @@ export const BV_FORCE_RULES: Record<string, IBattleValueForceRules> = {
     },
 };
 
-/** The force adjustments under `edition`; none before the TechManual (BV1's come with 'Mech BV1). */
+/** The force adjustments under `edition`; none before the Master Rules. */
 export const getBattleValueForceRules = (edition: string | undefined): IBattleValueForceRules | undefined => {
     const listed = getListedEdition(edition, BV_FORCE_RULES);
     return listed ? BV_FORCE_RULES[listed] : undefined;
 };
 
-/** TAG, Light TAG and C3 masters: each adds the force's TAG-guided ammo to its unit's BV (BV v4.1 p.23; TO:AUE p.198). */
-const TAG_DESIGNATORS = ["is-tag", "prototype-tag", "clan-tag", "clan-light-tag", "c3-computer-master", "c3-boosted-master", "c3-emergency-master"];
+const isRearMounted = (item: IEquipmentItem) => !!item.rear || item.location === "rear" || item.location === "aft";
 
-/** A unit's part in its force's TAG adjustment: how many times it adds the force's guided ammo BV, and the BV of the guided ammo it carries. */
-export interface IBattleValueTagShare { times: number; ammo: number }
+/**
+ * A unit's part in its force's TAG adjustment: how many times it adds the force's guided ammo BV, and the BV of the
+ * guided ammo it carries. BV1: `tag` when a TAG is among its designators, and `semiGuided`, what its semi-guided LRM
+ * ammo adds beside friendly TAG (Maximum Tech p.91).
+ */
+export interface IBattleValueTagShare { times: number; ammo: number; tag?: boolean; semiGuided?: number }
 
 /**
  * A unit's TAG share under `edition`: once for each designator it carries (TO:AUE p.198), half each when all are
  * rear-mounted (v4.1 p.23). Each ton of guided ammo counts its BV for the launcher it feeds (semi-guided LRM ammo
- * takes the launcher's); `stores` are a fighter's bombs, each counting its own BV (user ruling, 2026-11-03).
+ * takes the launcher's); `stores` are a fighter's bombs, each counting its own BV (user ruling, 2026-11-03). BV1's
+ * edition lists its own ammo and designators.
  */
 export const getBattleValueTagShare = (edition: string | undefined, equipment: IEquipmentItem[], binWeapon: (bin: IEquipmentItem) => IEquipmentItem | null | undefined,
     stores: Array<{ item: IEquipmentItem | undefined; count: number }> = []): IBattleValueTagShare => {
-    const tagAmmo = getBattleValueForceRules(edition)?.tagAmmo ?? [];
-    const designators = tagAmmo.length > 0 ? equipment.filter((item) => !item.isAmmo && TAG_DESIGNATORS.includes(item.tag)) : [];
-    const rearOnly = designators.every((item) => item.rear || item.location === "rear" || item.location === "aft");
+    const rules = getBattleValueForceRules(edition);
+    const tagAmmo = rules?.tagAmmo ?? rules?.homingTag?.ammo ?? [];
+    const designatorTags = rules?.homingTag?.designators ?? TAG_DESIGNATORS;
+    const designators = tagAmmo.length > 0 ? equipment.filter((item) => !item.isAmmo && designatorTags.includes(item.tag)) : [];
+    const rearOnly = designators.every(isRearMounted);
     const bins = equipment.filter((item) => item.isAmmo && tagAmmo.includes(item.tag));
     return {
         times: designators.length * (rearOnly ? 0.5 : 1),
         ammo: bins.reduce((sum, bin) => sum + getAmmoBattleValuePerTon(binWeapon(bin) ?? null, bin) * (bin.weight || 0), 0)
             + stores.reduce((sum, store) => sum + (store.item && tagAmmo.includes(store.item.tag) ? (store.item.battleValue || 0) * store.count : 0), 0),
+        tag: (rules?.homingTag && designators.some((item) => TAGS.includes(item.tag))) || undefined,
     };
+};
+
+/**
+ * What `share` adds before skill among its force's `shares` under `edition`: its designators' guided ammo, or BV1's
+ * flat bonus (once a unit, whichever side of the pair it holds) and its semi-guided ammo beside friendly TAG.
+ */
+export const getBattleValueTagBonus = (edition: string | undefined, share: IBattleValueTagShare, shares: IBattleValueTagShare[]): number => {
+    const guided = shares.reduce((sum, entry) => sum + entry.ammo, 0);
+    const homing = getBattleValueForceRules(edition)?.homingTag;
+    if (!homing) return share.times * guided;
+    const paired = guided > 0 && shares.some((entry) => entry.times > 0) && (share.times > 0 || share.ammo > 0);
+    return (paired ? homing.bonus : 0) + (shares.some((entry) => entry.tag) ? share.semiGuided ?? 0 : 0);
 };
 
 /** C3 systems that join a network (TW p.131; TO:AUE p.110). C3i counts like standard C3 (CRB p.220). */
@@ -183,14 +225,29 @@ export const getBattleValueC3Type = (equipment: IEquipmentItem[]): BattleValueC3
     return types.includes("boosted") ? "boosted" : types[0];
 };
 
+export interface IBattleValueC3Part { systems: string[]; weapons: number }
+
+/** A unit's C3 systems, and the BV of its weapons without ammo, defensive gear or artillery, rear ones halved (BMR p.143; BMR(R) p.157). */
+export const getBattleValueC3Part = (edition: string | undefined, equipment: IEquipmentItem[]): IBattleValueC3Part => ({
+    systems: equipment.filter((item) => C3_SYSTEMS[item.tag]).map((item) => item.tag),
+    weapons: equipment.filter((item) => !item.isAmmo && !item.battleValueDefensive && ["Energy Weapons", "Ballistic Weapons", "Missile Weapons"].includes(item.category ?? ""))
+        .reduce((sum, item) => sum + (getItemBattleValue(item, edition) ?? 0) * (isRearMounted(item) ? 0.5 : 1), 0),
+});
+
+/** BV1 counts C3 only in a complete network: a master and a slave, or two Improved C3 Computers (BMR p.143; BMR(R) p.157). */
+export const isBattleValueC3Complete = (systems: string[]): boolean => systems.filter((tag) => tag === "c3i-computer").length > 1
+    || (systems.some((tag) => tag.endsWith("-master")) && systems.some((tag) => tag.endsWith("-slave")));
+
 /**
  * What a C3 network member adds before skill under `edition`: TM's percent of the network's total BV (`network`;
- * each member by its own C3 type, TO:AUE p.198), or the CRB's percent of its own (`own`), growing with the network's
- * `members` (p.220). A network of one adds nothing.
+ * each member by its own C3 type, TO:AUE p.198), the CRB's percent of its own (`own`), growing with the network's
+ * `members` (p.220), or BV1's percent of its `weapons`, rounded, when the network's `systems` are complete.
+ * A network of one adds nothing.
  */
-export const getBattleValueC3Share = (edition: string | undefined, type: BattleValueC3Type | undefined, own: number, network: number, members: number): number => {
+export const getBattleValueC3Share = (edition: string | undefined, type: BattleValueC3Type | undefined, own: number, network: number, members: number, weapons = 0, systems: string[] = []): number => {
     const rule = getBattleValueForceRules(edition)?.c3;
     if (!rule || !type || members < 2) return 0;
+    if (rule.kind === "weapons") return isBattleValueC3Complete(systems) ? Math.round(weapons * rule.percent / 100) : 0;
     if (rule.kind === "network") return network * (type === "boosted" ? rule.boostedPercent : rule.percent) / 100;
     return own * (Math.min(rule.cap, rule.twoUnits + (members - 2) * rule.perExtraUnit) + (type === "boosted" ? rule.boostedFlat : 0)) / 100;
 };
@@ -222,8 +279,8 @@ export const getPrintedItemBattleValue = (item: IEquipmentItem, edition: string 
 };
 
 /** Maximum Tech's special ammunition multiplier (p.91) for an ammo bin under `edition`: 1 without its Level 3 rules. */
-export const getAmmoBattleValueMultiplier = (ammo: IEquipmentItem, edition: string | undefined): number =>
-    getBattleValueRules(edition, "mech").levelThree?.ammo.find(([pattern]) => pattern.test(ammo.tag))?.[1] ?? 1;
+export const getAmmoBattleValueMultiplier = (ammo: IEquipmentItem, edition: string | undefined, tagged = false): number =>
+    getBattleValueRules(edition, "mech").levelThree?.ammo.find(([pattern, , needsTag]) => pattern.test(ammo.tag) && (tagged || !needsTag))?.[1] ?? 1;
 
 /** Speed Factor: ((MP - 5) / 10 + 1) ^ 1.2 to two places, the curve both BV1 (BMR(R) p.154) and BV2 (TM p.316) tabulate. */
 export const getSpeedFactor = (mp: number): number => Number.isFinite(mp) ? Math.round(Math.pow(1 + (mp - 5) / 10, 1.2) * 100) / 100 : 0.44;
