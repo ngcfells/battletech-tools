@@ -546,6 +546,82 @@ describe("Vehicles against the Master Unit List", () => {
             return vehicle;
     };
 
+    describe("BV1 (BMR(R) pp.154-155; Maximum Tech pp.90-92)", () => {
+        const edition = "master-rules-revised";
+        const skulker: Spec = { name: "Skulker", card: "", mul: 0, motive: "wheeled", tons: 20, cruise: 7, engine: "ice", armor: [18, 18, 18, 18, 0], turret: false, eq: [["medium-laser", "front"]] };
+        const add = (vehicle: Vehicle, tag: string, location: string = "front"): void => {
+            vehicle.addEquipmentFromTag(tag);
+            const item = vehicle.getEquipmentList()[vehicle.getEquipmentList().length - 1];
+            if (location) vehicle.setEquipmentLocation(item.uuid!, location);
+        };
+
+        // Maximum Tech's vehicle table, pp.96-100.
+        it.each([["Scorpion", 163], ["Vedette", 229], ["J. Edgar", 328]])("%s: the printed BV %i", (name, printed) => {
+            expect(build(specs.find((spec) => spec.name === name)!).getBattleValue(edition)).toBe(printed);
+        });
+
+        it("reads a wheeled vehicle's modifier and both BV1 editions alike (Skulker 155)", () => {
+            const vehicle = build(skulker);
+            expect([vehicle.getBattleValue("master-rules"), vehicle.getBattleValue(edition)]).toEqual([155, 155]);
+        });
+
+        it("keeps BV2 under a BV2 edition and logs BV1 first under a BV1 one", () => {
+            const vehicle = build(skulker);
+            expect(vehicle.getBattleValue("total-warfare")).not.toBe(155);
+            expect(vehicle.getBattleValueLog("total-warfare")).not.toContain("BV1");
+            const log = vehicle.getBattleValueLog(edition);
+            expect(log.indexOf("<strong>BV1:</strong>")).toBeGreaterThan(-1);
+            expect(log.indexOf("<strong>BV2 (current rules), for comparison")).toBeGreaterThan(log.indexOf("<strong>BV1:</strong>"));
+        });
+
+        it("counts a VTOL's Flank MP twice in the Speed Factor (Sprint Laser Variant 352)", () => {
+            const sprint: Spec = { ...skulker, motive: "vtol", tons: 10, cruise: 13, armor: [6, 3, 3, 3, 2], eq: [["medium-laser", "front"], ["beagle-active-probe", "front"]] };
+            const vehicle = build(sprint);
+            expect(vehicle.getBattleValueLog(edition)).toContain("(MP 40)");
+            expect(vehicle.getBattleValue(edition)).toBe(352);
+        });
+
+        it("halves the front arc, not the sides, when the rear outweighs the rest (BMR(R) p.155)", () => {
+            const vehicle = build({ ...skulker, eq: [["medium-laser", "front"], ["medium-laser", "right"], ["medium-laser", "rear"], ["medium-laser", "rear"], ["medium-laser", "rear"]] });
+            expect(vehicle.getBattleValueLog(edition)).toContain("Weapons 207 +");
+        });
+
+        it("takes a targeting computer's 20% from the weapons it links", () => {
+            const vehicle = build(skulker);
+            add(vehicle, "targeting-computer", "body");
+            expect(vehicle.getBattleValueLog(edition)).toContain("Targeting Computer 9.2");
+        });
+
+        it("rates Level 3 vehicle equipment only under an edition with Maximum Tech's rules (p.92)", () => {
+            const rated = (tag: string) => {
+                const vehicle = build(skulker);
+                add(vehicle, tag);
+                return vehicle.getBattleValue(edition);
+            };
+            expect(rated("bulldozer")).toBe(165); // 155.44 + 10 x 0.7 x 1.4
+            expect(rated("bridge-layer-heavy")).toBe(175); // + 20 after the modifiers
+            const amphibious = build(skulker);
+            amphibious.setChassisModification("fully-amphibious", true, 3);
+            expect(amphibious.getChassisModifications().length).toBe(1);
+            expect([amphibious.getBattleValue(edition), amphibious.getBattleValue("master-rules")]).toEqual([166, 155]); // type modifier 0.8 under Level 3
+        });
+
+        it("adds 1 to the Speed Factor MP for a supercharger (Maximum Tech p.91)", () => {
+            const vehicle = build(skulker);
+            add(vehicle, "supercharger", "body");
+            expect(vehicle.getBattleValueLog(edition)).toContain("(MP 12)");
+        });
+
+        it("rates semi-guided LRM ammo x 6 only beside TAG, as a 'Mech's (Maximum Tech p.91)", () => {
+            const vehicle = build({ ...skulker, eq: [["lrm-5", "front"]] });
+            expect(vehicle.getBattleValueTagShare(edition).semiGuided).toBeUndefined();
+            add(vehicle, "ammo-is-lrm-semi-guided", "");
+            const gain = vehicle.getBattleValueTagShare(edition).semiGuided ?? 0;
+            expect(Math.abs(gain - 6 * 5 * 1.76)).toBeLessThanOrEqual(1);
+            expect(vehicle.getBattleValueTagShare("total-warfare").semiGuided).toBeUndefined();
+        });
+    });
+
     it("builds a printable Alpha Strike unit from the conversion (Scorpion)", () => {
         const unit = build(specs[0]).getAlphaStrikeUnit();
         expect(unit.basePoints).toBe(11);

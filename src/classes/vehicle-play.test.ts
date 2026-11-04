@@ -319,9 +319,9 @@ describe("Vehicle play mode: save and roster", () => {
         pilot.piloting = 4;
         tank.setPilot(pilot);
         expect(tank.getPilotAdjustedBattleValue()).toBe(Math.round(tank.getBattleValue() * 1.32));
-        // Vehicle BV1 is not entered yet, so the Master Rules and the 1987 Manual (no Battle Value) show BV2, which
-        // reads the TechManual table (plan ruling 2), not Master Rules p.144's 1.25.
-        expect(tank.getPilotAdjustedBattleValue("master-rules")).toBe(Math.round(tank.getBattleValue() * 1.32));
+        // A BV1 reads its own edition's table (Master Rules p.144: 1.25); the 1987 Manual has no Battle Value, so it
+        // shows BV2 on the TechManual table (plan ruling 2).
+        expect(tank.getPilotAdjustedBattleValue("master-rules")).toBe(Math.round(tank.getBattleValue("master-rules") * 1.25));
         expect(tank.getPilotAdjustedBattleValue("battletech-manual")).toBe(Math.round(tank.getBattleValue() * 1.32));
     });
 

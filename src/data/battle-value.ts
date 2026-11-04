@@ -1,5 +1,5 @@
 import { IEquipmentItem } from "./data-interfaces";
-import { ARTEMIS_FIRE_CONTROL, getAmmoBattleValuePerTon, getEquipmentCatalogDefinitions } from "./equipment-registry";
+import { ARTEMIS_FIRE_CONTROL, getAmmoBattleValuePerTon, getEquipmentCatalogDefinitions, getItemBattleValue as getCatalogBattleValue } from "./equipment-registry";
 import { DEFAULT_RULES_EDITION, RulesEditionUnitType, btRulesEditions, getEditionStats, getRulesEdition } from "./rules-editions";
 
 /**
@@ -34,6 +34,12 @@ export interface IBattleValueLevelThree {
     engines: Record<string, number>;
     /** p.91: a command console's BV for its side, added once after the total. */
     commandConsole: number;
+    /** p.92: vehicle equipment by tag, rated at this figure in this step instead of as a weapon. */
+    vehicleItems: Record<string, [step: "defensive" | "movement" | "weapons", value: number]>;
+    /** p.92: added to the Vehicle Type Modifier by chassis modification tag; p.90: any other has no impact on BV. */
+    vehicleChassis: Record<string, number>;
+    /** p.92: Base Weapon Battle Rating for each additional crewman. */
+    vehicleCrew: number;
 }
 
 const MAX_TECH: IBattleValueLevelThree = {
@@ -56,6 +62,18 @@ const MAX_TECH: IBattleValueLevelThree = {
     engines: { "large-standard": 1.125, "large-ice": 1.125, clan_xxl: 0.75, "large-clan_xl": 0.75, "large-clan_xxl": 0.5,
         xxl: 0.5, "large-xl": 0.75, "large-xxl": 0.375 },
     commandConsole: 200,
+    vehicleItems: { bulldozer: ["defensive", 10], "bridge-layer-light": ["movement", 5], "bridge-layer-medium": ["movement", 10],
+        "bridge-layer-heavy": ["movement", 20], "vtol-mast-mount": ["weapons", 10] },
+    vehicleChassis: { "limited-amphibious": 0.1, "fully-amphibious": 0.1, "dune-buggy": 0.05 },
+    vehicleCrew: 2,
+};
+
+/**
+ * BV1 Vehicle Type Modifiers (BMR p.141, BMR(R) p.154): surface vessels, hydrofoils and submarines are Naval. The books
+ * have no WiGE, read here as Hover.
+ */
+export const BV1_VEHICLE_TYPE_MODIFIERS: Record<string, number> = {
+    tracked: 0.8, wheeled: 0.7, hover: 0.6, wige: 0.6, "naval-surface": 0.5, "naval-sub": 0.5, hydrofoil: 0.5, vtol: 0.4,
 };
 
 const NO_BATTLE_VALUE: IBattleValueRules = { scheme: "none", source: "No Battle Value system before the BattleTech Master Rules (1998)" };
@@ -74,14 +92,14 @@ const BV2: IBattleValueRules = { scheme: "bv2", source: "TechManual pp.302-319, 
 export const BV_RULES: Record<string, Partial<Record<BattleValueUnitType, IBattleValueRules>>> = {
     "master-rules": {
         mech: bv1("BattleTech Master Rules pp.139-145; FanPro BMR errata p.12", true),
-        vehicle: bv1("BattleTech Master Rules pp.141-142; FanPro BMR errata p.12"),
+        vehicle: bv1("BattleTech Master Rules pp.141-142; FanPro BMR errata p.12", true),
         fighter: AT2, "small-craft": AT2, "capital-ship": AT2,
         infantry: bv1("BattleTech Master Rules p.142 (table); FanPro BMR errata p.12"),
         "battle-armor": bv1("BattleTech Master Rules p.142 (table)"),
     },
     "master-rules-revised": {
         mech: { ...bv1("BattleTech Master Rules, Revised Edition pp.152-159; Maximum Tech pp.90-92 (Level 3)", true), levelThree: MAX_TECH },
-        vehicle: bv1("BattleTech Master Rules, Revised Edition pp.154-155; Maximum Tech p.92 (Level 3)"),
+        vehicle: { ...bv1("BattleTech Master Rules, Revised Edition pp.154-155; Maximum Tech pp.90-92 (Level 3)", true), levelThree: MAX_TECH },
         fighter: AT2R, "small-craft": AT2R, "capital-ship": AT2R,
         protomech: bv1("BattleTech Master Rules, Revised Edition pp.155-156"),
         infantry: bv1("BattleTech Master Rules, Revised Edition pp.155-156 (table); Maximum Tech p.93 (Level 3)"),
@@ -182,17 +200,20 @@ export interface IBattleValueTagShare { times: number; ammo: number; tag?: boole
  * A unit's TAG share under `edition`: once for each designator it carries (TO:AUE p.198), half each when all are
  * rear-mounted (v4.1 p.23). Each ton of guided ammo counts its BV for the launcher it feeds (semi-guided LRM ammo
  * takes the launcher's); `stores` are a fighter's bombs, each counting its own BV (user ruling, 2026-11-03). BV1's
- * edition lists its own ammo and designators.
+ * edition lists its own ammo and designators; `taggedGain` gives what the unit's BV1 gains with its semi-guided LRM ammo
+ * beside TAG, asked only when it carries some.
  */
 export const getBattleValueTagShare = (edition: string | undefined, equipment: IEquipmentItem[], binWeapon: (bin: IEquipmentItem) => IEquipmentItem | null | undefined,
-    stores: Array<{ item: IEquipmentItem | undefined; count: number }> = []): IBattleValueTagShare => {
+    stores: Array<{ item: IEquipmentItem | undefined; count: number }> = [], taggedGain?: () => number): IBattleValueTagShare => {
     const rules = getBattleValueForceRules(edition);
     const tagAmmo = rules?.tagAmmo ?? rules?.homingTag?.ammo ?? [];
     const designatorTags = rules?.homingTag?.designators ?? TAG_DESIGNATORS;
     const designators = tagAmmo.length > 0 ? equipment.filter((item) => !item.isAmmo && designatorTags.includes(item.tag)) : [];
     const rearOnly = designators.every(isRearMounted);
     const bins = equipment.filter((item) => item.isAmmo && tagAmmo.includes(item.tag));
+    const semiGuided = taggedGain && equipment.some((item) => getAmmoBattleValueMultiplier(item, edition, true) !== getAmmoBattleValueMultiplier(item, edition));
     return {
+        ...(semiGuided ? { semiGuided: taggedGain() } : {}),
         times: designators.length * (rearOnly ? 0.5 : 1),
         ammo: bins.reduce((sum, bin) => sum + getAmmoBattleValuePerTon(binWeapon(bin) ?? null, bin) * (bin.weight || 0), 0)
             + stores.reduce((sum, store) => sum + (store.item && tagAmmo.includes(store.item.tag) ? (store.item.battleValue || 0) * store.count : 0), 0),
@@ -281,6 +302,32 @@ export const getPrintedItemBattleValue = (item: IEquipmentItem, edition: string 
 /** Maximum Tech's special ammunition multiplier (p.91) for an ammo bin under `edition`: 1 without its Level 3 rules. */
 export const getAmmoBattleValueMultiplier = (ammo: IEquipmentItem, edition: string | undefined, tagged = false): number =>
     getBattleValueRules(edition, "mech").levelThree?.ammo.find(([pattern, , needsTag]) => pattern.test(ammo.tag) && (tagged || !needsTag))?.[1] ?? 1;
+
+/** BV1's defensive equipment: AMS (with its ammo), A-Pods and ECM; an active probe is offensive (BMR(R) pp.152, 154). */
+export const isBattleValue1Defensive = (item: IEquipmentItem): boolean => item.battleValueDefensive === true && !/probe/.test(item.tag);
+
+/** Rates an item, or with `weapon` an ammo bin's ton, in a BV1 calculation. */
+export type BattleValue1Rater = (item: IEquipmentItem, weapon?: IEquipmentItem) => number;
+
+/**
+ * A BV1 rater under `edition`, from its tables; an item they do not print falls back on the catalog's BV2 figure, which
+ * `note` logs. Special ammunition is worth a multiple of the standard ammo's BV (Maximum Tech p.91).
+ */
+export const getBattleValue1Rater = (edition: string, techTag: string, tagged: boolean, note: (line: string) => void): BattleValue1Rater => (item, weapon) => {
+    const multiplier = weapon ? getAmmoBattleValueMultiplier(item, edition, tagged) : 1;
+    const printed = getPrintedItemBattleValue(weapon ?? item, edition, weapon ? "ammoBattleValue" : "battleValue", techTag === "clan" || techTag === "mclan");
+    if (printed !== undefined) return printed * multiplier;
+    const bv2 = weapon ? getAmmoBattleValuePerTon(weapon, item) : getCatalogBattleValue(item, techTag);
+    if (bv2) note(`${item.name}: not in the ${getRulesEdition(getBattleValueEdition(edition)).name} tables, BV2 figure ${bv2} used`);
+    return bv2 * multiplier;
+};
+
+/** The BV1 of the ammo in `equipment`: the bins feeding defensive weapons, or the rest. A bin feeding nothing counts for neither. */
+export const getBattleValue1Ammo = (equipment: IEquipmentItem[], binWeapon: (bin: IEquipmentItem) => IEquipmentItem | null | undefined, rate: BattleValue1Rater, defensive: boolean): number =>
+    equipment.filter((item) => item.isAmmo || item.tag.startsWith("ammo-")).reduce((sum, bin) => {
+        const fed = binWeapon(bin);
+        return fed && isBattleValue1Defensive(fed) === defensive ? sum + rate(bin, fed) * bin.weight : sum;
+    }, 0);
 
 /** Speed Factor: ((MP - 5) / 10 + 1) ^ 1.2 to two places, the curve both BV1 (BMR(R) p.154) and BV2 (TM p.316) tabulate. */
 export const getSpeedFactor = (mp: number): number => Number.isFinite(mp) ? Math.round(Math.pow(1 + (mp - 5) / 10, 1.2) * 100) / 100 : 0.44;

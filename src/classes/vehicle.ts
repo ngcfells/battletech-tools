@@ -9,8 +9,8 @@ import { IAssignedQuirk, IQuirkTargets, QuirkUnitType } from "../data/quirk-inte
 import { getQuirkIssues, getQuirkTargets } from "../data/quirk-registry";
 import { QuirkList } from "./quirk-list";
 import { getAlphaStrikeQuirks } from "../utils/quirk-effects";
-import { DEFAULT_RULES_EDITION, getArtVeePlayRules, getSelectableRulesEditionTag } from "../data/rules-editions";
-import { BattleValueC3Type, IBattleValueC3Part, IBattleValueTagShare, getBattleValueC3Part, getBattleValueC3Type, getBattleValueFor, getBattleValueSkillEdition, getBattleValueTagShare, getSkillMultiplier } from "../data/battle-value";
+import { DEFAULT_RULES_EDITION, getArtVeePlayRules, getRulesEdition, getSelectableRulesEditionTag } from "../data/rules-editions";
+import { BattleValueC3Type, IBattleValueC3Part, IBattleValueTagShare, getBattleValueC3Part, getBattleValueC3Type, getBattleValueFor, getBattleValueSkillEdition, getBattleValueTagShare, getSkillMultiplier, BV1_VEHICLE_TYPE_MODIFIERS, getBattleValue1Ammo, getBattleValue1Rater, getBattleValueEdition, getBattleValueRules, getSpeedFactor, isBattleValue1Defensive } from "../data/battle-value";
 import { getComboArtillery } from "../data/artillery-custom";
 import {
     getDamageGroupings, getDualTurretHit, getFacingAfterFallDirection, getLargeNavalVesselHitLocation, getSuperheavyVehicleHitLocation, getVehicleCriticalEffect,
@@ -2986,6 +2986,21 @@ export default class Vehicle implements IGameSettingsUnit {
         return this._equipmentList.some((item) => item.variableFormula?.startsWith("targeting-computer"));
     }
 
+    /** Modular armor points the vehicle carries. */
+    private _modularArmorPoints(): number {
+        return this._equipmentList.filter((item) => item.isModularArmor).reduce((sum, item) => sum + (item.currentAdditionalArmor ?? item.additionalArmor ?? 0), 0);
+    }
+
+    /** A VTOL jet booster's boosted speed, twice Cruising MP (TO:AUE pp.162, 194), or a Supercharger's (TO:AUE p.157); 0 without one. */
+    private _bvBoostedMP(): number {
+        return this._equipmentList.some((item) => item.tag === "vtol-jet-booster" || item.variableFormula === "supercharger") ? this.getCruiseMP() * 2 : 0;
+    }
+
+    /** Flank MP for BV, at `boosted` if higher. An unmotorized Trailer (a Support Vehicle with no engine, or a Combat Vehicle with no Cruising MP) counts as 1 (TM pp.308, 317). */
+    private _bvFlankMP(boosted: number): number {
+        return this._support?.engine === "none" || this.getCruiseMP() === 0 ? 1 : Math.max(this.getFlankMP(), boosted);
+    }
+
     /** Each item in a VTOL Mast Mount, which sits in the Rotor location, costs 10 BV more (TO:AUE p.194). */
     private _mastMountBV(item: IEquipmentItem): number {
         if (item.location !== "rotor" || item.isAmmo || item.tag === VTOL_MAST_MOUNT) return 0;
@@ -3038,9 +3053,7 @@ export default class Vehicle implements IGameSettingsUnit {
     private _calcBattleValue(): void {
         let log = "<strong>DEFENSIVE BATTLE RATING</strong><br />";
         const locations = this.getLocations().map((loc) => loc.tag);
-        const modularArmor = this._equipmentList
-            .filter((item) => item.isModularArmor)
-            .reduce((sum, item) => sum + (item.currentAdditionalArmor ?? item.additionalArmor ?? 0), 0);
+        const modularArmor = this._modularArmorPoints();
         let armorBV = 0;
         if (this._support) {
             const armorPoints = locations.reduce((sum, loc) => sum + (this._armorAllocation[loc] ?? 0), 0) + modularArmor;
@@ -3099,12 +3112,9 @@ export default class Vehicle implements IGameSettingsUnit {
         defensive *= typeModifier;
         log += ` = ${defensive.toFixed(2)}<br />`;
 
-        // An unmotorized Trailer (a Support Vehicle with no engine, or a Combat Vehicle with no Cruising MP)
-        // counts as Flank MP 1 (TM pp.308, 317).
-        // A VTOL jet booster's boosted speed, twice Cruising MP, gives the Defensive and Speed Factors (TO:AUE pp.162, 194).
-        // A Supercharger likewise doubles Cruising MP (TO:AUE p.157).
-        const boosted = this._equipmentList.some((item) => item.tag === "vtol-jet-booster" || item.variableFormula === "supercharger") ? this.getCruiseMP() * 2 : 0;
-        const flank = this._support?.engine === "none" || this.getCruiseMP() === 0 ? 1 : Math.max(this.getFlankMP(), boosted);
+        // The boosted speed gives the Defensive and Speed Factors.
+        const boosted = this._bvBoostedMP();
+        const flank = this._bvFlankMP(boosted);
         const airborne = this._motiveType.tag === "vtol" || this._motiveType.tag === "wige";
         // The highest potential target modifier includes stealth armor's +2 at long range (TM p.316).
         const stealth = /stealth/.test(this._armorType.tag) ? 2 : 0;
@@ -3205,6 +3215,80 @@ export default class Vehicle implements IGameSettingsUnit {
             + `${robotic !== 1 ? ` x ${robotic} (Smart Robotic Control System, IO:AE p.187)` : ""}`
             + `${drone ? " x 0.95 (Drone Operating System, TO:AUE p.193)" : ""} = ${this._battleValue} (provisional)<br />`;
         this._calcLogBV = log;
+    }
+
+    /**
+     * BV1 (BMR pp.141-142 with the FanPro errata p.12; BMR(R) pp.154-155), from `edition`'s equipment tables, with
+     * Maximum Tech's Level 3 rules (pp.90-92) where the edition has them. Fractions are kept to the end. `log` collects
+     * the steps when given; `tagged` rates semi-guided LRM ammo as beside friendly TAG (Maximum Tech p.91).
+     */
+    private _calcBattleValue1(edition: string, log?: string[], tagged = false): number {
+        const note = (line: string) => log?.push(line + "<br />");
+        const levelThree = getBattleValueRules(edition, "vehicle").levelThree;
+        const valueOf = getBattleValue1Rater(edition, this._tech.tag, tagged, (line) => note(escapeLogText(line)));
+        const binWeapon = (bin: IEquipmentItem) => this._binWeapon(bin);
+        const has = (tag: string) => !!levelThree && this._equipmentList.some((item) => matchesTag(item, tag));
+        const levelThreeItems = (step: string) => this._equipmentList.reduce((sum, item) => {
+            const entry = levelThree?.vehicleItems[item.tag];
+            return sum + (entry?.[0] === step ? entry[1] : 0);
+        }, 0);
+        note(`<strong>BV1 (${getRulesEdition(getBattleValueEdition(edition)).name}${levelThree ? `; ${levelThree.source}` : ""})</strong>`);
+
+        // Step 1: Defensive Battle Rating (BMR(R) p.154): Armor Factor + Internal Structure / 2 (turret and rotor
+        // included) + defensive gear. Level 3: Hardened armor points count double (Maximum Tech pp.90-91).
+        const locations = this.getLocations().map((loc) => loc.tag);
+        const armorPoints = this._armorPoints() + this._modularArmorPoints();
+        const hardened = !levelThree ? 0 : this.isPatchworkArmor()
+            ? locations.reduce((sum, loc) => sum + (this.getPatchworkArmorType(loc).tag === "hardened" ? this._armorAllocation[loc] ?? 0 : 0), 0)
+            : this._armorType.tag === "hardened" ? this._armorPoints() : 0;
+        const allocation = this.getStructureAllocation();
+        const structure = locations.reduce((sum, loc) => sum + (allocation[loc] ?? 0), 0) / 2;
+        // What Maximum Tech rates in a step of its own counts there alone.
+        const rated = (item: IEquipmentItem) => item.isAmmo || !!levelThree?.vehicleItems[item.tag];
+        const gear = getBattleValue1Ammo(this._equipmentList, binWeapon, valueOf, true) + levelThreeItems("defensive")
+            + this._equipmentList.reduce((sum, item) => sum + (!rated(item) && isBattleValue1Defensive(item) ? valueOf(item) : 0), 0);
+        const subtotal = armorPoints + hardened + structure + gear;
+        // Level 3: chassis modifications add to the Vehicle Type Modifier (Maximum Tech p.92).
+        const chassisModifier = this.getChassisModifications().reduce((sum, mod) => sum + (levelThree?.vehicleChassis[mod.tag] ?? 0), 0);
+        const typeModifier = Math.round(((BV1_VEHICLE_TYPE_MODIFIERS[this._motiveType.tag] ?? 0.5) + chassisModifier) * 100) / 100;
+        // Defensive Movement Factor: the highest potential TMM on the 'Mech table (BMR(R) p.153), +1 for a VTOL. Level 3:
+        // a supercharger or jet booster's added movement counts (Maximum Tech p.91), and jumping as for a 'Mech (p.92).
+        const boosted = levelThree ? this._bvBoostedMP() : 0;
+        const tmm = (mp: number) => Math.min(getMovementModifier(mp), 4);
+        const movementModifier = Math.max(tmm(this._bvFlankMP(boosted)) + (this._motiveType.tag === "vtol" ? 1 : 0), this._jumpMP > 0 ? tmm(this._jumpMP) + 1 : 0);
+        const movementFactor = 1 + movementModifier / 10;
+        const bridge = levelThreeItems("movement");
+        const defensive = subtotal * typeModifier * movementFactor + bridge;
+        note(`Armor ${armorPoints}${hardened ? ` + Hardened ${hardened}` : ""} + Internal Structure ${structure} + Defensive Gear ${gear} = ${subtotal}`);
+        note(`Defensive Battle Rating: ${subtotal} x ${typeModifier} (${escapeLogText(this._motiveType.name)}) x ${movementFactor} (TMM +${movementModifier})${bridge ? ` + Bridgelayer ${bridge}` : ""} = ${defensive}`);
+
+        // Step 2: Offensive Battle Rating (BMR(R) pp.154-155). Rear weapons count half, unless they outweigh the other
+        // arcs: then the rear is the front and the front arc counts half. Multi-Trac II: all count in full (Maximum Tech p.91).
+        const weapons = this._equipmentList.filter((item) => !rated(item) && !isBattleValue1Defensive(item))
+            .map((item) => ({ item, bv: valueOf(item) })).filter((entry) => entry.bv > 0);
+        const rearBV = weapons.reduce((sum, entry) => sum + (entry.item.location === "rear" ? entry.bv : 0), 0);
+        const rearIsFront = rearBV > weapons.reduce((sum, entry) => sum + (entry.item.location === "rear" ? 0 : entry.bv), 0);
+        const arc = (item: IEquipmentItem) => !has("targeting-multi-trac-ii") && item.location === (rearIsFront ? "front" : "rear") ? 0.5 : 1;
+        const weaponBV = weapons.reduce((sum, entry) => sum + entry.bv * arc(entry.item), 0);
+        // A targeting computer: 20% of the weapons it links (BMR(R) pp.121, 154); variable-range targeting 10% (Maximum Tech p.91).
+        const computerShare = (this.hasTargetingComputer() ? 0.2 : 0) + (has("targeting-variable-range") ? 0.1 : 0);
+        const computerBV = computerShare * weapons.reduce((sum, entry) => sum + (isTargetingComputerWeapon(entry.item) ? entry.bv * arc(entry.item) : 0), 0);
+        const ammoBV = getBattleValue1Ammo(this._equipmentList, binWeapon, valueOf, false);
+        // Level 3: additional crew and a mast mount (Maximum Tech p.92).
+        const extras = levelThreeItems("weapons") + (levelThree?.vehicleCrew ?? 0) * this.getSupportVehicleExtraCrew();
+        const base = weaponBV + computerBV + ammoBV + extras;
+        note(`Base Weapon Battle Rating: Weapons ${weaponBV} + Targeting Computer ${computerBV} + Ammo ${ammoBV}${extras ? ` + Level 3 ${extras}` : ""} = ${base}`);
+        // Speed Factor MP: Flanking MP + VTOL MP, so a VTOL counts its Flank MP twice (BMR(R) p.155; Maximum Tech's Sprint
+        // and Yellow Jacket BVs fit no other reading), + Jump MP (Maximum Tech p.92), +1 with a supercharger or jet booster (p.91).
+        const speedMP = this._bvFlankMP(0) * (this._motiveType.tag === "vtol" ? 2 : 1) + this._jumpMP + (boosted > 0 ? 1 : 0);
+        const speedFactor = getSpeedFactor(speedMP);
+        const offensive = base * speedFactor;
+        note(`Offensive Battle Rating: ${base} x Speed Factor ${speedFactor} (MP ${speedMP}) = ${offensive}`);
+
+        // Step 3: Final BV, rounded (BMR(R) p.155).
+        const battleValue = Math.round(defensive + offensive);
+        note(`<strong>BV1:</strong> ${battleValue} (rounded from ${defensive + offensive})`);
+        return battleValue;
     }
 
     /**
@@ -3333,11 +3417,16 @@ export default class Vehicle implements IGameSettingsUnit {
     }
 
     public getBattleValue(edition: string = this._rulesEdition): number {
-        return getBattleValueFor(edition, "vehicle", { bv2: () => this._battleValue });
+        return getBattleValueFor(edition, "vehicle", { bv1: () => this._calcBattleValue1(edition), bv2: () => this._battleValue });
     }
 
     public getBattleValueLog(edition: string = this._rulesEdition): string {
-        return getBattleValueFor(edition, "vehicle", { bv2: () => this._calcLogBV });
+        // Under a BV1 edition its own steps come first, then the BV2 ones for comparison (plan ruling 1).
+        return getBattleValueFor(edition, "vehicle", { bv1: () => {
+            const steps: string[] = [];
+            this._calcBattleValue1(edition, steps);
+            return `${steps.join("")}<strong>BV2 (current rules), for comparison</strong><br />${this._calcLogBV}`;
+        }, bv2: () => this._calcLogBV });
     }
 
     public getCBillCost(): number {
@@ -5001,7 +5090,8 @@ export default class Vehicle implements IGameSettingsUnit {
 
     /** This unit's part in its force's TAG adjustment under `edition` (BV v4.1 p.23; TO:AUE p.198). */
     public getBattleValueTagShare(edition: string = this._rulesEdition): IBattleValueTagShare {
-        return getBattleValueTagShare(edition, this._equipmentList, (bin) => this.getAmmoBinWeapon(bin));
+        return getBattleValueTagShare(edition, this._equipmentList, (bin) => this.getAmmoBinWeapon(bin), [],
+            () => this._calcBattleValue1(edition, undefined, true) - this.getBattleValue(edition));
     }
 
     /** The C3 system this unit joins a force's C3 network with, if any (BV v4.1 p.23). */

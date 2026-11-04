@@ -10,7 +10,7 @@ import { getBattleMechTroAdapter } from "./battlemech-tro";
 import { isSSWNoMake, readSSWTechnicalReadout } from "../utils/ssw-technical-readout";
 import { ITechnicalReadoutExport } from "../data/technical-readout-interfaces";
 import { getAlphaStrikeQuirks, getQuirkHeatGenerated, getQuirkWeaponHeat } from "../utils/quirk-effects";
-import { BattleValueC3Type, IBattleValueC3Part, IBattleValueTagShare, getAmmoBattleValueMultiplier, getBattleValueC3Part, getBattleValueC3Type, getBattleValueEdition, getBattleValueFor, getBattleValueRules, getBattleValueSkillEdition, getBattleValueTagShare, getPrintedItemBattleValue, getSkillMultiplier, getSpeedFactor } from "../data/battle-value";
+import { BattleValueC3Type, IBattleValueC3Part, IBattleValueTagShare, getBattleValueC3Part, getBattleValueC3Type, getBattleValueEdition, getBattleValueFor, getBattleValueRules, getBattleValueSkillEdition, getBattleValueTagShare, getSkillMultiplier, getSpeedFactor, getBattleValue1Ammo, getBattleValue1Rater, isBattleValue1Defensive } from "../data/battle-value";
 import { battlemechLocations } from "../data/battlemech-locations";
 import { IArmorType, ICockpitType, ICriticalLocations, IEngineOption, IEngineType, IEquipmentItem, IGyro, IHeatSync, IInternalStructure, IInternalStructurePerTon, IJumpJet, IMechType, IMyomerType, IResolvedInternalStructure, ISplitLocation, ITechDates } from "../data/data-interfaces";
 import { btEraOptions, findEraByTag, getClosestEraForTech, getEraForYear, getErasForTech } from "../data/era-options";
@@ -1616,21 +1616,11 @@ export class BattleMech {
         const note = (line: string) => log?.push(line + "<br />");
         const statsEdition = getBattleValueEdition(edition);
         const isAmmo = (item: IEquipmentItem) => item.isAmmo || item.tag.startsWith("ammo-");
-        // AMS (with its ammo), A-Pods and ECM; an active probe is offensive here (BMR(R) p.152).
-        const isDefensive = (item: IEquipmentItem) => item.battleValueDefensive === true && !/probe/.test(item.tag);
-        // A weapon's BV, or with `weapon` an ammo bin's per ton, from the edition's tables; the catalog's BV2 otherwise.
+        const isDefensive = isBattleValue1Defensive;
         // Maximum Tech's Level 3 rules (pp.90-92), where the edition has them.
         const levelThree = getBattleValueRules(edition, "mech").levelThree;
-        const clan = this._tech.tag === "clan" || this._tech.tag === "mclan";
-        const valueOf = (item: IEquipmentItem, weapon?: IEquipmentItem): number => {
-            // Special ammunition is worth a multiple of the standard ammo's BV (Maximum Tech p.91).
-            const multiplier = weapon ? getAmmoBattleValueMultiplier(item, edition, tagged) : 1;
-            const printed = getPrintedItemBattleValue(weapon ?? item, edition, weapon ? "ammoBattleValue" : "battleValue", clan);
-            if (printed !== undefined) return printed * multiplier;
-            const bv2 = weapon ? getAmmoBattleValuePerTon(weapon, item) : getItemBattleValue(item, this._tech.tag);
-            if (bv2) note(`${this._escapeLogText(item.name)}: not in the ${getRulesEdition(statsEdition).name} tables, BV2 figure ${bv2} used`);
-            return bv2 * multiplier;
-        };
+        const valueOf = getBattleValue1Rater(edition, this._tech.tag, tagged, (line) => note(this._escapeLogText(line)));
+        const binWeapon = (bin: IEquipmentItem) => this.getAmmoBinWeapon(bin);
         note(`<strong>BV1 (${getRulesEdition(statsEdition).name}${levelThree ? `; ${levelThree.source}` : ""})</strong>`);
 
         // Step 1: Defensive Battle Rating (BMR(R) pp.152-153). Level 3 engines read their own multiplier, reinforced
@@ -1638,12 +1628,8 @@ export class BattleMech {
         const structureFactor = (levelThree?.engines[(this.getLargeEngineType() ?? this._engineType).tag]
             ?? ({ xl: 0.75, light: 1.125, clan_xl: 1.125 } as Record<string, number>)[this._engineType.tag] ?? 1.5)
             * (levelThree ? ({ reinforced: 2, composite: 0.5 } as Record<string, number>)[this.getInternalStructureType()] ?? 1 : 1);
-        let defensiveGear = 0;
-        for (const item of this._equipmentList) {
-            const fed = isAmmo(item) ? this.getAmmoBinWeapon(item) : null;
-            if (fed && isDefensive(fed)) defensiveGear += valueOf(item, fed) * item.weight;
-            else if (!isAmmo(item) && isDefensive(item)) defensiveGear += valueOf(item);
-        }
+        let defensiveGear = getBattleValue1Ammo(this._equipmentList, binWeapon, valueOf, true)
+            + this._equipmentList.reduce((sum, item) => sum + (!isAmmo(item) && isDefensive(item) ? valueOf(item) : 0), 0);
         if (levelThree) {
             // Heavy-duty gyro +30, command console +25, 5 a slot of component armor; a torso-mounted cockpit adds the
             // center torso armor, front and rear, x 2 (Maximum Tech pp.91-92).
@@ -1709,11 +1695,7 @@ export class BattleMech {
         const computerShare = (this.hasTargetingComputer() ? 0.2 : 0) + (levelThree && this._equipmentList.some(item => matchesTag(item, "targeting-variable-range")) ? 0.1 : 0)
             + (levelThree && this.hasEnhancedImaging() ? 0.05 : 0);
         const computerBV = computerShare * weapons.reduce((sum, entry) => sum + (isTargetingComputerWeapon(entry.item) ? entry.bv * arc(entry.item) : 0), 0);
-        let ammoBV = 0;
-        for (const item of this._equipmentList.filter(isAmmo)) {
-            const fed = this.getAmmoBinWeapon(item);
-            if (fed && !isDefensive(fed)) ammoBV += valueOf(item, fed) * item.weight;
-        }
+        const ammoBV = getBattleValue1Ammo(this._equipmentList, binWeapon, valueOf, false);
         let base = weaponBV + computerBV + ammoBV;
         note(`Base Weapon Battle Rating: Weapons ${weaponBV} + Targeting Computer ${computerBV} + Ammo ${ammoBV} = ${base}`);
         // Weapons that cannot be fired once the 'Mech overheats are worth half.
@@ -2233,9 +2215,8 @@ export class BattleMech {
 
     /** This unit's part in its force's TAG adjustment under `edition` (BV v4.1 p.23; TO:AUE p.198). */
     public getBattleValueTagShare(edition: string = this._rulesEdition): IBattleValueTagShare {
-        const share = getBattleValueTagShare(edition, this._equipmentList, (bin) => this.getAmmoBinWeapon(bin));
-        const semiGuided = this._equipmentList.some(item => getAmmoBattleValueMultiplier(item, edition, true) !== getAmmoBattleValueMultiplier(item, edition));
-        return semiGuided ? { ...share, semiGuided: this._calcBattleValue1(edition, undefined, true) - this.getBattleValue(edition) } : share;
+        return getBattleValueTagShare(edition, this._equipmentList, (bin) => this.getAmmoBinWeapon(bin), [],
+            () => this._calcBattleValue1(edition, undefined, true) - this.getBattleValue(edition));
     }
 
     /** The C3 system this unit joins a force's C3 network with, if any (BV v4.1 p.23). */
