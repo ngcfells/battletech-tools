@@ -88,3 +88,67 @@ describe("a Cockpit Command Console", () => {
         expect(unit?.getBattleValue()).toBe(954);
     });
 });
+
+// Enhanced Imaging (2b-3, plan ruling R1): a Clan cockpit system with no weight or slots. Under BMR(R) it is Max Tech's
+// Level 3 EI cockpit (pp.60-61): one cockpit system only, so not with a small, torso-mounted or command console
+// cockpit (p.60), priced 400,000 for the display cockpit against the standard 200,000 (p.87). Under Total Warfare it is
+// IO:AE's Experimental EI interface (p.69), on any Clan cockpit.
+describe("an Enhanced Imaging cockpit", () => {
+    function clanMech(edition: string, tech: string = "clan"): BattleMech {
+        const unit = new BattleMech();
+        unit.setRulesEdition(edition);
+        unit.setTech(tech);
+        unit.setEra("jihad");
+        unit.setTonnage(50);
+        unit.setWalkSpeed(4);
+        return unit;
+    }
+
+    it("offers the EI cockpit to Clan 'Mechs under BMR(R) Level 3 and TW, not with small/torso/console under BMR(R)", () => {
+        expect(clanMech("master-rules-revised").getEnhancedImagingOption(3).available).toBe(true);
+        expect(clanMech("master-rules-revised").getEnhancedImagingOption(2).available).toBe(false);
+        expect(clanMech("master-rules").getEnhancedImagingOption(5).available).toBe(false);
+        expect(clanMech("total-warfare").getEnhancedImagingOption(4).available).toBe(true);
+        expect(clanMech("total-warfare").getEnhancedImagingOption(3).available).toBe(false);
+        expect(clanMech("total-warfare", "is").canMountEnhancedImaging()).toBe(false);
+        for (const cockpit of ["small", "torso-mounted"]) {
+            const unit = clanMech("master-rules-revised");
+            unit.setCockpitType(cockpit);
+            expect(unit.canMountEnhancedImaging(), cockpit).toBe(false);
+            const tw = clanMech("total-warfare");
+            tw.setCockpitType(cockpit);
+            expect(tw.canMountEnhancedImaging(), cockpit).toBe(true);
+        }
+        const console = clanMech("master-rules-revised");
+        console.setCommandConsole(true);
+        expect(console.canMountEnhancedImaging()).toBe(false);
+        const unit = clanMech("master-rules-revised");
+        expect(unit.setEnhancedImaging(true)).toBe(true);
+        expect(unit.getRequiredRulesLevel()).toBe(3);
+    });
+
+    it("prices the EI display at 400,000 under BMR(R) and adds no weight or slots", () => {
+        const unit = clanMech("master-rules-revised");
+        const [tons, cost, slots] = [unit.getCurrentTonnage(), unit.getCBillCostNumeric(), tags(unit.getCriticals().head)];
+        unit.setEnhancedImaging(true);
+        expect(unit.getCurrentTonnage()).toBe(tons);
+        expect(tags(unit.getCriticals().head)).toEqual(slots);
+        // 400,000 - 200,000 (Max Tech p.87), times the 1 + 50/100 tonnage multiplier.
+        expect(unit.getCBillCostNumeric() - cost).toBe(300000);
+    });
+
+    it("survives a save and load", () => {
+        const unit = clanMech("master-rules-revised");
+        unit.setEnhancedImaging(true);
+        expect(new BattleMech(unit.exportJSON()).hasEnhancedImaging()).toBe(true);
+    });
+
+    it("reads EI Interface from a MegaMek nocrit line", () => {
+        vi.spyOn(console, "error").mockImplementation(() => undefined);
+        const file = readFileSync("src/utils/__fixtures__/daishi-dire-wolf-a.mtf", "utf8") + "\nnocrit:EIInterface:None\n";
+        const { mech: unit, issues } = importBattleMechMtf(file);
+        expect(issues).toEqual([]);
+        expect(unit?.sswImportErrors).toEqual([]);
+        expect(unit?.hasEnhancedImaging()).toBe(true);
+    });
+});

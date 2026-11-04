@@ -106,6 +106,14 @@ export default class MechCreatorStep2 extends React.Component<IHomeProps, IHomeS
       }
     }
 
+    setEnhancedImaging = ( event: React.FormEvent<HTMLInputElement>): void => {
+      if( this.props.appGlobals.currentBattleMech ) {
+        const currentMech = this.props.appGlobals.currentBattleMech;
+        currentMech.setEnhancedImaging( event.currentTarget.checked );
+        this.props.appGlobals.saveCurrentBattleMech( currentMech );
+      }
+    }
+
     setRoboticControl = ( event: React.FormEvent<HTMLSelectElement>): void => {
       if( this.props.appGlobals.currentBattleMech ) {
         const currentMech = this.props.appGlobals.currentBattleMech;
@@ -361,6 +369,22 @@ export default class MechCreatorStep2 extends React.Component<IHomeProps, IHomeS
                                 );
                               })()}
                             </EditionChoice>
+                            {/* Outside the cockpit choice: under BMR(R) the cockpit has one option and is hidden, yet Max Tech adds EI (p.60). */}
+                            {(() => {
+                              const mech = this.props.appGlobals.currentBattleMech;
+                              const imaging = mech.getEnhancedImagingOption(mechRulesLevel(this.props.appGlobals));
+                              if( !isOptionShown(imaging, mech.hasEnhancedImaging()) ) return null;
+                              return (
+                                <label className="d-block">
+                                  <input
+                                    type="checkbox"
+                                    checked={mech.hasEnhancedImaging()}
+                                    onChange={this.setEnhancedImaging}
+                                  />{" "}
+                                  {availabilityOptionLabel(imaging)}: no weight or slots
+                                </label>
+                              );
+                            })()}
 
                             <div className="clear-both overflow-hidden">
                               <hr />

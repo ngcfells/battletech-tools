@@ -2923,7 +2923,7 @@ describe("Batch 8 cockpit catalog", () => {
             expect([item.book, item.page], item.tag).toEqual(pages[item.tag]);
         }
         expect(mechCockpitTypes.filter(item => item.constructionStatus === "implemented").map(item => item.tag).sort())
-            .toEqual(["command-console", "industrial", "industrial-advanced-fire-control", "interface", "primitive", "primitive-industrial", "primitive-industrial-advanced-fire-control", "quadvee", "small", "standard", "superheavy", "superheavy-industrial", "superheavy-tripod", "torso-mounted", "tripod"]);
+            .toEqual(["command-console", "enhanced-imaging-interface", "industrial", "industrial-advanced-fire-control", "interface", "primitive", "primitive-industrial", "primitive-industrial-advanced-fire-control", "quadvee", "small", "standard", "superheavy", "superheavy-industrial", "superheavy-tripod", "torso-mounted", "tripod"]);
         // Small (TM p.304) and Torso-Mounted (TO:AUE p.193) cockpits multiply the final BV by 0.95.
         expect(cockpit("small")?.bvMultiplier).toBe(0.95);
         expect(cockpit("torso-mounted")?.bvMultiplier).toBe(0.95);
@@ -6871,6 +6871,13 @@ describe("Battle Value worked examples (BV v4.1 pp.3-7)", () => {
         mech.setRulesEdition("master-rules-revised");
         expect(mech.getPilotAdjustedBattleValue()).toBe(2243);
         expect(mech.calcLogBV).toContain("BV1");
+        // Max Tech p.91, the Goshawk with an EI cockpit: the targeting computer's 598 linked weapons now add 25% (149.5),
+        // base 853, heat 22 of 30: X 625.53, Y 113.73, x 2.3 = 1,700.31; defensive (463.375 - 25) x 1.3 = 569.89.
+        expect(mech.setEnhancedImaging(true)).toBe(true);
+        expect(mech.getBattleValue("master-rules-revised")).toBe(2270);
+        // Piloting reads 1 better for skill: 4/5 reads the 4/4 column, 2,270 x 1.05.
+        expect(mech.getPilotAdjustedBattleValue()).toBe(2384);
+        expect(mech.getPilotAdjustedBattleValue("master-rules-revised", 10)).toBe(Math.round(2280 * 1.05));
     });
 
     // Maximum Tech's BV1 lists (pp.94 on) follow BMR(R) to the point; loadouts from TRO 3025 / TRO 3060.
@@ -6993,6 +7000,9 @@ describe("Battle Value worked examples (BV v4.1 pp.3-7)", () => {
             placeIn(mech, "targeting-variable-range", "hd", "head");
             expect(mech.getBattleValue("master-rules-revised")).toBe(1510);
             expect(mech.getBattleValue("master-rules")).toBe(1427);
+            // Built under BMR(R), the design needs Level 3, the system's grade there (it read 0 before 2b-3).
+            mech.setRulesEdition("master-rules-revised");
+            expect(mech.getRequiredRulesLevel()).toBe(3);
         });
 
         // p.91: with Multi-Trac II a rear medium laser counts whole (46, not 23) and in the heat (27 + 3). Defensive

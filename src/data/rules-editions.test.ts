@@ -1390,12 +1390,12 @@ describe("Rules editions: Master Rules, Revised Edition, complete", () => {
     const row = (tag: string) => figures(find(tag).editionStats![TAG]!);
 
     // The Revised Edition reprints the Master Rules and adds to it: nothing is dropped. Maximum Tech's Level 3
-    // records (six targeting and tracking systems so far, p.59) join it too.
+    // records (six targeting and tracking systems, p.59, and the EI cockpit, pp.60-61) join it too.
     it("includes every Master Rules record and forty-five new ones, plus Maximum Tech's", () => {
         const added = labelled.filter(entry => entry.record.introducedInEdition === TAG).map(entry => entry.label);
         expect(inEdition(TAG)).toEqual([...inEdition(BEFORE), ...added].sort());
         const maxTech = labelled.filter(({ record }) => record.editionStats?.[TAG]?.book === "MaxTech").map(entry => entry.label);
-        expect(maxTech).toHaveLength(6);
+        expect(maxTech).toHaveLength(7);
         expect(added.filter(label => !maxTech.includes(label))).toHaveLength(45);
         expect(added).toEqual(expect.arrayContaining(["equipment gauss-rifle-heavy", "equipment rotary-ac-2", "equipment inarc",
             "equipment rocket-launcher-20", "equipment c3i-computer", "equipment targeting-computer", "equipment atm-12",

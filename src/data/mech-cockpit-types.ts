@@ -263,12 +263,21 @@ export const mechCockpitTypes: ICockpitType[] = [
 		tag: "enhanced-imaging-interface",
 		// EI prints no level of its own; it falls under the Experimental augmented warrior rules (IO:AE p.68).
 		rulesLevel: 4,
-		editions: ["total-warfare", "battlemech-manual", "core-rulebook"],
+		altNames: ["EI Interface", "EIInterface"],
+		editions: ["master-rules-revised", "total-warfare", "battlemech-manual", "core-rulebook"],
+		editionLevels: { "master-rules-revised": 3 },
+		introducedInEdition: "master-rules-revised",
+		editionStats: {
+			"master-rules-revised": {
+				book: "MaxTech", page: 60, name: "Enhanced Imaging", cbills: 200000,
+				notes: "Maximum Tech's Level 3 EI cockpit system (pp.60-61): the 'Mech's own system, no implanted pilot needed (plan ruling R1). One cockpit system only, so not with a small, torso-mounted or command console cockpit (p.60). The Enhanced Imaging Display cockpit costs 400,000 against the standard 200,000 (p.87), so it adds 200,000. BV1: Piloting -1 for skill, +5% of the weapons as a targeting computer, -25 defensive (p.91).",
+			},
+		},
 		weight: 0,
 		cost: 1500000,
 		techBase: "clan",
 		addOn: true,
-		constructionStatus: "deferred",
+		constructionStatus: "implemented",
 		book: "IO:AE",
 		page: 69,
 		notes: "Clan 'Mech and battle armor cockpits, no weight or slots; built into every ProtoMech. Lets a pilot with EI implants use them, and gives a 1-hex active probe even without them (IO:AE p.69). BV 0 (p.190). IO:AE prints no cost for the interface itself (it points to pp.178-183, which give none): 1,500,000 follows MegaMek, flagged. Dated with the Clan EI implants (3040, p.52). Experimental.",

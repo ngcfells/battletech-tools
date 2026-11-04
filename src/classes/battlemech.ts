@@ -576,6 +576,8 @@ export class BattleMech {
     private _advancedFireControl: boolean = false;
     // A Cockpit Command Console beside the cockpit (TO:AUE p.112). An option, off by default.
     private _commandConsole: boolean = false;
+    // Clan Enhanced Imaging in the cockpit (Maximum Tech pp.60-61; IO:AE p.69). An option, off by default.
+    private _enhancedImaging: boolean = false;
     // Built under the Primitive 'Mech rules (IO:AE pp.116-118). With later equipment it is a RetroTech unit.
     private _primitive: boolean = false;
     // Mixed Tech on an Inner Sphere base: Clan CASE, "seamless and weightless", in every location (TM p.210).
@@ -710,6 +712,7 @@ export class BattleMech {
         this._advancedFireControl = false;
         this._roboticControl = "none";
         this._commandConsole = false;
+        this._enhancedImaging = false;
         this._patchworkArmor = {};
         this._frankenMech = false;
         this._frankenMechDonors = {};
@@ -1543,9 +1546,7 @@ export class BattleMech {
     private _setPilotAdjustedBattleValue(): void {
         // Fetch raw pilot credentials with safe default constraints
         const gunnery = this._pilot?.gunnery ?? 4;
-        // Level 3 BV1: a small (compact) or torso-mounted cockpit reads the Piloting Skill 1 worse (Maximum Tech pp.61, 91).
-        const cockpitPenalty = getBattleValueRules(this._rulesEdition, "mech").levelThree && ["small", "torso-mounted"].includes(this.getCockpitType().tag);
-        const piloting = cockpitPenalty ? Math.min(7, (this._pilot?.piloting ?? 5) + 1) : this._pilot?.piloting ?? 5;
+        const piloting = this._getBattleValuePiloting(this._rulesEdition);
         let skillMultiplier = 1.0;
         const matrixMultiplier = getSkillMultiplier(gunnery, piloting, "mech", getBattleValueSkillEdition(this._rulesEdition, "mech"));
         if (matrixMultiplier !== null) {
@@ -1621,7 +1622,8 @@ export class BattleMech {
             // Heavy-duty gyro +30, command console +25, 5 a slot of component armor; a torso-mounted cockpit adds the
             // center torso armor, front and rear, x 2 (Maximum Tech pp.91-92).
             const centerTorsoArmor = this.getCockpitType().tag === "torso-mounted" ? (this._armorAllocation.centerTorso ?? 0) + (this._armorAllocation.centerTorsoRear ?? 0) : 0;
-            defensiveGear += (this.getGyro().tag === "heavy-duty" ? 30 : 0) + (this.hasCommandConsole() ? 25 : 0)
+            // Enhanced Imaging takes 25 off (p.91).
+            defensiveGear += (this.getGyro().tag === "heavy-duty" ? 30 : 0) + (this.hasCommandConsole() ? 25 : 0) - (this.hasEnhancedImaging() ? 25 : 0)
                 + 5 * this.getArmoredComponentRecords().reduce((sum, armored) => sum + armored.slots, 0) + centerTorsoArmor * 2;
         }
         // 20 a ton of explosive ammo, a Gauss rifle counting as a ton. Clan: center torso, legs and head; Inner Sphere
@@ -1676,8 +1678,9 @@ export class BattleMech {
         const arc = (item: IEquipmentItem) => multiTracII || !!item.rear === rearIsFront ? 1 : 0.5;
         const weaponBV = weapons.reduce((sum, entry) => sum + entry.bv * arc(entry.item), 0);
         // A targeting computer: 20% of the weapons it links, rear ones halved, no ammo (BMR(R) p.153, p.121). Level 3:
-        // a variable-range targeting system adds 10% "in the same way" (Maximum Tech p.91).
-        const computerShare = (this.hasTargetingComputer() ? 0.2 : 0) + (levelThree && this._equipmentList.some(item => matchesTag(item, "targeting-variable-range")) ? 0.1 : 0);
+        // a variable-range targeting system adds 10% "in the same way", Enhanced Imaging 5% (Maximum Tech p.91).
+        const computerShare = (this.hasTargetingComputer() ? 0.2 : 0) + (levelThree && this._equipmentList.some(item => matchesTag(item, "targeting-variable-range")) ? 0.1 : 0)
+            + (levelThree && this.hasEnhancedImaging() ? 0.05 : 0);
         const computerBV = computerShare * weapons.reduce((sum, entry) => sum + (isTargetingComputerWeapon(entry.item) ? entry.bv * arc(entry.item) : 0), 0);
         let ammoBV = 0;
         for (const item of this._equipmentList.filter(isAmmo)) {
@@ -1824,6 +1827,11 @@ export class BattleMech {
             const console = getCockpitType("command-console");
             this._calcLogCBill += "<tr><td><strong>" + console.name + "</strong></td><td>" + addCommas(console.cost) + "</td></tr>\n";
             cbillDryTotal += console.cost;
+        }
+        if (this.hasEnhancedImaging()) {
+            const imaging = this._getEnhancedImaging();
+            this._calcLogCBill += "<tr><td><strong>" + imaging.name + "</strong></td><td>" + addCommas(imaging.cost) + "</td></tr>\n";
+            cbillDryTotal += imaging.cost;
         }
         if (this._roboticControl !== "none") {
             const robotic = getRoboticControlCost(this._roboticControl, this.getRoboticControlWeight());
@@ -2176,7 +2184,18 @@ export class BattleMech {
     public getPilotAdjustedBattleValue(edition: string = this._rulesEdition, forceBonus: number = 0): number {
         this._refreshBattleValue();
         if (edition === this._rulesEdition && !forceBonus) return this._pilotAdjustedBattleValue;
-        return Math.round((this.getBattleValue(edition) + forceBonus) * (getSkillMultiplier(this._pilot?.gunnery ?? 4, this._pilot?.piloting ?? 5, "mech", getBattleValueSkillEdition(edition, "mech")) ?? 1));
+        return Math.round((this.getBattleValue(edition) + forceBonus) * (getSkillMultiplier(this._pilot?.gunnery ?? 4, this._getBattleValuePiloting(edition), "mech", getBattleValueSkillEdition(edition, "mech")) ?? 1));
+    }
+
+    /**
+     * The Piloting Skill the skill table reads under `edition`. Level 3 BV1: a small (compact) or torso-mounted cockpit
+     * reads it 1 worse, Enhanced Imaging 1 better (Maximum Tech pp.61, 91).
+     */
+    private _getBattleValuePiloting(edition: string): number {
+        const piloting = this._pilot?.piloting ?? 5;
+        if (!getBattleValueRules(edition, "mech").levelThree) return piloting;
+        const cockpit = ["small", "torso-mounted"].includes(this.getCockpitType().tag) ? 1 : 0;
+        return Math.min(7, Math.max(0, piloting + cockpit - (this.hasEnhancedImaging() ? 1 : 0)));
     }
 
     /** This unit's part in its force's TAG adjustment under `edition` (BV v4.1 p.23; TO:AUE p.198). */
@@ -2493,12 +2512,51 @@ export class BattleMech {
 
     /** The Command Console as the cockpit picker offers it: availability judged as getAvailableCockpits() does. */
     public getCommandConsoleOption(rulesLevel: number = 2): ICockpitType {
-        const console = { ...getCockpitType("command-console") };
-        const availability = this._techDatesAvailability(console, rulesLevel);
-        console.availableAsPrototype = availability.asPrototype;
-        console.available = this.canMountCommandConsole() && availability.available
-            && this.isOfferedInEdition(console, rulesLevel) && rulesLevel >= (console.rulesLevel ?? 0);
-        return console;
+        return this._cockpitAddOnOption(getCockpitType("command-console"), this.canMountCommandConsole(), rulesLevel);
+    }
+
+    /** A cockpit add-on as the cockpit picker offers it, judged by its dates, edition and rules level there. */
+    private _cockpitAddOnOption(record: ICockpitType, mountable: boolean, rulesLevel: number): ICockpitType {
+        const addOn = { ...record };
+        const availability = this._techDatesAvailability(addOn, rulesLevel);
+        addOn.availableAsPrototype = availability.asPrototype;
+        addOn.available = mountable && availability.available && this.isOfferedInEdition(addOn, rulesLevel);
+        return addOn;
+    }
+
+    /**
+     * May this 'Mech add Enhanced Imaging? Clan technology only (Maximum Tech p.60; IO:AE p.69). Under the Master Rules
+     * it is one of Max Tech's cockpit systems, and a 'Mech takes only one: not with a small, torso-mounted or command
+     * console cockpit (p.60). IO:AE puts it in any Clan cockpit.
+     */
+    public canMountEnhancedImaging(): boolean {
+        if (this._tech.tag !== "clan" && this._tech.tag !== "mclan") return false;
+        return !this.usesEarlierRulesEdition() || (this.getCockpitType().tag === "standard" && !this.hasCommandConsole());
+    }
+
+    /** Enhanced Imaging as the cockpit picker offers it. */
+    public getEnhancedImagingOption(rulesLevel: number = 2): ICockpitType {
+        return this._cockpitAddOnOption(this._getEnhancedImaging(), this.canMountEnhancedImaging(), rulesLevel);
+    }
+
+    /** Enhanced Imaging is mounted: chosen, and allowed by the cockpit and technology in force. */
+    public hasEnhancedImaging(): boolean {
+        return this._enhancedImaging && this.canMountEnhancedImaging();
+    }
+
+    /** Add or remove Enhanced Imaging; returns whether it is mounted. */
+    public setEnhancedImaging(mounted: boolean): boolean {
+        if (mounted && !this.canMountEnhancedImaging()) return false;
+        this._enhancedImaging = mounted;
+        this._calc();
+        return this.hasEnhancedImaging();
+    }
+
+    /** The Enhanced Imaging record with the name and add-on price the design's edition prints (Maximum Tech p.87). */
+    private _getEnhancedImaging(): ICockpitType {
+        const imaging = getCockpitType("enhanced-imaging-interface");
+        const stats = getEditionStats(imaging, this._rulesEdition);
+        return { ...imaging, name: stats?.name ?? imaging.name, cost: stats?.cbills ?? imaging.cost };
     }
 
     /** A Cockpit Command Console is mounted: chosen, and allowed by the cockpit and chassis in force. */
@@ -3434,6 +3492,9 @@ export class BattleMech {
             const console = getCockpitType("command-console");
             html += console.name.padEnd(col1Padding + col2Padding, " " ) + "" + console.weight + "\n";
         }
+        if( this.hasEnhancedImaging() ) {
+            html += this._getEnhancedImaging().name.padEnd(col1Padding + col2Padding, " " ) + "0\n";
+        }
 
         // if( this.getJumpJetWeight() > 0 ) {
         // html += "Jump Jets".padEnd( " ",col1Padding + col2Padding) + "" + this.getJumpJetWeight() + "\n";
@@ -3737,6 +3798,9 @@ export class BattleMech {
         if( this.hasCommandConsole() ) {
             const console = getCockpitType("command-console");
             html += "<tr><td colspan=\"3\">" + esc(console.name) + "</td><td class=\"text-center\" colspan=\"1\">" + console.weight + "</td></tr>";
+        }
+        if( this.hasEnhancedImaging() ) {
+            html += "<tr><td colspan=\"3\">" + esc(this._getEnhancedImaging().name) + "</td><td class=\"text-center\" colspan=\"1\">0</td></tr>";
         }
 
         if( typeTag === "biped" || typeTag === "lam" || typeTag === "tripod" ) {
@@ -6694,6 +6758,7 @@ export class BattleMech {
         check("Gyro", this._gyro);
         check("Cockpit", this.getCockpitType());
         if (this.hasCommandConsole()) check("Command Console", getCockpitType("command-console"));
+        if (this.hasEnhancedImaging()) check("Enhanced Imaging", getCockpitType("enhanced-imaging-interface"));
         check("Internal structure", this._selectedInternalStructure);
         check("Armor", this.getArmorObj());
         check("Heat sinks", this._heatSinkType);
@@ -7111,8 +7176,11 @@ export class BattleMech {
     public getRequiredRulesLevel(): number {
         let level = this._mechType.rulesLevel ?? 0;
         if (this._tonnage < 20 || this._tonnage > 100) level = Math.max(level, 3);
+        // A record graded in the design's own edition (Max Tech's Level 3 under BMR(R)) reads that grade.
+        const graded = (record: Parameters<typeof getEquipmentRulesLevel>[0] & { editionLevels?: { [edition: string]: number } }) =>
+            record.editionLevels?.[this._rulesEdition] ?? getEquipmentRulesLevel(record);
         for (const item of this._equipmentList) {
-            if (item) level = Math.max(level, getEquipmentRulesLevel(item));
+            if (item) level = Math.max(level, graded(item));
         }
         for (const tag of Object.keys(this._bombLoadout)) {
             const bomb = this._findBomb(tag);
@@ -7129,13 +7197,14 @@ export class BattleMech {
                 level = Math.max(level, CUSTOM_HOMEBREW_RULES_LEVEL, record?.rulesLevel ?? 0);
             } else if (record && (kind !== "jumpJet" || this.getJumpJetCount() > 0)) {
                 // Advanced and Experimental parts (TO:AUE, IO:AE), graded as equipment is.
-                level = Math.max(level, getEquipmentRulesLevel(record));
+                level = Math.max(level, graded(record));
             }
         }
         // Primitive 'Mech construction is Advanced (IO:AE p.116).
         if (this._primitive) level = Math.max(level, 3);
         level = Math.max(level, this.getCockpitType().rulesLevel ?? 0);
         if (this.hasCommandConsole()) level = Math.max(level, getCockpitType("command-console").rulesLevel ?? 0);
+        if (this.hasEnhancedImaging()) level = Math.max(level, graded(getCockpitType("enhanced-imaging-interface")));
         if (this._roboticControl !== "none") level = Math.max(level, SRCS_RULES_LEVEL);
         // An IndustrialMech with BattleMech armor is Experimental (TO:AUE p.92); the Dark Age armors are
         // "only under Experimental Mixed-Tech rules" (IO:AE p.82).
@@ -7153,8 +7222,9 @@ export class BattleMech {
         if (this.hasArmoredComponents()) level = Math.max(level, EXPERIMENTAL_RULES_LEVEL);
         // Fractional Accounting is "experimental-level unit design" (TO:AUE p.188).
         if (this.usesFractionalAccounting()) level = Math.max(level, EXPERIMENTAL_RULES_LEVEL);
-        // An edition before Total Warfare has no rules levels: only content from outside the canon keeps its level.
-        if (this.usesEarlierRulesEdition() && level < APOCRYPHAL_RULES_LEVEL) return 0;
+        // The box sets before Total Warfare have no rules levels: only content from outside the canon keeps its level.
+        // The Master Rules are graded like Total Warfare (BMR p.6, BMR(R) p.6).
+        if (this.usesEarlierRulesEdition() && !getRulesEdition(this._rulesEdition).gradedLikeTotalWarfare && level < APOCRYPHAL_RULES_LEVEL) return 0;
         return level;
     }
 
@@ -8791,6 +8861,9 @@ export class BattleMech {
         // Cockpit Command Console (TO:AUE p.112).
         if( this.hasCommandConsole())
             exportObject.features.push( "command_console" );
+        // Enhanced Imaging (Maximum Tech pp.60-61; IO:AE p.69).
+        if( this.hasEnhancedImaging())
+            exportObject.features.push( "enhanced_imaging" );
         // Built under the Primitive 'Mech rules (IO:AE pp.116-118).
         if( this._primitive)
             exportObject.features.push( "primitive" );
@@ -9235,6 +9308,8 @@ export class BattleMech {
                     this._advancedFireControl = true;
                 if( importObject.features.indexOf( "command_console" ) > -1)
                     this._commandConsole = true;
+                if( importObject.features.indexOf( "enhanced_imaging" ) > -1)
+                    this._enhancedImaging = true;
 
                 // Other features
             }
@@ -13288,6 +13363,10 @@ export class BattleMech {
         }
         if( flag( "commandconsole" ) && !this.setCommandConsole( true ) ) {
             this._sswImportErrors.push( "This 'Mech cannot mount a Cockpit Command Console (TO:AUE p.112)" );
+        }
+        // Not a Skunk Werks attribute: the MegaMek import sets it from MegaMek's "EIInterface" nocrit line.
+        if( flag( "enhancedimaging" ) && !this.setEnhancedImaging( true ) ) {
+            this._sswImportErrors.push( "This 'Mech cannot mount Enhanced Imaging (Clan only, IO:AE p.69)" );
         }
     }
 

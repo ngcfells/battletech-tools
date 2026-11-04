@@ -2,6 +2,7 @@
 // building (chassis, equipment and slot placement in one place); its TRO text and quirks are read as a BLK file's.
 // MegaMek's equipment names are on the catalog records (altNames), as findImportedEquipment expects (#118, #241).
 import { IEquipmentItem } from "../data/data-interfaces";
+import { getCockpitType } from "../data/mech-cockpit-types";
 import { mechInternalStructureTypes } from "../data/mech-internal-structure-types";
 import { DESIGN_CORRECTIONS } from "../data/mtf-design-corrections";
 import { findAllByName } from "../data/tag-match";
@@ -207,7 +208,10 @@ export function convertMtfToSSW(file: IMtfFile): { xml: string; issues: string[]
     // one (its Mek.hasAdvancedFireControl); Skunk Werks names it "Industrial w/ Adv. FC" (#371). A Command Console is
     // a BattleMech cockpit there too, so an IndustrialMech with one has Advanced Fire Control.
     // MegaMek writes a Smart Robotic Control System as a "nocrit" line; Skunk Werks calls it a "Robotic Cockpit".
-    const srcs = (file.values["nocrit"] ?? []).map((line) => line.split(":")[0]).find((name) => /^(Improved)?SmartRoboticControlSystem$/i.test(name));
+    const noCrits = (file.values["nocrit"] ?? []).map((line) => line.split(":")[0]);
+    const srcs = noCrits.find((name) => /^(Improved)?SmartRoboticControlSystem$/i.test(name));
+    // MegaMek's Enhanced Imaging interface (IO:AE p.69), by its lookup names.
+    const enhancedImaging = noCrits.some((name) => getCockpitType("enhanced-imaging-interface").altNames!.some((alt) => alt.toLowerCase() === name.trim().toLowerCase()));
     const sswCockpit = srcs && !industrial && /^standard cockpit$/i.test(cockpit) ? (/^improved/i.test(srcs) ? "Robotic Cockpit (Improved)" : "Robotic Cockpit")
         : industrial && /^((standard|primitive) cockpit|command console)$/i.test(cockpit) ? "Industrial w/ Adv. FC"
         : cockpit === "Command Console" ? "Standard Cockpit"
@@ -406,7 +410,7 @@ export function convertMtfToSSW(file: IMtfFile): { xml: string; issues: string[]
 <structure techbase="${structureTech}"><type>${xml(structureName)}</type>${structureSlots.join("")}</structure>
 <engine rating="${engine?.[1] ?? 0}" techbase="${tb(engineTech)}">${xml(engineName ?? "")}</engine>
 <gyro techbase="2">${xml(gyro)}</gyro>
-<cockpit><type${ejection}${value(file, "cockpit") === "Command Console" ? ` commandconsole="TRUE"` : ""}>${xml(sswCockpit)}</type></cockpit>
+<cockpit><type${ejection}${value(file, "cockpit") === "Command Console" ? ` commandconsole="TRUE"` : ""}${enhancedImaging ? ` enhancedimaging="TRUE"` : ""}>${xml(sswCockpit)}</type></cockpit>
 ${myomer && !/^standard$/i.test(myomer) ? `<enhancement techbase="${clan ? 1 : 0}"><type>${/industrial/i.test(myomer) ? "Industrial TSM" : "TSM"}</type>${myomerSlots.join("")}</enhancement>` : ""}
 <armor techbase="${armor ? (armor[2] === "Clan" ? 1 : 0) : 2}"><type>${xml(armorName)}</type>${armorValues.join("")}${armorSlots.join("")}</armor>
 ${/omnime(k|ch)/i.test(config) ? `<omnibase heatsinks="${Math.max(0, sinkCount - podSinks)}" jumpjets="${Math.max(0, (jetType === "Mech UMU" ? jetSlotsAt.length : jumpMP) - podJets)}" />` : ""}

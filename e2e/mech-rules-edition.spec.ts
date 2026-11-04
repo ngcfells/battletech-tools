@@ -203,6 +203,32 @@ test("offers the Maximum Tech targeting systems under BMR(R) Advanced, one to a 
     expect(errors).toEqual([]);
 });
 
+// Maximum Tech pp.60-61, p.87: the Clan EI cockpit, BMR(R) Level 3, no weight or slots.
+test("offers Enhanced Imaging to Clan 'Mechs under BMR(R) Advanced", async ({ page }) => {
+    const errors: string[] = [];
+    page.on("pageerror", (error) => errors.push(error.stack ?? error.message));
+    const imaging = page.getByRole("checkbox", { name: /Enhanced Imaging/ });
+    const openAt = async (level: string, tech: string) => {
+        await page.goto("classic-battletech/mech-creator/step1");
+        await page.getByLabel("Rules Edition").selectOption("master-rules-revised");
+        await page.getByLabel("Rules Level").selectOption(level);
+        await page.getByLabel("Technology Base").selectOption(tech);
+        // EI dates from 3040 (IO:AE p.52); the Clan default era ends in 2840.
+        await page.getByLabel("Era:").selectOption("clan-inv");
+        await page.goto("classic-battletech/mech-creator/step2");
+    };
+    await openAt("2", "clan");
+    await expect(imaging).toHaveCount(0);
+    await openAt("3", "is");
+    await expect(imaging).toHaveCount(0);
+    await openAt("3", "clan");
+    await imaging.check();
+    await expect(imaging).toBeChecked();
+    await page.goto("classic-battletech/mech-creator/summary");
+    await expect(page.getByText("Enhanced Imaging").first()).toBeAttached();
+    expect(errors).toEqual([]);
+});
+
 // A field the edition's rulebook does not have is not shown: Battledroids has one engine, one gyro, one armor, no
 // eras and no OmniMechs. Total Warfare keeps them all.
 test("Battledroids hides the fields its rulebook does not have", async ({ page }) => {
