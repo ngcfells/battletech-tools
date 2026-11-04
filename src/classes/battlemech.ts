@@ -2569,6 +2569,13 @@ export class BattleMech {
             && (this.usesEarlierRulesEdition() || !!this._pilot?.eiImplants);
     }
 
+    /** The roll Enhanced Imaging asks for on structure damage, for the play log and the sheet. */
+    public getEnhancedImagingFeedback(): string {
+        return this.usesEarlierRulesEdition()
+            ? "roll 2D6, 7 or better or the pilot takes 1 damage (Maximum Tech p.61)"
+            : "roll 2D6, 7 or better or the pilot takes 1 damage and a consciousness roll (IO:AE p.69)";
+    }
+
     /** Add or remove Enhanced Imaging; returns whether it is mounted. */
     public setEnhancedImaging(mounted: boolean): boolean {
         if (mounted && !this.canMountEnhancedImaging()) return false;
@@ -9933,9 +9940,7 @@ export class BattleMech {
 
         // Enhanced Imaging feedback on internal structure damage (Maximum Tech p.61; IO:AE p.69).
         if (structureHit && this.isEnhancedImagingActive()) {
-            rv.push({ criticals: 0, criticalRoll: 0, criticalEffects: [this.usesEarlierRulesEdition()
-                ? "Enhanced Imaging feedback: roll 2D6, 7 or better or the pilot takes 1 damage (Maximum Tech p.61)"
-                : "Enhanced Imaging feedback: roll 2D6, 7 or better or the pilot takes 1 damage and a consciousness roll (IO:AE p.69)"],
+            rv.push({ criticals: 0, criticalRoll: 0, criticalEffects: ["Enhanced Imaging feedback: " + this.getEnhancedImagingFeedback()],
                 location, amount });
         }
         this._calc();

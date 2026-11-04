@@ -535,6 +535,27 @@ export default class BattleMechSVG extends React.Component<IBattleMechSVGProps, 
                 Gunnery: {this.props.mechData.getPilot().gunnery}
             </text>
 
+            {/* Enhanced Imaging: the box is marked in play while it is active; on paper the player marks it. */}
+            {this.props.mechData.hasEnhancedImaging() ? (
+                <g fontFamily="sans-serif" fill={strokeColor}>
+                    <text x={pilotBoxX + 10} y={pilotBoxY + 106} style={{fontWeight: 700}} fontSize={20}>EI</text>
+                    <rect
+                        data-testid="ei-box"
+                        fill={this.props.inPlay && this.props.mechData.isEnhancedImagingActive() ? strokeColor : bgColor}
+                        stroke={strokeColor}
+                        strokeWidth={2}
+                        x={pilotBoxX + 40}
+                        y={pilotBoxY + 91}
+                        width={16}
+                        height={16}
+                    />
+                    <text x={pilotBoxX + 62} y={pilotBoxY + 106} fontSize={18}>On</text>
+                    {breakLines("Structure damage: " + this.props.mechData.getEnhancedImagingFeedback(), 40).map((line, lineIndex) => (
+                        <text key={lineIndex} x={pilotBoxX + 10} y={pilotBoxY + 122 + lineIndex * 15} fontSize={13}>{line}</text>
+                    ))}
+                </g>
+            ) : null}
+
             <PilotHitTrackSVG
                 width={500}
                 height={250}
