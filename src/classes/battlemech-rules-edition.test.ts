@@ -506,3 +506,107 @@ describe("ICE engines in BattleMechs by edition (issue 40)", () => {
         expect(mech.getRequiredRulesLevel()).toBe(4);
     });
 });
+
+// Maximum Tech pp.62-63, 87, 92 (user rulings R4, 2026-11-03): at Level 3 an armless 'Mech takes no armor or equipment
+// in its arms, which are "technically not present"; TW drops the rule, so there it is built at the Apocryphal level.
+describe("Armless 'Mechs (Maximum Tech pp.62-63)", () => {
+    const armless = (type: string = "biped", edition: string = "master-rules-revised"): BattleMech => {
+        const mech = build(edition);
+        mech.setMechType(type);
+        return mech;
+    };
+
+    it("offers armless at BMR(R) Level 3 on bipeds and tripods, at the Apocryphal level under TW, never quads or LAMs", () => {
+        expect(armless().getArmlessOption(3).available).toBe(true);
+        expect(armless().getArmlessOption(2).available).toBe(false);
+        expect(armless("biped", "master-rules").getArmlessOption(3).available).toBe(false);
+        expect(armless("biped", "total-warfare").getArmlessOption(4).available).toBe(false);
+        expect(armless("tripod", "total-warfare").getArmlessOption(5).available).toBe(true);
+        for (const type of ["quad", "lam", "quadvee"]) {
+            const mech = armless(type, "total-warfare");
+            expect(mech.getArmlessOption(5).available, type).toBe(false);
+            expect(mech.setArmless(true), type).toBe(false);
+        }
+    });
+
+    it("grades the design Level 3 under BMR(R) and Apocryphal under TW", () => {
+        const levelThree = armless();
+        levelThree.setArmless(true);
+        expect(levelThree.getRequiredRulesLevel()).toBe(3);
+        const tripod = armless("tripod", "total-warfare");
+        tripod.setArmless(true);
+        expect(tripod.getRequiredRulesLevel()).toBe(5);
+    });
+
+    for (const type of ["biped", "tripod"]) {
+        it(`${type}: no arm armor, structure, slots or actuator cost, structure weight unchanged`, () => {
+            const mech = armless(type, type === "tripod" ? "total-warfare" : "master-rules-revised");
+            mech.allocateArmorMax();
+            const { leftArm, rightArm } = mech.getInternalStructure();
+            const [weight, maxArmor, cost] = [mech.getInternalStructureWeight(), mech.getMaxArmor(), mech.getCBillCostNumeric()];
+            expect(mech.setArmless(true)).toBe(true);
+            expect(mech.getInternalStructure().leftArm).toBe(0);
+            expect(mech.getInternalStructure().rightArm).toBe(0);
+            expect(mech.getInternalStructureWeight()).toBe(weight);
+            expect(mech.getMaxArmor()).toBe(maxArmor - ((leftArm ?? 0) + (rightArm ?? 0)) * 2);
+            expect(mech.getArmorAllocation().leftArm).toBe(0);
+            expect(mech.getArmorAllocation().rightArm).toBe(0);
+            expect(mech.getCriticals().leftArm).toEqual([]);
+            expect(mech.getCriticals().rightArm).toEqual([]);
+            expect(mech.getCBillCostNumeric()).toBeLessThan(cost);
+            expect(mech.getPatchworkLocations().map(location => location.key)).not.toContain("leftArm");
+            expect(mech.hasHandActuator("la")).toBe(false);
+            expect(mech.hasLowerArmActuator("ra")).toBe(false);
+            expect(mech.getQuirkTargets().quad).toBeFalsy();
+            mech.setArmless(false);
+            expect(mech.getInternalStructure().leftArm).toBe(leftArm);
+            expect(mech.getCriticals().leftArm.length).toBe(12);
+        });
+    }
+
+    it("refuses arm equipment (Max Tech p.62): takes it off the arm, and flags a loaded design", () => {
+        const mech = armless();
+        const laser = add(mech, "medium-laser");
+        laser.location = "ra";
+        mech.setArmless(true);
+        expect(laser.location).toBe("un");
+        expect(mech.getChassisEquipmentViolations().join(" ")).not.toContain("armless");
+        laser.location = "ra";
+        expect(mech.getChassisEquipmentViolations().join(" ")).toContain("Medium Laser: an armless 'Mech has no arms to mount it (Maximum Tech p.62).");
+    });
+
+    it("spreads equipment over the locations left, at the slot count of a 'Mech with arms", () => {
+        const tripod = armless("tripod", "total-warfare");
+        const stealth = { space: { battlemech: 12 }, spreadLocations: "limbs-and-side-torsos" } as Parameters<BattleMech["getSpreadSlotCount"]>[0];
+        const slots = tripod.getSpreadSlotCount(stealth);
+        tripod.setArmless(true);
+        expect(tripod.getSpreadSlotCount(stealth)).toBe(slots);
+    });
+
+    it("adds 0.1 to the Defensive Movement Factor under BMR(R) Level 3 (Max Tech p.92)", () => {
+        const mech = armless();
+        mech.setArmless(true);
+        expect(mech.getBVCalcHTML()).toContain("armless +0.1");
+    });
+
+    it("keeps BV2 as built: no Defensive Movement Factor bonus under TW", () => {
+        const mech = armless("tripod", "total-warfare");
+        mech.setArmless(true);
+        expect(mech.getBVCalcHTML()).not.toContain("armless +0.1");
+    });
+
+    it("lists Armless in the TRO weights and survives a save and load", () => {
+        const mech = armless();
+        mech.allocateArmorMax();
+        mech.setArmless(true);
+        expect(mech.makeTROHTML()).toContain("Armless");
+        expect(mech.makeTROBBCode()).toContain("Armless");
+        const saved = mech.exportJSON();
+        expect(JSON.parse(saved).features).toContain("armless");
+        const loaded = new BattleMech(saved);
+        expect(loaded.isArmless()).toBe(true);
+        expect(loaded.getInternalStructure().leftArm).toBe(0);
+        expect(loaded.getCriticals().rightArm).toEqual([]);
+        expect(loaded.getMaxArmor()).toBe(mech.getMaxArmor());
+    });
+});

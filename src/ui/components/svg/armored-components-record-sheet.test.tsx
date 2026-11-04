@@ -49,3 +49,15 @@ describe("Enhanced Imaging on the record sheet", () => {
         expect(sheet(mech, true)).not.toContain(marked);
     });
 });
+
+// Maximum Tech p.62: the sheet still has to draw when the arms hold nothing.
+describe("an armless 'Mech on the record sheet", () => {
+    it.each(["biped", "tripod"])("renders a %s", (type) => {
+        const mech = new BattleMech();
+        mech.setRulesEdition(type === "biped" ? "master-rules-revised" : "total-warfare");
+        mech.setMechType(type);
+        mech.setTonnage(50);
+        expect(mech.setArmless(true)).toBe(true);
+        expect(renderToStaticMarkup(<BattleMechSVG mechData={mech} />)).toContain("<svg");
+    });
+});

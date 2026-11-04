@@ -12,7 +12,7 @@ import { ITechnicalReadoutExport } from "../data/technical-readout-interfaces";
 import { getAlphaStrikeQuirks, getQuirkHeatGenerated, getQuirkWeaponHeat } from "../utils/quirk-effects";
 import { BattleValueC3Type, IBattleValueTagShare, getAmmoBattleValueMultiplier, getBattleValueC3Type, getBattleValueEdition, getBattleValueFor, getBattleValueRules, getBattleValueSkillEdition, getBattleValueTagShare, getPrintedItemBattleValue, getSkillMultiplier, getSpeedFactor } from "../data/battle-value";
 import { battlemechLocations } from "../data/battlemech-locations";
-import { IArmorType, ICockpitType, ICriticalLocations, IEngineOption, IEngineType, IEquipmentItem, IGyro, IHeatSync, IInternalStructure, IInternalStructurePerTon, IJumpJet, IMyomerType, IResolvedInternalStructure, ISplitLocation, ITechDates } from "../data/data-interfaces";
+import { IArmorType, ICockpitType, ICriticalLocations, IEngineOption, IEngineType, IEquipmentItem, IGyro, IHeatSync, IInternalStructure, IInternalStructurePerTon, IJumpJet, IMechType, IMyomerType, IResolvedInternalStructure, ISplitLocation, ITechDates } from "../data/data-interfaces";
 import { btEraOptions, findEraByTag, getClosestEraForTech, getEraForYear, getErasForTech } from "../data/era-options";
 import { mechArmorTypes } from "../data/mech-armor-types";
 import { findAllByName, findByTag, matchesTag } from "../data/tag-match";
@@ -36,7 +36,7 @@ import { mechHeatSinkTypes } from "../data/mech-heat-sink-types";
 import { mechInternalStructureTypes } from "../data/mech-internal-structure-types";
 import { mechJumpJetTypes } from "../data/mech-jump-jet-types";
 import { mechMyomerTypes } from "../data/mech-myomer-types";
-import { mechTypeOptions } from "../data/mech-type-options";
+import { armlessMechOption, mechTypeOptions } from "../data/mech-type-options";
 import { getTargetingComputerWeaponWeight, IVariableEquipmentContext, isTargetingComputerWeapon, sizeVariableEquipment } from "../data/variable-equipment";
 import { btTechOptions } from "../data/tech-options";
 import { getEditionTechBases, IGameSettings } from "../data/game-settings";
@@ -588,6 +588,7 @@ export class BattleMech {
     private _advancedFireControl: boolean = false;
     // A Cockpit Command Console beside the cockpit (TO:AUE p.112). An option, off by default.
     private _commandConsole: boolean = false;
+    private _armless: boolean = false;
     // Clan Enhanced Imaging in the cockpit (Maximum Tech pp.60-61; IO:AE p.69). An option, off by default.
     private _enhancedImaging: boolean = false;
     // Built under the Primitive 'Mech rules (IO:AE pp.116-118). With later equipment it is a RetroTech unit.
@@ -724,6 +725,7 @@ export class BattleMech {
         this._advancedFireControl = false;
         this._roboticControl = "none";
         this._commandConsole = false;
+        this._armless = false;
         this._enhancedImaging = false;
         this._patchworkArmor = {};
         this._frankenMech = false;
@@ -766,7 +768,7 @@ export class BattleMech {
     /** What the quirk picker can attach quirks to on this unit. */
     public getQuirkTargets(): IQuirkTargets {
         const hasArms = !this.isQuad() && !this.isQuadVee();
-        const locations = battlemechLocations.filter((location) => !location.rear).map((location) => {
+        const locations = battlemechLocations.filter((location) => !location.rear && !(this.isArmless() && ["la", "ra"].includes(location.tag))).map((location) => {
             const isArm = hasArms && (location.tag === "ra" || location.tag === "la");
             return {
                 tag: location.tag, label: location.name,
@@ -1677,10 +1679,11 @@ export class BattleMech {
         const tmm = (mp: number) => Math.min(getMovementModifier(mp), 4);
         const jump = this.getBVJumpSpeed();
         const movementModifier = Math.max(tmm(this.getBVRunSpeed()), jump > 0 ? tmm(jump) + 1 : 0);
-        // Level 3: a null-signature system adds 0.5 (Maximum Tech p.92).
-        const movementFactor = 1 + movementModifier / 10 + (levelThree && this._equipmentList.some(item => matchesTag(item, "null-signature-system")) ? 0.5 : 0);
+        // Level 3: a null-signature system adds 0.5, a 'Mech designed without arms 0.1 (Maximum Tech p.92).
+        const armlessFactor = levelThree && this.isArmless() ? 0.1 : 0;
+        const movementFactor = Math.round((1 + movementModifier / 10 + armlessFactor + (levelThree && this._equipmentList.some(item => matchesTag(item, "null-signature-system")) ? 0.5 : 0)) * 100) / 100;
         const defensive = subtotal * movementFactor;
-        note(`Defensive Battle Rating: ${subtotal} x ${movementFactor} (TMM +${movementModifier}) = ${defensive}`);
+        note(`Defensive Battle Rating: ${subtotal} x ${movementFactor} (TMM +${movementModifier}${armlessFactor ? ", armless +0.1" : ""}) = ${defensive}`);
 
         // Step 2: Offensive Battle Rating (BMR(R) pp.153-154). Rear weapons count half, unless they outweigh the rest.
         const weapons = firing.map(item => ({ item, bv: valueOf(item) })).filter(entry => entry.bv > 0);
@@ -1980,7 +1983,8 @@ export class BattleMech {
             actuatorTotal += 120 * this.getTonnage();
 
             // 2A. Arm Actuator Setups (Biped/LAM base plus Tripod extension)
-            if (["biped", "lam", "tripod"].includes(this._mechType.tag.toLowerCase())) {
+            // An armless 'Mech buys no arm actuators (Maximum Tech p.87).
+            if (["biped", "lam", "tripod"].includes(this._mechType.tag.toLowerCase()) && !this.isArmless()) {
                 const arms = ["Right", "Left"];
                 
                 arms.forEach(side => {
@@ -2604,6 +2608,37 @@ export class BattleMech {
         return this.hasCommandConsole();
     }
 
+    /** May this 'Mech be built without arms? Bipeds and tripods (plan ruling R4): a quad has none, a LAM needs its own. */
+    public canBeArmless(): boolean {
+        return this._mechType.tag === "biped" || this._mechType.tag === "tripod";
+    }
+
+    /** Armless as the chassis step offers it, judged by the edition and rules level. */
+    public getArmlessOption(rulesLevel: number = 2): IMechType & { available: boolean } {
+        return { ...armlessMechOption, available: this.canBeArmless() && this.isOfferedInEdition(armlessMechOption, rulesLevel) };
+    }
+
+    /** Built without arms: chosen, and allowed by the chassis in force (Maximum Tech p.62). */
+    public isArmless(): boolean {
+        return this._armless && this.canBeArmless();
+    }
+
+    /** Build the 'Mech with or without arms; returns whether it is armless. Arm armor goes, arm equipment comes off. */
+    public setArmless(armless: boolean): boolean {
+        if (armless && !this.canBeArmless()) return false;
+        this._armless = armless;
+        if (armless) {
+            this._armorAllocation.leftArm = 0;
+            this._armorAllocation.rightArm = 0;
+            for (const item of this._equipmentList) {
+                if (item?.location === "la" || item?.location === "ra") item.location = "un";
+            }
+        }
+        // setTonnage recalculates the structure, the maximum armor and everything after them.
+        this.setTonnage(this._tonnage);
+        return this.isArmless();
+    }
+
     /**
      * Equipment an IndustrialMech cannot use without Advanced Fire Control (TM p.69): Artemis IV,
      * the Beagle Active Probe or its Clan equivalent, C3 and C3i units, and targeting computers.
@@ -2625,10 +2660,10 @@ export class BattleMech {
         return this._hasFrontLegs() ? ["fll", "frl", "ll", "rl"] : this.isTripod() ? ["ll", "rl", "cl"] : ["ll", "rl"];
     }
 
-    /** Locations a spread item's slots go in on this chassis, or null when the item has no such rule. */
-    private _getSpreadLocations(item: IEquipmentItem | null | undefined): string[] | null {
+    /** Locations a spread item's slots go in on this chassis, or null when the item has no such rule. `withArms` counts an armless 'Mech's arms. */
+    private _getSpreadLocations(item: IEquipmentItem | null | undefined, withArms: boolean = false): string[] | null {
         if (!item?.spreadLocations) return null;
-        const arms = this._hasFrontLegs() ? [] : ["la", "ra"];
+        const arms = this._hasFrontLegs() || (this.isArmless() && !withArms) ? [] : ["la", "ra"];
         const legs = this._legLocations();
         switch (item.spreadLocations) {
             case "all": return ["hd", "ct", "lt", "rt", ...arms, ...legs];
@@ -2654,7 +2689,7 @@ export class BattleMech {
      */
     public getSpreadSlotCount(item: IEquipmentItem): number {
         let slots = item.space.battlemech;
-        const spreadLocations = this._getSpreadLocations(item);
+        const spreadLocations = this._getSpreadLocations(item, true);
         if (this.isTripod() && spreadLocations?.includes("cl")) {
             // A biped has one location fewer: the third leg.
             slots = slots / (spreadLocations.length - 1) * spreadLocations.length;
@@ -2673,14 +2708,14 @@ export class BattleMech {
      * humanoid 'Mech and the side torsos of a four-legged one (TM pp.241-249).
      */
     private _getAllowedLocations(item: IEquipmentItem): string[] | null {
-        if (item.armTool) return this._hasFrontLegs() ? ["lt", "rt"] : ["la", "ra"];
+        if (item.armTool) return this._hasFrontLegs() ? ["lt", "rt"] : this.isArmless() ? [] : ["la", "ra"];
         if (!item.allowedLocations) return null;
         // "Superheavy 'Mechs may ignore the torso-only mounting restrictions applied to Heavy Gauss Rifles (standard and
         // improved), and may place these items in the arms" (IO:AE p.157).
         const allowed = this.isSuperheavy() && BattleMech.HEAVY_GAUSS_TAGS.includes(item.tag)
             ? [...item.allowedLocations, "la", "ra"] : item.allowedLocations;
-        // A four-legged 'Mech has no arm locations.
-        return this._hasFrontLegs() ? allowed.filter(location => location !== "la" && location !== "ra") : allowed;
+        // A four-legged or armless 'Mech has no arm locations.
+        return this._hasFrontLegs() || this.isArmless() ? allowed.filter(location => location !== "la" && location !== "ra") : allowed;
     }
 
     /** ECM suites, including the CEWS that work as one. */
@@ -3527,6 +3562,9 @@ export class BattleMech {
         if( this.hasEnhancedImaging() ) {
             html += this._getEnhancedImaging().name.padEnd(col1Padding + col2Padding, " " ) + "0\n";
         }
+        if( this.isArmless() ) {
+            html += armlessMechOption.name.padEnd(col1Padding + col2Padding, " " ) + "0\n";
+        }
 
         // if( this.getJumpJetWeight() > 0 ) {
         // html += "Jump Jets".padEnd( " ",col1Padding + col2Padding) + "" + this.getJumpJetWeight() + "\n";
@@ -3833,6 +3871,9 @@ export class BattleMech {
         }
         if( this.hasEnhancedImaging() ) {
             html += "<tr><td colspan=\"3\">" + esc(this._getEnhancedImaging().name) + "</td><td class=\"text-center\" colspan=\"1\">0</td></tr>";
+        }
+        if( this.isArmless() ) {
+            html += "<tr><td colspan=\"3\">" + armlessMechOption.name + "</td><td class=\"text-center\" colspan=\"1\">0</td></tr>";
         }
 
         if( typeTag === "biped" || typeTag === "lam" || typeTag === "tripod" ) {
@@ -4564,9 +4605,9 @@ export class BattleMech {
 
         // DYNAMIC CRITICAL SLOTS: Get the stuff the different types need
         if (typeTag === "biped" || typeTag === "lam") {
-            // Standard Bipeds and Land Air Mechs feature 12 slots per arm and 6 slots per leg
-            this._criticals.leftArm = Array(12).fill(null);
-            this._criticals.rightArm = Array(12).fill(null);
+            // Standard Bipeds and Land Air Mechs feature 12 slots per arm and 6 slots per leg; an armless 'Mech's arms are not there.
+            this._criticals.leftArm = Array(this.isArmless() ? 0 : 12).fill(null);
+            this._criticals.rightArm = Array(this.isArmless() ? 0 : 12).fill(null);
             this._criticals.leftLeg = Array(6).fill(null);
             this._criticals.rightLeg = Array(6).fill(null);
             // Scrub non-existent limbs in this type
@@ -4587,8 +4628,8 @@ export class BattleMech {
             this._criticals.centerLeg = [];
         } else if (typeTag === "tripod") {
             // Tripods possess 3 legs with 6 slots each, plus 2 standard 12-slot arms
-            this._criticals.leftArm = Array(12).fill(null);
-            this._criticals.rightArm = Array(12).fill(null);
+            this._criticals.leftArm = Array(this.isArmless() ? 0 : 12).fill(null);
+            this._criticals.rightArm = Array(this.isArmless() ? 0 : 12).fill(null);
             this._criticals.leftLeg = Array(6).fill(null);
             this._criticals.rightLeg = Array(6).fill(null);
             this._criticals.centerLeg = Array(6).fill(null);
@@ -4674,50 +4715,16 @@ export class BattleMech {
                 this._addCriticalItem("quadvee-conversion", "QuadVee Conversion / Motive Gear", 2, "frl");
                 this._addCriticalItem("quadvee-conversion", "QuadVee Conversion / Motive Gear", 2, "fll");
             }
-        } else if (typeTag === "tripod") {
-            // ---- TRIPOD ARMS & CONDITIONAL ACTUATORS ----
-            // Tripods use standard arm actuators, but some configurations can completely drop arms.
-            // Check if the current layout allocates structural space for them before populating.
-            const rightArmIS = this._internalStructure.rightArm ?? 0;
-            const leftArmIS = this._internalStructure.leftArm ?? 0;
-            if (leftArmIS > 0) {
-                this._addCriticalItem("shoulder", "Shoulder", 1, "la", 0);
-                this._addCriticalItem("upper-arm-actuator", "Upper Arm Actuator", 1, "la", 1);
-                if (this.hasLowerArmActuator("la")) {
-                    this._addCriticalItem("lower-arm-actuator", "Lower Arm Actuator", 1, "la", 2);
-                    if (this.hasHandActuator("la")) {
-                        this._addCriticalItem("hand-actuator", "Hand Actuator", 1, "la", 3);
+        } else if (!this.isArmless()) {
+            // ---- BIPED / LAM / TRIPOD ARM ACTUATORS ----
+            for (const arm of ["la", "ra"]) {
+                this._addCriticalItem("shoulder", "Shoulder", 1, arm, 0);
+                this._addCriticalItem("upper-arm-actuator", "Upper Arm Actuator", 1, arm, 1);
+                if (this.hasLowerArmActuator(arm)) {
+                    this._addCriticalItem("lower-arm-actuator", "Lower Arm Actuator", 1, arm, 2);
+                    if (this.hasHandActuator(arm)) {
+                        this._addCriticalItem("hand-actuator", "Hand Actuator", 1, arm, 3);
                     }
-                }
-            }
-            if (rightArmIS > 0) {
-                this._addCriticalItem("shoulder", "Shoulder", 1, "ra", 0);
-                this._addCriticalItem("upper-arm-actuator", "Upper Arm Actuator", 1, "ra", 1);
-                if (this.hasLowerArmActuator("ra")) {
-                    this._addCriticalItem("lower-arm-actuator", "Lower Arm Actuator", 1, "ra", 2);
-                    if (this.hasHandActuator("ra")) {
-                        this._addCriticalItem("hand-actuator", "Hand Actuator", 1, "ra", 3);
-                    }
-                }
-            }
-        } else {
-            // ---- BIPED / LAM SELECTION (STANDARD FALLBACK) ----
-            // Left Arm Actuators
-            this._addCriticalItem("shoulder", "Shoulder", 1, "la", 0);
-            this._addCriticalItem("upper-arm-actuator", "Upper Arm Actuator", 1, "la", 1);
-            if (this.hasLowerArmActuator("la")) {
-                this._addCriticalItem("lower-arm-actuator", "Lower Arm Actuator", 1, "la", 2);
-                if (this.hasHandActuator("la")) {
-                    this._addCriticalItem("hand-actuator", "Hand Actuator", 1, "la", 3);
-                }
-            }
-            // Right Arm Actuators
-            this._addCriticalItem("shoulder", "Shoulder", 1, "ra", 0);
-            this._addCriticalItem("upper-arm-actuator", "Upper Arm Actuator", 1, "ra", 1);
-            if (this.hasLowerArmActuator("ra")) {
-                this._addCriticalItem("lower-arm-actuator", "Lower Arm Actuator", 1, "ra", 2);
-                if (this.hasHandActuator("ra")) {
-                    this._addCriticalItem("hand-actuator", "Hand Actuator", 1, "ra", 3);
                 }
             }
         }
@@ -5114,6 +5121,8 @@ export class BattleMech {
     public hasHandActuator(
         location: string,
     ) {
+        if( this.isArmless() )
+            return false;
         if( location === "ra" )
             if( this._no_right_arm_hand_actuator)
                 return false;
@@ -5126,6 +5135,8 @@ export class BattleMech {
     public hasLowerArmActuator(
         location: string,
     ) {
+        if( this.isArmless() )
+            return false;
         if( location === "ra" )
             if( this._no_right_arm_lower_actuator)
                 return false;
@@ -6791,6 +6802,7 @@ export class BattleMech {
         check("Cockpit", this.getCockpitType());
         if (this.hasCommandConsole()) check("Command Console", getCockpitType("command-console"));
         if (this.hasEnhancedImaging()) check("Enhanced Imaging", getCockpitType("enhanced-imaging-interface"));
+        if (this.isArmless()) check("Chassis option", armlessMechOption);
         check("Internal structure", this._selectedInternalStructure);
         check("Armor", this.getArmorObj());
         check("Heat sinks", this._heatSinkType);
@@ -7244,6 +7256,8 @@ export class BattleMech {
         level = Math.max(level, this.getCockpitType().rulesLevel ?? 0);
         if (this.hasCommandConsole()) level = Math.max(level, getCockpitType("command-console").rulesLevel ?? 0);
         if (this.hasEnhancedImaging()) level = Math.max(level, graded(getCockpitType("enhanced-imaging-interface")));
+        // Level 3 in Maximum Tech; apocryphal from TW on (plan ruling R4).
+        if (this.isArmless()) level = Math.max(level, this.isOfferedInEdition(armlessMechOption, 3) ? 3 : APOCRYPHAL_RULES_LEVEL);
         if (this._roboticControl !== "none") level = Math.max(level, SRCS_RULES_LEVEL);
         // An IndustrialMech with BattleMech armor is Experimental (TO:AUE p.92); the Dark Age armors are
         // "only under Experimental Mixed-Tech rules" (IO:AE p.82).
@@ -8099,8 +8113,10 @@ export class BattleMech {
                     ? `${item.name} must be placed in: ${allowedLocations.join(", ").toUpperCase()}.`
                     : `${item.name} cannot be mounted on this chassis.`);
             }
+            if ((item.location === "la" || item.location === "ra") && this.isArmless()) {
+                violations.push(`${item.name}: an armless 'Mech has no arms to mount it (Maximum Tech p.62).`);
             // Arm weapons and their actuators (TM pp.220, 237; TO:AUE p.100).
-            if ((item.location === "la" || item.location === "ra") && !this._hasFrontLegs()) {
+            } else if ((item.location === "la" || item.location === "ra") && !this._hasFrontLegs()) {
                 const arm = item.location.toUpperCase();
                 const lowerArm = this.hasLowerArmActuator(item.location);
                 const hand = lowerArm && this.hasHandActuator(item.location);
@@ -8377,12 +8393,12 @@ export class BattleMech {
       this._internalStructure.leftTorso = structureData.leftTorso;
       this._internalStructure.rightTorso = structureData.rightTorso;
       // Handling the alternate limb layouts (Arms vs. Front Legs)
-      if ('leftArm' in structureData) {
+      if ('leftArm' in structureData && !this.isArmless()) {
         this._internalStructure.leftArm = structureData.leftArm ?? 0;
       } else {
         this._internalStructure.leftArm = 0;
       }
-      if ('rightArm' in structureData) {
+      if ('rightArm' in structureData && !this.isArmless()) {
         this._internalStructure.rightArm = structureData.rightArm ?? 0;
       } else {
         this._internalStructure.rightArm = 0;
@@ -8908,6 +8924,9 @@ export class BattleMech {
         // Enhanced Imaging (Maximum Tech pp.60-61; IO:AE p.69).
         if( this.hasEnhancedImaging())
             exportObject.features.push( "enhanced_imaging" );
+        // Built without arms (Maximum Tech p.62).
+        if( this.isArmless())
+            exportObject.features.push( "armless" );
         // Built under the Primitive 'Mech rules (IO:AE pp.116-118).
         if( this._primitive)
             exportObject.features.push( "primitive" );
@@ -9170,6 +9189,7 @@ export class BattleMech {
             // Before the tonnage and Walking MP: a Primitive 'Mech's engine rating depends on it.
             this._primitive = Array.isArray(importObject.features) && importObject.features.indexOf( "primitive" ) > -1;
             this._clanCASE = Array.isArray(importObject.features) && importObject.features.indexOf( "clan_case" ) > -1;
+            this._armless = Array.isArray(importObject.features) && importObject.features.indexOf( "armless" ) > -1;
             this._armoredSlots = new Set( Array.isArray( importObject.armored_components )
                 ? importObject.armored_components.filter( ( key ): key is string => typeof key === "string" )
                 : [] );
@@ -10368,6 +10388,9 @@ export class BattleMech {
         if (allowedLocations && destLoc !== "un" && !allowedLocations.includes(destLoc)) {
             return false;
         }
+        if (this.isArmless() && (destLoc === "la" || destLoc === "ra")) {
+            return false;
+        }
         if (movingItem?.onePerLocationGroup && destLoc !== "un" && this._equipmentList.some(item =>
             item?.onePerLocationGroup === movingItem.onePerLocationGroup
             && item.uuid !== movingItem.uuid
@@ -11087,7 +11110,7 @@ export class BattleMech {
             return [...core, locations.frontLeftLeg, locations.frontRightLeg,
                 { ...locations.leftLeg, label: "Rear Left Leg" }, { ...locations.rightLeg, label: "Rear Right Leg" }];
         }
-        const limbs = [locations.leftArm, locations.rightArm, locations.leftLeg, locations.rightLeg];
+        const limbs = [...(this.isArmless() ? [] : [locations.leftArm, locations.rightArm]), locations.leftLeg, locations.rightLeg];
         return typeTag === "tripod" ? [...core, ...limbs, locations.centerLeg] : [...core, ...limbs];
     }
 

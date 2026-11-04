@@ -74,6 +74,23 @@ export const mechTypeOptions: IMechType[] = [
 	}
 ];
 
+// Not a chassis of its own: a biped or tripod built without arms. TW reprints no armless rule, so tripods, which arrive
+// with it, reach this at the Apocryphal level (plan ruling R4).
+const armlessApocryphal = { source: "Maximum Tech, Revised p.62", notes: "No rulebook from Total Warfare on reprints the armless 'Mech rules." };
+export const armlessMechOption: IMechType = {
+	id: 0,
+	tag: "armless",
+	name: "Armless",
+	rulesLevel: 3,
+	book: "MaxTech",
+	page: 62,
+	editions: ["master-rules-revised"],
+	editionLevels: { "master-rules-revised": 3 },
+	introducedInEdition: "master-rules-revised",
+	editionStats: { "master-rules-revised": { book: "MaxTech", page: 62, name: "Armless", notes: "Level 3: no armor or equipment in the arms, which are technically not present. A hit-location roll for an arm does nothing and does not transfer (p.62); most physical attacks are impossible and standing is +4 Piloting (p.63). No arm actuators are bought (p.87). BV1: +0.1 Defensive Movement Factor, not for 'Mechs only drawn without arms (p.92). In Level 2 play the arms keep armor, structure, shoulder and upper arm actuators and hold nothing else (p.62)." } },
+	apocryphalIn: { "total-warfare": armlessApocryphal, "battlemech-manual": armlessApocryphal, "core-rulebook": armlessApocryphal },
+};
+
 export function getMechTypeOptionsForRulesLevel(rulesLevel: number): IMechType[] {
 	return mechTypeOptions.filter(option => option.rulesLevel <= rulesLevel);
 }

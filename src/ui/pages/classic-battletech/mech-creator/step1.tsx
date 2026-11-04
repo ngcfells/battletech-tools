@@ -159,6 +159,14 @@ export default class MechCreatorStep1 extends React.Component<IHomeProps, IHomeS
       }
     }
 
+    setArmless = ( e: React.FormEvent<HTMLInputElement>): void => {
+      if( this.props.appGlobals.currentBattleMech ) {
+        const currentMech = this.props.appGlobals.currentBattleMech;
+        currentMech.setArmless( e.currentTarget.checked );
+        this.props.appGlobals.saveCurrentBattleMech( currentMech );
+      }
+    }
+
     updateType = ( e: React.FormEvent<HTMLSelectElement>): void => {
       if( this.props.appGlobals.currentBattleMech ) {
         const currentMech = this.props.appGlobals.currentBattleMech;
@@ -326,6 +334,17 @@ export default class MechCreatorStep1 extends React.Component<IHomeProps, IHomeS
                               </select>
                             </label>
                           </EditionChoice>
+                          {(() => {
+                            const mech = this.props.appGlobals.currentBattleMech;
+                            const armless = mech.getArmlessOption(mechRulesLevel(this.props.appGlobals));
+                            if( !isOptionShown(armless, mech.isArmless()) ) return null;
+                            return (
+                              <label className="d-block">
+                                <input type="checkbox" checked={mech.isArmless()} onChange={this.setArmless} data-testid="armless" />{" "}
+                                {availabilityOptionLabel(armless)}: no arm armor, structure or slots
+                              </label>
+                            );
+                          })()}
                           {!this.props.appGlobals.currentBattleMech.usesEarlierRulesEdition() && this.props.appGlobals.currentBattleMech.getRequiredRulesLevel() > mechRulesLevel(this.props.appGlobals) ? (
                             <p className="color-red smaller-text">
                               This design requires the {getRulesLevelOptions().find( (option) => option.id === this.props.appGlobals.currentBattleMech?.getRequiredRulesLevel() )?.name} rules

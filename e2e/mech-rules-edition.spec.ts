@@ -229,6 +229,27 @@ test("offers Enhanced Imaging to Clan 'Mechs under BMR(R) Advanced", async ({ pa
     expect(errors).toEqual([]);
 });
 
+test("offers armless 'Mechs under BMR(R) Advanced, saved across a reload, and the later steps open", async ({ page }) => {
+    const errors: string[] = [];
+    page.on("pageerror", (error) => errors.push(error.stack ?? error.message));
+    const armless = page.getByTestId("armless");
+    await page.goto("classic-battletech/mech-creator");
+    await page.getByTitle("Click here to clear out your current 'mech and start over.").click();
+    await page.goto("classic-battletech/mech-creator/step1");
+    await page.getByLabel("Rules Edition").selectOption("master-rules-revised");
+    await page.getByLabel("Rules Level").selectOption("2");
+    await expect(armless).toHaveCount(0);
+    await page.getByLabel("Rules Level").selectOption("3");
+    await armless.check();
+    await page.reload();
+    await expect(armless).toBeChecked();
+    for (const step of ["step3", "step4", "step5", "step6", "summary"]) {
+        await page.goto(`classic-battletech/mech-creator/${step}`);
+        await expect(page.getByRole("main").or(page.locator("body")).first()).toBeVisible();
+    }
+    expect(errors).toEqual([]);
+});
+
 // IO:AE p.184: under TW a pilot with EI implants in a 'Mech with the EI interface reads Gunnery and Piloting 1 better.
 test("EI implants raise the roster's adjusted BV under TW", async ({ page }) => {
     const errors: string[] = [];
