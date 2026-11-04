@@ -78,7 +78,7 @@ export default class ArtVeeReadout extends React.Component<{ appGlobals: IAppGlo
 
     // A link straight to a section arrives before this lazy page has rendered it, so the browser cannot jump there itself.
     componentDidMount = (): void => {
-        document.getElementById(window.location.hash.slice(1))?.scrollIntoView();
+        requestAnimationFrame(() => document.getElementById(window.location.hash.slice(1))?.scrollIntoView());
     }
 
     render = (): JSX.Element => {
