@@ -277,6 +277,14 @@ test("EI implants raise the roster's adjusted BV under TW", async ({ page }) => 
     const heavyWoods = page.locator(".modal").getByLabel("Heavy Woods / Smoke Hexes").first();
     await heavyWoods.selectOption("2");
     await expect(heavyWoods).toHaveValue("2");
+    // An aimed shot names a location; EI aims at an active target as a targeting computer does (IO:AE p.69).
+    const aimed = page.locator(".modal").getByLabel("Aimed Shot").first();
+    await aimed.selectOption("la");
+    await expect(aimed).toHaveValue("la");
+    const immobile = page.locator(".modal label.checkbox-input", { hasText: "Immobile" }).first();
+    const unchecked = await immobile.innerHTML();
+    await immobile.click();
+    await expect.poll(() => immobile.innerHTML()).not.toBe(unchecked);
     expect(errors).toEqual([]);
 });
 

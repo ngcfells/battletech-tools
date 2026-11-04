@@ -155,11 +155,11 @@ describe("an Enhanced Imaging cockpit", () => {
 
     it("plays: Piloting -1 and a feedback roll on structure damage while on; off or a sensors hit ends both", () => {
         const feedback = (unit: BattleMech) => unit.takeDamage(1, "ct", false).flatMap(result => result.criticalEffects);
-        // Max Tech reads the interface alone (p.62); TW needs a pilot with EI implants (IO:AE p.69).
+        // Max Tech reads the interface alone (p.61); TW needs a pilot with EI implants (IO:AE p.69).
         const maxTech = clanMech("master-rules-revised");
         maxTech.setEnhancedImaging(true);
         expect(maxTech.getPilotingSkillModifier()).toBe(-1);
-        expect(feedback(maxTech)).toEqual(["Enhanced Imaging feedback: roll 2D6, 7 or better or the pilot takes 1 damage (Maximum Tech p.62)"]);
+        expect(feedback(maxTech)).toEqual(["Enhanced Imaging feedback: roll 2D6, 7 or better or the pilot takes 1 damage (Maximum Tech p.61)"]);
         maxTech.enhancedImagingOff = true;
         expect(new BattleMech(maxTech.exportJSON()).enhancedImagingOff).toBe(true);
         expect(maxTech.getPilotingSkillModifier()).toBe(0);
@@ -193,5 +193,48 @@ describe("an Enhanced Imaging cockpit", () => {
         const maxTech = clanMech("master-rules-revised");
         maxTech.setEnhancedImaging(true);
         expect(toHit(maxTech, 3, 2, 2).finalToHit).toBe(toHit(maxTech, 0, 0).finalToHit + 3);
+    });
+
+    it("to-hit: a targeting computer -1, immobile -4 and aimed shots by targeting computer, EI or both", () => {
+        const toHit = (unit: BattleMech, aim: { aimedLocation?: string; immobile?: boolean } = {}, tag = "er-small-laser-clan") => {
+            const weapon = unit.addEquipmentFromTag(tag, unit.getTech().tag, "rt", false, undefined, "a", false, [], undefined, undefined)!;
+            const index = unit.equipmentList.findIndex(item => item.uuid === weapon.uuid);
+            const target = { name: "T", active: true, range: 1, movement: 0, otherMods: 0, jumped: false, primary: true, inRearArc: false };
+            return getTargetToHitFromWeapon(unit, index, { ...target, ...aim });
+        };
+        // No computer: aimed shots only at an immobile target, -4, the head +3 instead (TW p.110); missiles cannot aim.
+        const is = clanMech("total-warfare", "is");
+        const base = toHit(is, {}, "medium-laser").finalToHit;
+        expect(toHit(is, { aimedLocation: "la" }, "medium-laser").finalToHit).toBe(base);
+        expect(toHit(is, { aimedLocation: "la" }, "medium-laser").otherModifiersExplanation).toContain("Aimed Shot Not Allowed");
+        expect(toHit(is, { immobile: true }, "medium-laser").finalToHit).toBe(base - 4);
+        expect(toHit(is, { immobile: true, aimedLocation: "la" }, "medium-laser").finalToHit).toBe(base - 4);
+        expect(toHit(is, { immobile: true, aimedLocation: "hd" }, "medium-laser").finalToHit).toBe(base + 3);
+        expect(toHit(is, { immobile: true, aimedLocation: "la" }, "lrm-5").otherModifiersExplanation).toContain("Aimed Shot Not Allowed");
+        // Targeting computer: -1, or +3 in its place aimed at an active target, never the head, no pulse (TW p.143).
+        is.addEquipmentFromTag("targeting-computer", "is", "lt", false, undefined, undefined, false, [], undefined, undefined);
+        expect(toHit(is, {}, "medium-laser").finalToHit).toBe(base - 1);
+        expect(toHit(is, {}, "medium-laser").otherModifiersExplanation).toContain("Targeting Computer (-1)");
+        expect(toHit(is, {}, "lrm-5").finalToHit).toBe(toHit(clanMech("total-warfare", "is"), {}, "lrm-5").finalToHit);
+        expect(toHit(is, { aimedLocation: "la" }, "medium-laser").finalToHit).toBe(base + 3);
+        expect(toHit(is, { aimedLocation: "hd" }, "medium-laser").finalToHit).toBe(base - 1);
+        expect(toHit(is, { aimedLocation: "la" }, "medium-pulse-laser").finalToHit).toBe(toHit(is, {}, "medium-pulse-laser").finalToHit);
+        expect(toHit(is, { immobile: true, aimedLocation: "la" }, "medium-laser").finalToHit).toBe(base - 5);
+        // EI alone aims as a computer does: TW +2 more, Max Tech +6; with a computer TW -1 in place of the +2, Max Tech +2
+        // (IO:AE p.69; Maximum Tech p.61).
+        const tw = clanMech("total-warfare");
+        tw.setEnhancedImaging(true);
+        tw.setPilotEIImplants(true);
+        const twBase = toHit(tw).finalToHit;
+        expect(toHit(tw, { aimedLocation: "ra" }).finalToHit).toBe(twBase + 5);
+        const maxTech = clanMech("master-rules-revised");
+        maxTech.setEnhancedImaging(true);
+        const maxTechBase = toHit(maxTech).finalToHit;
+        expect(toHit(maxTech, { aimedLocation: "ra" }).finalToHit).toBe(maxTechBase + 6);
+        for (const unit of [tw, maxTech]) {
+            unit.addEquipmentFromTag("clan-targeting-computer", "clan", "lt", false, undefined, undefined, false, [], undefined, undefined);
+        }
+        expect(toHit(tw, { aimedLocation: "ra" }).finalToHit).toBe(twBase + 2);
+        expect(toHit(maxTech, { aimedLocation: "ra" }).finalToHit).toBe(maxTechBase + 2);
     });
 });

@@ -355,6 +355,10 @@ export interface ITargetToHit {
     heavyWoodsHexes?: number;
     /** The darkness or night modifier, as the scenario sets it. */
     darkness?: number;
+    /** Shut down, or its warrior unconscious: an immobile target (TW p.110). */
+    immobile?: boolean;
+    /** The hit location an aimed shot names ("hd", "ct", "la" and so on), or unset for none. */
+    aimedLocation?: string;
 }
 
 export interface IGATOR {
@@ -447,7 +451,7 @@ export class BattleMech {
     public currentMovementMode: string = "n";
     /** A variable-range targeting system's End Phase setting (Maximum Tech p.59). */
     public targetingRangeSetting: "normal" | "long" | "short" = "normal";
-    /** The Enhanced Imaging interface switched off in the End Phase (Maximum Tech p.62; IO:AE p.69). */
+    /** The Enhanced Imaging interface switched off in the End Phase (Maximum Tech p.61; IO:AE p.69). */
     public enhancedImagingOff = false;
     public currentToHitMovementModifier: number = 0;
     public currentTargetModifier: number = 0;
@@ -2558,7 +2562,7 @@ export class BattleMech {
 
     /**
      * Enhanced Imaging gives its benefits and feedback: switched on in the End Phase, no sensors hit, and under TW a
-     * pilot with EI implants (IO:AE p.69); Maximum Tech reads the interface alone (p.62).
+     * pilot with EI implants (IO:AE p.69); Maximum Tech reads the interface alone (p.61).
      */
     public isEnhancedImagingActive(): boolean {
         return this.hasEnhancedImaging() && !this.enhancedImagingOff && this.sensorHits() === 0
@@ -8592,7 +8596,7 @@ export class BattleMech {
         }
 
         public getPilotingSkillModifier(): number {
-            // Enhanced Imaging: every Piloting Skill Roll -1 (Maximum Tech p.62; IO:AE p.69).
+            // Enhanced Imaging: every Piloting Skill Roll -1 (Maximum Tech p.61; IO:AE p.69).
             return (this.isTripod() ? -1 : 0) + (this.hasActiveModularArmor() ? 1 : 0) + this.getFrankenMechLegPilotingModifier()
                 + (this.isEnhancedImagingActive() ? -1 : 0)
                 // Torso-Mounted Cockpit, blinded: three sensor hits, or two both in the head (TO:AUE p.113).
@@ -9927,10 +9931,10 @@ export class BattleMech {
 
         }
 
-        // Enhanced Imaging feedback on internal structure damage (Maximum Tech p.62; IO:AE p.69).
+        // Enhanced Imaging feedback on internal structure damage (Maximum Tech p.61; IO:AE p.69).
         if (structureHit && this.isEnhancedImagingActive()) {
             rv.push({ criticals: 0, criticalRoll: 0, criticalEffects: [this.usesEarlierRulesEdition()
-                ? "Enhanced Imaging feedback: roll 2D6, 7 or better or the pilot takes 1 damage (Maximum Tech p.62)"
+                ? "Enhanced Imaging feedback: roll 2D6, 7 or better or the pilot takes 1 damage (Maximum Tech p.61)"
                 : "Enhanced Imaging feedback: roll 2D6, 7 or better or the pilot takes 1 damage and a consciousness roll (IO:AE p.69)"],
                 location, amount });
         }

@@ -141,6 +141,8 @@ describe("Battledroids tanks, jeeps and infantry", () => {
             maxTargetMovementModifier: 3,
             secondaryTargetModifiers: false,
             criticalHitRoll: 7,
+            // No immobile-target modifier and no aimed shots (BD pp.8-11, 15).
+            immobileTargetModifier: 0,
         });
         expect(getEditionPlayRules("total-warfare")).toBeUndefined();
         expect(getEditionPlayRules(undefined)).toBeUndefined();

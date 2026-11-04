@@ -3,6 +3,7 @@ import { BattleMech, IGATOR, ITargetToHit } from "./classes/battlemech";
 import { CONST_MUL_API_ENABLED } from "./configVars";
 import { IEquipmentItem } from "./data/data-interfaces";
 import { getEquipmentCatalogs, getEquipmentListByTech } from "./data/equipment-registry";
+import { isTargetingComputerWeapon } from "./data/variable-equipment";
 import { DEFAULT_MUL_SOURCE_SELECTION, getMULRecordKey, loadMULListItems } from "./data/mul-list-items";
 import { IAppGlobals } from "./ui/app-router";
 import { replaceAll } from "./utils/replaceAll";
@@ -943,7 +944,7 @@ export function getTargetToHitFromWeapon(
             systemModifier( mech.getSensorToHitModifier(), "Sensor Hits" );
             // Woods, jungle or smoke: +1 a light hex, +2 a heavy hex (BD p.10; TW p.117). Enhanced Imaging: each hex 1
             // less, at least +1, and no darkness modifier (IO:AE p.69); Maximum Tech: any light woods +1 in all, heavy or
-            // smoke +1 a hex, no night modifier (p.62).
+            // smoke +1 a hex, no night modifier (p.61).
             const enhancedImaging = mech.isEnhancedImagingActive();
             const lightHexes = target.lightWoodsHexes ?? 0;
             const heavyHexes = target.heavyWoodsHexes ?? 0;
@@ -953,6 +954,32 @@ export function getTargetToHitFromWeapon(
                 enhancedImaging ? "Woods / Smoke, Enhanced Imaging" : "Woods / Smoke",
             );
             systemModifier( enhancedImaging ? 0 : target.darkness ?? 0, "Darkness" );
+            // An immobile target -4; an aimed shot at it names a location, the head at +3 in place of the -4, with no
+            // missile launcher, LB-X cluster or Hyper-Assault Gauss (TW p.110; BMR(R) pp.24-26). A targeting computer
+            // -1 for its direct-fire weapons, lost by LB-X cluster; or, aimed at an active target, +3 in its place, never
+            // at the head nor with a pulse weapon (TW p.143; BMR(R) p.148). Enhanced Imaging aims as a computer does: TW
+            // +2 more, -1 in place of it with a computer (IO:AE p.69); Maximum Tech +6, +2 with a computer (p.61).
+            const immobileModifier = mech.getEditionPlayRules()?.immobileTargetModifier ?? -4;
+            const cluster = !!ammo?.tag.includes( "cluster" );
+            const computer = mech.hasTargetingComputer() && isTargetingComputerWeapon( weapon ) && !cluster;
+            const aimed = target.aimedLocation;
+            const canAim = weapon.category !== "Missile Weapons" && !cluster && !/hyper-assault|(^|-)hag(-|$)/.test( weapon.tag );
+            const immobileAim = !!aimed && !!target.immobile && !!immobileModifier && canAim;
+            const computerAim = !!aimed && !target.immobile && canAim && aimed !== "hd" && !weapon.tag.includes( "pulse" )
+                && ( computer || ( enhancedImaging && isTargetingComputerWeapon( weapon ) ) );
+            const aimedHead = immobileAim && aimed === "hd";
+            systemModifier( target.immobile ? ( aimedHead ? 3 : immobileModifier ) : 0, aimedHead ? "Immobile Target, Aimed At The Head" : "Immobile Target" );
+            systemModifier( computer && !computerAim ? -1 : 0, "Targeting Computer" );
+            if( computerAim ) {
+                systemModifier(
+                    computer ? ( enhancedImaging ? 2 : 3 ) : mech.usesEarlierRulesEdition() ? 6 : 5,
+                    "Aimed At " + getLocationName( aimed!, false ) + ( computer ? ", Targeting Computer" : "" ) + ( enhancedImaging ? ", Enhanced Imaging" : "" ),
+                );
+            } else if( immobileAim && !aimedHead ) {
+                otherModifiersExplanation.push( "Aimed At " + getLocationName( aimed!, false ) );
+            } else if( aimed ) {
+                otherModifiersExplanation.push( "Aimed Shot Not Allowed, Fired Unaimed" );
+            }
             // A targeting and tracking system: anti-aircraft, or Multi-Trac in place of the secondary-target modifier
             // (Maximum Tech p.59).
             const system = mech.getTargetingSystem();

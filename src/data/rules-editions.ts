@@ -53,6 +53,8 @@ export interface IEditionPlayRules {
     secondaryTargetModifiers: boolean;
     /** Two-dice roll that makes a hit on the internal structure a critical hit. */
     criticalHitRoll: number;
+    /** To-hit modifier against an immobile target, which may then take aimed shots; 0 when the edition has neither. */
+    immobileTargetModifier: number;
 }
 
 /** One of an edition's own game levels, as its rulebook names it, and the tool's rules level it stands for. */
@@ -137,12 +139,13 @@ export const btRulesEditions: IRulesEdition[] = [
         book: "BD",
         complete: true,
         // Heat Point Table, BD p.12; Movement Modifiers Table, BD p.5; Determining Critical Hits, BD p.18. The
-        // weapon attack rules (BD pp.8-11, 15) have no modifier for a second target.
+        // weapon attack rules (BD pp.8-11, 15) have no modifier for a second target, nor for an immobile one.
         playRules: {
             moveHeat: { walk: 0, run: 1, jumpPerHex: 1, jumpMinimum: 0 },
             maxTargetMovementModifier: 3,
             secondaryTargetModifiers: false,
             criticalHitRoll: 7,
+            immobileTargetModifier: 0,
         },
         ammoTonsFor: "launcher",
         // "the Armor Value may not be more than twice the number of internal structure boxes at that location", over

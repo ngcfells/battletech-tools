@@ -670,16 +670,17 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
       })
     }
 
-    updateTargetAirborne = (
+    updateTargetFlag = (
       e: React.FormEvent<HTMLInputElement>,
-      target: "a" | "b" | "c"
+      target: "a" | "b" | "c",
+      field: "airborne" | "immobile",
     ) => {
       if( e && e.preventDefault ) {
         e.preventDefault();
       }
       const targetData = this.state.targetData;
       if( targetData ) {
-        targetData[target].airborne = e.currentTarget.checked;
+        targetData[target][field] = e.currentTarget.checked;
       }
       this.setState({
         targetData: targetData,
@@ -750,8 +751,9 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
       })
     }
 
-    // Woods, jungle or smoke hexes and darkness: what Enhanced Imaging reduces (IO:AE p.69; Maximum Tech p.62).
-    renderTargetTerrain = ( target: "a" | "b" | "c" ) => {
+    // Woods, jungle or smoke hexes and darkness, which Enhanced Imaging reduces, and aimed shots, which it allows (IO:AE
+    // p.69; Maximum Tech p.61).
+    renderTargetConditions = ( mech: BattleMech, target: "a" | "b" | "c" ) => {
       if( !this.state.targetData ) return null;
       const data = this.state.targetData[target];
       return (
@@ -786,6 +788,33 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
             min={0}
             max={10}
           />
+          {mech.getEditionPlayRules()?.immobileTargetModifier !== 0 ? (
+            <>
+              <InputCheckbox
+                label="Immobile"
+                checked={!!data.immobile}
+                description="Shut down, or its warrior unconscious: -4 to hit, and any weapon but a missile launcher, LB-X cluster or Hyper-Assault Gauss may aim (TW p.110)"
+                onChange={(e) => this.updateTargetFlag(e, target, "immobile")}
+              />
+              <label>
+                Aimed Shot:{" "}
+                <select
+                  value={data.aimedLocation ?? ""}
+                  title={"A 'Mech target's location. An active target takes aims only with a targeting computer or Enhanced Imaging, never at the head. On a hit roll 2D6: 6-8 hits the location, else "
+                    + (mech.usesEarlierRulesEdition() ? "a computer-aimed shot misses (BMR(R) p.148) and others roll for location (BMR(R) p.26)" : "roll for location (TW p.110)")}
+                  onChange={(e) => {
+                    this.state.targetData![target].aimedLocation = e.currentTarget.value || undefined;
+                    this.setState({ targetData: this.state.targetData });
+                  }}
+                >
+                  <option value="">-none-</option>
+                  {["hd", "ct", "lt", "rt", "la", "ra", "ll", "rl"].map(location => (
+                    <option key={location} value={location}>{getLocationName(location, false)}</option>
+                  ))}
+                </select>
+              </label>
+            </>
+          ) : null}
         </>
       );
     }
@@ -2149,7 +2178,7 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
         }}
       />{" "}
       Enhanced Imaging on (set in the End Phase): Piloting -1, feedback roll on structure damage; a sensors hit shuts it down
-      {this.state.setTargetDialog.usesEarlierRulesEdition() ? " (Maximum Tech p.62)" : "; works only for a pilot with EI implants, and gives a 1-hex active probe while the sensors are unhit, on or off (IO:AE p.69)"}.
+      {this.state.setTargetDialog.usesEarlierRulesEdition() ? " (Maximum Tech p.61)" : "; works only for a pilot with EI implants, and gives a 1-hex active probe while the sensors are unhit, on or off (IO:AE p.69)"}.
       {this.state.setTargetDialog.isEnhancedImagingActive() ? null : <strong> Not active.</strong>}
     </label>
   ) : null}
@@ -2189,7 +2218,7 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
                 label="Airborne"
                 checked={!!this.state.targetData.a.airborne}
                 description="Airborne, not grounded: an aerospace unit, a VTOL or a 'Mech on a combat drop, but not a jumping 'Mech. For Anti-Aircraft Targeting (CO p.225; Maximum Tech p.59)."
-                onChange={(e) => this.updateTargetAirborne(e, "a")}
+                onChange={(e) => this.updateTargetFlag(e, "a", "airborne")}
               />
             ) : null}
 
@@ -2217,7 +2246,7 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
           min={-10}
           max={50}
         />
-        {this.renderTargetTerrain("a")}
+        {this.renderTargetConditions(this.state.setTargetDialog, "a")}
         <InputNumeric
           label="Range"
           description='The number of hexes between your target'
@@ -2265,7 +2294,7 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
                 label="Airborne"
                 checked={!!this.state.targetData.b.airborne}
                 description="Airborne, not grounded: an aerospace unit, a VTOL or a 'Mech on a combat drop, but not a jumping 'Mech. For Anti-Aircraft Targeting (CO p.225; Maximum Tech p.59)."
-                onChange={(e) => this.updateTargetAirborne(e, "b")}
+                onChange={(e) => this.updateTargetFlag(e, "b", "airborne")}
               />
             ) : null}
 
@@ -2294,7 +2323,7 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
           min={-10}
           max={50}
         />
-        {this.renderTargetTerrain("b")}
+        {this.renderTargetConditions(this.state.setTargetDialog, "b")}
         <InputNumeric
           label="Range"
           description='The number of hexes between your target'
@@ -2343,7 +2372,7 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
                 label="Airborne"
                 checked={!!this.state.targetData.c.airborne}
                 description="Airborne, not grounded: an aerospace unit, a VTOL or a 'Mech on a combat drop, but not a jumping 'Mech. For Anti-Aircraft Targeting (CO p.225; Maximum Tech p.59)."
-                onChange={(e) => this.updateTargetAirborne(e, "c")}
+                onChange={(e) => this.updateTargetFlag(e, "c", "airborne")}
               />
             ) : null}
           </div>
@@ -2371,7 +2400,7 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
           min={-10}
           max={50}
         />
-        {this.renderTargetTerrain("c")}
+        {this.renderTargetConditions(this.state.setTargetDialog, "c")}
         <InputNumeric
           label="Range"
           description='The number of hexes between your target'
