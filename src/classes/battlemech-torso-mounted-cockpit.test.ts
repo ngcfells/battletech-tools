@@ -74,4 +74,24 @@ describe("a Torso-Mounted Cockpit", () => {
         expect(unit.sensorHits()).toBe(3);
         expect(unit.areSensorsDestroyed()).toBe(true);
     });
+
+    it("adds +2 to-hit at the first sensor hit, +4 at the second, and +4 Piloting once blind (TO:AUE p.113; TW p.117)", () => {
+        const standard = mech();
+        standard.toggleCritical("hd", 1);
+        expect(standard.getSensorToHitModifier()).toBe(2);
+        const unit = mech();
+        unit.setCockpitType("torso-mounted");
+        const piloting = unit.getPilotingSkillModifier();
+        unit.toggleCritical("ct", 11);
+        expect(unit.getSensorToHitModifier()).toBe(2);
+        unit.toggleCritical("hd", 0);
+        expect(unit.getSensorToHitModifier()).toBe(4);
+        expect(unit.getPilotingSkillModifier()).toBe(piloting);
+        unit.toggleCritical("ct", 11);
+        unit.toggleCritical("hd", 1);
+        expect(unit.getPilotingSkillModifier()).toBe(piloting + 4);
+        unit.toggleCritical("ct", 11);
+        expect(unit.getSensorToHitModifier()).toBe(0);
+        expect(unit.getPilotingSkillModifier()).toBe(piloting + 4);
+    });
 });

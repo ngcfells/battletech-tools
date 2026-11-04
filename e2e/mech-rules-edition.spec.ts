@@ -273,6 +273,10 @@ test("EI implants raise the roster's adjusted BV under TW", async ({ page }) => 
     await expect(ei).not.toContainText("Not active.");
     await ei.getByRole("checkbox").uncheck();
     await expect(ei).toContainText("Not active.");
+    // Woods / smoke hexes per target, which EI reduces in the GATOR (IO:AE p.69).
+    const heavyWoods = page.locator(".modal").getByLabel("Heavy Woods / Smoke Hexes").first();
+    await heavyWoods.selectOption("2");
+    await expect(heavyWoods).toHaveValue("2");
     expect(errors).toEqual([]);
 });
 

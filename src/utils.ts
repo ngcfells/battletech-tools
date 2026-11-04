@@ -930,28 +930,32 @@ export function getTargetToHitFromWeapon(
 
                 otherModifiersExplanation.push( "Weapon Accuracy Modifier" );
             }
-            // IndustrialMech fire control (TM p.69; IO:AE p.114).
-            const fireControlModifier = mech.getFireControlToHitModifier();
-            if( fireControlModifier > 0 ) {
-                gator.finalToHit += fireControlModifier;
-                gator.otherModifiers += fireControlModifier;
-                otherModifiersExplanation.push( (mech.isPrimitive() ? "Primitive IndustrialMech cockpit" : "IndustrialMech fire control") + " (+" + fireControlModifier + ")" );
-            }
-            // The Heat Scale's fire modifier (TW pp.158-160; BD p.13).
-            const heatModifier = mech.getHeatToHitModifier();
-            if( heatModifier > 0 ) {
-                gator.finalToHit += heatModifier;
-                gator.otherModifiers += heatModifier;
-                otherModifiersExplanation.push( "Heat (+" + heatModifier + ")" );
-            }
-            // A targeting and tracking system: anti-aircraft, or Multi-Trac in place of the secondary-target modifier
-            // (Maximum Tech p.59).
-            const system = mech.getTargetingSystem();
             const systemModifier = ( modifier: number, label: string ) => {
+                if( !modifier ) return;
                 gator.finalToHit += modifier;
                 gator.otherModifiers += modifier;
                 otherModifiersExplanation.push( label + " (" + (modifier > 0 ? "+" : "") + modifier + ")" );
             };
+            // IndustrialMech fire control (TM p.69; IO:AE p.114).
+            systemModifier( mech.getFireControlToHitModifier(), mech.isPrimitive() ? "Primitive IndustrialMech cockpit" : "IndustrialMech fire control" );
+            // The Heat Scale's fire modifier (TW pp.158-160; BD p.13).
+            systemModifier( mech.getHeatToHitModifier(), "Heat" );
+            systemModifier( mech.getSensorToHitModifier(), "Sensor Hits" );
+            // Woods, jungle or smoke: +1 a light hex, +2 a heavy hex (BD p.10; TW p.117). Enhanced Imaging: each hex 1
+            // less, at least +1, and no darkness modifier (IO:AE p.69); Maximum Tech: any light woods +1 in all, heavy or
+            // smoke +1 a hex, no night modifier (p.62).
+            const enhancedImaging = mech.isEnhancedImagingActive();
+            const lightHexes = target.lightWoodsHexes ?? 0;
+            const heavyHexes = target.heavyWoodsHexes ?? 0;
+            systemModifier(
+                !enhancedImaging ? lightHexes + 2 * heavyHexes
+                    : mech.usesEarlierRulesEdition() ? Math.min( lightHexes, 1 ) + heavyHexes : lightHexes + heavyHexes,
+                enhancedImaging ? "Woods / Smoke, Enhanced Imaging" : "Woods / Smoke",
+            );
+            systemModifier( enhancedImaging ? 0 : target.darkness ?? 0, "Darkness" );
+            // A targeting and tracking system: anti-aircraft, or Multi-Trac in place of the secondary-target modifier
+            // (Maximum Tech p.59).
+            const system = mech.getTargetingSystem();
             if( system?.targetingSystem?.airborne ) {
                 systemModifier( system.targetingSystem.airborne[target.airborne ? 0 : 1], system.name );
             }

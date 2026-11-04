@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it, vi } from "vitest";
 import { BattleMech } from "./battlemech";
 import { importBattleMechMtf } from "./battlemech-mtf";
+import { getTargetToHitFromWeapon } from "../utils";
 
 // Cockpit Command Console (TO:AUE pp.112-113, #171): an Advanced add-on of 3 tons and 1 slot beside the cockpit,
 // 500,000 C-bills. Not with a Torso-Mounted, QuadVee or tripod cockpit (p.112; IO:AE p.159). The console takes
@@ -172,5 +173,25 @@ describe("an Enhanced Imaging cockpit", () => {
         tw.toggleCritical("hd", 1);
         expect(tw.isEnhancedImagingActive()).toBe(false);
         expect(feedback(tw)).toEqual([]);
+    });
+
+    it("to-hit: woods and smoke 1 less a hex (at least +1), darkness ignored; Max Tech light woods +1 in all", () => {
+        const toHit = (unit: BattleMech, light: number, heavy: number, darkness = 0) => {
+            const weapon = unit.addEquipmentFromTag("er-small-laser-clan", "clan", "rt", false, undefined, "a", false, [], undefined, undefined)!;
+            const index = unit.equipmentList.findIndex(item => item.uuid === weapon.uuid);
+            const target = { name: "T", active: true, range: 1, movement: 0, otherMods: 0, jumped: false, primary: true, inRearArc: false };
+            return getTargetToHitFromWeapon(unit, index, { ...target, lightWoodsHexes: light, heavyWoodsHexes: heavy, darkness });
+        };
+        // Light +1 and heavy +2 a hex (TW p.117), darkness as entered.
+        const tw = clanMech("total-warfare");
+        const base = toHit(tw, 0, 0).finalToHit;
+        expect(toHit(tw, 2, 1, 2).finalToHit).toBe(base + 6);
+        expect(toHit(tw, 2, 1).otherModifiersExplanation).toContain("Woods / Smoke (+4)");
+        tw.setEnhancedImaging(true);
+        tw.setPilotEIImplants(true);
+        expect(toHit(tw, 2, 1, 2).finalToHit).toBe(base + 3);
+        const maxTech = clanMech("master-rules-revised");
+        maxTech.setEnhancedImaging(true);
+        expect(toHit(maxTech, 3, 2, 2).finalToHit).toBe(toHit(maxTech, 0, 0).finalToHit + 3);
     });
 });

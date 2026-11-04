@@ -732,27 +732,62 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
       })
     }
 
-    updateTargetOtherMods = (
+    updateTargetNumber = (
       e: React.FormEvent<HTMLInputElement>,
-      target: string
+      target: "a" | "b" | "c",
+      field: "otherMods" | "lightWoodsHexes" | "heavyWoodsHexes" | "darkness",
     ) => {
       if( e && e.preventDefault ) {
         e.preventDefault();
       }
       const targetData = this.state.targetData;
       if( targetData ) {
-        if( target === "a" ) {
-          targetData.a.otherMods = +e.currentTarget.value;
-        } else if( target === "b" ) {
-          targetData.b.otherMods = +e.currentTarget.value;
-        } else if( target === "c" ) {
-          targetData.c.otherMods = +e.currentTarget.value;
-        }
+        targetData[target][field] = +e.currentTarget.value;
       }
 
       this.setState({
         targetData: targetData,
       })
+    }
+
+    // Woods, jungle or smoke hexes and darkness: what Enhanced Imaging reduces (IO:AE p.69; Maximum Tech p.62).
+    renderTargetTerrain = ( target: "a" | "b" | "c" ) => {
+      if( !this.state.targetData ) return null;
+      const data = this.state.targetData[target];
+      return (
+        <>
+          <InputNumeric
+            label="Light Woods / Smoke Hexes"
+            description="Light woods, jungle or smoke hexes between you and the target, its own hex included: +1 each"
+            value={data.lightWoodsHexes ?? 0}
+            onChange={(e) => this.updateTargetNumber(e, target, "lightWoodsHexes")}
+            step={1}
+            inline={true}
+            min={0}
+            max={50}
+          />
+          <InputNumeric
+            label="Heavy Woods / Smoke Hexes"
+            description="Heavy woods, jungle or smoke hexes between you and the target, its own hex included: +2 each"
+            value={data.heavyWoodsHexes ?? 0}
+            onChange={(e) => this.updateTargetNumber(e, target, "heavyWoodsHexes")}
+            step={1}
+            inline={true}
+            min={0}
+            max={50}
+          />
+          <InputNumeric
+            label="Darkness Mod"
+            description="The scenario's darkness or night modifier"
+            value={data.darkness ?? 0}
+            onChange={(e) => this.updateTargetNumber(e, target, "darkness")}
+            step={1}
+            inline={true}
+            min={0}
+            max={10}
+          />
+        </>
+      );
     }
 
     updateTargetMovement = (
@@ -2174,14 +2209,15 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
 
         <InputNumeric
           label="Other Mods"
-          description='Trees, Water, other cover, etc'
+          description='Water, partial cover, etc. (enter woods and smoke below)'
           value={this.state.targetData.a.otherMods}
-          onChange={(e) => this.updateTargetOtherMods(e, "a")}
+          onChange={(e) => this.updateTargetNumber(e, "a", "otherMods")}
           step={1}
           inline={true}
           min={-10}
           max={50}
         />
+        {this.renderTargetTerrain("a")}
         <InputNumeric
           label="Range"
           description='The number of hexes between your target'
@@ -2249,15 +2285,16 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
 
         <InputNumeric
           label="Other Mods"
-          description='Trees, Water, other cover, etc'
+          description='Water, partial cover, etc. (enter woods and smoke below)'
 
           value={this.state.targetData.b.otherMods}
-          onChange={(e) => this.updateTargetOtherMods(e, "b")}
+          onChange={(e) => this.updateTargetNumber(e, "b", "otherMods")}
           step={1}
           inline={true}
           min={-10}
           max={50}
         />
+        {this.renderTargetTerrain("b")}
         <InputNumeric
           label="Range"
           description='The number of hexes between your target'
@@ -2325,15 +2362,16 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
 
         <InputNumeric
           label="Other Mods"
-          description='Trees, Water, other cover, etc'
+          description='Water, partial cover, etc. (enter woods and smoke below)'
 
           value={this.state.targetData.c.otherMods}
-          onChange={(e) => this.updateTargetOtherMods(e, "c")}
+          onChange={(e) => this.updateTargetNumber(e, "c", "otherMods")}
           step={1}
           inline={true}
           min={-10}
           max={50}
         />
+        {this.renderTargetTerrain("c")}
         <InputNumeric
           label="Range"
           description='The number of hexes between your target'

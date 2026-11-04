@@ -350,6 +350,11 @@ export interface ITargetToHit {
     inRearArc: boolean;
     /** Airborne, not grounded: an aerospace unit, a VTOL, a 'Mech on a combat drop; not a jumping 'Mech (CO p.225). */
     airborne?: boolean;
+    /** Light and heavy woods, jungle or smoke hexes the attack passes through or into, the target's own included. */
+    lightWoodsHexes?: number;
+    heavyWoodsHexes?: number;
+    /** The darkness or night modifier, as the scenario sets it. */
+    darkness?: number;
 }
 
 export interface IGATOR {
@@ -8589,7 +8594,9 @@ export class BattleMech {
         public getPilotingSkillModifier(): number {
             // Enhanced Imaging: every Piloting Skill Roll -1 (Maximum Tech p.62; IO:AE p.69).
             return (this.isTripod() ? -1 : 0) + (this.hasActiveModularArmor() ? 1 : 0) + this.getFrankenMechLegPilotingModifier()
-                + (this.isEnhancedImagingActive() ? -1 : 0);
+                + (this.isEnhancedImagingActive() ? -1 : 0)
+                // Torso-Mounted Cockpit, blinded: three sensor hits, or two both in the head (TO:AUE p.113).
+                + (this.getCockpitType().tag === "torso-mounted" && (this.sensorHits() >= 3 || this.sensorHits(["hd"]) >= 2) ? 4 : 0);
         }
 
         public ignoresSecondaryTargetModifier(): boolean {
@@ -12278,10 +12285,10 @@ export class BattleMech {
         return rv;
     }
     /** Damaged Sensors slots in the head and, with a Torso-Mounted Cockpit, the center torso (TO:AUE p.113). */
-    public sensorHits(): number {
+    public sensorHits(locations: string[] = ["hd", "ct"]): number {
         let rv = 0;
 
-        for( const location of ["hd", "ct"] ) {
+        for( const location of locations ) {
             const slots = this._criticals[BattleMech.MECH_LOCATION_MAP[location]];
             for( const critIndex in slots ) {
                 if(
@@ -12302,6 +12309,13 @@ export class BattleMech {
      * Torso-Mounted Cockpit (TO:AUE p.113). */
     public areSensorsDestroyed(): boolean {
         return this.sensorHits() >= (this.isIndustrialMech() ? 1 : this.getCockpitType().tag === "torso-mounted" ? 3 : 2);
+    }
+
+    /** Weapon attack to-hit for sensor hits: +2 at the first (BD p.18; TW p.117), +4 at a Torso-Mounted Cockpit's
+     * second (TO:AUE p.113); none once the sensors can no longer fire. */
+    public getSensorToHitModifier(): number {
+        const hits = this.sensorHits();
+        return hits === 0 || this.areSensorsDestroyed() ? 0 : hits === 1 ? 2 : 4;
     }
 
     public toggleISBubble(clickLocation: string, clickIndex: number): void {
