@@ -39,4 +39,13 @@ describe("ArtVee readout", () => {
         expect(html).toContain("<pre>Mass: 55 tons</pre>");
         expect(html).toContain("<hr/>");
     });
+
+    it("draws an image block from the lore folder, with its description", () => {
+        const html = renderToStaticMarkup(<ReadoutText text={"![Three stages](artvee-falconet.svg)"} />);
+        expect(html).toMatch(/<img alt="Three stages" src="[^"]*artvee-falconet[^"]*\.svg/);
+    });
+
+    it("shows the Falconet in both modes and converting", () => {
+        expect(ARTVEE_READOUT).toMatch(/^!\[.*Vehicle Mode.*Blind Turn.*Siege Mode.*\]\(artvee-falconet\.svg\)$/m);
+    });
 });

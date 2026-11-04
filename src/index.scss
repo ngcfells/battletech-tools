@@ -1528,6 +1528,7 @@ body.retro {
 .artvee-readout {
   pre, table { display: block; max-width: 100%; overflow-x: auto; }
   pre { font-size: 0.85em; }
+  img { display: block; width: 100%; max-width: 900px; height: auto; margin: 1em 0 0.5em; }
   th, td { padding: 0.15em 0.6em 0.15em 0; text-align: left; }
   blockquote { margin: 0.75em 0; padding-left: 1em; border-left: 3px solid currentcolor; }
 }

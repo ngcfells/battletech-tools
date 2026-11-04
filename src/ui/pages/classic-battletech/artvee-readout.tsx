@@ -1,4 +1,5 @@
 import React, { type JSX } from 'react';
+import falconetArt from '../../../../docs/lore/artvee-falconet.svg';
 import readout from '../../../../docs/lore/artvee-tro.md?raw';
 import { IAppGlobals } from '../../app-router';
 import TextSection from '../../components/text-section';
@@ -20,7 +21,9 @@ function inline(text: string): React.ReactNode[] {
 
 const cells = (row: string): string[] => row.replace(/^\||\|$/g, "").split("|").map((cell) => cell.trim());
 
-/** The block forms the readout uses: headings, paragraphs, quotes, lists, tables, stat blocks and rules. */
+const images: Record<string, string> = { "artvee-falconet.svg": falconetArt };
+
+/** The block forms the readout uses: headings, paragraphs, quotes, lists, tables, stat blocks, images and rules. */
 export function ReadoutText({ text }: { text: string }): JSX.Element {
     const blocks: JSX.Element[] = [];
     const lines = text.split("\n");
@@ -40,8 +43,12 @@ export function ReadoutText({ text }: { text: string }): JSX.Element {
         const line = lines[at];
         const key = blocks.length;
         const heading = /^(#{1,3}) (.*)/.exec(line);
+        const image = /^!\[(.*)\]\((.*)\)$/.exec(line);
         if (!line.trim()) {
             at++;
+        } else if (image) {
+            at++;
+            blocks.push(<img key={key} alt={image[1]} src={images[image[2]]} />);
         } else if (heading) {
             at++;
             const Tag = `h${heading[1].length}` as "h1" | "h2" | "h3";
