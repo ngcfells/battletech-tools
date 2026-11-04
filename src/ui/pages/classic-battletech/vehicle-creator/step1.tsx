@@ -464,6 +464,7 @@ export default class VehicleCreatorStep1 extends React.Component<IStep1Props, IS
                                                 <option key={sample.id} value={sample.id}>{sample.name} ({sample.save.tonnage} tons)</option>
                                             ))}
                                         </select>
+                                        <Link className="smaller-text" to={`${process.env.PUBLIC_URL}/classic-battletech/artvee-readout`}>Read the ArtVee Technical Readout</Link>
                                     </label>
                                 ) : null}
 

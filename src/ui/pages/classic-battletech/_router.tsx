@@ -17,6 +17,7 @@ const ProtoMechCreatorRouter = React.lazy(() => import("./protomech-creator/_rou
 const SmallCraftCreatorRouter = React.lazy(() => import("./small-craft-creator/_router"));
 const CapitalShipCreatorRouter = React.lazy(() => import("./capital-ship-creator/_router"));
 const BuildingCreatorRouter = React.lazy(() => import("./building-creator/_router"));
+const ArtVeeReadout = React.lazy(() => import("./artvee-readout"));
 
 export default class ClassicBattleTechRouter extends React.Component<IClassicBattleTechRouterProps, IClassicBattleTechRouterState> {
 
@@ -80,6 +81,12 @@ export default class ClassicBattleTechRouter extends React.Component<IClassicBat
 
                 <Route path={`building-creator/*`} element={
                     <BuildingCreatorRouter
+                        appGlobals={this.props.appGlobals}
+                    />
+                }/>
+
+                <Route path={`artvee-readout`} element={
+                    <ArtVeeReadout
                         appGlobals={this.props.appGlobals}
                     />
                 }/>

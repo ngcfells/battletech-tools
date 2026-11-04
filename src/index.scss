@@ -1523,3 +1523,11 @@ body.retro {
     margin-right: 1em;
     white-space: nowrap;
 }
+
+// ArtVee Technical Readout: stat blocks and tables scroll on their own on a phone.
+.artvee-readout {
+  pre, table { display: block; max-width: 100%; overflow-x: auto; }
+  pre { font-size: 0.85em; }
+  th, td { padding: 0.15em 0.6em 0.15em 0; text-align: left; }
+  blockquote { margin: 0.75em 0; padding-left: 1em; border-left: 3px solid currentcolor; }
+}

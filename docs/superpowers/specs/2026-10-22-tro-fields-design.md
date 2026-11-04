@@ -8,7 +8,7 @@ Status: for user approval (2026-10-22). Mockups the user approved: `.superpowers
 The app builds units but keeps none of the text a Technical Readout (TRO) carries: the manufacturer and factory,
 the makes of the engine, armor and weapons, and the Overview, Capabilities and Deployment prose. SSW and MegaMek
 files carry that text, and the importers throw it away (TODO.md §2 asks for "manufacturer and fluff text" to be kept
-for round-trips; Ideas #53). Custom designs, such as the ArtVee patterns (`docs/lore/artvee-tro-skeleton.md`,
+for round-trips; Ideas #53). Custom designs, such as the ArtVee patterns (`docs/lore/artvee-tro.md`,
 Ideas #69), need somewhere to hold the write-up and a way to print it.
 
 ## Goals

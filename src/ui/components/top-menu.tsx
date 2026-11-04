@@ -101,6 +101,11 @@ export default class TopMenu extends React.Component<ITopMenuProps, ITopMenuStat
                     label: "Roster",
                     url: "/classic-battletech/roster",
                     tag: "classic-battletech-roster",
+                },
+                {
+                    label: "ArtVee Readout (Homebrew)",
+                    url: "/classic-battletech/artvee-readout",
+                    tag: "classic-battletech-artvee-readout",
                 }
             ]
         });
@@ -190,6 +195,11 @@ export default class TopMenu extends React.Component<ITopMenuProps, ITopMenuStat
                     label: "Roster",
                     url: "/classic-battletech/roster",
                     tag: "classic-battletech-roster",
+                },
+                {
+                    label: "ArtVee Readout (Homebrew)",
+                    url: "/classic-battletech/artvee-readout",
+                    tag: "classic-battletech-artvee-readout",
                 }
             ]
         });

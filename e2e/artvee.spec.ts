@@ -83,3 +83,21 @@ test("Vehicle Creator: a sample ArtVee loads at Custom Homebrew and is hidden be
 
     expect(errors).toEqual([]);
 });
+
+test("ArtVee readout: the sample list links to the Technical Readout, which lists all nine designs", async ({ page }) => {
+    const errors = watchErrors(page);
+
+    await page.goto("classic-battletech/vehicle-creator/step1");
+    await page.getByLabel("Rules Level").selectOption("6");
+    await page.getByLabel("Motive Type").selectOption("tracked");
+    await page.getByLabel("Era:").selectOption({ label: "Star League (2571-2780)" });
+    await page.getByRole("link", { name: "Read the ArtVee Technical Readout" }).click();
+
+    const readout = page.getByTestId("artvee-readout");
+    await expect(readout.getByRole("heading", { name: "Technical Readout: Combat Vehicle Overhaul (3085)" })).toBeVisible();
+    await expect(readout.getByRole("heading", { level: 2, name: /ArtVee [A-Z]{3}-/ })).toHaveCount(9);
+    await page.getByRole("link", { name: "Tormentum ArtVee TRM-1M" }).click();
+    await expect(page).toHaveURL(/#tormentum-artvee-trm-1m$/);
+    await expect(readout.getByRole("heading", { name: "Tormentum ArtVee TRM-1M" })).toBeInViewport();
+    expect(errors).toEqual([]);
+});
