@@ -116,6 +116,7 @@ export default class MULSearchFilters extends React.Component<IMULSearchFiltersP
                     <option value="introductory">Introductory</option>
                     <option value="standard">Standard</option>
                     <option value="advanced">Advanced</option>
+                    <option value="experimental">Experimental</option>
                 </select>
             </label>
         </div>

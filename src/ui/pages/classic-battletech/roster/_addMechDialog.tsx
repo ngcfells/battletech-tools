@@ -30,7 +30,7 @@ import { getBattleMechTroAdapter } from '../../../../classes/battlemech-tro';
 import { getUnitTroAdapter } from '../../../../classes/unit-tro';
 import type { TechnicalReadout } from '../../../../classes/technical-readout';
 import type { ITroUnitAdapter } from '../../../../data/technical-readout-interfaces';
-import { getMULAerospaceClass, MULAerospaceClass, buildClassicDesignIndex, ClassicDesignIndex, findClassicDesigns, getClassicMechEntries, getClassicUnitEntries, getDesignMULRecord, getDesignsOffMUL, getMULIdKey, getMULMatchKeys, IClassicDesignEntry, IDesignSummary, isMULCapitalShip, isMULLargeAerospaceCraft } from '../../../../utils/classicMULMatch';
+import { getMULAerospaceClass, MULAerospaceClass, buildClassicDesignIndex, ClassicDesignIndex, findClassicDesigns, getClassicMechEntries, getClassicUnitEntries, getDesignMULRecord, getDesignsOffMUL, getMULIdKey, getMULMatchKeys, getSSWRulesLevel, IClassicDesignEntry, IDesignSummary, isMULCapitalShip, isMULLargeAerospaceCraft } from '../../../../utils/classicMULMatch';
 import { IMULSearchFilters } from '../../../../utils/mulSearchFilters';
 import { getMULEraLabel, getMULTypeLabel } from '../../../../utils/mulUtilities';
 import { paginate } from '../../../../utils/paginate';
@@ -425,7 +425,7 @@ export default class BattleMechAddMechDialog extends React.Component<IBattleMech
         const tons = "getTonnage" in unit && unit.getTonnage ? +unit.getTonnage() : 0;
         const tech = "getTech" in unit && unit.getTech ? unit.getTech().name : "getTechName" in unit && unit.getTechName ? unit.getTechName() : "isClan" in unit && unit.isClan?.() ? "Clan" : "Inner Sphere";
         const year = ( unit.getEra() as { yearStart?: number } | null )?.yearStart;
-        return { ...base, tons, bv: unit.getBattleValue(), tech, typeId: design instanceof BattleMech && design.isIndustrialMech() ? 20 : typeId, year, bfType: bfType( tons ) };
+        return { ...base, tons, bv: unit.getBattleValue(), tech, typeId: design instanceof BattleMech && design.isIndustrialMech() ? 20 : typeId, year, rulesLevel: getSSWRulesLevel( unit.getRequiredRulesLevel() ), bfType: bfType( tons ) };
     }
 
     renderMULSearch = (): JSX.Element => {

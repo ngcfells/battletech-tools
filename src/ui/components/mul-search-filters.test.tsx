@@ -60,3 +60,10 @@ describe("MULSearchFilters Special Rulesets (#324 round 4)", () => {
         expect(tech.selectedOptions[0].textContent).toBe("Clan (not offered under the ticked rulesets)");
     });
 });
+
+describe("MULSearchFilters Search Rules (#614)", () => {
+    it("offers every graded rules level, Experimental included", () => {
+        render(<Harness start={newMULSearchFilters()} />);
+        expect(optionValues(/Search Rules/)).toEqual(["", "introductory", "standard", "advanced", "experimental"]);
+    });
+});

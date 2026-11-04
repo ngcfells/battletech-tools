@@ -1,5 +1,22 @@
 import { describe, expect, it } from "vitest";
-import { buildClassicDesignIndex, findClassicDesign, getDesignsOffMUL, getMULIdKey, getMULMatchKeys, getMULAerospaceClass, isMULCapitalShip, isMULLargeAerospaceCraft } from "./classicMULMatch";
+import { filterMULRecords } from "../utils";
+import { buildClassicDesignIndex, findClassicDesign, getDesignMULRecord, getDesignsOffMUL, getMULIdKey, getMULMatchKeys, getMULAerospaceClass, getSSWRulesLevel, isMULCapitalShip, isMULLargeAerospaceCraft } from "./classicMULMatch";
+import { newMULSearchFilters } from "./mulSearchFilters";
+
+// #614: a saved design carries its own rules level, so the Search Rules filter narrows it like a bundled one.
+describe("getSSWRulesLevel", () => {
+    const record = (level: number) => getDesignMULRecord({ name: "Goshawk", model: "EI", tons: 35, bv: 0, tech: "Clan", typeId: 18, rulesLevel: getSSWRulesLevel(level) }, "k");
+
+    it("turns the app's Introductory 1 to Experimental 4 into the MUL Rules names", () => {
+        expect([1, 2, 3, 4].map((level) => record(level).Rules)).toEqual(["Introductory", "Standard", "Advanced", "Experimental"]);
+    });
+
+    it("leaves an ungraded or off-scale level unset, so every Rules choice keeps it", () => {
+        expect([0, 5, 6, 7].map((level) => record(level).Rules)).toEqual(["", "", "", ""]);
+        expect(filterMULRecords([record(4)], newMULSearchFilters({ rules: "experimental" }))).toHaveLength(1);
+        expect(filterMULRecords([record(4)], newMULSearchFilters({ rules: "standard" }))).toHaveLength(0);
+    });
+});
 
 describe("getMULMatchKeys", () => {
     it("drops quotes, parentheses and HTML entities so MUL and Skunk Werks spellings meet", () => {

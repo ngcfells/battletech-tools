@@ -126,6 +126,11 @@ export interface IDesignSummary {
 }
 
 const SSW_RULES_LEVELS = ["Introductory", "Standard", "Advanced", "Experimental", "Era Specific"];
+/** The app rules level (Introductory 1 to Experimental 4) as a Skunk Werks one; ungraded or off-scale stays unset. */
+export function getSSWRulesLevel(level: number): number | undefined {
+    return level >= 1 && level <= 4 ? level - 1 : undefined;
+}
+
 const MUL_TECHNOLOGIES = [{ Id: 1, Name: "Inner Sphere" }, { Id: 2, Name: "Clan" }, { Id: 3, Name: "Mixed" }];
 
 /**

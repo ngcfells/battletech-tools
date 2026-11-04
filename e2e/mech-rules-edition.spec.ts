@@ -246,7 +246,12 @@ test("EI implants raise the roster's adjusted BV under TW", async ({ page }) => 
 
     await page.goto("classic-battletech/roster");
     await page.getByTitle("Add 'Mechs, or search the Master Unit List for any unit type").first().click();
-    await page.locator(".modal tr", { hasText: "Saved" }).getByRole("button", { name: /^Add / }).first().click();
+    // #614: the design is Experimental (TW, the IO:AE interface), so Search Rules narrows to it, and Standard leaves it out.
+    const saved = page.locator(".modal tr", { hasText: "Saved" });
+    await page.getByLabel(/Search Rules/).selectOption("standard");
+    await expect(saved).toHaveCount(0);
+    await page.getByLabel(/Search Rules/).selectOption("experimental");
+    await saved.getByRole("button", { name: /^Add / }).first().click();
     await page.getByRole("dialog").getByRole("button", { name: "Close" }).first().click();
     await expect(page.locator(".modal")).toHaveCount(0);
     await page.getByTitle("Edit the name and pilot of this unit").first().click();
