@@ -250,6 +250,33 @@ test("offers armless 'Mechs under BMR(R) Advanced, saved across a reload, and th
     expect(errors).toEqual([]);
 });
 
+// Maximum Tech p.62: the critical hit dialog has no arms to hit.
+test("plays an armless 'Mech with no arm critical tables", async ({ page }) => {
+    const errors: string[] = [];
+    page.on("pageerror", (error) => errors.push(error.stack ?? error.message));
+    await page.goto("classic-battletech/mech-creator");
+    await page.getByTitle("Click here to clear out your current 'mech and start over.").click();
+    await page.goto("classic-battletech/mech-creator/step1");
+    await page.getByLabel("Rules Edition").selectOption("master-rules-revised");
+    await page.getByLabel("Rules Level").selectOption("3");
+    await page.getByTestId("armless").check();
+    await page.goto("classic-battletech/mech-creator");
+    await page.getByTitle("Click here to save a a new 'mech row").click();
+
+    await page.goto("classic-battletech/roster");
+    await page.getByTitle("Add 'Mechs, or search the Master Unit List for any unit type").first().click();
+    await page.locator(".modal tr", { hasText: "Saved" }).getByRole("button", { name: /^Add / }).first().click();
+    await page.goto("classic-battletech/roster/play");
+    await page.locator(".mech-selector li button").first().click();
+    await page.getByTitle("Weapon Attack Phase").click();
+    await page.locator("svg.cursor-pointer[viewBox='0 0 210 210']").last().click();
+
+    const legends = page.locator(".modal fieldset legend");
+    await expect(legends.filter({ hasText: /^Head$/ })).toHaveCount(1);
+    await expect(legends.filter({ hasText: /Arm$/ })).toHaveCount(0);
+    expect(errors).toEqual([]);
+});
+
 // IO:AE p.184: under TW a pilot with EI implants in a 'Mech with the EI interface reads Gunnery and Piloting 1 better.
 test("EI implants raise the roster's adjusted BV under TW", async ({ page }) => {
     const errors: string[] = [];

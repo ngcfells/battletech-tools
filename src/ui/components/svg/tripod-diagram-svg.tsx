@@ -87,6 +87,7 @@ export const tripodCenterLegBubbles = (count: number, layout: ITripodCenterLegBu
 };
 
 interface ITripodDiagramSVGProps {
+    armless?: boolean;
     className?: string;
     xLoc?: number;
     yLoc?: number;
@@ -119,7 +120,7 @@ export function TripodArmorDiagramSVG( props: ITripodDiagramSVGProps ): JSX.Elem
     const strokeColor = props.strokeColor ?? "rgb(0,0,0)";
     return (
         <TripodArtFrame {...props} label="Tripod armor diagram">
-            <BipedArmorDiagramSVG width={ART_BASE_WIDTH} bgColor={props.bgColor} strokeColor={props.strokeColor} />
+            <BipedArmorDiagramSVG width={ART_BASE_WIDTH} bgColor={props.bgColor} strokeColor={props.strokeColor} armless={props.armless} />
             <polygon className="tripod-center-leg" points={ARMOR_CENTER_LEG} fill={props.bgColor ?? "rgb(255,255,255)"} stroke={strokeColor} strokeWidth={6} strokeLinejoin="round" />
         </TripodArtFrame>
     );
@@ -129,7 +130,7 @@ export function TripodInternalStructureDiagramSVG( props: ITripodDiagramSVGProps
     const strokeColor = props.strokeColor ?? "rgb(0,0,0)";
     return (
         <TripodArtFrame {...props} label="Tripod internal structure diagram">
-            <BipedInternalStructureDiagramSVG width={ART_BASE_WIDTH} bgColor={props.bgColor} strokeColor={props.strokeColor} />
+            <BipedInternalStructureDiagramSVG width={ART_BASE_WIDTH} bgColor={props.bgColor} strokeColor={props.strokeColor} armless={props.armless} />
             <polygon className="tripod-center-leg" points={INTERNAL_CENTER_LEG} fill={props.bgColor ?? "rgb(255,255,255)"} stroke={strokeColor} strokeWidth={6} strokeLinejoin="round" />
         </TripodArtFrame>
     );
@@ -139,7 +140,7 @@ export function TripodDamageTransferDiagramSVG( props: ITripodDiagramSVGProps ):
     const strokeColor = props.strokeColor ?? "rgb(0,0,0)";
     return (
         <TripodArtFrame {...props} label="Tripod damage transfer diagram">
-            <BipedDamageTransferDiagramSVG width={ART_BASE_WIDTH} bgColor={props.bgColor} strokeColor={props.strokeColor} />
+            <BipedDamageTransferDiagramSVG width={ART_BASE_WIDTH} bgColor={props.bgColor} strokeColor={props.strokeColor} armless={props.armless} />
             <polygon className="tripod-center-leg" points={TRANSFER_CENTER_LEG} fill={props.bgColor ?? "rgb(255,255,255)"} stroke={strokeColor} strokeWidth={6} strokeLinejoin="round" />
             <polygon className="tripod-center-leg-arrow" points={TRANSFER_CENTER_LEG_ARROW} fill={strokeColor} />
         </TripodArtFrame>

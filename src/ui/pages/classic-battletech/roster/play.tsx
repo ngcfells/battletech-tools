@@ -2592,14 +2592,14 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
     <div className="row">
       <div className="col">
 
-        <InPlayCriticalHitTable
+        {this.state.criticalHitDialog.isArmless() ? null : <InPlayCriticalHitTable
           appGlobals={this.props.appGlobals}
           location={this.state.criticalHitDialog.isQuad() || this.state.criticalHitDialog.isQuadVee() ? "fll" : "la"}
           mechData={this.state.criticalHitDialog}
           critData={this.state.criticalHitDialog.isQuad() || this.state.criticalHitDialog.isQuadVee() ? this.state.criticalHitDialog.getCriticals().frontLeftLeg : this.state.criticalHitDialog.getCriticals().leftArm}
           numberCritSlots={this.state.criticalHitDialog.isQuad() || this.state.criticalHitDialog.isQuadVee() ? 6 : 12}
           onChange={this.updateCriticalHitDialog}
-        />
+        />}
 
         <InPlayCriticalHitTable
           appGlobals={this.props.appGlobals}
@@ -2691,14 +2691,14 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
       </div>
       <div className="col">
 
-      <InPlayCriticalHitTable
+      {this.state.criticalHitDialog.isArmless() ? null : <InPlayCriticalHitTable
           appGlobals={this.props.appGlobals}
           location={this.state.criticalHitDialog.isQuad() || this.state.criticalHitDialog.isQuadVee() ? "frl" : "ra"}
           mechData={this.state.criticalHitDialog}
           critData={this.state.criticalHitDialog.isQuad() || this.state.criticalHitDialog.isQuadVee() ? this.state.criticalHitDialog.getCriticals().frontRightLeg : this.state.criticalHitDialog.getCriticals().rightArm}
           numberCritSlots={this.state.criticalHitDialog.isQuad() || this.state.criticalHitDialog.isQuadVee() ? 6 : 12}
           onChange={this.updateCriticalHitDialog}
-        />
+        />}
 
         <InPlayCriticalHitTable
           appGlobals={this.props.appGlobals}

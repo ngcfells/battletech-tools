@@ -1982,28 +1982,17 @@ export class BattleMech {
             cbillDryTotal += 120 * this.getTonnage();
             actuatorTotal += 120 * this.getTonnage();
 
-            // 2A. Arm Actuator Setups (Biped/LAM base plus Tripod extension)
-            // An armless 'Mech buys no arm actuators (Maximum Tech p.87).
+            // 2A. Arm actuators: upper 100, lower 50, hand 80 x tonnage; the shoulder is not priced (BMR(R) p.149; TM p.278).
+            // Only what is mounted is bought, and an armless 'Mech buys none (Maximum Tech p.87).
             if (["biped", "lam", "tripod"].includes(this._mechType.tag.toLowerCase()) && !this.isArmless()) {
-                const arms = ["Right", "Left"];
-                
-                arms.forEach(side => {
-                    this._calcLogCBill += `<tr><td>${side} Shoulder Actuator<br /><span class="smaller-text">150 x Unit Tonnage [${this.getTonnage()}]</span></td><td>${addCommas(150 * this.getTonnage())}</td></tr>\n`;
-                    cbillDryTotal += 150 * this.getTonnage();
-                    actuatorTotal += 150 * this.getTonnage();
-
-                    this._calcLogCBill += `<tr><td>${side} Upper Arm Actuator<br /><span class="smaller-text">150 x Unit Tonnage [${this.getTonnage()}]</span></td><td>${addCommas(150 * this.getTonnage())}</td></tr>\n`;
-                    cbillDryTotal += 150 * this.getTonnage();
-                    actuatorTotal += 150 * this.getTonnage();
-
-                    // Check for structural hand/lower actuator exclusions if tracking custom options
-                    this._calcLogCBill += `<tr><td>${side} Lower Arm Actuator<br /><span class="smaller-text">80 x Unit Tonnage [${this.getTonnage()}]</span></td><td>${addCommas(80 * this.getTonnage())}</td></tr>\n`;
-                    cbillDryTotal += 80 * this.getTonnage();
-                    actuatorTotal += 80 * this.getTonnage();
-
-                    this._calcLogCBill += `<tr><td>${side} Hand Actuator<br /><span class="smaller-text">120 x Unit Tonnage [${this.getTonnage()}]</span></td><td>${addCommas(120 * this.getTonnage())}</td></tr>\n`;
-                    cbillDryTotal += 120 * this.getTonnage();
-                    actuatorTotal += 120 * this.getTonnage();
+                ([["Right", "ra"], ["Left", "la"]] as const).forEach(([side, arm]) => {
+                    const lowerArm = this.hasLowerArmActuator(arm);
+                    const actuators: [string, number][] = [["Upper Arm", 100], ...(lowerArm ? [["Lower Arm", 50]] as [string, number][] : []), ...(lowerArm && this.hasHandActuator(arm) ? [["Hand", 80]] as [string, number][] : [])];
+                    actuators.forEach(([name, price]) => {
+                        this._calcLogCBill += `<tr><td>${side} ${name} Actuator<br /><span class="smaller-text">${price} x Unit Tonnage [${this.getTonnage()}]</span></td><td>${addCommas(price * this.getTonnage())}</td></tr>\n`;
+                        cbillDryTotal += price * this.getTonnage();
+                        actuatorTotal += price * this.getTonnage();
+                    });
                 });
             }
 
@@ -2621,6 +2610,13 @@ export class BattleMech {
     /** Built without arms: chosen, and allowed by the chassis in force (Maximum Tech p.62). */
     public isArmless(): boolean {
         return this._armless && this.canBeArmless();
+    }
+
+    /** A hit on an arm that is not there "does no damage" and "does not transfer" (Maximum Tech p.62). */
+    private static readonly ARMLESS_HIT = "Armless: the arm hit has no effect (Maximum Tech p.62).";
+
+    private _isArmlessArm(location: string): boolean {
+        return this.isArmless() && (location === "la" || location === "ra");
     }
 
     /** Build the 'Mech with or without arms; returns whether it is armless. Arm armor goes, arm equipment comes off. */
@@ -6444,6 +6440,7 @@ export class BattleMech {
      * `extraModifier` is added to the chance roll (a fall, see rollIndustrialMechDamageCheck).
      */
     public rollCriticalHit(location: string, dice: { chance?: number; lines?: number[] } = {}, extraModifier: number = 0): string[] {
+        if (this._isArmlessArm(this._normalizeLocation(location))) return [BattleMech.ARMLESS_HIT];
         if (this.getEditionPlayRules()) return this.rollEditionCriticalHit(location, dice);
         const die = () => 1 + Math.floor(Math.random() * 6);
         const roll = dice.chance ?? die() + die();
@@ -9897,6 +9894,9 @@ export class BattleMech {
 
         const rv: IDamageResults[] = [];
         location = this._normalizeLocation(location);
+        if (this._isArmlessArm(location)) {
+            return [{ criticals: 0, criticalRoll: 0, criticalEffects: [BattleMech.ARMLESS_HIT], location, amount: 0 }];
+        }
         let structureHit = false;
         const structure = (at: string, damage: number) => {
             const left = this._takeStructureDamageAtLocation(at, damage);

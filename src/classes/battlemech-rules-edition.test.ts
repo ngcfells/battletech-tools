@@ -507,6 +507,30 @@ describe("ICE engines in BattleMechs by edition (issue 40)", () => {
     });
 });
 
+// #616. Arm actuators: upper 100, lower 50, hand 80 x tonnage, no shoulder price (BMR(R) p.149; TM p.278). Before this,
+// they took the leg rates and a shoulder charge, and removed actuators were still paid for.
+describe("arm actuator costs (#616)", () => {
+    const tons = 50;
+    const multiplier = 1 + tons / 100;
+
+    it("charges the book's prices and no shoulder", () => {
+        const log = build().getCBillCalcHTML();
+        expect(log).not.toContain("Shoulder");
+        expect(log).toContain("Right Upper Arm Actuator<br /><span class=\"smaller-text\">100 x");
+        expect(log).toContain("Left Lower Arm Actuator<br /><span class=\"smaller-text\">50 x");
+        expect(log).toContain("Left Hand Actuator<br /><span class=\"smaller-text\">80 x");
+    });
+
+    it("does not charge for a removed hand, or a removed lower arm and its hand", () => {
+        const mech = build();
+        const full = mech.getCBillCostNumeric();
+        mech.removeHandActuator("la");
+        expect(full - mech.getCBillCostNumeric()).toBe(80 * tons * multiplier);
+        mech.removeLowerArmActuator("ra");
+        expect(full - mech.getCBillCostNumeric()).toBe((80 + 50 + 80) * tons * multiplier);
+    });
+});
+
 // Maximum Tech pp.62-63, 87, 92 (user rulings R4, 2026-11-03): at Level 3 an armless 'Mech takes no armor or equipment
 // in its arms, which are "technically not present"; TW drops the rule, so there it is built at the Apocryphal level.
 describe("Armless 'Mechs (Maximum Tech pp.62-63)", () => {
@@ -593,6 +617,22 @@ describe("Armless 'Mechs (Maximum Tech pp.62-63)", () => {
         const mech = armless("tripod", "total-warfare");
         mech.setArmless(true);
         expect(mech.getBVCalcHTML()).not.toContain("armless +0.1");
+    });
+
+    it("does nothing on an arm hit: no damage, no transfer, no critical hit (Max Tech p.62)", () => {
+        const mech = armless();
+        mech.allocateArmorMax();
+        mech.setArmless(true);
+        const before = [mech.getCurrentArmor(), mech.getCurrentStructure()];
+        for (const arm of ["la", "ra"]) {
+            const results = mech.takeDamage(20, arm, false);
+            expect(results.map(result => result.amount)).toEqual([0]);
+            expect(results[0].criticalEffects.join(" ")).toContain("no effect");
+            expect(mech.rollCriticalHit(arm, { chance: 12 }).join(" ")).toContain("no effect");
+        }
+        expect([mech.getCurrentArmor(), mech.getCurrentStructure()]).toEqual(before);
+        mech.takeDamage(5, "lt", false);
+        expect(mech.getCurrentArmor()).toBe(before[0] - 5);
     });
 
     it("lists Armless in the TRO weights and survives a save and load", () => {

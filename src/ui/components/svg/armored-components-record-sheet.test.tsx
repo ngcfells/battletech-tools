@@ -52,12 +52,28 @@ describe("Enhanced Imaging on the record sheet", () => {
 
 // Maximum Tech p.62: the sheet still has to draw when the arms hold nothing.
 describe("an armless 'Mech on the record sheet", () => {
-    it.each(["biped", "tripod"])("renders a %s", (type) => {
+    const sheet = (type: string, armless: boolean) => {
         const mech = new BattleMech();
         mech.setRulesEdition(type === "biped" ? "master-rules-revised" : "total-warfare");
         mech.setMechType(type);
         mech.setTonnage(50);
-        expect(mech.setArmless(true)).toBe(true);
-        expect(renderToStaticMarkup(<BattleMechSVG mechData={mech} />)).toContain("<svg");
+        mech.setArmless(armless);
+        return renderToStaticMarkup(<BattleMechSVG mechData={mech} />);
+    };
+
+    it.each(["biped", "tripod"])("draws no arms on a %s, and notes the play rules", (type) => {
+        const withArms = sheet(type, false);
+        expect(withArms).toContain("LEFT ARM");
+        expect(withArms).toContain("Hand Actuator");
+        expect(withArms).not.toContain("armless-outline");
+        const markup = sheet(type, true);
+        expect(markup).not.toContain("LEFT ARM");
+        expect(markup).not.toContain("RIGHT ARM");
+        expect(markup).not.toContain("ARM [");
+        expect(markup).not.toContain("Shoulder");
+        expect(markup).not.toContain("Hand Actuator");
+        // Armor, structure and damage transfer outlines.
+        expect((markup.match(/armless-outline/g) ?? []).length).toBeGreaterThanOrEqual(3);
+        expect(markup).toContain("Standing: +4 Piloting");
     });
 });

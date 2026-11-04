@@ -84,6 +84,7 @@ export const armlessMechOption: IMechType = {
 	rulesLevel: 3,
 	book: "MaxTech",
 	page: 62,
+	notes: "Arm hits do nothing and do not transfer. No punches, pushes or clubs. Standing: +4 Piloting.",
 	editions: ["master-rules-revised"],
 	editionLevels: { "master-rules-revised": 3 },
 	introducedInEdition: "master-rules-revised",

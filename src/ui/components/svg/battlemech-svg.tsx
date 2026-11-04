@@ -5,6 +5,7 @@ import { CONST_HIGHLIGHT_COLOR } from '../../../configVars';
 import { formatBattleValue, getBattleValueRules } from '../../../data/battle-value';
 import { editionHasPrices } from '../../../data/rules-editions';
 import { breakLines } from '../../../utils/breakLines';
+import { armlessMechOption } from '../../../data/mech-type-options';
 import BattleTechLogo from '../battletech-logo';
 import { NOT_ENDORSED, TRADEMARK_NOTICE } from './record-sheet-svg-kit';
 import { drawnBubble } from './armor-bubble-layouts';
@@ -87,6 +88,7 @@ export default class BattleMechSVG extends React.Component<IBattleMechSVGProps, 
         // Biped/LAM use the Biped anatomy; Tripod extends that base with a Center Leg overlay.
         // QuadVee correctly reuses the Quad diagram (same 4-leg, no-arm anatomy).
         const hasArms = !this.props.mechData.isQuad() && !this.props.mechData.isQuadVee();
+        const armless = this.props.mechData.isArmless();
 
         let bgColor = "rgb(255,255,255)";
         let strokeColor = "rgb(0,0,0)";
@@ -751,9 +753,9 @@ export default class BattleMechSVG extends React.Component<IBattleMechSVGProps, 
     {hasArms ? (
         <>
             {this.props.mechData.isTripod() ? (
-                <TripodArmorDiagramSVG xLoc={1263} yLoc={-10} width={700} bgColor={bgColor} />
+                <TripodArmorDiagramSVG xLoc={1263} yLoc={-10} width={700} bgColor={bgColor} armless={armless} />
             ) : (
-                <BipedArmorDiagramSVG xLoc={1263} yLoc={-10} width={700} bgColor={bgColor} />
+                <BipedArmorDiagramSVG xLoc={1263} yLoc={-10} width={700} bgColor={bgColor} armless={armless} />
             )}
 
             {/* A Tripod's rear armor is the Biped's: the Center Leg has none. */}
@@ -782,11 +784,13 @@ export default class BattleMechSVG extends React.Component<IBattleMechSVGProps, 
 		<text x={this.armorBoxLeft + this.armorBoxWidth / 2 + 55} y={this.armorBoxTop + 95} textAnchor="start" fontFamily="sans-serif" fill={strokeColor} style={{fontWeight: 700}} fontSize={20}>RIGHT TORSO</text>
 		<text x={this.armorBoxLeft + this.armorBoxWidth / 2 + 85} y={this.armorBoxTop + 115} textAnchor="start" fontFamily="sans-serif" fill={strokeColor} style={{fontWeight: 700}} fontSize={20}>[{this.props.mechData.getArmorAllocation().rightTorso }]</text>
 
+        {armless ? null : <>
 		<text x={this.armorBoxLeft +  20} y={this.armorBoxTop + 620} textAnchor="start" fontFamily="sans-serif" fill={strokeColor} style={{fontWeight: 700}} fontSize={20}>LEFT</text>
 		<text x={this.armorBoxLeft +  20} y={this.armorBoxTop + 640} textAnchor="start" fontFamily="sans-serif" fill={strokeColor} style={{fontWeight: 700}} fontSize={20}>ARM [{this.props.mechData.getArmorAllocation().leftArm }]</text>
 
 		<text x={this.armorBoxLeft + this.armorBoxWidth - 40} y={this.armorBoxTop + 620} textAnchor="end" fontFamily="sans-serif" fill={strokeColor} style={{fontWeight: 700}} fontSize={20}>RIGHT</text>
 		<text x={this.armorBoxLeft + this.armorBoxWidth - 40} y={this.armorBoxTop + 640} textAnchor="end" fontFamily="sans-serif" fill={strokeColor} style={{fontWeight: 700}} fontSize={20}>ARM [{this.props.mechData.getArmorAllocation().rightArm }]</text>
+        </>}
 
 		<text x={this.armorBoxLeft +  20} y={this.armorBoxTop + 890} textAnchor="start" fontFamily="sans-serif" fill={strokeColor} style={{fontWeight: 700}} fontSize={20}>LEFT</text>
 		<text x={this.armorBoxLeft +  20} y={this.armorBoxTop + 910} textAnchor="start" fontFamily="sans-serif" fill={strokeColor} style={{fontWeight: 700}} fontSize={20}>LEG [{this.props.mechData.getArmorAllocation().leftLeg }]</text>
@@ -927,9 +931,9 @@ export default class BattleMechSVG extends React.Component<IBattleMechSVGProps, 
     {hasArms ? (
         <>
             {this.props.mechData.isTripod() ? (
-                <TripodInternalStructureDiagramSVG xLoc={1350} yLoc={1275} width={420} />
+                <TripodInternalStructureDiagramSVG xLoc={1350} yLoc={1275} width={420} armless={armless} />
             ) : (
-                <BipedInternalStructureDiagramSVG xLoc={1350} yLoc={1275} width={420} />
+                <BipedInternalStructureDiagramSVG xLoc={1350} yLoc={1275} width={420} armless={armless} />
             )}
 
         {/* // Main Structure Labels */}
@@ -941,11 +945,13 @@ export default class BattleMechSVG extends React.Component<IBattleMechSVGProps, 
 		<text x={this.isBoxLeft + this.isBoxWidth / 2 + 65} y={this.isBoxTop + 85} textAnchor="start" fontFamily="sans-serif" fill={strokeColor} style={{fontWeight: 700}} fontSize={15}>RIGHT TORSO</text>
 		<text x={this.isBoxLeft + this.isBoxWidth / 2 + 65} y={this.isBoxTop + 105} textAnchor="start" fontFamily="sans-serif" fill={strokeColor} style={{fontWeight: 700}} fontSize={15}>[{this.props.mechData.getInternalStructure().rightTorso }]</text>
 
+        {armless ? null : <>
 		<text x={this.isBoxLeft +  this.isBoxWidth / 2 - 200} y={this.isBoxTop + 310} textAnchor="end" fontFamily="sans-serif" fill={strokeColor} style={{fontWeight: 700}} fontSize={15}>LEFT</text>
 		<text x={this.isBoxLeft +  this.isBoxWidth / 2 - 200} y={this.isBoxTop + 330} textAnchor="end" fontFamily="sans-serif" fill={strokeColor} style={{fontWeight: 700}} fontSize={15}>ARM [{this.props.mechData.getInternalStructure().leftArm }]</text>
 
 		<text x={this.isBoxLeft + this.isBoxWidth / 2 + 200} y={this.isBoxTop + 310} textAnchor="start" fontFamily="sans-serif" fill={strokeColor} style={{fontWeight: 700}} fontSize={15}>RIGHT</text>
 		<text x={this.isBoxLeft + this.isBoxWidth / 2 + 200} y={this.isBoxTop + 330} textAnchor="start" fontFamily="sans-serif" fill={strokeColor} style={{fontWeight: 700}} fontSize={15}>ARM [{this.props.mechData.getInternalStructure().rightArm }]</text>
+        </>}
 
 		<text x={this.isBoxLeft +  this.isBoxWidth / 2 - 150} y={this.isBoxTop + 570} textAnchor="end" fontFamily="sans-serif" fill={strokeColor} style={{fontWeight: 700}} fontSize={15}>LEFT</text>
 		<text x={this.isBoxLeft +  this.isBoxWidth / 2 - 150} y={this.isBoxTop + 590} textAnchor="end" fontFamily="sans-serif" fill={strokeColor} style={{fontWeight: 700}} fontSize={15}>LEG [{this.props.mechData.getInternalStructure().leftLeg }]</text>
@@ -1068,6 +1074,15 @@ export default class BattleMechSVG extends React.Component<IBattleMechSVGProps, 
         strokeColor={this.props.currentPhase === 2 ? currentPhaseGroupColor : undefined}
     >
 
+        {armless ? (
+            <g fontFamily="sans-serif" fill={strokeColor}>
+                <text x={critBoxLeft + critCol1Start} y={critBoxTop + 100} style={{fontWeight: 700}} fontSize={30}>ARMLESS</text>
+                {breakLines(armlessMechOption.notes ?? "", 34).map((line, lineIndex) => (
+                    <text key={lineIndex} x={critBoxLeft + critCol1Start} y={critBoxTop + 140 + lineIndex * 26} fontSize={22}>{line}</text>
+                ))}
+            </g>
+        ) : null}
+        {armless ? null : <>
 {/* // Left Arm */}
         <text
             x={critBoxLeft + critCol1Start}
@@ -1094,6 +1109,7 @@ export default class BattleMechSVG extends React.Component<IBattleMechSVGProps, 
             yLoc={critBoxTop + 140}
             location="la"
         />
+        </>}
 	{/* // Head */}
         <text
             x={critBoxLeft + critCol2Start}
@@ -1116,6 +1132,7 @@ export default class BattleMechSVG extends React.Component<IBattleMechSVGProps, 
             location="hd"
         />
 
+        {armless ? null : <>
         <text
             x={critBoxLeft + critCol3Start}
             y={critBoxTop + 100}
@@ -1140,6 +1157,7 @@ export default class BattleMechSVG extends React.Component<IBattleMechSVGProps, 
             yLoc={critBoxTop + 140}
             location="ra"
         />
+        </>}
 
         <text
             x={critBoxLeft + critCol1Start}
@@ -1275,6 +1293,7 @@ export default class BattleMechSVG extends React.Component<IBattleMechSVGProps, 
         <>
             {this.props.mechData.isTripod() ? (
                 <TripodDamageTransferDiagramSVG
+                    armless={armless}
                     xLoc={critBoxLeft + critBoxWidth / 2 - damageTransferWidth / 2}
                     yLoc={critBoxTop + 950}
                     width={damageTransferWidth}
@@ -1282,6 +1301,7 @@ export default class BattleMechSVG extends React.Component<IBattleMechSVGProps, 
                 />
             ) : (
                 <BipedDamageTransferDiagramSVG
+                    armless={armless}
                     xLoc={critBoxLeft + critBoxWidth / 2 - damageTransferWidth / 2}
                     yLoc={critBoxTop + 950}
                     width={damageTransferWidth}
