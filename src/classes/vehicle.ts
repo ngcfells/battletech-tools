@@ -9,7 +9,7 @@ import { IAssignedQuirk, IQuirkTargets, QuirkUnitType } from "../data/quirk-inte
 import { getQuirkIssues, getQuirkTargets } from "../data/quirk-registry";
 import { QuirkList } from "./quirk-list";
 import { getAlphaStrikeQuirks } from "../utils/quirk-effects";
-import { DEFAULT_RULES_EDITION, getSelectableRulesEditionTag } from "../data/rules-editions";
+import { DEFAULT_RULES_EDITION, getArtVeePlayRules, getSelectableRulesEditionTag } from "../data/rules-editions";
 import { BattleValueC3Type, IBattleValueC3Part, IBattleValueTagShare, getBattleValueC3Part, getBattleValueC3Type, getBattleValueFor, getBattleValueSkillEdition, getBattleValueTagShare, getSkillMultiplier } from "../data/battle-value";
 import { getComboArtillery } from "../data/artillery-custom";
 import {
@@ -237,6 +237,10 @@ export interface IVehicleInPlay {
     artVeeTransformingTo?: ArtVeeMode | "";
     /** The ArtVee Conversion Equipment has been destroyed: the unit is stuck in its current Mode. */
     artVeeConversionDestroyed?: boolean;
+    /** The ArtVee's spades are fouled: it cannot leave Siege Mode until it jettisons them. */
+    artVeeSpadesFouled?: boolean;
+    /** The ArtVee has jettisoned its spades, for the rest of the game. */
+    artVeeSpadesJettisoned?: boolean;
     /** Legacy flags from saves made before motiveHits. */
     motiveDamage?: IVehicleMotiveDamage;
 }
@@ -275,6 +279,8 @@ const newInPlay = (): IVehicleInPlay => ({
     artVeeMode: "vehicle",
     artVeeTransformingTo: "",
     artVeeConversionDestroyed: false,
+    artVeeSpadesFouled: false,
+    artVeeSpadesJettisoned: false,
 });
 
 export type ArtVeeMode = "vehicle" | "siege";
@@ -396,6 +402,8 @@ export const normalizeVehicleInPlay = (saved: unknown): IVehicleInPlay => {
         artVeeMode: saved.artVeeMode === "siege" ? "siege" : "vehicle",
         artVeeTransformingTo: saved.artVeeTransformingTo === "siege" || saved.artVeeTransformingTo === "vehicle" ? saved.artVeeTransformingTo : "",
         artVeeConversionDestroyed: flag(saved.artVeeConversionDestroyed, false),
+        artVeeSpadesFouled: flag(saved.artVeeSpadesFouled, false),
+        artVeeSpadesJettisoned: flag(saved.artVeeSpadesJettisoned, false),
     };
 };
 
@@ -1464,14 +1472,44 @@ export default class Vehicle implements IGameSettingsUnit {
         if (this._inPlay.artVeeConversionDestroyed) return "the conversion equipment is destroyed";
         if (this._inPlay.artVeeTransformingTo) return "it is already transforming";
         if (this._inPlay.criticals.crewKilled) return "the crew is killed";
+        if (this.getArtVeeMode() === "siege" && this._inPlay.artVeeSpadesFouled) return "the spades are fouled: jettison them first";
         // The transformation is declared before moving: it is the unit's only action that turn (ArtVee ruling 2026-10-21).
         if (this._inPlay.movementMode !== "stationary" || this._inPlay.hexesMoved > 0) return "it has already moved this turn";
         return null;
     }
 
-    /** True when the conversion equipment is destroyed or the crew is killed, which strands a pending transformation. */
+    /** True when destroyed conversion equipment, a killed crew or fouled spades strand a pending transformation. */
     public getArtVeeTransformationBlockedByDamage(): boolean {
-        return this._artVee && (!!this._inPlay.artVeeConversionDestroyed || !!this._inPlay.criticals.crewKilled);
+        const fouled = this.getArtVeeMode() === "siege" && !!this._inPlay.artVeeSpadesFouled;
+        return this._artVee && (!!this._inPlay.artVeeConversionDestroyed || !!this._inPlay.criticals.crewKilled || fouled);
+    }
+
+    /** Why the ArtVee can't try a Bishop Move now, or null. */
+    public getArtVeeBishopMoveBlock(): string | null {
+        if (!this._artVee) return "it is not an ArtVee";
+        if (this.getArtVeeMode() === "siege" || this._inPlay.artVeeTransformingTo) return "it is not in Vehicle Mode";
+        if (this.isImmobile()) return "it is immobile";
+        return null;
+    }
+
+    /** The Driving Skill Roll target for each Bishop Move shift. */
+    public getArtVeeBishopMoveTarget(): number {
+        return this.getDrivingSkillTarget(getArtVeePlayRules(this._rulesEdition).bishopMove.drivingModifier);
+    }
+
+    /** Marks the spades fouled or clear, in Siege Mode with spades still on. True when that is now their state. */
+    public setArtVeeSpadesFouled(fouled: boolean): boolean {
+        if (this.getArtVeeMode() !== "siege" || this._inPlay.artVeeSpadesJettisoned) return false;
+        this._inPlay.artVeeSpadesFouled = fouled;
+        return true;
+    }
+
+    /** Drops fouled spades so the ArtVee can leave Siege Mode. True when they went. */
+    public jettisonArtVeeSpades(): boolean {
+        if (!this._inPlay.artVeeSpadesFouled) return false;
+        this._inPlay.artVeeSpadesFouled = false;
+        this._inPlay.artVeeSpadesJettisoned = true;
+        return true;
     }
 
     /** Declares a transformation in the Movement Phase (LAM timing). Null on success, otherwise the reason it can't. */
@@ -1494,7 +1532,8 @@ export default class Vehicle implements IGameSettingsUnit {
         if (!this._artVee || !weapon.comboArtilleryTag) return null;
         if (this.getArtVeeMode() !== "siege") return null;
         const piece = getComboArtillery(weapon)?.name ?? "artillery";
-        return `Siege Mode: fires as the ${piece} artillery (artillery rules)`;
+        const penalty = this._inPlay.artVeeSpadesJettisoned ? `, +${getArtVeePlayRules(this._rulesEdition).jettisonedSiegeToHitModifier} to hit with the spades gone` : "";
+        return `Siege Mode: fires as the ${piece} artillery (artillery rules)${penalty}`;
     }
 
     /** A Custom Homebrew rule for tracked Combat Vehicles up to 100 t, in an era the conversion equipment is in date for. */
@@ -4209,6 +4248,8 @@ export default class Vehicle implements IGameSettingsUnit {
 
     public addMotiveHit(level: VehicleMotiveHit): void {
         this._inPlay.motiveHits.push(level);
+        // A hit to the track pods of a dug-in ArtVee fouls its spades.
+        this.setArtVeeSpadesFouled(true);
     }
 
     public removeMotiveHit(index: number): void {
@@ -4738,9 +4779,9 @@ export default class Vehicle implements IGameSettingsUnit {
     public turnReset(): void {
         this.setMovement("stationary", 0);
         // A transformation declared this turn takes effect now.
-        // Destroyed conversion equipment or a killed crew strands the unit in its current Mode, even mid-transformation.
+        // Destroyed conversion equipment, a killed crew or fouled spades strand the unit in its current Mode, even mid-transformation.
         if (this._inPlay.artVeeTransformingTo) {
-            if (!this._inPlay.artVeeConversionDestroyed && !this._inPlay.criticals.crewKilled) this._inPlay.artVeeMode = this._inPlay.artVeeTransformingTo;
+            if (!this.getArtVeeTransformationBlockedByDamage()) this._inPlay.artVeeMode = this._inPlay.artVeeTransformingTo;
             this._inPlay.artVeeTransformingTo = "";
         }
         const c = this._inPlay.criticals;

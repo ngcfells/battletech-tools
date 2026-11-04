@@ -101,11 +101,6 @@ export default class TopMenu extends React.Component<ITopMenuProps, ITopMenuStat
                     label: "Roster",
                     url: "/classic-battletech/roster",
                     tag: "classic-battletech-roster",
-                },
-                {
-                    label: "ArtVee Readout (Homebrew)",
-                    url: "/classic-battletech/artvee-readout",
-                    tag: "classic-battletech-artvee-readout",
                 }
             ]
         });
@@ -195,11 +190,6 @@ export default class TopMenu extends React.Component<ITopMenuProps, ITopMenuStat
                     label: "Roster",
                     url: "/classic-battletech/roster",
                     tag: "classic-battletech-roster",
-                },
-                {
-                    label: "ArtVee Readout (Homebrew)",
-                    url: "/classic-battletech/artvee-readout",
-                    tag: "classic-battletech-artvee-readout",
                 }
             ]
         });
@@ -257,6 +247,14 @@ export default class TopMenu extends React.Component<ITopMenuProps, ITopMenuStat
 
     menuStructure.push(
         {
+            label: "TRO - JBT",
+            url: "/classic-battletech/tro-jbt",
+            tag: "tro-jbt",
+        },
+    );
+
+    menuStructure.push(
+        {
             label: "Other Tools",
             url: "/other-tools",
             tag: "other-tools",
@@ -268,14 +266,6 @@ export default class TopMenu extends React.Component<ITopMenuProps, ITopMenuStat
             label: "About",
             url: "/about",
             tag: "about",
-        },
-    );
-
-    menuStructure.push(
-        {
-            label: "Status",
-            url: "/dev-status",
-            tag: "dev-status",
         },
     );
 

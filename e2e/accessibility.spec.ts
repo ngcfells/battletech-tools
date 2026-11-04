@@ -12,7 +12,6 @@ const PAGES = [
     "game-management/match-play",
     "other-tools",
     "about",
-    "dev-status",
     "settings",
     "settings/backup-and-restore",
     "alpha-strike/roster",

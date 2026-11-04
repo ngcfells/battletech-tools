@@ -41,7 +41,6 @@ const About = React.lazy(() => import("./pages/about"));
 const AlphaStrikeRouter = React.lazy(() => import("./pages/alpha-strike/_router"));
 const ClassicBattleTechRouter = React.lazy(() => import("./pages/classic-battletech/_router"));
 const CustomMULEditor = React.lazy(() => import("./pages/custom-mul-editor"));
-const DevelopmentStatus = React.lazy(() => import("./pages/development-status"));
 const EquipmentEditor = React.lazy(() => import("./pages/equipment-editor"));
 const GameManagementRouter = React.lazy(() => import("./pages/game-management/_router"));
 const Home = React.lazy(() => import("./pages/home"));
@@ -885,9 +884,7 @@ export default class AppRouter extends React.Component<IAppRouterProps, IAppRout
                 }/>
 
                 <Route path={`${process.env.PUBLIC_URL}/dev-status`}    element={
-                    <DevelopmentStatus
-                        appGlobals={this.state.appGlobals}
-                    />
+                    <Navigate replace to={`${process.env.PUBLIC_URL}/`} />
                 }/>
                 <Route path={`${process.env.PUBLIC_URL}/other-tools`}  element={
                     <OtherTools

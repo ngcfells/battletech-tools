@@ -1524,8 +1524,28 @@ body.retro {
     white-space: nowrap;
 }
 
-// ArtVee Technical Readout: stat blocks and tables scroll on their own on a phone.
-.artvee-readout {
+// TRO - JBT: a card for each document.
+.tro-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  gap: 1rem;
+  margin-top: 1em;
+  a { display: block; padding: 1em; border: 1px solid currentcolor; border-radius: 0.25rem; text-decoration: none; }
+  strong, span { display: block; }
+  strong { margin-bottom: 0.25em; }
+}
+
+.tro-pager {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5em;
+  margin: 1em 0;
+  select { max-width: 100%; }
+}
+
+// The readouts: stat blocks and tables scroll on their own on a phone.
+.tro-readout {
   pre, table { display: block; max-width: 100%; overflow-x: auto; }
   pre { font-size: 0.85em; }
   img { display: block; width: 100%; max-width: 900px; height: auto; margin: 1em 0 0.5em; }

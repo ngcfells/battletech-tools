@@ -52,6 +52,79 @@ describe("custom records by tech base", () => {
     });
 });
 
+describe("ArtVee maneuvers", () => {
+    const artVee = (): Vehicle => {
+        const vehicle = new Vehicle();
+        vehicle.setTech("is");
+        vehicle.setEra("jihad");
+        vehicle.setMotiveType("tracked");
+        vehicle.setTonnage(60);
+        vehicle.setEngineType("xl");
+        vehicle.setCruiseMP(4);
+        vehicle.setHasTurret(true);
+        vehicle.addEquipmentFromTag("custom-artvee-thumper-combo", "turret");
+        vehicle.setArtVee(true);
+        return vehicle;
+    };
+    const inSiege = (): Vehicle => {
+        const vehicle = artVee();
+        vehicle.startArtVeeTransformation();
+        vehicle.turnReset();
+        return vehicle;
+    };
+
+    it("rolls a Bishop Move at +2 Driving in Vehicle Mode only", () => {
+        const vehicle = artVee();
+        expect(vehicle.getArtVeeBishopMoveBlock()).toBeNull();
+        expect(vehicle.getArtVeeBishopMoveTarget()).toBe(vehicle.getDrivingSkillTarget() + 2);
+        expect(inSiege().getArtVeeBishopMoveBlock()).toBe("it is not in Vehicle Mode");
+        expect(new Vehicle().getArtVeeBishopMoveBlock()).toBe("it is not an ArtVee");
+    });
+
+    it("fouls the spades on a motive hit in Siege Mode only", () => {
+        const moving = artVee();
+        moving.addMotiveHit("minor");
+        expect(moving.getInPlay().artVeeSpadesFouled).toBe(false);
+        const dug = inSiege();
+        dug.addMotiveHit("minor");
+        expect(dug.getInPlay().artVeeSpadesFouled).toBe(true);
+        expect(dug.getArtVeeTransformationBlock()).toBe("the spades are fouled: jettison them first");
+    });
+
+    it("strands a declared transformation when the spades foul, and frees it on jettison", () => {
+        const vehicle = inSiege();
+        vehicle.startArtVeeTransformation();
+        vehicle.setArtVeeSpadesFouled(true);
+        vehicle.turnReset();
+        expect(vehicle.getArtVeeMode()).toBe("siege");
+        expect(vehicle.jettisonArtVeeSpades()).toBe(true);
+        expect(vehicle.getArtVeeTransformationBlock()).toBeNull();
+        vehicle.startArtVeeTransformation();
+        vehicle.turnReset();
+        expect(vehicle.getArtVeeMode()).toBe("vehicle");
+    });
+
+    it("jettisons only fouled spades, and they stay gone with +1 to hit in Siege Mode", () => {
+        const vehicle = inSiege();
+        const gun = vehicle.getEquipmentList().find((item) => !!item.comboArtilleryTag)!;
+        expect(vehicle.jettisonArtVeeSpades()).toBe(false);
+        expect(vehicle.getArtVeeWeaponBlock(gun)).not.toContain("+1");
+        vehicle.setArtVeeSpadesFouled(true);
+        vehicle.jettisonArtVeeSpades();
+        expect(vehicle.getArtVeeWeaponBlock(gun)).toContain("+1 to hit");
+        expect(vehicle.setArtVeeSpadesFouled(true)).toBe(false);
+        expect(vehicle.getInPlay().artVeeSpadesFouled).toBe(false);
+    });
+
+    it("keeps the spades through a save", () => {
+        const vehicle = inSiege();
+        vehicle.setArtVeeSpadesFouled(true);
+        vehicle.jettisonArtVeeSpades();
+        const restored = new Vehicle(JSON.stringify(vehicle.export()));
+        expect(restored.getInPlay().artVeeSpadesJettisoned).toBe(true);
+    });
+});
+
 describe("ArtVee construction", () => {
     const thumperArtVee = (options: { tonnage?: number; combo?: string; location?: string } = {}): Vehicle => {
         const vehicle = new Vehicle();

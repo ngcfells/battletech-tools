@@ -93,17 +93,28 @@ test("ArtVee readout: the sample list links to the Technical Readout, which list
     await page.getByLabel("Era:").selectOption({ label: "Star League (2571-2780)" });
     await page.getByRole("link", { name: "Read the ArtVee Technical Readout" }).click();
 
-    const readout = page.getByTestId("artvee-readout");
-    await expect(readout.getByRole("heading", { name: "Technical Readout: Combat Vehicle Overhaul (3085)" })).toBeVisible();
-    await expect(readout.getByRole("heading", { level: 2, name: /ArtVee [A-Z]{3}-/ })).toHaveCount(9);
+    const readout = page.getByTestId("tro-readout");
+    await expect(readout.getByRole("heading", { name: "ArtVees and MAPs (3085)" })).toBeVisible();
+    const pages = page.getByRole("combobox");
+    await expect(pages.getByRole("option", { name: /ArtVee [A-Z]{3}-/ })).toHaveCount(9);
     for (const faction of ["Star League Defense Force", "The Clans", "The Inner Sphere"]) {
-        await expect(readout.getByRole("heading", { level: 2, name: faction, exact: true })).toBeVisible();
+        await expect(pages.getByRole("option", { name: faction, exact: true })).toHaveCount(1);
     }
+    await pages.selectOption({ label: "How Conversion Works and Other Things" });
     const plates = readout.getByRole("img", { name: /Falconet ArtVee in three stages/ });
     await expect(plates).toBeVisible();
     expect(await plates.evaluate((image: HTMLImageElement) => image.naturalWidth)).toBeGreaterThan(0);
-    await page.getByRole("link", { name: "Tormentum ArtVee TRM-1M" }).click();
+    await page.getByRole("button", { name: "Next" }).first().click();
+    await expect(readout.getByRole("heading", { name: "The Blind Infinity" })).toBeVisible();
+    await pages.selectOption({ label: "Tormentum ArtVee TRM-1M" });
     await expect(page).toHaveURL(/#tormentum-artvee-trm-1m$/);
-    await expect(readout.getByRole("heading", { name: "Tormentum ArtVee TRM-1M" })).toBeInViewport();
+    await expect(readout.getByRole("heading", { name: "Tormentum ArtVee TRM-1M" })).toBeVisible();
+    await page.reload();
+    await expect(page.getByTestId("tro-readout").getByRole("heading", { name: "Tormentum ArtVee TRM-1M" })).toBeVisible();
+
+    await page.getByRole("link", { name: "Back to TRO - JBT" }).click();
+    await expect(page.getByTestId("tro-introduction").getByRole("heading", { name: "Explanation" })).toBeVisible();
+    await page.getByTestId("tro-card-ammunition").click();
+    await expect(page.getByTestId("tro-readout").getByRole("heading", { name: "Long Tom Artillery: Anti-Orbital Ammo" })).toBeVisible();
     expect(errors).toEqual([]);
 });

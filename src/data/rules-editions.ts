@@ -57,6 +57,14 @@ export interface IEditionPlayRules {
     immobileTargetModifier: number;
 }
 
+/** The ArtVee's Custom Homebrew maneuvers, which ride on the printed rules the citations name. */
+export interface IArtVeePlayRules {
+    /** Bishop Move: a lateral shift as a quad 'Mech makes, with a Driving Skill Roll; a failure is a skid's motive roll. */
+    bishopMove: { extraMP: number; drivingModifier: number; lateralShiftBook: string; lateralShiftPage: number; skidBook: string; skidPage: number };
+    /** To-hit modifier on Siege Mode artillery once the spades are jettisoned. */
+    jettisonedSiegeToHitModifier: number;
+}
+
 /** One of an edition's own game levels, as its rulebook names it, and the tool's rules level it stands for. */
 export interface IRulesEditionLevel {
     /** The tool's rules level (0-4) this level stands for. */
@@ -94,6 +102,8 @@ export interface IRulesEdition {
     torsoArmorSectionsApart?: boolean;
     /** Where the edition's game rules differ from Total Warfare's in what play mode works out; absent while not reviewed. */
     playRules?: IEditionPlayRules;
+    /** The edition's own ArtVee maneuver rules; absent while it follows ARTVEE_PLAY_RULES. */
+    artVeePlayRules?: IArtVeePlayRules;
     /** The edition's rulebook prints no prices, for equipment or for a finished unit. */
     noPrices?: boolean;
     /**
@@ -623,6 +633,17 @@ export function getEditionStats(record: IEditionRecord, editionTag: string): IEd
 /** The edition's own play rules, or undefined where play mode follows Total Warfare. */
 export function getEditionPlayRules(editionTag: string | undefined): IEditionPlayRules | undefined {
     return getRulesEdition(editionTag).playRules;
+}
+
+/** Custom Homebrew (user request 2026-11-04): the same numbers in every edition until one is ruled otherwise. */
+export const ARTVEE_PLAY_RULES: IArtVeePlayRules = {
+    bishopMove: { extraMP: 1, drivingModifier: 2, lateralShiftBook: "TW", lateralShiftPage: 50, skidBook: "TW", skidPage: 192 },
+    jettisonedSiegeToHitModifier: 1,
+};
+
+/** The ArtVee maneuver rules in an edition. */
+export function getArtVeePlayRules(editionTag: string | undefined): IArtVeePlayRules {
+    return getRulesEdition(editionTag).artVeePlayRules ?? ARTVEE_PLAY_RULES;
 }
 
 /** Does the edition's rulebook print prices? */

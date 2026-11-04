@@ -31,6 +31,8 @@ export default class Home extends React.Component<IHomeProps, IHomeState> {
               <TextSection
                 label="Available Tools"
                 >
+                  {/* Scrolls in its own box beside the news; it takes focus so a keyboard can scroll it. */}
+                  <div className="home-scroll" role="region" aria-label="Available Tools" tabIndex={0}>
                   <ul className='styleless'>
                   <li>
                       <h3><Link to="alpha-strike/roster">Alpha Strike Roster</Link></h3>
@@ -150,12 +152,8 @@ export default class Home extends React.Component<IHomeProps, IHomeState> {
                       <p className="alert alert-warning alert-thin">Your data is always private and stored on your own device. This means that if you lose your device you lose your data!</p>
                     </li>
                   </ul>
-                  <h3>Why? What's the purpose of this app? I use Solaris Skunk Werks/Mech Factory/ etc.</h3>
-                  <p>Each of these software packages are amazing tools! However what they lack is complete cross-platform compatibility and ease of tablet use. Sure, <a href="https://battletech.rpg.hu/mechfactory_frame.php">Mech Factory</a> comes close, but it can't be used offline.</p>
-                  <p>Jeff created this app originally as an electronic Alpha Strike roster sheet, but it's grown into more.</p>
 
-                  <h3>What's next?</h3>
-                  <p>Plans will be updated on the <Link to="dev-status">Development Status Page</Link>.</p>
+                  </div>
                 </TextSection>
             </div>
             <div className="col-md">
@@ -163,7 +161,7 @@ export default class Home extends React.Component<IHomeProps, IHomeState> {
               label="News"
             >
                   {/* The news scrolls in its own box (discussion #13); it takes focus so a keyboard can scroll it. */}
-                  <div className="news-scroll" role="region" aria-label="News" tabIndex={0}>
+                  <div className="home-scroll" role="region" aria-label="News" tabIndex={0}>
                   <ul className="news">
                   <li>
                   <h3>
@@ -171,6 +169,9 @@ export default class Home extends React.Component<IHomeProps, IHomeState> {
                     </h3>
                     <h4>Author - NGCFells</h4>
                       <ul>
+                        <li>TRO - JBT is on the top menu: a home for our custom creations, with a card for each document. The ArtVee Technical Readout now reads a page at a time and its Markdown can be downloaded, and the anti-orbital Long Tom has its own page under Ammunition.</li>
+                        <li>Two new ArtVee rules in Play Mode: the Bishop Move, a risky lateral shift in Vehicle Mode, and jettisoning fouled spades to escape Siege Mode at +1 to hit with its artillery after that. The rules are in the ArtVee Technical Readout.</li>
+                        <li>The Status page has moved to the home page, and plans now live in the GitHub issues. Available Tools scrolls in its own box beside the News, and the story of why this app exists is on the About page.</li>
                         <li>The ArtVee now has its own Technical Readout, a Custom Homebrew history of the Mobile Artillery Platform from the Star League to 3085: how the conversion works, the doctrine, the makers, and all nine sample designs with their stats and crews. Read it from the Classic BattleTech menu, or from the sample list in the Vehicle Creator. The ArtVee idea is by kris (helvedes heste).</li>
                         <li>Battle Value by rules edition: a 'Mech built under the <i>BattleTech Master Rules</i>, its Revised Edition or the Classic BattleTech box set now shows its BV1, worked out by that book's rules and equipment tables, with the current rules' BV2 beside it. It matches the Goshawk example in the book and the <i>Maximum Tech</i> BV lists. Under the Revised Edition, <i>Maximum Tech</i>'s Level 3 values count too: its equipment table, XXL and Large engines, hardened armor, reinforced and composite structure, CASE II, heavy-duty gyros, torso-mounted cockpits, command consoles, coolant pods and special ammunition. Other unit types show BV2 until their BV1 is in.</li>
                         <li>Force Battle Value under the <i>BattleTech Master Rules</i> and its Revised Edition: units with homing Arrow IV missiles or TAG add 200 once the force has both (under the Revised Edition a C3 master counts as TAG), and a complete C3 network adds 35 percent of each member's weapons. With <i>Maximum Tech</i>'s rules, semi-guided LRM ammunition counts six times beside friendly TAG, and a command console adds 200 once to the force total.</li>
@@ -573,6 +574,20 @@ export default class Home extends React.Component<IHomeProps, IHomeState> {
                   </li>
                   </ul>
                   </div>
+              </TextSection>
+            </div>
+          </div>
+          <div className="row">
+            <div className="col-md">
+              <TextSection label="Status and Plans">
+                <p>Bugs, plans and new ideas are all tracked in the <a href="https://github.com/HeySporky/battletech-tools/issues" target="_blank" rel="noopener noreferrer">GitHub issues</a>, so that is the place to see what is coming or to ask for something.</p>
+                <p><strong>Current Focus:</strong> Getting the new unit creators and rules editions reviewed for the main site, then file imports and checking the data against the rulebooks.</p>
+                <p><strong>Production Site:</strong> <a href="https://jeffs-bt-tools.github.io/battletech-tools" target="_blank" rel="noopener noreferrer">https://jeffs-bt-tools.github.io/battletech-tools</a><br />
+            <strong>Development Site:</strong> <a href="https://heysporky.github.io/battletech-tools" target="_blank" rel="noopener noreferrer">https://heysporky.github.io/battletech-tools</a><br />
+            <strong>Development Repo:</strong> <a href="https://github.com/HeySporky/battletech-tools" target="_blank" rel="noopener noreferrer">https://github.com/HeySporky/battletech-tools</a><br />
+            <strong>Beta Test Site:</strong> <a href="https://ngcfells.github.io/battletech-tools" target="_blank" rel="noopener noreferrer">https://ngcfells.github.io/battletech-tools</a><br />
+            <strong>Beta Test Repo:</strong> <a href="https://github.com/NGCFells/battletech-tools" target="_blank" rel="noopener noreferrer">https://github.com/NGCFells/battletech-tools</a></p>
+                <p>New work is tried out on the beta test site first, then offered to the development repo for review. The beta site may have features, and bugs, that the others do not have yet.</p>
               </TextSection>
             </div>
           </div>

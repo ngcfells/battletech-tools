@@ -1,5 +1,5 @@
-.news-scroll {
-    // The news is long; it scrolls on its own so the home page ends (discussion #13).
+.home-scroll {
+    // The tools and the news are long; each scrolls on its own so the home page ends (discussion #13).
     max-height: 75vh;
     overflow-y: auto;
     overscroll-behavior: contain;

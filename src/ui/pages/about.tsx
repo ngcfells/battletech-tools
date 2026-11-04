@@ -28,6 +28,11 @@ export default class About extends React.Component<IAboutProps, IAboutState> {
               <h3 className="h4"><strong>FleetfootMike</strong></h3>
               DevOps/Design - <a href="https://www.talesfromtheperiphery.org.uk/">Podcast</a>
               <br /><br />
+              <h3 className="h4"><strong>NGCFells</strong></h3>
+              Gaming Grognard - <a href="https://github.com/ngcfells">GitHub</a>
+              <br />
+              Started playing BattleTech when it was known as BattleDroids on 12/25/1984... Been doing it ever since. An archivist and web archeologist, he is always looking for that next old crusty thing someone left stashed in an old pizza box covered in Crown Royal bags.
+              <br /><br />
               <h3 className="h4"><strong>Phasertech</strong></h3>
               QA/User Experience<br /><br />
               <h3 className="h4"><strong>Shadoblade</strong></h3>
@@ -35,12 +40,17 @@ export default class About extends React.Component<IAboutProps, IAboutState> {
               <br /><br />
               <h3 className="h4"><strong>blackstarthegodkiller</strong></h3>
               Spiritual Bum / Research Lead<br /><br />
-              <h3 className="h4"><strong>NGCFells</strong></h3>
-              Gaming Grognard - <a href="https://github.com/ngcfells">GitHub</a>
-              <br /><br /><br /><br />
+              <br /><br />
               <h3 className="h4"><strong>A Great Discord Community</strong> -  <a href="https://discord.gg/U539K45v8U">Join us!</a></h3>
               <br />
               </TextSection>
+          <TextSection
+            label="Why This App?"
+          >
+            <h3 className="h4">Why? What's the purpose of this app? I use Solaris Skunk Werks/Mech Factory/ etc.</h3>
+            <p>Each of these software packages are amazing tools! However what they lack is complete cross-platform compatibility and ease of tablet use. Sure, <a href="https://battletech.rpg.hu/mechfactory_frame.php">Mech Factory</a> comes close, but it can't be used offline.</p>
+            <p>Jeff created this app originally as an electronic Alpha Strike roster sheet, but it's grown into more.</p>
+          </TextSection>
           <TextSection
             label="Original Maintainers"
           >

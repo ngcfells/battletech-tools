@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Route, Routes } from "react-router";
+import { Navigate, Route, Routes } from "react-router";
 import { IAppGlobals } from '../../app-router';
 import Error404 from "../error404";
 import ClassicBattleTechHome from './home';
@@ -17,7 +17,8 @@ const ProtoMechCreatorRouter = React.lazy(() => import("./protomech-creator/_rou
 const SmallCraftCreatorRouter = React.lazy(() => import("./small-craft-creator/_router"));
 const CapitalShipCreatorRouter = React.lazy(() => import("./capital-ship-creator/_router"));
 const BuildingCreatorRouter = React.lazy(() => import("./building-creator/_router"));
-const ArtVeeReadout = React.lazy(() => import("./artvee-readout"));
+const TroJbt = React.lazy(() => import("./tro-jbt"));
+const TroReader = React.lazy(() => import("./tro-jbt").then((module) => ({ default: module.TroReader })));
 
 export default class ClassicBattleTechRouter extends React.Component<IClassicBattleTechRouterProps, IClassicBattleTechRouterState> {
 
@@ -85,10 +86,23 @@ export default class ClassicBattleTechRouter extends React.Component<IClassicBat
                     />
                 }/>
 
-                <Route path={`artvee-readout`} element={
-                    <ArtVeeReadout
+                <Route path={`tro-jbt`} element={
+                    <TroJbt
                         appGlobals={this.props.appGlobals}
                     />
+                }/>
+
+                {["artvee", "ammunition"].map((slug) => (
+                    <Route key={slug} path={`tro-jbt/${slug}`} element={
+                        <TroReader
+                            appGlobals={this.props.appGlobals}
+                            slug={slug}
+                        />
+                    }/>
+                ))}
+
+                <Route path={`artvee-readout`} element={
+                    <Navigate replace to={`${process.env.PUBLIC_URL}/classic-battletech/tro-jbt/artvee`} />
                 }/>
 
                 <Route path={`roster/*`} element={

@@ -13,7 +13,6 @@ const ROUTES = [
     "equipment-editor",
     "game-management",
     "settings",
-    "dev-status",
     "other-tools",
 ];
 

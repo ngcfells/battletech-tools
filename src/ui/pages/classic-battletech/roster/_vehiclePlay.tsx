@@ -1,6 +1,7 @@
 import * as React from 'react';
 import Vehicle, { isTurretLocation, IVehicleCriticalHits, VEHICLE_MAX_SENSOR_HITS, VehicleFollowUpRoll, VehicleMotiveHit, VehicleMovementMode, VehicleTurretLocation } from '../../../../classes/vehicle';
 import { IDamagePerRange, IEquipmentItem } from '../../../../data/data-interfaces';
+import { getArtVeePlayRules } from '../../../../data/rules-editions';
 import { VehicleAttackDirection } from '../../../../data/vehicle-hit-tables';
 import { IBattleArmorCarrierLoad, isCarrierWeaponBlocked } from '../../../../classes/battle-armor-transport';
 import TextSection from '../../../components/text-section';
@@ -221,6 +222,8 @@ export default class VehiclePlayPanel extends React.Component<IVehiclePlayPanelP
         const mode = vehicle.getArtVeeMode();
         const target = mode === "siege" ? "Vehicle" : "Siege";
         const reason = vehicle.getArtVeeTransformationBlock();
+        const rules = getArtVeePlayRules(vehicle.getRulesEdition());
+        const bishop = rules.bishopMove;
         return (
             <div className="d-block" data-testid="vehicle-artvee">
                 <strong>Mode</strong>:{" "}
@@ -251,6 +254,33 @@ export default class VehiclePlayPanel extends React.Component<IVehiclePlayPanelP
                         onChange={(e) => { inPlay.artVeeConversionDestroyed = e.currentTarget.checked; this._changed(); }}
                     />{" "}Conversion equipment destroyed
                 </label>
+                {vehicle.getArtVeeBishopMoveBlock() === null ? (
+                    <div data-testid="vehicle-artvee-bishop">
+                        Bishop Move: lateral shift, +{bishop.extraMP} MP a hex ({bishop.lateralShiftBook} p. {bishop.lateralShiftPage}), Driving Skill Roll {vehicle.getArtVeeBishopMoveTarget()}+ each.{" "}
+                        <button type="button" className="btn btn-secondary btn-xs" onClick={this.skid} disabled={!!this.state.pendingRoll}>
+                            Failed: stop, motive roll ({bishop.skidBook} p. {bishop.skidPage})
+                        </button>
+                    </div>
+                ) : null}
+                {mode === "siege" && !inPlay.artVeeSpadesJettisoned ? (
+                    <label className="d-block">
+                        <input
+                            type="checkbox"
+                            data-testid="vehicle-artvee-fouled"
+                            checked={!!inPlay.artVeeSpadesFouled}
+                            onChange={(e) => { vehicle.setArtVeeSpadesFouled(e.currentTarget.checked); this._changed(); }}
+                        />{" "}Spades fouled
+                    </label>
+                ) : null}
+                {inPlay.artVeeSpadesFouled ? (
+                    <button
+                        type="button"
+                        className="btn btn-sm btn-secondary"
+                        data-testid="vehicle-artvee-jettison"
+                        onClick={() => { vehicle.jettisonArtVeeSpades(); this._changed(); }}
+                    >Jettison spades</button>
+                ) : null}
+                {inPlay.artVeeSpadesJettisoned ? <div data-testid="vehicle-artvee-jettisoned">Spades jettisoned: +{rules.jettisonedSiegeToHitModifier} to hit with Siege Mode artillery</div> : null}
             </div>
         );
     }
