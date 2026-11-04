@@ -102,6 +102,7 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
             setTargetDialog: null,
             targetData: null,
             targetingRangeSetting: "normal",
+            enhancedImagingOff: false,
             viewGATOR: null,
 
             takeDamageDialog: null,
@@ -979,6 +980,7 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
           takeDamageDialog: null,
           targetData: targetData,
           targetingRangeSetting: currentBM.targetingRangeSetting,
+          enhancedImagingOff: currentBM.enhancedImagingOff,
         })
       }
 
@@ -991,9 +993,10 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
         e.preventDefault();
       }
 
-      // Cancel puts back the variable-range setting the dialog opened with.
+      // Cancel puts back the End Phase settings the dialog opened with.
       if( this.state.setTargetDialog ) {
         this.state.setTargetDialog.targetingRangeSetting = this.state.targetingRangeSetting;
+        this.state.setTargetDialog.enhancedImagingOff = this.state.enhancedImagingOff;
       }
       this.setState({
         setTargetDialog: null,
@@ -2100,6 +2103,21 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
       </select>
     </label>
   ) : null}
+  {this.state.setTargetDialog.hasEnhancedImaging() ? (
+    <label className="text-center full-width">
+      <input
+        type="checkbox"
+        checked={!this.state.setTargetDialog.enhancedImagingOff}
+        onChange={(e) => {
+          this.state.setTargetDialog!.enhancedImagingOff = !e.currentTarget.checked;
+          this.forceUpdate();
+        }}
+      />{" "}
+      Enhanced Imaging on (set in the End Phase): Piloting -1, feedback roll on structure damage; a sensors hit shuts it down
+      {this.state.setTargetDialog.usesEarlierRulesEdition() ? " (Maximum Tech p.62)" : "; works only for a pilot with EI implants, and gives a 1-hex active probe while the sensors are unhit, on or off (IO:AE p.69)"}.
+      {this.state.setTargetDialog.isEnhancedImagingActive() ? null : <strong> Not active.</strong>}
+    </label>
+  ) : null}
   {this.state.targetData ? (
     <div className="row">
       <div className="col-md">
@@ -2758,6 +2776,7 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
           return (
             <li key={lineIndex}>
               {line.amount} on {getLocationName( line.location, this.state.takeDamageDialog ? this.state.takeDamageDialog.isQuad() : false) }
+              {line.damageResults?.flatMap( result => result.criticalEffects ).map( (effect, effectIndex) => <div key={effectIndex} className="small-text">{effect}</div> )}
             </li>
           )
         })}
@@ -3575,6 +3594,8 @@ interface IPlayState {
   targetData: ICombinedTargetData | null;
   /** The unit's variable-range targeting setting when the target dialog opened. */
   targetingRangeSetting: BattleMech["targetingRangeSetting"];
+  /** The unit's Enhanced Imaging switch when the target dialog opened. */
+  enhancedImagingOff: boolean;
   targetWeaponSelection: IEquipmentItem[];
   viewGATOR: IGATOR | null;
 

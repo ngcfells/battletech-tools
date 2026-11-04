@@ -151,4 +151,26 @@ describe("an Enhanced Imaging cockpit", () => {
         expect(unit?.sswImportErrors).toEqual([]);
         expect(unit?.hasEnhancedImaging()).toBe(true);
     });
+
+    it("plays: Piloting -1 and a feedback roll on structure damage while on; off or a sensors hit ends both", () => {
+        const feedback = (unit: BattleMech) => unit.takeDamage(1, "ct", false).flatMap(result => result.criticalEffects);
+        // Max Tech reads the interface alone (p.62); TW needs a pilot with EI implants (IO:AE p.69).
+        const maxTech = clanMech("master-rules-revised");
+        maxTech.setEnhancedImaging(true);
+        expect(maxTech.getPilotingSkillModifier()).toBe(-1);
+        expect(feedback(maxTech)).toEqual(["Enhanced Imaging feedback: roll 2D6, 7 or better or the pilot takes 1 damage (Maximum Tech p.62)"]);
+        maxTech.enhancedImagingOff = true;
+        expect(new BattleMech(maxTech.exportJSON()).enhancedImagingOff).toBe(true);
+        expect(maxTech.getPilotingSkillModifier()).toBe(0);
+        expect(feedback(maxTech)).toEqual([]);
+        const tw = clanMech("total-warfare");
+        tw.setEnhancedImaging(true);
+        expect(tw.isEnhancedImagingActive()).toBe(false);
+        tw.setPilotEIImplants(true);
+        expect(tw.getPilotingSkillModifier()).toBe(-1);
+        expect(feedback(tw)[0]).toContain("consciousness roll (IO:AE p.69)");
+        tw.toggleCritical("hd", 1);
+        expect(tw.isEnhancedImagingActive()).toBe(false);
+        expect(feedback(tw)).toEqual([]);
+    });
 });

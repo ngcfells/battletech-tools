@@ -250,6 +250,7 @@ export interface IBattleMechExport {
     selectedMech?: boolean;
     currentMovementMode?: string;
     targetingRangeSetting?: "long" | "short";
+    enhancedImagingOff?: boolean;
     currentToHitMovementModifier?: number;
     currentTargetModifier?: number;
     currentTargetJumpingMP?: number;
@@ -441,6 +442,8 @@ export class BattleMech {
     public currentMovementMode: string = "n";
     /** A variable-range targeting system's End Phase setting (Maximum Tech p.59). */
     public targetingRangeSetting: "normal" | "long" | "short" = "normal";
+    /** The Enhanced Imaging interface switched off in the End Phase (Maximum Tech p.62; IO:AE p.69). */
+    public enhancedImagingOff = false;
     public currentToHitMovementModifier: number = 0;
     public currentTargetModifier: number = 0;
     public currentTargetJumpingMP: number = 0;
@@ -2546,6 +2549,15 @@ export class BattleMech {
     /** Enhanced Imaging is mounted: chosen, and allowed by the cockpit and technology in force. */
     public hasEnhancedImaging(): boolean {
         return this._enhancedImaging && this.canMountEnhancedImaging();
+    }
+
+    /**
+     * Enhanced Imaging gives its benefits and feedback: switched on in the End Phase, no sensors hit, and under TW a
+     * pilot with EI implants (IO:AE p.69); Maximum Tech reads the interface alone (p.62).
+     */
+    public isEnhancedImagingActive(): boolean {
+        return this.hasEnhancedImaging() && !this.enhancedImagingOff && this.sensorHits() === 0
+            && (this.usesEarlierRulesEdition() || !!this._pilot?.eiImplants);
     }
 
     /** Add or remove Enhanced Imaging; returns whether it is mounted. */
@@ -8575,7 +8587,9 @@ export class BattleMech {
         }
 
         public getPilotingSkillModifier(): number {
-            return (this.isTripod() ? -1 : 0) + (this.hasActiveModularArmor() ? 1 : 0) + this.getFrankenMechLegPilotingModifier();
+            // Enhanced Imaging: every Piloting Skill Roll -1 (Maximum Tech p.62; IO:AE p.69).
+            return (this.isTripod() ? -1 : 0) + (this.hasActiveModularArmor() ? 1 : 0) + this.getFrankenMechLegPilotingModifier()
+                + (this.isEnhancedImagingActive() ? -1 : 0);
         }
 
         public ignoresSecondaryTargetModifier(): boolean {
@@ -8826,6 +8840,7 @@ export class BattleMech {
             exportObject.currentHeat = _currentHeat;
             exportObject.currentMovementMode =_currentMovementMode;
             if( this.targetingRangeSetting !== "normal" ) exportObject.targetingRangeSetting = this.targetingRangeSetting;
+            if( this.enhancedImagingOff ) exportObject.enhancedImagingOff = true;
             exportObject.currentTargetJumpingMP =_currentTargetJumpingMP;
             exportObject.currentTargetModifier =_currentTargetModifier;
             exportObject.currentToHitMovementModifier =_currentToHitMovementModifier;
@@ -9111,6 +9126,7 @@ export class BattleMech {
             this.currentMovementMode = importObject.currentMovementMode;
         }
         this.targetingRangeSetting = importObject?.targetingRangeSetting ?? "normal";
+        this.enhancedImagingOff = importObject?.enhancedImagingOff === true;
 
         if( importObject && importObject.currentTargetModifier ) {
             this.currentTargetModifier = importObject.currentTargetModifier;
@@ -9843,6 +9859,12 @@ export class BattleMech {
 
         const rv: IDamageResults[] = [];
         location = this._normalizeLocation(location);
+        let structureHit = false;
+        const structure = (at: string, damage: number) => {
+            const left = this._takeStructureDamageAtLocation(at, damage);
+            structureHit ||= left < damage;
+            return left;
+        };
 
         // Check location armor
         // let armorDamage = true;
@@ -9870,7 +9892,7 @@ export class BattleMech {
 
             if( remainderDamage ) {
                 // structureDamage = true;
-                remainderDamage = this._takeStructureDamageAtLocation( location, remainderDamage )
+                remainderDamage = structure( location, remainderDamage )
                 while(
                     remainderDamage > 0 &&
                     !ventAt(location) &&
@@ -9879,12 +9901,12 @@ export class BattleMech {
                     location !== "hd"
                 ) {
                     location = this._moveDamageLocationIn( location, rear );
-                    remainderDamage = this._takeStructureDamageAtLocation( location, remainderDamage )
+                    remainderDamage = structure( location, remainderDamage )
                 }
 
             }
         } else if (locationHasStructure) {
-            let remainderDamage = this._takeStructureDamageAtLocation( location, amount )
+            let remainderDamage = structure( location, amount )
             while(
                 remainderDamage > 0 &&
                 !ventAt(location) &&
@@ -9893,11 +9915,18 @@ export class BattleMech {
                 location !== "hd"
             ) {
                 location = this._moveDamageLocationIn( location, rear );
-                remainderDamage = this._takeStructureDamageAtLocation( location, remainderDamage )
+                remainderDamage = structure( location, remainderDamage )
             }
 
         }
 
+        // Enhanced Imaging feedback on internal structure damage (Maximum Tech p.62; IO:AE p.69).
+        if (structureHit && this.isEnhancedImagingActive()) {
+            rv.push({ criticals: 0, criticalRoll: 0, criticalEffects: [this.usesEarlierRulesEdition()
+                ? "Enhanced Imaging feedback: roll 2D6, 7 or better or the pilot takes 1 damage (Maximum Tech p.62)"
+                : "Enhanced Imaging feedback: roll 2D6, 7 or better or the pilot takes 1 damage and a consciousness roll (IO:AE p.69)"],
+                location, amount });
+        }
         this._calc();
         return rv;
 

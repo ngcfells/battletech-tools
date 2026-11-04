@@ -262,6 +262,17 @@ test("EI implants raise the roster's adjusted BV under TW", async ({ page }) => 
     await expect(adjusted).not.toHaveText(before ?? "");
     const value = (text: string | null) => Number((text ?? "").replace(/\D/g, ""));
     expect(value(await adjusted.textContent())).toBeGreaterThan(value(before));
+    await dialog.getByRole("button", { name: "Save" }).first().click();
+
+    // Play: the End Phase switch sits in the Target dialog; with implants and the switch on, EI is active (IO:AE p.69).
+    await page.goto("classic-battletech/roster/play");
+    await page.locator(".mech-selector li button").first().click();
+    await page.getByTitle(/^Open the Target Dialog for /).first().click();
+    const ei = page.locator(".modal label", { hasText: "Enhanced Imaging on" });
+    await expect(ei.getByRole("checkbox")).toBeChecked();
+    await expect(ei).not.toContainText("Not active.");
+    await ei.getByRole("checkbox").uncheck();
+    await expect(ei).toContainText("Not active.");
     expect(errors).toEqual([]);
 });
 
