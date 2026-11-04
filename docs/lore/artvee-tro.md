@@ -31,12 +31,13 @@ because no one ever looked at this machine with a colder eye.
 
 ## How Conversion Works
 
-Crews call the hydraulic system that reshapes the chassis the "Iron Knee", after the hinge that swings the spades down.
-Most of the gear sits in the hull. The breech and barrel assembly sits in the turret. Destroy any of it and the vehicle
+An ArtVee does not run on two tracks. It runs on four split track pods, one at each corner, and each pod rides on a
+hinged arm. Crews call the hydraulic leg at the end of each arm the "Iron Knee". Most of the gear sits in the hull. The breech and barrel assembly sits in the turret. Destroy any of it and the vehicle
 stays in whichever Mode it was in, which is a bad day for a tank and a worse one for a gun.
 
-1. **The Lock Down.** The commander orders Siege Mode and the tracks lock. Hydraulic spades drop from the rear of the
-   hull and anchor the tank against the kick of artillery fire.
+1. **The Lock Down.** The commander orders Siege Mode and the tracks lock. The four arms swing the pods out until the
+   vehicle makes an X when seen from above. An Iron Knee then drops at each corner and drives a spade into the ground.
+   The gun can fire in any direction, so the tank has to be braced on every side against the kick of artillery fire.
 2. **The Breech Swap.** The combo gun's breech slides along a double rail inside the turret. The automatic loader seals
    off the autocannon feed and connects the artillery rammer. Separate magazines feed the two kinds of round.
 3. **The Barrel Change.** The folding autocannon barrel tucks back into the turret, and magnetic stabilizers lock the
@@ -45,7 +46,7 @@ stays in whichever Mode it was in, which is a bad day for a tank and a worse one
 
 In Siege Mode the turret can still turn a full 360 degrees.
 
-![The Falconet ArtVee in three stages: Vehicle Mode with spades stowed, the Blind Turn with spades dropping and the tube rising, and Siege Mode with spades anchored and the Thumper tube raised.](artvee-falconet.svg)
+![The Falconet ArtVee in three stages, from the side and from above: Vehicle Mode with four track pods tucked in, the Blind Turn with the pods swinging out and the tube rising, and Siege Mode with pods and Iron Knees forming an X and the Thumper tube raised.](artvee-falconet.svg)
 
 *A Falconet FLC-1 goes from Vehicle Mode to Siege Mode. Bureau of Technology drawing.*
 
@@ -209,7 +210,7 @@ brawler or a fixed gun.
 ### Capabilities
 
 Everything on the Falconet serves its Thumper/AC-5 Combo Gun, carried in a fully turning turret. In Vehicle Mode the gun
-works as a long-reach Autocannon/5 that punishes hovercraft on the flanks and screening infantry. Once the spades are
+works as a long-reach Autocannon/5 that punishes hovercraft on the flanks and screening infantry. Once the Iron Knees are
 down and Siege Mode is set, the breech locks in as a standard Thumper tube. General Mechanics knew how risky the
 conversion turn was and gave the chassis ten and a half tons of Ferro-Fibrous armor to cover it. Two front machine guns
 and a turret pulse laser sweep away anti-armor infantry.
@@ -299,7 +300,7 @@ smash forts or duel medium BattleMechs.
 ### Capabilities
 
 The Saker's Sniper/AC-10 Combo Gun sits in a roomy, balanced turret. In Vehicle Mode it works as a long-reach
-Autocannon/10. In Siege Mode the tracks lock, the spades drop, and the breech becomes a pure Sniper tube. Eleven tons of
+Autocannon/10. In Siege Mode the tracks lock, the pods spread, the Iron Knees drop, and the breech becomes a pure Sniper tube. Eleven tons of
 Ferro-Fibrous armor let it take as much punishment as a line tank like the Patton or Manticore. A medium pulse laser,
 two machine guns and a rear Buckler smoke dispenser cover it during the conversion turn.
 
