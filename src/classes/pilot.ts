@@ -6,6 +6,8 @@ export interface IPilot {
     gunnery: number;
     wounds: number;
     alphaStrikeAbilities: number[];
+    /** Clan enhanced imaging neural implants (IO:AE p.69); older saves leave it out. */
+    eiImplants?: boolean;
 }
 
 export default class Pilot {
@@ -14,6 +16,7 @@ export default class Pilot {
     gunnery: number = 4;
     wounds: number = 0;
     alphaStrikeAbilities: number[] = [];
+    eiImplants: boolean = false;
 
     constructor(importObj: IPilot | null = null ) {
         if( importObj ) {
@@ -36,6 +39,7 @@ export default class Pilot {
             if( Array.isArray(importObj.alphaStrikeAbilities) ) {
                 this.alphaStrikeAbilities = importObj.alphaStrikeAbilities.filter((id): id is number => typeof id === "number" && Number.isFinite(id));
             }
+            this.eiImplants = importObj.eiImplants === true;
         }
     }
 
@@ -62,6 +66,7 @@ export default class Pilot {
             gunnery: this.gunnery,
             wounds: this.wounds,
             alphaStrikeAbilities: this.alphaStrikeAbilities,
+            eiImplants: this.eiImplants,
         }
 
         return rv;

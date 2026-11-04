@@ -229,6 +229,37 @@ test("offers Enhanced Imaging to Clan 'Mechs under BMR(R) Advanced", async ({ pa
     expect(errors).toEqual([]);
 });
 
+// IO:AE p.184: under TW a pilot with EI implants in a 'Mech with the EI interface reads Gunnery and Piloting 1 better.
+test("EI implants raise the roster's adjusted BV under TW", async ({ page }) => {
+    const errors: string[] = [];
+    page.on("pageerror", (error) => errors.push(error.stack ?? error.message));
+    await page.goto("classic-battletech/mech-creator");
+    await page.getByTitle("Click here to clear out your current 'mech and start over.").click();
+    await page.goto("classic-battletech/mech-creator/step1");
+    await page.getByLabel("Rules Level").selectOption("4");
+    await page.getByLabel("Technology Base").selectOption("clan");
+    await page.getByLabel("Era:").selectOption("clan-inv");
+    await page.goto("classic-battletech/mech-creator/step2");
+    await page.getByRole("checkbox", { name: /Enhanced Imaging/ }).check();
+    await page.goto("classic-battletech/mech-creator");
+    await page.getByTitle("Click here to save a a new 'mech row").click();
+
+    await page.goto("classic-battletech/roster");
+    await page.getByTitle("Add 'Mechs, or search the Master Unit List for any unit type").first().click();
+    await page.locator(".modal tr", { hasText: "Saved" }).getByRole("button", { name: /^Add / }).first().click();
+    await page.getByRole("dialog").getByRole("button", { name: "Close" }).first().click();
+    await expect(page.locator(".modal")).toHaveCount(0);
+    await page.getByTitle("Edit the name and pilot of this unit").first().click();
+    const dialog = page.locator(".modal");
+    const adjusted = dialog.locator("div", { hasText: /^Adjusted BV:/ });
+    const before = await adjusted.textContent();
+    await dialog.getByRole("checkbox", { name: /EI neural implants/ }).check();
+    await expect(adjusted).not.toHaveText(before ?? "");
+    const value = (text: string | null) => Number((text ?? "").replace(/\D/g, ""));
+    expect(value(await adjusted.textContent())).toBeGreaterThan(value(before));
+    expect(errors).toEqual([]);
+});
+
 // A field the edition's rulebook does not have is not shown: Battledroids has one engine, one gyro, one armor, no
 // eras and no OmniMechs. Total Warfare keeps them all.
 test("Battledroids hides the fields its rulebook does not have", async ({ page }) => {

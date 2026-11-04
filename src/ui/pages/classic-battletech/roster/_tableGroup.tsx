@@ -249,6 +249,16 @@ export default class BattleMechTableGroup extends React.Component<IBattleMechTab
         }
       }
 
+      setPilotEIImplants = ( event: React.FormEvent<HTMLInputElement>): void => {
+        const mech = this.state.editingUnit;
+        if( mech ) {
+            mech.setPilotEIImplants( event.currentTarget.checked );
+            this.setState({
+                editingUnit: mech,
+            })
+        }
+      }
+
     render = (): JSX.Element => {
         if(!this.props.appGlobals.currentCBTForce) {
             return (<>No BM Force Error</>);
@@ -327,6 +337,16 @@ export default class BattleMechTableGroup extends React.Component<IBattleMechTab
                     </label>
                     </div>
                 </div>
+                {this.state.editingUnit.hasEnhancedImaging() || this.state.editingUnit.getPilot().eiImplants ? (
+                    <label className="d-block">
+                        <input
+                            type="checkbox"
+                            checked={this.state.editingUnit.getPilot().eiImplants}
+                            onChange={this.setPilotEIImplants}
+                        />{" "}
+                        EI neural implants (with the 'Mech's EI interface: Gunnery and Piloting 1 better for BV, IO:AE p.184)
+                    </label>
+                ) : null}
                 </fieldset>
             </div>
             <div className="col-md-6">

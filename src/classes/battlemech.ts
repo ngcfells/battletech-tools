@@ -1545,8 +1545,7 @@ export class BattleMech {
      */
     private _setPilotAdjustedBattleValue(): void {
         // Fetch raw pilot credentials with safe default constraints
-        const gunnery = this._pilot?.gunnery ?? 4;
-        const piloting = this._getBattleValuePiloting(this._rulesEdition);
+        const [gunnery, piloting] = this._getBattleValueSkills(this._rulesEdition);
         let skillMultiplier = 1.0;
         const matrixMultiplier = getSkillMultiplier(gunnery, piloting, "mech", getBattleValueSkillEdition(this._rulesEdition, "mech"));
         if (matrixMultiplier !== null) {
@@ -2184,18 +2183,23 @@ export class BattleMech {
     public getPilotAdjustedBattleValue(edition: string = this._rulesEdition, forceBonus: number = 0): number {
         this._refreshBattleValue();
         if (edition === this._rulesEdition && !forceBonus) return this._pilotAdjustedBattleValue;
-        return Math.round((this.getBattleValue(edition) + forceBonus) * (getSkillMultiplier(this._pilot?.gunnery ?? 4, this._getBattleValuePiloting(edition), "mech", getBattleValueSkillEdition(edition, "mech")) ?? 1));
+        return Math.round((this.getBattleValue(edition) + forceBonus) * (getSkillMultiplier(...this._getBattleValueSkills(edition), "mech", getBattleValueSkillEdition(edition, "mech")) ?? 1));
     }
 
     /**
-     * The Piloting Skill the skill table reads under `edition`. Level 3 BV1: a small (compact) or torso-mounted cockpit
-     * reads it 1 worse, Enhanced Imaging 1 better (Maximum Tech pp.61, 91).
+     * The Gunnery and Piloting Skills the skill table reads under `edition`. Level 3 BV1: a small (compact) or
+     * torso-mounted cockpit reads Piloting 1 worse, Enhanced Imaging 1 better (Maximum Tech pp.61, 91). Otherwise EI
+     * implants read both 1 better, only with the EI interface (IO:AE p.184; lowest 0).
      */
-    private _getBattleValuePiloting(edition: string): number {
+    private _getBattleValueSkills(edition: string): [gunnery: number, piloting: number] {
+        const gunnery = this._pilot?.gunnery ?? 4;
         const piloting = this._pilot?.piloting ?? 5;
-        if (!getBattleValueRules(edition, "mech").levelThree) return piloting;
+        if (!getBattleValueRules(edition, "mech").levelThree) {
+            const implants = this._pilot?.eiImplants && this.hasEnhancedImaging() ? 1 : 0;
+            return [Math.max(0, gunnery - implants), Math.max(0, piloting - implants)];
+        }
         const cockpit = ["small", "torso-mounted"].includes(this.getCockpitType().tag) ? 1 : 0;
-        return Math.min(7, Math.max(0, piloting + cockpit - (this.hasEnhancedImaging() ? 1 : 0)));
+        return [gunnery, Math.min(7, Math.max(0, piloting + cockpit - (this.hasEnhancedImaging() ? 1 : 0)))];
     }
 
     /** This unit's part in its force's TAG adjustment under `edition` (BV v4.1 p.23; TO:AUE p.198). */
@@ -6878,6 +6882,13 @@ export class BattleMech {
         newValue: number,
     ) {
         this._pilot.gunnery = newValue;
+        this._calcBattleValue();
+    }
+
+    public setPilotEIImplants(
+        newValue: boolean,
+    ) {
+        this._pilot.eiImplants = newValue;
         this._calcBattleValue();
     }
 

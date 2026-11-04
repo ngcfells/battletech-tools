@@ -1,6 +1,8 @@
 import { describe, expect, it, vi } from "vitest";
 import { sswTestFixtures } from "../data/ssw/sswTestFixtures";
 import { BattleMech } from "./battlemech";
+import Pilot from "./pilot";
+import { getSkillMultiplier } from "../data/battle-value";
 import { getVTOLAMSamples } from "../data/vtolam-samples";
 import { mechInternalStructureTypes, validateChassisCombination } from "../data/mech-internal-structure-types";
 import { getTargetToHitFromWeapon } from "../utils";
@@ -6878,6 +6880,23 @@ describe("Battle Value worked examples (BV v4.1 pp.3-7)", () => {
         // Piloting reads 1 better for skill: 4/5 reads the 4/4 column, 2,270 x 1.05.
         expect(mech.getPilotAdjustedBattleValue()).toBe(2384);
         expect(mech.getPilotAdjustedBattleValue("master-rules-revised", 10)).toBe(Math.round(2280 * 1.05));
+
+        // IO:AE p.184: under TW the interface alone changes no skill; EI implants read Gunnery and Piloting 1 better,
+        // but only in a 'Mech with the interface. A 4/5 implanted pilot reads the 3/4 column.
+        mech.setRulesEdition("total-warfare");
+        const bv2 = mech.getBattleValue("total-warfare");
+        expect(mech.getPilotAdjustedBattleValue()).toBe(bv2);
+        mech.setPilotEIImplants(true);
+        expect(mech.getPilotAdjustedBattleValue()).toBe(Math.round(bv2 * getSkillMultiplier(3, 4, "mech", "total-warfare")!));
+        // Max Tech has no implants: BMR(R) keeps the cockpit read alone.
+        expect(mech.getPilotAdjustedBattleValue("master-rules-revised")).toBe(2384);
+        mech.setEnhancedImaging(false);
+        expect(mech.getPilotAdjustedBattleValue()).toBe(mech.getBattleValue("total-warfare"));
+        // Implants save with the pilot; old saves without the field load without them.
+        const copy = new BattleMech();
+        copy.importJSON(mech.exportJSON());
+        expect(copy.getPilot().eiImplants).toBe(true);
+        expect(new Pilot({ name: "", piloting: 5, gunnery: 4, wounds: 0, alphaStrikeAbilities: [] }).eiImplants).toBe(false);
     });
 
     // Maximum Tech's BV1 lists (pp.94 on) follow BMR(R) to the point; loadouts from TRO 3025 / TRO 3060.
