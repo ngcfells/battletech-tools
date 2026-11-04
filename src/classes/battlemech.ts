@@ -12277,26 +12277,31 @@ export class BattleMech {
 
         return rv;
     }
+    /** Damaged Sensors slots in the head and, with a Torso-Mounted Cockpit, the center torso (TO:AUE p.113). */
     public sensorHits(): number {
         let rv = 0;
 
-        for( const critIndex in this._criticals.head ) {
-            if(
-                this._criticals.head[critIndex]
-                &&
-                this._criticals.head[critIndex].name.toLowerCase().startsWith( "sensors" )
-                &&
-                this.isCriticalDamaged( "hd", +critIndex )
-            ) {
-                rv++;
+        for( const location of ["hd", "ct"] ) {
+            const slots = this._criticals[BattleMech.MECH_LOCATION_MAP[location]];
+            for( const critIndex in slots ) {
+                if(
+                    slots[critIndex]
+                    &&
+                    slots[critIndex].name.toLowerCase().startsWith( "sensors" )
+                    &&
+                    this.isCriticalDamaged( location, +critIndex )
+                ) {
+                    rv++;
+                }
             }
         }
         return rv;
     }
 
-    /** Sensors that can no longer fire weapons: two hits, or one on an IndustrialMech (TW p.128). */
+    /** Sensors that can no longer fire weapons: two hits, one on an IndustrialMech (TW p.128), three with a
+     * Torso-Mounted Cockpit (TO:AUE p.113). */
     public areSensorsDestroyed(): boolean {
-        return this.sensorHits() >= (this.isIndustrialMech() ? 1 : 2);
+        return this.sensorHits() >= (this.isIndustrialMech() ? 1 : this.getCockpitType().tag === "torso-mounted" ? 3 : 2);
     }
 
     public toggleISBubble(clickLocation: string, clickIndex: number): void {

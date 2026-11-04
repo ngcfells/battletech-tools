@@ -181,6 +181,17 @@ export default class ComponentDamageSVG extends React.Component<IComponentDamage
                     // clickFunction={this.to}
                 />
 
+                {/* A Torso-Mounted Cockpit is blinded at the third sensor hit (TO:AUE p.113). */}
+                {this.props.mechData.getCockpitType().tag === "torso-mounted" ? (
+                    <DamageCircleSVG
+                        xLoc={this.props.xLoc + textRightLine + 130}
+                        yLoc={this.props.yLoc + 130}
+                        radius={20}
+                        isFilled={this.props.mechData.sensorHits() > 2}
+                        bgColorFilled={"rgb(200,0,0)"}
+                    />
+                ) : null}
+
                 <text
                     x={this.props.xLoc + textRightLine}
                     y={this.props.yLoc + 180}

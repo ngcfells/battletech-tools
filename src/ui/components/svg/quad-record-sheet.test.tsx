@@ -18,6 +18,7 @@ describe("Quad record sheet front legs", () => {
             expect((markup.match(/LEG \[17\]/g) ?? []).length).toBe(2);
             const legSlots = type === "quad" ? "Hip" : "QuadVee Conversion";
             expect((markup.match(new RegExp(legSlots, "g")) ?? []).length).toBeGreaterThanOrEqual(4);
-        });
+        // A full sheet render passes 5 s when the whole suite runs at once.
+        }, 20_000);
     }
 });

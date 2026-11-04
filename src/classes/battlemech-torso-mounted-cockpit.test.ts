@@ -60,4 +60,18 @@ describe("a Torso-Mounted Cockpit", () => {
         expect(unit.getSSWUnresolved()).toEqual([]);
         expect(unit.getUnallocatedCriticals().map((item) => item.tag)).toEqual([]);
     });
+
+    // "A 'Mech using this system may survive 2 sensor critical hits and still perform weapon attacks... Three sensor
+    // hits (or more) completely blind" it (TO:AUE p.113). Its sensors sit in the head and the center torso (#615).
+    it("counts the center torso sensors and fires until the third sensor hit", () => {
+        const unit = mech();
+        unit.setCockpitType("torso-mounted");
+        unit.toggleCritical("ct", 11);
+        expect(unit.sensorHits()).toBe(1);
+        unit.toggleCritical("hd", 0);
+        expect(unit.areSensorsDestroyed()).toBe(false);
+        unit.toggleCritical("hd", 1);
+        expect(unit.sensorHits()).toBe(3);
+        expect(unit.areSensorsDestroyed()).toBe(true);
+    });
 });
