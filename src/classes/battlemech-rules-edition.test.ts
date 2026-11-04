@@ -661,6 +661,122 @@ describe("Jump packs (Maximum Tech pp.80-81; TO:AUE p.105)", () => {
         return mech;
     };
 
+    describe("in play", () => {
+        const jump = (mech: BattleMech, mp: number) => {
+            mech.currentMovementMode = "j";
+            mech.currentTargetJumpingMP = mp;
+            mech.jumpPackJumping = true;
+        };
+
+        it("jumps on the pack without heat, while jets still heat (Maximum Tech p.81; TO:AUE p.105)", () => {
+            const mech = pack(BMRR, 55, 5, 4);
+            jump(mech, 5);
+            expect(mech.getActiveMoveHeat()).toBe(0);
+            mech.jumpPackJumping = false;
+            expect(mech.getActiveMoveHeat()).toBe(5);
+        });
+
+        it("spends a hex of fuel per hex under Maximum Tech, then drops the empty pack (p.81)", () => {
+            const mech = pack(BMRR, 55, 5, 4);
+            expect(mech.getJumpPackFuelLeft()).toBe(10);
+            jump(mech, 5);
+            expect(mech.getJumpPackFuelLeft()).toBe(5);
+            mech.turnReset();
+            expect(mech.getJumpPackFuelLeft()).toBe(5);
+            expect(mech.jumpPackJumping).toBe(false);
+            jump(mech, 5);
+            mech.turnReset();
+            expect(mech.getJumpPackSpeed()).toBe(0);
+            expect(mech.jumpPackLost).toBe("out of fuel, dropped");
+        });
+
+        it("spends no fuel when the move of the turn was not a pack jump", () => {
+            const mech = pack(BMRR, 55, 5, 4);
+            jump(mech, 5);
+            mech.currentMovementMode = "w";
+            mech.turnReset();
+            expect(mech.getJumpPackFuelLeft()).toBe(10);
+        });
+
+        it("cannot jump further than the fuel left", () => {
+            const mech = pack(BMRR, 55, 5, 4);
+            jump(mech, 4);
+            mech.turnReset();
+            jump(mech, 3);
+            mech.turnReset();
+            expect(mech.getJumpPackSpeed()).toBe(3);
+        });
+
+        it("is destroyed by a rear torso hit and by no other hit (Maximum Tech p.81; TO:AUE p.105)", () => {
+            const mech = pack("total-warfare", 55, 6, 6);
+            expect(mech.takeDamage(1, "ct", false)).toEqual([]);
+            expect(mech.takeDamage(1, "rl", true)).toEqual([]);
+            expect(mech.jumpPackLost).toBe("");
+            const result = mech.takeDamage(1, "lt", true);
+            expect(result[0].criticalEffects[0]).toContain("Jump pack destroyed");
+            expect(mech.jumpPackLost).toBe("destroyed");
+            expect(mech.getJumpPackSpeed()).toBe(0);
+        });
+
+        it("is not hit by an ammunition explosion, which is no attack", () => {
+            const mech = pack("total-warfare", 55, 6, 6);
+            mech.takeDamage(1, "ct", true, { structureOnly: true });
+            expect(mech.jumpPackLost).toBe("");
+        });
+
+        it("is slowed by a medium shield as jump jets are (provides jumping in the same manner, p.105)", () => {
+            const mech = pack("total-warfare", 55, 6, 6);
+            mech.addEquipmentFromTag("shield-medium", "is", "la", false, undefined, "", false, [], undefined, undefined);
+            expect(mech.getJumpPackSpeed()).toBe(mech.getJumpPackMP() - 1);
+        });
+
+        it("is whole again after a damage reset", () => {
+            const mech = pack(BMRR, 55, 5, 4);
+            jump(mech, 5);
+            mech.turnReset();
+            mech.dropJumpPack();
+            mech.resetDamage();
+            expect(mech.jumpPackLost).toBe("");
+            expect(mech.getJumpPackFuelLeft()).toBe(10);
+        });
+
+        it("keeps fuel and losses across a save, but not in a design export", () => {
+            const mech = pack(BMRR, 55, 5, 4);
+            jump(mech, 3);
+            mech.turnReset();
+            mech.dropJumpPack();
+            jump(mech, 1);
+            const loaded = new BattleMech(mech.exportJSON());
+            expect(loaded.jumpPackFuelUsed).toBe(3);
+            expect(loaded.jumpPackLost).toBe("dropped");
+            expect(loaded.jumpPackJumping).toBe(true);
+            const design = JSON.parse(mech.exportJSON(true));
+            expect(design).not.toHaveProperty("jumpPackFuelUsed");
+            expect(design).not.toHaveProperty("jumpPackLost");
+            expect(design).not.toHaveProperty("jumpPackJumping");
+        });
+
+        it("words the sheet line for each edition, and for a lost pack", () => {
+            expect(pack(BMRR, 55, 5, 4).getJumpPackNote()).toContain("Jump pack: 4 t, 10 hexes");
+            expect(pack(BMRR, 55, 5, 4).getJumpPackNote()).not.toContain("combat drop");
+            const tw = pack("total-warfare", 55, 6, 6);
+            expect(tw.getJumpPackNote()).toContain("Jump pack: 6 t, 72 fuel");
+            expect(tw.getJumpPackNote()).toContain("combat drop burns all fuel");
+            tw.dropJumpPack();
+            expect(tw.getJumpPackNote()).toBe("Jump pack: dropped");
+            expect(new BattleMech().getJumpPackNote()).toBe("");
+        });
+
+        it("shows the pack as the Jumping MP, beside any jets", () => {
+            const mech = pack("total-warfare", 55, 6, 6);
+            expect(mech.getJumpingText()).toBe("6");
+            mech.setJumpSpeed(3);
+            expect(mech.getJumpingText()).toBe("3 (pack 6)");
+            mech.dropJumpPack();
+            expect(mech.getJumpingText()).toBe("3");
+        });
+    });
+
     it("is offered at Level 3 under BMR(R) and Advanced under TW, not before the Revised Master Rules", () => {
         expect(build(BMRR).getJumpPackOption(3).available).toBe(true);
         expect(build(BMRR).getJumpPackOption(2).available).toBe(false);

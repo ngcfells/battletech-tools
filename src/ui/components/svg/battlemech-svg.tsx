@@ -327,8 +327,11 @@ export default class BattleMechSVG extends React.Component<IBattleMechSVGProps, 
                         style={{fontWeight: 500}}
                         fontSize={30}
                     >
-                        {this.props.mechData.getJumpSpeed()}
+                        {this.props.mechData.getJumpingText()}
                     </text>
+                    {breakLines(this.props.mechData.getJumpPackNote(), 80).map((line, lineIndex) => (
+                        <text key={lineIndex} data-testid="jump-pack-note" x={generalDataBoxX + 20} y={generalDataBoxY + 303 + lineIndex * 15} fontFamily="sans-serif" fill={strokeColor} fontSize={15}>{line}</text>
+                    ))}
 
                     <DieSVG
                         posY={ generalDataBoxY + 280 - 25}

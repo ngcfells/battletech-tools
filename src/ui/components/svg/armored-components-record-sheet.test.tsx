@@ -21,6 +21,31 @@ describe("armored components on the record sheet", () => {
     });
 });
 
+// The sheet's pack line and Jumping MP (Maximum Tech pp.80-81; TO:AUE p.105).
+describe("Jump pack on the record sheet", () => {
+    const words = (mech: BattleMech) => renderToStaticMarkup(<BattleMechSVG mechData={mech} />).replace(/<[^>]+>/g, " ").replace(/\s+/g, " ");
+
+    it("prints the pack note and its Jumping MP only with a pack strapped on", () => {
+        const mech = new BattleMech();
+        mech.setTonnage(55);
+        mech.setWalkSpeed(5);
+        mech.setRulesEdition("master-rules-revised");
+        expect(words(mech)).not.toContain("Jump pack:");
+        mech.setJumpPackTons(4);
+        expect(words(mech)).toContain("Jump pack: 4 t, 10 hexes");
+        expect(words(mech)).toContain("Jumping 5");
+    });
+
+    it("keeps the longest note, Total Warfare's, to the two lines above the cost", () => {
+        const mech = new BattleMech();
+        mech.setTonnage(55);
+        mech.setWalkSpeed(6);
+        mech.setRulesEdition("total-warfare");
+        mech.setJumpPackTons(20);
+        expect(renderToStaticMarkup(<BattleMechSVG mechData={mech} />).match(/data-testid="jump-pack-note"/g)).toHaveLength(2);
+    });
+});
+
 // The sheet's EI note: an on/off box and the feedback reminder, each edition's own (Maximum Tech p.61; IO:AE p.69).
 describe("Enhanced Imaging on the record sheet", () => {
     const eiMech = (edition: string) => {

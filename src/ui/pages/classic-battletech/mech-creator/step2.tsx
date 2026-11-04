@@ -289,7 +289,7 @@ export default class MechCreatorStep2 extends React.Component<IHomeProps, IHomeS
                                     <option key={tons} value={tons}>{tons} t</option>
                                   ))}
                                 </select>
-                                <span className="smaller-text"> {mech.getJumpPackMP()} MP, {mech.getJumpPackFuel()} {mech.usesEarlierRulesEdition() ? "hexes" : "fuel"}. Cargo: no design weight or slots.</span>
+                                <span className="smaller-text"> {mech.getJumpPackMP()} MP, {mech.getJumpPackFuelText()}. Cargo: no design weight or slots.</span>
                               </label>
                             );
                           })()}

@@ -254,6 +254,9 @@ export interface IBattleMechExport {
     currentToHitMovementModifier?: number;
     currentTargetModifier?: number;
     currentTargetJumpingMP?: number;
+    jumpPackJumping?: boolean;
+    jumpPackFuelUsed?: number;
+    jumpPackLost?: string;
     targetAToHit?: ITargetToHit | null;
     targetBToHit?: ITargetToHit | null;
     targetCToHit?: ITargetToHit | null;
@@ -458,6 +461,12 @@ export class BattleMech {
     public currentToHitMovementModifier: number = 0;
     public currentTargetModifier: number = 0;
     public currentTargetJumpingMP: number = 0;
+    /** This turn's jump is on the jump pack, not jump jets. */
+    public jumpPackJumping = false;
+    /** Jump pack fuel spent in earlier turns: Fuel Points, or hexes under Maximum Tech. */
+    public jumpPackFuelUsed = 0;
+    /** How the jump pack left the 'Mech, empty while it is strapped on. */
+    public jumpPackLost = "";
     public currentHeat: number = 0;
     public damageLog: IMechDamageLog[] = [];
     public criticalDamage: Record<string, number[]> = {};
@@ -2670,6 +2679,51 @@ export class BattleMech {
     /** Fuel: hexes under Maximum Tech (MP x 2, p.80), Fuel Points under TO:AUE (per pack ton, rounded up, p.105). */
     public getJumpPackFuel(): number {
         return this.usesEarlierRulesEdition() ? this.getJumpPackMP() * 2 : Math.ceil(this.getJumpPackTons() * (this._jumpPackRow()?.fuelPerTon ?? 0));
+    }
+
+    /** Fuel with its unit: hexes under Maximum Tech, Fuel Points under TO:AUE. */
+    public getJumpPackFuelText(fuel: number = this.getJumpPackFuel()): string {
+        return `${fuel} ${this.usesEarlierRulesEdition() ? "hexes" : "fuel"}`;
+    }
+
+    private _jumpPackFuelBeforeThisTurn(): number {
+        return this.jumpPackLost ? 0 : Math.max(0, this.getJumpPackFuel() - this.jumpPackFuelUsed);
+    }
+
+    private _isJumpPackJump(): boolean {
+        return this.currentMovementMode === "j" && this.jumpPackJumping;
+    }
+
+    /** Fuel left after this turn's jump, at one a Jump MP (TO:AUE p.105) or a hex (Maximum Tech p.81). */
+    public getJumpPackFuelLeft(): number {
+        return Math.max(0, this._jumpPackFuelBeforeThisTurn() - (this._isJumpPackJump() ? this.currentTargetJumpingMP : 0));
+    }
+
+    /** Jumping MP the pack gives now: modified like jump jets (it jumps "in the same manner"), at most the fuel left. */
+    public getJumpPackSpeed(): number {
+        return Math.min(this._applyJumpModifiers(this.getJumpPackMP()), this._jumpPackFuelBeforeThisTurn());
+    }
+
+    /** Drop the pack: 1 MP in the Movement Phase, as any cargo (BMR(R) p.78; TW p.261). */
+    public dropJumpPack(how: string = "dropped"): void {
+        this.jumpPackLost = how;
+    }
+
+    /** The sheet's Jumping MP: the pack's, beside any jets. */
+    public getJumpingText(): string {
+        const jets = this.getJumpSpeed();
+        const pack = this.getJumpPackSpeed();
+        if (pack <= 0) return `${jets}`;
+        return jets > 0 ? `${jets} (pack ${pack})` : `${pack}`;
+    }
+
+    /** The sheet's pack line, each edition's own rules (Maximum Tech p.81; TO:AUE p.105). */
+    public getJumpPackNote(): string {
+        if (this.getJumpPackTons() <= 0) return "";
+        if (this.jumpPackLost) return `Jump pack: ${this.jumpPackLost}`;
+        return `Jump pack: ${this.getJumpPackTons()} t, ${this.getJumpPackFuelText(this.getJumpPackFuelLeft())}. No heat. Drop for 1 MP. `
+            + "Any rear torso hit destroys it. Dropped when empty."
+            + (this.usesEarlierRulesEdition() ? "" : " A combat drop burns all fuel.");
     }
 
     /** A hit on an arm that is not there "does no damage" and "does not transfer" (Maximum Tech p.62). */
@@ -5828,6 +5882,8 @@ export class BattleMech {
     }
 
     public getActiveMoveHeat(): number {
+        // A jump pack generates no heat (Maximum Tech p.81; TO:AUE p.105).
+        if( this.currentMovementMode === "j" && this.jumpPackJumping ) return 0;
         // An earlier edition's own Heat Point Table (Battledroids: walking 0, running 1, jumping 1 a hex, BD p.12).
         const editionMoveHeat = getEditionPlayRules(this._rulesEdition)?.moveHeat;
         if( editionMoveHeat ) {
@@ -8400,6 +8456,8 @@ export class BattleMech {
         resetBubbleMatrix(this._structureBubbles);
         // CORE METRIC RECOVERY RESETS
         this.currentHeat = 0;
+        this.jumpPackFuelUsed = 0;
+        this.jumpPackLost = "";
         if (this.pilot) {
             this.pilot.wounds = 0;
         }
@@ -8940,6 +8998,9 @@ export class BattleMech {
             if( this.targetingRangeSetting !== "normal" ) exportObject.targetingRangeSetting = this.targetingRangeSetting;
             if( this.enhancedImagingOff ) exportObject.enhancedImagingOff = true;
             exportObject.currentTargetJumpingMP =_currentTargetJumpingMP;
+            if( !noInPlayVariables && this.jumpPackJumping ) exportObject.jumpPackJumping = true;
+            if( !noInPlayVariables && this.jumpPackFuelUsed ) exportObject.jumpPackFuelUsed = this.jumpPackFuelUsed;
+            if( !noInPlayVariables && this.jumpPackLost ) exportObject.jumpPackLost = this.jumpPackLost;
             exportObject.currentTargetModifier =_currentTargetModifier;
             exportObject.currentToHitMovementModifier =_currentToHitMovementModifier;
             exportObject.damageLog = this.damageLog;
@@ -9228,6 +9289,9 @@ export class BattleMech {
         }
         this.targetingRangeSetting = importObject?.targetingRangeSetting ?? "normal";
         this.enhancedImagingOff = importObject?.enhancedImagingOff === true;
+        this.jumpPackJumping = importObject?.jumpPackJumping === true;
+        this.jumpPackFuelUsed = importObject?.jumpPackFuelUsed ?? 0;
+        this.jumpPackLost = importObject?.jumpPackLost ?? "";
 
         if( importObject && importObject.currentTargetModifier ) {
             this.currentTargetModifier = importObject.currentTargetModifier;
@@ -9965,6 +10029,8 @@ export class BattleMech {
         if (this._isArmlessArm(location)) {
             return [{ criticals: 0, criticalRoll: 0, criticalEffects: [BattleMech.ARMLESS_HIT], location, amount: 0 }];
         }
+        // Any successful rear torso hit destroys a jump pack, and the 'Mech takes full damage (Maximum Tech p.81; TO:AUE p.105).
+        const jumpPackHit = rear && !structureOnly && /^[clr]tr?$/.test(location) && this.getJumpPackTons() > 0 && !this.jumpPackLost;
         let structureHit = false;
         const structure = (at: string, damage: number) => {
             const left = this._takeStructureDamageAtLocation(at, damage);
@@ -10026,6 +10092,10 @@ export class BattleMech {
 
         }
 
+        if (jumpPackHit) {
+            this.dropJumpPack("destroyed");
+            rv.push({ criticals: 0, criticalRoll: 0, criticalEffects: ["Jump pack destroyed by the rear torso hit."], location, amount });
+        }
         // Enhanced Imaging feedback on internal structure damage (Maximum Tech p.61; IO:AE p.69).
         if (structureHit && this.isEnhancedImagingActive()) {
             rv.push({ criticals: 0, criticalRoll: 0, criticalEffects: ["Enhanced Imaging feedback: " + this.getEnhancedImagingFeedback()],
@@ -13123,6 +13193,12 @@ export class BattleMech {
     }
 
     public turnReset() {
+        // The turn's jump burns its fuel here, as the move may be reset until then; an empty pack drops (TO:AUE p.105).
+        if( this._isJumpPackJump() && !this.jumpPackLost ) {
+            this.jumpPackFuelUsed += this.currentTargetJumpingMP;
+            if( this._jumpPackFuelBeforeThisTurn() <= 0 ) this.dropJumpPack("out of fuel, dropped");
+        }
+        this.jumpPackJumping = false;
         this.currentMovementMode = "n"
         this.currentToHitMovementModifier = -1;
         this.damageLog = [];

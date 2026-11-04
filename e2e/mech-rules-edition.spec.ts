@@ -249,6 +249,50 @@ test("offers a jump pack under BMR(R) Advanced, saved across a reload", async ({
     expect(errors).toEqual([]);
 });
 
+test("a jump pack jumps without heat in play, burns its fuel and drops when empty", async ({ page }) => {
+    const errors: string[] = [];
+    page.on("pageerror", (error) => errors.push(error.stack ?? error.message));
+    await page.goto("classic-battletech/mech-creator");
+    await page.getByTitle("Click here to clear out your current 'mech and start over.").click();
+    await page.goto("classic-battletech/mech-creator/step1");
+    await page.getByLabel("Rules Edition").selectOption("master-rules-revised");
+    await page.getByLabel("Rules Level").selectOption("3");
+    await page.getByLabel("Mech Tonnage").selectOption("55");
+    await page.goto("classic-battletech/mech-creator/step2");
+    await page.getByLabel("Walking Movement Points").selectOption("5");
+    await page.getByTestId("jump-pack-tons").selectOption("4");
+    await page.goto("classic-battletech/mech-creator");
+    await page.getByTitle("Click here to save a a new 'mech row").click();
+
+    await page.goto("classic-battletech/roster");
+    await page.getByTitle("Add 'Mechs, or search the Master Unit List for any unit type").first().click();
+    await page.locator(".modal tr", { hasText: "Saved" }).getByRole("button", { name: /^Add / }).first().click();
+    await page.goto("classic-battletech/roster/play");
+    await page.locator(".mech-selector li button").first().click();
+    await expect(page.getByTestId("jump-pack-note").first()).toContainText("Jump pack: 4 t, 10 hexes");
+
+    const jump = async () => {
+        await page.getByText("Click here to set move for the turn").first().click();
+        const dialog = page.locator(".modal");
+        await expect(dialog.getByTestId("jump-pack-use")).toBeChecked();
+        await dialog.getByRole("button", { name: /Jump:\s+5/ }).click();
+        await dialog.getByLabel(/Jumping MP Used/).selectOption("5");
+        await dialog.getByRole("button", { name: "Save" }).first().click();
+    };
+    const nextTurn = async () => {
+        await page.getByTitle("End Phase").click();
+        await page.getByRole("button", { name: "Next Turn" }).click();
+        await page.getByTitle("Movement Phase").click();
+    };
+    await jump();
+    await expect(page.getByTestId("jump-pack-note").first()).toContainText("5 hexes");
+    await nextTurn();
+    await jump();
+    await nextTurn();
+    await expect(page.getByTestId("jump-pack-note").first()).toHaveText("Jump pack: out of fuel, dropped");
+    expect(errors).toEqual([]);
+});
+
 test("offers armless 'Mechs under BMR(R) Advanced, saved across a reload, and the later steps open", async ({ page }) => {
     const errors: string[] = [];
     page.on("pageerror", (error) => errors.push(error.stack ?? error.message));

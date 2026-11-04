@@ -81,6 +81,7 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
             setMovementMode: "",
             setMovementNumber: 0,
             setMovementCanJump: false,
+            setMovementUsesPack: false,
             setMovementJumpingMP: 0,
 
             resolveFireDialog: false,
@@ -1216,10 +1217,30 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
         setMovementDialog: currentBM,
         setMovementMode: currentBM ? currentBM.currentMovementMode : "",
         setMovementNumber: currentBM ? currentBM.currentToHitMovementModifier : 0,
-        setMovementCanJump: currentBM && currentBM.getJumpSpeed() > 0 && currentBM.canUseJumpJetsInCurrentMode() ? true : false,
+        setMovementCanJump: currentBM && Math.max(currentBM.getJumpSpeed(), currentBM.getJumpPackSpeed()) > 0 && currentBM.canUseJumpJetsInCurrentMode() ? true : false,
+        setMovementUsesPack: currentBM ? currentBM.jumpPackJumping || (currentBM.getJumpSpeed() <= 0 && currentBM.getJumpPackSpeed() > 0) : false,
+        setMovementJumpingMP: currentBM ? currentBM.currentTargetJumpingMP : 0,
         setTargetDialog: null,
         takeDamageDialog: null,
       })
+    }
+    dropJumpPack = (
+      e: React.FormEvent<HTMLButtonElement>
+    ) => {
+      if( e && e.preventDefault ) {
+        e.preventDefault();
+      }
+      const currentBM = this.state.setMovementDialog;
+      if( currentBM && this.props.appGlobals.currentCBTForce ) {
+        currentBM.dropJumpPack();
+        currentBM.jumpPackJumping = false;
+        this.props.appGlobals.saveCurrentCBTForce( this.props.appGlobals.currentCBTForce );
+        this.setState({
+          setMovementUsesPack: false,
+          setMovementCanJump: currentBM.getJumpSpeed() > 0 && currentBM.canUseJumpJetsInCurrentMode(),
+          setMovementMode: currentBM.getJumpSpeed() > 0 || this.state.setMovementMode !== "j" ? this.state.setMovementMode : "n",
+        });
+      }
     }
     closeSetMovement  = (
       e: React.FormEvent<HTMLButtonElement>
@@ -1245,8 +1266,10 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
           const currentBM = this.state.setMovementDialog;
           currentBM.currentMovementMode = this.state.setMovementMode;
           currentBM.currentToHitMovementModifier = this.state.setMovementNumber;
+          const packJump = currentBM.currentMovementMode === "j" && this.state.setMovementUsesPack;
+          currentBM.jumpPackJumping = packJump;
           if( currentBM.currentMovementMode === "j")
-            currentBM.currentTargetJumpingMP = this.state.setMovementJumpingMP;
+            currentBM.currentTargetJumpingMP = packJump ? Math.min(this.state.setMovementJumpingMP, currentBM.getJumpPackSpeed()) : this.state.setMovementJumpingMP;
           else
             currentBM.currentTargetJumpingMP = 0
           this.props.appGlobals.saveCurrentCBTForce( this.props.appGlobals.currentCBTForce );
@@ -2049,7 +2072,7 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
         numberPips={3}
       />
       </svg><br />
-      Jump:  {this.state.setMovementDialog.getJumpSpeed()}
+      Jump:  {this.state.setMovementDialog.getJumpingText()}
       </button>
       </>
     ) : null}
@@ -2127,10 +2150,25 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
       </div>
 
   </div>
+  {this.state.setMovementDialog.getJumpPackSpeed() > 0 ? (
+    <div className="text-center" data-testid="jump-pack-play">
+      <label>
+        <input
+          type="checkbox"
+          data-testid="jump-pack-use"
+          checked={this.state.setMovementUsesPack}
+          disabled={this.state.setMovementDialog.getJumpSpeed() <= 0}
+          onChange={(e) => this.setState({ setMovementUsesPack: e.currentTarget.checked })}
+        />{" "}
+        Jump on the jump pack ({this.state.setMovementDialog.getJumpPackSpeed()} MP, {this.state.setMovementDialog.getJumpPackFuelText(this.state.setMovementDialog.getJumpPackFuelLeft())} left, no heat)
+      </label>{" "}
+      <button className="btn btn-sm" data-testid="jump-pack-drop" onClick={this.dropJumpPack}>Drop the pack (1 MP)</button>
+    </div>
+  ) : null}
   {this.state.setMovementMode === "j" ? (
         <div className="text-center">
         <InputNumeric
-          label="Jumping MP Used (for heat calculation)"
+          label={this.state.setMovementUsesPack ? "Jumping MP Used (for fuel)" : "Jumping MP Used (for heat calculation)"}
           value={this.state.setMovementJumpingMP}
           onChange={this.updateMovementJumpingMP}
           description="Changing this will also set the movement modifer above, so you don't have to perform two clicks."
@@ -3640,6 +3678,7 @@ interface IPlayState {
   setMovementMode: string;
   setMovementNumber: number;
   setMovementCanJump: boolean;
+  setMovementUsesPack: boolean;
   setMovementJumpingMP: number;
 
   resolveFireDialog: boolean;
