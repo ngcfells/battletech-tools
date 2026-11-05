@@ -50,3 +50,15 @@ test("deep links resolve under the GitHub Pages base path", async ({ page }) => 
     await expect(page).toHaveURL(/\/battletech-tools\/about$/);
     await expect(page.locator("#root")).not.toBeEmpty();
 });
+
+// The top menu and logo must fit the window at every width that shows them (#626).
+for (const width of [768, 900, 991, 992, 1024, 1059, 1280]) {
+    test(`the header does not scroll sideways at ${width} px`, async ({ page }) => {
+        await page.setViewportSize({ width, height: 800 });
+        await page.goto("about");
+        await expect(page.locator("header.topmenu li.logo")).toBeVisible();
+
+        const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+        expect(overflow).toBe(0);
+    });
+}
