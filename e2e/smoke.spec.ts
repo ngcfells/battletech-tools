@@ -62,3 +62,24 @@ for (const width of [768, 900, 991, 992, 1024, 1059, 1280]) {
         expect(overflow).toBe(0);
     });
 }
+
+// GitHub Pages answers a direct link with public/404.html, which packs the query for the decoder in index.html (#627).
+// `vite preview` serves the app instead, so the test answers the first request with the real 404.html, and adds the
+// trailing slash that GitHub Pages adds to the redirect.
+for (const [link, search, hash] of [
+    ["about?v=123", "?v=123", ""],
+    ["about?a=1&b=2", "?a=1&b=2", ""],
+    ["about?v=123#top", "?v=123", "#top"],
+    ["about?next=a%2Fb", "?next=a%2Fb", ""],
+]) {
+    test(`the direct link /${link} opens the page and keeps its query`, async ({ page }) => {
+        await page.route(/\/battletech-tools\/about\?/, (route) => route.fulfill({ path: "public/404.html", contentType: "text/html" }));
+        await page.route(/\/battletech-tools\?rd=/, (route) => route.fulfill({ status: 301, headers: { location: route.request().url().replace("/battletech-tools?", "/battletech-tools/?") } }));
+        await page.goto(link);
+
+        await expect(page.locator("#root")).not.toBeEmpty();
+        await expect(page).toHaveURL(/\/battletech-tools\/about\?/);
+        await expect(page).not.toHaveTitle(/404/);
+        expect(await page.evaluate(() => [location.pathname, location.search, location.hash])).toEqual(["/battletech-tools/about", search, hash]);
+    });
+}
