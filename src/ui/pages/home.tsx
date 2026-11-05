@@ -37,22 +37,20 @@ export default class Home extends React.Component<IHomeProps, IHomeState> {
                   <li>
                       <h3><Link to="alpha-strike/roster">Alpha Strike Roster</Link></h3>
                       <ul>
-                        <li>The ability to search the <a href="http://masterunitlist.info" target="_blank" rel="noopener noreferrer">Master Unit List (MUL)</a> and add Alpha Strike Units to your Companies/Lances/Stars/Binaries, etc.</li>
-                        <li>A copy of the Master Unit List is bundled with the app and kept current every week, so you can search it offline.</li>
-                        <li>Filter the search by era, faction and special ability, and tick which unit lists to search: the live MUL, the MUL 1.0 leftovers and custom units such as the ArtVees.</li>
-                        <li>After the MUL is searched and added to your forces, your units are stored offline on your local device.</li>
-                        <li>You may print your AS forces here (which you can do on the MUL if you like), but more importantly you can...</li>
-                        <li>Play your Alpha Strike games using a live in-play virtual stack of Alpha Strike Cards. When your unit takes damage or heat, the effects of the damage affect the card live and immediately. All your to-hit rolls are updated on-the-fly.</li>
+                        <li>Search the <a href="http://masterunitlist.info" target="_blank" rel="noopener noreferrer">Master Unit List (MUL)</a> and add units to your Companies, Lances, Stars and Binaries. A copy is bundled with the app and kept current every week, so search works offline.</li>
+                        <li>Filter by rules, tech, type, era, role, faction and special ability, and tick which unit lists to search: the live MUL, the MUL 1.0 leftovers and custom units such as the ArtVees.</li>
+                        <li>Add a unit from a photo of its printed card, or a 'Mech you built in the 'Mech Creator.</li>
+                        <li>Your forces are stored on your device. Print them, or play with a live stack of cards: damage and heat change the card at once, and to-hit rolls update on the fly.</li>
                       </ul>
                       <br />
                       <h3>Advanced Search Terms</h3>
                       <ul>
                         <li><b>a:&lt;ability&gt;</b> - Search for abilities. Use <b>,</b> for AND (a:ECM,TAG), <b>!</b> for NOT (a:!CASE)</li>
-                        <li><b>pv:30-50</b> - Point value ranges. Also supports &gt;, &lt;, &gt;=, &lt;=, = operators (e.g., pv&gt;=40)</li>
-                        <li><b>short&gt;=x, medium&gt;=x, long&gt;=x</b> - Damage filters. Now supports all comparison operators and ranges</li>
-                        <li><b>armor&gt;=x, structure&gt;=x</b> - Defensive stats. Supports ranges (armor:4-6)</li>
-                        <li><b>year:3050-3067</b> - Introduction year ranges (replaces intro syntax)</li>
-                        <li><b>mv&gt;=10, jump&gt;0</b> - Movement and jump filters</li>
+                        <li><b>pv:30-50</b> - Point value ranges, or the &gt;, &lt;, &gt;=, &lt;= and = operators (pv&gt;=40)</li>
+                        <li><b>short&gt;=x, medium&gt;=x, long&gt;=x</b> - Damage at each range, with the same operators</li>
+                        <li><b>armor&gt;=x, structure&gt;=x</b> - Defensive stats, also as ranges (armor:4-6)</li>
+                        <li><b>year:3050-3067</b> - Introduction year ranges</li>
+                        <li><b>mv&gt;=10, jump&gt;0</b> - Movement and jump, mv also as ranges (mv:8-12)</li>
                         <li><b>dmg:3/3/2</b> - Exact damage profiles (use * for wildcards: dmg:3/*/*)</li>
                         <li><b>defense&gt;12</b> - Combined armor+structure value</li>
                       </ul>
@@ -60,11 +58,12 @@ export default class Home extends React.Component<IHomeProps, IHomeState> {
                       <ul>
                         <li><i>timber wolf a:IF,ECM long&gt;=3</i> - Timber Wolves with both IF and ECM, long damage 3+</li>
                         <li><i>pv:20-40 a:ECM,TAG</i> - Units 20-40 PV with both ECM and TAG</li>
-                        <li><i>role:Striker mv&gt;=10 jump&gt;0</i> - Fast jumping strikers</li>
+                        <li><i>mv&gt;=10 jump&gt;0</i> - Fast jumping units</li>
                         <li><i>defense&gt;12 short&gt;=3 mv&lt;8</i> - Slow durable brawlers</li>
-                        <li><i>tech:clan year:3050-3067 a:!CASE</i> - Clan Invasion era units without CASE</li>
+                        <li><i>year:3050-3067 a:!CASE</i> - Units introduced 3050-3067 without CASE</li>
                         <li><i>dmg:3/3/* armor:4-6</i> - Units with 3/3/any damage and 4-6 armor</li>
                       </ul>
+                      Tech and Role are filters beside the search box, not search terms.
                       <br />
                     </li>
                     <li>
@@ -76,27 +75,27 @@ export default class Home extends React.Component<IHomeProps, IHomeState> {
                     </li>
                     <li>
                       <h3><Link to="classic-battletech">Classic BattleTech Tools</Link></h3>
-                      <p>Every creator follows the TechManual's construction steps and gives the unit a record sheet, Battle Value and C-Bill cost, and every unit but a building an Alpha Strike card. Each one starts with the Rules Edition, then that edition's own Rules Levels (Introductory to Experimental, plus Apocryphal, Custom Homebrew and Munchkin for non-canon play), and only offers what those allow. Before a load, import or start over replaces your design, each creator offers to save it. Saved units go into the Classic Roster.</p>
+                      <p>Every creator follows its edition's construction rules and gives the unit a record sheet, Technical Readout, Battle Value and C-Bill cost, and every unit but a building an Alpha Strike card. 'Mechs and vehicles also show BV1 under the <i>BattleTech Master Rules</i> editions. Each creator starts with the Rules Edition, then that edition's own Rules Levels (Introductory to Experimental, plus Apocryphal, Custom Homebrew and Munchkin for non-canon play), and only offers what those allow. Before a load, import or start over replaces your design, each creator offers to save it. Saved units go into the Classic Roster.</p>
                       <ul>
                         <li>
                           <h4><Link to="classic-battletech/mech-creator">'Mech Creator</Link></h4>
                           <ul>
                             <li>Biped, Quad, Tripod, LAM and QuadVee BattleMechs, OmniMechs, Superheavy 'Mechs, IndustrialMechs and Primitive 'Mechs.</li>
                             <li>Inner Sphere, Clan and Mixed technology from the canon equipment catalogs.</li>
-                            <li>Build under any rules edition from <i>Battledroids</i> (1984) to the 2026 Core Rulebook: each edition offers only what its rulebook prints, with that book's weights, heat, ranges and damage.</li>
-                            <li>Pick a printed <i>Battledroids</i> droid: the ten in the box set, the Merlin from its construction example, the Spider from <i>Game News</i> #3 and the 1984 TCI kit-back sheets, built under that edition's rules.</li>
-                            <li>Shields on the record sheet: a circle for each point of Damage Capacity and a diamond for each point of Damage Absorption, marked off in play.</li>
+                            <li>Any rules edition from <i>Battledroids</i> (1984) to the 2026 Core Rulebook, each offering only what its rulebook prints, with that book's weights, heat, ranges and damage.</li>
+                            <li>The printed <i>Battledroids</i> droids: the ten in the box set, the Merlin, the Spider and the 1984 TCI kit-back sheets.</li>
+                            <li>Shields on the record sheet, marked off in play.</li>
                             <li>Patchwork Armor, Fractional Accounting and FrankenMechs.</li>
-                            <li>Import Solaris Skunk Werks (.ssw) designs.</li>
+                            <li>Import Solaris Skunk Werks (.ssw) designs or pasted TRO text.</li>
                           </ul>
                         </li>
                         <li>
                           <h4><Link to="classic-battletech/vehicle-creator">Vehicle Creator</Link></h4>
-                          <p>Combat Vehicles of every motive type, OmniVehicles and Support Vehicles (chassis modifications, BAR and tech ratings, light and medium weapons), with turrets, transport bays, Patchwork Armor and Fractional Accounting.</p>
+                          <p>Combat Vehicles of every motive type, ArtVees, OmniVehicles and Support Vehicles (chassis modifications, BAR and tech ratings, light and medium weapons), with turrets, transport bays, Patchwork Armor, Fractional Accounting and MegaMek (.blk) import.</p>
                         </li>
                         <li>
                           <h4><Link to="classic-battletech/fighter-creator">Fighter Creator</Link></h4>
-                          <p>Aerospace and conventional fighters, OmniFighters, bombs and external stores, and Support Vehicle aircraft: airships, fixed-wing and satellites.</p>
+                          <p>Aerospace and conventional fighters, OmniFighters, bombs and external stores, and Support Vehicle aircraft: airships, fixed-wing and satellites, with MegaMek (.blk) import for fixed-wing.</p>
                         </li>
                         <li>
                           <h4><Link to="classic-battletech/infantry-creator">Infantry Creator</Link></h4>
@@ -104,7 +103,7 @@ export default class Home extends React.Component<IHomeProps, IHomeState> {
                         </li>
                         <li>
                           <h4><Link to="classic-battletech/battle-armor-creator">Battle Armor Creator</Link></h4>
-                          <p>Battle armor suits and squads, weapon loadouts, Tactical Operations equipment and mixed technology.</p>
+                          <p>Battle armor suits and squads, weapon loadouts, Tactical Operations equipment and mixed technology, with MegaMek (.blk) import.</p>
                         </li>
                         <li>
                           <h4><Link to="classic-battletech/protomech-creator">ProtoMech Creator</Link></h4>
@@ -116,7 +115,7 @@ export default class Home extends React.Component<IHomeProps, IHomeState> {
                         </li>
                         <li>
                           <h4><Link to="classic-battletech/capital-ship-creator">JumpShip and WarShip Creator</Link></h4>
-                          <p>JumpShips, WarShips and space stations: K-F drive, capital armor and weapons in up to eight arcs, docking collars, grav decks and bays, with Battle Value, a record sheet, an Alpha Strike card and play in the Classic Roster.</p>
+                          <p>JumpShips, WarShips and space stations: K-F drive, capital armor and weapons in up to eight arcs, docking collars, grav decks and bays.</p>
                         </li>
                         <li>
                           <h4><Link to="classic-battletech/building-creator">Building Creator</Link></h4>
@@ -126,14 +125,15 @@ export default class Home extends React.Component<IHomeProps, IHomeState> {
                           <h4><Link to="classic-battletech/roster">Classic Roster</Link></h4>
                           <p>Electronic record sheets for every unit type above, grouped into lances and other formations. They let you:</p>
                           <ul>
-                            <li>Search the Master Unit List by name, era, faction, tech, role and rules level and add the matching 'Mech, vehicle, fighter, infantry, battle armor or ProtoMech design to a group</li>
-                            <li>Track your movement modes and to-hit numbers for each unit at a glance</li>
+                            <li>Search the Master Unit List by name, era, faction, tech, role and rules level and add the matching design of any unit type it lists to a group</li>
+                            <li>Track each unit's movement modes and to-hit numbers at a glance</li>
                             <li>Set your targets' speed, range and other to-hit modifiers (up to 3 targets at a time)</li>
-                            <li>Assign your weapons to your targets: your GATOR and final to-hit are worked out for you</li>
+                            <li>Assign your weapons to your targets, with GATOR and the final to-hit worked out for you</li>
                             <li>Fire everything from one sheet, mark attacks as resolved and track cluster hits</li>
                             <li>Take damage and critical hits by location, with each unit type's own damage rules</li>
                             <li>Apply heat for each 'Mech's movement mode and the weapons it fired</li>
                             <li>Play <i>Battledroids</i> (1984) rules games</li>
+                            <li>Total the force's Battle Value under the rules edition you pick</li>
                             <li>Print the record sheets and Alpha Strike cards</li>
                           </ul>
                         </li>
@@ -141,11 +141,25 @@ export default class Home extends React.Component<IHomeProps, IHomeState> {
                       <br />
                     </li>
                     <li>
+                        <h3><Link to="classic-battletech/tro-jbt">TRO - JBT</Link></h3>
+                        <ul>
+                          <li>Our custom creations: the ArtVee Technical Readout and Ammunition, read a page at a time or downloaded as Markdown.</li>
+                        </ul>
+                        <br />
+                    </li>
+                    <li>
                       <h3><Link to="game-management/match-play">Alpha Strike Match Play</Link></h3>
                       <ul>
                         <li>Generates deployments and scenarios for the Alpha Strike Match Play format, with a custom ban system for variety.</li>
                       </ul>
                       <br />
+                    </li>
+                    <li>
+                        <h3><Link to="other-tools">Other Tools</Link></h3>
+                        <ul>
+                          <li>Links to other fan-made BattleTech tools, such as MegaMek and Solaris Skunk Werks.</li>
+                        </ul>
+                        <br />
                     </li>
                     <li>
                       <h4><Link to="settings/backup-and-restore">Backing up and Restoring</Link></h4>
