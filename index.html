@@ -76,6 +76,18 @@ li.beta-ideas + li.logo{margin-left:0!important}
 li.beta-ideas a.beta-ideas-button{display:block;background:#2471a3!important;color:#fff!important;font-weight:700;font-size:.8rem;
 padding:.4rem .75rem;border-radius:.5rem!important;margin:0 .5rem 0 0!important;min-height:0!important;white-space:nowrap;text-decoration:none}
 li.beta-ideas a.beta-ideas-button:hover{background:#2e86c1!important}
+@media(max-width:1599.98px){
+header.topmenu ul.main-menu{flex-wrap:wrap}
+header.topmenu ul.main-menu::after{content:"";order:1;flex-basis:100%;height:0}
+header.topmenu ul.main-menu>li.beta-issues{order:2;margin-left:0!important}
+header.topmenu ul.main-menu>li.beta-ideas{order:2}
+header.topmenu ul.main-menu>li.logo{order:3;margin-left:auto!important}
+}
+@media(max-width:767.98px){
+header.topmenu ul.main-menu>li.logo{order:0}
+header.topmenu ul.main-menu>li.beta-issues,header.topmenu ul.main-menu>li.beta-ideas{flex:1 1 40%;min-width:0;padding-bottom:.25rem}
+header.topmenu ul.main-menu>li a.beta-issues-button,header.topmenu ul.main-menu>li a.beta-ideas-button{white-space:normal;text-align:center}
+}
 </style>
 <script>
 (function(){
