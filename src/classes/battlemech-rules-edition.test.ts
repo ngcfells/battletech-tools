@@ -665,15 +665,12 @@ describe("Jump packs (Maximum Tech pp.80-81; TO:AUE p.105)", () => {
         const jump = (mech: BattleMech, mp: number) => {
             mech.currentMovementMode = "j";
             mech.currentTargetJumpingMP = mp;
-            mech.jumpPackJumping = true;
         };
 
-        it("jumps on the pack without heat, while jets still heat (Maximum Tech p.81; TO:AUE p.105)", () => {
+        it("jumps on the pack without heat (Maximum Tech p.81; TO:AUE p.105)", () => {
             const mech = pack(BMRR, 55, 5, 4);
             jump(mech, 5);
             expect(mech.getActiveMoveHeat()).toBe(0);
-            mech.jumpPackJumping = false;
-            expect(mech.getActiveMoveHeat()).toBe(5);
         });
 
         it("spends a hex of fuel per hex under Maximum Tech, then drops the empty pack (p.81)", () => {
@@ -683,7 +680,6 @@ describe("Jump packs (Maximum Tech pp.80-81; TO:AUE p.105)", () => {
             expect(mech.getJumpPackFuelLeft()).toBe(5);
             mech.turnReset();
             expect(mech.getJumpPackFuelLeft()).toBe(5);
-            expect(mech.jumpPackJumping).toBe(false);
             jump(mech, 5);
             mech.turnReset();
             expect(mech.getJumpPackSpeed()).toBe(0);
@@ -749,11 +745,9 @@ describe("Jump packs (Maximum Tech pp.80-81; TO:AUE p.105)", () => {
             const loaded = new BattleMech(mech.exportJSON());
             expect(loaded.jumpPackFuelUsed).toBe(3);
             expect(loaded.jumpPackLost).toBe("dropped");
-            expect(loaded.jumpPackJumping).toBe(true);
             const design = JSON.parse(mech.exportJSON(true));
             expect(design).not.toHaveProperty("jumpPackFuelUsed");
             expect(design).not.toHaveProperty("jumpPackLost");
-            expect(design).not.toHaveProperty("jumpPackJumping");
         });
 
         it("words the sheet line for each edition, and for a lost pack", () => {
@@ -767,13 +761,11 @@ describe("Jump packs (Maximum Tech pp.80-81; TO:AUE p.105)", () => {
             expect(new BattleMech().getJumpPackNote()).toBe("");
         });
 
-        it("shows the pack as the Jumping MP, beside any jets", () => {
+        it("shows the pack as the Jumping MP until it is dropped", () => {
             const mech = pack("total-warfare", 55, 6, 6);
             expect(mech.getJumpingText()).toBe("6");
-            mech.setJumpSpeed(3);
-            expect(mech.getJumpingText()).toBe("3 (pack 6)");
             mech.dropJumpPack();
-            expect(mech.getJumpingText()).toBe("3");
+            expect(mech.getJumpingText()).toBe("0");
         });
     });
 
@@ -796,13 +788,35 @@ describe("Jump packs (Maximum Tech pp.80-81; TO:AUE p.105)", () => {
         expect(inEra(BMRR, "clan-inv")).toBe(true);
     });
 
-    it("is barred from LAMs under TW, and goes when a 'Mech becomes one (IO:AE LAM construction)", () => {
-        const mech = pack("total-warfare", 55, 5, 4);
-        expect(mech.getJumpPackMP()).toBe(5);
-        mech.setMechType("lam");
-        expect(mech.getJumpPackOption(3).available).toBe(false);
-        expect(mech.getJumpPackTons()).toBe(0);
-        expect(mech.getJumpPackMP()).toBe(0);
+    describe.each([BMRR, "total-warfare"])("is only for a 'Mech without jump jets under %s (TO:AUE p.105)", (edition) => {
+        const expectBarred = (mech: BattleMech) => {
+            expect(mech.getJumpPackOption(3).available).toBe(false);
+            expect(mech.getJumpPackTons()).toBe(0);
+            expect(mech.getJumpPackMP()).toBe(0);
+        };
+
+        it("goes when the 'Mech mounts jump jets, and comes back without them", () => {
+            const mech = pack(edition, 55, 5, 4);
+            mech.setJumpSpeed(3);
+            expectBarred(mech);
+            expect(mech.getJumpingText()).toBe("3");
+            mech.setJumpSpeed(0);
+            expect(mech.getJumpPackTons()).toBe(4);
+        });
+
+        it("goes when a 'Mech becomes a LAM, which has jump jets", () => {
+            const mech = pack(edition, 55, 5, 4);
+            expect(mech.getJumpPackMP()).toBe(5);
+            mech.setMechType("lam");
+            expectBarred(mech);
+        });
+
+        it("goes beside a partial wing, which needs integrated jets", () => {
+            const mech = pack(edition, 55, 5, 4);
+            mech.addEquipmentFromTag("partial-wing", "is", "lt", false, undefined, "", false, [], undefined, undefined);
+            expect(mech.hasPartialWing()).toBe(true);
+            expectBarred(mech);
+        });
     });
 
     it("reaches Clan designs through the Star League version before Clan production in 3083 (IO:AE p.29)", () => {

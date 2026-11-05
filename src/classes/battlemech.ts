@@ -254,7 +254,6 @@ export interface IBattleMechExport {
     currentToHitMovementModifier?: number;
     currentTargetModifier?: number;
     currentTargetJumpingMP?: number;
-    jumpPackJumping?: boolean;
     jumpPackFuelUsed?: number;
     jumpPackLost?: string;
     targetAToHit?: ITargetToHit | null;
@@ -461,8 +460,6 @@ export class BattleMech {
     public currentToHitMovementModifier: number = 0;
     public currentTargetModifier: number = 0;
     public currentTargetJumpingMP: number = 0;
-    /** This turn's jump is on the jump pack, not jump jets. */
-    public jumpPackJumping = false;
     /** Jump pack fuel spent in earlier turns: Fuel Points, or hexes under Maximum Tech. */
     public jumpPackFuelUsed = 0;
     /** How the jump pack left the 'Mech, empty while it is strapped on. */
@@ -2624,9 +2621,14 @@ export class BattleMech {
         return this._armless && this.canBeArmless();
     }
 
-    /** May this 'Mech carry a jump pack? The tables stop at 100 tons, and LAMs may not from IO:AE on (p.108). */
+    /**
+     * May this 'Mech carry a jump pack? It is for a 'Mech that "lacks integral jump jets" (TO:AUE p.105), in every edition,
+     * so never a LAM or a partial wing, which needs integrated jets (user ruling, #621). UMUs are not jets. The tables stop
+     * at 100 tons.
+     */
     public canCarryJumpPack(): boolean {
-        return this._tonnage <= 100 && (this.usesEarlierRulesEdition() || !this.isLAM());
+        const hasJumpJets = this._jumpSpeed > 0 && !this._jumpJetType.underwater;
+        return this._tonnage <= 100 && !hasJumpJets && !this.isLAM() && !this.hasPartialWing();
     }
 
     /** The jump pack as the movement step offers it. Only TO:AUE's rules have dates. */
@@ -2679,7 +2681,7 @@ export class BattleMech {
     }
 
     private _isJumpPackJump(): boolean {
-        return this.currentMovementMode === "j" && this.jumpPackJumping;
+        return this.currentMovementMode === "j" && this.getJumpPackTons() > 0 && !this.jumpPackLost;
     }
 
     /** Fuel left after this turn's jump, at one a Jump MP (TO:AUE p.105) or a hex (Maximum Tech p.81). */
@@ -2697,12 +2699,9 @@ export class BattleMech {
         this.jumpPackLost = how;
     }
 
-    /** The sheet's Jumping MP: the pack's, beside any jets. */
+    /** The sheet's Jumping MP: the jets', or the pack's on a 'Mech without them. */
     public getJumpingText(): string {
-        const jets = this.getJumpSpeed();
-        const pack = this.getJumpPackSpeed();
-        if (pack <= 0) return `${jets}`;
-        return jets > 0 ? `${jets} (pack ${pack})` : `${pack}`;
+        return `${Math.max(this.getJumpSpeed(), this.getJumpPackSpeed())}`;
     }
 
     /** The sheet's pack line, each edition's own rules (Maximum Tech p.81; TO:AUE p.105). */
@@ -5871,7 +5870,7 @@ export class BattleMech {
 
     public getActiveMoveHeat(): number {
         // A jump pack generates no heat (Maximum Tech p.81; TO:AUE p.105).
-        if( this.currentMovementMode === "j" && this.jumpPackJumping ) return 0;
+        if( this._isJumpPackJump() ) return 0;
         // An earlier edition's own Heat Point Table (Battledroids: walking 0, running 1, jumping 1 a hex, BD p.12).
         const editionMoveHeat = getEditionPlayRules(this._rulesEdition)?.moveHeat;
         if( editionMoveHeat ) {
@@ -8986,7 +8985,6 @@ export class BattleMech {
             if( this.targetingRangeSetting !== "normal" ) exportObject.targetingRangeSetting = this.targetingRangeSetting;
             if( this.enhancedImagingOff ) exportObject.enhancedImagingOff = true;
             exportObject.currentTargetJumpingMP =_currentTargetJumpingMP;
-            if( !noInPlayVariables && this.jumpPackJumping ) exportObject.jumpPackJumping = true;
             if( !noInPlayVariables && this.jumpPackFuelUsed ) exportObject.jumpPackFuelUsed = this.jumpPackFuelUsed;
             if( !noInPlayVariables && this.jumpPackLost ) exportObject.jumpPackLost = this.jumpPackLost;
             exportObject.currentTargetModifier =_currentTargetModifier;
@@ -9277,7 +9275,6 @@ export class BattleMech {
         }
         this.targetingRangeSetting = importObject?.targetingRangeSetting ?? "normal";
         this.enhancedImagingOff = importObject?.enhancedImagingOff === true;
-        this.jumpPackJumping = importObject?.jumpPackJumping === true;
         this.jumpPackFuelUsed = importObject?.jumpPackFuelUsed ?? 0;
         this.jumpPackLost = importObject?.jumpPackLost ?? "";
 
@@ -13182,11 +13179,10 @@ export class BattleMech {
 
     public turnReset() {
         // The turn's jump burns its fuel here, as the move may be reset until then; an empty pack drops (TO:AUE p.105).
-        if( this._isJumpPackJump() && !this.jumpPackLost ) {
+        if( this._isJumpPackJump() ) {
             this.jumpPackFuelUsed += this.currentTargetJumpingMP;
             if( this._jumpPackFuelBeforeThisTurn() <= 0 ) this.dropJumpPack("out of fuel, dropped");
         }
-        this.jumpPackJumping = false;
         this.currentMovementMode = "n"
         this.currentToHitMovementModifier = -1;
         this.damageLog = [];

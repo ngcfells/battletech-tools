@@ -274,7 +274,7 @@ test("a jump pack jumps without heat in play, burns its fuel and drops when empt
     const jump = async () => {
         await page.getByText("Click here to set move for the turn").first().click();
         const dialog = page.locator(".modal");
-        await expect(dialog.getByTestId("jump-pack-use")).toBeChecked();
+        await expect(dialog.getByTestId("jump-pack-play")).toContainText("Jump pack");
         await dialog.getByRole("button", { name: /Jump:\s+5/ }).click();
         await dialog.getByLabel(/Jumping MP Used/).selectOption("5");
         await dialog.getByRole("button", { name: "Save" }).first().click();
