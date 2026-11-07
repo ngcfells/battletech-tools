@@ -103,3 +103,6 @@ robots.txt
 # Local developer harnesses (Aces card photo reader runs, etc.); never committed
 src/zz-local/
 tools-local/
+
+# mordel.net list chunks hold member designs: not committed until mordel.net agrees (build-mordel-list.mjs)
+src/data/mordel/mordel_*.json

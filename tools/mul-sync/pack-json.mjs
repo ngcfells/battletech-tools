@@ -46,3 +46,30 @@ export function stringifyTable(records) {
     const { $v: rows, ...head } = table;
     return `${JSON.stringify(head).slice(0, -1)},"$v":[\n${rows.map((row) => JSON.stringify(row)).join(",\n")}\n]}\n`;
 }
+
+/** The value tabulate was given. A plain list or object passes through. */
+export function untabulate(value) {
+    if (Array.isArray(value)) return value.map(untabulate);
+    if (value && typeof value === "object") {
+        if (Array.isArray(value.$k) && Array.isArray(value.$v)) {
+            const absent = "$a" in value ? value.$a : null;
+            const objects = value.$o ?? [];
+            return value.$v.map((row) => {
+                const record = {};
+                value.$k.forEach((key, index) => {
+                    if (row[index] === absent) return;
+                    const dot = key.indexOf(".");
+                    if (dot > 0 && objects.includes(key.slice(0, dot))) {
+                        const outer = key.slice(0, dot);
+                        record[outer] = { ...record[outer], [key.slice(dot + 1)]: untabulate(row[index]) };
+                    } else {
+                        record[key] = untabulate(row[index]);
+                    }
+                });
+                return record;
+            });
+        }
+        return Object.fromEntries(Object.entries(value).map(([key, item]) => [key, untabulate(item)]));
+    }
+    return value;
+}

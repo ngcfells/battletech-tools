@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { stringifyTable as stringifyTableForSync } from "../../tools/mul-sync/pack-json.mjs";
+import { stringifyTable as stringifyTableForSync, untabulate as untabulateForSync } from "../../tools/mul-sync/pack-json.mjs";
 import { stringifyTable, tabulate, untabulate } from "./packed-json";
 
 const records = [
@@ -34,5 +34,11 @@ describe("tables of records", () => {
 
     it("are written the same by the MUL sync", () => {
         expect(stringifyTableForSync(records)).toBe(stringifyTable(records));
+    });
+
+    it("are read the same by the sync tools", () => {
+        const text = stringifyTable(records);
+        expect(untabulateForSync(JSON.parse(text))).toEqual(untabulate(JSON.parse(text)));
+        expect(untabulateForSync(records)).toEqual(records);
     });
 });
