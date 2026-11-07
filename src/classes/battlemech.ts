@@ -13606,6 +13606,8 @@ export class BattleMech {
     private _installSSWEquipmentItem(
         item: any
     ) {
+        // An empty loadout (an OmniMech base with no fixed equipment) reads as an item with no name.
+        if( !item?.name ) return;
 
         // Unprefixed items belong to the design's own tech base; SSW marks the other side's items
         // with "(IS) " or "(CL) " (older files: "(CLAN) ").
@@ -13750,6 +13752,12 @@ export class BattleMech {
                         const shorter = name.replace( / \([^()]*\)$/, "" );
                         name = shorter === name ? "" : shorter;
                     }
+                }
+                // The MTF import names the weapon a bin feeds by its tag (<feeds>).
+                const feeds = typeof item.feeds === "string" ? item.feeds.trim() : "";
+                if( newItem.isAmmo && feeds && !newItem.feedsWeaponTag ) {
+                    const weapon = getEquipmentCatalogDefinitions().flatMap( definition => definition.equipment ).find( candidate => candidate.tag === feeds );
+                    if( weapon && getCompatibleAmmo( weapon, newItem ) ) newItem.feedsWeaponTag = feeds;
                 }
                 // Cargo bays and other sized items: SSW gives the size in tons.
                 if( newItem.sizeLabel === "Tons" && item.tons !== undefined && +item.tons > 0 ) {

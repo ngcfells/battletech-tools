@@ -141,6 +141,8 @@ interface IMtfItem {
     pod: boolean;
     tons: number;
     half: boolean;
+    /** Ammunition: the tag of the weapon the bin feeds, so an LRM 20 ton is not read as an LRM 15 one. */
+    feeds?: string;
     places: { loc: string; index: number; count: number }[];
 }
 
@@ -369,8 +371,8 @@ export function convertMtfToSSW(file: IMtfFile): { xml: string; issues: string[]
         const line = parseBlkAmmoLine(/Pods$/i.test(ammo.name) ? ammo.name.replace(/Pods$/i, "Ammo") : ammo.name);
         const weapon = line ? findBlkAmmoWeapon(line, weapons) : undefined;
         const round = line && weapon ? findBlkAmmo(line, weapon) : undefined;
-        if (!line || !round) { issues.push(`Cannot find the ammunition '${ammo.name}'`); continue; }
-        items.push({ record: round, name: ammo.name, rear: ammo.rear, pod: ammo.pod, tons: 0, half: line.half, places: [{ loc: ammo.loc, index: ammo.index, count: 1 }] });
+        if (!line || !weapon || !round) { issues.push(`Cannot find the ammunition '${ammo.name}'`); continue; }
+        items.push({ record: round, name: ammo.name, rear: ammo.rear, pod: ammo.pod, tons: 0, half: line.half, feeds: weapon.tag, places: [{ loc: ammo.loc, index: ammo.index, count: 1 }] });
     }
 
     // MegaMek's "heat sinks" line counts the prototype doubles too: they are equipment here.
@@ -382,7 +384,7 @@ export function convertMtfToSSW(file: IMtfFile): { xml: string; issues: string[]
             ? place(item.places[0].loc, item.places[0].index)
             : item.places.map((part) => `<splitlocation index="${part.index}" number="${part.count}">${part.loc.toUpperCase()}</splitlocation>`).join("");
         return `<equipment${item.pod ? ' omnipod="TRUE"' : ""}><name manufacturer="">${xml(name)}</name><type>${item.record.isAmmo ? "ammunition" : "equipment"}</type>`
-            + (item.tons > 0 ? `<tons>${item.tons}</tons>` : "") + where + "</equipment>";
+            + (item.tons > 0 ? `<tons>${item.tons}</tons>` : "") + (item.feeds ? `<feeds>${xml(item.feeds)}</feeds>` : "") + where + "</equipment>";
     });
 
     const armorValues = Object.entries(file.values).filter(([key]) => / armor$/.test(key)).map(([key, list]) => {

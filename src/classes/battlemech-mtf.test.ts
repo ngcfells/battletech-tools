@@ -152,6 +152,26 @@ describe("MegaMek 'Mech import", () => {
         expect(xml.match(/<heatsinks[^>]*>[\s\S]*?<\/heatsinks>/)?.[0].match(/<location /g)).toHaveLength(1);
     });
 
+    it("feeds each ton to the launcher it is loaded for: an LRM 20 ton beside an LRM 15", () => {
+        const launchers = [
+            "chassis:Test Archer", "model:TA-1", "Config:Biped", "techbase:Inner Sphere", "era:3058", "rules level:2", "mass:50",
+            "engine:250 Fusion Engine", "structure:IS Standard", "myomer:Standard", "heat sinks:10 Single", "walk mp:5", "jump mp:0",
+            "armor:Standard(Inner Sphere)", ...armor([14, 14, 18, 18, 22, 9, 18, 18, 5, 5, 6]), "",
+            ...location("Left Arm", "Shoulder", "Upper Arm Actuator", "Lower Arm Actuator", "Hand Actuator"),
+            ...location("Right Arm", "Shoulder", "Upper Arm Actuator", ...fill(5, "LRM 20")),
+            ...location("Left Torso", "IS Ammo LRM-20", "IS Ammo LRM-15"),
+            ...location("Right Torso", ...fill(3, "LRM 15")),
+            ...location("Center Torso", ...fill(3, "Fusion Engine"), ...fill(4, "Gyro"), ...fill(3, "Fusion Engine")),
+            ...location("Head", "Life Support", "Sensors", "Cockpit", "-Empty-", "Sensors", "Life Support"),
+            ...location("Left Leg", "Hip", "Upper Leg Actuator", "Lower Leg Actuator", "Foot Actuator"),
+            ...location("Right Leg", "Hip", "Upper Leg Actuator", "Lower Leg Actuator", "Foot Actuator"),
+        ].join("\n");
+        const { mech, issues } = importBattleMechMtf(launchers);
+        expect(issues).toEqual([]);
+        const bins = mech!.getInstalledEquipment().filter((item) => item.isAmmo);
+        expect(bins.map((bin) => mech!.getAmmoBinWeapon(bin)?.tag).sort()).toEqual(["lrm-15", "lrm-20"]);
+    });
+
     // mordel.net's MegaMek-format files (#241): "Standard (IS)" armor, TSM slots named "TSM", an empty Center Leg on a
     // biped, "Biped Omnimech", and a mixed-tech 'Mech's "Double" sinks whose Clan tech only the slot names give
     // (Jackalope JLP-NH).

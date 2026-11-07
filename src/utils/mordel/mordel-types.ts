@@ -65,7 +65,8 @@ export interface IMordelEquipment {
     slots: number;
     facing?: string | null;
     associated_id?: number | null;
-    stacks?: number | null;
+    /** A stacked item: "Compartment, Infantry" in half-ton increments, a drone control system by drones. */
+    stacks?: { count: number; unit: string } | null;
     armored?: boolean;
     capacitor?: boolean;
     dumper?: boolean;
@@ -82,8 +83,9 @@ export interface IMordelLocation {
     armor: number;
     rear_armor: number | null;
     structure: number;
-    armor_type?: string | null;
-    structure_type?: string | null;
+    /** Patchwork armor: this location's own type. */
+    armor_type?: IMordelTyped | null;
+    structure_type?: IMordelTyped | null;
 }
 
 export interface IMordelDetail extends IMordelListRow {
@@ -92,7 +94,8 @@ export interface IMordelDetail extends IMordelListRow {
     configuration?: string | null;
     sources?: { title: string; publisher?: string; year?: number }[];
     manufacturers?: { manufacturer: string; factories: string[] }[];
-    movement?: { walk: number; run: number; jump: number; mechanical_jump_booster?: number; [key: string]: number | undefined };
+    /** 'Mechs and ProtoMechs: walk, run, jump. Vehicles: cruise, flank, jump. */
+    movement?: { walk?: number; run?: number; cruise?: number; flank?: number; jump?: number; mechanical_jump_booster?: number; [key: string]: number | undefined };
     engine?: IMordelTyped & { rating?: number; model?: string | null };
     heat_sinks?: IMordelTyped & { count?: number };
     structure?: IMordelTyped & { model?: string | null };
