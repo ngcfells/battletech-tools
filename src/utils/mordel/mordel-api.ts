@@ -1,0 +1,161 @@
+// The app's calls to mordel.net with the user's own key. The client is the CLI sync's (tools/mordel-sync), without a
+// User-Agent (browsers can't set one) and without its long waits: a user pulls one unit at a time.
+import { readLocalStorage, writeLocalStorage } from "../../dataSavesStorage";
+import { createClient, listUnits, MordelAuthError, MordelHttpError } from "../../../tools/mordel-sync/mordel-client.mjs";
+import { getMordelKey, markMordelKeyRejected, mordelBaseUrl } from "./mordel-key";
+import { IMordelDetail, IMordelListRow, mordelKeyOf, MordelType } from "./mordel-types";
+
+/** No key is saved, or mordel.net refused it (401). */
+export class MordelKeyError extends Error {
+    constructor(public reason: "missing" | "rejected") {
+        super(reason === "missing" ? "No mordel.net API key is saved. Add yours in Settings."
+            : "mordel.net refused the saved API key. It may have been revoked: add a new one in Settings.");
+        this.name = "MordelKeyError";
+    }
+}
+
+/** mordel.net could not be reached, was busy, or does not allow this site yet (CORS). */
+export class MordelUnavailableError extends Error {
+    constructor(message: string) {
+        super(message);
+        this.name = "MordelUnavailableError";
+    }
+}
+
+// Scott has not named the endpoint for the key owner's own designs yet: a placeholder until he does.
+export const MORDEL_MY_UNITS_PATH = "/units/mine";
+
+const DETAIL_CACHE = "mordelDetailCache";
+export const DETAIL_CACHE_SIZE = 50;
+/** Rows a list top-up keeps; beyond this the shipped list waits for the next release. */
+export const TOP_UP_LIMIT = 2000;
+
+export type FetchImpl = (url: string, init: { headers: Record<string, string> }) => Promise<Response>;
+
+export interface IMordelCallOptions {
+    fetchImpl?: FetchImpl;
+    /** The key to use instead of the saved one (the settings page's Test button). */
+    key?: string;
+    base?: string;
+}
+
+const client = (options: IMordelCallOptions = {}) => {
+    const key = options.key ?? getMordelKey();
+    if (!key) throw new MordelKeyError("missing");
+    return createClient({
+        base: options.base ?? mordelBaseUrl(),
+        key,
+        fetchImpl: options.fetchImpl ?? ((url, init) => fetch(url, init)),
+        pauseMs: 250,
+        retries: 0,
+    });
+};
+
+/** Runs a call, turning the client's and the browser's errors into the two the app shows. */
+async function call<T>(work: () => Promise<T>, savedKey: boolean): Promise<T> {
+    try {
+        return await work();
+    } catch (error) {
+        if (error instanceof MordelKeyError) throw error;
+        if (error instanceof MordelAuthError) {
+            if (savedKey) markMordelKeyRejected();
+            throw new MordelKeyError("rejected");
+        }
+        if (error instanceof MordelHttpError) {
+            const status = (error as MordelHttpError & { status: number }).status;
+            throw new MordelUnavailableError(status === 503 || status === 429
+                ? "mordel.net is busy right now. Try again in a minute."
+                : `mordel.net could not answer (${status}).`);
+        }
+        // fetch rejects with a TypeError when the network is down or the site does not allow this one (CORS).
+        throw new MordelUnavailableError("Could not reach mordel.net. You may be offline, or mordel.net does not allow this site yet.");
+    }
+}
+
+/** "ok" when mordel.net accepts the key. */
+export async function testMordelKey(key: string, options: IMordelCallOptions = {}): Promise<"ok" | "rejected" | "unavailable"> {
+    try {
+        await call(() => client({ ...options, key }).get("/units?limit=1"), false);
+        return "ok";
+    } catch (error) {
+        return error instanceof MordelKeyError ? "rejected" : "unavailable";
+    }
+}
+
+interface ICacheEntry { key: string; stamp: number; unit: IMordelDetail }
+
+const readCache = (): ICacheEntry[] => {
+    try {
+        const parsed = JSON.parse(readLocalStorage(DETAIL_CACHE) ?? "[]");
+        return Array.isArray(parsed) ? parsed.filter((entry) => entry && typeof entry.key === "string" && entry.unit) : [];
+    } catch {
+        return [];
+    }
+};
+
+const stampOf = (unit: { updated?: number | null; created?: number | null }): number => unit.updated ?? unit.created ?? 0;
+
+/**
+ * A unit's full detail: from the cache when it is as new as `stamp` (the list's updated or created time), else from
+ * mordel.net. Null when mordel.net has no such unit, or not one this key may see.
+ */
+export async function fetchMordelDetail(type: MordelType, id: number, stamp: number | null = null, options: IMordelCallOptions = {}): Promise<IMordelDetail | null> {
+    const key = `${type}/${id}`;
+    const cached = readCache().find((entry) => entry.key === key);
+    if (cached && (stamp === null || cached.stamp >= stamp)) return cached.unit;
+    const answer = await call(() => client(options).get(`/units/${type}/${id}`), options.key === undefined) as { unit?: IMordelDetail } | null;
+    const unit = answer?.unit ?? null;
+    if (unit) {
+        const rest = readCache().filter((entry) => entry.key !== key);
+        writeLocalStorage(DETAIL_CACHE, JSON.stringify([{ key: mordelKeyOf(unit), stamp: stampOf(unit), unit }, ...rest].slice(0, DETAIL_CACHE_SIZE)));
+    }
+    return unit;
+}
+
+/** The list rows created or changed since `since` (seconds), newest pages last; at most TOP_UP_LIMIT. */
+export async function fetchMordelListSince(since: number, options: IMordelCallOptions = {}): Promise<{ rows: IMordelListRow[]; serverTime: number | null }> {
+    return call(async () => {
+        const rows: IMordelListRow[] = [];
+        let serverTime: number | null = null;
+        for await (const page of listUnits(client(options), { updatedSince: since, limit: 1000 })) {
+            rows.push(...page.units as IMordelListRow[]);
+            serverTime = page.serverTime ?? serverTime;
+            if (rows.length >= TOP_UP_LIMIT) break;
+        }
+        return { rows: rows.slice(0, TOP_UP_LIMIT), serverTime };
+    }, options.key === undefined);
+}
+
+/**
+ * The key owner's own designs, private ones included. Null while mordel.net does not offer the list yet
+ * (MORDEL_MY_UNITS_PATH is a placeholder).
+ */
+export async function fetchMyMordelUnits(options: IMordelCallOptions = {}): Promise<IMordelListRow[] | null> {
+    try {
+        return await call(async () => {
+            const page = await client(options).get(`${MORDEL_MY_UNITS_PATH}?limit=1000`) as { units?: IMordelListRow[] } | null;
+            return Array.isArray(page?.units) ? page.units : null;
+        }, options.key === undefined);
+    } catch (error) {
+        // A 400 is mordel.net reading "mine" as a unit id: the endpoint is not there yet.
+        if (error instanceof MordelUnavailableError && /\(400\)/.test(error.message)) return null;
+        throw error;
+    }
+}
+
+/** "bm/23454", "https://mordel.net/tro.php?a=vt&ut=bm&id=23454" or a /units/bm/23454 link, as a type and id. */
+export function parseMordelUnitRef(text: string): { type: MordelType; id: number } | null {
+    const trimmed = text.trim();
+    const pair = /^(bm|cv|im|pm)\s*[/ ]\s*(\d+)$/i.exec(trimmed)
+        ?? /\/units\/(bm|cv|im|pm)\/(\d+)/i.exec(trimmed);
+    if (pair) return { type: pair[1].toLowerCase() as MordelType, id: +pair[2] };
+    try {
+        const url = new URL(trimmed);
+        const type = url.searchParams.get("ut")?.toLowerCase();
+        const id = Number(url.searchParams.get("id"));
+        if (type && /^(bm|cv|im|pm)$/.test(type) && Number.isInteger(id) && id > 0) return { type: type as MordelType, id };
+    } catch {
+        // Not a link.
+    }
+    return null;
+}

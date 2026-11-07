@@ -28,7 +28,8 @@ const RETRY_PAUSE_MS = 30_000;
 /**
  * get(path) gives the parsed JSON body, or null for 404. 401 throws MordelAuthError (stop the run); 503 and 429 are
  * retried after a longer pause; anything else throws MordelHttpError with the server's message.
- * @param {{ base: string, key: string, userAgent: string,
+ * A browser cannot set User-Agent: leave userAgent out there and the header is not sent.
+ * @param {{ base: string, key: string, userAgent?: string,
  *   fetchImpl?: (url: string, init: { headers: Record<string, string> }) => Promise<Response>,
  *   pauseMs?: number, sleep?: (ms: number) => Promise<void>, retries?: number }} options
  */
@@ -42,7 +43,7 @@ export function createClient({ base, key, userAgent, fetchImpl = fetch, pauseMs 
             else if (sent > 0) await wait(pauseMs);
             sent++;
             const response = await fetchImpl(base + path, {
-                headers: { "X-API-Key": key, "User-Agent": userAgent, Accept: "application/json" },
+                headers: { "X-API-Key": key, ...(userAgent ? { "User-Agent": userAgent } : {}), Accept: "application/json" },
             });
             const text = await response.text();
             let body;

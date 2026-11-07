@@ -69,6 +69,13 @@ describe("mordel sync: requests", () => {
         expect(calls[0].headers["User-Agent"]).toBe("test-agent/1.0");
     });
 
+    it("sends no User-Agent when none is given, as a browser must", async () => {
+        const { c, calls } = client([json({ status: "OK" })], { userAgent: undefined });
+        await c.get("/ping");
+        expect("User-Agent" in calls[0].headers).toBe(false);
+        expect(calls[0].headers["X-API-Key"]).toBe("test-key");
+    });
+
     it("pauses before every request after the first", async () => {
         const { c, pauses } = client([json({ status: "OK" }), json({ status: "OK" })]);
         await c.get("/ping");

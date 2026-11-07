@@ -5,6 +5,7 @@ import { ESaveDataMode } from '../../../dataSaves';
 import { IAppGlobals } from '../../app-router';
 import InputCheckbox from '../../components/form_elements/input_checkbox';
 import UIPage from '../../components/ui-page';
+import MordelKeySettings from './_mordel-key-settings';
 
 export default class SettingsHome extends React.Component<ISettingsHomeProps, ISettingsHomeState> {
     // [openPicker, data, authResponse] = useDrivePicker();
@@ -112,6 +113,7 @@ export default class SettingsHome extends React.Component<ISettingsHomeProps, IS
                       </>
                     ) : null} */}
                   </fieldset>
+                <MordelKeySettings developerMenu={this.props.appGlobals.appSettings.developerMenu} />
               </div>
             </div>
 

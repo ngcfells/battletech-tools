@@ -49,6 +49,12 @@ export default defineConfig(({ command, mode }) => {
         },
         server: {
             port: 3000,
+            // mordel.net does not allow this site's origin yet (CORS), so in development the app reaches its API
+            // through these. src/utils/mordel/mordel-key.ts names them. The key travels in the request header.
+            proxy: {
+                "/mordel-api": { target: "https://mordel.net/api/v1", changeOrigin: true, rewrite: (path: string) => path.replace(/^\/mordel-api/, "") },
+                "/mordel-sandbox-api": { target: "https://sandbox.mordel.net/api/v1", changeOrigin: true, rewrite: (path: string) => path.replace(/^\/mordel-sandbox-api/, "") },
+            },
         },
     };
 });
