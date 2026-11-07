@@ -42,6 +42,7 @@ import MULSearchFilters from '../../../components/mul-search-filters';
 import UnitStandingBadge, { UnitStandingLegend } from '../../../components/unit-standing-badge';
 import SearchResultsPager from '../../../components/search-results-pager';
 import MechViewPanel from '../../../components/mech-view-panel';
+import MordelUnitsPanel from '../../../components/mordel-units-panel';
 import StandardModal from '../../../components/standard-modal';
 import BattleMechTableGroup from './_tableGroup';
 import type { JSX } from "react";
@@ -101,6 +102,7 @@ const CBT_MUL_KINDS: IClassicMULKind[] = [
     { typeIDs: [17], matches: (unit) => isMULLargeAerospaceCraft( unit ) && !isMULCapitalShip( unit ), creator: "small-craft-creator", saves: (g) => g.smallCraftSaves, load: (json) => new SmallCraft( json ), bundledTypes: ["small-craft"], table: "smallCraft", sheet: (unit) => <SmallCraftRecordSheet craft={unit as SmallCraft} /> },
     { typeIDs: [17], matches: isMULCapitalShip, creator: "capital-ship-creator", saves: (g) => g.capitalShipSaves, load: (json) => new CapitalShip( json ), table: "capitalShips", sheet: (unit) => <CapitalShipRecordSheet ship={unit as CapitalShip} /> },
 ];
+const kindOfTable = ( table: IClassicMULKind["table"] ): IClassicMULKind => CBT_MUL_KINDS.find( (kind) => kind.table === table )!;
 const CBT_MUL_TYPE_IDS = Array.from( new Set( CBT_MUL_MECH_TYPE_IDS.concat( ...CBT_MUL_KINDS.map( (kind) => kind.typeIDs ) ) ) );
 // The MUL files fighters, Small Craft, DropShips and capital ships all under type 17, so the Type list gives each kind
 // its own option (issue 322), on ids of their own that the search maps back to type 17 and the kind's Alpha Strike type.
@@ -579,6 +581,15 @@ export default class BattleMechAddMechDialog extends React.Component<IBattleMech
     <div className="row">
       <div className="col">
           {this.renderMULSearch()}
+          <fieldset className="fieldset">
+              <legend>mordel.net Units</legend>
+              <MordelUnitsPanel
+                mode="classic"
+                onAddMech={(mech) => this.importUnit( null, mech )}
+                onAddVehicle={(vehicle) => this.importOtherUnit( null, kindOfTable( "vehicles" ), vehicle )}
+                onAddProtoMech={(proto) => this.importOtherUnit( null, kindOfTable( "protoMechs" ), proto )}
+              />
+          </fieldset>
       </div>
       <div className="col">
           <fieldset className="fieldset">

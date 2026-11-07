@@ -11,6 +11,7 @@ import BattleMechSVG from '../../../components/svg/battlemech-svg';
 import TextSection from '../../../components/text-section';
 import UIPage from '../../../components/ui-page';
 import BundledMechList from '../../../components/bundled-mech-list';
+import MordelUnitsPanel from '../../../components/mordel-units-panel';
 import './home.scss';
 import { replaceCurrentBattleMech } from '../../../components/confirm-replace-design';
 const ArrowCircleLeft = FaArrowCircleLeft as any;
@@ -246,6 +247,15 @@ export default class MechCreatorImports extends React.Component<IHomeProps, IHom
                               <Link to={`${process.env.PUBLIC_URL}/classic-battletech/mech-creator/exports`} className="btn btn-primary btn-sm"><ArrowCircleLeft /> Exports</Link>
                             </div>
                           </div>
+                        </TextSection>
+
+                        <TextSection
+                          label="Start From a mordel.net 'Mech"
+                        >
+                          <MordelUnitsPanel
+                            mode="designer"
+                            onAddMech={(mech) => replaceCurrentBattleMech( this.props.appGlobals, () => this.props.appGlobals.saveCurrentBattleMech( mech ) )}
+                          />
                         </TextSection>
 
                         <TextSection
