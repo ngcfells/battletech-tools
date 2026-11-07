@@ -1,4 +1,4 @@
-import type { IASMULUnit, MULSource } from "../classes/alpha-strike-unit";
+import type { IASMULUnit, MULListSource, MULSource } from "../classes/alpha-strike-unit";
 import { getLocalCustomMULUnits, saveLocalCustomMULUnits } from "./custom-mul-local";
 import { reconcileLocalCustomMUL } from "./custom-mul";
 import { correctMULBattleValue } from "./mul-bv-corrections";
@@ -23,11 +23,11 @@ type MULChunkEntry = Partial<IASMULUnit> & {
 };
 
 // Which bundled lists the user wants searched: any of them, ticked one by one, never none.
-export type MULSourceSelection = MULSource[];
+export type MULSourceSelection = MULListSource[];
 
 export const DEFAULT_MUL_SOURCE_SELECTION: MULSourceSelection = ["mul2"];
 
-export const MUL_SOURCE_OPTIONS: { value: MULSource; label: string; description: string }[] = [
+export const MUL_SOURCE_OPTIONS: { value: MULListSource; label: string; description: string }[] = [
     {
         value: "mul2",
         label: "MUL 2.0 (live)",
@@ -49,9 +49,10 @@ export const MUL_SOURCE_LABELS: Record<MULSource, string> = {
     mul2: "MUL 2.0",
     mul1: "MUL 1.0",
     custom: "Custom",
+    mordel: "Mordel.net",
 };
 
-const MUL_SOURCE_ORDER: MULSource[] = MUL_SOURCE_OPTIONS.map((option) => option.value);
+const MUL_SOURCE_ORDER: MULListSource[] = MUL_SOURCE_OPTIONS.map((option) => option.value);
 
 /**
  * Reads a saved list choice: an array of sources, or the "mul2+mul1+custom" strings saved before the lists became
@@ -110,13 +111,13 @@ export function getLegacyMULFactionID(liveID: number): number {
 
 type ChunkLoaders = Record<string, () => Promise<unknown>>;
 
-const mulChunkModulesBySource: Record<MULSource, ChunkLoaders> = {
+const mulChunkModulesBySource: Record<MULListSource, ChunkLoaders> = {
     mul2: import.meta.glob("./mul/live/*.json", { eager: false, import: "default" }) as ChunkLoaders,
     mul1: import.meta.glob("./mul/mul1/*.json", { eager: false, import: "default" }) as ChunkLoaders,
     custom: import.meta.glob("./mul/custom/*.json", { eager: false, import: "default" }) as ChunkLoaders,
 };
 
-const cachedBySource: Partial<Record<MULSource, Promise<IASMULUnit[]>>> = {};
+const cachedBySource: Partial<Record<MULListSource, Promise<IASMULUnit[]>>> = {};
 
 function isMULListEntry(item: unknown): item is IASMULUnit {
     if (!item || typeof item !== "object") {
@@ -166,7 +167,7 @@ export function getMULRecordKey(unit: IASMULUnit): string {
     return unit.MulUnitKey ?? `${unit.MulSource ?? "mul2"}\u001f${unit.Id}\u001f${unit.Name}\u001f${unit.Variant ?? ""}\u001f${unit.Class}`;
 }
 
-function loadMULSource(source: MULSource): Promise<IASMULUnit[]> {
+function loadMULSource(source: MULListSource): Promise<IASMULUnit[]> {
     const cached = cachedBySource[source];
     if (cached) {
         return cached;

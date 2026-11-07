@@ -153,7 +153,10 @@ export function getMULDisplayName(unit: Pick<IASMULUnit, "Name" | "Variant" | "M
 
 // mul2: masterunitlist.battletech.com (current). mul1: legacy numeric-id MUL records the live site no longer lists.
 // custom: non-canonical units, from the shared curated list or saved locally in this browser.
-export type MULSource = "mul2" | "mul1" | "custom";
+// mordel: a mordel.net unit, pulled with the user's own API key.
+export type MULSource = MULListSource | "mordel";
+/** The sources the shipped MUL lists come from (mordel.net units have their own list). */
+export type MULListSource = "mul2" | "mul1" | "custom";
 
 export interface ICustomMULInfo {
     author: string;

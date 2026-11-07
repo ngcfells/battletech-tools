@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { FaPlus, FaTrash } from "react-icons/fa";
 import { MUL_SOURCE_OPTIONS } from '../../data/mul-list-items';
-import { MULSource } from '../../classes/alpha-strike-unit';
+import { MULListSource } from '../../classes/alpha-strike-unit';
 import { IAbilityCodeCount } from '../../utils/mulAbilities';
 import { changeMULSearchFilters, IMULSearchFilters, isMULEraOffered, isMULTechOffered, isMULTypeOffered } from '../../utils/mulSearchFilters';
 import { getMULAerospaceRoles, getMULEraAliases, getMULEraIDs, getMULEraLabel, getMULFactionIDs, getMULFactionLabels, getMULGroundRoles, getMULTypeIDs, getMULTypeLabel } from '../../utils/mulUtilities';
@@ -66,7 +66,7 @@ export default class MULSearchFilters extends React.Component<IMULSearchFiltersP
         });
     }
 
-    private toggleSource = ( source: MULSource, checked: boolean ): void => {
+    private toggleSource = ( source: MULListSource, checked: boolean ): void => {
         const ticked = this.props.filters.sources.filter( (existing) => existing !== source ).concat( checked ? [source] : [] );
         this.change({ sources: MUL_SOURCE_OPTIONS.map( (option) => option.value ).filter( (value) => ticked.includes( value ) ) });
     }

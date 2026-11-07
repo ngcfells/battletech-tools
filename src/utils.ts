@@ -1,4 +1,4 @@
-import { IASMULUnit } from "./classes/alpha-strike-unit";
+import { IASMULUnit, MULSource } from "./classes/alpha-strike-unit";
 import { BattleMech, IGATOR, ITargetToHit } from "./classes/battlemech";
 import { CONST_MUL_API_ENABLED } from "./configVars";
 import { IEquipmentItem } from "./data/data-interfaces";
@@ -495,7 +495,7 @@ async function getCachedMULSearchResults(
     const allowedSources = selection;
     const bundledMatches = (await loadMULListItems(selection)).filter(matchesAllFilters);
     const sessionMatches = (appGlobals?.appSettings.alphasStrikeCachedSearchResults ?? [])
-        .filter((unit) => allowedSources.includes(unit.MulSource ?? "mul2"))
+        .filter((unit) => (allowedSources as MULSource[]).includes(unit.MulSource ?? "mul2"))
         .filter(matchesAllFilters);
     const seen = new Set(bundledMatches.map(getMULRecordKey));
 
