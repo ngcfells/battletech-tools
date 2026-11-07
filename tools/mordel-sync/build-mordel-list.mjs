@@ -5,8 +5,7 @@
  *   tools/mordel-sync/canon-mismatch-report.json  canon units whose stats differ from their MUL record
  *
  * A canon unit the MUL list already has with the same BV, PV and Alpha Strike stats is left out: the MUL list covers
- * it. The rows carry member designs' names and stats, so the data files stay out of public commits until mordel.net
- * agrees to them.
+ * it. mordel.net agreed to the list shipping with the app (2026-11-07); the details stay in the git-ignored mirror.
  *
  * Environment:
  *   MORDEL_MIRROR_DIR   default tools/mordel-sync/.mirror

@@ -15,11 +15,8 @@ export const TOP_UP_EVERY_MS = 24 * 60 * 60 * 1000;
 interface ITopUp { since: number; rows: IMordelListRow[]; checked?: number }
 
 type ChunkLoaders = Record<string, () => Promise<unknown>>;
-// The chunks hold member designs and are not committed until mordel.net agrees. Only "vite dev" with
-// VITE_MORDEL_LIST=local (in .env.development.local) reads them, so no build can carry them to the public site.
-const chunks: ChunkLoaders = import.meta.env.DEV && import.meta.env.VITE_MORDEL_LIST === "local"
-    ? import.meta.glob("./mordel/mordel_*.json", { eager: false, import: "default" }) as ChunkLoaders
-    : {};
+// Shipped with mordel.net's agreement (2026-11-07). Each chunk loads only when the list is first searched.
+const chunks = import.meta.glob("./mordel/mordel_*.json", { eager: false, import: "default" }) as ChunkLoaders;
 
 /** False when this build has no shipped list: search then finds only units this device topped up. */
 export const mordelListShipped = (): boolean => Object.keys(chunks).length > 0;
