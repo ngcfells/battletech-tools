@@ -1,16 +1,28 @@
 // The mordel.net unit list: the shipped chunks (tools/mordel-sync/build-mordel-list.mjs), plus rows this device
 // fetched since with the user's key, less units mordel.net no longer has.
 import { fetchMordelListSince, IMordelCallOptions, TOP_UP_LIMIT } from "../utils/mordel/mordel-api";
+import { getMordelServer } from "../utils/mordel/mordel-key";
 import { IMordelListRow, mordelKeyOf } from "../utils/mordel/mordel-types";
 import { untabulate } from "../utils/packed-json";
 
 export const MORDEL_TOP_UP_STORAGE = "mordelListTopUp";
 export const MORDEL_HIDDEN_STORAGE = "mordelHiddenUnits";
+/** Rows a device keeps from its top-ups. */
+export const TOP_UP_KEEP = 10000;
+/** How often the panel tops the list up: once a day. */
+export const TOP_UP_EVERY_MS = 24 * 60 * 60 * 1000;
 
-interface ITopUp { since: number; rows: IMordelListRow[] }
+interface ITopUp { since: number; rows: IMordelListRow[]; checked?: number }
 
 type ChunkLoaders = Record<string, () => Promise<unknown>>;
-const chunks = import.meta.glob("./mordel/mordel_*.json", { eager: false, import: "default" }) as ChunkLoaders;
+// The chunks hold member designs and are not committed until mordel.net agrees. Only "vite dev" with
+// VITE_MORDEL_LIST=local (in .env.development.local) reads them, so no build can carry them to the public site.
+const chunks: ChunkLoaders = import.meta.env.DEV && import.meta.env.VITE_MORDEL_LIST === "local"
+    ? import.meta.glob("./mordel/mordel_*.json", { eager: false, import: "default" }) as ChunkLoaders
+    : {};
+
+/** False when this build has no shipped list: search then finds only units this device topped up. */
+export const mordelListShipped = (): boolean => Object.keys(chunks).length > 0;
 
 let shipped: Promise<IMordelListRow[]> | null = null;
 
@@ -49,6 +61,9 @@ const hiddenKeys = (): string[] => {
     return Array.isArray(saved) ? saved.filter((key): key is string => typeof key === "string") : [];
 };
 
+/** A sandbox answer hides a unit only while the sandbox is chosen: its keys carry the server's name. */
+const hiddenKeyOf = (key: string): string => (getMordelServer() === "sandbox" ? `sandbox:${key}` : key);
+
 /** Rows by "type/id", the newest change winning. */
 function merge(...lists: IMordelListRow[][]): Map<string, IMordelListRow> {
     const byKey = new Map<string, IMordelListRow>();
@@ -63,28 +78,39 @@ function merge(...lists: IMordelListRow[][]): Map<string, IMordelListRow> {
 /** The whole list, sorted by name. */
 export async function loadMordelList(): Promise<IMordelListRow[]> {
     const byKey = merge(await loadShipped(), topUpOf()?.rows ?? []);
-    for (const key of hiddenKeys()) byKey.delete(key);
+    const hidden = new Set(hiddenKeys());
+    for (const key of [...byKey.keys()]) if (hidden.has(hiddenKeyOf(key))) byKey.delete(key);
     return [...byKey.values()].sort((a, b) => a.name.localeCompare(b.name));
 }
 
 /** Leaves a unit out of the list on this device: mordel.net answered that it is gone. */
 export function hideMordelUnit(key: string): void {
     const keys = hiddenKeys();
-    if (!keys.includes(key)) writeStorage(MORDEL_HIDDEN_STORAGE, [...keys, key]);
+    const stored = hiddenKeyOf(key);
+    if (!keys.includes(stored)) writeStorage(MORDEL_HIDDEN_STORAGE, [...keys, stored]);
+}
+
+/** True when the last top-up was a day ago or more, or there was none. */
+export function mordelTopUpDue(now: number = Date.now()): boolean {
+    return now - (topUpOf()?.checked ?? 0) >= TOP_UP_EVERY_MS;
 }
 
 /**
  * Fetches the units changed since the shipped list (or the last top-up) and keeps them on this device. Returns how
- * many rows came back and whether there were more than one top-up keeps, in which case the app needs a newer list.
+ * many rows came back and whether there were more than one call fetches; the next top-up then goes on from the
+ * newest row fetched (pages come oldest first).
  */
-export async function topUpMordelList(options: IMordelCallOptions = {}): Promise<{ fetched: number; tooMany: boolean }> {
+export async function topUpMordelList(options: IMordelCallOptions = {}, now: number = Date.now()): Promise<{ fetched: number; tooMany: boolean }> {
     const saved = topUpOf();
     const since = saved?.since ?? Math.max(0, ...(await loadShipped()).map(stampOf));
     const { rows, serverTime } = await fetchMordelListSince(since, options);
     const tooMany = rows.length >= TOP_UP_LIMIT;
-    const kept = [...merge(saved?.rows ?? [], rows).values()].sort((a, b) => stampOf(b) - stampOf(a)).slice(0, TOP_UP_LIMIT);
-    // When the answer was cut short, keep the old starting point so the rows left out are asked for again.
-    writeStorage(MORDEL_TOP_UP_STORAGE, { since: tooMany || serverTime == null ? since : serverTime, rows: kept });
+    const kept = [...merge(saved?.rows ?? [], rows).values()].sort((a, b) => stampOf(b) - stampOf(a)).slice(0, TOP_UP_KEEP);
+    const newest = Math.max(since, ...rows.map(stampOf));
+    // Cut short: go on one second before the newest row fetched, so rows of that same second are not skipped
+    // (unless that would not move on at all).
+    const next = tooMany ? (newest - 1 > since ? newest - 1 : newest) : serverTime ?? newest;
+    writeStorage(MORDEL_TOP_UP_STORAGE, { since: next, rows: kept, checked: now });
     return { fetched: rows.length, tooMany };
 }
 

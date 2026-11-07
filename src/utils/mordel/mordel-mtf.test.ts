@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { IMordelDetail, IMordelEquipment } from "./mordel-types";
-import { importMordelMech, mordelToMtf } from "./mordel-mtf";
+import { ACTUATOR_CAUTION, importMordelMech, mordelToMtf } from "./mordel-mtf";
 
 // The canon Dola DOL-1A2 as mordel.net details it (fluff left out). Canon or made-up units only.
 const item = (id: number, name: string, location: string | null, slots = 1, over: Partial<IMordelEquipment> = {}): IMordelEquipment =>
@@ -63,6 +63,27 @@ describe("importMordelMech", () => {
         const { mech } = importMordelMech(detail);
         expect(mech!.getInstalledEquipment().map((entry) => entry.tag)).toContain("clan-streak-srm-4");
     }, 30000);
+
+    it("writes a bin of half a ton's shots as a half-ton bin", () => {
+        const detail = dola();
+        detail.equipment = [...detail.equipment!, item(902, "Machine Gun", "CT"), item(903, "Machine Gun (Ammo 100)", "CT")];
+        const { text } = mordelToMtf(detail);
+        expect(text).toContain("IS Machine Gun Ammo - Half");
+        const { mech } = importMordelMech(detail);
+        const bin = mech!.getInstalledEquipment().find((entry) => /machine-gun/i.test(entry.tag) && entry.isAmmo);
+        expect(bin?.weight).toBe(0.5);
+    }, 30000);
+
+    it("writes the heat sinks' own tech base, and cautions that arm actuators are guessed", () => {
+        const detail = dola({ heat_sinks: { type: "Double", technology: "Clan", count: 10 } });
+        const { text, cautions } = mordelToMtf(detail);
+        expect(text).toContain("Heat Sinks:10 Clan Double");
+        expect(cautions).toEqual([ACTUATOR_CAUTION]);
+    });
+
+    it("names a gyro it does not know", () => {
+        expect(mordelToMtf(dola({ gyro: { type: "Made-up" } })).notes).toContain("Gyro 'Made-up' is laid out as a standard one");
+    });
 
     it("names an item it does not know, and does not claim the Battle Value matches", () => {
         const detail = dola();

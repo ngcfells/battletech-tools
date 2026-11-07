@@ -2,7 +2,7 @@
 // User-Agent (browsers can't set one) and without its long waits: a user pulls one unit at a time.
 import { readLocalStorage, writeLocalStorage } from "../../dataSavesStorage";
 import { createClient, listUnits, MordelAuthError, MordelHttpError } from "../../../tools/mordel-sync/mordel-client.mjs";
-import { getMordelKey, markMordelKeyRejected, mordelBaseUrl } from "./mordel-key";
+import { getMordelKey, markMordelKeyRejected, mordelBaseUrl, MORDEL_DETAIL_CACHE_STORAGE } from "./mordel-key";
 import { IMordelDetail, IMordelListRow, mordelKeyOf, MordelType } from "./mordel-types";
 
 /** No key is saved, or mordel.net refused it (401). */
@@ -25,7 +25,7 @@ export class MordelUnavailableError extends Error {
 // Scott has not named the endpoint for the key owner's own designs yet: a placeholder until he does.
 export const MORDEL_MY_UNITS_PATH = "/units/mine";
 
-const DETAIL_CACHE = "mordelDetailCache";
+const DETAIL_CACHE = MORDEL_DETAIL_CACHE_STORAGE;
 export const DETAIL_CACHE_SIZE = 50;
 /** Rows a list top-up keeps; beyond this the shipped list waits for the next release. */
 export const TOP_UP_LIMIT = 2000;
@@ -75,7 +75,7 @@ async function call<T>(work: () => Promise<T>, savedKey: boolean): Promise<T> {
 /** "ok" when mordel.net accepts the key. */
 export async function testMordelKey(key: string, options: IMordelCallOptions = {}): Promise<"ok" | "rejected" | "unavailable"> {
     try {
-        await call(() => client({ ...options, key }).get("/units?limit=1"), false);
+        await call(() => client({ ...options, key }).get("/units?limit=1"), key.trim() === getMordelKey());
         return "ok";
     } catch (error) {
         return error instanceof MordelKeyError ? "rejected" : "unavailable";
@@ -97,18 +97,25 @@ const stampOf = (unit: { updated?: number | null; created?: number | null }): nu
 
 /**
  * A unit's full detail: from the cache when it is as new as `stamp` (the list's updated or created time), else from
- * mordel.net. Null when mordel.net has no such unit, or not one this key may see.
+ * mordel.net. With no stamp (a pasted link) it is always pulled fresh, the cached copy serving only when mordel.net
+ * cannot be reached. Null when mordel.net has no such unit, or not one this key may see. The cache is kept per server.
  */
 export async function fetchMordelDetail(type: MordelType, id: number, stamp: number | null = null, options: IMordelCallOptions = {}): Promise<IMordelDetail | null> {
-    const key = `${type}/${id}`;
+    const server = options.base ?? mordelBaseUrl();
+    const key = `${server} ${type}/${id}`;
     const cached = readCache().find((entry) => entry.key === key);
-    if (cached && (stamp === null || cached.stamp >= stamp)) return cached.unit;
-    const answer = await call(() => client(options).get(`/units/${type}/${id}`), options.key === undefined) as { unit?: IMordelDetail } | null;
-    const unit = answer?.unit ?? null;
-    if (unit) {
-        const rest = readCache().filter((entry) => entry.key !== key);
-        writeLocalStorage(DETAIL_CACHE, JSON.stringify([{ key: mordelKeyOf(unit), stamp: stampOf(unit), unit }, ...rest].slice(0, DETAIL_CACHE_SIZE)));
+    if (cached && stamp !== null && cached.stamp >= stamp) return cached.unit;
+    let answer: { unit?: IMordelDetail } | null;
+    try {
+        answer = await call(() => client(options).get(`/units/${type}/${id}`), options.key === undefined) as { unit?: IMordelDetail } | null;
+    } catch (error) {
+        if (cached && error instanceof MordelUnavailableError) return cached.unit;
+        throw error;
     }
+    const unit = answer?.unit ?? null;
+    const rest = readCache().filter((entry) => entry.key !== key);
+    const kept = unit ? [{ key: `${server} ${mordelKeyOf(unit)}`, stamp: stampOf(unit), unit }, ...rest] : rest;
+    writeLocalStorage(DETAIL_CACHE, JSON.stringify(kept.slice(0, DETAIL_CACHE_SIZE)));
     return unit;
 }
 

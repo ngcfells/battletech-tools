@@ -54,7 +54,8 @@ export function mordelToASMULUnit(unit: IMordelListRow | IMordelDetail): IASMULU
         EraIcon: "",
         EraId: 0,
         EraStart: unit.year ?? 0,
-        Id: unit.id,
+        // Not a MUL unit: a mordel.net id here could be taken for a real MUL id.
+        Id: 0,
         ImageUrl: (unit as IMordelDetail).image_url ?? "",
         IsFeatured: false,
         IsPublished: true,

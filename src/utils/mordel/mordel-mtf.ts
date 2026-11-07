@@ -98,6 +98,7 @@ function fixedSlots(detail: IMordelDetail, layout: Layout, clan: boolean, notes:
     const side = SIDE_ENGINE_SLOTS[engineType.replace(/ \(Prototype\)$/, "")]?.[engineClan ? 1 : 0] ?? 0;
     const gyroType = detail.gyro?.type ?? "Standard";
     const gyro = GYRO_SLOTS[gyroType] ?? 4;
+    if (GYRO_SLOTS[gyroType] === undefined) notes.push(`Gyro '${gyroType}' is laid out as a standard one`);
     const centerEngine = /^compact$/i.test(engineType) ? 3 : 6;
     const engine = (n: number) => Array<string>(n).fill("Fusion Engine");
     const cockpit = detail.cockpit?.type ?? (detail.unit_type_short === "im" ? "Industrial" : "Standard");
@@ -124,17 +125,22 @@ function fixedSlots(detail: IMordelDetail, layout: Layout, clan: boolean, notes:
     return slots;
 }
 
-/** An ammunition entry ("LRM 15 (Ammo 8) [Artemis IV]") as a MegaMek ammunition line. */
-export function ammoLine(item: IMordelEquipment, notes: string[]): string | null {
-    const match = /^(.+?)\s*\(Ammo \d+\)\s*(?:\[(.+)\])?$/.exec(item.name);
+/**
+ * An ammunition entry ("LRM 15 (Ammo 8) [Artemis IV]") as a MegaMek ammunition line. A bin of half a ton's shots
+ * ("Machine Gun (Ammo 100)") is a half-ton one.
+ */
+export function ammoLine(item: IMordelEquipment, notes: string[], faction: ImportFaction = "is"): string | null {
+    const match = /^(.+?)\s*\(Ammo (\d+)\)\s*(?:\[(.+)\])?$/.exec(item.name);
     if (!match) return null;
-    const kinds = (match[2] ?? "").split("/").map((part) => part.trim()).filter(Boolean);
+    const { record } = findMordelRecord({ ...item, name: match[1] }, faction);
+    const half = !!record?.shotsPerTon && Number(match[2]) * 2 === record.shotsPerTon;
+    const kinds = (match[3] ?? "").split("/").map((part) => part.trim()).filter(Boolean);
     const words: string[] = [];
     for (const kind of kinds) {
         if (AMMO_KINDS[kind]) words.push(AMMO_KINDS[kind]);
         else notes.push(`'${item.name}': ${kind} rounds are read as standard ones`);
     }
-    return `${clanTech(item.technology) ? "Clan" : "IS"} ${match[1]}${words.length ? " " + words.join(" ") : ""} Ammo`;
+    return `${clanTech(item.technology) ? "Clan" : "IS"} ${match[1]}${words.length ? " " + words.join(" ") : ""} Ammo${half ? " - Half" : ""}`;
 }
 
 /** The MTF slot name for an item, or null when it has no slot of its own. */
@@ -156,7 +162,7 @@ function slotName(item: IMordelEquipment, faction: ImportFaction, notes: string[
         if (!/\[Homing\]$/.test(name)) notes.push(`'${name}': only homing pods are read; these are read as homing ones`);
         return `${p}${name.startsWith("Improved") ? "iNarc" : "Narc"} Pods`;
     }
-    if (/\(Ammo \d+\)/.test(name)) return ammoLine(item, notes);
+    if (/\(Ammo \d+\)/.test(name)) return ammoLine(item, notes, faction);
     const { record, base, oneShot, itemFaction } = findMordelRecord(item, faction);
     const os = oneShot ? ` (${oneShot})` : "";
     // Unknown here: the MTF import names it in its issues.
@@ -184,8 +190,14 @@ export function findMordelRecord(item: IMordelEquipment, faction: ImportFaction)
 const marks = (item: IMordelEquipment, omni: boolean): string =>
     (/rear/i.test(item.facing ?? "") ? " (R)" : "") + (item.armored ? " (ARMORED)" : "") + (omni && !item.fixed ? " (OMNIPOD)" : "");
 
-/** The detail as an MTF file. Notes name what was read approximately or left out. */
-export function mordelToMtf(detail: IMordelDetail): { text: string; notes: string[] } {
+/** mordel.net does not list arm actuators: shown with every 'Mech that keeps a guessed one. */
+export const ACTUATOR_CAUTION = "mordel.net does not list arm actuators, so hand and lower arm actuators are fitted wherever they fit. Check the arms against the record sheet.";
+
+/**
+ * The detail as an MTF file. Notes name what was read approximately or left out; cautions name what was guessed
+ * without changing the Battle Value (arm actuators).
+ */
+export function mordelToMtf(detail: IMordelDetail): { text: string; notes: string[]; cautions: string[] } {
     const notes: string[] = [];
     const layout = layoutOf(detail);
     const clan = /^clan/i.test(detail.tech_base);
@@ -288,6 +300,7 @@ export function mordelToMtf(detail: IMordelDetail): { text: string; notes: strin
         if (left > 0) notes.push(`${left} slots of ${name} do not fit`);
     }
     for (const code of codes) if (freeIn(code) < 0) notes.push(`${code} has more than ${sizeOf(code)} slots`);
+    const cautions = arms.some((code) => slots[code].includes("Hand Actuator") || slots[code].includes("Lower Arm Actuator")) ? [ACTUATOR_CAUTION] : [];
 
     // The header.
     const engineType = detail.engine?.type ?? "Fusion";
@@ -295,6 +308,8 @@ export function mordelToMtf(detail: IMordelDetail): { text: string; notes: strin
     if (!engineName) notes.push(`Engine '${engineType}' is not converted yet`);
     const engineClan = clanTech(detail.engine?.technology) || (!detail.engine?.technology && clan);
     const myomer = detail.myomer?.type ?? "Standard";
+    const sinkTech = /^(Double|Laser)$/i.test(detail.heat_sinks?.type ?? "") && detail.heat_sinks?.technology
+        ? (clanTech(detail.heat_sinks.technology) ? "Clan " : "IS ") : "";
     const lines: string[] = [
         "generator:battletech-tools from mordel.net",
         `chassis:${oneLine(detail.name_parts?.name || detail.name)}`,
@@ -317,7 +332,8 @@ export function mordelToMtf(detail: IMordelDetail): { text: string; notes: strin
             : COCKPITS[detail.cockpit?.type ?? ""] ?? (detail.unit_type_short === "im" ? "Industrial" : "Standard Cockpit")}`,
         ...headerItems,
         "",
-        `Heat Sinks:${detail.heat_sinks?.count ?? 0} ${detail.heat_sinks?.type ?? "Single"}`,
+        // The sinks' own tech base: Clan doubles on an Inner Sphere chassis take 2 slots, not 3.
+        `Heat Sinks:${detail.heat_sinks?.count ?? 0} ${sinkTech}${detail.heat_sinks?.type ?? "Single"}`,
         `Walk MP:${detail.movement?.walk ?? 0}`,
         `Jump MP:${detail.movement?.jump ?? 0}`,
         "",
@@ -340,17 +356,17 @@ export function mordelToMtf(detail: IMordelDetail): { text: string; notes: strin
     for (const [key, text] of Object.entries(detail.fluff ?? {})) {
         if (["overview", "capabilities", "deployment", "history", "notes"].includes(key) && oneLine(text)) lines.push("", `${key}:${oneLine(text)}`);
     }
-    return { text: lines.join("\n") + "\n", notes };
+    return { text: lines.join("\n") + "\n", notes, cautions };
 }
 
 /**
  * Builds the 'Mech, and checks it against mordel.net: bvOk is true only when nothing was left out or read
  * approximately and our Battle Value is mordel.net's.
  */
-export function importMordelMech(detail: IMordelDetail): { mech: BattleMech | null; issues: string[]; bvOk: boolean; ourBV: number } {
-    const { text, notes } = mordelToMtf(detail);
+export function importMordelMech(detail: IMordelDetail): { mech: BattleMech | null; issues: string[]; cautions: string[]; bvOk: boolean; ourBV: number } {
+    const { text, notes, cautions } = mordelToMtf(detail);
     const { mech, issues: importIssues } = importBattleMechMtf(text);
     const issues = [...notes, ...importIssues];
     const ourBV = mech ? mech.getBattleValue() : 0;
-    return { mech, issues, bvOk: !!mech && issues.length === 0 && detail.battle_value != null && ourBV === detail.battle_value, ourBV };
+    return { mech, issues, cautions, bvOk: !!mech && issues.length === 0 && detail.battle_value != null && ourBV === detail.battle_value, ourBV };
 }

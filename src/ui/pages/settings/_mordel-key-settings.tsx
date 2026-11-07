@@ -22,6 +22,8 @@ export default function MordelKeySettings(props: { developerMenu: boolean }): JS
         setMessage("Testing…");
         const result = await testMordelKey(key);
         setBusy(false);
+        // A refused saved key stays marked until a new one is saved.
+        setRejected(isMordelKeyRejected());
         setMessage(RESULT_TEXT[result]);
         return result;
     };
@@ -82,7 +84,7 @@ export default function MordelKeySettings(props: { developerMenu: boolean }): JS
                     <button type="button" className="btn btn-danger btn-sm" disabled={busy} onClick={remove}>Remove key</button>
                 </> : null}
             </form>
-            {message ? <p role="status">{message}</p> : null}
+            <p role="status">{message}</p>
             {props.developerMenu ? (
                 <label>
                     Server (developers):

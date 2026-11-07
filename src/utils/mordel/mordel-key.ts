@@ -5,6 +5,8 @@ import { readLocalStorage, writeLocalStorage } from "../../dataSavesStorage";
 export const MORDEL_KEY_STORAGE = "mordelApiKey";
 const SERVER_STORAGE = "mordelServer";
 const REJECTED_STORAGE = "mordelKeyRejected";
+/** Unit details pulled with the key (mordel-api.ts): private designs among them, so they go when the key does. */
+export const MORDEL_DETAIL_CACHE_STORAGE = "mordelDetailCache";
 
 export type MordelServer = "production" | "sandbox";
 
@@ -33,6 +35,7 @@ export function getMordelKey(): string | null {
 }
 
 export function saveMordelKey(key: string): void {
+    if (getMordelKey() !== key.trim()) removeLocalStorage(MORDEL_DETAIL_CACHE_STORAGE);
     writeLocalStorage(MORDEL_KEY_STORAGE, key.trim());
     removeLocalStorage(REJECTED_STORAGE);
 }
@@ -40,6 +43,7 @@ export function saveMordelKey(key: string): void {
 export function removeMordelKey(): void {
     removeLocalStorage(MORDEL_KEY_STORAGE);
     removeLocalStorage(REJECTED_STORAGE);
+    removeLocalStorage(MORDEL_DETAIL_CACHE_STORAGE);
 }
 
 /** mordel.net answered 401 for the saved key: it was revoked or mistyped. Cleared when a key is saved. */

@@ -25,10 +25,20 @@ const mocks = vi.hoisted(() => ({
     fetchMordelDetail: vi.fn(),
     hideMordelUnit: vi.fn(),
     importMordelMech: vi.fn(),
+    loadMordelList: vi.fn(),
+    shipped: { value: true },
+    topUpDue: vi.fn(),
+    topUpMordelList: vi.fn(),
 }));
 
-vi.mock("../../data/mordel-list", () => ({ loadMordelList: vi.fn(async () => ROWS), hideMordelUnit: mocks.hideMordelUnit }));
-vi.mock("../../utils/mordel/mordel-key", () => ({ getMordelKey: () => mocks.key.value }));
+vi.mock("../../data/mordel-list", () => ({
+    loadMordelList: mocks.loadMordelList, hideMordelUnit: mocks.hideMordelUnit,
+    mordelListShipped: () => mocks.shipped.value, mordelTopUpDue: mocks.topUpDue, topUpMordelList: mocks.topUpMordelList,
+}));
+vi.mock("../../utils/mordel/mordel-key", async (actual) => ({
+    ...(await actual<typeof import("../../utils/mordel/mordel-key")>()),
+    getMordelKey: () => mocks.key.value,
+}));
 vi.mock("../../utils/mordel/mordel-mtf", () => ({ importMordelMech: mocks.importMordelMech }));
 vi.mock("../../utils/mordel/mordel-api", async (actual) => ({
     ...(await actual<typeof import("../../utils/mordel/mordel-api")>()),
@@ -42,6 +52,10 @@ beforeEach(() => {
     mocks.fetchMordelDetail.mockReset();
     mocks.hideMordelUnit.mockReset();
     mocks.importMordelMech.mockReset();
+    mocks.loadMordelList.mockReset().mockResolvedValue(ROWS);
+    mocks.shipped.value = true;
+    mocks.topUpDue.mockReset().mockReturnValue(false);
+    mocks.topUpMordelList.mockReset().mockResolvedValue({ fetched: 0, tooMany: false });
 });
 afterEach(cleanup);
 
@@ -71,7 +85,10 @@ describe("MordelUnitsPanel", () => {
         await search("hornet");
         fireEvent.click(screen.getByRole("button", { name: "Add Hornet HNT-1" }));
         expect(await screen.findByText(/needs your own mordel.net API key/)).toBeTruthy();
-        expect(screen.getByRole("link", { name: "Open Settings" }).getAttribute("href")).toMatch(/\/settings$/);
+        // A new tab, so the roster dialog keeps what the user has done.
+        const settings = screen.getByRole("link", { name: "Open Settings (opens in a new tab)" });
+        expect(settings.getAttribute("href")).toMatch(/\/settings$/);
+        expect(settings.getAttribute("target")).toBe("_blank");
         expect(mocks.fetchMordelDetail).not.toHaveBeenCalled();
     });
 
@@ -81,6 +98,71 @@ describe("MordelUnitsPanel", () => {
         await search("hornet");
         fireEvent.click(screen.getByRole("button", { name: "Add Hornet HNT-1" }));
         expect(await screen.findByText(/refused the saved API key/)).toBeTruthy();
+        expect(screen.getByRole("alert").textContent).toMatch(/refused the saved API key/);
+    });
+
+    it("cautions about guessed parts even when the Battle Value matches", async () => {
+        mocks.fetchMordelDetail.mockResolvedValue({ ...ROWS[0] });
+        mocks.importMordelMech.mockReturnValue({ mech, issues: [], cautions: ["Check the arms."], bvOk: true, ourBV: 1000 });
+        renderPanel();
+        await search("hornet");
+        fireEvent.click(screen.getByRole("button", { name: "Add Hornet HNT-1" }));
+        expect(await screen.findByText("Hornet HNT-1 added.")).toBeTruthy();
+        expect(screen.getByRole("status").textContent).toContain("Check the arms.");
+    });
+
+    it("labels the buttons Load in the designer", async () => {
+        render(<MemoryRouter><MordelUnitsPanel mode="designer" onAddMech={vi.fn()} /></MemoryRouter>);
+        await search("hnt-2");
+        expect(screen.getByRole("button", { name: "Load Hornet HNT-2" }).textContent).toBe("Load");
+    });
+
+    it("does not add the unit when the panel closes before the pull finishes", async () => {
+        let answer: (value: unknown) => void = () => undefined;
+        mocks.fetchMordelDetail.mockReturnValue(new Promise((resolve) => { answer = resolve; }));
+        mocks.importMordelMech.mockReturnValue({ mech, issues: [], cautions: [], bvOk: true, ourBV: 1000 });
+        const { onAddMech } = renderPanel();
+        await search("hornet");
+        fireEvent.click(screen.getByRole("button", { name: "Add Hornet HNT-1" }));
+        cleanup();
+        answer({ ...ROWS[0] });
+        await new Promise((resolve) => setTimeout(resolve, 0));
+        expect(onAddMech).not.toHaveBeenCalled();
+    });
+
+    it("switches tabs with the arrow keys", async () => {
+        renderPanel();
+        const list = screen.getByRole("tab", { name: "Mordel.net units" });
+        fireEvent.keyDown(list, { key: "ArrowRight" });
+        const mineTab = screen.getByRole("tab", { name: "My Mordel designs" });
+        expect(mineTab.getAttribute("aria-selected")).toBe("true");
+        expect(screen.getByRole("tabpanel").getAttribute("aria-labelledby")).toBe(mineTab.id);
+        fireEvent.keyDown(mineTab, { key: "ArrowRight" });
+        expect(screen.getByRole("tab", { name: "Mordel.net units" }).getAttribute("aria-selected")).toBe("true");
+    });
+
+    it("says so when this build ships no list", async () => {
+        mocks.loadMordelList.mockResolvedValue([]);
+        mocks.shipped.value = false;
+        renderPanel();
+        expect(await screen.findByText(/does not ship the mordel.net list/)).toBeTruthy();
+    });
+
+    it("tops the list up once it is due, with a key, and shows the new rows", async () => {
+        mocks.topUpDue.mockReturnValue(true);
+        mocks.loadMordelList.mockResolvedValueOnce([]).mockResolvedValue(ROWS);
+        renderPanel();
+        await search("hnt-2");
+        expect(await screen.findByRole("button", { name: "Add Hornet HNT-2" })).toBeTruthy();
+        expect(mocks.topUpMordelList).toHaveBeenCalledTimes(1);
+    });
+
+    it("does not top up without a key", async () => {
+        mocks.key.value = null;
+        mocks.topUpDue.mockReturnValue(true);
+        renderPanel();
+        await search("hnt-2");
+        expect(mocks.topUpMordelList).not.toHaveBeenCalled();
     });
 
     it("hides a unit mordel.net no longer has, with a note", async () => {

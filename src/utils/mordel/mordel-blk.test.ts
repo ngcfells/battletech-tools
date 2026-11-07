@@ -58,6 +58,13 @@ describe("importMordelBlk: Combat Vehicles", () => {
         expect(result.ourBV).toBeGreaterThan(0);
     });
 
+    it("fits Artemis only to the launchers its marked ammunition feeds", () => {
+        const equipment = [...tank().equipment!, item(7, "SRM 4", "FR"), item(8, "SRM 4 (Ammo 25)", "BD")];
+        const tags = (importMordelBlk(tank({ equipment })).unit as Vehicle).getEquipmentList().map((entry) => entry.tag);
+        expect(tags.some((tag) => /lrm.*10.*artemis-iv/.test(tag))).toBe(true);
+        expect(tags.filter((tag) => /srm.*4/.test(tag) && !/ammo/.test(tag))).toEqual([expect.not.stringMatching(/artemis/)]);
+    });
+
     it("writes the half-ton machine gun bin as a half ton", () => {
         expect(mordelVehicleToBlk(tank()).text).toContain("IS machine-gun Ammo - Half");
     });

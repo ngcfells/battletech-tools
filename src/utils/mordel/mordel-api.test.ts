@@ -97,12 +97,41 @@ describe("mordel browser client", () => {
 
     it(`keeps the newest ${DETAIL_CACHE_SIZE} details`, async () => {
         const f = fake((url) => json({ status: "OK", unit: unit(+url.split("/").pop()!) }));
-        for (let id = 1; id <= DETAIL_CACHE_SIZE + 1; id++) await fetchMordelDetail("bm", id, null, { ...f });
+        for (let id = 1; id <= DETAIL_CACHE_SIZE + 1; id++) await fetchMordelDetail("bm", id, 10, { ...f });
         const before = f.calls.length;
-        await fetchMordelDetail("bm", DETAIL_CACHE_SIZE + 1, null, f);
+        await fetchMordelDetail("bm", DETAIL_CACHE_SIZE + 1, 10, f);
         expect(f.calls.length).toBe(before);
-        await fetchMordelDetail("bm", 1, null, f);
+        await fetchMordelDetail("bm", 1, 10, f);
         expect(f.calls.length).toBe(before + 1);
+    });
+
+    it("pulls a pasted link fresh, and falls back to the cached copy only when mordel.net cannot be reached", async () => {
+        let name = "First";
+        let down = false;
+        const f = fake(() => { if (down) throw new TypeError("Failed to fetch"); return json({ unit: { ...unit(1), name } }); });
+        expect((await fetchMordelDetail("bm", 1, null, f))!.name).toBe("First");
+        name = "Edited";
+        expect((await fetchMordelDetail("bm", 1, null, f))!.name).toBe("Edited");
+        down = true;
+        expect((await fetchMordelDetail("bm", 1, null, f))!.name).toBe("Edited");
+    });
+
+    it("keeps the cache per server, and drops it with the key", async () => {
+        const production = fake(() => json({ unit: { ...unit(1, 100), name: "Production" } }));
+        const sandbox = { ...fake(() => json({ unit: { ...unit(1, 100), name: "Sandbox" } })), base: "https://sandbox.example/v1" };
+        await fetchMordelDetail("bm", 1, 100, production);
+        expect((await fetchMordelDetail("bm", 1, 100, sandbox))!.name).toBe("Sandbox");
+        expect(localStorage.getItem("mordelDetailCache")).toContain("Production");
+        saveMordelKey("another-key-5678");
+        expect(localStorage.getItem("mordelDetailCache")).toBeNull();
+        await fetchMordelDetail("bm", 1, 100, production);
+        removeMordelKey();
+        expect(localStorage.getItem("mordelDetailCache")).toBeNull();
+    });
+
+    it("marks the saved key rejected when a test of it is refused", async () => {
+        expect(await testMordelKey(KEY, fake(() => json({}, 401)))).toBe("rejected");
+        expect(isMordelKeyRejected()).toBe(true);
     });
 
     it("tests a key without saving or rejecting the saved one", async () => {

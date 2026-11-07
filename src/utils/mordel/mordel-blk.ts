@@ -123,8 +123,21 @@ export function mordelVehicleToBlk(detail: IMordelDetail): { text: string; issue
     const transporters: string[] = [];
     const fitted = detail.fire_control?.artemis === "V" ? "-artemis-v" : detail.fire_control?.artemis ? "-artemis-iv" : detail.fire_control?.apollo ? "-apollo" : "";
     const omni = !!detail.omni;
+    // mordel.net gives Artemis for the whole design, and marks the ammunition that uses it. Where any ammunition is
+    // marked, only the launchers it feeds are fitted; otherwise (and for Apollo) every launcher that takes it is.
+    const artemisFed = new Set<string>();
+    if (/artemis/.test(fitted)) {
+        for (const item of detail.equipment ?? []) {
+            const match = AMMO.exec(item.name.trim());
+            const record = match && /Artemis/.test(match[3] ?? "") ? findMordelRecord({ ...item, name: match[1] }, faction).record : null;
+            if (record) artemisFed.add(record.tag);
+        }
+    }
+    const fits = (launcherTag: string) => !!fitted && (artemisFed.size === 0 || artemisFed.has(launcherTag));
     for (const item of detail.equipment ?? []) {
         const name = item.name.trim();
+        // The fire control is fitted to its launchers below, not mounted apart.
+        if (/^(Artemis IV|Artemis V|MRM Apollo) FCS$/.test(name)) continue;
         if (name === "Sponson Turret") { add("BD", "SponsonTurret"); continue; }
         if (name === "Vehicular Jump Jet") continue;
         if (CHASSIS_MODS[name]) { add("BD", CHASSIS_MODS[name]); continue; }
@@ -149,8 +162,7 @@ export function mordelVehicleToBlk(detail: IMordelDetail): { text: string; issue
             issues.push(`'${name}' (${item.stacks.count} ${item.stacks.unit}) is read as one`);
         }
         if (item.insulator || item.pulse_module || item.dumper) issues.push(`'${name}': its add-on is left out`);
-        // Artemis and Apollo are fitted to every launcher that takes them (mordel.net gives them for the whole design).
-        const tag = (fitted && getBlkFittedTag(record.tag, fitted)) || record.tag;
+        const tag = (fits(base.tag) && getBlkFittedTag(record.tag, fitted)) || record.tag;
         const rear = /rear/i.test(item.facing ?? "") ? " (R)" : "";
         for (let copy = 0; copy < copies; copy++) add(code, `${tag}${item.sponson_turret ? " (ST)" : ""}${rear}${omni && !item.fixed ? ":OMNI" : ""}`);
     }

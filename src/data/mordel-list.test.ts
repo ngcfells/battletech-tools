@@ -1,7 +1,8 @@
 // @vitest-environment happy-dom
 import { beforeEach, describe, expect, it } from "vitest";
-import { saveMordelKey } from "../utils/mordel/mordel-key";
-import { hideMordelUnit, loadMordelList, MORDEL_TOP_UP_STORAGE, topUpMordelList } from "./mordel-list";
+import { TOP_UP_LIMIT } from "../utils/mordel/mordel-api";
+import { saveMordelKey, setMordelServer } from "../utils/mordel/mordel-key";
+import { hideMordelUnit, loadMordelList, MORDEL_TOP_UP_STORAGE, mordelListShipped, mordelTopUpDue, topUpMordelList, TOP_UP_EVERY_MS } from "./mordel-list";
 
 // Made-up units with ids above any mordel.net id, so the test works with or without the shipped (local-only) chunks.
 const row = (id: number, updated: number, name = `Testunit ${id}`) => ({
@@ -41,6 +42,33 @@ describe("mordel list", () => {
         expect((await ours()).map((r) => r.id)).toEqual([990000002]);
         expect(JSON.parse(localStorage.getItem("mordelHiddenUnits")!)).toEqual(["bm/990000001"]);
     }, 30000);
+
+    it("goes on from the newest row fetched when a top-up is cut short", async () => {
+        const rows = Array.from({ length: TOP_UP_LIMIT }, (_, i) => row(990000001 + i, 200 + i));
+        const f = fake({ units: rows, server_time: 99999 });
+        expect(await topUpMordelList(f)).toEqual({ fetched: TOP_UP_LIMIT, tooMany: true });
+        expect(JSON.parse(localStorage.getItem(MORDEL_TOP_UP_STORAGE)!).since).toBe(200 + TOP_UP_LIMIT - 2);
+    }, 30000);
+
+    it("is due once a day", async () => {
+        expect(mordelTopUpDue(TOP_UP_EVERY_MS)).toBe(true);
+        await topUpMordelList(fake({ units: [], server_time: 5 }), TOP_UP_EVERY_MS);
+        expect(mordelTopUpDue(2 * TOP_UP_EVERY_MS - 1)).toBe(false);
+        expect(mordelTopUpDue(2 * TOP_UP_EVERY_MS)).toBe(true);
+    }, 30000);
+
+    it("hides a unit the sandbox has not got only while the sandbox is chosen", async () => {
+        localStorage.setItem(MORDEL_TOP_UP_STORAGE, JSON.stringify({ since: 100, rows: [row(990000001, 110)] }));
+        setMordelServer("sandbox");
+        hideMordelUnit("bm/990000001");
+        expect(await ours()).toEqual([]);
+        setMordelServer("production");
+        expect((await ours()).map((r) => r.id)).toEqual([990000001]);
+    }, 30000);
+
+    it("ships no member designs in tests or builds", () => {
+        expect(mordelListShipped()).toBe(false);
+    });
 
     it("reads broken saved data as empty", async () => {
         localStorage.setItem(MORDEL_TOP_UP_STORAGE, "{not json");
