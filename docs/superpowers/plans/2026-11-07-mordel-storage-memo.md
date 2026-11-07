@@ -1,0 +1,74 @@
+# mordel.net units: storage memo (2026-11-07)
+
+For the owner. The question: how do mordel.net units reach users of the app?
+
+## Recommendation
+
+**Option (c), per-user keys.** It is built on branch `mordel-user-key` and works end to end in development:
+
+- The app keeps a list of units.
+- A user picks a unit.
+- The app pulls its details from mordel.net with the user's own API key.
+
+One decision is still open: where the list itself comes from (see "The list" below).
+
+## The three options
+
+| Option | Size to users | Member designs in our public repo | Status |
+| --- | --- | --- | --- |
+| (a) Ship every detail with the app | about 530 MB (579 MB on disk), about 87 MB gzipped | Yes | Not recommended |
+| (b) An optional download pack | the same, in one download | Yes, unless it is hosted elsewhere | Not recommended |
+| (c) Ship a list; details pulled with the user's own key | list: 13 MB, 2.4 MB gzipped | No: the list is git-ignored for now | Built |
+
+Scott agreed to per-user keys in principle. (c) still needs CORS on mordel.net for our three origins. Until CORS is on, only the development server works, through a proxy.
+
+## The list
+
+The list rows hold member designs: names, designers, tonnage, Battle Value and Alpha Strike cards. battletech-tools is public, so the list is **not committed**:
+
+- The list files `src/data/mordel/mordel_*.json` are git-ignored. Only `canon-mechs.csv` is tracked.
+- A build includes the list only in development with `VITE_MORDEL_LIST=local`. A production build carries none. This was checked: `build/` has no list files.
+- With a key saved, the app pulls the units changed on mordel.net since the last check, once a day. It keeps up to 10,000 rows on the device.
+- Any unit can also be pulled by its link or `type/id`.
+
+That leaves a public build with no list of its own. Three ways to close the gap; the owner and Scott should pick one:
+
+1. **Scott agrees to us shipping the list** (it holds no more than his public site shows). Then we commit the list files and drop the dev-only gate. Smallest change.
+2. **The app pulls the whole list with the user's key** on first use: 57 pages, then the daily changes. No member data in our repo. Costs Scott about 57 requests per new user. This is a small change from what is built (the cap of 10,000 rows would go).
+3. **Scott hosts a list file** we fetch. No load on his API, but it needs work on his side.
+
+My call: ask Scott for 1, with 2 as the fallback.
+
+## Canon units: dropped from the list where they match the MUL
+
+Of 5,055 canon units on mordel.net:
+
+| Group | Units | What happens |
+| --- | --- | --- |
+| Match our MUL data (Battle Value and Alpha Strike stats) | 4,099 | Dropped from the list. Users get the MUL unit we already ship. |
+| Do not match | 334 | Kept in the list. **Needs the discussion you asked for.** |
+| Not in our MUL data | 622 | Kept in the list. |
+
+The 334 mismatches (full list in `tools/mordel-sync/canon-mismatch-report.json`):
+
+- 248 differ in Battle Value. The median gap is 20 BV, and 92 are within 10. The largest is 2,295.
+- 132 differ in Point Value, 69 in damage, 18 in movement, 15 in armor, 10 in structure and 9 in size.
+- One unit can differ in more than one way.
+
+Questions for that discussion:
+
+- Which side is right, unit by unit, and who decides?
+- Should mismatches go to Scott as a report?
+- Should a mismatched canon unit show both values?
+
+The report was built while the mirror pull was still running, with 10,043 details missing. It gets rebuilt when the pull ends, and the numbers may move.
+
+## How well the conversion works
+
+Each Classic unit is built from mordel.net's detail, and our Battle Value is compared with mordel.net's, across the mirror's canon units:
+
+- 'Mechs: 3,930 of 4,269 match.
+- Vehicles: 942 of 1,002.
+- ProtoMechs: 80 of 85.
+
+A unit that does not match is still added, with a warning that lists why.

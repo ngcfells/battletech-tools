@@ -123,4 +123,13 @@ The owner's words:
 
 - The API has no actuator data (lower arm and hand). Could the detail say which are present?
 - Production API base: is it `https://mordel.net/api/v1`?
-- The "my units" endpoint path once it exists.
+- The "my units" endpoint path once it exists. The app uses `/units/mine` as a placeholder.
+- Stack increments: we read communications equipment as 1 ton per increment, and infantry and cargo bays as 0.5 ton.
+  Is that right?
+- OmniMechs: the detail gives no base (fixed) heat-sink count, so the MTF base heat-sink line cannot be written.
+  Could it be added?
+- Artemis and Apollo: `fire_control` says a vehicle has them, but not which launchers. We read it from the
+  "[Artemis IV]" mark on the ammo. 19 of 345 Artemis vehicles mix marked and unmarked launcher ammo, and none of the
+  25 Apollo vehicles mark their ammo. Could each launcher say what it is linked to?
+- May we ship the unit list (names, designers, Battle Value and Alpha Strike cards) in our public app? If not,
+  is about 57 list requests per new user acceptable for a first pull? (Storage memo, 2026-11-07.)
