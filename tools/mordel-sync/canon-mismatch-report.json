@@ -1,12 +1,12 @@
 {
- "built": "2026-11-07T06:29:52.654Z",
- "detailsMissingOrStale": 10043,
+ "built": "2026-11-07T09:53:14.889Z",
+ "detailsMissingOrStale": 0,
  "counts": {
-  "total": 46000,
-  "canon": 5055,
-  "droppedMatching": 4099,
-  "canonMismatched": 334,
-  "canonNotInMul": 622
+  "total": 56043,
+  "canon": 5416,
+  "droppedMatching": 4317,
+  "canonMismatched": 381,
+  "canonNotInMul": 718
  },
  "mismatches": [
   {
@@ -162,6 +162,14 @@
    ]
   },
   {
+   "key": "bm/21713",
+   "name": "Battle Cobra BTL-C-2OC",
+   "mulUnitKey": "MMRB7HT6FS",
+   "diffs": [
+    "PV 20 vs 19"
+   ]
+  },
+  {
    "key": "bm/230",
    "name": "Wasp WSP-3W",
    "mulUnitKey": "GGN3CH6X1J",
@@ -226,6 +234,14 @@
    ]
   },
   {
+   "key": "bm/2910",
+   "name": "Seraph C-SRP-O Invictus",
+   "mulUnitKey": "2AVPWESQGF",
+   "diffs": [
+    "BV 1810 vs 1794"
+   ]
+  },
+  {
    "key": "bm/2963",
    "name": "Arctic Wolf II A",
    "mulUnitKey": "CWHBB43F9X",
@@ -278,6 +294,22 @@
    ]
   },
   {
+   "key": "bm/3236",
+   "name": "Seraph C-SRP-OA Dominus",
+   "mulUnitKey": "TS5ZVRX99Y",
+   "diffs": [
+    "BV 2360 vs 2338"
+   ]
+  },
+  {
+   "key": "bm/3241",
+   "name": "Archangel C-ANG-OC Comminus",
+   "mulUnitKey": "NMKQBM97B7",
+   "diffs": [
+    "BV 2010 vs 2014"
+   ]
+  },
+  {
    "key": "bm/3264",
    "name": "Helepolis HEP-2H",
    "mulUnitKey": "51JX7M2SF6",
@@ -299,6 +331,14 @@
    "mulUnitKey": "4WCWNYC0AM",
    "diffs": [
     "BV 2322 vs 2355"
+   ]
+  },
+  {
+   "key": "bm/3297",
+   "name": "Malak C-MK-OS Caelestis",
+   "mulUnitKey": "5ZT8JDF57Y",
+   "diffs": [
+    "BV 1121 vs 1125"
    ]
   },
   {
@@ -410,6 +450,22 @@
    ]
   },
   {
+   "key": "bm/3608",
+   "name": "Osteon A",
+   "mulUnitKey": "PKJCTAD1JJ",
+   "diffs": [
+    "PV 60 vs 61"
+   ]
+  },
+  {
+   "key": "bm/3632",
+   "name": "Cephalus U",
+   "mulUnitKey": "RFSE1BN2W5",
+   "diffs": [
+    "PV 28 vs 26"
+   ]
+  },
+  {
    "key": "bm/3639",
    "name": "Revenant UBM-1A",
    "mulUnitKey": "QGW0GW482C",
@@ -492,6 +548,14 @@
    "mulUnitKey": "WDFPPF30G3",
    "diffs": [
     "PV 51 vs 48"
+   ]
+  },
+  {
+   "key": "bm/3941",
+   "name": "Seraph C-SRP-OR (Ravana)",
+   "mulUnitKey": "THFATQ52M9",
+   "diffs": [
+    "BV 1957 vs 1941"
    ]
   },
   {
@@ -610,6 +674,22 @@
    ]
   },
   {
+   "key": "bm/4284",
+   "name": "Osteon PRIME",
+   "mulUnitKey": "HZCPSD4B7T",
+   "diffs": [
+    "PV 78 vs 79"
+   ]
+  },
+  {
+   "key": "bm/4320",
+   "name": "Savage Coyote Z",
+   "mulUnitKey": "PKYFEQ64NR",
+   "diffs": [
+    "BV 3026 vs 3080"
+   ]
+  },
+  {
    "key": "bm/434",
    "name": "Shogun SHG-2E",
    "mulUnitKey": "DGP30Q9GY2",
@@ -639,6 +719,14 @@
    "mulUnitKey": "CNWP334P1K",
    "diffs": [
     "PV 48 vs 45"
+   ]
+  },
+  {
+   "key": "bm/4399",
+   "name": "Gladiator GLD-1R (Keller)",
+   "mulUnitKey": "0CG2GEP9VY",
+   "diffs": [
+    "BV 1553 vs 1517"
    ]
   },
   {
@@ -728,6 +816,14 @@
    "mulUnitKey": "KT862Z38RP",
    "diffs": [
     "BV 375 vs 382"
+   ]
+  },
+  {
+   "key": "bm/4642",
+   "name": "Valkyrie VLK-QW5",
+   "mulUnitKey": "EM1FS5WVCQ",
+   "diffs": [
+    "BV 689 vs 701"
    ]
   },
   {
@@ -913,6 +1009,134 @@
    ]
   },
   {
+   "key": "bm/5115",
+   "name": "Stinger LAM Mk I STG-A1",
+   "mulUnitKey": "WGA82SFMEH",
+   "diffs": [
+    "BV 846 vs 0"
+   ]
+  },
+  {
+   "key": "bm/5116",
+   "name": "Stinger LAM STG-A5",
+   "mulUnitKey": "AEHQ6WA532",
+   "diffs": [
+    "BV 1073 vs 0"
+   ]
+  },
+  {
+   "key": "bm/5117",
+   "name": "Stinger LAM STG-A10",
+   "mulUnitKey": "0ZQ944ZS5W",
+   "diffs": [
+    "BV 881 vs 0"
+   ]
+  },
+  {
+   "key": "bm/5124",
+   "name": "Screamer LAM SCR-1X-LAM",
+   "mulUnitKey": "EZ7WQE21S5",
+   "diffs": [
+    "BV 1599 vs 1144"
+   ]
+  },
+  {
+   "key": "bm/5130",
+   "name": "Wasp LAM Mk I WSP-100",
+   "mulUnitKey": "01J5W5SQ8K",
+   "diffs": [
+    "BV 638 vs 0"
+   ]
+  },
+  {
+   "key": "bm/5132",
+   "name": "Wasp LAM Mk I WSP-100A",
+   "mulUnitKey": "YF6XWN9XYC",
+   "diffs": [
+    "BV 909 vs 0"
+   ]
+  },
+  {
+   "key": "bm/5134",
+   "name": "Wasp LAM Mk I WSP-100b",
+   "mulUnitKey": "4SJJEQPCNY",
+   "diffs": [
+    "BV 876 vs 0"
+   ]
+  },
+  {
+   "key": "bm/5135",
+   "name": "Wasp LAM WSP-105",
+   "mulUnitKey": "R19X1QB0ET",
+   "diffs": [
+    "BV 814 vs 0"
+   ]
+  },
+  {
+   "key": "bm/5136",
+   "name": "Wasp LAM WSP-105M",
+   "mulUnitKey": "531HYDG5FY",
+   "diffs": [
+    "BV 907 vs 0"
+   ]
+  },
+  {
+   "key": "bm/5138",
+   "name": "Wasp LAM WSP-110",
+   "mulUnitKey": "R2Q4K195JH",
+   "diffs": [
+    "BV 783 vs 0"
+   ]
+  },
+  {
+   "key": "bm/5146",
+   "name": "Yurei S-YR-1LAM",
+   "mulUnitKey": "0BXXTBNNHR",
+   "diffs": [
+    "BV 2253 vs 2106"
+   ]
+  },
+  {
+   "key": "bm/5158",
+   "name": "Phoenix Hawk LAM PHX-HK2M",
+   "mulUnitKey": "4YMV79XV6G",
+   "diffs": [
+    "BV 1465 vs 0"
+   ]
+  },
+  {
+   "key": "bm/5159",
+   "name": "Phoenix Hawk LAM Mk I PHX-HK1",
+   "mulUnitKey": "5JC7S2G874",
+   "diffs": [
+    "BV 1942 vs 0"
+   ]
+  },
+  {
+   "key": "bm/5160",
+   "name": "Phoenix Hawk LAM Mk I PHX-HK1R",
+   "mulUnitKey": "ZFTHYB32PA",
+   "diffs": [
+    "BV 1858 vs 0"
+   ]
+  },
+  {
+   "key": "bm/5161",
+   "name": "Phoenix Hawk LAM PHX-HK1RB",
+   "mulUnitKey": "9P3BWF9MF8",
+   "diffs": [
+    "BV 1800 vs 0"
+   ]
+  },
+  {
+   "key": "bm/5168",
+   "name": "Shadow Hawk LAM SHD-X1",
+   "mulUnitKey": "B5Q6WEWGWF",
+   "diffs": [
+    "BV 828 vs 0"
+   ]
+  },
+  {
    "key": "bm/5169",
    "name": "Shadow Hawk LAM SHD-X2",
    "mulUnitKey": "P9R12FJJKW",
@@ -1027,6 +1251,24 @@
     "structure 4 vs 6",
     "damage short 4 vs 3",
     "damage medium 5 vs 3"
+   ]
+  },
+  {
+   "key": "bm/5280",
+   "name": "Pwwka S-PW-1LAM",
+   "mulUnitKey": "F5EEW9P4T2",
+   "diffs": [
+    "BV 1707 vs 1638"
+   ]
+  },
+  {
+   "key": "bm/5281",
+   "name": "Waneta S-WN-2LAM",
+   "mulUnitKey": "JNYHWPZMCX",
+   "diffs": [
+    "BV 2804 vs 2713",
+    "PV 40 vs 39",
+    "damage long 3 vs 2"
    ]
   },
   {
@@ -1174,6 +1416,76 @@
    "mulUnitKey": "6M4K90536V",
    "diffs": [
     "BV 2113 vs 2124"
+   ]
+  },
+  {
+   "key": "bm/908",
+   "name": "Hussar HSR-500-D",
+   "mulUnitKey": "HB3YCWS9S4",
+   "diffs": [
+    "BV 980 vs 977"
+   ]
+  },
+  {
+   "key": "bm/91543",
+   "name": "Dervish DV-6M (Turner)",
+   "mulUnitKey": "32SNRVGM43",
+   "diffs": [
+    "BV 1417 vs 0"
+   ]
+  },
+  {
+   "key": "bm/91544",
+   "name": "Scorpion SCP-1N (Wendall 2)",
+   "mulUnitKey": "E4Z5ZZRS5B",
+   "diffs": [
+    "BV 1220 vs 0"
+   ]
+  },
+  {
+   "key": "bm/91545",
+   "name": "Crusader CRD-3R (Bear)",
+   "mulUnitKey": "69661XPZRK",
+   "diffs": [
+    "BV 1206 vs 0"
+   ]
+  },
+  {
+   "key": "bm/91546",
+   "name": "Archer ARC-4M (Ismail)",
+   "mulUnitKey": "CPMY9CQVC8",
+   "diffs": [
+    "BV 1500 vs 0",
+    "PV 44 vs 45"
+   ]
+  },
+  {
+   "key": "bm/91547",
+   "name": "Orion ON1-K (Muller)",
+   "mulUnitKey": "334RTVK0ES",
+   "diffs": [
+    "BV 1224 vs 0",
+    "PV 48 vs 43",
+    "damage short 2 vs 1",
+    "damage medium 2 vs 1"
+   ]
+  },
+  {
+   "key": "bm/91548",
+   "name": "Crockett CRK-5003-0 (Saddleford)",
+   "mulUnitKey": "Y1V25F18T1",
+   "diffs": [
+    "BV 1855 vs 0"
+   ]
+  },
+  {
+   "key": "bm/978",
+   "name": "Scorpion SCP-12C",
+   "mulUnitKey": "MCF7EZFEJ1",
+   "diffs": [
+    "BV 1247 vs 1259",
+    "PV 34 vs 37",
+    "damage medium 1 vs 2"
    ]
   },
   {
@@ -1329,6 +1641,14 @@
     "structure 4 vs 0",
     "damage short 4 vs 0",
     "damage medium 4 vs 0"
+   ]
+  },
+  {
+   "key": "cv/1477",
+   "name": "Zephyr Hovertank (LRM)",
+   "mulUnitKey": "1QYA5H405B",
+   "diffs": [
+    "BV 889 vs 867"
    ]
   },
   {
@@ -1509,6 +1829,14 @@
    ]
   },
   {
+   "key": "cv/2534",
+   "name": "LRM Carrier (WoB)",
+   "mulUnitKey": "ZM7MFJAWSE",
+   "diffs": [
+    "PV 34 vs 35"
+   ]
+  },
+  {
    "key": "cv/2658",
    "name": "Brutus Assault Tank",
    "mulUnitKey": "J1FE0WZB66",
@@ -1517,6 +1845,14 @@
     "PV 32 vs 28",
     "damage medium 5 vs 4",
     "damage long 2 vs 1"
+   ]
+  },
+  {
+   "key": "cv/2663",
+   "name": "Zhukov Heavy Tank (WoB)",
+   "mulUnitKey": "A628J3WCHY",
+   "diffs": [
+    "BV 983 vs 939"
    ]
   },
   {
@@ -2074,6 +2410,14 @@
    ]
   },
   {
+   "key": "cv/546",
+   "name": "SturmFeur Heavy Tank (WoB)",
+   "mulUnitKey": "V7V961TYXB",
+   "diffs": [
+    "BV 1596 vs 1578"
+   ]
+  },
+  {
    "key": "cv/547",
    "name": "SturmFeur Heavy Tank (Steiner)",
    "mulUnitKey": "HA62E5ZQFX",
@@ -2328,6 +2672,22 @@
    ]
   },
   {
+   "key": "cv/6557",
+   "name": "Prowler Multi-Terrain Vehicle (WoB)",
+   "mulUnitKey": "YJ4XKGMH0X",
+   "diffs": [
+    "BV 698 vs 697"
+   ]
+  },
+  {
+   "key": "cv/6595",
+   "name": "Bolla Stealth Tank Dominus",
+   "mulUnitKey": "EB3B58TVFQ",
+   "diffs": [
+    "BV 898 vs 908"
+   ]
+  },
+  {
    "key": "cv/6679",
    "name": "Kinnol MBT",
    "mulUnitKey": "CRJTSAMYK3",
@@ -2349,6 +2709,22 @@
    "mulUnitKey": "0ATZGWH6XH",
    "diffs": [
     "armor 4 vs 5"
+   ]
+  },
+  {
+   "key": "cv/7382",
+   "name": "Joust Medium Tank BE701",
+   "mulUnitKey": "5GYJ6GGE46",
+   "diffs": [
+    "BV 1074 vs 1077"
+   ]
+  },
+  {
+   "key": "cv/7537",
+   "name": "Chalchiuhtotolin Support Tank (Chemical Laser)",
+   "mulUnitKey": "SR6C2S61KB",
+   "diffs": [
+    "BV 1181 vs 1177"
    ]
   },
   {
@@ -2790,6 +3166,14 @@
    "mulUnitKey": "SA30FHMTEA",
    "diffs": [
     "BV 182 vs 180"
+   ]
+  },
+  {
+   "key": "pm/43",
+   "name": "Basilisk (Quad) B",
+   "mulUnitKey": "FP6BF3XEM6",
+   "diffs": [
+    "BV 240 vs 218"
    ]
   },
   {
