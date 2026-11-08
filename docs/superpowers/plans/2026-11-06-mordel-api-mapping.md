@@ -210,12 +210,40 @@ Reply as sent by the user (2026-11-06):
 >
 > Chris
 
+## 7. Scott's answers to both threads (received 2026-11-08)
+
+API thread:
+
+- Per-user keys: going ahead. Users can fetch a list of their own units, and he will add everything CORS needs.
+- Images: they are plain files under `images/tro/`, not API responses, so a small `.htaccess` in that folder adds
+  the same CORS header. **Our side:** set `crossOrigin = "anonymous"` on any image we draw onto a record sheet
+  (canvas), or the canvas is tainted.
+- The unit list will carry name_parts, mul_id and role.
+- Removals: instead of `removed_since` he will add an id list, something like `/units/ids`, returning the type and
+  id of every unit the key can see, in one small response (about 600 KB uncompressed for all 56,000). We compare
+  it with our local copy and drop anything missing. It catches every removal (account deletions too), works with
+  `owner=me`, only lists units the key can already see, and needs no website changes. A daily check is plenty.
+  Keep using `updated_since` for additions and changes.
+- He expects the API to be done or nearly done when the user is back from Utah, ready for us to walk it for gaps.
+
+Archive-designs thread (he agrees with the plan: archivist account, non-canon, credit in notes):
+
+1. Original-designer field: no dedicated field (only one use case). He plans user-defined fluff fields, and an
+   "Original Designer" fluff field could be made then.
+2. Moving a design to its original creator's account later: yes.
+3. Import: no HMP or SSW import (those programs are dead). A MegaMek file upload is requested but not built yet.
+4. Push from our API key: possible as an API v2 if we can wait, depending on volume. It needs a shared unit format,
+   likely JSON (his old "MechML" idea). He suggests drafting the structure with AI and wants to involve Hammer so
+   the MegaMek team is on board.
+
 Follow-ups (both threads):
 
 - Recheck the Hammer, the Sheinhardt and the trailing slash after Scott's next production-to-sandbox copy.
-- Per-user keys are agreed in principle, so option (c) is the lead in the storage memo. Waiting on: CORS (three
-  origins, preflight without a key, Max-Age, images, 429), a "my units" list with private units (the user will make
-  test private units once it exists), the list additions (name_parts, mul_id, role) and a removals feed.
-- Archive designs: waiting on his answers on an original-designer field, moving designs to their creators, import
-  of .mtf/SSW/HeavyMetal files, and a push API (that would need our units mapped back to his format).
+- Per-user keys are confirmed (2026-11-08), so option (c) is the plan. He is building CORS (images via
+  `.htaccess`), a "my units" list, name_parts/mul_id/role in the list, and `/units/ids` for removals. When it
+  lands: walk the docs for gaps, recheck the preflight, Max-Age and 429 details we asked for (not confirmed in his
+  reply), make test private units, and set `crossOrigin = "anonymous"` on record-sheet images.
+- Removals in the sync client: replace any planned `removed_since` with a daily `/units/ids` compare.
+- Archive designs: plan agreed. Credit goes in the notes for now (fluff field later). Import is out for now. A push
+  API is a possible v2: it would need a shared JSON unit format, drafted with MegaMek (Hammer) involved.
 - The user is away at a conference in Utah the week of 2026-11-09 and may be fully offline.
