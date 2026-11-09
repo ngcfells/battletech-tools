@@ -29,6 +29,16 @@ const dola = (over: Partial<IMordelDetail> = {}): IMordelDetail => ({
 });
 
 describe("mordelToMtf", () => {
+    // A superheavy's engine takes half its slots in each location, rounded up (IO:AE pp.156-157), as MegaMek writes it.
+    it("lays out a superheavy's engine in half the slots", () => {
+        const { text } = mordelToMtf(dola({ tons: 150, engine: { type: "XL", technology: "Inner Sphere", rating: 300 },
+            gyro: { type: "Superheavy" }, cockpit: { type: "Superheavy" }, equipment: [] }));
+        const lines = (section: string) => text.split(`${section}:\n`)[1].split("\n").slice(0, 12);
+        expect(lines("Center Torso").slice(0, 6)).toEqual([...Array(3).fill("Fusion Engine"), "Gyro", "Gyro", "-Empty-"]);
+        expect(lines("Left Torso").filter((slot) => slot === "Fusion Engine")).toHaveLength(2);
+    });
+
+
     it("lays out the fixed parts, the equipment and the armor slots the way MegaMek does", () => {
         const { text, notes } = mordelToMtf(dola());
         expect(notes).toEqual([]);

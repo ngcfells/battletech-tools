@@ -95,15 +95,17 @@ const layoutOf = (detail: IMordelDetail): Layout => {
 function fixedSlots(detail: IMordelDetail, layout: Layout, clan: boolean, notes: string[]): Record<string, string[]> {
     const engineType = detail.engine?.type ?? "Fusion";
     const engineClan = clanTech(detail.engine?.technology) || (!detail.engine?.technology && clan);
-    const side = SIDE_ENGINE_SLOTS[engineType.replace(/ \(Prototype\)$/, "")]?.[engineClan ? 1 : 0] ?? 0;
+    // A superheavy's engine takes half its slots in each location, rounded up (IO:AE pp.156-157).
+    const half = (n: number) => (detail.tons > 100 ? Math.ceil(n / 2) : n);
+    const side = half(SIDE_ENGINE_SLOTS[engineType.replace(/ \(Prototype\)$/, "")]?.[engineClan ? 1 : 0] ?? 0);
     const gyroType = detail.gyro?.type ?? "Standard";
     const gyro = GYRO_SLOTS[gyroType] ?? 4;
     if (GYRO_SLOTS[gyroType] === undefined) notes.push(`Gyro '${gyroType}' is laid out as a standard one`);
-    const centerEngine = /^compact$/i.test(engineType) ? 3 : 6;
+    const centerEngine = half(/^compact$/i.test(engineType) ? 3 : 6);
     const engine = (n: number) => Array<string>(n).fill("Fusion Engine");
     const cockpit = detail.cockpit?.type ?? (detail.unit_type_short === "im" ? "Industrial" : "Standard");
     const slots: Record<string, string[]> = {
-        CT: [...engine(3), ...Array<string>(gyro).fill("Gyro"), ...engine(centerEngine - 3)],
+        CT: [...engine(Math.min(3, centerEngine)), ...Array<string>(gyro).fill("Gyro"), ...engine(Math.max(0, centerEngine - 3))],
         LT: engine(side),
         RT: engine(side),
         H: ["Life Support", "Sensors", "Cockpit", "-Empty-", "Sensors", "Life Support"],
