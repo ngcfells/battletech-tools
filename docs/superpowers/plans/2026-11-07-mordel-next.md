@@ -1,4 +1,4 @@
-# mordel.net import: what's left (handoff, 2026-11-07)
+# mordel.net import: what's left (handoff, 2026-11-07; updated 2026-11-09)
 
 Branch `mordel-user-key`. The user keys, Settings, roster and designer import, the shipped list and
 "My Mordel designs" are built and reviewed. What follows is the work after that.
@@ -6,26 +6,51 @@ Branch `mordel-user-key`. The user keys, Settings, roster and designer import, t
 ## Picking this up in a cloud session
 
 The branch is not on the public GitHub repo. It lives in the private repo `NGCFells2/ResourceLibrary`,
-folder `Custom/battletech-tools-handoff/`:
+folder `Custom/cloud-handoff/battletech-tools/` (start with `Custom/cloud-handoff/CLOUD-START.md`):
 
-- `mordel-user-key.bundle`: a git bundle of this branch. Restore it with
-  `git clone https://github.com/ngcfells/battletech-tools.git && cd battletech-tools &&
-  git fetch <path>/mordel-user-key.bundle mordel-user-key:mordel-user-key && git checkout mordel-user-key`.
+- `battletech-tools.bundle`: every unpushed branch, this one included. The clone must have the bundle's base
+  commits, so deepen it first (`git fetch --depth=1000 origin master`), then
+  `git fetch <path>/battletech-tools.bundle 'refs/heads/mordel-user-key:refs/heads/mordel-user-key'`.
 - `mordel-mirror.tar.gz`: the mordel.net unit details (56,043 units, full pull 2026-11-07). Unpack it to
   `tools/mordel-sync/.mirror/`, which is git-ignored. **It holds member designs: never commit it to
   battletech-tools, which is public.**
 - `zz-gaps.test.ts`, `zz-bv.test.ts`: scratch harnesses. Copy them to `src/utils/mordel/`, change the
   `MIRROR` and `OUT` paths at the top, and run them with `npx vitest run src/utils/mordel/zz-gaps.test.ts`.
-  Delete them before any commit.
+  The gaps harness takes `SLICE` and `SLICES` (run 4 slices at once: about 8 minutes, against well over 30
+  for one) and writes `gaps-<slice>.json` plus a `.progress` file; `merge_gaps.py` joins them. Move them out
+  of `src/` before `npm run check` or a commit.
 
 Rules: no push, merge or deploy of battletech-tools without the owner's OK. The mordel.net key never goes
 in a file, URL, log or commit. No member designs in committed test fixtures.
 
-## 1. Alt names and tags (owner's call: do it)
+## 1. Alt names and tags (owner's call: do it). DONE 2026-11-09, except as noted
 
-When mordel.net names an item we already have, add their name to the catalog item's `altNames` and their
-tag to `altTags`. Known so far: Blue Shield, Tracks, RISC Super-Cooled Myomer, Command Console (a cockpit
-type). The gaps run lists the rest: issues worded "unknown equipment" whose item exists under our name.
+mordel.net items carry names only (no tags), so this is `altNames`. Commits 85604b97 and 2656b753:
+
+- Every "X (Prototype)" weapon name mordel.net uses is an alt name of our Prototype or Primitive Prototype
+  record (IO:AE pp.112, 189, 211).
+- "Blue Shield PFD" is an alt name of the Blue Shield.
+- RISC Super-Cooled Myomer: the MegaMek import read `myomer:Super-Cooled` as TSM. It is now that myomer,
+  with its slots (IO:AE p.88); a superheavy takes half, rounded up (IO:AE pp.156-157).
+- RISC Laser Pulse Module: paired with its laser like the PPC Capacitor (IO:AE p.87), by associated_id, or
+  with the marked laser in its location when there is no link.
+- Ladders by length (20 m steps; two member designs with 1, 5 or 10 m stay flagged); the light fluid
+  suction system by unit kind.
+- "Superheavy" myomer on a superheavy is standard myomer (IO:AE p.156): its 842 notes are gone.
+- The vehicle BLK reader no longer cuts "primitive" out of `primitive-prototype-*` ammunition lines.
+
+Gaps run (2026-11-09): units with an issue went from 5,319 to 5,110 'Mechs, 121 to 116 IndustrialMechs and 950 to
+940 vehicles. ProtoMechs stayed at 84.
+
+Not alt names, so moved on:
+
+- **Command Console** on vehicles: TO:AUE p.113 lists the Cockpit Command Console for CV and SV, but our vehicles
+  do not model it at all. A feature, part of section 3.
+- **Blue Shield on vehicles**: TO:AUE p.108 allows it on CV, SV, AF and CF (1 slot in every location, carried in
+  the body), but our record has `combatVehicle: -1`. Section 3.
+- **Booby Trap**: only an Alpha Strike special ability here, not an equipment record. Section 3.
+- **Bays, compartments, cubicles, seats, drop chutes** on vehicles (`Bay, Infantry (Foot)`,
+  `Compartment, Battle Armor`, `Cubicle, 'Mech`, `Seat (Combat Crew)`, ...): transport space, section 2.
 
 ## 2. Every unit kind imports (owner's call: do it)
 
