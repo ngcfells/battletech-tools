@@ -133,3 +133,4 @@ The owner's words:
   25 Apollo vehicles mark their ammo. Could each launcher say what it is linked to?
 - May we ship the unit list (names, designers, Battle Value and Alpha Strike cards) in our public app? If not,
   is about 57 list requests per new user acceptable for a first pull? (Storage memo, 2026-11-07.)
+  **Answered 2026-11-07: yes, the list ships with the app** (storage memo, "The list").

@@ -24,20 +24,23 @@ Scott agreed to per-user keys in principle. (c) still needs CORS on mordel.net f
 
 ## The list
 
-The list rows hold member designs: names, designers, tonnage, Battle Value and Alpha Strike cards. battletech-tools is public, so the list is **not committed**:
+The list rows hold member designs: names, designers, tonnage, Battle Value and Alpha Strike cards. **Answered
+2026-11-07: Scott agreed to the list shipping with the app** (option 1 below), so the list now ships:
 
-- The list files `src/data/mordel/mordel_*.json` are git-ignored. Only `canon-mechs.csv` is tracked.
-- A build includes the list only in development with `VITE_MORDEL_LIST=local`. A production build carries none. This was checked: `build/` has no list files.
-- With a key saved, the app pulls the units changed on mordel.net since the last check, once a day. It keeps up to 10,000 rows on the device.
+- The list files `src/data/mordel/mordel_*.json` are committed. `canon-mechs.csv` is tracked as before.
+- Every build includes the list. The `VITE_MORDEL_LIST=local` dev-only gate is gone. Each chunk loads only when the
+  list is first searched.
+- With a key saved, the app pulls the units changed on mordel.net since the last check, once a day. It keeps up to
+  10,000 rows on the device.
 - Any unit can also be pulled by its link or `type/id`.
+- The unit details stay in the git-ignored mirror (`tools/mordel-sync/.mirror/`) and are never committed.
 
-That leaves a public build with no list of its own. Three ways to close the gap; the owner and Scott should pick one:
+The three options weighed before Scott answered, kept for the record:
 
-1. **Scott agrees to us shipping the list** (it holds no more than his public site shows). Then we commit the list files and drop the dev-only gate. Smallest change.
-2. **The app pulls the whole list with the user's key** on first use: 57 pages, then the daily changes. No member data in our repo. Costs Scott about 57 requests per new user. This is a small change from what is built (the cap of 10,000 rows would go).
-3. **Scott hosts a list file** we fetch. No load on his API, but it needs work on his side.
-
-My call: ask Scott for 1, with 2 as the fallback.
+1. **Scott agrees to us shipping the list** (it holds no more than his public site shows). Then we commit the list
+   files and drop the dev-only gate. Smallest change. **Chosen.**
+2. **The app pulls the whole list with the user's key** on first use: 57 pages, then the daily changes.
+3. **Scott hosts a list file** we fetch.
 
 ## Canon units: dropped from the list where they match the MUL
 
