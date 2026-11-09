@@ -99,8 +99,8 @@ const readVehicleEquipment = (file: IBlkFile, vehicle: Vehicle, layout: string[]
             const name = lineName(line);
             const lineKey = key(name);
             if (skip(lineKey) || getBlkFireControlSuffix(name)) continue;
-            // Primitive rounds are read as the standard ones.
-            const ammoLine = parseBlkAmmoLine(name.replace(/\bprimitive\b/ig, ""));
+            // Primitive rounds are read as the standard ones; a tag that has the word (primitive-prototype-ac-20) keeps it.
+            const ammoLine = parseBlkAmmoLine(name.replace(/(?<![\w-])primitive(?![\w-])/ig, ""));
             if (ammoLine) {
                 pendingAmmo.push({ line, ammo: ammoLine });
                 continue;
@@ -475,7 +475,7 @@ export const importFixedWingSupportBlk = (text: string): IFixedWingSupportBlkRes
             const name = line.replace(/:.*$/, "").replace(/\((R|Rear)\)/gi, "").trim();
             const lineKey = key(name);
             if (CHASSIS_MODS[lineKey] || FIRE_CONTROL[lineKey]) continue;
-            const ammoLine = parseBlkAmmoLine(name.replace(/\bprimitive\b/ig, ""));
+            const ammoLine = parseBlkAmmoLine(name.replace(/(?<![\w-])primitive(?![\w-])/ig, ""));
             if (ammoLine) {
                 pendingAmmo.push({ line, ammo: ammoLine });
                 continue;

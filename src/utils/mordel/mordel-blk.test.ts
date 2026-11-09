@@ -90,6 +90,14 @@ describe("importMordelBlk: Combat Vehicles", () => {
         expect(blk.text).toContain("fluid-suction-system-light-vehicular");
     });
 
+    // The BLK reader reads MegaMek's "Primitive" rounds as standard ones; that must not cut "primitive" out of a tag.
+    it("loads a primitive prototype autocannon's ammunition (IO:AE p.112)", () => {
+        const assault = tank({ year: 2490, rules_level: "Experimental", fire_control: undefined, equipment: [item(1, "Autocannon/20 (Prototype)", "FR"),
+            item(2, "Autocannon/20 (Prototype) (Ammo 5)", "BD")] });
+        const { issues } = importMordelBlk(assault);
+        expect(issues.filter((issue) => /ammunition|ammo/i.test(issue))).toEqual([]);
+    });
+
     it("mounts communications equipment a ton per increment", () => {
         const result = importMordelBlk(tank({ equipment: [item(1, "Communications Equipment", "BD", { stacks: { count: 3, unit: "increments" } })] }));
         expect((result.unit as Vehicle).getEquipmentList().filter((entry) => entry.tag === "communications-equipment")).toHaveLength(3);

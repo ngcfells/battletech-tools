@@ -107,6 +107,17 @@ describe("importMordelMech", () => {
         expect(tags.filter((tag) => tag === "er-medium-laser")).toHaveLength(2);
     }, 30000);
 
+    // Some designs mark the laser (pulse_module) and list its module with no associated_id, even before the laser.
+    it("pairs an unlinked RISC Laser Pulse Module with the marked laser in its location", () => {
+        const base = dola().equipment!.map((e) => (e.id === 67 ? { ...e, pulse_module: true } : e));
+        const pulsed = dola({ rules_level: "Experimental", year: 3135, equipment: [item(300, "RISC Laser Pulse Module", "LA"), ...base] });
+        const { mech, issues } = importMordelMech(pulsed);
+        expect(issues.filter((issue) => /pulse|cannot/i.test(issue))).toEqual([]);
+        const tags = mech!.getInstalledEquipment().map((e) => e.tag);
+        expect(tags.filter((tag) => tag === "er-medium-laser-risc-pulse-module")).toHaveLength(1);
+        expect(tags.filter((tag) => tag === "er-medium-laser")).toHaveLength(1);
+    }, 30000);
+
     // mordel.net names a ladder once with its length, and the light fluid suction system without the unit kind.
     it("reads a ladder by its length and the 'Mech light fluid suction system", () => {
         const fitted = dola({ equipment: [...dola().equipment!, item(500, "Ladder", "CT", 1, { stacks: { count: 40, unit: "meters" } }),

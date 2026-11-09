@@ -224,13 +224,26 @@ export function mordelToMtf(detail: IMordelDetail): { text: string; notes: strin
             else slots[code].push(name);
         }
     };
+    // Some designs list a pulse module with no associated_id, the laser marked instead: it goes to a marked laser in its
+    // location that has no module of its own.
     const equipment = [...(detail.equipment ?? [])];
+    const isModule = (item: IMordelEquipment) => item.name === "RISC Laser Pulse Module";
+    for (const [index, module] of equipment.entries()) {
+        if (!isModule(module) || module.associated_id != null) continue;
+        const laser = equipment.find((item) => item.pulse_module && item.location === module.location
+            && !equipment.some((other) => isModule(other) && other.associated_id === item.id));
+        if (laser) equipment[index] = { ...module, associated_id: laser.id };
+    }
     // A PPC Capacitor follows its PPC, and a RISC Laser Pulse Module its laser (IO:AE p.87): the MTF import pairs each
-    // with the item listed before it.
-    const capacitors = equipment.filter((item) => /^(PPC Capacitor|RISC Laser Pulse Module)$/.test(item.name) && item.associated_id != null);
+    // with the item listed before it. A marked weapon with no add-on listed gets one.
+    const capacitors = equipment.filter((item) => (item.name === "PPC Capacitor" || isModule(item)) && item.associated_id != null);
     const ordered = equipment.filter((item) => !capacitors.includes(item)).flatMap((item) => {
         const own = capacitors.filter((c) => c.associated_id === item.id);
-        return item.capacitor && own.length === 0 ? [item, { ...item, name: "PPC Capacitor", slots: 1, capacitor: false }] : [item, ...own];
+        const missing = [
+            ...(item.capacitor && !own.some((c) => c.name === "PPC Capacitor") ? [{ ...item, name: "PPC Capacitor", slots: 1, capacitor: false }] : []),
+            ...(item.pulse_module && !own.some(isModule) ? [{ ...item, name: "RISC Laser Pulse Module", slots: 1, pulse_module: false }] : []),
+        ];
+        return [item, ...own, ...missing];
     });
     const booster = detail.movement?.mechanical_jump_booster ?? 0;
     const headerItems: string[] = [];
