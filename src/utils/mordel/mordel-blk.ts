@@ -149,7 +149,7 @@ export function mordelVehicleToBlk(detail: IMordelDetail): { text: string; issue
             if (line) add("BD", line);
             continue;
         }
-        const { record: base, oneShot, itemFaction } = findMordelRecord(item, faction);
+        const { record: base, oneShot, itemFaction } = findMordelRecord(item, faction, true);
         if (!base) { issues.push(`'${name}' has no match in this catalog and is left out`); continue; }
         // One-shot launchers are their own records: the launcher's tag plus "-os" or "-ios".
         const oneShotRecord = oneShot ? findImportedEquipment(base.tag + (/^OS$/i.test(oneShot) ? "-os" : "-ios"), itemFaction, true)?.item : undefined;
@@ -158,7 +158,8 @@ export function mordelVehicleToBlk(detail: IMordelDetail): { text: string; issue
         // Communications equipment is mounted a ton to a record; mordel.net counts it in increments, read as tons.
         // A drone carrier's drones are set once the unit is built.
         const copies = record.tag === "communications-equipment" ? Math.max(1, item.stacks?.count ?? 1) : 1;
-        if (item.stacks && item.stacks.count > 1 && copies === 1 && item.stacks.unit !== "drones") {
+        // A ladder's length is its record.
+        if (item.stacks && item.stacks.count > 1 && copies === 1 && item.stacks.unit !== "drones" && !/^ladder-/.test(record.tag)) {
             issues.push(`'${name}' (${item.stacks.count} ${item.stacks.unit}) is read as one`);
         }
         if (item.insulator || item.pulse_module || item.dumper) issues.push(`'${name}': its add-on is left out`);

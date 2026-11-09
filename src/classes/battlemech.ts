@@ -5028,8 +5028,9 @@ export class BattleMech {
             }
         }
 
-        // Myomer critical items (TSM variants spread anywhere but the head)
-        for( let mCounter = 0; mCounter < this._myomerType.criticals; mCounter++) {
+        // Myomer critical items (TSM variants spread anywhere but the head). A superheavy takes half, rounded up
+        // (IO:AE p.157); only Super-Cooled Myomer is left to it, TSM being barred (IO:AE p.156).
+        for( let mCounter = 0; mCounter < this.getCriticalSlots( this._myomerType.criticals ); mCounter++) {
             this._unallocatedCriticals.push({
                 uuid: generateUUID(),
                 name: this._myomerType.name,

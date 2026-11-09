@@ -82,6 +82,14 @@ describe("importMordelBlk: Combat Vehicles", () => {
         expect(result.bvOk).toBe(false);
     });
 
+    it("reads a ladder by its length and the vehicular light fluid suction system", () => {
+        const blk = mordelVehicleToBlk(tank({ equipment: [...tank().equipment!, item(7, "Ladder", "BD", { stacks: { count: 60, unit: "meters" } }),
+            item(8, "Light Fluid Suction System", "BD")] }));
+        expect(blk.issues).toEqual([]);
+        expect(blk.text).toContain("ladder-60");
+        expect(blk.text).toContain("fluid-suction-system-light-vehicular");
+    });
+
     it("mounts communications equipment a ton per increment", () => {
         const result = importMordelBlk(tank({ equipment: [item(1, "Communications Equipment", "BD", { stacks: { count: 3, unit: "increments" } })] }));
         expect((result.unit as Vehicle).getEquipmentList().filter((entry) => entry.tag === "communications-equipment")).toHaveLength(3);

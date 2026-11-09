@@ -4700,6 +4700,17 @@ describe("Batch 21 Superheavy 'Mech equipment limits (IO:AE p.156)", () => {
             .toEqual([true, false, false, false]);
     });
 
+    // Super-Cooled Myomer is not TSM, so a superheavy may mount it; like other equipment it takes half its 6 slots,
+    // rounded up (IO:AE pp.88, 156-157).
+    it("gives Super-Cooled Myomer 3 slots on a superheavy, 6 on a standard 'Mech", () => {
+        const myomerSlots = (mech: BattleMech) => {
+            mech.setMyomerType("risc-super-cooled-myomer");
+            return mech.getUnallocatedCriticals().filter((crit) => crit.tag === "risc-super-cooled-myomer").length;
+        };
+        expect(myomerSlots(build(100))).toBe(6);
+        expect(myomerSlots(build(150))).toBe(3);
+    });
+
     it("cannot jump: no jump jets, improved jump jets or UMUs", () => {
         const heavy = build(100);
         heavy.setJumpSpeed(2);

@@ -291,7 +291,7 @@ export function convertMtfToSSW(file: IMtfFile): { xml: string; issues: string[]
                 if (slot.pod) podJets++;
                 continue;
             }
-            if (/Triple Strength Myomer|^TSM$/i.test(name)) { myomerSlots.push(place(loc, index)); index++; continue; }
+            if (/Triple Strength Myomer|^TSM$|^(IS)?Super-?Cooled ?Myomer$/i.test(name)) { myomerSlots.push(place(loc, index)); index++; continue; }
             if (STRUCTURE_SLOT.test(name)) {
                 // A FrankenMech location keeps its donor's structure slots (CO pp.212-213).
                 if (franken) frankenSlots[loc] = (frankenSlots[loc] ?? 0) + 1; else structureSlots.push(place(loc, index));
@@ -334,6 +334,14 @@ export function convertMtfToSSW(file: IMtfFile): { xml: string; issues: string[]
                     ?? findImportedEquipment("clan-" + ppc.record.tag.replace(/-clan$/, "") + "-capacitor", itemFaction, true));
                 if (ppc && paired) ppc.record = paired.item;
                 else issues.push("Cannot pair a PPC Capacitor with its PPC");
+                index += run; continue;
+            }
+            // A RISC Laser Pulse Module's slot follows its laser, the same way (IO:AE p.87).
+            if (/^(IS)?RISC ?Laser ?Pulse ?Module$/i.test(name)) {
+                const laser = [...items].reverse().find((item) => item.places[0]?.loc === loc && /laser/.test(item.record.tag) && !/risc-pulse-module/.test(item.record.tag));
+                const paired = laser && findImportedEquipment(laser.record.tag + "-risc-pulse-module", itemFaction, true);
+                if (laser && paired) laser.record = paired.item;
+                else issues.push("Cannot pair a RISC Laser Pulse Module with its laser");
                 index += run; continue;
             }
             if (!record) { issues.push(`Cannot find any equipment named '${name}'`); index += run; continue; }
@@ -413,7 +421,7 @@ export function convertMtfToSSW(file: IMtfFile): { xml: string; issues: string[]
 <engine rating="${engine?.[1] ?? 0}" techbase="${tb(engineTech)}">${xml(engineName ?? "")}</engine>
 <gyro techbase="2">${xml(gyro)}</gyro>
 <cockpit><type${ejection}${value(file, "cockpit") === "Command Console" ? ` commandconsole="TRUE"` : ""}${enhancedImaging ? ` enhancedimaging="TRUE"` : ""}>${xml(sswCockpit)}</type></cockpit>
-${myomer && !/^standard$/i.test(myomer) ? `<enhancement techbase="${clan ? 1 : 0}"><type>${/industrial/i.test(myomer) ? "Industrial TSM" : "TSM"}</type>${myomerSlots.join("")}</enhancement>` : ""}
+${myomer && !/^standard$/i.test(myomer) ? `<enhancement techbase="${clan ? 1 : 0}"><type>${/super-?cooled/i.test(myomer) ? "Super-Cooled Myomer" : /industrial/i.test(myomer) ? "Industrial TSM" : "TSM"}</type>${myomerSlots.join("")}</enhancement>` : ""}
 <armor techbase="${armor ? (armor[2] === "Clan" ? 1 : 0) : 2}"><type>${xml(armorName)}</type>${armorValues.join("")}${armorSlots.join("")}</armor>
 ${/omnime(k|ch)/i.test(config) ? `<omnibase heatsinks="${Math.max(0, sinkCount - podSinks)}" jumpjets="${Math.max(0, (jetType === "Mech UMU" ? jetSlotsAt.length : jumpMP) - podJets)}" />` : ""}
 <baseloadout${fcs}>

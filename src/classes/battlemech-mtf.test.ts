@@ -187,6 +187,31 @@ describe("MegaMek 'Mech import", () => {
         expect(convertMtfToSSW(parseMtfFile(mordel.replace("Config:Biped", "Config:Biped Omnimech"))!).xml).toContain(`omnimech="TRUE"`);
     });
 
+    // MegaMek writes RISC Super-Cooled Myomer as "myomer:Super-Cooled" with six "ISSuperCooledMyomer" slots (IO:AE p.88).
+    it("reads Super-Cooled Myomer as that myomer, not as TSM (IO:AE p.88)", () => {
+        const cooled = brawler.replace("rules level:2", "rules level:4").replace("myomer:Standard", "myomer:Super-Cooled")
+            .replace(/ISDoubleHeatSink\nISDoubleHeatSink\nISDoubleHeatSink\n/, "ISSuperCooledMyomer\nISSuperCooledMyomer\nISSuperCooledMyomer\n")
+            .replace("Medium Laser" + "\n-Empty-".repeat(5), "Medium Laser" + "\nISSuperCooledMyomer".repeat(3))
+            .replace("heat sinks:11 Double", "heat sinks:10 Double");
+        const { mech, issues, xml } = importBattleMechMtf(cooled);
+        expect(issues).toEqual([]);
+        expect(xml).toContain("<type>Super-Cooled Myomer</type>");
+        expect(mech!.getMyomerType().tag).toBe("risc-super-cooled-myomer");
+        expect(xml.match(/<enhancement[^>]*>[\s\S]*?<\/enhancement>/)?.[0].match(/<location /g)).toHaveLength(6);
+    });
+
+    // MegaMek writes a RISC Laser Pulse Module as its own slot after its laser (IO:AE p.87); the catalog holds the pair
+    // as one record.
+    it("pairs a RISC Laser Pulse Module with the laser before it (IO:AE p.87)", () => {
+        const pulsed = brawler.replace("rules level:2", "rules level:4")
+            .replace("Hand Actuator\nMedium Laser\n-Empty-", "Hand Actuator\nMedium Laser\nISRISCLaserPulseModule");
+        const { mech, issues } = importBattleMechMtf(pulsed);
+        expect(issues).toEqual([]);
+        const tags = mech!.getInstalledEquipment().map((item) => item.tag);
+        expect(tags).toContain("medium-laser-risc-pulse-module");
+        expect(tags.filter((tag) => tag === "medium-laser")).toHaveLength(2);
+    });
+
     it("reads Heavy Industrial armor as Standard armor (TM p.205)", () => {
         const { mech, issues } = importBattleMechMtf(brawler.replace("armor:Standard(Inner Sphere)", "armor:Heavy Industrial(Inner Sphere)"));
         expect(issues).toEqual([]);

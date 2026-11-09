@@ -81,6 +81,50 @@ describe("importMordelMech", () => {
         expect(cautions).toEqual([ACTUATOR_CAUTION]);
     });
 
+    // mordel.net lists RISC Super-Cooled Myomer as the myomer type and as six slots (IO:AE p.88).
+    it("reads RISC Super-Cooled Myomer, its type and its slots", () => {
+        const cooled = dola({
+            rules_level: "Experimental", year: 3135, myomer: { type: "RISC Super-Cooled Myomer" },
+            equipment: [...dola().equipment!, ...["LL", "LL", "RL", "RL", "CT", "CT"].map((at, i) => item(200 + i, "RISC Super-Cooled Myomer", at))],
+        });
+        expect(mordelToMtf(cooled).text).toContain("Myomer:Super-Cooled");
+        const { mech, issues } = importMordelMech(cooled);
+        expect(issues.filter((issue) => /myomer/i.test(issue))).toEqual([]);
+        expect(mech!.getMyomerType().tag).toBe("risc-super-cooled-myomer");
+    }, 30000);
+
+    // mordel.net lists a RISC Laser Pulse Module apart, tied to its laser by associated_id (IO:AE p.87).
+    it("pairs a RISC Laser Pulse Module with its laser", () => {
+        const pulsed = dola({
+            rules_level: "Experimental", year: 3135,
+            // The module belongs to the small laser listed first, not to the ER medium lasers after it.
+            equipment: [item(400, "Small Laser", "LA"), ...dola().equipment!, item(300, "RISC Laser Pulse Module", "LA", 1, { associated_id: 400 })],
+        });
+        const { mech, issues } = importMordelMech(pulsed);
+        expect(issues.filter((issue) => /pulse|cannot/i.test(issue))).toEqual([]);
+        const tags = mech!.getInstalledEquipment().map((e) => e.tag);
+        expect(tags).toContain("small-laser-risc-pulse-module");
+        expect(tags.filter((tag) => tag === "er-medium-laser")).toHaveLength(2);
+    }, 30000);
+
+    // mordel.net names a ladder once with its length, and the light fluid suction system without the unit kind.
+    it("reads a ladder by its length and the 'Mech light fluid suction system", () => {
+        const fitted = dola({ equipment: [...dola().equipment!, item(500, "Ladder", "CT", 1, { stacks: { count: 40, unit: "meters" } }),
+            item(501, "Light Fluid Suction System", "RL")] });
+        const { mech, issues } = importMordelMech(fitted);
+        expect(issues.filter((issue) => /cannot find|no match/i.test(issue))).toEqual([]);
+        const tags = mech!.getInstalledEquipment().map((e) => e.tag);
+        expect(tags).toContain("ladder-40");
+        expect(tags).toContain("fluid-suction-system-light-mech");
+    }, 30000);
+
+    // A superheavy 'Mech's musculature is standard myomer (IO:AE p.156); mordel.net calls it "Superheavy".
+    it("reads a superheavy's Superheavy myomer as standard, with no note", () => {
+        const { text, notes } = mordelToMtf(dola({ tons: 150, myomer: { type: "Superheavy" } }));
+        expect(text).toContain("Myomer:Standard");
+        expect(notes.filter((note) => /myomer/i.test(note))).toEqual([]);
+    });
+
     it("names a gyro it does not know", () => {
         expect(mordelToMtf(dola({ gyro: { type: "Made-up" } })).notes).toContain("Gyro 'Made-up' is laid out as a standard one");
     });

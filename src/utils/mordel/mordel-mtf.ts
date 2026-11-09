@@ -153,10 +153,12 @@ function slotName(item: IMordelEquipment, faction: ImportFaction, notes: string[
     if (name === "Compact Heat Sink") return "IS1 Compact Heat Sink";
     if (JUMP_JETS[name]) return JUMP_JETS[name];
     if (/^(Industrial )?Triple-Strength Myomer$/i.test(name)) return "Triple Strength Myomer";
+    if (name === "RISC Super-Cooled Myomer") return "ISSuperCooledMyomer";
     if (FIRE_CONTROL[name]) return `${p}${FIRE_CONTROL[name]}`;
     if (MULTISLOT_NAMES[name]) return MULTISLOT_NAMES[name];
     if (name === "Actuator Enhancement System") return `${p}AES`;
     if (name === "PPC Capacitor") return `${p}PPC Capacitor`;
+    if (name === "RISC Laser Pulse Module") return "ISRISCLaserPulseModule";
     if (name === "Partial Wing") return `${p}PartialWing`;
     if (/^(Narc Missile Beacon|Improved Narc Launcher) \(Ammo \d+\)/.test(name)) {
         if (!/\[Homing\]$/.test(name)) notes.push(`'${name}': only homing pods are read; these are read as homing ones`);
@@ -177,9 +179,12 @@ function slotName(item: IMordelEquipment, faction: ImportFaction, notes: string[
  * Clan launcher, not the Inner Sphere one of the same name. A one-shot mark ("(OS)", "(I-OS)") is taken off the name
  * and returned apart.
  */
-export function findMordelRecord(item: IMordelEquipment, faction: ImportFaction): { record: IEquipmentItem | null; base: string; oneShot: string | null; itemFaction: ImportFaction } {
+export function findMordelRecord(item: IMordelEquipment, faction: ImportFaction, vehicle = false): { record: IEquipmentItem | null; base: string; oneShot: string | null; itemFaction: ImportFaction } {
     const trimmed = item.name.trim();
-    const name = NAME_ALIASES[trimmed] ?? trimmed;
+    // A ladder is one record per length; the light fluid suction system one per unit kind.
+    const name = trimmed === "Ladder" && item.stacks?.unit === "meters" ? `Ladder (${item.stacks.count}m)`
+        : trimmed === "Light Fluid Suction System" ? `Fluid Suction System (Light, ${vehicle ? "Vehicular" : "'Mech"})`
+        : NAME_ALIASES[trimmed] ?? trimmed;
     const oneShot = /\s*\((OS|I-OS|IOS)\)$/i.exec(name);
     const base = oneShot ? name.slice(0, oneShot.index) : name;
     const itemFaction: ImportFaction = clanTech(item.technology) ? "clan" : /inner sphere|primitive/i.test(item.technology ?? "") ? "is" : faction;
@@ -220,8 +225,9 @@ export function mordelToMtf(detail: IMordelDetail): { text: string; notes: strin
         }
     };
     const equipment = [...(detail.equipment ?? [])];
-    // A PPC Capacitor follows its PPC: the MTF import pairs it with the PPC listed before it.
-    const capacitors = equipment.filter((item) => item.name === "PPC Capacitor" && item.associated_id != null);
+    // A PPC Capacitor follows its PPC, and a RISC Laser Pulse Module its laser (IO:AE p.87): the MTF import pairs each
+    // with the item listed before it.
+    const capacitors = equipment.filter((item) => /^(PPC Capacitor|RISC Laser Pulse Module)$/.test(item.name) && item.associated_id != null);
     const ordered = equipment.filter((item) => !capacitors.includes(item)).flatMap((item) => {
         const own = capacitors.filter((c) => c.associated_id === item.id);
         return item.capacitor && own.length === 0 ? [item, { ...item, name: "PPC Capacitor", slots: 1, capacitor: false }] : [item, ...own];
@@ -325,7 +331,8 @@ export function mordelToMtf(detail: IMordelDetail): { text: string; notes: strin
         `Mass:${detail.tons}`,
         `Engine:${detail.engine?.rating ?? 0} ${engineName ?? engineType} Engine(${engineClan ? "Clan" : "IS"})`,
         `Structure:${structureTech ? "Clan" : "IS"} ${STRUCTURES[structureType] ?? structureType}`,
-        `Myomer:${/Triple-Strength/i.test(myomer) ? (/industrial/i.test(myomer) ? "Industrial Triple-Strength" : "Triple-Strength") : "Standard"}`,
+        `Myomer:${/Triple-Strength/i.test(myomer) ? (/industrial/i.test(myomer) ? "Industrial Triple-Strength" : "Triple-Strength")
+            : /Super-Cooled/i.test(myomer) ? "Super-Cooled" : "Standard"}`,
         ...(GYROS[detail.gyro?.type ?? "Standard"] && detail.gyro?.type !== "Standard" ? [`Gyro:${GYROS[detail.gyro!.type!]}`] : []),
         // MegaMek writes an IndustrialMech's Advanced Fire Control as a BattleMech cockpit; the MTF import reads it so.
         `Cockpit:${commandConsole ? "Command Console" : advancedFireControl && /^industrial$/i.test(detail.cockpit?.type ?? "Industrial") ? "Standard Cockpit"
@@ -339,8 +346,8 @@ export function mordelToMtf(detail: IMordelDetail): { text: string; notes: strin
         "",
         `Armor:${armorType === "Patchwork" ? "Patchwork" : `${ARMORS[armorType] ?? armorType} (${armorTech ? "Clan" : "IS"})`}`,
     ];
-    // A primitive 'Mech's myomer is standard myomer.
-    if (/^(Superheavy|RISC)/i.test(myomer)) notes.push(`Myomer '${myomer}' is read as standard`);
+    // A primitive 'Mech's myomer is standard myomer, and so is a superheavy's musculature (IO:AE p.156).
+    if (/^Superheavy/i.test(myomer) && detail.tons <= 100) notes.push(`Myomer '${myomer}' is read as standard`);
     for (const location of detail.locations ?? []) {
         const armorKey = SECTIONS[layout].find(([code]) => code === location.code)?.[2];
         if (!armorKey) continue;
