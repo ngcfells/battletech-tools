@@ -52,6 +52,15 @@ Not alt names, so moved on:
 - **Bays, compartments, cubicles, seats, drop chutes** on vehicles (`Bay, Infantry (Foot)`,
   `Compartment, Battle Armor`, `Cubicle, 'Mech`, `Seat (Combat Crew)`, ...): transport space, section 2.
 
+## NEXT (stopped 2026-11-09 mid-section 2, account change)
+
+1. Run `npm run check` first: the last commit (wip, superheavy engine slots) has only had the converter tests.
+2. Finish superheavy layout in `mordel-mtf.ts`: armor and structure slots halve too (IO:AE pp.155, 157; our model
+   already does, `getCriticalSlots`). Apply the same `half()` to `armorSlots` and `structureSlots`. Test: a 150-ton
+   design with IS Endo Steel writes 7 `IS Endo-Steel` slots, Clan Endo-Composite 2. Expected to clear most of the
+   630 "CT has more than 12 slots" and the side torso and endo steel overflows (all superheavies), then rerun gaps.
+3. Then the rest of this section.
+
 ## 2. Every unit kind imports (owner's call: do it)
 
 The converters must take every unit on mordel.net. Not yet supported:
