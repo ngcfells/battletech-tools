@@ -179,6 +179,17 @@ export default class Home extends React.Component<IHomeProps, IHomeState> {
                   <ul className="news">
                   <li>
                   <h3>
+                      <strong>November 10th, 2026</strong> - Aces playtest updates, a patch, and a Mordel.net connection in the works
+                    </h3>
+                    <h4>Author - NGCFells</h4>
+                      <ul>
+                        <li>Coming: we are working on a new connection to Mordel.net. Mordel.net's owner has built a public API for it, and we are building on it. When it is ready, you will make a free key on your own Mordel.net account, enter it once in Settings, and then look up designs there, including your own private ones, and bring them into the roster and the creators. Your key stays on your device and goes only to Mordel.net. It is not released yet; nothing changes for you today.</li>
+                        <li>Aces updates from Rekikire's playtest: the number of player units able to move follows your roster when Movement starts; the Command card hands out Move First and Move Last by itself; damage at range comes from the unit's own short, medium and long values and the distance you enter (you can still type over it); the Command card is found when the sortie names the deck and faction, with a warning when none matches; duplicate unit names are numbered in force order on both sides; the Command card shows the ideal RED, YELLOW and BLUE unit; and Behavior conditions that depend on distances, who has moved, or a crippled unit are answered for you where the app knows enough, and asked when it does not. The critical hit tables are built in, checked against the <i>Alpha Strike Companion Expansion</i> and its errata.</li>
+                        <li>Patch: the Alpha Strike formation bonuses now follow the book more closely (Striker/Cavalry checks every unit's Move, Fast Assault needs the Assault Lance's Juggernaut or two Snipers, Pursuit wants a Medium attack over 1, Anti-Air reads FLK, AC and ARTX as printed, Rifle enforces the 8" Move, and the Strategic Command Star accepts an aerospace fighter). Fixed: missile launchers of size 40 (MRM 40 and the like) got the wrong Cluster Hits Table result; an Alpha Strike force's turn and a pilot's wounds are now read back from a save; a unit added to a missing group goes to the last group; vehicle motive boxes no longer grow each time an older save is recalculated; and low-skill Point Values step for every 10 points or part over 104.</li>
+                      </ul>
+                  </li>
+                  <li>
+                  <h3>
                       <strong>November 4th, 2026</strong> - Vehicle BV1, force Battle Value, jump packs and TRO - JBT
                     </h3>
                     <h4>Author - NGCFells</h4>
