@@ -17,6 +17,7 @@ import {
     findAcesCard,
     findAcesCommandCard,
     getAcesIdealTargets,
+    evaluateAcesCondition,
     IAcesCandidate,
     IAcesUnitStats,
     identifyAcesCombatTarget,
@@ -428,5 +429,67 @@ describe("Aces Command card lookup", () => {
         const other = { ...acesSampleMechWarriorC, id: "other-c", deck: "Star Colonel", faction: "" };
         expect( findAcesCommandCard( [ acesSampleMechWarriorC, other ], "C", "Unknown", "" ) ).toBeNull();
         expect( findAcesCommandCard( [ acesSampleMechWarriorC, other ], "C", "Star Colonel", "" )!.id ).toBe( "other-c" );
+    });
+});
+
+describe("Aces behavior conditions answered from known data (#630 point 2)", () => {
+    const at = ( id: string, distance: number | null, extra: Partial<IAcesCandidate> = {} ) => enemy( id, {}, { distance, ...extra } );
+    const ask = ( text: string, candidates: IAcesCandidate[], more: { crippled?: boolean | null } = {} ) =>
+        evaluateAcesCondition( text, { candidates: candidates, ideals: getAcesIdealTargets( candidates, acesSampleStarCaptainB ), crippled: more.crippled === undefined ? null : more.crippled } );
+
+    it("any [moved] enemies in N inches: true for a moved unit inside, false when none moved, asks on an unknown distance", () => {
+        const text = "If there are any [moved] enemies in 18\"";
+        expect( ask( text, [ at( "A", 10, { moved: true } ) ] ) ).toBe( true );
+        expect( ask( text, [ at( "A", 30, { moved: true } ) ] ) ).toBe( false );
+        expect( ask( text, [ at( "A", 5, { moved: false } ) ] ) ).toBe( false );
+        expect( ask( text, [ at( "A", null, { moved: true } ) ] ) ).toBeNull();
+        expect( ask( text, [] ) ).toBe( false );
+    });
+    it("no [moved] / no [notmoved] enemies in N inches", () => {
+        expect( ask( "If there are no [moved] enemies in 12\"", [ at( "A", 20, { moved: true } ) ] ) ).toBe( true );
+        expect( ask( "If there are no [moved] enemies in 12\"", [ at( "A", 4, { moved: true } ) ] ) ).toBe( false );
+        expect( ask( "If there are no [notmoved] enemies in 12\"", [ at( "A", 4, { moved: false } ) ] ) ).toBe( false );
+        expect( ask( "If there are no [notmoved] enemies in 12\"", [ at( "A", null, { moved: false } ) ] ) ).toBeNull();
+        expect( ask( "If there are no [notmoved] enemies in 12\"", [ at( "A", null, { moved: true } ) ] ) ).toBe( true );
+    });
+    it("joins clauses with and: false wins, all true is true, anything unknown asks", () => {
+        const text = "If there are any [moved] enemies in 18\" and no [notmoved] enemies in 6\"";
+        expect( ask( text, [ at( "A", 10, { moved: true } ), at( "B", 20, { moved: false } ) ] ) ).toBe( true );
+        expect( ask( text, [ at( "A", 10, { moved: true } ), at( "B", 3, { moved: false } ) ] ) ).toBe( false );
+        expect( ask( text, [ at( "A", 10, { moved: true } ), at( "B", null, { moved: false } ) ] ) ).toBeNull();
+        expect( ask( text, [ at( "A", 30, { moved: true } ), at( "B", null, { moved: false } ) ] ) ).toBe( false );
+    });
+    it("at least K enemies in [los] and N inches", () => {
+        const text = "If there are at least 3 enemies in [los] and 24\"";
+        const three = [ at( "A", 5, { inLOS: true } ), at( "B", 10, { inLOS: true } ), at( "C", 24, { inLOS: true } ) ];
+        expect( ask( text, three ) ).toBe( true );
+        expect( ask( text, [ ...three.slice( 0, 2 ), at( "C", 30, { inLOS: true } ) ] ) ).toBe( false );
+        expect( ask( text, [ ...three.slice( 0, 2 ), at( "C", 10, { inLOS: false } ) ] ) ).toBe( false );
+        expect( ask( text, [ ...three.slice( 0, 2 ), at( "C", null, { inLOS: true } ) ] ) ).toBeNull();
+    });
+    it("ideal [c] is [moved] (and in N inches)", () => {
+        // Star Captain B red: lowest armor.
+        const low = enemy( "Locust", { armor: 2 }, { distance: 10, moved: true } );
+        const high = enemy( "Atlas", { armor: 9 }, { distance: 4, moved: false } );
+        expect( ask( "If the ideal [red] is [moved]", [ low, high ] ) ).toBe( true );
+        expect( ask( "If the ideal [red] is [moved] and in 8\"", [ low, high ] ) ).toBe( false );
+        expect( ask( "If the ideal [red] is [moved] and in 12\"", [ low, high ] ) ).toBe( true );
+        expect( ask( "If the ideal [red] is [moved]", [ { ...low, moved: false }, high ] ) ).toBe( false );
+        expect( ask( "If the ideal [red] is [moved] and in 12\"", [ { ...low, distance: null }, high ] ) ).toBeNull();
+        // Tied ideal: the players must judge first.
+        expect( ask( "If the ideal [red] is [moved]", [ enemy( "A", {} ), enemy( "B", {} ) ] ) ).toBeNull();
+    });
+    it("a not-moved ideal answers false even when the rest of the line needs the table", () => {
+        const low = enemy( "Locust", { armor: 2 }, { distance: 10, moved: false } );
+        const atlas = enemy( "Atlas", { armor: 9 } );
+        expect( ask( "If the ideal [red] is [moved] and unit can move behind it", [ low, atlas ] ) ).toBe( false );
+        expect( ask( "If the ideal [red] is [moved] and unit can move behind it", [ { ...low, moved: true }, atlas ] ) ).toBeNull();
+    });
+    it("this unit is crippled, and unknown wording asks", () => {
+        expect( ask( "If this unit is crippled", [], { crippled: true } ) ).toBe( true );
+        expect( ask( "If this unit is crippled", [], { crippled: false } ) ).toBe( false );
+        expect( ask( "If this unit is crippled", [] ) ).toBeNull();
+        expect( ask( "If there are any enemies in this unit's [range]", [ at( "A", 3 ) ] ) ).toBeNull();
+        expect( ask( "", [ at( "A", 3 ) ] ) ).toBeNull();
     });
 });

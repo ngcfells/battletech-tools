@@ -22,7 +22,7 @@ import {
     TAcesRuleset,
 } from '../../../../classes/aces-engine';
 import AcesIdealTargets from './_ideal-targets';
-import { getAcesUnitLabels, TAcesPriorityToken, TAcesSide } from '../../../../classes/aces-helpers';
+import { getAcesCrippledReasonsForUnit, getAcesUnitLabels, TAcesPriorityToken, TAcesSide } from '../../../../classes/aces-helpers';
 import { IAcesCardLibrary, IAcesCommandCard, IAcesSpecialOrder, newAcesCardLibrary, TAcesSpecialOrderKind } from '../../../../data/aces-cards';
 import AlphaStrikeForce from '../../../../classes/alpha-strike-force';
 import AlphaStrikeGroup from '../../../../classes/alpha-strike-group';
@@ -175,6 +175,7 @@ export default class AcesGamePage extends React.Component<IAcesGamePageProps, IA
             currentHeat: unit.currentHeat,
             damage: { short: unit.currentDamage.short, medium: unit.currentDamage.medium, long: unit.currentDamage.long, extreme: unit.currentDamage.extreme },
             fireControlHits: unit.fireControlHits.filter( ( hit ) => hit ).length,
+            crippled: getAcesCrippledReasonsForUnit( unit ).length > 0,
         };
     }
 
@@ -666,6 +667,8 @@ export default class AcesGamePage extends React.Component<IAcesGamePageProps, IA
                 behaviorOrder={behaviorOrder}
                 behaviorOverride={override ? override.behavior : null}
                 preFilters={movementObjective ? movementObjective.preFilters : []}
+                movedIds={game.playerUnitsMoved}
+                onMovedChange={( id, moved ) => this._update( ( g ) => g.setPlayerUnitMoved( id, moved ) )}
                 resetKey={phase + unit.uuid + ( card ? card.id : "" ) + game.turn}
                 onLog={( message ) => this._update( ( g ) => g.addLog( message ) )}
                 onDone={() => {

@@ -885,6 +885,99 @@ export const getAcesIdealTargets = (
     } );
 }
 
+
+/* ---------------------------------------------------------------------------------------------------------------
+ * Behavior conditions answered from known data (#630 point 2)
+ * ------------------------------------------------------------------------------------------------------------- */
+
+export interface IAcesConditionContext {
+    candidates: IAcesCandidate[];
+    /** The Command card color lists worked out over the same candidates (getAcesIdealTargets). */
+    ideals: IAcesIdealTarget[];
+    /** This unit is crippled (QSR p.12), or null when it is not known. */
+    crippled: boolean | null;
+}
+
+type TTriState = boolean | null;
+
+/** AND over clauses: a false wins, all true is true, and anything unknown leaves the question to the players. */
+const andTriState = ( values: TTriState[] ): TTriState => {
+    if( values.some( ( value ) => value === false ) ) return false;
+    return values.length > 0 && values.every( ( value ) => value === true ) ? true : null;
+}
+
+/** Any candidate with this moved state inside N inches: true when one is known inside, null when one's distance is unknown. */
+const anyWithin = ( candidates: IAcesCandidate[], moved: boolean, inches: number ): TTriState => {
+    let unknown = false;
+    for( const candidate of candidates ) {
+        if( !!candidate.moved !== moved ) continue;
+        if( typeof candidate.distance !== "number" ) unknown = true;
+        else if( candidate.distance <= inches ) return true;
+    }
+    return unknown ? null : false;
+}
+
+const negate = ( value: TTriState ): TTriState => value === null ? null : !value;
+
+const conditionClauses: { pattern: RegExp, answer: ( match: RegExpExecArray, context: IAcesConditionContext ) => TTriState }[] = [
+    { pattern: /^(?:there are )?any \[moved\] enemies in (\d+)"/i, answer: ( m, c ) => anyWithin( c.candidates, true, +m[1] ) },
+    { pattern: /^(?:there are )?no \[moved\] enemies in (\d+)"/i, answer: ( m, c ) => negate( anyWithin( c.candidates, true, +m[1] ) ) },
+    { pattern: /^(?:there are )?no \[notmoved\] enemies in (\d+)"/i, answer: ( m, c ) => negate( anyWithin( c.candidates, false, +m[1] ) ) },
+    {
+        pattern: /^(?:there are )?at least (\d+) enemies in \[los\] and (\d+)"/i,
+        answer: ( m, c ) => {
+            const needed = +m[1];
+            const inches = +m[2];
+            const seen = c.candidates.filter( ( candidate ) => candidate.inLOS !== false );
+            const known = seen.filter( ( candidate ) => typeof candidate.distance === "number" && candidate.distance <= inches ).length;
+            const unknown = seen.filter( ( candidate ) => typeof candidate.distance !== "number" ).length;
+            if( known >= needed ) return true;
+            return known + unknown < needed ? false : null;
+        },
+    },
+    {
+        pattern: /^the ideal \[(red|yellow|blue)\](?: enemy)? is \[moved\](?: and in (\d+)")?/i,
+        answer: ( m, c ) => {
+            const entry = c.ideals.find( ( ideal ) => ideal.color === m[1].toLowerCase() );
+            if( !entry || entry.pending ) return null;
+            if( !entry.ideal ) return entry.tied.length > 0 ? null : false;
+            const ideal = c.candidates.find( ( candidate ) => candidate.id === entry.ideal!.id ) || entry.ideal;
+            if( !ideal.moved ) return false;
+            if( m[2] === undefined ) return true;
+            return typeof ideal.distance === "number" ? ideal.distance <= +m[2] : null;
+        },
+    },
+    { pattern: /^this unit is crippled/i, answer: ( _m, c ) => c.crippled },
+];
+
+/**
+ * Answers a Behavior column's printed condition ("If there are any [moved] enemies in 18\" and ...") from the
+ * distances, moved marks and unit state already known. True or false when the data settles it, null when the
+ * players must answer (unknown distance, a tied ideal unit, or wording the engine does not read). A line with an
+ * unread clause still answers false when a clause it can read is false.
+ */
+export const evaluateAcesCondition = ( text: string, context: IAcesConditionContext ): boolean | null => {
+    let rest = text.trim().replace( /^if\s+/i, "" );
+    if( !rest ) return null;
+    const answers: TTriState[] = [];
+    while( rest ) {
+        let matched = false;
+        for( const clause of conditionClauses ) {
+            const match = clause.pattern.exec( rest );
+            if( !match ) continue;
+            answers.push( clause.answer( match, context ) );
+            rest = rest.substring( match[0].length ).replace( /^\s*,?\s*(?:and\s+)?/i, "" ).trim();
+            matched = true;
+            break;
+        }
+        if( !matched ) {
+            answers.push( null );
+            break;
+        }
+    }
+    return andTriState( answers );
+}
+
 const plainWords = ( text: string ): string => text.toLowerCase().replace( /[^a-z0-9]+/g, " " ).trim();
 
 /**

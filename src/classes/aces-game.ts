@@ -116,6 +116,8 @@ export interface IAcesGameExport {
     specialOrders?: IAcesGameSpecialOrders;
     commandCardId?: string;
     deckPools?: { [deckId: string]: string[] };
+    /** Player units (by uuid) that have moved this turn, for the Command card conditions. */
+    playerUnitsMoved?: string[];
 }
 
 export const newAcesUnitState = ( unitUUID: string ): IAcesUnitState => {
@@ -158,6 +160,8 @@ export class AcesGame {
     public initiativeWinner: TAcesSide | null = null;
     public lastInitiativeWinner: TAcesSide | null = null;
     public playerUnitsAbleToMove: number = 0;
+    /** Player units that moved this turn; ticking one once carries to every automated unit card reading. */
+    public playerUnitsMoved: string[] = [];
     public scenario: IAcesGameScenario = {
         gameSize: "battle",
         deploymentId: null,
@@ -633,6 +637,11 @@ export class AcesGame {
         this.playerUnitsAbleToMove = count;
     }
 
+    public setPlayerUnitMoved( id: string, moved: boolean ) {
+        const rest = this.playerUnitsMoved.filter( ( entry ) => entry !== id );
+        this.playerUnitsMoved = moved ? rest.concat( [ id ] ) : rest;
+    }
+
     public getMoveOrder(): IAcesMoveStep[][] {
         if( !this.initiativeWinner ) return [];
         const loser: TAcesSide = this.initiativeWinner === "player" ? "automated" : "player";
@@ -736,6 +745,7 @@ export class AcesGame {
         this.phase = "initiative";
         this.lastInitiativeWinner = this.initiativeWinner;
         this.initiativeWinner = null;
+        this.playerUnitsMoved = [];
         for( const state of this.unitStates ) {
             state.moved = false;
             state.attacked = false;
@@ -807,6 +817,7 @@ export class AcesGame {
             specialOrders: { ...this.specialOrders },
             commandCardId: this.commandCardId,
             deckPools: JSON.parse( JSON.stringify( this.deckPools ) ),
+            playerUnitsMoved: this.playerUnitsMoved.slice(),
         };
     }
 
@@ -864,6 +875,7 @@ export class AcesGame {
             };
         }
         if( typeof data.commandCardId === "string" ) this.commandCardId = data.commandCardId;
+        this.playerUnitsMoved = Array.isArray( data.playerUnitsMoved ) ? data.playerUnitsMoved.filter( ( id ) => typeof id === "string" ) : [];
         this.deckPools = {};
         if( data.deckPools && typeof data.deckPools === "object" ) {
             for( const key of Object.keys( data.deckPools ) ) {

@@ -311,3 +311,28 @@ describe("Aces Command card tokens (#630)", () => {
         expect( game.getUnitState( byName( game, "Locust" ).uuid ).token ).toBe( "move-last" );
     });
 });
+
+describe("Aces player units moved this turn (#630 point 2)", () => {
+    it("remembers which player units moved, clears the list on the next turn, and survives a save", () => {
+        const game = makeGame( [ makeUnit( "Bot", "Brawler", 30 ) ] );
+        expect( game.playerUnitsMoved ).toEqual( [] );
+        game.setPlayerUnitMoved( "u1", true );
+        game.setPlayerUnitMoved( "u2", true );
+        game.setPlayerUnitMoved( "u1", true );
+        game.setPlayerUnitMoved( "u2", false );
+        expect( game.playerUnitsMoved ).toEqual( [ "u1" ] );
+        const again = makeGame( [ makeUnit( "Bot", "Brawler", 30 ) ] );
+        again.import( game.export() );
+        expect( again.playerUnitsMoved ).toEqual( [ "u1" ] );
+        again.nextTurn();
+        expect( again.playerUnitsMoved ).toEqual( [] );
+    });
+    it("loads an older save with no list", () => {
+        const game = makeGame( [ makeUnit( "Bot", "Brawler", 30 ) ] );
+        const data = game.export();
+        delete data.playerUnitsMoved;
+        const again = makeGame( [ makeUnit( "Bot", "Brawler", 30 ) ] );
+        again.import( data );
+        expect( again.playerUnitsMoved ).toEqual( [] );
+    });
+});
