@@ -281,3 +281,33 @@ describe("Aces player units able to move (#630)", () => {
         expect( game.playerUnitsAbleToMove ).toBe( 3 );
     });
 });
+
+describe("Aces Command card tokens (#630)", () => {
+    it("gives the token to the unit the card ranks first, and takes it back when the card changes", () => {
+        const weak = makeUnit( "Locust", "Scout", 20 );
+        weak.damage.medium = 1;
+        const strong = makeUnit( "Atlas", "Juggernaut", 60 );
+        strong.damage.medium = 5;
+        const game = makeGame( [ weak, strong ] );
+        // Star Captain B: MOVE LAST to the unit with the highest M damage, then the highest PV.
+        game.applyCommandTokens( acesSampleStarCaptainB );
+        expect( game.getUnitState( byName( game, "Atlas" ).uuid ).token ).toBe( "move-last" );
+        expect( game.getUnitState( byName( game, "Locust" ).uuid ).token ).toBe( null );
+
+        // A card with no token order clears the old token.
+        game.applyCommandTokens( null );
+        expect( game.getUnitState( byName( game, "Atlas" ).uuid ).token ).toBe( null );
+    });
+    it("leaves the token for the players when the card ranking is tied", () => {
+        const game = makeGame( [ makeUnit( "Twin A", "Brawler", 30 ), makeUnit( "Twin B", "Brawler", 30 ) ] );
+        game.applyCommandTokens( acesSampleStarCaptainB );
+        for( const unit of game.getAutomatedUnits() ) expect( game.getUnitState( unit.uuid ).token ).toBe( null );
+    });
+    it("does not give a token to a unit that has already moved this turn", () => {
+        const game = makeGame( [ makeUnit( "Locust", "Scout", 20 ), makeUnit( "Atlas", "Juggernaut", 60 ) ] );
+        game.markMoved( byName( game, "Atlas" ).uuid );
+        game.applyCommandTokens( acesSampleStarCaptainB );
+        expect( game.getUnitState( byName( game, "Atlas" ).uuid ).token ).toBe( null );
+        expect( game.getUnitState( byName( game, "Locust" ).uuid ).token ).toBe( "move-last" );
+    });
+});

@@ -185,6 +185,7 @@ export default class AcesGamePage extends React.Component<IAcesGamePageProps, IA
             warnings = game.loadScenario( scenario, this.state.library.cards.length > 0 ? this.state.library : null );
             const command = this._commandCard();
             game.commandCardId = command ? command.id : "";
+            game.applyCommandTokens( command );
         } );
         this.setState({ warnings: warnings });
     }
@@ -503,6 +504,8 @@ export default class AcesGamePage extends React.Component<IAcesGamePageProps, IA
                     g.nextPhase();
                     // The player's count follows the roster each time Movement starts; it stays editable.
                     if( g.phase === "movement" ) g.setPlayerUnitsFromForce( this.props.appGlobals.currentASForce );
+                    // A new turn starts with the Command card handing out its Move First / Move Last token.
+                    if( g.phase === "initiative" ) g.applyCommandTokens( this._commandCard() );
                     // Damage lands at the start of the End Phase; carried infantry go down with their transport (Aces p.5).
                     for( const unit of g.getAutomatedUnits() ) {
                         if( unit.isWrecked() && g.getPassengers( unit.uuid ).length > 0 ) g.handleTransportDestroyed( unit.uuid );
@@ -552,7 +555,7 @@ export default class AcesGamePage extends React.Component<IAcesGamePageProps, IA
                         {" "}Automated commander destroyed (set automatically when that unit is destroyed)
                     </label>
                     <label>Command card:{" "}
-                        <select value={game.commandCard} onChange={( e ) => { const value = e.currentTarget.value; this._update( ( g ) => { g.commandCard = value; } ); }}>
+                        <select value={game.commandCard} onChange={( e ) => { const value = e.currentTarget.value; this._update( ( g ) => { g.commandCard = value; g.commandCardId = ""; g.applyCommandTokens( this._commandCard() ); } ); }}>
                             {[ "A", "B", "C", "D", "E" ].map( ( letter ) => <option key={letter} value={letter}>{letter}</option> )}
                         </select>
                     </label>
@@ -806,6 +809,7 @@ export default class AcesGamePage extends React.Component<IAcesGamePageProps, IA
                                 g.commandCard = result.letter;
                                 const next = this._commandCard();
                                 g.commandCardId = next ? next.id : "";
+                                g.applyCommandTokens( next );
                             }
                             g.addLog( result.trace[result.trace.length - 1] );
                         } );

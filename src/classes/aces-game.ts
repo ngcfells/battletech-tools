@@ -14,7 +14,7 @@ import {
     TAcesPriorityToken,
     TAcesSide,
 } from "./aces-helpers";
-import { IAcesRngState, newAcesRngState, rollAces2D6, rollAcesD6, shuffleAces, TAcesRuleset } from "./aces-engine";
+import { chooseAcesTokenUnit, getAcesOrdersForPhase, getAcesUnitStats, IAcesRngState, newAcesRngState, rollAces2D6, rollAcesD6, shuffleAces, TAcesRuleset } from "./aces-engine";
 import AlphaStrikeForce, { IASForceExport } from "./alpha-strike-force";
 import { AlphaStrikeUnit } from "./alpha-strike-unit";
 
@@ -661,6 +661,29 @@ export class AcesGame {
         }
         state.token = token;
         return true;
+    }
+
+    /**
+     * Hands out the Move First / Move Last tokens the face-up Command card orders (Aces p.8). Old tokens are taken
+     * back first, since the card in play decides who holds them. A tied ranking gives no token: the players choose.
+     */
+    public applyCommandTokens( card: IAcesCommandCard | null ) {
+        for( const state of this.unitStates ) state.token = null;
+        if( !card ) return;
+        const units = this.getLiveAutomatedUnits().map( ( unit ) => {
+            const state = this.getUnitState( unit.uuid );
+            return {
+                id: unit.uuid,
+                name: unit.customName || unit.name,
+                stats: getAcesUnitStats( unit ),
+                eligible: !state.moved && !state.cannotMove && !state.forcedWithdrawal && !state.fleeing && !state.isEmplacement && !state.transportedBy,
+            };
+        } );
+        for( const order of getAcesOrdersForPhase( card, "initiative" ) ) {
+            if( !order.token ) continue;
+            const choice = chooseAcesTokenUnit( order, units );
+            if( choice.unitId ) this.assignToken( choice.unitId, order.token );
+        }
     }
 
     /**
