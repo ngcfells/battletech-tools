@@ -10,15 +10,11 @@ export const MORDEL_DETAIL_CACHE_STORAGE = "mordelDetailCache";
 
 export type MordelServer = "production" | "sandbox";
 
-// VERIFY with Scott: the production API's address. The sandbox's is from his docs.
+// VERIFY with Scott: the production API's address. The sandbox's is from his docs (2026-11-10); on that date
+// https://mordel.net/api/v1/ping still answered 404, so production has no API yet. The API allows any origin (CORS *).
 export const MORDEL_BASES: Record<MordelServer, string> = {
     production: "https://mordel.net/api/v1",
     sandbox: "https://sandbox.mordel.net/api/v1",
-};
-/** The Vite dev server's proxies (vite.config.ts), for testing before mordel.net allows this site (CORS). */
-export const MORDEL_DEV_PROXIES: Record<MordelServer, string> = {
-    production: "/mordel-api",
-    sandbox: "/mordel-sandbox-api",
 };
 
 const removeLocalStorage = (keyName: string): void => {
@@ -68,7 +64,7 @@ export function setMordelServer(server: MordelServer): void {
     writeLocalStorage(SERVER_STORAGE, server);
 }
 
-/** The API base for the chosen server: the dev proxy under "vite dev", the site itself otherwise. */
-export function mordelBaseUrl(dev: boolean = import.meta.env.DEV, server: MordelServer = getMordelServer()): string {
-    return dev ? MORDEL_DEV_PROXIES[server] : MORDEL_BASES[server];
+/** The API base for the chosen server. */
+export function mordelBaseUrl(server: MordelServer = getMordelServer()): string {
+    return MORDEL_BASES[server];
 }

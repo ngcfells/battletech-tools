@@ -12,6 +12,7 @@ export interface IMordelAlphaStrike {
     armor: number;
     structure: number;
     /** "0*" is minimal damage. */
+    /** The API gives short, medium and long only (no extreme), so `extreme` stays unset on live units. */
     damage: { short: string; medium: string; long: string; extreme?: string };
     overheat: number;
     point_value: number;
@@ -31,6 +32,8 @@ export interface IMordelListRow {
     id: number;
     name: string;
     designer?: string | null;
+    /** public, semi_private or private. A key sees its owner's own units at every level. */
+    privacy?: "public" | "semi_private" | "private";
     canon: boolean;
     tech_base: string;
     mixed_tech?: boolean;
@@ -56,12 +59,13 @@ export interface IMordelListRow {
 export interface IMordelTyped { type: string | null; technology?: string | null; tons?: number | null }
 
 export interface IMordelEquipment {
-    id: number;
+    /** Numbers an item within its unit (the entries of an item spread over locations share it); null on slotless items. */
+    id: number | null;
     name: string;
     model?: string | null;
     /** H, CT, LT, RT, LA, RA, LL, RL, ... or null. */
     location: string | null;
-    technology: string;
+    technology: string | null;
     slots: number;
     facing?: string | null;
     associated_id?: number | null;
@@ -90,6 +94,15 @@ export interface IMordelLocation {
 
 export interface IMordelDetail extends IMordelListRow {
     image_url?: string | null;
+    /** Download address per format (record_sheet, alpha_strike_card, megamek and the five texts), or null. */
+    files?: Record<string, string | null>;
+    /** For an Omni base: the variants the key can see. Empty otherwise. */
+    omni_variants?: { id: number; name: string }[];
+    retrotech?: boolean;
+    frankenmech?: boolean;
+    communications_model?: string | null;
+    /** Omni Combat Vehicles: the fixed weight of each turret. */
+    omni_turret_tons?: { turret: number | null; front_turret: number | null; sponson_turrets: number | null } | null;
     tech_rating?: string | null;
     configuration?: string | null;
     sources?: { title: string; publisher?: string; year?: number }[];

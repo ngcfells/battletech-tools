@@ -200,12 +200,12 @@ describe("MordelUnitsPanel", () => {
         expect(screen.getByText("No mordel.net units match.")).toBeTruthy();
     });
 
-    it("explains when mordel.net has no list of the user's designs yet", async () => {
+    it("explains when the key has no designs on mordel.net", async () => {
         const api = await import("../../utils/mordel/mordel-api");
-        vi.spyOn(api, "fetchMyMordelUnits").mockResolvedValue(null);
+        vi.spyOn(api, "fetchMyMordelUnits").mockResolvedValue([]);
         renderPanel();
         fireEvent.click(screen.getByRole("tab", { name: "My Mordel designs" }));
         fireEvent.click(screen.getByRole("button", { name: "Load my designs" }));
-        expect(await screen.findByText(/does not offer a list of your designs yet/)).toBeTruthy();
+        expect(await screen.findByText(/lists no designs under this key/)).toBeTruthy();
     });
 });

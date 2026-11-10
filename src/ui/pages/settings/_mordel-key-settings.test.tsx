@@ -6,7 +6,7 @@ import MordelKeySettings from "./_mordel-key-settings";
 
 beforeEach(() => {
     localStorage.clear();
-    vi.stubGlobal("fetch", vi.fn(async () => new Response(JSON.stringify({ units: [] }), { status: 200 })));
+    vi.stubGlobal("fetch", vi.fn(async () => new Response(JSON.stringify({ status: "OK", message: "API key is valid" }), { status: 200 })));
 });
 afterEach(() => {
     cleanup();

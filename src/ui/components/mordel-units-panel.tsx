@@ -193,8 +193,8 @@ export default function MordelUnitsPanel(props: IMordelUnitsPanelProps): React.J
         try {
             const list = await fetchMyMordelUnits();
             if (!mounted.current) return;
-            setMine(list ? list.filter((row) => types.includes(row.unit_type_short)) : []);
-            setMineNote(list ? null : "mordel.net does not offer a list of your designs yet. Paste a link to one below instead.");
+            setMine(list.filter((row) => types.includes(row.unit_type_short)));
+            setMineNote(list.length ? null : "mordel.net lists no designs under this key. Paste a link to one below instead.");
         } catch (error) {
             if (mounted.current) showError(error, "Your designs");
         } finally {
@@ -226,7 +226,7 @@ export default function MordelUnitsPanel(props: IMordelUnitsPanelProps): React.J
                             <td>{TYPE_LABELS[row.unit_type_short] ?? row.unit_type}</td>
                             <td className="text-center">{row.tons}</td>
                             <td className="text-center">{row.battle_value ?? "-"}</td>
-                            <td>{row.canon ? "Canon" : row.designer ?? ""}</td>
+                            <td>{row.canon ? "Canon" : row.designer ?? ""}{row.privacy && row.privacy !== "public" ? ` (${row.privacy === "private" ? "private" : "semi-private"})` : ""}</td>
                             <td className="text-right">
                                 <button type="button" className="btn btn-primary btn-sm no-right-margin" disabled={busy !== null}
                                     aria-label={`${verb} ${unitName(row)}`} onClick={() => void addRow(row)}>

@@ -1,11 +1,11 @@
 import React, { useState, type JSX } from "react";
-import { testMordelKey } from "../../../utils/mordel/mordel-api";
+import { testMordelKey, UNREACHABLE_MESSAGE } from "../../../utils/mordel/mordel-api";
 import { getMordelKey, getMordelServer, isMordelKeyRejected, maskMordelKey, MordelServer, removeMordelKey, saveMordelKey, setMordelServer } from "../../../utils/mordel/mordel-key";
 
 const RESULT_TEXT = {
     ok: "mordel.net accepted the key.",
     rejected: "mordel.net refused this key. Check it on your mordel.net account page.",
-    unavailable: "Could not reach mordel.net. You may be offline, or mordel.net does not allow this site yet.",
+    unavailable: UNREACHABLE_MESSAGE,
 };
 
 /** Settings: the user's own mordel.net API key, kept on this device only. */

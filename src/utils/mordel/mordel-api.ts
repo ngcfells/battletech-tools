@@ -14,16 +14,15 @@ export class MordelKeyError extends Error {
     }
 }
 
-/** mordel.net could not be reached, was busy, or does not allow this site yet (CORS). */
+export const UNREACHABLE_MESSAGE = "Could not reach mordel.net. You may be offline, or mordel.net may be down.";
+
+/** mordel.net could not be reached, or was busy. */
 export class MordelUnavailableError extends Error {
     constructor(message: string) {
         super(message);
         this.name = "MordelUnavailableError";
     }
 }
-
-// Scott has not named the endpoint for the key owner's own designs yet: a placeholder until he does.
-export const MORDEL_MY_UNITS_PATH = "/units/mine";
 
 const DETAIL_CACHE = MORDEL_DETAIL_CACHE_STORAGE;
 export const DETAIL_CACHE_SIZE = 50;
@@ -46,8 +45,11 @@ const client = (options: IMordelCallOptions = {}) => {
         base: options.base ?? mordelBaseUrl(),
         key,
         fetchImpl: options.fetchImpl ?? ((url, init) => fetch(url, init)),
-        pauseMs: 250,
-        retries: 0,
+        // 120 points per 60 s: a list page costs 1, so 500 ms between pages stays well under. A 429 waits for the
+        // server's Retry-After once; a 503 (site release) is shown at once.
+        pauseMs: 500,
+        retries: 1,
+        retryBusy: false,
     });
 };
 
@@ -67,15 +69,17 @@ async function call<T>(work: () => Promise<T>, savedKey: boolean): Promise<T> {
                 ? "mordel.net is busy right now. Try again in a minute."
                 : `mordel.net could not answer (${status}).`);
         }
-        // fetch rejects with a TypeError when the network is down or the site does not allow this one (CORS).
-        throw new MordelUnavailableError("Could not reach mordel.net. You may be offline, or mordel.net does not allow this site yet.");
+        // fetch rejects with a TypeError when the network is down or the server cannot be reached.
+        throw new MordelUnavailableError(UNREACHABLE_MESSAGE);
     }
 }
 
 /** "ok" when mordel.net accepts the key. */
 export async function testMordelKey(key: string, options: IMordelCallOptions = {}): Promise<"ok" | "rejected" | "unavailable"> {
     try {
-        await call(() => client({ ...options, key }).get("/units?limit=1"), key.trim() === getMordelKey());
+        // GET /key costs one point, returns no data, and still answers during a site release (when /units gives 503).
+        const answer = await call(() => client({ ...options, key }).get("/key") as Promise<{ status?: string } | null>, key.trim() === getMordelKey());
+        if (answer?.status !== "OK") return "unavailable";
         return "ok";
     } catch (error) {
         return error instanceof MordelKeyError ? "rejected" : "unavailable";
@@ -119,35 +123,42 @@ export async function fetchMordelDetail(type: MordelType, id: number, stamp: num
     return unit;
 }
 
-/** The list rows created or changed since `since` (seconds), newest pages last; at most TOP_UP_LIMIT. */
-export async function fetchMordelListSince(since: number, options: IMordelCallOptions = {}): Promise<{ rows: IMordelListRow[]; serverTime: number | null }> {
+/**
+ * The list rows created or changed since `since` (seconds). mordel.net pages by type and then id, not by time, so a
+ * sweep that reaches TOP_UP_LIMIT stops with `nextCursor`: pass it back as `cursor` to carry on. `serverTime` is the
+ * first page's, taken before the units were read, so it is the safe time for the next sweep (the caller keeps the
+ * sweep's own first time when it resumes from a cursor).
+ */
+export async function fetchMordelListSince(since: number, options: IMordelCallOptions = {}, cursor: string | null = null): Promise<{ rows: IMordelListRow[]; serverTime: number | null; nextCursor: string | null }> {
     return call(async () => {
         const rows: IMordelListRow[] = [];
         let serverTime: number | null = null;
-        for await (const page of listUnits(client(options), { updatedSince: since, limit: 1000 })) {
+        let nextCursor: string | null = null;
+        for await (const page of listUnits(client(options), { updatedSince: since, limit: 1000, cursor })) {
             rows.push(...page.units as IMordelListRow[]);
-            serverTime = page.serverTime ?? serverTime;
+            serverTime ??= page.serverTime ?? null;
+            nextCursor = page.nextCursor ?? null;
             if (rows.length >= TOP_UP_LIMIT) break;
         }
-        return { rows: rows.slice(0, TOP_UP_LIMIT), serverTime };
+        return { rows, serverTime, nextCursor };
     }, options.key === undefined);
 }
 
-/**
- * The key owner's own designs, private ones included. Null while mordel.net does not offer the list yet
- * (MORDEL_MY_UNITS_PATH is a placeholder).
- */
-export async function fetchMyMordelUnits(options: IMordelCallOptions = {}): Promise<IMordelListRow[] | null> {
-    try {
-        return await call(async () => {
-            const page = await client(options).get(`${MORDEL_MY_UNITS_PATH}?limit=1000`) as { units?: IMordelListRow[] } | null;
-            return Array.isArray(page?.units) ? page.units : null;
-        }, options.key === undefined);
-    } catch (error) {
-        // A 400 is mordel.net reading "mine" as a unit id: the endpoint is not there yet.
-        if (error instanceof MordelUnavailableError && /\(400\)/.test(error.message)) return null;
-        throw error;
-    }
+/** The key owner's own designs (GET /units?owner=me): every privacy level, private ones included. */
+export async function fetchMyMordelUnits(options: IMordelCallOptions = {}): Promise<IMordelListRow[]> {
+    return call(async () => {
+        const rows: IMordelListRow[] = [];
+        for await (const page of listUnits(client(options), { owner: "me", limit: 1000 })) rows.push(...page.units as IMordelListRow[]);
+        return rows;
+    }, options.key === undefined);
+}
+
+/** Every public unit id mordel.net lists (GET /units/ids, 2 points), by type: how removals are found. */
+export async function fetchMordelIds(options: IMordelCallOptions = {}): Promise<Partial<Record<MordelType, number[]>> | null> {
+    return call(async () => {
+        const answer = await client(options).get("/units/ids") as { ids?: Partial<Record<MordelType, number[]>> } | null;
+        return answer?.ids && typeof answer.ids === "object" ? answer.ids : null;
+    }, options.key === undefined);
 }
 
 /** "bm/23454", "https://mordel.net/tro.php?a=vt&ut=bm&id=23454" or a /units/bm/23454 link, as a type and id. */

@@ -2,8 +2,8 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { AppSettings } from "../../ui/classes/app_settings";
 import { getFullBackup } from "../../dataSaves";
-import { DETAIL_CACHE_SIZE, fetchMordelDetail, fetchMordelListSince, fetchMyMordelUnits, MordelKeyError, MordelUnavailableError, parseMordelUnitRef, testMordelKey } from "./mordel-api";
-import { getMordelKey, isMordelKeyRejected, maskMordelKey, MORDEL_BASES, MORDEL_DEV_PROXIES, mordelBaseUrl, removeMordelKey, saveMordelKey } from "./mordel-key";
+import { DETAIL_CACHE_SIZE, fetchMordelDetail, fetchMordelIds, fetchMordelListSince, fetchMyMordelUnits, MordelKeyError, MordelUnavailableError, parseMordelUnitRef, testMordelKey } from "./mordel-api";
+import { getMordelKey, isMordelKeyRejected, maskMordelKey, MORDEL_BASES, mordelBaseUrl, removeMordelKey, saveMordelKey } from "./mordel-key";
 
 const KEY = "made-up-key-1234";
 const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status, headers: { "Content-Type": "application/json" } });
@@ -33,9 +33,9 @@ describe("mordel key store", () => {
         expect(getMordelKey()).toBeNull();
     });
 
-    it("uses the dev proxy under vite dev and the site otherwise", () => {
-        expect(mordelBaseUrl(true, "sandbox")).toBe(MORDEL_DEV_PROXIES.sandbox);
-        expect(mordelBaseUrl(false, "production")).toBe(MORDEL_BASES.production);
+    it("names the API address of each server", () => {
+        expect(mordelBaseUrl("sandbox")).toBe(MORDEL_BASES.sandbox);
+        expect(mordelBaseUrl("production")).toBe(MORDEL_BASES.production);
     });
 
     it("never puts the key in a backup", async () => {
@@ -72,7 +72,7 @@ describe("mordel browser client", () => {
         const f = fake(() => { throw new TypeError("Failed to fetch"); });
         const error = await fetchMordelDetail("bm", 1, null, f).catch((e) => e);
         expect(error).toBeInstanceOf(MordelUnavailableError);
-        expect(error.message).toMatch(/does not allow this site yet/);
+        expect(error.message).toMatch(/offline, or mordel.net may be down/);
         expect(error.message).not.toContain(KEY);
     });
 
@@ -83,7 +83,7 @@ describe("mordel browser client", () => {
     });
 
     it("gives null for a unit mordel.net does not have (404)", async () => {
-        expect(await fetchMordelDetail("bm", 1, null, fake(() => json({ message: "Not found" }, 404)))).toBeNull();
+        expect(await fetchMordelDetail("bm", 1, null, fake(() => json({ status: "Error", message: "Unit not found" }, 404)))).toBeNull();
     });
 
     it("serves the cached copy until the list has a newer one", async () => {
@@ -135,25 +135,75 @@ describe("mordel browser client", () => {
     });
 
     it("tests a key without saving or rejecting the saved one", async () => {
-        expect(await testMordelKey("other", fake(() => json({ units: [] })))).toBe("ok");
+        expect(await testMordelKey("other", fake(() => json({ status: "OK", message: "API key is valid" })))).toBe("ok");
         expect(await testMordelKey("other", fake(() => json({}, 401)))).toBe("rejected");
         expect(isMordelKeyRejected()).toBe(false);
         expect(await testMordelKey("other", fake(() => { throw new TypeError("Failed to fetch"); }))).toBe("unavailable");
     });
 
-    it("pages the list since a time", async () => {
-        const f = fake((url) => url.includes("cursor=") ? json({ units: [unit(2)], server_time: 50 })
-            : json({ units: [unit(1)], next_cursor: "c2", server_time: 40 }));
-        const { rows, serverTime } = await fetchMordelListSince(30, f);
+    it("tests a key with GET /key, the one-point call", async () => {
+        const f = fake(() => json({ status: "OK", message: "API key is valid", server_time: 5 }));
+        expect(await testMordelKey("other", f)).toBe("ok");
+        expect(f.calls.map((call) => call.url)).toEqual(["https://api.example/v1/key"]);
+    });
+
+    it("does not call a missing API a good key", async () => {
+        const html = () => new Response("<html>Error 404</html>", { status: 404 });
+        expect(await testMordelKey("other", fake(html))).toBe("unavailable");
+        expect(await testMordelKey("other", fake(() => json({ status: "Error", message: "Endpoint not found" }, 404)))).toBe("unavailable");
+    });
+
+    it("tells a missing server from a missing unit", async () => {
+        await expect(fetchMordelDetail("bm", 1, null, fake(() => new Response("<html>Error 404</html>", { status: 404 })))).rejects.toThrow(MordelUnavailableError);
+        await expect(fetchMordelDetail("bm", 1, null, fake(() => json({ status: "Error", message: "Endpoint not found" }, 404)))).rejects.toThrow(MordelUnavailableError);
+        expect(await fetchMordelDetail("bm", 1, null, fake(() => json({ status: "Error", message: "Unit not found" }, 404)))).toBeNull();
+    });
+
+    it("waits for Retry-After on a 429, then tries again", async () => {
+        let answered = 0;
+        const f = fake(() => answered++ === 0
+            ? new Response(JSON.stringify({ status: "Error", message: "Rate limit exceeded. Try again in 1 seconds." }), { status: 429, headers: { "Retry-After": "1" } })
+            : json({ status: "OK", unit: unit(1) }));
+        const started = Date.now();
+        expect((await fetchMordelDetail("bm", 1, null, f))!.id).toBe(1);
+        expect(f.calls).toHaveLength(2);
+        expect(Date.now() - started).toBeGreaterThanOrEqual(900);
+    }, 10000);
+
+    it("pages the list since a time, and keeps the first page's server time", async () => {
+        const f = fake((url) => url.includes("cursor=") ? json({ units: [unit(2)], next_cursor: null, server_time: 50 })
+            : json({ units: [unit(1)], next_cursor: "bm-1", server_time: 40 }));
+        const { rows, serverTime, nextCursor } = await fetchMordelListSince(30, f);
         expect(rows.map((row) => row.id)).toEqual([1, 2]);
-        expect(serverTime).toBe(50);
+        expect(serverTime).toBe(40);
+        expect(nextCursor).toBeNull();
+        expect(f.calls[0].url).toContain("updated_since=30");
+        expect(f.calls[1].url).toContain("cursor=bm-1");
+    });
+
+    it("carries on from a cursor", async () => {
+        const f = fake(() => json({ units: [unit(9)], next_cursor: null, server_time: 60 }));
+        await fetchMordelListSince(30, f, "bm-8");
+        expect(f.calls[0].url).toContain("cursor=bm-8");
         expect(f.calls[0].url).toContain("updated_since=30");
     });
 
-    it("gives null for my designs while mordel.net does not offer them", async () => {
-        expect(await fetchMyMordelUnits(fake(() => json({ message: "Not found" }, 404)))).toBeNull();
-        expect(await fetchMyMordelUnits(fake(() => json({ message: "Bad id" }, 400)))).toBeNull();
-        expect(await fetchMyMordelUnits(fake(() => json({ units: [unit(7)] })))).toHaveLength(1);
+    it("lists my designs with owner=me, every page", async () => {
+        const f = fake((url) => url.includes("cursor=") ? json({ units: [{ ...unit(8), privacy: "private" }], next_cursor: null })
+            : json({ units: [unit(7)], next_cursor: "bm-7" }));
+        const mine = await fetchMyMordelUnits(f);
+        expect(mine.map((row) => row.id)).toEqual([7, 8]);
+        expect(f.calls[0].url).toContain("owner=me");
+        expect(f.calls[1].url).toContain("owner=me");
+        expect(f.calls[0].url).not.toContain("/units/mine");
+        expect(await fetchMyMordelUnits(fake(() => json({ units: [], next_cursor: null })))).toEqual([]);
+    });
+
+    it("reads the id list", async () => {
+        const f = fake(() => json({ status: "OK", count: 3, ids: { bm: [1, 2], pm: [5] } }));
+        expect(await fetchMordelIds(f)).toEqual({ bm: [1, 2], pm: [5] });
+        expect(f.calls[0].url).toBe("https://api.example/v1/units/ids");
+        expect(await fetchMordelIds(fake(() => json({ status: "OK" })))).toBeNull();
     });
 });
 
