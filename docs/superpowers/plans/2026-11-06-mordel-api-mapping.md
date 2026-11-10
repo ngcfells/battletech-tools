@@ -315,3 +315,53 @@ detail fields in `mordel-types.ts` are the documented ones.
 - Items 1 to 7 are fixes with no rules judgment; say go and they are built test-first on this branch.
 - Item 10: wanted at all? Suggest the BV-breakdown use first (it speeds section 4).
 - Send the reply, or change it.
+
+## 8. After the fixes: rerun against the sandbox (2026-11-10)
+
+Fixes for section 7 items 1 to 9 and 11 are in commit 152009764 (item 10 is the owner's call; item 12 is Scott's).
+`npm run check` passes. Built: `owner=me` for My designs (paged, with `privacy` shown), cursor resume for a cut-short
+top-up (`since` moves on only when a sweep ends), the first page's `server_time`, removals through `/units/ids`
+(guarded: an empty answer or one lacking half of what we know is ignored), Retry-After on 429 (once, up to 60 s; 503
+is shown at once), `GET /key` for the Test button, a 404 from a wrong address or a server without the API is now an
+error and not "no such unit", the dev proxies and the CORS wording are gone, the types match the docs.
+
+Rerun (read-only, about 33 points, key never printed; script was a throwaway):
+
+- Errors: 14 cases all give the documented status and a JSON message. The messages are clear and name the fix
+  (unknown parameter lists the allowed ones; limit, type, cursor, owner, updated_since each say what is valid).
+- Fixed since our last reply: the trailing slash `/units/bm/474/` now answers 200, the Hammer HMR-5M (cost 5,167,240,
+  armor 7.5 t) and the Sheinhardt name (no leading space) are right.
+- `/units`: the 26 summary fields are all there in the documented order, no extras. Cursor `bm-32` style, rows in
+  type then id order (bm30..bm34, bm37..). `updated_since` is inclusive; a future time gives an empty list.
+  `server_time` differs from page to page (so taking the first page's, as the docs say, matters).
+- `/units/ids`: 56,263 ids (bm 49,819, cv 5,447, im 582, pm 415), gzip, every id of a `/units` page is in it.
+- Detail: all 28 documented detail fields present, none extra, on bm 474, cv 2993, pm 14, bm 2303. `files` has all 8
+  links on every unit tried. Equipment `id` and `location` are null on slotless items (bm 474 has 1, pm 14 has 18);
+  `technology` and `facing` were never null in the four units.
+- Files: the BV breakdown text and the MegaMek .mtf download fine (content types and Content-Disposition as documented);
+  an unknown format gives 404 with the list of formats; `quantity` on a MegaMek file gives 400.
+- Headers: `Access-Control-Allow-Origin: *`, `Expose-Headers: Content-Disposition, Retry-After`, `Cache-Control:
+  no-store` on success and on a 401, which also carries `WWW-Authenticate: X-API-Key`. The OPTIONS preflight (checked
+  earlier) is 204 with `Max-Age: 86400`.
+
+### Still open: nothing found wrong in the sandbox API; the gaps are these
+
+1. **Production has no API yet.** `https://mordel.net/api/v1/ping` answers an HTML 404 (checked 2026-11-10). The app
+   defaults to "production", so until Scott opens it every call fails with "mordel.net could not answer (404)" unless
+   the user picks the sandbox in Settings. Options: default to the sandbox until production answers, or leave it and
+   ask Scott when production opens (the draft reply asks).
+2. **Not tested, cannot be from here:** `owner=me` with private and semi-private units (the sandbox key owns none; the
+   owner will make some); a real 429 and its body (it needs 120 points in a minute: not worth forcing); the 503 during a
+   release; the "Too many files at once" 429; the 422 for a FrankenMech MegaMek file.
+3. **Docs wording that would help other testers** (for Scott, optional):
+   - `omni_base_id` on a base is its own id (said); say that `omni_variants` lists only the variants the key can see
+     (said), and that the base of a variant can be another member's private unit (said). All covered: no gap.
+   - The docs say `/units/ids` is "all in one response"; it is about 56,000 ids (about 400 KB raw): say gzip is on.
+   - `created_since` and `updated_since` together: not described (we never combine them).
+   - Which time zone/clock `server_time` uses is Unix UTC (said). No gap.
+   - The sandbox is a copy of production taken at a point in time (Scott told us in mail): a line in the docs would
+     tell other testers why ids can differ from production.
+4. **Command-line sync (`tools/mordel-sync`) still lists everything weekly to find removals.** One `/units/ids` call
+   (2 points) would do it instead of 57 list pages. Not changed: it works, and the app now uses ids.
+5. **Texts can change without `updated`** (Scott's note). The app does not store texts, so nothing to do until we
+   fetch the BV breakdown for the BV work (section 4 of the next-steps plan); fetch it fresh each time.
