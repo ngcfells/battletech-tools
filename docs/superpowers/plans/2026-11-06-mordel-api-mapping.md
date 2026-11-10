@@ -219,3 +219,99 @@ Follow-ups (both threads):
 - Archive designs: waiting on his answers on an original-designer field, moving designs to their creators, import
   of .mtf/SSW/HeavyMetal files, and a push API (that would need our units mapped back to his format).
 - The user is away at a conference in Utah the week of 2026-11-09 and may be fully offline.
+
+## 7. Scott's REST API v1 docs (2026-11-10) against the `mordel-user-key` branch
+
+Read: `documentation.php?a=api&s=start`, `s=endpoints`, `s=reference` (Code Release 2.26.30). The docs pages answer 406
+to curl without a browser User-Agent. Checked live with the sandbox key, read-only, 5 points in all: `/key` 200;
+`/units?owner=me&limit=2` 200 with 0 units (the sandbox key owns none yet); `/units?type=bm&updated_since=...&limit=2`
+200, `next_cursor` is `bm-41449`, and the rows come back in id order, NOT by `updated`; the OPTIONS preflight returns
+204 with `Allow-Headers: X-API-Key`, `Allow-Methods: GET`, `Max-Age: 86400`; every response carries `Allow-Origin: *`
+and exposes `Content-Disposition, Retry-After`.
+
+### What already matches
+
+CORS works from the browser as built (no User-Agent, key in the header only, no credentials). `limit` 1000, cursor
+paging, `updated_since`, `/units/{type}/{id}`, 401 stops and asks for a new key, 404 gives null, and the summary and
+detail fields in `mordel-types.ts` are the documented ones.
+
+### Gaps, most important first
+
+1. **"My designs" calls a path that does not exist.** `MORDEL_MY_UNITS_PATH = "/units/mine"` in `mordel-api.ts` is a
+   placeholder, and the panel says "does not offer a list of your designs yet". Scott's answer is
+   `GET /units?owner=me` (every privacy level, same cursor paging). Change `fetchMyMordelUnits` to page through
+   `listUnits(... { owner: "me" })` (add `owner` to `listUnits` in `tools/mordel-sync/mordel-client.mjs`) and drop the
+   400-means-not-there branch. Rows now carry `privacy`: add it to `IMordelListRow` and show it in the panel, and treat
+   `semi_private` and `private` details as private (cache cleared with the key, as now).
+2. **The top-up resume rule is wrong for the way pages are ordered.** `topUpMordelList` (`src/data/mordel-list.ts`)
+   assumes "pages come oldest first" and, when it hits `TOP_UP_LIMIT` (2000), resumes from the newest `updated` in the
+   rows it kept. The docs and the live call say pages are ordered by type, then id. After a cut-short run, `since`
+   jumps forward and every changed unit not yet read (later ids, other types) with an older stamp is skipped for good.
+   Fix: when cut short, save the `next_cursor` with the `since` and the first page's `server_time`, resume from that
+   cursor next time, and move `since` on only when a sweep reaches `next_cursor: null`. A full list is only 57 pages
+   (57 of the 120 points per 60 s), so raising the cap is the other option.
+3. **`server_time` is taken from the wrong page.** `fetchMordelListSince` keeps the LAST page's `server_time`
+   (`page.serverTime ?? serverTime`). The docs say to save the one from the FIRST page, because it is taken before the
+   units are read (a unit saved mid-sync is then picked up next time). The CLI (`mordel-run.mjs`) already uses
+   `serverTime ??= page.serverTime`. Same fix in the app.
+4. **Removals are not handled in the app.** Deleted and newly private units just stop appearing in `/units`. Scott's
+   answer is `GET /units/ids` (2 points, all ids grouped by type, a few hundred KB, gzipped). The app never calls it, so
+   a removed unit stays in the shipped list and the top-up rows. Add `fetchMordelIds()`; drop from the top-up rows,
+   and hide in the shipped list (the hidden-keys list already exists), any unit missing from it. The CLI's weekly full
+   list for removals can become one `/units/ids` call.
+5. **429 is not honoured.** The client retries 429 and 503 after a fixed 30 s times attempt, and the app sets
+   `retries: 0`, so a 429 shows "busy, try again in a minute". Retry-After is readable from the browser (exposed
+   header) and exact: read it, wait that many seconds (cap about 60), then retry. A 503 stays a "try later". The "too
+   many files at once" 429 (Retry-After 2) is the same if files are ever downloaded.
+6. **Key test uses the wrong call.** `testMordelKey` calls `/units?limit=1`. `GET /key` exists for this (1 point, no
+   data). Use it: it also keeps answering during a site release, when `/units` gives 503 and a good key would look
+   "unavailable".
+7. **Stale CORS wording.** The error says "mordel.net does not allow this site yet", and `MORDEL_DEV_PROXIES` in
+   `mordel-key.ts` exists "before mordel.net allows this site (CORS)". CORS is open (`*`) and the preflight is cached a
+   day, so remove the dev proxies and their vite config entries, and reword the error to "You may be offline, or
+   mordel.net is down".
+8. **Production base URL is unverified.** `MORDEL_BASES.production = https://mordel.net/api/v1` is marked VERIFY. The
+   docs only give the sandbox address. Ask Scott (reply draft below).
+9. **Types.** `IMordelEquipment.id` is `number | null` (slotless items), `technology` is `string | null`, and `facing`
+   can be null. Missing from the detail type: `privacy`, `files`, `omni_variants`, `retrotech`, `frankenmech`,
+   `communications_model`, `omni_turret_tons`, `jump_jets` tons. `alpha_strike.damage` has no `extreme` in the API (the
+   optional field can go). `omni_base_id` is null for a variant whose base is private, so the importer must not
+   require it.
+10. **Possible features (owner's call, not gaps):**
+    - `files.megamek` is a ready .mtf/.blk (1 point; 422 for FrankenMechs). We convert the JSON ourselves, so it
+      could cross-check our converter against mordel.net's own export, or be the fallback for a unit our converter
+      cannot build yet (section 2 of the next-steps plan). The Alpha Strike card and record sheet PDFs cost 10 and 4.
+    - The five texts (readout, BV, Alpha Strike, weight, cost) give the book-style breakdowns: fetch the BV
+      breakdown for a mismatch (section 4) instead of guessing. Texts can change without `updated`.
+    - `image_url` is CORS-open: the record sheet can draw it on a canvas (`crossOrigin = "anonymous"`).
+11. **Rate budget.** 120 points per 60 s: a 250 ms pause per call is 240 a minute, over budget if the app ever
+    batches. Fine for one-at-a-time use; a batch import (a whole force) should pace at 500 ms or follow Retry-After.
+12. **Not in v1, so keep our workarounds:** a removals feed (use `/units/ids`), an original-designer field, file
+    import, a push endpoint. `designer` is the account display name only.
+
+### Draft reply to Scott (for the owner to send or change)
+
+> Scott,
+>
+> Thanks for the v1 docs. They are clear, and the CORS note (open origin, preflight cached for a day, Retry-After
+> readable) is exactly what the browser app needed. We ran `/key`, `/units?owner=me` and a cursor page against the
+> sandbox and it all behaved as documented.
+>
+> Two small questions:
+>
+> 1. Is the production address `https://mordel.net/api/v1`? The docs show only the sandbox.
+> 2. Pages are ordered by type and id, so we resume a cut-short sync by cursor. Is a saved cursor safe to use a few
+>    hours later (for example, to finish tomorrow), or should we start over?
+>
+> `/units/ids` covers removals well, so we will use that. The original-designer field is still the one we would use
+> most: our archive designs are built under an archivist account, so the credit sits in the notes today. A free-text
+> "credit" field on the unit would do.
+>
+> One thing we noticed: our sandbox key owns no units, so `owner=me` returned an empty list. We will make a few private
+> test units and try again.
+
+### Owner decisions needed
+
+- Items 1 to 7 are fixes with no rules judgment; say go and they are built test-first on this branch.
+- Item 10: wanted at all? Suggest the BV-breakdown use first (it speeds section 4).
+- Send the reply, or change it.
