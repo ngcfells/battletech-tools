@@ -15,6 +15,7 @@ import {
     determineAcesBehavior,
     evaluateAcesStrategy,
     findAcesCard,
+    findAcesCommandCard,
     IAcesCandidate,
     IAcesUnitStats,
     identifyAcesCombatTarget,
@@ -344,5 +345,29 @@ describe("Aces card lookup", () => {
         expect( findAcesCard( [ acesSampleSniper475, acesSampleBrawler383 ], "Sniper", 475 )!.id ).toBe( acesSampleSniper475.id );
         expect( findAcesCard( [ acesSampleSniper475 ], "", 475 ) ).not.toBeNull();
         expect( findAcesCard( [ acesSampleSniper475 ], "Brawler", 475 ) ).toBeNull();
+    });
+});
+
+describe("Aces Command card lookup", () => {
+    const cards = [ acesSampleStarCaptainB, acesSampleMechWarriorC ];
+    it("matches a sortie deck name that holds the deck and the faction", () => {
+        // Sortie text: "MechWarrior, Clan Jade Falcon"; the library card stores deck and faction apart.
+        expect( findAcesCommandCard( cards, "C", "MechWarrior, Clan Jade Falcon", "" )!.id ).toBe( acesSampleMechWarriorC.id );
+        expect( findAcesCommandCard( cards, "C", " mechwarrior  clan jade falcon ", "" )!.id ).toBe( acesSampleMechWarriorC.id );
+        expect( findAcesCommandCard( cards, "C", "MechWarrior deck", "" )!.id ).toBe( acesSampleMechWarriorC.id );
+    });
+    it("still matches the plain deck name, the saved id, and a blank deck", () => {
+        expect( findAcesCommandCard( cards, "B", "Star Captain", "" )!.id ).toBe( acesSampleStarCaptainB.id );
+        expect( findAcesCommandCard( cards, "C", "Anything", acesSampleMechWarriorC.id )!.id ).toBe( acesSampleMechWarriorC.id );
+        expect( findAcesCommandCard( cards, "B", "", "" )!.id ).toBe( acesSampleStarCaptainB.id );
+    });
+    it("falls back to the only card with that letter, and returns null when the letter is missing", () => {
+        expect( findAcesCommandCard( cards, "C", "Some Other Deck", "" )!.id ).toBe( acesSampleMechWarriorC.id );
+        expect( findAcesCommandCard( cards, "D", "MechWarrior", "" ) ).toBeNull();
+    });
+    it("does not guess between several cards with the same letter", () => {
+        const other = { ...acesSampleMechWarriorC, id: "other-c", deck: "Star Colonel", faction: "" };
+        expect( findAcesCommandCard( [ acesSampleMechWarriorC, other ], "C", "Unknown", "" ) ).toBeNull();
+        expect( findAcesCommandCard( [ acesSampleMechWarriorC, other ], "C", "Star Colonel", "" )!.id ).toBe( "other-c" );
     });
 });

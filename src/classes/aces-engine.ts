@@ -820,6 +820,31 @@ export const acesBehaviorLabel = ( behavior: string ): string => {
     return acesBehaviorIds.indexOf( behavior as TAcesBehavior ) > -1 ? capitalize( behavior ) : behavior;
 }
 
+const plainWords = ( text: string ): string => text.toLowerCase().replace( /[^a-z0-9]+/g, " " ).trim();
+
+/**
+ * Finds the face-up Command card in a library. A saved card id wins when its letter still matches. Otherwise the
+ * deck name decides: a sortie writes "MechWarrior, Clan Jade Falcon" while the library keeps the deck and faction
+ * apart, so the name matches when it equals the deck, "deck faction", or starts with the deck name as whole words.
+ * A name that matches nothing falls back to the only card with that letter; with several, nothing is guessed.
+ */
+export const findAcesCommandCard = ( cards: IAcesCommandCard[], letter: string, deckName: string, cardId: string = "" ): IAcesCommandCard | null => {
+    const sameLetter = cards.filter( ( card ) => card.letter === letter );
+    const byId = cardId ? sameLetter.find( ( card ) => card.id === cardId ) : null;
+    if( byId ) return byId;
+    const wanted = plainWords( deckName.replace( /\bdeck\b/gi, " " ) );
+    if( !wanted ) return sameLetter[0] || null;
+    const matches = sameLetter.filter( ( card ) => {
+        const deck = plainWords( card.deck );
+        if( !deck ) return false;
+        return wanted === deck || wanted === plainWords( card.deck + " " + card.faction ) || wanted.indexOf( deck + " " ) === 0;
+    } );
+    // The longest deck name is the most specific ("Star Captain" over "Star").
+    matches.sort( ( a, b ) => b.deck.length - a.deck.length );
+    if( matches.length > 0 ) return matches[0];
+    return sameLetter.length === 1 ? sameLetter[0] : null;
+}
+
 /** Finds the card in a library whose deck and movement priority match what's showing on the table. */
 export const findAcesCard = ( cards: IAcesCard[], deck: string, priority: number | null ): IAcesCard | null => {
     if( priority === null ) return null;

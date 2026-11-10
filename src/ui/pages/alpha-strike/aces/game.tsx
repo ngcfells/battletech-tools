@@ -15,6 +15,7 @@ import {
     getAcesOrdersForPhase,
     getAcesUnitStats,
     newAcesRngState,
+    findAcesCommandCard,
     rollAcesCriticalHit,
     rollAcesMotiveDamage,
     TAcesRuleset,
@@ -133,11 +134,7 @@ export default class AcesGamePage extends React.Component<IAcesGamePageProps, IA
     /** The face-up Command card, when the players entered their Command deck in the library. */
     private _commandCard = (): IAcesCommandCard | null => {
         const game = this.state.game!;
-        const cards = this.state.library.commandCards;
-        const byId = game.commandCardId ? cards.find( ( card ) => card.id === game.commandCardId ) : null;
-        if( byId && byId.letter === game.commandCard ) return byId;
-        const deck = game.commandDeck.trim().toLowerCase();
-        return cards.find( ( card ) => card.letter === game.commandCard && ( !deck || card.deck.toLowerCase() === deck ) ) || null;
+        return findAcesCommandCard( this.state.library.commandCards, game.commandCard, game.commandDeck, game.commandCardId );
     }
 
     private _specialOrder = ( kind: TAcesSpecialOrderKind ): IAcesSpecialOrder | null => {
@@ -573,7 +570,14 @@ export default class AcesGamePage extends React.Component<IAcesGamePageProps, IA
     private _renderCommandOrders = ( phase: TAcesPhase ): JSX.Element | null => {
         const game = this.state.game!;
         const card = this._commandCard();
-        if( !card ) return null;
+        if( !card ) {
+            if( !game.commandDeck.trim() ) return null;
+            return (
+                <div className="aces-command-orders alert alert-warning">
+                    No Command card {game.commandCard} in the card library matches the deck "{game.commandDeck}". Enter that card in the library, or fix the Command deck name in setup. The red, yellow and blue lists are skipped until then.
+                </div>
+            );
+        }
         const orders = getAcesOrdersForPhase( card, phase );
         const units = game.getLiveAutomatedUnits().map( ( unit ) => {
             const state = game.getUnitState( unit.uuid );
