@@ -260,3 +260,24 @@ describe("Aces game: card library, sorties, dice and transport", () => {
         expect( inside.isWrecked() ).toBe( true );
     });
 });
+
+describe("Aces player units able to move (#630)", () => {
+    it("counts the roster units still standing and able to move", () => {
+        const roster = new AlphaStrikeForce();
+        for( let index = 0; index < 6; index++ ) roster.addToGroup( makeUnit( "Mech " + index, "Brawler", 30 ), 0 );
+        const game = makeGame( [ makeUnit( "Bot", "Brawler", 30 ) ] );
+        game.playerUnitsAbleToMove = 4;
+        game.setPlayerUnitsFromForce( roster );
+        expect( game.playerUnitsAbleToMove ).toBe( 6 );
+
+        roster.groups[0].members[0].currentHeat = 4; // shut down, so immobile
+        game.setPlayerUnitsFromForce( roster );
+        expect( game.playerUnitsAbleToMove ).toBe( 5 );
+    });
+    it("leaves the number alone when there is no roster", () => {
+        const game = makeGame( [ makeUnit( "Bot", "Brawler", 30 ) ] );
+        game.playerUnitsAbleToMove = 3;
+        game.setPlayerUnitsFromForce( null );
+        expect( game.playerUnitsAbleToMove ).toBe( 3 );
+    });
+});

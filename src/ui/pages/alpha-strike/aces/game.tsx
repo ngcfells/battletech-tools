@@ -501,6 +501,8 @@ export default class AcesGamePage extends React.Component<IAcesGamePageProps, IA
                 <button className="btn btn-primary btn-sm" onClick={() => this._update( ( g ) => {
                     if( g.phase === "combat" ) applyAcesPlayerForceRound( this.props.appGlobals );
                     g.nextPhase();
+                    // The player's count follows the roster each time Movement starts; it stays editable.
+                    if( g.phase === "movement" ) g.setPlayerUnitsFromForce( this.props.appGlobals.currentASForce );
                     // Damage lands at the start of the End Phase; carried infantry go down with their transport (Aces p.5).
                     for( const unit of g.getAutomatedUnits() ) {
                         if( unit.isWrecked() && g.getPassengers( unit.uuid ).length > 0 ) g.handleTransportDestroyed( unit.uuid );

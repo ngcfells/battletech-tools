@@ -615,6 +615,18 @@ export class AcesGame {
         } ).length;
     }
 
+    /** Sets the player move count from the roster: units still standing that are not immobile. No roster leaves it as typed. */
+    public setPlayerUnitsFromForce( force: AlphaStrikeForce | null ) {
+        if( !force ) return;
+        let count = 0;
+        for( const group of force.groups ) {
+            for( const unit of group.members ) {
+                if( !unit.isWrecked() && !unit.immobile ) count++;
+            }
+        }
+        this.playerUnitsAbleToMove = count;
+    }
+
     public getMoveOrder(): IAcesMoveStep[][] {
         if( !this.initiativeWinner ) return [];
         const loser: TAcesSide = this.initiativeWinner === "player" ? "automated" : "player";
