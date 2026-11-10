@@ -15,6 +15,12 @@ import {
     acesTextToPlain,
 } from "../data/aces-cards";
 import {
+    asceAerospaceCriticalTable,
+    asceDropShipCriticalTable,
+    asceMechCriticalTable,
+    asceProtoMechCriticalTable,
+    asceVehicleCriticalTable,
+    TAsceCritical,
     acesMotiveSystemsTable,
     acesVehicleCriticalHitTable,
     ACES_MAX_AUTOMATED_TARGET_NUMBER,
@@ -738,8 +744,22 @@ export const evaluateAcesStrategy = (
 
 export interface IAcesCriticalResult {
     roll: number | null;
-    effect: TAcesVehicleCritical | "weapon" | "use-asce-table";
+    effect: TAcesVehicleCritical | TAsceCritical | "weapon" | "use-asce-table";
     label: string;
+    /** An IndustrialMech rolls twice under ASCE (p.50): the second result. */
+    also?: IAcesCriticalResult;
+}
+
+/** The ASCE table for a unit type, or null when the book prints none (ships, buildings). */
+const asceTableFor = ( type: string ) => {
+    switch( type ) {
+        case "BM": case "IM": return asceMechCriticalTable;
+        case "PM": return asceProtoMechCriticalTable;
+        case "CV": case "SV": return asceVehicleCriticalTable;
+        case "AF": case "CF": return asceAerospaceCriticalTable;
+        case "SC": case "DS": case "DA": return asceDropShipCriticalTable;
+        default: return null;
+    }
 }
 
 /**
@@ -763,8 +783,22 @@ export const rollAcesCriticalHit = (
             return { roll: roll, effect: row.effect, label: row.label + " (Aces p.4)" };
         }
     }
+    // Alpha Strike: Commander's Edition (pp.49-50, 187). Infantry and battle armor never roll.
+    if( type === "CI" || type === "BA" ) return { roll: null, effect: "none", label: "No critical hit (infantry and battle armor never take one, ASCE p.49)" };
+    const table = asceTableFor( type );
+    if( !table ) {
+        const roll = rollAces2D6( rng );
+        return { roll: roll, effect: "use-asce-table", label: "Look up " + roll + " on the Alpha Strike: Commander's Edition critical hit table" };
+    }
     const roll = rollAces2D6( rng );
-    return { roll: roll, effect: "use-asce-table", label: "Look up " + roll + " on the Alpha Strike: Commander's Edition critical hit table" };
+    const row = lookupAcesTable( table, roll );
+    const result: IAcesCriticalResult = { roll: roll, effect: row.effect, label: row.label + " (ASCE p." + ( table === asceMechCriticalTable || table === asceProtoMechCriticalTable || table === asceVehicleCriticalTable ? "50" : "187" ) + ")" };
+    if( type === "IM" ) {
+        const secondRoll = rollAces2D6( rng );
+        const second = lookupAcesTable( table, secondRoll );
+        result.also = { roll: secondRoll, effect: second.effect, label: second.label + " (second roll, IndustrialMech)" };
+    }
+    return result;
 }
 
 /** Motive systems damage roll under "aces" (Aces p.4); hover and wheeled units add 1. */

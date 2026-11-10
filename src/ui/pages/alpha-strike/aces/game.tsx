@@ -204,8 +204,11 @@ export default class AcesGamePage extends React.Component<IAcesGamePageProps, IA
             const state = game.getUnitState( unit.uuid );
             const result = rollAcesCriticalHit( game.ruleset, unit.type, state.isEmplacement, game.rng );
             let message = this._name( unit ) + " critical hit" + ( result.roll !== null ? " (" + result.roll + ")" : "" ) + ": " + result.label + ".";
-            if( result.effect !== "use-asce-table" && !applyAcesCriticalToUnit( unit, result.effect ) ) {
-                message += " Mark it on the card by hand.";
+            // "none" needs no marking; results the card has no box for (ammo, crew, destroyed) are marked by hand.
+            const mark = ( effect: string ): string => effect === "use-asce-table" || effect === "none" || applyAcesCriticalToUnit( unit, effect ) ? "" : " Mark it on the card by hand.";
+            message += mark( result.effect );
+            if( result.also ) {
+                message += " Second roll (" + result.also.roll + "): " + result.also.label + "." + mark( result.also.effect );
             }
             game.addLog( message );
             this.setState({ critMessage: message });

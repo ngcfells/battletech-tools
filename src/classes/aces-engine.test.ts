@@ -34,6 +34,7 @@ import {
     shuffleAces,
 } from "./aces-engine";
 import { newAcesBehaviorColumn } from "../data/aces-cards";
+import { asceAerospaceCriticalTable, asceDropShipCriticalTable, asceMechCriticalTable, asceProtoMechCriticalTable, asceVehicleCriticalTable, lookupAcesTable } from "../data/aces-rules";
 import { getAcesEffectivePriority, IAcesActivationInput } from "./aces-helpers";
 import { AlphaStrikeUnit } from "./alpha-strike-unit";
 
@@ -324,8 +325,35 @@ describe("Aces rules switch: critical hits (Aces pp.4-6)", () => {
     it("vehicles use the Aces table; everything under ASCE uses the Commander's Edition table", () => {
         const vehicle = rollAcesCriticalHit( "aces", "CV", false, newAcesRngState( 1 ) );
         expect( vehicle.effect ).not.toBe( "use-asce-table" );
-        expect( rollAcesCriticalHit( "asce", "CV", false, newAcesRngState( 1 ) ).effect ).toBe( "use-asce-table" );
-        expect( rollAcesCriticalHit( "asce", "CI", false, newAcesRngState( 1 ) ).effect ).toBe( "use-asce-table" );
+        // ASCE tables are built in (p.50, p.187): no more "look it up".
+        for( const type of [ "BM", "IM", "PM", "CV", "SV", "AF", "CF", "SC", "DS" ] ) {
+            const result = rollAcesCriticalHit( "asce", type, false, newAcesRngState( 1 ) );
+            expect( result.effect, type ).not.toBe( "use-asce-table" );
+            expect( result.roll, type ).not.toBeNull();
+        }
+        // Infantry and battle armor never roll for a critical hit under ASCE (p.49).
+        const infantry = rollAcesCriticalHit( "asce", "CI", false, newAcesRngState( 1 ) );
+        expect( infantry.effect ).toBe( "none" );
+        expect( infantry.roll ).toBeNull();
+        // Ships and anything else the book prints no table for stay a lookup.
+        expect( rollAcesCriticalHit( "asce", "WS", false, newAcesRngState( 1 ) ).effect ).toBe( "use-asce-table" );
+    });
+
+    it("rolls the ASCE column for the unit type, and an IndustrialMech rolls twice (p.50)", () => {
+        expect( lookupAcesTable( asceMechCriticalTable, 2 ).effect ).toBe( "ammo" );
+        expect( lookupAcesTable( asceMechCriticalTable, 12 ).effect ).toBe( "destroyed" );
+        expect( lookupAcesTable( asceProtoMechCriticalTable, 10 ).effect ).toBe( "destroyed" );
+        expect( lookupAcesTable( asceVehicleCriticalTable, 12 ).effect ).toBe( "engine" );
+        expect( lookupAcesTable( asceVehicleCriticalTable, 9 ).effect ).toBe( "weapon" );
+        expect( lookupAcesTable( asceAerospaceCriticalTable, 12 ).effect ).toBe( "crew-killed" );
+        expect( lookupAcesTable( asceDropShipCriticalTable, 7 ).effect ).toBe( "thruster" );
+        const rng = newAcesRngState( 5 );
+        const industrial = rollAcesCriticalHit( "asce", "IM", false, rng );
+        expect( rng.calls ).toBe( 4 );
+        expect( industrial.also ).toBeDefined();
+        const mech = newAcesRngState( 5 );
+        rollAcesCriticalHit( "asce", "BM", false, mech );
+        expect( mech.calls ).toBe( 2 );
     });
 
     it("marks a critical hit for the End Phase", () => {
