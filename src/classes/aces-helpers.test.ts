@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { AlphaStrikeUnit } from "./alpha-strike-unit";
 import {
     acesCommandInitiativeModifier,
     calculateAcesToHit,
@@ -6,6 +7,7 @@ import {
     getAcesEffectivePriority,
     getAcesFrontLoadedMoveOrder,
     getAcesInitiativeModifiers,
+    getAcesUnitLabels,
     getAcesRangeBracket,
     sortAcesActivation,
     splitAcesDeck,
@@ -282,5 +284,34 @@ describe("Aces Initiative (Aces p.32)", () => {
         expect( acesCommandInitiativeModifier( [ order( "initiative", "Assign the MOVE LAST token to your unit with ([highest] PV)." ) ] ) ).toBe( 0 );
         expect( acesCommandInitiativeModifier( [ order( "movement", "+2 Initiative" ) ] ) ).toBe( 0 );
         expect( getAcesInitiativeModifiers( false, false, false, 2 ) ).toEqual( [ { label: "Command card Initiative order", value: 2 } ] );
+    });
+});
+
+describe("Aces unit labels (#630)", () => {
+    const named = ( name: string, customName: string = "" ): AlphaStrikeUnit => {
+        const unit = new AlphaStrikeUnit();
+        unit.name = name;
+        unit.customName = customName;
+        return unit;
+    };
+    it("numbers duplicate names in force order and leaves single names alone", () => {
+        const first = named( "Fulcrum Heavy Hovertank" );
+        const lone = named( "Rifleman RFL-3N" );
+        const second = named( "Fulcrum Heavy Hovertank" );
+        const labels = getAcesUnitLabels( [ first, lone, second ] );
+        expect( labels.get( first.uuid ) ).toBe( "Fulcrum Heavy Hovertank (1)" );
+        expect( labels.get( second.uuid ) ).toBe( "Fulcrum Heavy Hovertank (2)" );
+        expect( labels.get( lone.uuid ) ).toBe( "Rifleman RFL-3N" );
+    });
+    it("keeps the same numbers when the list is sorted a different way", () => {
+        const first = named( "Elemental" );
+        const second = named( "Elemental" );
+        const forward = getAcesUnitLabels( [ first, second ] );
+        expect( forward.get( first.uuid ) ).toBe( "Elemental (1)" );
+        expect( forward.get( second.uuid ) ).toBe( "Elemental (2)" );
+    });
+    it("uses the custom name when there is one", () => {
+        const unit = named( "Atlas AS7-D", "Old Bessie" );
+        expect( getAcesUnitLabels( [ unit ] ).get( unit.uuid ) ).toBe( "Old Bessie (Atlas AS7-D)" );
     });
 });

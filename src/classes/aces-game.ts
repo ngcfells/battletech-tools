@@ -6,6 +6,7 @@ import {
     getAcesCrippledReasonsForUnit,
     getAcesFrontLoadedMoveOrder,
     getAcesInitiativeModifiers,
+    getAcesUnitLabels,
     IAcesModifier,
     IAcesMoveStep,
     sortAcesActivation,
@@ -529,7 +530,7 @@ export class AcesGame {
         state.cannotMove = true;
         state.moved = true;
         state.token = null;
-        this.addLog( ( passenger.customName || passenger.name ) + " mounts " + ( transport.customName || transport.name ) + ". The transport can't Sprint this turn." );
+        this.addLog( this.getUnitLabel( passenger ) + " mounts " + this.getUnitLabel( transport ) + ". The transport can't Sprint this turn." );
         return check;
     }
 
@@ -544,7 +545,7 @@ export class AcesGame {
         state.moved = true;
         const move = passenger.move.length > 0 ? Math.ceil( passenger.move[0].currentMove / 2 ) : 0;
         const reason = "Dismounts in base contact, then may move up to " + move + "\" (Ground, or Jump from an OMNI unit).";
-        this.addLog( ( passenger.customName || passenger.name ) + ": " + reason );
+        this.addLog( this.getUnitLabel( passenger ) + ": " + reason );
         return { ok: true, reason: reason };
     }
 
@@ -559,7 +560,7 @@ export class AcesGame {
             const state = this.getUnitState( passenger.uuid );
             state.transportedBy = "";
             state.cannotMove = false;
-            const name = passenger.customName || passenger.name;
+            const name = this.getUnitLabel( passenger );
             if( transport && transport.hasAbility( "OMNI" ) && passenger.type.toUpperCase() === "BA" ) {
                 rv.push( name + " is placed in base contact with the destroyed Omni unit." );
             } else {
@@ -613,6 +614,11 @@ export class AcesGame {
             const state = this.getUnitState( unit.uuid );
             return !state.cannotMove && !state.isEmplacement && !state.transportedBy && !unit.immobile;
         } ).length;
+    }
+
+    /** A unit name for the log and messages: same-name automated units are numbered in force order. */
+    public getUnitLabel( unit: AlphaStrikeUnit ): string {
+        return getAcesUnitLabels( this.getAutomatedUnits() ).get( unit.uuid ) || ( unit.customName || unit.name );
     }
 
     /** Sets the player move count from the roster: units still standing that are not immobile. No roster leaves it as typed. */
@@ -674,7 +680,7 @@ export class AcesGame {
             const state = this.getUnitState( unit.uuid );
             return {
                 id: unit.uuid,
-                name: unit.customName || unit.name,
+                name: this.getUnitLabel( unit ),
                 stats: getAcesUnitStats( unit ),
                 eligible: !state.moved && !state.cannotMove && !state.forcedWithdrawal && !state.fleeing && !state.isEmplacement && !state.transportedBy,
             };
@@ -700,7 +706,7 @@ export class AcesGame {
                 if( this.forcedWithdrawal && !state.forcedWithdrawal && !state.isEmplacement ) {
                     state.forcedWithdrawal = true;
                     state.token = null;
-                    this.addLog( ( unit.customName || unit.name ) + " is crippled and under Forced Withdrawal." );
+                    this.addLog( this.getUnitLabel( unit ) + " is crippled and under Forced Withdrawal." );
                 }
             }
         }

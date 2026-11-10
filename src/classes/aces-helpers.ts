@@ -497,3 +497,23 @@ export const getAcesInitiativeModifiers = (
     if( commanderDestroyed ) rv.push( { label: "Force Commander destroyed", value: ACES_INITIATIVE_COMMANDER_DESTROYED_MODIFIER } );
     return rv;
 }
+
+/**
+ * Display names for a list of units. Units that share a name are numbered in the order given ("Fulcrum Heavy
+ * Hovertank (1)", "(2)"), so two of the same unit can be told apart however a list is sorted. Pass the force in
+ * its own order, not a priority-sorted queue.
+ */
+export const getAcesUnitLabels = ( units: AlphaStrikeUnit[] ): Map<string, string> => {
+    const base = ( unit: AlphaStrikeUnit ): string => unit.customName ? unit.customName + " (" + unit.name + ")" : unit.name;
+    const totals = new Map<string, number>();
+    for( const unit of units ) totals.set( base( unit ), ( totals.get( base( unit ) ) || 0 ) + 1 );
+    const seen = new Map<string, number>();
+    const rv = new Map<string, string>();
+    for( const unit of units ) {
+        const name = base( unit );
+        const number = ( seen.get( name ) || 0 ) + 1;
+        seen.set( name, number );
+        rv.set( unit.uuid, totals.get( name )! > 1 ? name + " (" + number + ")" : name );
+    }
+    return rv;
+}
