@@ -196,7 +196,6 @@ export default class AlphaStrikeAddUnitsView extends React.Component<IAlphaStrik
         data = filterMULByStanding( data, this.props.appGlobals.appSettings.alphaStrikeSearchStandings );
 
         if(this.latestSearchId !== currentSearchId) {
-          console.log("updateSearchResults: searchId mismatch, aborting");
           // Don't set isSearching to false here - a newer search is running
           return;
         }

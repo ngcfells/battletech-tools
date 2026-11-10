@@ -80,11 +80,12 @@ export default class AlphaStrikeForce {
         mulUnit: AlphaStrikeUnit,
         groupIndex: number = 0
     ) {
-        if( this.groups.length < groupIndex)  {
-            groupIndex = this.groups.length
-        }
         if( this.groups.length === 0 ) {
             this.groups.push(new AlphaStrikeGroup());
+        }
+        // An index past the last group (a group removed since the page drew) adds to the last one, not nowhere.
+        if( groupIndex >= this.groups.length || groupIndex < 0 )  {
+            groupIndex = this.groups.length - 1;
         }
         if( this.groups.length > groupIndex && this.groups[groupIndex]) {
             // let exportData = mulUnit.export();
@@ -158,6 +159,8 @@ export default class AlphaStrikeForce {
     public removeGroup(asGroupIndex: number) {
         if( this.groups.length > asGroupIndex && this.groups[asGroupIndex]) {
             this.groups.splice( asGroupIndex, 1);
+            // A Nova or Mechanized bonus rests on another group's transports, which may just have left.
+            this.validateAllGroups();
         }
     }
 
@@ -248,6 +251,10 @@ export default class AlphaStrikeForce {
 
         if( typeof(importObj.phase) !== "undefined" ) {
             this.phase = importObj.phase;
+        }
+        // The turn is exported beside the phase, so it is read back too (older saves, or a bad value, start at 1).
+        if( typeof importObj.turn === "number" && Number.isFinite(importObj.turn) && importObj.turn >= 1 ) {
+            this.turn = Math.floor(importObj.turn);
         }
 
         this.quirksInPlay = !!importObj.quirksInPlay;

@@ -120,6 +120,10 @@ function parseMULSearchTokens(searchTerm: string): IMULSearchTokens {
         if ((match = term.match(/^(\w+)(>=|<=|!=|>|<|=)(.+)$/))) {
             const [, field, op, valueStr] = match;
             const val = parseInt(valueStr);
+            // "pv>x" has no number to compare with: a NaN bound would hide every unit, so the term is dropped.
+            if (Number.isNaN(val)) {
+                continue;
+            }
 
             switch (field) {
                 case "pv":
@@ -250,52 +254,12 @@ function parseMULSearchTokens(searchTerm: string): IMULSearchTokens {
             continue;
         }
 
-        switch (true) {
-            case term.startsWith("pv>"):
-                value = term.substring(3);
-                tokens.minPV = parseInt(value) + 1;
-                break;
-            case term.startsWith("pv<"):
-                value = term.substring(3);
-                tokens.maxPV = parseInt(value) - 1;
-                break;
-            case term.startsWith("pv="):
-                value = term.substring(3);
-                tokens.minPV = parseInt(value);
-                tokens.maxPV = parseInt(value);
-                break;
-            case term.startsWith("short>"):
-                value = term.includes("=") ? term.substring(7) : term.substring(6);
-                tokens.minDamage[0] = term.includes("=") ? parseInt(value) : parseInt(value) + 1;
-                break;
-            case term.startsWith("medium>"):
-                value = term.includes("=") ? term.substring(8) : term.substring(7);
-                tokens.minDamage[1] = term.includes("=") ? parseInt(value) : parseInt(value) + 1;
-                break;
-            case term.startsWith("long>"):
-                value = term.includes("=") ? term.substring(6) : term.substring(5);
-                tokens.minDamage[2] = term.includes("=") ? parseInt(value) : parseInt(value) + 1;
-                break;
-            case term.startsWith("armor>"):
-                value = term.includes("=") ? term.substring(7) : term.substring(6);
-                tokens.minArmorStructure[0] = term.includes("=") ? parseInt(value) : parseInt(value) + 1;
-                break;
-            case term.startsWith("structure>"):
-                value = term.includes("=") ? term.substring(11) : term.substring(10);
-                tokens.minArmorStructure[1] = term.includes("=") ? parseInt(value) : parseInt(value) + 1;
-                break;
-            case term.startsWith("intro>"):
-                value = term.includes("=") ? term.substring(7) : term.substring(6);
-                tokens.introDate[0] = term.includes("=") ? parseInt(value) : parseInt(value) + 1;
-                break;
-            case term.startsWith("intro<"):
-                value = term.includes("=") ? term.substring(7) : term.substring(6);
-                tokens.introDate[1] = term.includes("=") ? parseInt(value) : parseInt(value) - 1;
-                break;
-            default:
-                tokens.nameTerms.push(term);
-                break;
+        // An operator still being typed ("pv>", "short>=") has no value yet: it filters nothing, and is not a name.
+        if (/^\w+(>=|<=|!=|>|<|=)$/.test(term)) {
+            continue;
         }
+
+        tokens.nameTerms.push(term);
     }
 
     return tokens;
@@ -620,7 +584,6 @@ export async function getMULASSearchResults(
 
     const tokens = getMULSearchTokens(searchTerm, abilityFilters);
 
-    console.log('Searching...');
     if( offLine === false && CONST_MUL_API_ENABLED ) {
         try {
             let url = "https://masterunitlist.azurewebsites.net/Unit/QuickList?";
@@ -630,9 +593,9 @@ export async function getMULASSearchResults(
             }
 
             url += rulesNumbersURI.join("");
-            url += typesFilterURI.join();
-            url += techFilterURI.join();
-            url += roleFilterURI.join();
+            url += typesFilterURI.join("");
+            url += techFilterURI.join("");
+            url += roleFilterURI.join("");
             url += factionFilterURI.join("");
 
             if( tokens.abilitySearch.length > 0 ) {
@@ -782,8 +745,13 @@ export function getClusterHitsPerRoll(
     roll: number,
     numberCluster: number,
 ): number {
-    if( clusterHitsTable[ roll - 2 ] && clusterHitsTable[ roll - 2][ numberCluster - 2] ) {
-        return clusterHitsTable[ roll - 2][ numberCluster - 2];
+    // The table's columns are cluster sizes 2 to 30, then 40 (TW p.116): there is no column for 31 to 39.
+    if( numberCluster > 30 && numberCluster !== 40 ) {
+        return -1;
+    }
+    const column = numberCluster === 40 ? 29 : numberCluster - 2;
+    if( clusterHitsTable[ roll - 2 ] && clusterHitsTable[ roll - 2][ column ] ) {
+        return clusterHitsTable[ roll - 2][ column ];
     }
 
     return -1;

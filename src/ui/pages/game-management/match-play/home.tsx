@@ -54,7 +54,6 @@ export default class AlphaStrikeGameManagementHome extends React.Component<IAlph
             this.props.appGlobals.currentDeployments = generateScenarioDeployments(this.currentDeploymentSet, this.numberOfOptions);
             this.props.appGlobals.currentScenarios = generateAvailableScenarios(this.currentScenarioSet, this.numberOfOptions);
             this.props.appGlobals.currentTerrains = generateScenarioTerrains(this.currentTerrainSet, this.numberOfOptions);
-            console.log(this.props.appGlobals.currentTerrains);
             this.setState({updated: true});
         }
 

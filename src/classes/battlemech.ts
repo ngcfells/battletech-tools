@@ -12188,7 +12188,9 @@ export class BattleMech {
 
     public toggleHeatBubble( clickLocation: string, clickIndex: number ): void {
         // TODO ~~Any ideas on what this is supposed to be? RHS? https://www.sarna.net/wiki/Radical_Heat_Sink_System
-        console.log( "TODO mechOject toggleHeatBubble", clickLocation, clickIndex);
+        // Not implemented: the heat bubbles are display only for now.
+        void clickLocation;
+        void clickIndex;
     }
 
     public lifeSupportHits(): number {

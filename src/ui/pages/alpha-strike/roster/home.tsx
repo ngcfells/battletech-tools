@@ -75,7 +75,7 @@ export default class AlphaStrikeRosterHome extends React.Component<IHomeProps, I
         pack.members.forEach((member, index) => {
           const item = units.find((unit) => getMULDisplayName(unit).toLowerCase() === member.trim().toLowerCase());
           if( !item ) {
-            console.log("No match found for '" + member + "'");
+            console.warn("Force pack member not found in the bundled MUL: '" + member + "'");
             return;
           }
           const newUnit = new AlphaStrikeUnit();
