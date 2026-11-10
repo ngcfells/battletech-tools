@@ -16,10 +16,12 @@ import {
     getAcesUnitStats,
     newAcesRngState,
     findAcesCommandCard,
+    getAcesIdealTargets,
     rollAcesCriticalHit,
     rollAcesMotiveDamage,
     TAcesRuleset,
 } from '../../../../classes/aces-engine';
+import AcesIdealTargets from './_ideal-targets';
 import { getAcesUnitLabels, TAcesPriorityToken, TAcesSide } from '../../../../classes/aces-helpers';
 import { IAcesCardLibrary, IAcesCommandCard, IAcesSpecialOrder, newAcesCardLibrary, TAcesSpecialOrderKind } from '../../../../data/aces-cards';
 import AlphaStrikeForce from '../../../../classes/alpha-strike-force';
@@ -603,6 +605,7 @@ export default class AcesGamePage extends React.Component<IAcesGamePageProps, IA
         return (
             <div className="aces-command-orders">
                 <p><strong>Command card {card.deck} {card.letter}</strong></p>
+                <AcesIdealTargets targets={getAcesIdealTargets( this._enemies().map( ( enemy ) => ( { id: enemy.id, name: enemy.name, stats: enemy.stats } ) ), card )} />
                 {orders.length > 0 ? (
                     <ul>
                         {orders.map( ( order, index ) => {

@@ -16,6 +16,7 @@ import {
     evaluateAcesStrategy,
     findAcesCard,
     findAcesCommandCard,
+    getAcesIdealTargets,
     IAcesCandidate,
     IAcesUnitStats,
     identifyAcesCombatTarget,
@@ -345,6 +346,36 @@ describe("Aces card lookup", () => {
         expect( findAcesCard( [ acesSampleSniper475, acesSampleBrawler383 ], "Sniper", 475 )!.id ).toBe( acesSampleSniper475.id );
         expect( findAcesCard( [ acesSampleSniper475 ], "", 475 ) ).not.toBeNull();
         expect( findAcesCard( [ acesSampleSniper475 ], "Brawler", 475 ) ).toBeNull();
+    });
+});
+
+describe("Aces ideal targets on a Command card (#630)", () => {
+    it("works out the ideal unit for the red, yellow and blue lists", () => {
+        // Star Captain B. Red: lowest armor. Yellow: objective, highest armor lost. Blue: objective, lowest structure.
+        const units = [
+            enemy( "Locust", { armor: 2, structure: 3, "armor-lost": 0 } ),
+            enemy( "Atlas", { armor: 9, structure: 8, "armor-lost": 5 } ),
+            enemy( "Hunchback", { armor: 6, structure: 2, "armor-lost": 1 } ),
+        ];
+        const ideals = getAcesIdealTargets( units, acesSampleStarCaptainB );
+        expect( ideals.map( ( entry ) => entry.color ) ).toEqual( [ "red", "yellow", "blue" ] );
+        expect( ideals[0].ideal!.id ).toBe( "Locust" );
+        expect( ideals[1].ideal!.id ).toBe( "Atlas" );
+        expect( ideals[2].ideal!.id ).toBe( "Hunchback" );
+    });
+    it("says so when the units are tied on every line, and when a line needs the players", () => {
+        const twins = [ enemy( "A", {} ), enemy( "B", {} ) ];
+        const tied = getAcesIdealTargets( twins, acesSampleStarCaptainB );
+        expect( tied[0].ideal ).toBeNull();
+        expect( tied[0].tied.map( ( entry ) => entry.id ) ).toEqual( [ "A", "B" ] );
+
+        const judged = { ...acesSampleStarCaptainB, red: [ { text: "Attacked by ally this turn" } ] };
+        const asked = getAcesIdealTargets( twins, judged );
+        expect( asked[0].pending!.text ).toBe( "Attacked by ally this turn" );
+    });
+    it("gives nothing without a Command card or without units", () => {
+        expect( getAcesIdealTargets( [ enemy( "A", {} ) ], null ) ).toEqual( [] );
+        expect( getAcesIdealTargets( [], acesSampleStarCaptainB )[0].ideal ).toBeNull();
     });
 });
 

@@ -820,6 +820,37 @@ export const acesBehaviorLabel = ( behavior: string ): string => {
     return acesBehaviorIds.indexOf( behavior as TAcesBehavior ) > -1 ? capitalize( behavior ) : behavior;
 }
 
+export interface IAcesIdealTarget {
+    color: "red" | "yellow" | "blue";
+    /** The one unit the color list picks. */
+    ideal: IAcesCandidate | null;
+    /** Units still tied after the whole list. */
+    tied: IAcesCandidate[];
+    /** A judged line the players must answer before the list can pick. */
+    pending: IAcesPriorityRule | null;
+    trace: string[];
+}
+
+/**
+ * The ideal unit for each color list of the face-up Command card (Aces pp.12, 18), worked out over a set of units.
+ * The same lists the card reader expands when a priority line says "[red] command list".
+ */
+export const getAcesIdealTargets = (
+    candidates: IAcesCandidate[],
+    commandCard: IAcesCommandCard | null,
+    judgements: TAcesJudgements = {},
+): IAcesIdealTarget[] => {
+    if( !commandCard ) return [];
+    return ( [ "red", "yellow", "blue" ] as const ).map( ( color ) => {
+        const trace: string[] = [];
+        if( candidates.length === 0 ) return { color: color, ideal: null, tied: [], pending: null, trace: trace };
+        const result = narrowAcesCandidates( candidates, commandCard[color], null, judgements, trace );
+        if( result.pending ) return { color: color, ideal: null, tied: result.remaining, pending: result.pending, trace: trace };
+        if( result.remaining.length === 1 ) return { color: color, ideal: result.remaining[0], tied: [], pending: null, trace: trace };
+        return { color: color, ideal: null, tied: result.remaining, pending: null, trace: trace };
+    } );
+}
+
 const plainWords = ( text: string ): string => text.toLowerCase().replace( /[^a-z0-9]+/g, " " ).trim();
 
 /**
