@@ -171,6 +171,7 @@ export default class AcesGamePage extends React.Component<IAcesGamePageProps, IA
             // The Overheat Value is the card's own field; the ability list only carries OVL.
             ovRating: unit.overheat || getAcesAbilityValue( unit, "OV" ) || 0,
             currentHeat: unit.currentHeat,
+            damage: { short: unit.currentDamage.short, medium: unit.currentDamage.medium, long: unit.currentDamage.long, extreme: unit.currentDamage.extreme },
             fireControlHits: unit.fireControlHits.filter( ( hit ) => hit ).length,
         };
     }

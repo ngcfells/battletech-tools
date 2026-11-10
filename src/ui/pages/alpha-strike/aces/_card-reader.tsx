@@ -13,6 +13,7 @@ import {
     TAcesFilterAnswer,
     TAcesJudgements,
 } from '../../../../classes/aces-engine';
+import { getAcesDamageAtDistance } from '../../../../classes/aces-helpers';
 import {
     acesTextToPlain,
     IAcesCard,
@@ -44,6 +45,8 @@ export interface IAcesReaderUnit {
     ovRating: number;
     currentHeat: number;
     fireControlHits: number;
+    /** Current short, medium, long and extreme damage, so the damage at the target range can be worked out. */
+    damage?: { short: number, medium: number, long: number, extreme: number };
 }
 
 interface ICandidateInput {
@@ -75,6 +78,7 @@ export default class AcesCardReader extends React.Component<IAcesCardReaderProps
             altApplies: false,
             filterAnswers: [],
             damage: "",
+            damageTargetId: "",
             destroyedThisPhase: false,
             zeroMoveFromHeat: false,
             physical: { orderedByCard: false, baseContact: false, inMeleeRange: false, physicalDamage: "", },
@@ -317,7 +321,10 @@ export default class AcesCardReader extends React.Component<IAcesCardReaderProps
             out.push( <p key="indirect-order"><strong>The card says:</strong> with no enemies in line of sight, use the Indirect Fire special order card.</p> );
         }
 
-        const damage = toNumber( this.state.damage );
+        // Damage comes from the unit values at the distance entered for the target; typing overrides it.
+        const autoDamage = target && unit.damage ? getAcesDamageAtDistance( unit.damage, toNumber( this._input( target.id ).distance ) ) : null;
+        const typedDamage = this.state.damageTargetId === ( target ? target.id : "" ) ? toNumber( this.state.damage ) : null;
+        const damage = typedDamage !== null ? typedDamage : autoDamage;
         const ov = resolveAcesOverheat( card.combat.overheat, {
             isBattleMech: unit.isBattleMech,
             ovRating: unit.ovRating,
@@ -331,7 +338,7 @@ export default class AcesCardReader extends React.Component<IAcesCardReaderProps
         } );
         out.push(
             <div key="ov-inputs" className="aces-inline">
-                <label>Damage at this range: <input type="number" className="aces-number" value={this.state.damage} onChange={( e ) => this.setState( { damage: e.currentTarget.value } )} /></label>
+                <label>Damage at this range: <input type="number" className="aces-number" value={typedDamage !== null ? this.state.damage : ( autoDamage === null ? "" : autoDamage )} onChange={( e ) => this.setState( { damage: e.currentTarget.value, damageTargetId: target ? target.id : "" } )} /></label>
                 <label><input type="checkbox" checked={this.state.destroyedThisPhase} onChange={( e ) => this.setState( { destroyedThisPhase: e.currentTarget.checked } )} /> Destroyed this phase</label>
                 <label><input type="checkbox" checked={this.state.zeroMoveFromHeat} onChange={( e ) => this.setState( { zeroMoveFromHeat: e.currentTarget.checked } )} /> 0 Move from heat</label>
             </div>
@@ -434,6 +441,8 @@ interface IAcesCardReaderState {
     altApplies: boolean;
     filterAnswers: TAcesFilterAnswer[];
     damage: string;
+    /** The target the typed damage was entered for; another target goes back to the worked-out value. */
+    damageTargetId: string;
     destroyedThisPhase: boolean;
     zeroMoveFromHeat: boolean;
     physical: { orderedByCard: boolean, baseContact: boolean, inMeleeRange: boolean, physicalDamage: string };

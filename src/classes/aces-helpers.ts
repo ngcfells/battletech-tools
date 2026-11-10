@@ -499,6 +499,18 @@ export const getAcesInitiativeModifiers = (
 }
 
 /**
+ * The damage a unit deals at a distance, from its current short, medium, long and extreme values and the range
+ * brackets (ASCE p.44). Null when the distance is not known.
+ */
+export const getAcesDamageAtDistance = (
+    damage: { short: number, medium: number, long: number, extreme: number },
+    inches: number | null,
+): number | null => {
+    if( inches === null || isNaN( inches ) || inches < 0 ) return null;
+    return damage[getAcesRangeBracket( inches )];
+}
+
+/**
  * Display names for a list of units. Units that share a name are numbered in the order given ("Fulcrum Heavy
  * Hovertank (1)", "(2)"), so two of the same unit can be told apart however a list is sorted. Pass the force in
  * its own order, not a priority-sorted queue.

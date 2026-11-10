@@ -6,6 +6,7 @@ import {
     getAcesCrippledReasons,
     getAcesEffectivePriority,
     getAcesFrontLoadedMoveOrder,
+    getAcesDamageAtDistance,
     getAcesInitiativeModifiers,
     getAcesUnitLabels,
     getAcesRangeBracket,
@@ -284,6 +285,22 @@ describe("Aces Initiative (Aces p.32)", () => {
         expect( acesCommandInitiativeModifier( [ order( "initiative", "Assign the MOVE LAST token to your unit with ([highest] PV)." ) ] ) ).toBe( 0 );
         expect( acesCommandInitiativeModifier( [ order( "movement", "+2 Initiative" ) ] ) ).toBe( 0 );
         expect( getAcesInitiativeModifiers( false, false, false, 2 ) ).toEqual( [ { label: "Command card Initiative order", value: 2 } ] );
+    });
+});
+
+describe("Aces damage at a distance (#630)", () => {
+    const damage = { short: 5, medium: 4, long: 2, extreme: 1 };
+    it("picks the bracket for the distance in inches", () => {
+        expect( getAcesDamageAtDistance( damage, 0 ) ).toBe( 5 );
+        expect( getAcesDamageAtDistance( damage, 6 ) ).toBe( 5 );
+        expect( getAcesDamageAtDistance( damage, 7 ) ).toBe( 4 );
+        expect( getAcesDamageAtDistance( damage, 24 ) ).toBe( 4 );
+        expect( getAcesDamageAtDistance( damage, 25 ) ).toBe( 2 );
+        expect( getAcesDamageAtDistance( damage, 42 ) ).toBe( 2 );
+        expect( getAcesDamageAtDistance( damage, 43 ) ).toBe( 1 );
+    });
+    it("gives nothing when the distance is not known", () => {
+        expect( getAcesDamageAtDistance( damage, null ) ).toBeNull();
     });
 });
 
