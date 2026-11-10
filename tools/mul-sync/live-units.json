@@ -187934,8 +187934,8 @@
       }
     },
     "5Q1CFKF1AC": {
-      "summaryHash": "[\"Templar III\",\"TLR-2J \\\"Arthur\\\"\",1,4,6,3,85,53,2722,3146,7,[5,52,68],null]",
-      "detailScrapedAt": "2026-09-27T14:21:15.433Z",
+      "summaryHash": "[\"Templar III\",\"TLR-2J \\\"Arthur\\\"\",1,19,6,3,85,53,2722,3146,7,[5,52,68],null]",
+      "detailScrapedAt": "2026-11-09T13:35:23.445Z",
       "record": {
         "Id": 101616,
         "MulUnitKey": "5Q1CFKF1AC",
@@ -187996,11 +187996,11 @@
         "BFDamageLongMin": false,
         "BFDamageExtremeMin": false,
         "BFAbilities": "CASEII,MHQ 1,OMNI",
-        "SubTypeId": 4,
+        "SubTypeId": 19,
         "BFThreshold": 0,
         "Rules": "Advanced",
         "TRO": "SF",
-        "ImageUrl": "https://i.ibb.co/7QdYNjf/templar-iii-3150.png"
+        "ImageUrl": "https://masterunitlist.battletech.com/point-backs/unit-art/manual/templar-iii-9a5a42.webp"
       }
     },
     "5Q4ERRKJ5Z": {

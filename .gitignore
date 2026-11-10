@@ -76,6 +76,9 @@ robots.txt
 /tools/mul-sync/browser-state.json
 /tools/mul-sync/last-failure.png
 
+# mordel.net sync mirror: member designs from mordel.net. Never commit it; the repository is public.
+/tools/mordel-sync/.mirror/
+
 # ---------------------------------------------------------------------------
 # Ollama AI engine rules and helpers (root-anchored; the committed equivalents
 # under tools/ are intentional project tooling and must stay tracked)
