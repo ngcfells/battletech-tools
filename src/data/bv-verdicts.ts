@@ -24,7 +24,66 @@ export interface IBvVerdict {
 export const MECH_MATCHED_FLOOR = 3924;
 
 /** Keyed by bvVerdictKey. */
-export const BV_VERDICTS: Record<string, IBvVerdict> = {};
+export const BV_VERDICTS: Record<string, IBvVerdict> = {
+    // Bombard BMB-1X
+    "mul:103586": { verdict: "mul-suspect", note: "The list's value equals ours when the M-Pods are not counted as explosive. The Battle Value table marks the M-Pod to be treated as a Gauss weapon in the defensive rating, 1 point a slot (a mark added in a later printing).", cites: [{ source: "toaue", page: "195" }] },
+    // Hachiwara HCA-3T
+    "mul:100753": { verdict: "mul-suspect", note: "The list's value equals ours when the M-Pods are not counted as explosive. The Battle Value table marks the M-Pod to be treated as a Gauss weapon in the defensive rating, 1 point a slot (a mark added in a later printing).", cites: [{ source: "toaue", page: "195" }] },
+    // Hachiwara HCA-4T
+    "mul:107252": { verdict: "mul-suspect", note: "The list's value equals ours when the M-Pods are not counted as explosive. The Battle Value table marks the M-Pod to be treated as a Gauss weapon in the defensive rating, 1 point a slot (a mark added in a later printing).", cites: [{ source: "toaue", page: "195" }] },
+    // Hachiwara HCA-4U
+    "mul:103158": { verdict: "mul-suspect", note: "The list's value equals ours when the M-Pods are not counted as explosive. The Battle Value table marks the M-Pod to be treated as a Gauss weapon in the defensive rating, 1 point a slot (a mark added in a later printing).", cites: [{ source: "toaue", page: "195" }] },
+    // Juggernaut JG-R9TX1 'Leapin' Lil'
+    "mul:104550": { verdict: "mul-suspect", note: "The list's value equals ours when the M-Pods are not counted as explosive. The Battle Value table marks the M-Pod to be treated as a Gauss weapon in the defensive rating, 1 point a slot (a mark added in a later printing).", cites: [{ source: "toaue", page: "195" }] },
+    // Neanderthal NTL-AG
+    "mul:100409": { verdict: "mul-suspect", note: "The list's value equals ours when the M-Pods are not counted as explosive. The Battle Value table marks the M-Pod to be treated as a Gauss weapon in the defensive rating, 1 point a slot (a mark added in a later printing).", cites: [{ source: "toaue", page: "195" }] },
+    // Ronin SA-RN7
+    "mul:106825": { verdict: "mul-suspect", note: "The list's value equals ours when the M-Pods are not counted as explosive. The Battle Value table marks the M-Pod to be treated as a Gauss weapon in the defensive rating, 1 point a slot (a mark added in a later printing).", cites: [{ source: "toaue", page: "195" }] },
+    // Scarecrow UCU-F4
+    "mul:101662": { verdict: "mul-suspect", note: "The list's value equals ours when the B-Pods are not counted as explosive. The Battle Value table marks the B-Pod to be treated as a Gauss weapon in the defensive rating, 1 point a slot.", cites: [{ source: "tm", page: "317" }] },
+    // Thunderbolt TDR-9Nr
+    "mul:107546": { verdict: "mul-suspect", note: "The list's value equals ours when the B-Pods are not counted as explosive. The Battle Value table marks the B-Pod to be treated as a Gauss weapon in the defensive rating, 1 point a slot.", cites: [{ source: "tm", page: "317" }] },
+    // Minsk 2
+    "mul:108489": { verdict: "mul-suspect", note: "The list's value equals ours when the B-Pods are not counted as explosive. The Battle Value table marks the B-Pod to be treated as a Gauss weapon in the defensive rating, 1 point a slot.", cites: [{ source: "tm", page: "317" }] },
+    // Ti Ts'ang TSG-10L
+    "mul:100218": { verdict: "mul-suspect", note: "The list's value equals ours when the Chaff Pod is not counted as explosive. The Battle Value table marks the Chaff Pod to be treated as a Gauss weapon in the defensive rating, 1 point a slot.", cites: [{ source: "toaue", page: "195" }] },
+    // Berserker BRZ-C3
+    "mul:104953": { verdict: "mul-suspect", note: "The list's value equals ours when the physical weapon's Battle Value is worked from its damage without Triple-Strength Myomer. The table's footnote takes the damage after all modifications such as Triple-Strength Myomer, which doubles it.", cites: [{ source: "tm", page: "317" }, { source: "toaue", page: "195" }] },
+    // Black Knight BL-6-KNT (Ian)
+    "mul:105347": { verdict: "mul-suspect", note: "The list's value equals ours when the physical weapon's Battle Value is worked from its damage without Triple-Strength Myomer. The table's footnote takes the damage after all modifications such as Triple-Strength Myomer, which doubles it.", cites: [{ source: "tm", page: "317" }, { source: "toaue", page: "195" }] },
+    // Centurion CN9-YLW2 'Yen Lo Wang'
+    "mul:104260": { verdict: "mul-suspect", note: "The list's value equals ours when the physical weapon's Battle Value is worked from its damage without Triple-Strength Myomer. The table's footnote takes the damage after all modifications such as Triple-Strength Myomer, which doubles it.", cites: [{ source: "tm", page: "317" }, { source: "toaue", page: "195" }] },
+    // Charger CGR-3Kr
+    "mul:103187": { verdict: "mul-suspect", note: "The list's value equals ours when the physical weapon's Battle Value is worked from its damage without Triple-Strength Myomer. The table's footnote takes the damage after all modifications such as Triple-Strength Myomer, which doubles it.", cites: [{ source: "tm", page: "317" }, { source: "toaue", page: "195" }] },
+    // Mantis MTS-L
+    "mul:101745": { verdict: "mul-suspect", note: "The list's value equals ours when the physical weapon's Battle Value is worked from its damage without Triple-Strength Myomer. The table's footnote takes the damage after all modifications such as Triple-Strength Myomer, which doubles it.", cites: [{ source: "tm", page: "317" }, { source: "toaue", page: "195" }] },
+    // Atlas AS7-S2
+    "mul:105418": { verdict: "mul-suspect", note: "The list's value equals ours when every slot of the split Heavy Gauss Rifle is counted as explosive. The rule counts a Gauss weapon slot only in the center torso, legs or head, or where CASE does not protect it; the slots in the CASE-protected side torso are spared.", cites: [{ source: "tm", page: "302" }, { source: "tm", page: "303" }] },
+    // Banshee BNC-6S
+    "mul:100691": { verdict: "mul-suspect", note: "The list's value equals ours when every slot of the split Heavy Gauss Rifle is counted as explosive. The rule counts a Gauss weapon slot only in the center torso, legs or head, or where CASE does not protect it; the slots in the CASE-protected side torso are spared.", cites: [{ source: "tm", page: "302" }, { source: "tm", page: "303" }] },
+    // Caesar CES-4S
+    "mul:104378": { verdict: "mul-suspect", note: "The list's value equals ours when every slot of the split Heavy Gauss Rifle is counted as explosive. The rule counts a Gauss weapon slot only in the center torso, legs or head, or where CASE does not protect it; the slots in the CASE-protected side torso are spared.", cites: [{ source: "tm", page: "302" }, { source: "tm", page: "303" }] },
+    // Goliath GOL-4S
+    "mul:107105": { verdict: "mul-suspect", note: "The list's value equals ours when every slot of the split Heavy Gauss Rifle is counted as explosive. The rule counts a Gauss weapon slot only in the center torso, legs or head, or where CASE does not protect it; the slots in the CASE-protected side torso are spared.", cites: [{ source: "tm", page: "302" }, { source: "tm", page: "303" }] },
+    // Hauptmann HA1-OC
+    "mul:106426": { verdict: "mul-suspect", note: "The list's value equals ours when every slot of the split Heavy Gauss Rifle is counted as explosive. The rule counts a Gauss weapon slot only in the center torso, legs or head, or where CASE does not protect it; the slots in the CASE-protected side torso are spared.", cites: [{ source: "tm", page: "302" }, { source: "tm", page: "303" }] },
+    // Blood Asp (Star Adder) I
+    "mul:101859:I": { verdict: "mul-suspect", note: "The list's value equals ours when every slot of the split Heavy Gauss Rifle is counted as explosive. The rule counts a Gauss weapon slot only in the center torso, legs or head, or where CASE does not protect it; the slots in the CASE-protected side torso are spared.", cites: [{ source: "tm", page: "302" }, { source: "tm", page: "303" }] },
+    // Hellbringer (Loki) G
+    "mul:106138:G": { verdict: "mul-suspect", note: "The list's value equals ours when every slot of the split Heavy Gauss Rifle is counted as explosive. The rule counts a Gauss weapon slot only in the center torso, legs or head, or where CASE does not protect it; the slots in the CASE-protected side torso are spared.", cites: [{ source: "tm", page: "302" }, { source: "tm", page: "303" }] },
+    // Devastator DVS-2-EC
+    "mul:104733": { verdict: "mul-suspect", note: "The list's value equals ours when the Improved Gauss Rifles are not counted as explosive. The rule takes 1 point for each Gauss weapon slot that CASE does not protect.", cites: [{ source: "tm", page: "302" }, { source: "tm", page: "303" }] },
+    // Excalibur EXC-B2b-EC
+    "mul:103102": { verdict: "mul-suspect", note: "The list's value equals ours when the Improved Gauss Rifles are not counted as explosive. The rule takes 1 point for each Gauss weapon slot that CASE does not protect.", cites: [{ source: "tm", page: "302" }, { source: "tm", page: "303" }] },
+    // Awesome AWS-11V
+    "mul:107437": { verdict: "mul-suspect", note: "The list's value equals ours when the four slots of the ER PPC and its capacitor are counted as explosive. They sit behind CASE II, which spares them.", cites: [{ source: "toaue", page: "111" }, { source: "tm", page: "302" }, { source: "tm", page: "303" }] },
+    // Revenant UBM-1A
+    "mul:106408": { verdict: "mul-suspect", note: "The list's value equals ours when the final value is multiplied by 0.95. The rule for a Smart Robotic Control System multiplies it by 0.85.", cites: [{ source: "ioae", page: "187" }] },
+    // Wasp WSP-3L
+    "mul:103134": { verdict: "mul-suspect", note: "The list's value equals ours when every heat-generating weapon is halved. Heat efficiency here is zero or less, and the rule still counts the first weapon chosen at its full value before halving the rest.", cites: [{ source: "tm", page: "303" }] },
+    // Wulfen C
+    "mul:108098": { verdict: "mul-suspect", note: "The list's value equals ours when every heat-generating weapon is halved. Heat efficiency here is zero or less, and the rule still counts the first weapon chosen at its full value before halving the rest.", cites: [{ source: "tm", page: "303" }] },
+};
 
 /** "mul:<id>", "mul:<id>:<configuration>", or "file:<path>" where the Master Unit List has no entry. */
 export const bvVerdictKey = (miss: IBundledMiss): string => {
