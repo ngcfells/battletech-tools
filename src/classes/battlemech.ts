@@ -1509,7 +1509,7 @@ export class BattleMech {
 
         let modifiedMechTonnage = this.getTonnage();
 
-        // AES: +0.1 per arm, +0.2 (biped) or +0.4 (quad) when every leg has one (TO:AUE p.91).
+        // AES: +0.1 for each limb mounting one: arms, and every leg (biped 0.2, tripod 0.3, quad 0.4) (TO:AUE p.192).
         const aesMultiplier = this.getAESBVMultiplier();
         if (aesMultiplier !== 1) {
             modifiedMechTonnage *= aesMultiplier;
@@ -11099,7 +11099,10 @@ export class BattleMech {
         return item;
     }
 
-    /** BV weight factor from Actuator Enhancement Systems (TO:AUE p.91). */
+    /**
+     * BV weight factor from Actuator Enhancement Systems: 10 percent of the tonnage for each limb mounting one
+     * (TO:AUE p.192). Leg AES goes in every leg (TO:AUE p.91), so a biped gains 0.2, a tripod 0.3, a quad 0.4.
+     */
     public getAESBVMultiplier(): number {
         const aes = this._equipmentList.filter(item => item?.variableFormula === "aes-arm" || item?.variableFormula === "aes-leg");
         let multiplier = 1;
@@ -11109,7 +11112,7 @@ export class BattleMech {
         const quad = this.isQuad() || this.isQuadVee();
         const legs = quad ? ["ll", "rl", "fll", "frl"] : this.isTripod() ? ["ll", "rl", "cl"] : ["ll", "rl"];
         if (legs.every(leg => aes.some(item => item.variableFormula === "aes-leg" && item.location === leg))) {
-            multiplier += quad ? 0.4 : 0.2;
+            multiplier += 0.1 * legs.length;
         }
         return Math.round(multiplier * 100) / 100;
     }

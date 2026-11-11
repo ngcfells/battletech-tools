@@ -95,7 +95,7 @@ Code: `_calcBattleValue` and its helpers in `src/classes/battlemech.ts`.
 | `bv2.off.weapons.total` | TM p.304 | The running weapon rating. | Yes | |
 | `bv2.off.tonnage` | TM p.304 (step 8) | Add the 'Mech's tonnage. | Yes | |
 | `bv2.off.tonnage.tsm` | TM p.304; IO:AE p.186 | TSM: tonnage x 1.5. Industrial TSM: x 1.15. Prototype TSM: x 1.5. | Yes | |
-| `bv2.off.tonnage.aes` | TO:AUE p.192 | Add 10 percent of the tonnage for each limb with an AES. | Bipeds and quads yes; tripods no: Finding 4 | |
+| `bv2.off.tonnage.aes` | TO:AUE p.192 | Add 10 percent of the tonnage for each limb with an AES. | Yes, tripods since 2026-11-10: see Finding 4 | |
 | `bv2.off.speed` | TM p.304, table p.316; TO:AUE p.192 | Running MP + half the Jumping MP rounded up, with MASC, TSM (not industrial TSM), a supercharger or jump boosters at their most; then the table, or (1 + (that - 5) / 10) to the power 1.2, to two places. | Yes | |
 | `bv2.off.speed.lam` | IO:AE p.186 | A LAM adds half its AirMech flank MP, rounded normally, to its 'Mech running MP. | Yes | |
 | `bv2.off.rating` | TM p.304 | Weapon rating x speed factor. | Yes | |
@@ -153,6 +153,7 @@ changed while reading. Each is decided in the queue (plan Task 11) or by the own
    `provisional`.
 4. **AES on a tripod's legs.** TO:AUE p.192 adds 10 percent of the tonnage for each limb with an AES. Our code adds
    20 percent for a full set of legs unless the 'Mech is a quad (40), so a tripod's three legs give 20, not 30.
+   FIXED 2026-11-10: 10 percent for each leg, so a tripod's three give 30 (`getAESBVMultiplier`).
 5. **An armored gyro.** TO:AUE p.192 gives 5 points a slot for an item with no BV. Our code uses 5 percent of the
    gyro points for each slot; the comment says this follows MegaMek and SSW. Shown as `provisional`.
 6. **UMU and the jump bonus.** TO:AUE p.192 says to calculate a UMU as if it were jump jets. Our code leaves out the

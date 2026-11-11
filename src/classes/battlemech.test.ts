@@ -1522,6 +1522,18 @@ describe("BattleMech spread, movement and limb equipment", () => {
         expect(mech.getAESBVMultiplier()).toBe(1.1);
     });
 
+    it("adds 10 percent of the tonnage for each limb with an AES, a tripod's three legs too (TO:AUE p.192)", () => {
+        const legs = (type: string, locations: string[]) => {
+            const mech = build(50, 5);
+            mech.setType(type);
+            for (const location of locations) add(mech, "aes-leg", location);
+            return mech.getAESBVMultiplier();
+        };
+        expect(legs("biped", ["ll", "rl"])).toBe(1.2);
+        expect(legs("quad", ["ll", "rl", "fll", "frl"])).toBe(1.4);
+        expect(legs("tripod", ["ll", "rl", "cl"])).toBe(1.3);
+    });
+
     it("shows variable equipment sized for the 'Mech in the equipment picker", () => {
         const mech = build(75, 4);
         const masc = mech.getAvailableEquipmentByCatalog("is", false, 2).find(item => item.tag === "masc")!;
