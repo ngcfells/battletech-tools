@@ -59,7 +59,39 @@ export const BUNDLED_MECHS_NOTICE = COPYRIGHT_NOTICE + "Converted from " + SSW_C
 const MECH_CLASSES = ["BattleMech", "IndustrialMech"];
 const MECH_TYPE_IDS = [18, 20];
 export const isMULMech = (unit: IASMULUnit): boolean => MECH_CLASSES.includes(unit.Class) || MECH_TYPE_IDS.includes(unit.Type?.Id);
-type Leave = (reason: string, detail?: string) => void;
+/** A unit whose BV we work out differently from the Master Unit List (#599). `file` is the design file it was read from. */
+export interface IBundledMiss { mulId: number | null; name: string; config?: string; ours: number; mul: number; file: string }
+/** A miss before the build knows which file it came from. */
+type Miss = Omit<IBundledMiss, "file">;
+
+/** Where our BV and the MUL's agree and differ, for one unit type. Nothing is left out to improve a count. */
+export interface IBundledAccuracy {
+    unitType: "mechs";
+    /** MUL entries with a kept design. */
+    matched: number;
+    /** MUL entries with files, none matching: one row per MUL entry (and configuration). */
+    differs: IBundledMiss[];
+    /** Files that could not be compared: the import failed, or the MUL has no entry with a BV for them. */
+    notChecked: { importFailed: number; noMulEntry: number };
+}
+
+type Leave = (reason: string, detail?: string, misses?: Miss[]) => void;
+
+/**
+ * The accuracy record from a build's tallies. A MUL entry with a kept design is matched only, whatever other files
+ * differ; a differing entry is listed once (its first file by name); rows are sorted by name, then configuration.
+ */
+export function buildBundledAccuracy(matchedIds: Iterable<number>, misses: IBundledMiss[], notChecked: IBundledAccuracy["notChecked"]): IBundledAccuracy {
+    const matched = new Set(matchedIds);
+    const rows = new Map<string, IBundledMiss>();
+    for (const miss of [...misses].sort((a, b) => a.file.localeCompare(b.file))) {
+        if (miss.mulId !== null && matched.has(miss.mulId)) continue;
+        const key = miss.mulId !== null ? `mul:${miss.mulId}` : `file:${miss.file}:${miss.config ?? ""}`;
+        if (!rows.has(key)) rows.set(key, miss);
+    }
+    const differs = [...rows.values()].sort((a, b) => a.name.localeCompare(b.name) || (a.config ?? "").localeCompare(b.config ?? ""));
+    return { unitType: "mechs", matched: matched.size, differs, notChecked };
+}
 
 /**
  * A bundled design's standing, left out when canon: a file from an apocryphal folder (MegaMek's "Videogame
@@ -305,6 +337,8 @@ export interface IBundledBuild {
     leftOut: { file: string; reason: string; detail: string }[];
     /** Different submodels kept under a new model (#241). */
     renamed?: { file: string; from: string; to: string }[];
+    /** Where our BV and the MUL's differ (#599); 'Mechs only so far. */
+    accuracy?: IBundledAccuracy;
 }
 
 /**
@@ -320,12 +354,15 @@ function keepMatchingConfigurations(mech: BattleMech, xml: string, mul: Map<stri
         .flatMap(({ chassis, model, design }) => {
             const unit = [model, mech.getModelName() + " " + model].flatMap((variant) => getMULMatchKeys(chassis, variant)).map((key) => mul.get(key)).find((found) => found && found.BattleValue > 0);
             const expected = unit ? unit.BattleValue : fileBV.get(model);
-            return design.getBattleValue() === expected ? [] : [`${model}: BV ${design.getBattleValue()}, ${unit ? "MUL" : "file"} ${expected}`];
+            if (design.getBattleValue() === expected) return [];
+            const miss: Miss | undefined = unit ? { mulId: unit.Id, name: chassis, config: model, ours: design.getBattleValue(), mul: unit.BattleValue } : undefined;
+            return [{ detail: `${model}: BV ${design.getBattleValue()}, ${unit ? "MUL" : "file"} ${expected}`, miss }];
         });
-    if (wrong.length === names.length) { leave("BV differs from the MUL in every configuration", wrong.join("; ")); return false; }
-    for (const detail of wrong) {
-        leave("configuration BV differs from the MUL", detail);
-        mech.deleteOmniConfiguration(detail.slice(0, detail.indexOf(": BV ")));
+    const missesOf = (list: typeof wrong) => list.flatMap(({ miss }) => miss ? [miss] : []);
+    if (wrong.length === names.length) { leave("BV differs from the MUL in every configuration", wrong.map(({ detail }) => detail).join("; "), missesOf(wrong)); return false; }
+    for (const entry of wrong) {
+        leave("configuration BV differs from the MUL", entry.detail, missesOf([entry]));
+        mech.deleteOmniConfiguration(entry.detail.slice(0, entry.detail.indexOf(": BV ")));
     }
     return true;
 }
@@ -355,7 +392,7 @@ interface IPreparedEntry { chassis: string; model: string; summary: IDesignSumma
  */
 export interface IPreparedMech {
     /** Left out, or configurations dropped, for reasons that hold whatever the other files are. */
-    leaves: { reason: string; detail: string }[];
+    leaves: { reason: string; detail: string; misses?: Miss[] }[];
     rejected?: boolean;
     chassis?: string;
     model?: string;
@@ -406,7 +443,7 @@ function megaMekMechForm(mech: BattleMech, job: IMechJob, mtf: string): ICustomM
 /** Imports a file and runs the checks that need no other file. `model` renames it first (a renumbered submodel). */
 export function prepareMechFile(job: IMechJob, { mul, mul1ById }: IMechMUL, model?: string): IPreparedMech {
     const leaves: IPreparedMech["leaves"] = [];
-    const leave: Leave = (reason, detail = "") => { leaves.push({ reason, detail }); };
+    const leave: Leave = (reason, detail = "", misses) => { leaves.push({ reason, detail, ...(misses?.length ? { misses } : {}) }); };
     const { warn, log } = console;
     const random = Math.random;
     let failedAllocations = 0;
@@ -492,7 +529,7 @@ export function prepareMechFile(job: IMechJob, { mul, mul1ById }: IMechMUL, mode
  * bundled-build-runner.ts); by default each is prepared here, one after another.
  */
 export function buildBundledMechs(sswDir: string, mulDir: string, megamekDir?: string, canon: ICanonMech[] = [], mordelDir?: string,
-    prepare?: (job: IMechJob) => IPreparedMech): IBundledBuild & { customRecords: IASMULUnit[] } {
+    prepare?: (job: IMechJob) => IPreparedMech): IBundledBuild & { customRecords: IASMULUnit[]; accuracy: IBundledAccuracy } {
     const indexes = loadMechMUL(mulDir);
     const customIds = loadMegaMekCustomIds(mulDir, isMULMech);
     const customRecords: IASMULUnit[] = [];
@@ -502,6 +539,10 @@ export function buildBundledMechs(sswDir: string, mulDir: string, megamekDir?: s
     const kept: { header: Omit<IBundledDesignHeader, "id">; design: Record<string, unknown> }[] = [];
     const leftOut: IBundledBuild["leftOut"] = [];
     const renamed: NonNullable<IBundledBuild["renamed"]> = [];
+    // The accuracy record (#599): MUL entries with a kept design, every BV difference, and the files not compared.
+    const matchedIds = new Set<number>();
+    const missed: IBundledMiss[] = [];
+    const notChecked = { importFailed: 0, noMulEntry: 0 };
     // The kept design each match key and MUL id belongs to, with its layouts, to tell a duplicate from a variant.
     const taken = new Map<string, IKeptLayout>();
     const takenIds = new Map<number, IKeptLayout>();
@@ -514,8 +555,12 @@ export function buildBundledMechs(sswDir: string, mulDir: string, megamekDir?: s
      * none to check a new model by). True when the design is kept.
      */
     const keep = (job: IMechJob, design: IPreparedMech, leave: Leave, renaming = false): boolean => {
-        design.leaves.forEach(({ reason, detail }) => leave(reason, detail));
-        if (design.rejected) return false;
+        design.leaves.forEach(({ reason, detail, misses }) => leave(reason, detail, misses));
+        if (design.rejected) {
+            // Rejected with no BV difference recorded: the file never reached a comparison.
+            if (!renaming && !design.leaves.some(({ misses }) => misses?.length)) notChecked.importFailed++;
+            return false;
+        }
         const { chassis, model, tons, bv, entries } = design as Required<IPreparedMech>;
         const mulUnit = design.mulUnitId ? mul1ById.get(design.mulUnitId) : undefined;
         const own = entries.map((entry) => ({ keys: getMULMatchKeys(entry.chassis, entry.model), layout: { summary: entry.summary, name: entry.chassis + " " + entry.model } }));
@@ -553,8 +598,11 @@ export function buildBundledMechs(sswDir: string, mulDir: string, megamekDir?: s
         const matched = listed.filter((match) => match.unit!.BattleValue > 0);
         const wrong = matched.filter(({ entry, unit }) => entry.bv !== unit!.BattleValue);
         if (wrong.length > 0) {
-            leave("BV differs from the MUL", wrong.map(({ entry, unit }) => `${entry.model}: BV ${entry.bv}, MUL ${unit!.BattleValue}`).join("; ")); return false;
+            leave("BV differs from the MUL", wrong.map(({ entry, unit }) => `${entry.model}: BV ${entry.bv}, MUL ${unit!.BattleValue}`).join("; "),
+                wrong.map(({ entry, unit }) => ({ mulId: unit!.Id, name: `${entry.chassis} ${entry.model}`.trim(), ours: entry.bv, mul: unit!.BattleValue })));
+            return false;
         }
+        if (matched.length === 0 && !renaming) notChecked.noMulEntry++;
         // A MegaMek 'Mech the MUL lacks is filed in the custom unit list at our own BV, which the rules, books and
         // errata certify; no other tool's figure is the check.
         let customRecord: IASMULUnit | null = null;
@@ -571,6 +619,7 @@ export function buildBundledMechs(sswDir: string, mulDir: string, megamekDir?: s
         own.forEach(({ keys, layout }, index) => keys.forEach((key) => taken.set(key, { ...layout, mulId: idOf(index) })));
         listed.forEach(({ entry, unit }) => takenIds.set(unit!.Id, own[entries.indexOf(entry)].layout));
         if (customRecord) customRecords.push(customRecord);
+        matched.forEach(({ unit }) => matchedIds.add(unit!.Id));
         const mulId = customRecord?.Id ?? matched.find(({ entry }) => entry.base)?.unit?.Id ?? matched[0]?.unit?.Id;
         const sourceUrl = job.source === "mordel" ? getMordelUnitUrl(job.name) : undefined;
         const { cost, rulesLevel, year, tech, configs, layout, standing } = design.header!;
@@ -585,10 +634,16 @@ export function buildBundledMechs(sswDir: string, mulDir: string, megamekDir?: s
     };
 
     for (const job of listMechJobs(sswDir, megamekDir, mordelDir)) {
-        keep(job, prepared(job), (reason, detail = "") => leftOut.push({ file: job.name, reason, detail }));
+        keep(job, prepared(job), (reason, detail = "", misses = []) => {
+            leftOut.push({ file: job.name, reason, detail });
+            missed.push(...misses.map((miss) => ({ ...miss, file: job.name })));
+        });
     }
     kept.sort((a, b) => (a.header.name + " " + a.header.model).localeCompare(b.header.name + " " + b.header.model));
-    return { headers: kept.map(({ header }, id) => ({ id, ...header })), designs: kept.map(({ design }) => design), leftOut, renamed, customRecords };
+    return {
+        headers: kept.map(({ header }, id) => ({ id, ...header })), designs: kept.map(({ design }) => design), leftOut, renamed, customRecords,
+        accuracy: buildBundledAccuracy(matchedIds, missed, notChecked),
+    };
 }
 
 /** One record a line, so a rebuild's diff shows which designs changed. */
@@ -620,6 +675,13 @@ export function writeBundledDesigns(type: string, title: string, notice: string,
         ...(build.renamed?.length ? ["## Renamed", "", "Different submodels of a kept design, kept under a new model (#241).", "",
             ...build.renamed.map(({ file, from, to }) => `- \`${file}\`: ${from} -> ${to}`), ""] : []),
     ].join("\n"));
+    // The accuracy data (#599): stable key order and one differing unit a line, so a rebuild's diff reads well.
+    if (build.accuracy) {
+        const { unitType, matched, differs, notChecked } = build.accuracy;
+        fs.writeFileSync(path.join(dataDir, `${type}-accuracy.json`), `{"unitType":${JSON.stringify(unitType)},"matched":${matched},`
+            + `"notChecked":${JSON.stringify({ importFailed: notChecked.importFailed, noMulEntry: notChecked.noMulEntry })},\n`
+            + lines(differs.map(({ mulId, name, config, ours, mul, file }) => ["", { mulId, name, ...(config ? { config } : {}), ours, mul, file }]), `"differs":[`, "]}\n"));
+    }
 }
 
 export const writeBundledMechs = (build: IBundledBuild, dataDir: string): void => writeBundledDesigns("mechs", "'Mechs", BUNDLED_MECHS_NOTICE, build, dataDir);

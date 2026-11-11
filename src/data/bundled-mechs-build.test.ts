@@ -5,7 +5,8 @@ import { expect, it } from "vitest";
 import type { IASMULUnit } from "../classes/alpha-strike-unit";
 import { untabulate } from "../utils/packed-json";
 import {
-    buildBundledMechs, findLooseMULMatch, getBundledStanding, getMordelUnitUrl, getRenumberedModel, isMULMech, isOfficialMULRecord, loadCanonMechs, loadMULIndex, writeMegaMekCustomRecords,
+    buildBundledAccuracy, buildBundledMechs, findLooseMULMatch, getBundledStanding, getMordelUnitUrl, getRenumberedModel, isMULMech, isOfficialMULRecord, loadCanonMechs, loadMULIndex,
+    writeBundledMechs, writeMegaMekCustomRecords,
 } from "./bundled-mechs-build";
 
 // #241: canon is what the live MUL or MUL 1.0 lists. These records stand in for the MUL's own spellings of 'Mechs
@@ -189,4 +190,87 @@ it("links a mordel.net file to its BattleMech or IndustrialMech page", () => {
     expect(getMordelUnitUrl("mordel/23454/Dola DOL-1A2.mtf")).toBe("https://www.mordel.net/tro.php?a=vt&ut=bm&id=23454");
     expect(getMordelUnitUrl("mordel/im/121/Crosscut ED-X2 LoggerMech (RL).mtf")).toBe("https://www.mordel.net/tro.php?a=vt&ut=im&id=121");
     expect(getMordelUnitUrl("megamek/3075/Quasit QUA-51M MilitiaMech.mtf")).toBeUndefined();
+});
+
+// #599: the build records where our BV and the MUL's differ, as data. Nothing is dropped to improve a count.
+it("records a kept design as matched and a file whose BV differs from the MUL as one row with both numbers", () => {
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), "bundled-mechs-build-"));
+    const ssw = path.join(root, "ssw"), megamek = path.join(root, "megamek", "RG");
+    for (const dir of [ssw, megamek]) fs.mkdirSync(dir, { recursive: true });
+    for (const [fixture, name] of [["ryoken-iii-skinwalker-b", "(Ryoken III) Skinwalker B"], ["ryoken-iii-xp-skinwalker-b", "Ryoken III-XP B"]]) {
+        fs.copyFileSync(path.resolve(__dirname, `../utils/__fixtures__/${fixture}.mtf`), path.join(megamek, name + ".mtf"));
+    }
+    try {
+        const { accuracy } = buildBundledMechs(ssw, path.resolve(__dirname, "mul"), path.join(root, "megamek"));
+        expect(accuracy.unitType).toBe("mechs");
+        expect(accuracy.matched).toBe(1);
+        expect(accuracy.differs).toEqual([{ mulId: expect.any(Number), name: expect.stringContaining("Ryoken III-XP"), ours: expect.any(Number), mul: 3613, file: "megamek/RG/Ryoken III-XP B.mtf" }]);
+        expect(accuracy.differs[0].ours).not.toBe(3613);
+        expect(accuracy.notChecked).toEqual({ importFailed: 0, noMulEntry: 0 });
+    } finally {
+        fs.rmSync(root, { recursive: true, force: true });
+    }
+}, 120_000);
+
+it("counts a file that fails to import and a design the MUL does not list as not checked", () => {
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), "bundled-mechs-build-"));
+    const ssw = path.join(root, "ssw"), megamek = path.join(root, "megamek"), mul = path.join(root, "mul");
+    for (const dir of [ssw, path.join(megamek, "Custom"), ...["live", "mul1", "custom"].map((list) => path.join(mul, list))]) fs.mkdirSync(dir, { recursive: true });
+    const text = fs.readFileSync(path.resolve(__dirname, "../utils/__fixtures__/mordel-dola-dol-1a2.mtf"), "utf8")
+        .replace(/^chassis:.*$/m, "chassis:Testmech").replace(/^model:.*$/m, "model:TST-1");
+    fs.writeFileSync(path.join(megamek, "Custom", "Testmech TST-1.mtf"), text);
+    fs.writeFileSync(path.join(ssw, "broken.ssw"), "<notamech />");
+    try {
+        const { accuracy } = buildBundledMechs(ssw, mul, megamek);
+        expect(accuracy).toEqual({ unitType: "mechs", matched: 0, differs: [], notChecked: { importFailed: 1, noMulEntry: 1 } });
+    } finally {
+        fs.rmSync(root, { recursive: true, force: true });
+    }
+}, 120_000);
+
+it("gives an OmniMech's wrong configuration a row of its own, with the configuration named", () => {
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), "bundled-mechs-build-"));
+    const ssw = path.join(root, "ssw"), mul = path.join(root, "mul");
+    for (const dir of [ssw, ...["live", "mul1", "custom"].map((list) => path.join(mul, list))]) fs.mkdirSync(dir, { recursive: true });
+    fs.copyFileSync(path.resolve(__dirname, "../utils/__fixtures__/dire-wolf-omni.ssw"), path.join(ssw, "dire-wolf-omni.ssw"));
+    try {
+        // Our own BV of each configuration, then a MUL that agrees on all but the last.
+        const configs = buildBundledMechs(ssw, path.resolve(__dirname, "mul")).headers[0].configs!;
+        expect(configs.length).toBeGreaterThan(2);
+        const wrong = configs[configs.length - 1];
+        fs.writeFileSync(path.join(mul, "live", "a.json"), JSON.stringify(configs.map((config, index) =>
+            ({ ...record(500 + index, "Dire Wolf (Daishi)", config.name, 100, config === wrong ? config.bv + 7 : config.bv), Class: "BattleMech" }))));
+        const { accuracy, headers } = buildBundledMechs(ssw, mul);
+        expect(headers[0].configs!.map((config) => config.name)).not.toContain(wrong.name);
+        expect(accuracy.matched).toBe(configs.length - 1);
+        expect(accuracy.differs).toEqual([{ mulId: 500 + configs.length - 1, name: "Dire Wolf (Daishi)", config: wrong.name, ours: wrong.bv, mul: wrong.bv + 7, file: "dire-wolf-omni.ssw" }]);
+    } finally {
+        fs.rmSync(root, { recursive: true, force: true });
+    }
+}, 240_000);
+
+it("counts a MUL entry with a kept design as matched only, and lists each differing entry once, by name then configuration", () => {
+    const miss = (mulId: number | null, name: string, file: string, config?: string) => ({ mulId, name, ...(config ? { config } : {}), ours: 100, mul: 110, file });
+    const accuracy = buildBundledAccuracy([1, 2], [
+        miss(1, "Atlas AS7-D", "megamek/a.mtf"), miss(3, "Zeus ZEU-6S", "ssw/z.ssw"), miss(3, "Zeus ZEU-6S", "megamek/z.mtf"),
+        miss(5, "Mad Cat", "ssw/m.ssw", "B"), miss(4, "Mad Cat", "ssw/m.ssw", "A"),
+    ], { importFailed: 2, noMulEntry: 3 });
+    expect(accuracy.matched).toBe(2);
+    expect(accuracy.differs.map((row) => [row.mulId, row.config, row.file])).toEqual([[4, "A", "ssw/m.ssw"], [5, "B", "ssw/m.ssw"], [3, undefined, "megamek/z.mtf"]]);
+    expect(accuracy.notChecked).toEqual({ importFailed: 2, noMulEntry: 3 });
+});
+
+it("writes the accuracy data beside the report, one differing unit a line", () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "bundled-mechs-write-"));
+    try {
+        const accuracy = buildBundledAccuracy([1], [{ mulId: 3, name: "Zeus ZEU-6S", ours: 100, mul: 110, file: "z.ssw" }, { mulId: 4, name: "Atlas AS7-K", ours: 5, mul: 6, file: "a.ssw" }], { importFailed: 0, noMulEntry: 0 });
+        writeBundledMechs({ headers: [], designs: [], leftOut: [], accuracy }, dir);
+        const text = fs.readFileSync(path.join(dir, "mechs-accuracy.json"), "utf8");
+        expect(JSON.parse(text)).toEqual(accuracy);
+        expect(text.split("\n").filter((line) => line.includes("\"mulId\""))).toHaveLength(2);
+        expect(text.indexOf("Atlas")).toBeLessThan(text.indexOf("Zeus"));
+        expect(fs.existsSync(path.join(dir, "mechs-report.md"))).toBe(true);
+    } finally {
+        fs.rmSync(dir, { recursive: true, force: true });
+    }
 });
