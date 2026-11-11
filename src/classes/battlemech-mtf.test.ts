@@ -273,7 +273,8 @@ describe("MegaMek 'Mech import", () => {
                 location("Right Torso", ...engineSlots, "IS LB 10-X AC Ammo|IS LB 10-X Cluster Ammo").join("\n"));
         const { mech, issues } = importBattleMechMtf(sided);
         expect(issues).toEqual([]);
-        expect(mech!.calcLogBV).toContain(`= ${modifier}x.`);
+        const engineStep = mech!.getBattleValueBreakdown().steps.find((step) => step.id === "bv2.def.engine.superheavy");
+        expect(engineStep?.detail).toMatch(new RegExp(` x ${modifier}$`));
     });
 
     // "Treat the Superheavy 'Mech as a Clan 'Mech if the explosive components are in a location protected by any form
@@ -286,8 +287,9 @@ describe("MegaMek 'Mech import", () => {
                 location("Right Torso", ...fill(2, "Fusion Engine"), "IS LB 10-X AC Ammo|IS LB 10-X Cluster Ammo", "ISCASE").join("\n"));
         const { mech, issues } = importBattleMechMtf(xl);
         expect(issues).toEqual([]);
-        expect(mech!.calcLogBV).toContain("Explosive Ammo in rightTorso protected by CASE");
-        expect(mech!.calcLogBV).not.toContain("Explosive Ammo Crit in rightTorso");
+        const steps = mech!.getBattleValueBreakdown().steps;
+        expect(steps.filter((step) => step.id === "bv2.def.explosive.superheavy" && step.label.includes("ammunition in rightTorso protected by CASE"))).toHaveLength(1);
+        expect(steps.filter((step) => step.id === "bv2.def.explosive.ammo" && step.label.includes("rightTorso"))).toHaveLength(0);
     });
 
     // "Superheavy 'Mechs may ignore the torso-only mounting restrictions applied to Heavy Gauss Rifles (standard and

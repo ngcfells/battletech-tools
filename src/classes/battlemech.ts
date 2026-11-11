@@ -1,3 +1,5 @@
+import { CalcTrace, ICalcBreakdown, ICalcCitation, ICalcStep, renderCalcStepsHtml } from "../data/calc-steps";
+import { MECH_BV2_STEPS, MECH_BV2_WEAPON_CITES } from "../data/calc-steps-mech-bv2";
 import { AlphaStrikeStructureColumn, getAlphaStrikeMechStructure } from "../data/alpha-strike-mech-structure";
 import { findUnitCatalogRecord, getUnitCatalogRecords } from "../data/equipment-lookup";
 import { IAssignedQuirk, IQuirkTargets, QuirkUnitType } from "../data/quirk-interfaces";
@@ -662,6 +664,8 @@ export class BattleMech {
     private _alphaStrikeSpecialAmmoTag = "";
 
     private _calcLogBV = "";
+    /** The cited steps of the last Battle Value 2 calculation; `_calcLogBV` is rendered from them. */
+    private _battleValueSteps: ICalcStep[] = [];
     /** Set when a critical slot move changes what the Battle Value depends on; cleared by the next calculation. */
     private _battleValueStale = false;
     private _calcLogAS = "";
@@ -896,19 +900,16 @@ export class BattleMech {
         this._battleValueStale = false;
         // Insulators follow their lasers' locations, which can change without a full recalculation.
         mateLaserInsulators(this._equipmentList);
-        const hasCamo = false;
         // Stealth Armor counts at full effect even when Modular Armor negates it in play (TO:AUE p.192).
         const hasBasicStealth = this._armorType.tag === "stealth-basic";
-        const hasPrototypeStealth = false;
-        const hasStandardStealth = false;
-        const hasImprovedStealth = false;
         const hasMimetic = this._armorType.tag === "mimetic";
         this._battleValue = 0;
         this._calcLogBV = "";
+        const trace = new CalcTrace(MECH_BV2_STEPS);
+        const rounded2 = (value: number): number => Math.round(value * 100) / 100;
         /* *************************************************************************
         * STEP 1: CALCULATE DEFENSIVE BATTLE RATING - TechManual p. 302
         * *********************************************************************** */
-        this._calcLogBV += "<strong>STEP 1: CALCULATE DEFENSIVE BATTLE RATING - TM p302</strong><br />";
         // 1A. Total Armor Factor Valuation (TM p. 302). A Torso-Mounted Cockpit doubles the center torso armor, front
         // and rear, before any armor type modifier (TO:AUE p.193).
         const doubledCenterTorsoArmor = this.getCockpitType().tag === "torso-mounted"
@@ -920,6 +921,9 @@ export class BattleMech {
         const armorTypeMultiplier = (armor: IArmorType): number => BattleMech._armorBVMultiplier(armor) + blueShieldBonus;
         const armorBVMultiplier = armorTypeMultiplier(this._armorType);
         const isPatchwork = this.isPatchworkArmor();
+        if (blueShieldBonus > 0) {
+            trace.add("bv2.def.armor.blue-shield", { label: "Blue Shield: +0.2 to the armor and structure type modifiers" });
+        }
         if (isPatchwork) {
             // Patchwork: "Calculate the modified Defensive Battle Rating on a location-by-location basis, and
             // then sum the total before multiplying by 2.5" (TO:AUE p.194).
@@ -929,14 +933,18 @@ export class BattleMech {
                 const points = this._getPatchworkLocationPoints(location.key) * (doubledCenterTorsoArmor > 0 && location.key === "centerTorso" ? 2 : 1);
                 const multiplier = armorTypeMultiplier(locationArmor);
                 modifiedArmorPoints += points * multiplier;
-                this._calcLogBV += `${location.label}: ${points} x ${multiplier} (${this._escapeLogText(locationArmor.name)}) = ${points * multiplier}<br />`;
+                trace.add("bv2.def.armor.patchwork", { label: `Armor, ${location.label} (${locationArmor.name})`, detail: `${points} points x ${multiplier}`, value: points * multiplier });
             }
             totalArmorFactor = 2.5 * modifiedArmorPoints;
-            this._calcLogBV += `Total Armor Factor = Armor Factor x 2.5: ${totalArmorFactor} = 2.5 x ${modifiedArmorPoints}<br />`;
+            trace.add("bv2.def.armor.patchwork", { label: "Total Armor Factor", detail: `2.5 x ${modifiedArmorPoints}`, value: totalArmorFactor, emphasis: true });
         } else {
-            this._calcLogBV += `Total Armor Factor = Armor Factor x 2.5: ${totalArmorFactor} = 2.5 x ${this.getTotalArmor() + doubledCenterTorsoArmor}${doubledCenterTorsoArmor ? " (center torso armor counted twice, TO:AUE p.193)" : ""}<br />`;
+            if (doubledCenterTorsoArmor > 0) {
+                trace.add("bv2.def.armor.torso-cockpit", { label: "Torso-mounted cockpit: center torso armor counted twice", value: doubledCenterTorsoArmor });
+            }
+            const armorPoints = this.getTotalArmor() + doubledCenterTorsoArmor;
             totalArmorFactor *= armorBVMultiplier;
-            this._calcLogBV += `Total Armor Factor = ${armorBVMultiplier} x Modifier for ${this._armorType.name}: ${totalArmorFactor}<br />`;
+            const darkAgeArmor = ["heat-dissipating", "anti-penetrative-ablation", "ballistic-reinforced", "impact-resistant"].includes(this._armorType.tag);
+            trace.add(darkAgeArmor ? "bv2.def.armor.dark-age" : "bv2.def.armor", { label: "Armor", detail: `${armorPoints} points x 2.5 x ${armorBVMultiplier} (${this._armorType.name})`, value: totalArmorFactor });
         }
         // Modular Armor: its points count "using the Armor Type Modifier for the armor fitted in the same location"
         // (TO:AUE p.192).
@@ -946,7 +954,7 @@ export class BattleMech {
             if (!longKey || points <= 0) continue;
             const multiplier = isPatchwork ? armorTypeMultiplier(this.getPatchworkArmorType(longKey)) : armorBVMultiplier;
             totalArmorFactor += 2.5 * points * multiplier;
-            this._calcLogBV += `${this._escapeLogText(pack.name)} (${pack.location}): ${points} points x 2.5 x ${multiplier} = +${2.5 * points * multiplier} -> Total Armor Factor: ${totalArmorFactor}<br />`;
+            trace.add("bv2.def.armor.modular", { label: `${pack.name} (${pack.location})`, detail: `${points} points x 2.5 x ${multiplier}`, value: 2.5 * points * multiplier, total: totalArmorFactor });
         }
         // HarJel repair systems: an armor multiplier "only for body sections where a HarJel system is located",
         // stacking with the armor type's own; "every critical slot ... will add -1 to the unit's Defensive BV" (IO:AE p.185).
@@ -963,11 +971,10 @@ export class BattleMech {
             const locationBVMultiplier = isPatchwork ? armorTypeMultiplier(this.getPatchworkArmorType(longKey)) : armorBVMultiplier;
             const bonus = 2.5 * locationArmor * locationBVMultiplier * (item.armorRepairBVMultiplier - 1);
             totalArmorFactor += bonus;
-            this._calcLogBV += `${this._escapeLogText(item.name)} in ${longKey}: armor x ${item.armorRepairBVMultiplier} on ${locationArmor} points = +${bonus.toFixed(2)} -> Total Armor Factor: ${totalArmorFactor.toFixed(2)}<br />`;
+            trace.add("bv2.def.armor.harjel", { label: `${item.name} in ${longKey}`, detail: `armor x ${item.armorRepairBVMultiplier} on ${locationArmor} points`, value: bonus, total: totalArmorFactor });
         }
         // 1B. Internal Structure Points Valuation (TM p. 302)
         let totalInternalStructurePoints = 1.5 * this._totalInternalStructurePoints;
-        this._calcLogBV += `Total Internal Structure Points = IS Points x 1.5: ${totalInternalStructurePoints} = 1.5 x ${this._totalInternalStructurePoints}<br />`;
         // Structure type modifier: Industrial and Composite 0.5, Reinforced 2.
         if (this.hasFrankenMechHybridStructure()) {
             // A FrankenMech of mixed structure: each location's points take their own type's modifier.
@@ -977,13 +984,13 @@ export class BattleMech {
                 const structure = this.getFrankenMechLocationStructure(location.key);
                 const locationPoints = 1.5 * (points[location.key] ?? 0) * ((structure.bvMultiplier ?? 1) + blueShieldBonus);
                 totalInternalStructurePoints += locationPoints;
-                this._calcLogBV += `Internal Structure (${location.label}): ${points[location.key] ?? 0} points x 1.5 x ${(structure.bvMultiplier ?? 1) + blueShieldBonus} (${this._escapeLogText(structure.name)}) = ${locationPoints.toFixed(2)}<br />`;
+                trace.add("bv2.def.structure.frankenmech", { label: `Internal structure, ${location.label} (${structure.name})`, detail: `${points[location.key] ?? 0} points x 1.5 x ${(structure.bvMultiplier ?? 1) + blueShieldBonus}`, value: locationPoints });
             }
-            this._calcLogBV += `Total Internal Structure BV: ${totalInternalStructurePoints}<br />`;
+            trace.add("bv2.def.structure.frankenmech", { label: "Total internal structure", value: totalInternalStructurePoints });
         } else {
             const structureBVMultiplier = (this._selectedInternalStructure?.bvMultiplier ?? 1) + blueShieldBonus;
             totalInternalStructurePoints *= structureBVMultiplier;
-            this._calcLogBV += `Total Internal Structure BV = ${structureBVMultiplier} x ${this._selectedInternalStructure?.name ?? "Standard"} Modifier: ${totalInternalStructurePoints}<br />`;
+            trace.add("bv2.def.structure", { label: "Internal structure", detail: `${this._totalInternalStructurePoints} points x 1.5 x ${structureBVMultiplier} (${this._selectedInternalStructure?.name ?? "Standard"})`, value: totalInternalStructurePoints });
         }
         // 1C. Adjust Internal Structure for Engine Type Safety Factor (TM p. 302 / Errata)
         const engineTag = this._engineType.tag;
@@ -1010,8 +1017,9 @@ export class BattleMech {
         if (this.isSuperheavy()) {
             engineModifier = BattleMech.SUPERHEAVY_ENGINE_BV_MODIFIERS[engineTag] ?? 1.0;
         }
+        const structureBeforeEngine = totalInternalStructurePoints;
         totalInternalStructurePoints *= engineModifier;
-        this._calcLogBV += `Engine Modification (${engineTag}) = ${engineModifier}x. Total IS BV: ${totalInternalStructurePoints}<br />`;
+        trace.add(this.isSuperheavy() ? "bv2.def.engine.superheavy" : "bv2.def.engine", { label: `Engine modifier (${engineTag})`, detail: `${structureBeforeEngine} x ${engineModifier}`, value: totalInternalStructurePoints });
         // 1D. Gyro Points Modifier (TM p. 302)
         const gyroType = this.getGyro().tag;
         let gyroModifier = 0.5;
@@ -1021,7 +1029,7 @@ export class BattleMech {
             gyroModifier = 1.0;
         }
         const totalGyroPoints = this.getTonnage() * gyroModifier;
-        this._calcLogBV += `Total Gyro BV = ${gyroModifier} x Tonnage for ${gyroType} Gyro: ${totalGyroPoints} = ${gyroModifier} x ${this.getTonnage()}<br />`;
+        trace.add("bv2.def.gyro", { label: `Gyro (${gyroType})`, detail: `${this.getTonnage()} tons x ${gyroModifier}`, value: totalGyroPoints });
         // 1D-2. Defensive Equipment (TM p. 302): AMS, ECM, active probes, pods, etc. AMS ammo counts
         // here too, capped at the BV of the AMS it feeds (Excessive Ammunition rule).
         let defensiveEquipmentBV = 0;
@@ -1033,18 +1041,18 @@ export class BattleMech {
                 if (fedWeapon && this._isDefensiveBVEquipment(fedWeapon)) {
                     const ammoValue = getAmmoBattleValuePerTon(fedWeapon, currentItem) * currentItem.weight;
                     defensiveAmmoBV += ammoValue;
-                    this._calcLogBV += `+ Defensive Ammunition: ${this._escapeLogText(currentItem.name)} (${this._escapeLogText(currentItem.location)}) for ${this._escapeLogText(fedWeapon.name)} = ${ammoValue.toFixed(2)}<br />`;
+                    trace.add("bv2.def.equipment.ams-ammo", { label: `${currentItem.name} (${currentItem.location})`, detail: `ammunition for ${fedWeapon.name}`, value: ammoValue });
                 }
             } else if (this._isDefensiveBVEquipment(currentItem)) {
                 defensiveEquipmentBV += currentItem.battleValue || 0;
                 if (currentItem.weaponType?.includes("AMS")) {
                     defensiveAmmoCap += currentItem.battleValue || 0;
                 }
-                this._calcLogBV += `+ Defensive Equipment: ${this._escapeLogText(currentItem.name)} (${this._escapeLogText(currentItem.location || "no location")}) = ${currentItem.battleValue || 0}<br />`;
+                trace.add("bv2.def.equipment", { label: `${currentItem.name} (${currentItem.location || "no location"})`, value: currentItem.battleValue || 0 });
             }
         }
         if (defensiveAmmoBV > defensiveAmmoCap) {
-            this._calcLogBV += `Defensive ammunition BV ${defensiveAmmoBV.toFixed(2)} exceeds AMS BV ${defensiveAmmoCap}; capped (Excessive Ammunition rule).<br />`;
+            trace.add("bv2.def.equipment.ams-ammo", { label: "Defensive ammunition capped at the AMS BV (Excessive Ammunition rule)", detail: `${defensiveAmmoBV.toFixed(2)} is over ${defensiveAmmoCap}`, value: defensiveAmmoCap });
             defensiveAmmoBV = defensiveAmmoCap;
         }
         defensiveEquipmentBV += defensiveAmmoBV;
@@ -1054,12 +1062,13 @@ export class BattleMech {
             const itemBV = armored.item ? (armored.item.battleValue || 0) : armored.record.tag === "gyro" ? totalGyroPoints : 0;
             const value = itemBV > 0 ? itemBV * 0.05 * armored.slots : 5 * armored.slots;
             defensiveEquipmentBV += value;
-            this._calcLogBV += `+ Armored Component: ${this._escapeLogText(armored.record.name)} (${armored.loc}, ${armored.slots} slot${armored.slots === 1 ? "" : "s"}) = ${value.toFixed(2)}<br />`;
+            trace.add(armored.record.tag === "gyro" && !armored.item ? "bv2.def.equipment.armored-gyro" : "bv2.def.equipment.armored", { label: `Armored ${armored.record.name} (${armored.loc}, ${armored.slots} slot${armored.slots === 1 ? "" : "s"})`, value });
         }
-        this._calcLogBV += `Total Defensive Equipment BV: ${defensiveEquipmentBV.toFixed(2)}<br />`;
+        if (defensiveEquipmentBV !== 0) {
+            trace.add("bv2.def.equipment.total", { label: "Total defensive equipment", value: defensiveEquipmentBV });
+        }
         // 1E. Get Explosive Ammo Modifiers (TM pp. 302-303)
         let explosiveAmmoModifiers = 0;
-        this._calcLogBV += "<strong>Get Explosive Ammo Modifiers (TM p302-303)</strong><br />";
         // CASE and CASE II by location.
         const caseMap: Record<string, boolean> = {};
         const caseIIMap: Record<string, boolean> = {};
@@ -1120,16 +1129,19 @@ export class BattleMech {
             if (critArray.length === 0) return;
             const penalised = isPenalisedLocation(loc);
             // A Clan 'Mech's side torsos and arms were never listed; an Inner Sphere 'Mech's protected locations are.
-            const logProtected = !penalised && (!isClanBase || hasCaseII(loc));
+            const armCaseXl = (loc === "la" || loc === "ra") && engineSideSlots >= 3 && caseMap[loc] && !hasCaseII(loc) && !isSuperheavy;
+            const logProtected = !penalised && (!isClanBase || hasCaseII(loc) || armCaseXl);
             const protection = hasCaseII(loc) ? "CASE II" : "CASE";
+            const protectedId = armCaseXl ? "bv2.def.explosive.arm-case-xl"
+                : isSuperheavy && caseMap[loc] && !hasCaseII(loc) ? "bv2.def.explosive.superheavy" : "bv2.def.explosive.protected";
             critArray.forEach((item) => {
                 // Prototype improved jump jets explode when hit (IO:AE p.97): 1 BV a slot, as an explosive component.
                 if (item && !item.obj && item.tag === "jj-" + this._jumpJetType.tag && this._jumpJetType.explosive) {
                     if (penalised) {
-                        this._calcLogBV += `Explosive Component Crit (${this._jumpJetType.name}) in ${longKey} (${techLabel}, -1)<br />`;
+                        trace.add("bv2.def.explosive.jump-jet", { label: `Explosive component: ${this._jumpJetType.name} in ${longKey} (${techLabel})`, value: -1 });
                         explosiveAmmoModifiers += 1;
                     } else if (logProtected) {
-                        this._calcLogBV += `Explosive Component (${this._jumpJetType.name}) in ${longKey} protected by ${protection}. Penalty negated (0).<br />`;
+                        trace.add(protectedId, { label: `Explosive component (${this._jumpJetType.name}) in ${longKey} protected by ${protection}. Penalty negated`, value: 0 });
                     }
                     return;
                 }
@@ -1140,20 +1152,20 @@ export class BattleMech {
                     const ammoSlots = item.obj.explosiveAsAmmo ? Math.max(1, slotsHere || (item.crits ?? 1)) : 1;
                     if (penalised) {
                         for (let slot = 0; slot < ammoSlots; slot++) {
-                            this._calcLogBV += `Explosive Ammo Crit in ${longKey} (${techLabel}, -15)<br />`;
+                            trace.add(BattleMech._isLAMInternalStore(item.obj) ? "bv2.def.explosive.lam-store" : "bv2.def.explosive.ammo", { label: `Explosive ammunition: ${item.obj.name} in ${longKey} (${techLabel})`, value: -15 });
                             explosiveAmmoModifiers += 15;
                         }
                     } else if (logProtected) {
-                        this._calcLogBV += `Explosive Ammo in ${longKey} protected by ${protection}. Penalty negated (0).<br />`;
+                        trace.add(protectedId, { label: `Explosive ammunition in ${longKey} protected by ${protection}. Penalty negated`, value: 0 });
                     }
                 }
                 const componentSlots = explosiveComponentSlots(item, critArray);
                 if (componentSlots > 0) {
                     if (penalised) {
-                        this._calcLogBV += `Explosive Component Crit (${item.obj.name}) in ${longKey} (${techLabel}, -${componentSlots})<br />`;
+                        trace.add("bv2.def.explosive.component", { label: `Explosive component: ${item.obj.name} in ${longKey} (${techLabel})`, value: -componentSlots });
                         explosiveAmmoModifiers += componentSlots;
                     } else if (logProtected) {
-                        this._calcLogBV += `Explosive Component (${item.obj.name}) in ${longKey} protected by ${protection}. Penalty negated (0).<br />`;
+                        trace.add(protectedId, { label: `Explosive component (${item.obj.name}) in ${longKey} protected by ${protection}. Penalty negated`, value: 0 });
                     }
                 }
             });
@@ -1163,18 +1175,17 @@ export class BattleMech {
         // =====================================================================
         let defensiveSubtotal = totalArmorFactor + totalInternalStructurePoints + totalGyroPoints + defensiveEquipmentBV - explosiveAmmoModifiers - repairSystemSlots;
         if (repairSystemSlots > 0) {
-            this._calcLogBV += `HarJel repair system slots: -${repairSystemSlots} (included in the Defensive Subtotal below)<br />`;
+            trace.add("bv2.def.harjel-slots", { label: "HarJel repair system slots (taken off in the Defensive Subtotal)", value: -repairSystemSlots });
         }
-        this._calcLogBV += `Defensive Subtotal (Armor + IS + Gyro + Defensive Equipment - Ammo Penalties): ${defensiveSubtotal} = ${totalArmorFactor} + ${totalInternalStructurePoints} + ${totalGyroPoints} + ${defensiveEquipmentBV} - ${explosiveAmmoModifiers}<br />`;
+        trace.add("bv2.def.subtotal", { label: "Defensive Subtotal", detail: `${totalArmorFactor} + ${totalInternalStructurePoints} + ${totalGyroPoints} + ${defensiveEquipmentBV} - ${explosiveAmmoModifiers}${repairSystemSlots > 0 ? ` - ${repairSystemSlots}` : ""}`, value: defensiveSubtotal, emphasis: true });
         // "These subtractions cannot drop the running total below 1" (TM p.302).
         if (explosiveAmmoModifiers > 0 && defensiveSubtotal < 1) {
             defensiveSubtotal = 1;
-            this._calcLogBV += "Penalties cannot take the total below 1: Defensive Subtotal set to 1<br />";
+            trace.add("bv2.def.floor", { label: "Penalties cannot take the total below 1: Defensive Subtotal set to 1", value: 1 });
         }
         /* *************************************************************************
          * STEP 2: CALCULATE DEFENSIVE FACTOR MODIFIER & STEALTH GEAR - TM p. 304
          * *********************************************************************** */
-        this._calcLogBV += "<strong>STEP 2: CALCULATE DEFENSIVE FACTOR MODIFIER - TM p304</strong><br />";
         // 2A. Gather movement metrics using native speed methods
         const runSpeed = this.getBVRunSpeed();
         const jumpSpeed = this.getBVJumpSpeed();
@@ -1184,72 +1195,69 @@ export class BattleMech {
             ? getMovementModifier(this.getAirMechFlankMP()) + 1
             : getMovementModifier(runSpeed);
         if (this.hasAirMechMode()) {
-            this._calcLogBV += `LAM: running TMM uses AirMech Flank MP ${this.getAirMechFlankMP()} +1 airborne (IO:AE p.186)<br />`;
+            trace.add("bv2.def.tmm.lam", { label: `LAM: running TMM uses AirMech Flank MP ${this.getAirMechFlankMP()} +1 airborne` });
         }
         // Jumping modifier bonus (TM p. 304); UMU movement earns no jump bonus.
         const jumpModifier = Math.max(jumpSpeed > 0 ? getMovementModifier(jumpSpeed) + 1 : 0, getMovementModifier(this.getUMUSpeed()));
         // Determine the optimal Target Movement Modifier (TMM)
         const moveModifier = Math.max(runModifier, jumpModifier);
-        this._calcLogBV += `Best Base TMM: ${moveModifier} (Run TMM: ${runModifier}, Jump TMM: ${jumpModifier})<br />`;
+        trace.add("bv2.def.tmm", { label: "Best Base TMM", detail: `run ${runModifier}, jump ${jumpModifier}`, value: moveModifier });
+        if (this.getUMUSpeed() > 0) {
+            trace.add("bv2.def.tmm.umu", { label: "UMU movement modifier counted without the jump bonus" });
+        }
         // Calculate baseline Defensive Factor Modifier
         let defensiveFactorModifier = 1 + (moveModifier / 10);
         if (defensiveFactorModifier < 1.0) {
             defensiveFactorModifier = 1.0;
         }
-        this._calcLogBV += `Base Defensive Factor (1 + TMM / 10): ${defensiveFactorModifier.toFixed(2)} = 1 + ${moveModifier} / 10<br />`;
+        trace.add("bv2.def.factor", { label: "Base Defensive Factor", detail: `1 + ${moveModifier} / 10`, value: rounded2(defensiveFactorModifier) });
+        let factorAdjusted = false;
+        const addFactor = (id: string, label: string, bonus: number): void => {
+            factorAdjusted = true;
+            trace.add(id, { label, value: rounded2(bonus), total: rounded2(defensiveFactorModifier) });
+        };
         // 2B. Process Defensive Factor Modifiers for Stealth and Advanced Camouflage Systems
-        this._calcLogBV += "<strong>Defensive Factor Modifiers for Stealth / Advanced Electronic Systems</strong><br />";
-        // Standard & Advanced Systems (Tactical Operations p. 342)
-        if (hasCamo) {
+        if (hasBasicStealth) {
             defensiveFactorModifier += 0.2;
-            this._calcLogBV += "Applied Standard Camouflage Shielding (+0.20)<br />";
-        }
-        if (hasBasicStealth || hasPrototypeStealth || hasStandardStealth) {
-            defensiveFactorModifier += 0.2;
-            this._calcLogBV += "Activated Electronic/Standard Stealth Armor Matrix (+0.20)<br />";
-        }
-        if (hasImprovedStealth) {
-            defensiveFactorModifier += 0.3;
-            this._calcLogBV += "Activated Advanced Improved Stealth Suite (+0.30)<br />";
+            addFactor("bv2.def.factor.stealth", "Stealth armor (+0.2)", 0.2);
         }
         if (hasMimetic) {
             defensiveFactorModifier += 0.3;
-            this._calcLogBV += "Activated Active Mimetic Light Polarization Layering (+0.30)<br />";
+            addFactor("bv2.def.factor.stealth", "Mimetic armor (+0.3)", 0.3);
         }
         // Signature systems (TO:AUE pp.112, 148, 161): Null Signature and Chameleon each +2 TMM;
         // Void Signature raises the TMM to 3, or to 4 when it is already 3.
         const hasEquipmentTag = (tag: string) => this._equipmentList.some(item => matchesTag(item, tag));
-        if (hasEquipmentTag("null-signature-system") && !(hasBasicStealth || hasPrototypeStealth || hasStandardStealth)) {
+        if (hasEquipmentTag("null-signature-system") && !hasBasicStealth) {
             defensiveFactorModifier += 0.2;
-            this._calcLogBV += "Null Signature System (+0.20)<br />";
+            addFactor("bv2.def.factor.null-signature", "Null-Signature System (+0.2)", 0.2);
         }
         if (hasEquipmentTag("chameleon-lps")) {
             defensiveFactorModifier += 0.2;
-            this._calcLogBV += "Chameleon Light Polarization Shield (+0.20)<br />";
+            addFactor("bv2.def.factor.chameleon", "Chameleon Light Polarization Shield (+0.2)", 0.2);
         }
         if (hasEquipmentTag("void-signature-system")) {
             const voidBonus = moveModifier < 3 ? (3 - moveModifier) / 10 : moveModifier === 3 ? 0.1 : 0;
             defensiveFactorModifier += voidBonus;
-            this._calcLogBV += `Void Signature System (+${voidBonus.toFixed(2)})<br />`;
+            addFactor("bv2.def.factor.void-signature", `Void-Signature System (+${voidBonus.toFixed(2)})`, voidBonus);
+        }
+        if (factorAdjusted) {
+            trace.add("bv2.def.factor", { label: "Defensive Factor", value: rounded2(defensiveFactorModifier) });
         }
         // 2C. Apply the defensive factor to the defensive subtotal (TM p. 303)
         let finalDefensiveBattleRating = defensiveSubtotal * defensiveFactorModifier;
-        this._calcLogBV += `Final Defensive Rating Calculation = DBR Subtotal * Defensive Factor: ${finalDefensiveBattleRating.toFixed(2)} = ${defensiveSubtotal.toFixed(2)} x ${defensiveFactorModifier.toFixed(2)}<br />`;
         // Canonical Floor Check Rule Enforced (TM p. 303: "Minimum rating threshold of 1")
         if (finalDefensiveBattleRating < 1.0) {
             finalDefensiveBattleRating = 1.0;
-            this._calcLogBV += "Final Defensive Battle Rating dropped below threshold. Enforcing canonical minimum floor: 1.0<br />";
-        } else {
-            this._calcLogBV += `Final Defensive Battle Rating (Subtotal x Defensive Factor): ${finalDefensiveBattleRating.toFixed(2)} = ${defensiveSubtotal.toFixed(2)} x ${defensiveFactorModifier.toFixed(2)}<br />`;
+            trace.add("bv2.def.floor", { label: "The Defensive Battle Rating cannot fall below 1", value: 1 });
         }
         // Lock down the tracking properties safely
         this._defensiveBattleRating = finalDefensiveBattleRating;
-        this._calcLogBV += `<strong>Final Defensive Battle Rating</strong>: ${this._defensiveBattleRating.toFixed(2)}<br />`;
+        trace.add("bv2.def.rating", { label: "Defensive Battle Rating", detail: `${rounded2(defensiveSubtotal)} x ${rounded2(defensiveFactorModifier)}`, value: this._defensiveBattleRating, emphasis: true });
         
                 /* *************************************************************************
          * STEP 3: CALCULATE OFFENSIVE BATTLE RATING - TechManual p. 303
          * *********************************************************************** */
-        this._calcLogBV += "<strong>STEP 3: CALCULATE OFFENSIVE BATTLE RATING - TM p303</strong><br />";
 
         const ammoBV: Record<string, number> = {};
         const weaponBV: Record<string, number> = {};
@@ -1264,7 +1272,7 @@ export class BattleMech {
                 // Ammo feeds weapons by family, so group each bin under the weapon it is loaded for.
                 const fedWeapon = this.getAmmoBinWeapon(currentItem);
                 if (!fedWeapon) {
-                    this._calcLogBV += `+ Ignoring Ammunition: ${this._escapeLogText(currentItem.name)} (${this._escapeLogText(currentItem.location)}), no mounted weapon fires it<br />`;
+                    trace.add("bv2.off.ammo.unused", { label: `Ignoring ammunition: ${currentItem.name} (${currentItem.location}), no mounted weapon fires it`, value: 0 });
                     continue;
                 }
                 if (this._isDefensiveBVEquipment(fedWeapon)) {
@@ -1278,7 +1286,7 @@ export class BattleMech {
                 const assignedAmmoValue = perTonValue * currentItem.weight;
                 ammoBV[fedWeapon.tag] += assignedAmmoValue;
 
-                this._calcLogBV += `+ Adding Ammunition: ${this._escapeLogText(currentItem.name)} (${this._escapeLogText(currentItem.location)}) for ${this._escapeLogText(fedWeapon.name)} = ${assignedAmmoValue.toFixed(2)} (${perTonValue} BV x ${currentItem.weight} tons)<br />`;
+                trace.add("bv2.off.ammo", { label: `${currentItem.name} (${currentItem.location})`, detail: `for ${fedWeapon.name}: ${perTonValue} BV x ${currentItem.weight} tons`, value: assignedAmmoValue });
             } else if (!this._isDefensiveBVEquipment(currentItem)) {
                 // Accumulate weapon totals to handle duplicate weapons correctly for the Excessive Ammo Cap
                 if (!weaponBV[currentItem.tag]) {
@@ -1296,14 +1304,16 @@ export class BattleMech {
             if (weaponBV[ammoKey]) {
                 const totalAllowedCap = weaponBV[ammoKey];
                 if (simplifiedAmmoBV[ammoKey] > totalAllowedCap) {
-                    this._calcLogBV += `<strong>Excessive Ammunition Rule Triggered:</strong> Combined ammo BV for ${ammoKey} (${simplifiedAmmoBV[ammoKey].toFixed(2)}) exceeds weapon group total (${totalAllowedCap.toFixed(2)}). Capping value to match.<br />`;
+                    trace.add("bv2.off.ammo.cap", { label: `Excessive Ammunition: ammo for ${ammoKey} capped at its weapons' BV`, detail: `${simplifiedAmmoBV[ammoKey].toFixed(2)} is over ${totalAllowedCap.toFixed(2)}`, value: totalAllowedCap });
                     simplifiedAmmoBV[ammoKey] = totalAllowedCap;
                 }
                 totalAmmoBV += simplifiedAmmoBV[ammoKey];
             }
         }
 
-        this._calcLogBV += `<strong>Total Capped Ammo BV:</strong> ${totalAmmoBV.toFixed(2)}<br />`;
+        if (totalAmmoBV !== 0) {
+            trace.add("bv2.off.ammo.total", { label: "Total ammunition BV", value: totalAmmoBV });
+        }
 
         // 3D. Engine Thermal Dissipation Capacity Evaluation (TM p. 303)
         let mechHeatEfficiency = 6; // Baseline structural buffer
@@ -1316,7 +1326,7 @@ export class BattleMech {
         // example gives 15 double heat sinks a capacity of 36 (30 + 15 x 0.4), as MegaMek, SSW and the MUL count it.
         if (this._equipmentList.some(item => matchesTag(item, "radical-heat-sink-system"))) {
             const radical = heatSinkCapacity + Math.ceil(this.getHeatSinks() * 0.4);
-            this._calcLogBV += `Radical Heat Sink System: heat sink capacity ${heatSinkCapacity} + ${this.getHeatSinks()} heat sinks x 0.4 = ${radical} (IO:AE p.185)<br />`;
+            trace.add("bv2.off.heat.radical", { label: "Radical Heat Sink System", detail: `heat sink capacity ${heatSinkCapacity} + ${this.getHeatSinks()} heat sinks x 0.4`, value: radical });
             heatSinkCapacity = radical;
         }
         mechHeatEfficiency += heatSinkCapacity - this.getMaxMovementHeat();
@@ -1326,31 +1336,35 @@ export class BattleMech {
         const isSignatureSystem = (item: IEquipmentItem): boolean => BattleMech.SIGNATURE_SYSTEM_TAGS.some(tag => matchesTag(item, tag));
         for (const item of this._equipmentList.filter(isSignatureSystem)) {
             mechHeatEfficiency -= item.heat || 0;
-            this._calcLogBV += `${this._escapeLogText(item.name)}: -${item.heat || 0} heat efficiency<br />`;
+            trace.add("bv2.off.heat.signature", { label: `${item.name}: heat taken off the heat efficiency`, value: -(item.heat || 0) });
         }
         // Partial wing: +3 heat capacity in a standard atmosphere (TO:AUE p.105).
-        mechHeatEfficiency += this.getPartialWingHeatBonus();
+        const partialWingHeatBonus = this.getPartialWingHeatBonus();
+        mechHeatEfficiency += partialWingHeatBonus;
+        if (partialWingHeatBonus !== 0) {
+            trace.add("bv2.off.heat.partial-wing", { label: "Partial wing heat bonus", value: partialWingHeatBonus });
+        }
         // LAMs add 9 instead of 6 to heat capacity (IO:AE p.186). The +3 matches AirMech mode's
         // partial-wing heat bonus (IO:AE p.107), so bimodal LAMs, which have no AirMech mode,
         // keep the 'Mech value (as MegaMek also reads it; IO does not say).
         if (this.hasAirMechMode()) {
             mechHeatEfficiency += 3;
-            this._calcLogBV += `LAM: heat capacity +9 instead of +6; movement heat ${this.getMaxMovementHeat()} from AirMech Flank MP / 3 (IO pp.113, 192)<br />`;
+            trace.add("bv2.off.heat.lam", { label: `LAM: heat capacity +9 instead of +6; movement heat ${this.getMaxMovementHeat()} from AirMech Flank MP / 3` });
         }
         // RISC Emergency Coolant System: +4 to Heat Efficiency (IO:AE p.190).
         if (this._equipmentList.some(item => matchesTag(item, "risc-emergency-coolant-system"))) {
             mechHeatEfficiency += 4;
+            trace.add("bv2.off.heat.emergency-coolant", { label: "RISC Emergency Coolant System: +4 heat efficiency", value: 4 });
         }
         // Coolant Pods: heat sinks x pods / 5, rounded up, at most twice the number of heat sinks (TO:AUE p.193).
         const coolantPods = this._equipmentList.filter(item => item?.coolantPod).length;
         if (coolantPods > 0) {
             const coolantPodCapacity = Math.min(Math.ceil(this.getHeatSinks() * coolantPods / 5), this.getHeatSinks() * 2);
             mechHeatEfficiency += coolantPodCapacity;
-            this._calcLogBV += `Coolant Pods: ${coolantPods} x ${this.getHeatSinks()} heat sinks / 5 = +${coolantPodCapacity} heat sink capacity (TO:AUE p.193)<br />`;
+            trace.add("bv2.off.heat.coolant-pod", { label: "Coolant pods", detail: `${coolantPods} x ${this.getHeatSinks()} heat sinks / 5`, value: coolantPodCapacity });
         }
         
-        this._calcLogBV += `<strong>Heat Efficiency Capacity Pool:</strong> ${mechHeatEfficiency} (6 + Engine Sinks: ${this.getHeatSinks() * sinkEfficiencyMultiplier} - Movement Heat: ${this.getMaxMovementHeat()})<br />`;
-        this._calcLogBV += "<strong>Total Weapon Heat Breakdown:</strong> ";
+        trace.add("bv2.off.heat.efficiency", { label: "Heat efficiency", detail: `6 + ${heatSinkCapacity} heat sink capacity - ${this.getMaxMovementHeat()} movement heat`, value: mechHeatEfficiency });
 
         // 3E. Weapon Heat Multiplier Mapping (TM p. 303 / Errata updates)
         let totalWeaponHeat = 0;
@@ -1390,8 +1404,7 @@ export class BattleMech {
             heatLogFragments.push(`${baseHeat}`);
         }
 
-        this._calcLogBV += heatLogFragments.length > 0 ? heatLogFragments.join(" + ") : "0";
-        this._calcLogBV += ` = ${totalWeaponHeat.toFixed(2)}<br />`;
+        trace.add("bv2.off.heat.weapons", { label: "Total weapon heat", detail: heatLogFragments.length > 0 ? heatLogFragments.join(" + ") : "0", value: totalWeaponHeat });
 
         // 3F. Dynamic Weapon Arc & Thermal Efficiency Splitting Loop (TM pp. 303-304)
         let runningTotal = 0;
@@ -1430,21 +1443,20 @@ export class BattleMech {
             const isFlexibleLimb = this.isNotOnTorsoHeadOrLegs(this._firingArcLocation(currentItem));
             const waiveRearPenalty = isRearDominant || isFlexibleLimb;
 
-            const logName = this._escapeLogText(currentItem.name);
-            const logLoc = this._escapeLogText((currentItem.location || "no location") + (this.isTurretMounted(currentItem) ? ", turret" : ""));
+            const weaponNotes: string[] = [`Base BV ${baseBV}, heat ${weaponHeat}`];
+            let arcHalved = false;
+            let heatHalved = false;
             if (firesRear(currentItem)) {
-                if (waiveRearPenalty) {
-                    this._calcLogBV += `+ Adding Rear Weapon ${logName} (${logLoc}) - Base BV: ${baseBV} (Rear penalty waived), Heat: ${weaponHeat}<br />`;
-                } else {
-                    this._calcLogBV += `+ Adding Rear Weapon ${logName} (${logLoc}) - Base BV: ${baseBV} halved due to Rear Arc: ${baseBV / 2}, Heat: ${weaponHeat}<br />`;
+                if (!waiveRearPenalty) {
+                    weaponNotes.push("halved: rear arc");
+                    arcHalved = true;
                     finalWeaponMultiplier *= 0.5;
                 }
             } else {
                 if (isRearDominant && !isFlexibleLimb) {
-                    this._calcLogBV += `+ Adding Front Weapon ${logName} (${logLoc}) - Base BV: ${baseBV} halved due to Rear Dominance: ${baseBV / 2}, Heat: ${weaponHeat}<br />`;
+                    weaponNotes.push("halved: forward arc, rear weapons are worth more");
+                    arcHalved = true;
                     finalWeaponMultiplier *= 0.5;
-                } else {
-                    this._calcLogBV += `+ Adding Front Weapon ${logName} (${logLoc}) - Base BV: ${baseBV}, Heat: ${weaponHeat}<br />`;
                 }
             }
 
@@ -1452,23 +1464,38 @@ export class BattleMech {
             if (totalWeaponHeat >= mechHeatEfficiency) {
                 if (inHalfCost && weaponHeat > 0) {
                     finalWeaponMultiplier *= 0.5;
-                    this._calcLogBV += `  [Thermal Penalty: Halved due to running hot] -> Cumulative Item Multiplier: ${finalWeaponMultiplier}<br />`;
+                    weaponNotes.push("halved: over heat efficiency");
+                    heatHalved = true;
                 }
 
                 runningHeat += weaponHeat;
 
                 if (!inHalfCost && runningHeat >= mechHeatEfficiency && weaponHeat > 0) {
                     inHalfCost = true;
-                    this._calcLogBV += "  (System limit reached: This component consumes the remaining thermal efficiency pool; subsequent weapons will incur a heat penalty.)<br />";
+                    weaponNotes.push("this weapon reaches the heat efficiency; later weapons count half");
                 }
             }
 
             runningTotal += baseBV * finalWeaponMultiplier;
+            const weaponCites: ICalcCitation[] = [];
+            if (this.hasTargetingComputer() && isTargetingComputerWeapon(currentItem)) weaponCites.push(MECH_BV2_WEAPON_CITES.targetingComputer);
+            if (currentItem.linkedWeaponTags?.length) weaponCites.push(MECH_BV2_WEAPON_CITES.machineGunArray);
+            if (this._hasArmAES(currentItem.location)) weaponCites.push(MECH_BV2_WEAPON_CITES.actuatorEnhancement);
+            if (this.hasDroneOperatingSystem()) weaponCites.push(MECH_BV2_WEAPON_CITES.droneOperatingSystem);
+            if (/(^|-)ppc-capacitor$/.test(currentItem.tag)) weaponCites.push(MECH_BV2_WEAPON_CITES.ppcCapacitor);
+            const turretMounted = this.isTurretMounted(currentItem);
+            trace.add(heatHalved ? "bv2.off.weapon.overheat" : arcHalved ? "bv2.off.weapon.rear" : turretMounted ? "bv2.off.weapon.turret" : "bv2.off.weapon", {
+                label: `${currentItem.name} (${(currentItem.location || "no location") + (turretMounted ? ", turret" : "")})`,
+                detail: weaponNotes.join("; "),
+                value: baseBV * finalWeaponMultiplier,
+                total: runningTotal,
+                cites: weaponCites,
+            });
         }
 
         // 3G. Finalize Offensive Calculations & Apply TSM Tonnage Modifiers (TM p. 303)
         const totalWeaponBV = runningTotal;
-        this._calcLogBV += `<strong>Total Weapon BV:</strong> ${totalWeaponBV.toFixed(2)}<br />`;
+        trace.add("bv2.off.weapons.total", { label: "Total weapon BV", value: totalWeaponBV, emphasis: true });
 
         let modifiedMechTonnage = this.getTonnage();
 
@@ -1476,55 +1503,54 @@ export class BattleMech {
         const aesMultiplier = this.getAESBVMultiplier();
         if (aesMultiplier !== 1) {
             modifiedMechTonnage *= aesMultiplier;
-            this._calcLogBV += `Actuator Enhancement System: Tonnage modified by ${aesMultiplier}x -> ${modifiedMechTonnage} tons<br />`;
+            trace.add("bv2.off.tonnage.aes", { label: "Actuator Enhancement System: tonnage modified", detail: `${this.getTonnage()} tons x ${aesMultiplier}`, value: modifiedMechTonnage });
         }
         if (this._myomerType.bvWeightMultiplier !== 1) {
             // TSM x 1.5, Industrial TSM x 1.15 (TM p. 303)
             modifiedMechTonnage *= this._myomerType.bvWeightMultiplier;
-            this._calcLogBV += `${this._myomerType.name} Active: Tonnage modified by ${this._myomerType.bvWeightMultiplier}x -> ${modifiedMechTonnage} tons (Base: ${this.getTonnage()})<br />`;
-        } else {
-            this._calcLogBV += `Standard Tonnage Applied: ${modifiedMechTonnage} tons<br />`;
+            trace.add("bv2.off.tonnage.tsm", { label: `${this._myomerType.name}: tonnage modified`, detail: `${this.getTonnage()} tons x ${this._myomerType.bvWeightMultiplier}`, value: modifiedMechTonnage });
         }
 
         const baseOffensiveRating = totalWeaponBV + totalAmmoBV + modifiedMechTonnage;
+        trace.add("bv2.off.tonnage", { label: "Tonnage", detail: `weapons ${totalWeaponBV.toFixed(2)} + ammunition ${totalAmmoBV.toFixed(2)} + tonnage ${modifiedMechTonnage}`, value: modifiedMechTonnage, total: baseOffensiveRating });
 
         // 3H. Apply Speed Factor Scaling Multiplier (TM p. 304)
         const speedFactorModifier = this._getSpeedFactorModifier();
         let finalOffensiveBattleRating = baseOffensiveRating * speedFactorModifier;
-        this._calcLogBV += `<strong>Offensive Battle Rating:</strong> ${finalOffensiveBattleRating.toFixed(2)} ` +
-            `(${totalWeaponBV.toFixed(2)} [Weapon BV] + ${totalAmmoBV.toFixed(2)} [Ammo BV] + ${modifiedMechTonnage} [Mech Tonnage]) ` +
-            `x ${speedFactorModifier.toFixed(4)} [Speed Factor Rating]<br />`;
+        if (this.hasAirMechMode()) {
+            trace.add("bv2.off.speed.lam", { label: "LAM: speed factor uses AirMech mode movement" });
+        }
+        trace.add("bv2.off.speed", { label: "Speed Factor", value: speedFactorModifier });
+        trace.add("bv2.off.rating", { label: "Offensive Battle Rating", detail: `${baseOffensiveRating.toFixed(2)} x ${speedFactorModifier}`, value: finalOffensiveBattleRating, emphasis: this.hasAdvancedFireControl() });
         // "IndustrialMechs, unless equipped with Advanced Fire Control (see p. 69), multiply their
         // Offensive Battle Rating by 0.9" (TM p.304).
         if (!this.hasAdvancedFireControl()) {
-            this._calcLogBV += `IndustrialMech without Advanced Fire Control: ${finalOffensiveBattleRating.toFixed(2)} x 0.9 = ${(finalOffensiveBattleRating * 0.9).toFixed(2)}<br />`;
+            trace.add("bv2.off.industrial", { label: "IndustrialMech without Advanced Fire Control", detail: `${finalOffensiveBattleRating.toFixed(2)} x 0.9`, value: finalOffensiveBattleRating * 0.9, emphasis: true });
             finalOffensiveBattleRating *= 0.9;
         }
-        this._calcLogBV += `<strong>Final Offensive Battle Rating:</strong> ${finalOffensiveBattleRating.toFixed(2)}<br />`;
         this._offensiveBattleRating = finalOffensiveBattleRating;
 
         /* *************************************************************************
          * STEP 4: CALCULATE FINAL BATTLE VALUE - TechManual p. 304
          * *********************************************************************** */
-        this._calcLogBV += "<strong>STEP 4: CALCULATE FINAL BATTLE VALUE - TM p304</strong><br />";
 
         // Pull verified class values calculated in previous steps
         const currentDBR = this._defensiveBattleRating;
         const currentOBR = this._offensiveBattleRating;
         
         let finalBattleValue = currentDBR + currentOBR;
-        this._calcLogBV += `Unmodified Combined BV = Defensive Rating + Offensive Rating: ${finalBattleValue.toFixed(2)} = ${currentDBR.toFixed(2)} + ${currentOBR.toFixed(2)}<br />`;
+        trace.add("bv2.final.sum", { label: "Defensive + Offensive Battle Rating", detail: `${currentDBR.toFixed(2)} + ${currentOBR.toFixed(2)}`, value: finalBattleValue });
 
         // Small (TM p.304) and Torso-Mounted (TO:AUE p.193) cockpits multiply the BV by 0.95; a drone takes no
         // cockpit modifier (TO:AUE p.192).
         const cockpitBVMultiplier = this.hasDroneOperatingSystem() ? 1 : this.getCockpitType().bvMultiplier ?? 1;
         if (cockpitBVMultiplier !== 1) {
             finalBattleValue *= cockpitBVMultiplier;
-            this._calcLogBV += `${this.getCockpitType().name} Penalty Applied: Total multiplied by ${cockpitBVMultiplier} -> Intermediate BV: ${finalBattleValue.toFixed(2)}<br />`;
+            trace.add("bv2.final.cockpit", { label: `${this.getCockpitType().name}: total multiplied by ${cockpitBVMultiplier}`, value: finalBattleValue });
         }
         if (this._roboticControl !== "none") {
             finalBattleValue *= SRCS_BATTLE_VALUE_MULTIPLIER;
-            this._calcLogBV += `${this.getRoboticControl().name} (IO:AE p.187): Total multiplied by ${SRCS_BATTLE_VALUE_MULTIPLIER} -> Intermediate BV: ${finalBattleValue.toFixed(2)}<br />`;
+            trace.add("bv2.final.robotic", { label: `${this.getRoboticControl().name}: total multiplied by ${SRCS_BATTLE_VALUE_MULTIPLIER}`, value: finalBattleValue });
         }
 
         // Equipment that multiplies the final BV, once per kind (RISC Heat Sink Override Kit x1.01, IO:AE p.190).
@@ -1534,22 +1560,25 @@ export class BattleMech {
         }
         finalMultipliers.forEach(item => {
             finalBattleValue *= item.battleValueFinalMultiplier!;
-            this._calcLogBV += `${this._escapeLogText(item.name)}: Total multiplied by ${item.battleValueFinalMultiplier} -> Intermediate BV: ${finalBattleValue.toFixed(2)}<br />`;
+            trace.add(item.tag === "drone-operating-system" ? "bv2.final.drone" : item.tag === "risc-heat-sink-override-kit" ? "bv2.final.override-kit" : "bv2.final.equipment",
+                { label: `${item.name}: total multiplied by ${item.battleValueFinalMultiplier}`, value: finalBattleValue });
         });
 
         // Execute absolute rounding to whole integer values (TM p. 304)
         const absoluteRoundedBV = Math.round(finalBattleValue);
-        this._calcLogBV += `<strong>Final Unit Battle Value:</strong> ${absoluteRoundedBV} (Rounded from ${finalBattleValue.toFixed(2)})<br />`;
         
         // LAM bombs add their BV to the base BV before the skill multiplier, as external stores do on
         // fighters (TM p.315). Provisional: IO:AE's LAM BV rules (p.186) do not say bombs follow that rule.
         const bombBV = this.getBombBattleValue();
         if (bombBV > 0) {
-            this._calcLogBV += `<em>PROVISIONAL LAM BV:</em> + Loaded bombs (external stores): ${bombBV} -> ${absoluteRoundedBV + bombBV}<br />`;
+            trace.add("bv2.final.lam-bombs", { label: "Loaded bombs (external stores)", value: bombBV, total: absoluteRoundedBV + bombBV });
         }
+        trace.add("bv2.final.round", { label: "Battle Value", detail: `${finalBattleValue.toFixed(2)} rounded${bombBV > 0 ? `, plus ${bombBV} for bombs` : ""}`, value: absoluteRoundedBV + bombBV, emphasis: true });
 
         // Commit values into the master class structures
         this._battleValue = absoluteRoundedBV + bombBV;
+        this._battleValueSteps = trace.steps;
+        this._calcLogBV = renderCalcStepsHtml(trace.steps);
         // Under a BV1 edition its own steps come first in the log, then the BV2 ones for comparison (plan ruling 1).
         this._battleValue1.clear();
         getBattleValueFor(this._rulesEdition, "mech", { bv1: () => {
@@ -1574,15 +1603,10 @@ export class BattleMech {
         const matrixMultiplier = getSkillMultiplier(gunnery, piloting, "mech", getBattleValueSkillEdition(this._rulesEdition, "mech"));
         if (matrixMultiplier !== null) {
             skillMultiplier = matrixMultiplier;
-        } else {
-            // Fallback warning telemetry if an out-of-bounds custom skill rating is supplied
-            this._calcLogBV += `[Pilot Data Alert] Skill rating layout (${gunnery}/${piloting}) falls outside standard matrix boundaries. Defaulting to 1.0x baseline modifier.<br />`;
         }
         // Calculate finalized personnel metrics and round to whole integer steps
         const baseBattleValue = this.getBattleValue();
         this._pilotAdjustedBattleValue = Math.round(baseBattleValue * skillMultiplier);
-        this._calcLogBV += `<strong>Pilot Adjusted BV:</strong> ${this._pilotAdjustedBattleValue} ` +
-            `(Base Unit BV: ${baseBattleValue} x Skill Multiplier [G:${gunnery}/P:${piloting}]: ${skillMultiplier.toFixed(2)})<br />`;
     }
 
     /**
@@ -2177,6 +2201,13 @@ export class BattleMech {
         if (this._battleValueStale) {
             this._calcBattleValue();
         }
+    }
+
+    /** The Battle Value 2 calculation as cited steps. BV1 and no-BV editions are not broken down yet: every edition reads BV2. */
+    public getBattleValueBreakdown(edition: string = this._rulesEdition): ICalcBreakdown {
+        // Always recalculated: the steps quote names and numbers that can change without a slot move marking the BV stale.
+        this._calcBattleValue();
+        return { kind: "battle-value", edition, scheme: "bv2", steps: this._battleValueSteps, result: this._battleValue };
     }
 
     public getBattleValue(edition: string = this._rulesEdition): number {

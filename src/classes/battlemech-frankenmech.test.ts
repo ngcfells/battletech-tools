@@ -153,7 +153,8 @@ describe("FrankenMechs: hybrid structure (XTRO:Mercenaries p.7)", () => {
     it("values each location's structure by its own type", () => {
         const mech = franken();
         mech.setFrankenMechDonor("leftArm", { structure: "reinforced" });
-        expect(mech.getBVCalcHTML()).toContain("Internal Structure (Left Arm): 10 points x 1.5 x 2 (Reinforced) = 30.00");
+        expect(mech.getBattleValueBreakdown().steps.filter((step) => step.id === "bv2.def.structure.frankenmech" && step.label === "Internal structure, Left Arm (Reinforced)"))
+            .toMatchObject([{ detail: "10 points x 1.5 x 2", value: 30 }]);
         expect(mech.getBattleValue()).toBeGreaterThan(franken().getBattleValue());
     });
 });

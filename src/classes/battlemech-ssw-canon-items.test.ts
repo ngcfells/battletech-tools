@@ -109,7 +109,9 @@ describe("prototype lasers count their Battle Value heat from IO:AE p.189", () =
         const unit = mech();
         const laser = add(unit, tag, "ra");
         unit.getBattleValue();
-        expect(unit.calcLogBV).toContain(`Total Weapon Heat Breakdown:</strong> ${heat} = ${heat}.00`);
+        const heatStep = unit.getBattleValueBreakdown().steps.find((step) => step.id === "bv2.off.heat.weapons");
+        expect(heatStep?.detail).toBe(`${heat}`);
+        expect(heatStep?.value).toBe(heat);
         expect(laser?.battleValue).toBe(bv);
     });
 });

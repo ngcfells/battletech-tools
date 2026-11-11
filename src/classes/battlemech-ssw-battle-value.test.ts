@@ -299,8 +299,11 @@ describe("SSW Battle Value (#46)", () => {
         // The MUL gives 2675; SSW gives 2788.
         const mech = importFixture("amarok-3");
         expect(mech.getBattleValue()).toBe(2675);
-        expect(mech.calcLogBV).not.toContain("Weapon CASE II");
-        expect(mech.calcLogBV).toContain("Total Weapon Heat Breakdown:</strong> 2 + 2 + 2 + 2 + 2 + 2 + 2 + 4 + 6 = 24.00");
+        const steps = mech.getBattleValueBreakdown().steps;
+        expect(steps.filter((step) => step.label.includes("Weapon CASE II"))).toHaveLength(0);
+        const heat = steps.find((step) => step.id === "bv2.off.heat.weapons");
+        expect(heat?.detail).toBe("2 + 2 + 2 + 2 + 2 + 2 + 2 + 4 + 6");
+        expect(heat?.value).toBe(24);
     });
 
     it("fits the design's Artemis IV to an Improved LRM (IO:AE p.91): Excalibur EXC-B2b-EC", () => {

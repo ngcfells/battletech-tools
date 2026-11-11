@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 import { sswTestFixtures } from "../data/ssw/sswTestFixtures";
 import { BattleMech } from "./battlemech";
 import Pilot from "./pilot";
+import { ICalcStep } from "../data/calc-steps";
 import { getSkillMultiplier } from "../data/battle-value";
 import { getVTOLAMSamples } from "../data/vtolam-samples";
 import { mechInternalStructureTypes, validateChassisCombination } from "../data/mech-internal-structure-types";
@@ -52,6 +53,17 @@ const clanBallisticList = equipmentBallistic.filter((item) => item.techBase === 
 
 const isEnergyList = equipmentEnergy.filter((item) => item.techBase === "is");
 const clanEnergyList = equipmentEnergy.filter((item) => item.techBase === "clan");
+
+// The Battle Value calculation's cited steps (#599): the tests read the numbers from them, not from the log text.
+const bvSteps = (mech: BattleMech, ...ids: string[]): ICalcStep[] => mech.getBattleValueBreakdown().steps.filter((step) => ids.length === 0 || ids.includes(step.id));
+const bvLast = (mech: BattleMech, ...ids: string[]): ICalcStep => {
+    const found = bvSteps(mech, ...ids);
+    if (found.length === 0) throw new Error(`No step ${ids.join(", ")}`);
+    return found[found.length - 1];
+};
+const bvRound2 = (value: number | undefined): number => Math.round((value ?? NaN) * 100) / 100;
+/** The Battle Value before rounding: the last multiplier or sum step of the final section. */
+const bvUnrounded = (mech: BattleMech): number => bvLast(mech, "bv2.final.sum", "bv2.final.cockpit", "bv2.final.robotic", "bv2.final.drone", "bv2.final.override-kit", "bv2.final.equipment").value!;
 
 describe("BattleMech engine availability by era", () => {
     it("shows the expected Inner Sphere engines for a Star League mech", () => {
@@ -233,12 +245,11 @@ describe("BattleMech armor technology availability", () => {
             mech.setTech("is");
             mech.setEra("ilClan");
             mech.setArmorType(tag);
-            mech.getBattleValue();
-            return mech.getBVCalcHTML();
+            return bvLast(mech, "bv2.def.armor").detail;
         };
-        expect(withArmor("hardened")).toContain("Total Armor Factor = 2 x Modifier for Hardened Armor");
-        expect(withArmor("reactive")).toContain("Total Armor Factor = 1.5 x Modifier for Reactive Armor");
-        expect(withArmor("standard")).toContain("Total Armor Factor = 1 x Modifier for Standard");
+        expect(withArmor("hardened")).toContain(" x 2.5 x 2 (Hardened Armor)");
+        expect(withArmor("reactive")).toContain(" x 2.5 x 1.5 (Reactive Armor)");
+        expect(withArmor("standard")).toContain(" x 2.5 x 1 (Standard)");
     });
 
     it("filters armor by multiplier for pure tech bases and permits both families for mixed bases", () => {
@@ -959,10 +970,9 @@ describe("BattleMech ammunition bins", () => {
         mech.setTech("is");
         mech.addEquipmentFromTag("is-laser-ams", "is", "lt", false, undefined, "", false, [], undefined, undefined);
         mech.getBattleValue();
-        const log = mech.getBVCalcHTML();
 
-        expect(log).toContain("+ Defensive Equipment: Laser AMS");
-        expect(log).not.toContain("Weapon Laser AMS");
+        expect(bvSteps(mech, "bv2.def.equipment").filter((step) => step.label.startsWith("Laser AMS"))).toHaveLength(1);
+        expect(bvSteps(mech).filter((step) => step.id.startsWith("bv2.off.weapon") && step.label.includes("Laser AMS"))).toHaveLength(0);
     });
 
     it("counts AMS ammunition defensively, capped at the AMS BV (TM p.302)", () => {
@@ -972,11 +982,10 @@ describe("BattleMech ammunition bins", () => {
         mech.addEquipmentFromTag("ammo-clan-ams-standard", "clan", "lt", false, undefined, "", false, [], undefined, undefined);
         mech.addEquipmentFromTag("ammo-clan-ams-standard", "clan", "lt", false, undefined, "", false, [], undefined, undefined);
         mech.getBattleValue();
-        const log = mech.getBVCalcHTML();
 
-        expect(log).toContain("capped (Excessive Ammunition rule)");
-        expect(log).toContain("Total Defensive Equipment BV: 64.00"); // 32 AMS + ammo capped at 32
-        expect(log).not.toContain("+ Adding Ammunition: AMS");
+        expect(bvSteps(mech, "bv2.def.equipment.ams-ammo").filter((step) => step.label.includes("capped"))).toHaveLength(1);
+        expect(bvLast(mech, "bv2.def.equipment.total").value).toBe(64); // 32 AMS + ammo capped at 32
+        expect(bvSteps(mech, "bv2.off.ammo").filter((step) => step.label.includes("AMS"))).toHaveLength(0);
     });
 
     it("values a machine gun array at 0.67 x its linked machine guns in the same location (TM p.228)", () => {
@@ -989,7 +998,7 @@ describe("BattleMech ammunition bins", () => {
         mech.getBattleValue();
 
         // Two linked MGs (BV 5 each) in the right arm; the left-arm MG is not linked.
-        expect(mech.getBVCalcHTML()).toMatch(/Machine Gun Array \(ra\) - Base BV: 6\.7\b/);
+        expect(bvSteps(mech).find((step) => step.label.startsWith("Machine Gun Array (ra)"))?.detail).toMatch(/^Base BV 6\.7\b/);
     });
 
     it("gives one-shot launchers no ammunition and a quarter of their heat for BV (TM p.303)", () => {
@@ -1169,7 +1178,7 @@ describe("BattleMech engine construction", () => {
         const heavyDuty = build(150, 2, "standard");
         heavyDuty.setGyroTypeByName("Heavy Duty Gyro");
         expect(heavyDuty.getBattleValue()).toBe(standard.getBattleValue());
-        expect(heavyDuty.getBVCalcHTML()).toContain("Total Gyro BV = 0.5 x Tonnage");
+        expect(bvLast(heavyDuty, "bv2.def.gyro").detail).toMatch(/ tons x 0\.5$/);
     });
 
     it("gives the Superheavy Gyro two center torso slots (IO:AE p.156)", () => {
@@ -1184,12 +1193,11 @@ describe("BattleMech engine construction", () => {
         const log = (tag: string) => {
             const mech = build(50, 4, "standard", "is", "ilClan");
             mech.setInternalStructureType(tag);
-            mech.getBattleValue();
-            return mech.getBVCalcHTML();
+            return bvLast(mech, "bv2.def.structure").detail;
         };
-        expect(log("reinforced")).toContain("Total Internal Structure BV = 2 x Reinforced Modifier");
-        expect(log("composite")).toContain("Total Internal Structure BV = 0.5 x Composite Modifier");
-        expect(log("industrial")).toContain("Total Internal Structure BV = 0.5 x Industrial Modifier");
+        expect(log("reinforced")).toMatch(/ x 2 \(Reinforced\)$/);
+        expect(log("composite")).toMatch(/ x 0\.5 \(Composite\)$/);
+        expect(log("industrial")).toMatch(/ x 0\.5 \(Industrial\)$/);
 
         const clan = new BattleMech();
         clan.setTech("clan");
@@ -1263,7 +1271,7 @@ describe("BattleMech heat sink and gyro availability", () => {
         mech.setAdditionalHeatSinks(2);
         mech.getBattleValue();
         expect(mech.getHeatSyncName()).toBe("Laser Heat Sinks");
-        expect(mech.getBVCalcHTML()).toContain("Engine Sinks: 24");
+        expect(bvLast(mech, "bv2.off.heat.efficiency").detail).toContain("6 + 24 heat sink capacity");
         expect(mech.getCBillCalcHTML()).toContain("6,000 x (Number of Heat Sinks [12])");
     });
 
@@ -1389,7 +1397,7 @@ describe("BattleMech myomer and MP boosters", () => {
         tsm.setMyomerType("tsm");
         expect(tsm.hasTripleStrengthMyomer()).toBe(true);
         expect(tsm.getUnallocatedCritCount() - standard.getUnallocatedCritCount()).toBe(6);
-        expect(tsm.getBVCalcHTML()).toContain("Tonnage modified by 1.5x");
+        expect(bvLast(tsm, "bv2.off.tonnage.tsm").detail).toMatch(/ x 1\.5$/);
         expect(tsm.getCBillCalcHTML()).toContain("16,000 x Unit Tonnage [55]");
         expect(tsm.getBattleValue()).toBeGreaterThan(standard.getBattleValue());
 
@@ -1592,10 +1600,9 @@ describe("Chassis rules levels, provisional BV, and cost multipliers", () => {
         expect(lam.getAirMechFlankMP()).toBe(23);
         expect(lam.getHeatSinks()).toBe(12);
         expect(lam.getMaxMovementHeat()).toBe(8);
-        const log = lam.getBVCalcHTML();
-        expect(log).toContain("Best Base TMM: 6");
-        expect(log).toContain("Heat Efficiency Capacity Pool:</strong> 13");
-        expect(log).toContain("x 3.0000 [Speed Factor Rating]");
+        expect(bvLast(lam, "bv2.def.tmm").value).toBe(6);
+        expect(bvLast(lam, "bv2.off.heat.efficiency").value).toBe(13);
+        expect(bvLast(lam, "bv2.off.speed").value).toBe(3);
     });
 
     it("applies the x1.25 OmniMech cost multiplier", () => {
@@ -1954,12 +1961,12 @@ describe("LAM bombs and fuel", () => {
             const lam = makeLAM();
             addTo(lam, tag, "lt", "leftTorso");
             lam.clearBombLoadout();
-            return lam.getBVCalcHTML();
+            return bvSteps(lam);
         };
         for (const tag of ["lam-bomb-bay", "lam-fuel-tank"]) {
-            const log = penalty(tag);
-            expect(log).toContain("Explosive Ammo Crit in leftTorso (Inner Sphere, -15)");
-            expect(log).not.toMatch(/Explosive Component Crit \((Bomb Bay|Fuel Tank)/);
+            const steps = penalty(tag);
+            expect(steps.filter((step) => step.id === "bv2.def.explosive.lam-store" && step.label.includes("in leftTorso (Inner Sphere)") && step.value === -15).length).toBeGreaterThan(0);
+            expect(steps.filter((step) => step.id === "bv2.def.explosive.component" && /(Bomb Bay|Fuel Tank)/.test(step.label))).toHaveLength(0);
         }
     });
 
@@ -2197,7 +2204,7 @@ describe("BattleMech", () => {
 
         expect(mech.getRunSpeed()).toBe(8);
         expect(mech.getJumpSpeed()).toBe(5);
-        expect(mech.getBVCalcHTML()).toContain("x 1.7600 [Speed Factor Rating]");
+        expect(bvLast(mech, "bv2.off.speed").value).toBe(1.76);
     });
 
     // Regression: SSW names ammunition "@ SRM-6" ("Ammo (SRM-6)"); after the ammunition catalog moved to one
@@ -4224,11 +4231,11 @@ describe("Batch 17 explosive weapons in Battle Value (TO:AUE pp.194-195)", () =>
         expect(mech.moveCritical("un", from, "ra", slot), tag).toBe(true);
         return mech;
     };
-    // Points taken off for the named item: the log prints one line per item per location, "(Inner Sphere, -N)".
+    // Points taken off for the named item: one step per item per location, valued -N.
     const penalties = (mech: BattleMech, name: string) =>
-        mech.getBVCalcHTML().split("<br />")
-            .filter(line => line.startsWith(`Explosive Component Crit (${name}) in `))
-            .reduce((total, line) => total + Number(/-(\d+)\)$/.exec(line)?.[1] ?? 0), 0);
+        bvSteps(mech, "bv2.def.explosive.component")
+            .filter(step => step.label.startsWith(`Explosive component: ${name} in `))
+            .reduce((total, step) => total - (step.value ?? 0), 0);
 
     it("gives a PPC with a Capacitor its combined Battle Value and marks it explosive", () => {
         // tag: BV (TO:AUE p.194, "Treat as Gauss weapon when calculating defensive battle rating")
@@ -5045,10 +5052,10 @@ describe("Batch 26 explosive ammunition penalty by location (TM p.302, TO:AUE p.
         };
         for (const [tag, location] of options.items ?? []) place(tag, location);
         for (const location of options.ammo) place(tech === "clan" ? "ammo-clan-lb-10x-standard" : "ammo-ac-10-standard", location);
-        const log = mech.getBVCalcHTML().split("<br />");
+        const steps = bvSteps(mech);
         return {
-            locations: log.filter(line => /^Explosive Ammo Crit in /.test(line)).map(line => /in (\w+)/.exec(line)![1]).sort(),
-            log,
+            locations: steps.filter(step => step.id === "bv2.def.explosive.ammo" || step.id === "bv2.def.explosive.lam-store").map(step => / in (\w+) \([^)]*\)$/.exec(step.label)![1]).sort(),
+            steps,
             mech,
         };
     };
@@ -5095,10 +5102,10 @@ describe("Batch 26 explosive ammunition penalty by location (TM p.302, TO:AUE p.
         // 20 tons, no armor: structure and gyro are worth 59.5, six tons of ammunition would take off 90.
         const unarmored = penalised({ tonnage: 20, ammo: ["ct", "ct", "ll", "ll", "rl", "rl"] });
         expect(unarmored.locations).toHaveLength(6);
-        expect(unarmored.log.some(line => line.startsWith("Penalties cannot take the total below 1"))).toBe(true);
+        expect(unarmored.steps.some(step => step.id === "bv2.def.floor" && step.label.startsWith("Penalties cannot take the total below 1"))).toBe(true);
         expect(unarmored.mech.getBattleValue()).toBeGreaterThan(0);
         // An ordinary design never reaches the floor.
-        expect(penalised({ ammo: ["ct"] }).log.some(line => line.startsWith("Penalties cannot take the total below 1"))).toBe(false);
+        expect(penalised({ ammo: ["ct"] }).steps.some(step => step.id === "bv2.def.floor")).toBe(false);
     });
 });
 
@@ -5118,7 +5125,7 @@ describe("Batch 27 Weapon Battle Rating order (TM p.303)", () => {
         const from = mech.unallocatedCriticals.findIndex(critical => critical?.uuid === item.uuid);
         expect(mech.moveCritical("un", from, location, mech.getCriticals()[key].findIndex(critical => !critical))).toBe(true);
     };
-    const weaponBV = (mech: BattleMech) => Number(/<strong>Total Weapon BV:<\/strong> ([\d.]+)/.exec(mech.getBVCalcHTML())?.[1]);
+    const weaponBV = (mech: BattleMech) => bvRound2(bvLast(mech, "bv2.off.weapons.total").value);
 
     it("takes the cooler of two weapons with the same Battle Value first", () => {
         const mech = build();
@@ -5153,7 +5160,7 @@ describe("Batch 27 Weapon Battle Rating order (TM p.303)", () => {
         const mech = build();
         for (const tag of ["medium-laser", "standard-ppc", "small-laser", "large-laser"]) add(mech, tag);
         mech.getBattleValue();
-        mech.getBVCalcHTML();
+        mech.getBattleValueBreakdown();
         const bySortKey = [...mech.equipmentList].sort((a, b) => a.sort > b.sort ? 1 : a.sort < b.sort ? -1 : 0);
         expect(mech.equipmentList.map(item => item.tag)).toEqual(bySortKey.map(item => item.tag));
         expect(mech.equipmentList.map(item => item.tag)).not.toEqual(["standard-ppc", "large-laser", "medium-laser", "small-laser"]);
@@ -5413,7 +5420,7 @@ describe("Batch 30 Superheavy ammunition shares critical slots (IO:AE p.157)", (
         // Gauss ammunition does not explode; autocannon ammunition does.
         move(mech, add(mech, "ammo-is-lb-10x-standard"), "ct", slot);
         move(mech, add(mech, "ammo-is-lb-10x-standard"), "ct", slot);
-        expect(mech.getBVCalcHTML().split("<br />").filter(line => /^Explosive Ammo Crit in /.test(line))).toHaveLength(1);
+        expect(bvSteps(mech, "bv2.def.explosive.ammo", "bv2.def.explosive.lam-store")).toHaveLength(1);
     });
 
     it("fits the SHP-4X Omega as the book allocates it", () => {
@@ -5506,9 +5513,8 @@ describe("Batch 31 Vehicular Grenade Launcher and Recon Camera (TO:AUE pp.127, 1
         mech.setWalkSpeed(4);
         const before = mech.getBattleValue();
         mech.addEquipmentFromTag("vehicular-grenade-launcher", "is", "", false, undefined, "", false, [], undefined, undefined);
-        const log = mech.getBVCalcHTML();
-        expect(/<strong>Total Weapon BV:<\/strong> ([\d.]+)/.exec(log)?.[1]).toBe("15.00");
-        expect(log).toContain("Total Weapon Heat Breakdown:</strong> 0.25 = 0.25");
+        expect(bvRound2(bvLast(mech, "bv2.off.weapons.total").value)).toBe(15);
+        expect(bvLast(mech, "bv2.off.heat.weapons")).toMatchObject({ detail: "0.25", value: 0.25 });
         expect(mech.getBattleValue()).toBeGreaterThan(before);
     });
 });
@@ -5656,7 +5662,7 @@ describe("Batch 35 TSEMP weapons and RISC Viral Jammers (IO:AE pp.84, 88, 190, 2
         const item = mech.addEquipmentFromTag("tsemp-cannon", "is", "", false, undefined, "", false, [], undefined, undefined)!;
         const from = mech.unallocatedCriticals.findIndex(critical => critical?.uuid === item.uuid);
         expect(mech.moveCritical("un", from, "ra", mech.getCriticals().rightArm.findIndex(critical => !critical))).toBe(true);
-        expect(mech.getBVCalcHTML()).toContain("Explosive Component Crit (TSEMP Cannon) in rightArm (Inner Sphere, -5)");
+        expect(bvSteps(mech, "bv2.def.explosive.component").filter(step => step.label === "Explosive component: TSEMP Cannon in rightArm (Inner Sphere)" && step.value === -5)).toHaveLength(1);
     });
 });
 
@@ -5687,9 +5693,8 @@ describe("Batch 36 BattleMech Taser (TO:AUE pp.157-158)", () => {
         const add = (tag: string) => mech.addEquipmentFromTag(tag, "is", "", false, undefined, "", false, [], undefined, undefined);
         expect(add("mech-taser")).not.toBeNull();
         expect(add("ammo-is-mech-taser-standard")).not.toBeNull();
-        const log = mech.getBVCalcHTML();
-        expect(/<strong>Total Weapon BV:<\/strong> ([\d.]+)/.exec(log)?.[1]).toBe("40.00");
-        expect(/<strong>Total Capped Ammo BV:<\/strong> ([\d.]+)/.exec(log)?.[1]).toBe("5.00");
+        expect(bvRound2(bvLast(mech, "bv2.off.weapons.total").value)).toBe(40);
+        expect(bvRound2(bvLast(mech, "bv2.off.ammo.total").value)).toBe(5);
     });
 });
 
@@ -5778,7 +5783,7 @@ describe("Batch 38 Coolant Pod (TO:AUE pp.116, 193)", () => {
         for (let pod = 0; pod < pods; pod++) {
             mech.addEquipmentFromTag("coolant-pod", "is", "", false, undefined, "", false, [], undefined, undefined);
         }
-        return Number(/<strong>Heat Efficiency Capacity Pool:<\/strong> (-?[\d.]+)/.exec(mech.getBVCalcHTML())?.[1]);
+        return bvLast(mech, "bv2.off.heat.efficiency").value!;
     };
 
     it("adds heat sinks x pods / 5, rounded up, to the heat sink capacity for Battle Value", () => {
@@ -5802,7 +5807,7 @@ describe("Batch 38 Coolant Pod (TO:AUE pp.116, 193)", () => {
         const pod = mech.addEquipmentFromTag("coolant-pod", "is", "", false, undefined, "", false, [], undefined, undefined)!;
         const from = mech.unallocatedCriticals.findIndex(critical => critical?.uuid === pod.uuid);
         expect(mech.moveCritical("un", from, "ct", mech.getCriticals().centerTorso.findIndex(critical => !critical))).toBe(true);
-        expect(mech.getBVCalcHTML()).toContain("Explosive Component Crit (Coolant Pod) in centerTorso (Inner Sphere, -1)");
+        expect(bvSteps(mech, "bv2.def.explosive.component").filter(step => step.label === "Explosive component: Coolant Pod in centerTorso (Inner Sphere)" && step.value === -1)).toHaveLength(1);
     });
 });
 
@@ -5836,7 +5841,7 @@ describe("Batch 39 RISC Heat Sink Override Kit (IO:AE pp.86, 190, 215)", () => {
 
     it("multiplies the final Battle Value by 1.01, once", () => {
         const plain = build();
-        const unrounded = Number(/Rounded from ([\d.]+)/.exec(plain.getBVCalcHTML())?.[1]);
+        const unrounded = bvUnrounded(plain);
         const one = build();
         addKit(one);
         expect(one.getBattleValue()).toBe(Math.round(unrounded * 1.01));
@@ -5922,7 +5927,7 @@ describe("Batch 41 cockpit selection and IndustrialMech fire control (TM pp.69, 
     it("switches between the Standard and Small cockpits", () => {
         const mech = build();
         expect(mech.getCockpitType().tag).toBe("standard");
-        const standard = Number(/Rounded from ([\d.]+)/.exec(mech.getBVCalcHTML())?.[1]);
+        const standard = bvUnrounded(mech);
         expect(mech.setCockpitType("small").tag).toBe("small");
         expect(mech.getCockpitWeight()).toBe(2);
         expect(mech.getBattleValue()).toBe(Math.round(standard * 0.95));
@@ -5937,7 +5942,7 @@ describe("Batch 41 cockpit selection and IndustrialMech fire control (TM pp.69, 
         const mech = build();
         const noGyro = () => mech.getAvailableGyros(4).find(gyro => gyro.tag === "none")?.available;
         expect(noGyro()).toBe(false);
-        const standard = Number(/Rounded from ([\d.]+)/.exec(mech.getBVCalcHTML())?.[1]);
+        const standard = bvUnrounded(mech);
         expect(mech.setCockpitType("interface")).toMatchObject({ tag: "interface", weight: 4, cost: 1500000 });
         expect(mech.getBattleValue()).toBe(Math.round(standard * 1.3));
         expect(mech.canMountCommandConsole()).toBe(false);
@@ -5960,7 +5965,7 @@ describe("Batch 41 cockpit selection and IndustrialMech fire control (TM pp.69, 
         const systems = () => mech.getAvailableRoboticControls(3).map(system => system.tag);
         expect(systems()).toEqual(["none", "srcs", "srcs-improved"]);
         expect(mech.getAvailableRoboticControls(2).map(system => system.tag)).toEqual(["none"]);
-        const standard = Number(/Rounded from ([\d.]+)/.exec(mech.getBVCalcHTML())?.[1]);
+        const standard = bvUnrounded(mech);
         const tons = mech.getCurrentTonnage();
         expect(mech.setRoboticControl("srcs").tag).toBe("srcs");
         // 5 percent of 50 tons, on top of the 3-ton cockpit; the 'Mech fights at Gunnery 5, Piloting 9.
@@ -6003,14 +6008,14 @@ describe("Batch 41 cockpit selection and IndustrialMech fire control (TM pp.69, 
     });
 
     it("multiplies the Offensive Battle Rating by 0.9 without Advanced Fire Control", () => {
-        const offensive = (mech: BattleMech) => Number(/<strong>Final Offensive Battle Rating:<\/strong> ([\d.]+)/.exec(mech.getBVCalcHTML())?.[1]);
+        const offensive = (mech: BattleMech) => bvRound2(bvLast(mech, "bv2.off.rating", "bv2.off.industrial").value);
         const mech = build({ structure: "industrial" });
         add(mech, "medium-laser");
         const plain = offensive(mech);
-        expect(mech.getBVCalcHTML()).toMatch(/IndustrialMech without Advanced Fire Control: [\d.]+ x 0.9 = [\d.]+/);
+        expect(bvLast(mech, "bv2.off.industrial").detail).toMatch(/ x 0\.9$/);
         mech.setCockpitType("industrial-advanced-fire-control");
         expect(plain).toBeCloseTo(offensive(mech) * 0.9, 1);
-        expect(mech.getBVCalcHTML()).not.toContain("without Advanced Fire Control");
+        expect(bvSteps(mech, "bv2.off.industrial")).toHaveLength(0);
     });
 
     it("keeps Artemis IV, active probes, C3 and targeting computers off an IndustrialMech without Advanced Fire Control", () => {
@@ -6063,7 +6068,7 @@ describe("Batch 43 HarJel II and III repair systems (IO:AE pp.82-83, 185, 215)",
     const place = (mech: BattleMech, item: { uuid?: string }, loc: string, key: string) =>
         mech.moveCritical("un", mech.unallocatedCriticals.findIndex(critical => critical?.uuid === item.uuid), loc, (mech.getCriticals() as any)[key].findIndex((critical: unknown) => !critical));
     const offered = (mech: BattleMech, tag: string) => !!mech.getAvailableEquipment(false, 4).find(item => item.tag === tag)?.available;
-    const subtotal = (mech: BattleMech) => Number(/Defensive Subtotal[^:]*: (-?[\d.]+) =/.exec(mech.getBVCalcHTML())?.[1]);
+    const subtotal = (mech: BattleMech) => bvLast(mech, "bv2.def.subtotal").value!;
 
     it("lists both Clan records with the table values and IO:AE dates", () => {
         expect(clanMiscList.find(item => item.tag === "clan-harjel-ii")).toMatchObject({
@@ -6126,7 +6131,7 @@ describe("Batch 43 HarJel II and III repair systems (IO:AE pp.82-83, 185, 215)",
         const protectedArmor = armor.leftTorso + armor.leftTorsoRear;
         expect(protectedArmor).toBeGreaterThan(0);
         expect(subtotal(mech)).toBeCloseTo(plain + 2.5 * protectedArmor * 0.1 - 1, 5);
-        expect(mech.getBVCalcHTML()).toContain("HarJel II Self-Repair System in leftTorso: armor x 1.1");
+        expect(bvSteps(mech, "bv2.def.armor.harjel").filter(step => step.label === "HarJel II Self-Repair System in leftTorso" && step.detail?.startsWith("armor x 1.1 on "))).toHaveLength(1);
 
         const three = build();
         const harjelIII = add(three, "clan-harjel-iii");
@@ -6209,14 +6214,14 @@ describe("Batch 44 RISC Laser Pulse Module (IO:AE pp.87, 190, 215)", () => {
             expect(mech.moveCritical("un", from, "la", mech.getCriticals().leftArm.findIndex(critical => !critical))).toBe(true);
             return mech;
         };
-        const weaponBV = (mech: BattleMech) => Number(/<strong>Total Weapon BV:<\/strong> ([\d.]+)/.exec(mech.getBVCalcHTML())?.[1]);
+        const weaponBV = (mech: BattleMech) => bvRound2(bvLast(mech, "bv2.off.weapons.total").value);
         const plain = build("large-laser");
         const modified = build("large-laser-risc-pulse-module");
         expect(weaponBV(modified)).toBeCloseTo(weaponBV(plain) * 1.15, 2);
         // Three slots in the arm, one of them the module.
         expect(modified.getCriticals().leftArm.find(critical => critical?.obj?.tag === "large-laser-risc-pulse-module")?.crits).toBe(3);
-        expect(modified.getBVCalcHTML()).toContain("Explosive Component Crit (Large Laser w/ RISC Laser Pulse Module) in leftArm (Inner Sphere, -1)");
-        expect(plain.getBVCalcHTML()).not.toContain("Explosive Component Crit");
+        expect(bvSteps(modified, "bv2.def.explosive.component").filter(step => step.label === "Explosive component: Large Laser w/ RISC Laser Pulse Module in leftArm (Inner Sphere)" && step.value === -1)).toHaveLength(1);
+        expect(bvSteps(plain, "bv2.def.explosive.component")).toHaveLength(0);
     });
 });
 
@@ -6355,10 +6360,10 @@ describe("Batch 46 C3 Remote Sensor Launcher (TO:AUE pp.110, 195, 217)", () => {
     it("counts the launcher at 30 and each ton of sensors at 6 in the Battle Value", () => {
         const mech = build();
         add(mech, "c3-remote-sensor-launcher");
-        const weaponBV = (unit: BattleMech) => Number(/<strong>Total Weapon BV:<\/strong> ([\d.]+)/.exec(unit.getBVCalcHTML())?.[1]);
+        const weaponBV = (unit: BattleMech) => bvRound2(bvLast(unit, "bv2.off.weapons.total").value);
         expect(weaponBV(mech)).toBe(30);
         add(mech, "ammo-is-c3-remote-sensor-standard");
-        expect(mech.getBVCalcHTML()).toContain("for C3 Remote Sensor Launcher = 6.00");
+        expect(bvSteps(mech, "bv2.off.ammo").filter(step => step.detail?.startsWith("for C3 Remote Sensor Launcher") && bvRound2(step.value) === 6)).toHaveLength(1);
     });
 });
 
@@ -6469,12 +6474,12 @@ describe("Batch 48 superheavy IndustrialMechs and superheavy engines (IO:AE pp.1
     });
 
     it("lets it take the superheavy BattleMech cockpit for Advanced Fire Control", () => {
-        const offensive = (unit: BattleMech) => Number(/<strong>Final Offensive Battle Rating:<\/strong> ([\d.]+)/.exec(unit.getBVCalcHTML())?.[1]);
+        const offensive = (unit: BattleMech) => bvRound2(bvLast(unit, "bv2.off.rating", "bv2.off.industrial").value);
         const mech = build("industrial");
         mech.addEquipmentFromTag("medium-laser", "is", "", false, undefined, "", false, [], undefined, undefined);
         const plain = offensive(mech);
         const plainCost = mech.getCBillCostNumeric();
-        expect(mech.getBVCalcHTML()).toMatch(/IndustrialMech without Advanced Fire Control: [\d.]+ x 0.9 = [\d.]+/);
+        expect(bvLast(mech, "bv2.off.industrial").detail).toMatch(/ x 0\.9$/);
         expect(mech.setCockpitType("superheavy")).toMatchObject({ tag: "superheavy", weight: 4, cost: 300000 });
         expect(mech.hasAdvancedFireControl()).toBe(true);
         expect(plain).toBeCloseTo(offensive(mech) * 0.9, 1);

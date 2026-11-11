@@ -270,9 +270,9 @@ describe("Extended Fuel Tanks (TM pp.68, 244)", () => {
         const mech = build({ structure: "industrial", engine: "ice" });
         const tank = add(mech, "extended-fuel-tank")!;
         expect(place(mech, tank, "lt", "leftTorso")).toBe(true);
-        const log = mech.getBVCalcHTML();
-        expect(log.match(/Explosive Ammo Crit in leftTorso \(Inner Sphere, -15\)/g)).toHaveLength(2);
-        expect(log).not.toContain("Explosive Component Crit (Extended Fuel Tank)");
+        const steps = mech.getBattleValueBreakdown().steps;
+        expect(steps.filter((step) => step.id.startsWith("bv2.def.explosive.") && step.label.includes("leftTorso (Inner Sphere)") && step.value === -15)).toHaveLength(2);
+        expect(steps.filter((step) => step.id === "bv2.def.explosive.component" && step.label.includes("Extended Fuel Tank"))).toHaveLength(0);
     });
 });
 
