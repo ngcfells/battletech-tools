@@ -4,9 +4,10 @@ import { IAppGlobals } from '../../app-router';
 import TextSection from '../../components/text-section';
 import UIPage from '../../components/ui-page';
 import { GiBattleMech, GiBunker, GiJetFighter, GiMissileMech, GiRank3, GiSamusHelmet, GiSpaceShuttle, GiSpaceship, GiTank } from "react-icons/gi";
-import { MdTableView } from 'react-icons/md';
+import { MdFactCheck, MdTableView } from 'react-icons/md';
 const MissileMechIcon = GiMissileMech as any;
 const TableViewIcon = MdTableView as any;
+const AccuracyIcon = MdFactCheck as any;
 const VehicleIcon = GiTank as any;
 const FighterIcon = GiJetFighter as any;
 const InfantryIcon = GiRank3 as any;
@@ -83,6 +84,11 @@ export default class ClassicBattleTechHome extends React.Component<IClassicBattl
                   <Link  to={`${process.env.PUBLIC_URL}/classic-battletech/roster`}>
                     <TableViewIcon />
                     Classic BattleTech Roster
+                  </Link>
+
+                  <Link to={`${process.env.PUBLIC_URL}/classic-battletech/battle-value-accuracy`}>
+                    <AccuracyIcon />
+                    Battle Value Accuracy
                   </Link>
               </div>
 

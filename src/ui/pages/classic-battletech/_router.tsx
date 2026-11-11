@@ -17,6 +17,7 @@ const ProtoMechCreatorRouter = React.lazy(() => import("./protomech-creator/_rou
 const SmallCraftCreatorRouter = React.lazy(() => import("./small-craft-creator/_router"));
 const CapitalShipCreatorRouter = React.lazy(() => import("./capital-ship-creator/_router"));
 const BuildingCreatorRouter = React.lazy(() => import("./building-creator/_router"));
+const BvAccuracy = React.lazy(() => import("./bv-accuracy"));
 const TroJbt = React.lazy(() => import("./tro-jbt"));
 const TroReader = React.lazy(() => import("./tro-jbt").then((module) => ({ default: module.TroReader })));
 
@@ -107,6 +108,12 @@ export default class ClassicBattleTechRouter extends React.Component<IClassicBat
 
                 <Route path={`roster/*`} element={
                     <BattleMechRosterRouter
+                        appGlobals={this.props.appGlobals}
+                    />
+                }/>
+
+                <Route path={`battle-value-accuracy`} element={
+                    <BvAccuracy
                         appGlobals={this.props.appGlobals}
                     />
                 }/>

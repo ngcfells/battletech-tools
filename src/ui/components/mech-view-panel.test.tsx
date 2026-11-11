@@ -1,5 +1,6 @@
 // @vitest-environment happy-dom
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { MemoryRouter } from "react-router";
 import { afterEach, describe, expect, it } from "vitest";
 import { BattleMech } from "../../classes/battlemech";
 import MechViewPanel from "./mech-view-panel";
@@ -40,5 +41,12 @@ describe("MechViewPanel", () => {
         render(<MechViewPanel mech={mech} mulBattleValue={mech.getBattleValue()} />);
         fireEvent.click(screen.getByRole("button", { name: "Battle Value and cost breakdown" }));
         expect(screen.getByText(new RegExp(`Master Unit List: ${mech.getBattleValue().toLocaleString("en-US")}`))).toBeTruthy();
+    });
+
+    it("links to the accuracy record when our Battle Value differs from the Master Unit List", () => {
+        const mech = new BattleMech();
+        render(<MemoryRouter><MechViewPanel mech={mech} mulBattleValue={mech.getBattleValue() + 5} /></MemoryRouter>);
+        fireEvent.click(screen.getByRole("button", { name: "Battle Value and cost breakdown" }));
+        expect(screen.getByRole("link", { name: "See the Battle Value accuracy record" }).getAttribute("href")).toMatch(/\/classic-battletech\/battle-value-accuracy$/);
     });
 });

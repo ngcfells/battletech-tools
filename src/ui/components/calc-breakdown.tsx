@@ -22,6 +22,9 @@ export interface ICalcBreakdownProps {
     accuracyHref?: string;
 }
 
+/** Where the Battle Value accuracy record lives. */
+export const BV_ACCURACY_PATH = `${process.env.PUBLIC_URL}/classic-battletech/battle-value-accuracy`;
+
 /** A 'Mech's breakdown: every rules edition that covers 'Mechs, oldest first, starting on the design's own. */
 export function MechCalcBreakdown(props: { mech: BattleMech; mulBattleValue?: number; accuracyHref?: string }): JSX.Element {
     const { mech } = props;
@@ -35,7 +38,7 @@ export function MechCalcBreakdown(props: { mech: BattleMech; mulBattleValue?: nu
             skillBattleValue={(edition) => mech.getPilotAdjustedBattleValue(edition)}
             skillLabel={`Gunnery ${pilot.gunnery}, Piloting ${pilot.piloting}`}
             mulBattleValue={props.mulBattleValue}
-            accuracyHref={props.accuracyHref}
+            accuracyHref={props.accuracyHref ?? BV_ACCURACY_PATH}
         />
     );
 }
