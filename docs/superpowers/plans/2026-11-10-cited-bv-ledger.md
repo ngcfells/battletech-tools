@@ -198,6 +198,70 @@ pp.91-92); a hand-held
 weapon's own BV (Max Tech p.92); the Piloting change a torso or compact cockpit makes to the skill multiplier;
 improved jump jet heat.
 
+## 'Mech cost (read 2026-11-11)
+
+Code: `_calcCBillCost` in `src/classes/battlemech.ts`, and the `cost` fields of the component records. The cost follows
+the current rules under every rules edition: the function has no edition branch of its own (an edition changes only
+the equipment prices its book prints). A component is `cited` only where its own table row was read; the lists are in
+`READ_ROWS` in `src/data/calc-steps-mech-cost.ts`.
+
+| Step id | Read on | What the page says | Code agrees? | Check |
+|---|---|---|---|---|
+| `cost.cockpit` | TM p.277 table; TO:AUE p.219; IO:AE pp.215, 217 | Standard 200,000; Small 175,000; Industrial 100,000, with advanced fire control 200,000. Torso-mounted 750,000 (TO:AUE). QuadVee 375,000, Primitive 100,000 and Primitive Industrial 50,000 (IO:AE p.215). Tripod 400,000, Superheavy Tripod 500,000 (IO:AE p.217). | Yes, except the primitive cockpits: Finding 21 | Image |
+| `cost.cockpit.record` | none | A cockpit whose row was not re-read (interface, superheavy and others). | Price from our records; provisional |  |
+| `cost.cockpit.command-console` | TO:AUE p.219 | Cockpit Command Console 500,000. | Yes | Image |
+| `cost.cockpit.enhanced-imaging` | none | Not re-read. The code comment names Maximum Tech p.87 for the add-on price. | Price from our records; provisional |  |
+| `cost.cockpit.robotic` | IO:AE p.215 | Smart Robotic Control System: 5,000 + 10,000 x its tonnage. The other robotic control rows were not read. | Yes for the Smart system; provisional | Image |
+| `cost.life-support` | TM p.277 | 50,000. | Yes | Image |
+| `cost.sensors` | TM p.277 | 2,000 x unit tonnage. | Yes | Image |
+| `cost.musculature` | TM p.277; IO:AE p.215 | Standard 2,000, Triple-Strength Myomer 16,000, Industrial TSM 12,000, each x unit tonnage. RISC Super-Cooled Myomer 10,000 x tonnage (IO:AE). | Yes | Image |
+| `cost.musculature.record` | none | A myomer whose row was not re-read (prototype TSM). | Price from our records; provisional |  |
+| `cost.musculature.primitive` | IO:AE p.215 | Primitive 'Mech musculature 1,000 x tonnage. | Yes | Image |
+| `cost.musculature.superheavy` | IO:AE p.217 | Superheavy 'Mech musculature 12,000 x tonnage. | Yes | Image |
+| `cost.structure` | TM p.278 | Standard 400, Endo-Steel 1,600, Industrial 300, each x unit tonnage. | Yes | Image |
+| `cost.structure.record` | none | A structure type whose row was not re-read (endo-composite, reinforced, composite, prototype endo steel). | Price from our records; provisional |  |
+| `cost.structure.superheavy` | IO:AE p.217 | Superheavy: standard 4,000, endo-composite 6,400, endo steel 16,000, industrial 3,000, each x tonnage. | Yes | Image |
+| `cost.structure.tripod` | IO:AE p.217 | Tripod 'Mech structure: the structure cost x 1.2. | Yes | Image |
+| `cost.structure.frankenmech` | none | No rule. | Our reading; provisional |  |
+| `cost.actuators` | TM p.278 | Each: upper arm 100, lower arm 50, hand 80, upper leg 150, lower leg 80, foot 120, x unit tonnage. Shoulders and hips have no row. Only what is mounted is bought. | Yes | Image |
+| `cost.actuators.superheavy` | IO:AE p.217 | Superheavy actuators: 2 x the standard cost. | Yes | Image |
+| `cost.engine` | TM p.278; TO:AUE p.219 | (Multiplier x engine rating x unit tonnage) / 75. Standard fusion 5,000, light 15,000, XL 20,000, compact 10,000, internal combustion 1,250, fuel cell 3,500, fission 7,500. TO:AUE: XXL 100,000; large engines twice their type (ICE 2,500, fusion 10,000, light 30,000, XL 40,000, XXL 200,000). | Yes, but each engine is rounded to a whole C-bill: Finding 20 | Image |
+| `cost.engine.record` | none | An engine whose row was not re-read (primitive). | Price from our records; provisional |  |
+| `cost.gyro` | TM p.278 | Standard 300,000, compact 400,000, heavy-duty 500,000, XL 750,000, each x gyro tonnage. | Yes | Image |
+| `cost.gyro.record` | none | A gyro whose row was not re-read. | Price from our records; provisional |  |
+| `cost.gyro.superheavy` | IO:AE p.217 | Superheavy 'Mech gyro: 500,000 x its tonnage. | Yes | Image |
+| `cost.jump-jets` | TM p.278 | Standard 200, improved 500, x (number of jump jets) squared x unit tonnage. | Yes | Image |
+| `cost.jump-jets.record` | none | A jump jet type whose row was not re-read (UMU, prototypes). | Price from our records; provisional |  |
+| `cost.jump-pack` | TO:AUE p.217 | Jump Pack / Drop Pack: 20,000 x its tonnage. | Yes |  |
+| `cost.heat-sinks` | TM p.278 | Single with a fusion engine: 2,000 for each heat sink over 10; single with another engine: 2,000 for every one; double: 6,000 for every one. | Yes | Image |
+| `cost.heat-sinks.record` | none | A heat sink type whose row was not re-read (laser, compact, prototypes). | Price from our records; provisional |  |
+| `cost.power-amplifiers` | TM p.278 | 20,000 x amplifier tonnage. | Yes | Image |
+| `cost.armor` | TM p.278; TO:AUE p.217; IO:AE p.215 | Per ton of armor: standard and heavy industrial 10,000, ferro-fibrous 20,000, light ferro-fibrous 15,000, heavy ferro-fibrous 25,000, stealth 50,000, commercial 3,000, industrial 5,000. Hardened 15,000 (TO:AUE). Anti-penetrative ablation 15,000, heat-dissipating 25,000, impact-resistant 20,000, ballistic-reinforced 25,000 (IO:AE). | Yes | Image (TM, IO:AE) |
+| `cost.armor.record` | none | An armor whose row was not re-read (laser-reflective, reactive, ferro-lamellor and others). | Price from our records; provisional |  |
+| `cost.armor.patchwork` | none | Not re-read. | Our reading; provisional |  |
+| `cost.equipment` | TM p.282 | Every weapon and item mounted adds its listed cost to the structural cost. The Mongoose example confirms three rows: Beagle active probe 200,000, medium laser 40,000, small laser 11,250. | Rule yes; item prices from our records; provisional |  |
+| `cost.ammo` | TM p.282 | Ammunition need not be bought to find a unit's cost. | Yes: left out of the cost; provisional for the prices |  |
+| `cost.armored-components` | TO:AUE p.217 | Armored components: 150,000 for each critical slot. | Yes |  |
+| `cost.quadvee-motive` | IO:AE p.215; TM p.278 | QuadVee wheels (750 x engine rating x tonnage) / 75; tracks (500 x engine rating x tonnage) / 75. | Yes | Image |
+| `cost.conversion` | IO:AE p.215 table, notes p.218 | LAM conversion: bimodal WSC x 0.65, standard WSC x 0.75; QuadVee conversion WSC x 0.5. WSC is the cost of the unit's weapons, equipment and internal structure. | We take the share of the whole cost so far (owner ruling 2026-10-26); provisional | Image |
+| `cost.conversion.homebrew` | none | A fan rule (VTOL LAM). | Provisional |  |
+| `cost.subtotal` | TM p.282 | Structural cost + weapon and equipment costs. | Yes |  |
+| `cost.omni` | TM p.285 table footnote | Omni Conversion Cost 1.25 for a unit built as an Omni, else 1. | Yes | Image |
+| `cost.omni.homebrew` | none | A fan rule (Omni-LAM x 1.75). | Provisional |  |
+| `cost.tonnage-multiplier` | TM p.285 table | BattleMechs: x (1 + tonnage / 100). IndustrialMechs: x (1 + tonnage / 400), with no Omni conversion. | Yes (the code tells an IndustrialMech by its Industrial internal structure) | Image |
+| `cost.final` | TM p.274, p.285 | Text: no rounding until the end, then up to the nearest 0.01 C-bill. Examples: rounded down to the whole C-bill. | We round to the nearest whole C-bill: Finding 22; provisional |  |
+| `cost.final.loaded` | TM p.282 | No rule for a loaded cost. | Our addition; provisional |  |
+| `cost.rules-edition` | none | The older editions' cost rules were not read. | Not modelled; provisional. See Issues to file |  |
+
+Read but not applied by the code: Environmental Sealing on an IndustrialMech, 225 x unit tonnage (TM p.278); the Uni
+example adds it. See Finding 23.
+
+### Issues to file
+
+- Cost under the rules editions before Total Warfare: the older books' own cost rules are not modelled
+  (`cost.rules-edition`).
+- Environmental Sealing's 225 x tonnage is not in the 'Mech cost (Finding 23).
+
 ## Worked examples in the books
 
 | Unit | Where | Numbers the book prints |
@@ -206,6 +270,8 @@ improved jump jet heat.
 | TDR-10SE Thunderbolt | BV chapter v4.1 (the sixth printing's extract drops this example; TM p.302 names it) | Armor 200 x 2.5 = 500; structure 104 x 1.5 = 156; gyro 65 x 0.5 = 32.5; Guardian ECM 61; subtotal 749.5; one ton of LRM 10 ammunition in the left torso -15 = 734.5; target modifier +3 with MASC, factor 1.3; defensive rating 954.85. LRM 10 90, its ammunition 11, ER PPC 229 x 1.25 = 286.25, ER medium laser 62 x 1.25 = 77.5 (three); heat efficiency 6 + 24 - 4 = 26; weapon heat 34; order ER PPC (15), LRM 10 (19), ER medium (24), ER medium (29, over), third ER medium at half = 38.75; weapon rating 646; running MP 8 with MASC, jumping MP 4, speed factor 1.63; offensive rating 1,052.98. Sum 2,007.83 (BV 2,008). |
 | WI-DM DemolitionMech | TM p.305 | Armor 85 x 2.5 = 212.5; structure 58 x 1.5 x 0.5 = 43.5; gyro 35 x 0.5 = 17.5; no defensive equipment; subtotal 273.5; target modifier +2, factor 1.2; defensive rating 328.2. Rock cutter 6, wrecking ball 8, small laser 9, tonnage 35; heat efficiency 6 + 1 - 2 = 5; weapon rating 58; running MP 5, speed factor 1.00; x 0.9 for no advanced fire control = 52.2. Sum 380.4; BV 380. |
 | Phoenix Hawk LAM | IO:AE p.186 | Not yet usable: see Finding 10. |
+| MON-66 Mongoose (cost) | TM pp.275, 282, 285 | Cockpit 200,000 + life support 50,000 + sensors 50,000 = 300,000. Musculature 50,000; endo steel 40,000; two sets of arm actuators 11,500; two sets of leg actuators 17,500; 419,000 so far. Engine (200-rated standard fusion) 333,333.333; gyro (2 tons) 600,000; 1,352,333.333. No heat sink or jump jet cost. Five tons of ferro-fibrous armor 100,000; structural cost 1,452,333.333. Beagle active probe 200,000, three medium lasers 120,000, small laser 11,250: 331,250; 1,783,583.333. x (1 + 25 / 100) = 2,229,479.166, rounded down to 2,229,479. |
+| Uni CargoMech (cost) | TM pp.275, 282, 285 | A 70-ton quad IndustrialMech. Industrial cockpit 100,000 + 50,000 + 140,000 = 290,000. Musculature 140,000; industrial structure 21,000; environmental sealing 15,750; four legs of actuators 98,000; 564,750. Fuel cell engine (210) 784,000; gyro (3 tons) 900,000; 2,248,750. One single heat sink 2,000; nine tons of commercial armor 27,000; structural cost 2,277,750. Two lift hoists 100,000; 2,377,750. x (1 + 70 / 400) = 2,793,856.25, rounded down to 2,793,856. |
 | Goshawk (BV1) | BMR p.145 and BMR(R) p.159, the same figures | Armor 173 x 2 = 346; structure 91 x 1.125 = 102.375; tonnage 55; no defensive equipment; 503.375; no explosive penalty; heat (30 - 22) x 5 = 40; 463.375; jumping gives +3, factor 1.3; defensive rating 602.3875. Large pulse laser 265, three medium pulse lasers 333, targeting computer 598 x 0.2 = 119.6, four machine guns 20 with half a ton of ammunition 0.5, two Streak SRM 2 80 with a ton of ammunition 5; base 823.1; X = 22 x 823.1 / 30 = 603.6066667; Y = 109.7466667; modified rating 713.3533334; running 9 + jumping 6 = 15, speed factor 2.30; offensive rating 1,640.72667; total 2,243.100167; BV 2,243. |
 
 ## Findings
@@ -279,3 +345,17 @@ changed while reading. Each is decided in the queue (plan Task 11) or by the own
 19. **BV1: a slip in the Goshawk example.** BMR p.145 and BMR(R) p.159 print 713.3533334 x 2.30 = 1,640.72667. The
     product is 1,640.71267. The printed total (2,243.100167) carries the slip; the BV rounds to 2,243 either way.
     Our test checks the true product.
+20. **Cost: the engine is rounded early.** TM p.274 says no cost is rounded until the end. Our code rounds the engine
+    cost to a whole C-bill as soon as it is worked out (the Mongoose's 333,333.333 becomes 333,333). The final cost
+    can differ by a C-bill. Not changed while reading.
+21. **Cost: the primitive cockpits.** IO:AE p.215 (table, page image) prints Primitive BattleMech Cockpit 100,000 and
+    Primitive IndustrialMech Cockpit 50,000. Our records have 200,000 and 100,000 (and 200,000 for the primitive
+    industrial cockpit with advanced fire control, which the table does not list). This looks like our bug.
+22. **Cost: rounding the final cost.** TM p.274 says to round up to the nearest 0.01 C-bill at the end. The examples
+    on p.285 round down to the whole C-bill (2,229,479.166 to 2,229,479; 2,793,856.25 to 2,793,856). Our code rounds
+    to the nearest whole C-bill, and its log line shows the figure rounded up, so the log can read one C-bill above
+    the cost the app uses. The log line is corrected when the function is converted (Task 7); the rounding rule is
+    shown as `provisional`.
+23. **Cost: Environmental Sealing.** TM p.278 prices it at 225 x unit tonnage for IndustrialMechs, and the Uni
+    example adds 15,750. `_calcCBillCost` has no such line; if the catalog item carries a flat price, the example
+    will show it. Check with the Uni example in Task 7.

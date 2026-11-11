@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 import { findCalcDefProblems } from "./calc-steps";
 import { MECH_BV1_STEPS, getMechBv1Steps } from "./calc-steps-mech-bv1";
 import { MECH_BV2_STEPS, MECH_BV2_WEAPON_CITES } from "./calc-steps-mech-bv2";
+import { MECH_COST_KINDS, MECH_COST_STEPS, getMechCostStep } from "./calc-steps-mech-cost";
 import { CALC_SOURCES } from "./calc-sources";
 import { mechArmorTypes } from "./mech-armor-types";
 
@@ -51,6 +52,46 @@ describe("'Mech BV2 step definitions", () => {
         for (const [name, cite] of Object.entries(MECH_BV2_WEAPON_CITES)) {
             expect(CALC_SOURCES[cite.source], name).toBeDefined();
             expect(cite.page.trim(), name).not.toBe("");
+        }
+    });
+});
+
+describe("'Mech cost step definitions", () => {
+    it("are clean: every citation names a known source and page, and every uncited step says why", () => {
+        expect(findCalcDefProblems(MECH_COST_STEPS)).toEqual([]);
+    });
+
+    it("have ids prefixed cost. and one of the three sections", () => {
+        const sections = ["Structure and Systems", "Equipment", "Final Cost"];
+        for (const [id, def] of Object.entries(MECH_COST_STEPS)) {
+            expect(id.startsWith("cost."), id).toBe(true);
+            expect(sections, id).toContain(def.section);
+        }
+    });
+
+    it("cover the TechManual's structural cost lines", () => {
+        for (const id of ["cost.cockpit", "cost.life-support", "cost.sensors", "cost.musculature", "cost.structure", "cost.actuators", "cost.engine", "cost.gyro",
+            "cost.jump-jets", "cost.heat-sinks", "cost.armor", "cost.equipment", "cost.ammo", "cost.omni", "cost.tonnage-multiplier", "cost.final"]) {
+            expect(MECH_COST_STEPS[id], id).toBeDefined();
+        }
+    });
+
+    it("are each listed in the reading ledger", () => {
+        for (const id of Object.keys(MECH_COST_STEPS)) expect(ledger, id).toContain("`" + id + "`");
+    });
+
+    it("gives a component whose price row was read its cited step, with the page of a row outside the TechManual", () => {
+        expect(getMechCostStep("cockpit", "standard")).toEqual({ id: "cost.cockpit" });
+        expect(getMechCostStep("cockpit", "torso-mounted")).toEqual({ id: "cost.cockpit", cites: [{ source: "toaue", page: "219" }] });
+        expect(getMechCostStep("armor", "ballistic-reinforced")).toEqual({ id: "cost.armor", cites: [{ source: "ioae", page: "215" }] });
+    });
+
+    it("gives a component whose price row was not re-read the provisional record step", () => {
+        expect(getMechCostStep("cockpit", "interface")).toEqual({ id: "cost.cockpit.record" });
+        expect(getMechCostStep("structure", "reinforced")).toEqual({ id: "cost.structure.record" });
+        for (const kind of MECH_COST_KINDS) {
+            const def = MECH_COST_STEPS[getMechCostStep(kind, "no-such-tag").id];
+            expect(def.status, kind).toBe("provisional");
         }
     });
 });
