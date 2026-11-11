@@ -179,6 +179,17 @@ export default class Home extends React.Component<IHomeProps, IHomeState> {
                   <ul className="news">
                   <li>
                   <h3>
+                      <strong>November 11th, 2026</strong> - Every 'Mech Battle Value shows its working, checked against the Master Unit List
+                    </h3>
+                    <h4>Author - NGCFells</h4>
+                      <ul>
+                        <li>Every Battle Value and cost figure for a 'Mech now opens into its steps, each with the book and page it comes from, in the designer summary and the unit viewer.</li>
+                        <li>A new page, Battle Value Accuracy, compares our 'Mech numbers with the Master Unit List: 3,939 match and 104 differ, each listed with both numbers. For 47 of those we have read the rule and think the list's value is the one in question, with the page cited; the other 57 are still being worked.</li>
+                        <li>Fixes found along the way: several machine gun arrays in one location no longer count the same guns twice, Clan heavy machine gun arrays from MegaMek files link their guns, a 'Mech with two sizes of the same launcher values each ton of ammunition for the launcher it feeds, and torpedo launchers can now carry Artemis IV like the missile launchers of their size.</li>
+                      </ul>
+                  </li>
+                  <li>
+                  <h3>
                       <strong>November 10th, 2026</strong> - Aces playtest updates, a patch, and a Mordel.net connection in the works
                     </h3>
                     <h4>Author - NGCFells</h4>
