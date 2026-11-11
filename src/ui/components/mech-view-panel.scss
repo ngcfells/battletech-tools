@@ -9,3 +9,12 @@
         cursor: zoom-out;
     }
 }
+
+.mech-view-breakdown {
+    margin-top: 1rem;
+    @media print {
+        > button[aria-expanded="false"] {
+            display: none;
+        }
+    }
+}

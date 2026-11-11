@@ -20,4 +20,25 @@ describe("MechViewPanel", () => {
         fireEvent.click(sheet);
         expect(container.querySelectorAll(".col")).toHaveLength(2);
     });
+
+    // The Battle Value and cost breakdown (#599) sits under a disclosure, closed until asked for.
+    it("opens the Battle Value and cost breakdown on request", () => {
+        const mech = new BattleMech();
+        render(<MechViewPanel mech={mech} />);
+        const toggle = screen.getByRole("button", { name: "Battle Value and cost breakdown" });
+        expect(toggle.getAttribute("aria-expanded")).toBe("false");
+        expect(screen.queryByLabelText("Rules edition")).toBeNull();
+        fireEvent.click(toggle);
+        expect(toggle.getAttribute("aria-expanded")).toBe("true");
+        expect((screen.getByLabelText("Rules edition") as HTMLSelectElement).value).toBe(mech.getRulesEdition());
+        expect(screen.getByRole("region", { name: "Cost" })).toBeTruthy();
+        expect(screen.queryByText(/Master Unit List/)).toBeNull();
+    });
+
+    it("shows the Master Unit List's Battle Value beside ours for a bundled design", () => {
+        const mech = new BattleMech();
+        render(<MechViewPanel mech={mech} mulBattleValue={mech.getBattleValue()} />);
+        fireEvent.click(screen.getByRole("button", { name: "Battle Value and cost breakdown" }));
+        expect(screen.getByText(new RegExp(`Master Unit List: ${mech.getBattleValue().toLocaleString("en-US")}`))).toBeTruthy();
+    });
 });

@@ -12,9 +12,8 @@ import BattleMechSVG from '../../../components/svg/battlemech-svg';
 import QuirkPicker from '../../../components/quirk-picker';
 import CanonQuirksButton from '../../../components/canon-quirks-button';
 import TextSection from '../../../components/text-section';
+import { MechCalcBreakdown } from '../../../components/calc-breakdown';
 import InputField from '../../../components/form_elements/input_field';
-import { editionHasPrices, getRulesEdition } from '../../../../data/rules-editions';
-import { editionHasBattleValue, getBattleValueRules } from '../../../../data/battle-value';
 import { getMULGroundRoles } from '../../../../utils/mulUtilities';
 import { mechRulesLevel } from '../../../components/design-lock';
 const ArrowCircleLeft = FaArrowCircleLeft as any;
@@ -244,31 +243,11 @@ export default class MechCreatorSummary extends React.Component<IHomeProps, IHom
                           </div>
                           <br />
                           <h3 className="text-center">Calculations</h3>
-                          <div className="row">
-                            <div className="col-lg-4">
-                              <h4 className="text-center">Battle Value</h4>
-                              {getBattleValueRules(this.props.appGlobals.currentBattleMech.getRulesEdition(), "mech").scheme === "bv2" ? null : (
-                                <p className="smaller-text text-center">{getRulesEdition(this.props.appGlobals.currentBattleMech.getRulesEdition()).name} {editionHasBattleValue(this.props.appGlobals.currentBattleMech.getRulesEdition()) ? "uses BV1: its steps come first, then the current rules' (BV2), for comparison." : "has no Battle Value. This is the current rules' (BV2), for comparison."}</p>
-                              )}
-                              <div className="mech-tro some-padding">
-                                <SanitizedHTML html={this.props.appGlobals.currentBattleMech.calcLogBV} raw={true} />
-                              </div>
-                            </div>
-                            <div className="col-lg-4">
-                              <h4 className="text-center">Alpha Strike</h4>
-                              <div className="mech-tro some-padding">
-                                <SanitizedHTML html={this.props.appGlobals.currentBattleMech.calcLogAS} raw={true} />
-                                </div>
-                            </div>
-                            <div className="col-lg-4">
-                              <h4 className="text-center">CBill Cost</h4>
-                              {editionHasPrices(this.props.appGlobals.currentBattleMech.getRulesEdition()) ? null : (
-                                <p className="smaller-text text-center">{getRulesEdition(this.props.appGlobals.currentBattleMech.getRulesEdition()).name} prints no prices. This is the current rules' cost, for comparison.</p>
-                              )}
-                              <div className="mech-tro some-padding">
-                                <SanitizedHTML html={this.props.appGlobals.currentBattleMech.calcLogCBill} raw={true} />
-                              </div>
-                            </div>
+                          <MechCalcBreakdown mech={this.props.appGlobals.currentBattleMech} />
+                          <br />
+                          <h4 className="text-center">Alpha Strike</h4>
+                          <div className="mech-tro some-padding">
+                            <SanitizedHTML html={this.props.appGlobals.currentBattleMech.calcLogAS} raw={true} />
                           </div>
 
                           <div className="clear-both overflow-hidden">

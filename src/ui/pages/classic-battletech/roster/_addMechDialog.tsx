@@ -293,12 +293,14 @@ export default class BattleMechAddMechDialog extends React.Component<IBattleMech
     viewUnit = (
         e: React.FormEvent<HTMLButtonElement>,
         bm: BattleMech,
+        mulBattleValue?: number,
     ) => {
         if( e && e.preventDefault ) {
             e.preventDefault();
         }
         this.setState({
             viewingUnit: bm,
+            viewingMulBattleValue: mulBattleValue,
         })
     }
 
@@ -497,9 +499,11 @@ export default class BattleMechAddMechDialog extends React.Component<IBattleMech
         if( design && !kind ) {
             const mech = design as MechDesign;
             bv = mech instanceof BattleMech ? mech.getBattleValue() : mech.bv;
+            // A bundled design that matched this Master Unit List entry: the breakdown shows the list's BV beside ours (#599).
+            const mulBattleValue = !( mech instanceof BattleMech ) && unit.BattleValue > 0 ? unit.BattleValue : undefined;
             buttons = (
                 <>
-                    <button className='btn btn-sm btn-primary' onClick={this.withMech( mech, this.viewUnit )} title={"View " + name}><Eye /></button>
+                    <button className='btn btn-sm btn-primary' onClick={this.withMech( mech, (e, bm) => this.viewUnit( e, bm, mulBattleValue ) )} title={"View " + name}><Eye /></button>
                     <button className='btn btn-sm btn-primary' onClick={this.withMech( mech, this.viewTRO )} title={"Technical Readout of " + name} aria-label={"TRO " + name}><Book /></button>
                     <button className='btn btn-sm btn-primary' onClick={this.withMech( mech, this.importUnit )} title={"Add " + name + " to this group"} aria-label={"Add " + name}><PlusCircle /></button>
                 </>
@@ -572,7 +576,7 @@ export default class BattleMechAddMechDialog extends React.Component<IBattleMech
     >
 
         <h3 className="text-center">Viewing {this.state.viewingUnit.getName()}</h3>
-        <MechViewPanel mech={this.state.viewingUnit} />
+        <MechViewPanel mech={this.state.viewingUnit} mulBattleValue={this.state.viewingMulBattleValue} />
     </StandardModal>
 ) : null}
 
@@ -609,6 +613,7 @@ interface IBattleMechAddMechDialogProps {
 
 interface IBattleMechAddMechDialogState {
     viewingUnit: BattleMech | null;
+    viewingMulBattleValue?: number;
     updated: boolean;
     mulResults: IASMULUnit[];
     viewingOther: { kind: IClassicMULKind; design: ClassicMULUnit } | null;
