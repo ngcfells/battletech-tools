@@ -190,7 +190,9 @@ describe("Power amplifiers on ICE and fuel cell 'Mechs (TM p.72)", () => {
         add(mech, "small-laser");
         expect(mech.getCBillCalcHTML()).not.toContain("Power Amplifiers");
         mech.setEngineType("ice");
-        expect(mech.getCBillCalcHTML()).toContain("<strong>Power Amplifiers</strong><br /><span class=\"smaller-text\">20,000 x Amplifier Tonnage [0.5]</span></td><td>10,000</td>");
+        const amplifier = mech.getCostBreakdown().steps.find((step) => step.id === "cost.power-amplifiers");
+        expect(amplifier).toMatchObject({ label: "Power Amplifiers", detail: "20,000 x 0.5 tons of amplifier", value: 10000 });
+        expect(mech.getCBillCalcHTML()).toContain("Power Amplifiers");
     });
 
     it("needs none with a fission or fusion engine", () => {
@@ -516,10 +518,11 @@ describe("Primitive BattleMechs (IO:AE pp.116-118)", () => {
         const mech = mackie();
         const log = mech.getCBillCalcHTML();
         expect(log).toContain("Primitive Musculature");
-        expect(log).toContain("1,000 x Unit Tonnage [100]");
-        expect(log).toContain("Primitive BattleMech Cockpit</strong></td><td>200,000");
+        const steps = mech.getCostBreakdown().steps;
+        expect(steps.find((step) => step.id === "cost.musculature.primitive")).toMatchObject({ label: "Primitive Musculature", detail: "1,000 x 100 tons", value: 100000 });
+        expect(steps.find((step) => step.label === "Primitive BattleMech Cockpit")?.value).toBe(200000);
         // The engine costs as a 360-rated standard fusion engine: 5,000 x 360 x 100 / 75.
-        expect(log).toContain("Engine Rating [360]");
+        expect(steps.find((step) => step.id.startsWith("cost.engine"))?.detail).toContain("rating 360");
         expect(log).toContain("<td>2,400,000</td>");
     });
 

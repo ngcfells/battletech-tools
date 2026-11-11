@@ -122,6 +122,29 @@ export const renderCalcStepsHtml = (steps: ICalcStep[]): string => {
     return html;
 };
 
+/** The steps as the cost table: a heading row per section, a row per step (label, value, citation). Everything is escaped. */
+export const renderCalcStepsTable = (steps: ICalcStep[]): string => {
+    let html = "<table class=\"cbill-cost\"><tbody>";
+    let section: string | undefined;
+    for (const step of steps) {
+        if (step.section !== section) {
+            section = step.section;
+            html += `<tr><td colspan="3"><strong>${escapeCalcText(section)}</strong></td></tr>`;
+        }
+        let label = escapeCalcText(step.label);
+        let value = typeof step.value === "number" ? escapeCalcText(step.value.toLocaleString("en-US", { maximumFractionDigits: 3 })) : "";
+        if (step.emphasis) {
+            label = `<strong>${label}</strong>`;
+            if (value) value = `<strong>${value}</strong>`;
+        }
+        if (step.detail) label += `<br /><span class="smaller-text">${escapeCalcText(step.detail)}</span>`;
+        let cites = escapeCalcText(formatCitations(step.cites));
+        if (step.status !== "cited") cites += `${cites ? " " : ""}(${escapeCalcText(STATUS_PREFIX[step.status])}: ${escapeCalcText(step.note ?? "")})`;
+        html += `<tr><td>${label}</td><td>${value}</td><td class="smaller-text">${cites}</td></tr>`;
+    }
+    return `${html}</tbody></table>`;
+};
+
 /** What is wrong with a definitions table, in words. Empty when it is clean. */
 export const findCalcDefProblems = (defs: CalcStepDefs): string[] => {
     const problems: string[] = [];

@@ -207,7 +207,8 @@ the equipment prices its book prints). A component is `cited` only where its own
 
 | Step id | Read on | What the page says | Code agrees? | Check |
 |---|---|---|---|---|
-| `cost.cockpit` | TM p.277 table; TO:AUE p.219; IO:AE pp.215, 217 | Standard 200,000; Small 175,000; Industrial 100,000, with advanced fire control 200,000. Torso-mounted 750,000 (TO:AUE). QuadVee 375,000, Primitive 100,000 and Primitive Industrial 50,000 (IO:AE p.215). Tripod 400,000, Superheavy Tripod 500,000 (IO:AE p.217). | Yes, except the primitive cockpits: Finding 21 | Image |
+| `cost.cockpit` | TM p.277 table; TO:AUE p.219; IO:AE pp.215, 217 | Standard 200,000; Small 175,000; Industrial 100,000, with advanced fire control 200,000. Torso-mounted 750,000 (TO:AUE). QuadVee 375,000 (IO:AE p.215). Tripod 400,000, Superheavy Tripod 500,000 (IO:AE p.217). | Yes | Image |
+| `cost.cockpit.primitive` | IO:AE p.117 text, p.215 table | Text: a primitive cockpit is the standard one in every way, cost included (200,000; industrial 100,000). Table: 100,000 and 50,000. | Follows the text (as the record's note says); provisional: Finding 21 | Image (table) |
 | `cost.cockpit.record` | none | A cockpit whose row was not re-read (interface, superheavy and others). | Price from our records; provisional |  |
 | `cost.cockpit.command-console` | TO:AUE p.219 | Cockpit Command Console 500,000. | Yes | Image |
 | `cost.cockpit.enhanced-imaging` | none | Not re-read. The code comment names Maximum Tech p.87 for the add-on price. | Price from our records; provisional |  |
@@ -253,14 +254,13 @@ the equipment prices its book prints). A component is `cited` only where its own
 | `cost.final.loaded` | TM p.282 | No rule for a loaded cost. | Our addition; provisional |  |
 | `cost.rules-edition` | none | The older editions' cost rules were not read. | Not modelled; provisional. See Issues to file |  |
 
-Read but not applied by the code: Environmental Sealing on an IndustrialMech, 225 x unit tonnage (TM p.278); the Uni
-example adds it. See Finding 23.
+Environmental Sealing on an IndustrialMech, 225 x unit tonnage (TM p.278), is priced on its equipment item, so it
+arrives under `cost.equipment`.
 
 ### Issues to file
 
 - Cost under the rules editions before Total Warfare: the older books' own cost rules are not modelled
   (`cost.rules-edition`).
-- Environmental Sealing's 225 x tonnage is not in the 'Mech cost (Finding 23).
 
 ## Worked examples in the books
 
@@ -349,13 +349,13 @@ changed while reading. Each is decided in the queue (plan Task 11) or by the own
     cost to a whole C-bill as soon as it is worked out (the Mongoose's 333,333.333 becomes 333,333). The final cost
     can differ by a C-bill. Not changed while reading.
 21. **Cost: the primitive cockpits.** IO:AE p.215 (table, page image) prints Primitive BattleMech Cockpit 100,000 and
-    Primitive IndustrialMech Cockpit 50,000. Our records have 200,000 and 100,000 (and 200,000 for the primitive
-    industrial cockpit with advanced fire control, which the table does not list). This looks like our bug.
+    Primitive IndustrialMech Cockpit 50,000. Our records have 200,000 and 100,000. Not a bug: IO:AE p.117 says a
+    primitive cockpit is the standard one in every way, costs included, and the record's note says the text is
+    followed. The book contradicts itself; shown as `provisional`. A question for Catalyst.
 22. **Cost: rounding the final cost.** TM p.274 says to round up to the nearest 0.01 C-bill at the end. The examples
     on p.285 round down to the whole C-bill (2,229,479.166 to 2,229,479; 2,793,856.25 to 2,793,856). Our code rounds
     to the nearest whole C-bill, and its log line shows the figure rounded up, so the log can read one C-bill above
     the cost the app uses. The log line is corrected when the function is converted (Task 7); the rounding rule is
     shown as `provisional`.
-23. **Cost: Environmental Sealing.** TM p.278 prices it at 225 x unit tonnage for IndustrialMechs, and the Uni
-    example adds 15,750. `_calcCBillCost` has no such line; if the catalog item carries a flat price, the example
-    will show it. Check with the Uni example in Task 7.
+23. **Cost: Environmental Sealing (withdrawn).** TM p.278 prices it at 225 x unit tonnage. Our code has it: the
+    equipment item is priced that way (a test pins the Uni's 15,750). No finding.

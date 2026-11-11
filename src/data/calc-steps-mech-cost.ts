@@ -25,6 +25,8 @@ export const MECH_COST_STEPS: CalcStepDefs = {
     // ---- Structure and systems (TM tables pp.277-278) ----
     "cost.cockpit": step(STRUCTURE, [at("tm", "277")]),
     "cost.cockpit.record": provisional(STRUCTURE, [], RECORD_NOTE),
+    "cost.cockpit.primitive": provisional(STRUCTURE, [at("ioae", "117"), at("ioae", "215")],
+        "The book prints two prices. Its rules text says a primitive cockpit costs what the standard one does (p.117: 200,000; 100,000 for the industrial one); its table prints 100,000 and 50,000 (p.215). We follow the rules text."),
     "cost.cockpit.command-console": step(STRUCTURE, [at("toaue", "219")]),
     "cost.cockpit.enhanced-imaging": provisional(STRUCTURE, [], RECORD_NOTE),
     "cost.cockpit.robotic": provisional(STRUCTURE, [at("ioae", "215")],
@@ -100,7 +102,6 @@ const READ_ROWS: Record<MechCostKind, Record<string, ICalcCitation[]>> = {
     cockpit: {
         "standard": TM, "small": TM, "industrial": TM, "industrial-advanced-fire-control": TM,
         "torso-mounted": [at("toaue", "219")], "quadvee": [at("ioae", "215")], "tripod": [at("ioae", "217")], "superheavy-tripod": [at("ioae", "217")],
-        "primitive": [at("ioae", "215")], "primitive-industrial": [at("ioae", "215")],
     },
     musculature: { "standard": TM, "tsm": TM, "industrial-tsm": TM, "risc-super-cooled-myomer": [at("ioae", "215")] },
     structure: { "standard": TM, "endo-steel": TM, "industrial": TM },
@@ -123,6 +124,8 @@ const READ_ROWS: Record<MechCostKind, Record<string, ICalcCitation[]>> = {
  * outside the TechManual), else the kind's `.record` step. A large engine reads the "large" row whatever its type.
  */
 export const getMechCostStep = (kind: MechCostKind, tag: string): { id: string; cites?: ICalcCitation[] } => {
+    // The book prices the primitive cockpits two ways: its own provisional step.
+    if (kind === "cockpit" && tag.startsWith("primitive")) return { id: "cost.cockpit.primitive" };
     const cites = Object.prototype.hasOwnProperty.call(READ_ROWS[kind], tag) ? READ_ROWS[kind][tag] : undefined;
     if (!cites) return { id: `cost.${kind}.record` };
     return cites.length > 0 ? { id: `cost.${kind}`, cites } : { id: `cost.${kind}` };

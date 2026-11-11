@@ -1272,7 +1272,7 @@ describe("BattleMech heat sink and gyro availability", () => {
         mech.getBattleValue();
         expect(mech.getHeatSyncName()).toBe("Laser Heat Sinks");
         expect(bvLast(mech, "bv2.off.heat.efficiency").detail).toContain("6 + 24 heat sink capacity");
-        expect(mech.getCBillCalcHTML()).toContain("6,000 x (Number of Heat Sinks [12])");
+        expect(mech.getCostBreakdown().steps.find((step) => step.id.startsWith("cost.heat-sinks"))?.detail).toContain("6,000 x 12 heat sinks");
     });
 
     it("weighs and slots Compact heat sinks two per slot with doubled engine capacity (TO:AUE p.128)", () => {
@@ -1398,7 +1398,7 @@ describe("BattleMech myomer and MP boosters", () => {
         expect(tsm.hasTripleStrengthMyomer()).toBe(true);
         expect(tsm.getUnallocatedCritCount() - standard.getUnallocatedCritCount()).toBe(6);
         expect(bvLast(tsm, "bv2.off.tonnage.tsm").detail).toMatch(/ x 1\.5$/);
-        expect(tsm.getCBillCalcHTML()).toContain("16,000 x Unit Tonnage [55]");
+        expect(tsm.getCostBreakdown().steps.find((step) => step.id.startsWith("cost.musculature"))?.detail).toBe("16,000 x 55 tons");
         expect(tsm.getBattleValue()).toBeGreaterThan(standard.getBattleValue());
 
         const copy = new BattleMech();
@@ -1621,31 +1621,33 @@ describe("Chassis rules levels, provisional BV, and cost multipliers", () => {
         const standard = new BattleMech();
         const omni = new BattleMech();
         omni.toggleOmni();
-        const html = omni.getCBillCalcHTML();
-        expect(html).toContain("1.25 [OmniMech]");
+        expect(omni.getCostBreakdown().steps.find((step) => step.id === "cost.omni")).toMatchObject({ label: "OmniMech conversion", value: 1.25 });
         expect(cost(omni)).toBe(Math.round(cost(standard) * 1.25));
     });
 
     it("adds chassis cockpit, structure, and conversion equipment costs", () => {
         const quadvee = new BattleMech();
         quadvee.setType("quadvee");
-        const quadveeHTML = quadvee.getCBillCalcHTML();
-        expect(quadveeHTML).toContain("QuadVee Cockpit");
-        expect(quadveeHTML).toContain("Conversion Equipment");
+        const quadveeSteps = quadvee.getCostBreakdown().steps;
+        expect(quadveeSteps.some((step) => step.label === "QuadVee Cockpit")).toBe(true);
+        expect(quadveeSteps.some((step) => step.label === "Conversion Equipment")).toBe(true);
 
-        const tripodHTML = (() => { const tripod = new BattleMech(); tripod.setType("tripod"); return tripod.getCBillCalcHTML(); })();
-        expect(tripodHTML).toContain("Tripod 'Mech Cockpit");
-        expect(tripodHTML).toContain("x 1.2 [Tripod]");
+        const tripod = new BattleMech();
+        tripod.setType("tripod");
+        const tripodSteps = tripod.getCostBreakdown().steps;
+        expect(tripodSteps.some((step) => step.label === "Tripod 'Mech Cockpit")).toBe(true);
+        expect(tripodSteps.find((step) => step.id === "cost.structure.tripod")?.detail).toBe("structure cost x 1.2");
 
-        expect(quadveeHTML).toContain("0.5 x (Structural, Weapon and Equipment Costs");
-        expect(quadveeHTML).toContain("Interstellar Operations p.187");
+        const conversion = quadveeSteps.find((step) => step.id === "cost.conversion");
+        expect(conversion?.detail).toContain("0.5 x structural, weapon and equipment costs");
+        expect(conversion?.cites.some((cite) => cite.source === "ioae")).toBe(true);
     });
 
     // "WSC x 0.65 for Bimodal LAMs, and WSC x 0.75 for Standard LAMs": a 'Mech that "had run up a cost of 1,850,000
     // C-bills in structural, weapon, and equipment costs" adds 1,387,500 (IO p.186, IO:AE p.180). QuadVees: WSC x 0.5,
     // with the same wording (IO p.187, IO:AE p.181).
     it("prices LAM and QuadVee conversion on the whole structural, weapon and equipment cost", () => {
-        const amount = (html: string, pattern: RegExp) => Number(html.match(pattern)![1].replace(/,/g, ""));
+        const amount = (text: string | undefined, pattern: RegExp) => Number(text!.match(pattern)![1].replace(/,/g, ""));
         for (const [lamType, rate] of [["standard", 0.75], ["bimodal", 0.65], ["quadvee", 0.5]] as const) {
             const lam = new BattleMech();
             if (lamType === "quadvee") {
@@ -1654,10 +1656,12 @@ describe("Chassis rules levels, provisional BV, and cost multipliers", () => {
                 lam.setType("lam");
                 lam.setLAMType(lamType);
             }
-            const html = lam.getCBillCalcHTML();
-            const base = amount(html, /Structural, Weapon and Equipment Costs \[([\d,.]+)\]/);
-            expect(html).toContain(lamType === "quadvee" ? "Interstellar Operations p.187" : "Interstellar Operations p.186");
-            expect(amount(html, /Dry Subtotal: ([\d,.]+)/)).toBeCloseTo(base * (1 + rate), 0);
+            const steps = lam.getCostBreakdown().steps;
+            const conversion = steps.find((step) => step.id === "cost.conversion");
+            const base = amount(conversion?.detail, /structural, weapon and equipment costs ([\d,.]+)/);
+            expect(conversion?.detail).toContain(`${rate} x`);
+            expect(conversion?.cites.some((cite) => cite.source === "ioae")).toBe(true);
+            expect(steps.find((step) => step.id === "cost.subtotal")?.value).toBeCloseTo(base * (1 + rate), 0);
         }
     });
 
@@ -1665,15 +1669,16 @@ describe("Chassis rules levels, provisional BV, and cost multipliers", () => {
     it("prices Superheavy gyros at the Heavy-Duty rate and IndustrialMechs at 1 + tonnage / 400", () => {
         const superheavy = new BattleMech();
         superheavy.setTonnage(120);
-        const superheavyHTML = superheavy.getCBillCalcHTML();
-        expect(superheavyHTML).toContain("Gyro: Superheavy");
-        expect(superheavyHTML).toContain("500,000 x Gyro Tonnage");
+        const superheavyGyro = superheavy.getCostBreakdown().steps.find((step) => step.id === "cost.gyro.superheavy");
+        expect(superheavyGyro?.label).toContain("Gyro: Superheavy");
+        expect(superheavyGyro?.detail).toContain("500,000 x");
+        expect(superheavyGyro?.detail).toContain("tons of gyro");
 
         const industrial = new BattleMech();
         industrial.setInternalStructureType("industrial");
-        const industrialHTML = industrial.getCBillCalcHTML();
-        expect(industrialHTML).toContain("/ 400) [IndustrialMech]");
-        expect(new BattleMech().getCBillCalcHTML()).toContain("/ 100)");
+        const industrialMultiplier = industrial.getCostBreakdown().steps.find((step) => step.id === "cost.tonnage-multiplier");
+        expect(industrialMultiplier?.detail).toContain("/ 400 (IndustrialMech)");
+        expect(new BattleMech().getCostBreakdown().steps.find((step) => step.id === "cost.tonnage-multiplier")?.detail).toContain("/ 100");
     });
 });
 
@@ -1771,7 +1776,7 @@ describe("Bimodal LAM", () => {
     it("uses 15% conversion weight and 65% conversion cost", () => {
         const lam = makeBimodal();
         expect(lam.getWeightBreakdown().find(entry => /Conversion/.test(entry.name))?.weight).toBe(5);
-        expect(lam.getCBillCalcHTML()).toContain("0.65 x (Structural, Weapon and Equipment Costs");
+        expect(lam.getCostBreakdown().steps.find((step) => step.id === "cost.conversion")?.detail).toContain("0.65 x structural, weapon and equipment costs");
     });
 
     it("keeps the LAM type through save and load and resets it for other chassis", () => {
@@ -1814,10 +1819,10 @@ describe("VTOLAM", () => {
         lam.setGyroType("xl");
         expect(lam.getEngineType().tag).toBe("xl");
         expect(lam.getGyro().tag).toBe("xl");
-        const vtolamCostHTML = lam.getCBillCalcHTML();
-        expect(vtolamCostHTML).toContain("0.65 x (Structural, Weapon and Equipment Costs");
-        expect(vtolamCostHTML).toContain("VTOLAM (Custom Homebrew) at the Bimodal LAM rate.");
-        expect(vtolamCostHTML).not.toContain("Interstellar Operations p.186");
+        const vtolamSteps = lam.getCostBreakdown().steps;
+        expect(vtolamSteps.find((step) => step.id === "cost.conversion.homebrew")?.detail).toContain("0.65 x structural, weapon and equipment costs");
+        expect(vtolamSteps.some((step) => step.id === "cost.conversion")).toBe(false);
+        expect(vtolamSteps.find((step) => step.id === "cost.conversion.homebrew")?.cites).toEqual([]);
         lam.setLAMType("standard");
         expect(lam.getEngineType().tag).toBe("standard");
         expect(lam.getGyro().tag).toBe("standard");
@@ -2864,11 +2869,11 @@ describe("Batch 8 cockpit catalog", () => {
     });
 
     it("prices chassis cockpits from the catalog without a provisional label (IO:AE pp.215, 217)", () => {
-        const html = chassis("tripod", 150).getCBillCalcHTML();
-        expect(html).toContain("<strong>Superheavy Tripod 'Mech Cockpit</strong></td><td>500,000</td>");
-        expect(chassis("biped", 150).getCBillCalcHTML()).toContain("<strong>Superheavy BattleMech Cockpit</strong></td><td>300,000</td>");
-        expect(chassis("quadvee", 60).getCBillCalcHTML()).toContain("<strong>QuadVee Cockpit</strong></td><td>375,000</td>");
-        expect(chassis("tripod", 60).getCBillCalcHTML()).toContain("<strong>Tripod 'Mech Cockpit</strong></td><td>400,000</td>");
+        const cockpit = (mech: BattleMech) => mech.getCostBreakdown().steps.find((step) => step.id.startsWith("cost.cockpit"));
+        expect(cockpit(chassis("tripod", 150))).toMatchObject({ label: "Superheavy Tripod 'Mech Cockpit", value: 500000 });
+        expect(cockpit(chassis("biped", 150))).toMatchObject({ label: "Superheavy BattleMech Cockpit", value: 300000 });
+        expect(cockpit(chassis("quadvee", 60))).toMatchObject({ label: "QuadVee Cockpit", value: 375000 });
+        expect(cockpit(chassis("tripod", 60))).toMatchObject({ label: "Tripod 'Mech Cockpit", value: 400000 });
     });
 
     it("lists every 'Mech cockpit with its published weight and cost", () => {
@@ -4221,9 +4226,9 @@ describe("Batch 16 large engines", () => {
         expect(build(100, 4, "xl").getLargeEngineType()).toBeNull();
         expect(mech.getEngineName()).toBe("Large XL Fusion");
         expect(build(100, 4, "xl").getEngineName()).toBe("XL Fusion");
-        const html = mech.getCBillCalcHTML();
-        expect(html).toContain("Engine: Large XL Fusion");
-        expect(html).toContain("40,000 [Multiplier] x Engine Rating [500]");
+        const engineStep = mech.getCostBreakdown().steps.find((step) => step.id.startsWith("cost.engine"));
+        expect(engineStep?.label).toBe("Engine: Large XL Fusion");
+        expect(engineStep?.detail).toContain("40,000 x rating 500");
         const slots = (location: "centerTorso" | "leftTorso" | "rightTorso") =>
             mech.getCriticals()[location].filter(item => item?.tag === "engine").reduce((total, item) => total + (item?.crits ?? 1), 0);
         expect([slots("centerTorso"), slots("leftTorso"), slots("rightTorso")]).toEqual([8, 3, 3]);

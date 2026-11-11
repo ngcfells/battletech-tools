@@ -1,4 +1,5 @@
-import { CalcTrace, ICalcBreakdown, ICalcCitation, ICalcStep, formatCalcNumber, renderCalcStepsHtml } from "../data/calc-steps";
+import { CalcTrace, ICalcBreakdown, ICalcCitation, ICalcStep, formatCalcNumber, renderCalcStepsHtml, renderCalcStepsTable } from "../data/calc-steps";
+import { MECH_COST_STEPS, getMechCostStep } from "../data/calc-steps-mech-cost";
 import { NO_BATTLE_VALUE_STEPS, getMechBv1Steps } from "../data/calc-steps-mech-bv1";
 import { MECH_BV2_STEPS, MECH_BV2_WEAPON_CITES } from "../data/calc-steps-mech-bv2";
 import { AlphaStrikeStructureColumn, getAlphaStrikeMechStructure } from "../data/alpha-strike-mech-structure";
@@ -667,6 +668,8 @@ export class BattleMech {
     private _calcLogBV = "";
     /** The cited steps of the last Battle Value 2 calculation; `_calcLogBV` is rendered from them. */
     private _battleValueSteps: ICalcStep[] = [];
+    /** The cited steps of the last C-bill cost calculation; `_calcLogCBill` is rendered from them. */
+    private _costSteps: ICalcStep[] = [];
     /** Set when a critical slot move changes what the Battle Value depends on; cleared by the next calculation. */
     private _battleValueStale = false;
     private _calcLogAS = "";
@@ -1938,45 +1941,39 @@ export class BattleMech {
     }
 
     private _calcCBillCost() {
-        // TODO Calculations
-        this._calcLogCBill = "";
-
+        const trace = new CalcTrace(MECH_COST_STEPS);
         let cbillDryTotal = 0;
         let cbillAmmoTotal = 0;
-        // _this._calcLogCBill = "TODO";
+        const tonnage = this.getTonnage();
 
-        this._calcLogCBill += "<table class=\"cbill-cost\">\n";
-
-        this._calcLogCBill += "<tbody>\n";
         // Cockpit: the chassis decides (Tripod, QuadVee, superheavy: IO:AE pp.215, 217); otherwise Standard or Small (TM p.277).
         const cockpit = this.getCockpitType();
-        this._calcLogCBill += "<tr><td><strong>" + (cockpit.tag === "standard" ? "Standard Cockpit" : cockpit.name) + "</strong></td><td>" + addCommas(cockpit.cost) + "</td></tr>\n";
+        const cockpitStep = getMechCostStep("cockpit", cockpit.tag);
+        trace.add(cockpitStep.id, { label: cockpit.tag === "standard" ? "Standard Cockpit" : cockpit.name, value: cockpit.cost, cites: cockpitStep.cites });
         cbillDryTotal += cockpit.cost;
         if (this.hasCommandConsole()) {
             const console = getCockpitType("command-console");
-            this._calcLogCBill += "<tr><td><strong>" + console.name + "</strong></td><td>" + addCommas(console.cost) + "</td></tr>\n";
+            trace.add("cost.cockpit.command-console", { label: console.name, value: console.cost });
             cbillDryTotal += console.cost;
         }
         if (this.hasEnhancedImaging()) {
             const imaging = this._getEnhancedImaging();
-            this._calcLogCBill += "<tr><td><strong>" + imaging.name + "</strong></td><td>" + addCommas(imaging.cost) + "</td></tr>\n";
+            trace.add("cost.cockpit.enhanced-imaging", { label: imaging.name, value: imaging.cost });
             cbillDryTotal += imaging.cost;
         }
         if (this._roboticControl !== "none") {
             const robotic = getRoboticControlCost(this._roboticControl, this.getRoboticControlWeight());
-            this._calcLogCBill += "<tr><td><strong>" + this.getRoboticControl().name + "</strong></td><td>" + addCommas(robotic) + "</td></tr>\n";
+            trace.add("cost.cockpit.robotic", { label: this.getRoboticControl().name, value: robotic });
             cbillDryTotal += robotic;
         }
 
         // Life Support
-        this._calcLogCBill += "<tr><td><strong>Life Support</strong></td><td>50,000</td></tr>\n";
+        trace.add("cost.life-support", { label: "Life Support", value: 50000 });
         cbillDryTotal += 50000;
 
         // Sensors
-        this._calcLogCBill += "<tr><td><strong>Sensors</strong><br /><span class=\"smaller-text\">2,000 x Unit Tonnage [" + this.getTonnage() + "]</span></td><td>" + addCommas( 2000 * this.getTonnage()) + "</td></tr>\n";
-        cbillDryTotal += 2000 * this.getTonnage() ;
-
-        this._calcLogCBill += "<tr><td colspan=\"2\" class=\"text-right\"><strong>Cockpit Subtotal: " + addCommas(cbillDryTotal) + "</strong></td></tr>\n";
+        trace.add("cost.sensors", { label: "Sensors", detail: `2,000 x ${tonnage} tons`, value: 2000 * tonnage });
+        cbillDryTotal += 2000 * tonnage;
 
         // Myomer
         {
@@ -1985,10 +1982,13 @@ export class BattleMech {
                 : this._myomerType.tag === "standard" ? "Standard Musculature" : this._myomerType.name;
             // Primitive 'Mech musculature costs 1,000 x tonnage (IO:AE pp.181, 215).
             // Superheavy standard musculature costs 12,000 x tonnage (IO:AE p.217).
-            const myomerCostPerTon = primitiveMusculature ? 1000
-                : this._myomerType.tag === "standard" && this._tonnage > 100 ? 12000 : this._myomerType.costPerTon;
-            const myomerCost = myomerCostPerTon * this.getTonnage();
-            this._calcLogCBill += "<tr><td><strong>" + myomerName + "</strong><br /><span class=\"smaller-text\">" + addCommas(myomerCostPerTon) + " x Unit Tonnage [" + this.getTonnage() + "]</span></td><td>" +  addCommas( myomerCost ) + "</td></tr>\n";
+            const superheavyMusculature = !primitiveMusculature && this._myomerType.tag === "standard" && this._tonnage > 100;
+            const myomerCostPerTon = primitiveMusculature ? 1000 : superheavyMusculature ? 12000 : this._myomerType.costPerTon;
+            const myomerCost = myomerCostPerTon * tonnage;
+            const myomerStep = primitiveMusculature ? { id: "cost.musculature.primitive" }
+                : superheavyMusculature ? { id: "cost.musculature.superheavy" }
+                    : getMechCostStep("musculature", this._myomerType.tag);
+            trace.add(myomerStep.id, { label: myomerName, detail: `${addCommas(myomerCostPerTon)} x ${tonnage} tons`, value: myomerCost, cites: "cites" in myomerStep ? myomerStep.cites : undefined });
             cbillDryTotal += myomerCost;
         }
 
@@ -2008,94 +2008,47 @@ export class BattleMech {
             for (const location of locations) {
                 const structure = this.getFrankenMechLocationStructure(location.key);
                 const share = (BattleMech.FRANKENMECH_STRUCTURE_SHARES[location.key] ?? 0) / totalShare;
-                const locationCost = structureCostPerTonOf(structure) * this.getTonnage() * share * structureChassisMultiplier;
-                this._calcLogCBill += "<tr><td><strong>Internal Structure, " + location.label + ": " + structure.name + "</strong><br />" + addCommas( structureCostPerTonOf(structure) ) + " x Unit Tonnage [" + this.getTonnage() + "] x " + Math.round(share * 1000) / 10 + "%" + (structureChassisMultiplier !== 1 ? " x 1.2 [Tripod]" : "") + "</td><td>" + addCommas( locationCost ) + "</td></tr>\n";
+                const locationCost = structureCostPerTonOf(structure) * tonnage * share * structureChassisMultiplier;
+                trace.add("cost.structure.frankenmech", {
+                    label: `Internal Structure, ${location.label}: ${structure.name}`,
+                    detail: `${addCommas(structureCostPerTonOf(structure))} x ${tonnage} tons x ${Math.round(share * 1000) / 10}%${structureChassisMultiplier !== 1 ? " x 1.2 (Tripod)" : ""}`,
+                    value: locationCost,
+                });
                 structureCost += locationCost;
             }
         } else {
             const structureCostPerTon = structureCostPerTonOf(this._selectedInternalStructure);
-            structureCost = structureCostPerTon * this.getTonnage() * structureChassisMultiplier;
-            this._calcLogCBill += "<tr><td><strong>Internal Structure: " + this._selectedInternalStructure.name  + "</strong><br />" +  addCommas( structureCostPerTon ) + " x Unit Tonnage [" + this.getTonnage() + "]" + (structureChassisMultiplier !== 1 ? " x 1.2 [Tripod]" : "") + "</td><td>" +  addCommas( structureCost ) + "</td></tr>\n";
+            structureCost = structureCostPerTon * tonnage * structureChassisMultiplier;
+            const baseStructureCost = structureCostPerTon * tonnage;
+            const structureStep = this._tonnage > 100 ? { id: "cost.structure.superheavy" } : getMechCostStep("structure", this._selectedInternalStructure.tag);
+            trace.add(structureStep.id, {
+                label: `Internal Structure: ${this._selectedInternalStructure.name}`,
+                detail: `${addCommas(structureCostPerTon)} x ${tonnage} tons`,
+                value: baseStructureCost,
+                cites: "cites" in structureStep ? structureStep.cites : undefined,
+            });
+            if (structureChassisMultiplier !== 1) {
+                trace.add("cost.structure.tripod", { label: "Tripod structure", detail: "structure cost x 1.2", value: structureCost - baseStructureCost });
+            }
         }
         cbillDryTotal += structureCost;
 
-        this._calcLogCBill += "<tr><td colspan=\"2\"><strong>Actuators</strong></td></tr>\n";
-
+        // Actuators (TM p.278): the shoulders and hips are not priced.
         let actuatorTotal = 0;
-        // Actuators
-        if( this._mechType.tag.toLowerCase() === "quad" ) {
-            this._calcLogCBill += "<tr><td>Right Front Upper Leg Actuator<br /><span class=\"smaller-text\">150 x Unit Tonnage [" + this.getTonnage() + "]</span></td><td>" +  addCommas( 150 * this.getTonnage() ) + "</td></tr>\n";
-            cbillDryTotal += 150 * this.getTonnage() ;
-            actuatorTotal += 150 * this.getTonnage() ;
-
-            this._calcLogCBill += "<tr><td>Right Front Lower Leg Actuator<br /><span class=\"smaller-text\">80 x Unit Tonnage [" + this.getTonnage() + "]</span></td><td>" +  addCommas( 80 * this.getTonnage() ) + "</td></tr>\n";
-            cbillDryTotal += 80 * this.getTonnage() ;
-            actuatorTotal += 80 * this.getTonnage() ;
-
-            this._calcLogCBill += "<tr><td>Right Front Foot Actuator<br /><span class=\"smaller-text\">120 x Unit Tonnage [" + this.getTonnage() + "]</span></td><td>" +  addCommas( 120 * this.getTonnage() ) + "</td></tr>\n";
-            cbillDryTotal += 120 * this.getTonnage() ;
-            actuatorTotal += 120 * this.getTonnage() ;
-
-            this._calcLogCBill += "<tr><td>Left Front Upper Leg Actuator<br /><span class=\"smaller-text\">150 x Unit Tonnage [" + this.getTonnage() + "]</span></td><td>" +  addCommas( 150 * this.getTonnage() ) + "</td></tr>\n";
-            cbillDryTotal += 150 * this.getTonnage() ;
-            actuatorTotal += 150 * this.getTonnage() ;
-
-            this._calcLogCBill += "<tr><td>Left Front Lower Leg Actuator<br /><span class=\"smaller-text\">80 x Unit Tonnage [" + this.getTonnage() + "]</span></td><td>" +  addCommas( 80 * this.getTonnage() ) + "</td></tr>\n";
-            cbillDryTotal += 80 * this.getTonnage() ;
-            actuatorTotal += 80 * this.getTonnage() ;
-
-            this._calcLogCBill += "<tr><td>Left Front Foot Actuator<br /><span class=\"smaller-text\">120 x Unit Tonnage [" + this.getTonnage() + "]</span></td><td>" +  addCommas( 120 * this.getTonnage() ) + "</td></tr>\n";
-            cbillDryTotal += 120 * this.getTonnage() ;
-            actuatorTotal += 120 * this.getTonnage() ;
-
-            this._calcLogCBill += "<tr><td>Right Rear Upper Leg Actuator<br /><span class=\"smaller-text\">150 x Unit Tonnage [" + this.getTonnage() + "]</span></td><td>" +  addCommas( 150 * this.getTonnage() ) + "</td></tr>\n";
-            cbillDryTotal += 150 * this.getTonnage() ;
-            actuatorTotal += 150 * this.getTonnage() ;
-
-            this._calcLogCBill += "<tr><td>Right Rear Lower Leg Actuator<br /><span class=\"smaller-text\">80 x Unit Tonnage [" + this.getTonnage() + "]</span></td><td>" +  addCommas( 80 * this.getTonnage() ) + "</td></tr>\n";
-            cbillDryTotal += 80 * this.getTonnage() ;
-            actuatorTotal += 80 * this.getTonnage() ;
-
-            this._calcLogCBill += "<tr><td>Right Rear Foot Actuator<br /><span class=\"smaller-text\">120 x Unit Tonnage [" + this.getTonnage() + "]</span></td><td>" +  addCommas( 120 * this.getTonnage() ) + "</td></tr>\n";
-            cbillDryTotal += 120 * this.getTonnage() ;
-            actuatorTotal += 120 * this.getTonnage() ;
-
-            this._calcLogCBill += "<tr><td>Left Rear Upper Leg Actuator<br /><span class=\"smaller-text\">150 x Unit Tonnage [" + this.getTonnage() + "]</span></td><td>" +  addCommas( 150 * this.getTonnage() ) + "</td></tr>\n";
-            cbillDryTotal += 150 * this.getTonnage() ;
-            actuatorTotal += 150 * this.getTonnage() ;
-
-            this._calcLogCBill += "<tr><td>Left Rear Lower Leg Actuator<br /><span class=\"smaller-text\">80 x Unit Tonnage [" + this.getTonnage() + "]</span></td><td>" +  addCommas( 80 * this.getTonnage() ) + "</td></tr>\n";
-            cbillDryTotal += 80 * this.getTonnage() ;
-            actuatorTotal += 80 * this.getTonnage() ;
-
-            this._calcLogCBill += "<tr><td>Left Rear Foot Actuator<br /><span class=\"smaller-text\">120 x Unit Tonnage [" + this.getTonnage() + "]</span></td><td>" +  addCommas( 120 * this.getTonnage() ) + "</td></tr>\n";
-            cbillDryTotal += 120 * this.getTonnage() ;
-            actuatorTotal += 120 * this.getTonnage() ;
+        const addActuator = (name: string, price: number) => {
+            trace.add("cost.actuators", { label: `${name} Actuator`, detail: `${price} x ${tonnage} tons`, value: price * tonnage });
+            cbillDryTotal += price * tonnage;
+            actuatorTotal += price * tonnage;
+        };
+        const legActuators: [string, number][] = [["Upper Leg", 150], ["Lower Leg", 80], ["Foot", 120]];
+        if (this._mechType.tag.toLowerCase() === "quad") {
+            for (const side of ["Right Front", "Left Front", "Right Rear", "Left Rear"]) {
+                for (const [part, price] of legActuators) addActuator(`${side} ${part}`, price);
+            }
         } else {
-
-            this._calcLogCBill += "<tr><td>Right Upper Leg Actuator<br /><span class=\"smaller-text\">150 x Unit Tonnage [" + this.getTonnage() + "]</span></td><td>" +  addCommas( 150 * this.getTonnage() ) + "</td></tr>\n";
-            cbillDryTotal += 150 * this.getTonnage() ;
-            actuatorTotal += 150 * this.getTonnage() ;
-
-            this._calcLogCBill += "<tr><td>Right Lower Leg Actuator<br /><span class=\"smaller-text\">80 x Unit Tonnage [" + this.getTonnage() + "]</span></td><td>" +  addCommas( 80 * this.getTonnage() ) + "</td></tr>\n";
-            cbillDryTotal += 80 * this.getTonnage() ;
-            actuatorTotal += 80 * this.getTonnage() ;
-
-            this._calcLogCBill += "<tr><td>Right Foot Actuator<br /><span class=\"smaller-text\">120 x Unit Tonnage [" + this.getTonnage() + "]</span></td><td>" +  addCommas( 120 * this.getTonnage() ) + "</td></tr>\n";
-            cbillDryTotal += 120 * this.getTonnage() ;
-            actuatorTotal += 120 * this.getTonnage() ;
-
-            this._calcLogCBill += "<tr><td>Left Upper Leg Actuator<br /><span class=\"smaller-text\">150 x Unit Tonnage [" + this.getTonnage() + "]</span></td><td>" +  addCommas( 150 * this.getTonnage() ) + "</td></tr>\n";
-            cbillDryTotal += 150 * this.getTonnage() ;
-            actuatorTotal += 150 * this.getTonnage() ;
-
-            this._calcLogCBill += "<tr><td>Left Lower Leg Actuator<br /><span class=\"smaller-text\">80 x Unit Tonnage [" + this.getTonnage() + "]</span></td><td>" + addCommas(80 * this.getTonnage()) + "</td></tr>\n";
-            cbillDryTotal += 80 * this.getTonnage();
-            actuatorTotal += 80 * this.getTonnage();
-
-            this._calcLogCBill += "<tr><td>Left Foot Actuator<br /><span class=\"smaller-text\">120 x Unit Tonnage [" + this.getTonnage() + "]</span></td><td>" + addCommas(120 * this.getTonnage()) + "</td></tr>\n";
-            cbillDryTotal += 120 * this.getTonnage();
-            actuatorTotal += 120 * this.getTonnage();
+            for (const side of ["Right", "Left"]) {
+                for (const [part, price] of legActuators) addActuator(`${side} ${part}`, price);
+            }
 
             // 2A. Arm actuators: upper 100, lower 50, hand 80 x tonnage; the shoulder is not priced (BMR(R) p.149; TM p.278).
             // Only what is mounted is bought, and an armless 'Mech buys none (Maximum Tech p.87).
@@ -2103,35 +2056,19 @@ export class BattleMech {
                 ([["Right", "ra"], ["Left", "la"]] as const).forEach(([side, arm]) => {
                     const lowerArm = this.hasLowerArmActuator(arm);
                     const actuators: [string, number][] = [["Upper Arm", 100], ...(lowerArm ? [["Lower Arm", 50]] as [string, number][] : []), ...(lowerArm && this.hasHandActuator(arm) ? [["Hand", 80]] as [string, number][] : [])];
-                    actuators.forEach(([name, price]) => {
-                        this._calcLogCBill += `<tr><td>${side} ${name} Actuator<br /><span class="smaller-text">${price} x Unit Tonnage [${this.getTonnage()}]</span></td><td>${addCommas(price * this.getTonnage())}</td></tr>\n`;
-                        cbillDryTotal += price * this.getTonnage();
-                        actuatorTotal += price * this.getTonnage();
-                    });
+                    actuators.forEach(([name, price]) => addActuator(`${side} ${name}`, price));
                 });
             }
 
             // 2B. Advanced Chassis Exception: Tripod Center Leg Actuators (TM p. 278 structural adjustments)
             if (this._mechType.tag.toLowerCase() === "tripod") {
-                this._calcLogCBill += "<tr><td>Center Rear Upper Leg Actuator<br /><span class=\"smaller-text\">150 x Unit Tonnage [" + this.getTonnage() + "]</span></td><td>" + addCommas(150 * this.getTonnage()) + "</td></tr>\n";
-                cbillDryTotal += 150 * this.getTonnage();
-                actuatorTotal += 150 * this.getTonnage();
-
-                this._calcLogCBill += "<tr><td>Center Rear Lower Leg Actuator<br /><span class=\"smaller-text\">80 x Unit Tonnage [" + this.getTonnage() + "]</span></td><td>" + addCommas(80 * this.getTonnage()) + "</td></tr>\n";
-                cbillDryTotal += 80 * this.getTonnage();
-                actuatorTotal += 80 * this.getTonnage();
-
-                this._calcLogCBill += "<tr><td>Center Rear Foot Actuator<br /><span class=\"smaller-text\">120 x Unit Tonnage [" + this.getTonnage() + "]</span></td><td>" + addCommas(120 * this.getTonnage()) + "</td></tr>\n";
-                cbillDryTotal += 120 * this.getTonnage();
-                actuatorTotal += 120 * this.getTonnage();
+                for (const [part, price] of legActuators) addActuator(`Center Rear ${part}`, price);
             }
         }
 
-        // Close Actuator Layout Block subtotaling
-        this._calcLogCBill += "<tr><td colspan=\"2\" class=\"text-right\"><strong>Actuators Subtotal: " + addCommas(actuatorTotal) + "</strong></td></tr>\n";
         // Superheavy actuators cost double (IO:AE p.217).
         if (this._tonnage > 100) {
-            this._calcLogCBill += "<tr><td>Superheavy Actuators (x2)</td><td>" + addCommas(actuatorTotal) + "</td></tr>\n";
+            trace.add("cost.actuators.superheavy", { label: "Superheavy actuators cost double", value: actuatorTotal });
             cbillDryTotal += actuatorTotal;
         }
 
@@ -2146,12 +2083,15 @@ export class BattleMech {
         const engineCostMultiplier = largeEngineType
             ? largeEngineType.costMultiplier
             : (engineType.costMultiplier || 0) * (this.isLargeEngine() ? 2 : 1);
-        // Execute canonical cost calculation and round to the nearest whole C-Bill
-        const engineCost = Math.round((engineCostMultiplier * engineRating * this.getTonnage()) / 75);
-        this._calcLogCBill += "<tr><td><strong>Engine: " + engineName + "</strong><br />" +
-            "<span class=\"smaller-text\">" + addCommas(engineCostMultiplier) + 
-            " [Multiplier] x Engine Rating [" + engineRating + "] x Unit Tonnage [" + this.getTonnage() + "] / 75</span></td>" +
-            "<td>" + addCommas(engineCost) + "</td></tr>\n";
+        // No cost is rounded before the end (TM p.274).
+        const engineCost = (engineCostMultiplier * engineRating * tonnage) / 75;
+        const engineStep = getMechCostStep("engine", largeEngineType || this.isLargeEngine() ? "large" : engineType.tag);
+        trace.add(engineStep.id, {
+            label: `Engine: ${engineName}`,
+            detail: `(${addCommas(engineCostMultiplier)} x rating ${engineRating} x ${tonnage} tons) / 75`,
+            value: engineCost,
+            cites: engineStep.cites,
+        });
         cbillDryTotal += engineCost;
 
         // Gyro
@@ -2161,87 +2101,108 @@ export class BattleMech {
         const gyroName = this._tonnage > 100 ? "Superheavy (" + this.getGyroName() + ")" : this.getGyroName();
         const gyrocostMultiplier = this._tonnage > 100 ? superheavyGyroCostMultiplier : this.getGyro().costMultiplier;
         const gyroTonnage = this.getGyroWeight();
-
-        this._calcLogCBill += "<tr><td><strong>Gyro: " + gyroName  + "</strong><br /><span class=\"smaller-text\">" +  addCommas( gyrocostMultiplier ) + " x Gyro Tonnage [" + gyroTonnage + "]</span></td><td>" +  addCommas( gyrocostMultiplier * gyroTonnage  ) + "</td></tr>\n";
-        cbillDryTotal += gyrocostMultiplier * gyroTonnage ;
+        const gyroStep = this._tonnage > 100 ? { id: "cost.gyro.superheavy" } : getMechCostStep("gyro", this.getGyro().tag);
+        trace.add(gyroStep.id, {
+            label: `Gyro: ${gyroName}`,
+            detail: `${addCommas(gyrocostMultiplier)} x ${gyroTonnage} tons of gyro`,
+            value: gyrocostMultiplier * gyroTonnage,
+            cites: "cites" in gyroStep ? gyroStep.cites : undefined,
+        });
+        cbillDryTotal += gyrocostMultiplier * gyroTonnage;
 
         // Jump Jets
         const numberOfJumpJets = this.getNumberOfJumpJets();
-        if( numberOfJumpJets ) {
-            const jumpJetName = this._jumpJetType.name;
+        if (numberOfJumpJets) {
             const jumpJetCost = this._jumpJetType.costMultiplier;
-            this._calcLogCBill += "<tr><td><strong>Jump Jets: " + jumpJetName  + "</strong><br /><span class=\"smaller-text\">" +  addCommas( jumpJetCost ) + " x (# Jump Jets [" +  numberOfJumpJets + "])<sup>2</sup> x Unit Tonnage [" + this.getTonnage() + "]</span></td><td>" +  addCommas( jumpJetCost * Math.pow( numberOfJumpJets, 2) *  this.getTonnage()  ) + "</td></tr>\n";
-            cbillDryTotal += jumpJetCost * Math.pow( numberOfJumpJets, 2) *  this.getTonnage()  ;
+            const jumpJetStep = getMechCostStep("jump-jets", this._jumpJetType.tag);
+            trace.add(jumpJetStep.id, {
+                label: `Jump Jets: ${this._jumpJetType.name}`,
+                detail: `${addCommas(jumpJetCost)} x ${numberOfJumpJets} jump jets squared x ${tonnage} tons`,
+                value: jumpJetCost * Math.pow(numberOfJumpJets, 2) * tonnage,
+                cites: jumpJetStep.cites,
+            });
+            cbillDryTotal += jumpJetCost * Math.pow(numberOfJumpJets, 2) * tonnage;
         }
 
         // Jump Pack: priced with the equipment (Maximum Tech p.87; TO:AUE cost table).
         const jumpPackTons = this.getJumpPackTons();
-        if( jumpPackTons > 0 ) {
+        if (jumpPackTons > 0) {
             const jumpPackCost = mechJumpPack.costMultiplier * jumpPackTons;
-            this._calcLogCBill += "<tr><td><strong>" + mechJumpPack.name + "</strong><br /><span class=\"smaller-text\">" +  addCommas( mechJumpPack.costMultiplier ) + " x Pack Tons [" + jumpPackTons + "]</span></td><td>" +  addCommas( jumpPackCost ) + "</td></tr>\n";
+            trace.add("cost.jump-pack", { label: mechJumpPack.name, detail: `${addCommas(mechJumpPack.costMultiplier)} x ${jumpPackTons} tons of pack`, value: jumpPackCost });
             cbillDryTotal += jumpPackCost;
         }
 
         // Heat Sinks
         const heatSinksName = this.getHeatSinksObj().name;
-        const heatSinksCost =  this.getHeatSinksObj().cost ;
+        const heatSinksCost = this.getHeatSinksObj().cost;
         const numberOfHeatSinks = this.getHeatSinks();
         const heatSinkType = this.getHeatSinksType();
-        // console.log( numberOfHeatSinks );
-        // console.log( heatSinkType );
 
         // Single-type sinks: the ones that come with the engine are free; double-type sinks are all paid for.
         const freeSinks = Math.min(this.getFreeHeatSinks(), this.getHeatSinksObj().freeSinks ?? (heatSinkType === "single" ? 10 : 0));
         const paidSinks = Math.max(0, numberOfHeatSinks - freeSinks);
-        this._calcLogCBill += "<tr><td><strong>Heat Sinks: " + heatSinksName  + "</strong><br /><span class=\"smaller-text\">" + addCommas(heatSinksCost) + " x (Number of Heat Sinks" + (freeSinks ? " over " + freeSinks : "") + " [" + paidSinks + "])</span></td><td>" +  addCommas( heatSinksCost * paidSinks ) + "</td></tr>\n";
-        cbillDryTotal +=  heatSinksCost * paidSinks;
+        const heatSinkStep = getMechCostStep("heat-sinks", heatSinkType);
+        trace.add(heatSinkStep.id, {
+            label: `Heat Sinks: ${heatSinksName}`,
+            detail: `${addCommas(heatSinksCost)} x ${paidSinks} heat sinks${freeSinks ? ` over ${freeSinks}` : ""}`,
+            value: heatSinksCost * paidSinks,
+            cites: heatSinkStep.cites,
+        });
+        cbillDryTotal += heatSinksCost * paidSinks;
 
         // Power amplifiers: 20,000 C-bills per ton (TM pp.278-279).
         const powerAmplifierWeight = this.getPowerAmplifierWeight();
         if (powerAmplifierWeight > 0) {
-            this._calcLogCBill += "<tr><td><strong>Power Amplifiers</strong><br /><span class=\"smaller-text\">20,000 x Amplifier Tonnage [" + powerAmplifierWeight + "]</span></td><td>" + addCommas( 20000 * powerAmplifierWeight ) + "</td></tr>\n";
+            trace.add("cost.power-amplifiers", { label: "Power Amplifiers", detail: `20,000 x ${powerAmplifierWeight} tons of amplifier`, value: 20000 * powerAmplifierWeight });
             cbillDryTotal += 20000 * powerAmplifierWeight;
         }
 
         // Armor
-        const armorName = this.getArmorObj().name;
-        const armorcostMultiplier = this.getArmorObj().costMultiplier;
-        const armorTonnage = this.getArmorWeight();
-
         if (this.isPatchworkArmor()) {
             // Patchwork: each location's armor at its own type's cost per ton.
             for (const location of this.getPatchworkLocations()) {
                 const locationWeight = this.getPatchworkLocationWeight(location.key);
                 if (locationWeight <= 0) continue;
                 const locationArmor = this.getPatchworkArmorType(location.key);
-                this._calcLogCBill += "<tr><td><strong>Armor: " + locationArmor.name + " (" + location.label + ")</strong><br /><span class=\"smaller-text\">" + addCommas( locationArmor.costMultiplier ) + " x Armor Tonnage [" + locationWeight + "]</span></td><td>" + addCommas( locationArmor.costMultiplier * locationWeight ) + "</td></tr>\n";
+                trace.add("cost.armor.patchwork", {
+                    label: `Armor: ${locationArmor.name} (${location.label})`,
+                    detail: `${addCommas(locationArmor.costMultiplier)} x ${locationWeight} tons of armor`,
+                    value: locationArmor.costMultiplier * locationWeight,
+                });
             }
         } else {
-            this._calcLogCBill += "<tr><td><strong>Armor: " + armorName  + "</strong><br /><span class=\"smaller-text\">" +  addCommas( armorcostMultiplier ) + " x Armor Tonnage [" + armorTonnage + "]</span></td><td>" +  addCommas( armorcostMultiplier * armorTonnage  ) + "</td></tr>\n";
+            const armorObj = this.getArmorObj();
+            const armorStep = getMechCostStep("armor", armorObj.tag);
+            trace.add(armorStep.id, {
+                label: `Armor: ${armorObj.name}`,
+                detail: `${addCommas(armorObj.costMultiplier)} x ${this.getArmorWeight()} tons of armor`,
+                value: armorObj.costMultiplier * this.getArmorWeight(),
+                cites: armorStep.cites,
+            });
         }
         cbillDryTotal += this.getArmorCost();
 
         // Equipment
-        for( let eqC = 0; eqC < this._equipmentList.length; eqC++) {
-            if( this._equipmentList[eqC].tag.indexOf( "ammo-" ) === -1) {
-                this._calcLogCBill += "<tr><td><strong>" + this._equipmentList[eqC].name + "</strong></td><td>" + addCommas(this._equipmentList[eqC].cbills) + "</td></tr>\n";
-                cbillDryTotal += this._equipmentList[eqC].cbills;
+        for (const item of this._equipmentList) {
+            if (item.tag.indexOf("ammo-") === -1) {
+                trace.add("cost.equipment", { label: item.name, value: item.cbills });
+                cbillDryTotal += item.cbills;
             } else {
-                this._calcLogCBill += "<tr><td><strong>" + this._equipmentList[eqC].name + "</strong></td><td class=\"text-right\">" + addCommas(this._equipmentList[eqC].cbills * this._equipmentList[eqC].weight) + "<div class=\"smaller-text\">(not included in dry cost)</div></td></tr>\n";
-                cbillAmmoTotal += this._equipmentList[eqC].cbills * this._equipmentList[eqC].weight;
+                trace.add("cost.ammo", { label: item.name, detail: `${item.weight} tons x ${addCommas(item.cbills)}`, value: item.cbills * item.weight });
+                cbillAmmoTotal += item.cbills * item.weight;
             }
         }
 
         // Armored components: 150,000 C-bills for each slot (TO:AUE p.217).
         const armoredComponentSlots = this.getArmoredComponentSlots();
-        if( armoredComponentSlots > 0 ) {
-            this._calcLogCBill += "<tr><td><strong>Armored Components</strong><br /><span class=\"smaller-text\">150,000 x Slots [" + armoredComponentSlots + "]</span></td><td>" + addCommas( armoredComponentSlots * 150000 ) + "</td></tr>\n";
+        if (armoredComponentSlots > 0) {
+            trace.add("cost.armored-components", { label: "Armored Components", detail: `150,000 x ${armoredComponentSlots} slots`, value: armoredComponentSlots * 150000 });
             cbillDryTotal += armoredComponentSlots * 150000;
         }
 
         const motiveGear = this._quadVeeMotiveGear();
-        if( motiveGear ) {
-            this._calcLogCBill += "<tr><td><strong>" + motiveGear.name + "</strong></td><td>" + addCommas( motiveGear.cbills ) + "</td></tr>\n";
+        if (motiveGear) {
+            trace.add("cost.quadvee-motive", { label: motiveGear.name, value: motiveGear.cbills });
             cbillDryTotal += motiveGear.cbills;
         }
 
@@ -2252,40 +2213,52 @@ export class BattleMech {
         if (conversionRate > 0) {
             const conversionBase = cbillDryTotal;
             const conversionCost = conversionBase * conversionRate;
-            const conversionSource = this.isVTOLAM() ? "VTOLAM (Custom Homebrew) at the Bimodal LAM rate."
-                : (this.isLAM() ? "LAM conversion cost from Interstellar Operations p.186 and Interstellar Operations: Alternate Eras p.180;"
-                    : "QuadVee conversion cost from Interstellar Operations p.187 and Interstellar Operations: Alternate Eras p.181;")
-                    + " no other edition prints this cost, so a later edition may change it.";
-            this._calcLogCBill += "<tr><td><strong>Conversion Equipment</strong><br /><span class=\"smaller-text\">" + conversionRate
-                + " x (Structural, Weapon and Equipment Costs [" + addCommas(conversionBase) + "])<br />" + conversionSource
-                + "</span></td><td>" + addCommas(conversionCost) + "</td></tr>\n";
+            trace.add(this.isVTOLAM() ? "cost.conversion.homebrew" : "cost.conversion", {
+                label: "Conversion Equipment",
+                detail: `${conversionRate} x structural, weapon and equipment costs ${addCommas(conversionBase)}`,
+                value: conversionCost,
+            });
             cbillDryTotal += conversionCost;
         }
 
-        // NOTE - for some reason SSW and the MUL are 1000 less here than the actual summation even when all the line items are right.
-        this._calcLogCBill += "<tr><td colspan=\"2\" class=\"text-right\">&nbsp;</td></tr>\n";
-        this._calcLogCBill += "<tr><td colspan=\"2\" class=\"text-right\"><strong>Dry Subtotal: " + addCommas(cbillDryTotal) + "</strong></td></tr>\n";
+        trace.add("cost.subtotal", { label: "Structure, weapons and equipment", value: cbillDryTotal, emphasis: true });
 
-        // (Structural Cost + Weapon/Equipment Costs) x (Omni Conversion Cost) x (1 + [Total Tonnage ÷ 100])
+        // (Structural Cost + Weapon/Equipment Costs) x (Omni Conversion Cost) x (1 + [Total Tonnage / 100])
         // OmniMechs x1.25 (TM p.285). The Custom Homebrew Omni-LAM uses x1.75
         // in its place ("costs 1.75 times a normal mech", Kronos Battle Systems fan rule).
         const omniCostMultiplier = this.isOmniLAM() ? 1.75 : this._omnimech ? 1.25 : 1;
-        const omniCostLabel = this.isOmniLAM() ? " x 1.75 [Omni-LAM, Custom Homebrew]" : this._omnimech ? " x 1.25 [OmniMech]" : "";
         // IndustrialMechs (Industrial internal structure) use 1 + tonnage / 400 (TM p.285).
         const tonnageDivisor = this.getInternalStructureType() === "industrial" ? 400 : 100;
-        const costMultiplier = (1 + this.getTonnage() / tonnageDivisor) * omniCostMultiplier;
+        const costMultiplier = (1 + tonnage / tonnageDivisor) * omniCostMultiplier;
 
-        this._calcLogCBill += "<tr><td colspan=\"2\" class=\"text-right\">&nbsp;</td></tr>\n";
-        this._calcLogCBill += "<tr><td colSpan=\"2\">Cost Multiplier:<div class=\"smaller-text\">Sub Total [" + addCommas(cbillDryTotal) + "] x (1 + Unit Tonnage [" + this.getTonnage() + "] / " + tonnageDivisor + ")" + (tonnageDivisor === 400 ? " [IndustrialMech]" : "") + omniCostLabel + " - rounded up</div></td><td>" + costMultiplier + "</td></tr>";
-        this._calcLogCBill += "<tr><td class=\"text-right\"><strong>Final Dry Cost</strong>:</td><td>" + addCommas( Math.ceil(cbillDryTotal * costMultiplier ) ) + "</td></tr>\n";
-        this._calcLogCBill += "<tr><td class=\"text-right\"><strong>Final Loaded Cost</strong>:</td><td>" + addCommas( Math.ceil( ( cbillDryTotal ) * costMultiplier ) + cbillAmmoTotal ) + "</td></tr>\n";
+        if (omniCostMultiplier !== 1) {
+            trace.add(this.isOmniLAM() ? "cost.omni.homebrew" : "cost.omni", { label: this.isOmniLAM() ? "Omni-LAM conversion" : "OmniMech conversion", value: omniCostMultiplier });
+        }
+        trace.add("cost.tonnage-multiplier", {
+            label: "Tonnage multiplier",
+            detail: `1 + ${tonnage} / ${tonnageDivisor}${tonnageDivisor === 400 ? " (IndustrialMech)" : ""}`,
+            value: 1 + tonnage / tonnageDivisor,
+        });
+        if (this.usesEarlierRulesEdition()) {
+            trace.add("cost.rules-edition", { label: "Worked out with the current rules (TechManual)" });
+        }
 
-        // cbillDryTotal = Math.floor(cbillDryTotal)
-        cbillDryTotal = Math.round( cbillDryTotal * costMultiplier );
+        const finalDryCost = Math.round(cbillDryTotal * costMultiplier);
+        trace.add("cost.final", { label: "Final cost", detail: `${addCommas(cbillDryTotal)} x ${costMultiplier}, rounded`, value: finalDryCost, emphasis: true });
+        if (cbillAmmoTotal > 0) {
+            trace.add("cost.final.loaded", { label: "Loaded cost, with the ammunition carried", value: finalDryCost + cbillAmmoTotal, emphasis: true });
+        }
 
-        this._calcLogCBill += "</tbody></table>";
-        this._cbillCost = addCommas(cbillDryTotal);
-        this._cbillCostWithAmmo = addCommas( cbillDryTotal + cbillAmmoTotal)
+        this._costSteps = trace.steps;
+        this._calcLogCBill = renderCalcStepsTable(trace.steps);
+        this._cbillCost = addCommas(finalDryCost);
+        this._cbillCostWithAmmo = addCommas(finalDryCost + cbillAmmoTotal);
+    }
+
+    /** The C-bill cost calculation as cited steps. */
+    public getCostBreakdown(): ICalcBreakdown {
+        this._calcCBillCost();
+        return { kind: "cost", edition: this._rulesEdition, steps: this._costSteps, result: this.getCBillCostNumeric() };
     }
 
     public getNumberOfJumpJets() {
