@@ -35,7 +35,7 @@ Code: `_calcBattleValue` and its helpers in `src/classes/battlemech.ts`.
 | Step id | Read on | What the page says | Code agrees? | Check |
 |---|---|---|---|---|
 | `bv2.def.armor` | TM p.302, table p.315; TO:AUE p.192 table | Armor points x 2.5 x the armor type modifier. TM: standard, ferro-fibrous, industrial, heavy industrial and stealth 1.0, commercial 0.5. TO:AUE adds ferro-lamellor 1.2, hardened 2.0, laser-reflective 1.5, reactive 1.5. | Yes | Image (TO:AUE p.192) |
-| `bv2.def.armor.dark-age` | IO:AE p.185 table, p.190 table | Two tables that disagree: see Finding 3. | Follows p.190 | Image (both) |
+| `bv2.def.armor.dark-age` | IO:AE p.185 table, p.190 table | Two tables that disagree: see Finding 3. | Follows p.190 (owner ruling 2026-11-10) | Image (both) |
 | `bv2.def.armor.patchwork` | TO:AUE p.194 | Work the armor location by location with each location's modifier, sum, then x 2.5. | Yes | |
 | `bv2.def.armor.torso-cockpit` | TO:AUE p.193 | Count the center torso armor, front and rear, twice, before the armor type modifier. | Yes | |
 | `bv2.def.armor.modular` | TO:AUE p.192 | Modular armor's points count with the modifier of the armor in the same location; stealth still counts at full effect; the speed penalty is ignored everywhere in BV. | Yes | |
@@ -150,7 +150,12 @@ changed while reading. Each is decided in the queue (plan Task 11) or by the own
 3. **Dark Age armor multipliers.** IO:AE p.185 prints Anti-Penetrative Ablation 1.2, Heat-Dissipating 1.05,
    Impact-Resistant 1, Ballistic-Reinforced 1.2. IO:AE p.190 prints 1.2, 1.1, none, and 1.5. Errata v3.01 is silent.
    Our records use p.190's (heat-dissipating 1.1, ballistic-reinforced 1.5). A question for Catalyst; shown as
-   `provisional`.
+   `provisional`. DECIDED 2026-11-10 (owner): keep p.190. Interstellar Operations (2016; errata v1.1, v1.21 silent)
+   prints 1.2 / 1.1 / 1 / 1.5 in both its tables, and IO:AE errata v3.01 is silent. Tried p.185 (1.05, 1.2): all
+   30 bundled designs with these armors (26 'Mechs, 4 vehicles; MUL and SSW/MegaMek file BVs) then fell 10 to 276
+   BV below the published figure, e.g. Hatamoto-Godai HTM-30Z 1,899 to 1,710, Spider VTOLAM 898 to 816. The
+   published BVs compute with p.190. Stays `provisional`, as the book still prints both; the 2023 third printing
+   (not held) may settle it.
 4. **AES on a tripod's legs.** TO:AUE p.192 adds 10 percent of the tonnage for each limb with an AES. Our code adds
    20 percent for a full set of legs unless the 'Mech is a quad (40), so a tripod's three legs give 20, not 30.
    FIXED 2026-11-10: 10 percent for each leg, so a tripod's three give 30 (`getAESBVMultiplier`).

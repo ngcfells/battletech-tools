@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 import { findCalcDefProblems } from "./calc-steps";
 import { MECH_BV2_STEPS, MECH_BV2_WEAPON_CITES } from "./calc-steps-mech-bv2";
 import { CALC_SOURCES } from "./calc-sources";
+import { mechArmorTypes } from "./mech-armor-types";
 
 const ledger = fs.readFileSync(path.join(__dirname, "../../docs/superpowers/plans/2026-11-10-cited-bv-ledger.md"), "utf8");
 
@@ -25,6 +26,13 @@ describe("'Mech BV2 step definitions", () => {
             "bv2.def.factor", "bv2.off.heat.efficiency", "bv2.off.weapon", "bv2.off.ammo", "bv2.off.tonnage", "bv2.off.speed", "bv2.final.cockpit", "bv2.final.round"]) {
             expect(MECH_BV2_STEPS[id], id).toBeDefined();
         }
+    });
+
+    it("price the Dark Age armors from IO:AE p.190, as the MUL and record sheets do (owner ruling 2026-11-10)", () => {
+        // p.185 prints 1.05 and 1.2; with those, all 30 bundled designs with these armors left their MUL/file BV.
+        const multiplier = (tag: string) => mechArmorTypes.find(armor => armor.tag === tag)?.bvMultiplier ?? 1;
+        expect(["anti-penetrative-ablation", "heat-dissipating", "impact-resistant", "ballistic-reinforced"].map(multiplier))
+            .toEqual([1.2, 1.1, 1, 1.5]);
     });
 
     it("are each listed in the reading ledger", () => {

@@ -21,7 +21,7 @@ export const MECH_BV2_STEPS: CalcStepDefs = {
     // Armor factor x 2.5 x the Armor Type Modifier (TM tables p.315; advanced types TO:AUE p.192).
     "bv2.def.armor": step(DEFENSIVE, [at("tm", "302"), at("tm", "315"), at("toaue", "192")]),
     "bv2.def.armor.dark-age": provisional(DEFENSIVE, [at("ioae", "185"), at("ioae", "190")],
-        "The book prints two sets of multipliers. The table on p.185 gives Heat-Dissipating 1.05, Impact-Resistant 1 and Ballistic-Reinforced 1.2; the table on p.190 gives Heat-Dissipating 1.1, none for Impact-Resistant and Ballistic-Reinforced 1.5. Both give Anti-Penetrative Ablation 1.2. Errata v3.01 does not settle it. We use p.190."),
+        "The book prints two sets of multipliers. The table on p.185 gives Heat-Dissipating 1.05, Impact-Resistant 1 and Ballistic-Reinforced 1.2; the table on p.190 gives Heat-Dissipating 1.1, none for Impact-Resistant and Ballistic-Reinforced 1.5. Both give Anti-Penetrative Ablation 1.2. Errata v3.01 does not settle it. We use p.190: it matches the 2016 Interstellar Operations tables, and the Master Unit List and published record sheets compute with it (every design we hold with these armors matches only on p.190's figures)."),
     "bv2.def.armor.patchwork": step(DEFENSIVE, [at("toaue", "194")]),
     "bv2.def.armor.torso-cockpit": step(DEFENSIVE, [at("toaue", "193")]),
     "bv2.def.armor.modular": step(DEFENSIVE, [at("toaue", "192")]),
