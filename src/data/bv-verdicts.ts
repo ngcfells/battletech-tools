@@ -75,14 +75,12 @@ export const BV_VERDICTS: Record<string, IBvVerdict> = {
     "mul:104733": { verdict: "mul-suspect", note: "The list's value equals ours when the Improved Gauss Rifles are not counted as explosive. The rule takes 1 point for each Gauss weapon slot that CASE does not protect.", cites: [{ source: "tm", page: "302" }, { source: "tm", page: "303" }] },
     // Excalibur EXC-B2b-EC
     "mul:103102": { verdict: "mul-suspect", note: "The list's value equals ours when the Improved Gauss Rifles are not counted as explosive. The rule takes 1 point for each Gauss weapon slot that CASE does not protect.", cites: [{ source: "tm", page: "302" }, { source: "tm", page: "303" }] },
-    // Awesome AWS-11V
-    "mul:107437": { verdict: "mul-suspect", note: "The list's value equals ours when the four slots of the ER PPC and its capacitor are counted as explosive. They sit behind CASE II, which spares them.", cites: [{ source: "toaue", page: "111" }, { source: "tm", page: "302" }, { source: "tm", page: "303" }] },
     // Revenant UBM-1A
     "mul:106408": { verdict: "mul-suspect", note: "The list's value equals ours when the final value is multiplied by 0.95. The rule for a Smart Robotic Control System multiplies it by 0.85.", cites: [{ source: "ioae", page: "187" }] },
     // Wasp WSP-3L
-    "mul:103134": { verdict: "mul-suspect", note: "The list's value equals ours when every heat-generating weapon is halved. Heat efficiency here is zero or less, and the rule still counts the first weapon chosen at its full value before halving the rest.", cites: [{ source: "tm", page: "303" }] },
+    "mul:103134": { verdict: "mul-suspect", note: "The list's value equals ours when every heat-generating weapon is halved. Heat efficiency here is zero or less, and the rule still counts the first weapon chosen at its full value before halving the rest.", cites: [{ source: "tm", page: "303" }, { source: "tm", page: "304" }] },
     // Wulfen C
-    "mul:108098": { verdict: "mul-suspect", note: "The list's value equals ours when every heat-generating weapon is halved. Heat efficiency here is zero or less, and the rule still counts the first weapon chosen at its full value before halving the rest.", cites: [{ source: "tm", page: "303" }] },
+    "mul:108098": { verdict: "mul-suspect", note: "The list's value equals ours when every heat-generating weapon is halved. Heat efficiency here is zero or less, and the rule still counts the first weapon chosen at its full value before halving the rest.", cites: [{ source: "tm", page: "303" }, { source: "tm", page: "304" }] },
 };
 
 /** "mul:<id>", "mul:<id>:<configuration>", or "file:<path>" where the Master Unit List has no entry. */
