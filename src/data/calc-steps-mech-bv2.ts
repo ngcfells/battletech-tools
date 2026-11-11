@@ -53,6 +53,8 @@ export const MECH_BV2_STEPS: CalcStepDefs = {
     "bv2.def.explosive.arm-case-xl": provisional(DEFENSIVE, [at("tm", "302")],
         "For a 'Mech with an Inner Sphere XL engine the rule counts explosive ammunition in any location. We do not count an arm that has its own CASE, since that CASE keeps the blast out of the side torso."),
     "bv2.def.explosive.superheavy": step(DEFENSIVE, [at("ioae", "188")]),
+    // Prototype CASE: "Ammo critical slots count as -8 BV, rather than -15" (IO:AE p.189 table).
+    "bv2.def.explosive.prototype-case": step(DEFENSIVE, [at("ioae", "189")]),
     "bv2.def.harjel-slots": step(DEFENSIVE, [at("ioae", "185")]),
     "bv2.def.subtotal": step(DEFENSIVE, [at("tm", "302-303")]),
     "bv2.def.floor": step(DEFENSIVE, [at("tm", "302")]),

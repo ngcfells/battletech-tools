@@ -5073,8 +5073,19 @@ describe("Batch 26 explosive ammunition penalty by location (TM p.302, TO:AUE p.
         expect(penalised({ ammo: ["lt", "la"] }).locations).toEqual(["leftArm", "leftTorso"]);
     });
 
-    it("counts prototype CASE as CASE (issue 27)", () => {
-        expect(penalised({ ammo: ["lt", "la", "rt"], items: [["case-prototype", "lt"]] }).locations).toEqual(["rightTorso"]);
+    it("prices ammunition behind prototype CASE at 8 a slot, not 15 (IO:AE p.189)", () => {
+        const { locations, steps } = penalised({ ammo: ["lt", "la", "rt"], items: [["case-prototype", "lt"]] });
+        expect(locations).toEqual(["rightTorso"]);
+        const proto = steps.filter(step => step.id === "bv2.def.explosive.prototype-case");
+        // The side torso it sits in, and the arm that transfers into it.
+        expect(proto.map(step => step.value)).toEqual([-8, -8]);
+        expect(proto.map(step => / in (\w+) /.exec(step.label)![1]).sort()).toEqual(["leftArm", "leftTorso"]);
+    });
+
+    it("gives prototype CASE no relief where CASE gives none (Inner Sphere XL side torso)", () => {
+        const { locations, steps } = penalised({ engine: "xl", ammo: ["lt"], items: [["case-prototype", "lt"]] });
+        expect(locations).toEqual(["leftTorso"]);
+        expect(steps.filter(step => step.id === "bv2.def.explosive.prototype-case")).toEqual([]);
     });
 
     it("treats a Light engine like a standard one", () => {

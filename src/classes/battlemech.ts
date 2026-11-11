@@ -1072,12 +1072,15 @@ export class BattleMech {
         // CASE and CASE II by location.
         const caseMap: Record<string, boolean> = {};
         const caseIIMap: Record<string, boolean> = {};
+        // Full CASE only: prototype CASE protects, but its ammunition slots still cost 8 each (IO:AE p.189).
+        const fullCaseMap: Record<string, boolean> = {};
         const validLocations = Object.keys(BattleMech.MECH_LOCATION_MAP);
         validLocations.forEach(locShorthand => {
             const longKey = BattleMech.MECH_LOCATION_MAP[locShorthand];
             const critArray: any[] = (this._criticals as any)[longKey] || [];
             caseMap[locShorthand] = this.hasClanCASE()
                 || critArray.some(critical => matchesTag(critical, "case") || matchesTag(critical, "case-prototype"));
+            fullCaseMap[locShorthand] = this.hasClanCASE() || critArray.some(critical => matchesTag(critical, "case"));
             caseIIMap[locShorthand] = critArray.some(critical => matchesTag(critical, "case-ii") || matchesTag(critical, "clan-case-ii"));
         });
         // The next location inward on the Damage Transfer Diagram (TW p.123), legs left out: CASE II
@@ -1097,11 +1100,11 @@ export class BattleMech {
         // A Superheavy 'Mech counts as a Clan 'Mech where any CASE protects the explosives, else as an Inner Sphere one
         // (IO:AE p.188).
         const isSuperheavy = this.isSuperheavy();
-        const isPenalisedLocation = (loc: string): boolean => {
+        const isPenalisedLocation = (loc: string, cases: Record<string, boolean> = caseMap): boolean => {
             if (hasCaseII(loc)) return false;
-            if (isSuperheavy && caseMap[loc]) return false;
-            if (loc === "lt" || loc === "rt") return !caseMap[loc] || engineSideSlots >= 3;
-            if (loc === "la" || loc === "ra") return !caseMap[loc] && isPenalisedLocation(inward[loc]);
+            if (isSuperheavy && cases[loc]) return false;
+            if (loc === "lt" || loc === "rt") return !cases[loc] || engineSideSlots >= 3;
+            if (loc === "la" || loc === "ra") return !cases[loc] && isPenalisedLocation(inward[loc], cases);
             return true;
         };
         // An explosive component loses 1 BV for each critical slot it fills (TM p.302). Only the first
@@ -1128,6 +1131,8 @@ export class BattleMech {
             const critArray: any[] = (this._criticals as any)[longKey] || [];
             if (critArray.length === 0) return;
             const penalised = isPenalisedLocation(loc);
+            // Spared only because prototype CASE counts: each ammunition slot costs 8, not 15 (IO:AE p.189).
+            const prototypeCaseOnly = !penalised && isPenalisedLocation(loc, fullCaseMap);
             // A Clan 'Mech's side torsos and arms were never listed; an Inner Sphere 'Mech's protected locations are.
             const armCaseXl = (loc === "la" || loc === "ra") && engineSideSlots >= 3 && caseMap[loc] && !hasCaseII(loc) && !isSuperheavy;
             const logProtected = !penalised && (!isClanBase || hasCaseII(loc) || armCaseXl);
@@ -1154,6 +1159,11 @@ export class BattleMech {
                         for (let slot = 0; slot < ammoSlots; slot++) {
                             trace.add(BattleMech._isLAMInternalStore(item.obj) ? "bv2.def.explosive.lam-store" : "bv2.def.explosive.ammo", { label: `Explosive ammunition: ${item.obj.name} in ${longKey} (${techLabel})`, value: -15 });
                             explosiveAmmoModifiers += 15;
+                        }
+                    } else if (prototypeCaseOnly) {
+                        for (let slot = 0; slot < ammoSlots; slot++) {
+                            trace.add("bv2.def.explosive.prototype-case", { label: `Explosive ammunition: ${item.obj.name} in ${longKey} behind prototype CASE`, value: -8 });
+                            explosiveAmmoModifiers += 8;
                         }
                     } else if (logProtected) {
                         trace.add(protectedId, { label: `Explosive ammunition in ${longKey} protected by ${protection}. Penalty negated`, value: 0 });

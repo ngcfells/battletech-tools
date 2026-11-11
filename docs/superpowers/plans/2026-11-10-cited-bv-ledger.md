@@ -58,6 +58,7 @@ Code: `_calcBattleValue` and its helpers in `src/classes/battlemech.ts`.
 | `bv2.def.explosive.protected` | TM pp.302-303; TO:AUE p.193 | The cases above where nothing is subtracted. | Yes | |
 | `bv2.def.explosive.arm-case-xl` | TM p.302 | For an Inner Sphere XL engine the page says any location. | No: see Finding 1 | |
 | `bv2.def.explosive.superheavy` | IO:AE p.188 | A Superheavy counts as a Clan 'Mech where the location has CASE, and as an Inner Sphere 'Mech where it has none; CASE II with a Gauss weapon subtracts nothing. | Mostly: see Finding 7 | |
+| `bv2.def.explosive.prototype-case` | IO:AE p.189 | Prototype CASE: "Ammo critical slots count as –8 BV, rather than –15", where CASE would protect them. | Yes, since 2026-11-10: see Finding 2 | Image |
 | `bv2.def.harjel-slots` | IO:AE p.185 | Each HarJel slot takes 1 off the defensive figure. | Yes | Image |
 | `bv2.def.subtotal` | TM pp.302-303 | Additions less subtractions. | Yes | |
 | `bv2.def.floor` | TM p.302 | The subtractions cannot take the running total below 1. | Yes | |
@@ -143,7 +144,9 @@ changed while reading. Each is decided in the queue (plan Task 11) or by the own
    with an Inner Sphere XL engine. Our code excuses an arm that has its own CASE. The code comment says this follows
    the MUL, SSW and MegaMek. By the page, such ammunition costs 15 a slot. Shown as `provisional`.
 2. **Prototype CASE.** IO:AE p.189 (table, checked on the image): ammunition slots count 8, not 15. Our code treats
-   prototype CASE as CASE, so those slots cost nothing. This looks like our bug.
+   prototype CASE as CASE, so those slots cost nothing. This looks like our bug. FIXED 2026-11-10: in BV2, an
+   ammunition slot spared only by prototype CASE now costs 8 (step `bv2.def.explosive.prototype-case`); where CASE
+   gives no relief (Inner Sphere XL side torso) it still costs 15. Explosive components behind it are unchanged.
 3. **Dark Age armor multipliers.** IO:AE p.185 prints Anti-Penetrative Ablation 1.2, Heat-Dissipating 1.05,
    Impact-Resistant 1, Ballistic-Reinforced 1.2. IO:AE p.190 prints 1.2, 1.1, none, and 1.5. Errata v3.01 is silent.
    Our records use p.190's (heat-dissipating 1.1, ballistic-reinforced 1.5). A question for Catalyst; shown as
