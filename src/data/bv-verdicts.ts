@@ -75,6 +75,8 @@ export const BV_VERDICTS: Record<string, IBvVerdict> = {
     "mul:104733": { verdict: "mul-suspect", note: "The list's value equals ours when the Improved Gauss Rifles are not counted as explosive. The rule takes 1 point for each Gauss weapon slot that CASE does not protect.", cites: [{ source: "tm", page: "302" }, { source: "tm", page: "303" }] },
     // Excalibur EXC-B2b-EC
     "mul:103102": { verdict: "mul-suspect", note: "The list's value equals ours when the Improved Gauss Rifles are not counted as explosive. The rule takes 1 point for each Gauss weapon slot that CASE does not protect.", cites: [{ source: "tm", page: "302" }, { source: "tm", page: "303" }] },
+    // Awesome AWS-11V
+    "mul:107437": { verdict: "mul-suspect", note: "The list's value equals ours when the four slots of the ER PPC and its capacitor are counted as explosive. The Battle Value table marks a PPC with a capacitor to be treated as a Gauss weapon in the defensive rating, and no reduction is made for a Gauss weapon in a location with CASE II (the same in the 2008 printing, the 2019 errata and the 7th printing).", cites: [{ source: "toaue", page: "193" }, { source: "toaue", page: "194" }] },
     // Revenant UBM-1A
     "mul:106408": { verdict: "mul-suspect", note: "The list's value equals ours when the final value is multiplied by 0.95. The rule for a Smart Robotic Control System multiplies it by 0.85.", cites: [{ source: "ioae", page: "187" }] },
     // Wasp WSP-3L
