@@ -2,6 +2,7 @@ import fs from "fs";
 import path from "path";
 import { describe, expect, it } from "vitest";
 import { findCalcDefProblems } from "./calc-steps";
+import { MECH_BV1_STEPS, getMechBv1Steps } from "./calc-steps-mech-bv1";
 import { MECH_BV2_STEPS, MECH_BV2_WEAPON_CITES } from "./calc-steps-mech-bv2";
 import { CALC_SOURCES } from "./calc-sources";
 import { mechArmorTypes } from "./mech-armor-types";
@@ -51,5 +52,43 @@ describe("'Mech BV2 step definitions", () => {
             expect(CALC_SOURCES[cite.source], name).toBeDefined();
             expect(cite.page.trim(), name).not.toBe("");
         }
+    });
+});
+
+describe("'Mech BV1 step definitions", () => {
+    const editions = ["master-rules", "master-rules-revised"];
+
+    it("has one table for each BV1 edition", () => {
+        expect(Object.keys(MECH_BV1_STEPS).sort()).toEqual(editions);
+    });
+
+    it.each(editions)("%s: every citation names a known source and page, and every uncited step says why", (edition) => {
+        expect(findCalcDefProblems(MECH_BV1_STEPS[edition])).toEqual([]);
+    });
+
+    it.each(editions)("%s: ids are prefixed bv1. and sit in one of the three sections", (edition) => {
+        const sections = ["Defensive Battle Rating", "Offensive Battle Rating", "Final Battle Value"];
+        for (const [id, def] of Object.entries(MECH_BV1_STEPS[edition])) {
+            expect(id.startsWith("bv1."), id).toBe(true);
+            expect(sections, id).toContain(def.section);
+        }
+    });
+
+    it("the Master Rules table has every step the Revised one has outside Level 3, so one calculation serves both", () => {
+        const core = (edition: string) => Object.keys(MECH_BV1_STEPS[edition]).filter(id => !id.startsWith("bv1.l3.")).sort();
+        expect(core("master-rules")).toEqual(core("master-rules-revised"));
+    });
+
+    it("the Revised table carries Maximum Tech's Level 3 steps, prefixed bv1.l3.", () => {
+        expect(Object.keys(MECH_BV1_STEPS["master-rules-revised"]).some(id => id.startsWith("bv1.l3."))).toBe(true);
+    });
+
+    it("an edition reads the newest BV1 edition at or before it", () => {
+        expect(getMechBv1Steps("classic-battletech-box-set")).toBe(MECH_BV1_STEPS["master-rules-revised"]);
+        expect(getMechBv1Steps("master-rules")).toBe(MECH_BV1_STEPS["master-rules"]);
+    });
+
+    it("are each listed in the reading ledger", () => {
+        for (const edition of editions) for (const id of Object.keys(MECH_BV1_STEPS[edition])) expect(ledger, id).toContain("`" + id + "`");
     });
 });

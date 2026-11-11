@@ -17,6 +17,10 @@ last column means the page image was checked.
 | `toaue` | Tactical Operations: Advanced Units & Equipment | 2022 printing |
 | `ioae` | Interstellar Operations: Alternate Eras | 2022 printing |
 | `ioae-errata-3.01` | IO: Alternate Eras errata | v3.01 (17 January 2023) |
+| `bmr` | BattleTech Master Rules | FASA 1707 (1998) |
+| `bmr-errata` | Classic BattleTech Master Rules errata, FanPro printings | As of 1 October 2004 |
+| `bmrr` | BattleTech Master Rules, Revised Edition | FanPro 35000 (2005 printing) |
+| `mt-revised` | Maximum Tech, Revised Edition | FanPro 35013, PDF version 1.0 (2005) |
 
 The v4.1 Battle Value chapter was compared with TM pp.302-304 line by line for the 'Mech rules: the rules text is
 the same. The IO:AE errata v3.01 has one Battle Value entry (Dead-Fire ammunition, p.190); it does not touch any
@@ -126,6 +130,61 @@ Weapon modifiers inside a Modified BV (`MECH_BV2_WEAPON_CITES`):
 | `bv2.final.round` | TM pp.302, 304 | Round to the nearest whole number, a half up. | Yes |
 | `bv2.final.lam-bombs` | TM p.315; IO:AE p.186 | External stores add to a fighter's base BV before the skill multiplier. Nothing says LAM bombs do. | Our reading |
 
+## 'Mech BV1 (read 2026-11-10 and 2026-11-11)
+
+Code: `_calcBattleValue1` in `src/classes/battlemech.ts`; `getBattleValue1Rater`, `getBattleValue1Ammo` and `MAX_TECH`
+in `src/data/battle-value.ts`. The two Master Rules books print the same procedure; the table gives both pages
+(BMR / BMR(R)). Page numbers are the printed ones. The Level 3 rows are from Maximum Tech, Revised.
+
+| Step id | Read on | What the page says | Code agrees? | Check |
+|---|---|---|---|---|
+| `bv1.def.armor` | BMR p.139 / BMR(R) p.152 | Total armor points x 2. | Yes | |
+| `bv1.def.structure` | BMR p.139 / BMR(R) p.152 | Internal structure points x 1.5; x 0.75 with an XL engine. | Yes | |
+| `bv1.def.structure.clan-xl` | BMR pp.139, 145 / BMR(R) pp.152, 159 | The rules text names only "XL engine" (0.75). The Goshawk example (a Clan XL) uses 91 x 1.125. | Follows the example: Finding 17 | |
+| `bv1.def.structure.light-engine` | BMR(R) p.152 | x 1.125 with a Light engine. Not in the 1998 book (no Light engine there). | Yes; provisional under master-rules | |
+| `bv1.def.tonnage` | BMR p.139 / BMR(R) p.152 | Add the 'Mech's tonnage. | Yes | |
+| `bv1.def.equipment` | BMR p.139, tables pp.142-144 / BMR(R) p.152, tables pp.156-158 | Add the BV of defensive equipment: anti-missile systems with their ammunition, and ECM. Everything else is offensive. | Yes (A-Pods also counted defensive) | |
+| `bv1.def.explosive` | BMR pp.139-140, errata p.12 / BMR(R) pp.152-153 | 20 points a ton of explosive ammunition, a Gauss rifle counting as a ton: Clan in center torso, legs or head; Inner Sphere XL anywhere; Inner Sphere standard (BMR(R): or Light) in center torso, legs, head, or a location without CASE; an arm, see Finding 15. | BMR(R): yes. BMR with errata: Finding 15 | |
+| `bv1.def.heat` | BMR p.140 / BMR(R) p.153 | (Maximum heat - heat sink capacity) x 5, when positive. Maximum heat: all weapons fired, plus the hotter of running and jumping; Ultra autocannon x 2, Streak / 2, rear-firing weapons ignored. | Yes | |
+| `bv1.def.heat.stealth` | BMR(R) p.154 | Stealth armor adds 10 to the maximum heat. Not in the 1998 book. | Yes; provisional under master-rules | |
+| `bv1.def.subtotal` | BMR p.139 / BMR(R) p.152 | The subtractions cannot take the running total below 1. | Yes | |
+| `bv1.def.factor` | BMR p.140, table p.32 / BMR(R) p.153, table p.33 | Multiply by the Defensive Movement Factor: 1 + the best Target Movement Modifier / 10 (table to +5 = 1.5), jumping and MASC or TSM counted. Attack Modifiers Table: 0-2 hexes 0, 3-4 +1, 5-6 +2, 7-9 +3, 10+ +4, jumped +1 more. | Yes (`getMovementModifier` capped at 4) | Image (both tables) |
+| `bv1.off.weapon` | BMR p.140, tables pp.142-144 / BMR(R) p.153, tables pp.156-158 | Add the BV of every weapon; rear-mounted ones at half. When the rear weapons are worth more than the rest, the rear counts as the front. | Yes | |
+| `bv1.off.weapon.unlisted` | none | No rule: an item the edition's tables do not print. | We use the BV2 figure; provisional | |
+| `bv1.off.targeting-computer` | BMR p.140, note D p.144 / BMR(R) p.153, note D p.158 | 20 percent of the BV of the weapons linked to it; no ammunition; rear weapons at half. | Yes | |
+| `bv1.off.ammo` | BMR p.140 / BMR(R) p.153 | All ammunition at full BV, per ton, rear weapons' too. | Yes | |
+| `bv1.off.base` | BMR p.140 / BMR(R) p.153 | Weapons + targeting computer + ammunition = Base Weapon Battle Rating. | Yes | |
+| `bv1.off.heat` | BMR pp.140-141, errata p.12 / BMR(R) pp.153-154 | When maximum heat exceeds the sink capacity: X = sinks x base / maximum heat; Y = (base - X) / 2; the rating becomes X + Y. The errata restores the X line the 1998 printing garbles. | Yes | |
+| `bv1.off.speed` | BMR pp.140-141, errata p.12 / BMR(R) pp.153-154 | Running MP + Jumping MP, +1 with MASC or TSM; the Speed Factor Table, which is ((MP - 5) / 10 + 1) ^ 1.2 to two places. The errata adds the rows for 0 (0.44) and 1 (0.54). | Yes | |
+| `bv1.off.speed.stealth` | BMR(R) p.154 | Stealth armor adds 0.2 to the Speed Factor. Not in the 1998 book. | Yes; provisional under master-rules | |
+| `bv1.final.round` | BMR pp.139, 141 / BMR(R) pp.152, 154 | Defensive + Offensive; fractions are kept to the end, then rounded to the nearest whole number. | Yes | |
+| `bv1.l3.item` | Max Tech (Revised) p.90 | The Level 3 equipment tables: BV and ammunition BV per ton (one-shot launchers after the slash). | Yes, but Finding 16 | Image |
+| `bv1.l3.item.artemis-v` | Max Tech (Revised) p.90 | An Artemis V launcher is worth its launcher's BV x 1.3. | Yes | |
+| `bv1.l3.ammo.special` | Max Tech (Revised) p.91 | Special ammunition is the standard ammunition's BV x a multiplier (armor-piercing 6, cluster 0.75, flechette 0.5 and so on); semi-guided only with TAG on the side. | Yes | |
+| `bv1.l3.def.armor.hardened` | Max Tech (Revised) pp.90-91 | Hardened armor counts x 4 instead of x 2; in patchwork armor only the hardened points are doubled. Other special armors count as standard. | Yes | |
+| `bv1.l3.def.engine` | Max Tech (Revised) p.91 | The Engine Multipliers table gives the internal structure multiplier for XXL and large engines. | Yes | Image |
+| `bv1.l3.def.structure-type` | Max Tech (Revised) p.92 | Reinforced structure doubles the internal structure value; composite halves it. | Yes | |
+| `bv1.l3.def.gyro` | Max Tech (Revised) p.92 | A heavy-duty gyro adds to the base defensive rating. | Yes (30) | |
+| `bv1.l3.def.command-console` | Max Tech (Revised) p.91 | A command console adds 25 to the base defensive rating. | Yes | |
+| `bv1.l3.def.enhanced-imaging` | Max Tech (Revised) p.91 | Enhanced Imaging takes 25 off the defensive rating. | Yes | |
+| `bv1.l3.def.component-armor` | Max Tech (Revised) p.92 | 5 points for each critical slot protected by component armor. | Yes | |
+| `bv1.l3.def.torso-cockpit` | Max Tech (Revised) p.91 | A torso-mounted cockpit adds the center torso armor, front and rear, x 2. | Yes | |
+| `bv1.l3.def.case-ii` | Max Tech (Revised) p.92 | CASE II protects as CASE does; ammunition it covers costs 5 a ton. | Yes | |
+| `bv1.l3.def.coolant-pod` | Max Tech (Revised) p.92 | Each coolant pod adds 1 to the heat sink capacity. | Yes | |
+| `bv1.l3.def.factor.supercharger` | Max Tech (Revised) p.91 | The Defensive Movement Factor uses the best possible movement, the supercharger's included. | Yes | |
+| `bv1.l3.def.factor.null-signature` | Max Tech (Revised) p.92 | A null-signature system adds 0.5 to the Defensive Movement Factor. Its 10 heat comes in as equipment heat. | Yes | |
+| `bv1.l3.def.factor.armless` | Max Tech (Revised) p.92 | A 'Mech built without arms adds 0.1 to the Defensive Movement Factor. | Yes | |
+| `bv1.l3.off.multi-trac` | Max Tech (Revised) p.91 | With Multi-Trac II, rear weapons count at full value, and in the heat. | Yes | |
+| `bv1.l3.off.targeting.variable-range` | Max Tech (Revised) p.91 | A variable-range targeting system adds 10 percent to the weapon values, worked as a targeting computer is. | Yes | |
+| `bv1.l3.off.targeting.enhanced-imaging` | Max Tech (Revised) p.91 | Enhanced Imaging adds 5 percent to the weapon values, the same way. | Yes | |
+| `bv1.l3.off.speed.supercharger` | Max Tech (Revised) p.91 | A supercharger counts as MASC does in the Speed Factor (+1). | Yes | |
+| `bv1.l3.final.jump-pack` | Max Tech (Revised) p.92 | A jump pack is left out of the movement figures and adds its Jumping MP x 5 to the final BV. | Yes | |
+
+Read but not applied by the code (no step): the Arrow IV and TAG pairing, +200 to the unit (BMR p.144 and BMR(R)
+p.158, note A); a satellite uplink and a command console's value to the side (Max Tech p.91-92); a hand-held
+weapon's own BV (Max Tech p.92); the Piloting change a torso or compact cockpit makes to the skill multiplier;
+improved jump jet heat.
+
 ## Worked examples in the books
 
 | Unit | Where | Numbers the book prints |
@@ -134,6 +193,7 @@ Weapon modifiers inside a Modified BV (`MECH_BV2_WEAPON_CITES`):
 | TDR-10SE Thunderbolt | BV chapter v4.1 (the sixth printing's extract drops this example; TM p.302 names it) | Armor 200 x 2.5 = 500; structure 104 x 1.5 = 156; gyro 65 x 0.5 = 32.5; Guardian ECM 61; subtotal 749.5; one ton of LRM 10 ammunition in the left torso -15 = 734.5; target modifier +3 with MASC, factor 1.3; defensive rating 954.85. LRM 10 90, its ammunition 11, ER PPC 229 x 1.25 = 286.25, ER medium laser 62 x 1.25 = 77.5 (three); heat efficiency 6 + 24 - 4 = 26; weapon heat 34; order ER PPC (15), LRM 10 (19), ER medium (24), ER medium (29, over), third ER medium at half = 38.75; weapon rating 646; running MP 8 with MASC, jumping MP 4, speed factor 1.63; offensive rating 1,052.98. Sum 2,007.83 (BV 2,008). |
 | WI-DM DemolitionMech | TM p.305 | Armor 85 x 2.5 = 212.5; structure 58 x 1.5 x 0.5 = 43.5; gyro 35 x 0.5 = 17.5; no defensive equipment; subtotal 273.5; target modifier +2, factor 1.2; defensive rating 328.2. Rock cutter 6, wrecking ball 8, small laser 9, tonnage 35; heat efficiency 6 + 1 - 2 = 5; weapon rating 58; running MP 5, speed factor 1.00; x 0.9 for no advanced fire control = 52.2. Sum 380.4; BV 380. |
 | Phoenix Hawk LAM | IO:AE p.186 | Not yet usable: see Finding 10. |
+| Goshawk (BV1) | BMR p.145 and BMR(R) p.159, the same figures | Armor 173 x 2 = 346; structure 91 x 1.125 = 102.375; tonnage 55; no defensive equipment; 503.375; no explosive penalty; heat (30 - 22) x 5 = 40; 463.375; jumping gives +3, factor 1.3; defensive rating 602.3875. Large pulse laser 265, three medium pulse lasers 333, targeting computer 598 x 0.2 = 119.6, four machine guns 20 with half a ton of ammunition 0.5, two Streak SRM 2 80 with a ton of ammunition 5; base 823.1; X = 22 x 823.1 / 30 = 603.6066667; Y = 109.7466667; modified rating 713.3533334; running 9 + jumping 6 = 15, speed factor 2.30; offensive rating 1,640.72667; total 2,243.100167; BV 2,243. |
 
 ## Findings
 
@@ -181,3 +241,15 @@ changed while reading. Each is decided in the queue (plan Task 11) or by the own
 14. **"Greater than" against "at least".** TM p.304 starts the heat steps when total weapon heat is greater than the
     efficiency; our code starts them when it is equal too. The result is the same: at equality the last weapon is
     the one that reaches the limit and still counts in full.
+15. **BV1: CASE and ammunition in an arm (was "Finding A").** The BMR errata p.12 rewrites the arm line: arm
+    ammunition is excused only by CASE in the next location inward. BMR(R) p.153 accepts CASE in the arm or the next
+    location inward. Our code applies the BMR(R) rule under both editions. Owner ruling 2026-11-10: fix it per
+    edition, in BV1 and in the designer's ammunition and CASE check. Shown as `provisional` under master-rules
+    until that fix lands.
+16. **BV1: Inner Sphere Grenade Launcher (was "Finding B").** Maximum Tech, Revised p.90 prints BV 1 (page image).
+    Our Level 3 table has 4, which matches no page read. Owner ruling 2026-11-10: each Maximum Tech printing gives
+    its values to the edition it belongs to; the FASA printing, if held, gives master-rules its own Level 3 table.
+17. **BV1: the Clan XL engine.** Neither Master Rules book names the Clan XL in the rules text (only "XL engine",
+    x 0.75). Both print the Goshawk example with 91 x 1.125. Our code follows the example. Shown as `provisional`.
+18. **Stale comment.** `_calcBattleValue1` says the movement modifiers are on BMR(R) p.25. The Attack Modifiers
+    Table is on p.33 (BMR p.32). Correct the comment when the function is converted (Task 5).
