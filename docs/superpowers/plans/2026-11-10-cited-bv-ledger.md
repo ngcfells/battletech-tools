@@ -158,6 +158,7 @@ images of both.
 | `bv1.def.heat.stealth` | BMR(R) p.154 | Stealth armor adds 10 to the maximum heat. Not in the 1998 book. | Yes; provisional under master-rules | |
 | `bv1.def.subtotal` | BMR p.139 / BMR(R) p.152 | The subtractions cannot take the running total below 1. | Yes | |
 | `bv1.def.factor` | BMR p.140, table p.32 / BMR(R) p.153, table p.33 | Multiply by the Defensive Movement Factor: 1 + the best Target Movement Modifier / 10 (table to +5 = 1.5), jumping and MASC or TSM counted. Attack Modifiers Table: 0-2 hexes 0, 3-4 +1, 5-6 +2, 7-9 +3, 10+ +4, jumped +1 more. | Yes (`getMovementModifier` capped at 4) | Image (both tables) |
+| `bv1.def.rating` | BMR p.140 / BMR(R) p.153 | The defensive subtotal x the Defensive Movement Factor is the Defensive Battle Rating. | Yes | |
 | `bv1.off.weapon` | BMR p.140, tables pp.142-144 / BMR(R) p.153, tables pp.156-158 | Add the BV of every weapon; rear-mounted ones at half. When the rear weapons are worth more than the rest, the rear counts as the front. | Yes | |
 | `bv1.off.weapon.unlisted` | none | No rule: an item the edition's tables do not print. | We use the BV2 figure; provisional | |
 | `bv1.off.targeting-computer` | BMR p.140, note D p.144 / BMR(R) p.153, note D p.158 | 20 percent of the BV of the weapons linked to it; no ammunition; rear weapons at half. | Yes | |
@@ -166,6 +167,8 @@ images of both.
 | `bv1.off.heat` | BMR pp.140-141, errata p.12 / BMR(R) pp.153-154 | When maximum heat exceeds the sink capacity: X = sinks x base / maximum heat; Y = (base - X) / 2; the rating becomes X + Y. The errata restores the X line the 1998 printing garbles. | Yes | |
 | `bv1.off.speed` | BMR pp.140-141, errata p.12 / BMR(R) pp.153-154 | Running MP + Jumping MP, +1 with MASC or TSM; the Speed Factor Table, which is ((MP - 5) / 10 + 1) ^ 1.2 to two places. The errata adds the rows for 0 (0.44) and 1 (0.54). | Yes | |
 | `bv1.off.speed.stealth` | BMR(R) p.154 | Stealth armor adds 0.2 to the Speed Factor. Not in the 1998 book. | Yes; provisional under master-rules | |
+| `bv1.off.rating` | BMR p.141 / BMR(R) p.154 | The modified weapon rating x the Speed Factor is the Offensive Battle Rating. | Yes | |
+| `none.no-battle-value` | BMR p.139 | The Battle Value System section opens here; the editions before the 1998 Master Rules have none. | Yes | |
 | `bv1.final.round` | BMR pp.139, 141 / BMR(R) pp.152, 154 | Defensive + Offensive; fractions are kept to the end, then rounded to the nearest whole number. | Yes | |
 | `bv1.l3.item` | Max Tech (Revised) p.90 | The Level 3 equipment tables: BV and ammunition BV per ton (one-shot launchers after the slash). | Yes, but Finding 16 | Image |
 | `bv1.l3.item.artemis-v` | Max Tech (Revised) p.90 | An Artemis V launcher is worth its launcher's BV x 1.3. | Yes | |
@@ -273,3 +276,6 @@ changed while reading. Each is decided in the queue (plan Task 11) or by the own
     x 0.75). Both print the Goshawk example with 91 x 1.125. Our code follows the example. Shown as `provisional`.
 18. **Stale comment.** `_calcBattleValue1` says the movement modifiers are on BMR(R) p.25. The Attack Modifiers
     Table is on p.33 (BMR p.32). Correct the comment when the function is converted (Task 5).
+19. **BV1: a slip in the Goshawk example.** BMR p.145 and BMR(R) p.159 print 713.3533334 x 2.30 = 1,640.72667. The
+    product is 1,640.71267. The printed total (2,243.100167) carries the slip; the BV rounds to 2,243 either way.
+    Our test checks the true product.

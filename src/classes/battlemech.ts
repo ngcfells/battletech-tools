@@ -1,4 +1,5 @@
-import { CalcTrace, ICalcBreakdown, ICalcCitation, ICalcStep, renderCalcStepsHtml } from "../data/calc-steps";
+import { CalcTrace, ICalcBreakdown, ICalcCitation, ICalcStep, formatCalcNumber, renderCalcStepsHtml } from "../data/calc-steps";
+import { NO_BATTLE_VALUE_STEPS, getMechBv1Steps } from "../data/calc-steps-mech-bv1";
 import { MECH_BV2_STEPS, MECH_BV2_WEAPON_CITES } from "../data/calc-steps-mech-bv2";
 import { AlphaStrikeStructureColumn, getAlphaStrikeMechStructure } from "../data/alpha-strike-mech-structure";
 import { findUnitCatalogRecord, getUnitCatalogRecords } from "../data/equipment-lookup";
@@ -12,7 +13,7 @@ import { getBattleMechTroAdapter } from "./battlemech-tro";
 import { isSSWNoMake, readSSWTechnicalReadout } from "../utils/ssw-technical-readout";
 import { ITechnicalReadoutExport } from "../data/technical-readout-interfaces";
 import { getAlphaStrikeQuirks, getQuirkHeatGenerated, getQuirkWeaponHeat } from "../utils/quirk-effects";
-import { BattleValueC3Type, IBattleValueC3Part, IBattleValueTagShare, getBattleValueC3Part, getBattleValueC3Type, getBattleValueEdition, getBattleValueFor, getBattleValueRules, getBattleValueSkillEdition, getBattleValueTagShare, getSkillMultiplier, getSpeedFactor, getBattleValue1Ammo, getBattleValue1Rater, isBattleValue1Defensive } from "../data/battle-value";
+import { BattleValueC3Type, IBattleValueC3Part, IBattleValueTagShare, getBattleValueC3Part, getBattleValueC3Type, getBattleValueEdition, getBattleValueFor, getBattleValueRules, getBattleValueSkillEdition, getBattleValueTagShare, getSkillMultiplier, getSpeedFactor, getBattleValue1Ammo, editionHasBattleValue, rateBattleValue1, isBattleValue1Defensive } from "../data/battle-value";
 import { battlemechLocations } from "../data/battlemech-locations";
 import { IArmorType, ICockpitType, ICriticalLocations, IEngineOption, IEngineType, IEquipmentItem, IGyro, IHeatSync, IInternalStructure, IInternalStructurePerTon, IJumpJet, IMechType, IMyomerType, IResolvedInternalStructure, ISplitLocation, ITechDates } from "../data/data-interfaces";
 import { btEraOptions, findEraByTag, getClosestEraForTech, getEraForYear, getErasForTech } from "../data/era-options";
@@ -1588,14 +1589,12 @@ export class BattleMech {
         // Commit values into the master class structures
         this._battleValue = absoluteRoundedBV + bombBV;
         this._battleValueSteps = trace.steps;
-        this._calcLogBV = renderCalcStepsHtml(trace.steps);
-        // Under a BV1 edition its own steps come first in the log, then the BV2 ones for comparison (plan ruling 1).
+        // The log is the design's own edition's breakdown: its BV1 steps under a BV1 edition, and the one line saying so
+        // under an edition without Battle Value.
         this._battleValue1.clear();
-        getBattleValueFor(this._rulesEdition, "mech", { bv1: () => {
-            const steps: string[] = [];
-            this._battleValue1.set(this._rulesEdition, this._calcBattleValue1(this._rulesEdition, steps));
-            this._calcLogBV = steps.join("") + "<strong>BV2 (current rules), for comparison</strong><br />" + this._calcLogBV;
-        }, bv2: () => undefined });
+        const own = this._getBattleValueBreakdown(this._rulesEdition);
+        if (own.scheme === "bv1") this._battleValue1.set(this._rulesEdition, own.result as number);
+        this._calcLogBV = renderCalcStepsHtml(own.steps);
 
         // Trigger secondary tracking updates for personnel/skills assignment
         this._setPilotAdjustedBattleValue();
@@ -1641,33 +1640,71 @@ export class BattleMech {
 
     /**
      * BV1 (BMR pp.139-141 with the FanPro errata p.12; BMR(R) pp.152-154), from `edition`'s equipment tables (BMR
-     * pp.142-144, BMR(R) pp.156-158). Fractions are kept to the end. `log` collects the steps when given.
+     * pp.142-144, BMR(R) pp.156-158) and its printing of Maximum Tech for Level 3 (pp.90-92). Fractions are kept to the
+     * end. `trace` collects the cited steps when given (the edition's table from getMechBv1Steps).
      */
-    private _calcBattleValue1(edition: string, log?: string[], tagged = false): number {
-        const note = (line: string) => log?.push(line + "<br />");
-        const statsEdition = getBattleValueEdition(edition);
+    private _calcBattleValue1(edition: string, trace?: CalcTrace, tagged = false): number {
+        const fmt = formatCalcNumber;
         const isAmmo = (item: IEquipmentItem) => item.isAmmo || item.tag.startsWith("ammo-");
         const isDefensive = isBattleValue1Defensive;
-        // Maximum Tech's Level 3 rules (pp.90-92), where the edition has them.
+        // Maximum Tech's Level 3 rules (pp.90-92), in the printing that goes with the edition.
         const levelThree = getBattleValueRules(edition, "mech").levelThree;
-        const valueOf = getBattleValue1Rater(edition, this._tech.tag, tagged, (line) => note(this._escapeLogText(line)));
+        const rate = (item: IEquipmentItem, weapon?: IEquipmentItem) => rateBattleValue1(edition, this._tech.tag, tagged, item, weapon);
+        const valueOf = (item: IEquipmentItem, weapon?: IEquipmentItem) => rate(item, weapon).value;
         const binWeapon = (bin: IEquipmentItem) => this.getAmmoBinWeapon(bin);
-        note(`<strong>BV1 (${getRulesEdition(statsEdition).name}${levelThree ? `; ${levelThree.source}` : ""})</strong>`);
+        // The step an item's figure belongs to: the edition's tables, Maximum Tech's table or rule, or neither.
+        const itemStep = (source: string, listed: string) =>
+            source === "unlisted" ? "bv1.off.weapon.unlisted" : source === "level-three" ? "bv1.l3.item" : source === "artemis-v" ? "bv1.l3.item.artemis-v" : listed;
 
         // Step 1: Defensive Battle Rating (BMR(R) pp.152-153). Level 3 engines read their own multiplier, reinforced
         // structure counts double and composite half (Maximum Tech pp.91-92).
-        const structureFactor = (levelThree?.engines[(this.getLargeEngineType() ?? this._engineType).tag]
-            ?? ({ xl: 0.75, light: 1.125, clan_xl: 1.125 } as Record<string, number>)[this._engineType.tag] ?? 1.5)
-            * (levelThree ? ({ reinforced: 2, composite: 0.5 } as Record<string, number>)[this.getInternalStructureType()] ?? 1 : 1);
-        let defensiveGear = getBattleValue1Ammo(this._equipmentList, binWeapon, valueOf, true)
+        const engineTag = (this.getLargeEngineType() ?? this._engineType).tag;
+        const levelThreeEngine = levelThree?.engines[engineTag];
+        const engineFactor = levelThreeEngine ?? ({ xl: 0.75, light: 1.125, clan_xl: 1.125 } as Record<string, number>)[this._engineType.tag] ?? 1.5;
+        const structureTypeFactor = levelThree ? ({ reinforced: 2, composite: 0.5 } as Record<string, number>)[this.getInternalStructureType()] ?? 1 : 1;
+        const structureFactor = engineFactor * structureTypeFactor;
+        // Hardened armor points count x 4, patchwork ones too (Maximum Tech pp.90-91).
+        const hardened = !levelThree ? 0 : this.isPatchworkArmor()
+            ? this.getPatchworkLocations().reduce((sum, location) => sum + (this.getPatchworkArmorType(location.key)?.tag === "hardened" ? this._getPatchworkLocationPoints(location.key) : 0), 0)
+            : this._armorType.tag === "hardened" ? this.getTotalArmor() : 0;
+        const armor = (this.getTotalArmor() + hardened) * 2;
+        const structure = this._totalInternalStructurePoints * structureFactor;
+        trace?.add("bv1.def.armor", { label: "Armor", detail: `${this.getTotalArmor()} points x 2`, value: this.getTotalArmor() * 2 });
+        if (hardened) trace?.add("bv1.l3.def.armor.hardened", { label: "Hardened armor counts x 4", detail: `${hardened} points x 2 more`, value: hardened * 2 });
+        const structureStep = levelThreeEngine !== undefined ? "bv1.l3.def.engine" : this._engineType.tag === "clan_xl" ? "bv1.def.structure.clan-xl"
+            : this._engineType.tag === "light" ? "bv1.def.structure.light-engine" : "bv1.def.structure";
+        trace?.add(structureStep, { label: `Internal structure (${this._engineType.name})`, detail: `${this._totalInternalStructurePoints} points x ${engineFactor}`, value: this._totalInternalStructurePoints * engineFactor });
+        if (structureTypeFactor !== 1) {
+            trace?.add("bv1.l3.def.structure-type", { label: `${structureTypeFactor === 2 ? "Reinforced" : "Composite"} internal structure`, detail: `structure value x ${structureTypeFactor}`, value: structure - this._totalInternalStructurePoints * engineFactor });
+        }
+        trace?.add("bv1.def.tonnage", { label: "Tonnage", value: this.getTonnage() });
+
+        // Defensive equipment: anti-missile systems with their ammunition, A-Pods and ECM.
+        const defensiveAmmo = getBattleValue1Ammo(this._equipmentList, binWeapon, valueOf, true);
+        let defensiveGear = defensiveAmmo
             + this._equipmentList.reduce((sum, item) => sum + (!isAmmo(item) && isDefensive(item) ? valueOf(item) : 0), 0);
+        if (trace) {
+            for (const item of this._equipmentList) {
+                if (isAmmo(item) || !isDefensive(item)) continue;
+                const rating = rate(item);
+                if (rating.value) trace.add(itemStep(rating.source, "bv1.def.equipment"), { label: item.name, value: rating.value });
+            }
+            if (defensiveAmmo) trace.add("bv1.def.equipment", { label: "Ammunition for defensive equipment", value: defensiveAmmo });
+        }
         if (levelThree) {
             // Heavy-duty gyro +30, command console +25, 5 a slot of component armor; a torso-mounted cockpit adds the
             // center torso armor, front and rear, x 2 (Maximum Tech pp.91-92).
             const centerTorsoArmor = this.getCockpitType().tag === "torso-mounted" ? (this._armorAllocation.centerTorso ?? 0) + (this._armorAllocation.centerTorsoRear ?? 0) : 0;
+            const heavyDutyGyro = this.getGyro().tag === "heavy-duty";
+            const armoredSlots = this.getArmoredComponentRecords().reduce((sum, armored) => sum + armored.slots, 0);
             // Enhanced Imaging takes 25 off (p.91).
-            defensiveGear += (this.getGyro().tag === "heavy-duty" ? 30 : 0) + (this.hasCommandConsole() ? 25 : 0) - (this.hasEnhancedImaging() ? 25 : 0)
-                + 5 * this.getArmoredComponentRecords().reduce((sum, armored) => sum + armored.slots, 0) + centerTorsoArmor * 2;
+            defensiveGear += (heavyDutyGyro ? 30 : 0) + (this.hasCommandConsole() ? 25 : 0) - (this.hasEnhancedImaging() ? 25 : 0)
+                + 5 * armoredSlots + centerTorsoArmor * 2;
+            if (heavyDutyGyro) trace?.add("bv1.l3.def.gyro", { label: "Heavy-duty gyro", value: 30 });
+            if (this.hasCommandConsole()) trace?.add("bv1.l3.def.command-console", { label: "Command console", value: 25 });
+            if (this.hasEnhancedImaging()) trace?.add("bv1.l3.def.enhanced-imaging", { label: "Enhanced Imaging", value: -25 });
+            if (armoredSlots) trace?.add("bv1.l3.def.component-armor", { label: "Component armor", detail: `${armoredSlots} slots x 5`, value: 5 * armoredSlots });
+            if (centerTorsoArmor) trace?.add("bv1.l3.def.torso-cockpit", { label: "Torso-mounted cockpit", detail: `${centerTorsoArmor} center torso armor x 2`, value: centerTorsoArmor * 2 });
         }
         // 20 a ton of explosive ammo, a Gauss rifle counting as a ton. Clan: center torso, legs and head; Inner Sphere
         // XL engine: anywhere; otherwise also a side torso without CASE, or an arm without CASE there or inward (BMR(R)
@@ -1685,71 +1722,118 @@ export class BattleMech {
         let explosive = 0;
         for (const item of this._equipmentList) {
             const tons = BattleMech._isExplosiveAmmoSlot(item) ? item.weight : BattleMech._isExplosiveComponent(item) && item.gauss ? 1 : 0;
-            if (tons > 0 && item.location && BattleMech.MECH_LOCATION_MAP[item.location] && penalised(item.location)) explosive += (caseII(item.location) ? 5 : 20) * tons;
+            if (tons > 0 && item.location && BattleMech.MECH_LOCATION_MAP[item.location] && penalised(item.location)) {
+                const perTon = caseII(item.location) ? 5 : 20;
+                explosive += perTon * tons;
+                trace?.add(perTon === 5 ? "bv1.l3.def.case-ii" : "bv1.def.explosive", {
+                    label: `Explosive: ${item.name} in the ${getLocationName(item.location, this._hasFrontLegs()).toLowerCase()}${perTon === 5 ? " behind CASE II" : ""}`,
+                    detail: `${fmt(tons)} ${tons === 1 ? "ton" : "tons"} x ${perTon}`, value: -perTon * tons,
+                });
+            }
         }
         // Maximum potential heat: every weapon but the rear-firing ones (Ultra x 2, Streak / 2), plus running or
         // jumping, whichever is hotter; Stealth armor +10 (in the movement heat). Level 3: with Multi-Trac II the rear
         // weapons count in the heat and at full value (Maximum Tech p.91).
         const multiTracII = !!levelThree && this._equipmentList.some(item => matchesTag(item, "targeting-multi-trac-ii"));
         const firing = this._equipmentList.filter(item => !isAmmo(item) && !isDefensive(item));
+        const statsEdition = getBattleValueEdition(edition);
         const heatOf = (item: IEquipmentItem) => (getEditionStats(item, statsEdition)?.heat ?? item.heat ?? 0) * (item.isUltra ? 2 : item.isStreak ? 0.5 : 1);
         const maxHeat = firing.filter(item => multiTracII || !item.rear).reduce((sum, item) => sum + heatOf(item), 0) + this.getMaxMovementHeat();
         // Level 3: each coolant pod adds 1 (Maximum Tech p.92).
-        const sinkCapacity = this.getHeatSinks() * this._heatSinkType.dissipation + this.getEquipmentHeatDissipation()
-            + (levelThree ? this._equipmentList.filter(item => item?.coolantPod).length : 0);
+        const coolantPods = levelThree ? this._equipmentList.filter(item => item?.coolantPod).length : 0;
+        const sinkCapacity = this.getHeatSinks() * this._heatSinkType.dissipation + this.getEquipmentHeatDissipation() + coolantPods;
         const heatPenalty = Math.max(0, maxHeat - sinkCapacity) * 5;
-        // Level 3: hardened armor points count x 4, patchwork ones too (Maximum Tech pp.90-91).
-        const hardened = !levelThree ? 0 : this.isPatchworkArmor()
-            ? this.getPatchworkLocations().reduce((sum, location) => sum + (this.getPatchworkArmorType(location.key)?.tag === "hardened" ? this._getPatchworkLocationPoints(location.key) : 0), 0)
-            : this._armorType.tag === "hardened" ? this.getTotalArmor() : 0;
-        const armor = (this.getTotalArmor() + hardened) * 2;
-        const structure = this._totalInternalStructurePoints * structureFactor;
+        const stealth = this._armorType.tag === "stealth-basic";
+        if (stealth) trace?.add("bv1.def.heat.stealth", { label: "Stealth armor", detail: "10 heat, counted in the maximum heat" });
+        if (coolantPods) trace?.add("bv1.l3.def.coolant-pod", { label: "Coolant pods", detail: `${coolantPods} added to the heat sink capacity` });
+        if (heatPenalty) trace?.add("bv1.def.heat", { label: "Heat the heat sinks cannot shed", detail: `(${fmt(maxHeat)} maximum heat - ${fmt(sinkCapacity)} heat sink capacity) x 5`, value: -heatPenalty });
         // The subtractions cannot take the total below 1.
-        const subtotal = Math.max(1, armor + structure + this.getTonnage() + defensiveGear - explosive - heatPenalty);
-        note(`Armor ${this.getTotalArmor()}${hardened ? ` + Hardened ${hardened}` : ""} x 2 = ${armor} + Internal Structure ${this._totalInternalStructurePoints} x ${structureFactor} = ${structure} + Tonnage ${this.getTonnage()} + Defensive Equipment ${defensiveGear} - Explosive Ammo ${explosive} - Heat (${maxHeat} - ${sinkCapacity}) x 5 = ${heatPenalty}: ${subtotal}`);
-        // Defensive Movement Factor: the BMR(R) p.25 modifiers (Total Warfare's up to +4), +1 more for jumping; MASC and TSM count.
+        const unfloored = armor + structure + this.getTonnage() + defensiveGear - explosive - heatPenalty;
+        const subtotal = Math.max(1, unfloored);
+        trace?.add("bv1.def.subtotal", { label: "Defensive subtotal", detail: unfloored < 1 ? "the subtractions cannot take it below 1" : undefined, value: subtotal });
+        // Defensive Movement Factor: the Target Movement Modifiers of the Attack Modifiers Table (BMR p.32, BMR(R) p.33:
+        // up to +4), +1 more for jumping; MASC and TSM count.
         const tmm = (mp: number) => Math.min(getMovementModifier(mp), 4);
         const jump = this.getBVJumpSpeed();
         const movementModifier = Math.max(tmm(this.getBVRunSpeed()), jump > 0 ? tmm(jump) + 1 : 0);
         // Level 3: a null-signature system adds 0.5, a 'Mech designed without arms 0.1 (Maximum Tech p.92).
         const armlessFactor = levelThree && this.isArmless() ? 0.1 : 0;
-        const movementFactor = Math.round((1 + movementModifier / 10 + armlessFactor + (levelThree && this._equipmentList.some(item => matchesTag(item, "null-signature-system")) ? 0.5 : 0)) * 100) / 100;
+        const nullSignature = !!levelThree && this._equipmentList.some(item => matchesTag(item, "null-signature-system"));
+        const hasSupercharger = this._equipmentList.some(item => item?.variableFormula === "supercharger");
+        const movementFactor = Math.round((1 + movementModifier / 10 + armlessFactor + (nullSignature ? 0.5 : 0)) * 100) / 100;
         const defensive = subtotal * movementFactor;
-        note(`Defensive Battle Rating: ${subtotal} x ${movementFactor} (TMM +${movementModifier}${armlessFactor ? ", armless +0.1" : ""}) = ${defensive}`);
+        if (levelThree && hasSupercharger) trace?.add("bv1.l3.def.factor.supercharger", { label: "Supercharger", detail: "its movement counts toward the Target Movement Modifier" });
+        if (nullSignature) trace?.add("bv1.l3.def.factor.null-signature", { label: "Null-signature system", detail: "0.5 added to the Defensive Movement Factor" });
+        if (armlessFactor) trace?.add("bv1.l3.def.factor.armless", { label: "Built without arms", detail: "0.1 added to the Defensive Movement Factor" });
+        trace?.add("bv1.def.factor", { label: "Defensive Movement Factor", detail: `Target Movement Modifier +${movementModifier}`, value: movementFactor });
+        trace?.add("bv1.def.rating", { label: "Defensive Battle Rating", detail: `${fmt(subtotal)} x ${movementFactor}`, value: defensive, emphasis: true });
 
         // Step 2: Offensive Battle Rating (BMR(R) pp.153-154). Rear weapons count half, unless they outweigh the rest.
-        const weapons = firing.map(item => ({ item, bv: valueOf(item) })).filter(entry => entry.bv > 0);
+        const weapons = firing.map(item => ({ item, rating: rate(item) })).map(entry => ({ ...entry, bv: entry.rating.value })).filter(entry => entry.bv > 0);
         const rearBV = weapons.reduce((sum, entry) => sum + (entry.item.rear ? entry.bv : 0), 0);
         const rearIsFront = rearBV > weapons.reduce((sum, entry) => sum + (entry.item.rear ? 0 : entry.bv), 0);
         const arc = (item: IEquipmentItem) => multiTracII || !!item.rear === rearIsFront ? 1 : 0.5;
         const weaponBV = weapons.reduce((sum, entry) => sum + entry.bv * arc(entry.item), 0);
-        // A targeting computer: 20% of the weapons it links, rear ones halved, no ammo (BMR(R) p.153, p.121). Level 3:
-        // a variable-range targeting system adds 10% "in the same way", Enhanced Imaging 5% (Maximum Tech p.91).
-        const computerShare = (this.hasTargetingComputer() ? 0.2 : 0) + (levelThree && this._equipmentList.some(item => matchesTag(item, "targeting-variable-range")) ? 0.1 : 0)
-            + (levelThree && this.hasEnhancedImaging() ? 0.05 : 0);
-        const computerBV = computerShare * weapons.reduce((sum, entry) => sum + (isTargetingComputerWeapon(entry.item) ? entry.bv * arc(entry.item) : 0), 0);
+        if (trace) {
+            if (multiTracII && rearBV > 0) trace.add("bv1.l3.off.multi-trac", { label: "Multi-Trac II", detail: "rear-mounted weapons count in full" });
+            for (const entry of weapons) {
+                const share = arc(entry.item);
+                trace.add(itemStep(entry.rating.source, "bv1.off.weapon"), {
+                    label: `${entry.item.name}${entry.item.rear ? " (rear)" : ""}`,
+                    detail: share === 1 ? undefined : `${fmt(entry.bv)} x 0.5${entry.item.rear ? "" : ", the rear weapons count as the front"}`,
+                    value: entry.bv * share,
+                });
+            }
+        }
+        // A targeting computer: 20% of the weapons it links, rear ones halved, no ammo (BMR(R) p.153, note D p.158).
+        // Level 3: a variable-range targeting system adds 10% "in the same way", Enhanced Imaging 5% (Maximum Tech p.91).
+        const variableRange = !!levelThree && this._equipmentList.some(item => matchesTag(item, "targeting-variable-range"));
+        const imaging = !!levelThree && this.hasEnhancedImaging();
+        const computerShare = (this.hasTargetingComputer() ? 0.2 : 0) + (variableRange ? 0.1 : 0) + (imaging ? 0.05 : 0);
+        const linkedBV = weapons.reduce((sum, entry) => sum + (isTargetingComputerWeapon(entry.item) ? entry.bv * arc(entry.item) : 0), 0);
+        const computerBV = computerShare * linkedBV;
+        if (this.hasTargetingComputer()) trace?.add("bv1.off.targeting-computer", { label: "Targeting computer", detail: `${fmt(linkedBV)} of linked weapons x 0.2`, value: 0.2 * linkedBV });
+        if (variableRange) trace?.add("bv1.l3.off.targeting.variable-range", { label: "Variable-range targeting system", detail: `${fmt(linkedBV)} of linked weapons x 0.1`, value: 0.1 * linkedBV });
+        if (imaging) trace?.add("bv1.l3.off.targeting.enhanced-imaging", { label: "Enhanced Imaging", detail: `${fmt(linkedBV)} of linked weapons x 0.05`, value: 0.05 * linkedBV });
         const ammoBV = getBattleValue1Ammo(this._equipmentList, binWeapon, valueOf, false);
+        if (trace) {
+            for (const bin of this._equipmentList.filter(isAmmo)) {
+                const fed = binWeapon(bin);
+                if (!fed || isDefensive(fed)) continue;
+                const rating = rate(bin, fed);
+                if (!rating.value) continue;
+                trace.add(rating.source === "unlisted" ? "bv1.off.weapon.unlisted" : rating.multiplier !== 1 ? "bv1.l3.ammo.special" : "bv1.off.ammo", {
+                    label: bin.name,
+                    detail: `${fmt(bin.weight)} ${bin.weight === 1 ? "ton" : "tons"} x ${fmt(rating.value)}${rating.multiplier !== 1 ? ` (standard ammunition x ${rating.multiplier})` : ""}`,
+                    value: rating.value * bin.weight,
+                });
+            }
+        }
         let base = weaponBV + computerBV + ammoBV;
-        note(`Base Weapon Battle Rating: Weapons ${weaponBV} + Targeting Computer ${computerBV} + Ammo ${ammoBV} = ${base}`);
+        trace?.add("bv1.off.base", { label: "Base Weapon Battle Rating", detail: `weapons ${fmt(weaponBV)} + targeting ${fmt(computerBV)} + ammunition ${fmt(ammoBV)}`, value: base });
         // Weapons that cannot be fired once the 'Mech overheats are worth half.
         if (maxHeat > sinkCapacity) {
             const x = sinkCapacity * base / maxHeat;
+            const y = (base - x) / 2;
             base = x + (base - x) / 2;
-            note(`Heat: X = ${sinkCapacity} x Base / ${maxHeat} = ${x}, Y = (Base - X) / 2: Modified Weapon Battle Rating ${base}`);
+            trace?.add("bv1.off.heat", { label: "Modified Weapon Battle Rating", detail: `X = ${fmt(sinkCapacity)} x base / ${fmt(maxHeat)} = ${fmt(x)}; Y = (base - X) / 2 = ${fmt(y)}; X + Y`, value: base });
         }
         // Speed Factor MP: Running + Jumping, +1 with MASC, a Supercharger (Max Tech p.91) or TSM; Stealth armor +0.2.
         const enhanced = this.hasTripleStrengthMyomer() || this._equipmentList.some(item => ["masc-is", "masc-clan", "supercharger"].includes(item?.variableFormula ?? ""));
         const speedMP = this.getRunSpeed() + jump + (enhanced ? 1 : 0);
-        const speedFactor = getSpeedFactor(speedMP) + (this._armorType.tag === "stealth-basic" ? 0.2 : 0);
+        const speedFactor = getSpeedFactor(speedMP) + (stealth ? 0.2 : 0);
         const offensive = base * speedFactor;
-        note(`Offensive Battle Rating: ${base} x Speed Factor ${speedFactor} (MP ${speedMP}) = ${offensive}`);
+        if (hasSupercharger) trace?.add("bv1.l3.off.speed.supercharger", { label: "Supercharger", detail: "counts as MASC does: 1 added to the MP" });
+        if (stealth) trace?.add("bv1.off.speed.stealth", { label: "Stealth armor", detail: "0.2 added to the Speed Factor" });
+        trace?.add("bv1.off.speed", { label: "Speed Factor", detail: `Running ${this.getRunSpeed()} + Jumping ${jump}${enhanced ? " + 1" : ""} = MP ${speedMP}`, value: speedFactor });
+        trace?.add("bv1.off.rating", { label: "Offensive Battle Rating", detail: `${fmt(base)} x ${fmt(speedFactor)}`, value: offensive, emphasis: true });
 
         // Step 3: Final BV, rounded (BMR(R) p.154).
         // Level 3: a jump pack is left out above and adds its MP x 5 here (Maximum Tech p.92).
         const jumpPackMP = levelThree ? this.getJumpPackMP(edition) : 0;
-        if (jumpPackMP > 0) note(`Jump Pack ${jumpPackMP} MP x 5 = ${jumpPackMP * 5}`);
+        if (jumpPackMP > 0) trace?.add("bv1.l3.final.jump-pack", { label: "Jump pack", detail: `${jumpPackMP} MP x 5`, value: jumpPackMP * 5 });
         const battleValue = Math.round(defensive + offensive + jumpPackMP * 5);
-        note(`<strong>BV1:</strong> ${battleValue} (rounded from ${defensive + offensive + jumpPackMP * 5})`);
+        trace?.add("bv1.final.round", { label: "Battle Value", detail: `${fmt(defensive)} + ${fmt(offensive)}${jumpPackMP > 0 ? ` + ${jumpPackMP * 5}` : ""}, rounded`, value: battleValue, emphasis: true });
         return battleValue;
     }
 
@@ -2215,11 +2299,31 @@ export class BattleMech {
         }
     }
 
-    /** The Battle Value 2 calculation as cited steps. BV1 and no-BV editions are not broken down yet: every edition reads BV2. */
+    /**
+     * The Battle Value calculation under `edition` as cited steps: BV2, the edition's BV1, or for an edition older than
+     * Battle Value one step saying so and a null result. An unknown edition reads the default edition's.
+     */
     public getBattleValueBreakdown(edition: string = this._rulesEdition): ICalcBreakdown {
         // Always recalculated: the steps quote names and numbers that can change without a slot move marking the BV stale.
         this._calcBattleValue();
-        return { kind: "battle-value", edition, scheme: "bv2", steps: this._battleValueSteps, result: this._battleValue };
+        return this._getBattleValueBreakdown(edition);
+    }
+
+    /** The breakdown under `edition`, from the BV2 steps already worked out. */
+    private _getBattleValueBreakdown(edition: string): ICalcBreakdown {
+        if (!editionHasBattleValue(edition, "mech")) {
+            const trace = new CalcTrace(NO_BATTLE_VALUE_STEPS);
+            trace.add("none.no-battle-value", { label: `${getRulesEdition(edition).name} has no Battle Value. Battle Value first appears in the BattleTech Master Rules (1998)` });
+            return { kind: "battle-value", edition, scheme: "none", steps: trace.steps, result: null };
+        }
+        return getBattleValueFor<ICalcBreakdown>(edition, "mech", {
+            bv1: () => {
+                const trace = new CalcTrace(getMechBv1Steps(edition));
+                const result = this._calcBattleValue1(edition, trace);
+                return { kind: "battle-value", edition, scheme: "bv1", steps: trace.steps, result };
+            },
+            bv2: () => ({ kind: "battle-value", edition, scheme: "bv2", steps: this._battleValueSteps, result: this._battleValue }),
+        });
     }
 
     public getBattleValue(edition: string = this._rulesEdition): number {

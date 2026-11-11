@@ -69,6 +69,7 @@ const MASTER_RULES: CalcStepDefs = {
     "bv1.def.subtotal": step(DEFENSIVE, [at("bmr", "139")]),
     // The Defensive Movement Factors table (p.140) reads the Target Movement Modifier rows of the Attack Modifiers Table (p.32).
     "bv1.def.factor": step(DEFENSIVE, [at("bmr", "140"), at("bmr", "32")]),
+    "bv1.def.rating": step(DEFENSIVE, [at("bmr", "140")]),
 
     // ---- Step 2: Offensive Battle Rating ----
     "bv1.off.weapon": step(OFFENSIVE, [at("bmr", "140"), at("bmr", "142-144")]),
@@ -80,6 +81,7 @@ const MASTER_RULES: CalcStepDefs = {
     "bv1.off.speed": step(OFFENSIVE, [at("bmr", "140-141"), at("bmr-errata", "12")]),
     "bv1.off.speed.stealth": provisional(OFFENSIVE, [at("bmrr", "154")],
         "The 1998 Master Rules have no Stealth armor. We use the Revised Edition's rule: 0.2 added to the Speed Factor."),
+    "bv1.off.rating": step(OFFENSIVE, [at("bmr", "141")]),
 
     // ---- Step 3: Final Battle Value ----
     "bv1.final.round": step(FINAL, [at("bmr", "139"), at("bmr", "141")]),
@@ -102,6 +104,7 @@ const MASTER_RULES_REVISED: CalcStepDefs = {
     "bv1.def.subtotal": step(DEFENSIVE, [at("bmrr", "152")]),
     // The Defensive Movement Factors table (p.153) reads the Target Movement Modifier rows of the Attack Modifiers Table (p.33).
     "bv1.def.factor": step(DEFENSIVE, [at("bmrr", "153"), at("bmrr", "33")]),
+    "bv1.def.rating": step(DEFENSIVE, [at("bmrr", "153")]),
 
     // ---- Step 2: Offensive Battle Rating ----
     "bv1.off.weapon": step(OFFENSIVE, [at("bmrr", "153"), at("bmrr", "156-158")]),
@@ -112,11 +115,20 @@ const MASTER_RULES_REVISED: CalcStepDefs = {
     "bv1.off.heat": step(OFFENSIVE, [at("bmrr", "153-154")]),
     "bv1.off.speed": step(OFFENSIVE, [at("bmrr", "153-154")]),
     "bv1.off.speed.stealth": step(OFFENSIVE, [at("bmrr", "154")]),
+    "bv1.off.rating": step(OFFENSIVE, [at("bmrr", "154")]),
 
     // ---- Step 3: Final Battle Value ----
     "bv1.final.round": step(FINAL, [at("bmrr", "152"), at("bmrr", "154")]),
 
     ...levelThree("mt-revised"),
+};
+
+/**
+ * The one step of an edition older than the Battle Value system. Battle Value first appears in the BattleTech Master
+ * Rules (1998), whose Battle Value System section opens on p.139.
+ */
+export const NO_BATTLE_VALUE_STEPS: CalcStepDefs = {
+    "none.no-battle-value": step("Battle Value", [at("bmr", "139")]),
 };
 
 /** 'Mech BV1 step definitions by BV1 edition tag. */

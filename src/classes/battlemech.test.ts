@@ -6900,7 +6900,7 @@ describe("Battle Value worked examples (BV v4.1 pp.3-7)", () => {
         expect(mech.getBattleValue("classic-battletech-box-set")).toBe(2243);
         mech.setRulesEdition("master-rules-revised");
         expect(mech.getPilotAdjustedBattleValue()).toBe(2243);
-        expect(mech.calcLogBV).toContain("BV1");
+        expect(mech.calcLogBV).toContain("BMR(R) p.152");
         // Max Tech p.91, the Goshawk with an EI cockpit: the targeting computer's 598 linked weapons now add 25% (149.5),
         // base 853, heat 22 of 30: X 625.53, Y 113.73, x 2.3 = 1,700.31; defensive (463.375 - 25) x 1.3 = 569.89.
         expect(mech.setEnhancedImaging(true)).toBe(true);

@@ -300,16 +300,24 @@ export const getBattleValueEdition = (edition: string | undefined): string => ge
  * An item's BV, or a weapon's ammo BV per ton, only where `edition`'s tables print one (`clan`: on a Clan unit), its
  * Level 3 tables included. An Artemis V launcher is its launcher's x 1.3 (Maximum Tech p.90).
  */
-export const getPrintedItemBattleValue = (item: IEquipmentItem, edition: string | undefined, field: "battleValue" | "ammoBattleValue" = "battleValue", clan = false): number | undefined => {
+export const getPrintedItemBattleValue = (item: IEquipmentItem, edition: string | undefined, field: "battleValue" | "ammoBattleValue" = "battleValue", clan = false): number | undefined =>
+    readPrintedItemBattleValue(item, edition, field, clan)?.value;
+
+/** Where a BV1 figure was read: the edition's own tables, Maximum Tech's Level 3 table, or its Artemis V rule. */
+export type BattleValue1Source = "tables" | "level-three" | "artemis-v";
+
+const readPrintedItemBattleValue = (item: IEquipmentItem, edition: string | undefined, field: "battleValue" | "ammoBattleValue", clan: boolean): { value: number; source: BattleValue1Source } | undefined => {
     const printed = getEditionStats(item, getBattleValueEdition(edition))?.[field];
+    if (printed !== undefined) return { value: printed, source: "tables" };
     const levelThree = getBattleValueRules(edition, "mech").levelThree;
-    if (printed !== undefined || !levelThree) return printed;
+    if (!levelThree) return undefined;
     const value = (clan && field === "battleValue" ? levelThree.clanItems[item.tag] : undefined) ?? levelThree.items[item.tag]?.[field === "battleValue" ? 0 : 1];
+    if (value !== undefined) return { value, source: "level-three" };
     const artemisV = ARTEMIS_FIRE_CONTROL.find((system) => system.suffix === "-artemis-v")!;
-    if (value !== undefined || !item.tag.endsWith(artemisV.suffix)) return value;
+    if (!item.tag.endsWith(artemisV.suffix)) return undefined;
     const launcher = getEquipmentCatalogDefinitions().flatMap((definition) => definition.equipment).find((record) => record.tag === item.tag.slice(0, -artemisV.suffix.length));
     const launcherValue = launcher && getPrintedItemBattleValue(launcher, edition, field, clan);
-    return launcherValue === undefined ? undefined : launcherValue * (field === "battleValue" ? artemisV.battleValueMultiplier : 1);
+    return launcherValue === undefined ? undefined : { value: launcherValue * (field === "battleValue" ? artemisV.battleValueMultiplier : 1), source: "artemis-v" };
 };
 
 /** Maximum Tech's special ammunition multiplier (p.91) for an ammo bin under `edition`: 1 without its Level 3 rules. */
@@ -322,17 +330,31 @@ export const isBattleValue1Defensive = (item: IEquipmentItem): boolean => item.b
 /** Rates an item, or with `weapon` an ammo bin's ton, in a BV1 calculation. */
 export type BattleValue1Rater = (item: IEquipmentItem, weapon?: IEquipmentItem) => number;
 
+/** How a BV1 rater reached a figure: where it was read ("unlisted": the catalog's BV2 figure), and any special ammunition multiplier. */
+export interface IBattleValue1Rating { value: number; source: BattleValue1Source | "unlisted"; multiplier: number }
+
+/**
+ * Rates an item, or with `weapon` an ammo bin's ton, in a BV1 calculation under `edition`, and says where the figure
+ * came from. An item its tables do not print falls back on the catalog's BV2 figure. Special ammunition is worth a
+ * multiple of the standard ammo's BV (Maximum Tech p.91).
+ */
+export const rateBattleValue1 = (edition: string, techTag: string, tagged: boolean, item: IEquipmentItem, weapon?: IEquipmentItem): IBattleValue1Rating => {
+    const multiplier = weapon ? getAmmoBattleValueMultiplier(item, edition, tagged) : 1;
+    const printed = readPrintedItemBattleValue(weapon ?? item, edition, weapon ? "ammoBattleValue" : "battleValue", techTag === "clan" || techTag === "mclan");
+    if (printed !== undefined) return { value: printed.value * multiplier, source: printed.source, multiplier };
+    const bv2 = weapon ? getAmmoBattleValuePerTon(weapon, item) : getCatalogBattleValue(item, techTag);
+    return { value: bv2 * multiplier, source: "unlisted", multiplier };
+};
+
 /**
  * A BV1 rater under `edition`, from its tables; an item they do not print falls back on the catalog's BV2 figure, which
- * `note` logs. Special ammunition is worth a multiple of the standard ammo's BV (Maximum Tech p.91).
+ * `note` logs.
  */
 export const getBattleValue1Rater = (edition: string, techTag: string, tagged: boolean, note: (line: string) => void): BattleValue1Rater => (item, weapon) => {
-    const multiplier = weapon ? getAmmoBattleValueMultiplier(item, edition, tagged) : 1;
-    const printed = getPrintedItemBattleValue(weapon ?? item, edition, weapon ? "ammoBattleValue" : "battleValue", techTag === "clan" || techTag === "mclan");
-    if (printed !== undefined) return printed * multiplier;
-    const bv2 = weapon ? getAmmoBattleValuePerTon(weapon, item) : getCatalogBattleValue(item, techTag);
-    if (bv2) note(`${item.name}: not in the ${getRulesEdition(getBattleValueEdition(edition)).name} tables, BV2 figure ${bv2} used`);
-    return bv2 * multiplier;
+    const rating = rateBattleValue1(edition, techTag, tagged, item, weapon);
+    const bv2 = rating.multiplier ? rating.value / rating.multiplier : 0;
+    if (rating.source === "unlisted" && bv2) note(`${item.name}: not in the ${getRulesEdition(getBattleValueEdition(edition)).name} tables, BV2 figure ${bv2} used`);
+    return rating.value;
 };
 
 /** The BV1 of the ammo in `equipment`: the bins feeding defensive weapons, or the rest. A bin feeding nothing counts for neither. */

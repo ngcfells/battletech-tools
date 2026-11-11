@@ -610,13 +610,13 @@ describe("Armless 'Mechs (Maximum Tech pp.62-63)", () => {
     it("adds 0.1 to the Defensive Movement Factor under BMR(R) Level 3 (Max Tech p.92)", () => {
         const mech = armless();
         mech.setArmless(true);
-        expect(mech.getBVCalcHTML()).toContain("armless +0.1");
+        expect(mech.getBVCalcHTML()).toContain("Built without arms: 0.1 added to the Defensive Movement Factor");
     });
 
     it("keeps BV2 as built: no Defensive Movement Factor bonus under TW", () => {
         const mech = armless("tripod", "total-warfare");
         mech.setArmless(true);
-        expect(mech.getBVCalcHTML()).not.toContain("armless +0.1");
+        expect(mech.getBVCalcHTML()).not.toContain("Built without arms: 0.1 added to the Defensive Movement Factor");
     });
 
     it("does nothing on an arm hit: no damage, no transfer, no critical hit (Max Tech p.62)", () => {
@@ -899,7 +899,7 @@ describe("Jump packs (Maximum Tech pp.80-81; TO:AUE p.105)", () => {
         const battleValue = mech.getBattleValue();
         mech.setJumpPackTons(3);
         expect(mech.getBattleValue()).toBe(battleValue + 30);
-        expect(mech.getBVCalcHTML()).toContain("Jump Pack 6 MP x 5");
+        expect(mech.getBVCalcHTML()).toContain("Jump pack: 6 MP x 5 = 30");
     });
 
     it("leaves BV2 alone (R3: book-silent)", () => {
