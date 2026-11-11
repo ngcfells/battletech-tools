@@ -173,4 +173,13 @@ describe("MegaMek's ISCASE", () => {
         ];
         expect(expected.map(([name, faction]) => [name, findImportedEquipment(name, faction)?.item.tag])).toEqual(expected.map(([name, , tag]) => [name, tag]));
     });
+
+    it("reads MegaMek's Clan heavy machine gun array as the Clan array, which links Clan heavy machine guns", () => {
+        for (const name of ["Clan Heavy Machine Gun Array", "CLHMGA"]) {
+            expect([name, findImportedEquipment(name, "clan")?.item.tag]).toEqual([name, "clan-heavy-machine-gun-array"]);
+            // The MegaMek file converter looks names up as for a mixed-tech design.
+            expect([name, findImportedEquipment(name, "clan", true)?.item.tag]).toEqual([name, "clan-heavy-machine-gun-array"]);
+        }
+        expect(findImportedEquipment("ISHMGA", "is")?.item.tag).toBe("is-heavy-machine-gun-array");
+    });
 });

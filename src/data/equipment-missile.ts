@@ -2885,6 +2885,41 @@ export const equipmentMissile: IEquipmentItem[] = [
     { isAmmo: false, name: "’Mech Mortar-8 (Clan)", altNames: ["'Mech Mortar 8 (Clan)", "'Mech Mortar/8 (Clan)", "Mech Mortar 8"], tag: "clan-mech-mortar-8", editions: ["total-warfare", "battlemech-manual", "core-rulebook"], techBase: "clan", altTags: ["mech-mortar-8"], sort: "mech mortar 8", category: "Missile Weapons", alternateName: "Mech Mortar-8 (Clan)", damage: 0, notes: "Clan 'Mech Mortar: lighter than the Inner Sphere launcher (TO:AUE p.221) and never lost (IO:AE p.40). Alpha Strike values are a provisional workbook conversion.", damageAero: 3, accuracyModifier: 0, cbills: 70000, cbillsOneShot: 0, introduced: 2840, extinct: null, reintroduced: null, prototype: 2835, battleValue: 50, heat: 10, weight: 5, range: { min: 6, short: 7, medium: 14, long: 21 }, space: { battlemech: 3, protomech: -1, combatVehicle: 1, supportVehicle: 3, aerospaceFighter: -1, smallCraft: -1, dropShip: -1 }, shotsPerTon: 4, ammoBattleValue: 6, minAmmoTons: 1, explosive: false, weaponType: ["MS", "I"], techRating: "b", book: "TO:AUE", page: 136, alphaStrike: { heat: 10, rangeShort: 0.425, rangeMedium: 0.85, rangeLong: 0.85, rangeExtreme: 0, tc: false, notes: ["Indirect Fire", "Provisional workbook conversion"] }, damageClusters: 8, damagePerCluster: 1, heatAero: 10, rangeAero: "m", catalog: "clan", ammoTypes: ["ammo-clan-mech-mortar-standard"] },
 ];
 
+// Artemis IV applies to the torpedo versions of the standard launchers (TM p.207), and a torpedo launcher is its
+// missile launcher in every other respect (TM p.230): each record is the torpedo launcher's with the system's
+// ton, slot, 100,000 C-bills and Battle Value x1.2, and the missile launcher's dates for the system.
+for (const size of ["lrt-5", "lrt-10", "lrt-15", "lrt-20", "srt-2", "srt-4", "srt-6"].flatMap(tag => [tag, `clan-${tag}`])) {
+    const plain = equipmentMissile.find(item => item.tag === size);
+    const missile = equipmentMissile.find(item => item.tag === `${size.replace("lrt", "lrm").replace("srt", "srm")}-artemis-iv`);
+    if (!plain || !missile) continue;
+    equipmentMissile.push({
+        ...plain,
+        // The earlier rulebooks and the launcher's other spellings describe the plain launcher only.
+        editionStats: undefined,
+        introducedInEdition: undefined,
+        alternateName: undefined,
+        name: `${plain.name} + Artemis IV`,
+        altNames: [],
+        altTags: [],
+        tag: `${size}-artemis-iv`,
+        editions: ["total-warfare", "battlemech-manual", "core-rulebook"],
+        sort: `${plain.sort} + artemis iv`,
+        notes: `${plain.name} with the Artemis IV FCS (TM p.207): +2 on the Cluster Hits Table. Adds 1 ton, 1 'Mech and support vehicle slot and 100,000 C-bills; Battle Value x1.2, unrounded. Every applicable launcher on the unit must carry it.`,
+        cbills: plain.cbills + 100000,
+        introduced: missile.introduced,
+        extinct: missile.extinct,
+        reintroduced: missile.reintroduced,
+        prototype: missile.prototype,
+        battleValue: (plain.battleValue ?? 0) * 1.2,
+        weight: (plain.weight as number) + 1,
+        space: { ...plain.space, battlemech: plain.space.battlemech + 1, supportVehicle: plain.space.supportVehicle + 1 },
+        ammoTypes: [...(plain.ammoTypes ?? []), `ammo-${plain.techBase}-${size.includes("lrt") ? "lrt" : "srt"}-artemis-iv`],
+        book: "TM",
+        page: 207,
+        alphaStrike: missile.alphaStrike && { ...missile.alphaStrike, notes: ["TOR", "Artemis IV damage, as the missile launcher's"] },
+    });
+}
+
 const atmAmmoTypes = ["ammo-clan-atm-standard", "ammo-clan-atm-er", "ammo-clan-atm-he"];
 const iatmAmmoTypes = [...atmAmmoTypes, "ammo-clan-iatm-inferno", "ammo-clan-iatm-mag-pulse"];
 

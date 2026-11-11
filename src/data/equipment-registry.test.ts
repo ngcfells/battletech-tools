@@ -746,3 +746,28 @@ describe("rotary autocannon aerospace heat and CASE mounting (issues 29, 30)", (
         expect(caseItem.space.dropShip).toBe(-1);
     });
 });
+
+describe("torpedo launchers with Artemis IV", () => {
+    // Artemis IV applies to the torpedo versions of the standard launchers (TM p.207); a torpedo launcher is its
+    // missile launcher in every other respect (TM p.230).
+    it("lists each standard torpedo launcher with Artemis IV, as its missile launcher is listed", () => {
+        const catalog = getEquipmentCatalogDefinitions().flatMap(definition => definition.equipment);
+        const find = (tag: string) => catalog.find(item => item.tag === tag);
+        const torpedoes = ["lrt-5", "lrt-10", "lrt-15", "lrt-20", "srt-2", "srt-4", "srt-6"].flatMap(tag => [tag, `clan-${tag}`]);
+        for (const tag of torpedoes) {
+            const plain = find(tag)!;
+            const fitted = find(`${tag}-artemis-iv`);
+            const missile = find(`${tag.replace("lrt", "lrm").replace("srt", "srm")}-artemis-iv`)!;
+            expect(fitted, tag).toBeDefined();
+            expect([tag, fitted!.battleValue]).toEqual([tag, missile.battleValue]);
+            expect([tag, fitted!.weight, fitted!.space.battlemech]).toEqual([tag, (plain.weight as number) + 1, plain.space.battlemech + 1]);
+            expect([tag, fitted!.cbills]).toEqual([tag, plain.cbills + 100000]);
+            expect([tag, fitted!.introduced, fitted!.extinct]).toEqual([tag, missile.introduced, missile.extinct]);
+            expect(getLauncherBattleValueWithoutFireControl(fitted!, () => catalog), tag).toBe(plain.battleValue);
+            const family = tag.includes("lrt") ? "lrt" : "srt";
+            const round = ammoCatalog.find(item => item.tag === `ammo-${plain.techBase}-${family}-artemis-iv`)!;
+            expect(getCompatibleAmmo(fitted!, round), tag).toBeTruthy();
+            expect(getCompatibleAmmo(fitted!, ammoCatalog.find(item => item.tag === `ammo-${family}-standard`)!), tag).toBeTruthy();
+        }
+    });
+});

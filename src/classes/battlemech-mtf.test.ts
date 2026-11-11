@@ -152,6 +152,23 @@ describe("MegaMek 'Mech import", () => {
         expect(xml.match(/<heatsinks[^>]*>[\s\S]*?<\/heatsinks>/)?.[0].match(/<location /g)).toHaveLength(1);
     });
 
+    it("keeps each ton of ammunition with the launcher size its line names (TM p.303)", () => {
+        // The LRM 10 comes first, so a bin not kept with its launcher would count as LRM 10 ammunition.
+        const twoSizes = brawler
+            .replace([...location("Left Torso", ...fill(3, "ISDoubleHeatSink"), "Medium Laser")].join("\n"),
+                [...location("Left Torso", ...fill(3, "ISDoubleHeatSink"), ...fill(2, "ISLRM10"), "IS Ammo LRM-20 (OMNIPOD)", "IS Ammo LRM-10")].join("\n"))
+            .replace([...location("Right Torso", "Medium Laser")].join("\n"), [...location("Right Torso", ...fill(5, "ISLRM20"))].join("\n"));
+        expect(twoSizes).toContain("IS Ammo LRM-20 (OMNIPOD)");
+        expect(twoSizes).toContain("ISLRM20");
+        const { mech, issues } = importBattleMechMtf(twoSizes);
+        expect(issues).toEqual([]);
+        const bins = mech!.getInstalledEquipment().filter((item) => item.isAmmo);
+        expect(bins.map((bin) => mech!.getAmmoBinWeapon(bin)?.tag).sort()).toEqual(["lrm-10", "lrm-20"]);
+        mech!.getBattleValue();
+        const ammo = mech!.getBattleValueBreakdown().steps.filter((step) => step.id === "bv2.off.ammo");
+        expect(ammo.map((step) => step.value).sort()).toEqual([11, 23]);
+    });
+
     // mordel.net's MegaMek-format files (#241): "Standard (IS)" armor, TSM slots named "TSM", an empty Center Leg on a
     // biped, "Biped Omnimech", and a mixed-tech 'Mech's "Double" sinks whose Clan tech only the slot names give
     // (Jackalope JLP-NH).

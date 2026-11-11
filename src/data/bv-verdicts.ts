@@ -21,7 +21,7 @@ export interface IBvVerdict {
 }
 
 /** The count of Master Unit List 'Mech entries with a matching design that the last build wrote. A round that raises the count raises this. */
-export const MECH_MATCHED_FLOOR = 3924;
+export const MECH_MATCHED_FLOOR = 3939;
 
 /** Keyed by bvVerdictKey. */
 export const BV_VERDICTS: Record<string, IBvVerdict> = {
@@ -83,6 +83,42 @@ export const BV_VERDICTS: Record<string, IBvVerdict> = {
     "mul:103134": { verdict: "mul-suspect", note: "The list's value equals ours when every heat-generating weapon is halved. Heat efficiency here is zero or less, and the rule still counts the first weapon chosen at its full value before halving the rest.", cites: [{ source: "tm", page: "303" }, { source: "tm", page: "304" }] },
     // Wulfen C
     "mul:108098": { verdict: "mul-suspect", note: "The list's value equals ours when every heat-generating weapon is halved. Heat efficiency here is zero or less, and the rule still counts the first weapon chosen at its full value before halving the rest.", cites: [{ source: "tm", page: "303" }, { source: "tm", page: "304" }] },
+    // Skinwalker (Ryoken III-XP) B
+    "mul:108133": { verdict: "mul-suspect", note: "The list's value equals ours when no gyro is counted. The rule for a 'Mech whose interface cockpit replaces the gyro counts it as having a standard gyro.", cites: [{ source: "ioae", page: "187" }] },
+    // Skinwalker (Ryoken III-XP) D
+    "mul:102511": { verdict: "mul-suspect", note: "The list's value equals ours when no gyro is counted. The rule for a 'Mech whose interface cockpit replaces the gyro counts it as having a standard gyro.", cites: [{ source: "ioae", page: "187" }] },
+    // Skinwalker (Ryoken III-XP) Prime
+    "mul:108669": { verdict: "mul-suspect", note: "The list's value equals ours when no gyro is counted. The rule for a 'Mech whose interface cockpit replaces the gyro counts it as having a standard gyro.", cites: [{ source: "ioae", page: "187" }] },
+    // Parash 3
+    "mul:104943": { verdict: "mul-suspect", note: "The list's value equals ours when no gyro is counted. The rule for a 'Mech whose interface cockpit replaces the gyro counts it as having a standard gyro.", cites: [{ source: "ioae", page: "187" }] },
+    // Seraph C-SRP-O Invictus
+    "mul:100663": { verdict: "mul-suspect", note: "The list's value equals ours when the physical weapon's Battle Value is worked from its damage without Triple-Strength Myomer. The table's footnote takes the damage after all modifications such as Triple-Strength Myomer, which doubles it.", cites: [{ source: "tm", page: "317" }, { source: "toaue", page: "195" }] },
+    // Seraph C-SRP-OA Dominus
+    "mul:107321": { verdict: "mul-suspect", note: "The list's value equals ours when the physical weapon's Battle Value is worked from its damage without Triple-Strength Myomer. The table's footnote takes the damage after all modifications such as Triple-Strength Myomer, which doubles it.", cites: [{ source: "tm", page: "317" }, { source: "toaue", page: "195" }] },
+    // Seraph C-SRP-OR (Ravana)
+    "mul:107272": { verdict: "mul-suspect", note: "The list's value equals ours when the physical weapon's Battle Value is worked from its damage without Triple-Strength Myomer. The table's footnote takes the damage after all modifications such as Triple-Strength Myomer, which doubles it.", cites: [{ source: "tm", page: "317" }, { source: "toaue", page: "195" }] },
+    // Raider JL-3B
+    "mul:100204": { verdict: "mul-suspect", note: "The list's value equals ours when movement heat is zero. The rule gives zero movement heat to IndustrialMechs with an internal combustion engine only, and this design is a BattleMech.", cites: [{ source: "tm", page: "303" }] },
+    // Triskelion TRK-4V
+    "mul:104220": { verdict: "mul-suspect", note: "The list's value equals ours multiplied by 1.05. The rule works a tripod's Battle Value as a biped BattleMech's, with no multiplier.", cites: [{ source: "ioae", page: "188" }] },
+    // Pwwka S-PW-1LAM
+    "mul:104131": { verdict: "mul-suspect", note: "The list's value equals ours when the defensive factor leaves out the extra +1 for an airborne target. The rule for a Land-Air 'Mech takes the AirMech flank speed and adds that +1.", cites: [{ source: "ioae", page: "186" }] },
+    // Waneta S-WN-2LAM
+    "mul:105075": { verdict: "mul-suspect", note: "The list's value equals ours when the defensive factor leaves out the extra +1 for an airborne target. The rule for a Land-Air 'Mech takes the AirMech flank speed and adds that +1.", cites: [{ source: "ioae", page: "186" }] },
+    // Screamer LAM SCR-1X-LAM
+    "mul:104075": { verdict: "mul-suspect", note: "The list's value equals a plain BattleMech's: ground movement for the defensive factor and the speed factor, and bomb bays not counted as explosive. The rule for a Land-Air 'Mech takes its AirMech flank speed for both, with +1 for an airborne target.", cites: [{ source: "ioae", page: "186" }] },
+    // Alpha Wolf A
+    "mul:107017": { verdict: "mul-suspect", note: "The list's value equals ours when the Coolant Pod adds nothing to the heat sink capacity. The rule adds the number of heat sinks times a fifth of the number of pods, rounded up: 4 here.", cites: [{ source: "toaue", page: "193" }] },
+    // Grand Dragon DRG-5K (Emory)
+    "mul:100783": { verdict: "mul-suspect", note: "The list's value equals ours when the Prototype ER Large Laser takes the standard ER Large Laser's Battle Value. The table gives the prototype its own, lower value.", cites: [{ source: "ioae", page: "186" }, { source: "ioae", page: "189" }] },
+    // Hunchback HBK-4G (Shakir)
+    "mul:102608": { verdict: "mul-suspect", note: "The list's value equals ours when the Prototype Medium Pulse Lasers take the standard laser's Battle Value and heat. The table gives the prototype its own, lower value, and the rule counts 7 heat for it.", cites: [{ source: "ioae", page: "186" }, { source: "ioae", page: "189" }] },
+    // Super Griffin GRF-2N-X
+    "mul:102800": { verdict: "mul-suspect", note: "The list's value equals ours when no weapon's Battle Value is halved for heat. The rule gives prototype improved jump jets twice a standard jump jet's heat, so this design's six make 12 movement heat and its weapons pass the heat it can sink.", cites: [{ source: "ioae", page: "97" }] },
+    // Cataphract CTF-2X (George)
+    "mul:103219": { verdict: "mul-suspect", note: "The list's value equals ours when the three prototype double heat sinks each sink 1 heat. The rule has them work as Inner Sphere double heat sinks, and the Battle Value table gives them no adjustment.", cites: [{ source: "ioae", page: "65" }, { source: "ioae", page: "189" }] },
+    // Osprey OSP-36
+    "mul:102563": { verdict: "mul-suspect", note: "The list's value equals ours when the engine modifier is 1.0. The design carries an Inner Sphere XL engine, for which the table gives 0.5.", cites: [{ source: "tm", page: "302" }, { source: "tm", page: "315" }] },
 };
 
 /** "mul:<id>", "mul:<id>:<configuration>", or "file:<path>" where the Master Unit List has no entry. */

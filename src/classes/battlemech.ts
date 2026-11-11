@@ -11145,8 +11145,13 @@ export class BattleMech {
         const multiplier = (this.hasDroneOperatingSystem() ? 0.8 : 1) * (this._hasArmAES(item.location) ? 1.25 : 1);
         if (item.linkedWeaponTags?.length) {
             if (!item.location) return 0;
+            // A machine gun is linked to one array: where a location holds several arrays of a kind, its guns are
+            // dealt among them in turn, at most four to an array.
+            const arrays = this._equipmentList.filter(eq => eq.tag === item.tag && eq.location === item.location);
+            const turn = arrays.indexOf(item);
             const linked = this._equipmentList
-                .filter(eq => eq !== item && eq.location === item.location && item.linkedWeaponTags!.includes(eq.tag))
+                .filter(eq => eq.location === item.location && !eq.linkedWeaponTags?.length && item.linkedWeaponTags!.includes(eq.tag))
+                .filter((_gun, index) => index % arrays.length === turn)
                 .slice(0, 4);
             return linked.reduce((sum, eq) => sum + (eq.battleValue || 0), 0) * 0.67 * multiplier;
         }
@@ -13863,6 +13868,9 @@ export class BattleMech {
                 newItem.rear = rear;
                 if( turret ) newItem.turret = true;
                 newItem.split_location = [];
+                // The MegaMek file converter names the weapon a ton is loaded for by its tag.
+                const feeds = typeof item["@_feeds"] === "string" ? item["@_feeds"].trim() : "";
+                if( newItem.isAmmo && feeds ) newItem.feedsWeaponTag = feeds;
                 if( newItem.isAmmo && sswAmmoWeapon ) {
                     // Drop trailing qualifiers ("MML-5 (LRM)" -> "MML-5") until the name finds a weapon that fires the bin.
                     let name = sswAmmoWeapon;

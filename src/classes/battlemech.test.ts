@@ -1002,6 +1002,19 @@ describe("BattleMech ammunition bins", () => {
         expect(bvSteps(mech).find((step) => step.label.startsWith("Machine Gun Array (ra)"))?.detail).toMatch(/^Base BV 6\.7\b/);
     });
 
+    it("links each machine gun to one array when a location holds several arrays (TM p.228)", () => {
+        const mech = new BattleMech();
+        mech.setTech("is");
+        for (let gun = 0; gun < 7; gun++) mech.addEquipmentFromTag("machine-gun", "is", "rt", false, undefined, "", false, [], undefined, undefined);
+        mech.addEquipmentFromTag("is-machine-gun-array", "is", "rt", false, undefined, "", false, [], undefined, undefined);
+        mech.addEquipmentFromTag("is-machine-gun-array", "is", "rt", false, undefined, "", false, [], undefined, undefined);
+        mech.getBattleValue();
+
+        // Seven guns (BV 5 each) between two arrays: four and three, 7 x 5 x 0.67 in all, not 8 x 5 x 0.67.
+        const arrays = bvSteps(mech).filter((step) => step.label.startsWith("Machine Gun Array (rt)"));
+        expect(arrays.map((step) => /^Base BV ([\d.]+)/.exec(step.detail ?? "")?.[1]).sort()).toEqual(["10.05", "13.4"]);
+    });
+
     it("gives one-shot launchers no ammunition and a quarter of their heat for BV (TM p.303)", () => {
         const mech = new BattleMech();
         mech.setTech("is");

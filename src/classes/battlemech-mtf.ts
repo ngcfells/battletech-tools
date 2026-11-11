@@ -7,6 +7,7 @@ import { mechInternalStructureTypes } from "../data/mech-internal-structure-type
 import { DESIGN_CORRECTIONS } from "../data/mtf-design-corrections";
 import { findAllByName } from "../data/tag-match";
 import { findBlkAmmo, findBlkAmmoWeapon, parseBlkAmmoLine } from "../utils/blk-ammo";
+import { getCompatibleAmmo } from "../data/equipment-registry";
 import { IBlkFile } from "../utils/blk-file";
 import { applyBlkQuirks, IBlkImportedItem } from "../utils/blk-quirks";
 import { readBlkTechnicalReadout } from "../utils/blk-technical-readout";
@@ -142,6 +143,8 @@ interface IMtfItem {
     tons: number;
     half: boolean;
     places: { loc: string; index: number; count: number }[];
+    /** Ammunition: the tag of the weapon its line names, where more than one mounted weapon could fire the round. */
+    feeds?: string;
 }
 
 /**
@@ -370,7 +373,9 @@ export function convertMtfToSSW(file: IMtfFile): { xml: string; issues: string[]
         const weapon = line ? findBlkAmmoWeapon(line, weapons) : undefined;
         const round = line && weapon ? findBlkAmmo(line, weapon) : undefined;
         if (!line || !round) { issues.push(`Cannot find the ammunition '${ammo.name}'`); continue; }
-        items.push({ record: round, name: ammo.name, rear: ammo.rear, pod: ammo.pod, tons: 0, half: line.half, places: [{ loc: ammo.loc, index: ammo.index, count: 1 }] });
+        // An "LRM-20" ton beside an LRM 10 stays the LRM 20's: its Battle Value is the launcher's (TM p.303).
+        const feeds = weapons.some((other) => other.tag !== weapon!.tag && getCompatibleAmmo(other, round)) ? weapon!.tag : undefined;
+        items.push({ record: round, name: ammo.name, rear: ammo.rear, pod: ammo.pod, tons: 0, half: line.half, places: [{ loc: ammo.loc, index: ammo.index, count: 1 }], feeds });
     }
 
     // MegaMek's "heat sinks" line counts the prototype doubles too: they are equipment here.
@@ -381,7 +386,7 @@ export function convertMtfToSSW(file: IMtfFile): { xml: string; issues: string[]
         const where = item.places.length === 1
             ? place(item.places[0].loc, item.places[0].index)
             : item.places.map((part) => `<splitlocation index="${part.index}" number="${part.count}">${part.loc.toUpperCase()}</splitlocation>`).join("");
-        return `<equipment${item.pod ? ' omnipod="TRUE"' : ""}><name manufacturer="">${xml(name)}</name><type>${item.record.isAmmo ? "ammunition" : "equipment"}</type>`
+        return `<equipment${item.pod ? ' omnipod="TRUE"' : ""}${item.feeds ? ` feeds="${xml(item.feeds)}"` : ""}><name manufacturer="">${xml(name)}</name><type>${item.record.isAmmo ? "ammunition" : "equipment"}</type>`
             + (item.tons > 0 ? `<tons>${item.tons}</tons>` : "") + where + "</equipment>";
     });
 

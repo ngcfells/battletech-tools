@@ -17,7 +17,9 @@ const dataDir = path.resolve(__dirname, "bundled");
 // #595 added 127 MegaMek 'Mechs the MUL lacks, filed in the custom unit list at our own BV.
 // Prototype endo steel and ferro-fibrous brought in the Jenner JR7-K (Grace) (#109).
 // The corrected SSW Skinwalker B (#607) is a configuration of the SSW Skinwalker, not its own MegaMek record.
-const DESIGNS = 3686;
+// Fourteen MegaMek files came to match the list once machine gun arrays, mixed launcher sizes and torpedo launchers
+// with Artemis IV were read and valued by the rules (#599).
+const DESIGNS = 3700;
 // The table format with values shared per chunk (#241 follow-up) took it from 18.4 MB to 8.7 MB, read a chunk at a time.
 const MAX_BYTES = 9_000_000;
 
