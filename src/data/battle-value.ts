@@ -19,6 +19,11 @@ export interface IBattleValueRules {
     pending?: true;
     /** Level 3 additions to the edition's BV1 (Maximum Tech). */
     levelThree?: IBattleValueLevelThree;
+    /**
+     * BV1: explosive ammunition in an arm is excused only by CASE in the next location inward, not by CASE in the arm
+     * (FanPro BMR errata p.12). Without it, CASE in either counts (BMR(R) p.153).
+     */
+    armCaseInwardOnly?: true;
 }
 
 /** Maximum Tech's Level 3 BV1 tables (pp.90-91); its other rules are steps in each unit's BV1. */
@@ -91,7 +96,7 @@ const BV2: IBattleValueRules = { scheme: "bv2", source: "TechManual pp.302-319, 
  */
 export const BV_RULES: Record<string, Partial<Record<BattleValueUnitType, IBattleValueRules>>> = {
     "master-rules": {
-        mech: bv1("BattleTech Master Rules pp.139-145; FanPro BMR errata p.12", true),
+        mech: { ...bv1("BattleTech Master Rules pp.139-145; FanPro BMR errata p.12", true), armCaseInwardOnly: true },
         vehicle: bv1("BattleTech Master Rules pp.141-142; FanPro BMR errata p.12", true),
         fighter: AT2, "small-craft": AT2, "capital-ship": AT2,
         infantry: bv1("BattleTech Master Rules p.142 (table); FanPro BMR errata p.12"),

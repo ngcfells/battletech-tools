@@ -1670,16 +1670,18 @@ export class BattleMech {
                 + 5 * this.getArmoredComponentRecords().reduce((sum, armored) => sum + armored.slots, 0) + centerTorsoArmor * 2;
         }
         // 20 a ton of explosive ammo, a Gauss rifle counting as a ton. Clan: center torso, legs and head; Inner Sphere
-        // XL engine: anywhere; otherwise also a side torso without CASE, or an arm without CASE there or inward. Level 3:
-        // CASE II protects as CASE does, and ammo it covers costs 5 a ton (Maximum Tech p.92).
+        // XL engine: anywhere; otherwise also a side torso without CASE, or an arm without CASE there or inward (BMR(R)
+        // p.153); under the Master Rules errata (p.12) only CASE inward excuses an arm. Level 3: CASE II protects as CASE
+        // does, and ammo it covers costs 5 a ton (Maximum Tech p.92).
         const innerSphereXL = ((this.getLargeEngineType() ?? this._engineType).criticals?.[this.getEngineTechBase()]?.lt ?? 0) >= 3;
         const caseIn = (loc: string, tags: string[]) => ((this._criticals as any)[BattleMech.MECH_LOCATION_MAP[loc]] || [])
             .some((critical: any) => tags.some(tag => matchesTag(critical, tag)));
         const caseII = (loc: string) => !!levelThree && caseIn(loc, ["case-ii", "clan-case-ii"]);
         const hasCase = (loc: string) => this.hasClanCASE() || caseIn(loc, ["case", "case-prototype"]) || caseII(loc);
         const inward: Record<string, string> = { la: "lt", ra: "rt" };
+        const armCaseInwardOnly = !!getBattleValueRules(edition, "mech").armCaseInwardOnly;
         const penalised = (loc: string) => innerSphereXL || !["lt", "rt", "la", "ra"].includes(loc)
-            || (!hasCase(loc) && !(inward[loc] && hasCase(inward[loc])));
+            || (inward[loc] ? !(hasCase(inward[loc]) || (!armCaseInwardOnly && hasCase(loc))) : !hasCase(loc));
         let explosive = 0;
         for (const item of this._equipmentList) {
             const tons = BattleMech._isExplosiveAmmoSlot(item) ? item.weight : BattleMech._isExplosiveComponent(item) && item.gauss ? 1 : 0;

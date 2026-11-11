@@ -144,7 +144,7 @@ in `src/data/battle-value.ts`. The two Master Rules books print the same procedu
 | `bv1.def.structure.light-engine` | BMR(R) p.152 | x 1.125 with a Light engine. Not in the 1998 book (no Light engine there). | Yes; provisional under master-rules | |
 | `bv1.def.tonnage` | BMR p.139 / BMR(R) p.152 | Add the 'Mech's tonnage. | Yes | |
 | `bv1.def.equipment` | BMR p.139, tables pp.142-144 / BMR(R) p.152, tables pp.156-158 | Add the BV of defensive equipment: anti-missile systems with their ammunition, and ECM. Everything else is offensive. | Yes (A-Pods also counted defensive) | |
-| `bv1.def.explosive` | BMR pp.139-140, errata p.12 / BMR(R) pp.152-153 | 20 points a ton of explosive ammunition, a Gauss rifle counting as a ton: Clan in center torso, legs or head; Inner Sphere XL anywhere; Inner Sphere standard (BMR(R): or Light) in center torso, legs, head, or a location without CASE; an arm, see Finding 15. | BMR(R): yes. BMR with errata: Finding 15 | |
+| `bv1.def.explosive` | BMR pp.139-140, errata p.12 / BMR(R) pp.152-153 | 20 points a ton of explosive ammunition, a Gauss rifle counting as a ton: Clan in center torso, legs or head; Inner Sphere XL anywhere; Inner Sphere standard (BMR(R): or Light) in center torso, legs, head, or a location without CASE; an arm, see Finding 15. | Yes, per edition (Finding 15, fixed) | |
 | `bv1.def.heat` | BMR p.140 / BMR(R) p.153 | (Maximum heat - heat sink capacity) x 5, when positive. Maximum heat: all weapons fired, plus the hotter of running and jumping; Ultra autocannon x 2, Streak / 2, rear-firing weapons ignored. | Yes | |
 | `bv1.def.heat.stealth` | BMR(R) p.154 | Stealth armor adds 10 to the maximum heat. Not in the 1998 book. | Yes; provisional under master-rules | |
 | `bv1.def.subtotal` | BMR p.139 / BMR(R) p.152 | The subtractions cannot take the running total below 1. | Yes | |
@@ -180,8 +180,9 @@ in `src/data/battle-value.ts`. The two Master Rules books print the same procedu
 | `bv1.l3.off.speed.supercharger` | Max Tech (Revised) p.91 | A supercharger counts as MASC does in the Speed Factor (+1). | Yes | |
 | `bv1.l3.final.jump-pack` | Max Tech (Revised) p.92 | A jump pack is left out of the movement figures and adds its Jumping MP x 5 to the final BV. | Yes | |
 
-Read but not applied by the code (no step): the Arrow IV and TAG pairing, +200 to the unit (BMR p.144 and BMR(R)
-p.158, note A); a satellite uplink and a command console's value to the side (Max Tech p.91-92); a hand-held
+Applied to the force, not in the unit's own steps: the Arrow IV and TAG pairing, +200 to the unit (BMR p.144 and
+BMR(R) p.158, note A). Read but not applied by the code (no step): a satellite uplink's value to the side (Max Tech
+pp.91-92); a hand-held
 weapon's own BV (Max Tech p.92); the Piloting change a torso or compact cockpit makes to the skill multiplier;
 improved jump jet heat.
 
@@ -244,8 +245,11 @@ changed while reading. Each is decided in the queue (plan Task 11) or by the own
 15. **BV1: CASE and ammunition in an arm (was "Finding A").** The BMR errata p.12 rewrites the arm line: arm
     ammunition is excused only by CASE in the next location inward. BMR(R) p.153 accepts CASE in the arm or the next
     location inward. Our code applies the BMR(R) rule under both editions. Owner ruling 2026-11-10: fix it per
-    edition, in BV1 and in the designer's ammunition and CASE check. Shown as `provisional` under master-rules
-    until that fix lands.
+    edition, in BV1 and in the designer's ammunition and CASE check. FIXED 2026-11-11: under master-rules only CASE
+    inward excuses an arm (`armCaseInwardOnly` in `BV_RULES`); the step is now `cited`. The designer needed no change:
+    both books allow Inner Sphere CASE only in a torso (BMR p.128, BMR(R) p.136) and the designer already refuses an
+    arm under every edition, so the difference shows only on a design that arrives with CASE in an arm (an import).
+    Clan CASE covers every location, so a Clan or Mixed design is not affected.
 16. **BV1: Inner Sphere Grenade Launcher (was "Finding B").** Maximum Tech, Revised p.90 prints BV 1 (page image).
     Our Level 3 table has 4, which matches no page read. Owner ruling 2026-11-10: each Maximum Tech printing gives
     its values to the edition it belongs to; the FASA printing, if held, gives master-rules its own Level 3 table.

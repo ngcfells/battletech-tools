@@ -32,8 +32,8 @@ const MASTER_RULES: CalcStepDefs = {
         "The 1998 Master Rules have no Light engine. We use the Revised Edition's multiplier, 1.125."),
     "bv1.def.tonnage": step(DEFENSIVE, [at("bmr", "139")]),
     "bv1.def.equipment": step(DEFENSIVE, [at("bmr", "139"), at("bmr", "142-144")]),
-    "bv1.def.explosive": provisional(DEFENSIVE, [at("bmr", "139-140"), at("bmr-errata", "12")],
-        "The errata excuses ammunition in an arm only when the next location inward has CASE. We still also accept CASE in the arm itself, as the Revised Edition does; this is being corrected."),
+    // The errata rewrites the arm line: only CASE in the next location inward excuses ammunition in an arm.
+    "bv1.def.explosive": step(DEFENSIVE, [at("bmr", "139-140"), at("bmr-errata", "12")]),
     "bv1.def.heat": step(DEFENSIVE, [at("bmr", "140")]),
     "bv1.def.heat.stealth": provisional(DEFENSIVE, [at("bmrr", "154")],
         "The 1998 Master Rules have no Stealth armor. We use the Revised Edition's rule: 10 more heat."),
