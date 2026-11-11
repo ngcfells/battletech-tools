@@ -375,7 +375,8 @@ describe("BattleMech armor allocation", () => {
                 }
             }
         }
-    });
+        // Hundreds of allocations: over 5 s when the slow build suites run beside it.
+    }, 30_000);
 
     it("keeps the chassis armor ceiling independent of selected tonnage and synchronizes Allocate Max", () => {
         const mech = new BattleMech();
