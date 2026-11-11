@@ -217,8 +217,8 @@ describe("Classic BattleTech force rules edition", () => {
         const semiGuided = launcher.getBattleValueTagShare(edition).semiGuided ?? 0;
         expect(Math.abs(semiGuided - 55 * getSpeedFactor(launcher.getRunSpeed()))).toBeLessThanOrEqual(1);
         expect(total()).toBe(launcher.getPilotAdjustedBattleValue(edition, semiGuided) + master.getPilotAdjustedBattleValue(edition) + spotter.getPilotAdjustedBattleValue(edition));
-        // The Master Rules have no Level 3 ammo.
-        expect(launcher.getBattleValueTagShare("master-rules").semiGuided).toBeUndefined();
+        // The 1998 Master Rules read the FASA printing of Maximum Tech: the same x 6.
+        expect(Math.abs((launcher.getBattleValueTagShare("master-rules").semiGuided ?? 0) - 55 * getSpeedFactor(launcher.getRunSpeed()))).toBeLessThanOrEqual(1);
     });
 
     it("adds a command console's 200 once per side, after skill and outside any group (Maximum Tech p.91)", () => {

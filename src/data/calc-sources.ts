@@ -27,6 +27,7 @@ export const CALC_SOURCES: Record<string, ICalcSource> = {
     "bmr": { short: "BMR", title: "BattleTech Master Rules", printing: "FASA 1707 (1998)" },
     "bmr-errata": { short: "BMR errata", title: "Classic BattleTech Master Rules errata (FanPro printings)", printing: "As of 1 October 2004", errataOf: "bmr" },
     "bmrr": { short: "BMR(R)", title: "BattleTech Master Rules, Revised Edition", printing: "FanPro 35000 (2005 printing)" },
+    "mt": { short: "Max Tech", title: "Maximum Tech", printing: "FASA 1700, Corrected Second Printing (1999)" },
     "mt-revised": { short: "Max Tech (Revised)", title: "Maximum Tech, Revised Edition", printing: "FanPro 35013, PDF version 1.0 (2005)" },
     "ioae-errata-3.01": { short: "IO:AE errata v3.01", title: "Interstellar Operations: Alternate Eras errata", printing: "v3.01 (17 January 2023)", errataOf: "ioae" },
 };

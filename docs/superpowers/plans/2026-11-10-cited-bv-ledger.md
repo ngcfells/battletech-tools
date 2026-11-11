@@ -20,6 +20,7 @@ last column means the page image was checked.
 | `bmr` | BattleTech Master Rules | FASA 1707 (1998) |
 | `bmr-errata` | Classic BattleTech Master Rules errata, FanPro printings | As of 1 October 2004 |
 | `bmrr` | BattleTech Master Rules, Revised Edition | FanPro 35000 (2005 printing) |
+| `mt` | Maximum Tech | FASA 1700, Corrected Second Printing (1999) |
 | `mt-revised` | Maximum Tech, Revised Edition | FanPro 35013, PDF version 1.0 (2005) |
 
 The v4.1 Battle Value chapter was compared with TM pp.302-304 line by line for the 'Mech rules: the rules text is
@@ -29,6 +30,10 @@ the same. The IO:AE errata v3.01 has one Battle Value entry (Dead-Fire ammunitio
 ## Sources to ask the owner for
 
 None for 'Mech BV2.
+
+For BV1: Maximum Tech, first printing (FASA 1700, 1997). The library holds the corrected second printing (1999) and
+the FanPro Revised (2005). Both print Inner Sphere Grenade Launcher BV 1; the owner recalls 15 in one printing.
+Nothing waits on it.
 
 ## 'Mech BV2 (read 2026-11-10)
 
@@ -134,7 +139,11 @@ Weapon modifiers inside a Modified BV (`MECH_BV2_WEAPON_CITES`):
 
 Code: `_calcBattleValue1` in `src/classes/battlemech.ts`; `getBattleValue1Rater`, `getBattleValue1Ammo` and `MAX_TECH`
 in `src/data/battle-value.ts`. The two Master Rules books print the same procedure; the table gives both pages
-(BMR / BMR(R)). Page numbers are the printed ones. The Level 3 rows are from Maximum Tech, Revised.
+(BMR / BMR(R)). Page numbers are the printed ones. The Level 3 rows were read in both printings of Maximum Tech: the
+FASA corrected second printing (`mt`, cited under master-rules; its p.90 says it builds on Master Rules pp.139-145)
+and the FanPro Revised (`mt-revised`, cited under master-rules-revised). The two print these rules on the same pages
+with the same figures; the item tables, the special ammunition table and the engine table were compared on the page
+images of both.
 
 | Step id | Read on | What the page says | Code agrees? | Check |
 |---|---|---|---|---|
@@ -253,6 +262,13 @@ changed while reading. Each is decided in the queue (plan Task 11) or by the own
 16. **BV1: Inner Sphere Grenade Launcher (was "Finding B").** Maximum Tech, Revised p.90 prints BV 1 (page image).
     Our Level 3 table has 4, which matches no page read. Owner ruling 2026-11-10: each Maximum Tech printing gives
     its values to the edition it belongs to; the FASA printing, if held, gives master-rules its own Level 3 table.
+    FIXED 2026-11-11. The library holds the FASA corrected second printing (1999). Its pp.90-92 print the same
+    tables and rules as the Revised: Grenade Launcher 1 in both the Inner Sphere and the Clan table. The value is
+    now 1 under both editions, and master-rules reads its own Level 3 table (`MAX_TECH_FASA`, the same figures,
+    cited to the FASA printing). Effect: a design with Level 3 gear now has the same BV1 under master-rules as
+    under master-rules-revised, where before master-rules ignored Level 3. The owner recalls a printing with 15:
+    it is neither printing held. A first printing (FASA, 1997) is not in the library: see "Sources to ask the
+    owner for".
 17. **BV1: the Clan XL engine.** Neither Master Rules book names the Clan XL in the rules text (only "XL engine",
     x 0.75). Both print the Goshawk example with 91 x 1.125. Our code follows the example. Shown as `provisional`.
 18. **Stale comment.** `_calcBattleValue1` says the movement modifiers are on BMR(R) p.25. The Attack Modifiers

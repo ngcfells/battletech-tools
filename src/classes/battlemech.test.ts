@@ -6950,7 +6950,8 @@ describe("Battle Value worked examples (BV v4.1 pp.3-7)", () => {
     });
 
     // Maximum Tech's Level 3 BV1 (pp.90-92) on the Enforcer III above: Defensive 377.25 x 1.3, Offensive 936.71889. The
-    // Level 3 rules belong to BMR(R); under BMR the 'Mech keeps 1,427.
+    // Each Master Rules edition has its own printing of Maximum Tech, and both print the same Level 3 rules (owner
+    // ruling 2026-11-10; read 2026-11-11), so the 'Mech reads the same under BMR and BMR(R).
     describe("Maximum Tech Level 3 BV1 (pp.90-92)", () => {
         const enforcer3 = (structure = "endo-steel", engine = "xl", armor = "standard") => {
             const mech = build(50, 5, armor, 10, [9, 24, 7, 19, 5, 19, 5, 16, 16, 20, 20], structure, engine);
@@ -6967,7 +6968,7 @@ describe("Battle Value worked examples (BV v4.1 pp.3-7)", () => {
             const mech = enforcer3();
             placeIn(mech, "case-ii", "rt", "rightTorso");
             expect(mech.getBattleValue("master-rules-revised")).toBe(1466);
-            expect(mech.getBattleValue("master-rules")).toBe(1427);
+            expect(mech.getBattleValue("master-rules")).toBe(1466);
         });
 
         it("adds 30 for a heavy-duty gyro and 25 for a command console: (377.25 + 55) x 1.3", () => {
@@ -7009,11 +7010,11 @@ describe("Battle Value worked examples (BV v4.1 pp.3-7)", () => {
             for (const tag of ["large-laser", "autocannon-standard-c", "small-laser"]) add(mech, tag);
             placeIn(mech, "ammo-is-ac-10-armor-piercing", "rt", "rightTorso");
             expect(mech.getBattleValue("master-rules-revised")).toBe(1002);
-            expect(mech.getBattleValue("master-rules")).toBe(895);
+            expect(mech.getBattleValue("master-rules")).toBe(1002);
         });
 
-        // An LRM 5 in the left torso feeds on a ton of flare missiles: ammo 6 x .05 under BMR(R) Level 3, 6 under BMR.
-        it("multiplies flare LRM ammo BV by .05 under BMR(R) Level 3 (Max Tech p.91), x 1 under BMR", () => {
+        // An LRM 5 in the left torso feeds on a ton of flare missiles: ammo 6 x .05 at Level 3, under BMR and BMR(R).
+        it("multiplies flare LRM ammo BV by .05 at Level 3 (Max Tech p.91) under both Master Rules editions", () => {
             const enforcer = (ammo: string) => {
                 const mech = build(50, 4, "standard", 9, [9, 23, 4, 17, 3, 17, 3, 14, 14, 20, 20], "standard");
                 mech.setAdditionalHeatSinks(2);
@@ -7024,7 +7025,7 @@ describe("Battle Value worked examples (BV v4.1 pp.3-7)", () => {
                 return mech;
             };
             const [standard, flare] = [enforcer("ammo-lrm-standard"), enforcer("ammo-lrm-flare")];
-            expect(flare.getBattleValue("master-rules")).toBe(standard.getBattleValue("master-rules"));
+            expect([standard.getBattleValue("master-rules"), flare.getBattleValue("master-rules")]).toEqual([913, 906]);
             // Defensive 412.5 x 1.2 = 495. Weapons 302 + ammo 0.3, heat 12 of 18: X 201.53, Y 50.38, x 1.63 = 410.62.
             expect([standard.getBattleValue("master-rules-revised"), flare.getBattleValue("master-rules-revised")]).toEqual([913, 906]);
         });
@@ -7046,7 +7047,7 @@ describe("Battle Value worked examples (BV v4.1 pp.3-7)", () => {
             const mech = enforcer3();
             placeIn(mech, "targeting-variable-range", "hd", "head");
             expect(mech.getBattleValue("master-rules-revised")).toBe(1510);
-            expect(mech.getBattleValue("master-rules")).toBe(1427);
+            expect(mech.getBattleValue("master-rules")).toBe(1510);
             // Built under BMR(R), the design needs Level 3, the system's grade there (it read 0 before 2b-3).
             mech.setRulesEdition("master-rules-revised");
             expect(mech.getRequiredRulesLevel()).toBe(3);

@@ -74,13 +74,16 @@ describe("'Mech BV1 step definitions", () => {
         }
     });
 
-    it("the Master Rules table has every step the Revised one has outside Level 3, so one calculation serves both", () => {
-        const core = (edition: string) => Object.keys(MECH_BV1_STEPS[edition]).filter(id => !id.startsWith("bv1.l3.")).sort();
-        expect(core("master-rules")).toEqual(core("master-rules-revised"));
+    it("the two tables have the same step ids, so one calculation serves both", () => {
+        expect(Object.keys(MECH_BV1_STEPS["master-rules"]).sort()).toEqual(Object.keys(MECH_BV1_STEPS["master-rules-revised"]).sort());
     });
 
-    it("the Revised table carries Maximum Tech's Level 3 steps, prefixed bv1.l3.", () => {
-        expect(Object.keys(MECH_BV1_STEPS["master-rules-revised"]).some(id => id.startsWith("bv1.l3."))).toBe(true);
+    it("each table carries Level 3 steps (bv1.l3.) cited to its own Maximum Tech printing", () => {
+        const levelThree = (edition: string) => Object.entries(MECH_BV1_STEPS[edition]).filter(([id]) => id.startsWith("bv1.l3."));
+        expect(levelThree("master-rules-revised").length).toBeGreaterThan(0);
+        expect(levelThree("master-rules").map(([id]) => id).sort()).toEqual(levelThree("master-rules-revised").map(([id]) => id).sort());
+        for (const [id, def] of levelThree("master-rules")) expect(def.cites.map(cite => cite.source), id).toEqual(["mt"]);
+        for (const [id, def] of levelThree("master-rules-revised")) expect(def.cites.map(cite => cite.source), id).toEqual(["mt-revised"]);
     });
 
     it("an edition reads the newest BV1 edition at or before it", () => {

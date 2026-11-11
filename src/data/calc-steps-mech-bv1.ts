@@ -3,8 +3,9 @@
  *
  * Every entry was read on the page it cites, on 2026-11-10 and 2026-11-11; what each page says and how the code
  * compares is in docs/superpowers/plans/2026-11-10-cited-bv-ledger.md. The two editions print the same procedure;
- * each table cites its own book. A step the edition's book does not print (a Light engine or Stealth armor under the
- * 1998 Master Rules) is `provisional` there, so one calculation serves both. Change a citation only after reading
+ * each table cites its own book, and its own printing of Maximum Tech for Level 3. A step the edition's book does not
+ * print (a Light engine or Stealth armor under the 1998 Master Rules) is `provisional` there, so one calculation
+ * serves both. Change a citation only after reading
  * the page.
  */
 import { getBattleValueEdition } from "./battle-value";
@@ -22,7 +23,35 @@ const provisional = (section: string, cites: ICalcCitation[], note: string): ICa
 const CLAN_XL_NOTE = "The rules text gives x 0.75 for an XL engine and does not name the Clan XL. The book's worked example, a Goshawk with a Clan XL engine, multiplies its internal structure by 1.125. We follow the example.";
 const UNLISTED_NOTE = "This edition's equipment tables print no Battle Value for the item. We use its current (BV2) figure so the item is not worth nothing.";
 
-/** BattleTech Master Rules (FASA, 1998) pp.139-145, with the FanPro errata p.12. */
+/**
+ * Maximum Tech's Level 3 steps (pp.90-92). The FASA printing (`mt`) and the FanPro Revised (`mt-revised`) print these
+ * rules on the same pages; each Master Rules edition cites the printing written for it.
+ */
+const levelThree = (source: string): CalcStepDefs => ({
+    "bv1.l3.item": step(OFFENSIVE, [at(source, "90")]),
+    "bv1.l3.item.artemis-v": step(OFFENSIVE, [at(source, "90")]),
+    "bv1.l3.ammo.special": step(OFFENSIVE, [at(source, "91")]),
+    "bv1.l3.def.armor.hardened": step(DEFENSIVE, [at(source, "90-91")]),
+    "bv1.l3.def.engine": step(DEFENSIVE, [at(source, "91")]),
+    "bv1.l3.def.structure-type": step(DEFENSIVE, [at(source, "92")]),
+    "bv1.l3.def.gyro": step(DEFENSIVE, [at(source, "92")]),
+    "bv1.l3.def.command-console": step(DEFENSIVE, [at(source, "91")]),
+    "bv1.l3.def.enhanced-imaging": step(DEFENSIVE, [at(source, "91")]),
+    "bv1.l3.def.component-armor": step(DEFENSIVE, [at(source, "92")]),
+    "bv1.l3.def.torso-cockpit": step(DEFENSIVE, [at(source, "91")]),
+    "bv1.l3.def.case-ii": step(DEFENSIVE, [at(source, "92")]),
+    "bv1.l3.def.coolant-pod": step(DEFENSIVE, [at(source, "92")]),
+    "bv1.l3.def.factor.supercharger": step(DEFENSIVE, [at(source, "91")]),
+    "bv1.l3.def.factor.null-signature": step(DEFENSIVE, [at(source, "92")]),
+    "bv1.l3.def.factor.armless": step(DEFENSIVE, [at(source, "92")]),
+    "bv1.l3.off.multi-trac": step(OFFENSIVE, [at(source, "91")]),
+    "bv1.l3.off.targeting.variable-range": step(OFFENSIVE, [at(source, "91")]),
+    "bv1.l3.off.targeting.enhanced-imaging": step(OFFENSIVE, [at(source, "91")]),
+    "bv1.l3.off.speed.supercharger": step(OFFENSIVE, [at(source, "91")]),
+    "bv1.l3.final.jump-pack": step(FINAL, [at(source, "92")]),
+});
+
+/** BattleTech Master Rules (FASA, 1998) pp.139-145, with the FanPro errata p.12; Level 3 from Maximum Tech (FASA) pp.90-92. */
 const MASTER_RULES: CalcStepDefs = {
     // ---- Step 1: Defensive Battle Rating ----
     "bv1.def.armor": step(DEFENSIVE, [at("bmr", "139")]),
@@ -43,7 +72,7 @@ const MASTER_RULES: CalcStepDefs = {
 
     // ---- Step 2: Offensive Battle Rating ----
     "bv1.off.weapon": step(OFFENSIVE, [at("bmr", "140"), at("bmr", "142-144")]),
-    "bv1.off.weapon.unlisted": provisional(OFFENSIVE, [at("bmr", "142-144")], UNLISTED_NOTE),
+    "bv1.off.weapon.unlisted": provisional(OFFENSIVE, [at("bmr", "142-144"), at("mt", "90")], UNLISTED_NOTE),
     "bv1.off.targeting-computer": step(OFFENSIVE, [at("bmr", "140"), at("bmr", "144")]),
     "bv1.off.ammo": step(OFFENSIVE, [at("bmr", "140"), at("bmr", "142-144")]),
     "bv1.off.base": step(OFFENSIVE, [at("bmr", "140")]),
@@ -54,6 +83,8 @@ const MASTER_RULES: CalcStepDefs = {
 
     // ---- Step 3: Final Battle Value ----
     "bv1.final.round": step(FINAL, [at("bmr", "139"), at("bmr", "141")]),
+
+    ...levelThree("mt"),
 };
 
 /** BattleTech Master Rules, Revised Edition pp.152-159; Level 3 from Maximum Tech, Revised pp.90-92. */
@@ -85,28 +116,7 @@ const MASTER_RULES_REVISED: CalcStepDefs = {
     // ---- Step 3: Final Battle Value ----
     "bv1.final.round": step(FINAL, [at("bmrr", "152"), at("bmrr", "154")]),
 
-    // ---- Level 3: Maximum Tech, Revised ----
-    "bv1.l3.item": step(OFFENSIVE, [at("mt-revised", "90")]),
-    "bv1.l3.item.artemis-v": step(OFFENSIVE, [at("mt-revised", "90")]),
-    "bv1.l3.ammo.special": step(OFFENSIVE, [at("mt-revised", "91")]),
-    "bv1.l3.def.armor.hardened": step(DEFENSIVE, [at("mt-revised", "90-91")]),
-    "bv1.l3.def.engine": step(DEFENSIVE, [at("mt-revised", "91")]),
-    "bv1.l3.def.structure-type": step(DEFENSIVE, [at("mt-revised", "92")]),
-    "bv1.l3.def.gyro": step(DEFENSIVE, [at("mt-revised", "92")]),
-    "bv1.l3.def.command-console": step(DEFENSIVE, [at("mt-revised", "91")]),
-    "bv1.l3.def.enhanced-imaging": step(DEFENSIVE, [at("mt-revised", "91")]),
-    "bv1.l3.def.component-armor": step(DEFENSIVE, [at("mt-revised", "92")]),
-    "bv1.l3.def.torso-cockpit": step(DEFENSIVE, [at("mt-revised", "91")]),
-    "bv1.l3.def.case-ii": step(DEFENSIVE, [at("mt-revised", "92")]),
-    "bv1.l3.def.coolant-pod": step(DEFENSIVE, [at("mt-revised", "92")]),
-    "bv1.l3.def.factor.supercharger": step(DEFENSIVE, [at("mt-revised", "91")]),
-    "bv1.l3.def.factor.null-signature": step(DEFENSIVE, [at("mt-revised", "92")]),
-    "bv1.l3.def.factor.armless": step(DEFENSIVE, [at("mt-revised", "92")]),
-    "bv1.l3.off.multi-trac": step(OFFENSIVE, [at("mt-revised", "91")]),
-    "bv1.l3.off.targeting.variable-range": step(OFFENSIVE, [at("mt-revised", "91")]),
-    "bv1.l3.off.targeting.enhanced-imaging": step(OFFENSIVE, [at("mt-revised", "91")]),
-    "bv1.l3.off.speed.supercharger": step(OFFENSIVE, [at("mt-revised", "91")]),
-    "bv1.l3.final.jump-pack": step(FINAL, [at("mt-revised", "92")]),
+    ...levelThree("mt-revised"),
 };
 
 /** 'Mech BV1 step definitions by BV1 edition tag. */

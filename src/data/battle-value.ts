@@ -31,7 +31,7 @@ export interface IBattleValueLevelThree {
     source: string;
     /** p.90: BV, then ammo BV per ton, by tag (one-shot rows: the slash figure). */
     items: Record<string, [number, number?]>;
-    /** p.90 Clan table, where it prints another BV than the Inner Sphere one. */
+    /** p.90 Clan table, where it prints another BV than the Inner Sphere one (no row does today). */
     clanItems: Record<string, number>;
     /** p.91 Special Ammunition: ammo BV multiplier by ammo tag, `tagged` ones only with TAG on their side; the rest (caseless, tracer, smoke...) x 1. */
     ammo: Array<[pattern: RegExp, multiplier: number, tagged?: true]>;
@@ -47,13 +47,14 @@ export interface IBattleValueLevelThree {
     vehicleCrew: number;
 }
 
+/** Maximum Tech, Revised (FanPro 35013) pp.90-92: the Level 3 tables that go with the Revised Master Rules. */
 const MAX_TECH: IBattleValueLevelThree = {
-    source: "Maximum Tech pp.90-92",
+    source: "Maximum Tech, Revised pp.90-92",
     items: {
         "er-ppc-capacitor": [321], "ppc-capacitor": [247], "is-laser-ams": [105], "clan-laser-ams": [105],
         "large-x-pulse-laser": [178], "medium-x-pulse-laser": [71], "small-x-pulse-laser": [21],
         "er_large_pulse_laser": [271], "er_medium_pulse_laser": [116], "er_small_pulse_laser": [36],
-        "vehicular-grenade-launcher": [4], "heavy-flamer": [20, 3], "autocannon-light-2": [30, 3], "autocannon-light-5": [62, 5],
+        "vehicular-grenade-launcher": [1], "heavy-flamer": [20, 3], "autocannon-light-2": [30, 3], "autocannon-light-5": [62, 5],
         "long-tom-cannon": [348, 48], "sniper-cannon": [115, 16], "thumper-cannon": [58, 7],
         "thunderbolt-5": [64, 8], "thunderbolt-10": [127, 16], "thunderbolt-15": [229, 26], "thunderbolt-20": [305, 35],
         "thunderbolt-5-os": [13], "thunderbolt-10-os": [25], "thunderbolt-15-os": [46], "thunderbolt-20-os": [61],
@@ -61,7 +62,7 @@ const MAX_TECH: IBattleValueLevelThree = {
         "streak-lrm-5-os": [17], "streak-lrm-10-os": [35], "streak-lrm-15-os": [52], "streak-lrm-20-os": [69],
         "angel-ecm": [100], "bloodhound-active-probe": [25],
     },
-    clanItems: { "vehicular-grenade-launcher": 1 },
+    clanItems: {},
     ammo: [[/-ac-\d+-armor-piercing$/, 6], [/-lb-\d+x-cluster$/, 0.75], [/-ac-\d+-flechette$/, 0.5],
         [/-(srm-frag|lrm-fragmentation)$/, 0.5], [/-lrm-swarm-i$/, 1.5], [/-lrm-flare$/, 0.05], [/-lrm-semi-guided$/, 6, true]],
     engines: { "large-standard": 1.125, "large-ice": 1.125, clan_xxl: 0.75, "large-clan_xl": 0.75, "large-clan_xxl": 0.5,
@@ -72,6 +73,13 @@ const MAX_TECH: IBattleValueLevelThree = {
     vehicleChassis: { "limited-amphibious": 0.1, "fully-amphibious": 0.1, "dune-buggy": 0.05 },
     vehicleCrew: 2,
 };
+
+/**
+ * Maximum Tech (FASA 1700, corrected second printing) pp.90-92: written for the 1998 Master Rules (its p.90 names
+ * their pp.139-145), so it is that edition's Level 3 (owner ruling 2026-11-10). Read on the page images on
+ * 2026-11-11: every table and figure above is the same in this printing.
+ */
+const MAX_TECH_FASA: IBattleValueLevelThree = { ...MAX_TECH, source: "Maximum Tech (FASA) pp.90-92" };
 
 /**
  * BV1 Vehicle Type Modifiers (BMR p.141, BMR(R) p.154): surface vessels, hydrofoils and submarines are Naval. The books
@@ -96,15 +104,15 @@ const BV2: IBattleValueRules = { scheme: "bv2", source: "TechManual pp.302-319, 
  */
 export const BV_RULES: Record<string, Partial<Record<BattleValueUnitType, IBattleValueRules>>> = {
     "master-rules": {
-        mech: { ...bv1("BattleTech Master Rules pp.139-145; FanPro BMR errata p.12", true), armCaseInwardOnly: true },
-        vehicle: bv1("BattleTech Master Rules pp.141-142; FanPro BMR errata p.12", true),
+        mech: { ...bv1("BattleTech Master Rules pp.139-145; FanPro BMR errata p.12; Maximum Tech (FASA) pp.90-92 (Level 3)", true), armCaseInwardOnly: true, levelThree: MAX_TECH_FASA },
+        vehicle: { ...bv1("BattleTech Master Rules pp.141-142; FanPro BMR errata p.12; Maximum Tech (FASA) pp.90-92 (Level 3)", true), levelThree: MAX_TECH_FASA },
         fighter: AT2, "small-craft": AT2, "capital-ship": AT2,
         infantry: bv1("BattleTech Master Rules p.142 (table); FanPro BMR errata p.12"),
         "battle-armor": bv1("BattleTech Master Rules p.142 (table)"),
     },
     "master-rules-revised": {
-        mech: { ...bv1("BattleTech Master Rules, Revised Edition pp.152-159; Maximum Tech pp.90-92 (Level 3)", true), levelThree: MAX_TECH },
-        vehicle: { ...bv1("BattleTech Master Rules, Revised Edition pp.154-155; Maximum Tech pp.90-92 (Level 3)", true), levelThree: MAX_TECH },
+        mech: { ...bv1("BattleTech Master Rules, Revised Edition pp.152-159; Maximum Tech, Revised pp.90-92 (Level 3)", true), levelThree: MAX_TECH },
+        vehicle: { ...bv1("BattleTech Master Rules, Revised Edition pp.154-155; Maximum Tech, Revised pp.90-92 (Level 3)", true), levelThree: MAX_TECH },
         fighter: AT2R, "small-craft": AT2R, "capital-ship": AT2R,
         protomech: bv1("BattleTech Master Rules, Revised Edition pp.155-156"),
         infantry: bv1("BattleTech Master Rules, Revised Edition pp.155-156 (table); Maximum Tech p.93 (Level 3)"),
