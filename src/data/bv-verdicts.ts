@@ -117,6 +117,40 @@ export const BV_VERDICTS: Record<string, IBvVerdict> = {
     "mul:102800": { verdict: "mul-suspect", note: "The list's value equals ours when no weapon's Battle Value is halved for heat. The rule gives prototype improved jump jets twice a standard jump jet's heat, so this design's six make 12 movement heat and its weapons pass the heat it can sink.", cites: [{ source: "ioae", page: "97" }] },
     // Cataphract CTF-2X (George)
     "mul:103219": { verdict: "mul-suspect", note: "The list's value equals ours when the three prototype double heat sinks each sink 1 heat. The rule has them work as Inner Sphere double heat sinks, and the Battle Value table gives them no adjustment.", cites: [{ source: "ioae", page: "65" }, { source: "ioae", page: "189" }] },
+    // Anzu ZU-G60
+    "mul:103922": { verdict: "mul-suspect", note: "The publisher's record sheet for this design prints our value, not the list's.", cites: [{ source: "rs-dark-age", page: "134" }] },
+    // Archangel C-ANG-OC Comminus
+    "mul:105936": { verdict: "mul-suspect", note: "The publisher's record sheet for this design prints our value, not the list's.", cites: [{ source: "rs-jihad", page: "272" }] },
+    // Archer ARC-5R
+    "mul:107400": { verdict: "mul-suspect", note: "The publisher's record sheet for this design prints our value, not the list's.", cites: [{ source: "rg-ilclan-10", page: "27" }] },
+    // Demeter WLD-1-M AgroMech MOD
+    "mul:103855": { verdict: "mul-suspect", note: "The publisher's record sheet for this design prints our value, not the list's.", cites: [{ source: "tro-irregulars", page: "97" }] },
+    // Gargoyle (Man O' War) T
+    "mul:107466": { verdict: "mul-suspect", note: "The publisher's record sheet for this design prints our value, not the list's.", cites: [{ source: "rg-ilclan-11", page: "39" }] },
+    // Grand Crusader GRN-D-01-X
+    "mul:100807": { verdict: "mul-suspect", note: "The publisher's record sheet for this design prints our value, not the list's. The 2021 printing of the same sheet prints the list's value; the 2022 printing prints ours.", cites: [{ source: "rg-ilclan-23", page: "37" }] },
+    // Hierofalcon A
+    "mul:106181": { verdict: "mul-suspect", note: "The publisher's record sheet for this design prints our value, not the list's.", cites: [{ source: "rg-ilclan-3", page: "20" }] },
+    // Ice Ferret (Fenris) J
+    "mul:103579": { verdict: "mul-suspect", note: "The publisher's record sheet for this design prints our value, not the list's.", cites: [{ source: "rg-ilclan-4", page: "25" }] },
+    // Jackalope JLP-NH 'Tepoztecatl'
+    "mul:101228": { verdict: "mul-suspect", note: "The publisher's record sheet for this design prints our value, not the list's.", cites: [{ source: "rs-shrapnel-2", page: "14" }] },
+    // Merlin MLN-1P
+    "mul:101501": { verdict: "mul-suspect", note: "The publisher's record sheet for this design prints our value, not the list's.", cites: [{ source: "rg-ilclan-26", page: "25" }] },
+    // Poseidon PSD-V2
+    "mul:100025": { verdict: "mul-suspect", note: "The publisher's record sheet for this design prints our value, not the list's.", cites: [{ source: "rs-dark-age", page: "261" }] },
+    // Regent A
+    "mul:104973": { verdict: "mul-suspect", note: "The publisher's record sheet for this design prints our value, not the list's. The 2021 printing of the same sheet prints the list's value; the 2022 printing prints ours.", cites: [{ source: "rg-ilclan-21", page: "27" }] },
+    // Savage Wolf (Mad Cat Mk IV) Prime
+    "mul:102249": { verdict: "mul-suspect", note: "The publisher's record sheet for this design prints our value, not the list's.", cites: [{ source: "rs-dark-age", page: "192" }] },
+    // Scarecrow UCU-F4r
+    "mul:100976": { verdict: "mul-suspect", note: "The publisher's record sheet for this design prints our value, not the list's.", cites: [{ source: "rs-dark-age", page: "72" }] },
+    // Shogun SHG-3E
+    "mul:108235": { verdict: "mul-suspect", note: "The publisher's record sheet for this design prints our value, not the list's.", cites: [{ source: "rs-tro3150", page: "296" }] },
+    // Templar III TLR2-OB
+    "mul:105868": { verdict: "mul-suspect", note: "The publisher's record sheet for this design prints our value, not the list's.", cites: [{ source: "rs-tro3150", page: "216" }] },
+    // Vision Quest VQ-1NC
+    "mul:104965": { verdict: "mul-suspect", note: "The publisher's record sheet for this design prints our value, not the list's.", cites: [{ source: "tro-golden-century", page: "101" }] },
     // Griffin GRF-1RG
     "mul:108074": { verdict: "import", note: "The file we import carries fewer armor points than the published record sheet (Recognition Guide: ilClan, vol. 1). With the sheet's armor our value equals the list's." },
     // Osprey OSP-36

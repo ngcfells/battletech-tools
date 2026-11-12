@@ -29,5 +29,20 @@ export const CALC_SOURCES: Record<string, ICalcSource> = {
     "bmrr": { short: "BMR(R)", title: "BattleTech Master Rules, Revised Edition", printing: "FanPro 35000 (2005 printing)" },
     "mt": { short: "Max Tech", title: "Maximum Tech", printing: "FASA 1700, Corrected Second Printing (1999)" },
     "mt-revised": { short: "Max Tech (Revised)", title: "Maximum Tech, Revised Edition", printing: "FanPro 35013, PDF version 1.0 (2005)" },
+    // Published record sheets, cited where a sheet prints a Battle Value (#599). A record sheet page carries no page
+    // number of its own: the page given is the page of the PDF, except where the printing says otherwise.
+    "rs-dark-age": { short: "RS: Dark Age", title: "Record Sheets: Dark Age", printing: "2022 PDF, by PDF page" },
+    "rs-jihad": { short: "RS: Jihad", title: "Record Sheets: Jihad", printing: "2022 PDF, by PDF page" },
+    "rs-tro3150": { short: "RS: TRO 3150", title: "Record Sheets: Technical Readout 3150", printing: "2022 PDF, by PDF page" },
+    "rs-shrapnel-2": { short: "RS: Shrapnel Year 2", title: "Record Sheets: Shrapnel Magazine, Year 2", printing: "2026 PDF, by PDF page" },
+    "rg-ilclan-3": { short: "RG: ilClan 3", title: "Recognition Guide: ilClan, vol. 3", printing: "2022 PDF, by PDF page" },
+    "rg-ilclan-4": { short: "RG: ilClan 4", title: "Recognition Guide: ilClan, vol. 4", printing: "2022 PDF, by PDF page" },
+    "rg-ilclan-10": { short: "RG: ilClan 10", title: "Recognition Guide: ilClan, vol. 10", printing: "2022 PDF, by PDF page" },
+    "rg-ilclan-11": { short: "RG: ilClan 11", title: "Recognition Guide: ilClan, vol. 11", printing: "2022 PDF, by PDF page" },
+    "rg-ilclan-21": { short: "RG: ilClan 21", title: "Recognition Guide: ilClan, vol. 21", printing: "2022 PDF, by PDF page" },
+    "rg-ilclan-23": { short: "RG: ilClan 23", title: "Recognition Guide: ilClan, vol. 23", printing: "2022 PDF, by PDF page" },
+    "rg-ilclan-26": { short: "RG: ilClan 26", title: "Recognition Guide: ilClan, vol. 26", printing: "2022 PDF, by PDF page" },
+    "tro-golden-century": { short: "TRO: Golden Century", title: "Technical Readout: Golden Century", printing: "2020 PDF" },
+    "tro-irregulars": { short: "TRO: Irregulars", title: "Technical Readout: Irregulars", printing: "2021 PDF, by PDF page" },
     "ioae-errata-3.01": { short: "IO:AE errata v3.01", title: "Interstellar Operations: Alternate Eras errata", printing: "v3.01 (17 January 2023)", errataOf: "ioae" },
 };
