@@ -407,6 +407,16 @@ describe("MegaMek 'Mech import", () => {
         expect(mech!.getJumpSpeed()).toBe(2);
     });
 
+    // The Commando COM-1AK: a Primitive 'Mech's file gives the engine installed, 1.2 times the rating its Walking MP
+    // needs (IO:AE p.117). 50 tons at Walking MP 5 installs a 300.
+    it("reads a Primitive 'Mech's Walking MP from the file, not from the installed engine rating", () => {
+        const primitive = brawler.replace("engine:250 Fusion Engine", "engine:300 Fusion Engine").replace("structure:IS Standard", "structure:IS Standard\ncockpit:Primitive Cockpit");
+        const { mech } = importBattleMechMtf(primitive);
+        expect(mech!.isPrimitive()).toBe(true);
+        expect(mech!.getWalkSpeed()).toBe(5);
+        expect(mech!.getEngineRating()).toBe(300);
+    });
+
     // The Sasquatch SQS-TH-002 and Kuma 3: MegaMek names a large engine "Large", ours is the same type rated over 400 (TO:AUE p.119).
     it("reads large XXL engines as XXL engines rated over 400", () => {
         const large = (engine: string) => convertMtfToSSW(parseMtfFile(brawler.replace("engine:250 Fusion Engine", engine))!);

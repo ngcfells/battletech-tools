@@ -406,6 +406,11 @@ export function convertMtfToSSW(file: IMtfFile): { xml: string; issues: string[]
     const fcs = [...FIRE_CONTROL.map(([, flag]) => ` ${flag}="${fireControl.has(flag) ? "TRUE" : "FALSE"}"`)].join("");
     const sswTech = mixed ? "Mixed" : clan ? "Clan" : "Inner Sphere";
 
+    // SSW writes the rating the Walking MP needs. A Primitive 'Mech's MegaMek file gives the engine installed, which
+    // is 1.2 times that, rounded up (IO:AE p.117): its Walking MP is the one the file states.
+    const walkMP = +value(file, "walk mp");
+    const engineRating = /^Primitive/.test(mechType) && walkMP > 0 ? tons * walkMP : engine?.[1] ?? 0;
+
     const out = `<?xml version="1.0" encoding="UTF-8"?>
 <mech name="${xml(name)}" model="${xml(value(file, "model"))}" tons="${tons}" omnimech="${/omnime(k|ch)/i.test(config) ? "TRUE" : "FALSE"}">
 <mech_type>${mechType}</mech_type>
@@ -413,7 +418,7 @@ export function convertMtfToSSW(file: IMtfFile): { xml: string; issues: string[]
 <year>${xml(value(file, "era"))}</year>
 <motive_type>${quadVee ? `QuadVee ${wheeled ? "Wheels" : "Tracks"}` : lam ? `${lamType ?? "Standard"} LAM` : quad ? "Quad" : tripod ? "Tripod" : "Biped"}</motive_type>
 <structure techbase="${structureTech}"><type>${xml(structureName)}</type>${structureSlots.join("")}</structure>
-<engine rating="${engine?.[1] ?? 0}" techbase="${tb(engineTech)}">${xml(engineName ?? "")}</engine>
+<engine rating="${engineRating}" techbase="${tb(engineTech)}">${xml(engineName ?? "")}</engine>
 <gyro techbase="2">${xml(gyro)}</gyro>
 <cockpit><type${ejection}${value(file, "cockpit") === "Command Console" ? ` commandconsole="TRUE"` : ""}${enhancedImaging ? ` enhancedimaging="TRUE"` : ""}>${xml(sswCockpit)}</type></cockpit>
 ${myomer && !/^standard$/i.test(myomer) ? `<enhancement techbase="${clan ? 1 : 0}"><type>${/industrial/i.test(myomer) ? "Industrial TSM" : "TSM"}</type>${myomerSlots.join("")}</enhancement>` : ""}

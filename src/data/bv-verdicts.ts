@@ -21,7 +21,7 @@ export interface IBvVerdict {
 }
 
 /** The count of Master Unit List 'Mech entries with a matching design that the last build wrote. A round that raises the count raises this. */
-export const MECH_MATCHED_FLOOR = 3939;
+export const MECH_MATCHED_FLOOR = 3940;
 
 /** Keyed by bvVerdictKey. */
 export const BV_VERDICTS: Record<string, IBvVerdict> = {
@@ -117,6 +117,8 @@ export const BV_VERDICTS: Record<string, IBvVerdict> = {
     "mul:102800": { verdict: "mul-suspect", note: "The list's value equals ours when no weapon's Battle Value is halved for heat. The rule gives prototype improved jump jets twice a standard jump jet's heat, so this design's six make 12 movement heat and its weapons pass the heat it can sink.", cites: [{ source: "ioae", page: "97" }] },
     // Cataphract CTF-2X (George)
     "mul:103219": { verdict: "mul-suspect", note: "The list's value equals ours when the three prototype double heat sinks each sink 1 heat. The rule has them work as Inner Sphere double heat sinks, and the Battle Value table gives them no adjustment.", cites: [{ source: "ioae", page: "65" }, { source: "ioae", page: "189" }] },
+    // Griffin GRF-1RG
+    "mul:108074": { verdict: "import", note: "The file we import carries fewer armor points than the published record sheet (Recognition Guide: ilClan, vol. 1). With the sheet's armor our value equals the list's." },
     // Osprey OSP-36
     "mul:102563": { verdict: "mul-suspect", note: "The list's value equals ours when the engine modifier is 1.0. The design carries an Inner Sphere XL engine, for which the table gives 0.5.", cites: [{ source: "tm", page: "302" }, { source: "tm", page: "315" }] },
 };

@@ -1,14 +1,14 @@
 # Bundled 'Mechs: build report
 
-3700 designs kept (38 renamed), 4021 files left out.
+3701 designs kept (38 renamed), 4020 files left out.
 
 | Reason | Files |
 |---|---|
 | duplicate of a design already kept | 3191 |
-| BV differs from the MUL | 185 |
-| different submodel, same name and model: equipment | 164 |
+| BV differs from the MUL | 184 |
+| different submodel, same name and model: equipment | 167 |
 | different submodel, same name and model: ammo type | 112 |
-| the import could not carry all of it over | 93 |
+| the import could not carry all of it over | 90 |
 | different submodel, same name and model: actuators | 87 |
 | no Master Unit List entry to check its BV against | 54 |
 | configuration BV differs from the MUL | 44 |
@@ -1953,7 +1953,7 @@
 - `megamek/3075/Lumberjack LM1A.mtf`: the import could not carry all of it over: Cannot find any equipment named 'Dumper'
 - `megamek/3075/Lumberjack LM4C.mtf`: the import could not carry all of it over: Cannot find any equipment named 'Dumper'; Cannot find any equipment named 'Dumper'
 - `megamek/3075/Lumberjack LM4P.mtf`: the import could not carry all of it over: Cannot find any equipment named 'Dumper'
-- `megamek/3075/Mackie MSK-6S.mtf`: the import could not carry all of it over: Unallocated Criticals: 2; - Medium Laser (medium-laser); - Medium Laser (medium-laser)
+- `megamek/3075/Mackie MSK-6S.mtf`: different submodel, same name and model: equipment: Mackie MSK-6S
 - `megamek/3075/Mackie MSK-7A.mtf`: different submodel, same name and model: actuators: Mackie MSK-7A
 - `megamek/3075/Mackie MSK-8B.mtf`: duplicate of a design already kept: Mackie MSK-8B
 - `megamek/3075/Mackie MSK-9H.mtf`: duplicate of a design already kept: Mackie MSK-9H
@@ -3748,7 +3748,6 @@
 - `megamek/TRO Vehicle Annex/Uni ATAE-70 MilitiaMech.mtf`: the import could not carry all of it over: Cannot place the Environmental Sealing in the la; Cannot place the Environmental Sealing in the ra; Unallocated Criticals: 2; - Environmental Sealing (environmental-sealing); - Environmental Sealing (environmental-sealing)
 - `megamek/TRO Vehicle Annex/Uni ATAE-70T CargoMech.mtf`: different submodel, same name and model: equipment: Uni ATAE-70T CargoMech
 - `megamek/TRO Vehicle Annex/Vampyr SC-V-1 SalvageMech.mtf`: the import could not carry all of it over: Cannot place the Environmental Sealing in the la; Cannot place the Environmental Sealing in the ra; Unallocated Criticals: 2; - Environmental Sealing (environmental-sealing); - Environmental Sealing (environmental-sealing)
-- `megamek/ToS/ToS Kaumberg/Commando COM-1AK.mtf`: BV differs from the MUL: COM-1AK: BV 549, MUL 533
 - `megamek/Total Chaos/Atlas II AS7-D-H (Devlin).mtf`: duplicate of a design already kept: Atlas II AS7-D-H (Devlin)
 - `megamek/Total Chaos/Awesome AWS-10KM (Cameron).mtf`: duplicate of a design already kept: Awesome AWS-10KM (Cameron)
 - `megamek/Tukayyid/Archer ARC-5CS.mtf`: duplicate of a design already kept: Archer ARC-5CS
@@ -3946,7 +3945,7 @@
 - `megamek/XTRs/Primitives III/Firebee FRB-1E(WAM-B).mtf`: different submodel, same name and model: equipment: Firebee FRB-1E (WAM-B)
 - `megamek/XTRs/Primitives III/Longbow LGB-0C.mtf`: different submodel, same name and model: equipment: Longbow LGB-0C
 - `megamek/XTRs/Primitives III/Thunderbolt TDR-1C.mtf`: different submodel, same name and model: equipment: Thunderbolt TDR-1C
-- `megamek/XTRs/Primitives II/Banshee BNC-1E.mtf`: the import could not carry all of it over: Unallocated Criticals: 2; - Medium Laser (medium-laser); - Medium Laser (medium-laser)
+- `megamek/XTRs/Primitives II/Banshee BNC-1E.mtf`: different submodel, same name and model: equipment: Banshee BNC-1E
 - `megamek/XTRs/Primitives II/BattleAxe BKX-1X.mtf`: different submodel, same name and model: equipment: BattleAxe BKX-1X
 - `megamek/XTRs/Primitives II/Crossbow CRS-X.mtf`: different submodel, same name and model: actuators: Crossbow CRS-X
 - `megamek/XTRs/Primitives II/Gladiator GLD-1R.mtf`: different submodel, same name and model: equipment: Gladiator GLD-1R
@@ -3963,7 +3962,7 @@
 - `megamek/XTRs/Primitives I/Commando COM-1A.mtf`: different submodel, same name and model: equipment: Commando COM-1A
 - `megamek/XTRs/Primitives I/Helepolis HEP-1H.mtf`: different submodel, same name and model: equipment: Helepolis HEP-1H
 - `megamek/XTRs/Primitives I/Kyudo KY2-D-01.mtf`: different submodel, same name and model: equipment: Kyudo KY2-D-01
-- `megamek/XTRs/Primitives I/Mackie MSK-5S.mtf`: the import could not carry all of it over: Unallocated Criticals: 1; - Large Laser (large-laser)
+- `megamek/XTRs/Primitives I/Mackie MSK-5S.mtf`: different submodel, same name and model: equipment: Mackie MSK-5S
 - `megamek/XTRs/Primitives I/Shadow Hawk SHD-1R.mtf`: different submodel, same name and model: equipment: Shadow Hawk SHD-1R
 - `megamek/XTRs/Primitives V/Orion ON1-C.mtf`: different submodel, same name and model: equipment: Orion ON1-C
 - `megamek/XTRs/Primitives V/Orion ON1-H.mtf`: different submodel, same name and model: equipment: Orion ON1-H
