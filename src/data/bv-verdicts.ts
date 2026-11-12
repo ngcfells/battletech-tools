@@ -151,6 +151,24 @@ export const BV_VERDICTS: Record<string, IBvVerdict> = {
     "mul:105868": { verdict: "mul-suspect", note: "The publisher's record sheet for this design prints our value, not the list's.", cites: [{ source: "rs-tro3150", page: "216" }] },
     // Vision Quest VQ-1NC
     "mul:104965": { verdict: "mul-suspect", note: "The publisher's record sheet for this design prints our value, not the list's.", cites: [{ source: "tro-golden-century", page: "101" }] },
+    // Hercules HRC-LS-9004
+    "mul:107622": { verdict: "mul-suspect", note: "The list's value equals ours when the Blue Shield slot in the right arm is counted as explosive. A hit on an active Blue Shield is an explosion that CASE contains, and no reduction is taken for explosive slots in the location of CASE II or one location out from it: the right torso carries CASE II, so the right arm's slot is spared with the torso's.", cites: [{ source: "toaue", page: "108" }, { source: "toaue", page: "193" }] },
+    // Buccaneer BCN-6PX 'Pan'
+    "mul:100620": { verdict: "mul-suspect", note: "The list's value equals ours when the ER Medium Laser is the Clan model. The published record sheet gives the Inner Sphere weapon's damage and ranges.", cites: [{ source: "xtro-royal-fantasy", page: "45" }] },
+    // Kraken (Bane) XR
+    "mul:102778": { verdict: "mul-suspect", note: "The publisher's write-up for this design prints our value, not the list's.", cites: [{ source: "xtro-clans", page: "8" }] },
+    // Savage Coyote Z
+    "mul:106163": { verdict: "mul-suspect", note: "The list's value equals ours when both ER Medium Lasers count in full. The first of them takes the weapon heat past what the design can sink, and the rule halves every weapon after that one.", cites: [{ source: "tm", page: "303" }] },
+    // Gladiator GLD-1R (Keller)
+    "mul:100119": { verdict: "mul-suspect", note: "The list's value equals ours when the gyro adds nothing to the defensive rating. The rule adds the tonnage times the gyro's modifier.", cites: [{ source: "tm", page: "302" }] },
+    // Wolfhound WLF-2X
+    "mul:103846": { verdict: "mul-suspect", note: "The list's value equals ours when the gyro adds nothing to the defensive rating. The rule adds the tonnage times the gyro's modifier.", cites: [{ source: "tm", page: "302" }] },
+    // Turkina U
+    "mul:100869": { verdict: "mul-suspect", note: "The list's value equals ours when one of the eight armored slots is counted, not all eight. The rule gives an armored component with no Battle Value of its own 5 points a slot.", cites: [{ source: "toaue", page: "193" }] },
+    // Xanthos XNT-6O
+    "mul:108227": { verdict: "mul-suspect", note: "The list's value equals ours when the Coolant Pod is charged 15 points like a slot of ammunition. The rule subtracts 1 point a Coolant Pod slot.", cites: [{ source: "toaue", page: "193" }] },
+    // Malak C-MK-OS Caelestis
+    "mul:101689": { verdict: "mul-suspect", note: "The list's value equals ours when one slot of the ER PPC and its capacitor is counted as explosive, not all four. The Battle Value table marks a PPC with a capacitor to be treated as a Gauss weapon in the defensive rating, 1 point a slot.", cites: [{ source: "toaue", page: "194" }, { source: "toaue", page: "195" }] },
     // Griffin GRF-1RG
     "mul:108074": { verdict: "import", note: "The file we import carries fewer armor points than the published record sheet (Recognition Guide: ilClan, vol. 1). With the sheet's armor our value equals the list's." },
     // Osprey OSP-36

@@ -44,5 +44,7 @@ export const CALC_SOURCES: Record<string, ICalcSource> = {
     "rg-ilclan-26": { short: "RG: ilClan 26", title: "Recognition Guide: ilClan, vol. 26", printing: "2022 PDF, by PDF page" },
     "tro-golden-century": { short: "TRO: Golden Century", title: "Technical Readout: Golden Century", printing: "2020 PDF" },
     "tro-irregulars": { short: "TRO: Irregulars", title: "Technical Readout: Irregulars", printing: "2021 PDF, by PDF page" },
+    "xtro-clans": { short: "XTRO: Clans", title: "Experimental Technical Readout: Clans", printing: "2011 PDF, by PDF page" },
+    "xtro-royal-fantasy": { short: "XTRO: Royal Fantasy", title: "Experimental Technical Readout: Royal Fantasy", printing: "2014 PDF, by PDF page" },
     "ioae-errata-3.01": { short: "IO:AE errata v3.01", title: "Interstellar Operations: Alternate Eras errata", printing: "v3.01 (17 January 2023)", errataOf: "ioae" },
 };
