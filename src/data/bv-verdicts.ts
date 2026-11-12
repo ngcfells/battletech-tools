@@ -21,7 +21,7 @@ export interface IBvVerdict {
 }
 
 /** The count of Master Unit List 'Mech entries with a matching design that the last build wrote. A round that raises the count raises this. */
-export const MECH_MATCHED_FLOOR = 3940;
+export const MECH_MATCHED_FLOOR = 3941;
 
 /** Keyed by bvVerdictKey. */
 export const BV_VERDICTS: Record<string, IBvVerdict> = {
@@ -173,6 +173,16 @@ export const BV_VERDICTS: Record<string, IBvVerdict> = {
     "mul:108074": { verdict: "import", note: "The file we import carries fewer armor points than the published record sheet (Recognition Guide: ilClan, vol. 1). With the sheet's armor our value equals the list's." },
     // Osprey OSP-36
     "mul:102563": { verdict: "mul-suspect", note: "The list's value equals ours when the engine modifier is 1.0. The design carries an Inner Sphere XL engine, for which the table gives 0.5.", cites: [{ source: "tm", page: "302" }, { source: "tm", page: "315" }] },
+    // Antlion LK-3D
+    "mul:103175": { verdict: "mul-suspect", note: "The list's value equals ours when 'Mech Mortar ammunition is counted at 1.2 times its table value. The table gives a ton 1, 2, 3 or 6 points by launcher size, the same for Inner Sphere and Clan launchers.", cites: [{ source: "toaue", page: "194" }, { source: "toaue", page: "197" }] },
+    // Woodsman D
+    "mul:106880": { verdict: "mul-suspect", note: "The list's value equals ours when 'Mech Mortar ammunition is counted at 1.2 times its table value. The table gives a ton 1, 2, 3 or 6 points by launcher size, the same for Inner Sphere and Clan launchers.", cites: [{ source: "toaue", page: "194" }, { source: "toaue", page: "197" }] },
+    // Crossbow D
+    "mul:107702": { verdict: "mul-suspect", note: "The list's value equals ours when 'Mech Mortar ammunition is counted at 1.2 times its table value. The table gives a ton 1, 2, 3 or 6 points by launcher size, the same for Inner Sphere and Clan launchers.", cites: [{ source: "toaue", page: "194" }, { source: "toaue", page: "197" }] },
+    // Osteon A
+    "mul:106162": { verdict: "mul-suspect", note: "The list's value equals ours when 'Mech Mortar ammunition is counted at 1.2 times its table value. The table gives a ton 1, 2, 3 or 6 points by launcher size, the same for Inner Sphere and Clan launchers.", cites: [{ source: "toaue", page: "194" }, { source: "toaue", page: "197" }] },
+    // Thunderbolt IIC 2
+    "mul:102300": { verdict: "mul-suspect", note: "The list's value equals ours when the improved heavy large laser's side torso slots are counted as explosive. On a Clan 'Mech only Gauss-type slots in the center torso, legs or head count, and this is a Clan chassis with a standard fusion engine.", cites: [{ source: "tm", page: "302" }] },
 };
 
 /** "mul:<id>", "mul:<id>:<configuration>", or "file:<path>" where the Master Unit List has no entry. */

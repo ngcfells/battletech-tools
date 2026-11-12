@@ -5706,6 +5706,19 @@ describe("Batch 35 TSEMP weapons and RISC Viral Jammers (IO:AE pp.84, 88, 190, 2
         expect(mech.moveCritical("un", from, "ra", mech.getCriticals().rightArm.findIndex(critical => !critical))).toBe(true);
         expect(bvSteps(mech, "bv2.def.explosive.component").filter(step => step.label === "Explosive component: TSEMP Cannon in rightArm (Inner Sphere)" && step.value === -5)).toHaveLength(1);
     });
+
+    it("counts a RISC Emergency Coolant System like a Gauss weapon for the defensive rating: one point a slot (IO:AE p.190)", () => {
+        // A critical hit on it is a 5-point explosion (IO:AE p.86); the Battle Value table marks the row.
+        const mech = new BattleMech();
+        mech.setTech("is");
+        mech.setEra("dark-ages");
+        mech.setTonnage(75);
+        mech.setWalkSpeed(4);
+        const item = mech.addEquipmentFromTag("risc-emergency-coolant-system", "is", "", false, undefined, "", false, [], undefined, undefined)!;
+        const from = mech.unallocatedCriticals.findIndex(critical => critical?.uuid === item.uuid);
+        expect(mech.moveCritical("un", from, "lt", mech.getCriticals().leftTorso.findIndex(critical => !critical))).toBe(true);
+        expect(bvSteps(mech, "bv2.def.explosive.component").filter(step => step.label === "Explosive component: RISC Emergency Coolant System in leftTorso (Inner Sphere)" && step.value === -1)).toHaveLength(1);
+    });
 });
 
 describe("Batch 36 BattleMech Taser (TO:AUE pp.157-158)", () => {

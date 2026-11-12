@@ -44,6 +44,14 @@ describe("findImportedEquipment", () => {
         expect(findImportedEquipment("Enhanced ER PPC", "is", true)?.catalog).toBe("clan");
     });
 
+    it("keeps MegaMek's Clan 'Mech Mortar on the Clan record when the other faction is searched too", () => {
+        // The Clan launcher takes fewer slots (TO:AUE p.221); a MegaMek file's item is always looked up this way.
+        for (const size of [1, 2, 4, 8]) {
+            expect(findImportedEquipment(`Clan Mech Mortar-${size}`, "clan", true)?.item.tag).toBe(`clan-mech-mortar-${size}`);
+            expect(findImportedEquipment(`IS Mech Mortar-${size}`, "is", true)?.item.tag).toBe(`mech-mortar-${size}`);
+        }
+    });
+
     it("returns null for a name no catalog lists", () => {
         expect(findImportedEquipment("Not A Real Weapon", "is", true)).toBeNull();
     });

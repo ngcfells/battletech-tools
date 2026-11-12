@@ -220,6 +220,19 @@ describe("MegaMek 'Mech import", () => {
         expect(mech!.getInstalledEquipment().filter((item) => item.tag === "large-laser")).toHaveLength(2);
     });
 
+    it("keeps a quad's front-leg ammunition in the front leg, where its explosion counts (TM p.302)", () => {
+        const armed = quad.replace("Left Torso:\nLarge Laser\nLarge Laser\n-Empty-", "Left Torso:\nLarge Laser\nLarge Laser\nMachine Gun")
+            .replace("Front Right Leg:\nHip\nUpper Leg Actuator\nLower Leg Actuator\nFoot Actuator\n-Empty-", "Front Right Leg:\nHip\nUpper Leg Actuator\nLower Leg Actuator\nFoot Actuator\nIS Ammo MG - Half");
+        expect(armed).toContain("IS Ammo MG - Half");
+        const { mech, issues } = importBattleMechMtf(armed);
+        expect(issues).toEqual([]);
+        const ammo = mech!.getInstalledEquipment().find((item) => item.isAmmo);
+        expect(ammo?.location).toBe("frl");
+        expect(mech!.getCriticals().frontRightLeg?.[4]?.name).toBe(ammo?.name);
+        const steps = mech!.getBattleValueBreakdown("total-warfare").steps.filter((step) => step.id === "bv2.def.explosive.ammo");
+        expect(steps.map((step) => step.value)).toEqual([-15]);
+    });
+
     it("keeps an OmniMech's pod items in its pods and the rest fixed (#112)", () => {
         const omni = brawler.replace("Config:Biped", "Config:Biped Omnimek").replace("Right Torso:\nMedium Laser", "Right Torso:\nMedium Laser (omnipod)");
         const { mech, issues } = importBattleMechMtf(omni);

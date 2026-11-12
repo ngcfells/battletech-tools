@@ -13776,7 +13776,8 @@ export class BattleMech {
         }
 
         if( item.location && item.location["#text"]) {
-            location = item.location["#text"].toLowerCase().trim();
+            // A four-legged design written with arm codes for its front legs keeps the item in the front leg.
+            location = this._normalizeLocation( item.location["#text"].toLowerCase().trim() );
 
             if( typeof( item.location["@_index"]) !== "undefined" ) {
                 allocationIndex =  +item.location["@_index"];
@@ -13928,7 +13929,7 @@ export class BattleMech {
 
                         newItem.split_location.push(
                             {
-                                loc: split["#text"].toLowerCase(),
+                                loc: this._normalizeLocation( split["#text"].toLowerCase() ),
                                 index: +split["@_index"],
                                 size: +split["@_number"],
                             }

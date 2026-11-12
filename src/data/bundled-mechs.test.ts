@@ -19,7 +19,7 @@ const dataDir = path.resolve(__dirname, "bundled");
 // The corrected SSW Skinwalker B (#607) is a configuration of the SSW Skinwalker, not its own MegaMek record.
 // Fourteen MegaMek files came to match the list once machine gun arrays, mixed launcher sizes and torpedo launchers
 // with Artemis IV were read and valued by the rules (#599).
-const DESIGNS = 3701;
+const DESIGNS = 3702;
 // The table format with values shared per chunk (#241 follow-up) took it from 18.4 MB to 8.7 MB, read a chunk at a time.
 const MAX_BYTES = 9_000_000;
 
