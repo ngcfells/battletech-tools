@@ -179,12 +179,23 @@ export default class Home extends React.Component<IHomeProps, IHomeState> {
                   <ul className="news">
                   <li>
                   <h3>
+                      <strong>November 12th, 2026</strong> - Nine more 'Mech Battle Values traced to their cause
+                    </h3>
+                    <h4>Author - NGCFells</h4>
+                      <ul>
+                        <li>Battle Value Accuracy: of the 103 'Mechs whose value differs from the Master Unit List, 73 now carry a note saying why we think the list's value is the one in question (55 from the rule, with the page cited, and 18 from the publisher's own record sheet or write-up). One comes from a fault in the file we import, and 29 are still being worked. No Battle Value of ours changed today.</li>
+                        <li>The nine added today: Hercules HRC-LS-9004, Buccaneer BCN-6PX 'Pan', Kraken XR, Savage Coyote Z, Gladiator GLD-1R (Keller), Wolfhound WLF-2X, Turkina U, Xanthos XNT-6O and Malak C-MK-OS Caelestis. Each note on the page says what the list's value would need and which page says otherwise.</li>
+                        <li>Two readings were checked on the page and stand as they were: an Improved Gauss Rifle counts as explosive like every other Gauss rifle, and CASE II spares a Blue Shield Particle Field Damper's slots, because a hit on an active Blue Shield is an explosion.</li>
+                      </ul>
+                  </li>
+                  <li>
+                  <h3>
                       <strong>November 11th, 2026</strong> - Every 'Mech Battle Value shows its working, checked against the Master Unit List
                     </h3>
                     <h4>Author - NGCFells</h4>
                       <ul>
                         <li>Every Battle Value and cost figure for a 'Mech now opens into its steps, each with the book and page it comes from, in the designer summary and the unit viewer.</li>
-                        <li>A new page, Battle Value Accuracy, compares our 'Mech numbers with the Master Unit List: 3,940 match and 103 differ, each listed with both numbers. For 73 of those we think the list's value is the one in question: 55 where we have read the rule, with the page cited, and 18 where the publisher's own record sheet prints our number. One comes from a fault in the file we import; the other 29 are still being worked.</li>
+                        <li>A new page, Battle Value Accuracy, compares our 'Mech numbers with the Master Unit List: 3,940 match and 103 differ, each listed with both numbers. For 64 of those we think the list's value is the one in question: 47 where we have read the rule, with the page cited, and 17 where the publisher's own record sheet prints our number. One comes from a fault in the file we import; the other 38 are still being worked.</li>
                         <li>Later the same day: a Primitive 'Mech from a MegaMek file now walks at the speed its file states and carries the engine that speed needs. The Commando COM-1AK now matches the list and joins the bundled designs, three more Primitive files import, and seven bundled Primitive 'Mechs (Archer ARC-1A, four Phoenix PX-1K variants, Reconquista, Rook NH-1X) cost less than before because their engines were oversized. Their Battle Values did not change.</li>
                         <li>Fixes found along the way: several machine gun arrays in one location no longer count the same guns twice, Clan heavy machine gun arrays from MegaMek files link their guns, a 'Mech with two sizes of the same launcher values each ton of ammunition for the launcher it feeds, and torpedo launchers can now carry Artemis IV like the missile launchers of their size.</li>
                       </ul>
