@@ -34,9 +34,8 @@ The rules summary, the sample checks and every call made while planning are in t
 - The document says a Micro-Mech follows the BattleMech rules "except where noted". Where it is silent and a
   number is needed, read the BattleMech rule in the books the document names (BattleTech Master Rules, Revised;
   Maximum Tech; Tactical Handbook) and cite the page read.
-- Credit on the creator page, the record sheet and every equipment record's notes, in the wording the owner
-  settles (owner ruling 1). Until then: "Micro-Mechs v6.1.0.2: original author unknown; revised with Discord, who
-  wrote the Battle Value, cost and conversion appendices."
+- Credit on the creator page, the record sheet and every equipment record's notes, in the wording given in
+  owner ruling 1.
 - New equipment records go in the Custom Homebrew catalogs with their tags in
   `src/data/__fixtures__/tech-lists.json`. No record is added to, or changed in, a canon catalog.
 - No Micro-Mech is written to a MegaMek or Solaris Skunk Werks format.
@@ -64,13 +63,15 @@ push; append to the ledger what was built and every call that was ours; rewrite 
 
 ## Owner rulings (2026-11-13)
 
-1. **Credit and reference.** The owner recalls Micro-Mechs as an article in a magazine or fanzine. Not found yet:
-   no held magazine or fanzine extract carries it (searched the library text for the title and for the names in
-   its history; the only "Micro-Mech" hits are BattleTechnology 15 and 16, where the word means Elementals). One
-   lead: a DeviantArt post, "Micro-Mechs for BattleTech, Part 1", by the user Solarmech, with the same construction
-   wording. The cloud network blocks that site, so it was not read. **Chunk A, Step 0: read that post** (and any
-   later parts) and take the author, date and any printed source from it; until then the credit stays as under
-   Global Constraints, and the unnamed reviser is not called Solarmech on the strength of a search snippet.
+1. **Credit and reference.** The original author is **Solarmech**. His DeviantArt post "Micro-Mechs for
+   BattleTech, Part 1" (Apr 29, 2019; saved in `ResourceLibrary/scrapes/deviantart/`) says he devised them many
+   years ago and is posting them to be archived. It names no magazine or fanzine; none of the held ones carries
+   the article. The 6.1.0.2 document is another person's revision of a copy found online in late 2000, with
+   appendices by Discord. Credit: "Micro-Mechs by Solarmech. This version (6.1.0.2) was revised by an unnamed
+   editor with Discord, who wrote the Battle Value, cost and conversion appendices."
+   **Open:** the 2019 post differs from 6.1.0.2 (no quads, heavier shielding, jump jets and heat sinks, no head or
+   leg weapons, torso-only ammunition; the ledger has the table). Until the owner says otherwise this plan builds
+   **6.1.0.2**, the only complete text, and the unit's notes list where the author's 2019 post differs.
 2. **Battle Value.** Two figures. The document's own (Battle Value 1 with its changes) for BV1 editions, and a
    **provisional BV2 of ours** for BV2 editions, made by running the document's changes over the BV2 procedure
    (TechManual) with each item's BV2 figure. Both are marked provisional and the notes say the BV2 is ours.
@@ -111,9 +112,8 @@ push; append to the ledger what was built and every call that was ours; rewrite 
   `isSealed/setSealed`, `getFreeHeatSinks`, `getSlots(location)`, `getFreeSlots(location)`.
 - `IMicroMechExport` and `normalizeMicroMechExport(raw)`, after `normalizeProtoMechExport`.
 
-- [ ] **Step 0: The reference** (owner ruling 1). Read the DeviantArt post named there, on a machine that can reach
-  it. Put the author, date and any printed source in the ledger and in the credit wording. If it names a magazine or
-  fanzine, look for that issue in the library and tell the owner whether it is held.
+- [ ] **Step 0: Which text governs.** Read the owner's answer in the handoff on 6.1.0.2 against the author's 2019
+  post (owner ruling 1). If there is none, build 6.1.0.2 as planned.
 - [ ] **Step 1: Read** the document's Construction section and both record sheets, and the ledger's summary.
   Confirm each number below against the raw text before typing it.
 - [ ] **Step 2: Write the failing tests.** The four sample designs are the fixtures. Each line of each sample's
