@@ -208,7 +208,7 @@ export interface IFrankenMechDonor {
 /** Jump jets a FrankenMech kept from a lighter 'Mech, named by the weight class they were built for (TM p.51). */
 export type FrankenMechJumpJetClass = "light" | "medium" | "heavy";
 /** Standard, Bimodal (IO:AE p.100), or a Custom Homebrew VTOLAM, a LAM whose second mode is a VTOL, under one of two fan rule sets. */
-export type LAMType = "standard" | "bimodal" | "vtolam" | "vtolam-btitf";
+export type LAMType = "standard" | "bimodal" | "vtolam" | "vtolam-btitf" | "pam";
 
 interface ILAMTypeRules {
     name: string;
@@ -223,6 +223,8 @@ interface ILAMTypeRules {
     vtolCruise?: "engine" | "jump";
     /** The IO:AE p.108 LAM limits on engines, armor, structure, actuators and equipment. */
     lamLimits: boolean;
+    /** Fan rules (Custom Homebrew rules level, Battle Value provisional). */
+    homebrew?: boolean;
     notes?: string;
 }
 
@@ -239,6 +241,12 @@ export const LAM_TYPE_RULES: Record<LAMType, ILAMTypeRules> = {
     "vtolam-btitf": {
         name: "VTOLAM", conversion: 0.1, halfTon: true, costRate: 0, modes: ["mech", "vehicle"], minJumpMP: 1, maxTonnage: 35, vtolCruise: "jump", lamLimits: false,
         notes: "VTOLAM (Custom Homebrew; fan rules by professorheyteen, Battletech Into The Future): conversion equipment is 10% of tonnage, at most 35 tons, with rotor equipment in each side torso and conversion equipment in each leg; any equipment a BattleMech can use. It takes 'Mech hit locations in both modes, but a hit roll of 2 is a rotor hit: the first gives +3 to every Piloting roll in VTOL mode, the second destroys the rotor and the VTOLAM crashes, taking falling damage for its flight level (1 level with a successful Piloting roll). A critical hit on the rotor or conversion equipment ends transformation (in VTOL mode it reverts to 'Mech mode). It converts during the Movement Phase while jumping or at cruising speed, and may convert without its arms.",
+    },
+    // Red Pins, BattleTech forums, "Custom Weapons and Equipment" (topic 44833), reply #5, 21 Feb 2015. The full rules
+    // were never published; everything below the one line is our extrapolation (owner rulings 2026-11-12).
+    pam: {
+        name: "Permanent Air 'Mech", conversion: 0, costRate: 0, modes: ["airmech"], minJumpMP: 3, lamLimits: true, homebrew: true,
+        notes: "Permanent Air 'Mech (Custom Homebrew). Inspired by: Red Pins, BattleTech forums, \"Custom Weapons and Equipment\" (topic 44833), who described it as an AirMech with only one mode. The rules here are our own extrapolation from the Land-Air 'Mech rules: it is a single-mode LAM that is always in AirMech mode and never converts, so it carries no conversion equipment (no weight, no cost). It keeps the LAM avionics (head and each side torso) because it has wings, but has no landing gear: it lands on its feet. Its AirMech MP comes from its Jump MP, so it needs at least 3. It keeps every other LAM limit (engine, gyro, armor, structure, single-location equipment, 55 tons, biped, Inner Sphere) and may carry bombs as an AirMech. It has no free ton of fuel, which comes with the conversion equipment; AirMech movement on the ground map spends none, and Fuel Tanks may be added for space. Battle Value uses the LAM rules unchanged and is provisional.",
     },
 };
 
@@ -4397,7 +4405,7 @@ export class BattleMech {
         } else if (typeTag === "lam") {
             const rules = LAM_TYPE_RULES[this._lamType];
             const step = rules.halfTon ? 2 : 1;
-            this._weights.push({ name: rules.name + " Conversion Equipment", weight: Math.ceil(this._tonnage * rules.conversion * step) / step });
+            if (rules.conversion > 0) this._weights.push({ name: rules.name + " Conversion Equipment", weight: Math.ceil(this._tonnage * rules.conversion * step) / step });
         }
 
         this._runSpeed = Math.ceil(this._walkSpeed * 1.5);
@@ -5030,9 +5038,12 @@ export class BattleMech {
             this._addCriticalItem("lam-avionics", "LAM Avionics", 1, "rt");
             // A VTOLAM's landing gear is retractable skids, one slot in each side torso and none in the center.
             const gearName = this.isVTOLAM() ? "VTOLAM Landing Skids" : "LAM Landing Gear";
-            if (!this.isVTOLAM()) this._addCriticalItem("lam-landing-gear", gearName, 1, "ct");
-            this._addCriticalItem("lam-landing-gear", gearName, 1, "lt");
-            this._addCriticalItem("lam-landing-gear", gearName, 1, "rt");
+            // A Permanent Air 'Mech has no landing gear: it lands on its feet (owner ruling 2026-11-12).
+            if (!this.isPermanentAirMech()) {
+                if (!this.isVTOLAM()) this._addCriticalItem("lam-landing-gear", gearName, 1, "ct");
+                this._addCriticalItem("lam-landing-gear", gearName, 1, "lt");
+                this._addCriticalItem("lam-landing-gear", gearName, 1, "rt");
+            }
         }
 
         // STANDARD & REAR LEGS: Track Left Leg (ll) and Right Leg (rl) structural presence. Am I standing?
@@ -7412,9 +7423,9 @@ export class BattleMech {
         this._calc();
     }
 
-    /** Standard LAMs have an AirMech mode; Bimodal LAMs, VTOLAMs and other chassis do not. */
+    /** Standard LAMs and Permanent Air 'Mechs have an AirMech mode; Bimodal LAMs, VTOLAMs and other chassis do not. */
     public hasAirMechMode(): boolean {
-        return this.isLAM() && this._lamType === "standard";
+        return this.isLAM() && LAM_TYPE_RULES[this._lamType].modes.includes("airmech");
     }
 
     /** AirMech Cruise MP: 'Mech-mode Jump MP x 3 (IO:AE p.102). */
@@ -7433,7 +7444,7 @@ export class BattleMech {
      * The LAM movement and heat adjustments themselves follow IO:AE p.186.
      */
     public isBattleValueProvisional(): boolean {
-        return this.isOmniLAM() || this.isVTOLAM() || (this.isLAM() && this.getBombLoadoutSlots() > 0);
+        return this.isOmniLAM() || this.isVTOLAM() || this.isPermanentAirMech() || (this.isLAM() && this.getBombLoadoutSlots() > 0);
     }
 
     /**
@@ -7462,7 +7473,7 @@ export class BattleMech {
             const bomb = this._findBomb(tag);
             if (bomb) level = Math.max(level, getEquipmentRulesLevel(bomb));
         }
-        if (this.isOmniLAM() || this.isVTOLAM()) level = Math.max(level, CUSTOM_HOMEBREW_RULES_LEVEL);
+        if (this.isOmniLAM() || this.isVTOLAM() || this.isPermanentAirMech()) level = Math.max(level, CUSTOM_HOMEBREW_RULES_LEVEL);
         // A custom or draft chassis component (custom-component-registry.ts) is homebrew.
         const components: [CustomComponentKind, { tag: string, rulesLevel?: number } | null | undefined][] = [
             ["armor", this._armorType], ["structure", this._selectedInternalStructure], ["engine", this._engineType],
@@ -7921,11 +7932,14 @@ export class BattleMech {
         return bays;
     }
 
-    /** LAM fuel points: 80 from the conversion equipment plus 80 per Fuel Tank (IO:AE pp.180, 214). */
+    /**
+     * LAM fuel points: 80 from the conversion equipment plus 80 per Fuel Tank (IO:AE pp.180, 214). A Permanent Air
+     * 'Mech has no conversion equipment, so only its tanks count (AirMech movement spends fuel only in space, IO:AE p.102).
+     */
     public getLAMFuelPoints(): number {
         if (!this.isLAM() || this.isVTOLAM()) return 0;
         const tanks = this._equipmentList.filter(item => matchesTag(item, BattleMech.LAM_FUEL_TANK_TAG)).length;
-        return BattleMech.LAM_FUEL_POINTS_PER_TON * (1 + tanks);
+        return BattleMech.LAM_FUEL_POINTS_PER_TON * ((this.isPermanentAirMech() ? 0 : 1) + tanks);
     }
 
     /** Bombs this LAM's tech base, era, and the given rules level allow. */
@@ -8826,7 +8840,7 @@ export class BattleMech {
                         ? ["mech", "vehicle"]
                         : ["mech"];
 
-            this._transformationMode = (allowedModes.includes(requestedMode) ? requestedMode : "mech") as typeof this._transformationMode;
+            this._transformationMode = (allowedModes.includes(requestedMode) ? requestedMode : allowedModes[0]) as typeof this._transformationMode;
             return this._transformationMode;
         }
 
@@ -8894,6 +8908,11 @@ export class BattleMech {
 
         public isVTOLAM(): boolean {
             return this.isLAM() && !!LAM_TYPE_RULES[this._lamType].vtolCruise;
+        }
+
+        /** A Custom Homebrew single-mode LAM, always in AirMech mode (LAM_TYPE_RULES.pam). */
+        public isPermanentAirMech(): boolean {
+            return this.isLAM() && this._lamType === "pam";
         }
 
         public isBimodalLAM(): boolean {

@@ -367,8 +367,16 @@ export default class MechCreatorStep1 extends React.Component<IHomeProps, IHomeS
                                     <option value="vtolam-btitf">VTOLAM, Battletech Into The Future rules (Mech / VTOL; Custom Homebrew)</option>
                                   </>
                                 ) : null}
+                                {mechRulesLevel(this.props.appGlobals) >= CUSTOM_HOMEBREW_RULES_LEVEL || this.props.appGlobals.currentBattleMech.isPermanentAirMech() ? (
+                                  <option value="pam">Permanent Air 'Mech (AirMech only; Custom Homebrew)</option>
+                                ) : null}
                               </select>
                             </label>
+                          ) : null}
+                          {this.props.appGlobals.currentBattleMech.isPermanentAirMech() ? (
+                            <p className="smaller-text" data-testid="pam-notes">
+                              {this.props.appGlobals.currentBattleMech.getLAMTypeNotes()} AirMech Cruise / Flank MP: {this.props.appGlobals.currentBattleMech.getAirMechCruiseMP()} / {this.props.appGlobals.currentBattleMech.getAirMechFlankMP()}.
+                            </p>
                           ) : null}
                           {this.props.appGlobals.currentBattleMech.isVTOLAM() ? (
                             <p className="smaller-text" data-testid="vtolam-notes">

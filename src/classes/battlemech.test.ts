@@ -1801,6 +1801,70 @@ describe("Bimodal LAM", () => {
     });
 });
 
+// The Permanent Air 'Mech (Custom Homebrew; inspired by Red Pins, BattleTech forums topic 44833; the rules are ours).
+describe("Permanent Air 'Mech", () => {
+    const makePAM = (tonnage = 30) => {
+        const lam = new BattleMech();
+        lam.setEra("ilClan");
+        lam.setType("lam");
+        lam.setTonnage(tonnage);
+        lam.setLAMType("pam");
+        return lam;
+    };
+
+    it("is a LAM with only the AirMech mode, at the Custom Homebrew level", () => {
+        const pam = makePAM();
+        expect(pam.getLAMType()).toBe("pam");
+        expect(pam.isPermanentAirMech()).toBe(true);
+        expect(pam.hasAirMechMode()).toBe(true);
+        expect(pam.getTransformationMode()).toBe("airmech");
+        expect(pam.setTransformationMode("mech")).toBe("airmech");
+        expect(pam.setTransformationMode("aerospace")).toBe("airmech");
+        expect(pam.getRequiredRulesLevel()).toBe(CUSTOM_HOMEBREW_RULES_LEVEL);
+        expect(pam.isBattleValueProvisional()).toBe(true);
+    });
+
+    it("carries no conversion equipment, in weight or in cost", () => {
+        const pam = makePAM();
+        expect(pam.getWeightBreakdown().some(entry => /Conversion/.test(entry.name))).toBe(false);
+        expect(pam.getCostBreakdown().steps.some(step => /^cost\.conversion/.test(step.id))).toBe(false);
+    });
+
+    it("has the LAM avionics slots but no landing gear", () => {
+        const criticals = makePAM().getCriticals();
+        const count = (key: "head" | "leftTorso" | "rightTorso" | "centerTorso", tag: string) => criticals[key].filter(slot => slot?.tag === tag).length;
+        expect([count("head", "lam-avionics"), count("leftTorso", "lam-avionics"), count("rightTorso", "lam-avionics")]).toEqual([1, 1, 1]);
+        expect(["head", "leftTorso", "rightTorso", "centerTorso"].map(key => count(key as "head", "lam-landing-gear"))).toEqual([0, 0, 0, 0]);
+    });
+
+    it("moves as an AirMech on its Jump MP", () => {
+        const pam = makePAM();
+        pam.setWalkSpeed(5);
+        pam.setJumpSpeed(4);
+        expect(pam.getAirMechCruiseMP()).toBe(12);
+        expect(pam.getAirMechFlankMP()).toBe(18);
+    });
+
+    it("has no free fuel (it came with the conversion equipment) but may carry Fuel Tanks for space", () => {
+        expect(makePAM().getLAMFuelPoints()).toBe(0);
+    });
+
+    it("credits the author and says the rules are ours", () => {
+        const notes = makePAM().getLAMTypeNotes();
+        expect(notes).toContain("Inspired by: Red Pins");
+        expect(notes).toContain("topic 44833");
+        expect(notes).toMatch(/extrapolat/);
+    });
+
+    it("comes back in AirMech mode from a save, and an unknown type falls back to a standard LAM", () => {
+        const pam = makePAM();
+        const copy = new BattleMech(JSON.stringify({ ...JSON.parse(pam.exportJSON(true)), transformationMode: "mech" }));
+        expect(copy.getLAMType()).toBe("pam");
+        expect(copy.getTransformationMode()).toBe("airmech");
+        expect(pam.setLAMType("no-such-type")).toBe("standard");
+    });
+});
+
 // The VTOLAM (Custom Homebrew; BishopSteiner, deviantart.com/bishopsteiner/art/LOCUST-VTOLAM-concept-899660337).
 describe("VTOLAM", () => {
     const makeVTOLAM = (tonnage = 25) => {
