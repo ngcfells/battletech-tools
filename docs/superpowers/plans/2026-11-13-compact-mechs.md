@@ -4,21 +4,22 @@
 > execution method is **one chunk per session**, each ending with a commit, a ledger entry and a handoff, and the
 > session is cleared before the next chunk. Do not run two chunks in one session. Steps use checkbox (`- [ ]`) syntax.
 
-> **BLOCKED ON THE OWNER (2026-11-13).** No article called "Compact 'Mechs" is in the *Best of Future Wars*. The
-> only 'Mech construction rules in it are Clell Flint's "Alternate Rules for Building Mechs in BattleTech", which
-> size a 'Mech's insides by weight class. This plan assumes that article is what #172 means. Chunk A does not start
-> until the owner confirms it (question 1 below).
+> **Owner rulings, 2026-11-13 (all six questions answered; see "Owner rulings").** Flint's article is #172. Walkers
+> are a unit type of their own, planned in `2026-11-13-future-wars-walkers.md`. The two printings are editions. Any
+> equipment that makes sense is allowed. Everything else in the fanzine, and the HMP designs, come in by
+> `2026-11-13-best-of-future-wars.md`.
 
 **Goal:** Clell Flint's alternate construction rules can be chosen as a Special Ruleset under the Custom Homebrew
 rules level. A 'Mech built under it gets critical slots, a head, a cockpit, an engine and a gyro sized by its weight
-class. Its record sheet and play mode use those slot counts. The rest of the fanzine comes in as the owner picks it.
+class. Its record sheet and play mode use those slot counts. The rest of the fanzine comes in through its own plan.
 
 **Architecture:** Flint's rules change how every 'Mech is built, not one item or unit type, so they are a **Special
 Ruleset** (#324, `src/data/special-rulesets.ts`: "optional and homebrew rules that change how the game plays or how
 units are built"). It is the first real one; the only ruleset there now is a sample. `BattleMech` reads it through
 `getRulesets()`. The first chunk stops `BattleMech` assuming that every location has 6 or 12 slots. That assumption
 is written out in at least 21 places. The change must alter nothing, and the bundle tests prove it. Flint's walkers
-(four-legged 'Mechs with ten locations) do not fit the canon quad's eight locations. They wait on owner question 2.
+(four-legged 'Mechs with ten locations) do not fit the canon quad's eight locations, so they are a unit type of their
+own with a plan of their own.
 
 **Tech Stack:** TypeScript, React, Vitest. No new dependencies.
 
@@ -38,39 +39,30 @@ The article first appeared in *Future Wars* #11 (`ResourceLibrary/text/future-wa
 about 1413; PDF `future_wars_11_Qyhm8x.pdf`). The two printings differ in places (see Printings). The rules summary
 and every call made while planning are in the batch ledger, entry "Chunk 5". Read it before Chunk A.
 
-## Owner questions (asked 2026-11-13, one message)
+## Owner rulings (2026-11-13)
 
-1. **Is Flint's article what #172 calls "Compact 'Mechs"?** The words "Compact 'Mech" are in no held *Future Wars*
-   text held (the Best-of and every held issue were searched). If something else was meant, name the issue and page; this plan is then
-   replaced, not executed.
-2. **Walkers.** Flint's four-legged 'Mech has ten locations: four legs, front, rear, left, right and center torso,
-   and a control section with an optional turret. It has its own structure table, hit table, firing arcs, and
-   1.25 x movement while all four legs work. Options: (a) a new `walker` 'Mech type inside `BattleMech` (largest;
-   touches the record sheet, armor, criticals and play); (b) a unit type of its own, after the Micro-Mech plan;
-   (c) its own issue, later. **Recommendation: (c)**, so the ruleset ships first.
-3. **Printings.** Offer both printings as selectable versions (as the Micro-Mechs do), or the Best-of only?
-   The differences (Printings below) are all in the walker section, so for the biped rules this matters only
-   once walkers are built. **Recommendation:** the Best-of is the text of record, and #11's extra rule is a note.
-4. **Later technology under the ruleset.** Flint wrote for the 3025 rules: one engine, one gyro, one cockpit.
-   **Recommendation:** allow all equipment. Items keep their own slot counts. The engine-weight table sets the
-   centre-torso slots of every engine, and an XL or Light engine's side-torso slots are unchanged. The gyro table
-   (one slot a ton) applies to every gyro. Small and torso-mounted cockpits are not offered under the ruleset. The
-   alternative is a ruleset limited to 3025 standard parts (no XL, Light, Compact or XXL engine; no XL, Compact or
-   Heavy-Duty gyro; standard cockpit only).
-5. **The rest of the fanzine** (the issue asks for it). The list is under "Other material". Pick the items to bring
-   in. **Recommendation:** the nine equipment items first, as one chunk after the batch's Chunk 3 pattern. The
-   play rules become further Special Rulesets later. Power Armor and DropShip construction get their own issues.
-6. **The HeavyMetal Pro folder** (twelve files: eleven designs and HMP's `Mech.lst` index) holds no Compact
-   'Mechs. They are ordinary 3050-era designs: nine from *Future Wars* #33, and the Pulsar and Pulsar 2 from #32
-   (see the ledger). The app has no HMP importer. **Recommendation:** a separate
-   issue that enters them as Custom Homebrew designs from the issues' stat blocks (#33 has a text layer), not
-   through an importer.
+1. **Flint's article is what #172 calls "Compact 'Mechs".** The words appear in no held *Future Wars* text; the
+   owner confirmed the identification.
+2. **Walkers: a unit type of their own, planned now:** `docs/superpowers/plans/2026-11-13-future-wars-walkers.md`.
+3. **Both printings, as editions.** For the biped rules this plan builds, the two printings print the same tables
+   (checked on both page images, 2026-11-13: *Future Wars* #11 p.24 and Best-of pp.35-36). They differ only in the
+   walker section (see Printings and the walker plan). So the edition shows as **two Special Rulesets with the same
+   rules and different credits**, `future-wars-11-construction` and `best-of-future-wars-construction`, which both
+   declare `changes: ["mechConstruction"]` and so cannot both be ticked (the existing conflict rule in
+   `game-settings.ts`). The Best-of one is listed first.
+4. **Any equipment that makes sense.** The tables apply to every engine's center-torso slots and to every gyro (one
+   slot a ton). An XL or Light engine's side-torso slots are unchanged. Items keep their own slot counts. Small,
+   torso-mounted and drone cockpits are not offered under the ruleset: its cockpit rule replaces the cockpit choice.
+   An item that cannot fit a location at its class (a 7-slot item in a light arm) is refused there with a message.
+5. **The rest of the fanzine: all of it.** `docs/superpowers/plans/2026-11-13-best-of-future-wars.md`.
+6. **The HMP designs too.** Same plan: entered from the stat blocks of *Future Wars* #32 and #33.
 
 ## Global Constraints
 
-- The ruleset is Custom Homebrew (`minRulesLevel` at that level). Its `source` credits "Clell Flint, 'Alternate
-  Rules for Building Mechs in BattleTech', *Future Wars* #11, reprinted in *The Best of Future Wars, Volume One*
-  (1991), pp.35-38". The sheet and TRO credit it through `getRulesetCredits`.
+- Both rulesets are Custom Homebrew (`minRulesLevel` at that level). Their `source`: "Clell Flint, 'Alternate Rules for
+  Building Mechs in BattleTech', *The Best of Future Wars, Volume One* (1991), pp.35-36" and "Clell Flint,
+  'Alternative Rules for Building Mechs in BattleTech', *Future Wars* #11, p.24". The sheet and TRO credit them
+  through `getRulesetCredits`.
 - Without the ruleset, nothing changes: every bundle test passes unchanged at every chunk. If one fails, stop for the owner.
 - Read the page image before typing a number. A rule the article does not give is ours, labelled as ours in the
   code comment, the ruleset description and the ledger.
@@ -95,10 +87,10 @@ push; append to the ledger what was built and every call that was ours; rewrite 
 | B | The ruleset: slots, head, cockpit, engine and gyro by weight class | Opus 5.5 |
 | C | Creator: the ruleset's choices, issues when it is ticked or unticked | Sonnet 5.5 |
 | D | Record sheet and play mode: critical tables of any length | Sonnet 5.5 |
-| E | Fanzine equipment, once the owner picks (question 5) | Sonnet 5.5 |
-| F | Verify and report | Sonnet 5.5 |
+| E | Verify and report | Sonnet 5.5 |
 
-Walkers (question 2) get their own plan if the owner chooses (a) or (b).
+Walkers and the rest of the fanzine have their own plans (owner rulings 2 and 5). The walker plan's Chunk A needs
+this plan's Chunk B first.
 
 ## Rules (Best-of, printed pp.35-37; confirm each against the page image)
 
@@ -133,7 +125,9 @@ Walkers (question 2) get their own plan if the owner chooses (a) or (b).
 | Immobilized walker with every leg standing | cannot be knocked over except by a push, until a leg's structure is gone | not printed |
 | Firing arcs | six, named clockwise | "on the attached firing arc sheet" (no sheet in the reprint) |
 
-The #11 scan's walker slot table OCRs badly. Read it in the #11 page image before using it.
+Read on the #11 page image (2026-11-13): its typewriter face prints zero as a slashed "Ø", so the to-hit is 0.
+The variant walker slot table agrees with the Best-of except the assault control section: 16 in #11, 14 in the
+Best-of. The walker plan carries all four rows as edition rules.
 
 ## Review Focus
 
@@ -170,9 +164,9 @@ The #11 scan's walker slot table OCRs badly. Read it in the #11 page image befor
 **Files:** Modify `src/data/special-rulesets.ts` (+ test), `src/classes/battlemech.ts`; create
 `src/data/future-wars-construction.ts` (the tables) and `src/classes/battlemech-future-wars.test.ts`.
 
-**Interfaces (produces):** ruleset id `future-wars-alternate-construction`, `changes: ["mechConstruction"]`,
-`removesUnitTypes` none, `minRulesLevel` Custom Homebrew. `FUTURE_WARS_WEIGHT_CLASSES`, `getFutureWarsSlots(tons,
-location)`, `getFutureWarsEngineSlots(engineTons)`, `getFutureWarsCockpit(tons, large?)`. On `BattleMech`:
+**Interfaces (produces):** ruleset ids `best-of-future-wars-construction` and `future-wars-11-construction` (owner
+ruling 3), each `changes: ["mechConstruction"]`, `removesUnitTypes` none, `minRulesLevel` Custom Homebrew. `FUTURE_WARS_WEIGHT_CLASSES`, `getFutureWarsSlots(tons,
+location)`, `getFutureWarsEngineSlots(engineTons)`, `getFutureWarsCockpit(tons, large?)`, `FUTURE_WARS_CONSTRUCTION_RULESETS` (the two ids). On `BattleMech`:
 `usesFutureWarsConstruction()`, `getFutureWarsLargeCockpit/setFutureWarsLargeCockpit` (heavy only),
 `getExtraSensors/setExtraSensors`, `getExtraLifeSupport/setExtraLifeSupport`, all saved in `export`.
 
@@ -181,7 +175,9 @@ location)`, `getFutureWarsEngineSlots(engineTons)`, `getFutureWarsCockpit(tons, 
 - [ ] **Step 2: Failing tests**, each named for its rule: slot counts per class and location (one test per table
   row); head structure 3/4/5/6 and head armor maximum 6/8/10/12; cockpit 2/3/3-or-4/4 tons and slots; sensors
   2 slots; extra sensors and extra life support +0.5 t and +1 slot each; engine slots at 4.0, 4.5, 30.0 and 30.5
-  tons; gyro slots = gyro tons (a 3-ton gyro takes 3); a quad is refused under the ruleset with a message; a
+  tons; gyro slots = gyro tons (a 3-ton gyro takes 3); an XL engine keeps its side-torso slots; an item larger than its
+  location at the class is refused there; a small cockpit is not offered; ticking both rulesets is refused by the
+  conflict rule; a quad is refused under the ruleset with a message; a
   design without the ruleset is unchanged (the bundle tests); ticking the ruleset on a 'Mech that no longer fits
   lists issues and deletes nothing; `exportJSON`/`importJSON` round-trips the new fields; a save naming the
   ruleset when the registry lacks it loads with a message.
@@ -220,24 +216,14 @@ section.
 - [ ] **Step 4:** Commit `Custom Homebrew: Future Wars construction on the record sheet and in play (#172)`, push,
   ledger, handoff.
 
-## Chunk E: Fanzine equipment (after owner question 5)
-
-Follows the batch plan's Chunk 3: records in the matching `*-custom.ts` catalog (`weapon-custom`, `ammo-custom`,
-`misc-custom`), tags in `src/data/__fixtures__/tech-lists.json`, a test file after `custom-homebrew-batch.test.ts`.
-Each record credits its author and cites the printed page. Any figure the article leaves out is left at the
-"unverified" convention or labelled as ours, as the *Future Wars* #32 smoke devices do (`misc-custom.ts`).
-
-- [ ] **Step 1:** Read each picked item's page image. Ledger: every figure printed and every figure missing.
-- [ ] **Step 2:** Failing tests, records, unit tests, `npm run check`, commit, push, ledger, handoff.
-
-## Chunk F: Verify and report
+## Chunk E: Verify and report
 
 - [ ] **Step 1:** `npm run check`; confirm no bundled design changed.
-- [ ] **Step 2:** Comment on #172 with what is in and what is not (walkers, the play rules, Power Armor, DropShips,
-  the HMP designs), and leave it open while any of those is wanted.
+- [ ] **Step 2:** Comment on #172 with what is in, and what the walker and fanzine plans still owe. Leave the issue open
+  until they are done.
 - [ ] **Step 3:** Ask the owner about shipping. No deploy, `master` fast-forward or news entry without the answer.
 
-## Other material in the Best-of (for owner question 5)
+## Other material in the Best-of (owner ruling 5: all of it; see the fanzine plan)
 
 Printed pages. Bylines as printed. "Equipment" = catalog records; "play rule" = a Special Ruleset candidate.
 
@@ -254,7 +240,7 @@ Printed pages. Bylines as printed. "Equipment" = catalog records; "play rule" = 
 | 28 | Power Booster | Karl Sanders | equipment (with a burn-out table) |
 | 7 | DropShip Construction | Mark Stock | construction rules (DropShips) |
 | 14-16 | Power Armor: The Poor Man's Battlemech | Bill Swisher | unit type (5-ton suits) |
-| 35-38 | Optional Rules for Building Walkers | Clell Flint | unit type (owner question 2) |
+| 35-38 | Optional Rules for Building Walkers | Clell Flint | unit type: `2026-11-13-future-wars-walkers.md` |
 | 17 | Rules Variant: Opportunity Fire | Charles J. Tomaszewski | play rule |
 | 18-19 | Strategic Movement for BattleTech | H. Barents | play rule |
 | 22-26 | Stand, I Say!! Morale in BattleTech | H. Barents | play rule |
