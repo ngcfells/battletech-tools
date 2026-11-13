@@ -192,12 +192,12 @@ export default class MicroMechCreatorEquipment extends React.Component<IEquipmen
                                     {micro.getLocations().filter((each) => each !== "torsoRear").map((each) => (
                                         <tr key={each}>
                                             <th>{micro.getLocationName(each)}</th>
-                                            <td>{micro.getSlots(each).map((slot) => slot ?? "(free)").join(", ")}</td>
+                                            <td>{micro.getPlaySlots(each).map((slot) => slot ?? "(free)").join(", ")}</td>
                                         </tr>
                                     ))}
                                 </tbody>
                             </table>
-                            <p className="smaller-text">Jump jets take {micro.getJumpJets()} slots in the torso and legs and are not placed one by one.</p>
+                            <p className="smaller-text">Jump jets take {micro.getJumpJets()} slots: one to each leg in turn while a leg has room, then the torso (our placement; the texts say only "the legs and torso").</p>
 
                             <div className="clear-both overflow-hidden">
                                 <hr />

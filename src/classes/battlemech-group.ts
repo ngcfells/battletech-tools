@@ -169,7 +169,7 @@ export class BattleMechGroup {
             + sum(this.capitalShips, (ship) => ship.getPilotAdjustedBattleValue(edition))
             + sum([...this.infantry, ...this.battleArmor], (unit) => unit.getSkillAdjustedBattleValue(edition))
             + sum(this.protoMechs, (point) => point.getSkillAdjustedPointBattleValue(edition))
-            + sum(this.microMechs, (micro) => micro.getBattleValue(edition));
+            + sum(this.microMechs, (micro) => micro.getSkillAdjustedBattleValue(edition));
     }
 
     /** The Battle Value unit types the group holds (buildings and Battledroids units have no BV). */

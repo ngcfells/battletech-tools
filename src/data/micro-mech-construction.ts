@@ -152,6 +152,13 @@ export interface IMicroMechVersionRules {
     torsoOverflowToCockpit: number;
     /** Play: a destroyed gyro. */
     gyroHit: string;
+    /**
+     * Play: does the -1 agility bonus on Piloting Skill Rolls stay after a gyro hit? 6.1.0.2: "The +1 bonus for
+     * piloting is lost and all piloting rolls are at -4". 2019: "all piloting rolls are at +4" (the bonus not named).
+     */
+    gyroHitKeepsAgilityBonus: boolean;
+    /** Play: a Lower Leg Actuator hit also calls for a Piloting Skill Roll whenever the unit runs (2019 only). */
+    lowerLegHitRunRoll: boolean;
     /** Play: swamps. */
     swamp: string;
     /** Play: a neurohelmet. */
@@ -189,6 +196,8 @@ export const MICRO_MECH_VERSION_RULES: Record<MicroMechVersion, IMicroMechVersio
         vacuumEngines: ["fusion"],
         torsoOverflowToCockpit: 0.5,
         gyroHit: "The +1 piloting bonus is lost and all Piloting Skill Rolls are at -4 (read: 4 worse); no running or jumping.",
+        gyroHitKeepsAgilityBonus: false,
+        lowerLegHitRunRoll: false,
         swamp: "Cannot get stuck.",
         neurohelmet: null,
         iceInWater: "An ICE engine floods (destroyed) after two consecutive turns submerged at depth 1 or more, sealed or not.",
@@ -220,6 +229,8 @@ export const MICRO_MECH_VERSION_RULES: Record<MicroMechVersion, IMicroMechVersio
         vacuumEngines: ["fusion", "fuel cell"],
         torsoOverflowToCockpit: 1,
         gyroHit: "All Piloting Skill Rolls are at +4; no running or jumping.",
+        gyroHitKeepsAgilityBonus: true,
+        lowerLegHitRunRoll: true,
         swamp: "Can get stuck, with a -2 bonus (the post: \"a + 2 bonus\") on the Piloting Skill Roll.",
         neurohelmet: "Optional: a further -1 on Piloting Skill Rolls.",
         iceInWater: "An ICE engine is destroyed at depth 1 or more unless a snorkel is deployed; with one, safe to depth 2.",

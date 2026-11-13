@@ -8,7 +8,7 @@ import { btEraOptions, findEraByTag } from "../data/era-options";
 import { getUnitTypeEras } from "../data/game-settings";
 import { CUSTOM_HOMEBREW_RULES_LEVEL } from "../data/rules-level-options";
 import { mechEngineOptions } from "../data/mech-engine-options";
-import { editionHasBattleValue, getBattleValueFor, getSpeedFactor } from "../data/battle-value";
+import { editionHasBattleValue, getBattleValueFor, getBattleValueSkillEdition, getSkillMultiplier, getSpeedFactor } from "../data/battle-value";
 import { getRulesEdition } from "../data/rules-editions";
 import { CalcTrace, ICalcBreakdown, formatCalcNumber } from "../data/calc-steps";
 import { NO_BATTLE_VALUE_STEPS } from "../data/calc-steps-mech-bv1";
@@ -23,16 +23,20 @@ import {
     IMicroMechVersionRules,
     MICRO_MECH_ARMOR_KG_PER_POINT,
     MICRO_MECH_BORROWED_NOTE,
+    MICRO_MECH_COCKPIT_ARMOR,
     MICRO_MECH_COCKPIT_KG,
     MICRO_MECH_CREDIT,
     MICRO_MECH_DEFAULT_VERSION,
     MICRO_MECH_LOCATIONS,
     MICRO_MECH_LOCATION_NAMES,
     MICRO_MECH_LOWER_ARM,
+    MICRO_MECH_LOWER_LEG,
     MICRO_MECH_MAX_TONS,
     MICRO_MECH_MIN_TONS,
     MICRO_MECH_QUARTER_TON_KG,
     MICRO_MECH_SLOTS,
+    MICRO_MECH_UPPER_ARM,
+    MICRO_MECH_UPPER_LEG,
     MICRO_MECH_VERSION_RULES,
     MicroMechArmorType,
     MicroMechEngineKind,
@@ -56,7 +60,8 @@ import {
 // Construction: "Micro-Mechs" 6.1.0.2 or Solarmech's 2019 post, chosen by `version`; every rule that differs is a
 // field of MICRO_MECH_VERSION_RULES. Equipment comes from the 6.1.0.2 table (micro-mech-equipment-custom.ts). Cost and
 // Battle Value follow the 6.1.0.2 appendices (calc-steps-micro-mech.ts); a BV2 edition gets a provisional BV2 of ours.
-// Play is a later chunk of the plan (docs/superpowers/plans/2026-11-13-micro-mechs.md).
+// Play mode (in-play state saved with the roster) follows the rules sections of both texts (Chunk F of
+// docs/superpowers/plans/2026-11-13-micro-mechs.md).
 
 export const MAX_MICRO_MECH_NAME_LENGTH = 120;
 /** The highest rating in the standard engine table (TechManual p.49, as mech-engine-options.ts holds it). */
@@ -104,6 +109,72 @@ export interface IMicroMechAmmoLot extends IMicroMechAmmoExport {
     slots: number;
 }
 
+/** A filled slot: a fixed item, a mount's slot, a shared ammunition slot (the lots in it), or a placed jump jet (play). */
+interface IMicroMechSlotEntry {
+    name: string;
+    kind: "fixed" | "mount" | "ammo" | "jet";
+    mountIndex?: number;
+    /** Indexes into getAmmoLots of the lots sharing this slot. */
+    lots?: number[];
+}
+
+/**
+ * The record sheet's state in play (Chunk F), saved with the roster. Every field is optional and absent when clean.
+ * Counts are of what was lost: armor and structure points per location, cockpit armor points, hit slot indexes
+ * (into getPlaySlots), pilot hits, and shots fired per ammunition lot (getAmmoLots order).
+ */
+export interface IMicroMechInPlay {
+    armor?: Partial<Record<MicroMechLocation, number>>;
+    structure?: Partial<Record<MicroMechLocation, number>>;
+    cockpit?: number;
+    slots?: Partial<Record<MicroMechLocation, number[]>>;
+    pilotHits?: number;
+    shotsFired?: number[];
+    /** 2019 only: the pilot wears a neurohelmet. */
+    neurohelmet?: boolean;
+}
+
+/** A weapon in play: its to-hit modifier from damage, whether it is destroyed, and whether it may fire now. */
+export interface IMicroMechWeaponPlayLine {
+    mountIndex: number;
+    name: string;
+    location: MicroMechLocation;
+    toHit: number;
+    destroyed: boolean;
+    canFire: boolean;
+    reasons: string[];
+}
+
+export interface IMicroMechPlayMovement {
+    walk: number;
+    run: number;
+    jump: number;
+    text: string;
+    notes: string[];
+}
+
+export interface IMicroMechModifier {
+    total: number;
+    lines: string[];
+}
+
+/**
+ * "A Micro-Mech uses the Battlemech hit location table. The Right Torso, Center Torso and Left Torso locations all
+ * become a Torso hit location." The front / rear column of TW's 'Mech Hit Location Table (2 and 7 CT, 3-4 RA, 5 RL,
+ * 6 RT, 8 LT, 9 LL, 10-11 LA, 12 head); on a quad the arms are the front legs and the legs the rear legs (TW).
+ */
+export const MICRO_MECH_HIT_LOCATIONS: Record<MicroMechLayout, Record<number, MicroMechLocation>> = {
+    biped: { 2: "torso", 3: "ra", 4: "ra", 5: "rl", 6: "torso", 7: "torso", 8: "torso", 9: "ll", 10: "la", 11: "la", 12: "head" },
+    quad: { 2: "torso", 3: "frl", 4: "frl", 5: "rl", 6: "torso", 7: "torso", 8: "torso", 9: "ll", 10: "fll", 11: "fll", 12: "head" },
+};
+
+/** Determining Critical Hits Table (TW p.124): the hits for a 2D6 roll; 12 blows a head or limb off. */
+const criticalHitsForRoll = (roll: number): number => (roll >= 12 ? 3 : roll >= 10 ? 2 : roll >= 8 ? 1 : 0);
+const MICRO_MECH_PILOT_HITS = 6;
+/** "the pilot takes 3 hits from feedback" (both texts, Damaging a Micro-Mech Pilot). */
+const AMMO_EXPLOSION_PILOT_HITS = 3;
+const JUMP_JET_SLOT = "Jump Jet";
+
 export interface IMicroMechExport {
     /** The save format. */
     format: 1;
@@ -129,6 +200,11 @@ export interface IMicroMechExport {
     /** Heat sinks beyond the engine's free ones; absent means none. */
     extraHeatSinks?: number;
     era: string;
+    /** The pilot's skills (roster); absent means 4 and 5. */
+    gunnery?: number;
+    piloting?: number;
+    /** The record sheet in play (roster); absent when clean. */
+    inPlay?: IMicroMechInPlay;
     lastUpdated?: string;
 }
 
@@ -189,6 +265,9 @@ export default class MicroMech implements IGameSettingsUnit {
     private _mounts: { tag: string; location: MicroMechLocation; ammo: IMicroMechAmmoExport[] }[] = [];
     private _extraHeatSinks: number = 0;
     private _era: IEras = findEraByTag("jihad") ?? btEraOptions[btEraOptions.length - 1];
+    private _gunnery: number = 4;
+    private _piloting: number = 5;
+    private _inPlay: IMicroMechInPlay = {};
     private _importIssues: string[] = [];
 
     constructor(json: string = "") {
@@ -424,23 +503,30 @@ export default class MicroMech implements IGameSettingsUnit {
         const used = this._usedSlots(location);
         return [...used, ...new Array(Math.max(0, MICRO_MECH_SLOTS[location].slots - used.length)).fill(null)];
     }
-    private _usedSlots(location: MicroMechLocation): string[] {
-        const fixed = [...MICRO_MECH_SLOTS[location].fixed];
-        if ((location === "la" && this.hasLowerArm("left")) || (location === "ra" && this.hasLowerArm("right"))) fixed.push(MICRO_MECH_LOWER_ARM);
-        const items: string[] = [];
-        const ammo = new Map<string, { name: string; kg: number }>();
-        for (const mount of this.getMounts()) {
-            if (mount.location === location) for (let i = 0; i < mount.item.slots; i++) items.push(mount.item.name);
+    private _usedSlots(location: MicroMechLocation): string[] { return this._slotEntries(location).map((entry) => entry.name); }
+    /** The filled slots of a location, in order, with what fills each (for play: which mount or ammunition a hit strikes). */
+    private _slotEntries(location: MicroMechLocation): IMicroMechSlotEntry[] {
+        const fixed: IMicroMechSlotEntry[] = MICRO_MECH_SLOTS[location].fixed.map((name) => ({ name, kind: "fixed" }));
+        if ((location === "la" && this.hasLowerArm("left")) || (location === "ra" && this.hasLowerArm("right"))) fixed.push({ name: MICRO_MECH_LOWER_ARM, kind: "fixed" });
+        const items: IMicroMechSlotEntry[] = [];
+        const ammo = new Map<string, { name: string; kg: number; lots: number[] }>();
+        let lotIndex = 0;
+        this.getMounts().forEach((mount, mountIndex) => {
+            if (mount.location === location) for (let i = 0; i < mount.item.slots; i++) items.push({ name: mount.item.name, kind: "mount", mountIndex });
             for (const lot of mount.ammo) {
+                const index = lotIndex++;
                 if (lot.location !== location) continue;
                 // One slot holds up to 1,000 kg "for the same weapon class" (6.1.0.2), or of one ammunition type (2019).
                 const key = this.getRules().ammoSlots === "weapon-class" ? mount.tag : `${mount.tag}|${lot.type}`;
-                const group = ammo.get(key) ?? { name: mount.item.name, kg: 0 };
+                const group = ammo.get(key) ?? { name: mount.item.name, kg: 0, lots: [] };
                 group.kg += lot.kg;
+                group.lots.push(index);
                 ammo.set(key, group);
             }
+        });
+        for (const group of ammo.values()) {
+            for (let i = 0; i < Math.ceil(group.kg / AMMO_KG_PER_SLOT); i++) items.push({ name: `Ammo (${group.name})`, kind: "ammo", lots: [...group.lots] });
         }
-        for (const group of ammo.values()) for (let i = 0; i < Math.ceil(group.kg / AMMO_KG_PER_SLOT); i++) items.push(`Ammo (${group.name})`);
         return [...fixed, ...items];
     }
     public getFreeSlots(location: MicroMechLocation): number { return this.getSlots(location).filter((slot) => slot === null).length; }
@@ -877,6 +963,503 @@ export default class MicroMech implements IGameSettingsUnit {
         });
     }
 
+    // Play (Chunk F) ----------------------------------------------------------------------------------------------
+    // "Micro-Mech Rules" in both texts (6.1.0.2 raw lines 37-182; the 2019 post's rules section). Where they say "as
+    // for Battlemechs", Total Warfare (2022 printing) is followed and cited.
+
+    public getGunnery(): number { return this._gunnery; }
+    public setGunnery(skill: number): void { this._gunnery = clampInt(skill, 0, 8, 4); }
+    public getPiloting(): number { return this._piloting; }
+    public setPiloting(skill: number): void { this._piloting = clampInt(skill, 0, 8, 5); }
+    /** "Micro-Mechs pilots use the gunnery and piloting skill ratings the same as a Mechwarrior": the 'Mech skill table. */
+    public getSkillMultiplier(edition: string = this._rulesEdition): number {
+        return getSkillMultiplier(this._gunnery, this._piloting, "mech", getBattleValueSkillEdition(edition, "mech")) ?? 1;
+    }
+    /** The Battle Value with the pilot's skills, for the roster (rounded to the nearest, as the other unit types). */
+    public getSkillAdjustedBattleValue(edition: string = this._rulesEdition): number {
+        return Math.floor(this.getBattleValue(edition) * this.getSkillMultiplier(edition) + 0.5);
+    }
+
+    public getInPlay(): IMicroMechInPlay { return JSON.parse(JSON.stringify(this._inPlay)); }
+    /** Clears all damage, hits and shots fired; a 2019 pilot keeps the neurohelmet. */
+    public resetInPlay(): void { this._inPlay = this._inPlay.neurohelmet ? { neurohelmet: true } : {}; }
+    public hasInPlayState(): boolean { return Object.keys(this._inPlay).length > 0; }
+
+    private _lost(field: "armor" | "structure", location: MicroMechLocation): number { return this._inPlay[field]?.[location] ?? 0; }
+    private _setLost(field: "armor" | "structure", location: MicroMechLocation, points: number): void {
+        const record = { ...(this._inPlay[field] ?? {}) };
+        if (points > 0) record[location] = points;
+        else delete record[location];
+        if (Object.keys(record).length > 0) this._inPlay[field] = record;
+        else delete this._inPlay[field];
+    }
+    public getArmorLeft(location: MicroMechLocation): number { return Math.max(0, this.getArmor(location) - this._lost("armor", location)); }
+    public getStructureLeft(location: MicroMechLocation): number { return Math.max(0, this.getStructure(location) - this._lost("structure", location)); }
+    /** Marks a location's armor points lost (the sheet's circles). */
+    public setArmorDamage(location: MicroMechLocation, points: number): void {
+        if (this.getLocations().includes(location)) this._setLost("armor", location, clampInt(points, 0, this.getArmor(location), 0));
+    }
+    public setStructureDamage(location: MicroMechLocation, points: number): void {
+        if (this.getLocations().includes(location)) this._setLost("structure", location, clampInt(points, 0, this.getStructure(location), 0));
+    }
+    public getCockpitArmorLeft(): number { return MICRO_MECH_COCKPIT_ARMOR - (this._inPlay.cockpit ?? 0); }
+    public setCockpitDamage(points: number): void {
+        const lost = clampInt(points, 0, MICRO_MECH_COCKPIT_ARMOR, 0);
+        if (lost > 0) this._inPlay.cockpit = lost;
+        else delete this._inPlay.cockpit;
+    }
+    /** A location whose structure is gone. The rear torso is the torso's armor only. */
+    public isLocationDestroyed(location: MicroMechLocation): boolean {
+        return location !== "torsoRear" && this.getStructure(location) > 0 && this.getStructureLeft(location) === 0;
+    }
+
+    private _storedPilotHits(): number { return this._inPlay.pilotHits ?? 0; }
+    private _addPilotHits(hits: number): void { this.setPilotHits(this._storedPilotHits() + hits); }
+    /** Six hits, or killed outright (all three cockpit armor points gone, or a Cockpit critical hit). */
+    public getPilotHits(): number { return this.isPilotKilled() ? MICRO_MECH_PILOT_HITS : this._storedPilotHits(); }
+    public setPilotHits(hits: number): void {
+        const value = clampInt(hits, 0, MICRO_MECH_PILOT_HITS, 0);
+        if (value > 0) this._inPlay.pilotHits = value;
+        else delete this._inPlay.pilotHits;
+    }
+    /** "The pilot is killed if all three of the cockpit's armor points are eliminated"; a Cockpit critical hit kills too. */
+    public isPilotKilled(): boolean {
+        return this._storedPilotHits() >= MICRO_MECH_PILOT_HITS || this.getCockpitArmorLeft() <= 0 || this._hitNames("torso").includes("Cockpit");
+    }
+
+    public hasNeurohelmet(): boolean { return this._inPlay.neurohelmet === true; }
+    /** 2019 only ("Micro-Mechs can use a neurohelmet and this gives a -1 bonus to piloting rolls"); kept but unused under 6.1.0.2. */
+    public setNeurohelmet(worn: boolean): void {
+        if (worn) this._inPlay.neurohelmet = true;
+        else delete this._inPlay.neurohelmet;
+    }
+
+    // Ammunition in play: one counter per lot, in getAmmoLots order.
+    public getShotsFired(lotIndex: number): number { return this._inPlay.shotsFired?.[lotIndex] ?? 0; }
+    public getShotsLeft(lotIndex: number): number {
+        const lot = this.getAmmoLots()[lotIndex];
+        return lot ? Math.max(0, lot.shots - this.getShotsFired(lotIndex)) : 0;
+    }
+    public setShotsFired(lotIndex: number, shots: number): void {
+        const lots = this.getAmmoLots();
+        if (!Number.isInteger(lotIndex) || lotIndex < 0 || lotIndex >= lots.length) return;
+        const fired = lots.map((_lot, index) => this._inPlay.shotsFired?.[index] ?? 0);
+        fired[lotIndex] = clampInt(shots, 0, lots[lotIndex].shots, 0);
+        if (fired.some((value) => value > 0)) this._inPlay.shotsFired = fired;
+        else delete this._inPlay.shotsFired;
+    }
+
+    // Slots in play ----------------------------------------------------------------------------------------------
+
+    private _legLocations(): MicroMechLocation[] {
+        return this.getLocations().filter((location) => MICRO_MECH_SLOTS[location].fixed.includes(MICRO_MECH_UPPER_LEG));
+    }
+    /**
+     * Where the jump jets sit (ours: the texts say only "on the legs and torso"): one to each leg in turn while a
+     * leg has a free slot, then the torso.
+     */
+    private _jetPlacement(): Partial<Record<MicroMechLocation, number>> {
+        const legs = this._legLocations();
+        const free: Partial<Record<MicroMechLocation, number>> = {};
+        for (const location of [...legs, "torso" as MicroMechLocation]) free[location] = this.getFreeSlots(location);
+        const placed: Partial<Record<MicroMechLocation, number>> = {};
+        let left = this._jumpJets;
+        let progress = true;
+        while (left > 0 && progress) {
+            progress = false;
+            for (const leg of legs) {
+                if (left > 0 && (free[leg] ?? 0) > 0) {
+                    placed[leg] = (placed[leg] ?? 0) + 1;
+                    free[leg] = (free[leg] ?? 0) - 1;
+                    left--;
+                    progress = true;
+                }
+            }
+        }
+        if (left > 0) placed.torso = Math.min(left, free.torso ?? 0);
+        return placed;
+    }
+    private _playSlotEntries(location: MicroMechLocation): (IMicroMechSlotEntry | null)[] {
+        if (!this.getLocations().includes(location)) return [];
+        const entries: (IMicroMechSlotEntry | null)[] = this._slotEntries(location);
+        const jets = this._jetPlacement()[location] ?? 0;
+        for (let i = 0; i < jets; i++) entries.push({ name: JUMP_JET_SLOT, kind: "jet" });
+        while (entries.length < MICRO_MECH_SLOTS[location].slots) entries.push(null);
+        return entries;
+    }
+    /** The location's slots as the record sheet prints them in play: getSlots with the jump jets placed. */
+    public getPlaySlots(location: MicroMechLocation): (string | null)[] {
+        return this._playSlotEntries(location).map((entry) => entry?.name ?? null);
+    }
+    public isSlotHit(location: MicroMechLocation, slot: number): boolean { return this._inPlay.slots?.[location]?.includes(slot) ?? false; }
+    private _hitNames(location: MicroMechLocation): string[] {
+        const slots = this.getPlaySlots(location);
+        return (this._inPlay.slots?.[location] ?? []).map((index) => slots[index]).filter((name): name is string => !!name);
+    }
+    public getEngineHits(): number { return this._hitNames("torso").filter((name) => name === "Engine").length; }
+    /** "The gyro is destroyed by the first critical hit." */
+    public isGyroDestroyed(): boolean { return this._hitNames("torso").includes("Gyro"); }
+    /** A Sensors hit, or the head gone ("The sensors and any other systems mounted in the head are destroyed"). */
+    public hasSensorDamage(): boolean { return this._hitNames("head").includes("Sensors") || this.isLocationDestroyed("head"); }
+    /** "The first critical hit: The Micro-Mech cannot fire any energy weapons." */
+    public canFireEnergyWeapons(): boolean { return this.getEngineHits() === 0; }
+
+    /**
+     * The slot a critical hit strikes. Head: 1D6, 1-3 the first slot, 4-6 the second. Arms and legs: 1-2, 3-4, 5-6.
+     * Torso "use the same rules as a Battlemech": a first 1D6 picks the column (1-3, 4-6), a second the slot.
+     */
+    public getCriticalSlotForRoll(location: MicroMechLocation, first: number, second: number = 1): number {
+        const d1 = clampInt(first, 1, 6, 1);
+        const d2 = clampInt(second, 1, 6, 1);
+        const where = location === "torsoRear" ? "torso" : location;
+        if (where === "torso") return (d1 <= 3 ? 0 : 6) + d2 - 1;
+        if (where === "head") return d1 <= 3 ? 0 : 1;
+        return Math.floor((d1 - 1) / 2);
+    }
+
+    /**
+     * Rolls on the Determining Critical Hits Table (TW p.124: 8-9 one hit, 10-11 two, 12 three in the torso or the
+     * head or limb blown off), each hit rolling its slot again on an empty slot or one already hit (TW p.124).
+     * `dice` gives the players' rolls in order.
+     */
+    public rollCriticalHit(location: MicroMechLocation, dice: { chance?: number; lines?: number[] } = {}): string[] {
+        const die = () => 1 + Math.floor(Math.random() * 6);
+        const queue = [...(dice.lines ?? [])];
+        const next = () => queue.shift() ?? die();
+        const where = location === "torsoRear" ? "torso" : location;
+        if (!this.getLocations().includes(where)) return [];
+        const name = this.getLocationName(where);
+        const roll = dice.chance ?? die() + die();
+        if (roll >= 12 && where !== "torso") {
+            this.setArmorDamage(where, this.getArmor(where));
+            this.setStructureDamage(where, this.getStructure(where));
+            return [`Critical hit roll ${roll}: the ${name} is blown off${where === "head" ? "; its sensors are lost and the pilot is unhurt" : ""}.`];
+        }
+        const hits = criticalHitsForRoll(roll);
+        if (hits === 0) return [`Critical hit roll ${roll}: no critical hit.`];
+        const lines = [`Critical hit roll ${roll}: ${hits} critical hit${hits > 1 ? "s" : ""} in the ${name}.`];
+        const slots = this.getPlaySlots(where);
+        for (let hit = 0; hit < hits; hit++) {
+            if (!slots.some((slot, index) => slot !== null && !this.isSlotHit(where, index))) {
+                lines.push("No slot is left to hit.");
+                break;
+            }
+            let slot = -1;
+            for (let attempt = 0; attempt < 100 && slot < 0; attempt++) {
+                const candidate = where === "torso" ? this.getCriticalSlotForRoll(where, next(), next()) : this.getCriticalSlotForRoll(where, next());
+                if (slots[candidate] !== null && !this.isSlotHit(where, candidate)) slot = candidate;
+            }
+            if (slot < 0) slot = slots.findIndex((each, index) => each !== null && !this.isSlotHit(where, index));
+            lines.push(`${slots[slot]} (slot ${slot + 1}) hit.`, ...this.setSlotHit(where, slot, true));
+        }
+        return lines;
+    }
+
+    /** Marks a slot hit or not; a new hit returns its effects (an ammunition slot explodes). */
+    public setSlotHit(location: MicroMechLocation, slot: number, hit: boolean): string[] {
+        const entries = this._playSlotEntries(location);
+        const entry = entries[slot];
+        if (!Number.isInteger(slot) || !entry) return [];
+        const was = this.isSlotHit(location, slot);
+        this._markSlot(location, slot, hit);
+        if (!hit || was) return [];
+        return this._criticalEffect(location, entry);
+    }
+    /** Records a slot as hit or not, with no effect (a save being read). */
+    private _markSlot(location: MicroMechLocation, slot: number, hit: boolean): void {
+        const record = { ...(this._inPlay.slots ?? {}) };
+        const list = (record[location] ?? []).filter((index) => index !== slot);
+        if (hit) list.push(slot);
+        list.sort((a, b) => a - b);
+        if (list.length > 0) record[location] = list;
+        else delete record[location];
+        if (Object.keys(record).length > 0) this._inPlay.slots = record;
+        else delete this._inPlay.slots;
+    }
+
+    private _criticalEffect(location: MicroMechLocation, entry: IMicroMechSlotEntry): string[] {
+        const rules = this.getRules();
+        switch (entry.kind) {
+            case "ammo": return this._explodeAmmo(location, entry.lots ?? []);
+            case "jet": return ["A jump jet is lost: -1 Jump MP."];
+            case "mount": return [`${entry.name} destroyed.`];
+            default: break;
+        }
+        switch (entry.name) {
+            case "Cockpit": return ["Cockpit hit: the pilot is killed."];
+            case "Engine": return this.getEngineHits() >= 2
+                ? ["Second engine hit: the power plant is destroyed and the unit is out of the game."]
+                : ["First engine hit: no energy weapons may fire. If Life Support is also hit, the pilot takes one hit a turn until the engine is shut down."];
+            case "Gyro": return [`Gyro destroyed. ${rules.gyroHit}`];
+            case "Life Support": return ["Life Support hit: no effect in normal conditions; with an engine hit, one pilot hit a turn until the engine is shut down. See the notes for hostile environments."];
+            case "Sensors": return ["Sensors hit: +4 to hit on all attacks, and only one target within short range."];
+            case MICRO_MECH_UPPER_ARM: return ["Upper Arm Actuator Group hit: +4 to hit with this arm's weapons (not added to a Lower Arm hit)."];
+            case MICRO_MECH_LOWER_ARM: return ["Lower Arm Actuator Group hit: +2 to hit with this arm's weapons."];
+            case MICRO_MECH_UPPER_LEG: return ["Upper Leg Actuator Group hit: Walking MP halved, +2 on Piloting Skill Rolls, a roll whenever it runs; no kicks."];
+            case MICRO_MECH_LOWER_LEG: return [`Lower Leg Actuator Group hit: -2 Walking MP, +2 on Piloting Skill Rolls${rules.lowerLegHitRunRoll ? ", a roll whenever it runs" : ""}; no kicks.`];
+            default: return [`${entry.name} hit.`];
+        }
+    }
+
+    /** Damage a shot of this weapon's ammunition does when it explodes: the damage value, or per missile times the tubes. */
+    private _damagePerShot(item: IMicroMechItem): number {
+        if (typeof item.damage === "number") return item.damage;
+        const perMissile = /^(\d+)\/Hit$/.exec(item.damage);
+        return perMissile ? Number(perMissile[1]) * (item.tubes ?? 1) : 0;
+    }
+    private _hasCaseAt(location: MicroMechLocation): boolean {
+        return this.getMounts().some((mount) => mount.location === location && (mount.tag === CASE_TAG || mount.tag === CASE_II_TAG));
+    }
+    /**
+     * "Same effects as an ammo explosion on a Battlemech except where noted": the shots left times the damage of each
+     * go to the location's internal structure, the excess "directly to the internal structure of the next location
+     * inward" (TW, Transferring Damage), or dissipating where there is CASE (TW, CASE). "The pilot of a Micro-Mech takes
+     * three hits"; with no CASE the damage goes on past the torso into the cockpit.
+     */
+    private _explodeAmmo(location: MicroMechLocation, lotIndexes: number[]): string[] {
+        const lots = this.getAmmoLots();
+        const mounts = this.getMounts();
+        let damage = 0;
+        for (const index of lotIndexes) {
+            const lot = lots[index];
+            if (!lot) continue;
+            damage += this.getShotsLeft(index) * this._damagePerShot(mounts[lot.mountIndex].item);
+            this.setShotsFired(index, lot.shots);
+        }
+        this._addPilotHits(AMMO_EXPLOSION_PILOT_HITS);
+        const lines = [`Ammunition explosion: ${damage} damage to the ${this.getLocationName(location)}'s internal structure; the pilot takes ${AMMO_EXPLOSION_PILOT_HITS} hits from feedback.`];
+        let where = location;
+        let remaining = damage;
+        while (remaining > 0) {
+            const points = Math.min(this.getStructureLeft(where), remaining);
+            this.setStructureDamage(where, this._lost("structure", where) + points);
+            remaining -= points;
+            if (this.isLocationDestroyed(where)) lines.push(`${this.getLocationName(where)} destroyed.`);
+            if (remaining <= 0) break;
+            if (this._hasCaseAt(where)) {
+                lines.push(`CASE: the other ${remaining} damage dissipates.`);
+                break;
+            }
+            if (where === "torso") {
+                lines.push(...this._damageCockpit(remaining));
+                break;
+            }
+            where = "torso";
+        }
+        return lines;
+    }
+
+    /** Damage past the torso structure: the version's share of it (6.1.0.2 half, rounded down: ours) hits the cockpit armor, a pilot hit a point. */
+    private _damageCockpit(overflow: number): string[] {
+        const share = Math.floor(overflow * this.getRules().torsoOverflowToCockpit);
+        const points = Math.min(share, this.getCockpitArmorLeft());
+        if (points <= 0) return [`${overflow} damage past the torso structure; none reaches the cockpit.`];
+        this.setCockpitDamage((this._inPlay.cockpit ?? 0) + points);
+        this._addPilotHits(points);
+        const lines = [`${overflow} damage past the torso structure: ${points} to the cockpit armor and ${points} pilot hit${points > 1 ? "s" : ""} (no critical hit roll).`];
+        if (this.getCockpitArmorLeft() <= 0) lines.push("All three cockpit armor points are gone: the pilot is killed.");
+        return lines;
+    }
+
+    /**
+     * Applies damage "the same as for Battlemechs": armor, then structure. Damage passes from a limb or the head to the
+     * torso; a destroyed location passes all of it on. Past the torso structure it reaches the cockpit (see
+     * _damageCockpit). The pilot takes no hit from head or ordinary torso damage. A rear hit is the torso's rear armor.
+     */
+    public applyDamage(location: MicroMechLocation, points: number, rear: boolean = false): string[] {
+        let where: MicroMechLocation = location === "torsoRear" ? "torso" : location;
+        let useRear = rear || location === "torsoRear";
+        if (!this.getLocations().includes(where)) return [];
+        let remaining = clampInt(points, 0, 9999, 0);
+        const lines: string[] = [];
+        while (remaining > 0) {
+            const name = this.getLocationName(where);
+            if (this.isLocationDestroyed(where)) {
+                if (where === "torso") {
+                    lines.push(...this._damageCockpit(remaining));
+                    break;
+                }
+                where = "torso";
+                useRear = false;
+                continue;
+            }
+            const armorAt: MicroMechLocation = where === "torso" && useRear ? "torsoRear" : where;
+            const armor = Math.min(this.getArmorLeft(armorAt), remaining);
+            if (armor > 0) {
+                this.setArmorDamage(armorAt, this._lost("armor", armorAt) + armor);
+                remaining -= armor;
+            }
+            if (remaining <= 0) break;
+            const structure = Math.min(this.getStructureLeft(where), remaining);
+            if (structure > 0) {
+                this.setStructureDamage(where, this._lost("structure", where) + structure);
+                remaining -= structure;
+                lines.push(`${name}: ${structure} to the internal structure; roll for critical hits.`);
+            }
+            if (this.isLocationDestroyed(where)) lines.push(`${name} destroyed.`);
+            if (remaining <= 0) break;
+            if (where === "torso") {
+                lines.push(...this._damageCockpit(remaining));
+                break;
+            }
+            lines.push(`${remaining} passes to the torso.`);
+            where = "torso";
+            useRear = false;
+        }
+        return lines;
+    }
+
+    /** "Destroyed if the pilot is killed, the engine receives 2 critical hits or all the internal structure for the torso is eliminated." */
+    public isDestroyed(): boolean {
+        return this.isPilotKilled() || this.getEngineHits() >= 2 || this.isLocationDestroyed("torso");
+    }
+    public getDestroyedReason(): string | null {
+        if (this.isPilotKilled()) return "The pilot is killed.";
+        if (this.getEngineHits() >= 2) return "The engine is destroyed.";
+        if (this.isLocationDestroyed("torso")) return "The torso's internal structure is gone.";
+        return null;
+    }
+
+    private _legState(leg: MicroMechLocation): { destroyed: boolean; upper: boolean; lower: boolean } {
+        const hits = this._hitNames(leg);
+        return { destroyed: this.isLocationDestroyed(leg), upper: hits.includes(MICRO_MECH_UPPER_LEG), lower: hits.includes(MICRO_MECH_LOWER_LEG) };
+    }
+
+    /**
+     * Movement now. Upper Leg hits halve Walking MP (round up; applied before the Lower Leg reductions, TW p.127 as
+     * errata'd for the hip), Lower Leg hits take 2 each; running is refigured on the new Walking MP. A lost leg follows
+     * TW p.122: a biped walks 1 and cannot run, with both gone 0; a quad loses 1 MP for the first (replacing that
+     * leg's actuator penalties), walks 1 with two gone and 0 with three. A gyro hit stops running and jumping. Each jump
+     * jet hit, or on a lost leg, is -1 Jump MP.
+     */
+    public getPlayMovement(): IMicroMechPlayMovement {
+        if (this.isDestroyed()) return { walk: 0, run: 0, jump: 0, text: "Destroyed", notes: [] };
+        const rules = this.getRules();
+        const notes: string[] = [];
+        const legs = this._legLocations().map((leg) => ({ leg, ...this._legState(leg) }));
+        const standing = legs.filter((leg) => !leg.destroyed);
+        const lost = legs.length - standing.length;
+        let walk = this._walkMP;
+        for (const leg of standing) if (leg.upper) walk = Math.ceil(walk / 2);
+        for (const leg of standing) if (leg.lower) walk -= 2;
+        walk = Math.max(0, walk);
+        let canRun = true;
+        let canJump = true;
+        if (this.isQuad()) {
+            if (lost === 1) walk = Math.max(0, walk - 1);
+            else if (lost === 2) { walk = Math.min(walk, 1); canRun = false; }
+            else if (lost >= 3) { walk = 0; canRun = false; canJump = false; }
+        } else if (lost === 1) {
+            walk = Math.min(walk, 1);
+            canRun = false;
+        } else if (lost >= 2) {
+            walk = 0;
+            canRun = false;
+            canJump = false;
+        }
+        if (lost > 0) notes.push("A leg is gone: +5 on Piloting Skill Rolls, a roll to stand, and a roll each time it lands from a jump (TW p.122).");
+        if (this.isGyroDestroyed()) {
+            canRun = false;
+            canJump = false;
+            notes.push("Gyro destroyed: it may stand, walk and fire; an attempt to run or jump falls in the hex.");
+        }
+        if (standing.some((leg) => leg.upper) || (rules.lowerLegHitRunRoll && standing.some((leg) => leg.lower))) {
+            notes.push("A Piloting Skill Roll each time it runs (a leg actuator hit); a fall takes no damage, and standing again needs a roll.");
+        }
+        if (legs.some((leg) => leg.destroyed || leg.upper || leg.lower)) notes.push("No kick attacks: a leg actuator is damaged.");
+        const run = canRun && walk > 0 ? Math.ceil(walk * 1.5) : 0;
+        const jetsLost = this._hitNames("torso").filter((name) => name === JUMP_JET_SLOT).length
+            + legs.reduce((sum, leg) => sum + (leg.destroyed ? this._jetPlacement()[leg.leg] ?? 0 : this._hitNames(leg.leg).filter((name) => name === JUMP_JET_SLOT).length), 0);
+        const jump = canJump ? Math.max(0, this._jumpJets - jetsLost) : 0;
+        return { walk, run, jump, text: `Walk ${walk}, Run ${run}${this._jumpJets > 0 ? `, Jump ${jump}` : ""}`, notes };
+    }
+
+    /**
+     * The modifier on every Piloting Skill Roll now. "+1 bonus to all piloting rolls" (-1 on the target number). The
+     * document's table: Lower Leg +2, Gyro +4, Leg destroyed +5 (no modifiers for that leg's actuators); the critical
+     * hit text gives the Upper Leg +2 (its table prints +4: the text is followed). A quad with all four legs takes
+     * the BattleMech -2 (TW p.122: lost with a leg). 2019: an optional neurohelmet, a further -1.
+     */
+    public getPilotingModifier(): IMicroMechModifier {
+        const rules = this.getRules();
+        const lines: string[] = ["Agility bonus -1"];
+        let total = -1;
+        if (this.isGyroDestroyed()) {
+            if (!rules.gyroHitKeepsAgilityBonus) {
+                total += 1;
+                lines.push("Gyro destroyed: agility bonus lost +1");
+            }
+            total += 4;
+            lines.push("Gyro destroyed +4");
+        }
+        const legs = this._legLocations();
+        for (const leg of legs) {
+            const state = this._legState(leg);
+            const name = this.getLocationName(leg);
+            if (state.destroyed) {
+                total += 5;
+                lines.push(`${name} destroyed +5`);
+                continue;
+            }
+            if (state.upper) { total += 2; lines.push(`${name} Upper Leg Actuator Group +2`); }
+            if (state.lower) { total += 2; lines.push(`${name} Lower Leg Actuator Group +2`); }
+        }
+        if (this.isQuad() && legs.every((leg) => !this.isLocationDestroyed(leg))) {
+            total -= 2;
+            lines.push("Four legs -2 (TW p.122)");
+        }
+        if (rules.neurohelmet && this.hasNeurohelmet()) {
+            total -= 1;
+            lines.push("Neurohelmet -1");
+        }
+        return { total, lines };
+    }
+
+    /** Each weapon in play: lost with its slot or location; arm actuator and sensor modifiers; energy weapons after an engine hit. */
+    public getWeaponPlayLines(): IMicroMechWeaponPlayLine[] {
+        const lots = this.getAmmoLots();
+        const sensors = this.hasSensorDamage();
+        const destroyed = this.isDestroyed();
+        return this.getMounts().flatMap((mount, mountIndex) => {
+            if (!isMicroMechWeapon(mount.item)) return [];
+            const reasons: string[] = [];
+            const slotHit = this._playSlotEntries(mount.location).some((entry, index) => entry?.kind === "mount" && entry.mountIndex === mountIndex && this.isSlotHit(mount.location, index));
+            const lost = slotHit || this.isLocationDestroyed(mount.location);
+            if (lost) reasons.push(slotHit ? "destroyed" : `the ${this.getLocationName(mount.location)} is gone`);
+            let toHit = 0;
+            if (sensors) toHit += 4;
+            if (mount.location === "la" || mount.location === "ra") {
+                const hits = this._hitNames(mount.location);
+                if (hits.includes(MICRO_MECH_UPPER_ARM)) toHit += 4;
+                else if (hits.includes(MICRO_MECH_LOWER_ARM)) toHit += 2;
+            }
+            if (mount.item.kind === "energy" && !this.canFireEnergyWeapons()) reasons.push("engine hit: no energy weapons");
+            if (mount.item.ammo) {
+                const shots = lots.reduce((sum, lot, index) => sum + (lot.mountIndex === mountIndex ? this.getShotsLeft(index) : 0), 0);
+                if (shots <= 0) reasons.push("no ammunition");
+            }
+            if (destroyed) reasons.push("the unit is destroyed");
+            return [{ mountIndex, name: mount.item.name, location: mount.location, toHit, destroyed: lost, canFire: reasons.length === 0, reasons }];
+        });
+    }
+
+    /** The play rules the sheet does not track, in our own words, for the play panel. */
+    public getPlayNotes(): string[] {
+        const rules = this.getRules();
+        const notes = [
+            "Stacking, line of sight (one level tall), unit displacement, fire and different-elevation physical attacks: as a vehicle. No partial cover.",
+            "No heat scale. A shutdown Micro-Mech cannot be the target of an aimed shot; a targeting computer gives its -1 but no aimed shots.",
+            "Hit locations: the BattleMech table, with the three torso locations as the one torso. A Micro-Mech kicking a Micro-Mech uses the kick table.",
+            "No damage from a fall in its own hex. It stands for 1 MP without a roll while its leg actuators and gyro are whole.",
+            "Physical attacks: a kick or stomp (base 3, 1 damage, all leg actuators whole, front hex) and a charge (1 damage a hex moved, 1 to itself; may charge a vehicle). No punch, club, push or death from above.",
+            "It cannot be the target of leg or swarm attacks. -3 on rolls to enter, move in or leave a building.",
+            "Dumping ammunition dumps all of it. The pilot cannot eject: climbing out takes 2 turns, 4 if prone or the torso structure is gone.",
+            `Swamp: ${rules.swamp} ICE in water: ${rules.iceInWater}`,
+            `Vacuum: only a sealed ${rules.vacuumEngines.join(" or ")} Micro-Mech. No extra MP in low gravity.`,
+        ];
+        return notes;
+    }
+
     // Rules level, issues, notes -----------------------------------------------------------------------------------
 
     /** Every Micro-Mech is Custom Homebrew. */
@@ -944,7 +1527,8 @@ export default class MicroMech implements IGameSettingsUnit {
 
     // Save -------------------------------------------------------------------------------------------------------
 
-    public export(): IMicroMechExport {
+    /** The save. `noInPlayVariables` leaves the in-play state out (a design save). */
+    public export(noInPlayVariables: boolean = false): IMicroMechExport {
         const armor: Partial<Record<MicroMechLocation, number>> = {};
         for (const location of this.getLocations()) armor[location] = this._armor[location];
         return {
@@ -966,6 +1550,9 @@ export default class MicroMech implements IGameSettingsUnit {
             mounts: this._mounts.map((mount) => ({ tag: mount.tag, location: mount.location, ...(mount.ammo.length ? { ammo: mount.ammo.map((lot) => ({ ...lot })) } : {}) })),
             ...(this._extraHeatSinks > 0 ? { extraHeatSinks: this._extraHeatSinks } : {}),
             era: this._era.tag,
+            ...(this._gunnery !== 4 ? { gunnery: this._gunnery } : {}),
+            ...(this._piloting !== 5 ? { piloting: this._piloting } : {}),
+            ...(!noInPlayVariables && this.hasInPlayState() ? { inPlay: this.getInPlay() } : {}),
             lastUpdated: this.lastUpdated.toISOString(),
         };
     }
@@ -1020,6 +1607,9 @@ export default class MicroMech implements IGameSettingsUnit {
             this._armor[location] = points;
         }
         this._importMounts(data, issues);
+        this._gunnery = clampInt(data.gunnery ?? 4, 0, 8, 4);
+        this._piloting = clampInt(data.piloting ?? 5, 0, 8, 5);
+        this._importInPlay(data.inPlay);
         this._era = this.getAvailableEras().find((era) => era.tag === data.era) ?? this._era;
         const saved = typeof data.lastUpdated === "string" ? new Date(data.lastUpdated) : new Date();
         this.lastUpdated = Number.isNaN(saved.getTime()) ? new Date() : saved;
@@ -1063,6 +1653,28 @@ export default class MicroMech implements IGameSettingsUnit {
         const extra = clampInt(data.extraHeatSinks ?? 0, 0, MAX_EXTRA_HEAT_SINKS_UNLIMITED, 0);
         if (extra !== (data.extraHeatSinks ?? 0)) issues.push(`Extra heat sinks ${String(data.extraHeatSinks)} are out of range: set to ${extra}.`);
         this._extraHeatSinks = extra;
+    }
+
+    /** Reads the in-play state, dropping or clamping anything that does not fit this design (no issue: it is play state). */
+    private _importInPlay(raw: unknown): void {
+        this._inPlay = {};
+        if (!raw || typeof raw !== "object" || Array.isArray(raw)) return;
+        const data = raw as Record<string, unknown>;
+        const record = (value: unknown): Record<string, unknown> => (value && typeof value === "object" && !Array.isArray(value) ? value as Record<string, unknown> : {});
+        const armor = record(data.armor);
+        const structure = record(data.structure);
+        const slots = record(data.slots);
+        for (const location of this.getLocations()) {
+            if (armor[location] !== undefined) this.setArmorDamage(location, Number(armor[location]));
+            if (structure[location] !== undefined) this.setStructureDamage(location, Number(structure[location]));
+            const list = Array.isArray(slots[location]) ? slots[location] as unknown[] : [];
+            const entries = this._playSlotEntries(location);
+            for (const slot of list) if (typeof slot === "number" && Number.isInteger(slot) && entries[slot]) this._markSlot(location, slot, true);
+        }
+        if (data.cockpit !== undefined) this.setCockpitDamage(Number(data.cockpit));
+        if (data.pilotHits !== undefined) this.setPilotHits(Number(data.pilotHits));
+        if (Array.isArray(data.shotsFired)) data.shotsFired.forEach((shots, index) => this.setShotsFired(index, Number(shots)));
+        if (data.neurohelmet === true) this._inPlay.neurohelmet = true;
     }
 
     public importJSON(json: string): boolean {

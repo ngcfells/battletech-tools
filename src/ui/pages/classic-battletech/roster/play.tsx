@@ -44,6 +44,8 @@ import BattleArmor from '../../../../classes/battle-armor';
 import BattleArmorPlayPanel from './_battleArmorPlay';
 import ProtoMech from '../../../../classes/protomech';
 import ProtoMechPlayPanel from './_protoMechPlay';
+import MicroMech from '../../../../classes/micro-mech';
+import MicroMechPlayPanel from './_microMechPlay';
 import { IBattleArmorCarrierLoad, getBattleArmorCarrierLoad, isCarrierWeaponBlocked } from '../../../../classes/battle-armor-transport';
 import BattledroidsUnit from '../../../../classes/battledroids-unit';
 import BattledroidsPlayPanel from './_battledroidsPlay';
@@ -876,7 +878,7 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
       });
     }
 
-    onVehicleChange = ( _vehicle: Vehicle | AerospaceFighter | SmallCraft | CapitalShip | InfantryPlatoon | BattleArmor | ProtoMech | Building | BattledroidsUnit ): void => {
+    onVehicleChange = ( _vehicle: Vehicle | AerospaceFighter | SmallCraft | CapitalShip | InfantryPlatoon | BattleArmor | ProtoMech | MicroMech | Building | BattledroidsUnit ): void => {
       if(this.props.appGlobals.currentCBTForce) {
         this.props.appGlobals.saveCurrentCBTForce( this.props.appGlobals.currentCBTForce );
       }
@@ -927,6 +929,9 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
           }
           for( const point of group.protoMechs ) {
             point.resetInPlay();
+          }
+          for( const micro of group.microMechs ) {
+            micro.resetInPlay();
           }
           for( const building of group.buildings ) {
             building.resetInPlay();
@@ -1465,6 +1470,15 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
           }
         }
       }
+      // And a Micro-Mech (fan-made, #173).
+      let selectedMicroMech: MicroMech | null = null;
+      for( const group of this.props.appGlobals.currentCBTForce.groups ) {
+        for( const micro of group.microMechs ) {
+          if( micro.getUUID() === this.state.selectedVehicleUUID ) {
+            selectedMicroMech = micro;
+          }
+        }
+      }
       // And a Battledroids tank, jeep or infantry squad.
       let selectedBattledroidsUnit: BattledroidsUnit | null = null;
       for( const group of this.props.appGlobals.currentCBTForce.groups ) {
@@ -1484,7 +1498,7 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
         }
       }
       // The selected unit's quirks, in the same order the panels below are chosen; units without quirks show none.
-      const quirkCarrier: IQuirkCarrier | null = selectedBattledroidsUnit || selectedBuilding || selectedInfantry || selectedProtoMech ? null
+      const quirkCarrier: IQuirkCarrier | null = selectedBattledroidsUnit || selectedBuilding || selectedInfantry || selectedProtoMech || selectedMicroMech ? null
         : selectedBattleArmor ?? selectedFighter ?? selectedSmallCraft ?? selectedCapitalShip ?? selectedVehicle ?? selectedMech;
       return (
         <>
@@ -3127,6 +3141,12 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
               point={selectedProtoMech}
               onChange={this.onVehicleChange}
             />
+          ) : selectedMicroMech ? (
+            <MicroMechPlayPanel
+              key={selectedMicroMech.getUUID()}
+              micro={selectedMicroMech}
+              onChange={this.onVehicleChange}
+            />
           ) : selectedFighter ? (
             <FighterPlayPanel
               key={selectedFighter.getUUID()}
@@ -3417,6 +3437,36 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
                                 currentNumber={point.getActiveUnits()}
                                 height={8}
                                 title="ProtoMechs Active"
+                              />
+                            </div>
+                          )}
+                        </div>
+                      </button>
+                      <hr />
+                    </li>
+                  ))}
+                  {group.microMechs.map( (micro) => (
+                    <li key={micro.getUUID()}>
+                      <button
+                        onClick={(e) => this.selectVehicle(e, micro.getUUID())}
+                        className={selectedMicroMech && selectedMicroMech.getUUID() === micro.getUUID() ? "btn btn-sm btn-primary full-width" : "btn btn-sm btn-secondary full-width"}
+                        title={"Select " + micro.getDisplayName()}
+                      >
+                        {micro.getDisplayName()}
+                        <div className="stats">
+                          {micro.isDestroyed() ? (
+                            <h3 className="color-red text-center">
+                              DESTROYED
+                            </h3>
+                          ) : (
+                            <div className="bars">
+                              <StatBar
+                                color="white"
+                                background="#aaa"
+                                currentPercentage={Math.round(micro.getLocations().reduce((sum, location) => sum + micro.getArmorLeft(location), 0) / Math.max(1, micro.getArmorPoints()) * 100)}
+                                currentNumber={micro.getLocations().reduce((sum, location) => sum + micro.getArmorLeft(location), 0)}
+                                height={8}
+                                title="Armor Left"
                               />
                             </div>
                           )}

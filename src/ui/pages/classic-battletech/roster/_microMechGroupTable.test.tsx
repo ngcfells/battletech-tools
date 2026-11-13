@@ -42,6 +42,21 @@ describe("Micro-Mech roster table (#173, Chunk E)", () => {
         expect(container.querySelector('[data-testid="micro-mech-group-table"]')).toBeNull();
     });
 
+    it("sets the pilot's Gunnery and Piloting, and the group's Battle Value takes the skill multiplier (Chunk F)", () => {
+        const { force, appGlobals, saveCurrentCBTForce } = setup([]);
+        const micro = new MicroMech(JSON.stringify(save()));
+        force.groups[0].microMechs.push(micro);
+        const base = force.groups[0].getTotalBattleValue();
+        expect(base).toBe(micro.getBattleValue());
+        render(<MicroMechGroupTable appGlobals={appGlobals} bmGroupIndex={0} showAdd={false} showEdit={true} />);
+        fireEvent.change(screen.getByLabelText("Micro-Mech gunnery skill"), { target: { value: "3" } });
+        fireEvent.change(screen.getByLabelText("Micro-Mech piloting skill"), { target: { value: "4" } });
+        expect([micro.getGunnery(), micro.getPiloting()]).toEqual([3, 4]);
+        expect(force.groups[0].getTotalBattleValue()).toBe(micro.getSkillAdjustedBattleValue());
+        expect(force.groups[0].getTotalBattleValue()).toBeGreaterThan(base);
+        expect(saveCurrentCBTForce).toHaveBeenCalled();
+    });
+
     it("lists a group's Micro-Mech with its tonnage and Battle Value", () => {
         const { force, appGlobals } = setup([]);
         force.groups[0].microMechs.push(new MicroMech(JSON.stringify(save())));

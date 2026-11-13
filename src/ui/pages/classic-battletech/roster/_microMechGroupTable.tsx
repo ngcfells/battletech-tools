@@ -8,7 +8,7 @@ const Trash = FaTrash as any;
 /**
  * The Micro-Mechs (fan-made, Custom Homebrew) in a Classic BattleTech roster group: add saved designs from the
  * Micro-Mech Creator. They are not on the Master Unit List, so there is no search button. The Battle Value is the
- * design's own (provisional); the pilot skill multiplier waits for the play mode.
+ * design's own (provisional) times the 'Mech skill multiplier for the pilot's Gunnery and Piloting.
  */
 export default class MicroMechGroupTable extends React.Component<IMicroMechGroupTableProps, IMicroMechGroupTableState> {
 
@@ -80,11 +80,22 @@ export default class MicroMechGroupTable extends React.Component<IMicroMechGroup
                         <th>Micro-Mech (fan-made, NOT OFFICIAL)</th>
                         <th className="min-width no-wrap text-center">Tons</th>
                         <th className="min-width no-wrap text-center">Move</th>
+                        <th className="min-width no-wrap text-center">Gunnery</th>
+                        <th className="min-width no-wrap text-center">Piloting</th>
                         <th className="min-width no-wrap text-center">BV</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {micros.map( (micro, index) => (
+                    {micros.map( (micro, index) => {
+                        const edition = this.props.appGlobals.currentCBTForce?.rulesEdition;
+                        const adjustedBV = formatBattleValue((each) => micro.getSkillAdjustedBattleValue(each), "mech", edition);
+                        const baseBV = formatBattleValue((each) => micro.getBattleValue(each), "mech", edition);
+                        const skill = (label: string, value: number, set: (skill: number) => void) => this.props.showEdit ? (
+                            <select aria-label={`Micro-Mech ${label} skill`} value={value} onChange={(e) => { set(+e.currentTarget.value); this._save(); this.forceUpdate(); }}>
+                                {[0, 1, 2, 3, 4, 5, 6, 7, 8].map( (each) => <option key={each} value={each}>{each}</option> )}
+                            </select>
+                        ) : value;
+                        return (
                         <tr key={micro.getUUID()}>
                             {this.props.showEdit ? (
                                 <td className="min-width no-wrap text-center">
@@ -103,14 +114,20 @@ export default class MicroMechGroupTable extends React.Component<IMicroMechGroup
                             </td>
                             <td className="min-width no-wrap text-center">{micro.getTons()}</td>
                             <td className="min-width no-wrap text-center">{micro.getWalkMP()}/{micro.getRunMP()}{micro.getJumpMP() > 0 ? `/${micro.getJumpMP()}` : ""}</td>
-                            <td className="min-width no-wrap text-center">{formatBattleValue((edition) => micro.getBattleValue(edition), "mech", this.props.appGlobals.currentCBTForce?.rulesEdition)}</td>
+                            <td className="min-width no-wrap text-center">{skill("gunnery", micro.getGunnery(), (value) => micro.setGunnery(value))}</td>
+                            <td className="min-width no-wrap text-center">{skill("piloting", micro.getPiloting(), (value) => micro.setPiloting(value))}</td>
+                            <td className="min-width no-wrap text-center">
+                                {adjustedBV}
+                                {adjustedBV !== baseBV ? <div className='small-text'>Base: {baseBV}</div> : null}
+                            </td>
                         </tr>
-                    ))}
+                        );
+                    })}
                 </tbody>
                 {this.props.showAdd ? (
                     <tfoot>
                         <tr>
-                            <td colSpan={this.props.showEdit ? 5 : 4}>
+                            <td colSpan={this.props.showEdit ? 7 : 6}>
                                 {saves.length > 0 ? (
                                     <>
                                         <select

@@ -314,7 +314,7 @@ play rules as notes in our own words, the credit, and the sheet trademark notice
 - [x] **Step 3:** Unit tests, `npm run check`, print the Storm and the Hillman and look at both sheets.
 - [x] **Step 4:** Commit `Custom Homebrew: Micro-Mech record sheet and roster (#173)`, push, ledger, handoff.
 
-## Chunk F: Play mode
+## Chunk F: Play mode (done 2026-11-13, cloud; ledger `progress-cloud-micro-f.md`)
 
 **Files:**
 - Modify: `src/classes/micro-mech.ts` (+ test), `src/ui/pages/classic-battletech/roster/play.tsx`
@@ -325,8 +325,8 @@ play rules as notes in our own words, the credit, and the sheet trademark notice
 `setSlotHit(location, slot, hit)`, `getPilotHits/setPilotHits`, `getShotsLeft/setShotsFired`, `getPlayMovement()`,
 `getPilotingModifier()`, `canFireEnergyWeapons()`, `isDestroyed()`.
 
-- [ ] **Step 1: Read** the document's rules section again and list each play rule with its effect in the ledger.
-- [ ] **Step 2: Failing tests**, one per rule, named for the rule, with the play rows of the Versions table tested
+- [x] **Step 1: Read** the document's rules section again and list each play rule with its effect in the ledger.
+- [x] **Step 2: Failing tests**, one per rule, named for the rule, with the play rows of the Versions table tested
   under both versions: damage moves from a limb or the head to the
   torso; half of what goes past the torso structure hits the 3-point cockpit and each cockpit point is a pilot
   hit; the pilot takes no hit from head or ordinary torso damage and 3 from an ammunition explosion (cockpit
@@ -335,10 +335,10 @@ play rules as notes in our own words, the credit, and the sheet trademark notice
   leg hit is +2 and -2 Walking MP, an upper leg hit +2 and half MP, cumulative; arm group hits are +2 and +4 to
   hit, not cumulative; a sensor hit is +4 to hit; each jump jet hit is -1 Jump MP; destroyed when the pilot is
   dead, the engine has two hits or the torso structure is gone.
-- [ ] **Step 3: Implement**, with the play panel showing the sheet's boxes, the current movement and modifiers, and
+- [x] **Step 3: Implement**, with the play panel showing the sheet's boxes, the current movement and modifiers, and
   the rules that need no tracking (stacking, line of sight, physical attacks, buildings, ejecting) as notes.
-- [ ] **Step 4:** Unit tests, `npm run check`, play a Storm through a destroyed leg and an engine hit in the app.
-- [ ] **Step 5:** Commit `Custom Homebrew: Micro-Mech play mode (#173)`, push, ledger, handoff.
+- [x] **Step 4:** Unit tests, `npm run check`, play a Storm through a destroyed leg and an engine hit in the app.
+- [x] **Step 5:** Commit `Custom Homebrew: Micro-Mech play mode (#173)`, push, ledger, handoff.
 
 ## Chunk G: Alpha Strike ruleset (design, then build)
 

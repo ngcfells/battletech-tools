@@ -86,7 +86,8 @@ export default class MicroMechRecordSheetSVG extends React.Component<IMicroMechR
     }
 
     renderSlotBox(micro: MicroMech, location: MicroMechLocation, x: number, y: number, w: number, rowH: number): JSX.Element {
-        const slots = micro.getSlots(location);
+        // The jump jets placed in the leg and torso slots, as the play mode hits them (Chunk F).
+        const slots = micro.getPlaySlots(location);
         const ranges = slotRanges(location);
         // The torso prints as two columns of six; every other location as one column cut into die-range bands.
         const columns = location === "torso" ? 2 : 1;
