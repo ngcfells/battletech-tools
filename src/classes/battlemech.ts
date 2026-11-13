@@ -5980,7 +5980,8 @@ export class BattleMech {
         }
         // A quirk's change to the heat built up (Combat Computer) never takes generated heat below 0 (CO p.225).
         const quirkHeat = quirksInPlay ? getQuirkHeatGenerated(this.quirks, this.getQuirkInstalledUuids(equipmentList), this.getQuirkPlayYear()) : 0;
-        const generated = Math.max(0, this.getActiveMoveHeat() + this.getActiveWeaponHeat(equipmentList, quirksInPlay) + quirkHeat);
+        const generated = Math.max(0, this.getActiveMoveHeat() + this.getActiveWeaponHeat(equipmentList, quirksInPlay) + quirkHeat)
+            + this.getEngineHitHeat();
 
         return generated - this.getActiveHeatDissipation();
     }
@@ -12568,7 +12569,22 @@ export class BattleMech {
             }
         }
 
+        // The custom Mini Engine's first hit is marked as two (u/VanillaPhysics, #249), so its second hit destroys it.
+        if( rv > 0 && this._engineType.tag === BattleMech.MINI_ENGINE_TAG ) {
+            rv++;
+        }
+
         return rv;
+    }
+
+    /**
+     * Heat a turn from engine hits, Heat Point Table (TW p.159): +5 for the first, +10 in all from the second.
+     * XXL engines have no rule of their own here (TO:AUE p.121); the Mini Engine follows them with its first hit
+     * marked as two (#249).
+     */
+    public getEngineHitHeat(): number {
+        const hits = this.engineHits();
+        return hits >= 2 ? 10 : hits === 1 ? 5 : 0;
     }
 
     public gyroHits(): number {

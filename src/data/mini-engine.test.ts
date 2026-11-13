@@ -73,6 +73,32 @@ describe("Mini Engine (#249)", () => {
         expect(mini.getChassisEquipmentViolations().some((text) => text.includes("Mini Engine"))).toBe(true);
     });
 
+    it("in play the first engine hit counts as two: +10 heat a turn, and the second hit destroys it", () => {
+        // Heat Point Table (TW p.159): first engine hit +5 a turn, second +10 in all. An XXL engine has no rule of
+        // its own for engine-hit heat (TO:AUE p.121), so the Mini Engine follows the table with its first hit marked twice.
+        const engineSlot = (mech: BattleMech, nth: number) =>
+            mech.getCriticals().centerTorso.map((slot, index) => (slot?.tag === "engine" ? index : -1)).filter((index) => index >= 0)[nth];
+        const mini = makeMech("mini-engine"), standard = makeMech("standard");
+        const quietHeat = mini.getTurnHeatDifference(), standardQuietHeat = standard.getTurnHeatDifference();
+
+        mini.toggleCritical("ct", engineSlot(mini, 0));
+        standard.toggleCritical("ct", engineSlot(standard, 0));
+        expect(mini.engineHits()).toBe(2);
+        expect(standard.engineHits()).toBe(1);
+        expect(mini.getEngineHitHeat()).toBe(10);
+        expect(standard.getEngineHitHeat()).toBe(5);
+        expect(mini.getTurnHeatDifference() - quietHeat).toBe(10);
+        expect(standard.getTurnHeatDifference() - standardQuietHeat).toBe(5);
+        expect(mini.isDestroyed()).toBe(false);
+
+        mini.toggleCritical("ct", engineSlot(mini, 1));
+        standard.toggleCritical("ct", engineSlot(standard, 1));
+        expect(mini.engineHits()).toBe(3);
+        expect(mini.isDestroyed()).toBe(true);
+        expect(standard.getEngineHitHeat()).toBe(10);
+        expect(standard.isDestroyed()).toBe(false);
+    });
+
     it("battle value treats it as a standard engine (engine modifier 1.0)", () => {
         const standard = makeMech("standard"), mini = makeMech("mini-engine");
         const engineStep = (mech: BattleMech) => JSON.stringify(mech.getBattleValueBreakdown("total-warfare")).match(/Engine modifier \(([^)]*)\)[^}]*?"detail":"([^"]*)"/);
