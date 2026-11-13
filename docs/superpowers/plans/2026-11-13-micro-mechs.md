@@ -5,7 +5,7 @@
 > session is cleared before the next chunk. Do not run two chunks in one session. Steps use checkbox (`- [ ]`) syntax.
 
 **Goal:** A Micro-Mech (a fan-made 10 to 19 ton walker with one torso) can be built, saved, printed on its own
-record sheet and added to a roster, under the Custom Homebrew rules level.
+record sheet, added to a roster and played, with an Alpha Strike card, under the Custom Homebrew rules level.
 
 **Architecture:** A unit type of its own, after the ProtoMech's pattern: one class (`MicroMech`), one construction
 data file, one equipment table file, its own creator pages and record sheet. It is **not** a 'Mech type and touches
@@ -35,7 +35,7 @@ The rules summary, the sample checks and every call made while planning are in t
   number is needed, read the BattleMech rule in the books the document names (BattleTech Master Rules, Revised;
   Maximum Tech; Tactical Handbook) and cite the page read.
 - Credit on the creator page, the record sheet and every equipment record's notes, in the wording the owner
-  approves (question 1). Until then: "Micro-Mechs v6.1.0.2: original author unknown; revised with Discord, who
+  settles (owner ruling 1). Until then: "Micro-Mechs v6.1.0.2: original author unknown; revised with Discord, who
   wrote the Battle Value, cost and conversion appendices."
 - New equipment records go in the Custom Homebrew catalogs with their tags in
   `src/data/__fixtures__/tech-lists.json`. No record is added to, or changed in, a canon catalog.
@@ -55,29 +55,31 @@ push; append to the ledger what was built and every call that was ours; rewrite 
 |---|---|---|
 | A | Construction core: the class, weights, slots, armor, save format | Opus 5.5 |
 | B | Equipment table records, mounts, ammunition, heat sinks | Sonnet 5.5 |
-| C | Cost and Battle Value, checked against the document's samples | Fable 5.2 |
+| C | Cost, the document's Battle Value and our provisional BV2 | Fable 5.2 |
 | D | Creator pages, saves, menus | Sonnet 5.5 |
 | E | Record sheet, print, roster | Sonnet 5.5 |
-| F | Sample designs, verify, report | Sonnet 5.5 |
+| F | Play mode: damage, criticals, pilot, movement | Opus 5.5 |
+| G | Alpha Strike ruleset: design it, then the card | Fable 5.2 |
+| H | Sample designs, verify, report | Sonnet 5.5 |
 
-## Owner questions (answer before Chunk A; none blocks reading)
+## Owner rulings (2026-11-13)
 
-1. **Credit.** The document names no author: the original writer is unknown, the reviser is unnamed, and
-   "Discord" (a handle) wrote the appendices. Is the wording under Global Constraints right, and do you know the
-   reviser's name or where the file came from?
-2. **Battle Value.** The document's BV is Battle Value 1 with its own changes and its own per-weapon figures. Plan:
-   show that one value under every edition, marked provisional, and invent no BV2. OK?
-3. **Alpha Strike.** The document converts to BattleForce 2 only. Plan: no Alpha Strike card in this plan. OK?
-4. **Samples.** Ship the document's four designs as bundled samples? The Tunnel Rat's printed mass (90 tons), cost
-   and BV are corrupt, so it would carry our figures and a note.
-5. **Free heat sinks.** The text says engine rating / 10, rounded down; two samples show one more. Plan: the text.
-6. **Ranges.** The table gives no ranges. Items we already hold use our record's range. For the rest (Recoilless
-   Rifles, Light and Heavy Mortar, Grenade Launcher, Caseless Autocannons, ELRM sizes we lack), plan: read the
-   range in Maximum Tech or the Tactical Handbook, and leave out and list any that cannot be read. OK?
-7. **Dates.** The document's history starts in 2930 in the deep Periphery; its samples are dated 3067. Plan: no
-   date limit on the chassis; each weapon keeps its own date.
-8. **Play mode.** This plan ends at build, print and roster listing, with the play rules printed as notes. Damage
-   tracking in play would be a later plan. OK?
+1. **Credit and reference.** The owner recalls Micro-Mechs as an article in a magazine or fanzine. Not found yet:
+   no held magazine or fanzine extract carries it (searched the library text for the title and for the names in
+   its history; the only "Micro-Mech" hits are BattleTechnology 15 and 16, where the word means Elementals). One
+   lead: a DeviantArt post, "Micro-Mechs for BattleTech, Part 1", by the user Solarmech, with the same construction
+   wording. The cloud network blocks that site, so it was not read. **Chunk A, Step 0: read that post** (and any
+   later parts) and take the author, date and any printed source from it; until then the credit stays as under
+   Global Constraints, and the unnamed reviser is not called Solarmech on the strength of a search snippet.
+2. **Battle Value.** Two figures. The document's own (Battle Value 1 with its changes) for BV1 editions, and a
+   **provisional BV2 of ours** for BV2 editions, made by running the document's changes over the BV2 procedure
+   (TechManual) with each item's BV2 figure. Both are marked provisional and the notes say the BV2 is ours.
+3. **Alpha Strike.** We write an Alpha Strike ruleset for Micro-Mechs (Chunk G). It is ours, marked NOT OFFICIAL.
+4. **Samples.** Yes: ship the four designs, the Tunnel Rat with our figures and a note.
+5. **Free heat sinks.** Follow the rules text: engine rating / 10, rounded down.
+6. **Ranges.** The book's range where a book prints the weapon; otherwise extrapolate, and say so in the notes.
+7. **Dates.** No date limit on the chassis; each weapon keeps its own date.
+8. **Play mode.** Built in (Chunk F).
 
 ## Review Focus
 
@@ -109,6 +111,9 @@ push; append to the ledger what was built and every call that was ours; rewrite 
   `isSealed/setSealed`, `getFreeHeatSinks`, `getSlots(location)`, `getFreeSlots(location)`.
 - `IMicroMechExport` and `normalizeMicroMechExport(raw)`, after `normalizeProtoMechExport`.
 
+- [ ] **Step 0: The reference** (owner ruling 1). Read the DeviantArt post named there, on a machine that can reach
+  it. Put the author, date and any printed source in the ledger and in the credit wording. If it names a magazine or
+  fanzine, look for that issue in the library and tell the owner whether it is held.
 - [ ] **Step 1: Read** the document's Construction section and both record sheets, and the ledger's summary.
   Confirm each number below against the raw text before typing it.
 - [ ] **Step 2: Write the failing tests.** The four sample designs are the fixtures. Each line of each sample's
@@ -143,8 +148,8 @@ it.each([
   `mechEngineOptions` (as `ProtoMech.getEngineWeight` reads it), x 1.25, rounded **up** to 250 kg. Installed
   rating: tonnage x Walking MP, rounded up to the next rating the table lists. Gyro: rating / 100, rounded up to
   250 kg. Keep every weight in whole kilograms (armor is counted in points; its weight is points x 62.5, and the
-  total must come to a quarter-ton step: an odd half-point lot is an issue, not a rounding). Free heat sinks per
-  owner answer 5. The class holds no equipment yet: Chunk B adds mounts.
+  total must come to a quarter-ton step: an odd half-point lot is an issue, not a rounding). Free heat sinks: rating / 10, rounded down
+  (owner ruling 5). The class holds no equipment yet: Chunk B adds mounts.
 - [ ] **Step 5:** Unit tests and `npm run check`.
 - [ ] **Step 6:** Commit `Custom Homebrew: Micro-Mech construction core (#173)`, push, ledger, handoff.
 
@@ -165,7 +170,9 @@ it.each([
   `getHeatSinks`, `setExtraHeatSinks`, `getEnergyHeat`, `getPowerAmplifierWeight`.
 
 - [ ] **Step 1: Read** both tables in the raw text. List in the ledger every row that has no record in our
-  catalogs, and the range source found for it (owner answer 6).
+  catalogs, and the range source found for it (owner ruling 6): the page read in
+  Maximum Tech, the Tactical Handbook or a later book, or "extrapolated by us" with the reasoning (for a tube
+  launcher size we lack, the range of its launcher family).
 - [ ] **Step 2: Failing tests.** Pin a spread of rows exactly as printed, at least: ER Small Laser (heat 2,
   damage 3, 500 kg, 1 slot, 11,250, BV 17); Large Laser (8, 8, 5,000, 2, 100,000, 124); Machine Gun (0, 2, 500, 1,
   5,000, 5); LRM 9 (3,600 kg, 2 slots, 99,900, BV 78; 4/7/10/13 shots per quarter-ton step); SRM 6 (3,000 kg, 2
@@ -190,7 +197,8 @@ it.each([
 - Modify: `src/classes/micro-mech.ts`, `src/classes/micro-mech.test.ts`
 
 **Interfaces (produces):** `getCBillCost()`, `getCostBreakdown()`, `getBattleValue(edition?)`,
-`getBattleValueBreakdown()`, `isBattleValueProvisional(): true`, in the step-trace shape #599 uses
+`getBattleValueBreakdown(edition?)`, `isBattleValueProvisional(): true`, through `getBattleValueFor` in
+`src/data/battle-value.ts` so a BV1 edition gets the document's figure and a BV2 edition ours, in the step-trace shape #599 uses
 (`src/data/calc-steps.ts`), each step citing the document's appendix or the Master Rules page read.
 
 - [ ] **Step 1: Read** the document's cost and Battle Value appendices, then the pages they stand on: the cost table
@@ -204,8 +212,16 @@ it.each([
   1,073,387 and 531. Where our figure from the rules text agrees, pin it as a test. Where it does not, do **not**
   tune: record both figures and the step where they part in the ledger, show "the document prints N" on the
   breakdown, and bring it to the owner. The Tunnel Rat's printed figures are corrupt and are not targets.
-- [ ] **Step 4: Implement**, unit tests, `npm run check`.
-- [ ] **Step 5:** Commit `Custom Homebrew: Micro-Mech cost and Battle Value (#173)`, push, ledger, handoff.
+- [ ] **Step 4: Provisional BV2** (owner ruling 2). Read the BV2 procedure for 'Mechs (TechManual; the #599 step
+  table `src/data/calc-steps-mech-bv2.ts` has the pages). Carry each of the document's changes across, and write
+  down in the ledger, one line each, what the change becomes under BV2 and why: tonnage in the defensive rating;
+  the ammunition penalties (BV2 counts explosive ammunition per slot, the document per ton: state the conversion
+  chosen); +0.1 on the defensive factor; no heat steps, so no heat efficiency limit on weapons; part-ton
+  ammunition. Each item uses its BV2 figure from our catalogs through `canonTag`; an item with no BV2 figure
+  anywhere keeps the document's figure and the breakdown says so. Every step is `provisional` with a note. Tests
+  pin the steps, not a target number: there is no published BV2 to match.
+- [ ] **Step 5: Implement**, unit tests, `npm run check`.
+- [ ] **Step 6:** Commit `Custom Homebrew: Micro-Mech cost and Battle Value (#173)`, push, ledger, handoff.
 
 ## Chunk D: Creator, saves, menus
 
@@ -242,15 +258,60 @@ play rules as notes in our own words, the credit, and the sheet trademark notice
 
 - [ ] **Step 1:** Failing tests (the sheet renders each sample; the roster totals include a Micro-Mech's BV; an
   older roster without `microMechs` still loads).
-- [ ] **Step 2:** Implement. No play-mode tracking (owner question 8).
+- [ ] **Step 2:** Implement. Play-mode tracking is Chunk F; keep the sheet's boxes addressable for it.
 - [ ] **Step 3:** Unit tests, `npm run check`, print the Storm and the Hillman and look at both sheets.
 - [ ] **Step 4:** Commit `Custom Homebrew: Micro-Mech record sheet and roster (#173)`, push, ledger, handoff.
 
-## Chunk F: Samples, verify, report
+## Chunk F: Play mode
 
-- [ ] **Step 1:** If the owner said yes to question 4: `src/data/micro-mech-samples.ts` after `pam-samples.ts`, the
+**Files:**
+- Modify: `src/classes/micro-mech.ts` (+ test), `src/ui/pages/classic-battletech/roster/play.tsx`
+- Create: `src/ui/pages/classic-battletech/roster/_microMechPlay.tsx` (+ test), after `_protoMechPlay.tsx`
+
+**Interfaces (produces):** on `MicroMech`, an in-play state saved with the roster: `getInPlay`, `resetInPlay`,
+`applyDamage(location, points, rear?)`, `getArmorLeft`, `getStructureLeft`, `getCockpitArmorLeft`,
+`setSlotHit(location, slot, hit)`, `getPilotHits/setPilotHits`, `getShotsLeft/setShotsFired`, `getPlayMovement()`,
+`getPilotingModifier()`, `canFireEnergyWeapons()`, `isDestroyed()`.
+
+- [ ] **Step 1: Read** the document's rules section again and list each play rule with its effect in the ledger.
+- [ ] **Step 2: Failing tests**, one per rule, named for the rule: damage moves from a limb or the head to the
+  torso; half of what goes past the torso structure hits the 3-point cockpit and each cockpit point is a pilot
+  hit; the pilot takes no hit from head or ordinary torso damage and 3 from an ammunition explosion (cockpit
+  spared by CASE); the head and limb tables roll 1D6 over two or three slots; the first engine hit stops energy
+  weapons and the second destroys the unit; a gyro hit loses the +1 and gives -4, no running or jumping; a lower
+  leg hit is +2 and -2 Walking MP, an upper leg hit +2 and half MP, cumulative; arm group hits are +2 and +4 to
+  hit, not cumulative; a sensor hit is +4 to hit; each jump jet hit is -1 Jump MP; destroyed when the pilot is
+  dead, the engine has two hits or the torso structure is gone.
+- [ ] **Step 3: Implement**, with the play panel showing the sheet's boxes, the current movement and modifiers, and
+  the rules that need no tracking (stacking, line of sight, physical attacks, buildings, ejecting) as notes.
+- [ ] **Step 4:** Unit tests, `npm run check`, play a Storm through a destroyed leg and an engine hit in the app.
+- [ ] **Step 5:** Commit `Custom Homebrew: Micro-Mech play mode (#173)`, push, ledger, handoff.
+
+## Chunk G: Alpha Strike ruleset (design, then build)
+
+The document converts to BattleForce 2 only. The owner asked for an Alpha Strike ruleset of our own.
+
+- [ ] **Step 1: Read** the document's BattleForce 2 appendix; the Alpha Strike conversion rules for BattleMechs and
+  for ProtoMechs (Alpha Strike Companion / Commander's Edition conversion chapter; cite the pages read); and how
+  `ProtoMech.getAlphaStrikeStats()` and `getAlphaStrikeUnit()` do it in code.
+- [ ] **Step 2: Write the ruleset** as `docs/superpowers/specs/<date>-micro-mech-alpha-strike.md`: unit type code
+  and size; Move from Walk and Jump MP; armor and structure (the document fixes BattleForce structure at 1: say
+  whether Alpha Strike keeps that); damage by range band from the weapons, with no overheat value; special
+  abilities, including one for each play rule that matters at this scale (pilot in the torso, no heat, cannot be
+  swarmed, vehicle for stacking and line of sight); Point Value. Each rule says which it is: taken from the
+  document's BattleForce 2 conversion, taken from the Alpha Strike conversion rules, or ours. Check it on the four
+  samples against the document's BattleForce 2 lines (the Tunnel Rat's is corrupt).
+- [ ] **Step 3: Bring the ruleset to the owner** in one message. Build only after the answer.
+- [ ] **Step 4: Failing tests, then build:** `getAlphaStrikeStats()` and `getAlphaStrikeUnit()` on `MicroMech`, a
+  `print-as.tsx` in the creator, the card marked NOT OFFICIAL with `MulSource` set (#593), and the unit offered in
+  the Alpha Strike roster's add page beside the other custom units.
+- [ ] **Step 5:** Unit tests, `npm run check`, commit `Custom Homebrew: Micro-Mech Alpha Strike rules (#173)`,
+  push, ledger, handoff. If the design and the build do not fit one session, stop after Step 3 and say so.
+
+## Chunk H: Samples, verify, report
+
+- [ ] **Step 1:** `src/data/micro-mech-samples.ts` after `pam-samples.ts`, the
   four designs, each with the document's name and a note for every place we differ from its print.
 - [ ] **Step 2:** `npm run check`; confirm no bundled design changed (the bundle tests).
-- [ ] **Step 3:** Comment on #173 with what is in and what is not (Alpha Strike, play mode, the RPG and DropShip
-  bay appendices). Leave the issue open if anything the owner asked for is still out.
+- [ ] **Step 3:** Comment on #173 with what is in and what is not (the RPG and DropShip bay appendices). Leave the issue open if anything the owner asked for is still out.
 - [ ] **Step 4:** Ask the owner about shipping. No deploy, `master` fast-forward or news entry without the answer.
