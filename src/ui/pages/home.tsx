@@ -179,6 +179,21 @@ export default class Home extends React.Component<IHomeProps, IHomeState> {
                   <ul className="news">
                   <li>
                   <h3>
+                      <strong>November 12th, 2026</strong> - Four fan-made items join Custom Homebrew, and play mode counts engine heat
+                    </h3>
+                    <h4>Author - NGCFells</h4>
+                      <ul>
+                        <li>Everything below needs the Custom Homebrew rules level to be offered. A design that already carries one still opens and shows it at any level. Each item's notes credit the author of the post it comes from and say "Inspired by" where a number or rule is ours.</li>
+                        <li>Permanent Air 'Mech (Red Pins and LAMFAN, BattleTech forums): a single-mode Land-Air 'Mech that stays an AirMech. It has no conversion equipment and no landing gear, keeps its avionics, and carries a ton of fuel. Wings weigh as an Inner Sphere partial wing (7% of its mass); a Heavy Permanent Air 'Mech of 56 to 75 tons has Cruise at twice its Jump MP and 15% wings. A sample picker in step 1 loads five of LAMFAN's Air-Slip Mech designs rebuilt under these rules: Sparrow SPW-2J, Magpie MGP-1E and MGP-3A, Dire Hawk DRH-4K and DRH-3D.</li>
+                        <li>Mini Engine (u/VanillaPhysics): critical slots of a standard engine, weight of a light engine, heat of an XXL engine, and destroyed on a second hit with the first counted as two. Not offered above rating 400 or on superheavies. Its Battle Value treatment is ours. The engine picker now lists custom engines too.</li>
+                        <li>Pile Bunker with its ammunition (u/FweeCom): a 5-ton, 5-slot melee weapon, 15 damage, 2 heat, three shots to the ton, explosive. The author calls the numbers tentative.</li>
+                        <li>Omni-Laser (u/heavyarmormecha): a 10-ton, 4-slot Inner Sphere laser from 3150, range 6/12/18, with Focus, Pulse and Dazzler modes described in its notes. The record carries the Focus mode's 20 heat and 16 damage. The posts give no cost or Battle Value, so both show as unverified.</li>
+                        <li>Play mode: engine hits now add heat for every 'Mech (5 a turn after the first hit, 10 after the second), and an XXL or Mini Engine adds movement heat in play (2 standing, 4 walking, 6 running, jumping doubled with a minimum of 6).</li>
+                        <li>Not built yet: AirMech movement in play (enhancement #634), the Pile Bunker's Piloting roll and the Omni-Laser's mode choice in play.</li>
+                      </ul>
+                  </li>
+                  <li>
+                  <h3>
                       <strong>November 12th, 2026</strong> - Nine more 'Mech Battle Values traced to their cause
                     </h3>
                     <h4>Author - NGCFells</h4>
