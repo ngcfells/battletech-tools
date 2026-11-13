@@ -275,7 +275,7 @@ it.each([
 - [x] **Step 5: Implement**, unit tests, `npm run check`.
 - [x] **Step 6:** Commit `Custom Homebrew: Micro-Mech cost and Battle Value (#173)`, push, ledger, handoff.
 
-## Chunk D: Creator, saves, menus
+## Chunk D: Creator, saves, menus (done 2026-11-13, cloud; ledger `progress-cloud-micro-d.md`)
 
 **Files:**
 - Create: `src/ui/pages/classic-battletech/micro-mech-creator/` (`_router.tsx`, `_statusBar.tsx`, `home.tsx`,
@@ -289,11 +289,11 @@ it.each([
 Follow every place `ProtoMech` is wired (`grep -n -i protomech` over the files above lists them). Reuse the shared
 creator components (the game settings block, the status bar pattern); build nothing a second time.
 
-- [ ] **Step 1:** Failing tests: the creator link is absent below Custom Homebrew and present at it; a saved
+- [x] **Step 1:** Failing tests: the creator link is absent below Custom Homebrew and present at it; a saved
   Micro-Mech opens at any level; a backup with `microMechSaves` restores with a message for each cleaned value.
-- [ ] **Step 2:** Implement; the chassis page shows the credit and the "fan-made" mark.
-- [ ] **Step 3:** Unit tests, `npm run check`, then run the app and build the Storm by hand in the creator.
-- [ ] **Step 4:** Commit `Custom Homebrew: Micro-Mech creator (#173)`, push, ledger, handoff.
+- [x] **Step 2:** Implement; the chassis page shows the credit and the "fan-made" mark.
+- [x] **Step 3:** Unit tests, `npm run check`, then run the app and build the Storm by hand in the creator.
+- [x] **Step 4:** Commit `Custom Homebrew: Micro-Mech creator (#173)`, push, ledger, handoff.
 
 ## Chunk E: Record sheet, print, roster
 

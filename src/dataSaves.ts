@@ -11,6 +11,7 @@ import AerospaceFighter, { IAerospaceFighterExport, normalizeAerospaceFighterExp
 import InfantryPlatoon, { IInfantryPlatoonExport, normalizeInfantryPlatoonExport } from "./classes/infantry-platoon";
 import BattleArmor, { IBattleArmorExport, normalizeBattleArmorExport } from "./classes/battle-armor";
 import ProtoMech, { IProtoMechExport, normalizeProtoMechExport } from "./classes/protomech";
+import MicroMech, { IMicroMechExport, normalizeMicroMechExport } from "./classes/micro-mech";
 import SmallCraft, { ISmallCraftExport, normalizeSmallCraftExport } from "./classes/small-craft";
 import CapitalShip, { ICapitalShipExport, normalizeCapitalShipExport } from "./classes/capital-ship";
 import Building, { IBuildingExport, normalizeBuildingExport } from "./classes/building";
@@ -78,6 +79,9 @@ export interface IFullBackup {
     currentBattleArmor?: string | null;
     protoMechSaves?: IProtoMechExport[];
     currentProtoMech?: string | null;
+    // Micro-Mechs (Custom Homebrew); optional so older backups still restore.
+    microMechSaves?: IMicroMechExport[];
+    currentMicroMech?: string | null;
     smallCraftSaves?: ISmallCraftExport[];
     currentSmallCraft?: string | null;
     // JumpShips, WarShips and space stations; optional so older backups still restore.
@@ -115,6 +119,8 @@ export async function getFullBackup(
         currentBattleArmor: await getCurrentBattleArmor(appSettings),
         protoMechSaves: await getProtoMechSaves(appSettings),
         currentProtoMech: await getCurrentProtoMech(appSettings),
+        microMechSaves: await getMicroMechSaves(appSettings),
+        currentMicroMech: await getCurrentMicroMech(appSettings),
         smallCraftSaves: await getSmallCraftSaves(appSettings),
         currentSmallCraft: await getCurrentSmallCraft(appSettings),
         capitalShipSaves: await getCapitalShipSaves(appSettings),
@@ -143,6 +149,8 @@ export const MAX_INFANTRY_SAVES = 500;
 /** Most saved battle armor designs read from storage or a backup. */
 export const MAX_BATTLE_ARMOR_SAVES = 500;
 export const MAX_PROTOMECH_SAVES = 500;
+/** Most saved Micro-Mech designs read from storage or a backup. */
+export const MAX_MICRO_MECH_SAVES = 500;
 export const MAX_SMALL_CRAFT_SAVES = 500;
 export const MAX_CAPITAL_SHIP_SAVES = 500;
 /** Most saved buildings read from storage or a backup. */
@@ -581,6 +589,49 @@ export function restoreFullBackup(
         }
     }
 
+    if( Array.isArray(io.microMechSaves) ) {
+        // Saved Micro-Mechs in a backup may come from someone else: clean each one and report what changed.
+        if( io.microMechSaves.length > MAX_MICRO_MECH_SAVES ) {
+            restoreMessages.push(warning("Only the first " + MAX_MICRO_MECH_SAVES + " of " + io.microMechSaves.length + " saved Micro-Mechs are restored"));
+        }
+        for( const rawItem of io.microMechSaves.slice(0, MAX_MICRO_MECH_SAVES) ) {
+            const normalized = normalizeMicroMechExport( rawItem );
+            const item = normalized.micro;
+            for( const issue of normalized.issues ) {
+                restoreMessages.push({ severity: "warning", message: "Saved Micro-Mech '" + (item?.name || "(nameless)") + "': " + issue });
+            }
+            if( !item ) {
+                continue;
+            }
+            const itemName = item.name || "(nameless)";
+            const existingIndex = appGlobals.microMechSaves.findIndex( (existing) => existing.uuid === item.uuid );
+            if( existingIndex > -1 ) {
+                restoreMessages.push({
+                    severity: "replace",
+                    message: "Replace Saved Micro-Mech '" + (appGlobals.microMechSaves[existingIndex].name || "(nameless)") + "' with '" + itemName + "'",
+                });
+                if( performActions ) {
+                    appGlobals.microMechSaves[existingIndex] = item;
+                }
+            } else {
+                restoreMessages.push({
+                    severity: "add",
+                    message: "Add to your Saved Micro-Mechs: '" + itemName + "'",
+                })
+                if( performActions ) {
+                    appGlobals.microMechSaves.push( item )
+                }
+            }
+        }
+    }
+
+    const currentMicroMechPrefix = conditional( overWriteCurrentBattlemech, "current Micro-Mech" );
+    if( currentMicroMechPrefix !== null && typeof io.currentMicroMech === "string" && io.currentMicroMech ) {
+        for( const issue of new MicroMech(io.currentMicroMech).getImportIssues() ) {
+            restoreMessages.push(warning(currentMicroMechPrefix + "Current Micro-Mech: " + issue));
+        }
+    }
+
     if( Array.isArray(io.smallCraftSaves) ) {
         // Saved Small Craft in a backup may come from someone else: clean each one and report what changed.
         if( io.smallCraftSaves.length > MAX_SMALL_CRAFT_SAVES ) {
@@ -730,6 +781,9 @@ export function restoreFullBackup(
         if( typeof io.currentProtoMech === "string" && io.currentProtoMech ) {
             appGlobals.currentProtoMech = new ProtoMech(io.currentProtoMech);
         }
+        if( typeof io.currentMicroMech === "string" && io.currentMicroMech ) {
+            appGlobals.currentMicroMech = new MicroMech(io.currentMicroMech);
+        }
         if( typeof io.currentSmallCraft === "string" && io.currentSmallCraft ) {
             appGlobals.currentSmallCraft = new SmallCraft(io.currentSmallCraft);
         }
@@ -837,6 +891,9 @@ export function restoreFullBackup(
         appGlobals.saveProtoMechSaves( appGlobals.protoMechSaves );
         if( appGlobals.currentProtoMech )
             appGlobals.saveCurrentProtoMech( appGlobals.currentProtoMech );
+        appGlobals.saveMicroMechSaves( appGlobals.microMechSaves );
+        if( appGlobals.currentMicroMech )
+            appGlobals.saveCurrentMicroMech( appGlobals.currentMicroMech );
         appGlobals.saveSmallCraftSaves( appGlobals.smallCraftSaves );
         if( appGlobals.currentSmallCraft )
             appGlobals.saveCurrentSmallCraft( appGlobals.currentSmallCraft );
@@ -1267,6 +1324,50 @@ export async function getCurrentProtoMech(
     return await getData(
         appSettings,
         "currentProtoMech"
+    );
+}
+
+export function saveMicroMechSaves(
+    appSettings: AppSettings,
+    newValue: IMicroMechExport[]
+) {
+    saveData(appSettings, "microMechSaves", JSON.stringify(newValue) );
+}
+
+export async function getMicroMechSaves(
+    appSettings: AppSettings,
+): Promise<IMicroMechExport[]> {
+    let rv: IMicroMechExport[] = [];
+
+    const rawData = await getData(appSettings, "microMechSaves" );
+    try {
+        if( rawData )
+            rv = JSON.parse( rawData );
+
+        // Clean stored Micro-Mechs before anything renders them (restored backups included).
+        rv = Array.isArray( rv ) ? rv.slice( 0, MAX_MICRO_MECH_SAVES ).map( (item) => normalizeMicroMechExport( item ).micro )
+            .filter( (item): item is IMicroMechExport => item !== null ) : [];
+    }
+    catch {
+        rv = [];
+    }
+
+    return rv;
+}
+
+export function saveCurrentMicroMech(
+    appSettings: AppSettings,
+    newValue: string,
+) {
+    saveData(appSettings, "currentMicroMech", newValue );
+}
+
+export async function getCurrentMicroMech(
+    appSettings: AppSettings,
+): Promise<string | null> {
+    return await getData(
+        appSettings,
+        "currentMicroMech"
     );
 }
 

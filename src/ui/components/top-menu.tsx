@@ -5,6 +5,7 @@ import { Link } from 'react-router';
 import { CONST_BATTLETECH_URL } from '../../configVars';
 import { IAppGlobals } from '../app-router';
 import BattleTechLogo from './battletech-logo';
+import { microMechCreatorOffered } from './micro-mech-offer';
 import './top-menu.scss';
 const Bars = FaBars as any;
 
@@ -307,6 +308,20 @@ export default class TopMenu extends React.Component<ITopMenuProps, ITopMenuStat
         );
 
 
+    }
+
+    // The Micro-Mech Creator is Custom Homebrew: its link follows the rules level (or a saved design), after ProtoMechs.
+    if( microMechCreatorOffered(this.props.appGlobals) ) {
+        for( const menu of menuStructure ) {
+            const protoIndex = menu.subMenu?.findIndex( (item) => item.tag === "classic-battletech-protomech-creator" ) ?? -1;
+            if( menu.subMenu && protoIndex > -1 ) {
+                menu.subMenu.splice( protoIndex + 1, 0, {
+                    label: "Micro-Mech Creator",
+                    url: "/classic-battletech/micro-mech-creator",
+                    tag: "classic-battletech-micro-mech-creator",
+                });
+            }
+        }
     }
 
     let currentSubmenu: IMenuDef[] = [];

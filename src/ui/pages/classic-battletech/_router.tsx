@@ -14,6 +14,7 @@ const FighterCreatorRouter = React.lazy(() => import("./fighter-creator/_router"
 const InfantryCreatorRouter = React.lazy(() => import("./infantry-creator/_router"));
 const BattleArmorCreatorRouter = React.lazy(() => import("./battle-armor-creator/_router"));
 const ProtoMechCreatorRouter = React.lazy(() => import("./protomech-creator/_router"));
+const MicroMechCreatorRouter = React.lazy(() => import("./micro-mech-creator/_router"));
 const SmallCraftCreatorRouter = React.lazy(() => import("./small-craft-creator/_router"));
 const CapitalShipCreatorRouter = React.lazy(() => import("./capital-ship-creator/_router"));
 const BuildingCreatorRouter = React.lazy(() => import("./building-creator/_router"));
@@ -65,6 +66,12 @@ export default class ClassicBattleTechRouter extends React.Component<IClassicBat
 
                 <Route path={`protomech-creator/*`} element={
                     <ProtoMechCreatorRouter
+                        appGlobals={this.props.appGlobals}
+                    />
+                }/>
+
+                <Route path={`micro-mech-creator/*`} element={
+                    <MicroMechCreatorRouter
                         appGlobals={this.props.appGlobals}
                     />
                 }/>
