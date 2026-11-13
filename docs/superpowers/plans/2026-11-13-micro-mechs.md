@@ -69,9 +69,7 @@ push; append to the ledger what was built and every call that was ours; rewrite 
    the article. The 6.1.0.2 document is another person's revision of a copy found online in late 2000, with
    appendices by Discord. Credit: "Micro-Mechs by Solarmech. This version (6.1.0.2) was revised by an unnamed
    editor with Discord, who wrote the Battle Value, cost and conversion appendices."
-   **Open:** the 2019 post differs from 6.1.0.2 (no quads, heavier shielding, jump jets and heat sinks, no head or
-   leg weapons, torso-only ammunition; the ledger has the table). Until the owner says otherwise this plan builds
-   **6.1.0.2**, the only complete text, and the unit's notes list where the author's 2019 post differs.
+   **Ruling (2026-11-13): both texts are offered, as selectable versions** (see Versions below).
 2. **Battle Value.** Two figures. The document's own (Battle Value 1 with its changes) for BV1 editions, and a
    **provisional BV2 of ours** for BV2 editions, made by running the document's changes over the BV2 procedure
    (TechManual) with each item's BV2 figure. Both are marked provisional and the notes say the BV2 is ours.
@@ -82,11 +80,55 @@ push; append to the ledger what was built and every call that was ours; rewrite 
 7. **Dates.** No date limit on the chassis; each weapon keeps its own date.
 8. **Play mode.** Built in (Chunk F).
 
+## Versions (owner ruling, 2026-11-13)
+
+A Micro-Mech carries a `version`, chosen first in the creator, saved with the design and printed on the sheet:
+
+- `"6.1.0.2"`: the revised document with Discord's appendices. The default: it is the only complete text.
+- `"solarmech-2019"`: the author's own post, "Micro-Mechs for BattleTech, Part 1"
+  (`ResourceLibrary/scrapes/deviantart/solarmech-micro-mechs-part-1-795743489.txt`).
+
+One class and one set of pages serve both. Every rule that differs is a field of a per-version rules record
+(`MICRO_MECH_VERSION_RULES` in `micro-mech-construction.ts`), never an `if (version === ...)` scattered through the
+class. Read each row below in both texts before typing it; the 2019 column was read in the saved post on 2026-11-13.
+
+| Rule | 6.1.0.2 | solarmech-2019 |
+|---|---|---|
+| Layouts | biped, quad | biped only |
+| Structure weight | 10 percent of tonnage | 10 percent, rounded up to the quarter ton (11 t = 1.25) |
+| Engine kinds | fusion, ICE | fusion, ICE, industrial fusion, industrial ICE, fuel cell |
+| Fusion shielding | x 1.25, up to the quarter ton | x 1.5, up to the quarter ton |
+| ICE weight | twice the fusion engine | not stated in Part 1: read the rule it falls back on, cite it |
+| Jump jet | 125 kg | 500 kg |
+| Heat sink | 125 kg, at most 10 extra | 500 kg, no limit stated |
+| Free heat sinks | rating / 10, down | rating / 25, down, at least 3 |
+| Power amplifiers (ICE) | 1 ton per 10 tons of energy weapons or part | 10 percent of them, up to the quarter ton |
+| Armor | standard | standard or industrial |
+| Head armor maximum | 2 x structure | 3 x structure |
+| Weapon locations | any | not the head, not the legs |
+| Ammunition locations | any | torso only |
+| Tech base | Inner Sphere table | any but Clan |
+| Sealing in vacuum | fusion | fusion or fuel cell |
+| Torso overflow to the cockpit (play) | half | all |
+| Gyro hit (play) | bonus lost, rolls 4 worse | rolls +4 |
+| Swamp (play) | cannot get stuck | can get stuck, with a +2 bonus |
+| Neurohelmet (play) | not mentioned | optional, a further -1 on Piloting rolls |
+| ICE in water (play) | floods after two turns under | destroyed at depth 1 without a snorkel; see the post |
+
+The 2019 post has **no equipment table, cost, Battle Value or samples** (it is Part 1 only). Under
+`solarmech-2019` the app uses the 6.1.0.2 equipment table, cost and Battle Value rules, and says so on the sheet and
+in the notes: "equipment, cost and Battle Value from version 6.1.0.2; the author's own tables are not published".
+Where a 6.1.0.2 row leans on a 6.1.0.2 weight (jump jets in the cost formula, heat sinks), the 2019 weight is
+used and the note says it is our joining of the two. If a Part 2 of the post is saved later, it replaces the
+borrowed tables. The four samples are 6.1.0.2 designs; three are illegal under `solarmech-2019` and are not offered
+there.
+
 ## Review Focus
 
 - A backup or roster holding a Micro-Mech opened by a build that predates the type: the restore must skip it with
   a message, not fail.
 - A user below Custom Homebrew: no menu link, but a saved Micro-Mech opens.
+- A design switched from one version to the other: issues listed, nothing silently removed or re-weighed wrong.
 - A weight a quarter ton over: reported as an issue, never rounded away. All weights are whole kilograms.
 - A torso whose front and rear armor together exceed twice its structure.
 - A fifth weapon, a split weapon, a banned item (AMS, hatchet, sword, MASC, Triple Strength Myomer).
@@ -100,7 +142,9 @@ push; append to the ledger what was built and every call that was ours; rewrite 
 - Create: `src/data/micro-mech-construction.ts`, `src/classes/micro-mech.ts`, `src/classes/micro-mech.test.ts`
 
 **Interfaces (produces):**
-- `MicroMechLayout = "biped" | "quad"`; `MicroMechLocation = "head" | "torso" | "torsoRear" | "la" | "ra" | "ll" |
+- `MicroMechVersion = "6.1.0.2" | "solarmech-2019"`, `MICRO_MECH_VERSION_RULES`, and on the class
+  `getVersion/setVersion` (changing it re-checks the design and reports what is no longer legal; it deletes
+  nothing). `MicroMechLayout = "biped" | "quad"`; `MicroMechLocation = "head" | "torso" | "torsoRear" | "la" | "ra" | "ll" |
   "rl" | "fll" | "frl"`; `MICRO_MECH_MIN_TONS = 10`, `MICRO_MECH_MAX_TONS = 19`.
 - `microMechStructureTable` (tons, head, torso, arm, leg) and `MICRO_MECH_SLOTS` (fixed and free slots by location).
 - `class MicroMech implements IGameSettingsUnit`, with the ProtoMech's method names where the meaning is the same
@@ -112,8 +156,8 @@ push; append to the ledger what was built and every call that was ours; rewrite 
   `isSealed/setSealed`, `getFreeHeatSinks`, `getSlots(location)`, `getFreeSlots(location)`.
 - `IMicroMechExport` and `normalizeMicroMechExport(raw)`, after `normalizeProtoMechExport`.
 
-- [ ] **Step 0: Which text governs.** Read the owner's answer in the handoff on 6.1.0.2 against the author's 2019
-  post (owner ruling 1). If there is none, build 6.1.0.2 as planned.
+- [ ] **Step 0: Read both texts' construction sections** and fill `MICRO_MECH_VERSION_RULES` from the Versions
+  table, correcting the table (and the ledger) wherever the page says otherwise.
 - [ ] **Step 1: Read** the document's Construction section and both record sheets, and the ledger's summary.
   Confirm each number below against the raw text before typing it.
 - [ ] **Step 2: Write the failing tests.** The four sample designs are the fixtures. Each line of each sample's
@@ -142,7 +186,11 @@ it.each([
   Steel, Ferro-Fibrous, XL or Light engine exists to choose; a biped has 26 slots (head 2, arms 3, legs 3,
   torso 12) of which 12 are free, 10 with both lower arms; a quad has no arms and four 3-slot legs; the required
   rules level is Custom Homebrew; `importJSON(exportJSON())` round-trips; `normalizeMicroMechExport` rejects
-  junk and clamps out-of-range values with an issue for each.
+  junk and clamps out-of-range values with an issue for each; a save with no `version` loads as 6.1.0.2.
+  Then the same design under `solarmech-2019`, one test per row of the Versions table: an 11-ton structure is
+  1,250 kg; a rating-70 fusion engine is 3,000 kg; a jump jet 500 kg; free heat sinks at rating 70 are 3 (at
+  least 3) and at 100 are 4; head armor may reach 6; a quad is refused; and switching the Storm to it reports
+  the overweight and nothing is removed.
 - [ ] **Step 3: See them fail.**
 - [ ] **Step 4: Implement.** Engine weight: the standard fusion weight for the installed rating from
   `mechEngineOptions` (as `ProtoMech.getEngineWeight` reads it), x 1.25, rounded **up** to 250 kg. Installed
@@ -274,7 +322,8 @@ play rules as notes in our own words, the credit, and the sheet trademark notice
 `getPilotingModifier()`, `canFireEnergyWeapons()`, `isDestroyed()`.
 
 - [ ] **Step 1: Read** the document's rules section again and list each play rule with its effect in the ledger.
-- [ ] **Step 2: Failing tests**, one per rule, named for the rule: damage moves from a limb or the head to the
+- [ ] **Step 2: Failing tests**, one per rule, named for the rule, with the play rows of the Versions table tested
+  under both versions: damage moves from a limb or the head to the
   torso; half of what goes past the torso structure hits the 3-point cockpit and each cockpit point is a pilot
   hit; the pilot takes no hit from head or ordinary torso damage and 3 from an ammunition explosion (cockpit
   spared by CASE); the head and limb tables roll 1D6 over two or three slots; the first engine hit stops energy
