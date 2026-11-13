@@ -179,7 +179,7 @@ export default class Home extends React.Component<IHomeProps, IHomeState> {
                   <ul className="news">
                   <li>
                   <h3>
-                      <strong>November 12th, 2026</strong> - Four fan-made items join Custom Homebrew, and play mode counts engine heat
+                      <strong>November 12th, 2026</strong> - Four fan-made items join Custom Homebrew, play mode counts engine heat, and nine more 'Mech Battle Values are traced to their cause
                     </h3>
                     <h4>Author - NGCFells</h4>
                       <ul>
@@ -190,14 +190,6 @@ export default class Home extends React.Component<IHomeProps, IHomeState> {
                         <li>Omni-Laser (u/heavyarmormecha): a 10-ton, 4-slot Inner Sphere laser from 3150, range 6/12/18, with Focus, Pulse and Dazzler modes described in its notes. The record carries the Focus mode's 20 heat and 16 damage. The posts give no cost or Battle Value, so both show as unverified.</li>
                         <li>Play mode: engine hits now add heat for every 'Mech (5 a turn after the first hit, 10 after the second), and an XXL or Mini Engine adds movement heat in play (2 standing, 4 walking, 6 running, jumping doubled with a minimum of 6).</li>
                         <li>Not built yet: AirMech movement in play (enhancement #634), the Pile Bunker's Piloting roll and the Omni-Laser's mode choice in play.</li>
-                      </ul>
-                  </li>
-                  <li>
-                  <h3>
-                      <strong>November 12th, 2026</strong> - Nine more 'Mech Battle Values traced to their cause
-                    </h3>
-                    <h4>Author - NGCFells</h4>
-                      <ul>
                         <li>Battle Value Accuracy: of the 103 'Mechs whose value differs from the Master Unit List, 73 now carry a note saying why we think the list's value is the one in question (55 from the rule, with the page cited, and 18 from the publisher's own record sheet or write-up). One comes from a fault in the file we import, and 29 were still being worked that morning.</li>
                         <li>The nine added today: Hercules HRC-LS-9004, Buccaneer BCN-6PX 'Pan', Kraken XR, Savage Coyote Z, Gladiator GLD-1R (Keller), Wolfhound WLF-2X, Turkina U, Xanthos XNT-6O and Malak C-MK-OS Caelestis. Each note on the page says what the list's value would need and which page says otherwise.</li>
                         <li>Two readings were checked on the page and stand as they were: an Improved Gauss Rifle counts as explosive like every other Gauss rifle, and CASE II spares a Blue Shield Particle Field Damper's slots, because a hit on an active Blue Shield is an explosion.</li>
@@ -500,6 +492,17 @@ export default class Home extends React.Component<IHomeProps, IHomeState> {
                         <li>More quirks in play: a Game year on either roster (blank uses each unit's era start), so a quirk that has ended or not yet begun by then does not apply; an Airborne box on each target for Anti-Aircraft Targeting; cooling jacket quirks change a fired weapon's heat; Barrel Fist counts only for its own arm's punches; and a wrecked or engine-hit 'Mech drops out of its side's Initiative quirk. Improved Cooling Jacket can only go on a weapon or bay that makes heat. The <i>Campaign Operations</i> errata deletes No Torso Twist, so it stays for the designs that have it at the Apocryphal level, and Weak Legs follows the errata.</li>
                       </ul>
                    </li>
+                  <li>
+                  <h3>
+                      <strong>October 17th, 2026</strong> - Enhanced LRTs and the Light Blazer
+                    </h3>
+                    <h4>Author - NGCFells</h4>
+                      <ul>
+                        <li>Enhanced Long Range Torpedo launchers (5, 10, 15 and 20) with their ammunition, built like the Enhanced LRMs with the torpedo rules.</li>
+                        <li>The Light Blazer from <i>BattleTech Gothic</i>, at the Apocryphal rules level; its weight and slots are provisional.</li>
+                        <li>Interstellar Operations citations now point to the <i>Alternate Eras</i> pages.</li>
+                      </ul>
+                  </li>
                   <li>
                   <h3>
                       <strong>October 16th, 2026</strong> - JumpShips, WarShips and <i>Battledroids</i>
