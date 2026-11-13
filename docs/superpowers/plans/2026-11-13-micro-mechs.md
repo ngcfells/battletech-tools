@@ -79,6 +79,10 @@ push; append to the ledger what was built and every call that was ours; rewrite 
 6. **Ranges.** The book's range where a book prints the weapon; otherwise extrapolate, and say so in the notes.
 7. **Dates.** No date limit on the chassis; each weapon keeps its own date.
 8. **Play mode.** Built in (Chunk F).
+9. **Cost rounding (Chunk C).** Round each fraction up and count the ammunition carried: this gives the three sound
+   samples' printed costs.
+10. **Sample Battle Values (Chunk C).** Keep the rules text. The Storm (223, printed 217) and the Hillman (339,
+    printed 352) are not adjusted; the breakdown shows the printed figure beside ours. Our BV2 stays as built.
 
 ## Versions (owner ruling, 2026-11-13)
 

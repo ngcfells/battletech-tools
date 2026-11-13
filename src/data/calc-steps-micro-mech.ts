@@ -52,13 +52,13 @@ export const MICRO_MECH_COST_STEPS: CalcStepDefs = {
     // ---- Weapons and equipment (the document's tables) ----
     "mm.cost.equipment": step(EQUIPMENT, [at(DOC, "7-9")]),
     "mm.cost.ammo": provisional(EQUIPMENT, [at(DOC, "9-11")],
-        "The document's sample designs count the ammunition they carry in their Total Cost, so we do too, at the table's cost per ton for the weight carried. Special munitions are not offered yet."),
+        "The document's sample designs count the ammunition they carry in their Total Cost, so we do too (owner ruling, 2026-11-13), at the table's cost per ton for the weight carried. Special munitions are not offered yet."),
     "mm.cost.subtotal": step(EQUIPMENT, [at("bmrr", "149")]),
 
     // ---- Final cost ----
     "mm.cost.multiplier": step(FINAL_COST, [at("bmrr", "149")]),
     "mm.cost.final": provisional(FINAL_COST, [at(DOC, "16, 20, 22")],
-        "Neither text says how to round. Rounding each fraction up to the whole C-bill gives the printed cost of the three sound sample designs exactly (Storm 695,853; Hillman 852,898; Slayer 1,073,387), so we round up."),
+        "Neither text says how to round. Rounding each fraction up to the whole C-bill gives the printed cost of the three sound sample designs exactly (Storm 695,853; Hillman 852,898; Slayer 1,073,387), so we round up (owner ruling, 2026-11-13)."),
     "mm.cost.printed": provisional(FINAL_COST, [at(DOC, "16-22")], PRINTED),
     "mm.cost.borrowed": provisional(FINAL_COST, [], BORROWED),
 };
