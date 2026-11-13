@@ -1845,8 +1845,15 @@ describe("Permanent Air 'Mech", () => {
         expect(pam.getAirMechFlankMP()).toBe(18);
     });
 
-    it("has no free fuel (it came with the conversion equipment) but may carry Fuel Tanks for space", () => {
-        expect(makePAM().getLAMFuelPoints()).toBe(0);
+    it("carries its ton of fuel as a required weight, since it has no conversion equipment to hold it", () => {
+        const pam = makePAM();
+        expect(pam.getLAMFuelPoints()).toBe(80);
+        expect(pam.getWeightBreakdown().find(entry => /Fuel/.test(entry.name))).toEqual({ name: "Fuel (required)", weight: 1 });
+        const standard = makePAM();
+        standard.setLAMType("standard");
+        expect(standard.getWeightBreakdown().some(entry => entry.name === "Fuel (required)")).toBe(false);
+        // 30 tons: the standard LAM's 3-ton conversion equipment against the PAM's 1 ton of fuel.
+        expect(pam.getCurrentTonnage()).toBe(standard.getCurrentTonnage() - 2);
     });
 
     it("credits the author and says the rules are ours", () => {

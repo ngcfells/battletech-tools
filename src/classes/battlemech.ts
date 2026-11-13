@@ -246,7 +246,7 @@ export const LAM_TYPE_RULES: Record<LAMType, ILAMTypeRules> = {
     // were never published; everything below the one line is our extrapolation (owner rulings 2026-11-12).
     pam: {
         name: "Permanent Air 'Mech", conversion: 0, costRate: 0, modes: ["airmech"], minJumpMP: 3, lamLimits: true, homebrew: true,
-        notes: "Permanent Air 'Mech (Custom Homebrew). Inspired by: Red Pins, BattleTech forums, \"Custom Weapons and Equipment\" (topic 44833), who described it as an AirMech with only one mode. The rules here are our own extrapolation from the Land-Air 'Mech rules: it is a single-mode LAM that is always in AirMech mode and never converts, so it carries no conversion equipment (no weight, no cost). It keeps the LAM avionics (head and each side torso) because it has wings, but has no landing gear: it lands on its feet. Its AirMech MP comes from its Jump MP, so it needs at least 3. It keeps every other LAM limit (engine, gyro, armor, structure, single-location equipment, 55 tons, biped, Inner Sphere) and may carry bombs as an AirMech. It has no free ton of fuel, which comes with the conversion equipment; AirMech movement on the ground map spends none, and Fuel Tanks may be added for space. Battle Value uses the LAM rules unchanged and is provisional.",
+        notes: "Permanent Air 'Mech (Custom Homebrew). Inspired by: Red Pins, BattleTech forums, \"Custom Weapons and Equipment\" (topic 44833), who described it as an AirMech with only one mode. The rules here are our own extrapolation from the Land-Air 'Mech rules: it is a single-mode LAM that is always in AirMech mode and never converts, so it carries no conversion equipment (no weight, no cost). It keeps the LAM avionics (head and each side torso) because it has wings, but has no landing gear: it lands on its feet. Its AirMech MP comes from its Jump MP, so it needs at least 3. It keeps every other LAM limit (engine, gyro, armor, structure, single-location equipment, 55 tons, biped, Inner Sphere) and may carry bombs as an AirMech. With no conversion equipment to hold it, the LAM's ton of fuel (80 points) is a required 1 ton of its own; AirMech movement on the ground map spends none, and Fuel Tanks may be added for space. Battle Value uses the LAM rules unchanged and is provisional.",
     },
 };
 
@@ -4406,6 +4406,8 @@ export class BattleMech {
             const rules = LAM_TYPE_RULES[this._lamType];
             const step = rules.halfTon ? 2 : 1;
             if (rules.conversion > 0) this._weights.push({ name: rules.name + " Conversion Equipment", weight: Math.ceil(this._tonnage * rules.conversion * step) / step });
+            // A Permanent Air 'Mech has no conversion equipment to carry the LAM's ton of fuel, so it carries it itself.
+            if (this.isPermanentAirMech()) this._weights.push({ name: "Fuel (required)", weight: 1 });
         }
 
         this._runSpeed = Math.ceil(this._walkSpeed * 1.5);
@@ -7934,12 +7936,12 @@ export class BattleMech {
 
     /**
      * LAM fuel points: 80 from the conversion equipment plus 80 per Fuel Tank (IO:AE pp.180, 214). A Permanent Air
-     * 'Mech has no conversion equipment, so only its tanks count (AirMech movement spends fuel only in space, IO:AE p.102).
+     * 'Mech carries that first ton as a required weight instead (owner ruling 2026-11-12).
      */
     public getLAMFuelPoints(): number {
         if (!this.isLAM() || this.isVTOLAM()) return 0;
         const tanks = this._equipmentList.filter(item => matchesTag(item, BattleMech.LAM_FUEL_TANK_TAG)).length;
-        return BattleMech.LAM_FUEL_POINTS_PER_TON * ((this.isPermanentAirMech() ? 0 : 1) + tanks);
+        return BattleMech.LAM_FUEL_POINTS_PER_TON * (1 + tanks);
     }
 
     /** Bombs this LAM's tech base, era, and the given rules level allow. */
