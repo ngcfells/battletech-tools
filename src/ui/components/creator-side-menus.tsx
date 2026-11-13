@@ -88,6 +88,7 @@ export const MicroMechCreatorSideMenu = creatorSideMenu("micro-mech-creator", [
     ["chassis", "Steps 1-3", "Version, Chassis, Engine, Armor"],
     ["equipment", "Step 4", "Weapons, Ammunition and Equipment"],
     ["summary", "Summary", "Cost, Battle Value and legality"],
+    ["record-sheet", "Print", "Record sheet"],
 ]);
 
 export const SmallCraftCreatorSideMenu = creatorSideMenu("small-craft-creator", [

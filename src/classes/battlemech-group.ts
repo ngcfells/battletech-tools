@@ -9,6 +9,7 @@ import InfantryPlatoon, { IInfantryPlatoonExport } from "./infantry-platoon";
 import Building, { IBuildingExport } from "./building";
 import BattleArmor, { IBattleArmorExport } from "./battle-armor";
 import ProtoMech, { IProtoMechExport } from "./protomech";
+import MicroMech, { IMicroMechExport } from "./micro-mech";
 import BattledroidsUnit, { IBattledroidsUnitExport, findBattledroidsUnitDesign } from "./battledroids-unit";
 
 /** Most vehicles read from one saved group; far above any real lance or company. */
@@ -20,6 +21,7 @@ export const MAX_GROUP_INFANTRY = 100;
 export const MAX_GROUP_BUILDINGS = 100;
 export const MAX_GROUP_BATTLE_ARMOR = 100;
 export const MAX_GROUP_PROTOMECHS = 100;
+export const MAX_GROUP_MICRO_MECHS = 100;
 export const MAX_GROUP_BATTLEDROIDS_UNITS = 100;
 
 /** The units that take part in a force's TAG and C3 adjustments. */
@@ -35,6 +37,7 @@ export interface ICBTGroupExport {
 	infantry?: IInfantryPlatoonExport[];
 	battleArmor?: IBattleArmorExport[];
 	protoMechs?: IProtoMechExport[];
+	microMechs?: IMicroMechExport[];
 	buildings?: IBuildingExport[];
 	battledroidsUnits?: IBattledroidsUnitExport[];
 	uuid: string;
@@ -60,6 +63,8 @@ export class BattleMechGroup {
     public battleArmor: BattleArmor[] = [];
     // ProtoMech Points: each entry is one design fielded as up to five ProtoMechs.
     public protoMechs: ProtoMech[] = [];
+    // Micro-Mechs (fan-made, Custom Homebrew): one entry is one Micro-Mech.
+    public microMechs: MicroMech[] = [];
     // Gun emplacements and other buildings. No Battle Value method for them was found in the rulebooks, and they are not counted in tonnage.
     public buildings: Building[] = [];
     // The tanks, jeeps and infantry squads of Expert Battledroids (BD pp.22-23): fixed designs with no tonnage or Battle Value.
@@ -127,6 +132,9 @@ export class BattleMechGroup {
 		for( const point of this.protoMechs ) {
 			point.newUUID();
 		}
+		for( const micro of this.microMechs ) {
+			micro.newUUID();
+		}
 		for( const building of this.buildings ) {
 			building.newUUID();
 		}
@@ -160,13 +168,14 @@ export class BattleMechGroup {
         return sum(this._tagUnits(), (unit) => unit.getPilotAdjustedBattleValue(edition, tagBonus(unit) + c3Bonus(unit)))
             + sum(this.capitalShips, (ship) => ship.getPilotAdjustedBattleValue(edition))
             + sum([...this.infantry, ...this.battleArmor], (unit) => unit.getSkillAdjustedBattleValue(edition))
-            + sum(this.protoMechs, (point) => point.getSkillAdjustedPointBattleValue(edition));
+            + sum(this.protoMechs, (point) => point.getSkillAdjustedPointBattleValue(edition))
+            + sum(this.microMechs, (micro) => micro.getBattleValue(edition));
     }
 
     /** The Battle Value unit types the group holds (buildings and Battledroids units have no BV). */
     public getBattleValueUnitTypes(): BattleValueUnitType[] {
         const lists: Array<[BattleValueUnitType, unknown[]]> = [["mech", this.members], ["vehicle", this.vehicles], ["fighter", this.fighters],
-            ["small-craft", this.smallCraft], ["capital-ship", this.capitalShips], ["infantry", this.infantry], ["battle-armor", this.battleArmor], ["protomech", this.protoMechs]];
+            ["small-craft", this.smallCraft], ["capital-ship", this.capitalShips], ["infantry", this.infantry], ["battle-armor", this.battleArmor], ["protomech", this.protoMechs], ["mech", this.microMechs]];
         return lists.filter(([, units]) => units.length > 0).map(([type]) => type);
     }
 
@@ -204,6 +213,9 @@ export class BattleMechGroup {
         for( const point of this.protoMechs ) {
             rv += point.getTons() * point.getPointSize();
         }
+        for( const micro of this.microMechs ) {
+            rv += micro.getTons();
+        }
 
         return rv;
     }
@@ -216,6 +228,7 @@ export class BattleMechGroup {
             ...this.infantry.map( (platoon) => platoon.getTechName() ),
             ...this.battleArmor.map( (squad) => squad.isMixedTech() ? "Mixed" : squad.isClan() ? "Clan" : "Inner Sphere" ),
             ...this.protoMechs.map( (point) => point.hasInterfaceCockpit() ? "Mixed" : "Clan" ),
+            ...this.microMechs.map( () => "Inner Sphere" ),
             ...this.buildings.map( (building) => building.getTech().name ),
             ...this.battledroidsUnits.map( () => "Battledroids" ),
         ];
@@ -287,6 +300,13 @@ export class BattleMechGroup {
 				this.protoMechs.push( new ProtoMech( JSON.stringify(point) ) );
 			}
 		}
+		// Micro-Mechs likewise, read through their own validating import; an entry that is not one is skipped.
+		const microMechs = Array.isArray(importObj.microMechs) ? importObj.microMechs.slice(0, MAX_GROUP_MICRO_MECHS) : [];
+		for( const micro of microMechs ) {
+			if( micro && typeof micro === "object" && !Array.isArray(micro) ) {
+				this.microMechs.push( new MicroMech( JSON.stringify(micro) ) );
+			}
+		}
 		// Buildings likewise.
 		const buildings = Array.isArray(importObj.buildings) ? importObj.buildings.slice(0, MAX_GROUP_BUILDINGS) : [];
 		for( const building of buildings ) {
@@ -331,6 +351,7 @@ export class BattleMechGroup {
 			// Left out when there are none, so groups saved without them stay as they were.
 			...(this.battleArmor.length > 0 ? { battleArmor: this.battleArmor.map( (squad) => squad.export(noInPlayVariabless) ) } : {}),
 			...(this.protoMechs.length > 0 ? { protoMechs: this.protoMechs.map( (point) => point.export(noInPlayVariabless) ) } : {}),
+			...(this.microMechs.length > 0 ? { microMechs: this.microMechs.map( (micro) => micro.export() ) } : {}),
 			...(this.smallCraft.length > 0 ? { smallCraft: this.smallCraft.map( (craft) => craft.export(noInPlayVariabless) ) } : {}),
 			...(this.capitalShips.length > 0 ? { capitalShips: this.capitalShips.map( (ship) => ship.export(noInPlayVariabless) ) } : {}),
 			...(this.battledroidsUnits.length > 0 ? { battledroidsUnits: this.battledroidsUnits.map( (unit) => unit.export(noInPlayVariabless) ) } : {}),
@@ -347,7 +368,7 @@ export class BattleMechGroup {
     }
 
 	public getTotalUnits(): number {
-        return this.members.length + this.vehicles.length + this.fighters.length + this.smallCraft.length + this.capitalShips.length + this.infantry.length + this.battleArmor.length + this.protoMechs.length + this.buildings.length + this.battledroidsUnits.length;
+        return this.members.length + this.vehicles.length + this.fighters.length + this.smallCraft.length + this.capitalShips.length + this.infantry.length + this.battleArmor.length + this.protoMechs.length + this.microMechs.length + this.buildings.length + this.battledroidsUnits.length;
     }
 
 }

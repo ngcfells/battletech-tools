@@ -15,6 +15,7 @@ import CapitalShipGroupTable from './_capitalShipGroupTable';
 import InfantryGroupTable from './_infantryGroupTable';
 import BattleArmorGroupTable from './_battleArmorGroupTable';
 import ProtoMechGroupTable from './_protoMechGroupTable';
+import MicroMechGroupTable from './_microMechGroupTable';
 import BattledroidsGroupTable from './_battledroidsGroupTable';
 import BuildingGroupTable from './_buildingGroupTable';
 import type { JSX } from "react";
@@ -588,6 +589,12 @@ export default class BattleMechTableGroup extends React.Component<IBattleMechTab
 <ProtoMechGroupTable
     appGlobals={this.props.appGlobals}
     onSearchMUL={(e) => this.openAddingUnits( e, this.props.bmGroupIndex, 23 )}
+    bmGroupIndex={this.props.bmGroupIndex}
+    showAdd={this.props.showAdd}
+    showEdit={this.props.showEdit}
+/>
+<MicroMechGroupTable
+    appGlobals={this.props.appGlobals}
     bmGroupIndex={this.props.bmGroupIndex}
     showAdd={this.props.showAdd}
     showEdit={this.props.showEdit}

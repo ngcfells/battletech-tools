@@ -295,12 +295,12 @@ creator components (the game settings block, the status bar pattern); build noth
 - [x] **Step 3:** Unit tests, `npm run check`, then run the app and build the Storm by hand in the creator.
 - [x] **Step 4:** Commit `Custom Homebrew: Micro-Mech creator (#173)`, push, ledger, handoff.
 
-## Chunk E: Record sheet, print, roster
+## Chunk E: Record sheet, print, roster (done 2026-11-13, cloud; ledger `progress-cloud-micro-e.md`)
 
 **Files:**
 - Create: `src/ui/components/svg/micro-mech-record-sheet-svg.tsx` (+ test), `src/ui/components/micro-mech-record-sheet.tsx`,
   `micro-mech-creator/record-sheet.tsx`
-- Modify: `src/classes/battlemech-group.ts` (`microMechs`), `src/ui/pages/classic-battletech/roster/_addMechDialog.tsx`,
+- Modify: `src/classes/battlemech-group.ts` (`microMechs`), (`_addMechDialog.tsx` untouched: a Micro-Mech is on no MUL list; the group table adds from saves),
   `roster/_tableGroup.tsx`, `roster/print.tsx`, and a `roster/_microMechGroupTable.tsx`
 
 The sheet follows the document's two record sheets (biped and quad): armor and structure by location with the rear
@@ -308,11 +308,11 @@ torso, the slot tables with their die ranges (head 1-3 / 4-6; limbs 1-2 / 3-4 / 
 3-point cockpit armor, six pilot hits, weapons and ammunition, Walk / Run / Jump, and no heat scale. It prints the
 play rules as notes in our own words, the credit, and the sheet trademark notice with the NOT OFFICIAL mark.
 
-- [ ] **Step 1:** Failing tests (the sheet renders each sample; the roster totals include a Micro-Mech's BV; an
+- [x] **Step 1:** Failing tests (the sheet renders each sample; the roster totals include a Micro-Mech's BV; an
   older roster without `microMechs` still loads).
-- [ ] **Step 2:** Implement. Play-mode tracking is Chunk F; keep the sheet's boxes addressable for it.
-- [ ] **Step 3:** Unit tests, `npm run check`, print the Storm and the Hillman and look at both sheets.
-- [ ] **Step 4:** Commit `Custom Homebrew: Micro-Mech record sheet and roster (#173)`, push, ledger, handoff.
+- [x] **Step 2:** Implement. Play-mode tracking is Chunk F; keep the sheet's boxes addressable for it.
+- [x] **Step 3:** Unit tests, `npm run check`, print the Storm and the Hillman and look at both sheets.
+- [x] **Step 4:** Commit `Custom Homebrew: Micro-Mech record sheet and roster (#173)`, push, ledger, handoff.
 
 ## Chunk F: Play mode
 

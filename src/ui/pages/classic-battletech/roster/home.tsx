@@ -562,6 +562,21 @@ export default class BattleMechRosterHome extends React.Component<IHomeProps, IH
           </tr>
           </tbody>
       ))}
+      {(favGroup.microMechs ?? []).map( (micro) => (
+          <tbody key={micro.getUUID()}>
+          <tr>
+              <td>
+                  {micro.getDisplayName()}
+                  <div className='small-text'>{micro.getTons()}-ton {micro.isQuad() ? "quad" : "biped"} Micro-Mech (fan-made)</div>
+              </td>
+              <td className="min-width no-wrap text-center">{micro.getTons()}</td>
+              <td className="min-width no-wrap text-center small-text">Inner Sphere</td>
+              <td className="min-width no-wrap text-center">-</td>
+              <td className="min-width no-wrap text-center">-</td>
+              <td className="min-width no-wrap text-center">{formatBattleValue((edition) => micro.getBattleValue(edition), "mech", this.props.appGlobals.currentCBTForce?.rulesEdition)}</td>
+          </tr>
+          </tbody>
+      ))}
       {(favGroup.battledroidsUnits ?? []).map( (unit) => (
           <tbody key={unit.getUUID()}>
           <tr>

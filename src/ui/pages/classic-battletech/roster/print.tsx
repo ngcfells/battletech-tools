@@ -17,6 +17,7 @@ import InfantryRecordSheet from "../../../components/infantry-record-sheet";
 import { infantrySheetLines } from "../../../components/svg/infantry-record-sheet-svg";
 import BattleArmorRecordSheet from "../../../components/battle-armor-record-sheet";
 import ProtoMechRecordSheet from "../../../components/protomech-record-sheet";
+import MicroMechRecordSheet from "../../../components/micro-mech-record-sheet";
 import BattledroidsUnitRecordSheet from "../../../components/battledroids-unit-record-sheet";
 import BuildingRecordSheet from "../../../components/building-record-sheet";
 import { buildingSummary } from "./_buildingGroupTable";
@@ -51,6 +52,7 @@ export default class ClassicBattleTechRosterPrint extends React.Component<IPrint
         ...groups.flatMap( (group) => group.infantry ).map( (platoon) => platoon.getRequiredRulesLevel() ),
         ...groups.flatMap( (group) => group.battleArmor ).map( (squad) => squad.getRequiredRulesLevel() ),
         ...groups.flatMap( (group) => group.protoMechs ).map( (point) => point.getRequiredRulesLevel() ),
+        ...groups.flatMap( (group) => group.microMechs ).map( (micro) => micro.getRequiredRulesLevel() ),
         ...groups.flatMap( (group) => group.buildings ).map( (building) => building.getRequiredRulesLevel() ),
       ];
       printWithRulesLevelGuard(
@@ -369,6 +371,33 @@ export default class ClassicBattleTechRosterPrint extends React.Component<IPrint
                       </tr>
                     </tbody>
                     ))}
+                    {group.microMechs.map( (micro) => (
+                    <tbody key={micro.getUUID()}>
+                      <tr>
+                        <td>
+                          {micro.getDisplayName()} ({micro.getTons()}-ton {micro.isQuad() ? "quad" : "biped"} Micro-Mech, fan-made)
+                        </td>
+                        <td>
+                          {micro.getTons()}
+                        </td>
+                        <td className="small-text">
+                          Inner Sphere
+                        </td>
+                        <td className="min-width no-wrap text-center">
+                          -
+                        </td>
+                        <td className="min-width no-wrap text-center">
+                          -
+                        </td>
+                        <td className="min-width no-wrap text-center">
+                          {formatBattleValue((edition) => micro.getBattleValue(edition), "mech", this.props.appGlobals.currentCBTForce?.rulesEdition)}
+                        </td>
+                        <td className="min-width no-wrap text-right">
+                          {formatBattleValue((edition) => micro.getBattleValue(edition), "mech", this.props.appGlobals.currentCBTForce?.rulesEdition)}
+                        </td>
+                      </tr>
+                    </tbody>
+                    ))}
                     {group.battledroidsUnits.map( (unit) => (
                     <tbody key={unit.getUUID()}>
                       <tr>
@@ -521,6 +550,16 @@ export default class ClassicBattleTechRosterPrint extends React.Component<IPrint
                         <ProtoMechRecordSheet
                           proto={point}
                           showDamage={true}
+                        />
+                      </div>
+                  ))}
+                  {group.microMechs.map( (micro) => (
+                      <div className={"page"} key={micro.getUUID()}>
+                        <RulesLevelStamp
+                          requiredRulesLevel={micro.getRequiredRulesLevel()}
+                        />
+                        <MicroMechRecordSheet
+                          micro={micro}
                         />
                       </div>
                   ))}

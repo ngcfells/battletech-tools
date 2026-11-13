@@ -88,6 +88,7 @@ export default class MicroMechCreatorSummary extends React.Component<ISummaryPro
 
                             <div className="clear-both overflow-hidden">
                                 <hr />
+                                <Link to={`${process.env.PUBLIC_URL}/classic-battletech/micro-mech-creator/record-sheet`} className="btn btn-primary pull-right btn-sm">View Record Sheet</Link>
                                 <Link to={`${process.env.PUBLIC_URL}/classic-battletech/micro-mech-creator/equipment`} className="btn btn-primary btn-sm"><ArrowCircleLeft /> Previous Step</Link>
                             </div>
                         </TextSection>
