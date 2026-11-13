@@ -99,6 +99,24 @@ describe("Mini Engine (#249)", () => {
         expect(standard.isDestroyed()).toBe(false);
     });
 
+    it("play mode: XXL movement heat for XXL and Mini Engines (TO:AUE p.121)", () => {
+        for (const tag of ["xxl", "mini-engine"]) {
+            const mech = makeMech(tag);
+            mech.setJumpSpeed(4);
+            const heat = (mode: string, jumped = 0) => {
+                mech.currentMovementMode = mode;
+                mech.currentTargetJumpingMP = jumped;
+                return mech.getActiveMoveHeat();
+            };
+            expect([heat(""), heat("n"), heat("w"), heat("r"), heat("j", 2), heat("j", 4)], tag).toEqual([2, 2, 4, 6, 6, 8]);
+        }
+        const standard = makeMech("standard");
+        standard.currentMovementMode = "";
+        expect(standard.getActiveMoveHeat()).toBe(0);
+        standard.currentMovementMode = "r";
+        expect(standard.getActiveMoveHeat()).toBe(2);
+    });
+
     it("battle value treats it as a standard engine (engine modifier 1.0)", () => {
         const standard = makeMech("standard"), mini = makeMech("mini-engine");
         const engineStep = (mech: BattleMech) => JSON.stringify(mech.getBattleValueBreakdown("total-warfare")).match(/Engine modifier \(([^)]*)\)[^}]*?"detail":"([^"]*)"/);

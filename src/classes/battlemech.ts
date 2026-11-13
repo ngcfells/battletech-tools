@@ -6031,6 +6031,19 @@ export class BattleMech {
         }
         // Fuel cell and ICE IndustrialMechs make no heat walking or running (TW p.158); a non-fusion BattleMech does (TO:AUE p.120).
         const noWalkRunHeat = this.isIndustrialMech() && !this._hasFusionOrFissionEngine();
+        // XXL engines: 2 standing still, 4 walking, 6 running, jumping heat doubled with at least 6 (TO:AUE p.121).
+        // The custom Mini Engine heats the same way (#249).
+        if( this.isXXLEngine() ) {
+            if( this.currentMovementMode === "w" ) return 4;
+            if( this.currentMovementMode === "r" ) return 6;
+            if( this.currentMovementMode === "j" ) {
+                const jumped = Math.max(0, this.currentTargetJumpingMP);
+                // As getJumpHeat: improved jets count half their MP, rounded up, before the doubling.
+                const heatMP = this._jumpJetType.tag === "improved" ? Math.ceil(jumped / 2) : jumped;
+                return Math.max(6, heatMP * 2);
+            }
+            return 2;
+        }
         // TODO check if heat sinks are broken
         if( this.currentMovementMode === "w" ) {
             return noWalkRunHeat ? 0 : 1;
