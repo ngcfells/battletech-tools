@@ -2379,11 +2379,12 @@ export class BattleMech {
             // } else {
             //     return this._engine.weight[this._engineType.tag];
             // }
+            const weightTag = BattleMech.getEngineWeightTag(this._engineType.tag);
             if( this.usesFractionalAccounting() ) {
-                const fractionalWeight = getFractionalEngineWeight(this._engineType.tag, this._engine.weight.standard);
+                const fractionalWeight = getFractionalEngineWeight(weightTag, this._engine.weight.standard);
                 if( fractionalWeight !== null ) return fractionalWeight;
             }
-            switch( this._engineType.tag ) {
+            switch( weightTag ) {
                 case "standard": {
                     // An earlier edition's own Engine Table (Battledroids prints the 170 at 6.5 tons).
                     const edition = isEarlierRulesEdition(this._rulesEdition) ? getEditionStats(this._engineType, this._rulesEdition) : undefined;
@@ -2425,6 +2426,17 @@ export class BattleMech {
             return 0;
         }
     }
+
+    /**
+     * The engine weight column an engine type reads. The custom Mini Engine weighs as a light engine of the same
+     * rating (u/VanillaPhysics, #249); every other type reads its own column.
+     */
+    public static getEngineWeightTag(engineTag: string): string {
+        return engineTag === BattleMech.MINI_ENGINE_TAG ? "light" : engineTag;
+    }
+
+    /** Custom Homebrew Mini Engine (mech-custom-engine-types.ts, #249). */
+    public static readonly MINI_ENGINE_TAG = "mini-engine";
 
     public getEngineRating() {
         if( this._engine && this._engine.rating)
@@ -5515,8 +5527,9 @@ export class BattleMech {
         return this.isXXLEngine() ? Math.max(6, heatMP * 2) : Math.max(3, heatMP);
     }
 
+    /** XXL movement heat: XXL engines, and the custom Mini Engine, whose heat is "exactly like an XXL engine" (#249). */
     public isXXLEngine(): boolean {
-        return this._engineType.tag === "xxl" || this._engineType.tag === "clan_xxl";
+        return this._engineType.tag === "xxl" || this._engineType.tag === "clan_xxl" || this._engineType.tag === BattleMech.MINI_ENGINE_TAG;
     }
 
     /**
@@ -8258,7 +8271,10 @@ export class BattleMech {
         if (this.isSuperheavy() && (this._tech.tag === "clan" || this._tech.tag === "mclan")) {
             violations.push("Superheavy 'Mechs are available only to the Inner Sphere tech base.");
         }
-        if (!this._isSuperheavyLegalEngine(this._engineType.tag)) {
+        if (this._engineType.tag === BattleMech.MINI_ENGINE_TAG && (this.isSuperheavy() || this.isLargeEngine())) {
+            // The post (#249) covers neither, so we do not build them.
+            violations.push("The Mini Engine is not built above a rating of 400 or for superheavy 'Mechs.");
+        } else if (!this._isSuperheavyLegalEngine(this._engineType.tag)) {
             violations.push(this.isIndustrialMech()
                 ? "Superheavy IndustrialMechs may use only standard fusion engines."
                 : "Superheavy 'Mechs may use only fusion engines.");
@@ -11135,7 +11151,10 @@ export class BattleMech {
         const lookupTag = this.getEngineTechBase();
         const weights = this._engine?.weight;
         const large = this.isLargeEngine();
-        for (const engine of mechEngineTypes.map(entry => ({ ...entry }))) {
+        // Canon, then the custom catalog and this browser's drafts, which are offered only at the Custom Homebrew level.
+        for (const engine of getComponentRecords("engine").map(entry => ({ ...entry }))) {
+            const custom = isCustomComponent("engine", engine);
+            if (custom && rulesLevel < CUSTOM_HOMEBREW_RULES_LEVEL && engine.tag !== this._engineType.tag) continue;
             // Enforce strict key verification against the normalized tech base
             if (engine.criticals && lookupTag in engine.criticals) {
                 // Above rating 400 the large engine's own dates apply (IO:AE p.38); a type with
@@ -11147,9 +11166,12 @@ export class BattleMech {
                     : largeEngine ? this._datesAvailability(largeEngine, rulesLevel) : { available: false, asPrototype: false };
                 // No weight at this rating: no large Compact, Fuel Cell or Fission engines, and Primitive
                 // engines stop at an adjusted 400.
-                const buildableAtRating = !weights || (weights as Record<string, number | undefined>)[engine.tag] !== undefined;
+                const buildableAtRating = !weights || (weights as Record<string, number | undefined>)[BattleMech.getEngineWeightTag(engine.tag)] !== undefined;
                 engine.availableAsPrototype = availability.asPrototype;
                 engine.available = availability.available && buildableAtRating && this.isOfferedInEdition(engine, rulesLevel)
+                    && (!custom || rulesLevel >= CUSTOM_HOMEBREW_RULES_LEVEL)
+                    // The Mini Engine's post covers neither large engines nor superheavies (#249).
+                    && (engine.tag !== BattleMech.MINI_ENGINE_TAG || (!large && !this.isSuperheavy()))
                     && this._isSuperheavyLegalEngine(engine.tag)
                     && this._isChassisLegalEngine(engine.tag)
                     && (!this._isNonFusionBattleMechEngine(engine.tag) || rulesLevel >= this._nonFusionBattleMechRulesLevel())

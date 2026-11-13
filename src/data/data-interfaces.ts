@@ -224,6 +224,8 @@ export interface IEngineType extends ICatalogStanding {
     page?: number;
     /** Large engine records only: tag of the engine type this is the over-400 form of. */
     largeOf?: string;
+    /** Source, credit and anything not printed (custom records). */
+    notes?: string;
 }
 
 export interface IDamagePerRange {
