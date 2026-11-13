@@ -183,6 +183,18 @@ export const BV_VERDICTS: Record<string, IBvVerdict> = {
     "mul:106162": { verdict: "mul-suspect", note: "The list's value equals ours when 'Mech Mortar ammunition is counted at 1.2 times its table value. The table gives a ton 1, 2, 3 or 6 points by launcher size, the same for Inner Sphere and Clan launchers.", cites: [{ source: "toaue", page: "194" }, { source: "toaue", page: "197" }] },
     // Thunderbolt IIC 2
     "mul:102300": { verdict: "mul-suspect", note: "The list's value equals ours when the improved heavy large laser's side torso slots are counted as explosive. On a Clan 'Mech only Gauss-type slots in the center torso, legs or head count, and this is a Clan chassis with a standard fusion engine.", cites: [{ source: "tm", page: "302" }] },
+    // Pariah (Septicemia) US
+    "mul:108567": { verdict: "mul-suspect", note: "The list's value equals ours when both Spot Welders are counted in full. A Spot Welder generates 2 heat, so each counts half once the heat efficiency is passed.", cites: [{ source: "tm", page: "303" }, { source: "tm", page: "344" }] },
+    // Trebuchet TBT-7MM 'Merida'
+    "mul:105864": { verdict: "import", note: "The file we import carries one armor point fewer on the right arm than the published record sheet (XTRO: Royal Fantasy). With the sheet's armor our value equals the list's.", cites: [{ source: "xtro-royal-fantasy", page: "55" }] },
+    // Prey Seeker PY-SR30
+    "mul:101223": { verdict: "mul-suspect", note: "The list's value equals ours when the machine gun arrays count 6.7 less. The Battle Value table gives an array the total of all its machine guns multiplied by 0.67.", cites: [{ source: "tm", page: "317" }] },
+    // Skinwalker (Ryoken III-XP) C
+    "mul:104379": { verdict: "mul-suspect", note: "The list's value equals ours when no gyro is counted and the ammunition in the left arm is counted as unprotected. The rule for an interface cockpit that replaces the gyro counts a standard gyro, and the record sheet shows CASE in that arm.", cites: [{ source: "ioae", page: "187" }, { source: "tm", page: "303" }] },
+    // Emperor EMP-6A-EC
+    "mul:100943": { verdict: "mul-suspect", note: "The list's value equals ours when the Prototype Streak SRM 4 counts 45. The Battle Value table gives it 59.", cites: [{ source: "ioae", page: "189" }] },
+    // Starslayer STY-2C-EC
+    "mul:102870": { verdict: "mul-suspect", note: "The list's value equals ours when the Prototype Streak SRM 4 counts 45. The Battle Value table gives it 59.", cites: [{ source: "ioae", page: "189" }] },
 };
 
 /** "mul:<id>", "mul:<id>:<configuration>", or "file:<path>" where the Master Unit List has no entry. */
