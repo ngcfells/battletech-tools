@@ -201,7 +201,7 @@ it.each([
 - [x] **Step 5:** Unit tests and `npm run check`.
 - [x] **Step 6:** Commit `Custom Homebrew: Micro-Mech construction core (#173)`, push, ledger, handoff.
 
-## Chunk B: Equipment, ammunition, heat sinks
+## Chunk B: Equipment, ammunition, heat sinks (done 2026-11-13, cloud; ledger `progress-cloud-micro-b.md`)
 
 **Files:**
 - Create: `src/data/micro-mech-equipment-custom.ts`, `src/data/micro-mech-equipment-custom.test.ts`
@@ -217,11 +217,11 @@ it.each([
 - On `MicroMech`: `getMounts`, `addMount(tag, location)`, `removeMount`, `getAmmoLots`, `setAmmo(mountIndex, kg)`,
   `getHeatSinks`, `setExtraHeatSinks`, `getEnergyHeat`, `getPowerAmplifierWeight`.
 
-- [ ] **Step 1: Read** both tables in the raw text. List in the ledger every row that has no record in our
+- [x] **Step 1: Read** both tables in the raw text. List in the ledger every row that has no record in our
   catalogs, and the range source found for it (owner ruling 6): the page read in
   Maximum Tech, the Tactical Handbook or a later book, or "extrapolated by us" with the reasoning (for a tube
   launcher size we lack, the range of its launcher family).
-- [ ] **Step 2: Failing tests.** Pin a spread of rows exactly as printed, at least: ER Small Laser (heat 2,
+- [x] **Step 2: Failing tests.** Pin a spread of rows exactly as printed, at least: ER Small Laser (heat 2,
   damage 3, 500 kg, 1 slot, 11,250, BV 17); Large Laser (8, 8, 5,000, 2, 100,000, 124); Machine Gun (0, 2, 500, 1,
   5,000, 5); LRM 9 (3,600 kg, 2 slots, 99,900, BV 78; 4/7/10/13 shots per quarter-ton step); SRM 6 (3,000 kg, 2
   slots); Recoilless Rifle (Heavy) (325 kg; 6/12/18/25 shots); Grenade Launcher (100 kg; 6/12/18/24 shots);
@@ -231,12 +231,12 @@ it.each([
   extra, at most 10 extra at 125 kg) must cover the summed heat of the energy weapons; an ICE needs a ton of power
   amplifiers per 10 tons of energy weapons or part. And the four samples come to their printed totals: 10,975;
   12,975; 14,975; 17,925 kg, with the Storm at 25 of 26 slots.
-- [ ] **Step 3: See them fail.**
-- [ ] **Step 4: Implement.** Records in the single-line shape the custom catalogs use. Every record's notes carry
+- [x] **Step 3: See them fail.**
+- [x] **Step 4: Implement.** Records in the single-line shape the custom catalogs use. Every record's notes carry
   the credit. The one-slot ammunition wording contradicts itself in the document (ledger); follow the LB-5X
   example (one slot holds up to 1,000 kg for one weapon class) and say so in the notes.
-- [ ] **Step 5:** Unit tests and `npm run check`.
-- [ ] **Step 6:** Commit `Custom Homebrew: Micro-Mech equipment table (#173)`, push, ledger, handoff.
+- [x] **Step 5:** Unit tests and `npm run check`.
+- [x] **Step 6:** Commit `Custom Homebrew: Micro-Mech equipment table (#173)`, push, ledger, handoff.
 
 ## Chunk C: Cost and Battle Value
 

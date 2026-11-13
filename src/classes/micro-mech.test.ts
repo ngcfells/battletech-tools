@@ -345,3 +345,333 @@ describe("Micro-Mech construction, Solarmech's 2019 version", () => {
         expect(new MicroMech(micro.exportJSON()).getVersion()).toBe("solarmech-2019");
     });
 });
+
+// Chunk B: equipment, ammunition, heat sinks. The samples' weapon lines as the document prints them.
+const stormArmed = (): MicroMech => {
+    const micro = storm();
+    expect(micro.addMount("micro-er-laser-small", "ra")).toBe(true);
+    expect(micro.addMount("micro-machine-gun", "la")).toBe(true);
+    // "1 Machine Gun LA 0 100 1 500 / (Ammo Location:1) T 0 1 500": 500 kg, 100 shots, in the torso.
+    expect(micro.setAmmo(1, 500, "torso")).toBe(true);
+    return micro;
+};
+
+const tunnelRat = (): MicroMech => {
+    const micro = build(13, "biped", 4, 4);
+    micro.setLowerArm("left", false);
+    for (const [location, points] of [["head", 4], ["torso", 18], ["torsoRear", 6], ["la", 4], ["ra", 4], ["ll", 6], ["rl", 6]] as const) micro.setArmor(location, points);
+    micro.addMount("micro-er-laser-medium", "ra");
+    micro.addMount("micro-grenade-launcher", "head");
+    micro.setAmmo(1, 500, "torso");
+    micro.addMount("micro-beagle-active-probe", "torso");
+    micro.addMount("micro-recoilless-rifle-heavy", "la");
+    micro.setAmmo(3, 500, "la");
+    return micro;
+};
+
+const hillman = (): MicroMech => {
+    const micro = build(15, "quad", 5, 0);
+    for (const [location, points] of [["head", 4], ["torso", 18], ["torsoRear", 8], ["fll", 4], ["frl", 4], ["ll", 8], ["rl", 8]] as const) micro.setArmor(location, points);
+    micro.addMount("micro-pulse-laser-small", "head");
+    micro.addMount("micro-lrm-9", "torso");
+    micro.setAmmo(1, 750, "torso");
+    return micro;
+};
+
+const slayer = (): MicroMech => {
+    const micro = build(18, "quad", 5, 5);
+    for (const [location, points] of [["head", 4], ["torso", 20], ["torsoRear", 4], ["fll", 8], ["frl", 8], ["ll", 8], ["rl", 8]] as const) micro.setArmor(location, points);
+    micro.addMount("micro-laser-large", "torso");
+    micro.addMount("micro-laser-small", "head");
+    return micro;
+};
+
+describe("Micro-Mech equipment, version 6.1.0.2", () => {
+    it.each([
+        ["Storm STM-3X", stormArmed, 10975],
+        ["Tunnel Rat TNR-1X", tunnelRat, 12975],
+        ["Hillman HMN-2X", hillman, 14975],
+        ["Slayer SL-X4", slayer, 17925],
+    ] as [string, () => MicroMech, number][])("%s comes to its printed total", (_name, make, total) => {
+        const micro = make();
+        expect(micro.getWeight()).toBe(total);
+        expect(micro.getIssues()).toEqual([]);
+    });
+
+    it("fills 25 of the Storm's 26 slots", () => {
+        const micro = stormArmed();
+        expect(micro.getTotalSlots()).toBe(26);
+        expect(micro.getTotalUsedSlots()).toBe(25);
+        expect(micro.getSlots("la")).toEqual(["Upper Arm Actuator Group", "Lower Arm Actuator Group", "Machine Gun"]);
+        expect(micro.getSlots("torso").filter((slot) => slot === "Ammo (Machine Gun)")).toHaveLength(1);
+    });
+
+    it("counts the shots in a lot from the table", () => {
+        const lots = stormArmed().getAmmoLots();
+        expect(lots).toHaveLength(1);
+        expect(lots[0]).toMatchObject({ mountIndex: 1, tag: "micro-machine-gun", type: "standard", kg: 500, location: "torso", shots: 100, slots: 1 });
+        expect(hillman().getAmmoLots()[0].shots).toBe(10);
+        expect(tunnelRat().getAmmoLots().map((lot) => lot.shots)).toEqual([12, 12]);
+    });
+
+    it("lists each weapon, lot and system in the weight log", () => {
+        const names = stormArmed().getWeightLog().map((line) => `${line.name}: ${line.kg}`);
+        expect(names).toContain("ER Laser, Small (Right Arm): 500");
+        expect(names).toContain("Machine Gun (Left Arm): 500");
+        expect(names).toContain("Ammo (Machine Gun), 100 shots (Torso): 500");
+    });
+
+    it("makes a fifth weapon an issue; equipment does not count", () => {
+        const micro = build(19, "biped", 4, 0);
+        for (const location of ["head", "la", "ra", "torso"] as const) micro.addMount("micro-laser-small", location);
+        micro.addMount("micro-beagle-active-probe", "torso");
+        expect(micro.getWeaponCount()).toBe(4);
+        expect(micro.getIssues().join(" ")).not.toMatch(/weapons/);
+        expect(micro.addMount("micro-laser-small", "torso")).toBe(true);
+        expect(micro.getWeaponCount()).toBe(5);
+        expect(micro.getIssues()).toContain("5 weapons are mounted; a Micro-Mech mounts at most 4.");
+    });
+
+    it("counts a missile group of any size as one weapon", () => {
+        const micro = build(19, "biped", 4, 0);
+        micro.addMount("micro-lrm-20", "torso");
+        micro.addMount("micro-srm-1", "head");
+        expect(micro.getWeaponCount()).toBe(2);
+    });
+
+    it("refuses a weapon that does not fit its location: a weapon is never split", () => {
+        const micro = build(19, "biped", 4, 0);
+        // An arm with both actuator groups has one free slot; a Large Laser needs two.
+        expect(micro.addMount("micro-laser-large", "ra")).toBe(false);
+        micro.setLowerArm("right", false);
+        expect(micro.addMount("micro-laser-large", "ra")).toBe(true);
+        expect(micro.addMount("micro-ppc", "head")).toBe(false);
+        expect(micro.addMount("micro-laser-small", "torsoRear")).toBe(false);
+        expect(micro.addMount("micro-laser-small", "fll")).toBe(false);
+    });
+
+    it("refuses an unknown or banned item", () => {
+        const micro = build(19, "biped", 4, 0);
+        for (const tag of ["ams", "melee-hatchet", "masc", "melee-sword", "tsm", "medium-laser", "micro-nothing"]) expect(micro.addMount(tag, "torso"), tag).toBe(false);
+        expect(micro.getMounts()).toEqual([]);
+    });
+
+    it("removes a mount with its ammunition", () => {
+        const micro = stormArmed();
+        expect(micro.removeMount(1)).toBe(true);
+        expect(micro.getAmmoLots()).toEqual([]);
+        expect(micro.getMounts().map((mount) => mount.tag)).toEqual(["micro-er-laser-small"]);
+        expect(micro.removeMount(5)).toBe(false);
+    });
+
+    it("needs at least a quarter ton of ammunition for each ammunition weapon", () => {
+        const micro = build(19, "biped", 4, 0);
+        micro.addMount("micro-machine-gun", "torso");
+        expect(micro.getIssues()).toContain("Machine Gun (Torso) carries no ammunition: at least 250 kg is needed.");
+        micro.setAmmo(0, 250);
+        expect(micro.getIssues().join(" ")).not.toMatch(/no ammunition/);
+    });
+
+    it("sells ammunition in 250 kg lots, up to 1,000 kg a slot", () => {
+        const micro = build(19, "biped", 4, 0);
+        micro.addMount("micro-autocannon-2", "torso");
+        expect(micro.setAmmo(0, 300)).toBe(false);
+        expect(micro.setAmmo(0, -250)).toBe(false);
+        expect(micro.setAmmo(0, 1000)).toBe(true);
+        expect(micro.getAmmoLots()[0]).toMatchObject({ shots: 45, slots: 1 });
+        expect(micro.setAmmo(0, 1250)).toBe(true);
+        expect(micro.getAmmoLots()[0]).toMatchObject({ shots: 56, slots: 2 });
+        expect(micro.setAmmo(0, 0)).toBe(true);
+        expect(micro.getAmmoLots()).toEqual([]);
+    });
+
+    it("refuses ammunition for a weapon that takes none, or a type it does not have", () => {
+        const micro = build(19, "biped", 4, 0);
+        micro.addMount("micro-laser-small", "torso");
+        micro.addMount("micro-machine-gun", "torso");
+        expect(micro.setAmmo(0, 250)).toBe(false);
+        expect(micro.setAmmo(1, 250, "torso", "cluster")).toBe(false);
+        expect(micro.setAmmo(7, 250)).toBe(false);
+    });
+
+    it("keeps one weapon's standard and cluster ammunition in one slot (the LB-5X example)", () => {
+        const micro = build(19, "biped", 4, 0);
+        // The LB-2X fills four of the torso's five free slots; both lots share the fifth.
+        micro.addMount("micro-lb-2x-ac", "torso");
+        expect(micro.setAmmo(0, 500, "torso", "cluster")).toBe(true);
+        expect(micro.setAmmo(0, 250, "torso", "standard")).toBe(true);
+        expect(micro.getAmmoLots().map((lot) => [lot.type, lot.kg])).toEqual([["standard", 250], ["cluster", 500]]);
+        expect(micro.getSlots("torso").filter((slot) => slot?.startsWith("Ammo"))).toHaveLength(1);
+        expect(micro.getFreeSlots("torso")).toBe(0);
+    });
+
+    it("refuses ammunition that has no free slot", () => {
+        const micro = build(19, "biped", 4, 0);
+        micro.addMount("micro-machine-gun", "ra");
+        expect(micro.setAmmo(0, 250, "ra")).toBe(false);
+        expect(micro.setAmmo(0, 250, "la")).toBe(true);
+    });
+
+    it("needs heat sinks for the summed heat of the energy weapons: free plus at most 10 extra at 125 kg", () => {
+        const micro = slayer();
+        expect(micro.getEnergyHeat()).toBe(9);
+        expect(micro.getHeatSinks()).toBe(9);
+        micro.addMount("micro-laser-small", "ll");
+        expect(micro.getEnergyHeat()).toBe(10);
+        expect(micro.getIssues()).toContain("The energy weapons make 10 heat; the heat sinks dissipate 9.");
+        micro.setExtraHeatSinks(1);
+        expect(micro.getHeatSinks()).toBe(10);
+        expect(micro.getWeightLog()).toContainEqual({ name: "Heat sinks (1 extra)", kg: 125 });
+        expect(micro.getIssues().join(" ")).not.toMatch(/heat/);
+        micro.setExtraHeatSinks(11);
+        expect(micro.getExtraHeatSinks()).toBe(10);
+    });
+
+    it("needs no heat sinks for ballistic and missile weapons", () => {
+        const micro = build(19, "biped", 4, 0);
+        micro.addMount("micro-machine-gun", "torso");
+        micro.addMount("micro-srm-2", "torso");
+        expect(micro.getEnergyHeat()).toBe(0);
+    });
+
+    it("gives an ICE a ton of power amplifiers per 10 tons of energy weapons or part, and no free heat sinks", () => {
+        const micro = build(19, "biped", 4, 0);
+        micro.setEngineKind("ice");
+        expect(micro.getPowerAmplifierWeight()).toBe(0);
+        micro.addMount("micro-laser-small", "head");
+        expect(micro.getPowerAmplifierWeight()).toBe(1000);
+        micro.addMount("micro-ppc", "torso");
+        micro.addMount("micro-pulse-laser-large", "torso");
+        expect(micro.getPowerAmplifierWeight()).toBe(2000);
+        expect(micro.getWeightLog()).toContainEqual({ name: "Power amplifiers", kg: 2000 });
+        expect(micro.getHeatSinks()).toBe(micro.getExtraHeatSinks());
+        micro.setEngineKind("fusion");
+        expect(micro.getPowerAmplifierWeight()).toBe(0);
+    });
+
+    it("moves arm equipment to the front legs and back with the layout", () => {
+        const micro = stormArmed();
+        micro.setJumpJets(0);
+        micro.setLayout("quad");
+        expect(micro.getMounts().map((mount) => mount.location)).toEqual(["frl", "fll"]);
+        micro.setLayout("biped");
+        expect(micro.getMounts().map((mount) => mount.location)).toEqual(["ra", "la"]);
+    });
+
+    it("reports a lower arm group fitted into a full arm", () => {
+        const micro = build(19, "biped", 4, 0);
+        micro.setLowerArm("right", false);
+        micro.addMount("micro-laser-large", "ra");
+        micro.setLowerArm("right", true);
+        expect(micro.getIssues()).toContain("Right Arm holds 4 slots of items in 3 slots.");
+    });
+
+    it("counts jump jets against the slots the equipment leaves", () => {
+        const micro = stormArmed();
+        micro.addMount("micro-laser-small", "ll");
+        expect(micro.getIssues()).toContain("The jump jets need 6 slots in the torso and legs; 5 are free.");
+    });
+
+    it("saves and reads mounts, ammunition and heat sinks", () => {
+        const micro = stormArmed();
+        micro.setExtraHeatSinks(2);
+        const copy = new MicroMech(micro.exportJSON());
+        expect(copy.export()).toEqual(micro.export());
+        expect(copy.getWeight()).toBe(micro.getWeight());
+        expect(copy.getImportIssues()).toEqual([]);
+    });
+
+    it("drops an unreadable mount or lot with an issue for each", () => {
+        const data = stormArmed().export();
+        data.mounts = [
+            ...data.mounts!,
+            { tag: "micro-nothing", location: "torso" },
+            { tag: "micro-laser-small", location: "fll" },
+            { tag: "micro-autocannon-2", location: "torso", ammo: [{ type: "standard", kg: 300, location: "torso" }, { type: "cluster", kg: 250, location: "torso" }] },
+        ];
+        const { micro, issues } = normalizeMicroMechExport(data);
+        expect(micro?.mounts?.map((mount) => mount.tag)).toEqual(["micro-er-laser-small", "micro-machine-gun", "micro-autocannon-2"]);
+        expect(micro?.mounts?.[2].ammo).toEqual([{ type: "standard", kg: 250, location: "torso" }]);
+        expect(issues).toEqual([
+            "Unknown item \"micro-nothing\": dropped.",
+            "Laser, Small: no Left Front Leg on a biped: dropped.",
+            "Autocannon/2 ammunition 300 kg is not a 250 kg lot: set to 250 kg.",
+            "Autocannon/2 has no cluster ammunition: dropped.",
+        ]);
+    });
+
+    it("reads a Chunk A save with no equipment", () => {
+        const data = storm().export();
+        delete data.mounts;
+        delete data.extraHeatSinks;
+        const micro = new MicroMech(JSON.stringify(data));
+        expect(micro.getMounts()).toEqual([]);
+        expect(micro.getExtraHeatSinks()).toBe(0);
+        expect(micro.getImportIssues()).toEqual([]);
+    });
+});
+
+describe("Micro-Mech equipment, version solarmech-2019", () => {
+    it("refuses a weapon in the head or a leg, and ammunition outside the torso", () => {
+        const micro = build(19, "biped", 4, 0);
+        micro.setVersion("solarmech-2019");
+        expect(micro.addMount("micro-laser-small", "head")).toBe(false);
+        expect(micro.addMount("micro-laser-small", "ll")).toBe(false);
+        expect(micro.addMount("micro-c3-slave", "head")).toBe(true);
+        expect(micro.addMount("micro-case", "ll")).toBe(true);
+        expect(micro.addMount("micro-machine-gun", "ra")).toBe(true);
+        expect(micro.setAmmo(2, 250, "ra")).toBe(false);
+        expect(micro.setAmmo(2, 250)).toBe(true);
+        expect(micro.getAmmoLots()[0].location).toBe("torso");
+    });
+
+    it("reports the Tunnel Rat's head weapon and arm ammunition, and removes nothing", () => {
+        const micro = tunnelRat();
+        const issues = micro.setVersion("solarmech-2019");
+        expect(issues).toContain("Grenade Launcher is in the Head; Solarmech's 2019 post (Micro-Mechs for BattleTech, Part 1) allows no weapon in the head or legs.");
+        expect(issues).toContain("Recoilless Rifle (Heavy) ammunition is in the Left Arm; Solarmech's 2019 post (Micro-Mechs for BattleTech, Part 1) allows ammunition only in the torso.");
+        expect(micro.getMounts()).toHaveLength(4);
+        expect(micro.getAmmoLots()).toHaveLength(2);
+    });
+
+    it("weighs heat sinks at 500 kg with no limit, and counts part-ton shots as a fraction of the ton", () => {
+        const micro = build(19, "biped", 4, 0);
+        micro.setVersion("solarmech-2019");
+        micro.setExtraHeatSinks(12);
+        expect(micro.getExtraHeatSinks()).toBe(12);
+        expect(micro.getWeightLog()).toContainEqual({ name: "Heat sinks (12 extra)", kg: 6000 });
+        micro.addMount("micro-srm-2", "torso");
+        micro.setAmmo(0, 750);
+        expect(micro.getAmmoLots()[0].shots).toBe(37);
+    });
+
+    it("weighs power converters at 10 percent of the energy weapons, up to the quarter ton", () => {
+        const micro = build(19, "biped", 4, 0);
+        micro.setVersion("solarmech-2019");
+        micro.setEngineKind("ice");
+        micro.addMount("micro-laser-small", "torso");
+        expect(micro.getPowerAmplifierWeight()).toBe(250);
+        micro.addMount("micro-ppc", "torso");
+        micro.addMount("micro-laser-medium", "ra");
+        // 8,500 kg of energy weapons: 850 kg, up to 1,000.
+        expect(micro.getPowerAmplifierWeight()).toBe(1000);
+    });
+
+    it("keeps one ammunition type to a slot", () => {
+        const micro = build(19, "biped", 4, 0);
+        micro.setVersion("solarmech-2019");
+        // The LB-2X fills four of the torso's five free slots: the cluster lot needs a sixth.
+        micro.addMount("micro-lb-2x-ac", "torso");
+        expect(micro.setAmmo(0, 250, "torso", "standard")).toBe(true);
+        expect(micro.setAmmo(0, 250, "torso", "cluster")).toBe(false);
+        expect(micro.getAmmoLots().map((lot) => lot.type)).toEqual(["standard"]);
+    });
+
+    it("reports extra heat sinks over the 6.1.0.2 limit after a switch back, and keeps them", () => {
+        const micro = build(19, "biped", 4, 0);
+        micro.setVersion("solarmech-2019");
+        micro.setExtraHeatSinks(12);
+        expect(micro.setVersion("6.1.0.2")).toContain("12 extra heat sinks exceed the 10 the engine may carry.");
+        expect(micro.getExtraHeatSinks()).toBe(12);
+    });
+});

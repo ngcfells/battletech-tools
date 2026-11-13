@@ -134,6 +134,17 @@ export interface IMicroMechVersionRules {
     headArmorPerStructure: number;
     weaponLocations: "any" | "not-head-or-legs";
     ammoLocations: "any" | "torso";
+    /**
+     * Part-ton shots. "table": the 6.1.0.2 table's 250 / 500 / 750 kg columns. "fraction-of-ton": the per-ton shots
+     * times the fraction, fractions dropped (2019: "SRM-2 .75 tons of ammunition would be 37 rounds").
+     */
+    ammoShots: "table" | "fraction-of-ton";
+    /**
+     * What one ammunition slot (up to 1,000 kg) may hold. "weapon-class": any ammunition for one weapon (6.1.0.2's
+     * LB-5X example, which the plan follows where its LB-2X example says otherwise). "ammo-type": one ammunition type
+     * (2019, which prints only the LB-2X example).
+     */
+    ammoSlots: "weapon-class" | "ammo-type";
     techBase: string;
     /** Engines that may be sealed for vacuum. */
     vacuumEngines: string[];
@@ -172,6 +183,8 @@ export const MICRO_MECH_VERSION_RULES: Record<MicroMechVersion, IMicroMechVersio
         headArmorPerStructure: 2,
         weaponLocations: "any",
         ammoLocations: "any",
+        ammoShots: "table",
+        ammoSlots: "weapon-class",
         techBase: "is",
         vacuumEngines: ["fusion"],
         torsoOverflowToCockpit: 0.5,
@@ -201,6 +214,8 @@ export const MICRO_MECH_VERSION_RULES: Record<MicroMechVersion, IMicroMechVersio
         headArmorPerStructure: 3,
         weaponLocations: "not-head-or-legs",
         ammoLocations: "torso",
+        ammoShots: "fraction-of-ton",
+        ammoSlots: "ammo-type",
         techBase: "is",
         vacuumEngines: ["fusion", "fuel cell"],
         torsoOverflowToCockpit: 1,

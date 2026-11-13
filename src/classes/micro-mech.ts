@@ -20,6 +20,7 @@ import {
     MICRO_MECH_LOWER_ARM,
     MICRO_MECH_MAX_TONS,
     MICRO_MECH_MIN_TONS,
+    MICRO_MECH_QUARTER_TON_KG,
     MICRO_MECH_SLOTS,
     MICRO_MECH_VERSION_RULES,
     MicroMechArmorType,
@@ -31,11 +32,18 @@ import {
     getMicroMechStructureRow,
     isMicroMechVersion,
 } from "../data/micro-mech-construction";
+import {
+    IMicroMechItem,
+    MicroMechAmmoType,
+    findMicroMechItem,
+    getMicroMechAmmoShots,
+    isMicroMechWeapon,
+} from "../data/micro-mech-equipment-custom";
 
 // A Micro-Mech (#173): a fan-made 10 to 19 ton walker with one torso, built in kilograms. Custom Homebrew.
 // Construction: "Micro-Mechs" 6.1.0.2 or Solarmech's 2019 post, chosen by `version`; every rule that differs is a
-// field of MICRO_MECH_VERSION_RULES. Equipment, cost, Battle Value and play are later chunks of the plan
-// (docs/superpowers/plans/2026-11-13-micro-mechs.md).
+// field of MICRO_MECH_VERSION_RULES. Equipment comes from the 6.1.0.2 table (micro-mech-equipment-custom.ts). Cost,
+// Battle Value and play are later chunks of the plan (docs/superpowers/plans/2026-11-13-micro-mechs.md).
 
 export const MAX_MICRO_MECH_NAME_LENGTH = 120;
 /** The highest rating in the standard engine table (TechManual p.49, as mech-engine-options.ts holds it). */
@@ -49,6 +57,39 @@ const BUILT_ARMOR_TYPES: MicroMechArmorType[] = ["standard"];
 const QUAD_FOR_BIPED: Partial<Record<MicroMechLocation, MicroMechLocation>> = { la: "fll", ra: "frl" };
 
 export type MicroMechSide = "left" | "right";
+/** "A maximum of 4 weapons can be mounted on a Micro-Mech" (both texts). */
+export const MICRO_MECH_MAX_WEAPONS = 4;
+/** "Each critical slot can hold up to 1000kg of ammo" (6.1.0.2); "Ammunition amounts one ton or less are located in single slot" (both). */
+const AMMO_KG_PER_SLOT = 1000;
+/** A sanity cap on extra heat sinks where the text states no limit (2019). */
+const MAX_EXTRA_HEAT_SINKS_UNLIMITED = 99;
+
+export interface IMicroMechAmmoExport {
+    type: MicroMechAmmoType;
+    kg: number;
+    location: MicroMechLocation;
+}
+
+export interface IMicroMechMountExport {
+    tag: string;
+    location: MicroMechLocation;
+    /** The weapon's ammunition, one lot per type; each lot sits in one location. */
+    ammo?: IMicroMechAmmoExport[];
+}
+
+export interface IMicroMechMount extends IMicroMechMountExport {
+    item: IMicroMechItem;
+    ammo: IMicroMechAmmoExport[];
+}
+
+export interface IMicroMechAmmoLot extends IMicroMechAmmoExport {
+    mountIndex: number;
+    tag: string;
+    name: string;
+    shots: number;
+    /** Slots this lot fills by itself (lots that share a slot are counted in getSlots). */
+    slots: number;
+}
 
 export interface IMicroMechExport {
     /** The save format. */
@@ -70,6 +111,10 @@ export interface IMicroMechExport {
     /** Lower Arm Actuator Groups fitted (a biped's); absent means both. */
     lowerArms?: { left: boolean; right: boolean };
     armor: Partial<Record<MicroMechLocation, number>>;
+    /** Equipment, in the order it was added; absent in a Chunk A save. */
+    mounts?: IMicroMechMountExport[];
+    /** Heat sinks beyond the engine's free ones; absent means none. */
+    extraHeatSinks?: number;
     era: string;
     lastUpdated?: string;
 }
@@ -114,6 +159,8 @@ export default class MicroMech implements IGameSettingsUnit {
     private _sealed: boolean = false;
     private _lowerArms: Record<MicroMechSide, boolean> = { left: true, right: true };
     private _armor: Record<MicroMechLocation, number> = { head: 0, torso: 0, torsoRear: 0, la: 0, ra: 0, ll: 0, rl: 0, fll: 0, frl: 0 };
+    private _mounts: { tag: string; location: MicroMechLocation; ammo: IMicroMechAmmoExport[] }[] = [];
+    private _extraHeatSinks: number = 0;
     private _era: IEras = findEraByTag("jihad") ?? btEraOptions[btEraOptions.length - 1];
     private _importIssues: string[] = [];
 
@@ -182,6 +229,10 @@ export default class MicroMech implements IGameSettingsUnit {
             const to = layout === "quad" ? frontLeg : arm;
             this._armor[to] = this._armor[from];
             this._armor[from] = 0;
+            for (const mount of this._mounts) {
+                if (mount.location === from) mount.location = to;
+                for (const lot of mount.ammo) if (lot.location === from) lot.location = to;
+            }
         }
         this._layout = layout;
         this._clampArmor();
@@ -244,6 +295,33 @@ export default class MicroMech implements IGameSettingsUnit {
     /** An ICE has no free heat sinks (both texts). */
     public getFreeHeatSinks(): number {
         return this._engineKind === "fusion" ? this.getRules().freeHeatSinks(this.getInstalledEngineRating()) : 0;
+    }
+
+    // Heat sinks and power amplifiers --------------------------------------------------------------------------------
+
+    public getExtraHeatSinks(): number { return this._extraHeatSinks; }
+    /** "A maximum of ten single heat sinks can be added on the engine" (6.1.0.2); the 2019 post states no limit. */
+    public getMaxExtraHeatSinks(): number { return this.getRules().maxExtraHeatSinks ?? MAX_EXTRA_HEAT_SINKS_UNLIMITED; }
+    public setExtraHeatSinks(count: number): void { this._extraHeatSinks = clampInt(count, 0, this.getMaxExtraHeatSinks(), 0); }
+    /** Heat sinks "are mounted on the engine and do not take up location slots". */
+    public getHeatSinks(): number { return this.getFreeHeatSinks() + this._extraHeatSinks; }
+    public getHeatSinkWeight(): number { return this._extraHeatSinks * this.getRules().heatSinkKg; }
+    /** "enough heat sinks to dissipate all the heat generated by firing all its energy weapons in the same turn". */
+    public getEnergyHeat(): number {
+        return this.getMounts().filter((mount) => mount.item.kind === "energy").reduce((sum, mount) => sum + mount.item.heat, 0);
+    }
+    public getEnergyWeaponWeight(): number {
+        return this.getMounts().filter((mount) => mount.item.kind === "energy").reduce((sum, mount) => sum + mount.item.weightKg, 0);
+    }
+    /**
+     * An ICE's power amplifiers. 6.1.0.2: "1 ton per 10 tons of energy weapons or fraction there of". 2019: "10% of the
+     * tonnage of the energy weapons rounded up to the nearest .25 ton". A fusion engine needs none.
+     */
+    public getPowerAmplifierWeight(): number {
+        const energy = this.getEnergyWeaponWeight();
+        if (this._engineKind !== "ice" || energy <= 0) return 0;
+        if (this.getRules().powerAmplifiers === "per-10-tons") return Math.ceil(energy / 10000) * 1000;
+        return ceilToQuarterTonKg(energy / 10);
     }
 
     // Jump jets ----------------------------------------------------------------------------------------------------
@@ -309,16 +387,127 @@ export default class MicroMech implements IGameSettingsUnit {
         return true;
     }
 
-    /** The location's slots: the fixed items, then null for each free slot. Equipment comes in Chunk B. */
+    /**
+     * The location's slots: the fixed items, the equipment in the order added, the ammunition, then null for each free
+     * slot. A location holding more than it has is longer than its slot count (an issue). Jump jets are counted by
+     * getJumpJetSlotsFree, not placed.
+     */
     public getSlots(location: MicroMechLocation): (string | null)[] {
         if (!this.getLocations().includes(location)) return [];
-        const layout = MICRO_MECH_SLOTS[location];
-        const fixed = [...layout.fixed];
+        const used = this._usedSlots(location);
+        return [...used, ...new Array(Math.max(0, MICRO_MECH_SLOTS[location].slots - used.length)).fill(null)];
+    }
+    private _usedSlots(location: MicroMechLocation): string[] {
+        const fixed = [...MICRO_MECH_SLOTS[location].fixed];
         if ((location === "la" && this.hasLowerArm("left")) || (location === "ra" && this.hasLowerArm("right"))) fixed.push(MICRO_MECH_LOWER_ARM);
-        return [...fixed, ...new Array(Math.max(0, layout.slots - fixed.length)).fill(null)];
+        const items: string[] = [];
+        const ammo = new Map<string, { name: string; kg: number }>();
+        for (const mount of this.getMounts()) {
+            if (mount.location === location) for (let i = 0; i < mount.item.slots; i++) items.push(mount.item.name);
+            for (const lot of mount.ammo) {
+                if (lot.location !== location) continue;
+                // One slot holds up to 1,000 kg "for the same weapon class" (6.1.0.2), or of one ammunition type (2019).
+                const key = this.getRules().ammoSlots === "weapon-class" ? mount.tag : `${mount.tag}|${lot.type}`;
+                const group = ammo.get(key) ?? { name: mount.item.name, kg: 0 };
+                group.kg += lot.kg;
+                ammo.set(key, group);
+            }
+        }
+        for (const group of ammo.values()) for (let i = 0; i < Math.ceil(group.kg / AMMO_KG_PER_SLOT); i++) items.push(`Ammo (${group.name})`);
+        return [...fixed, ...items];
     }
     public getFreeSlots(location: MicroMechLocation): number { return this.getSlots(location).filter((slot) => slot === null).length; }
     public getTotalFreeSlots(): number { return this.getLocations().reduce((sum, location) => sum + this.getFreeSlots(location), 0); }
+    public getTotalSlots(): number { return this.getLocations().reduce((sum, location) => sum + MICRO_MECH_SLOTS[location].slots, 0); }
+    /** Every slot filled, jump jets included. */
+    public getTotalUsedSlots(): number {
+        return this.getLocations().reduce((sum, location) => sum + (location === "torsoRear" ? 0 : this._usedSlots(location).length), 0) + this._jumpJets;
+    }
+
+    // Equipment --------------------------------------------------------------------------------------------------
+
+    public getMounts(): IMicroMechMount[] {
+        return this._mounts.flatMap((mount) => {
+            const item = findMicroMechItem(mount.tag);
+            return item ? [{ tag: mount.tag, location: mount.location, item, ammo: mount.ammo.map((lot) => ({ ...lot })) }] : [];
+        });
+    }
+    public getWeaponCount(): number { return this.getMounts().filter((mount) => isMicroMechWeapon(mount.item)).length; }
+
+    /** Where the version allows this item. 2019: "Weapons cannot be mounted in the legs or the Head". */
+    private _allowsItemAt(item: IMicroMechItem, location: MicroMechLocation): boolean {
+        if (!this.getLocations().includes(location) || location === "torsoRear") return false;
+        if (isMicroMechWeapon(item) && this.getRules().weaponLocations === "not-head-or-legs") return location === "la" || location === "ra" || location === "torso";
+        return true;
+    }
+    /** 2019: "All ammunition must be mounted in the Torso". */
+    private _allowsAmmoAt(location: MicroMechLocation): boolean {
+        if (!this.getLocations().includes(location) || location === "torsoRear") return false;
+        return this.getRules().ammoLocations === "any" || location === "torso";
+    }
+    private _fits(location: MicroMechLocation): boolean { return this._usedSlots(location).length <= MICRO_MECH_SLOTS[location].slots; }
+
+    /**
+     * Mounts a table item in one location. Refused: an unknown tag (the banned items have no row), a location the
+     * version does not allow, or too few free slots there ("A Micro-Mech cannot spit weapons over multiple locations").
+     * A fifth weapon is mounted and reported as an issue.
+     */
+    public addMount(tag: string, location: MicroMechLocation): boolean {
+        const item = findMicroMechItem(tag);
+        if (!item || !this._allowsItemAt(item, location)) return false;
+        if (this.getFreeSlots(location) < item.slots) return false;
+        this._mounts.push({ tag, location, ammo: [] });
+        return true;
+    }
+    /** Removes the mount and its ammunition. */
+    public removeMount(index: number): boolean {
+        if (!Number.isInteger(index) || index < 0 || index >= this._mounts.length) return false;
+        this._mounts.splice(index, 1);
+        return true;
+    }
+
+    /**
+     * Sets a weapon's ammunition of one type: "quarter ton, half ton, three-quarter ton or full ton lots", so a
+     * multiple of 250 kg (0 removes it). The location defaults to the lot's own, else the torso where the version
+     * keeps ammunition there, else the weapon's. Refused where there is no such ammunition, the location is not
+     * allowed, or it has no free slot for it.
+     */
+    public setAmmo(mountIndex: number, kg: number, location?: MicroMechLocation, type: MicroMechAmmoType = "standard"): boolean {
+        const mount = this._mounts[mountIndex];
+        const item = mount ? findMicroMechItem(mount.tag) : undefined;
+        if (!mount || !item?.ammo?.some((ammo) => ammo.type === type)) return false;
+        if (!Number.isInteger(kg) || kg < 0 || kg % MICRO_MECH_QUARTER_TON_KG !== 0) return false;
+        const before = mount.ammo.map((lot) => ({ ...lot }));
+        const existing = mount.ammo.find((lot) => lot.type === type);
+        mount.ammo = mount.ammo.filter((lot) => lot.type !== type);
+        if (kg === 0) return true;
+        const where = location ?? existing?.location ?? (this.getRules().ammoLocations === "torso" ? "torso" : mount.location);
+        if (!this._allowsAmmoAt(where)) {
+            mount.ammo = before;
+            return false;
+        }
+        mount.ammo.push({ type, kg, location: where });
+        mount.ammo.sort((a, b) => (item.ammo ?? []).findIndex((ammo) => ammo.type === a.type) - (item.ammo ?? []).findIndex((ammo) => ammo.type === b.type));
+        if (!this._fits(where)) {
+            mount.ammo = before;
+            return false;
+        }
+        return true;
+    }
+    public getAmmoLots(): IMicroMechAmmoLot[] {
+        const rule = this.getRules().ammoShots;
+        return this.getMounts().flatMap((mount, mountIndex) => mount.ammo.map((lot) => {
+            const ammo = mount.item.ammo?.find((each) => each.type === lot.type);
+            return {
+                ...lot,
+                mountIndex,
+                tag: mount.tag,
+                name: mount.item.name,
+                shots: ammo ? getMicroMechAmmoShots(ammo, lot.kg, rule) : 0,
+                slots: Math.ceil(lot.kg / AMMO_KG_PER_SLOT),
+            };
+        }));
+    }
     /** Jump jets "may be mounted on the legs and torso only", one slot each. */
     public getJumpJetSlotsFree(): number {
         return this.getLocations().filter((location) => location === "torso" || MICRO_MECH_SLOTS[location].fixed.includes("Upper Leg Actuator Group"))
@@ -337,6 +526,13 @@ export default class MicroMech implements IGameSettingsUnit {
         ];
         if (this._jumpJets > 0) lines.push({ name: `Jump jets (${this._jumpJets})`, kg: this.getJumpJetWeight() });
         if (this._sealed) lines.push({ name: "Environmental sealing", kg: this.getSealingWeight() });
+        if (this._extraHeatSinks > 0) lines.push({ name: `Heat sinks (${this._extraHeatSinks} extra)`, kg: this.getHeatSinkWeight() });
+        if (this.getPowerAmplifierWeight() > 0) lines.push({ name: "Power amplifiers", kg: this.getPowerAmplifierWeight() });
+        for (const mount of this.getMounts()) lines.push({ name: `${mount.item.name} (${this.getLocationName(mount.location)})`, kg: mount.item.weightKg });
+        for (const lot of this.getAmmoLots()) {
+            const type = lot.type === "cluster" ? ", cluster" : "";
+            lines.push({ name: `Ammo (${lot.name}${type}), ${lot.shots} shots (${this.getLocationName(lot.location)})`, kg: lot.kg });
+        }
         return lines;
     }
     public getWeight(): number { return this.getWeightLog().reduce((sum, line) => sum + line.kg, 0); }
@@ -366,6 +562,23 @@ export default class MicroMech implements IGameSettingsUnit {
         const torso = this._armor.torso + this._armor.torsoRear;
         if (torso > this.getMaxArmor("torso")) issues.push(`Torso front and rear armor together (${torso}) exceed twice the torso structure (${this.getMaxArmor("torso")}).`);
         if (this.getArmorPoints() % 2 === 1) issues.push(`An odd number of armor points (${this.getArmorPoints()}) does not come to a whole kilogram (62.5 kg a point).`);
+        for (const location of this.getLocations()) {
+            if (location === "torsoRear" || this._fits(location)) continue;
+            issues.push(`${this.getLocationName(location)} holds ${this._usedSlots(location).length} slots of items in ${MICRO_MECH_SLOTS[location].slots} slots.`);
+        }
+        const weapons = this.getWeaponCount();
+        if (weapons > MICRO_MECH_MAX_WEAPONS) issues.push(`${weapons} weapons are mounted; a Micro-Mech mounts at most ${MICRO_MECH_MAX_WEAPONS}.`);
+        for (const mount of this.getMounts()) {
+            const at = `${mount.item.name} (${this.getLocationName(mount.location)})`;
+            if (!this._allowsItemAt(mount.item, mount.location)) issues.push(`${mount.item.name} is in the ${this.getLocationName(mount.location)}; ${rules.name} allows no weapon in the head or legs.`);
+            if (mount.item.ammo && mount.ammo.length === 0) issues.push(`${at} carries no ammunition: at least 250 kg is needed.`);
+            for (const lot of mount.ammo) {
+                if (!this._allowsAmmoAt(lot.location)) issues.push(`${mount.item.name} ammunition is in the ${this.getLocationName(lot.location)}; ${rules.name} allows ammunition only in the torso.`);
+            }
+        }
+        if (this._extraHeatSinks > this.getMaxExtraHeatSinks()) issues.push(`${this._extraHeatSinks} extra heat sinks exceed the ${this.getMaxExtraHeatSinks()} the engine may carry.`);
+        const heat = this.getEnergyHeat();
+        if (heat > this.getHeatSinks()) issues.push(`The energy weapons make ${heat} heat; the heat sinks dissipate ${this.getHeatSinks()}.`);
         if (this._jumpJets > this.getJumpJetSlotsFree()) issues.push(`The jump jets need ${this._jumpJets} slots in the torso and legs; ${this.getJumpJetSlotsFree()} are free.`);
         return issues;
     }
@@ -381,6 +594,11 @@ export default class MicroMech implements IGameSettingsUnit {
         if (this._engineKind === "ice") {
             notes.push("An ICE engine has no free heat sinks and needs power amplifiers for energy weapons.");
             notes.push(`Only a ${rules.vacuumEngines.join(" or ")} Micro-Mech may be sealed for vacuum.`);
+        }
+        if (this.getMounts().some((mount) => mount.ammo.length > 0)) {
+            notes.push(rules.ammoSlots === "weapon-class"
+                ? "One slot holds up to 1,000 kg of ammunition for one weapon, of any type: the document's LB-5X example, followed where its LB-2X example says each type takes its own slot."
+                : "Each ammunition type takes its own slot, up to 1,000 kg.");
         }
         return notes;
     }
@@ -406,6 +624,8 @@ export default class MicroMech implements IGameSettingsUnit {
             ...(this._sealed ? { sealed: true } : {}),
             ...(!this.isQuad() && !(this._lowerArms.left && this._lowerArms.right) ? { lowerArms: { ...this._lowerArms } } : {}),
             armor,
+            mounts: this._mounts.map((mount) => ({ tag: mount.tag, location: mount.location, ...(mount.ammo.length ? { ammo: mount.ammo.map((lot) => ({ ...lot })) } : {}) })),
+            ...(this._extraHeatSinks > 0 ? { extraHeatSinks: this._extraHeatSinks } : {}),
             era: this._era.tag,
             lastUpdated: this.lastUpdated.toISOString(),
         };
@@ -460,11 +680,50 @@ export default class MicroMech implements IGameSettingsUnit {
             if (points !== saved) issues.push(`${this.getLocationName(location)} armor ${String(saved)} is out of range: set to ${points}.`);
             this._armor[location] = points;
         }
+        this._importMounts(data, issues);
         this._era = this.getAvailableEras().find((era) => era.tag === data.era) ?? this._era;
         const saved = typeof data.lastUpdated === "string" ? new Date(data.lastUpdated) : new Date();
         this.lastUpdated = Number.isNaN(saved.getTime()) ? new Date() : saved;
         this._importIssues = issues;
         return true;
+    }
+
+    /** Mounts and heat sinks from a save. Rules issues (a fifth weapon, a version's location) stay for getIssues. */
+    private _importMounts(data: IMicroMechExport, issues: string[]): void {
+        this._mounts = [];
+        const saved = Array.isArray(data.mounts) ? data.mounts : [];
+        const layoutName = this._layout === "quad" ? "a quad" : "a biped";
+        for (const raw of saved) {
+            const tag = typeof raw?.tag === "string" ? raw.tag : "";
+            const item = findMicroMechItem(tag);
+            if (!item) {
+                issues.push(`Unknown item "${tag.slice(0, 40)}": dropped.`);
+                continue;
+            }
+            if (!this.getLocations().includes(raw.location) || raw.location === "torsoRear") {
+                const name = ALL_LOCATIONS.includes(raw.location) ? MICRO_MECH_LOCATION_NAMES[this._layout][raw.location] : `"${String(raw.location).slice(0, 40)}"`;
+                issues.push(`${item.name}: no ${name} on ${layoutName}: dropped.`);
+                continue;
+            }
+            const ammo: IMicroMechAmmoExport[] = [];
+            for (const lot of Array.isArray(raw.ammo) ? raw.ammo : []) {
+                if (!item.ammo?.some((each) => each.type === lot?.type) || ammo.some((each) => each.type === lot.type)) {
+                    issues.push(`${item.name} has no ${String(lot?.type).slice(0, 20)} ammunition: dropped.`);
+                    continue;
+                }
+                if (!this.getLocations().includes(lot.location) || lot.location === "torsoRear") {
+                    issues.push(`${item.name} ammunition: no such location on ${layoutName}: dropped.`);
+                    continue;
+                }
+                const kg = clampInt(Math.round(Number(lot.kg) / MICRO_MECH_QUARTER_TON_KG) * MICRO_MECH_QUARTER_TON_KG, MICRO_MECH_QUARTER_TON_KG, 20000, MICRO_MECH_QUARTER_TON_KG);
+                if (kg !== lot.kg) issues.push(`${item.name} ammunition ${String(lot.kg)} kg is not a 250 kg lot: set to ${kg} kg.`);
+                ammo.push({ type: lot.type, kg, location: lot.location });
+            }
+            this._mounts.push({ tag, location: raw.location, ammo });
+        }
+        const extra = clampInt(data.extraHeatSinks ?? 0, 0, MAX_EXTRA_HEAT_SINKS_UNLIMITED, 0);
+        if (extra !== (data.extraHeatSinks ?? 0)) issues.push(`Extra heat sinks ${String(data.extraHeatSinks)} are out of range: set to ${extra}.`);
+        this._extraHeatSinks = extra;
     }
 
     public importJSON(json: string): boolean {
