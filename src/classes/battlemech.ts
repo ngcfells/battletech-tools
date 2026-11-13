@@ -10989,7 +10989,12 @@ export class BattleMech {
     /** Unit values that variable-size equipment is sized from. */
     private _variableEquipmentContext(): IVariableEquipmentContext {
         const directFireWeaponWeight = getTargetingComputerWeaponWeight(this._equipmentList);
+        // Only a Ram Plate reads the charge figures.
+        const hasRamPlate = this._equipmentList.some(item => item?.variableFormula === "ram-plate");
+        const spikedTorsos = hasRamPlate
+            ? ["lt", "ct", "rt"].filter(loc => this._equipmentList.some(item => item?.tag === "spikes" && item.location === loc)).length : 0;
         return {
+            ...(hasRamPlate ? { runMP: this.getBVRunSpeed(), torsoSpikes: spikedTorsos } : {}),
             tonnage: this.getTonnage(),
             engineRating: this.getEngine()?.rating ?? 0,
             engineWeight: this.getEngineWeight() ?? 0,
@@ -14397,6 +14402,8 @@ export class BattleMech {
                             );
 
                             item.location = item.allocationLocation;
+                            // A lone spread item's other slots, as in the list above.
+                            this._placeSSWSpreadRemainder( item );
                         }
                     }
                 }

@@ -70,6 +70,10 @@ export interface IVariableEquipmentContext {
     drones?: number;
     /** Tons of weapons and equipment in a BattleMech Turret, not counting ammunition and heat sinks (TO:AUE p.158). */
     turretWeight?: number;
+    /** Running MP as Battle Value counts it, MASC and the like included (a Ram Plate's charge). */
+    runMP?: number;
+    /** Torso locations (left, center, right) that carry Spikes: each adds to a Ram Plate's charge. */
+    torsoSpikes?: number;
 }
 
 /** Weight class index: 1 light (<= 35 t), 2 medium (<= 55), 3 heavy (<= 75), 4 assault and heavier. */
@@ -240,8 +244,14 @@ export function sizeVariableEquipment(
             return { weight, slots: Math.ceil(weight), cbills: 500 * weight, battleValue: 0 };
         }
         // OTP: Hanseatic Crusade p.30: 1 ton per 10 tons of the unit, 1 slot in each torso; no cost printed.
-        case "ram-plate":
-            return { weight: roundUpHalfTon(t / 10), slots: 3, cbills: 0, battleValue: 0 };
+        // No Battle Value is printed either. Owner ruling 2026-11-12: half the greatest charge damage (tonnage x
+        // running MP / 10, each step rounded down), plus 1 for each torso carrying Spikes, times 1.1, in the
+        // Offensive Battle Rating. It reproduces the 2,124 of the book's own Rhino record sheet (p.40).
+        case "ram-plate": {
+            const halfCharge = Math.floor(Math.floor(t * (ctx.runMP ?? 0) / 10 + 1e-9) / 2);
+            const battleValue = halfCharge > 0 ? (halfCharge + (ctx.torsoSpikes ?? 0)) * 11 / 10 : 0;
+            return { weight: roundUpHalfTon(t / 10), slots: 3, cbills: 0, battleValue };
+        }
         // TO:AUE p.144: 1% of the vessel (half ton); 100,000 x item tons C-bills (p.221).
         case "naval-c3": {
             const weight = roundUpHalfTon(t / 100);

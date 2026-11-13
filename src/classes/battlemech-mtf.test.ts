@@ -534,6 +534,19 @@ describe("MegaMek 'Mech import", () => {
         }
     });
 
+    it("reads a Ram Plate as one item with a slot in each torso (OTP: Hanseatic Crusade p.30)", () => {
+        const core = [...fill(3, "Fusion Engine"), ...fill(4, "Gyro"), ...fill(3, "Fusion Engine")];
+        const rammer = quad.replace("structure:IS Standard", "structure:IS Reinforced").replace("techbase:Inner Sphere", "techbase:Mixed (Clan Chassis)")
+            .replace(location("Left Torso", "Large Laser", "Large Laser").join("\n"), location("Left Torso", "Ram Plate").join("\n"))
+            .replace(location("Right Torso", "Large Laser", "Large Laser").join("\n"), location("Right Torso", "Ram Plate").join("\n"))
+            .replace(location("Center Torso", ...core).join("\n"), location("Center Torso", ...core, "Ram Plate").join("\n"));
+        expect(rammer.match(/^Ram Plate$/gm)).toHaveLength(3);
+        const { mech, issues } = importBattleMechMtf(rammer);
+        expect(issues).toEqual([]);
+        expect(mech!.getInstalledEquipment().filter((item) => item.tag === "ram-plate")).toHaveLength(1);
+        expect(mech!.getUnallocatedCritCount()).toBe(0);
+    });
+
     it("leaves out what it cannot convert, saying why", () => {
         const lam = striker.replace("Config:Biped", "Config:LAM");
         expect(importBattleMechMtf(lam).issues.some((issue) => /LAM/.test(issue))).toBe(true);

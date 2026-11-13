@@ -67,6 +67,16 @@ describe("variable equipment sizing", () => {
         expect(sizeVariableEquipment("talons", ctx)).toMatchObject({ weight: 5, slots: 4, battleValue: 8 });
     });
 
+    it("values a Ram Plate so the printed Rhino sheet is reproduced (OTP: Hanseatic Crusade pp.30, 40)", () => {
+        // 50 tons at 12 running MP: 60 charge damage, half is 30, plus 3 torsos of Spikes, times 1.1.
+        const rhino = sizeVariableEquipment("ram-plate", { ...ctx, tonnage: 50, isQuad: true, runMP: 12, torsoSpikes: 3 })!;
+        expect(rhino).toMatchObject({ weight: 5, slots: 3 });
+        expect(rhino.battleValue).toBeCloseTo(36.3, 6);
+        // 55 tons at 7 running MP: 38 charge damage (rounded down), half is 19.
+        expect(sizeVariableEquipment("ram-plate", { ...ctx, tonnage: 55, isQuad: true, runMP: 7 })!.battleValue).toBeCloseTo(20.9, 6);
+        expect(sizeVariableEquipment("ram-plate", { ...ctx, tonnage: 50, isQuad: true })!.battleValue).toBe(0);
+    });
+
     it("counts energy and ballistic weapons except flamers, machine guns and AMS toward a targeting computer", () => {
         const item = (tag: string, category: string) => ({ tag, category }) as IEquipmentItem;
         expect(isTargetingComputerWeapon(item("large-laser", "Energy Weapons"))).toBe(true);

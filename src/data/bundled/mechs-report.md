@@ -1,6 +1,6 @@
 # Bundled 'Mechs: build report
 
-3702 designs kept (38 renamed), 4019 files left out.
+3703 designs kept (38 renamed), 4018 files left out.
 
 | Reason | Files |
 |---|---|
@@ -9,7 +9,7 @@
 | different submodel, same name and model: equipment | 161 |
 | different submodel, same name and model: ammo type | 110 |
 | different submodel, same name and model: actuators | 87 |
-| the import could not carry all of it over | 84 |
+| the import could not carry all of it over | 83 |
 | no Master Unit List entry to check its BV against | 54 |
 | configuration BV differs from the MUL | 44 |
 | duplicate of a design already kept, differs only in armor spread | 36 |
@@ -3804,7 +3804,6 @@
 - `megamek/Turning Points/OTP Falcon Incursion/BattleMaster BLR-3M (Rogers).mtf`: BV differs from the MUL: BLR-3M (Rogers): BV 1819, MUL 1818
 - `megamek/Turning Points/OTP Falcon Incursion/Nightstar NSR-9J Brubaker.mtf`: different submodel, same name and model: ammo type: Nightstar NSR-9J (Brubaker)
 - `megamek/Turning Points/OTP Hanseatic Crusade/Cazador.mtf`: different submodel, same name and model: ammo type: Cazador 
-- `megamek/Turning Points/OTP Hanseatic Crusade/Rhino.mtf`: the import could not carry all of it over: Unallocated Criticals: 3; - Ram Plate (ram-plate); - Ram Plate (ram-plate); - Ram Plate (ram-plate)
 - `megamek/Turning Points/OTP Hanseatic Crusade/Snow Fox (Omni) A.mtf`: different submodel, same name and model: equipment: Snow Fox (Omni) A
 - `megamek/Turning Points/OTP Hanseatic Crusade/Snow Fox (Omni) B.mtf`: different submodel, same name and model: equipment: Snow Fox (Omni) B
 - `megamek/Turning Points/OTP Hanseatic Crusade/Snow Fox (Omni) Prime.mtf`: different submodel, same name and model: equipment: Snow Fox (Omni) Prime

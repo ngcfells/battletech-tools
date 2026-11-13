@@ -21,7 +21,7 @@ export interface IBvVerdict {
 }
 
 /** The count of Master Unit List 'Mech entries with a matching design that the last build wrote. A round that raises the count raises this. */
-export const MECH_MATCHED_FLOOR = 3941;
+export const MECH_MATCHED_FLOOR = 3942;
 
 /** Keyed by bvVerdictKey. */
 export const BV_VERDICTS: Record<string, IBvVerdict> = {
@@ -84,13 +84,13 @@ export const BV_VERDICTS: Record<string, IBvVerdict> = {
     // Wulfen C
     "mul:108098": { verdict: "mul-suspect", note: "The list's value equals ours when every heat-generating weapon is halved. Heat efficiency here is zero or less, and the rule still counts the first weapon chosen at its full value before halving the rest.", cites: [{ source: "tm", page: "303" }, { source: "tm", page: "304" }] },
     // Skinwalker (Ryoken III-XP) B
-    "mul:108133": { verdict: "mul-suspect", note: "The list's value equals ours when no gyro is counted. The rule for a 'Mech whose interface cockpit replaces the gyro counts it as having a standard gyro.", cites: [{ source: "ioae", page: "187" }] },
+    "mul:108133": { verdict: "mul-suspect", note: "The list's value equals ours when no gyro is counted. The rule for a 'Mech whose interface cockpit replaces the gyro counts it as having a standard gyro. We believe the list is incorrect here: it follows an older ruling and has not been updated to the current rules, which its later Recognition Guide entries for the same cockpit do follow.", cites: [{ source: "ioae", page: "187" }] },
     // Skinwalker (Ryoken III-XP) D
-    "mul:102511": { verdict: "mul-suspect", note: "The list's value equals ours when no gyro is counted. The rule for a 'Mech whose interface cockpit replaces the gyro counts it as having a standard gyro.", cites: [{ source: "ioae", page: "187" }] },
+    "mul:102511": { verdict: "mul-suspect", note: "The list's value equals ours when no gyro is counted. The rule for a 'Mech whose interface cockpit replaces the gyro counts it as having a standard gyro. We believe the list is incorrect here: it follows an older ruling and has not been updated to the current rules, which its later Recognition Guide entries for the same cockpit do follow.", cites: [{ source: "ioae", page: "187" }] },
     // Skinwalker (Ryoken III-XP) Prime
-    "mul:108669": { verdict: "mul-suspect", note: "The list's value equals ours when no gyro is counted. The rule for a 'Mech whose interface cockpit replaces the gyro counts it as having a standard gyro.", cites: [{ source: "ioae", page: "187" }] },
+    "mul:108669": { verdict: "mul-suspect", note: "The list's value equals ours when no gyro is counted. The rule for a 'Mech whose interface cockpit replaces the gyro counts it as having a standard gyro. We believe the list is incorrect here: it follows an older ruling and has not been updated to the current rules, which its later Recognition Guide entries for the same cockpit do follow.", cites: [{ source: "ioae", page: "187" }] },
     // Parash 3
-    "mul:104943": { verdict: "mul-suspect", note: "The list's value equals ours when no gyro is counted. The rule for a 'Mech whose interface cockpit replaces the gyro counts it as having a standard gyro.", cites: [{ source: "ioae", page: "187" }] },
+    "mul:104943": { verdict: "mul-suspect", note: "The list's value equals ours when no gyro is counted. The rule for a 'Mech whose interface cockpit replaces the gyro counts it as having a standard gyro. We believe the list is incorrect here: it follows an older ruling and has not been updated to the current rules, which its later Recognition Guide entries for the same cockpit do follow.", cites: [{ source: "ioae", page: "187" }] },
     // Seraph C-SRP-O Invictus
     "mul:100663": { verdict: "mul-suspect", note: "The list's value equals ours when the physical weapon's Battle Value is worked from its damage without Triple-Strength Myomer. The table's footnote takes the damage after all modifications such as Triple-Strength Myomer, which doubles it.", cites: [{ source: "tm", page: "317" }, { source: "toaue", page: "195" }] },
     // Seraph C-SRP-OA Dominus
@@ -188,9 +188,9 @@ export const BV_VERDICTS: Record<string, IBvVerdict> = {
     // Trebuchet TBT-7MM 'Merida'
     "mul:105864": { verdict: "import", note: "The file we import carries one armor point fewer on the right arm than the published record sheet (XTRO: Royal Fantasy). With the sheet's armor our value equals the list's.", cites: [{ source: "xtro-royal-fantasy", page: "55" }] },
     // Prey Seeker PY-SR30
-    "mul:101223": { verdict: "mul-suspect", note: "The list's value equals ours when the machine gun arrays count 6.7 less. The Battle Value table gives an array the total of all its machine guns multiplied by 0.67.", cites: [{ source: "tm", page: "317" }] },
+    "mul:101223": { verdict: "mul-suspect", note: "The list's value equals ours when the machine gun arrays count 6.7 less. The Battle Value table gives an array the total of all its machine guns multiplied by 0.67, and the other designs with light machine gun arrays agree with the list under that rule.", cites: [{ source: "tm", page: "317" }] },
     // Skinwalker (Ryoken III-XP) C
-    "mul:104379": { verdict: "mul-suspect", note: "The list's value equals ours when no gyro is counted and the ammunition in the left arm is counted as unprotected. The rule for an interface cockpit that replaces the gyro counts a standard gyro, and the record sheet shows CASE in that arm.", cites: [{ source: "ioae", page: "187" }, { source: "tm", page: "303" }] },
+    "mul:104379": { verdict: "mul-suspect", note: "The list's value equals ours when no gyro is counted and the ammunition in the left arm is counted as unprotected. The rule for an interface cockpit that replaces the gyro counts a standard gyro, and the record sheet shows CASE in that arm. We believe the list is incorrect here: it follows an older ruling and has not been updated to the current rules. The list's later Recognition Guide entries for the same 'Mech agree with ours with the gyro counted, and its entry for the Goshawk II RISC of the same book agrees with arm ammunition left unpenalised.", cites: [{ source: "ioae", page: "187" }, { source: "tm", page: "303" }] },
     // Emperor EMP-6A-EC
     "mul:100943": { verdict: "mul-suspect", note: "The list's value equals ours when the Prototype Streak SRM 4 counts 45. The Battle Value table gives it 59.", cites: [{ source: "ioae", page: "189" }] },
     // Starslayer STY-2C-EC
