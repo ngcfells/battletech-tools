@@ -1140,4 +1140,36 @@ export const ammoCustom: IEquipmentItem[] = [
         notes: "3 nuclear charges a ton (Prince, Solaris7 forum, July 2018). BV 53 a ton, an eighth of the cannon's (see artillery-custom.ts). Not printed: "
             + "cost, dates and tech rating are the Arrow IV Davy Crockett-M round's (500,000 C-bills, IO:AE p.168)."
     },
+    {
+        isAmmo: true,
+        isSpecialAmmo: false,
+        name: "Pile Bunker - Charge",
+        altNames: ["Pile Bunker Ammo"],
+        tag: "ammo-custom-pile-bunker-standard",
+        techBase: "universal",
+        altTags: [],
+        sort: "ammo, pile bunker, charge",
+        category: "Ammunition",
+        cbills: 0,
+        introduced: 1950,
+        extinct: null,
+        reintroduced: null,
+        battleValue: 0,
+        heat: 0,
+        heatAero: 0,
+        weight: 1,
+        range: { min: 0, short: 0, medium: 0, long: 0 },
+        space: { battlemech: 1, protomech: -1, combatVehicle: -1, supportVehicle: -1, aerospaceFighter: -1, smallCraft: -1, dropShip: -1 },
+        roundsPerTon: 3,
+        explosive: true,
+        techRating: "x",
+        book: "Reddit u/FweeCom",
+        page: 0,
+        alphaStrike: { specialAbility: [], heat: 0, rangeShort: 0, rangeMedium: 0, rangeLong: 0, rangeExtreme: 0, tc: false, notes: ["Unverified custom equipment"] },
+        catalog: "custom",
+        rulesLevel: 6,
+        notes: "Ammunition for the Pile Bunker (custom-pile-bunker), homebrew by u/FweeCom (https://www.reddit.com/r/battletech/comments/1dak8pu/homebrew_equipment_pile_bunker/): "
+            + "three shots to the ton, and each shot explodes for 5 damage when the ton is hit. Inspired by: u/FweeCom. "
+            + "Not given by the author, so ours: the dates follow the Pile Bunker; cost and Battle Value are not given and stay 0 (unverified)."
+    },
 ];

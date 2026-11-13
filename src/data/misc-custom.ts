@@ -118,4 +118,18 @@ export const miscCustom: IEquipmentItem[] = [
         shotsPerTon: 0, minAmmoTons: 0, explosive: false, weaponType: [], techRating: "e", book: "http://solaris7.com/thread/lostech-custom-weapons/", page: 0, rulesLevel: 6,
         alphaStrike: { heat: 0, rangeShort: 0, rangeMedium: 0, rangeLong: 0, rangeExtreme: 0, tc: false, notes: ["Custom equipment: no Alpha Strike conversion"] }
     },
+    {
+        name: "Pile Bunker", tag: "custom-pile-bunker", techBase: "universal", catalog: "custom", sort: "equipment, pile bunker", category: "Custom Equipment",
+        notes: "Homebrew melee weapon by u/FweeCom (https://www.reddit.com/r/battletech/comments/1dak8pu/homebrew_equipment_pile_bunker/), who calls the numbers tentative. "
+            + "An explosive charge drives a spike out at force. Five tons, five slots, 15 damage on a hit, and the target makes a Piloting roll with a +1 modifier. "
+            + "It is a little harder to hit with (+1), builds 2 heat from the charge, and fires three times to the ton of ammunition (ammo-custom-pile-bunker-standard); "
+            + "a hit on that ammunition does 5 damage a shot. Inspired by: u/FweeCom. "
+            + "Not given by the author, so ours: the dates are those of the Heavy-Duty Pile Driver (1950, never extinct), the nearest canon melee tool. "
+            + "Cost and Battle Value are not given and stay 0 (unverified), so a 'Mech's Battle Value and cost leave this weapon out.",
+        damage: 15, damageAero: 0, accuracyModifier: 1, cbills: 0, introduced: 1950, extinct: null, reintroduced: null,
+        battleValue: 0, heat: 2, heatAero: 0, weight: 5,
+        range: { min: 0, short: 0, medium: 0, long: 0 }, space: { battlemech: 5, protomech: -1, combatVehicle: -1, supportVehicle: -1, aerospaceFighter: -1, smallCraft: -1, dropShip: -1 },
+        ammoTypes: ["ammo-custom-pile-bunker-standard"], shotsPerTon: 3, minAmmoTons: 1, explosive: false, weaponType: [], techRating: "x", book: "Reddit u/FweeCom", page: 0, rulesLevel: 6,
+        alphaStrike: { heat: 0, rangeShort: 0, rangeMedium: 0, rangeLong: 0, rangeExtreme: 0, tc: false, notes: ["Unverified custom equipment"] }
+    },
 ];

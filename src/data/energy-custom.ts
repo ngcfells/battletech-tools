@@ -308,5 +308,20 @@ export const energyCustom: IEquipmentItem[] = [
         shotsPerTon: 0, minAmmoTons: 0, explosive: false, weaponType: ["DE"], techRating: "e", linkedWeaponTags: ["medium-laser"],
         book: "http://solaris7.com/thread/lostech-custom-weapons/", page: 0, rulesLevel: 6,
         alphaStrike: { heat: 0, rangeShort: 0, rangeMedium: 0, rangeLong: 0, rangeExtreme: 0, tc: false, notes: ["Array damage is carried by its linked lasers"] }
+    },
+    {
+        name: "Omni-Laser", tag: "custom-omni-laser", techBase: "is", sort: "laser, omni", category: "Custom Equipment",
+        notes: "Homebrew laser by u/heavyarmormecha (https://www.reddit.com/r/battletech/comments/1n30c2j/custom_weapons_omnilaser/); the replies called it overpowered. "
+            + "The player picks a mode at the start of the Weapons Phase, kept until the next one. A critical hit disables the weapon. "
+            + "Focus: 20 heat, 16 damage to one location; if armor still covers the location, a through-armor critical roll at -2. "
+            + "Pulse: 18 heat, four 5-damage shots on the 4 column of the cluster table, -1 to hit and +1 on the cluster roll. "
+            + "Dazzler: 12 heat, fifteen 1-damage shots on the 15 column; against infantry, battle armor or ProtoMechs a hit does 4d6 in 5-damage clusters. "
+            + "A targeting computer and laser insulation apply; a power amplifier is needed on ICE and fuel cell units. Inspired by: u/heavyarmormecha. "
+            + "The record carries the Focus mode's heat and damage; the other modes are play text. "
+            + "Not given by the author, so ours: cost and Battle Value stay 0 (unverified), and the author's Experimental availability is read as introduced 3150.",
+        damage: 16, damageAero: 16, accuracyModifier: 0, cbills: 0, introduced: 3150, extinct: null, reintroduced: null, battleValue: 0, heat: 20, heatAero: 20, weight: 10,
+        range: { min: 0, short: 6, medium: 12, long: 18 }, space: { battlemech: 4, protomech: -1, combatVehicle: 4, supportVehicle: 4, aerospaceFighter: 4, smallCraft: 4, dropShip: -1 },
+        shotsPerTon: 0, minAmmoTons: 0, explosive: false, weaponType: ["DE", "E"], techRating: "x", book: "Reddit u/heavyarmormecha", page: 0, rulesLevel: 6,
+        alphaStrike: { heat: 0, rangeShort: 0, rangeMedium: 0, rangeLong: 0, rangeExtreme: 0, tc: false, notes: ["Unverified custom equipment"] }
     }
 ];
