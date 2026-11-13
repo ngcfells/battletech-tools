@@ -90,7 +90,8 @@ mode LAM as opposed to bi or trimodal"; it has **no conversion equipment** becau
 |---|---|---|
 | Modes | `["airmech"]` only | the author's one line |
 | Conversion equipment | none: 0 tons, no cost | owner ruling |
-| Avionics and landing gear slots | kept as on a LAM (head, side torsos, center torso), weightless | it still flies and lands |
+| Avionics slots | kept as on a LAM (head and each side torso), weightless | owner ruling: it has wings |
+| Landing gear | none: no slots | owner ruling: landing gear is only for the pure air mode; it lands on its feet |
 | Minimum Jump MP | 3 | AirMech MP comes from Jump MP |
 | LAM limits (engine, gyro, armor, structure, single-location equipment, 55 tons, biped, Inner Sphere) | kept | least invention |
 | Fuel | decide in Step 1 | see Step 1 |
@@ -145,6 +146,12 @@ describe("Permanent Air 'Mech", () => {
         expect(pam.getCostBreakdown().steps.some(step => /^cost\.conversion/.test(step.id))).toBe(false);
     });
 
+    it("has the LAM avionics slots but no landing gear", () => {
+        const slots = JSON.stringify(makePAM().exportJSON());
+        expect(slots).toContain("lam-avionics");
+        expect(slots).not.toContain("lam-landing-gear");
+    });
+
     it("moves as an AirMech on its Jump MP and needs 3 of it", () => {
         const pam = makePAM();
         pam.setWalkSpeed(5);
@@ -186,6 +193,8 @@ describe("Permanent Air 'Mech", () => {
   - No weight entry and no cost step when `conversion` or `costRate` is 0. The Battletech Into The Future VTOLAM
     already has `costRate: 0`; check its existing cost test still passes and keep its behaviour.
   - `isBattleValueProvisional()` and `getRequiredRulesLevel()`: include `isPermanentAirMech()`.
+  - Critical slots (near line 5024): the avionics as on a LAM, no landing gear. Count the avionics per location from
+    the critical table in the test if the export does not carry fixed slots.
   - Fuel per Step 1.
 
 - [ ] **Step 5: Add the picker option** in `step1.tsx`, beside the VTOLAM options and under the same rules-level
