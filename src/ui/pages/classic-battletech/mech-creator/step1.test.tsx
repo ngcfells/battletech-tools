@@ -20,6 +20,7 @@ const renderStep1 = (mech: BattleMech, mechRulesFilter: number) => {
         siteAlerts: { activeAlerts: [] },
     } as unknown as IAppGlobals;
     render(<MemoryRouter><MechCreatorStep1 appGlobals={appGlobals} /></MemoryRouter>);
+    return appGlobals;
 };
 
 const lam = (): BattleMech => {
@@ -39,6 +40,17 @@ describe("'Mech Creator step 1: Permanent Air 'Mech picker (#175)", () => {
         cleanup();
         renderStep1(unit, CUSTOM_HOMEBREW_RULES_LEVEL);
         expect(screen.getByTestId("pam-notes").textContent).toContain("Inspired by: Red Pins");
+    });
+
+    it("loads a sample Permanent Air 'Mech, and offers none below Custom Homebrew", () => {
+        // A fresh design: nothing would be lost, so no confirmation is asked.
+        const appGlobals = renderStep1(new BattleMech(), CUSTOM_HOMEBREW_RULES_LEVEL);
+        fireEvent.change(screen.getByTestId("pam-samples"), { target: { value: "magpie-mgp-1e" } });
+        const saved = vi.mocked(appGlobals.saveCurrentBattleMech).mock.calls.at(-1)?.[0] as BattleMech;
+        expect([saved.getName(), saved.getTonnage(), saved.isPermanentAirMech()]).toEqual(["MGP-1E Magpie", 30, true]);
+        cleanup();
+        renderStep1(lam(), 2);
+        expect(screen.queryByTestId("pam-samples")).toBeNull();
     });
 
     it("is not offered below Custom Homebrew, but a design that already is one still shows it", () => {

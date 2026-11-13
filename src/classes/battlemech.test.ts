@@ -5,6 +5,7 @@ import Pilot from "./pilot";
 import { ICalcStep } from "../data/calc-steps";
 import { getSkillMultiplier } from "../data/battle-value";
 import { getVTOLAMSamples } from "../data/vtolam-samples";
+import { getPAMSamples } from "../data/pam-samples";
 import { mechInternalStructureTypes, validateChassisCombination } from "../data/mech-internal-structure-types";
 import { getTargetToHitFromWeapon } from "../utils";
 import { mechArmorTypes } from "../data/mech-armor-types";
@@ -1861,6 +1862,24 @@ describe("Permanent Air 'Mech", () => {
         expect(notes).toContain("Inspired by: Red Pins");
         expect(notes).toContain("topic 44833");
         expect(notes).toMatch(/extrapolat/);
+    });
+
+    it("has LAMFAN's five Air-Slip Mechs as legal samples at the Custom Homebrew level, crediting the authors", () => {
+        expect(getPAMSamples(CUSTOM_HOMEBREW_RULES_LEVEL - 1)).toEqual([]);
+        const samples = getPAMSamples(CUSTOM_HOMEBREW_RULES_LEVEL);
+        expect(samples.map(sample => sample.id)).toEqual(["sparrow-spw-2j", "magpie-mgp-1e", "magpie-mgp-3a", "dire-hawk-drh-4k", "dire-hawk-drh-3d"]);
+        for (const sample of samples) {
+            const mech = new BattleMech(JSON.stringify(sample.save));
+            expect([sample.id, mech.isPermanentAirMech(), mech.getTransformationMode()]).toEqual([sample.id, true, "airmech"]);
+            expect([sample.id, mech.getCurrentTonnage() <= mech.getTonnage()]).toEqual([sample.id, true]);
+            expect([sample.id, mech.getChassisEquipmentViolations()]).toEqual([sample.id, []]);
+            expect([sample.id, mech.unallocatedCriticals.filter(Boolean)]).toEqual([sample.id, []]);
+            expect(JSON.stringify(sample.save)).toMatch(/LAMFAN.*topic 83239.*Inspired by: .*Red Pins/);
+        }
+        const spare = samples.map(sample => { const mech = new BattleMech(JSON.stringify(sample.save)); return mech.getTonnage() - mech.getCurrentTonnage(); });
+        expect(spare).toEqual([1, 1.5, 1.5, 4.5, 2.5]);
+        const magpie = new BattleMech(JSON.stringify(samples[1].save));
+        expect([magpie.getWalkSpeed(), magpie.getJumpSpeed(), magpie.getAirMechCruiseMP(), magpie.getHeatSinks()]).toEqual([6, 6, 18, 10]);
     });
 
     it("comes back in AirMech mode from a save, and an unknown type falls back to a standard LAM", () => {

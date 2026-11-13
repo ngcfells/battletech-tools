@@ -27,6 +27,7 @@ import { replaceCurrentBattleMech } from '../../../components/confirm-replace-de
 import EditionChoice from '../../../components/edition-choice';
 import ComponentTechBaseChoice from '../../../components/component-tech-base-choice';
 import { getVTOLAMSamples } from '../../../../data/vtolam-samples';
+import { getPAMSamples } from '../../../../data/pam-samples';
 import { CUSTOM_HOMEBREW_RULES_LEVEL } from '../../../../data/rules-level-options';
 import { generateUUID } from '../../../../utils/generateUUID';
 const ArrowCircleLeft = FaArrowCircleLeft as any;
@@ -150,7 +151,15 @@ export default class MechCreatorStep1 extends React.Component<IHomeProps, IHomeS
     }
 
     loadVTOLAMSample = ( e: React.FormEvent<HTMLSelectElement>): void => {
-      const sample = getVTOLAMSamples( mechRulesLevel(this.props.appGlobals) ).find( (entry) => entry.id === e.currentTarget.value );
+      this.loadSample( getVTOLAMSamples( mechRulesLevel(this.props.appGlobals) ), e.currentTarget.value );
+    }
+
+    loadPAMSample = ( e: React.FormEvent<HTMLSelectElement>): void => {
+      this.loadSample( getPAMSamples( mechRulesLevel(this.props.appGlobals) ), e.currentTarget.value );
+    }
+
+    loadSample = ( samples: { id: string; save: object }[], id: string ): void => {
+      const sample = samples.find( (entry) => entry.id === id );
       if( sample ) {
         replaceCurrentBattleMech( this.props.appGlobals, () => {
           this.props.appGlobals.saveCurrentBattleMech( keepDesignSettings( this.props.appGlobals, new BattleMech( JSON.stringify( { ...sample.save, uuid: generateUUID() } ) ) ) );
@@ -389,6 +398,17 @@ export default class MechCreatorStep1 extends React.Component<IHomeProps, IHomeS
                               <select value="" onChange={this.loadVTOLAMSample} data-testid="vtolam-samples">
                                 <option value="">Start from a sample VTOLAM (optional)</option>
                                 {getVTOLAMSamples( mechRulesLevel(this.props.appGlobals) ).map( (sample) => (
+                                  <option key={sample.id} value={sample.id}>{sample.name}</option>
+                                ))}
+                              </select>
+                            </label>
+                          ) : null}
+                          {getPAMSamples( mechRulesLevel(this.props.appGlobals) ).length > 0 ? (
+                            <label>
+                              Sample Permanent Air 'Mechs (Custom Homebrew):
+                              <select value="" onChange={this.loadPAMSample} data-testid="pam-samples">
+                                <option value="">Start from a sample Permanent Air 'Mech (optional)</option>
+                                {getPAMSamples( mechRulesLevel(this.props.appGlobals) ).map( (sample) => (
                                   <option key={sample.id} value={sample.id}>{sample.name}</option>
                                 ))}
                               </select>
