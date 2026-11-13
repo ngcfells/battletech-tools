@@ -136,7 +136,7 @@ there.
 
 ---
 
-## Chunk A: Construction core
+## Chunk A: Construction core (done 2026-11-13, cloud; ledger `progress-cloud-micro-a.md`)
 
 **Files:**
 - Create: `src/data/micro-mech-construction.ts`, `src/classes/micro-mech.ts`, `src/classes/micro-mech.test.ts`
@@ -156,11 +156,11 @@ there.
   `isSealed/setSealed`, `getFreeHeatSinks`, `getSlots(location)`, `getFreeSlots(location)`.
 - `IMicroMechExport` and `normalizeMicroMechExport(raw)`, after `normalizeProtoMechExport`.
 
-- [ ] **Step 0: Read both texts' construction sections** and fill `MICRO_MECH_VERSION_RULES` from the Versions
+- [x] **Step 0: Read both texts' construction sections** and fill `MICRO_MECH_VERSION_RULES` from the Versions
   table, correcting the table (and the ledger) wherever the page says otherwise.
-- [ ] **Step 1: Read** the document's Construction section and both record sheets, and the ledger's summary.
+- [x] **Step 1: Read** the document's Construction section and both record sheets, and the ledger's summary.
   Confirm each number below against the raw text before typing it.
-- [ ] **Step 2: Write the failing tests.** The four sample designs are the fixtures. Each line of each sample's
+- [x] **Step 2: Write the failing tests.** The four sample designs are the fixtures. Each line of each sample's
   weight table was recomputed from the rules while planning and agrees with the document:
 
 ```ts
@@ -191,15 +191,15 @@ it.each([
   1,250 kg; a rating-70 fusion engine is 3,000 kg; a jump jet 500 kg; free heat sinks at rating 70 are 3 (at
   least 3) and at 100 are 4; head armor may reach 6; a quad is refused; and switching the Storm to it reports
   the overweight and nothing is removed.
-- [ ] **Step 3: See them fail.**
-- [ ] **Step 4: Implement.** Engine weight: the standard fusion weight for the installed rating from
+- [x] **Step 3: See them fail.**
+- [x] **Step 4: Implement.** Engine weight: the standard fusion weight for the installed rating from
   `mechEngineOptions` (as `ProtoMech.getEngineWeight` reads it), x 1.25, rounded **up** to 250 kg. Installed
   rating: tonnage x Walking MP, rounded up to the next rating the table lists. Gyro: rating / 100, rounded up to
   250 kg. Keep every weight in whole kilograms (armor is counted in points; its weight is points x 62.5, and the
   total must come to a quarter-ton step: an odd half-point lot is an issue, not a rounding). Free heat sinks: rating / 10, rounded down
   (owner ruling 5). The class holds no equipment yet: Chunk B adds mounts.
-- [ ] **Step 5:** Unit tests and `npm run check`.
-- [ ] **Step 6:** Commit `Custom Homebrew: Micro-Mech construction core (#173)`, push, ledger, handoff.
+- [x] **Step 5:** Unit tests and `npm run check`.
+- [x] **Step 6:** Commit `Custom Homebrew: Micro-Mech construction core (#173)`, push, ledger, handoff.
 
 ## Chunk B: Equipment, ammunition, heat sinks
 
