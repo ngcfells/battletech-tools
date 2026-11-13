@@ -238,7 +238,7 @@ it.each([
 - [x] **Step 5:** Unit tests and `npm run check`.
 - [x] **Step 6:** Commit `Custom Homebrew: Micro-Mech equipment table (#173)`, push, ledger, handoff.
 
-## Chunk C: Cost and Battle Value
+## Chunk C: Cost and Battle Value (done 2026-11-13, cloud; ledger `progress-cloud-micro-c.md`)
 
 **Files:**
 - Create: `src/data/calc-steps-micro-mech.ts`
@@ -249,18 +249,18 @@ it.each([
 `src/data/battle-value.ts` so a BV1 edition gets the document's figure and a BV2 edition ours, in the step-trace shape #599 uses
 (`src/data/calc-steps.ts`), each step citing the document's appendix or the Master Rules page read.
 
-- [ ] **Step 1: Read** the document's cost and Battle Value appendices, then the pages they stand on: the cost table
+- [x] **Step 1: Read** the document's cost and Battle Value appendices, then the pages they stand on: the cost table
   and the Battle Value procedure in the BattleTech Master Rules, Revised (the document cites pp.149, 152, 157 and
   158; confirm which printing those numbers fit). `docs/superpowers/plans/2026-11-10-cited-bv-ledger.md` and
   `src/data/calc-steps-mech-bv1.ts` already record where the BV1 pages are and how they read.
-- [ ] **Step 2: Failing tests** for the document's changed rows (cockpit, life support, sensors, the four actuator
+- [x] **Step 2: Failing tests** for the document's changed rows (cockpit, life support, sensors, the four actuator
   groups, jump jets, sealing, ICE engine; ammunition penalties of 30, 30, 20 and 5; +0.1 on the defensive movement
   factor; no heat steps; part-ton ammunition unrounded).
-- [ ] **Step 3: Try the three good samples**: Storm 695,853 C-bills and BV 217; Hillman 852,898 and 352; Slayer
+- [x] **Step 3: Try the three good samples**: Storm 695,853 C-bills and BV 217; Hillman 852,898 and 352; Slayer
   1,073,387 and 531. Where our figure from the rules text agrees, pin it as a test. Where it does not, do **not**
   tune: record both figures and the step where they part in the ledger, show "the document prints N" on the
   breakdown, and bring it to the owner. The Tunnel Rat's printed figures are corrupt and are not targets.
-- [ ] **Step 4: Provisional BV2** (owner ruling 2). Read the BV2 procedure for 'Mechs (TechManual; the #599 step
+- [x] **Step 4: Provisional BV2** (owner ruling 2). Read the BV2 procedure for 'Mechs (TechManual; the #599 step
   table `src/data/calc-steps-mech-bv2.ts` has the pages). Carry each of the document's changes across, and write
   down in the ledger, one line each, what the change becomes under BV2 and why: tonnage in the defensive rating;
   the ammunition penalties (BV2 counts explosive ammunition per slot, the document per ton: state the conversion
@@ -268,8 +268,8 @@ it.each([
   ammunition. Each item uses its BV2 figure from our catalogs through `canonTag`; an item with no BV2 figure
   anywhere keeps the document's figure and the breakdown says so. Every step is `provisional` with a note. Tests
   pin the steps, not a target number: there is no published BV2 to match.
-- [ ] **Step 5: Implement**, unit tests, `npm run check`.
-- [ ] **Step 6:** Commit `Custom Homebrew: Micro-Mech cost and Battle Value (#173)`, push, ledger, handoff.
+- [x] **Step 5: Implement**, unit tests, `npm run check`.
+- [x] **Step 6:** Commit `Custom Homebrew: Micro-Mech cost and Battle Value (#173)`, push, ledger, handoff.
 
 ## Chunk D: Creator, saves, menus
 

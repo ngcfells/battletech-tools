@@ -8,6 +8,17 @@ import { btEraOptions, findEraByTag } from "../data/era-options";
 import { getUnitTypeEras } from "../data/game-settings";
 import { CUSTOM_HOMEBREW_RULES_LEVEL } from "../data/rules-level-options";
 import { mechEngineOptions } from "../data/mech-engine-options";
+import { editionHasBattleValue, getBattleValueFor, getSpeedFactor } from "../data/battle-value";
+import { getRulesEdition } from "../data/rules-editions";
+import { CalcTrace, ICalcBreakdown, formatCalcNumber } from "../data/calc-steps";
+import { NO_BATTLE_VALUE_STEPS } from "../data/calc-steps-mech-bv1";
+import {
+    IMicroMechPrintedFigures,
+    MICRO_MECH_BV1_STEPS,
+    MICRO_MECH_BV2_STEPS,
+    MICRO_MECH_COST_STEPS,
+    MICRO_MECH_PRINTED_FIGURES,
+} from "../data/calc-steps-micro-mech";
 import {
     IMicroMechVersionRules,
     MICRO_MECH_ARMOR_KG_PER_POINT,
@@ -37,13 +48,15 @@ import {
     MicroMechAmmoType,
     findMicroMechItem,
     getMicroMechAmmoShots,
+    getMicroMechItemBattleValue2,
     isMicroMechWeapon,
 } from "../data/micro-mech-equipment-custom";
 
 // A Micro-Mech (#173): a fan-made 10 to 19 ton walker with one torso, built in kilograms. Custom Homebrew.
 // Construction: "Micro-Mechs" 6.1.0.2 or Solarmech's 2019 post, chosen by `version`; every rule that differs is a
-// field of MICRO_MECH_VERSION_RULES. Equipment comes from the 6.1.0.2 table (micro-mech-equipment-custom.ts). Cost,
-// Battle Value and play are later chunks of the plan (docs/superpowers/plans/2026-11-13-micro-mechs.md).
+// field of MICRO_MECH_VERSION_RULES. Equipment comes from the 6.1.0.2 table (micro-mech-equipment-custom.ts). Cost and
+// Battle Value follow the 6.1.0.2 appendices (calc-steps-micro-mech.ts); a BV2 edition gets a provisional BV2 of ours.
+// Play is a later chunk of the plan (docs/superpowers/plans/2026-11-13-micro-mechs.md).
 
 export const MAX_MICRO_MECH_NAME_LENGTH = 120;
 /** The highest rating in the standard engine table (TechManual p.49, as mech-engine-options.ts holds it). */
@@ -129,6 +142,20 @@ const clampInt = (value: unknown, min: number, max: number, fallback: number): n
     return Number.isFinite(n) ? Math.min(max, Math.max(min, n)) : fallback;
 };
 const formatKg = (kg: number): string => `${kg.toLocaleString("en-US")} kg`;
+const fmt = (value: number): string => value.toLocaleString("en-US", { maximumFractionDigits: 3 });
+/** A C-bill figure with its fraction rounded up (float noise removed first). */
+const ceilCBill = (value: number): number => Math.ceil(Math.round(value * 1000) / 1000);
+const round2 = (value: number): number => Math.round(value * 100) / 100;
+/** Target Movement Modifier for hexes moved (BMR(R) p.33, capped at +4 there; Total Warfare p.117 goes on to +6). */
+const targetMovementModifier = (hexes: number, cap = 6): number =>
+    Math.min(cap, hexes >= 25 ? 6 : hexes >= 18 ? 5 : hexes >= 10 ? 4 : hexes >= 7 ? 3 : hexes >= 5 ? 2 : hexes >= 3 ? 1 : 0);
+const CASE_TAG = "micro-case";
+const CASE_II_TAG = "micro-case-ii";
+const ARTEMIS_TAG = "micro-artemis-iv-fcs";
+/** The table gives these no Battle Value and points to the Master Rules' force rules (notes C and D). */
+const FORCE_VALUED_TAGS = ["micro-c3-master-computer", "micro-c3-slave", "micro-c3i-computer", "micro-target-acquisition-gear-tag"];
+/** Battle Value 1 counts ECM as defensive and an active probe as offensive (BMR(R) pp.152-153). */
+const isDefensiveBv1 = (item: IMicroMechItem): boolean => /-ecm/.test(item.tag);
 
 /** Reads a saved Micro-Mech; null when the data is not one. Each value clamped on the way in gives an issue. */
 export const normalizeMicroMechExport = (raw: unknown): { micro: IMicroMechExport | null; issues: string[] } => {
@@ -539,6 +566,317 @@ export default class MicroMech implements IGameSettingsUnit {
     public getMaxWeight(): number { return this._tons * 1000; }
     public getRemainingWeight(): number { return this.getMaxWeight() - this.getWeight(); }
 
+    // Cost -------------------------------------------------------------------------------------------------------
+
+    /** The document's sample whose name, tonnage and weight this design has, if any: its printed figures are shown beside ours. */
+    public getPrintedFigures(): IMicroMechPrintedFigures | undefined {
+        const name = this._name.trim().toLowerCase();
+        return MICRO_MECH_PRINTED_FIGURES.find((sample) => sample.name.toLowerCase() === name && sample.tons === this._tons && sample.weightKg === this.getWeight());
+    }
+
+    /**
+     * The C-bill cost: the BattleMech Costs Table (Master Rules, Revised p.149) with the rows the document's appendix
+     * changes. The ammunition carried is counted, as the document's samples count it. Fractions are rounded up.
+     */
+    public getCostBreakdown(): ICalcBreakdown {
+        const trace = new CalcTrace(MICRO_MECH_COST_STEPS);
+        const tons = this._tons;
+        const rating = this.getInstalledEngineRating();
+        let total = 0;
+        const add = (id: string, label: string, detail: string | undefined, value: number): void => {
+            total += value;
+            trace.add(id, detail ? { label, detail, value } : { label, value });
+        };
+        const perTon = (id: string, label: string, rate: number, count = 1): void =>
+            add(id, label, `${tons} tons x ${fmt(rate)}${count > 1 ? ` x ${count}` : ""}`, tons * rate * count);
+
+        add("mm.cost.cockpit", "Cockpit", undefined, 150000);
+        add("mm.cost.life-support", "Life Support", undefined, 40000);
+        perTon("mm.cost.sensors", "Sensors", 1500);
+        perTon("mm.cost.musculature", "Musculature (standard)", 2000);
+        perTon("mm.cost.structure", "Internal Structure (standard)", 400);
+        if (!this.isQuad()) {
+            perTon("mm.cost.actuators", "Upper Arm Actuator Groups", 100, 2);
+            const lower = (this.hasLowerArm("left") ? 1 : 0) + (this.hasLowerArm("right") ? 1 : 0);
+            if (lower > 0) perTon("mm.cost.actuators", `Lower Arm Actuator Group${lower > 1 ? "s" : ""}`, 130, lower);
+        }
+        const legs = this.isQuad() ? 4 : 2;
+        perTon("mm.cost.actuators", "Upper Leg Actuator Groups", 150, legs);
+        perTon("mm.cost.actuators", "Lower Leg Actuator Groups", 200, legs);
+        if (this._engineKind === "ice") {
+            add("mm.cost.engine.ice", `Engine (${rating} ICE)`, `(1,250 x ${rating} x ${tons} tons) / 75, rounded up`, ceilCBill(1250 * rating * tons / 75));
+        } else {
+            add("mm.cost.engine", `Engine (${rating} fusion)`, `(5,000 x ${rating} x ${tons} tons) / 75, rounded up`, ceilCBill(5000 * rating * tons / 75));
+        }
+        add("mm.cost.gyro", "Gyro", `300,000 x ${this.getGyroWeight() / 1000} tons of gyro`, 300 * this.getGyroWeight());
+        if (this._jumpJets > 0) add("mm.cost.jump-jets", "Jump Jets", `${tons} tons x ${this._jumpJets} jets squared x 150`, tons * this._jumpJets * this._jumpJets * 150);
+        if (this._sealed) perTon("mm.cost.sealing", "Environmental Sealing", 1000);
+        if (this._extraHeatSinks > 0) {
+            const over = Math.max(0, this.getHeatSinks() - 10);
+            add("mm.cost.heat-sinks", "Heat Sinks", `2,000 x ${over} over 10 (${this.getHeatSinks()} fitted)`, 2000 * over);
+        }
+        if (this.getPowerAmplifierWeight() > 0) {
+            add("mm.cost.power-amplifiers", "Power Amplifiers", `20,000 x ${this.getPowerAmplifierWeight() / 1000} tons of amplifier`, 20 * this.getPowerAmplifierWeight());
+        }
+        add("mm.cost.armor", `Armor (${this.getArmorPoints()} points, standard)`, `10,000 x ${this.getArmorWeight() / 1000} tons of armor`, 10 * this.getArmorWeight());
+
+        for (const mount of this.getMounts()) add("mm.cost.equipment", `${mount.item.name} (${this.getLocationName(mount.location)})`, undefined, mount.item.cost);
+        for (const lot of this.getAmmoLots()) {
+            const ammo = findMicroMechItem(lot.tag)?.ammo?.find((each) => each.type === lot.type);
+            if (!ammo) continue;
+            add("mm.cost.ammo", `Ammo (${lot.name}${lot.type === "cluster" ? ", cluster" : ""})`, `${fmt(ammo.costPerTon)} a ton x ${lot.kg / 1000} tons`, ammo.costPerTon * lot.kg / 1000);
+        }
+        trace.add("mm.cost.subtotal", { label: "Structural, weapon and equipment cost", value: total, emphasis: true });
+        const multiplier = 1 + tons / 100;
+        trace.add("mm.cost.multiplier", { label: "Final cost multiplier", detail: `1 + (${tons} tons / 100)`, value: multiplier });
+        const result = ceilCBill(total * (100 + tons) / 100);
+        trace.add("mm.cost.final", { label: "Total cost, rounded up", detail: `${fmt(total)} x ${multiplier}`, value: result, emphasis: true });
+        const printed = this.getPrintedFigures();
+        if (printed) {
+            trace.add("mm.cost.printed", { label: printed.corrupt ? "The document prints (a corrupt figure)" : "The document prints", value: printed.cost });
+        }
+        if (this.getRules().borrowsTablesFrom) trace.add("mm.cost.borrowed", { label: "Cost rules from version 6.1.0.2" });
+        return { kind: "cost", edition: this._rulesEdition, steps: trace.steps, result };
+    }
+    public getCBillCost(): number { return this.getCostBreakdown().result ?? 0; }
+
+    // Battle Value -------------------------------------------------------------------------------------------------
+
+    /** No official Battle Value exists for a fan-made unit: the document's under a BV1 edition, ours under BV2. */
+    public isBattleValueProvisional(): true { return true; }
+
+    /** Is the torso protected by CASE (CASE II counts)? */
+    private _torsoHasCase(): boolean {
+        return this.getMounts().some((mount) => mount.location === "torso" && (mount.tag === CASE_TAG || mount.tag === CASE_II_TAG));
+    }
+    private _hasCaseII(location: MicroMechLocation): boolean {
+        return this.getMounts().some((mount) => mount.location === location && mount.tag === CASE_II_TAG);
+    }
+    /** The mounts an Artemis IV FCS is read as fitted to: one LRM or SRM launcher each, in the order mounted. */
+    private _artemisMounts(): Set<number> {
+        const mounts = this.getMounts();
+        const systems = mounts.filter((mount) => mount.tag === ARTEMIS_TAG).length;
+        const launchers = mounts.map((mount, index) => ({ mount, index })).filter(({ mount }) => mount.item.family === "lrm" || mount.item.family === "srm");
+        return new Set(launchers.slice(0, systems).map(({ index }) => index));
+    }
+
+    /**
+     * The document's Battle Value: the Master Rules (Revised) BattleMech procedure, pp.152-154, with the appendix's
+     * changes. The Micro-Mech's tonnage; 30, 30, 20 and 5 points a ton of ammunition; 0.1 more on the Defensive
+     * Movement Factor; no heat steps; part-ton ammunition at its fraction, unrounded.
+     */
+    private _calcBattleValue1(trace: CalcTrace): number {
+        const mounts = this.getMounts();
+        const lots = this.getAmmoLots();
+        const armor = this.getArmorPoints() * 2;
+        let defensive = armor;
+        trace.add("mm.bv1.def.armor", { label: "Armor", detail: `${this.getArmorPoints()} points x 2`, value: armor, total: defensive });
+        const structure = this.getTotalStructure() * 1.5;
+        defensive += structure;
+        trace.add("mm.bv1.def.structure", { label: "Internal structure", detail: `${this.getTotalStructure()} points x 1.5`, value: structure, total: defensive });
+        defensive += this._tons;
+        trace.add("mm.bv1.def.tonnage", { label: "Micro-Mech tonnage", value: this._tons, total: defensive });
+        for (const mount of mounts) {
+            if (!isDefensiveBv1(mount.item) || mount.item.battleValue === null) continue;
+            defensive += mount.item.battleValue;
+            trace.add("mm.bv1.def.equipment", { label: mount.item.name, value: mount.item.battleValue, total: defensive });
+        }
+        const torsoCase = this._torsoHasCase();
+        for (const lot of lots) {
+            const arm = lot.location === "la" || lot.location === "ra";
+            const [rate, why] = this._hasCaseII(lot.location) ? [5, "CASE II in its location"]
+                : arm && torsoCase ? [20, "in an arm, CASE in the torso"]
+                : [30, arm ? "in an arm, no CASE in the torso" : `in the ${this.getLocationName(lot.location).toLowerCase()}`];
+            const value = -rate * lot.kg / 1000;
+            defensive += value;
+            trace.add(lot.location === "head" && rate === 30 ? "mm.bv1.def.explosive.head" : "mm.bv1.def.explosive", {
+                label: `Ammo (${lot.name}), ${why}`, detail: `${rate} x ${lot.kg / 1000} tons, subtracted`, value, total: defensive,
+            });
+        }
+        trace.add("mm.bv1.def.no-heat", { label: "No heat step: a Micro-Mech does not generate heat" });
+        defensive = Math.max(1, defensive);
+        trace.add("mm.bv1.def.subtotal", { label: "Defensive subtotal (never below 1)", value: defensive, emphasis: true });
+        // Attack Modifiers Table, BMR(R) p.33: 0-2 hexes +0, 3-4 +1, 5-6 +2, 7-9 +3, 10 or more +4; a jump +1 more.
+        const run = this.getRunMP();
+        const tmm = Math.max(targetMovementModifier(run, 4), this._jumpJets > 0 ? targetMovementModifier(this._jumpJets, 4) + 1 : 0);
+        const factor = round2(1 + tmm / 10 + 0.1);
+        trace.add("mm.bv1.def.factor", { label: "Defensive Movement Factor", detail: `1 + (target movement modifier +${tmm}) / 10 + 0.1 for a Micro-Mech`, value: factor });
+        const defensiveRating = defensive * factor;
+        trace.add("mm.bv1.def.rating", { label: "Defensive Battle Rating", detail: `${formatCalcNumber(defensive)} x ${factor}`, value: defensiveRating, emphasis: true });
+
+        let offensive = 0;
+        const artemis = this._artemisMounts();
+        mounts.forEach((mount, index) => {
+            const item = mount.item;
+            if (isMicroMechWeapon(item)) {
+                const base = item.battleValue ?? 0;
+                const value = artemis.has(index) ? base * 1.2 : base;
+                offensive += value;
+                trace.add(artemis.has(index) ? "mm.bv1.off.weapon.artemis" : "mm.bv1.off.weapon", artemis.has(index)
+                    ? { label: `${item.name} with Artemis IV`, detail: `${base} x 1.2`, value, total: offensive }
+                    : { label: item.name, value, total: offensive });
+            } else if (item.battleValue !== null && !isDefensiveBv1(item)) {
+                offensive += item.battleValue;
+                trace.add("mm.bv1.off.equipment", { label: item.name, value: item.battleValue, total: offensive });
+            } else if (item.battleValue === null && FORCE_VALUED_TAGS.includes(item.tag)) {
+                trace.add("mm.bv1.off.force", { label: `${item.name}: valued for the force`, value: 0, total: offensive });
+            }
+        });
+        for (const lot of lots) {
+            const ammo = findMicroMechItem(lot.tag)?.ammo?.find((each) => each.type === lot.type);
+            if (!ammo) continue;
+            const value = ammo.bvPerTon * lot.kg / 1000;
+            offensive += value;
+            trace.add("mm.bv1.off.ammo", { label: `Ammo (${lot.name}${lot.type === "cluster" ? ", cluster" : ""})`, detail: `${ammo.bvPerTon} a ton x ${lot.kg / 1000} tons, unrounded`, value, total: offensive });
+        }
+        trace.add("mm.bv1.off.base", { label: "Base Weapon Battle Rating", value: offensive, emphasis: true });
+        trace.add("mm.bv1.off.no-heat", { label: "No heat efficiency step: a Micro-Mech does not generate heat" });
+        const speed = getSpeedFactor(run + this._jumpJets);
+        trace.add("mm.bv1.off.speed", { label: "Speed Factor", detail: `Running MP ${run} + Jumping MP ${this._jumpJets}`, value: speed });
+        const offensiveRating = offensive * speed;
+        trace.add("mm.bv1.off.rating", { label: "Offensive Battle Rating", detail: `${formatCalcNumber(offensive)} x ${speed}`, value: offensiveRating, emphasis: true });
+
+        const result = Math.round(defensiveRating + offensiveRating);
+        trace.add("mm.bv1.final.round", { label: "Battle Value (provisional)", detail: `${formatCalcNumber(defensiveRating)} + ${formatCalcNumber(offensiveRating)}, rounded`, value: result, emphasis: true });
+        const printed = this.getPrintedFigures();
+        if (printed) {
+            trace.add("mm.bv1.final.printed", { label: printed.corrupt ? "The document prints (a corrupt figure)" : "The document prints", value: printed.battleValue });
+        }
+        if (this.getRules().borrowsTablesFrom) trace.add("mm.bv1.final.borrowed", { label: "Battle Value rules from version 6.1.0.2" });
+        return result;
+    }
+
+    /**
+     * Our provisional BV2 (owner ruling 2): the TechManual BattleMech procedure (pp.302-304) with each of the document's
+     * changes carried across, each item at the BV2 figure our catalog holds for it. Every step says what was done.
+     */
+    private _calcBattleValue2(trace: CalcTrace): number {
+        const mounts = this.getMounts();
+        const lots = this.getAmmoLots();
+        const armor = this.getArmorPoints() * 2.5;
+        let defensive = armor;
+        trace.add("mm.bv2.def.armor", { label: "Armor", detail: `${this.getArmorPoints()} points x 2.5`, value: armor, total: defensive });
+        const structure = this.getTotalStructure() * 1.5;
+        defensive += structure;
+        trace.add("mm.bv2.def.structure", { label: "Internal structure", detail: `${this.getTotalStructure()} points x 1.5`, value: structure, total: defensive });
+        defensive += this._tons * 0.5;
+        trace.add("mm.bv2.def.tonnage", { label: "Micro-Mech tonnage (gyro)", detail: `${this._tons} tons x 0.5`, value: this._tons * 0.5, total: defensive });
+        for (const mount of mounts) {
+            const bv2 = getMicroMechItemBattleValue2(mount.item);
+            if (!bv2.defensive) continue;
+            defensive += bv2.battleValue;
+            trace.add("mm.bv2.def.equipment", { label: mount.item.name, value: bv2.battleValue, total: defensive });
+        }
+        const torsoCase = this._torsoHasCase();
+        for (const lot of lots) {
+            const arm = lot.location === "la" || lot.location === "ra";
+            const [rate, why] = this._hasCaseII(lot.location) ? [0, "CASE II in its location"]
+                : arm && torsoCase ? [15, "in an arm, CASE in the torso"]
+                : [22.5, arm ? "in an arm, no CASE in the torso" : `in the ${this.getLocationName(lot.location).toLowerCase()}`];
+            const value = rate === 0 ? 0 : -rate * lot.kg / 1000;
+            defensive += value;
+            trace.add("mm.bv2.def.explosive", { label: `Ammo (${lot.name}), ${why}`, detail: `${rate} x ${lot.kg / 1000} tons, subtracted`, value, total: defensive });
+        }
+        defensive = Math.max(1, defensive);
+        trace.add("mm.bv2.def.subtotal", { label: "Defensive subtotal (never below 1)", value: defensive, emphasis: true });
+        const run = this.getRunMP();
+        const tmm = Math.max(targetMovementModifier(run), this._jumpJets > 0 ? targetMovementModifier(this._jumpJets) + 1 : 0);
+        const factor = round2(1 + tmm / 10 + 0.1);
+        trace.add("mm.bv2.def.factor", { label: "Defensive factor", detail: `1 + (target movement modifier +${tmm}) / 10 + 0.1 for a Micro-Mech`, value: factor });
+        const defensiveRating = defensive * factor;
+        trace.add("mm.bv2.def.rating", { label: "Defensive Battle Rating", detail: `${formatCalcNumber(defensive)} x ${factor}`, value: defensiveRating, emphasis: true });
+
+        let offensive = 0;
+        const artemis = this._artemisMounts();
+        /** Unmodified weapon BV by table row, the cap on that row's ammunition (TM p.303). */
+        const weaponTotals = new Map<string, number>();
+        mounts.forEach((mount, index) => {
+            const item = mount.item;
+            const bv2 = getMicroMechItemBattleValue2(item);
+            if (isMicroMechWeapon(item)) {
+                weaponTotals.set(item.tag, (weaponTotals.get(item.tag) ?? 0) + bv2.battleValue);
+                const value = artemis.has(index) ? bv2.battleValue * 1.2 : bv2.battleValue;
+                offensive += value;
+                const id = artemis.has(index) ? "mm.bv2.off.weapon.artemis" : bv2.fromCatalog ? "mm.bv2.off.weapon" : "mm.bv2.off.weapon.document";
+                trace.add(id, artemis.has(index)
+                    ? { label: `${item.name} with Artemis IV${bv2.fromCatalog ? "" : " (the document's figure)"}`, detail: `${bv2.battleValue} x 1.2`, value, total: offensive }
+                    : { label: item.name, value, total: offensive });
+            } else if (item.battleValue === null && FORCE_VALUED_TAGS.includes(item.tag)) {
+                trace.add("mm.bv2.off.force", { label: `${item.name}: valued for the force`, value: 0, total: offensive });
+            } else if (item.battleValue !== null && !bv2.defensive) {
+                offensive += bv2.battleValue;
+                trace.add("mm.bv2.off.equipment", { label: item.name, value: bv2.battleValue, total: offensive });
+            }
+        });
+        const ammoTotals = new Map<string, { name: string; value: number }>();
+        for (const lot of lots) {
+            const item = findMicroMechItem(lot.tag);
+            if (!item) continue;
+            const bv2 = getMicroMechItemBattleValue2(item);
+            const value = bv2.ammoPerTon * lot.kg / 1000;
+            const group = ammoTotals.get(lot.tag) ?? { name: lot.name, value: 0 };
+            group.value += value;
+            ammoTotals.set(lot.tag, group);
+            trace.add("mm.bv2.off.ammo", {
+                label: `Ammo (${lot.name}${lot.type === "cluster" ? ", cluster" : ""})${bv2.ammoFromCatalog ? "" : " (the document's figure)"}`,
+                detail: `${bv2.ammoPerTon} a ton x ${lot.kg / 1000} tons, unrounded`, value,
+            });
+        }
+        let ammoCounted = 0;
+        for (const [tag, group] of ammoTotals) {
+            const cap = weaponTotals.get(tag) ?? 0;
+            const counted = Math.min(group.value, cap);
+            ammoCounted += counted;
+            if (counted < group.value) {
+                trace.add("mm.bv2.off.ammo.cap", { label: `Ammo (${group.name}) limited to its weapons' Battle Value`, detail: `${formatCalcNumber(group.value)} over ${formatCalcNumber(cap)}`, value: counted });
+            }
+        }
+        if (ammoTotals.size > 0) {
+            offensive += ammoCounted;
+            trace.add("mm.bv2.off.ammo.total", { label: "Ammunition counted", value: ammoCounted, total: offensive });
+        }
+        offensive += this._tons;
+        trace.add("mm.bv2.off.tonnage", { label: "Micro-Mech tonnage", value: this._tons, total: offensive });
+        const speed = getSpeedFactor(run + Math.ceil(this._jumpJets / 2));
+        trace.add("mm.bv2.off.speed", { label: "Speed factor", detail: `Running MP ${run} + half of Jumping MP ${this._jumpJets}, rounded up`, value: speed });
+        const offensiveRating = offensive * speed;
+        trace.add("mm.bv2.off.rating", { label: "Offensive Battle Rating", detail: `${formatCalcNumber(offensive)} x ${speed}`, value: offensiveRating, emphasis: true });
+
+        const result = Math.round(defensiveRating + offensiveRating);
+        trace.add("mm.bv2.final.round", { label: "Battle Value 2 (provisional, ours)", detail: `${formatCalcNumber(defensiveRating)} + ${formatCalcNumber(offensiveRating)}, rounded`, value: result, emphasis: true });
+        if (this.getRules().borrowsTablesFrom) trace.add("mm.bv2.final.borrowed", { label: "Battle Value rules from version 6.1.0.2" });
+        return result;
+    }
+
+    /**
+     * The Battle Value steps under `edition`: the document's under a Battle Value 1 edition, our provisional BV2 under
+     * a BV2 edition, and one step with a null result under an edition older than the Battle Value system.
+     */
+    public getBattleValueBreakdown(edition: string = this._rulesEdition): ICalcBreakdown {
+        if (!editionHasBattleValue(edition, "mech")) {
+            const trace = new CalcTrace(NO_BATTLE_VALUE_STEPS);
+            trace.add("none.no-battle-value", { label: `${getRulesEdition(edition).name} has no Battle Value. Battle Value first appears in the BattleTech Master Rules (1998)` });
+            return { kind: "battle-value", edition, scheme: "none", steps: trace.steps, result: null };
+        }
+        return getBattleValueFor<ICalcBreakdown>(edition, "mech", {
+            bv1: () => {
+                const trace = new CalcTrace(MICRO_MECH_BV1_STEPS);
+                return { kind: "battle-value", edition, scheme: "bv1", result: this._calcBattleValue1(trace), steps: trace.steps };
+            },
+            bv2: () => {
+                const trace = new CalcTrace(MICRO_MECH_BV2_STEPS);
+                return { kind: "battle-value", edition, scheme: "bv2", result: this._calcBattleValue2(trace), steps: trace.steps };
+            },
+        });
+    }
+    /** The Battle Value under `edition`; an edition with no Battle Value system reads our BV2, as a BattleMech does. */
+    public getBattleValue(edition: string = this._rulesEdition): number {
+        return getBattleValueFor(edition, "mech", {
+            bv1: () => this._calcBattleValue1(new CalcTrace(MICRO_MECH_BV1_STEPS)),
+            bv2: () => this._calcBattleValue2(new CalcTrace(MICRO_MECH_BV2_STEPS)),
+        });
+    }
+
     // Rules level, issues, notes -----------------------------------------------------------------------------------
 
     /** Every Micro-Mech is Custom Homebrew. */
@@ -591,6 +929,7 @@ export default class MicroMech implements IGameSettingsUnit {
         if (this.getArmorPoints() % 4 !== 0) {
             notes.push("The text buys armor by the quarter ton (4 points); the document's own samples use 2-point (125 kg) steps, as this design does.");
         }
+        notes.push("The Battle Value is provisional: the document's own under a Battle Value 1 rules edition, and one of ours under Battle Value 2.");
         if (this._engineKind === "ice") {
             notes.push("An ICE engine has no free heat sinks and needs power amplifiers for energy weapons.");
             notes.push(`Only a ${rules.vacuumEngines.join(" or ")} Micro-Mech may be sealed for vacuum.`);

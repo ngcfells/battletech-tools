@@ -2,6 +2,8 @@ import { describe, expect, it } from "vitest";
 import { CUSTOM_HOMEBREW_RULES_LEVEL } from "../data/rules-level-options";
 import { MICRO_MECH_SLOTS, MICRO_MECH_VERSION_RULES, MicroMechLayout, getMicroMechStructureRow } from "../data/micro-mech-construction";
 import MicroMech, { normalizeMicroMechExport } from "./micro-mech";
+import { CalcStepDefs, ICalcBreakdown, findCalcDefProblems } from "../data/calc-steps";
+import { MICRO_MECH_BV1_STEPS, MICRO_MECH_BV2_STEPS, MICRO_MECH_COST_STEPS } from "../data/calc-steps-micro-mech";
 
 // Fixtures: the four sample designs of "Micro-Mechs" 6.1.0.2 (their weight tables), chassis only: equipment is Chunk B.
 const build = (tons: number, layout: MicroMechLayout, walk: number, jets: number): MicroMech => {
@@ -255,13 +257,6 @@ describe("Micro-Mech construction, version 6.1.0.2", () => {
 });
 
 describe("Micro-Mech construction, Solarmech's 2019 version", () => {
-    const of2019 = (tons: number, walk: number): MicroMech => {
-        const micro = new MicroMech();
-        micro.setVersion("solarmech-2019");
-        micro.setTons(tons);
-        micro.setWalkMP(walk);
-        return micro;
-    };
 
     it("rounds structure up to the quarter ton: 11 tons is 1,250 kg", () => {
         expect(of2019(11, 6).getStructureWeight()).toBe(1250);
@@ -673,5 +668,351 @@ describe("Micro-Mech equipment, version solarmech-2019", () => {
         micro.setExtraHeatSinks(12);
         expect(micro.setVersion("6.1.0.2")).toContain("12 extra heat sinks exceed the 10 the engine may carry.");
         expect(micro.getExtraHeatSinks()).toBe(12);
+    });
+});
+
+// Chunk C: cost and Battle Value. The document's appendices (PDF pp.11-12) over the Master Rules, Revised pp.149, 152-154.
+const BV1 = "master-rules-revised";
+const BV2 = "total-warfare";
+const named = (make: () => MicroMech, name: string): MicroMech => {
+    const micro = make();
+    micro.setName(name);
+    return micro;
+};
+const stepsOf = (breakdown: ICalcBreakdown, id: string) => breakdown.steps.filter((step) => step.id === id);
+const valueOf = (breakdown: ICalcBreakdown, id: string) => stepsOf(breakdown, id).map((step) => step.value);
+const of2019 = (tons: number, walk: number): MicroMech => {
+    const micro = new MicroMech();
+    micro.setVersion("solarmech-2019");
+    micro.setTons(tons);
+    micro.setWalkMP(walk);
+    return micro;
+};
+/** An 11-ton biped, Walk 6, with a torso machine gun and 1,000 kg of its ammunition where asked (no left lower arm, for the slots). */
+const withAmmo = (ammoAt: "la" | "torso" | "ll" | "head", caseAt?: ["micro-case" | "micro-case-ii", "la" | "torso"]): MicroMech => {
+    const micro = build(11, "biped", 6, 0);
+    micro.setLowerArm("left", false);
+    expect(micro.addMount("micro-machine-gun", "torso")).toBe(true);
+    expect(micro.setAmmo(0, 1000, ammoAt)).toBe(true);
+    if (caseAt) expect(micro.addMount(caseAt[0], caseAt[1])).toBe(true);
+    return micro;
+};
+
+describe("Micro-Mech step definitions", () => {
+    it.each([
+        ["cost", MICRO_MECH_COST_STEPS],
+        ["Battle Value 1", MICRO_MECH_BV1_STEPS],
+        ["Battle Value 2", MICRO_MECH_BV2_STEPS],
+    ] as [string, CalcStepDefs][])("the %s table is clean", (_name, defs) => {
+        expect(findCalcDefProblems(defs)).toEqual([]);
+    });
+
+    it("every BV2 step is provisional and says it is ours", () => {
+        for (const def of Object.values(MICRO_MECH_BV2_STEPS)) {
+            expect(def.status).toBe("provisional");
+        }
+        expect(MICRO_MECH_BV2_STEPS["mm.bv2.def.armor"].note).toMatch(/ours, not the document's/);
+    });
+});
+
+describe("Micro-Mech cost (6.1.0.2 appendix)", () => {
+    it("the rows the document changes, on the Storm", () => {
+        const cost = stormArmed().getCostBreakdown();
+        expect(valueOf(cost, "mm.cost.cockpit")).toEqual([150000]);
+        expect(valueOf(cost, "mm.cost.life-support")).toEqual([40000]);
+        // Sensors: tonnage x 1,500.
+        expect(valueOf(cost, "mm.cost.sensors")).toEqual([16500]);
+        // Upper arm x 100 (two), lower arm x 130 (two), upper leg x 150 (two), lower leg x 200 (two).
+        expect(valueOf(cost, "mm.cost.actuators")).toEqual([2200, 2860, 3300, 4400]);
+        // Jump jets: tonnage x jets squared x 150.
+        expect(valueOf(cost, "mm.cost.jump-jets")).toEqual([59400]);
+        expect(stepsOf(cost, "mm.cost.sealing")).toEqual([]);
+    });
+
+    it("the rows left as the BattleMech's, on the Storm", () => {
+        const cost = stormArmed().getCostBreakdown();
+        expect(valueOf(cost, "mm.cost.musculature")).toEqual([22000]);
+        expect(valueOf(cost, "mm.cost.structure")).toEqual([4400]);
+        // (5,000 x 70 x 11) / 75 = 51,333.33, rounded up.
+        expect(valueOf(cost, "mm.cost.engine")).toEqual([51334]);
+        expect(valueOf(cost, "mm.cost.gyro")).toEqual([225000]);
+        expect(valueOf(cost, "mm.cost.armor")).toEqual([28750]);
+        expect(valueOf(cost, "mm.cost.equipment")).toEqual([11250, 5000]);
+        // 500 kg of machine gun ammunition at 1,000 a ton.
+        expect(valueOf(cost, "mm.cost.ammo")).toEqual([500]);
+        expect(valueOf(cost, "mm.cost.multiplier")).toEqual([1.11]);
+    });
+
+    it("only the lower arm groups fitted are priced", () => {
+        const micro = build(11, "biped", 6, 0);
+        micro.setLowerArm("left", false);
+        expect(valueOf(micro.getCostBreakdown(), "mm.cost.actuators")).toEqual([2200, 1430, 3300, 4400]);
+        micro.setLowerArm("right", false);
+        expect(valueOf(micro.getCostBreakdown(), "mm.cost.actuators")).toEqual([2200, 3300, 4400]);
+    });
+
+    it("a quad prices four legs and no arms", () => {
+        expect(valueOf(build(15, "quad", 5, 0).getCostBreakdown(), "mm.cost.actuators")).toEqual([9000, 12000]);
+    });
+
+    it("environmental sealing: tonnage x 1,000", () => {
+        const micro = build(11, "biped", 6, 0);
+        micro.setSealed(true);
+        expect(valueOf(micro.getCostBreakdown(), "mm.cost.sealing")).toEqual([11000]);
+    });
+
+    it("an ICE engine: (1,250 x rating x tonnage) / 75, with TechManual-priced power amplifiers", () => {
+        const micro = build(11, "biped", 6, 0);
+        expect(micro.setEngineKind("ice")).toBe(true);
+        expect(micro.addMount("micro-laser-small", "ra")).toBe(true);
+        const cost = micro.getCostBreakdown();
+        expect(stepsOf(cost, "mm.cost.engine")).toEqual([]);
+        // (1,250 x 70 x 11) / 75 = 12,833.33, rounded up.
+        expect(valueOf(cost, "mm.cost.engine.ice")).toEqual([12834]);
+        // 1 ton of amplifiers at 20,000 a ton: ours, from the TechManual.
+        expect(valueOf(cost, "mm.cost.power-amplifiers")).toEqual([20000]);
+        expect(stepsOf(cost, "mm.cost.power-amplifiers")[0].status).toBe("provisional");
+    });
+
+    it("heat sinks: 2,000 for each over 10, as the BattleMech table has it", () => {
+        const micro = build(11, "biped", 6, 0);
+        micro.setExtraHeatSinks(2);
+        // 7 free + 2 = 9: none over 10.
+        expect(valueOf(micro.getCostBreakdown(), "mm.cost.heat-sinks")).toEqual([0]);
+        micro.setExtraHeatSinks(5);
+        expect(valueOf(micro.getCostBreakdown(), "mm.cost.heat-sinks")).toEqual([4000]);
+    });
+
+    it.each([
+        ["Storm STM-3X", stormArmed, 695853],
+        ["Hillman HMN-2X", hillman, 852898],
+        ["Slayer SL-X4", slayer, 1073387],
+    ] as [string, () => MicroMech, number][])("%s costs what the document prints", (name, make, printed) => {
+        const micro = named(make, name);
+        expect(micro.getCBillCost()).toBe(printed);
+        expect(valueOf(micro.getCostBreakdown(), "mm.cost.printed")).toEqual([printed]);
+    });
+
+    it("the Tunnel Rat: our figure, beside the document's corrupt one", () => {
+        const micro = named(tunnelRat, "Tunnel Rat TNR-1X");
+        const cost = micro.getCostBreakdown();
+        expect(micro.getCBillCost()).toBe(990510);
+        expect(stepsOf(cost, "mm.cost.printed")[0]).toMatchObject({ value: 8993460, label: "The document prints (a corrupt figure)" });
+    });
+
+    it("a design that is not a sample shows no printed figure", () => {
+        expect(stepsOf(stormArmed().getCostBreakdown(), "mm.cost.printed").length).toBe(1);
+        const changed = stormArmed();
+        changed.setArmor("head", 2);
+        expect(stepsOf(changed.getCostBreakdown(), "mm.cost.printed")).toEqual([]);
+        expect(stepsOf(named(stormArmed, "My Storm").getCostBreakdown(), "mm.cost.printed")).toEqual([]);
+    });
+
+    it("the 2019 version borrows the 6.1.0.2 cost rules and says so", () => {
+        const micro = of2019(11, 6);
+        expect(stepsOf(micro.getCostBreakdown(), "mm.cost.borrowed").length).toBe(1);
+        expect(stepsOf(stormArmed().getCostBreakdown(), "mm.cost.borrowed")).toEqual([]);
+    });
+});
+
+describe("Micro-Mech Battle Value (6.1.0.2 appendix, BV1 editions)", () => {
+    it("is always provisional", () => {
+        expect(new MicroMech().isBattleValueProvisional()).toBe(true);
+    });
+
+    it("the Slayer comes to the document's 531", () => {
+        const micro = named(slayer, "Slayer SL-X4");
+        const bv = micro.getBattleValueBreakdown(BV1);
+        expect(bv.scheme).toBe("bv1");
+        expect(valueOf(bv, "mm.bv1.def.armor")).toEqual([120]);
+        expect(valueOf(bv, "mm.bv1.def.structure")).toEqual([49.5]);
+        // The Micro-Mech's own tonnage.
+        expect(valueOf(bv, "mm.bv1.def.tonnage")).toEqual([18]);
+        // Run 8 (+3) and Jump 5 (+2, +1): 1.3, and 0.1 more for a Micro-Mech.
+        expect(valueOf(bv, "mm.bv1.def.factor")).toEqual([1.4]);
+        expect(valueOf(bv, "mm.bv1.off.weapon")).toEqual([124, 9]);
+        // Running 8 + Jumping 5 = 13.
+        expect(valueOf(bv, "mm.bv1.off.speed")).toEqual([2.02]);
+        expect(bv.result).toBe(531);
+        expect(micro.getBattleValue(BV1)).toBe(531);
+        expect(valueOf(bv, "mm.bv1.final.printed")).toEqual([531]);
+    });
+
+    it("has no heat steps, even with more heat than sinks", () => {
+        const micro = build(18, "quad", 5, 0);
+        micro.addMount("micro-er-ppc", "torso");
+        const bv = micro.getBattleValueBreakdown(BV1);
+        expect(micro.getEnergyHeat()).toBeGreaterThan(micro.getHeatSinks());
+        expect(stepsOf(bv, "mm.bv1.def.no-heat").length).toBe(1);
+        expect(stepsOf(bv, "mm.bv1.off.no-heat").length).toBe(1);
+        // 229 x the Speed Factor for Running 8 (1.37): nothing halved.
+        expect(valueOf(bv, "mm.bv1.off.rating")[0]).toBeCloseTo(229 * 1.37, 6);
+    });
+
+    it.each([
+        // where the ammunition is, CASE, the points a ton
+        ["torso", "torso", undefined, -30, "mm.bv1.def.explosive"],
+        ["a leg", "ll", undefined, -30, "mm.bv1.def.explosive"],
+        ["an arm, no CASE in the torso", "la", undefined, -30, "mm.bv1.def.explosive"],
+        ["an arm, CASE in the arm only", "la", ["micro-case", "la"], -30, "mm.bv1.def.explosive"],
+        ["an arm, CASE in the torso", "la", ["micro-case", "torso"], -20, "mm.bv1.def.explosive"],
+        ["the torso, CASE in the torso", "torso", ["micro-case", "torso"], -30, "mm.bv1.def.explosive"],
+        ["the torso, CASE II there", "torso", ["micro-case-ii", "torso"], -5, "mm.bv1.def.explosive"],
+        ["an arm, CASE II there", "la", ["micro-case-ii", "la"], -5, "mm.bv1.def.explosive"],
+        ["the head (ours: as the torso)", "head", undefined, -30, "mm.bv1.def.explosive.head"],
+    ] as [string, "la" | "torso" | "ll" | "head", ["micro-case" | "micro-case-ii", "la" | "torso"] | undefined, number, string][])(
+        "a ton of ammunition in %s", (_name, ammoAt, caseAt, points, id) => {
+            const bv = withAmmo(ammoAt, caseAt).getBattleValueBreakdown(BV1);
+            expect([...valueOf(bv, "mm.bv1.def.explosive"), ...valueOf(bv, "mm.bv1.def.explosive.head")]).toEqual([points]);
+            expect(stepsOf(bv, id).length).toBe(1);
+        });
+
+    it("part-ton ammunition counts its fraction, unrounded, in the penalty and in its Battle Value", () => {
+        // The Storm: 500 kg of machine gun ammunition (1 a ton) in the torso.
+        const bv = stormArmed().getBattleValueBreakdown(BV1);
+        expect(valueOf(bv, "mm.bv1.def.explosive")).toEqual([-15]);
+        expect(valueOf(bv, "mm.bv1.off.ammo")).toEqual([0.5]);
+        // The Hillman: 750 kg of LRM 9 ammunition (10 a ton).
+        const hill = hillman().getBattleValueBreakdown(BV1);
+        expect(valueOf(hill, "mm.bv1.def.explosive")).toEqual([-22.5]);
+        expect(valueOf(hill, "mm.bv1.off.ammo")).toEqual([7.5]);
+    });
+
+    it("the Storm and the Hillman: our figure from the rules text, beside the document's", () => {
+        const stormBv = named(stormArmed, "Storm STM-3X").getBattleValueBreakdown(BV1);
+        // (92 + 34.5 + 11 - 15) x 1.4 + (17 + 5 + 0.5) x 2.3 = 223.25.
+        expect(stormBv.result).toBe(223);
+        expect(valueOf(stormBv, "mm.bv1.final.printed")).toEqual([217]);
+        const hillBv = named(hillman, "Hillman HMN-2X").getBattleValueBreakdown(BV1);
+        // (108 + 46.5 + 15 - 22.5) x 1.4 + (12 + 78 + 7.5) x 1.37 = 339.375. Structure 31: the 15-ton row, four legs.
+        expect(valueOf(hillBv, "mm.bv1.def.structure")).toEqual([46.5]);
+        expect(hillBv.result).toBe(339);
+        expect(valueOf(hillBv, "mm.bv1.final.printed")).toEqual([352]);
+    });
+
+    it("ECM is defensive, an active probe offensive", () => {
+        const micro = build(15, "quad", 5, 0);
+        micro.addMount("micro-guardian-ecm-suite", "torso");
+        micro.addMount("micro-beagle-active-probe", "torso");
+        const bv = micro.getBattleValueBreakdown(BV1);
+        expect(valueOf(bv, "mm.bv1.def.equipment")).toEqual([61]);
+        expect(valueOf(bv, "mm.bv1.off.equipment")).toEqual([10]);
+    });
+
+    it("Artemis IV adds 20 percent to one launcher, not its ammunition; C3 and TAG add nothing here", () => {
+        const micro = build(19, "biped", 3, 0);
+        micro.addMount("micro-srm-2", "la");
+        micro.setAmmo(0, 1000, "torso");
+        micro.addMount("micro-srm-2", "ra");
+        micro.addMount("micro-artemis-iv-fcs", "torso");
+        micro.addMount("micro-c3-slave", "torso");
+        micro.addMount("micro-target-acquisition-gear-tag", "torso");
+        const bv = micro.getBattleValueBreakdown(BV1);
+        expect(valueOf(bv, "mm.bv1.off.weapon.artemis")[0]).toBeCloseTo(25.2, 6);
+        expect(valueOf(bv, "mm.bv1.off.weapon")).toEqual([21]);
+        expect(valueOf(bv, "mm.bv1.off.ammo")).toEqual([3]);
+        expect(valueOf(bv, "mm.bv1.off.force")).toEqual([0, 0]);
+    });
+
+    it("the defensive subtotal never falls below 1", () => {
+        const micro = build(10, "biped", 1, 0);
+        micro.addMount("micro-machine-gun", "la");
+        micro.setAmmo(0, 2000, "torso");
+        const bv = micro.getBattleValueBreakdown(BV1);
+        // 0 armor + 22 x 1.5 structure + 10 tons - 60 = -17.
+        expect(valueOf(bv, "mm.bv1.def.subtotal")).toEqual([1]);
+    });
+
+    it("both BV1 editions give the document's figure; an older edition has none", () => {
+        const micro = slayer();
+        expect(micro.getBattleValue("master-rules")).toBe(531);
+        expect(micro.getBattleValueBreakdown("master-rules").scheme).toBe("bv1");
+        const none = micro.getBattleValueBreakdown("battletech-4th-edition");
+        expect(none.scheme).toBe("none");
+        expect(none.result).toBeNull();
+    });
+
+    it("the 2019 version borrows the 6.1.0.2 Battle Value rules and says so", () => {
+        expect(stepsOf(of2019(11, 6).getBattleValueBreakdown(BV1), "mm.bv1.final.borrowed").length).toBe(1);
+        expect(stepsOf(of2019(11, 6).getBattleValueBreakdown(BV2), "mm.bv2.final.borrowed").length).toBe(1);
+    });
+});
+
+describe("Micro-Mech provisional BV2 (ours)", () => {
+    it("the Storm, step by step", () => {
+        const bv = stormArmed().getBattleValueBreakdown(BV2);
+        expect(bv.scheme).toBe("bv2");
+        expect(bv.steps.every((step) => step.status === "provisional")).toBe(true);
+        expect(valueOf(bv, "mm.bv2.def.armor")).toEqual([115]);
+        expect(valueOf(bv, "mm.bv2.def.structure")).toEqual([34.5]);
+        // Tonnage enters the BV2 defensive rating through the gyro: 11 x 0.5.
+        expect(valueOf(bv, "mm.bv2.def.tonnage")).toEqual([5.5]);
+        // 500 kg in the torso at 22.5 a ton.
+        expect(valueOf(bv, "mm.bv2.def.explosive")).toEqual([-11.25]);
+        expect(valueOf(bv, "mm.bv2.def.subtotal")).toEqual([143.75]);
+        // Run 9 (+3), Jump 6 (+2, +1): 1.3, and 0.1 more.
+        expect(valueOf(bv, "mm.bv2.def.factor")).toEqual([1.4]);
+        expect(valueOf(bv, "mm.bv2.off.weapon")).toEqual([17, 5]);
+        expect(valueOf(bv, "mm.bv2.off.ammo")).toEqual([0.5]);
+        expect(valueOf(bv, "mm.bv2.off.tonnage")).toEqual([11]);
+        // Running 9 + half of Jumping 6 = 12.
+        expect(valueOf(bv, "mm.bv2.off.speed")).toEqual([1.89]);
+        // 143.75 x 1.4 + 33.5 x 1.89 = 264.565.
+        expect(bv.result).toBe(265);
+        expect(stormArmed().getBattleValue(BV2)).toBe(265);
+        expect(stepsOf(bv, "mm.bv2.final.printed" as string)).toEqual([]);
+    });
+
+    it("no heat efficiency limit: every weapon in full", () => {
+        const micro = build(18, "quad", 5, 0);
+        micro.addMount("micro-er-ppc", "torso");
+        micro.addMount("micro-er-laser-medium", "head");
+        expect(valueOf(micro.getBattleValueBreakdown(BV2), "mm.bv2.off.weapon")).toEqual([229, 62]);
+    });
+
+    it("an item with a BV2 figure in our catalog uses it; one without keeps the document's", () => {
+        const micro = build(19, "biped", 3, 0);
+        // Large Laser: the document prints 124, BV2 is 123. Heavy Flamer: 20 and 3 a ton against BV2's 15 and 2.
+        micro.addMount("micro-laser-large", "torso");
+        micro.addMount("micro-flamer-heavy", "la");
+        micro.setAmmo(1, 1000, "torso");
+        // No book prints an LRM 9.
+        micro.addMount("micro-lrm-9", "torso");
+        expect(micro.setAmmo(2, 500, "ll")).toBe(true);
+        const bv = micro.getBattleValueBreakdown(BV2);
+        expect(valueOf(bv, "mm.bv2.off.weapon")).toEqual([123, 15]);
+        expect(valueOf(bv, "mm.bv2.off.weapon.document")).toEqual([78]);
+        expect(valueOf(bv, "mm.bv2.off.ammo")).toEqual([2, 5]);
+        expect(stepsOf(bv, "mm.bv2.off.ammo")[1].label).toMatch(/the document's figure/);
+        expect(micro.getBattleValueBreakdown(BV1).steps.find((step) => step.label === "Laser, Large")?.value).toBe(124);
+    });
+
+    it("ammunition penalties by weight: 22.5 a ton, 15 in an arm with torso CASE, none under CASE II", () => {
+        expect(valueOf(withAmmo("torso").getBattleValueBreakdown(BV2), "mm.bv2.def.explosive")).toEqual([-22.5]);
+        expect(valueOf(withAmmo("la").getBattleValueBreakdown(BV2), "mm.bv2.def.explosive")).toEqual([-22.5]);
+        expect(valueOf(withAmmo("la", ["micro-case", "torso"]).getBattleValueBreakdown(BV2), "mm.bv2.def.explosive")).toEqual([-15]);
+        expect(valueOf(withAmmo("torso", ["micro-case-ii", "torso"]).getBattleValueBreakdown(BV2), "mm.bv2.def.explosive")).toEqual([0]);
+    });
+
+    it("a weapon's ammunition is worth no more than the weapon", () => {
+        const micro = build(19, "biped", 3, 0);
+        micro.addMount("micro-grenade-launcher", "la");
+        // 3 tons at 1 a ton against a grenade launcher worth 2 (both the document's figures: no book prints a BV2).
+        expect(micro.setAmmo(0, 3000, "torso")).toBe(true);
+        const bv = micro.getBattleValueBreakdown(BV2);
+        expect(valueOf(bv, "mm.bv2.off.ammo")).toEqual([3]);
+        expect(valueOf(bv, "mm.bv2.off.ammo.cap")).toEqual([2]);
+        expect(stepsOf(bv, "mm.bv2.off.ammo.total")[0]).toMatchObject({ value: 2, total: 4 });
+        expect(valueOf(bv, "mm.bv2.off.tonnage")[0]).toBe(19);
+        expect(stepsOf(bv, "mm.bv2.off.tonnage")[0].total).toBe(2 + 2 + 19);
+    });
+
+    it("active probes and ECM are defensive under BV2", () => {
+        const micro = build(15, "quad", 5, 0);
+        micro.addMount("micro-guardian-ecm-suite", "torso");
+        micro.addMount("micro-beagle-active-probe", "torso");
+        const bv = micro.getBattleValueBreakdown(BV2);
+        expect(valueOf(bv, "mm.bv2.def.equipment")).toEqual([61, 10]);
+        expect(stepsOf(bv, "mm.bv2.off.equipment")).toEqual([]);
     });
 });

@@ -230,3 +230,33 @@ export const getMicroMechItemIntroduced = (item: IMicroMechItem): number | null 
     const record = canonRecord(item);
     return typeof record?.introduced === "number" ? record.introduced : null;
 };
+
+/** Our catalog's Battle Value 2 figures for a table row, for the provisional BV2 (owner ruling 2). */
+export interface IMicroMechBattleValue2 {
+    /** The item's BV2: our catalog's for the same item, else the document's own figure; 0 where the table prints a letter note. */
+    battleValue: number;
+    /** False where no book prints a BV2 for the item (an odd tube count, a recoilless rifle) and the document's figure is kept. */
+    fromCatalog: boolean;
+    /** Ammunition BV2 per ton, with the same fallback. */
+    ammoPerTon: number;
+    ammoFromCatalog: boolean;
+    /** The catalog marks the item defensive (ECM, active probes). */
+    defensive: boolean;
+}
+
+/**
+ * A row's BV2 figures. Only a row whose `canonTag` names the same item is read from the catalog: a tube count whose
+ * range was extrapolated from its launcher family has no BV2 figure anywhere.
+ */
+export const getMicroMechItemBattleValue2 = (item: IMicroMechItem): IMicroMechBattleValue2 => {
+    const record = item.rangeExtrapolated ? undefined : canonRecord(item);
+    const fromCatalog = typeof record?.battleValue === "number";
+    const ammoFromCatalog = typeof record?.ammoBattleValue === "number";
+    return {
+        battleValue: item.battleValue === null ? 0 : fromCatalog ? record!.battleValue! : item.battleValue,
+        fromCatalog: fromCatalog || item.battleValue === null,
+        ammoPerTon: ammoFromCatalog ? record!.ammoBattleValue! : item.ammo?.[0]?.bvPerTon ?? 0,
+        ammoFromCatalog,
+        defensive: canonRecord(item)?.battleValueDefensive === true,
+    };
+};
