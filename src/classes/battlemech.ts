@@ -245,8 +245,8 @@ export const LAM_TYPE_RULES: Record<LAMType, ILAMTypeRules> = {
     // Red Pins, BattleTech forums, "Custom Weapons and Equipment" (topic 44833), reply #5, 21 Feb 2015. The full rules
     // were never published; everything below the one line is our extrapolation (owner rulings 2026-11-12).
     pam: {
-        name: "Permanent Air 'Mech", conversion: 0, costRate: 0, modes: ["airmech"], minJumpMP: 3, lamLimits: true, homebrew: true,
-        notes: "Permanent Air 'Mech (Custom Homebrew). Inspired by: Red Pins, BattleTech forums, \"Custom Weapons and Equipment\" (topic 44833), who described it as an AirMech with only one mode. The rules here are our own extrapolation from the Land-Air 'Mech rules: it is a single-mode LAM that is always in AirMech mode and never converts, so it carries no conversion equipment (no weight, no cost). It keeps the LAM avionics (head and each side torso) because it has wings, but has no landing gear: it lands on its feet. Its AirMech MP comes from its Jump MP, so it needs at least 3. It keeps every other LAM limit (engine, gyro, armor, structure, single-location equipment, 55 tons, biped, Inner Sphere) and may carry bombs as an AirMech. With no conversion equipment to hold it, the LAM's ton of fuel (80 points) is a required 1 ton of its own; AirMech movement on the ground map spends none, and Fuel Tanks may be added for space. Battle Value uses the LAM rules unchanged and is provisional.",
+        name: "Permanent Air 'Mech", conversion: 0, costRate: 0, modes: ["airmech"], minJumpMP: 3, maxTonnage: 75, lamLimits: true, homebrew: true,
+        notes: "Permanent Air 'Mech (Custom Homebrew). Inspired by: Red Pins, BattleTech forums, \"Custom Weapons and Equipment\" (topic 44833) and topics 13127 and 41508, who described it as an AirMech with only one mode, with Heavy PAMs of 60 to 75 tons on a reduced jump multiplier; and LAMFAN's Air-Slip Mechs (topic 83239). The rules here are our own extrapolation from the Land-Air 'Mech rules: it is a single-mode LAM that is always in AirMech mode and never converts, so it carries no conversion equipment (no weight, no cost). Its wings weigh the Inner Sphere Partial Wing's 7% of its mass, rounded up to the half ton, with no slots of their own; it keeps the LAM avionics (head and each side torso) and has no landing gear: it lands on its feet. Its AirMech Cruise MP is its Jump MP x 3, so it needs at least 3 Jump MP. A Heavy PAM (56 to 75 tons) flies on Jump MP x 2 and its wings weigh 15% of its mass; it may hover like any AirMech. It keeps every other LAM limit (engine, gyro, armor, structure, single-location equipment, biped, Inner Sphere) and carries no bomb bays: it never takes Fighter Mode to drop them. With no conversion equipment to hold it, the LAM's ton of fuel (80 points) is a required 1 ton of its own; AirMech movement on the ground map spends none, and Fuel Tanks may be added for space. Battle Value uses the LAM rules unchanged and is provisional.",
     },
 };
 
@@ -4407,7 +4407,10 @@ export class BattleMech {
             const step = rules.halfTon ? 2 : 1;
             if (rules.conversion > 0) this._weights.push({ name: rules.name + " Conversion Equipment", weight: Math.ceil(this._tonnage * rules.conversion * step) / step });
             // A Permanent Air 'Mech has no conversion equipment to carry the LAM's ton of fuel, so it carries it itself.
-            if (this.isPermanentAirMech()) this._weights.push({ name: "Fuel (required)", weight: 1 });
+            if (this.isPermanentAirMech()) {
+                this._weights.push({ name: "Permanent Air 'Mech Wings", weight: this.getPermanentAirMechWingWeight() });
+                this._weights.push({ name: "Fuel (required)", weight: 1 });
+            }
         }
 
         this._runSpeed = Math.ceil(this._walkSpeed * 1.5);
@@ -7430,9 +7433,24 @@ export class BattleMech {
         return this.isLAM() && LAM_TYPE_RULES[this._lamType].modes.includes("airmech");
     }
 
-    /** AirMech Cruise MP: 'Mech-mode Jump MP x 3 (IO:AE p.102). */
+    /** AirMech Cruise MP: 'Mech-mode Jump MP x 3 (IO:AE p.102); x 2 for a Heavy Permanent Air 'Mech (Red Pins). */
     public getAirMechCruiseMP(): number {
-        return this.hasAirMechMode() ? this.getJumpSpeed() * 3 : 0;
+        return this.hasAirMechMode() ? this.getJumpSpeed() * (this.isHeavyPermanentAirMech() ? 2 : 3) : 0;
+    }
+
+    /** A Permanent Air 'Mech over the LAM's 55 tons (to 75): Red Pins' Heavy PAM. */
+    public isHeavyPermanentAirMech(): boolean {
+        return this.isPermanentAirMech() && this._tonnage > BattleMech.LAM_MAX_TONNAGE;
+    }
+
+    /**
+     * A Permanent Air 'Mech's wings: the Inner Sphere Partial Wing's 7% of mass, rounded up to the half ton (TO:AUE
+     * p.104), 15% for a Heavy PAM, with no slots of their own: the LAM avionics stand for them (owner rulings 2026-11-12).
+     */
+    public getPermanentAirMechWingWeight(): number {
+        if (!this.isPermanentAirMech()) return 0;
+        // Percent in whole numbers, so 50 tons x 7% is exactly 3.5 tons and not a float a hair above it.
+        return Math.ceil(this._tonnage * (this.isHeavyPermanentAirMech() ? 15 : 7) * 2 / 100) / 2;
     }
 
     /** AirMech Flank MP: Cruise MP x 1.5, rounded up (IO:AE p.102). */
@@ -7849,6 +7867,8 @@ export class BattleMech {
      */
     /** LAMs need at least 3 Jump MP (IO:AE p.108); the usual walking-MP cap still applies. */
     public static readonly LAM_MIN_JUMP_MP = 3;
+    /** LAMs weigh at most 55 tons (IO:AE p.108). */
+    public static readonly LAM_MAX_TONNAGE = 55;
     /** Equipment LAMs may not mount (IO:AE p.108); bridge-layers are matched by tag prefix. */
     public static readonly LAM_PROHIBITED_TAGS: readonly string[] = [
         "supercharger", "backhoe", "combine", "dumper", "mechanical-jump-booster",
@@ -7889,7 +7909,7 @@ export class BattleMech {
 
     /** The heaviest LAM of this type, when its rules set one. */
     public getLAMMaxTonnage(): number | null {
-        return this.isLAM() ? LAM_TYPE_RULES[this._lamType].maxTonnage ?? null : null;
+        return this.isLAM() ? LAM_TYPE_RULES[this._lamType].maxTonnage ?? BattleMech.LAM_MAX_TONNAGE : null;
     }
 
     private _isLAMLegalGyro(tag: string): boolean {
@@ -8469,7 +8489,7 @@ export class BattleMech {
         if (this.isLAM()) {
             const maxTonnage = this.getLAMMaxTonnage();
             if (maxTonnage !== null && this._tonnage > maxTonnage) {
-                violations.push(`VTOLAMs weigh at most ${maxTonnage} tons under these rules.`);
+                violations.push(`${LAM_TYPE_RULES[this._lamType].name}s weigh at most ${maxTonnage} tons under these rules.`);
             }
             if (this._getLAMMinJumpMP() > 0 && this.getJumpSpeed() > this.getMaxJumpSpeed()) {
                 violations.push(`${LAM_TYPE_RULES[this._lamType].name}s need at least ${this._getLAMMinJumpMP()} Jump MP, but Jump MP ${this.getJumpSpeed()} exceeds Walk MP ${this.getWalkSpeed()}; raise the engine rating.`);
@@ -12018,6 +12038,8 @@ export class BattleMech {
         const name = item.name.toLowerCase();
         // A VTOLAM has no fighter mode, so no fuel tanks or bomb bays.
         if (this.isVTOLAM() && (tag === BattleMech.LAM_FUEL_TANK_TAG || tag === BattleMech.LAM_BOMB_BAY_TAG)) return false;
+        // A Permanent Air 'Mech never takes Fighter Mode, so torso bomb bays could not drop (owner ruling 2026-11-12).
+        if (this.isPermanentAirMech() && tag === BattleMech.LAM_BOMB_BAY_TAG) return false;
         // Battletech Into The Future: "A VTOLAM can use any equipment a normal battlemech can use".
         if (!this._hasLAMLimits()) return true;
         // IO:AE p.108, Prohibited Technologies and construction notes: no artillery, no weapon

@@ -1853,8 +1853,35 @@ describe("Permanent Air 'Mech", () => {
         const standard = makePAM();
         standard.setLAMType("standard");
         expect(standard.getWeightBreakdown().some(entry => entry.name === "Fuel (required)")).toBe(false);
-        // 30 tons: the standard LAM's 3-ton conversion equipment against the PAM's 1 ton of fuel.
-        expect(pam.getCurrentTonnage()).toBe(standard.getCurrentTonnage() - 2);
+        // 30 tons: the standard LAM's 3-ton conversion equipment against the PAM's 2.5 tons of wings and 1 ton of fuel.
+        expect(pam.getCurrentTonnage()).toBe(standard.getCurrentTonnage() + 0.5);
+    });
+
+    it("pays the Inner Sphere Partial Wing's 7% for its wings, rounded up to the half ton, with no slots", () => {
+        const pam = makePAM(25);
+        expect(pam.getWeightBreakdown().find(entry => /Wings/.test(entry.name))).toEqual({ name: "Permanent Air 'Mech Wings", weight: 2 });
+        expect([makePAM(50).getPermanentAirMechWingWeight(), makePAM(55).getPermanentAirMechWingWeight()]).toEqual([3.5, 4]);
+        expect(JSON.stringify(pam.getCriticals())).not.toMatch(/partial-wing/i);
+    });
+
+    it("may be a Heavy PAM of 56 to 75 tons: Jump MP x 2 and 15% wings", () => {
+        const heavy = makePAM(70);
+        expect([heavy.getTonnage(), heavy.isHeavyPermanentAirMech(), heavy.getPermanentAirMechWingWeight()]).toEqual([70, true, 10.5]);
+        heavy.setWalkSpeed(4);
+        heavy.setJumpSpeed(4);
+        expect([heavy.getAirMechCruiseMP(), heavy.getAirMechFlankMP()]).toEqual([8, 12]);
+        expect(heavy.getChassisEquipmentViolations().some(text => /weigh at most/.test(text))).toBe(false);
+        expect(makePAM(80).getTonnage()).toBe(75);
+        expect(makePAM(55).isHeavyPermanentAirMech()).toBe(false);
+        const standard = makePAM(70);
+        standard.setLAMType("standard");
+        expect(standard.getTonnage()).toBe(55);
+    });
+
+    it("mounts no bomb bays but may add Fuel Tanks", () => {
+        const tags = makePAM().getAvailableEquipment().filter(item => item.available).map(item => item.tag);
+        expect(tags).not.toContain("lam-bomb-bay");
+        expect(tags).toContain("lam-fuel-tank");
     });
 
     it("credits the author and says the rules are ours", () => {
@@ -1877,9 +1904,9 @@ describe("Permanent Air 'Mech", () => {
             expect(JSON.stringify(sample.save)).toMatch(/LAMFAN.*topic 83239.*Inspired by: .*Red Pins/);
         }
         const spare = samples.map(sample => { const mech = new BattleMech(JSON.stringify(sample.save)); return mech.getTonnage() - mech.getCurrentTonnage(); });
-        expect(spare).toEqual([1, 1.5, 1.5, 4.5, 2.5]);
+        expect(spare).toEqual([0, 0, 0, 1, 0]);
         const magpie = new BattleMech(JSON.stringify(samples[1].save));
-        expect([magpie.getWalkSpeed(), magpie.getJumpSpeed(), magpie.getAirMechCruiseMP(), magpie.getHeatSinks()]).toEqual([6, 6, 18, 10]);
+        expect([magpie.getWalkSpeed(), magpie.getJumpSpeed(), magpie.getAirMechCruiseMP(), magpie.getHeatSinks()]).toEqual([6, 4, 12, 10]);
     });
 
     it("comes back in AirMech mode from a save, and an unknown type falls back to a standard LAM", () => {

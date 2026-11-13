@@ -31,6 +31,8 @@ import { getPAMSamples } from '../../../../data/pam-samples';
 import { CUSTOM_HOMEBREW_RULES_LEVEL } from '../../../../data/rules-level-options';
 import { generateUUID } from '../../../../utils/generateUUID';
 const ArrowCircleLeft = FaArrowCircleLeft as any;
+// A Permanent Air 'Mech goes past the LAM's 55 tons (to its own 75, getLAMMaxTonnage), so it takes a biped's tonnage list.
+const tonnageChassisTag = ( mech: BattleMech ): string => mech.isPermanentAirMech() ? "biped" : mech.getType().tag;
 const ArrowCircleRight = FaArrowCircleRight as any;
 
 export default class MechCreatorStep1 extends React.Component<IHomeProps, IHomeState> {
@@ -190,7 +192,7 @@ export default class MechCreatorStep1 extends React.Component<IHomeProps, IHomeS
       if( currentMech.isOmnimech && !currentMech.canBeOmniMech( rulesLevel ) ) {
         currentMech.toggleOmni( rulesLevel );
       }
-      const { min, max } = getTonnageBoundsForMechType( currentMech.getType().tag, rulesLevel, currentMech.getTech().tag, currentMech.getRulesEdition() );
+      const { min, max } = getTonnageBoundsForMechType( tonnageChassisTag( currentMech ), rulesLevel, currentMech.getTech().tag, currentMech.getRulesEdition() );
       const tonnage = currentMech.getTonnage();
       const lamMax = currentMech.getLAMMaxTonnage();
       if( lamMax !== null && tonnage > lamMax ) {
@@ -511,11 +513,12 @@ export default class MechCreatorStep1 extends React.Component<IHomeProps, IHomeS
                               onChange={this.updateTonnage}
                             >
                             {getAvailableTonnagesForMechType(
-                              this.props.appGlobals.currentBattleMech.getType().tag,
+                              tonnageChassisTag( this.props.appGlobals.currentBattleMech ),
                               mechRulesLevel(this.props.appGlobals),
                               this.props.appGlobals.currentBattleMech.getTech().tag,
                               this.props.appGlobals.currentBattleMech.getRulesEdition()
-                            ).filter( (option) => option.tons <= ( this.props.appGlobals.currentBattleMech?.getLAMMaxTonnage() ?? Infinity ) ).map( (option) => {
+                            ).filter( (option) => option.tons <= ( this.props.appGlobals.currentBattleMech?.getLAMMaxTonnage() ?? Infinity )
+                              && ( !this.props.appGlobals.currentBattleMech?.isPermanentAirMech() || option.tons >= 20 ) ).map( (option) => {
                               return (
                                 <option key={option.tons} value={option.tons}>{option.tons} ({option.type})</option>
                               )

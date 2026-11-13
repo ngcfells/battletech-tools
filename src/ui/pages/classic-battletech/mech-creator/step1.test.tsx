@@ -53,6 +53,17 @@ describe("'Mech Creator step 1: Permanent Air 'Mech picker (#175)", () => {
         expect(screen.queryByTestId("pam-samples")).toBeNull();
     });
 
+    it("offers a PAM tonnages from 20 to 75 (Heavy PAMs), and a standard LAM only to 55", () => {
+        const tonnages = () => Array.from((screen.getByLabelText(/Mech Tonnage/) as HTMLSelectElement).options).map(option => Number(option.value));
+        const unit = lam();
+        unit.setLAMType("pam");
+        renderStep1(unit, CUSTOM_HOMEBREW_RULES_LEVEL);
+        expect([Math.min(...tonnages()), Math.max(...tonnages())]).toEqual([20, 75]);
+        cleanup();
+        renderStep1(lam(), CUSTOM_HOMEBREW_RULES_LEVEL);
+        expect(Math.max(...tonnages())).toBe(55);
+    });
+
     it("is not offered below Custom Homebrew, but a design that already is one still shows it", () => {
         renderStep1(lam(), 2);
         expect(screen.queryByRole("option", { name: /Permanent Air/ })).toBeNull();

@@ -40,44 +40,45 @@ const SRM4 = (loc: Loc): Item => ["srm-4", loc, "SRM 4", 1, 2];
 const SRM_AMMO = (loc: Loc): Item => ["ammo-srm-standard", loc, "SRM - Standard Ammo", 1, 1];
 
 const SOURCE = "Custom Homebrew. Design by LAMFAN, \"Air-Slip Mechs\", BattleTech forums topic 83239 (22 Nov 2023): https://battletech.com/forums/index.php?topic=83239.0. Inspired by: LAMFAN's Air-Slip Mechs and Red Pins' Permanent Air-Mechs (topic 44833; Red Pins, topic 83239 reply #4). Built under our Permanent Air 'Mech rules, our extrapolation from the LAM rules, not the author's:";
-const COMMON = "no partial wing, which these rules do not use; a required ton of fuel; AirMech MP from Jump MP x 3 (the post uses (jump jets + 2) x 2); standard armor for the post's Durallex Light; the slot layout is ours where the post does not give it.";
+const COMMON = "the wings weigh as the post's Partial Wing but take no slots and add no Jump MP; a required ton of fuel; AirMech Cruise MP is Jump MP x 3 (the post uses (jump jets + 2) x 2) and no bomb bays; standard armor for the post's Durallex Light; the slot layout is ours where the post does not give it.";
+const FUEL_CUT = "Two jump jets (1 ton) come out to carry the fuel";
 
 const SPECS: IPAMSpec[] = [
     {
-        id: "sparrow-spw-2j", name: "Sparrow SPW-2J", model: "SPW-2J", tonnage: 25, walk: 8, jump: 8, armorWeight: 3,
+        id: "sparrow-spw-2j", name: "Sparrow SPW-2J", model: "SPW-2J", tonnage: 25, walk: 8, jump: 6, armorWeight: 3,
         armor: [9, 6, 7, 7, 1, 1, 1, 3, 3, 5, 5], additionalHeatSinks: 0,
-        items: [...jj("ll", 2), ...hs("ct", 2), ...jj("rt", 2), ...jj("lt", 2), ...jj("rl", 2)],
+        items: [...jj("ll"), ...hs("ct", 2), ...jj("rt", 2), ...jj("lt", 2), ...jj("rl")],
         overview: "An unarmed scout and racer of 2844 that fights with hand-held weapons. Hit-and-run, harassment and racing.",
-        changes: "the post's 2 tons of partial wing go to the fuel, leaving 1 ton spare. The post lists its two placed heat sinks at 2 tons; its weights only add up as the engine's free ten.",
+        changes: `${FUEL_CUT}, one from each leg: Jump MP 8 to 6, AirMech Cruise 18. The post lists its two placed heat sinks at 2 tons; its weights only add up as the engine's free ten.`,
     },
     {
-        id: "magpie-mgp-1e", name: "Magpie MGP-1E", model: "MGP-1E", tonnage: 30, walk: 6, jump: 6, armorWeight: 5.5,
+        id: "magpie-mgp-1e", name: "Magpie MGP-1E", model: "MGP-1E", tonnage: 30, walk: 6, jump: 4, armorWeight: 5.5,
         armor: [9, 13, 10, 10, 4, 2, 2, 8, 8, 11, 11], additionalHeatSinks: 0,
-        items: [...jj("ll", 2), ...hs("ct"), SRM_AMMO("ct"), ...hs("rt"), ...jj("rt"), SRM4("rt"), ...hs("lt"), ...jj("lt"), ML("lt"), ...jj("rl", 2)],
+        items: [...jj("ll"), ...hs("ct"), SRM_AMMO("ct"), ...hs("rt"), ...jj("rt"), SRM4("rt"), ...hs("lt"), ...jj("lt"), ML("lt"), ...jj("rl")],
         overview: "The primary engagement unit of the Logan Prime Militia (2848): an SRM-4 and a medium laser for scouting, hit-and-run and swarm attacks.",
-        changes: "the post's 2.5 tons of partial wing go to the fuel, leaving 1.5 tons spare.",
+        changes: `${FUEL_CUT}, one from each leg: Jump MP 6 to 4, AirMech Cruise 12.`,
     },
     {
-        id: "magpie-mgp-3a", name: "Magpie MGP-3A", model: "MGP-3A", tonnage: 30, walk: 7, jump: 7, armorWeight: 4,
+        id: "magpie-mgp-3a", name: "Magpie MGP-3A", model: "MGP-3A", tonnage: 30, walk: 7, jump: 5, armorWeight: 4,
         armor: [7, 9, 7, 7, 2, 2, 2, 6, 6, 8, 8], additionalHeatSinks: 0,
-        items: [...jj("ll", 2), ...jj("ct"), ...hs("rt"), ...jj("rt"), ML("rt"), ...hs("lt"), ...jj("lt"), ML("lt"), ...jj("rl", 2)],
+        items: [...jj("ll"), ...jj("ct"), ...hs("rt"), ...jj("rt"), ML("rt"), ...hs("lt"), ...jj("lt"), ML("lt"), ...jj("rl")],
         overview: "The primary intercept unit of the Logan Prime Militia (2848): faster than the 1E, with two medium lasers.",
-        changes: "the post's 2.5 tons of partial wing go to the fuel, leaving 1.5 tons spare.",
+        changes: `${FUEL_CUT}, one from each leg: Jump MP 7 to 5, AirMech Cruise 15.`,
     },
     {
         id: "dire-hawk-drh-4k", name: "Dire Hawk DRH-4K", model: "DRH-4K", tonnage: 50, walk: 5, jump: 5, armorWeight: 8.5,
         armor: [9, 19, 16, 16, 6, 4, 4, 12, 12, 19, 19], additionalHeatSinks: 1,
         items: [...jj("ll"), ...jj("ct"), SRM_AMMO("ct"), ...hs("rt"), ML("rt"), ...jj("rt"), SRM4("rt"), ...jj("lt"), ["large-laser", "lt", "Large Laser", 2, 5], ...jj("rl")],
         overview: "A 2867 hit-and-run and harassment 'Mech: a large laser, a medium laser and an SRM-4.",
-        changes: "the post's 3.5 tons of partial wing go to the fuel. The post's weights add to 48 of its 50 tons, so this build has 4.5 tons spare.",
+        changes: "the post's weights add to 48 of its 50 tons, so the fuel fits and 1 ton is spare.",
     },
     {
-        id: "dire-hawk-drh-3d", name: "Dire Hawk DRH-3D", model: "DRH-3D", tonnage: 50, walk: 6, jump: 6, armorWeight: 9.5,
+        id: "dire-hawk-drh-3d", name: "Dire Hawk DRH-3D", model: "DRH-3D", tonnage: 50, walk: 6, jump: 4, armorWeight: 9.5,
         armor: [9, 22, 17, 17, 7, 5, 5, 14, 14, 21, 21], additionalHeatSinks: 0,
-        items: [...jj("ll"), ...jj("ct", 2), ML("rt"), ...jj("rt"), ["rocket-launcher-10", "rt", "Rocket Launcher 10", 1, 0.5], ["rocket-launcher-10", "rt", "Rocket Launcher 10", 1, 0.5],
+        items: [...jj("ll"), ML("rt"), ...jj("rt"), ["rocket-launcher-10", "rt", "Rocket Launcher 10", 1, 0.5], ["rocket-launcher-10", "rt", "Rocket Launcher 10", 1, 0.5],
             ML("lt"), ...jj("lt"), ["rocket-launcher-10", "lt", "Rocket Launcher 10", 1, 0.5], ["rocket-launcher-10", "lt", "Rocket Launcher 10", 1, 0.5], ...jj("rl")],
         overview: "A 2867 hit-and-run, harassment and bombardment 'Mech: two medium lasers and four 10-tube rocket launchers.",
-        changes: "the post's 3.5 tons of partial wing go to the fuel, leaving 2.5 tons spare.",
+        changes: `${FUEL_CUT}, the two in the center torso: Jump MP 6 to 4, AirMech Cruise 12.`,
     },
 ];
 
