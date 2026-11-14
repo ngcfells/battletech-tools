@@ -447,6 +447,9 @@ export default class AlphaStrikeUnitSVG extends React.Component<IAlphaStrikeUnit
                 </>
                 )}
 
+                {/* A Micro-Mech has no Heat Scale and no Overheat: the box is left off, as on an official vehicle card. */}
+                {this.props.asUnit.type.toLowerCase() !== "mm" ? (
+                <>
                 <rect x="20" y="315" width="550" height="80" fill="rgb(0,0,0)" rx="18" ry="18"></rect>
 
                 {/* Heat Scale Box */}
@@ -532,6 +535,8 @@ export default class AlphaStrikeUnitSVG extends React.Component<IAlphaStrikeUnit
                 <text onClick={() => this._setHeat(4)} className={this.props.inPlay && this.props.asUnit ? "cursor-pointer" : ""} x="515" y="368" textAnchor="start" style={{fill: "rgb(255,255,255)"}} fontFamily="sans-serif" fontSize={35}>S</text>
 
                 {/* End Heat Scale Box */}
+                </>
+                ) : null}
 
                 {/* Armor and Structure Box */}
                 <rect x="20" y="400" width="550" height="105" fill="rgb(0,0,0)" rx="18" ry="18"></rect>

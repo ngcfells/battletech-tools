@@ -24,8 +24,9 @@ The rules texts themselves are not reproduced here. They belong to their authors
 - **Solarmech's own text:**
   [Micro-Mechs for BattleTech, Part 1](https://www.deviantart.com/solarmech/art/Micro-Mechs-for-BattleTech-Part-1-795743489),
   on DeviantArt.
-- **Version 6.1.0.2:** we know of no public copy to link to. A web search in November 2026 found none. If you know
-  where it is hosted, please tell us and the link will go here.
+- **Version 6.1.0.2:**
+  [micro_mechs_6_1_0_2.zip](https://www.sarna.net/files/download/docs/rules/alternate/micro_mechs_6_1_0_2.zip)
+  (a PDF inside), in Sarna.net's alternate rules files.
 
 ## What Sets One Apart
 
