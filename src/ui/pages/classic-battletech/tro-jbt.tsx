@@ -73,9 +73,11 @@ export function readoutPages(text: string, pageStart: RegExp): string[] {
 /** A page's name: its first heading below the title. */
 export const readoutPageTitle = (page: string, fallback: string): string => /^#{2,4} (.*)$/m.exec(page)?.[1] ?? fallback;
 
-/** Bold and italics; the readout has no other inline marks. */
+/** Bold, italics and links to a web address; the readout has no other inline marks. */
 function inline(text: string): React.ReactNode[] {
-    return text.split(/(\*\*[^*]+\*\*|\*[^*]+\*)/).map((part, index) => {
+    return text.split(/(\*\*[^*]+\*\*|\*[^*]+\*|\[[^\]]+\]\(https:\/\/[^)\s]+\))/).map((part, index) => {
+        const link = /^\[([^\]]+)\]\((https:\/\/[^)\s]+)\)$/.exec(part);
+        if (link) return <a key={index} href={link[2]} target="_blank" rel="noopener noreferrer">{link[1]}</a>;
         if (part.startsWith("**")) return <strong key={index}>{part.slice(2, -2)}</strong>;
         if (part.startsWith("*") && part.length > 1) return <em key={index}>{part.slice(1, -1)}</em>;
         return part;

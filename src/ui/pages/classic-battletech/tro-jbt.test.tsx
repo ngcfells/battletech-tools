@@ -108,6 +108,14 @@ describe("Micro-Mechs readout", () => {
         for (const line of MICRO_MECH_AS_ABILITY_TEXT.slice(1)) expect(flat, line).toContain(`- ${line.slice(0, line.indexOf(":") + 1)}`);
     });
 
+    it("links to the author's own text, and renders the link", () => {
+        const url = "https://www.deviantart.com/solarmech/art/Micro-Mechs-for-BattleTech-Part-1-795743489";
+        expect(MICRO_MECHS_READOUT).toContain(`(${url})`);
+        const html = renderToStaticMarkup(<ReadoutText text={`See [the post](${url}), **here**.`} />);
+        expect(html).toContain(`<a href="${url}" target="_blank" rel="noopener noreferrer">the post</a>`);
+        expect(html).toContain("<strong>here</strong>");
+    });
+
     it("explains every code a Micro-Mech card can print", () => {
         for (const code of ["MM", "MCR", "ENE", "CASE", "SEAL", "IF#", "LRM", "HT", "ECM", "PRB", "RCN", "TAG", "C3S", "SNARC", "JMPW#"]) expect(flat, code).toContain(code);
     });
