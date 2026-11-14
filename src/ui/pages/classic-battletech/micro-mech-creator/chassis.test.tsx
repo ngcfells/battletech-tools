@@ -177,4 +177,17 @@ describe("Micro-Mech Creator, home and summary", () => {
         expect(screen.getByTestId("mm-printed").textContent).toContain("Battle Value 217");
         expect(screen.getByTestId("mm-weight-log").textContent).toContain("10975 kg");
     });
+
+    it("shows the Alpha Strike figures on the summary, marked not official, with a link to the rules", () => {
+        render(<Harness Page={MicroMechCreatorSummary} globals={makeGlobals(stormArmed())} />);
+        const text = screen.getByTestId("micro-alpha-strike").textContent ?? "";
+        expect(text).toContain("Type: MM");
+        expect(text).toContain('Move: 12"j');
+        expect(text).toContain("Damage (S/M/L): 1/0*/0");
+        expect(text).toContain("Specials: MCR");
+        expect(text).toContain("Point Value: 11");
+        expect(screen.getByTestId("micro-alpha-strike-log").textContent).toContain("Armor: 46 / 30");
+        expect(screen.getByText("View Alpha Strike Card").getAttribute("href")).toContain("/micro-mech-creator/print-as");
+        expect(screen.getByText("TRO - JBT: Micro-Mechs").getAttribute("href")).toContain("/tro-jbt/micro-mechs");
+    });
 });

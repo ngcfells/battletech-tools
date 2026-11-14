@@ -3,7 +3,8 @@ import { describe, expect, it } from "vitest";
 import Vehicle from "../../../classes/vehicle";
 import { ammoCustom } from "../../../data/ammo-custom";
 import { ARTVEE_SAMPLES } from "../../../data/artvee-samples";
-import { AMMUNITION_READOUT, ARTVEE_READOUT, ReadoutText, TRO_DOCUMENTS, TRO_INTRODUCTION, readoutPageTitle, readoutPages, readoutSectionId } from "./tro-jbt";
+import { MICRO_MECH_AS_ABILITY_TEXT } from "../../../data/alpha-strike-special-abilities";
+import { AMMUNITION_READOUT, ARTVEE_READOUT, MICRO_MECHS_READOUT, ReadoutText, TRO_DOCUMENTS, TRO_INTRODUCTION, readoutPageTitle, readoutPages, readoutSectionId } from "./tro-jbt";
 
 /** The text of one `#### name` section of the readout. */
 function section(name: string): string {
@@ -60,7 +61,7 @@ describe("ArtVee readout", () => {
 describe("TRO - JBT", () => {
     it("opens with the introduction and a card for the ArtVees, then the ammunition", () => {
         expect(TRO_INTRODUCTION).toContain("## Explanation");
-        expect(TRO_DOCUMENTS.map((document) => document.slug)).toEqual(["artvee", "ammunition"]);
+        expect(TRO_DOCUMENTS.map((document) => document.slug)).toEqual(["artvee", "ammunition", "micro-mechs"]);
     });
 
     it.each(TRO_DOCUMENTS.map((document) => [document.slug, document] as const))("renders every page of %s and loses no text", (_slug, document) => {
@@ -92,5 +93,22 @@ describe("TRO - JBT", () => {
         expect(AMMUNITION_READOUT).toContain(`| **Battle Value** | ${round?.battleValue} a ton |`);
         expect(AMMUNITION_READOUT).toContain("SmilingNid");
         expect(AMMUNITION_READOUT).not.toContain("user ruling");
+    });
+});
+
+describe("Micro-Mechs readout", () => {
+    const flat = MICRO_MECHS_READOUT.replace(/\*\*/g, "").replace(/\s+/g, " ");
+
+    it("credits the authors and says it is not official", () => {
+        for (const text of ["Solarmech", "Discord", "6.1.0.2", "not canon", "NOT OFFICIAL"]) expect(MICRO_MECHS_READOUT).toContain(text);
+    });
+
+    it("explains each rule of the MCR ability the card popup shows", () => {
+        // The readout has a bullet for every rule of the ability text (after its opening line), under the same name.
+        for (const line of MICRO_MECH_AS_ABILITY_TEXT.slice(1)) expect(flat, line).toContain(`- ${line.slice(0, line.indexOf(":") + 1)}`);
+    });
+
+    it("explains every code a Micro-Mech card can print", () => {
+        for (const code of ["MM", "MCR", "ENE", "CASE", "SEAL", "IF#", "LRM", "HT", "ECM", "PRB", "RCN", "TAG", "C3S", "SNARC", "JMPW#"]) expect(flat, code).toContain(code);
     });
 });

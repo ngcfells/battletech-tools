@@ -4,6 +4,7 @@ import ammunitionText from '../../../../docs/lore/ammunition-tro.md?raw';
 import falconetArt from '../../../../docs/lore/artvee-falconet.svg';
 import artveeText from '../../../../docs/lore/artvee-tro.md?raw';
 import introductionText from '../../../../docs/lore/tro-jbt.md?raw';
+import microMechsText from '../../../../docs/lore/micro-mechs-tro.md?raw';
 import { IAppGlobals } from '../../app-router';
 import TextSection from '../../components/text-section';
 import UIPage from '../../components/ui-page';
@@ -14,6 +15,7 @@ const unixLines = (text: string): string => text.replace(/\r\n/g, "\n");
 export const TRO_INTRODUCTION = unixLines(introductionText);
 export const ARTVEE_READOUT = unixLines(artveeText);
 export const AMMUNITION_READOUT = unixLines(ammunitionText);
+export const MICRO_MECHS_READOUT = unixLines(microMechsText);
 
 export interface ITroDocument {
     slug: string;
@@ -41,6 +43,14 @@ export const TRO_DOCUMENTS: ITroDocument[] = [
         summary: "Custom rounds, starting with the anti-orbital Long Tom shell.",
         fileName: "ammunition-tro.md",
         text: AMMUNITION_READOUT,
+        pageStart: /^## /,
+    },
+    {
+        slug: "micro-mechs",
+        title: "Micro-Mechs",
+        summary: "Solarmech's 10 to 19 ton walkers: what they are, who made them, our Alpha Strike rules for them and the four sample designs.",
+        fileName: "micro-mechs-tro.md",
+        text: MICRO_MECHS_READOUT,
         pageStart: /^## /,
     },
 ];

@@ -9,6 +9,7 @@ import AerospaceFighter from '../../../../classes/aerospace-fighter';
 import InfantryPlatoon from '../../../../classes/infantry-platoon';
 import BattleArmor from '../../../../classes/battle-armor';
 import ProtoMech from '../../../../classes/protomech';
+import MicroMech from '../../../../classes/micro-mech';
 import { loadMULListItems, MUL_SOURCE_LABELS } from '../../../../data/mul-list-items';
 import { getMULASSearchResults } from '../../../../utils';
 import { countAbilityCodes, IAbilityCodeCount } from '../../../../utils/mulAbilities';
@@ -897,6 +898,76 @@ title="View this unit's Alpha Strike Card"
                             <td colSpan={2} className="med-small-text">
                                 <strong title="Alpha Strike Type">Type</strong>: {asUnit.type}&nbsp;|&nbsp;
                                 <strong title="Alpha Strike Move">Move</strong>: {proto.getAlphaStrikeStats().move}&nbsp;
+                                <strong title="Alpha Strike Damage Bands">Damage</strong>: {asUnit.damage.short}/{asUnit.damage.medium}/{asUnit.damage.long}
+                                {asUnit.abilities.length > 0 ? <>&nbsp;|&nbsp;<strong title="Special Abilities">Special</strong>: {asUnit.abilities.join(", ")}</> : null}
+                            </td>
+                        </tr>
+                    </tbody>
+                );
+            })}
+        </table>
+    </TextSection>
+) : null}
+
+{this.props.appGlobals.microMechSaves && this.props.appGlobals.microMechSaves.length > 0 ? (
+    <TextSection
+        label="Your Created Micro-Mechs"
+    >
+        <p className="med-small-text">
+            Custom Homebrew, NOT OFFICIAL: the Alpha Strike rules for a Micro-Mech (type MM, the MCR ability) are this app's own.
+            {" "}<Link to={`${process.env.PUBLIC_URL}/classic-battletech/tro-jbt/micro-mechs`}>They are explained in TRO - JBT: Micro-Mechs.</Link>
+        </p>
+        <table className="table" data-testid="as-micro-mech-saves">
+            <thead>
+                <tr>
+                    <th><span className="visually-hidden">Actions</span></th>
+                    <th>Name</th>
+                    <th>Points</th>
+                </tr>
+            </thead>
+            {this.props.appGlobals.microMechSaves.map( (save, unitIndex) => {
+                // Converted from the saved design by our own ruleset: a Micro-Mech is on no Master Unit List.
+                const micro = new MicroMech( JSON.stringify(save) );
+                const asUnit = micro.getAlphaStrikeUnit();
+                const groups = this.props.appGlobals.currentASForce ? this.props.appGlobals.currentASForce.groups : [];
+                return (
+                    <tbody key={unitIndex}>
+                        <tr>
+                            <td className="text-left min-width no-wrap">
+                                {groups.length > 1 ? groups.map( (asGroup, asGroupIndex) => (
+                                    <button
+                                        key={asGroupIndex}
+                                        className="btn btn-primary btn-sm"
+                                        onClick={() => this.addToGroup(asUnit, asGroupIndex)}
+                                        title={"Adds this Micro-Mech to your group '" + asGroup.getName(asGroupIndex + 1) + "'"}
+                                    >
+                                        <Plus />&nbsp;{asGroupIndex + 1}
+                                    </button>
+                                )) : (
+                                    <button
+                                        className="btn btn-primary btn-sm no-right-margin"
+                                        onClick={() => this.addToGroup(asUnit, 0)}
+                                        title="Add this Micro-Mech to your current group"
+                                    >
+                                        <Plus />
+                                    </button>
+                                )}
+                                <button
+                                    className="btn btn-primary btn-sm"
+                                    onClick={() => this.props.openViewUnit(asUnit)}
+                                    title="View this Micro-Mech's Alpha Strike Card"
+                                >
+                                    <Eye />
+                                </button>
+                            </td>
+                            <td>{asUnit.name}</td>
+                            <td>{asUnit.basePoints}</td>
+                        </tr>
+                        <tr>
+                            <td>&nbsp;</td>
+                            <td colSpan={2} className="med-small-text">
+                                <strong title="Alpha Strike Type">Type</strong>: {asUnit.type}&nbsp;|&nbsp;
+                                <strong title="Alpha Strike Move">Move</strong>: {micro.getAlphaStrikeStats().move}&nbsp;
                                 <strong title="Alpha Strike Damage Bands">Damage</strong>: {asUnit.damage.short}/{asUnit.damage.medium}/{asUnit.damage.long}
                                 {asUnit.abilities.length > 0 ? <>&nbsp;|&nbsp;<strong title="Special Abilities">Special</strong>: {asUnit.abilities.join(", ")}</> : null}
                             </td>

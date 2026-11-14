@@ -83,6 +83,9 @@ push; append to the ledger what was built and every call that was ours; rewrite 
    samples' printed costs.
 10. **Sample Battle Values (Chunk C).** Keep the rules text. The Storm (223, printed 217) and the Hillman (339,
     printed 352) are not adjusted; the breakdown shows the printed figure beside ours. Our BV2 stays as built.
+11. **Alpha Strike (Chunk G, 2026-11-14).** The ruleset in `docs/superpowers/specs/2026-11-14-micro-mech-alpha-strike.md`
+    is approved: armor by Alpha Strike's rule, one ability `MCR`, the first Engine Hit as written, type `MM`. Every
+    code is explained in our rules, and Micro-Mechs have a TRO - JBT entry with credits (`docs/lore/micro-mechs-tro.md`).
 
 ## Versions (owner ruling, 2026-11-13)
 
@@ -340,7 +343,7 @@ play rules as notes in our own words, the credit, and the sheet trademark notice
 - [x] **Step 4:** Unit tests, `npm run check`, play a Storm through a destroyed leg and an engine hit in the app.
 - [x] **Step 5:** Commit `Custom Homebrew: Micro-Mech play mode (#173)`, push, ledger, handoff.
 
-## Chunk G: Alpha Strike ruleset (design done 2026-11-14, cloud; build waits for the owner; ledger `progress-cloud-micro-g.md`)
+## Chunk G: Alpha Strike ruleset (done 2026-11-14, cloud; ledger `progress-cloud-micro-g.md`)
 
 The document converts to BattleForce 2 only. The owner asked for an Alpha Strike ruleset of our own.
 
@@ -356,10 +359,10 @@ The document converts to BattleForce 2 only. The owner asked for an Alpha Strike
   samples against the document's BattleForce 2 lines (the Tunnel Rat's is corrupt).
 - [x] **Step 3: Bring the ruleset to the owner** (asked 2026-11-14; the spec is `docs/superpowers/specs/2026-11-14-micro-mech-alpha-strike.md`)
   in one message. Build only after the answer.
-- [ ] **Step 4: Failing tests, then build:** `getAlphaStrikeStats()` and `getAlphaStrikeUnit()` on `MicroMech`, a
+- [x] **Step 4: Failing tests, then build:** `getAlphaStrikeStats()` and `getAlphaStrikeUnit()` on `MicroMech`, a
   `print-as.tsx` in the creator, the card marked NOT OFFICIAL with `MulSource` set (#593), and the unit offered in
   the Alpha Strike roster's add page beside the other custom units.
-- [ ] **Step 5:** Unit tests, `npm run check`, commit `Custom Homebrew: Micro-Mech Alpha Strike rules (#173)`,
+- [x] **Step 5:** Unit tests, `npm run check`, commit `Custom Homebrew: Micro-Mech Alpha Strike rules (#173)`,
   push, ledger, handoff. If the design and the build do not fit one session, stop after Step 3 and say so.
 
 ## Chunk H: Samples, verify, report

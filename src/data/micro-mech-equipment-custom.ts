@@ -197,6 +197,14 @@ export const microMechItems: IMicroMechItem[] = [
     { tag: "micro-target-acquisition-gear-tag", name: "Target Acquisition Gear (TAG)", kind: "equipment", heat: 0, damage: 0, weightKg: 1000, slots: 1, cost: 50000, battleValue: null, bvNote: "See p.158, BMR Revised.", canonTag: "is-tag", notes: note("") },
 ];
 
+/** Alpha Strike codes for the equipment rows whose catalog record lists none of its own. */
+const MICRO_MECH_EQUIPMENT_ABILITIES: Record<string, string[]> = {
+    "micro-guardian-ecm-suite": ["ECM"],
+    "micro-c3-master-computer": ["C3M"],
+    "micro-c3-slave": ["C3S"],
+    "micro-case": ["CASE"],
+};
+
 export const findMicroMechItem = (tag: unknown): IMicroMechItem | undefined =>
     typeof tag === "string" ? microMechItems.find((item) => item.tag === tag) : undefined;
 
@@ -259,4 +267,82 @@ export const getMicroMechItemBattleValue2 = (item: IMicroMechItem): IMicroMechBa
         ammoFromCatalog,
         defensive: canonRecord(item)?.battleValueDefensive === true,
     };
+};
+
+// Alpha Strike (our ruleset: docs/superpowers/specs/2026-11-14-micro-mech-alpha-strike.md, section 2) -------------------
+
+/** The Cluster Hits Table at a roll of 7, by tube count (TW p.116; the sizes it does not print are interpolated by us). */
+const CLUSTER_HITS_ON_7: number[] = [0, 1, 1, 2, 3, 3, 4, 4, 5, 5, 6, 7, 8, 8, 9, 9, 10, 10, 11, 11, 12];
+/** The same table at a roll of 9, for a launcher with Artemis IV. */
+const CLUSTER_HITS_ON_9: number[] = [0, 1, 2, 2, 3, 4, 5, 6, 6, 7, 8, 9, 10, 10, 11, 12, 13, 14, 14, 15, 16];
+/** The tube count of the catalog record a launcher family's odd sizes are read from. */
+const FAMILY_RECORD_TUBES: Record<string, number> = { lrm: 5, elrm: 5, mrm: 10, srm: 2, "streak-srm": 2 };
+/** Rows whose printed damage differs from the catalog weapon they borrow a range from: the share of its value they keep. */
+const ALPHA_STRIKE_DAMAGE_SHARE: Record<string, number> = { "micro-caseless-ac-5": 2 / 5 };
+/** Heat Values at short, medium and long range (Heat-Generating Weaponry Table, ASC p.124). */
+const ALPHA_STRIKE_HEAT: Record<string, number[]> = {
+    "micro-flamer": [2, 0, 0],
+    "micro-flamer-vehicle": [2, 0, 0],
+    "micro-flamer-heavy": [4, 0, 0],
+};
+
+export type MicroMechAlphaStrikeSource = "catalog" | "cluster" | "ours" | "none";
+
+export interface IMicroMechAlphaStrikeValue {
+    /** Damage at Short, Medium and Long range, before shots, one-shot and rounding. */
+    damage: [number, number, number];
+    /** "catalog": the Companion's value for the same weapon; "cluster": an odd tube count; "ours": damage / 10 by range. */
+    source: MicroMechAlphaStrikeSource;
+    /** Counts toward the LRM, SRM, AC and FLK abilities and Indirect Fire. */
+    lrm: boolean; srm: boolean; ac: boolean; flak: boolean; indirect: boolean;
+    /** Heat Values at each range, for the HT ability. */
+    heat: number[];
+    /** Special ability codes the item itself gives (ECM, PRB, TAG ...). */
+    abilities: string[];
+    /** Shots under which the value is multiplied by 0.75 (ASC p.101); 0 for a weapon with no ammunition. */
+    fewShots: number;
+}
+
+/** A table row's Alpha Strike figures. `artemis`: the launcher has an Artemis IV FCS. */
+export const getMicroMechItemAlphaStrike = (item: IMicroMechItem, artemis: boolean = false): IMicroMechAlphaStrikeValue => {
+    const record = canonRecord(item);
+    const notes = (record?.alphaStrike?.notes ?? []).map((note: string) => note.trim().toLowerCase());
+    const result: IMicroMechAlphaStrikeValue = {
+        damage: [0, 0, 0], source: "none",
+        lrm: notes.includes("lrm"), srm: notes.includes("srm"), ac: notes.includes("ac"), flak: notes.includes("flak"),
+        indirect: notes.includes("indirect fire"),
+        heat: ALPHA_STRIKE_HEAT[item.tag] ?? [0, 0, 0],
+        abilities: [],
+        fewShots: !item.ammo ? 0 : /rotary/.test(item.tag) ? 60 : /ultra/.test(item.tag) ? 20 : 10,
+    };
+    if (!isMicroMechWeapon(item)) {
+        const own = record?.alphaStrike?.specialAbility ?? [];
+        result.abilities = own.length > 0 ? [...own] : MICRO_MECH_EQUIPMENT_ABILITIES[item.tag] ?? [];
+        return result;
+    }
+    result.abilities = [...(record?.alphaStrike?.specialAbility ?? [])];
+    const values = (source: typeof record): [number, number, number] =>
+        [source?.alphaStrike?.rangeShort || 0, source?.alphaStrike?.rangeMedium || 0, source?.alphaStrike?.rangeLong || 0];
+    if (item.family && item.tubes && item.rangeExtrapolated && record) {
+        // An odd tube count: the family's value for one missile hit x the hits of this size at a roll of 7 (9 with Artemis IV).
+        const familyTubes = FAMILY_RECORD_TUBES[item.family] ?? item.tubes;
+        const streak = item.family.startsWith("streak");
+        const familyHits = streak ? familyTubes : CLUSTER_HITS_ON_7[familyTubes];
+        const hits = streak ? item.tubes : (artemis ? CLUSTER_HITS_ON_9 : CLUSTER_HITS_ON_7)[item.tubes] ?? item.tubes;
+        result.damage = values(record).map((value) => value / familyHits * hits) as [number, number, number];
+        result.source = "cluster";
+    } else if (record?.alphaStrike) {
+        const withArtemis = artemis && item.canonTag ? findUnitCatalogRecord("is", `${item.canonTag}-artemis-iv`) : undefined;
+        const share = ALPHA_STRIKE_DAMAGE_SHARE[item.tag] ?? 1;
+        result.damage = values(withArtemis ?? record).map((value) => value * share) as [number, number, number];
+        result.source = "catalog";
+    } else if (item.range && typeof item.damage === "number") {
+        // No book converts this weapon: damage / 10 at each bracket its range reaches, halved at Short for a minimum range.
+        const value = item.damage / 10;
+        result.damage = [item.range.min > 0 ? value / 2 : value, item.range.long > 3 ? value : 0, item.range.long > 15 ? value : 0];
+        result.source = "ours";
+    }
+    // "Other One-Shot Missile Weapons" x 0.1; a rocket launcher's table value already counts its one shot (ASC p.101).
+    if (item.oneShot && !/rocket-launcher/.test(item.tag)) result.damage = result.damage.map((value) => value * 0.1) as [number, number, number];
+    return result;
 };

@@ -753,7 +753,7 @@ export interface IAcesCriticalResult {
 /** The ASCE table for a unit type, or null when the book prints none (ships, buildings). */
 const asceTableFor = ( type: string ) => {
     switch( type ) {
-        case "BM": case "IM": return asceMechCriticalTable;
+        case "BM": case "IM": case "MM": return asceMechCriticalTable;
         case "PM": return asceProtoMechCriticalTable;
         case "CV": case "SV": return asceVehicleCriticalTable;
         case "AF": case "CF": return asceAerospaceCriticalTable;

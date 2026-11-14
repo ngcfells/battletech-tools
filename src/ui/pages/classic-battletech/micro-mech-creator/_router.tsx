@@ -7,6 +7,7 @@ import MicroMechCreatorChassis from './chassis';
 import MicroMechCreatorEquipment from './equipment';
 import MicroMechCreatorSummary from './summary';
 import MicroMechCreatorRecordSheet from './record-sheet';
+import MicroMechCreatorPrintAS from './print-as';
 
 import type { JSX } from "react";
 
@@ -34,6 +35,10 @@ export default class MicroMechCreatorRouter extends React.Component<IMicroMechCr
 
                 <Route path={`record-sheet`} element={
                     <MicroMechCreatorRecordSheet appGlobals={this.props.appGlobals} />
+                }/>
+
+                <Route path={`print-as`} element={
+                    <MicroMechCreatorPrintAS appGlobals={this.props.appGlobals} />
                 }/>
 
                 <Route path="*" element={

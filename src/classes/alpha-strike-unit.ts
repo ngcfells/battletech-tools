@@ -1394,6 +1394,9 @@ export class AlphaStrikeUnit {
             ( this.type && this.type.toLowerCase() === "bm" )
                 ||
             ( this.type && this.type.toLowerCase() === "im" )
+                ||
+            // A Micro-Mech (Custom Homebrew) takes critical hits on the 'Mech column.
+            ( this.type && this.type.toLowerCase() === "mm" )
         ) {
             // for BattleMechs
             for( let count = 0; count < this.getMPHits(); count++ ) {
@@ -2069,7 +2072,7 @@ export class AlphaStrikeUnit {
      * with the same rules as the 'Mech conversion. Aerospace cards keep the Point Value they were given.
      */
     calc(): string {
-        const ground = ["BM", "IM", "PM", "CV", "SV", "BA", "CI"];
+        const ground = ["BM", "IM", "PM", "CV", "SV", "BA", "CI", "MM"];
         const type = (this.type || "").trim().toUpperCase();
         const jumpEntries = this.move.filter((move) => move.type === "j");
         const moves = this.move.filter((move) => move.type !== "j").map((move) => ({ inches: +move.move || 0, mode: (move.type || "").toLowerCase() }));

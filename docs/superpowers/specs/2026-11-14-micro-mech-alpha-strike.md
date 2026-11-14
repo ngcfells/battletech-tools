@@ -1,6 +1,12 @@
 # Micro-Mech Alpha Strike ruleset (#173, Micro-Mech plan Chunk G)
 
-**Status: design, waiting for the owner's answer (2026-11-14). Nothing is built yet.**
+**Status: approved by the owner on 2026-11-14 and built the same day.**
+
+Owner rulings (2026-11-14): (1) armor by Alpha Strike's rule; (2) one ability, `MCR`, as best, with every code
+explained in our rules, and a TRO - JBT entry for Micro-Mechs with credits; (3) the first Engine Hit as proposed;
+(4) type code `MM`, as best. Added in the build, beyond the design: a weapon with no ammunition counts nothing;
+the Caseless AC/5 keeps two fifths of the AC/5's value (its printed damage is 2); CASE prints when the torso has
+CASE or every ammunition location has its own.
 
 This ruleset is ours. No book and no Micro-Mech text has Alpha Strike rules for a Micro-Mech; the 6.1.0.2 document
 converts to BattleForce 2 only. Every card made by it is marked NOT OFFICIAL. Each rule below is marked with where
@@ -140,7 +146,7 @@ Where the card and the document's line differ, and why:
 6. **The BattleMech Point Value lines**, with nothing added or taken off for `MCR`.
 7. **Type code `MM`.**
 
-## Build (after the owner's answer; plan Step 4)
+## Build (done 2026-11-14; plan Step 4)
 
 `getAlphaStrikeStats()` and `getAlphaStrikeUnit()` on `MicroMech`; `print-as.tsx` in the creator; the card marked
 NOT OFFICIAL with `MulSource` set (#593); the `MCR` text in the special abilities reference; the type accepted by

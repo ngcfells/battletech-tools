@@ -1,4 +1,6 @@
 import { generateUUID } from "../utils/generateUUID";
+import { calculateGroundPointValue, groundTMM } from "../utils/alphaStrikeGroundPointValue";
+import { AlphaStrikeUnit, IASMULUnit } from "./alpha-strike-unit";
 import { IGameSettingsUnit, UnitGameSettings } from "./unit-game-settings";
 import { TechnicalReadout } from "./technical-readout";
 import type { ITechnicalReadoutExport } from "../data/technical-readout-interfaces";
@@ -52,6 +54,7 @@ import {
     MicroMechAmmoType,
     findMicroMechItem,
     getMicroMechAmmoShots,
+    getMicroMechItemAlphaStrike,
     getMicroMechItemBattleValue2,
     isMicroMechWeapon,
 } from "../data/micro-mech-equipment-custom";
@@ -62,6 +65,31 @@ import {
 // Battle Value follow the 6.1.0.2 appendices (calc-steps-micro-mech.ts); a BV2 edition gets a provisional BV2 of ours.
 // Play mode (in-play state saved with the roster) follows the rules sections of both texts (Chunk F of
 // docs/superpowers/plans/2026-11-13-micro-mechs.md).
+
+/** Alpha Strike unit type code for a Micro-Mech, and the ability that carries its play rules. Both are ours. */
+export const MICRO_MECH_AS_TYPE = "MM";
+export const MICRO_MECH_AS_ABILITY = "MCR";
+
+export interface IMicroMechASDamageValue {
+    damage: number;
+    /** 0*: more than nothing and under half a point. */
+    minimal: boolean;
+}
+
+export interface IMicroMechAlphaStrikeStats {
+    type: typeof MICRO_MECH_AS_TYPE;
+    size: 1;
+    move: string;
+    tmm: number;
+    armor: number;
+    structure: number;
+    damageValues: { short: IMicroMechASDamageValue; medium: IMicroMechASDamageValue; long: IMicroMechASDamageValue };
+    specialAbilities: string[];
+    pointValue: number;
+    calcLog: string[];
+}
+
+export const formatMicroMechASDamage = (value: IMicroMechASDamageValue): string => (value.minimal ? "0*" : `${value.damage}`);
 
 export const MAX_MICRO_MECH_NAME_LENGTH = 120;
 /** The highest rating in the standard engine table (TechManual p.49, as mech-engine-options.ts holds it). */
@@ -734,6 +762,9 @@ export default class MicroMech implements IGameSettingsUnit {
     /** Is the torso protected by CASE (CASE II counts)? */
     private _torsoHasCase(): boolean {
         return this.getMounts().some((mount) => mount.location === "torso" && (mount.tag === CASE_TAG || mount.tag === CASE_II_TAG));
+    }
+    private _hasCase(location: MicroMechLocation): boolean {
+        return this.getMounts().some((mount) => mount.location === location && mount.tag === CASE_TAG);
     }
     private _hasCaseII(location: MicroMechLocation): boolean {
         return this.getMounts().some((mount) => mount.location === location && mount.tag === CASE_II_TAG);
@@ -1523,6 +1554,146 @@ export default class MicroMech implements IGameSettingsUnit {
                 : "Each ammunition type takes its own slot, up to 1,000 kg.");
         }
         return notes;
+    }
+
+    // Alpha Strike ------------------------------------------------------------------------------------------------
+    // Our ruleset (owner approved 2026-11-14): docs/superpowers/specs/2026-11-14-micro-mech-alpha-strike.md. NOT OFFICIAL.
+
+    /** Shots carried for a mount, all its lots together. */
+    private _mountShots(mountIndex: number): number {
+        return this.getAmmoLots().filter((lot) => lot.mountIndex === mountIndex).reduce((sum, lot) => sum + lot.shots, 0);
+    }
+
+    public getAlphaStrikeStats(): IMicroMechAlphaStrikeStats {
+        const log: string[] = [];
+        const specials: string[] = [MICRO_MECH_AS_ABILITY];
+        const add = (code: string): void => { if (code && !specials.includes(code)) specials.push(code); };
+
+        // Move: 2 inches a Walking MP; the jump code, or both rates when they differ (ASC pp.92-93).
+        const ground = this._walkMP * 2;
+        const jump = this.getJumpMP() * 2;
+        const move = jump <= 0 ? `${ground}"` : jump === ground ? `${ground}"j` : `${ground}"/${jump}"j`;
+        const tmm = groundTMM(ground);
+        const jumpDifference = jump > 0 ? groundTMM(jump) - tmm : 0;
+        if (jumpDifference > 0) add(`JMPS${jumpDifference}`);
+        if (jumpDifference < 0) add(`JMPW${-jumpDifference}`);
+        log.push(`Move: ${this._walkMP} Walking MP x 2 = ${move}; Target Movement Modifier +${tmm}`);
+
+        // Armor: armor points / 30, rounded (ASC p.95). Structure is always 1 (the document; ASC p.97 agrees).
+        const armorPoints = this.getArmorPoints();
+        const armor = Math.round(armorPoints / 30 + 1e-9);
+        const structure = 1;
+        log.push(`Armor: ${armorPoints} / 30 = ${(armorPoints / 30).toFixed(2)}, rounded to ${armor}. Structure: ${structure} (always)`);
+
+        // Damage: every weapon fires forward; no heat step and no Overheat (ASC pp.99-101, 115).
+        const mounts = this.getMounts();
+        const artemis = this._artemisMounts();
+        const total = [0, 0, 0];
+        const sums = { lrm: [0, 0, 0], srm: [0, 0, 0], ac: [0, 0, 0], flak: [0, 0, 0], indirect: [0, 0, 0] };
+        const heat = [0, 0, 0];
+        let explosive = false;
+        mounts.forEach((mount, index) => {
+            const value = getMicroMechItemAlphaStrike(mount.item, artemis.has(index));
+            value.abilities.forEach(add);
+            if (!isMicroMechWeapon(mount.item)) return;
+            if (mount.item.ammo || mount.item.oneShot) explosive = true;
+            const shots = mount.item.ammo ? this._mountShots(index) : -1;
+            // No ammunition: the weapon cannot fire. Few shots: x 0.75 (ASC p.101).
+            const factor = shots === 0 ? 0 : shots > 0 && shots < value.fewShots ? 0.75 : 1;
+            const damage = value.damage.map((each) => each * factor);
+            damage.forEach((each, range) => {
+                total[range] += each;
+                heat[range] += factor > 0 ? value.heat[range] : 0;
+                (Object.keys(sums) as (keyof typeof sums)[]).forEach((key) => { if (value[key]) sums[key][range] += each; });
+            });
+            const how = value.source === "catalog" ? "" : value.source === "cluster" ? " (ours: the Cluster Hits Table for this tube count)" : value.source === "ours" ? " (ours: damage / 10 by range)" : " (no value)";
+            log.push(`${mount.item.name}${artemis.has(index) ? " with Artemis IV" : ""}: ${damage.map((each) => each.toFixed(3)).join(" / ")}${how}${shots === 0 ? ", no ammunition" : factor < 1 ? `, ${shots} shots: x 0.75` : ""}`);
+        });
+        const value = (damage: number): IMicroMechASDamageValue =>
+            damage <= 1e-9 ? { damage: 0, minimal: false } : damage < 0.5 - 1e-9 ? { damage: 0, minimal: true } : { damage: Math.ceil(damage - 1e-9), minimal: false };
+        const rated = (damage: number): IMicroMechASDamageValue =>
+            damage <= 1e-9 ? { damage: 0, minimal: false } : damage < 0.5 - 1e-9 ? { damage: 0, minimal: true } : { damage: Math.round(damage + 1e-9), minimal: false };
+        const damageValues = { short: value(total[0]), medium: value(total[1]), long: value(total[2]) };
+        log.push(`Damage: ${total.map((each) => each.toFixed(3)).join(" / ")}, giving ${formatMicroMechASDamage(damageValues.short)}/${formatMicroMechASDamage(damageValues.medium)}/${formatMicroMechASDamage(damageValues.long)}. No Overheat`);
+
+        // Special abilities (ASC pp.117-133), and MCR, which is ours.
+        const triple = (values: number[], ranges: number): string => values.slice(0, ranges).map((each) => formatMicroMechASDamage(rated(each))).join("/");
+        if (sums.lrm[1] >= 1 - 1e-9) add(`LRM${triple(sums.lrm, 3)}`);
+        if (sums.srm[1] >= 1 - 1e-9) add(`SRM${triple(sums.srm, 2)}`);
+        if (sums.ac[1] >= 1 - 1e-9) add(`AC${triple(sums.ac, 3)}`);
+        if (sums.flak.some((each) => each > 1e-9)) add(`FLK${triple(sums.flak, 3)}`);
+        if (sums.indirect[2] > 1e-9) add(`IF${formatMicroMechASDamage(rated(sums.indirect[2]))}`);
+        const heatRatings = heat.map((points) => (points >= 11 ? 2 : points >= 5 ? 1 : 0));
+        if (heatRatings.some((rating) => rating > 0)) add(`HT${heatRatings.map((rating) => rating || "-").join("/")}`);
+        if (["PRB", "LPRB", "BH"].some((code) => specials.includes(code))) add("RCN");
+        if (this._sealed) add("SEAL");
+        if (!explosive) add("ENE");
+        else {
+            // CASE in the torso keeps an explosion from the cockpit; else each ammunition location needs its own.
+            const lots = this.getAmmoLots();
+            const guarded = (location: MicroMechLocation): boolean => this._hasCase(location) || this._hasCaseII(location);
+            const all = (test: (location: MicroMechLocation) => boolean): boolean => lots.length > 0 && lots.every((lot) => test(lot.location));
+            const index = specials.indexOf("CASE");
+            if (index >= 0) specials.splice(index, 1);
+            const indexII = specials.indexOf("CASEII");
+            if (indexII >= 0) specials.splice(indexII, 1);
+            if (all((location) => this._hasCaseII(location))) add("CASEII");
+            else if (lots.length > 0 && (guarded("torso") || all(guarded))) add("CASE");
+        }
+        if (!explosive) for (const code of ["CASE", "CASEII"]) { const index = specials.indexOf(code); if (index >= 0) specials.splice(index, 1); }
+        specials.sort();
+
+        // Point Value: the ground procedure with the BattleMech lines (ASC pp.138-141, errata v1.6).
+        const pv = calculateGroundPointValue({
+            type: MICRO_MECH_AS_TYPE, size: 1, moves: [{ inches: ground, mode: "" }], jump,
+            short: damageValues.short, medium: damageValues.medium, long: damageValues.long,
+            overheat: 0, armor, structure, specials,
+        });
+        log.push(...pv.log);
+
+        return { type: MICRO_MECH_AS_TYPE, size: 1, move, tmm, armor, structure, damageValues, specialAbilities: specials, pointValue: pv.pointValue, calcLog: log };
+    }
+
+    /** The converted Alpha Strike card, built the same way as a Master Unit List record; a custom source, so NOT OFFICIAL. */
+    public getAlphaStrikeUnit(): AlphaStrikeUnit {
+        const stats = this.getAlphaStrikeStats();
+        const damage = stats.damageValues;
+        const record = {
+            Id: 0,
+            Name: this.getDisplayName(),
+            Class: "Micro-Mech",
+            Variant: "",
+            Tonnage: this._tons,
+            Cost: this.getCBillCost(),
+            BattleValue: this.getBattleValue(),
+            BFType: stats.type,
+            BFSize: stats.size,
+            BFMove: stats.move,
+            BFTMM: stats.tmm,
+            BFArmor: stats.armor,
+            BFStructure: stats.structure,
+            BFThreshold: 0,
+            BFDamageShort: damage.short.damage,
+            BFDamageMedium: damage.medium.damage,
+            BFDamageLong: damage.long.damage,
+            BFDamageExtreme: 0,
+            BFDamageShortMin: damage.short.minimal,
+            BFDamageMediumMin: damage.medium.minimal,
+            BFDamageLongMin: damage.long.minimal,
+            BFDamageExtremeMin: false,
+            BFOverheat: 0,
+            BFPointValue: stats.pointValue,
+            BFAbilities: stats.specialAbilities.join(","),
+            MulSource: "custom",
+            Role: { Id: 0, Name: "None", Image: null, SortOrder: 0 },
+            Technology: { Id: 0, Name: "Inner Sphere", Image: null, SortOrder: 0 },
+            Type: { Id: 0, Name: "Micro-Mech", Image: null, SortOrder: 0 },
+        } as unknown as IASMULUnit;
+        const unit = new AlphaStrikeUnit();
+        unit.importMUL(record);
+        unit.rulesLevel = this.getRequiredRulesLevel();
+        unit.rulesets = this.gameSettings.getRulesets();
+        return unit;
     }
 
     // Save -------------------------------------------------------------------------------------------------------

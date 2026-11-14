@@ -17,6 +17,8 @@ import { IAbilitySource } from "./ability-source";
 export enum ESpecialAbilityType {
     Standard = 1,
     Optional = 2,
+    /** Ours, for a Custom Homebrew unit type: in no rulebook. */
+    Custom = 3,
 }
 export function getSpecialAbilityTypeName( type: ESpecialAbilityType ): string {
     switch( type ) {
@@ -24,8 +26,22 @@ export function getSpecialAbilityTypeName( type: ESpecialAbilityType ): string {
             return "Standard Special Ability";
         case ESpecialAbilityType.Optional:
             return "Optional Special Ability";
+        case ESpecialAbilityType.Custom:
+            return "Custom Homebrew Special Ability (NOT OFFICIAL)";
     }
 }
+/** What the MCR ability means on the table. One text, shown on the card popup, the creator's card page and TRO - JBT. */
+export const MICRO_MECH_AS_ABILITY_TEXT: string[] = [
+    "Every Micro-Mech (unit type MM) has this ability. It is a Custom Homebrew rule of this app, not an official one.",
+    "Low profile: the unit is 1 inch (1 level) tall, as a vehicle, for line of sight, and never has partial cover.",
+    "Stacking: it counts as a vehicle for stacking and displacement.",
+    "No heat: it has no Heat Scale and no Overheat value. A Heat (HT) attack against it does its heat points as damage.",
+    "Too small to swarm: it cannot be the target of an anti-\u2019Mech (AM) infantry attack.",
+    "Light frame: it may make a standard physical attack (damage 1) or a charge. It may not make a Death From Above or a melee attack.",
+    "Critical hits: roll on the \u2019Mech column. First Engine Hit: a unit with ENE can make no more weapon attacks; any other unit treats it as a Weapon Hit. A second Engine Hit destroys the unit.",
+    "Unsealed: without the SEAL ability it follows the IndustrialMech limits for deep water and vacuum.",
+];
+
 export const CONST_AS_SPECIAL_ABILITIES: IASSpecialAbility[] = [
     /* ***************************
       Standard Special Abilities
@@ -1476,6 +1492,19 @@ export const CONST_AS_SPECIAL_ABILITIES: IASSpecialAbility[] = [
         ],
         source: { book: "ASCE", page: 91 },
         type: ESpecialAbilityType.Optional
+    },
+
+    /* ***************************
+      Custom Homebrew (ours; in no rulebook)
+    ***************************** */
+    {
+        // Micro-Mechs (#173): the Alpha Strike ruleset is ours, from the play rules of "Micro-Mechs" by Solarmech
+        // (version 6.1.0.2 revised by an unnamed editor with Discord). docs/superpowers/specs/2026-11-14-micro-mech-alpha-strike.md
+        tag: "MCR",
+        name: "Micro-Mech",
+        summary: MICRO_MECH_AS_ABILITY_TEXT,
+        source: { book: "TRO - JBT: Micro-Mechs (Custom Homebrew, NOT OFFICIAL)", page: 0 },
+        type: ESpecialAbilityType.Custom
     }
 
 ]

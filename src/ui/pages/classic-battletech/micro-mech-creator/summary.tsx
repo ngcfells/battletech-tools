@@ -8,6 +8,7 @@ import TextSection from '../../../components/text-section';
 import UIPage from '../../../components/ui-page';
 import { formatBattleValue } from '../../../../data/battle-value';
 import { btRulesEditions } from '../../../../data/rules-editions';
+import { formatMicroMechASDamage } from '../../../../classes/micro-mech';
 const ArrowCircleLeft = FaArrowCircleLeft as any;
 
 export default class MicroMechCreatorSummary extends React.Component<ISummaryProps> {
@@ -23,6 +24,7 @@ export default class MicroMechCreatorSummary extends React.Component<ISummaryPro
         const notes = micro.getNotes();
         const printed = micro.getPrintedFigures();
         const jump = micro.getJumpMP();
+        const alphaStrike = micro.getAlphaStrikeStats();
 
         return (
             <UIPage current="classic-battletech-micro-mech-creator" appGlobals={this.props.appGlobals}>
@@ -86,9 +88,31 @@ export default class MicroMechCreatorSummary extends React.Component<ISummaryPro
                                 edition={micro.getRulesEdition()}
                             />
 
+                            <h3>Alpha Strike</h3>
+                            <p data-testid="micro-alpha-strike">
+                                <strong>Type</strong>: {alphaStrike.type} &nbsp;|&nbsp;
+                                <strong>Size</strong>: {alphaStrike.size} &nbsp;|&nbsp;
+                                <strong>Move</strong>: {alphaStrike.move} &nbsp;|&nbsp;
+                                <strong>Damage (S/M/L)</strong>: {formatMicroMechASDamage(alphaStrike.damageValues.short)}/{formatMicroMechASDamage(alphaStrike.damageValues.medium)}/{formatMicroMechASDamage(alphaStrike.damageValues.long)} &nbsp;|&nbsp;
+                                <strong>Armor</strong>: {alphaStrike.armor} &nbsp;|&nbsp;
+                                <strong>Structure</strong>: {alphaStrike.structure} &nbsp;|&nbsp;
+                                <strong>Specials</strong>: {alphaStrike.specialAbilities.join(", ")} &nbsp;|&nbsp;
+                                <strong>Point Value</strong>: {alphaStrike.pointValue}
+                            </p>
+                            <ul data-testid="micro-alpha-strike-log">
+                                {alphaStrike.calcLog.map((line, index) => <li key={index}>{line}</li>)}
+                            </ul>
+                            <p className="smaller-text">
+                                <strong>NOT OFFICIAL.</strong> No rulebook and no Micro-Mech text has Alpha Strike rules for a Micro-Mech: these
+                                are this app's own, made from the Alpha Strike Companion's conversion (pp. 92-141, errata v1.6) and the
+                                document's play rules. The MCR ability and the rest are explained in{" "}
+                                <Link to={`${process.env.PUBLIC_URL}/classic-battletech/tro-jbt/micro-mechs`}>TRO - JBT: Micro-Mechs</Link>.
+                            </p>
+
                             <div className="clear-both overflow-hidden">
                                 <hr />
                                 <Link to={`${process.env.PUBLIC_URL}/classic-battletech/micro-mech-creator/record-sheet`} className="btn btn-primary pull-right btn-sm">View Record Sheet</Link>
+                                <Link to={`${process.env.PUBLIC_URL}/classic-battletech/micro-mech-creator/print-as`} className="btn btn-primary pull-right btn-sm">View Alpha Strike Card</Link>
                                 <Link to={`${process.env.PUBLIC_URL}/classic-battletech/micro-mech-creator/equipment`} className="btn btn-primary btn-sm"><ArrowCircleLeft /> Previous Step</Link>
                             </div>
                         </TextSection>

@@ -11,7 +11,7 @@ export interface IGroundPVDamage {
 }
 
 export interface IGroundPVInput {
-    /** Alpha Strike unit type: BM, IM, PM, CV, SV, BA, CI ... */
+    /** Alpha Strike unit type: BM, IM, PM, CV, SV, BA, CI ...; MM is our Micro-Mech. */
     type: string;
     size: number;
     /** Non-jumping Move rates in inches, with their mode letter ("" for a 'Mech's walk; t, w, h, n, v, g, f ...). */
@@ -113,7 +113,8 @@ export function calculateGroundPointValue(input: IGroundPVInput): IGroundPVResul
     const addOffensive = (label: string, amount: number): void => {
         if (amount > 0) { offensive += amount; offensiveParts.push(`${amount} (${label})`); }
     };
-    if (type === "BM" || type === "IM" || type === "PM") addOffensive("half its Size", input.size / 2);
+    // A Micro-Mech ("MM", Custom Homebrew, ours) is priced on the BattleMech lines.
+    if (type === "BM" || type === "IM" || type === "PM" || type === "MM") addOffensive("half its Size", input.size / 2);
     let overheat = input.overheat > 1 ? 1 + (input.overheat - 1) / 2 : input.overheat;
     if (shortOnly) overheat /= 2;
     addOffensive("Overheat", overheat);

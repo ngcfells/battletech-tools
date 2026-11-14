@@ -169,7 +169,7 @@ export default class AlphaStrikeRosterInPlay extends React.Component<IInPlayProp
   show={true}
   onClose={this.closeSpecialAbility}
 >
-  <div className='text-center'><em>{getSpecialAbilityTypeName(this.state.showSpecialAbility.type)}</em> - <span title={this.state.showSpecialAbility.source.book}>{this.state.showSpecialAbility.source.book} p{this.state.showSpecialAbility.source.page}</span></div>
+  <div className='text-center'><em>{getSpecialAbilityTypeName(this.state.showSpecialAbility.type)}</em> - <span title={this.state.showSpecialAbility.source.book}>{this.state.showSpecialAbility.source.book}{this.state.showSpecialAbility.source.page > 0 ? ` p${this.state.showSpecialAbility.source.page}` : ""}</span></div>
 
   {this.state.showSpecialAbility.summary.map( (line, lineIndex) => {
     return (
