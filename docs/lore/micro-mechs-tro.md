@@ -15,7 +15,7 @@ The app offers both texts as versions of the rules. Where the 2019 post has no t
 Battle Value), the 6.1.0.2 tables are borrowed, and the record sheet says so.
 
 **What is ours, and not the authors':** the Battle Value 2 figure, the ranges of weapons no rulebook prints, and
-the whole of the Alpha Strike rules below. If any of it is wrong, the fault is this app's.
+the whole of the Alpha Strike rules below. If any of it is incorrect, the fault lies with NGCFells.
 
 The rules texts themselves are not reproduced here. They belong to their authors.
 
