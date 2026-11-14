@@ -772,6 +772,31 @@ export const rollAcesCriticalHit = (
     unitType: string,
     isEmplacement: boolean,
     rng: IAcesRngState,
+    /** A Micro-Mech's state, for MCR's Engine Hit: whether it has ENE, and its Engine Hits before this one. */
+    micro?: { energy: boolean, engineHits: number },
+): IAcesCriticalResult => {
+    const result = rollAcesCriticalHitByTable( ruleset, unitType, isEmplacement, rng );
+    if( unitType.toUpperCase() !== "MM" || result.effect !== "engine" ) return result;
+    // MCR (this app's Micro-Mech rules, Custom Homebrew): the first Engine Hit stops an ENE unit's weapon attacks
+    // and is a Weapon Hit for any other; the second destroys the unit.
+    if( ( micro?.engineHits ?? 0 ) >= 1 ) {
+        return { ...result, label: "Engine Hit: a second Engine Hit, so the Micro-Mech is destroyed (MCR)" };
+    }
+    if( micro?.energy ) {
+        return { ...result, label: "Engine Hit: the Micro-Mech (ENE) can make no more weapon attacks; a second Engine Hit destroys it (MCR)" };
+    }
+    return {
+        ...result,
+        label: "Engine Hit: for a Micro-Mech also a Weapon Hit; a second Engine Hit destroys it (MCR)",
+        also: { roll: null, effect: "weapon", label: "Weapon Hit (MCR: a Micro-Mech's first Engine Hit)" },
+    };
+}
+
+const rollAcesCriticalHitByTable = (
+    ruleset: TAcesRuleset,
+    unitType: string,
+    isEmplacement: boolean,
+    rng: IAcesRngState,
 ): IAcesCriticalResult => {
     const type = unitType.toUpperCase();
     if( ruleset === "aces" ) {

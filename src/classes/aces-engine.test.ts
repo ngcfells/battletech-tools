@@ -357,6 +357,25 @@ describe("Aces rules switch: critical hits (Aces pp.4-6)", () => {
         expect( mech.calls ).toBe( 2 );
     });
 
+    it("gives a Micro-Mech's Engine Hit the MCR reading (Custom Homebrew): a Weapon Hit too, unless ENE; the second destroys it", () => {
+        let seed = 1;
+        while( rollAcesCriticalHit( "asce", "BM", false, newAcesRngState( seed ) ).effect !== "engine" ) seed++;
+        for( const ruleset of [ "asce", "aces" ] as const ) {
+            const first = rollAcesCriticalHit( ruleset, "MM", false, newAcesRngState( seed ), { energy: false, engineHits: 0 } );
+            expect( first.effect ).toBe( "engine" );
+            expect( first.label ).toMatch( /MCR/ );
+            expect( first.also?.effect ).toBe( "weapon" );
+            const energy = rollAcesCriticalHit( ruleset, "MM", false, newAcesRngState( seed ), { energy: true, engineHits: 0 } );
+            expect( energy.also ).toBeUndefined();
+            expect( energy.label ).toMatch( /no more weapon attacks/ );
+            const second = rollAcesCriticalHit( ruleset, "MM", false, newAcesRngState( seed ), { energy: false, engineHits: 1 } );
+            expect( second.also ).toBeUndefined();
+            expect( second.label ).toMatch( /destroyed/ );
+        }
+        // A BattleMech's Engine Hit is untouched.
+        expect( rollAcesCriticalHit( "asce", "BM", false, newAcesRngState( seed ) ).also ).toBeUndefined();
+    });
+
     it("marks a critical hit for the End Phase", () => {
         const unit = new AlphaStrikeUnit();
         unit.type = "CV";

@@ -203,13 +203,18 @@ export default class AcesGamePage extends React.Component<IAcesGamePageProps, IA
     private _rollCritical = ( unit: AlphaStrikeUnit ) => {
         this._update( ( game ) => {
             const state = game.getUnitState( unit.uuid );
-            const result = rollAcesCriticalHit( game.ruleset, unit.type, state.isEmplacement, game.rng );
+            // A Micro-Mech's Engine Hit reads by MCR: whether it has ENE, and the Engine Hits it already took.
+            const micro = {
+                energy: unit.abilities.some( ( ability ) => ability.trim().toUpperCase() === "ENE" ),
+                engineHits: unit.engineHits.filter( ( hit ) => hit ).length + unit.roundEngineHits.filter( ( hit ) => hit ).length,
+            };
+            const result = rollAcesCriticalHit( game.ruleset, unit.type, state.isEmplacement, game.rng, micro );
             let message = this._name( unit ) + " critical hit" + ( result.roll !== null ? " (" + result.roll + ")" : "" ) + ": " + result.label + ".";
             // "none" needs no marking; results the card has no box for (ammo, crew, destroyed) are marked by hand.
             const mark = ( effect: string ): string => effect === "use-asce-table" || effect === "none" || applyAcesCriticalToUnit( unit, effect ) ? "" : " Mark it on the card by hand.";
             message += mark( result.effect );
             if( result.also ) {
-                message += " Second roll (" + result.also.roll + "): " + result.also.label + "." + mark( result.also.effect );
+                message += ( result.also.roll !== null ? " Second roll (" + result.also.roll + "): " : " Also: " ) + result.also.label + "." + mark( result.also.effect );
             }
             game.addLog( message );
             this.setState({ critMessage: message });
