@@ -3,6 +3,7 @@ import { Link } from 'react-router';
 import { FaArrowCircleRight, FaFile, FaFolderOpen, FaSave, FaTrash } from "react-icons/fa";
 import MicroMech, { IMicroMechExport } from '../../../../classes/micro-mech';
 import { MICRO_MECH_CREDIT, MICRO_MECH_VERSION_RULES } from '../../../../data/micro-mech-construction';
+import { MICRO_MECH_SAMPLES } from '../../../../data/micro-mech-samples';
 import { IAppGlobals } from '../../../app-router';
 import { MicroMechCreatorSideMenu } from '../../../components/creator-side-menus';
 import TextSection from '../../../components/text-section';
@@ -50,6 +51,12 @@ export default class MicroMechCreatorHome extends React.Component<IHomeProps> {
         e.preventDefault();
         const save = this.props.appGlobals.microMechSaves[saveIndex];
         if (save) this.replaceDesign(() => this.props.appGlobals.saveCurrentMicroMech(new MicroMech(JSON.stringify(save))));
+    }
+
+    loadSample = (e: React.FormEvent<HTMLButtonElement>, sampleId: string): void => {
+        e.preventDefault();
+        const sample = MICRO_MECH_SAMPLES.find((each) => each.id === sampleId);
+        if (sample) this.replaceDesign(() => this.props.appGlobals.saveCurrentMicroMech(new MicroMech(JSON.stringify(sample.save))));
     }
 
     saveOver = (e: React.FormEvent<HTMLButtonElement>, saveIndex: number): void => {
@@ -161,6 +168,30 @@ export default class MicroMechCreatorHome extends React.Component<IHomeProps> {
                                     )) : (
                                         <tr><td colSpan={4}>You have no saved Micro-Mechs yet.</td></tr>
                                     )}
+                                </tbody>
+                            </table>
+                        </TextSection>
+
+                        <TextSection label="Sample Micro-Mechs">
+                            <p className="smaller-text">
+                                The four designs the 6.1.0.2 document prints, built under our rules. Loading one replaces the design
+                                you are working on; its Technical Readout notes say where it differs from the print.
+                            </p>
+                            <table className="table" data-testid="mm-samples">
+                                <thead>
+                                    <tr><th>Name</th><th><span className="visually-hidden">Actions</span></th></tr>
+                                </thead>
+                                <tbody>
+                                    {MICRO_MECH_SAMPLES.map((sample) => (
+                                        <tr key={sample.id}>
+                                            <td>{sample.name}</td>
+                                            <td className="text-right">
+                                                <button className="btn btn-sm btn-primary" type="button" data-testid={"mm-sample-" + sample.id} title={"Load " + sample.name + " into the editor"} onClick={(e) => this.loadSample(e, sample.id)}>
+                                                    <FolderOpen />
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))}
                                 </tbody>
                             </table>
                         </TextSection>

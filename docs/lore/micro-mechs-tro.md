@@ -125,7 +125,8 @@ Strike rulebook says they mean.
 Version 6.1.0.2 prints four designs. These are their figures as this app builds them. The cost of the first,
 third and fourth is the document's own. The document's Battle Value for the Storm (217) and the Hillman (352)
 differs from the rules text, which gives the figures below. The Tunnel Rat's printed cost and Battle Value are
-corrupt, so its figures are ours.
+corrupt, so its figures are ours. You can load all four from the Micro-Mech Creator's home page, under "Sample
+Micro-Mechs"; each one's Technical Readout notes say where it differs from the print.
 
 | Design | Tons | Walk / Jump | Armor | Weapons | Cost (C-bills) | Battle Value |
 | --- | --- | --- | --- | --- | --- | --- |

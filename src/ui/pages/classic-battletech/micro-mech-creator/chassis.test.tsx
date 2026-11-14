@@ -160,6 +160,17 @@ describe("Micro-Mech Creator, home and summary", () => {
         expect((globals.currentMicroMech as MicroMech).getName()).toBe("Storm STM-3X");
     });
 
+    it("offers the document's four sample designs and loads one", () => {
+        const globals = makeGlobals(new MicroMech());
+        render(<Harness Page={MicroMechCreatorHome} globals={globals} />);
+        expect(screen.getByTestId("mm-samples").querySelectorAll("tbody tr")).toHaveLength(4);
+        fireEvent.click(screen.getByTestId("mm-sample-hillman-hmn-2x"));
+        const loaded = globals.currentMicroMech as MicroMech;
+        expect(loaded.getName()).toBe("Hillman HMN-2X");
+        expect(loaded.isQuad()).toBe(true);
+        expect(loaded.getWeight()).toBe(14975);
+    });
+
     it("saves the design as new, and starts a blank one", () => {
         const globals = makeGlobals(storm());
         render(<Harness Page={MicroMechCreatorHome} globals={globals} />);
