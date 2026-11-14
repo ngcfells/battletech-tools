@@ -1357,7 +1357,7 @@ export default class MicroMech implements IGameSettingsUnit {
     }
 
     /**
-     * Movement now. Upper Leg hits halve Walking MP (round up; applied before the Lower Leg reductions, TW p.127 as
+     * Movement now. Upper Leg hits halve Walking MP (round up; applied before the Lower Leg reductions, TW pp.127-128 as
      * errata'd for the hip), Lower Leg hits take 2 each; running is refigured on the new Walking MP. A lost leg follows
      * TW p.122: a biped walks 1 and cannot run, with both gone 0; a quad loses 1 MP for the first (replacing that
      * leg's actuator penalties), walks 1 with two gone and 0 with three. A gyro hit stops running and jumping. Each jump

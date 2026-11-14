@@ -27,7 +27,7 @@ it comes from:
   (pp.138-141) as `ProtoMech.getAlphaStrikeStats()` and `calculateGroundPointValue()` already carry them.
 - AS:CE: stacking, partial cover ("'Mechs only"), physical attacks (pp.45-46), anti-'Mech attacks (p.46), the Heat
   special against a unit with no Heat Scale, critical hits (pp.49-50), unit heights. Page numbers not given here
-  were not found in the text extract: confirm them at home.
+  were not found in the text extract. Confirmed 2026-11-14 against the TW 11th printing (pp.116, 117, 122, 124, 127-128) and the AS:CE 2022 5th printing (pp.45-46, 50; the PDF page is the printed page + 1).
 - Code: `ProtoMech.getAlphaStrikeStats()` and `getAlphaStrikeUnit()` (`src/classes/protomech.ts`),
   `src/utils/alphaStrikeGroundPointValue.ts`.
 

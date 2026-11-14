@@ -179,6 +179,21 @@ export default class Home extends React.Component<IHomeProps, IHomeState> {
                   <ul className="news">
                   <li>
                   <h3>
+                      <strong>November 14th, 2026</strong> - Micro-Mechs join Custom Homebrew: a creator, record sheets, play mode and Alpha Strike cards
+                    </h3>
+                    <h4>Author - NGCFells</h4>
+                      <ul>
+                        <li>Needs the Custom Homebrew rules level to be offered; a Micro-Mech you have saved opens at any level. Fan-made, NOT OFFICIAL. Micro-Mechs are by Solarmech; version 6.1.0.2 was revised by an unnamed editor with Discord. Where a rule or number is ours, the notes say so.</li>
+                        <li>A Micro-Mech is a walker of 10 to 19 tons built in kilograms, with one torso and at most four weapons. Build one under either rules text: the 6.1.0.2 document or Solarmech's 2019 post.</li>
+                        <li>The creator covers the chassis, engine, armor, weapons, ammunition and heat sinks, with cost and Battle Value shown step by step. The Battle Value of the document is used for the classic editions; a second Battle Value is ours and marked provisional.</li>
+                        <li>Record sheets and printing, roster groups, and play mode: damage, critical hits, ammunition explosions, pilot hits, and the effects on movement and to-hit.</li>
+                        <li>Alpha Strike: our own ruleset (type MM, one ability, MCR), with cards, an entry on the Alpha Strike roster's add page, and a TRO - JBT entry that explains every code.</li>
+                        <li>Sample Micro-Mechs on the creator's home page: the document's Storm, Tunnel Rat, Hillman and Slayer. The Storm's and Hillman's Battle Values differ from the document's print (223 and 339 against 217 and 352; we keep the rules text), and the Tunnel Rat's printed mass, cost and Battle Value are corrupt, so its figures are ours.</li>
+                        <li>Not built: the document's RPG traits and DropShip bay appendices.</li>
+                      </ul>
+                  </li>
+                  <li>
+                  <h3>
                       <strong>November 12th, 2026</strong> - Four fan-made items join Custom Homebrew, play mode counts engine heat, and nine more 'Mech Battle Values are traced to their cause
                     </h3>
                     <h4>Author - NGCFells</h4>

@@ -288,7 +288,7 @@ describe("Micro-Mech play: movement and piloting", () => {
         expect(micro.getPilotingModifier().total).toBe(3);
     });
 
-    it("halves Walking MP (round up, before the Lower Leg -2, TW p.127 as errata'd) and adds +2 for an Upper Leg hit, cumulative", () => {
+    it("halves Walking MP (round up, before the Lower Leg -2, TW pp.127-128 as errata'd) and adds +2 for an Upper Leg hit, cumulative", () => {
         const micro = storm();
         micro.setSlotHit("ll", 0, true);
         expect(micro.getPlayMovement()).toMatchObject({ walk: 3, run: 5 });
