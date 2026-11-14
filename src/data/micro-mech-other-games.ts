@@ -39,11 +39,11 @@ export const MICRO_MECH_AEROTECH2: IMicroMechOtherGameStub = {
     game: "aerotech2",
     title: "Aerotech 2 Supplement",
     status: "partial",
-    built: "The Micro-Mech Bay is a transport bay in the Small Craft / DropShip and capital ship creators at Custom Homebrew (tag \"micro-mech\", small-craft-construction.ts).",
+    built: "The Micro-Mech Bay is a transport bay in the Small Craft / DropShip and capital ship creators at Custom Homebrew (tag \"micro-mech\", small-craft-construction.ts). In Alpha Strike it gives MMT#, and the emergency rule is part of MMT#'s text (MICRO_MECH_TRANSPORT_AS_ABILITY_TEXT).",
     rules: [
         "A Micro-Mech does not use a BattleMech bay: a Micro-Mech Bay weighs 75 tons and carries one Micro-Mech of up to 19 tons.",
         "The bay has basic repair facilities and quarters for a Micro-Mechwarrior and a technician. It costs 15,000 C-bills.",
-        "Not built (play rule): in an emergency up to 2 Micro-Mechs fit one BattleMech bay, but deploying them takes twice as long and they cannot make an orbital drop.",
+        "Built for Alpha Strike only (MMT#); waits for an AeroTech 2 play tool: in an emergency up to 2 Micro-Mechs fit one BattleMech bay, but deploying them takes twice as long and they cannot make an orbital drop.",
         "No BattleMech ever fits a Micro-Mech Bay.",
     ],
 };

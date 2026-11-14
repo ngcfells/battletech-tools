@@ -42,6 +42,16 @@ export const MICRO_MECH_AS_ABILITY_TEXT: string[] = [
     "Unsealed: without the SEAL ability it follows the IndustrialMech limits for deep water and vacuum.",
 ];
 
+/**
+ * MMT#, the Micro-Mech Bay in Alpha Strike: ours, after MT# and PT# (ASC:CE pp.87-88), with Micro-Mechs 6.1.0.2's
+ * emergency rule (two in a 'Mech bay, deployment time doubled, no orbital drop) put in Alpha Strike terms.
+ */
+export const MICRO_MECH_TRANSPORT_AS_ABILITY_TEXT: string[] = [
+    "A unit with this special ability can transport, deploy, and drop the indicated number of Micro-Mechs (unit type MM), as ’Mech Transport (MT#) does for ’Mechs. It usually applies to DropShips and is always used with the Door special ability (see Transporting Non-Infantry Units and Dropping Troops). It is a Custom Homebrew rule of this app, not an official one.",
+    "Each bay holds one Micro-Mech. No other unit, ’Mechs included, may use it.",
+    "Emergency loading: a ’Mech Transport (MT#) bay may hold two Micro-Mechs in place of one ’Mech. Each such Micro-Mech counts as two units against the number its bay doors can deploy in a turn, and it may not be dropped (Dropping Troops).",
+];
+
 export const CONST_AS_SPECIAL_ABILITIES: IASSpecialAbility[] = [
     /* ***************************
       Standard Special Abilities
@@ -1503,6 +1513,13 @@ export const CONST_AS_SPECIAL_ABILITIES: IASSpecialAbility[] = [
         tag: "MCR",
         name: "Micro-Mech",
         summary: MICRO_MECH_AS_ABILITY_TEXT,
+        source: { book: "TRO - JBT: Micro-Mechs (Custom Homebrew, NOT OFFICIAL)", page: 0 },
+        type: ESpecialAbilityType.Custom
+    },
+    {
+        tag: "MMT#",
+        name: "Micro-Mech Transport",
+        summary: MICRO_MECH_TRANSPORT_AS_ABILITY_TEXT,
         source: { book: "TRO - JBT: Micro-Mechs (Custom Homebrew, NOT OFFICIAL)", page: 0 },
         type: ESpecialAbilityType.Custom
     }

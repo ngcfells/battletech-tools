@@ -99,6 +99,17 @@ destroys a unit without CASE, and result 12 stands for the cockpit), Piloting bo
 buildings, swamps, ammunition dumping, climbing out. Version differences (6.1.0.2 / Solarmech 2019) change
 nothing on the card except through the design itself.
 
+**`MMT#`, "Micro-Mech Transport" [Ours, owner 2026-11-14]:** on the carrier, not the Micro-Mech. A Micro-Mech
+Bay (the document's AeroTech 2 supplement) gives a DropShip, Small Craft or capital ship `MMT#`, written as that
+class writes its other unit-bay codes (`MMT4-D1` on a DropShip, `MMT2D1` on a capital ship). It reads as `MT#` /
+`PT#` (AS:CE pp.87-88) for Micro-Mechs only; no other unit may use the bay. The document's emergency rule
+(two Micro-Mechs in a BattleMech bay, deployment time doubled, no orbital drop) becomes: an `MT#` bay may hold two
+Micro-Mechs in place of one 'Mech, each counting as two units against what its doors deploy in a turn, and none
+of them may be dropped. Text: `MICRO_MECH_TRANSPORT_AS_ABILITY_TEXT`.
+
+With it, DropShips and Small Craft now print the canon unit-bay codes too (`AT`, `ST`, `MT`, `PT`, `VTM`, `VTH`,
+`VTS` with their doors), which they lacked; capital ships already did.
+
 ## 4. Critical hits
 
 The 'Mech column of the Determining Critical Hits Table (AS:CE p.50), with the Engine Hit reading in `MCR`. [AS, Ours]

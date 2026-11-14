@@ -1891,6 +1891,16 @@ export default class SmallCraft implements IGameSettingsUnit {
         if (cargo > 0) specials.push(`CT${cargo}${cargoDoors > 0 ? `-D${cargoDoors}` : ""}`);
         const infantry = this._bays.filter((bay) => findTransportBayType(bay.tag)?.infantry).reduce((sum, bay) => sum + this.getBayWeight(bay), 0);
         if (infantry > 0) specials.push(`IT${Math.round(infantry * 10) / 10}`);
+        // Unit bays: the number of units carried, with the doors of those bays (ASC:CE pp.87-88; written as the
+        // vehicles' bays are, after MegaMek's converter). MMT is ours (Custom Homebrew): the Micro-Mech Bay.
+        for (const [code, tag] of [["AT", "fighter"], ["ST", "small-craft"], ["MT", "mech"], ["PT", "protomech"],
+            ["VTM", "vehicle-light"], ["VTH", "vehicle-heavy"], ["VTS", "vehicle-superheavy"], ["MMT", "micro-mech"]] as [string, string][]) {
+            const unitBays = this._bays.filter((bay) => bay.tag === tag);
+            // A ProtoMech entry is 5 cubicles; the others one unit each.
+            const units = unitBays.reduce((total, bay) => total + bay.amount * (tag === "protomech" ? 5 : 1), 0);
+            const doors = unitBays.reduce((total, bay) => total + bay.doors, 0);
+            if (units > 0) specials.push(`${code}${units}${doors > 0 ? `-D${doors}` : ""}`);
+        }
         const equipmentSpecials = new Set<string>();
         for (const item of this._equipmentList) {
             if (item.isAmmo) continue;

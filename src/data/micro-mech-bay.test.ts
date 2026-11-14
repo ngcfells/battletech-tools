@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import CapitalShip from "../classes/capital-ship";
 import SmallCraft from "../classes/small-craft";
+import { CONST_AS_SPECIAL_ABILITIES, ESpecialAbilityType } from "./alpha-strike-special-abilities";
 import { MICRO_MECH_AEROTECH2, MICRO_MECH_OTHER_GAMES } from "./micro-mech-other-games";
 import { CUSTOM_HOMEBREW_RULES_LEVEL } from "./rules-level-options";
 import { findTransportBayType } from "./small-craft-construction";
@@ -44,6 +45,32 @@ describe("Micro-Mech Bay", () => {
         const loaded = new CapitalShip(ship.exportJSON());
         expect(loaded.getBays()).toEqual(ship.getBays());
         expect(loaded.getBayWeight(loaded.getBays()[0])).toBe(150);
+    });
+
+    it("gives a DropShip MMT# (ours) with its doors, and the canon unit-bay codes beside it, as the vehicles print them", () => {
+        const ship = new SmallCraft();
+        ship.setCraftType("dropShip");
+        ship.setTonnage(3000);
+        ship.addBay("micro-mech", 4);
+        ship.addBay("mech", 2);
+        const specials = ship.getAlphaStrikeStats().specialAbilities;
+        expect(specials).toContain("MMT4-D1");
+        expect(specials).toContain("MT2-D1");
+    });
+
+    it("gives a capital ship MMT# as it prints MT#", () => {
+        const ship = new CapitalShip();
+        ship.setShipType("warShip");
+        ship.setTonnage(100000);
+        ship.addBay("micro-mech", 2);
+        expect(ship.getAlphaStrikeStats().specialAbilities).toContain("MMT2D1");
+    });
+
+    it("explains MMT# in the special abilities reference, as this app's own rule", () => {
+        const mmt = CONST_AS_SPECIAL_ABILITIES.find((ability) => ability.tag === "MMT#");
+        expect(mmt?.type).toBe(ESpecialAbilityType.Custom);
+        expect(mmt?.summary.join(" ")).toMatch(/not an official/);
+        expect(mmt?.summary.join(" ")).toMatch(/two Micro-Mechs/);
     });
 
     it("is what the AeroTech 2 stub says is built; the RPG and BattleForce 2 appendices are stubs for their own tools", () => {

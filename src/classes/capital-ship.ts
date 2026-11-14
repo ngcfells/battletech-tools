@@ -1072,7 +1072,9 @@ export default class CapitalShip implements IGameSettingsUnit {
         if (this.hasLithiumFusionBattery()) specials.push("LF");
         if (this._dockingCollars > 0) specials.push(`DT${this._dockingCollars}`);
         for (const [code, tags] of [["AT", ["fighter"]], ["ST", ["small-craft"]], ["MT", ["mech"]], ["PT", ["protomech"]],
-            ["VTM", ["vehicle-light"]], ["VTH", ["vehicle-heavy"]], ["VTS", ["vehicle-superheavy"]]] as [string, string[]][]) {
+            ["VTM", ["vehicle-light"]], ["VTH", ["vehicle-heavy"]], ["VTS", ["vehicle-superheavy"]],
+            // Ours (Custom Homebrew): the Micro-Mech Bay, as the 'Mech bay gives MT.
+            ["MMT", ["micro-mech"]]] as [string, string[]][]) {
             const special = this._bayTransportSpecial(code, tags);
             if (special) specials.push(special);
         }

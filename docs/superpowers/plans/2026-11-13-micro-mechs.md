@@ -93,6 +93,9 @@ push; append to the ledger what was built and every call that was ours; rewrite 
 14. **Other games (2026-11-14).** Build the Micro-Mech Bay (AeroTech 2 supplement) into DropShip and capital ship
     construction. The RolePlaying and BattleForce 2 appendices, and the bay's emergency play rule, are stubs
     (`src/data/micro-mech-other-games.ts`) for separate tools to come, as Classic BattleTech and Alpha Strike are.
+15. **Alpha Strike transport (2026-11-14).** "We have created our own AS rules for these units": the Micro-Mech
+    Bay gives its carrier `MMT#`, extrapolated from `MT#` / `PT#`, with the emergency rule in its text (spec
+    section 3).
 
 ## Versions (owner ruling, 2026-11-13)
 

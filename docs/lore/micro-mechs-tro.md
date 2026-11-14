@@ -59,7 +59,8 @@ Version 6.1.0.2's AeroTech 2 supplement gives Micro-Mechs a bay of their own. Th
 tons, carries one Micro-Mech of up to 19 tons, holds basic repair facilities and quarters for its pilot and a
 technician, and costs 15,000 C-bills. No BattleMech fits one. It is offered in the Small Craft / DropShip and
 capital ship creators at the Custom Homebrew level. The text adds an emergency rule: two Micro-Mechs can squeeze
-into one BattleMech bay, but they deploy at half speed and cannot make an orbital drop.
+into one BattleMech bay, but they deploy at half speed and cannot make an orbital drop. In Alpha Strike the bay
+gives the carrier **MMT#** (below).
 
 ### Waiting for Their Own Tools
 
@@ -70,7 +71,8 @@ in its own section. These appendices wait for a section of their own:
   the weapons BattleForce 2 does not list.
 - **Classic BattleTech RPG:** a Vehicle trait for 10 to 19 tons, Micro-Mech piloting, gunnery and tactics skills, a
   Micro-Mechwarrior Training field and life path, and its training events.
-- **AeroTech 2:** the bay above is built for construction; the emergency rule waits for an aerospace play tool.
+- **AeroTech 2:** the bay above is built for construction, and in Alpha Strike as MMT#; the emergency rule in
+  AeroTech 2 play waits for an aerospace play tool.
 
 ## Alpha Strike Rules
 
@@ -118,9 +120,19 @@ Every Micro-Mech card carries **MCR** (Micro-Mech). It stands for these rules:
   attacks, and any other unit treats it as a Weapon Hit. A second Engine Hit destroys the unit.
 - **Unsealed:** without the SEAL ability it follows the IndustrialMech limits for deep water and vacuum.
 
+### The MMT# Special Ability (Micro-Mech Transport)
+
+A DropShip, Small Craft or capital ship with Micro-Mech Bays carries **MMT#**, written as its other transport
+codes are (MMT4-D1: four Micro-Mechs, one door). It follows the rulebook's 'Mech Transport (MT#):
+
+- The carrier can transport, deploy and drop that many Micro-Mechs, with the Door ability.
+- Each bay holds one Micro-Mech. No other unit, 'Mechs included, may use one.
+- **Emergency loading:** an MT# bay may hold two Micro-Mechs in place of one 'Mech. Each such Micro-Mech counts as
+  two units against the number its bay doors can deploy in a turn, and it may not be dropped.
+
 ### Codes on a Micro-Mech Card
 
-MM and MCR are this app's own. The others are standard Alpha Strike special abilities and mean what the Alpha
+MM, MCR and MMT# are this app's own. The others are standard Alpha Strike special abilities and mean what the Alpha
 Strike rulebook says they mean.
 
 | Code | Meaning | Given by |
