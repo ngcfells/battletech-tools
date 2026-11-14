@@ -53,6 +53,25 @@ below that level. A design can be:
 - added to a Classic BattleTech roster and played there, with damage, critical hits, pilot hits and ammunition;
 - printed as an Alpha Strike card and added to an Alpha Strike roster.
 
+### Carried by DropShips
+
+Version 6.1.0.2's AeroTech 2 supplement gives Micro-Mechs a bay of their own. The **Micro-Mech Bay** weighs 75
+tons, carries one Micro-Mech of up to 19 tons, holds basic repair facilities and quarters for its pilot and a
+technician, and costs 15,000 C-bills. No BattleMech fits one. It is offered in the Small Craft / DropShip and
+capital ship creators at the Custom Homebrew level. The text adds an emergency rule: two Micro-Mechs can squeeze
+into one BattleMech bay, but they deploy at half speed and cannot make an orbital drop.
+
+### Waiting for Their Own Tools
+
+Version 6.1.0.2 also converts Micro-Mechs for other games. This app plays Classic BattleTech and Alpha Strike, each
+in its own section. These appendices wait for a section of their own:
+
+- **BattleForce 2:** class Mi, structure always 1, no overheat, a kick of 1 at Point Blank range, and the ranges of
+  the weapons BattleForce 2 does not list.
+- **Classic BattleTech RPG:** a Vehicle trait for 10 to 19 tons, Micro-Mech piloting, gunnery and tactics skills, a
+  Micro-Mechwarrior Training field and life path, and its training events.
+- **AeroTech 2:** the bay above is built for construction; the emergency rule waits for an aerospace play tool.
+
 ## Alpha Strike Rules
 
 **NOT OFFICIAL.** No rulebook and no Micro-Mech text has Alpha Strike rules for a Micro-Mech. Version 6.1.0.2

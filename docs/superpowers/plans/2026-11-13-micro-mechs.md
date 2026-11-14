@@ -86,6 +86,13 @@ push; append to the ledger what was built and every call that was ours; rewrite 
 11. **Alpha Strike (Chunk G, 2026-11-14).** The ruleset in `docs/superpowers/specs/2026-11-14-micro-mech-alpha-strike.md`
     is approved: armor by Alpha Strike's rule, one ability `MCR`, the first Engine Hit as written, type `MM`. Every
     code is explained in our rules, and Micro-Mechs have a TRO - JBT entry with credits (`docs/lore/micro-mechs-tro.md`).
+12. **Upper Leg Actuator hit (2026-11-14).** +4 on Piloting Skill Rolls, as the document's Piloting Skill Roll Table
+    prints (its critical hit text says +2).
+13. **Card heat (2026-11-14).** The Alpha Strike card leaves the heat scale and OV off a Micro-Mech, as an official
+    vehicle card does.
+14. **Other games (2026-11-14).** Build the Micro-Mech Bay (AeroTech 2 supplement) into DropShip and capital ship
+    construction. The RolePlaying and BattleForce 2 appendices, and the bay's emergency play rule, are stubs
+    (`src/data/micro-mech-other-games.ts`) for separate tools to come, as Classic BattleTech and Alpha Strike are.
 
 ## Versions (owner ruling, 2026-11-13)
 

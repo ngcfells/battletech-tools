@@ -1226,7 +1226,7 @@ export default class MicroMech implements IGameSettingsUnit {
             case "Sensors": return ["Sensors hit: +4 to hit on all attacks, and only one target within short range."];
             case MICRO_MECH_UPPER_ARM: return ["Upper Arm Actuator Group hit: +4 to hit with this arm's weapons (not added to a Lower Arm hit)."];
             case MICRO_MECH_LOWER_ARM: return ["Lower Arm Actuator Group hit: +2 to hit with this arm's weapons."];
-            case MICRO_MECH_UPPER_LEG: return ["Upper Leg Actuator Group hit: Walking MP halved, +2 on Piloting Skill Rolls, a roll whenever it runs; no kicks."];
+            case MICRO_MECH_UPPER_LEG: return ["Upper Leg Actuator Group hit: Walking MP halved, +4 on Piloting Skill Rolls, a roll whenever it runs; no kicks."];
             case MICRO_MECH_LOWER_LEG: return [`Lower Leg Actuator Group hit: -2 Walking MP, +2 on Piloting Skill Rolls${rules.lowerLegHitRunRoll ? ", a roll whenever it runs" : ""}; no kicks.`];
             default: return [`${entry.name} hit.`];
         }
@@ -1407,8 +1407,8 @@ export default class MicroMech implements IGameSettingsUnit {
 
     /**
      * The modifier on every Piloting Skill Roll now. "+1 bonus to all piloting rolls" (-1 on the target number). The
-     * document's table: Lower Leg +2, Gyro +4, Leg destroyed +5 (no modifiers for that leg's actuators); the critical
-     * hit text gives the Upper Leg +2 (its table prints +4: the text is followed). A quad with all four legs takes
+     * document's table: Lower Leg +2, Upper Leg +4, Gyro +4, Leg destroyed +5 (no modifiers for that leg's actuators).
+     * The critical hit text gives the Upper Leg +2; the table's +4 is followed (owner ruling, 2026-11-14). A quad with all four legs takes
      * the BattleMech -2 (TW p.122: lost with a leg). 2019: an optional neurohelmet, a further -1.
      */
     public getPilotingModifier(): IMicroMechModifier {
@@ -1432,7 +1432,7 @@ export default class MicroMech implements IGameSettingsUnit {
                 lines.push(`${name} destroyed +5`);
                 continue;
             }
-            if (state.upper) { total += 2; lines.push(`${name} Upper Leg Actuator Group +2`); }
+            if (state.upper) { total += 4; lines.push(`${name} Upper Leg Actuator Group +4`); }
             if (state.lower) { total += 2; lines.push(`${name} Lower Leg Actuator Group +2`); }
         }
         if (this.isQuad() && legs.every((leg) => !this.isLocationDestroyed(leg))) {

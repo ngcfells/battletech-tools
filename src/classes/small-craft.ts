@@ -30,7 +30,7 @@ import {
     SMALL_CRAFT_CONTROLS_FACTOR, SMALL_CRAFT_FACINGS, SMALL_CRAFT_FUEL_POINTS_PER_TON, SMALL_CRAFT_FUEL_PUMP_FACTOR, SMALL_CRAFT_MAX_ARMOR_TONS_PER_SI,
     SMALL_CRAFT_MAX_BAY_DOORS, SMALL_CRAFT_MAX_SI_FACTOR, SMALL_CRAFT_MAX_TONNAGE, SMALL_CRAFT_MIN_TONNAGE, SMALL_CRAFT_MIN_TURNS_OF_FIRE,
     SMALL_CRAFT_OPPOSITE_ARC, SMALL_CRAFT_SHAPES, SMALL_CRAFT_STRATEGIC_FUEL_TONS_PER_DAY, SMALL_CRAFT_TONNAGE_STEP, SMALL_CRAFT_WEAPONS_PER_ARC,
-    SMALL_CRAFT_WEAPONS_PER_GUNNER, SmallCraftArc, SmallCraftFacing, SmallCraftShape, findTransportBayType, getSmallCraftArcName,
+    SMALL_CRAFT_WEAPONS_PER_GUNNER, SmallCraftArc, SmallCraftFacing, SmallCraftShape, findTransportBayType, getSmallCraftArcName, getTransportBaysRulesLevel,
     getSmallCraftEngineWeight, getSmallCraftFacingName, getSmallCraftFireControlWeight, getSmallCraftFreeHeatSinks, getSmallCraftStructureWeight,
     quartersTypes, roundUpToHalfTon,
     CraftType, DROPSHIP_MIN_TONNAGE, DROPSHIP_MAX_TONNAGE, DROPSHIP_TONNAGE_STEP, getDropShipFuelPointsPerTon,
@@ -1794,7 +1794,8 @@ export default class SmallCraft implements IGameSettingsUnit {
         for (const mount of this._capitalWeapons) level = Math.max(level, mount.weapon.rulesLevel);
         // Fractional Accounting is "experimental-level unit design" (TO:AUE p.188).
         if (this.usesFractionalAccounting()) level = Math.max(level, EXPERIMENTAL_RULES_LEVEL);
-        return level;
+        // A bay from outside the rulebooks (the Micro-Mech Bay) needs its own level.
+        return Math.max(level, getTransportBaysRulesLevel(this._bays));
     }
 
     // Alpha Strike --------------------------------------------------------------------------------------------

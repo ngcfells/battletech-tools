@@ -29,7 +29,7 @@ import {
 import { IAerospaceArmorType, ICapitalWeapon, IEquipmentItem, IEras, IHeatSync, ITechDates, ITechOptions } from "../data/data-interfaces";
 import { CAPITAL_WEAPON_CATALOG, findCapitalWeapon, getCapitalAmmoBattleValue, getCapitalAmmoCost, getCapitalAmmoTags, getCapitalAmmoTons } from "../data/capital-weapon-helpers";
 import {
-    BAY_DOOR_COST, ESCAPE_SYSTEM_COST, ESCAPE_SYSTEM_TONS, QuartersTag, findTransportBayType, quartersTypes,
+    BAY_DOOR_COST, ESCAPE_SYSTEM_COST, ESCAPE_SYSTEM_TONS, QuartersTag, findTransportBayType, getTransportBaysRulesLevel, quartersTypes,
 } from "../data/small-craft-construction";
 import {
     ADVANCED_AEROSPACE_ARC_NAMES, ADVANCED_AEROSPACE_BV_ARMOR_FACTOR, ADVANCED_AEROSPACE_BV_SI_FACTOR, ADVANCED_AEROSPACE_FACINGS, ADVANCED_AEROSPACE_MAX_BAY_CAPITAL_DAMAGE, ADVANCED_AEROSPACE_MAX_SI_FACTOR,
@@ -951,7 +951,8 @@ export default class CapitalShip implements IGameSettingsUnit {
         for (const item of this._equipmentList) level = Math.max(level, getEquipmentRulesLevel(item));
         for (const mount of this._capitalWeapons) level = Math.max(level, mount.weapon.rulesLevel);
         if (this.isMonitor()) level = Math.max(level, CUSTOM_HOMEBREW_RULES_LEVEL);
-        return level;
+        // A bay from outside the rulebooks (the Micro-Mech Bay) needs its own level.
+        return Math.max(level, getTransportBaysRulesLevel(this._bays));
     }
 
     /** Damage Threshold of each facing: a tenth of its armor, rounded up (TW p.239), in capital points. */
