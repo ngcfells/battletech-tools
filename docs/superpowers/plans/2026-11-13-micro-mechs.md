@@ -340,21 +340,22 @@ play rules as notes in our own words, the credit, and the sheet trademark notice
 - [x] **Step 4:** Unit tests, `npm run check`, play a Storm through a destroyed leg and an engine hit in the app.
 - [x] **Step 5:** Commit `Custom Homebrew: Micro-Mech play mode (#173)`, push, ledger, handoff.
 
-## Chunk G: Alpha Strike ruleset (design, then build)
+## Chunk G: Alpha Strike ruleset (design done 2026-11-14, cloud; build waits for the owner; ledger `progress-cloud-micro-g.md`)
 
 The document converts to BattleForce 2 only. The owner asked for an Alpha Strike ruleset of our own.
 
-- [ ] **Step 1: Read** the document's BattleForce 2 appendix; the Alpha Strike conversion rules for BattleMechs and
+- [x] **Step 1: Read** the document's BattleForce 2 appendix; the Alpha Strike conversion rules for BattleMechs and
   for ProtoMechs (Alpha Strike Companion / Commander's Edition conversion chapter; cite the pages read); and how
   `ProtoMech.getAlphaStrikeStats()` and `getAlphaStrikeUnit()` do it in code.
-- [ ] **Step 2: Write the ruleset** as `docs/superpowers/specs/<date>-micro-mech-alpha-strike.md`: unit type code
+- [x] **Step 2: Write the ruleset** as `docs/superpowers/specs/<date>-micro-mech-alpha-strike.md`: unit type code
   and size; Move from Walk and Jump MP; armor and structure (the document fixes BattleForce structure at 1: say
   whether Alpha Strike keeps that); damage by range band from the weapons, with no overheat value; special
   abilities, including one for each play rule that matters at this scale (pilot in the torso, no heat, cannot be
   swarmed, vehicle for stacking and line of sight); Point Value. Each rule says which it is: taken from the
   document's BattleForce 2 conversion, taken from the Alpha Strike conversion rules, or ours. Check it on the four
   samples against the document's BattleForce 2 lines (the Tunnel Rat's is corrupt).
-- [ ] **Step 3: Bring the ruleset to the owner** in one message. Build only after the answer.
+- [x] **Step 3: Bring the ruleset to the owner** (asked 2026-11-14; the spec is `docs/superpowers/specs/2026-11-14-micro-mech-alpha-strike.md`)
+  in one message. Build only after the answer.
 - [ ] **Step 4: Failing tests, then build:** `getAlphaStrikeStats()` and `getAlphaStrikeUnit()` on `MicroMech`, a
   `print-as.tsx` in the creator, the card marked NOT OFFICIAL with `MulSource` set (#593), and the unit offered in
   the Alpha Strike roster's add page beside the other custom units.
