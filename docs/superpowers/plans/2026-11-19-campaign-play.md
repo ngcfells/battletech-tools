@@ -60,7 +60,10 @@ edition; this plan snapshots 'Mechs and Alpha Strike units only.
   `C:/repo/ResourceLibrary/text`; numbers, tables and names checked on the page image rendered from
   `C:/repo/JBTIICRework`). Ledger row per book/printing: what it tracks (money unit, time step, contracts, repair,
   salvage, experience, supply, territory, interstellar travel: jump range, transit to the jump point by star type,
-  recharge), each table with page, and the hooks it needs. Note real rule differences
+  recharge), each table with page, and the hooks it needs. Objective Raids (1992) and the eight Objectives books
+  (2011-13): ledger which planets they cover, what per planet (garrison, factories and products, conditions, raid
+  rules) and in what year; propose at the check-in whether they seed the system catalog (Task 5) and the planet
+  layer's starting dots (a factory = a manufacturing dot), so NGCFells decides before Task 5. Note real rule differences
   between printings (separate editions) and misprints (follow the original).
 - [ ] **Step 2:** Where an OCR extract is wrong on a passage used, list the correction in the ledger ("pending: another
   agent active in ResourceLibrary") instead of editing ResourceLibrary now.
@@ -355,7 +358,8 @@ edition; this plan snapshots 'Mechs and Alpha Strike units only.
 - Produces: routes `game-management/campaigns` (list + New), `.../campaigns/:id` (home), `.../campaigns/:id/planet`.
 
 Screens (follow the Aces campaign page's look and its save-on-change pattern):
-- List: name, edition ("No edition rules" for now), month, Open / Delete (confirm). New: name, campaign rulesets
+- List: name, edition ("No edition rules" for now), month, Open / Delete (confirm). New: name, start date, planet
+  (system search via `searchStarSystems`, then one of its planets from `loadStarSystemDetail`, or free text), campaign rulesets
   through `RulesetList` with `categories={["campaign"]}`, sides (name + role, at least one).
 - Home: step and Advance button; per-side balance and ledger table; log; force table (name, cost, BV, PV, status,
   Refresh, Remove) with "Add from current Classic BattleTech force" / "Add from current Alpha Strike force".

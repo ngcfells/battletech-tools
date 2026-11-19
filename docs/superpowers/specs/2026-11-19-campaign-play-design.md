@@ -180,6 +180,8 @@ All have text extracts in `ResourceLibrary/text`; natives in `JBTIICRework`. OCR
 | Campaign Operations (2016, 2021, 2023, errata 2024) | 2016+ | unit and planet |
 | Interstellar Operations BattleForce | 2021 | planet |
 | BattleTech: Mercenaries (CGL) | 2025 | unit |
+| Objective Raids (FASA 1665) | 1992 | planets: border worlds, garrisons, factories, raid rules, pirate points |
+| Objectives: Capellan Confederation, Draconis Combine, Federated Suns (CGL 2011); Free Worlds League, Lyran Alliance, Periphery (2012); The Clans (2013) | 2011-13 | planets: industrial sites and products by world, planetary conditions for campaigns |
 | *Future Wars* #5 pp.5-6; #16 pp.14-25 (Reese, Planetary Assault) | 1987 / 1990 | fan alternates |
 | BattleTech: Aces | | unit (already built) |
 
