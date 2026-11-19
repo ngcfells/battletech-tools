@@ -1,4 +1,6 @@
 import { AcesCampaign, IAcesCampaignExport } from "./classes/aces-campaign";
+import { Campaign } from "./classes/campaign/campaign";
+import { ICampaignExport } from "./classes/campaign/campaign-types";
 import { IAcesGameExport } from "./classes/aces-game";
 import { IAcesCardLibrary, mergeAcesCardLibrary, normalizeAcesCardLibrary } from "./data/aces-cards";
 import AlphaStrikeForce, { IASForceExport } from "./classes/alpha-strike-force";
@@ -27,6 +29,9 @@ export type { StorageSaveErrorHandler } from "./dataSavesStorage";
 /** Most Aces campaigns restored from one backup, as for the other saved collections. */
 export const MAX_ACES_CAMPAIGNS = 500;
 
+/** Most campaigns (campaign play) restored from one backup. */
+export const MAX_CAMPAIGNS = 500;
+
 
 // The restore reads what it merges with at once, so every write it makes is finished when it returns.
 function getDataNow( appSettings: AppSettings, keyName: string ): string | null {
@@ -34,6 +39,16 @@ function getDataNow( appSettings: AppSettings, keyName: string ): string | null 
 }
 
 function parseAcesCampaigns( rawData: string | null ): IAcesCampaignExport[] {
+    try {
+        const rv = rawData ? JSON.parse( rawData ) : null;
+        return Array.isArray(rv) ? rv.filter( (item) => item && typeof item === "object" ) : [];
+    }
+    catch {
+        return [];
+    }
+}
+
+function parseCampaigns( rawData: string | null ): ICampaignExport[] {
     try {
         const rv = rawData ? JSON.parse( rawData ) : null;
         return Array.isArray(rv) ? rv.filter( (item) => item && typeof item === "object" ) : [];
@@ -100,6 +115,9 @@ export interface IFullBackup {
     acesGame?: IAcesGameExport | null;
     acesCampaigns?: IAcesCampaignExport[];
     acesCardLibrary?: IAcesCardLibrary | null;
+
+    // Campaign play; optional so older backups still restore.
+    campaigns?: ICampaignExport[];
 }
 
 export async function getFullBackup(
@@ -136,6 +154,7 @@ export async function getFullBackup(
         acesGame: await getAcesGame(appSettings),
         acesCampaigns: await getAcesCampaigns(appSettings),
         acesCardLibrary: await getAcesCardLibrary(appSettings),
+        campaigns: await getCampaigns(appSettings),
     }
 
     return JSON.stringify( rv );
@@ -908,6 +927,38 @@ export function restoreFullBackup(
         }
     }
 
+    if( Array.isArray(io.campaigns) && io.campaigns.length > 0 ) {
+        // As the Aces campaigns: cap the count and rebuild each through the class.
+        if( io.campaigns.length > MAX_CAMPAIGNS ) {
+            restoreMessages.push(warning("Only the first " + MAX_CAMPAIGNS + " of " + io.campaigns.length + " campaigns are restored"));
+        }
+        const incoming: ICampaignExport[] = [];
+        for( const rawItem of io.campaigns.slice(0, MAX_CAMPAIGNS) as unknown[] ) {
+            const item = rawItem as { id?: unknown; name?: unknown } | null;
+            if( !item || typeof item !== "object" || typeof item.id !== "string" || !item.id ) {
+                restoreMessages.push(warning("A campaign in the backup is not readable and is skipped"));
+                continue;
+            }
+            try {
+                incoming.push( new Campaign( item as ICampaignExport ).export() );
+            } catch {
+                restoreMessages.push(warning("Campaign '" + String(item.name || "(nameless)").slice(0, 60) + "' is not readable and is skipped"));
+            }
+        }
+        for( const item of incoming ) {
+            restoreMessages.push({
+                severity: "add",
+                message: "Add or replace campaign '" + ( item.name ? String(item.name).slice(0, 60) : "(nameless)" ) + "'",
+            })
+        }
+        if( performActions ) {
+            const appSettings = appGlobals.appSettings;
+            const existing = parseCampaigns( getDataNow( appSettings, "campaigns" ) );
+            const merged = existing.filter( (campaign) => !incoming.some( (item) => item.id === campaign.id ) );
+            saveCampaigns( appSettings, merged.concat( incoming ) );
+        }
+    }
+
     if( io.acesCardLibrary && typeof io.acesCardLibrary === "object" ) {
         const incomingLibrary = normalizeAcesCardLibrary( io.acesCardLibrary );
         const count = incomingLibrary.cards.length + incomingLibrary.commandCards.length + incomingLibrary.specialOrders.length + incomingLibrary.edgeCards.length + incomingLibrary.scenarios.length;
@@ -1138,6 +1189,19 @@ export async function getAcesCampaigns(
     appSettings: AppSettings,
 ): Promise<IAcesCampaignExport[]> {
     return parseAcesCampaigns( await getData(appSettings, "acesCampaigns" ) );
+}
+
+export function saveCampaigns(
+    appSettings: AppSettings,
+    newValue: ICampaignExport[],
+) {
+    saveData(appSettings, "campaigns", JSON.stringify(newValue) );
+}
+
+export async function getCampaigns(
+    appSettings: AppSettings,
+): Promise<ICampaignExport[]> {
+    return parseCampaigns( await getData(appSettings, "campaigns" ) );
 }
 
 export function saveAcesCardLibrary(

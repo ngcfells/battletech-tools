@@ -1,6 +1,6 @@
 // @vitest-environment happy-dom
 import { describe, expect, it } from "vitest";
-import { MAX_ACES_CAMPAIGNS, MAX_RESTORE_GROUPS, MAX_VEHICLE_SAVES, restoreFullBackup, IFullBackup } from "./dataSaves";
+import { MAX_ACES_CAMPAIGNS, MAX_CAMPAIGNS, MAX_RESTORE_GROUPS, MAX_VEHICLE_SAVES, restoreFullBackup, IFullBackup } from "./dataSaves";
 import SmallCraft from "./classes/small-craft";
 import Vehicle from "./classes/vehicle";
 import { BattleMechForce, MAX_FORCE_GROUPS } from "./classes/battlemech-force";
@@ -102,5 +102,21 @@ describe("Restoring a backup", () => {
         const warnings = messages.filter((msg) => msg.severity === "warning").map((msg) => msg.message);
         expect(warnings.some((msg) => msg.includes(String(MAX_ACES_CAMPAIGNS)))).toBe(true);
         expect(warnings.filter((msg) => msg.includes("not readable"))).toHaveLength(2);
+    });
+
+    it("skips an unreadable campaign with a warning", () => {
+        const campaigns = [null, { name: "no id" }, "text", { id: "ok", name: "Fine", ledger: [{ junk: true }] }];
+        const messages = restoreFullBackup(backup({ campaigns }), appGlobals());
+        expect(messages.filter((msg) => msg.severity === "add").map((msg) => msg.message)).toEqual(["Add or replace campaign 'Fine'"]);
+        const warnings = messages.filter((msg) => msg.severity === "warning").map((msg) => msg.message);
+        expect(warnings.filter((msg) => msg.startsWith("A campaign in the backup is not readable"))).toHaveLength(3);
+    });
+
+    it("caps restored campaigns at 500", () => {
+        const campaigns = Array.from({ length: MAX_CAMPAIGNS + 5 }, (_, i) => ({ id: "k" + i, name: "Campaign " + i }));
+        const messages = restoreFullBackup(backup({ campaigns }), appGlobals());
+        expect(MAX_CAMPAIGNS).toBe(500);
+        expect(messages.filter((msg) => msg.severity === "add")).toHaveLength(MAX_CAMPAIGNS);
+        expect(messages.some((msg) => msg.severity === "warning" && msg.message.includes(String(MAX_CAMPAIGNS)))).toBe(true);
     });
 });
