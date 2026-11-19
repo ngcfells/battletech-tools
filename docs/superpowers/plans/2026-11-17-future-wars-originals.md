@@ -42,7 +42,7 @@ rules otherwise, and the notes say what the reprint changed.
 | 28 | Long Range Flamer (Sanders) | FW #9 (1988) p.27, Karl Sander | read in Chunk R |
 | 28 | Power Booster (Sanders) | FW #14 (1989) p.46, signed Karl Sander | |
 | 29 | Weapons Malfunctions (Bruanning) | FW #9 (1988) pp.10-11, Karl Bruanning and Herb Barents | |
-| 33-34 | A Question on Economics (Barents) | **FW #5 pp.5-6** | **the original prints combination values the reprint dropped**: mining + refining + heavy manufacturing = 7 million C (not 3); two food + one processing = 6 million; oil + refining + processing = 12 million; "you cannot use ALL the dots in conjunction"; manufacturing, processing and refining yield more than other things; heavy manufacturing leads to light. Payday every three months. Page 6: destroying an area's dots (food easiest, heavy industry hardest) by the size of the fight. The reprint replaced the numbers with "double or even triple" and added a MechWarrior "pain factor" paragraph |
+| 33-34 | A Question on Economics (Barents) | **FW #5 pp.5-6** | **the original prints combination values the reprint dropped**: mining + refining + heavy manufacturing = 7 million C (not 3); two food + one processing = 6 million; oil + refining + processing = 12 million; "you cannot use ALL the dots in conjunction"; manufacturing, processing and refining yield more than other things; heavy manufacturing leads to light. Payday every three months. Page 6: destroying an area's dots (food easiest, heavy industry hardest) by the size of the fight. The reprint replaced the numbers with "double or even triple" for dots in the same county, and added scorched earth, partisans and commando raids (no "pain factor" paragraph: read Best-of pp.33-34 on 2026-11-19; that text is FW #12's). Built as ONE merged ruleset by NGCFells's decision: see 2026-11-19-campaign-play.md |
 | 35-38 | Walkers / Alternate Rules for Building Mechs (Clell Flint) | FW #11 p.24 | already checked against FW #11 when built (compact plan line 48) |
 | 42-52 | Planetary Assault Rules (Michael Reese) | FW #16 pp.14-25 | FW #30 has battle reports played with a victory-level table (76-90 strategic, 91+ crushing): check whether that is these rules |
 | 57-59 | MechWarrior in a Box (Mark Stock) | FW #12 p.8 | FW #12 also has the "pain factor" text |
@@ -70,7 +70,7 @@ refactor's eligibility model (`changes`, `excludes`, `requires`).
 | R2 | Original-printing alternates (`2026-11-17-future-wars-printing-alternates.md`) | Opus 5.5 | done 2026-11-17 |
 | F | Power Armor: read, design, write its plan | Fable 5.2 or Opus 5.5 | done 2026-11-17 |
 | G | DropShips: all four methods (Stock; Stock + Eid; Reese; Houseman), each its own ruleset | Fable 5.2 | Q1 answered, UI |
-| H | Game Management "Future Wars" section; Economics in both versions (FW #5 numbers; reprint's "double or triple") as alternate rules | Fable 5.2 | Q3 answered, UI |
+| H | Game Management "Future Wars" section. Economics: moved to  (campaign play; both printings merged into one ruleset by NGCFells's decision, 2026-11-19). Planetary Assault, MechWarrior in a Box and City Raid stay here | Opus 5.5 | Economics: campaign plan |
 | I | Build H | Sonnet 5.5 | H |
 | J | *Future Wars* #33 designs (nine) | Sonnet 5.5 | nothing |
 | K | Pulsar: Kin weapons it needs, then the two designs | Opus 5.5 | Q2 answered, UI |
