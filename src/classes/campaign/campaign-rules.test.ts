@@ -10,7 +10,7 @@ const economyCampaign = ( rulesetIds: string[] = ["fw-economics"] ): Campaign =>
     const held = c.addSide( "Defenders", "defender" );
     c.addSide( "Raiders", "attacker" );
     c.planet = {
-        systemId: null, name: "Testworld", customDotTypes: [],
+        systemId: null, name: "Testworld", customDotTypes: [], customCombinations: [],
         areas: [ { id: "a1", name: "Farms", terrain: "plains", controllerSideId: held.id, comboOverride: null,
             dots: [ { id: "d1", type: "food", destroyed: false }, { id: "d2", type: "food", destroyed: false }, { id: "d3", type: "processing", destroyed: false } ] } ],
     };
@@ -53,6 +53,14 @@ describe( "Campaign rule hooks", () => {
         c.editionId = "test-sortie";
         c.advance( 6 );
         expect( c.ledger ).toEqual( [] );
+    } );
+
+    it( "pays the GM's own combinations at payday", () => {
+        const c = economyCampaign();
+        c.planet!.customCombinations = [ { id: "gm", name: "Granary", needs: { food: 2, processing: 1 }, multiplier: 3 } ];
+        c.advance( 3 );
+        // 9,000,000 (triple 3 dots) beats the printed 6,000,000.
+        expect( c.ledger[0].amount ).toBe( 9000000 );
     } );
 
     it( "a side with no paying areas gets no entry", () => {

@@ -1,4 +1,4 @@
-import { IStarSystemDetail, IStarSystemIndexEntry } from "./star-system-types";
+import { IStarSystemDetail, IStarSystemGarrison, IStarSystemIndexEntry, IStarSystemSite } from "./star-system-types";
 
 /*
  * Star system lookups for campaigns. The data (MegaMek Data, verified against our books: STAR-SYSTEMS-CREDITS.md)
@@ -42,6 +42,32 @@ export const loadStarSystemDetail = async ( id: string ): Promise<IStarSystemDet
     if( !shards.has( file ) ) shards.set( file, loader().then( ( data ) => data as Record<string, IStarSystemDetail> ) );
     const shard = await shards.get( file )!;
     return Object.prototype.hasOwnProperty.call( shard, id ) ? shard[id] : undefined;
+}
+
+export interface IStarSystemSites {
+    sites: IStarSystemSite[];
+    garrisons: IStarSystemGarrison[];
+}
+
+let sitesPromise: Promise<IStarSystemSites> | null = null;
+
+/** Industrial sites and garrisons read from our own books (not MegaMek Data), fetched once. */
+export const loadStarSystemSites = (): Promise<IStarSystemSites> => {
+    if( !sitesPromise ) {
+        sitesPromise = import( "./star-systems-sites.json" ).then( ( module ) => {
+            const data = ( module.default ?? module ) as Partial<IStarSystemSites>;
+            return { sites: data.sites ?? [], garrisons: data.garrisons ?? [] };
+        } );
+    }
+    return sitesPromise;
+}
+
+/** The garrison entries of the latest date on or before `date` (several books may list one date). */
+export const getSystemGarrisons = ( garrisons: IStarSystemGarrison[], systemId: string, date: string ): IStarSystemGarrison[] => {
+    const here = garrisons.filter( ( g ) => g.systemId === systemId && g.date <= date );
+    if( here.length === 0 ) return [];
+    const latest = here.reduce( ( best, g ) => ( g.date > best ? g.date : best ), here[0].date );
+    return here.filter( ( g ) => g.date === latest );
 }
 
 const normalise = ( text: string ): string => text.toLowerCase().replace( /['’`]/g, "" ).trim();

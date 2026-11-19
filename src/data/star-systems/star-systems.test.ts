@@ -7,7 +7,9 @@ import {
     getDistanceLY,
     getFewestJumps,
     getStarSystemIndex,
+    getSystemGarrisons,
     getSystemOwners,
+    loadStarSystemSites,
     loadStarSystemDetail,
     loadStarSystemIndex,
     searchStarSystems,
@@ -60,6 +62,24 @@ describe( "Star system lookups", () => {
     it( "returns null when no path exists", async () => {
         await loadStarSystemIndex();
         expect( getFewestJumps( byId( "Terra" ), byId( "Tharkad" ), 1 ) ).toBeNull();
+    } );
+
+    it( "picks the garrisons on or nearest before the date", () => {
+        const garrisons = [
+            { systemId: "Tharkad", date: "3054-01-01", faction: "LA", units: ["Royal Guard"], source: "Objective Raids p.1" },
+            { systemId: "Tharkad", date: "3054-01-01", faction: "LA", units: ["Tharkad Militia"], source: "Objective Raids p.1" },
+            { systemId: "Tharkad", date: "3060-01-01", faction: "LA", units: ["Later"], source: "Field Manual p.2" },
+            { systemId: "Donegal", date: "3050-01-01", faction: "LA", units: ["Elsewhere"], source: "x" },
+        ];
+        expect( getSystemGarrisons( garrisons, "Tharkad", "3055-06-01" ).flatMap( ( g ) => g.units ) ).toEqual( ["Royal Guard", "Tharkad Militia"] );
+        expect( getSystemGarrisons( garrisons, "Tharkad", "3060-01-01" ).flatMap( ( g ) => g.units ) ).toEqual( ["Later"] );
+        expect( getSystemGarrisons( garrisons, "Tharkad", "3000-01-01" ) ).toEqual( [] );
+    } );
+
+    it( "loads the sites and garrisons file", async () => {
+        const data = await loadStarSystemSites();
+        expect( Array.isArray( data.sites ) ).toBe( true );
+        expect( Array.isArray( data.garrisons ) ).toBe( true );
     } );
 
     it( "loads one system's detail", async () => {

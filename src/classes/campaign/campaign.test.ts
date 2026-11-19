@@ -21,7 +21,8 @@ const fixture = (): ICampaignExport => ( {
     planet: {
         systemId: "Tharkad",
         name: "Tharkad",
-        customDotTypes: [],
+        customDotTypes: [ { id: "spice", name: "Spice", value: 2000000, target: 8 } ],
+        customCombinations: [ { id: "gm1", name: "Spice trade", needs: { spice: 1, processing: 1 }, multiplier: 3 } ],
         areas: [ {
             id: "ar1",
             name: "Tharkad City",

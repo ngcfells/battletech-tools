@@ -64,12 +64,22 @@ export interface ICustomDotType {
     target: number;
 }
 
+/** A combination the GM sets (Best of Future Wars p.33: "double or even triple"). */
+export interface ICampaignCombination {
+    id: string;
+    name: string;
+    /** Dot type id -> how many. */
+    needs: Record<string, number>;
+    multiplier: 2 | 3;
+}
+
 export interface ICampaignPlanet {
     /** The star catalog's system id, or null for a free-text planet. */
     systemId: string | null;
     name: string;
     areas: ICampaignArea[];
     customDotTypes: ICustomDotType[];
+    customCombinations: ICampaignCombination[];
 }
 
 export interface ICampaignTarget {

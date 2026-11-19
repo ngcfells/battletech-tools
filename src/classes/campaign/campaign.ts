@@ -6,6 +6,7 @@ import {
     CampaignSideRole,
     CampaignTimeStep,
     ICampaignArea,
+    ICampaignCombination,
     ICampaignDot,
     ICampaignEdition,
     ICampaignExport,
@@ -97,10 +98,20 @@ const pickCustomDot = ( t: Record<string, any> ): ICustomDotType | null =>
         ? { id: t.id, name: t.name, value: t.value, target: t.target }
         : null;
 
+const pickCombination = ( c: Record<string, any> ): ICampaignCombination | null => {
+    if( !isString( c.id ) || !isString( c.name ) || !isObject( c.needs ) || ( c.multiplier !== 2 && c.multiplier !== 3 ) ) return null;
+    const needs: Record<string, number> = {};
+    for( const [type, count] of Object.entries( c.needs ).slice( 0, 50 ) ) {
+        if( isNumber( count ) && count > 0 && count <= 100 ) needs[type] = Math.floor( count );
+    }
+    return Object.keys( needs ).length > 0 ? { id: c.id, name: c.name, needs, multiplier: c.multiplier } : null;
+}
+
 const pickPlanet = ( p: unknown ): ICampaignPlanet | null =>
     isObject( p ) && isString( p.name )
         ? { systemId: isString( p.systemId ) ? p.systemId : null, name: p.name,
-            areas: cleanArray( p.areas, pickArea ), customDotTypes: cleanArray( p.customDotTypes, pickCustomDot ) }
+            areas: cleanArray( p.areas, pickArea ), customDotTypes: cleanArray( p.customDotTypes, pickCustomDot ),
+            customCombinations: cleanArray( p.customCombinations, pickCombination ) }
         : null;
 
 const isLeapYear = ( y: number ): boolean => ( y % 4 === 0 && y % 100 !== 0 ) || y % 400 === 0;
