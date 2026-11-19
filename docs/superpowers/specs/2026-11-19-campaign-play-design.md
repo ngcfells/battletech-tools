@@ -198,6 +198,30 @@ with pages, and which hooks it needs. The result decides the `ICampaignEdition` 
 
 Each chunk ends green (`npm run check` in PowerShell), news line, merge to beta, deploy (standing permission).
 
+## Star systems (added by NGCFells, 2026-11-19)
+
+"The app needs to have the systems and planets therein in order for players to be able to navigate to, or to assault
+or defend them."
+
+- **Base data: MekHQ** `C:/repo/mekhq/MekHQ/data/universe/planetary_systems/canon_systems.zip` (3,186 systems, CC
+  BY-NC-SA 4.0, credit "MegaMek Data (C) The MegaMek Team"): coordinates, star type, recharge stations by date,
+  every planet and moon, ownership / population / industry by date; most fields cite a book and page, others say
+  "canon", "SUCS" (community atlas) or "assumption".
+- **Verified against our own books** (NGCFells: "we use our own books to verify megamek... we are not cribbing someone
+  else's work"): an agent checks cited fields against the library (page images), searches the books for fields
+  cited only "canon", and records corrections in a corrections file the import applies (the book wins). Fields from
+  SUCS or "assumption" are shown with that source.
+- **Cross-check: the Inner Sphere Cartography Society maps** (`JBTIICRework/maps-and-art`, vector PDFs, about 2,100
+  named systems each, 2750 / 3040 / 3062 + 3062 JumpShip paths; credit ISCS, iscs.teamspam.net; the 3040 map by
+  Michael J. Flynn). Scale about 1.52 light-years a map point from Terra; Tharkad, Luthien and Sian match MekHQ's
+  coordinates. Every system's position and its owner in those years is compared automatically; disagreements go to the
+  verification ledger.
+- In a campaign: the planet layer is a real system's planet (system id + planet name); the campaign has a start date,
+  so the owner shown is the owner on the campaign's date; sides set targets `{ systemId, intent: travel | assault |
+  defend }`; the app shows distance in light-years and the fewest jumps (jump range read in the survey; 30 light-years
+  expected). Travel time comes with the editions.
+- Not in this pass: a drawn star map (later); interstellar-scale war rules.
+
 ## Builder's calls after the review (Claude, 2026-11-19; NGCFells can overrule any)
 
 1. **Currency and time step belong to the edition.** Each edition declares its money unit (C-bills, Aces Support

@@ -2,8 +2,9 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Survey every campaign edition, then build the shared campaign core, its planet layer and the merged Future
-Wars Economics ruleset with NGCFells's derived damage table, as the first shippable piece of campaign play.
+**Goal:** Survey every campaign edition, then build the shared campaign core, a verified star system catalog (MekHQ
+data as base, checked against our books and the ISCS maps), the planet layer and the merged Future Wars Economics
+ruleset with NGCFells's derived damage table, as the first shippable piece of campaign play.
 
 **Architecture:** One saved `Campaign` record (sides, ledgers, log, force snapshots, optional planet) in
 `src/classes/campaign/`; Economics and damage are pure functions in `src/data/`; the two rulesets are Special Rulesets
@@ -38,9 +39,9 @@ edition; this plan snapshots 'Mechs and Alpha Strike units only.
 1. A backup with no `campaigns` key, or with malformed campaign entries, restores everything else and skips the bad
    ones with a warning (Task 3 test).
 2. A campaign whose saved 'Mech was deleted or edited still opens and plays from its snapshot (Task 4 test).
-3. Destroyed dots pay nothing and cannot sit in a combination (Task 5 test).
-4. An area with no controller pays no one at payday, and a side with no areas gets no ledger entry (Task 7 test).
-5. Advancing several months at once pays every third month exactly once, never at month 0 (Task 7 test).
+3. Destroyed dots pay nothing and cannot sit in a combination (Task 8 test).
+4. An area with no controller pays no one at payday, and a side with no areas gets no ledger entry (Task 10 test).
+5. Advancing several months at once pays every third month exactly once, never at month 0 (Task 10 test).
 
 ---
 
@@ -58,7 +59,8 @@ edition; this plan snapshots 'Mechs and Alpha Strike units only.
 - [ ] **Step 1:** For each source in the spec's "Sources to read" table, read its campaign chapters (text extract in
   `C:/repo/ResourceLibrary/text`; numbers, tables and names checked on the page image rendered from
   `C:/repo/JBTIICRework`). Ledger row per book/printing: what it tracks (money unit, time step, contracts, repair,
-  salvage, experience, supply, territory), each table with page, and the hooks it needs. Note real rule differences
+  salvage, experience, supply, territory, interstellar travel: jump range, transit to the jump point by star type,
+  recharge), each table with page, and the hooks it needs. Note real rule differences
   between printings (separate editions) and misprints (follow the original).
 - [ ] **Step 2:** Where an OCR extract is wrong on a passage used, list the correction in the ledger ("pending: another
   agent active in ResourceLibrary") instead of editing ResourceLibrary now.
@@ -82,19 +84,21 @@ edition; this plan snapshots 'Mechs and Alpha Strike units only.
   - `interface ICampaignLogEntry { id: string; step: number; text: string }`
   - `interface ICampaignDot { id: string; type: string; destroyed: boolean }`
   - `interface ICampaignArea { id: string; name: string; terrain: string; controllerSideId: string | null; dots: ICampaignDot[]; comboOverride: string[] | null }` (GM's chosen combination ids, in order; null = the app picks)
-  - `interface ICampaignPlanet { name: string; areas: ICampaignArea[]; customDotTypes: ICustomDotType[] }`
+  - `interface ICampaignPlanet { systemId: string | null; name: string; areas: ICampaignArea[]; customDotTypes: ICustomDotType[] }` (`systemId` from Task 5's catalog; `name` = the planet's name in that system, or free text with no system)
+  - `interface ICampaignTarget { id: string; sideId: string; systemId: string; intent: "travel" | "assault" | "defend" }`
   - `interface ICustomDotType { id: string; name: string; value: number; target: number }` (GM-added type; value
     default 1,000,000; destruction target default 8, builder's call: the middle of the table)
   - `interface ICampaignForceUnit` (Task 4 fills it; Task 2 stores it as given)
   - `interface ICampaignEdition { id: string; name: string; source: { title: string; publication: string; pages: string }; kind: "unit" | "planet" | "both"; currency: string; timeStep: CampaignTimeStep }` plus the hooks Task 1 settles
-  - `interface ICampaignExport { version: 1; id: string; name: string; editionId: string | null; rulesetIds: string[]; step: number; sides: ICampaignSide[]; force: ICampaignForceUnit[]; ledger: ICampaignLedgerEntry[]; log: ICampaignLogEntry[]; planet: ICampaignPlanet | null; editionState: unknown }`
+  - `interface ICampaignExport { version: 1; id: string; name: string; editionId: string | null; rulesetIds: string[]; startDate: string; step: number; sides: ICampaignSide[]; targets: ICampaignTarget[]; force: ICampaignForceUnit[]; ledger: ICampaignLedgerEntry[]; log: ICampaignLogEntry[]; planet: ICampaignPlanet | null; editionState: unknown }`
   - `CAMPAIGN_EXPORT_VERSION = 1`
 - Produces (in `campaign.ts`): `class Campaign` with `constructor(data: ICampaignExport | null = null)`,
   `export(): ICampaignExport`, `import(data: unknown): void` (throws on non-object or missing id; drops malformed
   array items; caps each array at 5,000 entries), `get currency(): string` (edition's, else `"C"`),
   `get timeStep(): CampaignTimeStep` (edition's, else `"month"`), `balance(sideId: string, currency?: string): number`,
   `addLedger(entry: Omit<ICampaignLedgerEntry, "id">): void`, `addLog(text: string): void` (at the current step),
-  `addSide(name: string, role: CampaignSideRole): ICampaignSide`, `advance(steps?: number): void` (Task 7 adds the
+  `addSide(name: string, role: CampaignSideRole): ICampaignSide`, `currentDate(): string` (ISO `YYYY-MM-DD`:
+  `startDate` plus `step` months on a month time step; `startDate` otherwise), `advance(steps?: number): void` (Task 10 adds the
   ruleset hooks; here it only moves `step` and logs "Month N" / "Sortie N").
 
 - [ ] **Step 1: Write the failing tests:** `"round-trips through export and import"` (a campaign with two sides, one
@@ -102,7 +106,8 @@ edition; this plan snapshots 'Mechs and Alpha Strike units only.
   `"balances each side's ledger in its currency"` (+5,000,000 and -1,200,000 on side A, +3 on side B: `balance(A)` =
   3,800,000, `balance(B)` = 3); `"refuses a non-object and skips malformed items"` (`import("x")` throws; a ledger
   item without `sideId` is dropped); `"advances months and logs each"` (`advance(3)`: step 3, three log lines);
-  `"uses C-bills and months with no edition"`.
+  `"uses C-bills and months with no edition"`; `"counts the date in months"` (start `3025-01-15`, `advance(14)` →
+  `3026-03-15`).
 - [ ] **Step 2:** Run `npx vitest run src/classes/campaign/campaign.test.ts` (PowerShell). Expected: FAIL, module not
   found.
 - [ ] **Step 3:** Implement the types and class (ids from `src/utils/generateUUID.ts`; editions looked up from
@@ -155,7 +160,86 @@ edition; this plan snapshots 'Mechs and Alpha Strike units only.
 - [ ] **Step 4:** Run. Expected: PASS.
 - [ ] **Step 5:** Commit `Campaign play: force snapshots`.
 
-### Task 5: Economics (pure)
+### Task 5: Star system catalog (import from MekHQ)
+
+**Files:**
+- Create: `scripts/star-systems/import_mekhq_systems.py` (developer tool, run by hand; Python 3 + PyYAML)
+- Create: `src/data/star-systems/star-system-types.ts`, `src/data/star-systems/star-system-corrections.ts`
+- Create (generated, committed): `src/data/bundled/star-systems-index.json`, `src/data/bundled/star-systems-detail.json`
+- Create: `src/data/star-systems/STAR-SYSTEMS-CREDITS.md` (the CC BY-NC-SA 4.0 notice copied from the MekHQ files,
+  ISCS credit, NGCFells's verification rule)
+- Test: `src/data/star-systems/star-systems-data.test.ts`
+
+**Interfaces:**
+- Produces (types): `interface ISourced<T> { value: T; source: string }` (source = the MekHQ citation text, or the
+  book and page after a correction); `interface IStarSystemIndexEntry { id: string; name: string; x: number; y: number;
+  owners: { date: string; factions: string[] }[] }`; `interface IStarSystemDetail { id: string; spectralType:
+  ISourced<string> | null; primarySlot: number | null; recharge: { date: string; nadir?: boolean; zenith?: boolean }[];
+  planets: IStarPlanet[] }`; `interface IStarPlanet { name: ISourced<string>; type: string; sysPos: number;
+  gravity?: number; atmosphere?: string; pressure?: string; temperature?: number; water?: number; events: { date:
+  string; population?: number; socioIndustrial?: string; factions?: string[] }[] }`;
+  `interface IStarSystemCorrection { systemId: string; path: string; value: unknown; source: string; note: string }`
+  and `STAR_SYSTEM_CORRECTIONS: IStarSystemCorrection[]` (empty until Task 6).
+- The script reads the zip, keeps only these fields, applies `STAR_SYSTEM_CORRECTIONS` (exported to a JSON sidecar
+  the script reads: `src/data/star-systems/star-system-corrections.json`; the `.ts` file re-exports it typed), and
+  writes the two JSON files sorted by id. Index holds every system; detail is loaded only on campaign pages.
+
+- [ ] **Step 1: Write the failing tests:** `"holds every canon system"` (index length 3,186; ids unique);
+  `"places Terra at the origin and Tharkad where MekHQ does"` (Terra 0,0; Tharkad -212.999, 151.773); `"keeps each
+  field's source"` (Tharkad spectral type G6V, source "25 Years of Art and Fiction, pg. 167"); `"applies a
+  correction"` (run the script's correction step on a fixture; the corrected value and its book source win).
+- [ ] **Step 2:** Run. Expected: FAIL (files missing).
+- [ ] **Step 3:** Write and run the script: `python -I scripts/star-systems/import_mekhq_systems.py C:/repo/mekhq/MekHQ/data/universe/planetary_systems/canon_systems.zip`. Record the two files' sizes in the commit message.
+- [ ] **Step 4:** Run. Expected: PASS.
+- [ ] **Step 5:** Commit `Star systems: catalog from MegaMek data (CC BY-NC-SA 4.0), to be verified against the books`.
+
+### Task 6: Verify the catalog against the books and the ISCS maps (agent)
+
+**Files:**
+- Create: `scripts/star-systems/iscs_crosscheck.py`
+- Create: `.superpowers/sdd/2026-11-19-campaign-play/star-systems-verification.md` (ledger)
+- Modify: `src/data/star-systems/star-system-corrections.json`
+
+- [ ] **Step 1: ISCS cross-check (every system).** The script reads the four ISCS PDFs (vector text + dots; the dot
+  nearest each name label; 1.52 light-years a point, origin at Terra's dot, y flipped) and compares each named
+  system with the index: position more than 3 light-years apart, a name missing on either side, owner in 2750 / 3040 /
+  3062 (dot or region colour → faction; the legend gives the colours) different. Writes the disagreements to the
+  ledger.
+- [ ] **Step 2: Book check (agent, batches by source book).** For each cited book the library holds (look in
+  JBTIICRework and `ResourceLibrary/text/_hashes.json`), open the cited page as an image and check the fields that
+  cite it; for fields cited only "canon", search the extracts for the system and check what is found. Each mismatch:
+  a correction (book wins, `source` = book and page) and a ledger row. Fields from "SUCS" or "assumption" are not
+  changed; ledger counts them. Order: systems used by tests and the ISCS disagreements first, then by book.
+- [ ] **Step 3:** Re-run the import (Task 5 Step 3) and its tests. Expected: PASS.
+- [ ] **Step 4:** Commit `Star systems: verified against the books (n corrections)`; the ledger says how much is
+  verified, so later sessions continue the batches.
+
+### Task 7: System lookups for campaigns
+
+**Files:**
+- Create: `src/data/star-systems/star-systems.ts`
+- Test: `src/data/star-systems/star-systems.test.ts`
+
+**Interfaces:**
+- Consumes: Task 5's types and JSON.
+- Produces: `getStarSystemIndex(): IStarSystemIndexEntry[]`; `loadStarSystemDetail(id: string):
+  Promise<IStarSystemDetail | undefined>` (dynamic import of the detail JSON, as `bv-accuracy.tsx` imports its
+  bundled JSON); `searchStarSystems(query: string, limit?: number): IStarSystemIndexEntry[]` (case- and
+  apostrophe-insensitive, prefix matches first); `getSystemOwners(system: IStarSystemIndexEntry, date: string):
+  string[]` (the last entry on or before the date); `getDistanceLY(a, b): number`; `getFewestJumps(a, b, jumpRange:
+  number): number | null` (breadth-first over systems within `jumpRange`; null if unreachable);
+  `DEFAULT_JUMP_RANGE_LY = 30` (confirm the figure and page in Task 1's survey; put the page in a comment).
+
+- [ ] **Step 1: Write the failing tests:** `"finds Tharkad by a partial name"`; `"knows who held Tharkad in 3025"`
+  (expect the value the index holds for that date, read in the test from the JSON, and the faction code it gives);
+  `"measures Terra to Tharkad"` (≈ 261.5 light-years, to 1 decimal); `"counts jumps"` (Terra to a system 25 light-years
+  away: 1; Terra to Tharkad: at least 9); `"returns null when no path exists"` (jump range 1).
+- [ ] **Step 2:** Run. Expected: FAIL.
+- [ ] **Step 3:** Implement.
+- [ ] **Step 4:** Run. Expected: PASS.
+- [ ] **Step 5:** Commit `Star systems: search, owners by date, distance and jumps`.
+
+### Task 8: Economics (pure)
 
 **Files:**
 - Create: `src/data/future-wars-economics.ts`
@@ -190,7 +274,7 @@ edition; this plan snapshots 'Mechs and Alpha Strike units only.
 - [ ] **Step 4:** Run. Expected: PASS.
 - [ ] **Step 5:** Commit `Future Wars: Economics (merged printings) income and payday`.
 
-### Task 6: Derived damage table (pure)
+### Task 9: Derived damage table (pure)
 
 **Files:**
 - Create: `src/data/future-wars-economic-damage.ts`
@@ -220,7 +304,7 @@ edition; this plan snapshots 'Mechs and Alpha Strike units only.
 - [ ] **Step 4:** Run. Expected: PASS.
 - [ ] **Step 5:** Commit `Future Wars: derived economic damage table (NGCFells, inspired by Barents)`.
 
-### Task 7: The two rulesets and the campaign hooks
+### Task 10: The two rulesets and the campaign hooks
 
 **Files:**
 - Modify: `src/data/special-rulesets.ts` (two entries after the Future Wars play rulesets; `CHANGE_LABELS` gains
@@ -233,7 +317,7 @@ edition; this plan snapshots 'Mechs and Alpha Strike units only.
   `src/ui/components/special-rulesets/special-rulesets-step.test.tsx` (or the list's existing test file)
 
 **Interfaces:**
-- Consumes: Tasks 2, 5, 6.
+- Consumes: Tasks 2, 8, 9.
 - Produces:
   - Ruleset `fw-economics`: name "Future Wars: Economics", category `campaign`, `changes: ["planetEconomics"]`,
     `minRulesLevel: CUSTOM_HOMEBREW_RULES_LEVEL`, source publication "Future Wars", tag "FW #5", author "Herb Barents",
@@ -245,7 +329,7 @@ edition; this plan snapshots 'Mechs and Alpha Strike units only.
     NGCFells, "Inspired by Herb Barents, Future Wars #5", and prints the table and modifiers.
   - `CAMPAIGN_RULE_HOOKS: Record<string, { onStep?: (campaign: Campaign) => void }>`; `fw-economics.onStep` writes
     `getPayday(...)` entries when `timeStep === "month"` and `step % 3 === 0 && step > 0`, and logs "Payday".
-    `fw-economic-damage` has no step hook (rolls are made from the planet page, Task 8).
+    `fw-economic-damage` has no step hook (rolls are made from the planet page, Task 11).
 
 - [ ] **Step 1: Write the failing tests:** `"pays on months 3, 6 and 9 only"` (`advance(9)` → three paydays, none at
   0); `"no payday without the ruleset ticked"`; `"no payday on a sortie edition"` (a test edition with timeStep
@@ -257,7 +341,7 @@ edition; this plan snapshots 'Mechs and Alpha Strike units only.
 - [ ] **Step 4:** Run. Expected: PASS. Also run `npx vitest run src/data/special-rulesets.test.ts src/ui/components/special-rulesets` (no regressions in summary-length and CHANGE_LABELS checks).
 - [ ] **Step 5:** Commit `Future Wars: Economics and Economic Damage rulesets in campaigns`.
 
-### Task 8: Campaign screens
+### Task 11: Campaign screens
 
 **Files:**
 - Create: `src/ui/pages/game-management/campaigns/_router.tsx`, `list.tsx`, `campaign-home.tsx`, `planet.tsx`,
@@ -267,7 +351,7 @@ edition; this plan snapshots 'Mechs and Alpha Strike units only.
 - Test: `src/ui/pages/game-management/campaigns/campaigns.test.tsx`
 
 **Interfaces:**
-- Consumes: Tasks 2-7; `getCurrentCBTForce`, `getCurrentASForce` from `dataSaves.ts` for adding units.
+- Consumes: Tasks 2-10; `getCurrentCBTForce`, `getCurrentASForce` from `dataSaves.ts` for adding units.
 - Produces: routes `game-management/campaigns` (list + New), `.../campaigns/:id` (home), `.../campaigns/:id/planet`.
 
 Screens (follow the Aces campaign page's look and its save-on-change pattern):
@@ -275,13 +359,17 @@ Screens (follow the Aces campaign page's look and its save-on-change pattern):
   through `RulesetList` with `categories={["campaign"]}`, sides (name + role, at least one).
 - Home: step and Advance button; per-side balance and ledger table; log; force table (name, cost, BV, PV, status,
   Refresh, Remove) with "Add from current Classic BattleTech force" / "Add from current Alpha Strike force".
+- Systems (always shown): the campaign's system with its planets (each field with its source), the owner on the
+  campaign's date, and a targets table per side (system search, intent travel / assault / defend, distance in
+  light-years and fewest jumps from the campaign's system). Footer credits MegaMek Data (CC BY-NC-SA 4.0) and ISCS.
 - Planet (shown when `fw-economics` is ticked): areas (name, terrain, controller, dots by type with add/remove and a
   destroyed mark), custom dot types, GM combinations (needs + double/triple), payday preview per area with the grouping
   used. When `fw-economic-damage` is ticked: an after-battle damage roller per area (fight size, scorched earth;
   restraint shown automatically) and a quarterly partisans roll; results logged and marked on the dots. Both rulesets
   show NOT OFFICIAL and their credits.
 
-- [ ] **Step 1: Write the failing tests:** `"creates a campaign with a side and saves it"`; `"advancing three months
+- [ ] **Step 1: Write the failing tests:** `"picks the campaign planet from a real system"` (search "Thark", choose
+  Tharkad, a planet of it is offered); `"a target shows distance and jumps"`; `"creates a campaign with a side and saves it"`; `"advancing three months
   shows a payday in the controller's ledger"`; `"payday preview shows the grouping that pays most"` (the 14,000,000
   area); `"the damage roller marks destroyed dots and logs them"` (inject the roll); `"the planet page is hidden
   without Economics"`; `"shows NOT OFFICIAL and NGCFells's merge note"`.
@@ -292,7 +380,7 @@ Screens (follow the Aces campaign page's look and its save-on-change pattern):
   months, roll damage; no console errors, no overflow at 375 px.
 - [ ] **Step 6:** Commit `Campaign play: campaign, ledger, force and planet screens`.
 
-### Task 9: Ship
+### Task 12: Ship
 
 **Files:**
 - Modify: `src/ui/pages/home.tsx` (news: today's entry gains a bullet "Campaigns (issue #172)": campaign record,
