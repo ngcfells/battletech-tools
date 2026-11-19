@@ -6,10 +6,14 @@ import { IAppGlobals } from "../../../app-router";
 
 export const formatMoney = ( amount: number ): string => amount.toLocaleString( "en-US" );
 
-/** The campaign screens' dice; tests replace roll2d6. */
+/** The campaign screens' dice; tests replace roll2d6 and roll1d6. */
 export const campaignDice = {
     roll2d6: (): number => 2 + Math.floor( Math.random() * 6 ) + Math.floor( Math.random() * 6 ),
+    roll1d6: (): number => 1 + Math.floor( Math.random() * 6 ),
 };
+
+/** The campaign dice as a unit edition takes them; read at roll time so a test's replacement is used. */
+export const campaignRoll = { d6: () => campaignDice.roll1d6(), twoD6: () => campaignDice.roll2d6() };
 
 /** Every saved campaign, and a save that writes the whole list (as the Aces campaign page does). */
 export function useCampaigns( appGlobals: IAppGlobals ) {

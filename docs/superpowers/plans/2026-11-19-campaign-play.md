@@ -420,6 +420,57 @@ Screens (follow the Aces campaign page's look and its save-on-change pattern):
   months, roll damage; no console errors, no overflow at 375 px.
 - [ ] **Step 6:** Commit `Campaign play: campaign, ledger, force and planet screens`.
 
+### Task 13: Mercenary's Handbook (1987) edition
+
+Added at NGCFells's request ("Make sure we get the Merca editions in as well before shipping", 2026-11-19). Figures
+read from the 1987 scan's page images (the FanPro 2005 reprint matches; misprints follow the original, e.g. "Cacre").
+Scope: Cost of Living, Creating Contracts and the Basic Campaign System (pp.36-50). The Advanced Campaign System
+(pp.51-53+) is deferred to a follow-up.
+
+**Files:**
+- Create: `src/classes/campaign/unit-campaign.ts` (shared: `Quality`, `rangeLookup`, `CampaignRoll`)
+- Create: `src/data/campaign-editions/mercenarys-handbook-1987.ts` + `.test.ts`
+- Create: `src/ui/pages/game-management/campaigns/edition-mh1987.tsx`
+- Modify: `src/data/campaign-editions/index.ts` (register), `list.tsx` (Edition select), `campaign-home.tsx` (edition
+  panel), `campaign-store.ts` (`roll1d6` on the dice seam)
+
+**Interfaces (produces):** `MH1987_EDITION: ICampaignEdition` (id `mh-1987`, kind `unit`, currency `C-bills`,
+timeStep `month`, `onStep` posts the month's costs and contract pay to the unit's side); `IMh1987State` (sideId,
+roster lines `{ id, type, quality, condition, count, company }`, overheadPct, moraleMod, reputationMod, contract);
+pure `mh1987MonthlyCosts(state)`, `mh1987Reputation(roster)`, `mh1987Morale(state)`, `mh1987Negotiate(...)`,
+`mh1987ContractTerms(...)`, `mh1987ResolveMonth(...)`.
+
+- [ ] **Step 1:** Tests pin, from the pages: salaries (p.37: Elite MechWarrior 2,000, Green JumpShip 3,500), support
+  points (5/10/20/30, Elite pilot 1), maintenance (p.38: Heavy 'Mech n 35 / s 123, Union DS n 70), 1 SP = 5,000,
+  supplies 500 per squad, overhead 5-20% of salaries + supplies; reputation per company = ceil(points / 12) summed
+  (p.36); morale bands (1.0-1.75 Green ... 3.5+ Elite); Employer Position 2D6 (p.41: 7 → 95); every negotiation table
+  boundary (pp.42-44); Mission Modification rows (p.45: Objective Raid -6 / -50 / x1.75, length floored at 1); a
+  negotiation worked from the p.41 rules (player above employer adds points; spending lowers the employer; final is
+  the higher); Enemy Resistance (p.47: Garrison 7 → N) and outcome tables (pp.48-49: Offensive Heavy 2 → Q) and
+  Outcome Description (A win +6 ... Q loss -6); `onStep` posts salaries, supplies, overhead and maintenance shortfall
+  as separate ledger entries, plus 4 weeks of contract pay per month. Run: fail.
+- [ ] **Step 2:** Implement. Run: pass. Commit `Mercenary's Handbook 1987 edition`.
+
+### Task 14: Mercenary's Handbook 3055 edition
+
+**Files:** Create `src/data/campaign-editions/mercenarys-handbook-3055.ts` + `.test.ts`,
+`src/ui/pages/game-management/campaigns/edition-mh3055.tsx`; modify the same registry and screens as Task 13.
+
+**Interfaces (produces):** `MH3055_EDITION` (id `mh-3055`, kind `unit`, currency `C-bills`, timeStep `month`: a month
+is 4 weeks of maintenance and overhead and 2 biweekly paydays); `IMh3055State` (sideId, roster
+`{ id, template, quality, count }` from the Combatant Templates, personnel `{ id, position, quality, count,
+antiMech }`, rating inputs, contract); pure `mh3055Payroll`, `mh3055Maintenance`, `mh3055DragoonsRating`,
+`mh3055ContractOffer`, `mh3055ContractPay`.
+
+- [ ] **Step 1:** Tests pin, from the pages: Salary Table biweekly (p.89: Administration 640) and experience x1 /
+  1.5 / 2 / 3 (anti-'Mech x2 more), the Crimson Crusaders' payroll 48,870; Weekly Maintenance by Combatant Templates
+  Support Required (pp.112-114: Hvy 'Mech 375, Hvy Tracked 615, Support grades 675/1630/2810/3095 SP); Dragoons
+  Rating points and bands (p.100: 0-45 D, 46-85 C, 86-120 B, 121+ A); Contract Offers (p.102); employer and job tables
+  (pp.102-106, Periphery 2-3/3-6 misprint: a 3 reads the first row); payment = monthly salaries x rating (2.1 / 2.4 /
+  2.7 / 3) x employer x mission (Clan 2); Straight Support / Battle Loss (+1 B or C, +2 A, +3 Marik); transport and
+  salvage (+5 Combine or Rasalhague, -3 Clans); Contract Hearing. Run: fail.
+- [ ] **Step 2:** Implement. Run: pass. Commit `Mercenary's Handbook 3055 edition`.
+
 ### Task 12: Ship
 
 **Files:**

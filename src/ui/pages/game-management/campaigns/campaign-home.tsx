@@ -19,7 +19,9 @@ import { IAppGlobals } from '../../../app-router';
 import RulesetList from '../../../components/special-rulesets/ruleset-list';
 import TextSection from '../../../components/text-section';
 import UIPage from '../../../components/ui-page';
+import { MH1987_ID } from '../../../../data/campaign-editions/mercenarys-handbook-1987';
 import { formatMoney, useCampaign } from './campaign-store';
+import EditionMh1987 from './edition-mh1987';
 import SystemSearch from './system-search';
 
 const INTENTS: ICampaignTarget["intent"][] = ["travel", "assault", "defend"];
@@ -199,6 +201,12 @@ export default function CampaignHome( props: { appGlobals: IAppGlobals; id: stri
                             onToggle={toggleRulesets} onMoreInfo={() => undefined} categories={["campaign"]} />
                     ) : null}
                 </TextSection>
+
+                {campaign.editionId === MH1987_ID ? (
+                    <TextSection label="Mercenary's Handbook (1987)">
+                        <EditionMh1987 campaign={campaign} update={update} />
+                    </TextSection>
+                ) : null}
 
                 <TextSection label="Sides and ledgers">
                     {campaign.sides.map( ( side ) => {

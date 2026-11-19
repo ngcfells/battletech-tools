@@ -163,6 +163,51 @@ describe( "Campaign screens", () => {
         expect( screen.getByText( /Inspired by Herb Barents, Future Wars #5/ ) ).toBeTruthy();
     } );
 
+    it( "a new campaign can take the Mercenary's Handbook (1987) edition", async () => {
+        open( "" );
+        fireEvent.click( await screen.findByRole( "button", { name: "New campaign" } ) );
+        fireEvent.change( screen.getByLabelText( "Edition" ), { target: { value: "mh-1987" } } );
+        fireEvent.change( screen.getByLabelText( "Side name" ), { target: { value: "Our Battalion" } } );
+        fireEvent.click( screen.getByRole( "button", { name: "Add side" } ) );
+        fireEvent.click( screen.getByRole( "button", { name: "Create campaign" } ) );
+        await waitFor( () => expect( store.campaigns.map( ( c ) => c.editionId ) ).toEqual( ["mh-1987"] ) );
+    } );
+
+    it( "the 1987 panel previews the month and books it on advance", async () => {
+        const c = saved( [] );
+        c.editionId = "mh-1987";
+        store.campaigns = [ c.export() ];
+        open( "/c1" );
+        const panel = await screen.findByTestId( "edition-mh1987" );
+        fireEvent.click( within( panel ).getByRole( "button", { name: "Add squads" } ) );
+        const line = await within( panel ).findByTestId( "mh1987-line-0" );
+        fireEvent.change( within( line ).getByLabelText( "Type" ), { target: { value: "heavy-mech" } } );
+        fireEvent.change( within( line ).getByLabelText( "Count" ), { target: { value: "4" } } );
+        // 4 Regular heavy 'Mechs: salaries 2,400, supplies 2,000, overhead 15% 660, maintenance 140 SP x 5,000.
+        await waitFor( () => expect( within( panel ).getByTestId( "mh1987-costs" ).textContent ).toContain( "705,060" ) );
+        fireEvent.click( screen.getByRole( "button", { name: "Advance a month" } ) );
+        await waitFor( () => expect( screen.getByTestId( "campaign-ledger-Lyrans" ).textContent ).toContain( "Salaries" ) );
+    } );
+
+    it( "the 1987 panel negotiates, signs and resolves a month", async () => {
+        const c = saved( [] );
+        c.editionId = "mh-1987";
+        c.editionState = { roster: [ { id: "l1", type: "heavy-mech", quality: "regular", condition: "new", count: 12, company: "Company 1" } ] };
+        store.campaigns = [ c.export() ];
+        vi.spyOn( campaignDice, "roll2d6" ).mockReturnValue( 7 );
+        vi.spyOn( campaignDice, "roll1d6" ).mockReturnValue( 3 );
+        open( "/c1" );
+        const panel = await screen.findByTestId( "edition-mh1987" );
+        fireEvent.change( within( panel ).getByLabelText( "Mission" ), { target: { value: "garrison" } } );
+        fireEvent.click( within( panel ).getByRole( "button", { name: "Roll employer positions" } ) );
+        fireEvent.click( within( panel ).getByRole( "button", { name: "Negotiate" } ) );
+        fireEvent.click( await within( panel ).findByRole( "button", { name: "Sign contract" } ) );
+        await waitFor( () => expect( store.campaigns[0].log.some( ( l ) => l.text.startsWith( "Contract signed: Garrison Duty" ) ) ).toBe( true ) );
+        fireEvent.click( await within( panel ).findByRole( "button", { name: "Resolve month" } ) );
+        // Garrison: resistance 7 reads N; the N row at 7 reads I (uncompleted).
+        await waitFor( () => expect( store.campaigns[0].log.some( ( l ) => l.text.includes( "outcome I" ) ) ).toBe( true ) );
+    } );
+
     it( "seeds dots from Objectives sites", async () => {
         saved();
         open( "/c1/planet" );

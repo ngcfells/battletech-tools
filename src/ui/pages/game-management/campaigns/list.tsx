@@ -2,7 +2,7 @@ import React, { useEffect, useState, type JSX } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { Campaign } from '../../../../classes/campaign/campaign';
 import { CampaignSideRole, ICampaignSide } from '../../../../classes/campaign/campaign-types';
-import { findCampaignEdition } from '../../../../data/campaign-editions';
+import { CAMPAIGN_EDITIONS, findCampaignEdition } from '../../../../data/campaign-editions';
 import { IStarPlanet, IStarSystemIndexEntry, readSourced } from '../../../../data/star-systems/star-system-types';
 import { loadStarSystemDetail } from '../../../../data/star-systems/star-systems';
 import { findSpecialRuleset, RulesetCategory } from '../../../../data/special-rulesets';
@@ -33,6 +33,7 @@ function NewCampaign(props: { onCreate: (campaign: Campaign) => void; onCancel: 
     const [sides, setSides] = useState<ICampaignSide[]>([]);
     const [sideName, setSideName] = useState("");
     const [sideRole, setSideRole] = useState<CampaignSideRole>("attacker");
+    const [editionId, setEditionId] = useState("");
 
     useEffect(() => {
         let live = true;
@@ -62,6 +63,7 @@ function NewCampaign(props: { onCreate: (campaign: Campaign) => void; onCancel: 
         const campaign = new Campaign();
         campaign.name = name.trim() || "Campaign";
         campaign.startDate = /^\d{4}-\d{2}-\d{2}$/.test(startDate) ? startDate : "3025-01-01";
+        campaign.editionId = findCampaignEdition(editionId)?.id ?? null;
         campaign.rulesetIds = rulesetIds;
         campaign.sides = sides;
         campaign.planet = planet.trim()
@@ -76,6 +78,13 @@ function NewCampaign(props: { onCreate: (campaign: Campaign) => void; onCancel: 
             <p>
                 <label>Campaign name <input type="text" value={name} onChange={(e) => setName(e.currentTarget.value)} /></label>
                 <label>Start date <input type="text" value={startDate} placeholder="3025-01-01" onChange={(e) => setStartDate(e.currentTarget.value)} /></label>
+                <label>
+                    Edition{" "}
+                    <select value={editionId} onChange={(e) => setEditionId(e.currentTarget.value)}>
+                        <option value="">No edition rules</option>
+                        {CAMPAIGN_EDITIONS.map((edition) => <option key={edition.id} value={edition.id}>{edition.name}</option>)}
+                    </select>
+                </label>
             </p>
             <SystemSearch label="Star system" onPick={setSystem} />
             {system ? (
