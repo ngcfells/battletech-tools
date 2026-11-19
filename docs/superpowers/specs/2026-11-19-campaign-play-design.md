@@ -93,7 +93,7 @@ is wrong: pp.33-34 have none. Correct the plan.)
   on a campaign with no edition rules).
 - Dot types: the eight printed. GM may add a custom type (name, value 1 million unless set).
 - Each dot: 1,000,000 C a quarter to the area's controller.
-- **Combinations** (merge rule, builder's call shaped by the two texts; NGCFells to confirm in review):
+- **Combinations** (merge rule, shaped by the two texts; approved by NGCFells 2026-11-19):
   - A combination counts only when all its dots are in the **same area** (Best-of).
   - The three FW #5 combinations pay their printed totals: 7 / 6 / 12 million.
   - Any other combination the GM defines pays double (default) or triple (GM's choice) the dots' sum (Best-of).
@@ -101,7 +101,7 @@ is wrong: pp.33-34 have none. Correct the plan.)
     pays most and shows it; the GM can override.
 - Payday: every 3 campaign months, a ledger entry per controller with the breakdown.
 
-## Derived damage table (NGCFells, inspired by Barents) — DRAFT, approve with this doc
+## Derived damage table (NGCFells, inspired by Barents). Approved by NGCFells 2026-11-19
 
 After a battle in an area that holds dots, roll 2D6 for each dot there; on the target number or more the dot is
 destroyed (pays nothing until the GM rebuilds it).
