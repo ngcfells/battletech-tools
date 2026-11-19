@@ -8,6 +8,7 @@ import { btSpecialRulesets } from "../../data/special-rulesets";
 import Vehicle from "../../classes/vehicle";
 import { IAppGlobals } from "../app-router";
 import GameSettingsBlock, { UnitGameSettingsBlock, unitRulesLevel } from "./game-settings-block";
+import { testSpecialRuleset } from "../../test-support/rulesets";
 
 afterEach(() => {
     cleanup();
@@ -45,6 +46,23 @@ describe("GameSettingsBlock (#324)", () => {
         expect(screen.getByText(/the Clans never formed/)).toBeTruthy();
     });
 
+    it("No clears a requirement and the ruleset that needs it in one go", () => {
+        btSpecialRulesets.push(
+            testSpecialRuleset({ id: "test-clash", name: "C", changes: ["c"] }),
+            testSpecialRuleset({ id: "test-needs-c", name: "D", changes: ["d"], requires: ["test-clash"] }),
+        );
+        try {
+            const onChange = vi.fn();
+            render(<Harness start={{ ...base, rulesets: ["test-clash", "test-needs-c"] }} onChange={onChange} />);
+            fireEvent.change(select(/Special Rulesets/), { target: { value: "no" } });
+            expect(onChange.mock.calls.at(-1)?.[0].rulesets).toEqual([]);
+            expect(select(/Special Rulesets/).value).toBe("no");
+        } finally {
+            const index = btSpecialRulesets.findIndex((ruleset) => ruleset.id === "test-needs-c");
+            if (index >= 0) btSpecialRulesets.splice(index, 1);
+        }
+    });
+
     it("ticking the no-Clans universe on a Clan design moves Tech Base and reports it", () => {
         render(<Harness start={base} />);
         fireEvent.change(select(/Special Rulesets/), { target: { value: "yes" } });
@@ -64,7 +82,7 @@ describe("GameSettingsBlock (#324)", () => {
     });
 
     it("a clashing ruleset is disabled and names the one it clashes with", () => {
-        btSpecialRulesets.push({ id: "test-clash", name: "Test clash", description: "", source: { title: "test" }, changes: ["techBases"] });
+        btSpecialRulesets.push(testSpecialRuleset({ id: "test-clash", name: "Test clash", changes: ["techBases"] }));
         render(<Harness start={{ ...base, techBase: "is", era: "star-league", rulesets: ["sample-no-clans"] }} />);
         fireEvent.click(screen.getByRole("button", { name: /Choose rulesets/ }));
         const clash = screen.getByRole("checkbox", { name: /Test clash/ }) as HTMLInputElement;
@@ -105,14 +123,14 @@ describe("GameSettingsBlock (#324)", () => {
     });
 
     it("a stored edition the rulesets do not offer stays selected and flagged", () => {
-        btSpecialRulesets.push({ id: "test-clash", name: "Test min edition", description: "", source: { title: "test" }, minEdition: DEFAULT_RULES_EDITION, changes: ["edition"] });
+        btSpecialRulesets.push(testSpecialRuleset({ id: "test-clash", name: "Test min edition", minEdition: DEFAULT_RULES_EDITION, changes: ["edition"] }));
         render(<Harness start={{ ...base, edition: "battledroids", techBase: "is", rulesets: ["test-clash"] }} />);
         expect(select(/Rules Edition/).value).toBe("battledroids");
         expect(select(/Rules Edition/).selectedOptions[0].textContent).toMatch(/not offered under the ticked rulesets/);
     });
 
     it("a clashing ruleset's checkbox is described by its clash", () => {
-        btSpecialRulesets.push({ id: "test-clash", name: "Test clash", description: "", source: { title: "test" }, changes: ["techBases"] });
+        btSpecialRulesets.push(testSpecialRuleset({ id: "test-clash", name: "Test clash", changes: ["techBases"] }));
         render(<Harness start={{ ...base, techBase: "is", era: "star-league", rulesets: ["sample-no-clans"] }} />);
         fireEvent.click(screen.getByRole("button", { name: /Choose rulesets/ }));
         const clash = screen.getByRole("checkbox", { name: /Test clash/ });

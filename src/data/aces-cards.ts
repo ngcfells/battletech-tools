@@ -102,7 +102,7 @@ export const acesTextToPlain = ( text: string ): string => {
 /** Stats the engine can read off an Alpha Strike unit to rank candidates. */
 export type TAcesStat =
     "armor" | "structure" | "armor-lost" | "structure-lost" | "tmm" | "pv" | "mv" |
-    "damage-s" | "damage-m" | "damage-l" | "size" | "heat";
+    "damage-s" | "damage-m" | "damage-l" | "size" | "heat" | "armor-start" | "structure-start";
 
 export const acesStats: { id: TAcesStat, label: string }[] = [
     { id: "armor", label: "Armor" },
@@ -117,6 +117,8 @@ export const acesStats: { id: TAcesStat, label: string }[] = [
     { id: "damage-l", label: "L damage" },
     { id: "size", label: "Size" },
     { id: "heat", label: "Heat" },
+    { id: "armor-start", label: "Starting Armor" },
+    { id: "structure-start", label: "Starting Structure" },
 ];
 
 /**
@@ -134,6 +136,8 @@ export interface IAcesPriorityRule {
     objective?: boolean;
     /** A line the source doesn't show clearly; the engine skips it. */
     unresolved?: boolean;
+    /** "no Armor": keeps candidates whose armor is gone. */
+    noArmor?: boolean;
 }
 
 /* ---------------------------------------------------------------------------------------------------------------
@@ -285,6 +289,33 @@ export interface IAcesSpecialOrder {
 }
 
 /* ---------------------------------------------------------------------------------------------------------------
+ * Edge cards (Alpha Strike: Aces)
+ * ------------------------------------------------------------------------------------------------------------- */
+
+export type TAcesEdgePhase = "initiative" | "movement" | "combat" | "end" | "any";
+export const acesEdgePhases: TAcesEdgePhase[] = [ "initiative", "movement", "combat", "end", "any" ];
+
+export type TAcesEdgeTrigger = "none" | "moving" | "attacking" | "attacked" | "critical-hit" | "enemy-rear" | "damaged" | "other";
+export const acesEdgeTriggers: TAcesEdgeTrigger[] = [ "none", "moving", "attacking", "attacked", "critical-hit", "enemy-rear", "damaged", "other" ];
+
+export interface IAcesEdgeCard {
+    id: string;
+    name: string;
+    category: string;
+    cardNumber: string;
+    /** Edge point cost, 0 to 9; null when not entered. */
+    cost: number | null;
+    phase: TAcesEdgePhase;
+    trigger: TAcesEdgeTrigger;
+    /** The player's own words from their card; stays in their library. */
+    condition: string;
+    text: string;
+    source: IAcesSource | null;
+    sample: boolean;
+    notes: string;
+}
+
+/* ---------------------------------------------------------------------------------------------------------------
  * Sorties (Aces pp.28-33; Aces SS)
  * ------------------------------------------------------------------------------------------------------------- */
 
@@ -356,6 +387,7 @@ export interface IAcesCardLibrary {
     cards: IAcesCard[];
     commandCards: IAcesCommandCard[];
     specialOrders: IAcesSpecialOrder[];
+    edgeCards: IAcesEdgeCard[];
     scenarios: IAcesScenario[];
 }
 
@@ -438,6 +470,34 @@ export const newAcesSpecialOrder = (): IAcesSpecialOrder => {
     };
 }
 
+/** Names match ignoring case, edge spaces and runs of inner spaces, so older free-text saves still find their card. */
+export const normalizeAcesEdgeName = ( name: string ): string => {
+    return name.trim().replace( /\s+/g, " " ).toLowerCase();
+}
+
+export const acesEdgeCardForName = ( cards: IAcesEdgeCard[], name: string ): IAcesEdgeCard | undefined => {
+    const wanted = normalizeAcesEdgeName( name );
+    if( !wanted ) return undefined;
+    return cards.find( ( card ) => normalizeAcesEdgeName( card.name ) === wanted );
+}
+
+export const newAcesEdgeCard = ():IAcesEdgeCard => {
+    return {
+        id: generateUUID(),
+        name: "",
+        category: "",
+        cardNumber: "",
+        cost: null,
+        phase: "any",
+        trigger: "none",
+        condition: "",
+        text: "",
+        source: null,
+        sample: false,
+        notes: "",
+    };
+}
+
 export const newAcesScenario = (): IAcesScenario => {
     return {
         id: generateUUID(),
@@ -474,6 +534,7 @@ export const newAcesCardLibrary = (): IAcesCardLibrary => {
         cards: [],
         commandCards: [],
         specialOrders: [],
+        edgeCards: [],
         scenarios: [],
     };
 }
@@ -520,6 +581,7 @@ export const normalizeAcesPriorityRule = ( value: unknown ): IAcesPriorityRule |
     if( acesColors.indexOf( data.color as TAcesColor ) > -1 ) rv.color = data.color as TAcesColor;
     if( data.objective === true ) rv.objective = true;
     if( data.unresolved === true ) rv.unresolved = true;
+    if( data.noArmor === true ) rv.noArmor = true;
     return rv;
 }
 
@@ -652,7 +714,26 @@ export const normalizeAcesSpecialOrder = ( value: unknown ): IAcesSpecialOrder |
     };
 }
 
-const normalizeScenarioUnit = ( value: unknown ): IAcesScenarioUnit | null => {
+export const normalizeAcesEdgeCard = ( value: unknown ): IAcesEdgeCard | null => {
+    const data = obj( value );
+    if( typeof data.name !== "string" ) return null;
+    return {
+        id: str( data.id ) || generateUUID(),
+        name: data.name,
+        category: str( data.category ),
+        cardNumber: str( data.cardNumber ),
+        cost: num( data.cost ),
+        phase: oneOf( data.phase, acesEdgePhases, "any" ),
+        trigger: oneOf( data.trigger, acesEdgeTriggers, "none" ),
+        condition: str( data.condition ),
+        text: str( data.text ),
+        source: source( data.source ),
+        sample: bool( data.sample ),
+        notes: str( data.notes ),
+    };
+}
+
+const normalizeScenarioUnit = (value: unknown ): IAcesScenarioUnit | null => {
     const data = obj( value );
     if( typeof data.name !== "string" ) return null;
     return {
@@ -728,6 +809,7 @@ export const normalizeAcesCardLibrary = ( value: unknown ): IAcesCardLibrary => 
         cards: arr( data.cards, normalizeAcesCard ),
         commandCards: arr( data.commandCards, normalizeAcesCommandCard ),
         specialOrders: arr( data.specialOrders, normalizeAcesSpecialOrder ),
+        edgeCards: arr( data.edgeCards, normalizeAcesEdgeCard ),
         scenarios: arr( data.scenarios, normalizeAcesScenario ),
     };
 }
@@ -742,6 +824,7 @@ export const mergeAcesCardLibrary = ( base: IAcesCardLibrary, incoming: IAcesCar
         cards: merge( base.cards, incoming.cards ),
         commandCards: merge( base.commandCards, incoming.commandCards ),
         specialOrders: merge( base.specialOrders, incoming.specialOrders ),
+        edgeCards: merge( base.edgeCards, incoming.edgeCards ),
         scenarios: merge( base.scenarios, incoming.scenarios ),
     };
 }
@@ -752,6 +835,7 @@ const statSynonyms: { [label: string]: TAcesStat } = {
     "armor": "armor", "structure": "structure", "armor lost": "armor-lost", "structure lost": "structure-lost",
     "tmm": "tmm", "pv": "pv", "mv": "mv", "move": "mv", "s damage": "damage-s", "m damage": "damage-m",
     "l damage": "damage-l", "size": "size", "heat": "heat",
+    "starting armor": "armor-start", "starting structure": "structure-start",
 };
 
 /**
@@ -767,9 +851,10 @@ export const parseAcesPriorityLine = ( line: string ): IAcesPriorityRule => {
     const color = /^\[(red|yellow|blue)\](\s*(command\s+)?list)?$/i.exec( text );
     if( color ) return { text: text, color: color[1].toLowerCase() as TAcesColor };
     if( /\[destroyobj\]/i.test( text ) ) return { text: text, objective: true };
+    if( /^no armor$/i.test( text ) ) return { text: text, noArmor: true };
     const ranked = /^\[(highest|lowest)\]\s*(.+)$/i.exec( text );
     if( ranked ) {
-        const stat = statSynonyms[ ranked[2].trim().toLowerCase() ];
+        const stat = statSynonyms[ ranked[2].replace( /\[([sml])\]/i, "$1" ).trim().toLowerCase() ];
         if( stat ) return { text: text, stat: stat, direction: ranked[1].toLowerCase() as "highest" | "lowest" };
     }
     text = text.replace( /\s+/g, " " );
@@ -996,7 +1081,14 @@ export const validateAcesCommandCard = ( card: IAcesCommandCard ): string[] => {
     return rv;
 }
 
-export const validateAcesScenario = ( scenario: IAcesScenario ): string[] => {
+export const validateAcesEdgeCard = ( card: IAcesEdgeCard ): string[] => {
+    const rv: string[] = [];
+    if( !card.name.trim() ) rv.push( "Name is missing." );
+    if( card.cost !== null && ( !Number.isInteger( card.cost ) || card.cost < 0 || card.cost > 9 ) ) rv.push( "Cost should be a whole number from 0 to 9." );
+    return rv;
+}
+
+export const validateAcesScenario = (scenario: IAcesScenario ): string[] => {
     const rv: string[] = [];
     if( !scenario.name.trim() ) rv.push( "Sortie name is missing." );
     if( scenario.opposingUnits.length === 0 ) rv.push( "No opposing units listed." );

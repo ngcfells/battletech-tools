@@ -5,6 +5,14 @@ import { ammoCustom } from "./ammo-custom";
 import { ammoCatalog } from "./ammo";
 import { equipmentEnergy } from "./equipment-energy";
 import { universalEquipment } from "./universal-equipment";
+import { equipmentBallistic } from "./equipment-ballistic";
+import { equipmentMisc } from "./equipment-misc";
+import { equipmentMissile } from "./equipment-missile";
+import { mechArmorTypes } from "./mech-armor-types";
+import { mechEngineTypes } from "./mech-engine-types";
+import { mechHeatSinkTypes } from "./mech-heat-sink-types";
+import { mechInternalStructureTypes } from "./mech-internal-structure-types";
+import { mechMyomerTypes } from "./mech-myomer-types";
 
 const isAmmoList = ammoCatalog.filter((item) => item.techBase === "is");
 const clanAmmoList = ammoCatalog.filter((item) => item.techBase === "clan");
@@ -326,14 +334,6 @@ describe("equipment catalog provenance", () => {
     it("sorts every Long Tom round together", () => {
         const sorted = [...ammoCatalog].sort((a, b) => a.sort.localeCompare(b.sort)).map((item) => item.name.startsWith("Long Tom"));
         expect(sorted.lastIndexOf(true) - sorted.indexOf(true) + 1).toBe(sorted.filter(Boolean).length);
-    });
-
-    it("uses null, not 0, for ammunition that never went extinct", () => {
-        for (const item of [...isAmmoList, ...clanAmmoList, ...universalAmmoList]) {
-            expect(item.introduced, item.tag).not.toBe(0);
-            expect(item.extinct, item.tag).not.toBe(0);
-            expect(item.reintroduced, item.tag).not.toBe(0);
-        }
     });
 
     it("spells each rulebook abbreviation one way in the canon catalogs", () => {
@@ -699,7 +699,7 @@ describe("Batch 23 Rotary AC Caseless rounds", () => {
     it("stay available as Custom records under their old tags, statistics unchanged", () => {
         const custom = tags.map(tag => ammoCustom.find(item => item.tag === tag));
         for (const item of custom) {
-            expect(item).toMatchObject({ isSpecialAmmo: true, book: "Custom", page: 0, techRating: "x" });
+            expect(item).toMatchObject({ isSpecialAmmo: true, book: "Custom", page: 0, techRating: "e" });
             expect(item?.alphaStrike?.notes?.join(" ")).toContain("No canon source");
         }
         expect(custom.map(item => [item?.cbills, item?.battleValue, item?.roundsPerTon])).toEqual([
@@ -744,5 +744,65 @@ describe("rotary autocannon aerospace heat and CASE mounting (issues 29, 30)", (
         const caseItem = items().find((item) => item.tag === "case")!;
         expect(caseItem.space.smallCraft).toBe(-1);
         expect(caseItem.space.dropShip).toBe(-1);
+    });
+});
+
+describe("torpedo launchers with Artemis IV", () => {
+    // Artemis IV applies to the torpedo versions of the standard launchers (TM p.207); a torpedo launcher is its
+    // missile launcher in every other respect (TM p.230).
+    it("lists each standard torpedo launcher with Artemis IV, as its missile launcher is listed", () => {
+        const catalog = getEquipmentCatalogDefinitions().flatMap(definition => definition.equipment);
+        const find = (tag: string) => catalog.find(item => item.tag === tag);
+        const torpedoes = ["lrt-5", "lrt-10", "lrt-15", "lrt-20", "srt-2", "srt-4", "srt-6"].flatMap(tag => [tag, `clan-${tag}`]);
+        for (const tag of torpedoes) {
+            const plain = find(tag)!;
+            const fitted = find(`${tag}-artemis-iv`);
+            const missile = find(`${tag.replace("lrt", "lrm").replace("srt", "srm")}-artemis-iv`)!;
+            expect(fitted, tag).toBeDefined();
+            expect([tag, fitted!.battleValue]).toEqual([tag, missile.battleValue]);
+            expect([tag, fitted!.weight, fitted!.space.battlemech]).toEqual([tag, (plain.weight as number) + 1, plain.space.battlemech + 1]);
+            expect([tag, fitted!.cbills]).toEqual([tag, plain.cbills + 100000]);
+            expect([tag, fitted!.introduced, fitted!.extinct]).toEqual([tag, missile.introduced, missile.extinct]);
+            expect(getLauncherBattleValueWithoutFireControl(fitted!, () => catalog), tag).toBe(plain.battleValue);
+            const family = tag.includes("lrt") ? "lrt" : "srt";
+            const round = ammoCatalog.find(item => item.tag === `ammo-${plain.techBase}-${family}-artemis-iv`)!;
+            expect(getCompatibleAmmo(fitted!, round), tag).toBeTruthy();
+            expect(getCompatibleAmmo(fitted!, ammoCatalog.find(item => item.tag === `ammo-${family}-standard`)!), tag).toBeTruthy();
+        }
+    });
+});
+
+// One sweep over every canon catalog replaces the per-catalog copies that lived in battlemech.test.ts (Batches 3-12c)
+// and here. It checks the union of what those copies checked: no year stored as 0 (null means unknown or never), on
+// the record and on its Clan dates, and a numeric page on every equipment record.
+describe("catalog dates and pages", () => {
+    type Dated = { tag: string; page?: unknown; introduced?: unknown; extinct?: unknown; reintroduced?: unknown;
+        clanDates?: { introduced?: unknown; extinct?: unknown; reintroduced?: unknown } };
+    const catalogs: [string, Dated[], boolean][] = [
+        // [name, records, every record cites a numeric page]
+        ["myomer", mechMyomerTypes, false],
+        ["engine", mechEngineTypes, false],
+        ["internal structure", mechInternalStructureTypes, false],
+        ["armor", mechArmorTypes, false],
+        ["heat sink", mechHeatSinkTypes, false],
+        ["misc equipment", equipmentMisc, true],
+        ["universal equipment", universalEquipment, true],
+        ["energy weapon", equipmentEnergy, true],
+        ["ballistic weapon", equipmentBallistic, true],
+        ["missile weapon", equipmentMissile, true],
+        ["artillery", equipmentArtillery, true],
+        ["ammunition", ammoCatalog, true],
+    ];
+
+    it.each(catalogs)("%s records use null, not 0, for unknown years", (_name, records, citesPage) => {
+        for (const item of records) {
+            expect(item.introduced, item.tag).not.toBe(0);
+            expect(item.extinct, item.tag).not.toBe(0);
+            expect(item.reintroduced, item.tag).not.toBe(0);
+            expect(item.clanDates?.introduced, item.tag).not.toBe(0);
+            expect(item.clanDates?.extinct, item.tag).not.toBe(0);
+            expect(item.clanDates?.reintroduced, item.tag).not.toBe(0);
+            if (citesPage) expect(typeof item.page, item.tag).toBe("number");
+        }
     });
 });

@@ -1,4 +1,8 @@
 import { IEquipmentItem } from "./data-interfaces";
+import { applyDerivedValues } from "./derived-custom-values";
+import { equipmentMissile } from "./equipment-missile";
+import { futureWarsSwingFires } from "./best-of-future-wars-conversions";
+import { LOPUNNY_CREDIT } from "./ammo-custom";
 
 /*
  * DISCLAIMER: This file processes gameplay data derived from the BattleTech universe. 
@@ -14,7 +18,121 @@ import { IEquipmentItem } from "./data-interfaces";
  * excluded from the software's underlying license (GNU GPLv3).
  */
 
-export const missileCustom: IEquipmentItem[] = [
+/**
+ * The Reloading Rocket Launcher 10, 15 and 20 (Custom Homebrew, by NGCFells): the canon one-shot Rocket Launchers fed from ammunition each turn, for the
+ * catalog's rocket ammunition (ammo-rocket-launcher-standard, 240 rockets a ton), which had no launcher to fire it. Weight, slots, heat and ranges are
+ * the canon launcher's; Battle Value and cost are derived from it (derived-custom-values.ts, "reloadable-twin").
+ */
+const reloadingRocketLauncher = (size: number): IEquipmentItem => {
+    const canon = equipmentMissile.find((item) => item.tag === `rocket-launcher-${size}`);
+    if (!canon) throw new Error(`missile-custom: canon rocket-launcher-${size} not found`);
+    return {
+        isAmmo: false,
+        name: `Reloading Rocket Launcher ${size}`,
+        altNames: [`RRL ${size}`, `RRL-${size}`, `Reloadable Rocket Launcher ${size}`],
+        tag: `custom-rrl-${size}`,
+        techBase: "is",
+        altTags: [],
+        sort: `missile, rocket launcher ${size}, reloading`,
+        category: "Missile Weapons",
+        catalog: "custom",
+        rulesLevel: 6,
+        notes: `Custom Homebrew, by NGCFells: the catalog held rocket ammunition (ammo-rocket-launcher-standard, 240 rockets a ton, introduced 3067, source "Custom") with no launcher to fire it, and no published rule has a reloadable rocket launcher `
+            + `(Sarna's Rocket Launcher pages show only the one-shot RL 10, 15 and 20, and the Master Rules Revised price list reloads one after a mission for 1,000 C-Bills), so these three launchers are NGCFells's, not an author's. `
+            + `They are the canon Rocket Launcher ${size} (${canon.weight} tons, ${canon.space.battlemech} slot${canon.space.battlemech === 1 ? "" : "s"}, heat ${canon.heat}, ranges ${canon.range.short}/${canon.range.medium}/${canon.range.long}) fed from ammunition each turn instead of fired once a game: `
+            + `the same weight, slots, heat and ranges; shots a ton are 240 rockets over ${size}, ${240 / size}. Introduced 3067, the ammunition's date; tech rating E, the ammunition's.`,
+        rules: `Resolved as the canon Rocket Launcher ${size}: an LRM attack of ${size} unguided rockets on the Cluster Hits Table, with the launcher's own ranges and +1 to hit; no special munitions, Artemis IV or Narc homing; ECM has no effect and an anti-missile system may engage it. `
+            + `Unlike the canon launcher it fires every turn, spending one salvo of rocket ammunition (${size} rockets) a shot: a ton holds ${240 / size} salvos. The ammunition explodes.`,
+        lore: "The Marian Hegemony's rocket launchers were built to be thrown away: a bank of unguided tubes fired once and refilled between missions. "
+            + "The Reloading Rocket Launcher keeps the same dead-fire tubes but feeds them from a magazine ton of rockets, so it can fire turn after turn for as long as the magazine lasts, "
+            + "at the price of the tonnage and the explosive risk of that magazine. Quartermasters with no pods to spare in the Jihad's long campaigns welcomed it; gunners "
+            + "found it as inaccurate as the pods.",
+        damage: 0,
+        damageAero: canon.damageAero,
+        accuracyModifier: 1,
+        cbills: 0,
+        introduced: 3067,
+        extinct: null,
+        reintroduced: null,
+        battleValue: 0,
+        heat: canon.heat,
+        heatAero: canon.heatAero,
+        weight: canon.weight,
+        range: { ...canon.range },
+        space: { ...canon.space },
+        shotsPerTon: 240 / size,
+        ammoTypes: ["ammo-rocket-launcher-standard"],
+        minAmmoTons: 1,
+        explosive: false,
+        weaponType: ["MS"],
+        techRating: "e",
+        book: "Custom",
+        page: 0,
+        damageClusters: size,
+        damagePerCluster: 1,
+        rangeAero: canon.rangeAero,
+        alphaStrike: { heat: 0, rangeShort: 0, rangeMedium: 0, rangeLong: 0, rangeExtreme: 0, tc: false, notes: [] },
+    };
+};
+
+/**
+ * Thunderbolt torpedo launchers (Lopunny, QueerTech Discord, 2026-11-17): the Thunderbolt's statistics as a torpedo launcher, introduced 3082.
+ * NGCFells ruled (2026-11-18) that they are launchers of their own, apart from the Thunderbolt missile launchers, as the LRT is apart from the LRM.
+ */
+const thunderboltTorpedo = (size: number): IEquipmentItem => {
+    const canon = equipmentMissile.find((item) => item.tag === `thunderbolt-${size}`);
+    if (!canon) throw new Error(`missile-custom: canon thunderbolt-${size} not found`);
+    return {
+        isAmmo: false,
+        name: `Thunderbolt Torpedo ${size}`,
+        altNames: [`Thunderbolt-T ${size}`, `Thunderbolt ${size} Torpedo Launcher`],
+        tag: `custom-thunderbolt-torpedo-${size}`,
+        techBase: "is",
+        altTags: [],
+        sort: `missile, thunderbolt torpedo ${size}`,
+        category: "Missile Weapons",
+        catalog: "custom",
+        rulesLevel: 6,
+        alternateName: `Thunderbolt-T ${size}`,
+        notes: `${LOPUNNY_CREDIT}, who asked for Thunderbolt torpedoes introduced in 3082, with the standard Thunderbolt launcher's statistics, either as a torpedo launcher or as torpedo ammunition for the missile launcher. `
+            + "NGCFells ruled (2026-11-18) that they are launchers of their own, as the canon LRT is apart from the LRM: a missile launcher must vent its exhaust, a torpedo tube needs pressurized air to launch. "
+            + `Every figure is the Thunderbolt ${size}'s (${canon.weight} tons, ${canon.space.battlemech} slot${canon.space.battlemech === 1 ? "" : "s"}, heat ${canon.heat}, ${canon.damage} damage, ranges ${canon.range.min}/${canon.range.short}/${canon.range.medium}/${canon.range.long}, `
+            + `Battle Value ${canon.battleValue}, ${canon.cbills.toLocaleString("en-US")} C-bills), as canon torpedo launchers carry their missile counterpart's statistics (the LRT and LRM are priced and valued alike). `
+            + "The tech rating is the Thunderbolt's. Inspired by: Lopunny, QueerTech Discord.",
+        rules: `Resolved as the Thunderbolt ${size}: one missile for ${canon.damage} damage to a single location, minimum range ${canon.range.min}, ranges ${canon.range.short}/${canon.range.medium}/${canon.range.long}, heat ${canon.heat}. `
+            + "As a torpedo (the canon LRT and SRT rules): it fires only when the attacker is in a Water hex of Depth 1 or more, at a target in such a hex, with the line of sight traced through Water hexes. "
+            + `It fires only Thunderbolt Torpedo ${size} ammunition (ammo-is-thunderbolt-torpedo-${size}-standard), never missile ammunition, and has no special munitions.`,
+        lore: "The Thunderbolt's one big missile always looked like a torpedo to sailors, and the navies of the Federated Suns' water worlds finally built one in 3082. "
+            + "It could not simply be loaded into the old launcher: a missile tube is built to vent the motor's exhaust, a torpedo tube to throw its round out on a charge of pressurized gas before the motor lights, "
+            + "so the torpedo got a launcher of its own. Wet-navy crews call it the heaviest single blow a submarine or a wading 'Mech can throw.",
+        damage: canon.damage,
+        damageAero: canon.damageAero,
+        accuracyModifier: canon.accuracyModifier,
+        cbills: canon.cbills,
+        introduced: 3082,
+        extinct: null,
+        reintroduced: null,
+        battleValue: canon.battleValue,
+        heat: canon.heat,
+        heatAero: canon.heatAero,
+        weight: canon.weight,
+        range: { ...canon.range },
+        space: { ...canon.space },
+        shotsPerTon: canon.shotsPerTon,
+        ammoBattleValue: canon.ammoBattleValue,
+        ammoTypes: [`ammo-is-thunderbolt-torpedo-${size}-standard`],
+        minAmmoTons: canon.minAmmoTons,
+        explosive: false,
+        weaponType: [...(canon.weaponType ?? [])],
+        techRating: canon.techRating,
+        book: "QueerTech Discord, Lopunny",
+        page: 0,
+        rangeAero: canon.rangeAero,
+        alphaStrike: { ...canon.alphaStrike, notes: ["Indirect Fire", "TOR", "Provisional workbook conversion"] },
+    };
+};
+
+export const missileCustom: IEquipmentItem[] = applyDerivedValues([
     {
         isAmmo: false,
         name: "SRM-8",
@@ -648,5 +766,30 @@ export const missileCustom: IEquipmentItem[] = [
         shotsPerTon: 4, ammoTypes: ["ammo-is-inarc-standard"], minAmmoTons: 1, explosive: false, weaponType: [], techRating: "e",
         book: "http://solaris7.com/thread/lostech-custom-weapons/", page: 0, rulesLevel: 6, rangeAero: "",
         alphaStrike: { specialAbility: ["INARC"], heat: 0, rangeShort: 0, rangeMedium: 0, rangeLong: 0, rangeExtreme: 0, tc: false, notes: ["Custom equipment: no Alpha Strike conversion"] }
-    }
-];
+    },
+    // The Best of Future Wars, Volume One (1991), Chunk A of the fanzine plan (#172). Custom Homebrew: fan material.
+    {
+        name: "The Penitrator", tag: "custom-penitrator", techBase: "universal", catalog: "custom", altNames: ["Penitrator Launcher"], sort: "missile, penitrator", category: "Missile Weapons",
+        notes: "Custom Homebrew: Herb Barents, 'The Penitrator', *Future Wars* #3 (November 1987), p.5 (unsigned; the page still carries the running head of *Mech War Times*, the zine's name for issues #1 and #2; the 1991 reprint credits Barents); reprinted in *The Best of Future Wars, Volume One* (1991), p.20. "
+            + "Every number matches the original. The lore follows the original's 'only House Steiner has these weapons'; the 1991 reprint's 'Federated Commonwealth' is a slip (the Lyran half of it, where Steiner rules). The original also estimates the cost at '$250,000 per ton' of missiles, 'almost 10 times the cost of missile packs'; the missile record keeps that figure, 250,000 C-bills a ton (NGCFells's ruling, 2026-11-18). "
+            + "The article names no 'Mech location (the Blaster carried it on top of its torso), so none is restricted here; it gives no to-hit number inside 8 hexes. "
+            + "Not printed in The Best of Future Wars: the minimum range of 8 is NGCFells's, a way to carry the inside-8-hexes band in the range field, since the page only says the damage drops and the shot is harder there; the launcher's slots are NGCFells's, 2, as the SRM 6's; "
+            + "its cost, Battle Value, dates and tech rating are unverified (cost 0, Battle Value 0).",
+        rules: "A 3-ton launcher, 2 slots, firing missiles 2 a ton (ammo-custom-penitrator-standard). Roll a critical hit check for each missile that hits. "
+            + "Damage and internal structure damage by range: 1d4/2 and 1 inside 8 hexes (the missile has not reached speed and is harder to hit there), "
+            + "1d8 and 3 to 12, 1d6 and 2 to 24, 1d4 and 1 to 36.",
+        lore: "The Penitrator is a long-range solid-fuel missile with a soft shaped-charge warhead that spends its force past the armor, among the "
+            + "machinery inside, rather than on it. The design was captured from the 'Mech known as the Blaster, which carried four of the missiles "
+            + "in a launcher on top of its torso. The missile needs distance to reach speed, so it is weak and hard to aim up close. Only "
+            + "House Steiner fields it, in very small numbers. The 113th Regiment's recon company, the Silveradoes, captured the Blasters on Glow, "
+            + "the first moon of Harvest, and the 113th's techs took the missiles apart.",
+        damage: 0, damageAero: 0, accuracyModifier: 0, cbills: 0, introduced: null, extinct: null, reintroduced: null, battleValue: 0, heat: 0, heatAero: 0, weight: 3,
+        range: { min: 8, short: 12, medium: 24, long: 36 }, space: { battlemech: 2, protomech: -1, combatVehicle: -1, supportVehicle: -1, aerospaceFighter: -1, smallCraft: -1, dropShip: -1 },
+        shotsPerTon: 2, ammoTypes: ["ammo-custom-penitrator-standard"], minAmmoTons: 1, explosive: false, weaponType: [], techRating: "x", book: "The Best of Future Wars, Volume One", page: 20, rulesLevel: 6,
+        alphaStrike: { heat: 0, rangeShort: 0, rangeMedium: 0, rangeLong: 0, rangeExtreme: 0, tc: false, notes: ["Unverified custom equipment"] }
+    },
+    // The Best of Future Wars (1991) p.27: Swing Fire Missile System (#172).
+    ...futureWarsSwingFires(),
+    ...[10, 15, 20].map(reloadingRocketLauncher),
+    ...[5, 10, 15, 20].map(thunderboltTorpedo),
+]);

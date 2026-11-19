@@ -76,6 +76,7 @@ export default class Home extends React.Component<IHomeProps, IHomeState> {
                     <li>
                       <h3><Link to="classic-battletech">Classic BattleTech Tools</Link></h3>
                       <p>Every creator follows its edition's construction rules and gives the unit a record sheet, Technical Readout, Battle Value and C-Bill cost, and every unit but a building an Alpha Strike card. 'Mechs and vehicles also show BV1 under the <i>BattleTech Master Rules</i> editions. Each creator starts with the Rules Edition, then that edition's own Rules Levels (Introductory to Experimental, plus Apocryphal, Custom Homebrew and Munchkin for non-canon play), and only offers what those allow. Before a load, import or start over replaces your design, each creator offers to save it. Saved units go into the Classic Roster.</p>
+                      <p>Optional rules come as Special Rulesets: a searchable checklist grouped by Construction, Play, Campaign &amp; Economics and Setting, with each ruleset's source and author, a one-line summary, More info for the full text and tables, and the reason a greyed-out one cannot be ticked alongside the others. Fan-made rulesets sit at Custom Homebrew and are NOT OFFICIAL.</p>
                       <ul>
                         <li>
                           <h4><Link to="classic-battletech/mech-creator">'Mech Creator</Link></h4>
@@ -87,7 +88,16 @@ export default class Home extends React.Component<IHomeProps, IHomeState> {
                             <li>Shields on the record sheet, marked off in play.</li>
                             <li>Patchwork Armor, Fractional Accounting and FrankenMechs.</li>
                             <li>Import Solaris Skunk Werks (.ssw) designs or pasted TRO text.</li>
+                            <li>Custom Homebrew: Compact 'Mechs (Clell Flint's construction rules, either printing) and Power Armor (Bill Swisher's 5, 10 and 15-ton suits from Future Wars #14, with four sample suits to load).</li>
                           </ul>
+                        </li>
+                        <li>
+                          <h4><Link to="classic-battletech/micro-mech-creator">Micro-Mech Creator</Link> (Custom Homebrew)</h4>
+                          <p>Solarmech's 10 to 19-ton Micro-Mechs, with step-by-step cost and Battle Value, record sheets, play mode, Alpha Strike cards and four sample designs. Offered once the rules level reaches Custom Homebrew.</p>
+                        </li>
+                        <li>
+                          <h4><Link to="classic-battletech/walker-creator">Walker Creator</Link> (Custom Homebrew)</h4>
+                          <p>Clell Flint's four-legged walkers from Future Wars, and an industrial walker Inspired by Flint and TechManual, with record sheets, play mode, Alpha Strike cards and three sample walkers. Offered once the rules level reaches Custom Homebrew.</p>
                         </li>
                         <li>
                           <h4><Link to="classic-battletech/vehicle-creator">Vehicle Creator</Link></h4>
@@ -133,6 +143,7 @@ export default class Home extends React.Component<IHomeProps, IHomeState> {
                             <li>Take damage and critical hits by location, with each unit type's own damage rules</li>
                             <li>Apply heat for each 'Mech's movement mode and the weapons it fired</li>
                             <li>Play <i>Battledroids</i> (1984) rules games</li>
+                            <li>Run the Future Wars optional rules a unit carries (Opportunity Fire, Strategic Movement, Morale, Weapon Malfunctions, The Long Range Wars) and the fanzine's equipment from its own panels</li>
                             <li>Total the force's Battle Value under the rules edition you pick</li>
                             <li>Print the record sheets and Alpha Strike cards</li>
                           </ul>
@@ -143,7 +154,10 @@ export default class Home extends React.Component<IHomeProps, IHomeState> {
                     <li>
                         <h3><Link to="classic-battletech/tro-jbt">TRO - JBT</Link></h3>
                         <ul>
-                          <li>Our custom creations: the ArtVee Technical Readout and Ammunition, read a page at a time or downloaded as Markdown.</li>
+                          <li>The home of fan-made BattleTech material, gathered by NGCFells with links to every original post, site and Discord server, read a page at a time or downloaded as Markdown.</li>
+                          <li>Unit Types: ArtVees, Micro-Mechs, Walkers, Power Armor, VTOLAMs and Permanent Air 'Mechs, each with its history, its rules and pages for its sample designs.</li>
+                          <li>Equipment and Ammunition: The Best of Future Wars, Community Homebrew and Apocryphal equipment, and custom ammunition.</li>
+                          <li>Each readout has a contents list to jump straight to a design or section.</li>
                         </ul>
                         <br />
                     </li>
@@ -179,61 +193,141 @@ export default class Home extends React.Component<IHomeProps, IHomeState> {
                   <ul className="news">
                   <li>
                   <h3>
+                      <strong>November 19th, 2026</strong> - Future Wars DropShips: four ways to build a DropShip
+                    </h3>
+                    <h4>Author - NGCFells</h4>
+                      <ul>
+                        <li><strong>Future Wars DropShip construction.</strong> Four fan methods from Future Wars are Special Rulesets in the Small Craft Creator at the Custom Homebrew level: Mark Stock's (#16, reprinted in The Best of Future Wars), Erik Eid's (#25), Mike Reese's and Doug Houseman's (#36). Tick one on a DropShip and step 2 weighs the ship by that author's rules: engine, structure, fuel, bridge, heat sinks, armor, bays and quarters. Where Stock says to look values up in DropShips and JumpShips, NGCFells fitted formulae to every DropShip in that book; you can still type your own. Houseman's integrity table is extended past its eighth row. Fire factors per arc print in the record sheet's notes. Fan-made, NOT OFFICIAL (issue #172).</li>
+                        <li><strong>Sample DropShips.</strong> The Small Craft Creator's home page loads Stock's Pioneer A, B and C and Reese's UNION-12, THUNDERWOLF and GOLIATH-R, each built to its author's rule with what the sheet prints in its notes, and NGCFells's verification builds: the canon Leopard, Union and Overlord weighed by each method. TRO - JBT has a Future Wars DropShips readout with the methods, the formulae beside every DS&amp;JS DropShip, and each design.</li>
+                        <li><strong>DropShip rulings.</strong> DropShips may mount ECM suites, NGCFells's ruling: TechManual p.213 puts no unit restriction on them (its p.342 table prints NA), and AeroTech 2 Revised p.25 allows them; a DropShip uses one only against ground units. C3 stays off DropShips in every edition. Houseman's DropShips get the TechManual's free heat sinks, with his thrusters as the engine.</li>
+                        <li><strong>Active probes on DropShips.</strong> DropShips may now mount active probes (Beagle, Clan, Clan Light and Bloodhound), following NGCFells's ECM ruling: TechManual p.204 puts no unit restriction on them (its p.342 table prints NA), AeroTech 2 Revised p.25 allows them, and Tactical Operations lists the Bloodhound as available to DropShips. A DropShip uses one only against ground units.</li>
+                        <li><strong>Fixes.</strong> The Small Craft Creator's introduction now covers DropShips and Primitive craft. Rulings in ruleset and equipment text are credited to NGCFells by name.</li>
+                      </ul>
+                  </li>
+                  <li>
+                  <h3>
+                      <strong>November 18th, 2026</strong> - Heat-Seeking Thunderbolts and Thunderbolt torpedoes
+                    </h3>
+                    <h4>Author - NGCFells</h4>
+                      <ul>
+                        <li><strong>Lopunny's Thunderbolts (QueerTech Discord).</strong> Heat-Seeking ammunition for the Thunderbolt 5, 10, 15 and 20 (the canon Heat-Seeking rules, with the Thunderbolt's full shots a ton), and Thunderbolt Torpedo launchers with the Thunderbolt's statistics, both introduced 3082, as Custom Homebrew. NGCFells ruled the torpedoes are launchers of their own, as the LRT is apart from the LRM. Both are in TRO - JBT. Thanks, Lopunny!</li>
+                        <li><strong>Fix.</strong> Heat-Seeking LRM ammunition is introduced in 2340, as Tactical Operations prints it; the catalog had the year transposed to 2430.</li>
+                      </ul>
+                  </li>
+                  <li>
+                  <h3>
+                      <strong>November 17th, 2026</strong> - Power Armor, a new Special Rulesets window, and TRO - JBT by category
+                    </h3>
+                    <h4>Author - NGCFells</h4>
+                      <ul>
+                        <li><strong>Power Armor (issue #172).</strong> Bill Swisher's "poor man's BattleMech" from Future Wars #14 is a Special Ruleset at Custom Homebrew: build a 5, 10 or 15-ton suit in the 'Mech Creator, with its own record sheet, play rules (Target dialog, pilot criticals, unlatching the front plate), Battle Value and a PWA Alpha Strike ability. Four sample suits in step 1: the printed IPA-1 to IPA-3 and NGCFells's IPA-4. Fan-made, NOT OFFICIAL; where the article is silent the rulings are NGCFells's.</li>
+                        <li><strong>Future Wars originals (issue #172).</strong> The Best of Future Wars equipment and rules were checked against the first printings in the Future Wars fanzine (1987-1990), and every credit, in the equipment notes and in TRO - JBT, now names the original issue, year and page before the 1991 reprint. Where the reprint only fixed a slip, the original is followed. Where the two printings give different rules, you can now choose: Morale, Weapon Malfunctions and The Long Range Wars each have an original-printing Special Ruleset beside the reprint's, and "Future Wars: equipment as first printed" plays the Power Booster, Inferno Gauss shells, Long Range Flamer fuel, EII PDS and Swing Fire as the original issues had them. TRO - JBT's Best of Future Wars readout lists every difference under "Two printings".</li>
+                        <li><strong>Special Rulesets window (issue #324).</strong> A searchable checklist grouped by Construction, Play, Campaign &amp; Economics and Setting, with each ruleset's source, a summary, why a greyed-out one cannot be ticked, and More info for the full text.</li>
+                        <li><strong>TRO - JBT.</strong> The documents are sorted into Unit Types, Equipment, Ammunition and Other, and an opened readout has a contents list: click a design or section to go straight to it. Rulings and figures that are not the source's now name NGCFells as the one who made them.</li>
+                        <li><strong>VTOLAM and Permanent Air 'Mech readouts.</strong> Two new Unit Types in TRO - JBT, with their history, what sets them apart, credits to BishopSteiner, professorheyteen, Red Pins and LAMFAN with links to their original posts, and a page for each of the thirteen sample designs. Web addresses in every readout are now clickable, so each source can be followed to the original.</li>
+                        <li>Fixed: two TRO - JBT cards opened a missing page, and the armor Best Guess could over-armor a suit's head.</li>
+                      </ul>
+                  </li>
+                  <li>
+                  <h3>
+                      <strong>November 16th, 2026</strong> - Best of Future Wars equipment and rules in play, Lore and Rules for equipment, and Community Homebrew
+                    </h3>
+                    <h4>Author - NGCFells</h4>
+                      <ul>
+                        <li><strong>Best of Future Wars (issue #172).</strong> More fanzine equipment at Custom Homebrew (Rapid Fire autocannon, Swing Fire missile racks, Power Boosters) and five optional rules as Special Rulesets: Opportunity Fire, Strategic Movement, Morale, Weapon Malfunctions and The Long Range Wars. A roster's Play page runs them all in Best of Future Wars and Future Wars Rules panels. Fan-made, NOT OFFICIAL; where the fanzine is silent the rulings are NGCFells's.</li>
+                        <li><strong>Lore and Rules.</strong> Every piece of equipment can carry in-character lore and a how-it-plays rules field beside the notes that credit its source, editable in the equipment editor.</li>
+                        <li><strong>Community Homebrew and Apocryphal equipment.</strong> From r/battletech, the QueerTech Discord and MechWarrior 5: the Superheavy PPC, Fusion Lance, Re-Engineered Fusion Engine, Tandem Charge SRMs, Reloading Rocket Launchers, the Plasma Lance and a Pilebunker (u/Xenosama), and the PPC-X and COIL. Where an author gave no Battle Value, cost, date or Alpha Strike values, NGCFells derived them; the new TRO - JBT card shows the method so you can price your own.</li>
+                      </ul>
+                  </li>
+                  <li>
+                  <h3>
+                      <strong>November 15th, 2026</strong> - Walkers, 'Mech Alpha Strike heat, and Aces updates
+                    </h3>
+                    <h4>Author - NGCFells</h4>
+                      <ul>
+                        <li><strong>Walkers (issue #172).</strong> Clell Flint's four-legged 'Mechs from Future Wars #11 and The Best of Future Wars, at Custom Homebrew: a Walker Creator under either printing, an industrial walker Inspired by Flint and TechManual, record sheets, play mode, roster groups, NGCFells's Alpha Strike rules (WK, IWK) and three sample walkers by NGCFells with their own TRO - JBT readout. Cost and Battle Value are provisional. Fan-made, NOT OFFICIAL.</li>
+                        <li><strong>Best of Future Wars equipment.</strong> The EII Point Defense System, Gatling Laser, Long Range Flamer, Penitrator, VHE and Inferno Gauss shells and SABOT rounds, each with a TRO - JBT page.</li>
+                        <li><strong>'Mech Alpha Strike heat (issue #636).</strong> Conversions follow the Converting Heat errata v1.3; bundled 'Mech cards now match the Master Unit List on 2,763 of 3,473, up from 1,359. The Clan and Inner Sphere Laser AMS heat are no longer swapped.</li>
+                        <li><strong>Aces (issues #637, #638, #605, #191).</strong> The automated force ranks its targets and can change mid-game; Battlefield Support cards can be spent; the Scouring Sands emplacements are in the custom list; the card library reads Command, Special Orders and Edge cards from photos at any angle; Named Pilots take Edge abilities, with reminders each phase. Thanks to Rekikire for the reports and card photos.</li>
+                      </ul>
+                  </li>
+                  <li>
+                  <h3>
+                      <strong>November 14th, 2026</strong> - Micro-Mechs and Compact 'Mechs join Custom Homebrew
+                    </h3>
+                    <h4>Author - NGCFells</h4>
+                      <ul>
+                        <li><strong>Compact 'Mechs.</strong> Clell Flint's "Alternate Rules for Building Mechs" as two Special Rulesets, one per printing (Future Wars #11 and The Best of Future Wars), followed by the creator, record sheet and play mode. The 4-table critical roll is NGCFells's. Anything that no longer fits is left unallocated, never deleted. Fan-made, NOT OFFICIAL.</li>
+                        <li><strong>Micro-Mechs (issue #173).</strong> Solarmech's 10 to 19-ton walkers (version 6.1.0.2, revised by an unnamed editor with Discord, or the 2019 post): a creator with step-by-step cost and Battle Value, record sheets, play mode, NGCFells's Alpha Strike rules (MM, MCR), four sample designs, a Micro-Mech Bay (MMT#) for DropShips and Small Craft, and Aces support with the new Custom units campaign option. Fan-made, NOT OFFICIAL.</li>
+                        <li>DropShips and Small Craft now show the official unit-bay transport abilities (AT, ST, MT, PT, VTM, VTH, VTS).</li>
+                      </ul>
+                  </li>
+                  <li>
+                  <h3>
+                      <strong>November 12th, 2026</strong> - Four fan-made items, engine heat in play, and more Battle Values traced
+                    </h3>
+                    <h4>Author - NGCFells</h4>
+                      <ul>
+                        <li><strong>Custom Homebrew.</strong> The Permanent Air 'Mech (Red Pins and LAMFAN), with five of LAMFAN's Air-Slip designs as samples; the Mini Engine (u/VanillaPhysics); the Pile Bunker (u/FweeCom); and the Omni-Laser (u/heavyarmormecha). Each credits its author and says "Inspired by" where a number or rule is NGCFells's.</li>
+                        <li><strong>Play mode.</strong> Engine hits add heat for every 'Mech, and an XXL or Mini Engine adds movement heat.</li>
+                        <li><strong>Battle Value Accuracy.</strong> 3,941 'Mechs match the Master Unit List and 103 differ; 78 now carry a note on why NGCFells thinks the list's value is the one in question. Fixes found along the way: Clan 'Mech Mortars and RISC Emergency Coolant Systems import and value correctly, and a quad keeps its front-leg weapons.</li>
+                      </ul>
+                  </li>
+                  <li>
+                  <h3>
+                      <strong>November 11th, 2026</strong> - Every 'Mech Battle Value shows its working
+                    </h3>
+                    <h4>Author - NGCFells</h4>
+                      <ul>
+                        <li>Every 'Mech Battle Value and cost opens into its steps, each with book and page. A new Battle Value Accuracy page lists every 'Mech whose JBT value differs from the Master Unit List, and why.</li>
+                        <li>Fixed: Primitive 'Mechs from MegaMek files carried oversized engines; machine gun arrays counted guns twice; two sizes of one launcher shared ammunition value; torpedo launchers can take Artemis IV.</li>
+                      </ul>
+                  </li>
+                  <li>
+                  <h3>
+                      <strong>November 10th, 2026</strong> - Aces playtest updates, a patch, and a Mordel.net connection in the works
+                    </h3>
+                    <h4>Author - NGCFells</h4>
+                      <ul>
+                        <li>Coming: a connection to Mordel.net, built on the public API Mordel.net's owner made for it. You will enter a free key from your own Mordel.net account once in Settings and bring designs, private ones included, into the roster and creators. The key stays on your device and goes only to Mordel.net.</li>
+                        <li>Aces, from Rekikire's playtest: movement follows your roster, the Command card hands out Move First and Last and shows the ideal RED, YELLOW and BLUE unit, range damage comes from the unit's own values, duplicate names are numbered, and Behavior conditions are answered where the app knows enough. The critical hit tables are built in.</li>
+                        <li>Patch: formation bonuses follow the book more closely, and fixes to size-40 missile clusters, saved Alpha Strike turns and wounds, vehicle motive boxes and low-skill Point Values.</li>
+                      </ul>
+                  </li>
+                  <li>
+                  <h3>
                       <strong>November 4th, 2026</strong> - Vehicle BV1, force Battle Value, jump packs and TRO - JBT
                     </h3>
                     <h4>Author - NGCFells</h4>
                       <ul>
-                        <li>TRO - JBT is on the top menu: a home for our custom creations, with a card for each document. The ArtVee Technical Readout now reads a page at a time and its Markdown can be downloaded, and the anti-orbital Long Tom has its own page under Ammunition.</li>
-                        <li>Two new ArtVee rules in Play Mode: the Bishop Move, a risky lateral shift in Vehicle Mode, and jettisoning fouled spades to escape Siege Mode at +1 to hit with its artillery after that. The rules are in the ArtVee Technical Readout.</li>
-                        <li>Vehicles now have their own Battle Value under the <i>BattleTech Master Rules</i> and its Revised Edition, beside the current figure, and read that edition's skill table. <i>Maximum Tech</i>'s Level 3 vehicle rules apply under the Revised Edition.</li>
-                        <li>The Status page has moved to the home page, and plans now live in the GitHub issues. Available Tools scrolls in its own box beside the News, and the story of why this app exists is on the About page.</li>
-                        <li>Force Battle Value under the <i>BattleTech Master Rules</i> and its Revised Edition: units with homing Arrow IV missiles or TAG add 200 once the force has both (under the Revised Edition a C3 master counts as TAG), and a complete C3 network adds 35 percent of each member's weapons. With <i>Maximum Tech</i>'s rules, semi-guided LRM ammunition counts six times beside friendly TAG, and a command console adds 200 once to the force total.</li>
-                        <li>The ArtVee Technical Readout now reads like a real TRO: a signed introduction, a Star League, a Clan and an Inner Sphere section, full spec lines and stat pages for all nine designs, and line art of the Falconet in both modes and mid-conversion.</li>
-                        <li>Jump packs can now be strapped onto 'Mechs in the 'Mech creator: at Advanced rules under the <i>BattleTech Master Rules, Revised</i> (<i>Maximum Tech</i>) and under Total Warfare (<i>Tactical Operations</i>). They add no design weight or slots, cost 20,000 C-bills a ton, and BV1 adds the pack's MP x 5 to the final BV. They are only for 'Mechs without jump jets, so never beside jets, on a LAM or with partial wings. The technical readout, the record sheet and Play Mode all show them.</li>
-                        <li>Jump packs now work in play mode: the record sheet shows the pack's Jumping MP and fuel, a jump on the pack makes no heat and burns its fuel, an empty pack drops off, any rear torso hit destroys it, and the Set Movement dialog can drop it for 1 MP.</li>
+                        <li><strong>TRO - JBT</strong> is on the top menu: a home for NGCFells's custom creations. The ArtVee Technical Readout reads like a real TRO, a page at a time, with Markdown download, line art and two new play rules (the Bishop Move and jettisoning fouled spades).</li>
+                        <li><strong>Master Rules Battle Value.</strong> Vehicles get BV1 under the Master Rules and its Revised Edition, and force Battle Value adds TAG with homing Arrow IV, C3 networks, semi-guided LRMs and command consoles.</li>
+                        <li><strong>Jump packs</strong> for 'Mechs without jump jets (Maximum Tech and Tactical Operations), in the creator, on the record sheet and in play.</li>
+                        <li>The Status page moved to the home page, plans live in GitHub issues, and the About page tells why this app exists.</li>
                       </ul>
                   </li>
                   <li>
                   <h3>
-                      <strong>November 3rd, 2026</strong> - 'Mech BV1, Aces card reader and SSW import fixes
+                      <strong>November 3rd, 2026</strong> - 'Mech BV1, Maximum Tech, and rules-level fixes
                     </h3>
                     <h4>Author - NGCFells</h4>
                       <ul>
-                        <li>The ArtVee now has its own Technical Readout, a Custom Homebrew history of the Mobile Artillery Platform from the Star League to 3085: how the conversion works, the doctrine, the makers, and all nine sample designs with their stats and crews. Read it from the Classic BattleTech menu, or from the sample list in the Vehicle Creator. The ArtVee idea is by kris (helvedes heste).</li>
-                        <li>Battle Value by rules edition: a 'Mech built under the <i>BattleTech Master Rules</i>, its Revised Edition or the Classic BattleTech box set now shows its BV1, worked out by that book's rules and equipment tables, with the current rules' BV2 beside it. It matches the Goshawk example in the book and the <i>Maximum Tech</i> BV lists. Under the Revised Edition, <i>Maximum Tech</i>'s Level 3 values count too: its equipment table, XXL and Large engines, hardened armor, reinforced and composite structure, CASE II, heavy-duty gyros, torso-mounted cockpits, command consoles, coolant pods and special ammunition. Other unit types show BV2 until their BV1 is in.</li>
-                        <li>Flare LRM ammunition can now be loaded under the <i>BattleTech Master Rules</i> and its Revised Edition (a Level 2 munition, at the normal LRM price), and at the Apocryphal level under Total Warfare, whose errata removed it. <i>Maximum Tech</i> values it at 5% of the standard ammunition's BV.</li>
-                        <li>Enhanced Imaging (EI) can now be added to Clan 'Mechs in the 'Mech creator: as <i>Maximum Tech</i>'s Level 3 cockpit system under the <i>BattleTech Master Rules</i>, Revised Edition (400,000 C-bills for the cockpit instead of 200,000, and not with a small, torso-mounted or command console cockpit), and as the Experimental EI interface under Total Warfare. It weighs nothing and takes no slots. BV1 adds 5% of the weapons, takes 25 off the defensive rating and reads the Piloting Skill 1 better. MegaMek files with an EI interface import with it. MechWarriors can now have EI neural implants (a box in the roster's pilot editor, saved with the pilot): under Total Warfare a pilot with implants in a 'Mech with the EI interface reads Gunnery and Piloting 1 better for BV (<i>Interstellar Operations: Alternate Eras</i> p.184); the interface alone changes nothing. EI's record sheet notes come next. Also fixed: a design built under the Master Rules now reports the rules level its equipment needs there (a Variable-Range system needs Level 3); it used to report none.</li>
-                        <li>Play mode's Target dialog now takes woods, jungle and smoke hexes, darkness, an immobile target and an aimed shot location for each target, and the to-hit adds sensor hits too. EI is switched on or off there (End Phase): while on it gives Piloting -1, softens woods and smoke, ignores darkness, aims as a targeting computer does, and asks for a feedback roll when internal structure is hit. The 'Mech record sheet prints an EI note in the Warrior Data box: an on box, marked in play while EI is active, and the feedback roll. Fixed: a targeting computer's -1 to hit was never applied in play; it is now, or +3 in its place for an aimed shot (Total Warfare p.143).</li>
-                        <li>Armless 'Mechs from <i>Maximum Tech</i> can now be built in the 'Mech creator, under the <i>BattleTech Master Rules, Revised</i> at Advanced rules: bipeds and tripods give up their arm armor, structure, slots and actuators, and BV1 adds 0.1 to the Defensive Movement Factor. The record sheet leaves the arms off, and in play an arm hit does nothing.</li>
-                        <li>Targeting and tracking systems from <i>Maximum Tech</i> can now be mounted under the <i>BattleTech Master Rules</i>, Revised Edition, at Level 3: Long-Range, Short-Range, Variable-Range, Anti-Aircraft, Multi-Trac and Multi-Trac II, one to a 'Mech and not with a targeting or C3 computer. Variable-Range and Multi-Trac II take half a ton and a head slot and raise the sensors' price. In play, the to-hit numbers use their range, anti-aircraft and multi-target modifiers, and a Variable-Range setting is picked in the Target dialog. BV1 adds 10% of the weapons for Variable-Range, and counts rear weapons in full with Multi-Trac II. Also fixed: a secondary target in the front arc was labelled "In Rear Arc", and the Target dialog gave the secondary-target modifiers as -1 / -2 when they are +1 / +2.</li>
-                        <li>Fixed: 'Mech costs charged for shoulders and for arm actuators a design does not mount, and at the wrong prices. They now follow the rulebook's table (upper arm 100, lower arm 50, hand 80, per ton), so most printed costs drop.</li>
-                        <li>Fixed: the unit search's Search Rules filter now offers Experimental, and it narrows your saved designs by their own rules level too (before, a saved design showed under every choice).</li>
-                        <li>Fixed: in the 'Mech creator, changing the rules level after switching editions and then switching back could drop the equipment added in between (an LRM 5 vanished, so its ammunition was not listed).</li>
-                        <li>Rules levels fixed: Introductory under Total Warfare, and Level 1 under the <i>BattleTech Master Rules</i> and its Revised Edition, now offer only the technology of 3025 (standard lasers, PPCs, autocannons, machine guns, flamers, LRMs and SRMs, the hatchet, and standard engines, gyros, armor, structure, heat sinks and jump jets). Everything else needs Standard / Level 2.</li>
-                        <li>Fixed: the 'Mech creator offered Advanced and Experimental parts at the Standard rules level. Hardened, reactive, laser-reflective, ferro-lamellor and modular armor, XXL and large engines, reinforced and composite structure, compact heat sinks, 'Mech UMUs and super-cooled myomer now need Experimental; laser heat sinks and the Dark Age armors need Advanced (<i>Tactical Operations: Advanced Units &amp; Equipment</i>, <i>Interstellar Operations: Alternate Eras</i>). A design's required rules level now counts these parts too.</li>
-                        <li>Aces: the card photo reader knows more of the cards' condition, movement and combat filter wording, thanks to Rekikire's typed card list.</li>
-                        <li>Where an SSW file differs from the newest printed record sheet, importing it now gives the printed design too: the Zeus X ZEU-X and ZEU-X2 get their patchwork armor (Record Sheets: Dark Age), and the Skinwalker B gets its Improved Heavy Medium Lasers (Recognition Guide: ilClan 24).</li>
+                        <li><strong>ArtVee Technical Readout:</strong> a Custom Homebrew history of the Mobile Artillery Platform and its nine sample designs. The ArtVee idea is by kris (helvedes heste).</li>
+                        <li><strong>BV1 by edition.</strong> 'Mechs under the Master Rules, its Revised Edition or the Classic BattleTech box show BV1 beside BV2, matching the book's Goshawk and the Maximum Tech lists, Level 3 equipment included.</li>
+                        <li><strong>Maximum Tech.</strong> Enhanced Imaging (cockpit, EI implants and play rules), armless 'Mechs, targeting and tracking systems, and Flare LRM ammunition. The Target dialog gains terrain, darkness, immobile targets and aimed shots; a targeting computer's -1 now applies.</li>
+                        <li><strong>Fixes.</strong> Arm actuator costs follow the rulebook; Introductory and Level 1 offer only 3025 technology; Advanced and Experimental parts need their own levels; the Search Rules filter offers Experimental; equipment no longer drops when switching editions back. Aces card reader: more card wording, thanks to Rekikire. SSW imports give the printed Zeus X and Skinwalker B.</li>
                       </ul>
                   </li>
                   <li>
                   <h3>
-                      <strong>November 2nd, 2026</strong> - Ammunition explosions by edition, Aces fixes, equipment from the Solaris7 forum, and 28 more bundled 'Mechs
+                      <strong>November 2nd, 2026</strong> - Ammunition explosions by edition, Solaris7 equipment, and 28 more bundled 'Mechs
                     </h3>
                     <h4>Author - NGCFells</h4>
                       <ul>
-                        <li>Ammunition explosions now follow the edition you play, for 'Mechs, vehicles, buildings, fighters and small craft: a critical hit rolled on an ammunition bin explodes it, and CASE and CASE II protect as that edition says. Fighters and small craft can also lose ammunition to a failed heat Avoid Roll. ProtoMechs have no ammunition explosion rule: their critical hits never reach ammunition.</li>
-                        <li>DropShips in play run at zero net heat, with no Heat Scale or heat Avoid Rolls.</li>
-                        <li>Aces: the Initiative roller adds the Command card's Initiative order; printed cards put Support orders on their own line above the Emplacements columns; on phones, icon links wrap and tracker tables scroll sideways.</li>
-                        <li>New custom equipment from the Solaris7 forum, each record naming its author and thread, with anything the posts didn't give taken from the nearest canon item. At Custom Homebrew: Captain's Inner Sphere Heavy Laser, the Light Autocannon/10 and /20, the ER Improved Narc Launcher, the Inner Sphere Light Chemical Laser, the Rotary Small Chemical Laser, Small and Medium Laser Arrays, the 'Mech Periscope, Chaff Pod 2.0 and the Modular C3 (sized by how many units it links).</li>
-                        <li>At Munchkin, for games that want them: Nightstalker666's and Captain's railguns (Captain's takes one whole side of a 'Mech, side torso and arm), nanotube armor, and Prince's Nuclear Pulse Cannon. Thanks to Captain, Nightstalker666, Prince, Thunder, Lycaon and the late Lonely Coyote.</li>
-                        <li>28 more bundled 'Mechs from MegaMek's files, including all 13 QuadVees (Arion, Boreas, Cyllaros, Harpagos and Notos), LAMs, FrankenMechs, and designs with prototype heat sinks, jump jets, endo steel and ferro-fibrous, Interface Cockpits, Robotic Cockpits, Large XXL engines and patchwork armor.</li>
-                        <li>New in the 'Mech creator: the Interface Cockpit with No Gyro, the Smart Robotic Control System, prototype double heat sinks and prototype endo steel structure.</li>
-                        <li>Where a MegaMek file differs from the newest printed record sheet, importing it now gives the printed design: Shorty Sneede's two Hybrid Riflemen (ForcePack Record Sheets: Snord's Irregulars) and the Temax Cat (XTRO: Boondocks).</li>
-                        <li>QuadVees can now use any armor and internal structure a quad can, and their tracks or wheels are now included in weight and cost.</li>
-                        <li>Bundled units are now matched to the right Master Unit List entry when two entries share an alternate name: the Ryoken III (Skinwalker) and the Ryoken III-XP each get their own, and 9 battle armor designs, the Procyon and the Condor Heavy Hover Tank are now matched.</li>
-                        <li>The Skinwalker E shows its printed Battle Value of 3,107 (Recognition Guide: ilClan 24), where the live Master Unit List still says 3,102.</li>
-                        <li>ProtoMech quad melee weapon systems now count the ProtoMech's base Frenzy damage in their Battle Value (Interstellar Operations: Alternate Eras p.190): the Basilisk (Quad) is 258, as printed in The Wars of Reaving.</li>
-                        <li>The weekly Master Unit List update.</li>
+                        <li><strong>Ammunition explosions</strong> follow your edition for 'Mechs, vehicles, buildings, fighters and small craft; DropShips run at zero net heat.</li>
+                        <li><strong>Solaris7 forum equipment</strong>, each crediting its author and thread: ten items at Custom Homebrew and four railguns, armors and cannons at Munchkin. Thanks to Captain, Nightstalker666, Prince, Thunder, Lycaon and the late Lonely Coyote.</li>
+                        <li><strong>28 more bundled 'Mechs</strong> from MegaMek, all 13 QuadVees among them, with new creator parts (Interface Cockpit with No Gyro, Smart Robotic Control System, prototype double heat sinks and endo steel). Printed record sheets win over MegaMek files where they differ.</li>
+                        <li>Better Master Unit List matching for shared alternate names; the Skinwalker E and Basilisk (Quad) show their printed Battle Values. Aces fixes for Initiative, printed cards and phones. The weekly Master Unit List update.</li>
                       </ul>
                   </li>
                   <li>
@@ -251,10 +345,8 @@ export default class Home extends React.Component<IHomeProps, IHomeState> {
                     </h3>
                     <h4>Author - NGCFells</h4>
                       <ul>
-                        <li>Aces card reader: the conditions and movement filters repeat the same few phrases, changing only a number or colour, so each line read from the photo is matched to the nearest printed phrase and only the number or colour is taken from the photo. A line too far from every phrase stays as read for you to correct. Thanks to Rekikire for the idea.</li>
-                        <li>Aces card reader: a photo taken at a slant (up to 10 degrees) is straightened before it's read.</li>
-                        <li>Aces card reader: the moved check is read across a range of greens, so lighting and camera colour matter less. 1s and 7s in priority numbers are told apart by their shape, card numbers are found in dim footers, and the colour of the Armor lost icon is read. A last line cut off by the photo's edge is filled in with the cards' usual ending and flagged for you to check. Thanks to Rekikire for the test photos.</li>
-                        <li>Bundled 'Mechs: 127 'Mechs from MegaMek's files that the Master Unit List doesn't have now come with a record sheet and an entry in the custom unit list, at this app's own Battle Value, worked out by the rules and errata.</li>
+                        <li>Aces card reader: lines are matched to the cards' printed phrases, slanted photos are straightened, and colours, numbers and cut-off lines read better. Thanks to Rekikire for the idea and test photos.</li>
+                        <li>127 MegaMek 'Mechs the Master Unit List lacks now come with record sheets in the custom unit list, at a Battle Value worked out by the rules and errata.</li>
                       </ul>
                   </li>
                   <li>
@@ -263,14 +355,9 @@ export default class Home extends React.Component<IHomeProps, IHomeState> {
                     </h3>
                     <h4>Author - NGCFells</h4>
                       <ul>
-                        <li>For players who find the cards' small print hard to read, the app can read a photo of your own printed card. The reader isn't perfect: it misreads some letters, numbers and icons, so check everything it fills in against your card. The photo never leaves your device, and no card text ships with the app.</li>
-                        <li>Alpha Strike Roster: Add from a Card Photo, on the Add Units page. If the Master Unit List lists the unit and agrees with the card, its unit is added. If the card's values differ (an older printing, or a misread), the two show side by side and you choose. A custom, or a unit printed elsewhere, is read into a form to check and add as printed.</li>
-                        <li>Aces card library: the card editor reads a photo of either side of a card into the form, to be checked before it can be saved.</li>
-                        <li>Alpha Strike cards whose stats aren't from Master Unit List 2.0 say NOT OFFICIAL, on screen and in print: units from MUL 1.0, the custom unit lists, the unit creators, and cards added from a photo as printed. Forces saved before today keep their units' marks by whether they came from the Master Unit List.</li>
-                        <li>Aces game: a Your Force Cards section shows your current Alpha Strike roster in play, so you don't need the roster open in another tab, with a Reset your force button that repairs every unit for a new game. Thanks to Rekikire for the idea.</li>
-                        <li>Aces cards: the line-of-sight target icons come before "moved", as the cards print them, and sit on their own row under the zone.</li>
-                        <li>Aces card reader: the Overheat rows are the same on every card but for four numbers, so the reader now picks out just the numbers and writes the rows from them, leaving far fewer words to correct. Thanks to Rekikire.</li>
-                        <li>Aces cards: a tick box for the Missile Boat's "If there are no enemies in line of sight: use the Indirect Fire special order card" line. In the game, when the unit falls back to indirect fire, the card reminds you to use that special order card. The card reader ticks it when it reads the line. Thanks to Rekikire.</li>
+                        <li><strong>Card photos.</strong> The app can read a photo of your own printed card: add a unit to the Alpha Strike Roster from it, or fill the Aces card editor. Check what it reads; the photo never leaves your device, and no card text ships with the app.</li>
+                        <li>Alpha Strike cards not from Master Unit List 2.0 say NOT OFFICIAL, on screen and in print.</li>
+                        <li>Aces: your force's cards in the game with a Reset button, line-of-sight icons placed as printed, Overheat rows read from four numbers, and the Missile Boat's Indirect Fire line. Thanks to Rekikire.</li>
                       </ul>
                    </li>
                   <li>
@@ -279,71 +366,36 @@ export default class Home extends React.Component<IHomeProps, IHomeState> {
                     </h3>
                     <h4>Author - NGCFells</h4>
                       <ul>
-                        <li>Record sheets: armor and structure bubbles are packed inside each location's own shape. A vehicle's sections are cut from its hull, an aerospace craft's arcs are its wings, nose and tail, and a ProtoMech is drawn as a figure. 'Mech bubbles fill each location from the center out.</li>
-                        <li>Superheavy 'Mechs (up to 200 tons) no longer run out of armor or structure bubbles, and a sheet never shows more armor than the rules allow a location. Eight 'Mech bubbles that toggled or showed the wrong point are fixed, and small bubbles draw as rings, not black dots.</li>
-                        <li>The app opens faster: the first download is about a tenth of its old size, and unit types load as they're needed.</li>
-                        <li>The bundled record sheets behind the Master Unit List search add 983 Combat Vehicles, plus Support Vehicles, Small Craft and DropShips, each matching its Master Unit List Battle Value, or MegaMek's where the Master Unit List gives none. MegaMek vehicles the Master Unit List lacks are in the custom units, credited to MegaMek.</li>
-                        <li>Vehicle Battle Value: stealth armor, VTOL jet boosters and superchargers, machine gun arrays, drones, the VTOL mast mount, and support vehicle fire control (heavy weapons only, <i>TechManual</i> p.316).</li>
-                        <li>Cockpit Command Console for 'Mechs: 3 tons and a head slot beside the cockpit (<i>Tactical Operations: Advanced Units &amp; Equipment</i> pp.112-113), and it imports from Skunk Werks and MegaMek files.</li>
-                        <li>Superheavy and tripod 'Mechs import from MegaMek files, with the superheavy engine Battle Value table, Radical Heat Sinks and the Klondike rocket launchers: 3600 bundled 'Mechs.</li>
-                        <li>mordel.net is a third source of 'Mech files, after Skunk Werks and MegaMek, for canon 'Mechs neither has.</li>
-                        <li>Canon means listed on the Master Unit List or printed on an official record sheet. The "Custom" standing is now "Fan-made", shown beside the rules level, and both roster searches can filter by standing.</li>
-                        <li>Two designs with the same name and model but different gear are kept as separate models, each with its own designation.</li>
-                        <li>LRM 15 launchers make 5 heat, not 6, as <i>Total Warfare</i> p.303 prints.</li>
-                        <li>Aces cards: the line-of-sight target icons ("in line of sight", "out of line of sight") can be entered and are used in play.</li>
-                        <li>Battle Armor and the JumpShip/WarShip creator have their own menu icons.</li>
+                        <li><strong>Record sheets</strong> pack armor and structure bubbles in each location's own shape, superheavies never run short, and eight 'Mech bubble faults are fixed.</li>
+                        <li><strong>Faster start:</strong> the first download is about a tenth of its old size.</li>
+                        <li><strong>Bundled units:</strong> 983 Combat Vehicles plus Support Vehicles, Small Craft and DropShips, and superheavy and tripod 'Mechs (3,600 'Mechs in all), each matching its Master Unit List Battle Value. mordel.net joins Skunk Werks and MegaMek as a source of 'Mech files.</li>
+                        <li>Vehicle Battle Value for stealth armor, jet boosters, arrays, drones, mast mounts and fire control; the Cockpit Command Console; "Custom" is now "Fan-made"; LRM 15 heat is 5; Aces line-of-sight icons; new menu icons.</li>
                       </ul>
                    </li>
                   <li>
                   <h3>
-                      <strong>October 26th, 2026</strong> - One game settings block and Special Rulesets, 690 more bundled 'Mechs, IndustrialMech Battle Values, and printing from the roster
+                      <strong>October 26th, 2026</strong> - One game settings block and Special Rulesets, 690 more bundled 'Mechs, and printing from the roster
                     </h3>
                     <h4>Author - NGCFells</h4>
                       <ul>
-                        <li>Every Classic unit creator now opens with the same game settings, in one order: Special Rulesets, Edition, Rules Level, Tech Base, Era. Each step offers only what the steps above it allow, and a change moves only the steps below it, so a later choice no longer undoes an earlier one. The old per-creator edition, level, tech and era controls are gone.</li>
-                        <li>Each design keeps its own rules level and rulesets. The last level you pick is the default for your next design and for the roster searches.</li>
-                        <li>Special Rulesets: optional and homebrew rules that change how the game plays or how units are built, ticked in a pop-up window. Two rulesets that change the same thing cannot both be ticked. For now there is one sample, "The Clans never existed (alternate universe)": no Clan or Mixed tech, and no ProtoMechs. Real rulesets come in through GitHub issues.</li>
-                        <li>Clan and Mixed tech start at the Clan Founding Years: there are no Clans in the Star League era any more.</li>
-                        <li>The Alpha Strike unit creator opens with Special Rulesets and the Rules Level. Both roster Master Unit List searches have Special Rulesets on top: ticked rulesets trim the Tech, Type and Era lists and the results.</li>
-                        <li>Every record sheet, Alpha Strike card and Technical Readout of a unit built under Special Rulesets names them and their source. Alpha Strike cards made from a Classic design carry its rulesets.</li>
-                        <li>The printed Alpha Strike card's trademark notice no longer runs off the top of the card.</li>
-                        <li>Importing a Solaris Skunk Werks OmniMech now brings in every configuration in the file (Prime, A, B...), not only the base chassis. The base loadout's equipment is fixed; each configuration's is in pods.</li>
-                        <li>An OmniMech configuration now keeps its own heat sinks, jump jets, lower arm and hand actuators and Clan CASE, as the published configurations vary them.</li>
-                        <li>The bundled designs behind the Master Unit List search now include 84 OmniMechs with their configurations, and 602 'Mechs that Skunk Werks has no file for, converted from MegaMek's files. Each one matches its Master Unit List Battle Value.</li>
-                        <li>IndustrialMechs imported from MegaMek's files keep their Advanced Fire Control. MegaMek gives such a 'Mech a BattleMech cockpit, which had been read as a plain Industrial cockpit, so their Battle Value came out about 4% low. The Guard, Gulon, Inquisitor II, Reptar and others now match the Master Unit List and are among the bundled designs.</li>
-                        <li>Vehicular Mine Dispensers count 8 Battle Value each, and Space Mine Dispensers 10: the value of a 10-point minefield of their mines (<i>Tactical Operations: Advanced Units &amp; Equipment</i> pp.195, 197).</li>
-                        <li>The Master Unit List search shows a corrected Battle Value for eight IndustrialMechs whose MUL figure is out of date or departs from <i>TechManual</i>: the Jabberwocky JAW-65A, JAW-66B and JAW-66D, the Quasit QUA-51M and QUA-51P, the Diomede D-M3D-3 and D-M3D-4 and the Patron PTN-1, each with its source. Nail and rivet gun ammunition counts 0 (<i>TechManual</i> p.317), and commercial armor half (p.315).</li>
-                        <li>Classic Roster: the Skunk Werks list in the Add dialog has a TRO button, as the Master Unit List search does, and so does the list of your saved 'Mechs.</li>
-                        <li>Classic and Alpha Strike Rosters: viewing a record sheet, card or TRO now offers Print, which prints only what is shown. Clicking a 'Mech's record sheet beside its TRO shows the sheet at full width; click again to bring the TRO back.</li>
-                        <li>The BattleTech logo on a printed TRO is now drawn in black and gray, as on the record sheets; it had been pale yellow on white.</li>
-                        <li>Alpha Strike Roster: the Master Unit List search lists units as soon as it opens, with no filters set; it had shown none until a filter changed.</li>
-                        <li>The eight sample VTOLAMs are in the custom units, as the ArtVees are: both roster searches find them when "Custom units" is ticked, each with its designer's credit, and the Classic Roster adds the sample design.</li>
-                        <li>A 'Mech's Alpha Strike card shows minimal damage as 0*, not 0. Its LRM, SRM and AC specials need 10 or more points of damage at medium range, as the Master Unit List's do; minimal indirect fire is IF0*, and a special with no damage is left off, where the card had shown IF 0, SRM 0/0/0 or HEAT 0/0/0.</li>
-                        <li>Classic Roster: one Find Units list replaces the separate Master Unit List search and Skunk Werks import. It holds the Master Unit List and every design off it (your saved designs, the samples and the bundled designs), with a Source column, and lists a design with the same name, model and layout once.</li>
-                        <li>A standing badge (canon, apocryphal, custom, munchkin) beside each unit in both roster searches, with a legend.</li>
-                        <li>In the Clan Founding Years (2800-2840) a Clan 'Mech picks Clan or Star League structure, armor and heat sinks, which that era offers both of; Mixed Tech 'Mechs get the same choice wherever the versions differ. Clan vehicles may take Star League Ferro-Fibrous armor, and Clan fighters, Small Craft and DropShips Inner Sphere Ferro-Aluminum, in the years before the Clan versions.</li>
-                        <li>A battle armor bay on a Small Craft or DropShip starts with a door, and is flagged if it has none to share (<i>TechManual</i> p.196).</li>
+                        <li><strong>Game settings.</strong> Every Classic creator opens with Special Rulesets, Edition, Rules Level, Tech Base and Era, in that order; each step offers only what the ones above allow. Each design keeps its own level and rulesets.</li>
+                        <li><strong>Special Rulesets</strong> are ticked in a pop-up and named on every record sheet, card and TRO built under them. Clan and Mixed tech start at the Clan Founding Years.</li>
+                        <li><strong>OmniMechs and bundled 'Mechs.</strong> Skunk Werks OmniMech imports bring every configuration; 84 OmniMechs and 602 MegaMek 'Mechs join the bundled designs; IndustrialMechs keep Advanced Fire Control and eight show corrected Battle Values.</li>
+                        <li><strong>Rosters.</strong> One Find Units list in the Classic Roster, TRO buttons, Print for any sheet, card or TRO, standing badges, and the sample VTOLAMs in the custom units. Alpha Strike cards show minimal damage as 0* and drop empty specials.</li>
+                        <li>Also: mine dispenser Battle Value, Clan Founding Years tech choices, battle armor bay doors, and the printed card's trademark notice fits.</li>
                       </ul>
                    </li>
                   <li>
                   <h3>
-                      <strong>October 25th, 2026</strong> - Primitive Small Craft and DropShips, and the VTOLAM
+                      <strong>October 25th, 2026</strong> - Primitive Small Craft and DropShips, the VTOLAM, and 2,859 Skunk Werks 'Mechs
                     </h3>
                     <h4>Author - NGCFells</h4>
                       <ul>
-                        <li>The Small Craft and DropShip creator builds Primitive craft (<i>Interstellar Operations: Alternate Eras</i> pp.119-121), by year of introduction from 2100 to 2499: engine, controls and fuel by year, the Primitive DropShip weight limits and free heat sinks, armor at 0.66, single heat sinks only, and a RetroTech note on later equipment. DropShips choose their K-F boom: standard, prototype or none. MegaMek Primitive craft files import as Primitive, with their boom.</li>
-                        <li>The fighter, Small Craft and capital ship creators show heat as, for example, "20 dissipated of 34 generated".</li>
-                        <li>The Merlin, the 60-ton droid the <i>Battledroids</i> rulebook builds as its construction example (pp.23-25), can be picked with the book's ten. The text prints the head's armor as 0 and each arm's as 28, which come to 199 instead of 192; the sheet beside it shows 9 and 20, which match, so those are used.</li>
-                        <li>The VTOLAM, a LAM whose second mode is a VTOL, at the Custom Homebrew rules level, under two fan rule sets. BishopSteiner's (DeviantArt): conversion equipment 20% of tonnage, at most 30 tons, no jump jets needed, landing skids in the side torsos, and VTOL movement from the engine; with his Locust VTOLAM as a sample. professorheyteen's (<i>Battletech Into The Future</i>): 10% conversion equipment, at most 35 tons, any 'Mech equipment, and VTOL movement equal to the Jump MP; with all seven of his designs as samples (Locust for Hell's Horses and the LCAF, Firefly, Icestorm, Flea, Spider and Valkyrie), each at its published Battle Value. Pick the LAM type in the 'Mech Creator's step 1; in Play Mode a VTOLAM switches between 'Mech and VTOL.</li>
-                        <li>A Custom Homebrew infantry weapon: the Ceres Arms Léitíng-23 heavy combat carbine, from is-the-battlemech-cool-or-not's Tumblr. Its <i>A Time of War</i> stats are converted by the <i>A Time of War Companion</i>'s rules (pp.169-171): damage 0.28, range 0, Battle Value 0.26, from 3100. Infantry platoons, battle armor anti-personnel mounts, buildings and Support Vehicles offer it only at the Custom Homebrew rules level.</li>
-                        <li>Alpha Strike Roster: "Quickly add a ForcePack" now adds every unit in the pack. Most packs had been adding only some of their units, or none, because units were matched without their variant. Packs can now be added offline too, and the list has every opposing force from the <i>Aces: Scouring Sands</i> campaign book: two training forces and 21 sorties, each unit at the book's skill.</li>
-                        <li>'Mech Creator: <i>Battledroids</i> droids now print on the book's own droid record sheet: armor and internal structure as boxes in the droid's shape, the DroidWarrior's name, skills and hits, heat sinks, ammunition, the Critical Hit Chart and the Heat Scale. Play mode keeps the sheet with the trackers.</li>
-                        <li>'Mech Creator: BattleMech Turrets (<i>Tactical Operations: Advanced Units &amp; Equipment</i>): shoulder, head and quad turrets, with a Turret column on the equipment step to mark what each carries. The turret weighs 10% of what it carries, Battle Value counts its weapons in the right firing arc, and the record sheet marks them. SSW files with turrets now import with them, so designs such as the Quickdraw QKD-8X and Uraeus UAE-7R match their Battle Values.</li>
-                        <li>Custom Homebrew: the Improved 'Mech Taser (iTaser) and EMP Missiles for every non-Streak Inner Sphere missile launcher, police equipment by VoiceOfAN from <i>Battletech Into The Future</i>. Pick the Custom Homebrew rules level to use them.</li>
-                        <li>2,859 'Mechs converted from the Solaris Skunk Werks files, up from about 500, each checked against the Battle Value on the Master Unit List (or in the file, where the MUL has none). The Classic Roster's Master Unit List search now finds a record sheet, TRO and Add button for each of them, and the 'Mech Creator's import list has them all, every rules level, a page at a time. They load only when a list needs them, so the app no longer imports 500 'Mechs at every launch. OmniMechs come later, once the Skunk Werks import reads their configurations.</li>
-                        <li>917 more record sheets in the Classic Roster's Master Unit List search: 820 battle armor squads, 62 ProtoMechs, 30 Small Craft and DropShips and 5 Support Vehicles, converted from MegaMek's unit files (MegaMek Data by The MegaMek Team, CC BY-NC-SA 4.0). Each one's Battle Value matches the Master Unit List's. The rest are left out until their import or Battle Value is right.</li>
-                        <li>Battle armor carrying an assault rifle in an anti-personnel mount no longer counts the rifle in its Battle Value, as the Master Unit List values them. That brings 181 more suits into line with it, among them the Achileus and the Elemental.</li>
-                        <li>Saved IndustrialMechs keep their industrial armor (such as Commercial) when loaded again. They had been reloading with Standard armor, which changed their Battle Value and cost.</li>
+                        <li><strong>Primitive Small Craft and DropShips</strong> by year, 2100 to 2499, with K-F booms; MegaMek Primitive files import as such.</li>
+                        <li><strong>The VTOLAM</strong> at Custom Homebrew, under BishopSteiner's rules (with his Locust) or professorheyteen's (with his seven designs at their published Battle Values).</li>
+                        <li><strong>Custom Homebrew gear:</strong> the Léitíng-23 carbine (is-the-battlemech-cool-or-not), and VoiceOfAN's Improved 'Mech Taser and EMP Missiles from Battletech Into The Future.</li>
+                        <li><strong>Bundled units:</strong> 2,859 Skunk Werks 'Mechs and 917 MegaMek battle armor, ProtoMechs, Small Craft and Support Vehicles, each matching its Master Unit List Battle Value, loaded only when needed.</li>
+                        <li>Also: ForcePacks add every unit, offline too, with the Aces: Scouring Sands forces; BattleMech turrets; the Battledroids droid record sheet and the Merlin; battle armor rifle and IndustrialMech armor Battle Value fixes.</li>
                       </ul>
                    </li>
                   <li>
@@ -352,115 +404,54 @@ export default class Home extends React.Component<IHomeProps, IHomeState> {
                     </h3>
                     <h4>Author - NGCFells</h4>
                       <ul>
-                        <li>Skunk Werks imports: designs place every item where the file puts it (unplaced slots on the bundled designs down from 1,253), every canon item on them imports, the Torso-Mounted Cockpit can be built and imported, and files with a broken image attribute (the Summoner and Puma) load. A design that uses a draft item whose stats are not all entered says so on every creator step and on the saved list.</li>
-                        <li>Battle Value now matches Skunk Werks' BV2 on 2,881 of its 2,934 BattleMechs, up from 2,285, and on its IndustrialMech and Primitive designs, among them split weapons, CASE with XL engines, Artemis on improved launchers, forward and rear weapons, and prototype improved jump jets.</li>
-                        <li>DropShip ammunition sits in its weapons' bays and counts at the rate of the launchers in its bay and arc (<i>TechManual</i> p.311). MegaMek DropShip files import their internal weapon names, Artemis on MMLs, PPC Capacitors, Clan, MML, ATM, HAG and primitive rounds, bay quirks, Obsolete years and Narc pods. MML ammunition reads its shots at its own round's rate, Clan AMS fires 24 shots a ton, cruise missiles count their heat on aerospace units, and ammunition on fighters, Small Craft, DropShips and vehicles caps at its weapons' Battle Value.</li>
-                        <li>Master Unit List: DropShip, Small Craft and capital ship Alpha Strike cards get a back with their damage by firing arc, read off all 437 MUL card backs, and their own unit type (they were taken for aerospace fighters). Records from the new MUL get their armor threshold, rules level, TRO and image.</li>
-                        <li>Behind the scenes: every equipment catalog shares one record core and one registry, with each record's editions, tech base and Clan dates, so Clan units use the Clan dates everywhere and a mixed-tech fighter or Small Craft takes a production window over a prototype. The pre-<i>Total Warfare</i> expansions count as editions on one dated timeline, and every catalog was checked against MegaMek's 3,830 official items.</li>
+                        <li>Skunk Werks imports place every item where the file puts it, and Battle Value matches Skunk Werks' BV2 on 2,881 of 2,934 BattleMechs, up from 2,285.</li>
+                        <li>DropShip ammunition sits in its bays, MegaMek DropShip files import fully, and large-craft Alpha Strike cards get their arc backs from all 437 MUL cards.</li>
+                        <li>Behind the scenes: one equipment registry with editions and Clan dates, checked against MegaMek's 3,830 official items.</li>
                       </ul>
                    </li>
                   <li>
                   <h3>
-                      <strong>October 23rd, 2026</strong> - Bug fixes, and the Classic Roster MUL search for every unit type
+                      <strong>October 23rd, 2026</strong> - Technical Readouts for every unit type, and the Classic Roster MUL search
                     </h3>
                     <h4>Author - NGCFells</h4>
                       <ul>
-                        <li>Each 'Mech's engine, armor, gyro, structure, heat sink, cockpit, myomer and jump jet lists show that 'Mech's own era availability; opening another 'Mech no longer changes them, or whether a design reads as Anachronistic.</li>
-                        <li>Vehicles above engine rating 400 follow the large engine's own dates, as 'Mechs do: no Large Fusion before its 2630 prototype, and the Inner Sphere Large XL is out of reach between its loss in 2822 and its recovery in 3054.</li>
-                        <li>Faster: importing a Small Craft or DropShip <i>.blk</i> file takes a fraction of a second instead of 5 to 15, every change in the Small Craft, fighter and capital ship creators is quicker on designs with Artemis launchers, and restoring a backup full of saved vehicles takes under a second.</li>
-                        <li>The 'Mech Creator's Alpha Strike Role is a drop-down of the published ground roles instead of a text box.</li>
-                        <li>The Classic BattleTech roster page's issue link goes to the current project instead of Jeff's original one.</li>
-                        <li>The 'Mech sheet's "Created with" footer is on three lines, so a long site name no longer runs into the trademark notices.</li>
-                        <li>Alpha Strike roster: each ForcePack's name and members wrap in their own column beside the add button.</li>
-                        <li>The 'Mech Creator's Skunk Werks imports page describes the importer as it is now and explains the green check.</li>
-                        <li>Classic BattleTech roster: the 2022 "In Development" banner is replaced with a description of what the roster does now, the page is titled as the Classic BattleTech roster, a one-unit favorite says "One Unit", and the printed force's tech is no longer "Mixed" because of an empty group or a group of <i>Battledroids</i> units.</li>
-                        <li>Tripod 'Mechs have a proper record sheet: the armor, internal structure and damage transfer diagrams draw a Center Leg between the legs, with a bubble for every point of its armor and structure (a 100-ton Tripod's 42 Center Leg armor no longer stops at 30), and the 'Mech Creator's armor step shows the same Tripod. The Center Torso label closes its bracket again.</li>
-                        <li>The structure record sheet prints all of a building's fittings: sealing, superstructure, ceilings, doors, elevators and storage past the first two lines are no longer cut off, and a long list carries on to a second page.</li>
-                        <li>Anti-orbital Long Tom rounds now do 5 points of standard-scale damage instead of 2 capital, after a suggestion from Vehrec on the Star League Discord: the round is mostly propellant, made to buffet landing DropShips. Against capital armor, standard damage is totaled, divided by 10 and rounded normally.</li>
-                        <li>Rules editions: the <i>BattleTech Manual</i>, both <i>Compendiums</i> and both <i>Master Rules</i> give the Internal Combustion Engine to vehicles and buildings only, so the 'Mech Creator offers it under them only at the Custom Homebrew level, an ICE 'Mech built to them is Custom Homebrew, and switching an ICE 'Mech to one of them lists the engine. From <i>Total Warfare</i> on, an ICE BattleMech is still Experimental.</li>
-                        <li>Rules editions: under <i>Battledroids</i>, the second edition and the <i>BattleTech Manual</i>, each torso's front and rear armor has its own maximum of twice that location's structure, as those books print it. From the <i>BattleTech Compendium</i> on, front and rear share one maximum.</li>
-                        <li>Classic Roster Master Unit List search, an idea from Camille, Centrella-Sworn on the Star League Discord: in a group's Add dialog, search the MUL by name, era, factions, tech, role and rules level at once, and add the 'Mech design that matches (your saved one first, else the bundled Skunk Werks one).</li>
-                        <li>Both roster searches now take the unit lists as checkboxes, so the live MUL, the MUL 1.0 leftovers and custom units can be searched in any mix. The sample ArtVees are in the custom list, and their Alpha Strike cards now print IF0* and drop an empty REAR as the MUL does.</li>
-                        <li>Alpha Strike Point Values follow the <i>Alpha Strike Companion</i> errata v1.6 for every ground unit, in the 'Mech conversion and the Alpha Strike creator alike, and a jumper is priced on its jump. A card's "IF 0*" no longer prints as "IFNaN".</li>
-                        <li>Alternate munitions keep their standard round's Battle Value: IS LB 5-X cluster, Copperhead, Arrow IV homing and 22 more.</li>
-                        <li>Restoring a backup keeps its favorite groups after the page reloads, and the Alpha Strike favorites are capped like the Classic ones.</li>
-                        <li>Classic roster: both force total lines count every unit type and show the tonnage.</li>
-                        <li>'Mech placement follows the rules for physical weapons (hatchets, swords, maces, vibroblades and claws need their actuators and go in the arms), spread equipment (stealth systems, Chameleon, partial wings, tracks), AES and the stealth system conflicts. Saved designs that break them are flagged.</li>
-                        <li>The Classic Roster's Master Unit List search now finds vehicles, fighters, infantry, battle armor and ProtoMechs as well as 'Mechs, and adds each to its own table in the group. Every group table has a Search MUL button, the bundled ArtVee designs are found too, and each result has View (its record sheet) and TRO buttons beside Add.</li>
-                        <li>Vehicles, fighters, infantry, battle armor and ProtoMechs now keep a Technical Readout in their saves, ready for each creator's own TRO step.</li>
-                        <li>The Vehicle Creator has its Technical Readout step: Step 5, between Place Equipment and Summary. Enter the manufacturer, the makes of the chassis, engine, armor and each weapon, and the history text, then print the modern-style TRO sheet from that step or from the Summary.</li>
-                        <li>The Fighter Creator has its Technical Readout step too: Step 4, between Weapons and Equipment and Summary, with the same printable TRO sheet.</li>
-                        <li>The Infantry Creator has its Technical Readout step: Step 3, between Platoon Weaponry and Summary, with the same printable TRO sheet.</li>
-                        <li>The Battle Armor Creator has its Technical Readout step: Step 6, after Loadouts and before Summary, with the same printable TRO sheet. Importing a MegaMek battle armor file now brings its manufacturer, factory, component makes and history text across too.</li>
-                        <li>The ProtoMech Creator has its Technical Readout step: Step 6, between Weapons and Equipment and Summary, with the same printable TRO sheet. Importing a MegaMek ProtoMech file brings its TRO fields across too. The sheet now gives a ProtoMech's mass in tons (it printed the kilogram total as tons).</li>
-                        <li>The vehicle TRO sheet's construction table now lists every ton, the way the printed TROs do: control systems, lift equipment, turrets, heat sinks, movement, armor factor, internal structure and armor by location, and ammunition, with locations by name.</li>
-                        <li>The fighter TRO sheet's construction table does the same: engine with Safe and Maximum Thrust, structural integrity, cockpit, fuel, heat sinks, armor by arc and ammunition, adding up to the fighter's tonnage.</li>
-                        <li>The infantry TRO sheet's table now gives transport weight, tech base, movement, formation, platoon make-up, armor kit and damage divisor, anti-'Mech training and special features, with each weapon's trooper count.</li>
-                        <li>The Small Craft Creator has its Technical Readout step: Step 7, between Crew, Quarters and Bays and Summary, with the same printable TRO sheet. Its table lists every ton: engine with Safe and Maximum Thrust, structural integrity, fuel, heat sinks, quarters and bays, armor by side and the weapons by arc, capital weapons included for DropShips. Importing a MegaMek Small Craft or DropShip file brings its TRO fields across too.</li>
-                        <li>The Classic Roster's Master Unit List search now finds Small Craft and DropShips too: the Small Craft table has its own Search MUL button, and each result has View, TRO and Add, landing in the group's Small Craft table. Before, the MUL's Small Craft and DropShips were taken for fighters and sent to the Fighter Creator.</li>
-                        <li>The Master Unit List search now tells JumpShips, WarShips and space stations from Small Craft and DropShips: they match the vessels you saved in the JumpShip and WarShip Creator and go into the group's capital ship table, which has its own Search MUL button. One you have not built links to that creator, not the Small Craft Creator. Capital ships have no TRO button yet; their Technical Readout step comes next.</li>
-                        <li>The JumpShip and WarShip Creator has its Technical Readout step: Step 7, between Crew, Quarters, Bays and Collars and Summary, with the same printable TRO sheet. Its table lists every ton: structural integrity, engine with Safe and Maximum Thrust (or the station-keeping drive), fuel, K-F drive and jump sail, controls, heat sinks, docking collars, grav decks, quarters and bays, armor by facing with the free armor counted, and the weapons by arc, capital weapons included. The vessel's K-F drive gets a make of its own. The Master Unit List search now has a TRO button for capital ships too.</li>
-                        <li>Behind the scenes: every creator's Technical Readout step and printed TRO sheet are now one shared page instead of a copy per creator, so a fix to one reaches them all.</li>
-                        <li>The Building Creator has its Technical Readout step: Step 4, between Weapons, Power and Equipment and Summary, with the same printable TRO sheet. Its table gives the superstructure and Construction Factor, size, weight capacity and modifications, then every ton of the load, with each weapon's hex.</li>
-                        <li>Building Creator Summary: the total weight now matches the weight lines above it; a generator spread over several hexes could add a few kilograms of rounding (31.002 tons for a 31-ton generator).</li>
-                        <li>Behind the scenes: the step menus beside every creator are now one shared menu instead of nine copies.</li>
-                        <li><i>Battledroids</i> droids, the book's and your own Expert designs, have the same Technical Readout step and printed TRO sheet as any 'Mech (Step 7 of the 'Mech Creator). The 1984 and 1985 Engine Tables name a maker for every rating, so a droid's power plant reads as that maker until you enter another: the Merlin's 240 is a Pitban, the Griffin's 275 a CoreTek. The same holds for designs built under <i>BattleTech, Second Edition</i>.</li>
-                        <li>Importing a MegaMek Support Vehicle file (ground, VTOL or Fixed-Wing) now brings its Technical Readout across too: manufacturer, factory, the makes of chassis, engine, armor, communications and targeting systems, and the overview, capabilities, deployment, history and notes text.</li>
-                        <li>The Engine Table makers now cover designs built under <i>The BattleTech Manual</i>, <i>The BattleTech Compendium</i>, <i>BattleTech, Third Edition</i>, <i>The Rules of Warfare</i> and <i>BattleTech, Fourth Edition</i>: those books print one table of their own, which differs from the 1984 one at ratings 125 to 155 (a 130 is a Magna rather than a Vlar). The <i>Master Rules</i> tables give tonnages only, so designs under them get no default maker.</li>
+                        <li><strong>Technical Readouts everywhere.</strong> The Vehicle, Fighter, Infantry, Battle Armor, ProtoMech, Small Craft, JumpShip and WarShip and Building Creators, and Battledroids droids, each have a TRO step and a printable sheet whose table lists every ton. MegaMek imports bring TRO text across, and Engine Table makers are filled in by edition.</li>
+                        <li><strong>Classic Roster Master Unit List search</strong> (an idea from Camille, Centrella-Sworn): search by name, era, factions, tech, role and level, for every unit type, with View, TRO and Add.</li>
+                        <li><strong>Rules.</strong> Alpha Strike Point Values follow errata v1.6; alternate munitions keep their round's Battle Value; 'Mech placement rules for physical weapons, spread equipment and AES; tripod record sheets; edition rules for ICE 'Mechs and torso armor.</li>
+                        <li><strong>Anti-orbital Long Tom</strong> rounds do 5 standard-scale damage, after a suggestion from Vehrec.</li>
+                        <li>Also: era availability per 'Mech, large vehicle engine dates, faster imports and restores, and many small layout fixes.</li>
                       </ul>
                    </li>
                   <li>
                   <h3>
-                      <strong>October 22nd, 2026</strong> - Beta feedback and new record sheets for vehicles, fighters, Small Craft, DropShips, capital ships, battle armor, infantry, ProtoMechs, buildings, airships, satellites and <i>Battledroids</i> units
+                      <strong>October 22nd, 2026</strong> - New record sheets for every unit type, the ArtVee, and quirks in play
                     </h3>
                     <h4>Author - NGCFells</h4>
                       <p>New on the <a href="https://ngcfells.github.io/battletech-tools" target="_blank" rel="noopener noreferrer">beta test site</a> and offered to upstream</p>
                       <ul>
-                        <li>Light and Clan XL engines survive the loss of a side torso; only the Inner Sphere XL and XXL engines are lost with one.</li>
-                        <li>Battle Value counts prototype CASE as CASE, and Clan artillery (Long Tom 560, Sniper 96, Thumper 48) uses its own Battle Value on every unit that can mount it: 'Mechs, vehicles, fighters, Small Craft, DropShips and capital ships.</li>
-                        <li>LRM launchers do 3 aerospace damage for every 5 missiles (LRM 20: 12), Inner Sphere and Clan, and the Clan Rotary ACs have the same aerospace heat as the Inner Sphere ones.</li>
-                        <li>On the 'Mech sheet, a weapon with no medium or long range bracket (the Nail and Rivet Guns) prints a dash instead of 0.</li>
-                        <li>Alpha Strike: heat only ever lowers a unit's damage, so two LRM 5s no longer show 5 short-range damage.</li>
-                        <li>Importing a design no longer keeps the previous design's quirks.</li>
-                        <li>Every builder asks for the era first, and the era decides which tech bases you can pick. The Clan tech base starts with the Clan Founding Years, not the Star League.</li>
-                        <li>The equipment list shows only ammunition for the weapons you have mounted; tick "Show all ammunition" to see the rest. Ammunition sorts by weapon in every list.</li>
-                        <li>A tonnage bar stays on screen while you add equipment, and turns red when you are over.</li>
-                        <li>The 'Mech Creator has an optional Step 7, Technical Readout: who made the design and its engine, armor and each weapon (a weapon type can be marked mixed, with a make per copy), plus the Overview, Capabilities and other TRO text. Print it as a TRO sheet. The SSW importer now keeps these fields, and they are saved with the design.</li>
-                        <li>Sponsons are placement choices: you decide which weapons go in them.</li>
-                        <li>Vehicle ammunition goes in the Body, and the vehicle armor diagram has a top-down outline for each motive type.</li>
-                        <li>Warnings and small print are larger and easier to read.</li>
-                        <li>The vehicle record sheet is now one full page with every table the official sheets print: hit locations, motive system damage and critical hits, plus the VTOL elevation track, the submarine depth track and the super-heavy, Large Support Vehicle and Large Naval Vessel tables.</li>
-                        <li>The fighter record sheet is one full page too: external stores boxes for your bombs, the armor diagram, critical damage, pilot data, the velocity record and the heat scale, or, for conventional fighters, the ground map straight movement and fighter return tables.</li>
-                        <li>The 'Mech sheet's heat scale now runs from 30 at the top down to 0, with an Overflow box, as on the official sheet.</li>
-                        <li>Small Craft and DropShips get full-page sheets for aerodyne and spheroid shapes. The Small Craft sheet adds a crew and cargo box; the DropShip sheet lists weapons by bay with their combined heat and damage, carried fighters and Small Craft with their launch rate, crew data, the K-F boom and docking collar, and heat generated per arc.</li>
-                        <li>JumpShips, WarShips and space stations get full-page sheets laid out like the Strategic Operations ones: weapon bays in capital scale with standard scale in parentheses, each facing's armor in squares with its damage threshold, structural integrity, K-F drive, sail and docking collars in the hull, crew data, critical damage, heat generated per arc and the velocity record. Damage marked in play is filled in on the roster's printout.</li>
-                        <li>The battle armor sheet holds five squads to a page, as the Total Warfare one does, with the leg attack, swarm attack, swarm attack modifier, swarm hit location and transport position tables beside them. The roster prints its battle armor five squads to a page, and the creator prints a design with its alternate loadouts.</li>
-                        <li>The conventional infantry sheet holds four platoons to a page: thirty numbered troopers with the damage the platoon does under each, the range modifiers out to its reach, and its movement, armor and skills. Troopers it does not have and ranges it cannot reach are blacked out. An oversized platoon gets a block for each sub-platoon. Below them are the leg attack, swarm attack, swarm attack modifier, non-infantry weapon damage and burst-fire damage tables.</li>
-                        <li>The ProtoMech sheet holds a Point of five to a page: each block has the weapons inventory, pilot data with the consciousness track, the hit location table with its critical hit boxes and an armor diagram. The torso weapon roll names your torso weapons, and quads and Gliders get their own hit tables.</li>
-                        <li>Buildings print on a Structure Record Sheet like the Tactical Operations one: structure data, the weapons inventory, a line for every hex with its Construction Factor, armor and what entering it costs, crew data and a numbered map to mark the footprint on, level by level. Beside the map are the building critical hits table and the building's Damage Threshold and damage figures. Long walls run on to continuation pages.</li>
-                        <li>Airships and satellites get their own sheets, laid out like the Total Warfare Airship and Tactical Operations Satellite ones: craft data and weapons, the armor diagram, crew data, and critical damage with the thrusters. An airship's sheet adds the velocity record and the Airship Velocity Table, which gives the Thrust Points for each turn of the four-turn cycle. Fixed-wing Support Vehicles stay on the conventional fighter sheet.</li>
-                        <li>The <i>Battledroids</i> tanks, jeeps and infantry squads print two to a page, in the style of the book's droid record sheet: an armor diagram or damage boxes, the unit's data and weapons, and the rules the book gives it. Beside them are the To-Hit Number, movement, terrain and target modifiers, the Tank Hit Locations, the Missile Hit Table and the tank firing arc. Missile launchers show their damage per missile.</li>
-                        <li>Anti-orbital Long Tom ammunition, a Custom round requested on the Star League Discord by SmilingNid: it fires surface-to-orbit under the Strategic Operations rules for 5 points of damage, 3 shots a ton. The Federated Suns built it after Edo, with a prototype in 3055 and production from 3062.</li>
-                        <li>The Hailstorm, the towed artillery piece from the <i>MechWarrior 5</i> games, at the Apocryphal rules level: 35 points out to 12 mapsheets, with the rounds the other tubes fire. It mounts only on a Support Vehicle trailer.</li>
-                        <li>For games with space forces, a space turn tracker in Play Mode: tick "Space forces in this game" on the roster page. It counts the space turn (6 ground turns each), tracks each anti-orbital Long Tom shot from firing to the space phase, and reminds you of the rolls for firing early and for resolving each shot.</li>
-                        <li>The ArtVee (Artillery Vehicle), a Custom Homebrew tracked tank that transforms the way a LAM does, an idea put forward on the Star League Discord by kris (helvedes heste). Some powers call it a MAP (Mobile Artillery Platform). In Vehicle Mode it moves and fires an autocannon; in Siege Mode it stands still and fires real artillery. Both come from one ComboGun: a Thumper, Sniper or Long Tom tube with a drop-in AC/5, AC/10 or AC/20 breech. Build one in the Combat Vehicle creator at the Custom Homebrew rules level: tracked, with an XL or XXL engine, at least 4/6 movement (3/5 with a Long Tom), the ComboGun in a turret, and the Armored Motive System recommended. It has one blended Battle Value, as LAMs do, and its record sheet and single Alpha Strike card show both modes. In Play Mode a transformation is declared before the unit moves and is its only action that turn. The Star League built them from 2700 and the Inner Sphere lost them in the Succession Wars; the Clans kept theirs, and the Free Worlds League brought them back in 3071. Nine sample designs ship with the app: a Star League, a Clan and an Inner Sphere MAP pattern of each.</li>
-                        <li>The Armored Motive System, Experimental technology from <i>Tactical Operations: Advanced Units &amp; Equipment</i>, for Combat Vehicles with tracked, wheeled, hover, hydrofoil, naval or WiGE motive: −2 on Motive System Damage rolls. And two smoke devices from <i>Future Wars</i> #32, the Smoker and the Buckler Smoke Dispenser, as Custom equipment.</li>
-                        <li>Design quirks in play: tick "Use design quirks" on either roster page (it is off by default, and saved with the force). In Classic play a unit's quirks change its to-hit numbers (an Accurate Weapon, Improved Targeting in its range band), a Combat Computer cuts the heat it builds up, and the side's best Initiative quirk shows in the header. Each unit lists its quirks and what they do, including the ones you apply at the table. In Alpha Strike, units made from a design carry the quirks the Alpha Strike Companion lists, and their to-hit numbers change with them.</li>
-                        <li>More quirks in play: a Game year on either roster (blank uses each unit's era start), so a quirk that has ended or not yet begun by then does not apply; an Airborne box on each target for Anti-Aircraft Targeting; cooling jacket quirks change a fired weapon's heat; Barrel Fist counts only for its own arm's punches; and a wrecked or engine-hit 'Mech drops out of its side's Initiative quirk. Improved Cooling Jacket can only go on a weapon or bay that makes heat. The <i>Campaign Operations</i> errata deletes No Torso Twist, so it stays for the designs that have it at the Apocryphal level, and Weak Legs follows the errata.</li>
+                        <li><strong>Record sheets.</strong> Full-page sheets with every official table for vehicles, fighters, Small Craft, DropShips, JumpShips, WarShips, battle armor (five squads a page), infantry (four platoons), ProtoMechs (a Point a page), buildings, airships, satellites and Battledroids units.</li>
+                        <li><strong>The ArtVee</strong>, a Custom Homebrew tank that transforms into artillery, an idea by kris (helvedes heste), with nine samples; the Armored Motive System; and from the Star League Discord, the anti-orbital Long Tom (SmilingNid) with a space turn tracker. The Hailstorm at Apocryphal; the Smoker and Buckler from Future Wars #32.</li>
+                        <li><strong>Design quirks in play</strong> on either roster, by game year.</li>
+                        <li><strong>Beta feedback.</strong> Era first in every builder, a tonnage bar, the 'Mech Creator's TRO step, chosen sponsons, larger warnings, and fixes to XL engines, CASE, Clan artillery, LRM aerospace damage, Alpha Strike heat and imported quirks.</li>
                       </ul>
                    </li>
+                  <li>
+                  <h3>
+                      <strong>October 17th, 2026</strong> - Enhanced LRTs and the Light Blazer
+                    </h3>
+                    <h4>Author - NGCFells</h4>
+                      <ul>
+                        <li>Enhanced Long Range Torpedo launchers with ammunition; the Light Blazer from BattleTech Gothic at Apocryphal; Interstellar Operations citations point to Alternate Eras.</li>
+                      </ul>
+                  </li>
                   <li>
                   <h3>
                       <strong>October 16th, 2026</strong> - JumpShips, WarShips and <i>Battledroids</i>
                     </h3>
                     <h4>Author - NGCFells</h4>
-                      <p>New on the <a href="https://ngcfells.github.io/battletech-tools" target="_blank" rel="noopener noreferrer">beta test site</a>, and offered to the main site for review:</p>
                       <ul>
-                        <li>JumpShips, WarShips and space stations: a creator, Battle Value, record sheet, Alpha Strike card and play in the Classic Roster. Every unit type can now be built and played.</li>
-                        <li>Each rules edition has its own rules levels. <i>Battledroids</i> has Basic, Advanced and Expert; below Expert you pick from the droids the books print: the box set's ten, the Spider and the 1984 TCI kit backs.</li>
-                        <li><i>Battledroids</i> designs show only what that rulebook has, and undoing an edition switch brings back the design you had.</li>
-                        <li>Every creator offers to save your design before a load, import or start over replaces it.</li>
-                        <li>'Mech record sheets draw shields beside the arm, with Damage Capacity and Damage Absorption to mark off in play.</li>
+                        <li>JumpShips, WarShips and space stations: creator, Battle Value, record sheet, Alpha Strike card and play. Every unit type can now be built and played.</li>
+                        <li>Each edition has its own rules levels, and Battledroids designs show only what that book has. Creators offer to save before replacing a design; shields draw on the 'Mech sheet.</li>
                       </ul>
                    </li>
                   <li>
@@ -468,16 +459,10 @@ export default class Home extends React.Component<IHomeProps, IHomeState> {
                       <strong>October 15th, 2026</strong> - Every unit type, on the beta site
                     </h3>
                     <h4>Author - NGCFells</h4>
-                      <p>The <a href="https://ngcfells.github.io/battletech-tools" target="_blank" rel="noopener noreferrer">beta test site</a> now builds and plays every ground and aerospace unit short of JumpShips. This work is offered to the main site for review.</p>
                       <ul>
-                        <li>New creators: fighters (aerospace, conventional and OmniFighters), conventional infantry, battle armor, ProtoMechs, Small Craft and DropShips, and buildings, each with a record sheet, Battle Value, cost and a place in the Classic Roster.</li>
-                        <li>Vehicles: Support Vehicles of every motive type and OmniVehicles.</li>
-                        <li>'Mechs: Tripods, LAMs, QuadVees, Superheavy 'Mechs, IndustrialMechs and Primitive 'Mechs, with the canon Inner Sphere and Clan equipment checked against the rulebooks.</li>
-                        <li>Rules levels from Introductory to Experimental, plus Apocryphal, Custom Homebrew and Munchkin for non-canon play.</li>
-                        <li>Rules editions: build a 'Mech under any core rulebook from <i>Battledroids</i> (1984) to the 2026 Core Rulebook, and play <i>Battledroids</i> games. Every creator now starts with the rules edition.</li>
-                        <li>Patchwork Armor, Fractional Accounting, FrankenMechs and the <i>Ghosts of Obeedah</i> units.</li>
-                        <li>Solaris Skunk Werks import for 'Mechs, and MegaMek import for ProtoMechs and Small Craft.</li>
-                        <li>Alpha Strike: a companion for <i>BattleTech: Aces</i>, special ability filters, search results in pages, and the bundled Master Unit List updated every week.</li>
+                        <li>New creators for fighters, infantry, battle armor, ProtoMechs, Small Craft and DropShips, and buildings; Support Vehicles and OmniVehicles; Tripods, LAMs, QuadVees, Superheavy, Industrial and Primitive 'Mechs.</li>
+                        <li>Rules levels from Introductory to Experimental plus Apocryphal, Custom Homebrew and Munchkin; rules editions from Battledroids (1984) to the 2026 Core Rulebook.</li>
+                        <li>Skunk Werks and MegaMek imports, and Alpha Strike additions: an Aces companion, ability filters, paged results and a weekly Master Unit List update.</li>
                       </ul>
                    </li>
                   <li>
@@ -485,7 +470,7 @@ export default class Home extends React.Component<IHomeProps, IHomeState> {
                       <strong>October 1st, 2026</strong> - Vehicle Creator
                     </h3>
                     <h4>Author - NGCFells</h4>
-                      <p>The Vehicle Creator now covers the full Combat Vehicle rules: every motive type, Battle Value, cost, Alpha Strike cards and play in the Classic Roster. Imports were hardened along the way.</p>
+                      <p>The Vehicle Creator now covers the full Combat Vehicle rules: every motive type, Battle Value, cost, Alpha Strike cards and play in the Classic Roster.</p>
                    </li>
                   <li>
                   <h3>
@@ -493,10 +478,7 @@ export default class Home extends React.Component<IHomeProps, IHomeState> {
                     </h3>
                     <h4>Author - NGCFells</h4>
                       <ul>
-                        <li>The app moved to current tools (Vite, React 19, TypeScript), with automated tests on every change.</li>
-                        <li>The Alpha Strike Roster searches a copy of the Master Unit List bundled with the app, so it works offline.</li>
-                        <li>Fixed: Battle Value for units faster than 25 MP (TechManual p.316), and engines with no matching rating.</li>
-                        <li>The license is now GPLv3, matching the code it came from.</li>
+                        <li>Current tools (Vite, React 19, TypeScript) with automated tests; an offline Master Unit List; Battle Value fixes above 25 MP; the license is GPLv3, matching the code it came from.</li>
                       </ul>
                    </li>
                   <li>

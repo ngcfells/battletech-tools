@@ -4,6 +4,7 @@ import { btTechOptions } from "./tech-options";
 import { btSpecialRulesets, getRulesetRemovingUnitType } from "./special-rulesets";
 import { DEFAULT_RULES_EDITION, getSelectableRulesEditions } from "./rules-editions";
 import { findEraByTag, getClosestEraForTech, getErasForTech } from "./era-options";
+import { testSpecialRuleset } from "../test-support/rulesets";
 
 const base: IGameSettings = { rulesets: [], edition: DEFAULT_RULES_EDITION, rulesLevel: 1, techBase: "clan", era: "clan-inv" };
 
@@ -72,12 +73,32 @@ describe("shared game settings (#324)", () => {
     });
 
     it("refuses a ruleset that clashes with one already ticked", () => {
-        btSpecialRulesets.push({ id: "test-techs", name: "test", description: "", source: { title: "test" }, changes: ["techBases"] });
+        btSpecialRulesets.push(testSpecialRuleset({ id: "test-techs", name: "test", changes: ["techBases"] }));
         const ticked: IGameSettings = { ...base, techBase: "is", rulesets: ["sample-no-clans"] };
         const result = changeGameSetting(ticked, { step: "rulesets", toggle: "test-techs" }, "mech");
         expect(result.refused?.id).toBe("sample-no-clans");
         expect(result.settings).toEqual(ticked);
         expect(result.moves).toEqual([]);
+    });
+
+    it("refuses a ruleset whose requirement is not ticked, and the untick of a requirement in use", () => {
+        btSpecialRulesets.push(
+            testSpecialRuleset({ id: "test-req-c", name: "C", changes: ["c"] }),
+            testSpecialRuleset({ id: "test-req-d", name: "D", changes: ["d"], requires: ["test-req-c"] }),
+        );
+        try {
+            const missing = changeGameSetting(base, { step: "rulesets", toggle: "test-req-d" }, "mech");
+            expect(missing.settings).toEqual(base);
+            expect(missing.block).toMatchObject({ kind: "needs", reason: "Needs C" });
+            expect(missing.refused?.id).toBe("test-req-c");
+            const both: IGameSettings = { ...base, rulesets: ["test-req-c", "test-req-d"] };
+            const untick = changeGameSetting(both, { step: "rulesets", toggle: "test-req-c" }, "mech");
+            expect(untick.settings).toEqual(both);
+            expect(untick.block).toMatchObject({ kind: "neededBy", reason: "Needed by D" });
+            expect(changeGameSetting(both, { step: "rulesets", toggle: "test-req-d" }, "mech").settings.rulesets).toEqual(["test-req-c"]);
+        } finally {
+            for (const id of ["test-req-c", "test-req-d"]) btSpecialRulesets.splice(btSpecialRulesets.findIndex((entry) => entry.id === id), 1);
+        }
     });
     // Final review fixes.
     it("moves an unknown edition to the default edition, not the oldest", () => {
@@ -119,7 +140,7 @@ describe("shared game settings (#324)", () => {
     });
 
     it("drops editions before a ruleset's minimum edition", () => {
-        btSpecialRulesets.push({ id: "test-techs", name: "test", description: "", source: { title: "test" }, minEdition: DEFAULT_RULES_EDITION, changes: ["edition"] });
+        btSpecialRulesets.push(testSpecialRuleset({ id: "test-techs", name: "test", minEdition: DEFAULT_RULES_EDITION, changes: ["edition"] }));
         const tags = getGameSettingOptions({ ...base, rulesets: ["test-techs"] }, "mech").editions.map((edition) => edition.tag);
         expect(tags[0]).toBe(DEFAULT_RULES_EDITION);
         expect(tags).not.toContain("battledroids");

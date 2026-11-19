@@ -34,7 +34,8 @@ export default class SmallCraftCreatorCrew extends React.Component<ICrewProps> {
         const rulesLevel = unitRulesLevel(this.props.appGlobals.currentSmallCraft, this.props.appGlobals.appSettings);
         const people = craft.getCrew() + craft.getPassengers();
         const techBase = craft.getChassisTechBase();
-        const bayOptions = transportBayTypes.filter((type) => !type.tech || type.tech === techBase || craft.isMixedTech());
+        // A homebrew bay (the Micro-Mech Bay) is offered at its rules level.
+        const bayOptions = transportBayTypes.filter((type) => (!type.tech || type.tech === techBase || craft.isMixedTech()) && (type.rulesLevel ?? 0) <= rulesLevel);
         const remaining = craft.getRemainingTonnage();
 
         return (

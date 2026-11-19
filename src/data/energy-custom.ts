@@ -1,4 +1,6 @@
 import { IEquipmentItem } from "./data-interfaces";
+import { applyDerivedValues } from "./derived-custom-values";
+import { futureWarsBoostedWeapons } from "./best-of-future-wars-conversions";
 
 /*
  * DISCLAIMER: This file processes gameplay data derived from the BattleTech universe. 
@@ -14,160 +16,7 @@ import { IEquipmentItem } from "./data-interfaces";
  * excluded from the software's underlying license (GNU GPLv3).
  */
 
-export const energyCustom: IEquipmentItem[] = [
-    {
-       name: "COIL-L",
-        tag: "coil_l",
-        techBase: "universal",
-        sort: "laser, coil large",
-        category: "Energy Weapons",
-        damage: 35,
-        damageAero: 35,
-        accuracyModifier: 0,
-        cbills: 360000,
-        introduced: 3025,
-        extinct: null,
-        reintroduced: null,
-        battleValue: 0,
-        heat: 70,
-        weight: 8,
-        range: {
-            min: 90,
-            short: 180,
-            medium: 315,
-            long: 450
-        },
-        space: {
-            battlemech: 4,
-            protomech: -1,
-            combatVehicle: 1,
-            supportVehicle: 4,
-            aerospaceFighter: 1,
-            smallCraft: 1,
-            dropShip: 1
-        },
-        shotsPerTon: 0,
-        minAmmoTons: 0,
-        explosive: true,
-        weaponType: [
-            "DE"
-        ],
-        techRating: "f",
-        book: "HM",
-        page: 0,
-        alphaStrike: {
-            heat: 14,
-            rangeShort: 3.5,
-            rangeMedium: 3.5,
-            rangeLong: 0,
-            rangeExtreme: 0,
-            tc: false,
-            notes: ["Explosive, Unverified custom equipment"]
-        },
-        heatAero: 70
-    },
-    {
-        name: "COIL-M",
-        tag: "coil_m",
-        techBase: "universal",
-        sort: "laser, coil medium",
-        category: "Energy Weapons",
-        damage: 25,
-        damageAero: 25,
-        accuracyModifier: 0,
-        cbills: 220000,
-        introduced: 3025,
-        extinct: null,
-        reintroduced: null,
-        battleValue: 0,
-        heat: 40,
-        weight: 4,
-        range: {
-            min: 0,
-            short: 90,
-            medium: 180,
-            long: 270
-        },
-        space: {
-            battlemech: 3,
-            protomech: -1,
-            combatVehicle: 1,
-            supportVehicle: 3,
-            aerospaceFighter: 1,
-            smallCraft: 1,
-            dropShip: 1
-        },
-        shotsPerTon: 0,
-        minAmmoTons: 0,
-        explosive: true,
-        weaponType: [
-            "DE"
-        ],
-        techRating: "f",
-        book: "HM",
-        page: 0,
-        alphaStrike: {
-            heat: 8,
-            rangeShort: 2.5,
-            rangeMedium: 2.5,
-            rangeLong: 0,
-            rangeExtreme: 0,
-            tc: false,
-            notes: ["Explosive, Unverified custom equipment"]
-        },
-        heatAero: 40
-    },
-    {
-        name: "COIL-S",
-        tag: "coil_s",
-        techBase: "universal",
-        sort: "laser, coil small",
-        category: "Energy Weapons",
-        damage: 15,
-        damageAero: 15,
-        accuracyModifier: 0,
-        cbills: 110000,
-        introduced: 3025,
-        extinct: null,
-        reintroduced: null,
-        battleValue: 0,
-        heat: 30,
-        weight: 2,
-        range: {
-            min: 0,
-            short: 30,
-            medium: 60,
-            long: 90
-        },
-        space: {
-            battlemech: 2,
-            protomech: -1,
-            combatVehicle: 1,
-            supportVehicle: 2,
-            aerospaceFighter: 1,
-            smallCraft: 1,
-            dropShip: 1
-        },
-        shotsPerTon: 0,
-        minAmmoTons: 0,
-        explosive: true,
-        weaponType: [
-            "DE"
-        ],
-        techRating: "f",
-        book: "HM",
-        page: 0,
-        alphaStrike: {
-            heat: 6,
-            rangeShort: 1.5,
-            rangeMedium: 0,
-            rangeLong: 0,
-            rangeExtreme: 0,
-            tc: false,
-            notes: ["Explosive, Unverified custom equipment"]
-        },
-        heatAero: 30
-    },
+const energyCustomBase: IEquipmentItem[] = applyDerivedValues([
     {
         name: "Disruptor (MekTek)", tag: "custom-disruptor", techBase: "universal", sort: "disruptor", category: "Custom Equipment", notes: "Unverified placeholder associated with MekTek Issue 2.",
         damage: 10, damageAero: 10, accuracyModifier: 0, cbills: 0, introduced: 2316, prototype: 2306, extinct: null, reintroduced: null, battleValue: 0, heat: 8, heatAero: 8, weight: 6, // Dates of the Standard Large Laser, which shares its heat and ranges (IO p.43).
@@ -308,5 +157,86 @@ export const energyCustom: IEquipmentItem[] = [
         shotsPerTon: 0, minAmmoTons: 0, explosive: false, weaponType: ["DE"], techRating: "e", linkedWeaponTags: ["medium-laser"],
         book: "http://solaris7.com/thread/lostech-custom-weapons/", page: 0, rulesLevel: 6,
         alphaStrike: { heat: 0, rangeShort: 0, rangeMedium: 0, rangeLong: 0, rangeExtreme: 0, tc: false, notes: ["Array damage is carried by its linked lasers"] }
+    },
+    {
+        name: "Omni-Laser", tag: "custom-omni-laser", techBase: "is", sort: "laser, omni", category: "Custom Equipment",
+        notes: "Homebrew laser by u/heavyarmormecha (https://www.reddit.com/r/battletech/comments/1n30c2j/custom_weapons_omnilaser/); the replies called it overpowered. "
+            + "The player picks a mode at the start of the Weapons Phase, kept until the next one. A critical hit disables the weapon. "
+            + "Focus: 20 heat, 16 damage to one location; if armor still covers the location, a through-armor critical roll at -2. "
+            + "Pulse: 18 heat, four 5-damage shots on the 4 column of the cluster table, -1 to hit and +1 on the cluster roll. "
+            + "Dazzler: 12 heat, fifteen 1-damage shots on the 15 column; against infantry, battle armor or ProtoMechs a hit does 4d6 in 5-damage clusters. "
+            + "A targeting computer and laser insulation apply; a power amplifier is needed on ICE and fuel cell units. Inspired by: u/heavyarmormecha. "
+            + "The record carries the Focus mode's heat and damage; the other modes are play text. "
+            + "Not given by the author, so NGCFells's: the author's Experimental availability is read as introduced 3150; cost and Battle Value are priced at the Focus mode, the strongest of its three, "
+            + "as the canon MML is priced at its LRM mode (the MML 5 is 45, the LRM 5's, not LRM plus SRM); the other two modes add nothing.",
+        damage: 16, damageAero: 16, accuracyModifier: 0, cbills: 0, introduced: 3150, extinct: null, reintroduced: null, battleValue: 0, heat: 20, heatAero: 20, weight: 10,
+        range: { min: 0, short: 6, medium: 12, long: 18 }, space: { battlemech: 4, protomech: -1, combatVehicle: 4, supportVehicle: 4, aerospaceFighter: 4, smallCraft: 4, dropShip: -1 },
+        shotsPerTon: 0, minAmmoTons: 0, explosive: false, weaponType: ["DE", "E"], techRating: "x", book: "Reddit u/heavyarmormecha", page: 0, rulesLevel: 6,
+        alphaStrike: { heat: 0, rangeShort: 0, rangeMedium: 0, rangeLong: 0, rangeExtreme: 0, tc: false, notes: ["Unverified custom equipment"] }
+    },
+    {
+        name: "Superheavy PPC", tag: "custom-superheavy-ppc", techBase: "universal", catalog: "custom", sort: "ppc, 3, superheavy", category: "Energy Weapons",
+        notes: "Custom Homebrew by u/FedditSuns, 'Custom Weapon Feedback: Superheavy PPC', r/battletech (https://www.reddit.com/r/battletech/comments/1bhfssf/). "
+            + "From the post: 13 tons, 5 slots, 20 heat, 20 damage, range 3/6/12/18, aerospace range medium, Battle Value 422, cost 300,000 C-Bills. "
+            + "Inspired by: u/FedditSuns. Not given in the post, so NGCFells's: the tech base is left universal and the dates and tech rating are unverified.",
+        damage: 20, damageAero: 20, accuracyModifier: 0, cbills: 300000, introduced: null, extinct: null, reintroduced: null, battleValue: 422, heat: 20, heatAero: 20, weight: 13,
+        range: { min: 3, short: 6, medium: 12, long: 18 }, space: { battlemech: 5, protomech: -1, combatVehicle: 5, supportVehicle: 5, aerospaceFighter: 5, smallCraft: -1, dropShip: -1 },
+        shotsPerTon: 0, minAmmoTons: 0, explosive: false, weaponType: ["DE"], rangeAero: "m", techRating: "x", book: "Reddit u/FedditSuns", page: 0, rulesLevel: 6,
+        alphaStrike: { heat: 0, rangeShort: 0, rangeMedium: 0, rangeLong: 0, rangeExtreme: 0, tc: false, notes: ["Unverified custom equipment"] }
+    },
+    {
+        name: "Fusion Lance", tag: "custom-fusion-lance", techBase: "universal", catalog: "custom", sort: "lance, fusion", category: "Energy Weapons",
+        notes: "Custom Homebrew by u/Magical_Savior, 'Weapon Idea - Fusion Lance', r/battletech (https://www.reddit.com/r/battletech/comments/1mhvhwp/). "
+            + "The first draft was 5 damage per 100 of engine rating; u/sokttocs called it too weak for 30 heat and 3 hexes, and the author replied with the revised damage used here. "
+            + "From the post: 4 tons, 2 slots, 30 heat, a 3-hex attack range. "
+            + "Inspired by: u/Magical_Savior, u/sokttocs. Not given in the post, so NGCFells's: the record's damage is the smallest the formula gives (15, for an engine rated 100 or less) "
+            + "because a record holds one number; the rules text carries the formula. Range is read as 1 / 2 / 3 hexes for the weapon's 3-hex reach with its 5-a-hex falloff. "
+            + "Dates and tech rating are unverified. The Engine-slot mounting is not enforced by the builder.",
+        rules: "Mounted only where there are Engine critical slots. Activating it costs 30 heat; its attack reaches 3 hexes. Damage is 10 plus 5 for each 100 of "
+            + "engine rating or part of 100 (15 at the least, 30 at the most), less 5 for each hex after the first, and it does full damage to infantry. "
+            + "Each activation needs a Supercharger roll, and activations stack with a mounted Supercharger. A failed roll is a critical hit on the topmost engine slot, "
+            + "applied at once. Each engine hit takes 5 off the damage.",
+        damage: { short: 15, medium: 10, long: 5, aeroShort: 15, aeroMedium: 10, aeroLong: 5 }, damageAero: 15, accuracyModifier: 0, cbills: 0, introduced: null, extinct: null, reintroduced: null, battleValue: 0, heat: 30, heatAero: 30, weight: 4,
+        range: { min: 0, short: 1, medium: 2, long: 3 }, space: { battlemech: 2, protomech: -1, combatVehicle: -1, supportVehicle: -1, aerospaceFighter: -1, smallCraft: -1, dropShip: -1 },
+        shotsPerTon: 0, minAmmoTons: 0, explosive: false, weaponType: ["DE"], techRating: "x", book: "Reddit u/Magical_Savior", page: 0, rulesLevel: 6, variableFormula: "fusion-lance",
+        alphaStrike: { heat: 0, rangeShort: 0, rangeMedium: 0, rangeLong: 0, rangeExtreme: 0, tc: false, notes: ["Unverified custom equipment"] }
+    },
+    // The Best of Future Wars, Volume One (1991), Chunk A of the fanzine plan (#172). Custom Homebrew: fan material. Heat, Battle Value,
+    // dates and tech rating are left unverified where the article's stat block gives none.
+    {
+        name: "Gatling Laser", tag: "custom-gatling-laser", techBase: "universal", catalog: "custom", sort: "laser, gatling", category: "Energy Weapons",
+        notes: "Custom Homebrew: Karl Sanders, 'The Gatling Laser', *Future Wars* #8 (1988), p.37 ('New Technology'); reprinted in *The Best of Future Wars, Volume One* (1991), p.27. The original's prose cuts damage and range by a third, heat by over 75% and weight by a third (the reprint says 36% lighter), but the stat block "
+            + "says 4 tons, and the block is used. Not printed in The Best of Future Wars: heat is NGCFells's, 1, the 75% cut read off a medium laser's 3 heat and rounded up (the block gives none); "
+            + "dates and tech rating are unverified.",
+        rules: "A rotating-barrel laser: six shots a turn of 2 points each, rolled to hit on the SRM 6 cluster column. Ranges 1-2, 3-4, 5-6. 1 heat.",
+        lore: "The Gatling Laser spins six small focusing barrels around a common power feed, so each pulse leaves through a barrel that has had a "
+            + "moment to cool. Its designers set out to match a medium laser's punch for far less waste heat, and the weapon trades one heavy bolt "
+            + "for a stream of light hits scattered across the target.",
+        damageClusters: 6, damagePerCluster: 2, damageAero: 12, accuracyModifier: 0, cbills: 50000, introduced: null, extinct: null, reintroduced: null, battleValue: 0, heat: 1, heatAero: 1, weight: 4,
+        range: { min: 0, short: 2, medium: 4, long: 6 }, space: { battlemech: 2, protomech: -1, combatVehicle: -1, supportVehicle: -1, aerospaceFighter: -1, smallCraft: -1, dropShip: -1 },
+        shotsPerTon: 0, minAmmoTons: 0, explosive: false, weaponType: ["DE", "C"], techRating: "x", book: "The Best of Future Wars, Volume One", page: 27, rulesLevel: 6,
+        alphaStrike: { heat: 0, rangeShort: 0, rangeMedium: 0, rangeLong: 0, rangeExtreme: 0, tc: false, notes: ["Unverified custom equipment"] }
+    },
+    {
+        name: "Long Range Flamer", tag: "custom-lr-flamer", techBase: "universal", catalog: "custom", altNames: ["LR Flamer"], sort: "flamer, long range", category: "Energy Weapons",
+        notes: "Custom Homebrew: Karl Sander, 'Long Range Flamer', *Future Wars* #9 (1988), p.27 ('New Technology...'); reprinted in *The Best of Future Wars, Volume One* (1991), p.28. Every number matches the original. Not printed in either: "
+            + "dates and tech rating are unverified.",
+        rules: "Fuel-fed (ammo-custom-lr-flamer-standard, 15 shots a ton). "
+            + "The blaze sticks to the target as an inferno hit does: it does 5 plus 5 heat levels the first turn, 2 plus 5 the second and 0 plus 5 the third; a second hit adds its damage to "
+            + "the one still burning, and each earlier hit still burning adds 1 heat, to a most of 10 heat a turn. Harder to hit at range: +2 at medium, +3 at long. A miss "
+            + "scatters on a die: 1-3 one hex short of the target, 4 left, 5 right, 6 behind it, and the hexes struck catch fire.",
+        lore: "Rather than vent plasma bled from the fusion reactor, the Long Range Flamer throws a jet of jellied fuel from tanks of its own. "
+            + "The fuel clings and keeps burning for several turns, and a stream that misses still sets the ground ablaze around its target. "
+            + "It reaches far beyond any standard flamer, at the price of a fuel supply that can turn on its carrier if the tanks are breached.",
+        damage: 5, damageAero: 5, accuracyModifier: 0, cbills: 65000, introduced: null, extinct: null, reintroduced: null, battleValue: 0, heat: 8, heatAero: 8, weight: 5,
+        range: { min: 0, short: 4, medium: 8, long: 12 }, space: { battlemech: 2, protomech: -1, combatVehicle: -1, supportVehicle: -1, aerospaceFighter: -1, smallCraft: -1, dropShip: -1 },
+        shotsPerTon: 15, ammoTypes: ["ammo-custom-lr-flamer-standard"], minAmmoTons: 1, explosive: false, weaponType: ["DE"], techRating: "x", book: "The Best of Future Wars, Volume One", page: 28, rulesLevel: 6,
+        alphaStrike: { heat: 0, rangeShort: 0, rangeMedium: 0, rangeLong: 0, rangeExtreme: 0, tc: false, notes: ["Unverified custom equipment"] }
     }
-];
+]);
+
+/** The Best of Future Wars (1991) p.28: weapons with a Power Booster (#172), the Gatling Laser built from the record above. */
+const gatlingLaser = energyCustomBase.find((item) => item.tag === "custom-gatling-laser");
+if (!gatlingLaser) throw new Error("energy-custom: custom-gatling-laser not found");
+// The boosted weapons are built from records the first pass has filled, and take the same pass themselves (a figure already there is never changed).
+export const energyCustom: IEquipmentItem[] = applyDerivedValues([...energyCustomBase, ...futureWarsBoostedWeapons(gatlingLaser)]);

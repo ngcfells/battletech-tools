@@ -1,12 +1,26 @@
-import React, { useState, type JSX } from 'react';
+import React, { useLayoutEffect, useRef, useState, type JSX } from 'react';
 import { RulesEditionUnitType } from '../../data/rules-editions';
-import { getRulesetConflict, getSpecialRulesets, UNIT_TYPE_PLURALS } from '../../data/special-rulesets';
+import { orderForUntick, RulesetCategory } from '../../data/special-rulesets';
+import { EMPTY_RULESET_FILTER, IRulesetListFilter } from '../../utils/ruleset-list';
+import RulesetDetail from './special-rulesets/ruleset-detail';
+import RulesetList from './special-rulesets/ruleset-list';
 import StandardModal from './standard-modal';
+
+/** The nearest ancestor that scrolls (in the browser the whole .modal does, not .modal-body), else the .modal. */
+function findScroller(from: Element): Element | null {
+    for (let node = from.parentElement; node; node = node.parentElement) {
+        if (node.scrollHeight > node.clientHeight && /(auto|scroll)/.test(getComputedStyle(node).overflowY)) {
+            return node;
+        }
+    }
+    return from.closest(".modal");
+}
 
 /**
  * The Special Rulesets step (#324), first in the settings block and in the roster MUL searches: a yes/no, a button
- * that reopens the window, and the window itself with one checkbox per ruleset. The caller keeps the ticked ids and
- * learns which ones to toggle, in order ("No" toggles every ticked one).
+ * that reopens the window, and the window itself: a grouped checklist with search and filters, and a More info view
+ * per ruleset in the same window. The caller keeps the ticked ids and learns which ones to toggle, in order ("No"
+ * toggles every ticked one).
  */
 export default function SpecialRulesetsStep(props: {
     rulesets: string[];
@@ -17,15 +31,49 @@ export default function SpecialRulesetsStep(props: {
     onToggle: (ids: string[]) => void;
 }): JSX.Element {
     const [windowOpen, setWindowOpen] = useState(false);
+    // The list's search, filters and folded groups last while the step is on the page.
+    const [filter, setFilter] = useState<IRulesetListFilter>(EMPTY_RULESET_FILTER);
+    const [openGroups, setOpenGroups] = useState<Partial<Record<RulesetCategory, boolean>>>({});
+    const [detailId, setDetailId] = useState<string | undefined>(undefined);
+    // Where the list was when More info opened, to put the player back there.
+    const returnTo = useRef<{ id: string; scrollTop: number; scroller: Element | null } | undefined>(undefined);
+    const listRef = useRef<HTMLDivElement>(null);
     const using = props.rulesets.length > 0 || windowOpen;
 
     const choose = (value: string): void => {
         if (value === "yes") {
             setWindowOpen(true);
         } else {
-            props.onToggle(props.rulesets);
+            // Dependants first, so a requirement is never refused as still needed part way through.
+            props.onToggle(orderForUntick(props.rulesets));
         }
     };
+
+    const openDetail = (id: string, button: HTMLButtonElement): void => {
+        const scroller = findScroller(button);
+        returnTo.current = { id, scrollTop: scroller?.scrollTop ?? 0, scroller };
+        setDetailId(id);
+    };
+
+    const closeWindow = (): void => {
+        setWindowOpen(false);
+        setDetailId(undefined);
+        returnTo.current = undefined;
+    };
+
+    // Back from More info: the list was only hidden, so its search and groups are as they were; restore the scroll
+    // and focus that ruleset's More info button.
+    useLayoutEffect(() => {
+        const back = returnTo.current;
+        if (detailId !== undefined || !back) {
+            return;
+        }
+        returnTo.current = undefined;
+        if (back.scroller) {
+            back.scroller.scrollTop = back.scrollTop;
+        }
+        listRef.current?.querySelector<HTMLButtonElement>(`[data-ruleset-more-info="${CSS.escape(back.id)}"]`)?.focus();
+    }, [detailId]);
 
     return (
         <>
@@ -43,33 +91,24 @@ export default function SpecialRulesetsStep(props: {
                 Optional and homebrew rules that change how the game plays or how units are built. Leave this off for standard BattleTech.
             </p>
 
-            <StandardModal show={windowOpen} title="Special Rulesets" className="modal-xl" onClose={() => setWindowOpen(false)}>
+            <StandardModal show={windowOpen} title="Special Rulesets" className="modal-xl" onClose={closeWindow}>
                 {props.notice ? <p className="smaller-text">{props.notice}</p> : null}
-                {getSpecialRulesets().map((ruleset) => {
-                    const ticked = props.rulesets.includes(ruleset.id);
-                    const clash = ticked ? undefined : getRulesetConflict(props.rulesets, ruleset.id);
-                    const removesThis = !ticked && !!props.unitType && !!ruleset.removesUnitTypes?.includes(props.unitType);
-                    return (
-                        <div key={ruleset.id}>
-                            <label>
-                                <input
-                                    type="checkbox"
-                                    checked={ticked}
-                                    disabled={!!clash || removesThis}
-                                    aria-describedby={"ruleset-about-" + ruleset.id}
-                                    onChange={() => props.onToggle([ruleset.id])}
-                                />{" "}
-                                {ruleset.name}
-                            </label>
-                            <p className="smaller-text" id={"ruleset-about-" + ruleset.id}>
-                                {ruleset.description}{" "}
-                                Source: {ruleset.source.url ? <a href={ruleset.source.url} target="_blank" rel="noopener noreferrer">{ruleset.source.title}</a> : ruleset.source.title}.
-                                {clash ? <span className="color-red"> Clashes with {clash.name}.</span> : null}
-                                {removesThis && props.unitType ? <span className="color-red"> {UNIT_TYPE_PLURALS[props.unitType]} do not exist under this ruleset.</span> : null}
-                            </p>
-                        </div>
-                    );
-                })}
+                {detailId !== undefined ? (
+                    <RulesetDetail id={detailId} tickedIds={props.rulesets} unitType={props.unitType} onToggle={props.onToggle}
+                        onBack={() => setDetailId(undefined)} />
+                ) : null}
+                <div ref={listRef} hidden={detailId !== undefined}>
+                    <RulesetList
+                        tickedIds={props.rulesets}
+                        unitType={props.unitType}
+                        filter={filter}
+                        onFilter={setFilter}
+                        openGroups={openGroups}
+                        onGroupToggle={(category, open) => setOpenGroups((groups) => ({ ...groups, [category]: open }))}
+                        onToggle={props.onToggle}
+                        onMoreInfo={openDetail}
+                    />
+                </div>
             </StandardModal>
         </>
     );

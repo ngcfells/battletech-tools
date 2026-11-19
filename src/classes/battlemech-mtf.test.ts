@@ -172,6 +172,23 @@ describe("MegaMek 'Mech import", () => {
         expect(bins.map((bin) => mech!.getAmmoBinWeapon(bin)?.tag).sort()).toEqual(["lrm-15", "lrm-20"]);
     });
 
+    it("keeps each ton of ammunition with the launcher size its line names (TM p.303)", () => {
+        // The LRM 10 comes first, so a bin not kept with its launcher would count as LRM 10 ammunition.
+        const twoSizes = brawler
+            .replace([...location("Left Torso", ...fill(3, "ISDoubleHeatSink"), "Medium Laser")].join("\n"),
+                [...location("Left Torso", ...fill(3, "ISDoubleHeatSink"), ...fill(2, "ISLRM10"), "IS Ammo LRM-20 (OMNIPOD)", "IS Ammo LRM-10")].join("\n"))
+            .replace([...location("Right Torso", "Medium Laser")].join("\n"), [...location("Right Torso", ...fill(5, "ISLRM20"))].join("\n"));
+        expect(twoSizes).toContain("IS Ammo LRM-20 (OMNIPOD)");
+        expect(twoSizes).toContain("ISLRM20");
+        const { mech, issues } = importBattleMechMtf(twoSizes);
+        expect(issues).toEqual([]);
+        const bins = mech!.getInstalledEquipment().filter((item) => item.isAmmo);
+        expect(bins.map((bin) => mech!.getAmmoBinWeapon(bin)?.tag).sort()).toEqual(["lrm-10", "lrm-20"]);
+        mech!.getBattleValue();
+        const ammo = mech!.getBattleValueBreakdown().steps.filter((step) => step.id === "bv2.off.ammo");
+        expect(ammo.map((step) => step.value).sort()).toEqual([11, 23]);
+    });
+
     // mordel.net's MegaMek-format files (#241): "Standard (IS)" armor, TSM slots named "TSM", an empty Center Leg on a
     // biped, "Biped Omnimech", and a mixed-tech 'Mech's "Double" sinks whose Clan tech only the slot names give
     // (Jackalope JLP-NH).
@@ -248,6 +265,19 @@ describe("MegaMek 'Mech import", () => {
         expect(mech!.getInstalledEquipment().filter((item) => item.tag === "large-laser")).toHaveLength(2);
     });
 
+    it("keeps a quad's front-leg ammunition in the front leg, where its explosion counts (TM p.302)", () => {
+        const armed = quad.replace("Left Torso:\nLarge Laser\nLarge Laser\n-Empty-", "Left Torso:\nLarge Laser\nLarge Laser\nMachine Gun")
+            .replace("Front Right Leg:\nHip\nUpper Leg Actuator\nLower Leg Actuator\nFoot Actuator\n-Empty-", "Front Right Leg:\nHip\nUpper Leg Actuator\nLower Leg Actuator\nFoot Actuator\nIS Ammo MG - Half");
+        expect(armed).toContain("IS Ammo MG - Half");
+        const { mech, issues } = importBattleMechMtf(armed);
+        expect(issues).toEqual([]);
+        const ammo = mech!.getInstalledEquipment().find((item) => item.isAmmo);
+        expect(ammo?.location).toBe("frl");
+        expect(mech!.getCriticals().frontRightLeg?.[4]?.name).toBe(ammo?.name);
+        const steps = mech!.getBattleValueBreakdown("total-warfare").steps.filter((step) => step.id === "bv2.def.explosive.ammo");
+        expect(steps.map((step) => step.value)).toEqual([-15]);
+    });
+
     it("keeps an OmniMech's pod items in its pods and the rest fixed (#112)", () => {
         const omni = brawler.replace("Config:Biped", "Config:Biped Omnimek").replace("Right Torso:\nMedium Laser", "Right Torso:\nMedium Laser (omnipod)");
         const { mech, issues } = importBattleMechMtf(omni);
@@ -318,7 +348,8 @@ describe("MegaMek 'Mech import", () => {
                 location("Right Torso", ...engineSlots, "IS LB 10-X AC Ammo|IS LB 10-X Cluster Ammo").join("\n"));
         const { mech, issues } = importBattleMechMtf(sided);
         expect(issues).toEqual([]);
-        expect(mech!.calcLogBV).toContain(`= ${modifier}x.`);
+        const engineStep = mech!.getBattleValueBreakdown().steps.find((step) => step.id === "bv2.def.engine.superheavy");
+        expect(engineStep?.detail).toMatch(new RegExp(` x ${modifier}$`));
     });
 
     // "Treat the Superheavy 'Mech as a Clan 'Mech if the explosive components are in a location protected by any form
@@ -331,8 +362,9 @@ describe("MegaMek 'Mech import", () => {
                 location("Right Torso", ...fill(2, "Fusion Engine"), "IS LB 10-X AC Ammo|IS LB 10-X Cluster Ammo", "ISCASE").join("\n"));
         const { mech, issues } = importBattleMechMtf(xl);
         expect(issues).toEqual([]);
-        expect(mech!.calcLogBV).toContain("Explosive Ammo in rightTorso protected by CASE");
-        expect(mech!.calcLogBV).not.toContain("Explosive Ammo Crit in rightTorso");
+        const steps = mech!.getBattleValueBreakdown().steps;
+        expect(steps.filter((step) => step.id === "bv2.def.explosive.superheavy" && step.label.includes("ammunition in rightTorso protected by CASE"))).toHaveLength(1);
+        expect(steps.filter((step) => step.id === "bv2.def.explosive.ammo" && step.label.includes("rightTorso"))).toHaveLength(0);
     });
 
     // "Superheavy 'Mechs may ignore the torso-only mounting restrictions applied to Heavy Gauss Rifles (standard and
@@ -431,6 +463,16 @@ describe("MegaMek 'Mech import", () => {
         expect(issues).toEqual([]);
         expect(mech!.getJumpJetType().tag).toBe("primitive-prototype");
         expect(mech!.getJumpSpeed()).toBe(2);
+    });
+
+    // The Commando COM-1AK: a Primitive 'Mech's file gives the engine installed, 1.2 times the rating its Walking MP
+    // needs (IO:AE p.117). 50 tons at Walking MP 5 installs a 300.
+    it("reads a Primitive 'Mech's Walking MP from the file, not from the installed engine rating", () => {
+        const primitive = brawler.replace("engine:250 Fusion Engine", "engine:300 Fusion Engine").replace("structure:IS Standard", "structure:IS Standard\ncockpit:Primitive Cockpit");
+        const { mech } = importBattleMechMtf(primitive);
+        expect(mech!.isPrimitive()).toBe(true);
+        expect(mech!.getWalkSpeed()).toBe(5);
+        expect(mech!.getEngineRating()).toBe(300);
     });
 
     // The Sasquatch SQS-TH-002 and Kuma 3: MegaMek names a large engine "Large", ours is the same type rated over 400 (TO:AUE p.119).
@@ -535,6 +577,19 @@ describe("MegaMek 'Mech import", () => {
             expect(issues).toEqual([]);
             expect(mech!.getInstalledEquipment().map((item) => item.tag)).toContain(`prototype-rocket-launcher-${size}`);
         }
+    });
+
+    it("reads a Ram Plate as one item with a slot in each torso (OTP: Hanseatic Crusade p.30)", () => {
+        const core = [...fill(3, "Fusion Engine"), ...fill(4, "Gyro"), ...fill(3, "Fusion Engine")];
+        const rammer = quad.replace("structure:IS Standard", "structure:IS Reinforced").replace("techbase:Inner Sphere", "techbase:Mixed (Clan Chassis)")
+            .replace(location("Left Torso", "Large Laser", "Large Laser").join("\n"), location("Left Torso", "Ram Plate").join("\n"))
+            .replace(location("Right Torso", "Large Laser", "Large Laser").join("\n"), location("Right Torso", "Ram Plate").join("\n"))
+            .replace(location("Center Torso", ...core).join("\n"), location("Center Torso", ...core, "Ram Plate").join("\n"));
+        expect(rammer.match(/^Ram Plate$/gm)).toHaveLength(3);
+        const { mech, issues } = importBattleMechMtf(rammer);
+        expect(issues).toEqual([]);
+        expect(mech!.getInstalledEquipment().filter((item) => item.tag === "ram-plate")).toHaveLength(1);
+        expect(mech!.getUnallocatedCritCount()).toBe(0);
     });
 
     it("leaves out what it cannot convert, saying why", () => {

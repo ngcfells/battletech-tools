@@ -95,7 +95,7 @@ export default class AlphaStrikeGroup {
 			if( this.customName ) {
 				return this.customName;
 			} else {
-				return this.groupLabel + "Group #" + groupNumber.toString();
+				return this.groupLabel + " #" + groupNumber.toString();
 			}
 		}
 

@@ -110,7 +110,7 @@ describe("Security guard rails", () => {
         "ui/pages/classic-battletech/mech-creator/step3.tsx": 1,
         "ui/pages/classic-battletech/mech-creator/step4.tsx": 1,
         "ui/pages/classic-battletech/mech-creator/step5.tsx": 1,
-        "ui/pages/classic-battletech/mech-creator/summary.tsx": 4,
+        "ui/pages/classic-battletech/mech-creator/summary.tsx": 2,
         "ui/pages/classic-battletech/vehicle-creator/summary.tsx": 3,
         // Reviewed 2026-10-07: the fighter's Alpha Strike, Battle Value and cost logs. Equipment, engine, armor and
         // heat sink names and tags go through escapeLogText in aerospace-fighter.ts; the rest is numbers and constants.

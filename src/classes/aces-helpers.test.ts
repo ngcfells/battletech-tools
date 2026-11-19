@@ -1,11 +1,14 @@
 import { describe, expect, it } from "vitest";
+import { AlphaStrikeUnit } from "./alpha-strike-unit";
 import {
     acesCommandInitiativeModifier,
     calculateAcesToHit,
     getAcesCrippledReasons,
     getAcesEffectivePriority,
     getAcesFrontLoadedMoveOrder,
+    getAcesDamageAtDistance,
     getAcesInitiativeModifiers,
+    getAcesUnitLabels,
     getAcesRangeBracket,
     sortAcesActivation,
     splitAcesDeck,
@@ -61,6 +64,9 @@ describe("Aces target numbers (ASCE p.44, Aces pp.3-6)", () => {
             partialCover: true,
         };
         expect( calculateAcesToHit( { ...base, targetType: "BM" } ).targetNumber ).toBe( 6 );
+        // A walker is a 'Mech: it takes partial cover, industrial or not (Custom Homebrew).
+        expect( calculateAcesToHit( { ...base, targetType: "WK" } ).targetNumber ).toBe( 6 );
+        expect( calculateAcesToHit( { ...base, targetType: "IWK" } ).targetNumber ).toBe( 6 );
         expect( calculateAcesToHit( { ...base, targetType: "CV" } ).targetNumber ).toBe( 5 );
         expect( calculateAcesToHit( { ...base, targetType: "BA" } ).targetNumber ).toBe( 6 );
     });
@@ -282,5 +288,50 @@ describe("Aces Initiative (Aces p.32)", () => {
         expect( acesCommandInitiativeModifier( [ order( "initiative", "Assign the MOVE LAST token to your unit with ([highest] PV)." ) ] ) ).toBe( 0 );
         expect( acesCommandInitiativeModifier( [ order( "movement", "+2 Initiative" ) ] ) ).toBe( 0 );
         expect( getAcesInitiativeModifiers( false, false, false, 2 ) ).toEqual( [ { label: "Command card Initiative order", value: 2 } ] );
+    });
+});
+
+describe("Aces damage at a distance (#630)", () => {
+    const damage = { short: 5, medium: 4, long: 2, extreme: 1 };
+    it("picks the bracket for the distance in inches", () => {
+        expect( getAcesDamageAtDistance( damage, 0 ) ).toBe( 5 );
+        expect( getAcesDamageAtDistance( damage, 6 ) ).toBe( 5 );
+        expect( getAcesDamageAtDistance( damage, 7 ) ).toBe( 4 );
+        expect( getAcesDamageAtDistance( damage, 24 ) ).toBe( 4 );
+        expect( getAcesDamageAtDistance( damage, 25 ) ).toBe( 2 );
+        expect( getAcesDamageAtDistance( damage, 42 ) ).toBe( 2 );
+        expect( getAcesDamageAtDistance( damage, 43 ) ).toBe( 1 );
+    });
+    it("gives nothing when the distance is not known", () => {
+        expect( getAcesDamageAtDistance( damage, null ) ).toBeNull();
+    });
+});
+
+describe("Aces unit labels (#630)", () => {
+    const named = ( name: string, customName: string = "" ): AlphaStrikeUnit => {
+        const unit = new AlphaStrikeUnit();
+        unit.name = name;
+        unit.customName = customName;
+        return unit;
+    };
+    it("numbers duplicate names in force order and leaves single names alone", () => {
+        const first = named( "Fulcrum Heavy Hovertank" );
+        const lone = named( "Rifleman RFL-3N" );
+        const second = named( "Fulcrum Heavy Hovertank" );
+        const labels = getAcesUnitLabels( [ first, lone, second ] );
+        expect( labels.get( first.uuid ) ).toBe( "Fulcrum Heavy Hovertank (1)" );
+        expect( labels.get( second.uuid ) ).toBe( "Fulcrum Heavy Hovertank (2)" );
+        expect( labels.get( lone.uuid ) ).toBe( "Rifleman RFL-3N" );
+    });
+    it("keeps the same numbers when the list is sorted a different way", () => {
+        const first = named( "Elemental" );
+        const second = named( "Elemental" );
+        const forward = getAcesUnitLabels( [ first, second ] );
+        expect( forward.get( first.uuid ) ).toBe( "Elemental (1)" );
+        expect( forward.get( second.uuid ) ).toBe( "Elemental (2)" );
+    });
+    it("uses the custom name when there is one", () => {
+        const unit = named( "Atlas AS7-D", "Old Bessie" );
+        expect( getAcesUnitLabels( [ unit ] ).get( unit.uuid ) ).toBe( "Old Bessie (Atlas AS7-D)" );
     });
 });

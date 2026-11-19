@@ -14,9 +14,12 @@ const FighterCreatorRouter = React.lazy(() => import("./fighter-creator/_router"
 const InfantryCreatorRouter = React.lazy(() => import("./infantry-creator/_router"));
 const BattleArmorCreatorRouter = React.lazy(() => import("./battle-armor-creator/_router"));
 const ProtoMechCreatorRouter = React.lazy(() => import("./protomech-creator/_router"));
+const MicroMechCreatorRouter = React.lazy(() => import("./micro-mech-creator/_router"));
+const WalkerCreatorRouter = React.lazy(() => import("./walker-creator/_router"));
 const SmallCraftCreatorRouter = React.lazy(() => import("./small-craft-creator/_router"));
 const CapitalShipCreatorRouter = React.lazy(() => import("./capital-ship-creator/_router"));
 const BuildingCreatorRouter = React.lazy(() => import("./building-creator/_router"));
+const BvAccuracy = React.lazy(() => import("./bv-accuracy"));
 const TroJbt = React.lazy(() => import("./tro-jbt"));
 const TroReader = React.lazy(() => import("./tro-jbt").then((module) => ({ default: module.TroReader })));
 
@@ -68,6 +71,18 @@ export default class ClassicBattleTechRouter extends React.Component<IClassicBat
                     />
                 }/>
 
+                <Route path={`micro-mech-creator/*`} element={
+                    <MicroMechCreatorRouter
+                        appGlobals={this.props.appGlobals}
+                    />
+                }/>
+
+                <Route path={`walker-creator/*`} element={
+                    <WalkerCreatorRouter
+                        appGlobals={this.props.appGlobals}
+                    />
+                }/>
+
                 <Route path={`small-craft-creator/*`} element={
                     <SmallCraftCreatorRouter
                         appGlobals={this.props.appGlobals}
@@ -92,7 +107,8 @@ export default class ClassicBattleTechRouter extends React.Component<IClassicBat
                     />
                 }/>
 
-                {["artvee", "ammunition"].map((slug) => (
+                {/* Every TRO_DOCUMENTS slug (tro-jbt.tsx); kept as a list here so the lazy page stays out of this bundle. */}
+                {["artvee", "ammunition", "micro-mechs", "walkers", "power-armor", "vtolam", "permanent-air-mech", "best-of-future-wars", "homebrew-equipment", "future-wars-dropships"].map((slug) => (
                     <Route key={slug} path={`tro-jbt/${slug}`} element={
                         <TroReader
                             appGlobals={this.props.appGlobals}
@@ -107,6 +123,12 @@ export default class ClassicBattleTechRouter extends React.Component<IClassicBat
 
                 <Route path={`roster/*`} element={
                     <BattleMechRosterRouter
+                        appGlobals={this.props.appGlobals}
+                    />
+                }/>
+
+                <Route path={`battle-value-accuracy`} element={
+                    <BvAccuracy
                         appGlobals={this.props.appGlobals}
                     />
                 }/>

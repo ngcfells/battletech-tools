@@ -1,4 +1,5 @@
 import { IEquipmentItem } from "./data-interfaces";
+import { applyLoreAndRules } from "./custom-lore-rules";
 import { ammoCatalog } from "./ammo";
 import { equipmentArtillery } from "./equipment-artillery";
 
@@ -8,7 +9,7 @@ import { equipmentArtillery } from "./equipment-artillery";
  * (Support Vehicle trailers); 35 damage at 12 mapsheets (the Long Tom does 25 at 30, TO:AUE p.96); 25 tons; 4 shots
  * a ton; the Long Tom's dates; the munitions the Long Tom, Sniper and Thumper all fire.
  *
- * Derived from the Long Tom (our method, not a published one): cost 15,000 C-bills a ton, as the Long Tom and Sniper;
+ * Derived from the Long Tom (NGCFells's method, not a published one): cost 15,000 C-bills a ton, as the Long Tom and Sniper;
  * Battle Value 368 x 35/25; heat 20 x 35/25; Support Vehicle slots half the tonnage, rounded down, as the canon tubes.
  * Each round costs and counts per shot as the Long Tom's round x 35/25, so a ton of 4 is x 1.12 the Long Tom's ton of 5.
  */
@@ -25,7 +26,7 @@ const toHailstorm = (text: string) => text.replace(/long-tom/g, "hailstorm").rep
 
 const apocryphalAlphaStrike = { specialAbility: [], heat: 0, rangeShort: 0, rangeMedium: 0, rangeLong: 0, rangeExtreme: 0, tc: false, notes: ["Apocryphal: no Alpha Strike conversion"] };
 
-export const artilleryApocryphal: IEquipmentItem[] = [{
+export const artilleryApocryphal: IEquipmentItem[] = applyLoreAndRules([{
     isAmmo: false,
     name: "Hailstorm Artillery",
     altNames: ["Hailstorm", "Hailstorm Artillery Tube"],
@@ -65,9 +66,9 @@ export const artilleryApocryphal: IEquipmentItem[] = [{
     page: 0,
     alphaStrike: apocryphalAlphaStrike,
     heatAero: Math.round(longTom.heat * SCALE),
-}];
+}]);
 
-export const ammoApocryphal: IEquipmentItem[] = ammoCatalog
+export const ammoApocryphal: IEquipmentItem[] = applyLoreAndRules(ammoCatalog
     .filter((item) => sharedMunitions.some((munition) => item.tag.replace(/^ammo-(is|clan)-/, "ammo-") === `ammo-long-tom-${munition}`))
     .map((item): IEquipmentItem => ({
         isAmmo: true,
@@ -101,6 +102,6 @@ export const ammoApocryphal: IEquipmentItem[] = ammoCatalog
         rulesLevel: 5,
         prototype: item.prototype,
         notes: `Hailstorm round (Apocryphal, MechWarrior 5 video games): rules as the Long Tom's ${item.name.replace(/^Long Tom Artillery - /, "")} `
-            + `(${item.book} p.${item.page}). Where that round's damage follows the Long Tom's 25, use the Hailstorm's 35 (our provisional reading). `
+            + `(${item.book} p.${item.page}). Where that round's damage follows the Long Tom's 25, use the Hailstorm's 35 (NGCFells's provisional reading). `
             + `Cost and Battle Value are the Long Tom round's x 1.12 (35/25 a shot, 4 shots a ton against 5).`,
-    }));
+    })));

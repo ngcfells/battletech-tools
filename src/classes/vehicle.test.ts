@@ -592,7 +592,7 @@ describe("Vehicles against the Master Unit List", () => {
             expect(vehicle.getBattleValueLog(edition)).toContain("Targeting Computer 9.2");
         });
 
-        it("rates Level 3 vehicle equipment only under an edition with Maximum Tech's rules (p.92)", () => {
+        it("rates Level 3 vehicle equipment under the editions with Maximum Tech's rules (p.92)", () => {
             const rated = (tag: string) => {
                 const vehicle = build(skulker);
                 add(vehicle, tag);
@@ -603,7 +603,7 @@ describe("Vehicles against the Master Unit List", () => {
             const amphibious = build(skulker);
             amphibious.setChassisModification("fully-amphibious", true, 3);
             expect(amphibious.getChassisModifications().length).toBe(1);
-            expect([amphibious.getBattleValue(edition), amphibious.getBattleValue("master-rules")]).toEqual([166, 155]); // type modifier 0.8 under Level 3
+            expect([amphibious.getBattleValue(edition), amphibious.getBattleValue("master-rules")]).toEqual([166, 166]); // type modifier 0.8 at Level 3, in both printings of Maximum Tech
         });
 
         it("adds 1 to the Speed Factor MP for a supercharger (Maximum Tech p.91)", () => {

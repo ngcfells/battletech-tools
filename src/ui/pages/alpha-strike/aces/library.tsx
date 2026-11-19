@@ -5,6 +5,7 @@ import TextSection from '../../../components/text-section';
 import UIPage from '../../../components/ui-page';
 import {
     acesBehaviorIds,
+    acesEdgePhases,
     acesIconTokens,
     acesLines,
     acesMoveTypes,
@@ -20,17 +21,20 @@ import {
     IAcesCard,
     IAcesCardLibrary,
     IAcesCommandCard,
+    IAcesEdgeCard,
     IAcesScenario,
     IAcesSpecialOrder,
     mergeAcesCardLibrary,
     newAcesBehaviorColumn,
     newAcesCard,
     newAcesCommandCard,
+    newAcesEdgeCard,
     newAcesScenario,
     newAcesSpecialOrder,
     normalizeAcesCard,
     normalizeAcesCardLibrary,
     normalizeAcesCommandCard,
+    normalizeAcesEdgeCard,
     normalizeAcesScenario,
     normalizeAcesSpecialOrder,
     parseAcesCommandOrderLine,
@@ -43,16 +47,21 @@ import {
     parseAcesStrategyLine,
     parseAcesWaypointLine,
     parseAcesZone,
+    TAcesEdgeTrigger,
     TAcesSpecialOrderKind,
     validateAcesCard,
     validateAcesCommandCard,
+    validateAcesEdgeCard,
     validateAcesScenario,
 } from '../../../../data/aces-cards';
 import { getAcesSampleLibrary } from '../../../../data/aces-card-samples';
 import { acesDecks, ACES_BOOK, ACES_SS_BOOK } from '../../../../data/aces-rules';
 import { acesBehaviorLabel } from '../../../../classes/aces-engine';
 import { getAcesCardLibrary, saveAcesCardLibrary } from '../../../../dataSaves';
-import { applyAcesScanToCard, scanAcesCard, TAcesScanSide } from '../../../../classes/aces-card-scan';
+import { acesCardScanOptions, applyAcesScanToCard, scanAcesCard, TAcesScanSide } from '../../../../classes/aces-card-scan';
+import { acesSpecialOrderScanOptions, applyAcesSpecialOrderScan, scanAcesSpecialOrder } from '../../../../classes/aces-special-order-scan';
+import { acesEdgeCardScanOptions, applyAcesEdgeScan, scanAcesEdgeCard } from '../../../../classes/aces-edge-card-scan';
+import { acesCommandCardScanOptions, applyAcesCommandScan, scanAcesCommandCard, TAcesCommandScanSide } from '../../../../classes/aces-command-card-scan';
 import { generateUUID } from '../../../../utils/generateUUID';
 import { AcesCardView, AcesCommandCardView, AcesScenarioView, AcesSpecialOrderView } from './_aces-card-view';
 import './aces.scss';
@@ -62,13 +71,14 @@ import './aces.scss';
  * icons written as bracket tokens; the card reader and the sortie loader read what is saved here.
  */
 
-type TLibraryKind = "cards" | "commandCards" | "specialOrders" | "scenarios";
-type TDraft = IAcesCard | IAcesCommandCard | IAcesSpecialOrder | IAcesScenario;
+type TLibraryKind = "cards" | "commandCards" | "specialOrders" | "edgeCards" | "scenarios";
+type TDraft = IAcesCard | IAcesCommandCard | IAcesSpecialOrder | IAcesEdgeCard | IAcesScenario;
 
 const kindLabels: { [kind in TLibraryKind]: string } = {
     cards: "Aces cards",
     commandCards: "Command cards",
     specialOrders: "Special Orders",
+    edgeCards: "Edge cards",
     scenarios: "Sorties",
 };
 
@@ -78,6 +88,17 @@ const specialOrderKinds: { id: TAcesSpecialOrderKind, label: string }[] = [
     { id: "movement-objective", label: "Movement Objective" },
     { id: "destroy-objective", label: "Destroy Objective" },
     { id: "indirect-attacks", label: "Indirect Attacks" },
+    { id: "other", label: "Other" },
+];
+
+const edgeTriggers: { id: TAcesEdgeTrigger, label: string }[] = [
+    { id: "none", label: "None" },
+    { id: "moving", label: "Moving" },
+    { id: "attacking", label: "Attacking" },
+    { id: "attacked", label: "Being attacked" },
+    { id: "critical-hit", label: "Critical hit" },
+    { id: "enemy-rear", label: "Enemy in the rear" },
+    { id: "damaged", label: "Damaged" },
     { id: "other", label: "Other" },
 ];
 
@@ -106,6 +127,7 @@ const validate = ( kind: TLibraryKind, record: TDraft ): string[] => {
     if( kind === "cards" ) return validateAcesCard( record as IAcesCard );
     if( kind === "commandCards" ) return validateAcesCommandCard( record as IAcesCommandCard );
     if( kind === "scenarios" ) return validateAcesScenario( record as IAcesScenario );
+    if( kind === "edgeCards" ) return validateAcesEdgeCard( record as IAcesEdgeCard );
     return ( record as IAcesSpecialOrder ).name.trim() ? [] : [ "Name is missing." ];
 }
 
@@ -113,6 +135,7 @@ const normalize = ( kind: TLibraryKind, value: unknown ): TDraft | null => {
     if( kind === "cards" ) return normalizeAcesCard( value );
     if( kind === "commandCards" ) return normalizeAcesCommandCard( value );
     if( kind === "scenarios" ) return normalizeAcesScenario( value );
+    if( kind === "edgeCards" ) return normalizeAcesEdgeCard( value );
     return normalizeAcesSpecialOrder( value );
 }
 
@@ -128,6 +151,10 @@ const summary = ( kind: TLibraryKind, record: TDraft ): string => {
     if( kind === "scenarios" ) {
         const scenario = record as IAcesScenario;
         return ( scenario.code ? scenario.code + " - " : "" ) + ( scenario.name || "?" ) + ( scenario.campaign ? " (" + scenario.campaign + ")" : "" );
+    }
+    if( kind === "edgeCards" ) {
+        const edge = record as IAcesEdgeCard;
+        return ( edge.name || "?" ) + ( edge.cost === null ? "" : " (" + edge.cost + " Edge)" );
     }
     const order = record as IAcesSpecialOrder;
     return order.name || "?";
@@ -183,10 +210,31 @@ export default class AcesLibraryPage extends React.Component<IAcesLibraryPagePro
         try {
             // Loaded on demand, with tesseract, so the library page stays small for everyone else.
             const { scanCardPhoto } = await import( '../../../../classes/card-scan-browser' );
-            const result = await scanCardPhoto( file, scanAcesCard );
-            scan = { photo: photo, side: result.side, warnings: result.warnings };
-            if( result.side && this.state.draft ) {
-                this.setState({ draft: applyAcesScanToCard( this.state.draft as IAcesCard, result ), buffers: {}, json: null });
+            if( this.state.kind === "commandCards" ) {
+                const result = await scanCardPhoto( file, scanAcesCommandCard, acesCommandCardScanOptions );
+                // A photo of another kind of card comes back not found, and the draft is left as it was.
+                scan = { photo: photo, side: result.found ? result.side : null, warnings: result.warnings };
+                if( result.found && this.state.draft ) {
+                    this.setState({ draft: applyAcesCommandScan( this.state.draft as IAcesCommandCard, result ), buffers: {}, json: null });
+                }
+            } else if( this.state.kind === "specialOrders" ) {
+                const result = await scanCardPhoto( file, scanAcesSpecialOrder, acesSpecialOrderScanOptions );
+                scan = { photo: photo, side: result.found ? "special" : null, warnings: result.warnings };
+                if( result.found && this.state.draft ) {
+                    this.setState({ draft: applyAcesSpecialOrderScan( this.state.draft as IAcesSpecialOrder, result ), buffers: {}, json: null });
+                }
+            } else if( this.state.kind === "edgeCards" ) {
+                const result = await scanCardPhoto( file, scanAcesEdgeCard, acesEdgeCardScanOptions );
+                scan = { photo: photo, side: result.found ? "edge" : null, warnings: result.warnings };
+                if( result.found && this.state.draft ) {
+                    this.setState({ draft: applyAcesEdgeScan( this.state.draft as IAcesEdgeCard, result ), buffers: {}, json: null });
+                }
+            } else {
+                const result = await scanCardPhoto( file, scanAcesCard, acesCardScanOptions );
+                scan = { photo: photo, side: result.side, warnings: result.warnings };
+                if( result.side && this.state.draft ) {
+                    this.setState({ draft: applyAcesScanToCard( this.state.draft as IAcesCard, result ), buffers: {}, json: null });
+                }
             }
         } catch( err ) {
             scan = { photo: photo, side: null, warnings: [ "The photo couldn't be read (" + ( err instanceof Error ? err.message : String( err ) ) + "). The text reader downloads its English data the first time, so it needs a connection once." ] };
@@ -206,24 +254,24 @@ export default class AcesLibraryPage extends React.Component<IAcesLibraryPagePro
                 <legend>Read a card from a photo</legend>
                 <p className="aces-muted">
                     Photograph one side of the card straight on, filling the frame, and the text is read into the form
-                    below for you to check. Do each side separately. The photo stays on your device.
+                    below for you to check.{this.state.kind === "edgeCards" || this.state.kind === "specialOrders" ? "" : " Do each side separately."} The photo stays on your device.
                 </p>
                 <p className="aces-muted aces-scan-note">
                     <strong>The card reader isn't perfect.</strong> It misreads some words, numbers and icons. Check every line of the form against your card before you save it.
                 </p>
                 <label>
-                    Photo of the Movement or Combat side:{" "}
+                    {this.state.kind === "edgeCards" ? "Photo of the Edge card:" : this.state.kind === "specialOrders" ? "Photo of the Special Order card:" : this.state.kind === "commandCards" ? "Photo of the Orders or Support side:" : "Photo of the Movement or Combat side:"}{" "}
                     <input type="file" accept="image/*" disabled={this.state.scanning} style={{ width: "auto" }} onChange={this._scanPhoto} />
                 </label>
                 {this.state.scanning ? <p><strong>Reading the card...</strong> This takes a little while, longer the first time.</p> : null}
                 {this.state.scans.map( ( scan, index ) => (
                     <div key={index} className="aces-scan-result">
                         <p>
-                            <strong>{scan.side === "movement" ? "Movement side" : scan.side === "combat" ? "Combat side" : "Not read"}</strong>
+                            <strong>{scan.side ? scanSideLabels[scan.side] : "Not read"}</strong>
                             {scan.side ? ": filled in below. Check every line against the photo; OCR gets some words and icons wrong, and [?] marks an icon it couldn't place." : null}
                         </p>
                         {scan.warnings.length > 0 ? <ul className="aces-issue-error">{scan.warnings.map( ( warning, warningIndex ) => <li key={warningIndex}>{warning}</li> )}</ul> : null}
-                        <a href={scan.photo} target="_blank" rel="noopener noreferrer"><img className="aces-scan-photo" src={scan.photo} alt={"Your photo of the card's " + ( scan.side || "" ) + " side"} /></a>
+                        <a href={scan.photo} target="_blank" rel="noopener noreferrer"><img className="aces-scan-photo" src={scan.photo} alt={this.state.kind === "edgeCards" || this.state.kind === "specialOrders" ? "Your photo of the card" : "Your photo of the card's " + ( scan.side || "" ) + " side"} /></a>
                     </div>
                 ) )}
                 {this.state.scans.some( ( scan ) => scan.side ) ? (
@@ -260,6 +308,7 @@ export default class AcesLibraryPage extends React.Component<IAcesLibraryPagePro
             cards: library.cards.filter( ( item ) => !item.sample ),
             commandCards: library.commandCards.filter( ( item ) => !item.sample ),
             specialOrders: library.specialOrders.filter( ( item ) => !item.sample ),
+            edgeCards: library.edgeCards.filter( ( item ) => !item.sample ),
             scenarios: library.scenarios.filter( ( item ) => !item.sample ),
         }, "Samples removed." );
     }
@@ -291,9 +340,9 @@ export default class AcesLibraryPage extends React.Component<IAcesLibraryPagePro
             }
             try {
                 const incoming = normalizeAcesCardLibrary( JSON.parse( reader.result ) );
-                const count = incoming.cards.length + incoming.commandCards.length + incoming.specialOrders.length + incoming.scenarios.length;
+                const count = incoming.cards.length + incoming.commandCards.length + incoming.specialOrders.length + incoming.edgeCards.length + incoming.scenarios.length;
                 if( count === 0 ) {
-                    this.setState({ message: "That file holds no Aces cards, Command cards, Special Orders or sorties: nothing was imported." });
+                    this.setState({ message: "That file holds no Aces cards, Command cards, Special Orders, Edge cards or sorties: nothing was imported." });
                     return;
                 }
                 this._saveLibrary( mergeAcesCardLibrary( this.state.library, incoming ), "Imported " + count + " records." );
@@ -312,6 +361,7 @@ export default class AcesLibraryPage extends React.Component<IAcesLibraryPagePro
         switch( this.state.kind ) {
             case "commandCards": draft = newAcesCommandCard(); break;
             case "specialOrders": draft = newAcesSpecialOrder(); break;
+            case "edgeCards": draft = newAcesEdgeCard(); break;
             case "scenarios": draft = newAcesScenario(); break;
             default: draft = newAcesCard();
         }
@@ -599,6 +649,30 @@ export default class AcesLibraryPage extends React.Component<IAcesLibraryPagePro
         );
     }
 
+    private _renderEdgeCardForm = (): JSX.Element => {
+        const draft = this.state.draft as IAcesEdgeCard;
+        const phaseOptions = acesEdgePhases.map( ( id ) => ( { id: id, label: id.charAt( 0 ).toUpperCase() + id.slice( 1 ) } ) );
+        return (
+            <>
+                <div className="aces-inline">
+                    {this._text( "Name", [ "name" ] )}
+                    {this._text( "Category", [ "category" ] )}
+                    {this._text( "Card", [ "cardNumber" ], "1/12" )}
+                    {this._number( "Cost", [ "cost" ] )}
+                </div>
+                <div className="aces-inline">
+                    {this._select( "Phase", [ "phase" ], phaseOptions )}
+                    {this._select( "Trigger", [ "trigger" ], edgeTriggers )}
+                </div>
+                {this._text( "Condition", [ "condition" ], "Your own words from the card" )}
+                <label className="aces-field aces-field-wide">Card text
+                    <textarea rows={4} aria-label="Card text" value={draft.text} onChange={( e ) => this._change( [ "text" ], e.currentTarget.value )} />
+                    <span className="aces-muted">Type it in your own words; it stays in your library on this device.</span>
+                </label>
+            </>
+        );
+    }
+
     private _renderScenarioForm = (): JSX.Element => {
         return (
             <>
@@ -640,6 +714,17 @@ export default class AcesLibraryPage extends React.Component<IAcesLibraryPagePro
         );
     }
 
+    private _renderEdgePreview = ( card: IAcesEdgeCard ): JSX.Element => {
+        return (
+            <div className="aces-card">
+                <h5>{card.name || "?"}{card.cost === null ? "" : " (" + card.cost + " Edge)"}</h5>
+                <p className="aces-muted">{[ card.category, card.cardNumber, card.phase ].filter( ( item ) => item ).join( " | " )}</p>
+                {card.condition ? <p><em>{card.condition}</em></p> : null}
+                <p>{card.text}</p>
+            </div>
+        );
+    }
+
     private _renderEditor = (): JSX.Element => {
         const draft = this.state.draft!;
         const kind = this.state.kind;
@@ -655,6 +740,10 @@ export default class AcesLibraryPage extends React.Component<IAcesLibraryPagePro
             case "specialOrders":
                 form = this._renderSpecialOrderForm();
                 preview = <AcesSpecialOrderView order={draft as IAcesSpecialOrder} />;
+                break;
+            case "edgeCards":
+                form = this._renderEdgeCardForm();
+                preview = this._renderEdgePreview( draft as IAcesEdgeCard );
                 break;
             case "scenarios":
                 form = this._renderScenarioForm();
@@ -676,7 +765,7 @@ export default class AcesLibraryPage extends React.Component<IAcesLibraryPagePro
                 {issues.length > 0 ? (
                     <ul className="aces-issue-error">{issues.map( ( issue, index ) => <li key={index}>{issue}</li> )}</ul>
                 ) : <p className="aces-muted">The card reader can use this record.</p>}
-                {kind === "cards" && this.state.json === null ? this._renderScan() : null}
+                {( kind === "cards" || kind === "commandCards" || kind === "specialOrders" || kind === "edgeCards" ) && this.state.json === null ? this._renderScan() : null}
                 <div className="row">
                     <div className="col-lg-7">
                         {this.state.json !== null ? (
@@ -736,7 +825,7 @@ export default class AcesLibraryPage extends React.Component<IAcesLibraryPagePro
                                     <tr key={record.id}>
                                         <td>
                                             {summary( kind, record )}
-                                            {record.sample ? <span className="aces-muted"> (sample, {record.source ? record.source.book + " p." + record.source.page : ""})</span> : null}
+                                            {record.sample ? <span className="aces-muted"> ({record.source ? "sample, " + record.source.book + " p." + record.source.page : "sample"})</span> : null}
                                             {issues.length > 0 ? <><br /><span className="aces-issue-error">{issues.join( " " )}</span></> : null}
                                         </td>
                                         <td className="text-right">
@@ -796,8 +885,17 @@ interface IAcesLibraryPageState {
     scanChecked: boolean;
 }
 
+const scanSideLabels: { [side in TAcesScanSide | TAcesCommandScanSide | "special" | "edge"]: string } = {
+    movement: "Movement side",
+    combat: "Combat side",
+    orders: "Orders side",
+    support: "Support side",
+    special: "Special Order card",
+    edge: "Edge card",
+};
+
 interface IAcesCardScan {
     photo: string;
-    side: TAcesScanSide | null;
+    side: TAcesScanSide | TAcesCommandScanSide | "special" | "edge" | null;
     warnings: string[];
 }

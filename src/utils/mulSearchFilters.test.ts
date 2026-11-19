@@ -3,13 +3,14 @@ import { IASMULUnit } from "../classes/alpha-strike-unit";
 import { btSpecialRulesets, ISpecialRuleset } from "../data/special-rulesets";
 import { getMULEraAliases, getMULEraIDs } from "./mulUtilities";
 import { changeMULSearchFilters, filterMULByRulesets, isMULEraOffered, isMULTechOffered, isMULTypeOffered, newMULSearchFilters } from "./mulSearchFilters";
+import { testSpecialRuleset } from "../test-support/rulesets";
 
 const NO_CLANS = "sample-no-clans";
 const aliasId = (name: string) => getMULEraAliases().find((alias) => alias.label.startsWith(name))!.id;
 const unit = (techId: number, typeId: number, bfType = "") => ({ Technology: { Id: techId }, Type: { Id: typeId }, BFType: bfType }) as unknown as IASMULUnit;
 // A ruleset of the test's own, taken out again after it.
 const withRuleset = (ruleset: Partial<ISpecialRuleset>, run: () => void) => {
-    btSpecialRulesets.push({ id: "test-ruleset", name: "Test", description: "", source: { title: "test" }, changes: ["test"], ...ruleset });
+    btSpecialRulesets.push(testSpecialRuleset({ id: "test-ruleset", name: "Test", changes: ["test"], ...ruleset }));
     try {
         run();
     } finally {
@@ -62,13 +63,28 @@ describe("MUL search rulesets (#324 round 4)", () => {
     });
 
     it("a ruleset that clashes with one already ticked is dropped and named", () => {
-        btSpecialRulesets.push({ id: "test-clash", name: "Test clash", description: "", source: { title: "test" }, changes: ["techBases"] });
+        btSpecialRulesets.push(testSpecialRuleset({ id: "test-clash", name: "Test clash", changes: ["techBases"] }));
         try {
             const { filters, moves } = changeMULSearchFilters(newMULSearchFilters({ rulesets: [NO_CLANS] }), { rulesets: [NO_CLANS, "test-clash"] });
             expect(filters.rulesets).toEqual([NO_CLANS]);
             expect(moves).toEqual(["Clashes with Sample: The Clans never existed (alternate universe)"]);
         } finally {
             btSpecialRulesets.splice(btSpecialRulesets.findIndex((ruleset) => ruleset.id === "test-clash"), 1);
+        }
+    });
+
+    it("drops a ruleset whose requirement is missing, saying so", () => {
+        btSpecialRulesets.push(
+            testSpecialRuleset({ id: "test-req-c", name: "C", changes: ["c"] }),
+            testSpecialRuleset({ id: "test-req-d", name: "D", changes: ["d"], requires: ["test-req-c"] }),
+        );
+        try {
+            const alone = changeMULSearchFilters(newMULSearchFilters(), { rulesets: ["test-req-d"] });
+            expect(alone.filters.rulesets).toEqual([]);
+            expect(alone.moves).toContain("Needs C");
+            expect(changeMULSearchFilters(newMULSearchFilters(), { rulesets: ["test-req-d", "test-req-c"] }).filters.rulesets).toEqual(["test-req-d", "test-req-c"]);
+        } finally {
+            for (const id of ["test-req-c", "test-req-d"]) btSpecialRulesets.splice(btSpecialRulesets.findIndex((entry) => entry.id === id), 1);
         }
     });
 

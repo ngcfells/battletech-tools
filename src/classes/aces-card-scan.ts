@@ -11,7 +11,7 @@ import {
 } from "../data/aces-cards";
 import { acesCombatFilterPhrases, acesConditionPhrases, acesMovementFilterPhrases } from "../data/aces-card-phrases";
 import { acesDecks } from "../data/aces-rules";
-import { ICardScanBox, ICardScanColours, ICardScanIO, ICardScanLine, ICardScanRect, ICardScanWord, TCardScanMode, cardScanInkBoxes, cardScanMargin } from "./card-scan-io";
+import { ICardScanBox, ICardScanColours, ICardScanIO, ICardScanLine, ICardScanOptions, ICardScanRect, ICardScanWord, TCardScanMode, cardScanInkBoxes, cardScanMargin } from "./card-scan-io";
 
 /*
  * Reads an Aces behavior card from a photo of the players' own card, for those who find the small print hard to
@@ -49,7 +49,7 @@ export const acesScanTagColour = ( colours: ICardScanColours ): TAcesColor | nul
 /* ----- layout ----- */
 
 /** A printed header word, which the cards set in capitals (so "target" in a filter line is no match). */
-const fuzzyIs = ( text: string, target: string ): boolean => {
+export const fuzzyIs = ( text: string, target: string ): boolean => {
     const letters = text.replace( /[^A-Za-z]/g, "" );
     if( letters.replace( /[^A-Z]/g, "" ).length < letters.length * 0.6 ) return false;
     const word = letters.toUpperCase();
@@ -58,7 +58,7 @@ const fuzzyIs = ( text: string, target: string ): boolean => {
     return editDistance( word, target ) <= 2;
 }
 
-const editDistance = ( a: string, b: string ): number => {
+export const editDistance = ( a: string, b: string ): number => {
     const row = Array.from( { length: b.length + 1 }, ( _, index ) => index );
     for( let i = 1; i <= a.length; i++ ) {
         let previous = row[0];
@@ -72,7 +72,7 @@ const editDistance = ( a: string, b: string ): number => {
     return row[b.length];
 }
 
-const allWords = ( lines: ICardScanLine[] ): ICardScanWord[] => lines.reduce( ( rv, line ) => rv.concat( line.words ), [] as ICardScanWord[] );
+export const allWords = ( lines: ICardScanLine[] ): ICardScanWord[] => lines.reduce( ( rv, line ) => rv.concat( line.words ), [] as ICardScanWord[] );
 
 export interface IAcesScanLayout {
     side: TAcesScanSide;
@@ -84,7 +84,7 @@ export interface IAcesScanLayout {
     overheat: ICardScanRect | null;
 }
 
-const clampRect = ( rect: ICardScanRect, width: number, height: number ): ICardScanRect => {
+export const clampRect = ( rect: ICardScanRect, width: number, height: number ): ICardScanRect => {
     const left = Math.max( 0, Math.round( rect.left ) );
     const top = Math.max( 0, Math.round( rect.top ) );
     return {
@@ -374,7 +374,7 @@ const gluedRings = ( text: string ): number[] | null => {
     return rv.length > 0 ? rv : null;
 }
 
-const parseZone = ( text: string ): { zoneRings: number[], zoneKeyword: "" | "nearest" | "any" } => {
+export const parseZone = ( text: string ): { zoneRings: number[], zoneKeyword: "" | "nearest" | "any" } => {
     // A ring line is only numbers and marks, so once one ring reads cleanly the others count even where OCR lost the inch mark ("6') 24)").
     const marked = /\d+(?=\s*["”'’°]+\s*\))/.test( text ) && !/[A-Za-z]{2,}/.test( text );
     // A number that is no ring is two glued together, or one with its mark misread ("67\")" is 6" and a 7 for '")').
@@ -727,6 +727,9 @@ const withBlankRows = ( lines: ICardScanLine[], column: ICardScanRect ): ICardSc
     }
     return rv;
 }
+
+/** Behavior cards print landscape; a scan that found the column headers or TARGET found the card. */
+export const acesCardScanOptions: ICardScanOptions<IAcesScanResult> = { shape: "landscape", found: ( result ) => result.side !== null };
 
 export const scanAcesCard = async ( io: ICardScanIO ): Promise<IAcesScanResult> => {
     const result: IAcesScanResult = {

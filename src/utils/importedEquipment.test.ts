@@ -44,6 +44,14 @@ describe("findImportedEquipment", () => {
         expect(findImportedEquipment("Enhanced ER PPC", "is", true)?.catalog).toBe("clan");
     });
 
+    it("keeps MegaMek's Clan 'Mech Mortar on the Clan record when the other faction is searched too", () => {
+        // The Clan launcher takes fewer slots (TO:AUE p.221); a MegaMek file's item is always looked up this way.
+        for (const size of [1, 2, 4, 8]) {
+            expect(findImportedEquipment(`Clan Mech Mortar-${size}`, "clan", true)?.item.tag).toBe(`clan-mech-mortar-${size}`);
+            expect(findImportedEquipment(`IS Mech Mortar-${size}`, "is", true)?.item.tag).toBe(`mech-mortar-${size}`);
+        }
+    });
+
     it("returns null for a name no catalog lists", () => {
         expect(findImportedEquipment("Not A Real Weapon", "is", true)).toBeNull();
     });
@@ -172,5 +180,14 @@ describe("MegaMek's ISCASE", () => {
             ["ISNarc Pods", "is", "ammo-is-narc-standard"], ["IS Ammo Narc", "is", "ammo-is-narc-standard"], ["CLNarc Pods", "clan", "ammo-clan-narc-standard"],
         ];
         expect(expected.map(([name, faction]) => [name, findImportedEquipment(name, faction)?.item.tag])).toEqual(expected.map(([name, , tag]) => [name, tag]));
+    });
+
+    it("reads MegaMek's Clan heavy machine gun array as the Clan array, which links Clan heavy machine guns", () => {
+        for (const name of ["Clan Heavy Machine Gun Array", "CLHMGA"]) {
+            expect([name, findImportedEquipment(name, "clan")?.item.tag]).toEqual([name, "clan-heavy-machine-gun-array"]);
+            // The MegaMek file converter looks names up as for a mixed-tech design.
+            expect([name, findImportedEquipment(name, "clan", true)?.item.tag]).toEqual([name, "clan-heavy-machine-gun-array"]);
+        }
+        expect(findImportedEquipment("ISHMGA", "is")?.item.tag).toBe("is-heavy-machine-gun-array");
     });
 });

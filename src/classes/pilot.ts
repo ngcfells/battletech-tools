@@ -36,6 +36,10 @@ export default class Pilot {
             }
             this.piloting = skill(importObj.piloting, this.piloting);
             this.gunnery = skill(importObj.gunnery, this.gunnery);
+            // Wounds are exported, so they are read back: whole, 0 to 6 (the sixth kills the MechWarrior).
+            if( typeof importObj.wounds === "number" && Number.isFinite(importObj.wounds) ) {
+                this.wounds = Math.min(6, Math.max(0, Math.floor(importObj.wounds)));
+            }
             if( Array.isArray(importObj.alphaStrikeAbilities) ) {
                 this.alphaStrikeAbilities = importObj.alphaStrikeAbilities.filter((id): id is number => typeof id === "number" && Number.isFinite(id));
             }

@@ -33,7 +33,6 @@ export default class AlphaStrikeUnitEditViewModal extends React.Component<IAlpha
               )
             )
           );
-          console.log(this.props.appGlobals.currentASForce!.groups[i].availableFormationBonuses)
          }
         this.props.appGlobals.saveCurrentASForce( this.props.appGlobals.currentASForce );
       }

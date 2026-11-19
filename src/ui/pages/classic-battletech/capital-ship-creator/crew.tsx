@@ -35,7 +35,8 @@ export default class CapitalShipCreatorCrew extends React.Component<ICrewProps> 
         const rulesLevel = unitRulesLevel(this.props.appGlobals.currentCapitalShip, this.props.appGlobals.appSettings);
         const people = ship.getPeopleNeedingQuarters();
         const techBase = ship.getChassisTechBase();
-        const bayOptions = transportBayTypes.filter((type) => !type.tech || type.tech === techBase || ship.isMixedTech());
+        // A homebrew bay (the Micro-Mech Bay) is offered at its rules level.
+        const bayOptions = transportBayTypes.filter((type) => (!type.tech || type.tech === techBase || ship.isMixedTech()) && (type.rulesLevel ?? 0) <= rulesLevel);
         const remaining = ship.getRemainingTonnage();
 
         return (

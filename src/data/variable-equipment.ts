@@ -1,4 +1,5 @@
-import { IEquipmentItem } from "./data-interfaces";
+import { IDamagePerRange, IEquipmentItem } from "./data-interfaces";
+import { coilBattleValue, costFromBattleValue, fusionLanceBattleValue, fusionLanceHexDamage } from "./derived-values";
 
 /*
 * DISCLAIMER: This file processes gameplay data derived from the BattleTech universe. 
@@ -49,7 +50,11 @@ export type VariableEquipmentFormula =
     | "naval-tug-adaptor"
     | "light-sail"
     | "mech-turret"
-    | "modular-c3";
+    | "modular-c3"
+    | "fusion-lance"
+    | "coil-s"
+    | "coil-m"
+    | "coil-l";
 
 export interface IVariableEquipmentContext {
     /** Unit tonnage. */
@@ -70,6 +75,10 @@ export interface IVariableEquipmentContext {
     drones?: number;
     /** Tons of weapons and equipment in a BattleMech Turret, not counting ammunition and heat sinks (TO:AUE p.158). */
     turretWeight?: number;
+    /** Running MP as Battle Value counts it, MASC and the like included (a Ram Plate's charge). */
+    runMP?: number;
+    /** Torso locations (left, center, right) that carry Spikes: each adds to a Ram Plate's charge. */
+    torsoSpikes?: number;
 }
 
 /** Weight class index: 1 light (<= 35 t), 2 medium (<= 55), 3 heavy (<= 75), 4 assault and heavier. */
@@ -84,7 +93,7 @@ export interface IVariableEquipmentSize {
     weight: number;
     slots: number;
     cbills: number;
-    damage?: number;
+    damage?: number | IDamagePerRange;
     battleValue?: number;
 }
 
@@ -240,8 +249,14 @@ export function sizeVariableEquipment(
             return { weight, slots: Math.ceil(weight), cbills: 500 * weight, battleValue: 0 };
         }
         // OTP: Hanseatic Crusade p.30: 1 ton per 10 tons of the unit, 1 slot in each torso; no cost printed.
-        case "ram-plate":
-            return { weight: roundUpHalfTon(t / 10), slots: 3, cbills: 0, battleValue: 0 };
+        // No Battle Value is printed either. NGCFells's ruling 2026-11-12: half the greatest charge damage (tonnage x
+        // running MP / 10, each step rounded down), plus 1 for each torso carrying Spikes, times 1.1, in the
+        // Offensive Battle Rating. It reproduces the 2,124 of the book's own Rhino record sheet (p.40).
+        case "ram-plate": {
+            const halfCharge = Math.floor(Math.floor(t * (ctx.runMP ?? 0) / 10 + 1e-9) / 2);
+            const battleValue = halfCharge > 0 ? (halfCharge + (ctx.torsoSpikes ?? 0)) * 11 / 10 : 0;
+            return { weight: roundUpHalfTon(t / 10), slots: 3, cbills: 0, battleValue };
+        }
         // TO:AUE p.144: 1% of the vessel (half ton); 100,000 x item tons C-bills (p.221).
         case "naval-c3": {
             const weight = roundUpHalfTon(t / 100);
@@ -299,6 +314,27 @@ export function sizeVariableEquipment(
         case "modular-c3": {
             const weight = 1 + 0.5 * (Math.min(11, Math.max(1, ctx.size ?? 1)) - 1);
             return { weight, slots: Math.ceil(weight - 1e-9), cbills: 250000 * weight, battleValue: 0 };
+        }
+        // Custom Homebrew (u/Magical_Savior, r/battletech 1mhvhwp): 4 tons, 2 slots; damage 10 plus 5 per 100 of engine rating or part
+        // of 100 (15 to 30), 5 less each hex after the first, over 3 hexes. The author gave no Battle Value or cost, so both follow
+        // what the weapon does (derived-values.ts): Battle Value is its damage over the hexes it reaches, cost the canon energy
+        // median per Battle Value.
+        case "fusion-lance": {
+            const battleValue = fusionLanceBattleValue(ctx.engineRating);
+            const [first, second, third] = fusionLanceHexDamage(ctx.engineRating);
+            // Damage by hex, one hex to a band: the first, 5 less in the second, 10 less in the third.
+            const damage: IDamagePerRange = { short: first, medium: second, long: third, aeroShort: first, aeroMedium: second, aeroLong: third };
+            return { weight: 4, slots: 2, cbills: costFromBattleValue(battleValue), damage, battleValue };
+        }
+        // Apocryphal (BATTLETECH, Heavy Metal): the COIL weapons, at DevianID's tabletop Final Stats ("A Hare-Brained Weapon"). Damage and
+        // heat are multiplied by the movement modifier when it is over +1, so Battle Value is priced at the 'Mech's running speed. Cost
+        // is the catalog's (the game's own).
+        case "coil-s":
+        case "coil-m":
+        case "coil-l": {
+            const stats = { "coil-s": { weight: 2, slots: 4, damage: 3, reach: 3, cbills: 110000 }, "coil-m": { weight: 3, slots: 6, damage: 5, reach: 9, cbills: 220000 },
+                "coil-l": { weight: 4, slots: 8, damage: 7, reach: 15, cbills: 360000 } }[formula];
+            return { weight: stats.weight, slots: stats.slots, cbills: stats.cbills, damage: stats.damage, battleValue: coilBattleValue(stats.damage, stats.reach, ctx.runMP ?? 0) };
         }
     }
     return null;

@@ -171,6 +171,8 @@ class FastAssaultLance extends FormationBonusBase implements IFormationBonus {
         result = result && (group.members.filter(x=>x.armor<5).length===0);
         const medRange3OrGreaterCount = group.members.filter(x=>+x.damage.medium>=3).length;
         result = result && (Math.ceil(group.members.length*.75)<=medRange3OrGreaterCount);
+        // As the Assault Lance: a Juggernaut, or two Snipers.
+        result = result && (this.RoleCount(group, "Juggernaut")>=1||this.RoleCount(group, "Sniper")>=2)
         // faster than 10 or Jump capable
 
         result = result && (group.members.filter(x=>(x.move.filter(y=>y.type==="j").length>0)||(x.move.filter(y=>y.move>=10).length>0)).length===group.members.length);
@@ -218,7 +220,7 @@ class StrikerCavalryLance extends FormationBonusBase implements IFormationBonus 
                         &&
                             y.type!=="j").length > 0
                         )
-                ).length > 0
+                ).length === group.members.length
             );
 
 
@@ -382,9 +384,9 @@ class AntiAirLance extends FormationBonusBase implements IFormationBonus {
 
         // 75% sniper or missileboat
         result = result && (Math.ceil(group.members.length*.75)<=(this.RoleCount(group, "Missile Boat")+this.RoleCount(group, "Sniper")));
-        const artRegex = /ART\d+/;
-        const acRegex = /AC\d+/;
-        result = result && ((group.members.filter(x=>x.abilities.includes('FLK')).length + group.members.filter(x=>x.abilities.some(y=>artRegex.test(y))).length + group.members.filter(x=>x.abilities.some(y=>acRegex.test(y))).length)>=2);
+        // FLK#/#/#, AC#/#/# or ARTX-#, each unit counted once. The codes are anchored so "AC" is not found inside another.
+        const antiAirRegex = /^\s*(FLK|AC)\s*\d|^\s*ART.+\d/;
+        result = result && (group.members.filter(x=>x.abilities.some(y=>antiAirRegex.test(y))).length>=2);
         return result;
     }
 
@@ -471,7 +473,7 @@ class PursuitLance extends FormationBonusBase implements IFormationBonus {
 
         result = result && (group.members.filter(x=>x.size<=2).length===group.members.length);
         result = result && (Math.ceil(group.members.length*.75)<=(group.members.filter(x=>(x.move.filter(y=>y.move>=12).length>0)).length));
-        result = result && (group.members.filter(x=>+x.damage.medium<=1).length>=1);
+        result = result && (group.members.filter(x=>+x.damage.medium>1).length>=1);
         return result;
     }
 
@@ -568,7 +570,7 @@ class RifleLance extends FormationBonusBase implements IFormationBonus {
         result = result && (Math.ceil(group.members.length*.75)<=(group.members.filter(x=>x.size===2||x.size===3).length));
         const acRegex = /AC\d+/;
         result = result && (Math.ceil(group.members.length*.5)<=group.members.filter(x=>(x.abilities.filter(y=>acRegex.test(y)||y.includes('FLK')).length>0)).length);
-        result = result && (group.members.filter(x=>x.move.filter(y=>y.move>=8)).length===group.members.length);
+        result = result && (group.members.filter(x=>x.move.filter(y=>y.move>=8).length>0).length===group.members.length);
         return result;
     }
 
@@ -648,7 +650,7 @@ class StrategicCommandStar extends FormationBonusBase implements IFormationBonus
             return result;
         }
         //Exactly 1 Aerospace Fighter
-        result = result && (group.members.filter(x => x.type === 'CF').length === 1);
+        result = result && (group.members.filter(x => x.type === 'AF' || x.type === 'CF').length === 1);
         //Either 4 Mechs or 4 Elementals
         result = result && (group.members.filter(x => x.type ==='BM').length === 4 || group.members.filter(x => x.type === 'BA').length === 4);
         //If Mechs, check they're not little baby mechs.
@@ -759,7 +761,7 @@ class InfantryFormationBase extends FormationBonusBase {
       "The non-infantry units in the Mechanized or Nova formation must be capable of transporting all the infantry units in the formation simultaneously. This can be from battle armor using the MEC special ability to mount units with the OMNI special ability, battle armor with XMEC mounting ‘Mech units, any infantry mounting units with enough IT# special ability, or a combination of those.";
 
     IsValid(group: AlphaStrikeGroup, allGroups: AlphaStrikeGroup[]): boolean {
-      const isAllInfantry = (group.members.filter(x => x.isInfantry).length === group.members.length);
+      const isAllInfantry = group.members.length > 0 && (group.members.filter(x => x.isInfantry).length === group.members.length);
       if(!isAllInfantry){
         return false;
       }
@@ -818,7 +820,8 @@ class InfantryFormationBase extends FormationBonusBase {
         return backtrack(0);
       };
 
-      const sortedInfantry = group.members.sort((a, b) => getRequiredTransportSize(b) - getRequiredTransportSize(a));
+      // A copy: sorting the group's own list here would reorder the roster each time the bonuses are checked.
+      const sortedInfantry = [...group.members].sort((a, b) => getRequiredTransportSize(b) - getRequiredTransportSize(a));
       //need atleast 3 units in the group
       allGroups = allGroups.filter(x => x.members.length >= 3);
       //Don't include all infantry groups

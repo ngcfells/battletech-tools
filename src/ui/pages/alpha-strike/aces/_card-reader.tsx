@@ -2,6 +2,8 @@ import React, { type JSX } from 'react';
 import {
     acesBehaviorLabel,
     determineAcesBehavior,
+    evaluateAcesCondition,
+    getAcesIdealTargets,
     identifyAcesCombatTarget,
     identifyAcesMovementTarget,
     IAcesCandidate,
@@ -13,6 +15,7 @@ import {
     TAcesFilterAnswer,
     TAcesJudgements,
 } from '../../../../classes/aces-engine';
+import { getAcesDamageAtDistance } from '../../../../classes/aces-helpers';
 import {
     acesTextToPlain,
     IAcesCard,
@@ -44,6 +47,10 @@ export interface IAcesReaderUnit {
     ovRating: number;
     currentHeat: number;
     fireControlHits: number;
+    /** Current short, medium, long and extreme damage, so the damage at the target range can be worked out. */
+    damage?: { short: number, medium: number, long: number, extreme: number };
+    /** Crippled by the Quick Start rules (QSR p.12); the Behavior condition "this unit is crippled" reads it. */
+    crippled?: boolean;
 }
 
 interface ICandidateInput {
@@ -75,6 +82,7 @@ export default class AcesCardReader extends React.Component<IAcesCardReaderProps
             altApplies: false,
             filterAnswers: [],
             damage: "",
+            damageTargetId: "",
             destroyedThisPhase: false,
             zeroMoveFromHeat: false,
             physical: { orderedByCard: false, baseContact: false, inMeleeRange: false, physicalDamage: "", },
@@ -93,6 +101,28 @@ export default class AcesCardReader extends React.Component<IAcesCardReaderProps
         this.setState({ inputs: { ...this.state.inputs, [id]: { ...this._input( id ), ...change } } });
     }
 
+    /** Player units that moved this turn come from the game when it supplies them, so one tick carries to every unit. */
+    private _isMoved = ( id: string ): boolean => this.props.movedIds ? this.props.movedIds.indexOf( id ) > -1 : this._input( id ).moved;
+
+    private _setMoved = ( id: string, moved: boolean ) => {
+        if( this.props.onMovedChange ) this.props.onMovedChange( id, moved );
+        else this._setInput( id, { moved: moved } );
+    }
+
+    /** What the entered distances, moved marks and unit state already settle about the Aggressive and Balanced conditions. */
+    private _autoBehaviorAnswers = ( card: IAcesCard ): { aggressive: boolean | null, balanced: boolean | null } => {
+        const candidates = this._candidates();
+        const context = {
+            candidates: candidates,
+            ideals: getAcesIdealTargets( candidates, this.props.commandCard ),
+            crippled: typeof this.props.unit.crippled === "boolean" ? this.props.unit.crippled : null,
+        };
+        return {
+            aggressive: evaluateAcesCondition( card.aggressive.condition, context ),
+            balanced: evaluateAcesCondition( card.balanced.condition, context ),
+        };
+    }
+
     private _candidates = (): IAcesCandidate[] => {
         return this.props.enemies.map( ( enemy ) => {
             const input = this._input( enemy.id );
@@ -103,7 +133,7 @@ export default class AcesCardReader extends React.Component<IAcesCardReaderProps
                 isObjective: enemy.isObjective,
                 distance: toNumber( input.distance ),
                 canAttack: input.canAttack,
-                moved: input.moved,
+                moved: this._isMoved( enemy.id ),
                 inLOS: input.inLOS,
                 targetNumber: toNumber( input.targetNumber ),
                 doomed: input.doomed,
@@ -156,7 +186,7 @@ export default class AcesCardReader extends React.Component<IAcesCardReaderProps
                                 {combat ? (
                                     <td><input type="number" className="aces-number" aria-label={"Target Number against " + enemy.name} value={input.targetNumber} onChange={( e ) => this._setInput( enemy.id, { targetNumber: e.currentTarget.value } )} /></td>
                                 ) : (
-                                    <td><input type="checkbox" aria-label={enemy.name + " moved"} checked={input.moved} onChange={( e ) => this._setInput( enemy.id, { moved: e.currentTarget.checked } )} /></td>
+                                    <td><input type="checkbox" aria-label={enemy.name + " moved"} checked={this._isMoved( enemy.id )} onChange={( e ) => this._setMoved( enemy.id, e.currentTarget.checked )} /></td>
                                 )}
                                 {combat ? (
                                     <td><input type="checkbox" aria-label={enemy.name + " doomed"} checked={input.doomed} onChange={( e ) => this._setInput( enemy.id, { doomed: e.currentTarget.checked } )} /></td>
@@ -206,13 +236,24 @@ export default class AcesCardReader extends React.Component<IAcesCardReaderProps
 
     private _renderMovement = ( card: IAcesCard ): JSX.Element => {
         const specialOrder = this.props.behaviorOrder || null;
-        const behavior = determineAcesBehavior( card, this.state.behaviorAnswers, {
+        // A button the players pressed wins; otherwise the table data decides what it can.
+        const auto = this._autoBehaviorAnswers( card );
+        const typed = this.state.behaviorAnswers;
+        const answers = {
+            aggressive: typed.aggressive !== undefined && typed.aggressive !== null ? typed.aggressive : auto.aggressive,
+            balanced: typed.balanced !== undefined && typed.balanced !== null ? typed.balanced : auto.balanced,
+        };
+        const behavior = determineAcesBehavior( card, answers, {
             override: this.props.behaviorOverride || null,
             specialOrder: specialOrder,
             skip: this.state.skip,
         } );
         const out: JSX.Element[] = [];
         out.push( <div key="trace-b">{this._trace( behavior.trace )}</div> );
+        const answeredFromTable = ( [ "aggressive", "balanced" ] as const ).filter( ( id ) => auto[id] !== null && ( typed[id] === undefined || typed[id] === null ) && behavior.trace.some( ( line ) => line.indexOf( acesBehaviorLabel( id ) ) === 0 ) );
+        if( answeredFromTable.length > 0 ) {
+            out.push( <p key="auto-note" className="aces-muted">Answered from the distances and moved marks entered above. Change them to change the answer, or press True or False when a question shows.</p> );
+        }
         if( behavior.pending ) {
             const pending = behavior.pending;
             out.push(
@@ -317,7 +358,10 @@ export default class AcesCardReader extends React.Component<IAcesCardReaderProps
             out.push( <p key="indirect-order"><strong>The card says:</strong> with no enemies in line of sight, use the Indirect Fire special order card.</p> );
         }
 
-        const damage = toNumber( this.state.damage );
+        // Damage comes from the unit values at the distance entered for the target; typing overrides it.
+        const autoDamage = target && unit.damage ? getAcesDamageAtDistance( unit.damage, toNumber( this._input( target.id ).distance ) ) : null;
+        const typedDamage = this.state.damageTargetId === ( target ? target.id : "" ) ? toNumber( this.state.damage ) : null;
+        const damage = typedDamage !== null ? typedDamage : autoDamage;
         const ov = resolveAcesOverheat( card.combat.overheat, {
             isBattleMech: unit.isBattleMech,
             ovRating: unit.ovRating,
@@ -331,7 +375,7 @@ export default class AcesCardReader extends React.Component<IAcesCardReaderProps
         } );
         out.push(
             <div key="ov-inputs" className="aces-inline">
-                <label>Damage at this range: <input type="number" className="aces-number" value={this.state.damage} onChange={( e ) => this.setState( { damage: e.currentTarget.value } )} /></label>
+                <label>Damage at this range: <input type="number" className="aces-number" value={typedDamage !== null ? this.state.damage : ( autoDamage === null ? "" : autoDamage )} onChange={( e ) => this.setState( { damage: e.currentTarget.value, damageTargetId: target ? target.id : "" } )} /></label>
                 <label><input type="checkbox" checked={this.state.destroyedThisPhase} onChange={( e ) => this.setState( { destroyedThisPhase: e.currentTarget.checked } )} /> Destroyed this phase</label>
                 <label><input type="checkbox" checked={this.state.zeroMoveFromHeat} onChange={( e ) => this.setState( { zeroMoveFromHeat: e.currentTarget.checked } )} /> 0 Move from heat</label>
             </div>
@@ -418,6 +462,9 @@ interface IAcesCardReaderProps {
     behaviorOverride?: TAcesBehavior | null;
     /** Movement Objective filters (0a, 0b ...). */
     preFilters?: string[];
+    /** Player units (uuids) that moved this turn, kept by the game; without it each reading keeps its own marks. */
+    movedIds?: string[];
+    onMovedChange?: ( id: string, moved: boolean ) => void;
     /** Changing it clears the answers (new unit or new card). */
     resetKey: string;
     onLog?: ( message: string ) => void;
@@ -434,6 +481,8 @@ interface IAcesCardReaderState {
     altApplies: boolean;
     filterAnswers: TAcesFilterAnswer[];
     damage: string;
+    /** The target the typed damage was entered for; another target goes back to the worked-out value. */
+    damageTargetId: string;
     destroyedThisPhase: boolean;
     zeroMoveFromHeat: boolean;
     physical: { orderedByCard: boolean, baseContact: boolean, inMeleeRange: boolean, physicalDamage: string };

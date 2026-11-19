@@ -6,11 +6,12 @@ import {
     IAcesBehaviorColumn,
     IAcesCard,
     IAcesCommandCard,
+    IAcesEdgeCard,
     IAcesPriorityRule,
     IAcesScenario,
     IAcesSpecialOrder,
 } from '../../../../data/aces-cards';
-import { acesBehaviorLabel } from '../../../../classes/aces-engine';
+import { acesBehaviorLabel, isAcesNoOrder } from '../../../../classes/aces-engine';
 import AcesText from './_aces-text';
 
 /*
@@ -94,6 +95,7 @@ export const AcesCardView = ( props: { card: IAcesCard } ): JSX.Element => {
 
 export const AcesCommandCardView = ( props: { card: IAcesCommandCard } ): JSX.Element => {
     const card = props.card;
+    const orders = card.orders.filter( ( order ) => !isAcesNoOrder( order.text ) );
     return (
         <div className="aces-card-view">
             <div className="aces-card-head">
@@ -101,8 +103,8 @@ export const AcesCommandCardView = ( props: { card: IAcesCommandCard } ): JSX.El
                 <span className="aces-priority">{card.letter}</span>
                 {card.sample ? <span className="aces-muted"> sample</span> : null}
             </div>
-            {card.orders.length > 0 ? (
-                <ul>{card.orders.map( ( order, index ) => <li key={index}><em>{order.phase}:</em> <AcesText text={order.text} />{order.filter ? <> <AcesText text={order.filter} /></> : null}</li> )}</ul>
+            {orders.length > 0 ? (
+                <ul>{orders.map( ( order, index ) => <li key={index}><em>{order.phase}:</em> <AcesText text={order.text} />{order.filter ? <> <AcesText text={order.filter} /></> : null}</li> )}</ul>
             ) : null}
             <div className="aces-card-columns">
                 <div className="aces-card-column aces-red"><h5>Red</h5><AcesRuleList rules={card.red} /></div>
@@ -150,6 +152,28 @@ export const AcesSpecialOrderView = ( props: { order: IAcesSpecialOrder } ): JSX
             ) : null}
             {order.source ? <p className="aces-muted">{order.source.book} p.{order.source.page}</p> : null}
             {order.notes ? <p className="aces-muted">{order.notes}</p> : null}
+        </div>
+    );
+}
+
+const edgePhaseLabels: { [key: string]: string } = { initiative: "Initiative", movement: "Movement", combat: "Combat", end: "End", any: "Any phase" };
+const edgeTriggerLabels: { [key: string]: string } = { moving: "Moving", attacking: "Attacking", attacked: "Being attacked", "critical-hit": "Critical hit", "enemy-rear": "Enemy in the rear", damaged: "Damaged", other: "Other" };
+
+export const AcesEdgeCardView = ( props: { card: IAcesEdgeCard } ): JSX.Element => {
+    const card = props.card;
+    const timing = [ edgePhaseLabels[card.phase] || "", edgeTriggerLabels[card.trigger] || "" ].filter( ( item ) => item ).join( " · " );
+    return (
+        <div className="aces-card-view">
+            <div className="aces-card-head">
+                <strong>{card.name || "Edge card?"}</strong> {card.cardNumber}
+                {card.cost !== null ? <span className="aces-priority">{card.cost} Edge</span> : null}
+                {card.sample ? <span className="aces-muted"> sample</span> : null}
+            </div>
+            {card.category || timing ? <p className="aces-muted">{[ card.category, timing ].filter( ( item ) => item ).join( " · " )}</p> : null}
+            {card.condition ? <p><em><AcesText text={card.condition} /></em></p> : null}
+            {card.text ? <p><AcesText text={card.text} /></p> : null}
+            {card.source ? <p className="aces-muted">{card.source.book} p.{card.source.page}</p> : null}
+            {card.notes ? <p className="aces-muted">{card.notes}</p> : null}
         </div>
     );
 }

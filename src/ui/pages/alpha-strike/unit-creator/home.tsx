@@ -27,14 +27,12 @@ export default class AlphaStrikeUnitCreatorHome extends React.Component<IHomePro
         let calcLog = "";
         const lsASUnit = localStorage.getItem("editing_as_unit");
         if( lsASUnit ) {
-            console.log("lsASUnit");
             try {
 
                 const unitInfo = JSON.parse( lsASUnit );
                 asUnit = new AlphaStrikeUnit();
                 asUnit.importUnit( unitInfo );
                 calcLog = asUnit.calc();
-                console.log("lsASUnit2");
             }
             catch {
 
@@ -96,7 +94,6 @@ export default class AlphaStrikeUnitCreatorHome extends React.Component<IHomePro
     ) => {
         if(!doNotCalculate)
             this.state.editingASUnit.calc();
-        console.log("saveUnit", JSON.stringify(this.state.editingASUnit.export()) )
         localStorage.setItem("editing_as_unit", JSON.stringify(this.state.editingASUnit.export()));
     }
 

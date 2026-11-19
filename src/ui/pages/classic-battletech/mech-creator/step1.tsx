@@ -2,7 +2,7 @@ import { FaArrowCircleLeft, FaArrowCircleRight } from "react-icons/fa";
 import React, { type JSX } from 'react';
 import { Link } from 'react-router';
 import { BattleMech, IFrankenMechDonor } from '../../../../classes/battlemech';
-import { getAvailableTonnagesForMechType, getTonnageBoundsForMechType } from '../../../../data/mech-tonnages';
+import { btMechTonnages, getAvailableTonnagesForMechType, getTonnageBoundsForMechType } from '../../../../data/mech-tonnages';
 import { mechTypeOptions } from '../../../../data/mech-type-options';
 import { getRulesLevelOptions } from '../../../../data/rules-level-options';
 import { editionEditsPrintedUnitsAfterWarning, editionHasPrices, getRulesEdition, getShownRulesLevel } from '../../../../data/rules-editions';
@@ -27,9 +27,15 @@ import { replaceCurrentBattleMech } from '../../../components/confirm-replace-de
 import EditionChoice from '../../../components/edition-choice';
 import ComponentTechBaseChoice from '../../../components/component-tech-base-choice';
 import { getVTOLAMSamples } from '../../../../data/vtolam-samples';
+import { getPAMSamples } from '../../../../data/pam-samples';
+import { getPowerArmorSamples } from '../../../../data/power-armor-samples';
+import { FW_POWER_ARMOR_RULESET } from '../../../../data/future-wars-power-armor';
+import { getRulesetBlock } from '../../../../data/special-rulesets';
 import { CUSTOM_HOMEBREW_RULES_LEVEL } from '../../../../data/rules-level-options';
 import { generateUUID } from '../../../../utils/generateUUID';
 const ArrowCircleLeft = FaArrowCircleLeft as any;
+// A Permanent Air 'Mech goes past the LAM's 55 tons (to its own 75, getLAMMaxTonnage), so it takes a biped's tonnage list.
+const tonnageChassisTag = ( mech: BattleMech ): string => mech.isPermanentAirMech() ? "biped" : mech.getType().tag;
 const ArrowCircleRight = FaArrowCircleRight as any;
 
 export default class MechCreatorStep1 extends React.Component<IHomeProps, IHomeState> {
@@ -150,10 +156,29 @@ export default class MechCreatorStep1 extends React.Component<IHomeProps, IHomeS
     }
 
     loadVTOLAMSample = ( e: React.FormEvent<HTMLSelectElement>): void => {
-      const sample = getVTOLAMSamples( mechRulesLevel(this.props.appGlobals) ).find( (entry) => entry.id === e.currentTarget.value );
+      this.loadSample( getVTOLAMSamples( mechRulesLevel(this.props.appGlobals) ), e.currentTarget.value );
+    }
+
+    loadPAMSample = ( e: React.FormEvent<HTMLSelectElement>): void => {
+      this.loadSample( getPAMSamples( mechRulesLevel(this.props.appGlobals) ), e.currentTarget.value );
+    }
+
+    // A suit needs its ruleset: keep the design's other rulesets, less any that cannot sit with Power Armor.
+    loadPowerArmorSample = ( e: React.FormEvent<HTMLSelectElement>): void => {
+      this.loadSample( getPowerArmorSamples( mechRulesLevel(this.props.appGlobals) ), e.currentTarget.value, (suit) => {
+        const level = mechRulesLevel( this.props.appGlobals );
+        const kept = suit.getRulesets().filter( (id) => id !== FW_POWER_ARMOR_RULESET && !getRulesetBlock( [FW_POWER_ARMOR_RULESET], id ) );
+        suit.applyGameSettings({ ...suit.getGameSettings( level ), rulesLevel: level, rulesets: [...kept, FW_POWER_ARMOR_RULESET] });
+      });
+    }
+
+    loadSample = ( samples: { id: string; save: object }[], id: string, adjust?: ( mech: BattleMech ) => void ): void => {
+      const sample = samples.find( (entry) => entry.id === id );
       if( sample ) {
         replaceCurrentBattleMech( this.props.appGlobals, () => {
-          this.props.appGlobals.saveCurrentBattleMech( keepDesignSettings( this.props.appGlobals, new BattleMech( JSON.stringify( { ...sample.save, uuid: generateUUID() } ) ) ) );
+          const mech = keepDesignSettings( this.props.appGlobals, new BattleMech( JSON.stringify( { ...sample.save, uuid: generateUUID() } ) ) ) as BattleMech;
+          adjust?.( mech );
+          this.props.appGlobals.saveCurrentBattleMech( mech );
           this.setState({ updated: !this.state.updated });
         });
       }
@@ -181,8 +206,16 @@ export default class MechCreatorStep1 extends React.Component<IHomeProps, IHomeS
       if( currentMech.isOmnimech && !currentMech.canBeOmniMech( rulesLevel ) ) {
         currentMech.toggleOmni( rulesLevel );
       }
-      const { min, max } = getTonnageBoundsForMechType( currentMech.getType().tag, rulesLevel, currentMech.getTech().tag, currentMech.getRulesEdition() );
       const tonnage = currentMech.getTonnage();
+      // A construction ruleset's own tonnages (Power Armor: 5, 10, 15): the nearest one, the heavier on a tie.
+      const rulesetTonnages = currentMech.getConstructionTonnages();
+      if( rulesetTonnages ) {
+        if( !rulesetTonnages.includes( tonnage ) ) {
+          currentMech.setTonnage( rulesetTonnages.reduce( (best, tons) => Math.abs( tons - tonnage ) <= Math.abs( best - tonnage ) ? tons : best ) );
+        }
+        return;
+      }
+      const { min, max } = getTonnageBoundsForMechType( tonnageChassisTag( currentMech ), rulesLevel, currentMech.getTech().tag, currentMech.getRulesEdition() );
       const lamMax = currentMech.getLAMMaxTonnage();
       if( lamMax !== null && tonnage > lamMax ) {
         currentMech.setTonnage( lamMax );
@@ -367,8 +400,16 @@ export default class MechCreatorStep1 extends React.Component<IHomeProps, IHomeS
                                     <option value="vtolam-btitf">VTOLAM, Battletech Into The Future rules (Mech / VTOL; Custom Homebrew)</option>
                                   </>
                                 ) : null}
+                                {mechRulesLevel(this.props.appGlobals) >= CUSTOM_HOMEBREW_RULES_LEVEL || this.props.appGlobals.currentBattleMech.isPermanentAirMech() ? (
+                                  <option value="pam">Permanent Air 'Mech (AirMech only; Custom Homebrew)</option>
+                                ) : null}
                               </select>
                             </label>
+                          ) : null}
+                          {this.props.appGlobals.currentBattleMech.isPermanentAirMech() ? (
+                            <p className="smaller-text" data-testid="pam-notes">
+                              {this.props.appGlobals.currentBattleMech.getLAMTypeNotes()} AirMech Cruise / Flank MP: {this.props.appGlobals.currentBattleMech.getAirMechCruiseMP()} / {this.props.appGlobals.currentBattleMech.getAirMechFlankMP()}.
+                            </p>
                           ) : null}
                           {this.props.appGlobals.currentBattleMech.isVTOLAM() ? (
                             <p className="smaller-text" data-testid="vtolam-notes">
@@ -381,6 +422,28 @@ export default class MechCreatorStep1 extends React.Component<IHomeProps, IHomeS
                               <select value="" onChange={this.loadVTOLAMSample} data-testid="vtolam-samples">
                                 <option value="">Start from a sample VTOLAM (optional)</option>
                                 {getVTOLAMSamples( mechRulesLevel(this.props.appGlobals) ).map( (sample) => (
+                                  <option key={sample.id} value={sample.id}>{sample.name}</option>
+                                ))}
+                              </select>
+                            </label>
+                          ) : null}
+                          {getPAMSamples( mechRulesLevel(this.props.appGlobals) ).length > 0 ? (
+                            <label>
+                              Sample Permanent Air 'Mechs (Custom Homebrew):
+                              <select value="" onChange={this.loadPAMSample} data-testid="pam-samples">
+                                <option value="">Start from a sample Permanent Air 'Mech (optional)</option>
+                                {getPAMSamples( mechRulesLevel(this.props.appGlobals) ).map( (sample) => (
+                                  <option key={sample.id} value={sample.id}>{sample.name}</option>
+                                ))}
+                              </select>
+                            </label>
+                          ) : null}
+                          {getPowerArmorSamples( mechRulesLevel(this.props.appGlobals) ).length > 0 ? (
+                            <label>
+                              Sample Power Armor (Custom Homebrew):
+                              <select value="" onChange={this.loadPowerArmorSample} data-testid="power-armor-samples">
+                                <option value="">Start from a sample suit (optional)</option>
+                                {getPowerArmorSamples( mechRulesLevel(this.props.appGlobals) ).map( (sample) => (
                                   <option key={sample.id} value={sample.id}>{sample.name}</option>
                                 ))}
                               </select>
@@ -482,12 +545,18 @@ export default class MechCreatorStep1 extends React.Component<IHomeProps, IHomeS
                               value={this.props.appGlobals.currentBattleMech.getTonnage()}
                               onChange={this.updateTonnage}
                             >
-                            {getAvailableTonnagesForMechType(
-                              this.props.appGlobals.currentBattleMech.getType().tag,
-                              mechRulesLevel(this.props.appGlobals),
-                              this.props.appGlobals.currentBattleMech.getTech().tag,
-                              this.props.appGlobals.currentBattleMech.getRulesEdition()
-                            ).filter( (option) => option.tons <= ( this.props.appGlobals.currentBattleMech?.getLAMMaxTonnage() ?? Infinity ) ).map( (option) => {
+                            {(() => {
+                              const rulesetTonnages = this.props.appGlobals.currentBattleMech.getConstructionTonnages();
+                              return rulesetTonnages
+                                ? btMechTonnages.filter( (option) => rulesetTonnages.includes( option.tons ) )
+                                : getAvailableTonnagesForMechType(
+                                  tonnageChassisTag( this.props.appGlobals.currentBattleMech ),
+                                  mechRulesLevel(this.props.appGlobals),
+                                  this.props.appGlobals.currentBattleMech.getTech().tag,
+                                  this.props.appGlobals.currentBattleMech.getRulesEdition()
+                                );
+                            })().filter( (option) => option.tons <= ( this.props.appGlobals.currentBattleMech?.getLAMMaxTonnage() ?? Infinity )
+                              && ( !this.props.appGlobals.currentBattleMech?.isPermanentAirMech() || option.tons >= 20 ) ).map( (option) => {
                               return (
                                 <option key={option.tons} value={option.tons}>{option.tons} ({option.type})</option>
                               )

@@ -490,8 +490,7 @@ export class AlphaStrikeUnit {
                 currentMove: 0,
                 type: ""
             }
-            while( tmpMove.indexOf('"') > 0 )
-                tmpMove = tmpMove.replace('"', "");
+            tmpMove = tmpMove.replace(/"/g, "");
             if( tmpMove.indexOf("/") > 0 ) {
                 //split move....
                 const moveArray = tmpMove.split( "/" );
@@ -1162,7 +1161,7 @@ export class AlphaStrikeUnit {
             } else if( this.basePoints <= 104) {
                 pvDifference = 10;
             } else {
-                pvDifference = 10 + Math.floor( ( this.basePoints - 104) / 10 );
+                pvDifference = 10 + Math.ceil( ( this.basePoints - 104) / 10 );
             }
             this.currentPoints = this.basePoints - ( pvDifference * ( this.currentSkill - 4) );
         } else {
@@ -1286,6 +1285,8 @@ export class AlphaStrikeUnit {
         }
 
         if( typeof( this.roundMpControlHits ) === "undefined"  || this.roundMpControlHits.length !== this.mpControlHits.length  ) {
+            // Started empty: adding to a list of another length never reached the right one, and grew it on every call.
+            this.roundMpControlHits = [];
             for ( let mpHitsCount = 0; mpHitsCount < this.mpControlHits.length; mpHitsCount++) {
                 this.roundMpControlHits.push( false );
             }
@@ -1396,6 +1397,12 @@ export class AlphaStrikeUnit {
             ( this.type && this.type.toLowerCase() === "bm" )
                 ||
             ( this.type && this.type.toLowerCase() === "im" )
+                ||
+            // A Micro-Mech (Custom Homebrew) takes critical hits on the 'Mech column.
+            ( this.type && this.type.toLowerCase() === "mm" )
+                ||
+            // A walker (Custom Homebrew): WK as a BattleMech, IWK as an IndustrialMech.
+            ( this.type && ( this.type.toLowerCase() === "wk" || this.type.toLowerCase() === "iwk" ) )
         ) {
             // for BattleMechs
             for( let count = 0; count < this.getMPHits(); count++ ) {
@@ -2071,7 +2078,7 @@ export class AlphaStrikeUnit {
      * with the same rules as the 'Mech conversion. Aerospace cards keep the Point Value they were given.
      */
     calc(): string {
-        const ground = ["BM", "IM", "PM", "CV", "SV", "BA", "CI"];
+        const ground = ["BM", "IM", "PM", "CV", "SV", "BA", "CI", "MM", "WK", "IWK"];
         const type = (this.type || "").trim().toUpperCase();
         const jumpEntries = this.move.filter((move) => move.type === "j");
         const moves = this.move.filter((move) => move.type !== "j").map((move) => ({ inches: +move.move || 0, mode: (move.type || "").toLowerCase() }));

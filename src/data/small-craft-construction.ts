@@ -1,6 +1,8 @@
 // Small Craft construction data (TechManual pp.180-197). The transport bay, quarters and escape system tables
 // are the ones DropShips use as well.
 
+import { CUSTOM_HOMEBREW_RULES_LEVEL } from "./rules-level-options";
+
 export type SmallCraftShape = "aerodyne" | "spheroid";
 export const SMALL_CRAFT_SHAPES: { tag: SmallCraftShape; name: string }[] = [
     { tag: "aerodyne", name: "Aerodyne" },
@@ -110,6 +112,8 @@ export interface ITransportBayType {
     tech?: "is" | "clan";
     /** Bay personnel, who need no quarters (TM p.239). */
     personnel?: number;
+    /** A bay from outside the rulebooks: the rules level a design that carries it needs. */
+    rulesLevel?: number;
 }
 export const transportBayTypes: ITransportBayType[] = [
     { tag: "cargo", name: "Cargo, Standard", tonsEach: null, capacity: "1 ton of bulk cargo", cargoFactor: 1, cost: 0, costPerTon: true },
@@ -133,7 +137,14 @@ export const transportBayTypes: ITransportBayType[] = [
     { tag: "fighter", name: "Fighter Cubicle", tonsEach: 150, capacity: "1 fighter of up to 100 tons", cost: 20000, personnel: 2 },
     { tag: "vehicle-superheavy", name: "Vehicle Cubicle, Superheavy", tonsEach: 200, capacity: "1 vehicle of up to 200 tons", cost: 20000, personnel: 15 },
     { tag: "small-craft", name: "Small Craft Cubicle", tonsEach: 200, capacity: "1 Small Craft of up to 200 tons", cost: 20000, personnel: 5 },
+    // Micro-Mechs 6.1.0.2, AeroTech 2 supplement (Custom Homebrew, #173): 75 tons, 15,000 C-bills, basic repair and
+    // quarters for the Micro-Mechwarrior and a technician (taken as 2 bay personnel, as the 'Mech cubicle's).
+    // In an emergency two Micro-Mechs fit a 'Mech cubicle; no BattleMech fits this bay.
+    { tag: "micro-mech", name: "Micro-Mech Bay", tonsEach: 75, capacity: "1 Micro-Mech of up to 19 tons", cost: 15000, personnel: 2, rulesLevel: CUSTOM_HOMEBREW_RULES_LEVEL },
 ];
+/** The rules level a set of bays needs: the highest of their own levels (0 for the rulebook bays). */
+export const getTransportBaysRulesLevel = (bays: { tag: string }[]): number =>
+    bays.reduce((level, bay) => Math.max(level, findTransportBayType(bay.tag)?.rulesLevel ?? 0), 0);
 export const findTransportBayType = (tag: string): ITransportBayType | undefined => transportBayTypes.find((type) => type.tag === tag);
 
 /** Aerospace escape pods and lifeboats: 7 tons and 5,000 C-bills each, seven people (TM pp.216, 227; prices in the TM cost tables). */

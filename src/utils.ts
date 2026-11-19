@@ -8,6 +8,8 @@ import { DEFAULT_MUL_SOURCE_SELECTION, getMULRecordKey, loadMULListItems } from 
 import { IAppGlobals } from "./ui/app-router";
 import { replaceAll } from "./utils/replaceAll";
 import { getQuirkToHit } from "./utils/quirk-effects";
+import { getFutureWarsPlayKind, getLRFlamerRangeModifier } from "./utils/future-wars-play";
+import { getLongRangeWarsBand, getLongRangeWarsFirerModifier, getLongRangeWarsTargetModifier } from "./utils/future-wars-ruleset-tools";
 import { unitHasAbility } from "./utils/mulAbilities";
 import { resolveMULEraFilter } from "./utils/mulUtilities";
 import { filterMULByRulesets, IMULSearchFilters } from "./utils/mulSearchFilters";
@@ -120,6 +122,10 @@ function parseMULSearchTokens(searchTerm: string): IMULSearchTokens {
         if ((match = term.match(/^(\w+)(>=|<=|!=|>|<|=)(.+)$/))) {
             const [, field, op, valueStr] = match;
             const val = parseInt(valueStr);
+            // "pv>x" has no number to compare with: a NaN bound would hide every unit, so the term is dropped.
+            if (Number.isNaN(val)) {
+                continue;
+            }
 
             switch (field) {
                 case "pv":
@@ -250,52 +256,12 @@ function parseMULSearchTokens(searchTerm: string): IMULSearchTokens {
             continue;
         }
 
-        switch (true) {
-            case term.startsWith("pv>"):
-                value = term.substring(3);
-                tokens.minPV = parseInt(value) + 1;
-                break;
-            case term.startsWith("pv<"):
-                value = term.substring(3);
-                tokens.maxPV = parseInt(value) - 1;
-                break;
-            case term.startsWith("pv="):
-                value = term.substring(3);
-                tokens.minPV = parseInt(value);
-                tokens.maxPV = parseInt(value);
-                break;
-            case term.startsWith("short>"):
-                value = term.includes("=") ? term.substring(7) : term.substring(6);
-                tokens.minDamage[0] = term.includes("=") ? parseInt(value) : parseInt(value) + 1;
-                break;
-            case term.startsWith("medium>"):
-                value = term.includes("=") ? term.substring(8) : term.substring(7);
-                tokens.minDamage[1] = term.includes("=") ? parseInt(value) : parseInt(value) + 1;
-                break;
-            case term.startsWith("long>"):
-                value = term.includes("=") ? term.substring(6) : term.substring(5);
-                tokens.minDamage[2] = term.includes("=") ? parseInt(value) : parseInt(value) + 1;
-                break;
-            case term.startsWith("armor>"):
-                value = term.includes("=") ? term.substring(7) : term.substring(6);
-                tokens.minArmorStructure[0] = term.includes("=") ? parseInt(value) : parseInt(value) + 1;
-                break;
-            case term.startsWith("structure>"):
-                value = term.includes("=") ? term.substring(11) : term.substring(10);
-                tokens.minArmorStructure[1] = term.includes("=") ? parseInt(value) : parseInt(value) + 1;
-                break;
-            case term.startsWith("intro>"):
-                value = term.includes("=") ? term.substring(7) : term.substring(6);
-                tokens.introDate[0] = term.includes("=") ? parseInt(value) : parseInt(value) + 1;
-                break;
-            case term.startsWith("intro<"):
-                value = term.includes("=") ? term.substring(7) : term.substring(6);
-                tokens.introDate[1] = term.includes("=") ? parseInt(value) : parseInt(value) - 1;
-                break;
-            default:
-                tokens.nameTerms.push(term);
-                break;
+        // An operator still being typed ("pv>", "short>=") has no value yet: it filters nothing, and is not a name.
+        if (/^\w+(>=|<=|!=|>|<|=)$/.test(term)) {
+            continue;
         }
+
+        tokens.nameTerms.push(term);
     }
 
     return tokens;
@@ -620,7 +586,6 @@ export async function getMULASSearchResults(
 
     const tokens = getMULSearchTokens(searchTerm, abilityFilters);
 
-    console.log('Searching...');
     if( offLine === false && CONST_MUL_API_ENABLED ) {
         try {
             let url = "https://masterunitlist.azurewebsites.net/Unit/QuickList?";
@@ -630,9 +595,9 @@ export async function getMULASSearchResults(
             }
 
             url += rulesNumbersURI.join("");
-            url += typesFilterURI.join();
-            url += techFilterURI.join();
-            url += roleFilterURI.join();
+            url += typesFilterURI.join("");
+            url += techFilterURI.join("");
+            url += roleFilterURI.join("");
             url += factionFilterURI.join("");
 
             if( tokens.abilitySearch.length > 0 ) {
@@ -782,8 +747,13 @@ export function getClusterHitsPerRoll(
     roll: number,
     numberCluster: number,
 ): number {
-    if( clusterHitsTable[ roll - 2 ] && clusterHitsTable[ roll - 2][ numberCluster - 2] ) {
-        return clusterHitsTable[ roll - 2][ numberCluster - 2];
+    // The table's columns are cluster sizes 2 to 30, then 40 (TW p.116): there is no column for 31 to 39.
+    if( numberCluster > 30 && numberCluster !== 40 ) {
+        return -1;
+    }
+    const column = numberCluster === 40 ? 29 : numberCluster - 2;
+    if( clusterHitsTable[ roll - 2 ] && clusterHitsTable[ roll - 2][ column ] ) {
+        return clusterHitsTable[ roll - 2][ column ];
     }
 
     return -1;
@@ -871,7 +841,12 @@ export function getTargetToHitFromWeapon(
     const ammo = weapon?.selectedAmmoBinUUID
         ? equipmentList.find(item => item.uuid === weapon.selectedAmmoBinUUID)
         : undefined;
-    const weaponRange = ammo?.ammoProfile?.range ?? weapon?.range;
+    const baseRange = ammo?.ammoProfile?.range ?? weapon?.range;
+    // A Power Booster on this turn adds its range to each band (The Best of Future Wars p.28; as getPowerBoostedWeapon).
+    const boostedRange = weapon?.uuid && mech.isPowerBoosterOn( weapon.uuid ) ? weapon.conversion?.booster?.addedRange ?? 0 : 0;
+    const weaponRange = boostedRange && baseRange
+        ? { ...baseRange, short: baseRange.short + boostedRange, medium: baseRange.medium + boostedRange, long: baseRange.long + boostedRange }
+        : baseRange;
     gator.finalToHit = -1;
     if(
         equipmentList.length > index
@@ -942,6 +917,10 @@ export function getTargetToHitFromWeapon(
             // The Heat Scale's fire modifier (TW pp.158-160; BD p.13).
             systemModifier( mech.getHeatToHitModifier(), "Heat" );
             systemModifier( mech.getSensorToHitModifier(), "Sensor Hits" );
+            // The Best of Future Wars play rulesets: after an opportunity shot, a morale status, a malfunction.
+            for( const { modifier, label } of mech.getFutureWarsRulesetToHit( weapon?.uuid ) ) systemModifier( modifier, label );
+            // A Power Armor suit is +1 to hit "due to its small size" (The Best of Future Wars p.14; #172).
+            systemModifier( target.powerArmor ? 1 : 0, "Power Armor Target" );
             // Woods, jungle or smoke: +1 a light hex, +2 a heavy hex (BD p.10; TW p.117). Enhanced Imaging: each hex 1
             // less, at least +1, and no darkness modifier (IO:AE p.69); Maximum Tech: any light woods +1 in all, heavy or
             // smoke +1 a hex, no night modifier (p.61).
@@ -1004,6 +983,7 @@ export function getTargetToHitFromWeapon(
             gator.otherModifiersExplanation = otherModifiersExplanation.join(", ");
 
             const [shortModifier, mediumModifier, longModifier] = system?.targetingSystem?.ranges ?? [0, 2, 4];
+            let inRange = true;
             if(
                 target.range <= weaponRange.short
             ) {
@@ -1038,12 +1018,48 @@ export function getTargetToHitFromWeapon(
                 gator.rangeModifier = longModifier;
                 gator.rangeExplanation = "Long";
             } else {
-                gator.finalToHit = -1;
-                gator.explanation = "The target is out of this weapon's range.";
+                // The Long Range Wars: extended and extreme range, with their own firer and target movement modifiers in
+                // place of the standard ones, and ranging (The Best of Future Wars pp.55-56).
+                const longRangeWars = mech.getFutureWarsPrinting( "longRangeWars" ) !== undefined ? getLongRangeWarsBand( target.range, weaponRange.long ) : undefined;
+                if( longRangeWars ) {
+                    const mode = mech.currentMovementMode;
+                    const standardFirer = mode === "w" ? 1 : mode === "r" ? 2 : mode === "j" ? 3 : 0;
+                    const firer = getLongRangeWarsFirerModifier( mode );
+                    const targetModifier = getLongRangeWarsTargetModifier( target.movement );
+                    gator.finalToHit += longRangeWars.modifier + ( firer - standardFirer ) + ( targetModifier - target.movement );
+                    gator.rangeModifier = longRangeWars.modifier;
+                    gator.attackerMovementModifier = firer;
+                    gator.targetMovementModifier = targetModifier;
+                    gator.rangeExplanation = longRangeWars.band === "extended" ? "Extended" : "Extreme";
+                    // Ranging only on a target that stayed still or moved 6 hexes or less (standard modifier +2 or less) in
+                    // the reprint; on any target in Future Wars #12 as first printed.
+                    const anyTarget = mech.getFutureWarsPrinting( "longRangeWars" ) === "original";
+                    const ranging = anyTarget || target.movement <= 2 ? mech.futureWarsPlay.ranging ?? 0 : 0;
+                    if( ranging > 0 ) {
+                        gator.finalToHit -= ranging;
+                        gator.otherModifiers -= ranging;
+                        otherModifiersExplanation.push( "Ranging (-" + ranging + ")" );
+                        gator.otherModifiersExplanation = otherModifiersExplanation.join(", ");
+                    }
+                } else {
+                    inRange = false;
+                    gator.finalToHit = -1;
+                    gator.explanation = "The target is out of this weapon's range.";
+                }
             }
 
             // Design quirks, with the game's "Use design quirks" switch on (CO pp.225-234).
             const rangeBand = target.range <= weaponRange.short ? "short" : target.range <= weaponRange.medium ? "medium" : target.range <= weaponRange.long ? "long" : undefined;
+            // The Long Range Flamer's own penalty at range: +2 medium, +3 long (The Best of Future Wars p.28).
+            if( rangeBand && getFutureWarsPlayKind( weapon ) === "lr-flamer" ) {
+                const flamerModifier = getLRFlamerRangeModifier( rangeBand );
+                if( flamerModifier ) {
+                    gator.finalToHit += flamerModifier;
+                    gator.otherModifiers += flamerModifier;
+                    otherModifiersExplanation.push( "Long Range Flamer (+" + flamerModifier + ")" );
+                    gator.otherModifiersExplanation = otherModifiersExplanation.join(", ");
+                }
+            }
             if( quirksInPlay && rangeBand ) {
                 const quirkToHit = getQuirkToHit(mech.quirks, mech.getQuirkInstalledUuids(equipmentList), mech.getQuirkPlayYear(), {
                     weaponUuid: weapon.uuid,
@@ -1057,6 +1073,14 @@ export function getTargetToHitFromWeapon(
                     otherModifiersExplanation.push( ...quirkToHit.labels );
                     gator.otherModifiersExplanation = otherModifiersExplanation.join(", ");
                 }
+            }
+
+            // The Best of Future Wars play rulesets: a weapon that may not fire this turn (Strategic Movement, morale,
+            // an opportunity shot already taken, a malfunction). Last, so no modifier after it lifts the -1.
+            const noFire = inRange ? mech.getFutureWarsRulesetNoFire( weapon.uuid ) : undefined;
+            if( noFire ) {
+                gator.finalToHit = -1;
+                gator.explanation = noFire;
             }
         }
     }

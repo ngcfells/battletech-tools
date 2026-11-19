@@ -1,4 +1,5 @@
 import { IEquipmentItem } from "./data-interfaces";
+import { applyDerivedValues } from "./derived-custom-values";
 import { ammoCatalog } from "./ammo";
 
 /*
@@ -99,11 +100,158 @@ const empMissiles = (standardTag: string): IEquipmentItem => {
         rulesLevel: 6,
         notes: `Custom Homebrew by VoiceOfAN, Battletech Into The Future (2024-04-27). On a hit, roll 2D6 for each hit location: on 11+ the target shuts down. `
             + `Twice the standard ${launcher} round's cost and 2.5 times its Battle Value; otherwise as the standard round. Word of Blake, available 3136; `
-            + "tech rating E is ours (the PDF gives none)."
+            + "tech rating E is NGCFells's (the PDF gives none)."
     };
 };
 
-export const ammoCustom: IEquipmentItem[] = [
+const BEST_OF = "The Best of Future Wars, Volume One";
+const NOT_PRINTED_AMMO = "Not printed in The Best of Future Wars: cost and Battle Value are left at 0 (unverified); tech rating is unverified.";
+
+/**
+ * SABOT shells (Charles J. Tomaszewski, 'How to Kick Goliath Where it Counts', The Best of Future Wars, Volume One (1991), p.21).
+ * The article's chart gives each autocannon's SABOT rounds out of a ton, one in five: 4 of 20 for the AC/2, 3 of 15 for the AC/5,
+ * 2 of 10 for the AC/10, 1 of 5 for the AC/20. The record is those rounds, so a weapon's shots a ton scale to the chart's count.
+ */
+const sabotShells = (ac: "2" | "5" | "10" | "20", sabotRounds: number, chartRounds: number, external: number, internal: number): IEquipmentItem => ({
+    isAmmo: true,
+    isSpecialAmmo: true,
+    name: `AC/${ac} - SABOT Ammo`,
+    altNames: [`AC/${ac} SABOT Shells`],
+    tag: `ammo-ac-${ac}-sabot`,
+    techBase: "universal",
+    altTags: [],
+    sort: `ammo, ac/${ac.padStart(3, "0")}, sabot`,
+    category: "Ammunition",
+    cbills: 0,
+    introduced: null,
+    extinct: null,
+    reintroduced: null,
+    battleValue: 0,
+    heat: 0,
+    heatAero: 0,
+    weight: 1,
+    range: { min: 0, short: 0, medium: 0, long: 0 },
+    space: { battlemech: 1, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 },
+    roundsPerTon: sabotRounds,
+    explosive: true,
+    techRating: "x",
+    book: BEST_OF,
+    page: 21,
+    alphaStrike: { specialAbility: [], heat: 0, rangeShort: 0, rangeMedium: 0, rangeLong: 0, rangeExtreme: 0, tc: false, notes: ["Custom equipment: no Alpha Strike effect"] },
+    catalog: "custom",
+    rulesLevel: 6,
+    notes: `Custom Homebrew: Charles J. Tomaszewski, 'How to Kick Goliath Where it Counts', *Future Wars* #15 (1989), pp.31-32; reprinted in *The Best of Future Wars, Volume One* (1991), p.21. Every number matches the original. `
+        + `Only 1 round in 5 of the ton is SABOT: the chart's ${chartRounds} rounds a ton hold ${sabotRounds}, so the record counts those ${sabotRounds}. `
+        + `The chart's ${chartRounds} rounds a ton is the article's figure, not this catalog's standard AC/${ac} count. The article gives no year. ${NOT_PRINTED_AMMO}`,
+    rules: `A depleted-uranium penetrator that sheds its sheath in flight: half the normal damage outside and a quarter inside, fractions rounded up, `
+        + `which for the AC/${ac} is ${external} external, ${internal} internal. On a hit, make a critical hit check with a +1 modifier. `
+        + `${sabotRounds} SABOT round${sabotRounds === 1 ? "" : "s"} to the ton.`,
+    lore: "A SABOT shell carries a dense depleted-uranium dart inside a light sheath that falls away as the round leaves the barrel. The dart strikes "
+        + "with less force than a full shell but drives deep, seeking the machinery beneath the armor. Quartermasters on every side can supply "
+        + "SABOT rounds, though only in limited numbers, and they are issued one round in five.",
+});
+
+/** Lopunny's entry, posted on the QueerTech Discord server (2026-11-17). */
+export const LOPUNNY_CREDIT = "Custom Homebrew by Lopunny, posted on the QueerTech Discord server";
+const THUNDERBOLT_SIZES = [5, 10, 15, 20] as const;
+
+const thunderboltStandardAmmo = (size: number): IEquipmentItem => {
+    const canon = isAmmoList.find((item) => item.tag === `ammo-is-thunderbolt-${size}-standard`);
+    if (!canon) throw new Error(`Thunderbolt ammo: canon record ammo-is-thunderbolt-${size}-standard not found`);
+    return canon;
+};
+
+/**
+ * Heat-Seeking Thunderbolt ammunition (Lopunny): the canon Heat-Seeking missile rules (TO:AUE p.181) on the Thunderbolt's
+ * single big missile, but without the canon munition's halved rounds a ton. Cost x2 and BV x1.5 are the canon munition's factors.
+ */
+const thunderboltHeatSeekingAmmo = (size: number): IEquipmentItem => {
+    const canon = thunderboltStandardAmmo(size);
+    return {
+        isAmmo: true,
+        isSpecialAmmo: true,
+        name: `Thunderbolt ${size} - Heat-Seeking Ammo (IS)`,
+        altNames: [`Heat-Seeking Thunderbolt ${size} Ammo`, `Thunderbolt ${size} HS Ammo`],
+        tag: `ammo-is-thunderbolt-${size}-heat-seeking`,
+        techBase: "is",
+        altTags: [],
+        sort: canon.sort.replace("standard", "heat-seeking"),
+        category: "Ammunition",
+        cbills: canon.cbills * 2,
+        introduced: 3082,
+        extinct: null,
+        reintroduced: null,
+        battleValue: canon.battleValue,
+        heat: 0,
+        heatAero: 0,
+        weight: canon.weight,
+        range: { ...canon.range },
+        space: { ...canon.space },
+        roundsPerTon: canon.roundsPerTon,
+        explosive: canon.explosive,
+        techRating: canon.techRating,
+        book: "QueerTech Discord, Lopunny",
+        page: 0,
+        alphaStrike: { specialAbility: [], heat: 0, rangeShort: 0, rangeMedium: 0, rangeLong: 0, rangeExtreme: 0, tc: false, notes: ["Custom equipment: no Alpha Strike effect"] },
+        battleValueMultiplier: 1.5,
+        catalog: "custom",
+        rulesLevel: 6,
+        notes: `${LOPUNNY_CREDIT}. Introduced 3082, Lopunny's year (the year the canon Heat-Seeking Enhanced LRM round and the Enhanced LRT came into service). `
+            + `Lopunny's rule: the same rules as Heat-Seeking LRM ammunition, with no change to the ammunition's tonnage, so a ton still fires the Thunderbolt ${size}'s ${canon.roundsPerTon} shots `
+            + `(the canon Heat-Seeking munition packs half the rounds a ton). Not given by Lopunny, so NGCFells's: the cost is twice the standard round's and the Battle Value 1.5 times it, `
+            + `the canon Heat-Seeking munition's factors (TO:AUE p.181 and its munitions tables); the tech rating is the Thunderbolt round's. Inspired by: Lopunny, QueerTech Discord.`,
+        rules: `Ammunition for the Thunderbolt ${size}, ${canon.roundsPerTon} shots a ton, explosive. As Heat-Seeking missiles (TO:AUE p.181): against a heat-tracking unit that has overheated, `
+            + `the to-hit modifier equals the target's heat-induced MP modifier (12 points of heat, -2 MP, gives -2 to hit), with a further -2 if the target is on fire `
+            + `or the attack passes through the aft side of a fighter, Small Craft, DropShip, JumpShip or WarShip. Against a unit that does not track heat or has not overheated, +1 to hit. `
+            + `Fired into or through a hex that is on fire, +2 to hit. Otherwise as the Thunderbolt ${size}'s standard missile.`,
+        lore: "The Thunderbolt's single heavy missile always had room to spare, and after the Jihad the Federated Suns' missile makers filled some of it with an infrared seeker, "
+            + "the same guidance the Terran Hegemony had put on LRMs centuries before. Unlike the small LRM, the Thunderbolt did not have to give up any warhead to fit it, so a ton of the new missiles "
+            + "fires as many shots as a ton of the old. Against a 'Mech running hot the missile is deadly; against a cold target, or near a burning hex, it loses its way.",
+    };
+};
+
+/**
+ * Thunderbolt torpedo ammunition (Lopunny): every figure is the standard Thunderbolt round's, as canon torpedo ammunition
+ * carries its missile counterpart's statistics. Fires only from the Thunderbolt Torpedo launcher of its size (missile-custom.ts).
+ */
+const thunderboltTorpedoAmmo = (size: number): IEquipmentItem => {
+    const canon = thunderboltStandardAmmo(size);
+    return {
+        isAmmo: true,
+        isSpecialAmmo: false,
+        name: `Thunderbolt Torpedo ${size} - Standard Ammo (IS)`,
+        altNames: [`Thunderbolt Torpedo ${size} Ammo`],
+        tag: `ammo-is-thunderbolt-torpedo-${size}-standard`,
+        techBase: "is",
+        altTags: [],
+        sort: canon.sort.replace("thunderbolt", "thunderbolt torpedo"),
+        category: "Ammunition",
+        cbills: canon.cbills,
+        introduced: 3082,
+        extinct: null,
+        reintroduced: null,
+        battleValue: canon.battleValue,
+        heat: 0,
+        heatAero: 0,
+        weight: canon.weight,
+        range: { ...canon.range },
+        space: { ...canon.space },
+        roundsPerTon: canon.roundsPerTon,
+        explosive: canon.explosive,
+        techRating: canon.techRating,
+        book: "QueerTech Discord, Lopunny",
+        page: 0,
+        alphaStrike: { specialAbility: [], heat: 0, rangeShort: 0, rangeMedium: 0, rangeLong: 0, rangeExtreme: 0, tc: false, notes: ["Custom equipment: no Alpha Strike effect"] },
+        catalog: "custom",
+        rulesLevel: 6,
+        notes: `${LOPUNNY_CREDIT}. Torpedoes for the Thunderbolt Torpedo ${size} launcher, introduced 3082 (Lopunny's year). Cost, Battle Value, shots a ton and tech rating are the standard Thunderbolt ${size} round's, `
+            + "as canon torpedo ammunition carries its missile counterpart's figures (LRT and LRM ammunition are priced alike). Inspired by: Lopunny, QueerTech Discord.",
+        rules: `Ammunition for the Thunderbolt Torpedo ${size}, ${canon.roundsPerTon} torpedoes a ton, explosive. A torpedo launcher cannot fire missile ammunition, and a Thunderbolt missile launcher cannot fire torpedoes.`,
+        lore: "A Thunderbolt torpedo is the Thunderbolt missile's warhead and seeker in a sealed, heavier body with a water-breathing motor, sized to the same magazine racks so a quartermaster can store either.",
+    };
+};
+
+export const ammoCustom: IEquipmentItem[] = applyDerivedValues([
     {
         isAmmo: true,
         isSpecialAmmo: false,
@@ -614,7 +762,14 @@ export const ammoCustom: IEquipmentItem[] = [
         techRating: "e",
         book: "Custom",
         page: 0,
-        alphaStrike: { specialAbility: ["MSL"], heat: 0, rangeShort: 0, rangeMedium: 0, rangeLong: 0, rangeExtreme: 0, tc: false, notes: [] }
+        alphaStrike: { specialAbility: ["MSL"], heat: 0, rangeShort: 0, rangeMedium: 0, rangeLong: 0, rangeExtreme: 0, tc: false, notes: [] },
+        catalog: "custom",
+        rulesLevel: 6,
+        notes: "Custom Homebrew, by NGCFells: rocket ammunition for the Reloading Rocket Launchers (custom-rrl-10, -15 and -20), 240 rockets a ton, 45,000 C-Bills a ton (the canon Rocket Launcher 20's price), "
+            + "introduced 3067, the Rocket Launcher's date in the Jihad. The catalog held it with no launcher to fire it; no published rule has reloadable rockets, so the launchers and this record are NGCFells's.",
+        rules: "Rockets for the Reloading Rocket Launchers, 240 a ton: a salvo is the launcher's size (10, 15 or 20 rockets), so a ton holds 24, 16 or 12 salvos. The ammunition explodes.",
+        lore: "A magazine ton of unguided rockets, packed loose in feed trays for the reloading launchers, cheap to make and dangerous to carry: a hit that finds the magazine "
+            + "sets off every rocket in it."
     },
     {
         isAmmo: true,
@@ -1140,4 +1295,128 @@ export const ammoCustom: IEquipmentItem[] = [
         notes: "3 nuclear charges a ton (Prince, Solaris7 forum, July 2018). BV 53 a ton, an eighth of the cannon's (see artillery-custom.ts). Not printed: "
             + "cost, dates and tech rating are the Arrow IV Davy Crockett-M round's (500,000 C-bills, IO:AE p.168)."
     },
-];
+    {
+        isAmmo: true,
+        isSpecialAmmo: false,
+        name: "Pile Bunker - Charge",
+        altNames: ["Pile Bunker Ammo"],
+        tag: "ammo-custom-pile-bunker-standard",
+        techBase: "universal",
+        altTags: [],
+        sort: "ammo, pile bunker, charge",
+        category: "Ammunition",
+        cbills: 0,
+        introduced: 1950,
+        extinct: null,
+        reintroduced: null,
+        battleValue: 0,
+        heat: 0,
+        heatAero: 0,
+        weight: 1,
+        range: { min: 0, short: 0, medium: 0, long: 0 },
+        space: { battlemech: 1, protomech: -1, combatVehicle: -1, supportVehicle: -1, aerospaceFighter: -1, smallCraft: -1, dropShip: -1 },
+        roundsPerTon: 3,
+        explosive: true,
+        techRating: "x",
+        book: "Reddit u/FweeCom",
+        page: 0,
+        alphaStrike: { specialAbility: [], heat: 0, rangeShort: 0, rangeMedium: 0, rangeLong: 0, rangeExtreme: 0, tc: false, notes: ["Unverified custom equipment"] },
+        catalog: "custom",
+        rulesLevel: 6,
+        notes: "Ammunition for the Pile Bunker (custom-pile-bunker), homebrew by u/FweeCom (https://www.reddit.com/r/battletech/comments/1dak8pu/homebrew_equipment_pile_bunker/): "
+            + "three shots to the ton, and each shot explodes for 5 damage when the ton is hit. Inspired by: u/FweeCom. "
+            + "Not given by the author, so NGCFells's: the dates follow the Pile Bunker."
+    },
+    // The Best of Future Wars, Volume One (1991), Chunk A of the fanzine plan (#172). Custom Homebrew: fan material.
+    {
+        isAmmo: true, isSpecialAmmo: false, name: "Long Range Flamer - Standard Ammo", altNames: ["LR Flamer Ammo"], tag: "ammo-custom-lr-flamer-standard", techBase: "universal", altTags: [],
+        sort: "ammo, long range flamer, standard", category: "Ammunition", cbills: 0, introduced: null, extinct: null, reintroduced: null, battleValue: 0,
+        heat: 0, heatAero: 0, weight: 1, range: { min: 0, short: 4, medium: 8, long: 12 },
+        space: { battlemech: 1, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: -1, smallCraft: -1, dropShip: -1 },
+        roundsPerTon: 15, explosive: true, techRating: "x", book: BEST_OF, page: 28,
+        alphaStrike: { specialAbility: [], heat: 0, rangeShort: 0, rangeMedium: 0, rangeLong: 0, rangeExtreme: 0, tc: false, notes: ["Custom equipment: no Alpha Strike effect"] },
+        catalog: "custom", rulesLevel: 6,
+        notes: "Custom Homebrew: Karl Sander, 'Long Range Flamer', *Future Wars* #9 (1988), p.27; reprinted in *The Best of Future Wars, Volume One* (1991), p.28. "
+            + "The ammunition-hit rule is the reprint's; the original has the 'Mech take 2 damage and 3 heat for each round left, which play applies with the 'Future Wars: equipment as first printed' Special Ruleset ticked. "
+            + "Not printed in The Best of Future Wars: cost and Battle Value are left at 0 (unverified); dates and tech rating are unverified.",
+        rules: "15 shots a ton for the Long Range Flamer (custom-lr-flamer). Explosive: if the ammunition is hit, the damage is scaled as if the unit "
+            + "had been hit that many times by the weapon.",
+        lore: "Long Range Flamer fuel is a thickened, sticky gel carried in armored tanks. A breached tank sprays its carrier with the same burning "
+            + "gel it was meant to deliver."
+    },
+    {
+        isAmmo: true, isSpecialAmmo: false, name: "EII Point Defense System - Standard Ammo", altNames: ["EII PDS Ammo"], tag: "ammo-custom-eii-pds-standard", techBase: "universal", altTags: [],
+        sort: "ammo, eii point defense system, standard", category: "Ammunition", cbills: 0, introduced: null, extinct: null, reintroduced: null, battleValue: 0,
+        heat: 0, heatAero: 0, weight: 1, range: { min: 0, short: 1, medium: 2, long: 3 },
+        space: { battlemech: 1, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: -1, smallCraft: -1, dropShip: -1 },
+        roundsPerTon: 100, explosive: true, techRating: "x", book: BEST_OF, page: 8,
+        alphaStrike: { specialAbility: [], heat: 0, rangeShort: 0, rangeMedium: 0, rangeLong: 0, rangeExtreme: 0, tc: false, notes: ["Custom equipment: no Alpha Strike effect"] },
+        catalog: "custom", rulesLevel: 6,
+        notes: "Custom Homebrew: Mike Reese, 'Ellena Industries Inc. Point Defense System (EII PDS)', *Future Wars* #14 (1989), p.46; reprinted in *The Best of Future Wars, Volume One* (1991), p.8. "
+            + "Not printed in either: whether it explodes (marked explosive here by NGCFells, as machine gun ammunition is); cost and Battle Value are left at 0 (unverified); tech rating is unverified.",
+        rules: "The extra magazine of an EII Point Defense System (custom-eii-pds): a ton is 100 bursts, one burst against each salvo of incoming missiles; "
+            + "the system's own half ton, built in, is 50. Explosive, as machine gun ammunition is.",
+        lore: "Ellena Industries ships extra belts for its Point Defense System in sealed one-ton magazines that feed the gun alongside its built-in drum."
+    },
+    {
+        isAmmo: true, isSpecialAmmo: true, name: "Gauss Rifle - VHE Shell", altNames: ["VHE Gauss Shell"], tag: "ammo-is-gauss-rifle-vhe", techBase: "is", altTags: [],
+        sort: "ammo, gauss rifle, vhe, is", category: "Ammunition", cbills: 0, introduced: 3040, extinct: null, reintroduced: null, battleValue: 0,
+        heat: 0, heatAero: 0, weight: 1, range: { min: 0, short: 4, medium: 12, long: 19 },
+        space: { battlemech: 1, protomech: 1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 },
+        roundsPerTon: 5, explosive: true, techRating: "x", book: BEST_OF, page: 11,
+        alphaStrike: { specialAbility: [], heat: 0, rangeShort: 0, rangeMedium: 0, rangeLong: 0, rangeExtreme: 0, tc: false, notes: ["Custom equipment: no Alpha Strike effect"] },
+        catalog: "custom", rulesLevel: 6, explosionDamagePerShot: 30,
+        notes: "Custom Homebrew: Chris Congdon, 'New Ammo:', *Future Wars* #19 (1990), pp.30-31; reprinted, rewritten, as 'The Development of the VHE Shell', *The Best of Future Wars, Volume One* (1991), pp.9-11. Every number matches the original. Dated 3040, the year the article has Hanse Davion commission the research (the story's year, not a fielding date). Not printed in The "
+            + "Best of Future Wars: cost and Battle Value are left at 0 (unverified); tech rating is unverified.",
+        rules: "Very High Explosive: heavier than the standard round, so 5 shots a ton against 8 and a range 3 hexes shorter (1-4, 5-12, 13-19). "
+            + "On a hit it does 20 to the location struck and 5 to each adjacent location; a critical hit adds one more critical check for the charge, "
+            + "so one shell can cause as many as four. If the ammunition takes a critical hit, each shell does 30 points of damage as it cooks off.",
+        lore: "In 3040 Prince Hanse Davion commissioned research into a heavier Gauss round. The Very High Explosive shell that came of it wraps a "
+            + "shaped charge in a hollow high-explosive body: the charge drives into the plate it strikes while the casing bursts across the armor "
+            + "around it. The added mass shortens the round's flight and cuts the shells to a ton, and a magazine of VHE shells is far more "
+            + "dangerous to its owner than inert slugs."
+    },
+    {
+        isAmmo: true, isSpecialAmmo: true, name: "Gauss Rifle - Inferno Shell (Liao)", altNames: ["Liao Inferno Gauss Shell"], tag: "ammo-is-gauss-rifle-inferno", techBase: "is", altTags: [],
+        sort: "ammo, gauss rifle, inferno, is", category: "Ammunition", cbills: 0, introduced: null, extinct: null, reintroduced: null, battleValue: 0,
+        heat: 0, heatAero: 0, weight: 1, range: { min: 0, short: 7, medium: 15, long: 22 },
+        space: { battlemech: 1, protomech: 1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 },
+        roundsPerTon: 8, explosive: false, techRating: "x", book: BEST_OF, page: 11,
+        alphaStrike: { specialAbility: [], heat: 0, rangeShort: 0, rangeMedium: 0, rangeLong: 0, rangeExtreme: 0, tc: false, notes: ["Custom equipment: no Alpha Strike effect"] },
+        catalog: "custom", rulesLevel: 6,
+        notes: "Custom Homebrew: Chris Congdon, 'New Ammo:', *Future Wars* #19 (1990), pp.30-31; reprinted, rewritten, as 'The Development of the VHE Shell', *The Best of Future Wars, Volume One* (1991), pp.9-11 (the Liao Inferno shell, stats on p.11). "
+            + "On an ammunition hit the original adds 1 point of damage for each shell left (the reprint says only '1 point per shell', which play reads as heat); the 'Future Wars: equipment as first printed' Special Ruleset plays the original. "
+            + "An ammunition hit causes heat, not damage, so the record is not marked explosive, to keep the generic ammunition-explosion damage off it; "
+            + "in roster play an ammunition hit adds the heat to the 'Mech's heat scale. "
+            + "Not printed in The Best of Future Wars: the article gives no year of its own for it (the research was contemporary with the VHE shell, 3040, so it is left at no date); "
+            + "cost and Battle Value are left at 0 (unverified); tech rating is unverified.",
+        rules: "On impact the target takes 2 points of damage and 10 heat a turn for 5 turns; as with standard inferno rounds, more shells only lengthen the heat. "
+            + "If the ammunition takes a critical hit, the player takes 30 heat (20 if CASE is installed) and 1 more for each shell. "
+            + "8 shots a ton, range 1-7, 8-15, 16-22.",
+        lore: "The Capellan researcher Dr Xhiao Zing answered the Davion VHE program with a Gauss round of a different kind: a thin casing filled "
+            + "with napalm that bursts over the target and clings, cooking a 'Mech from the outside for several turns. The light load keeps the "
+            + "full reach of a standard slug. A struck magazine floods its carrier with burning napalm rather than exploding."
+    },
+    sabotShells("2", 4, 20, 1, 1),
+    sabotShells("5", 3, 15, 3, 2),
+    sabotShells("10", 2, 10, 5, 3),
+    sabotShells("20", 1, 5, 10, 5),
+    {
+        isAmmo: true, isSpecialAmmo: false, name: "Penitrator - Standard Ammo", altNames: ["Penitrator Missile"], tag: "ammo-custom-penitrator-standard", techBase: "universal", altTags: [],
+        sort: "ammo, penitrator, standard", category: "Ammunition", cbills: 250000, introduced: null, extinct: null, reintroduced: null, battleValue: 0,
+        heat: 0, heatAero: 0, weight: 1, range: { min: 8, short: 12, medium: 24, long: 36 },
+        space: { battlemech: 1, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: -1, smallCraft: -1, dropShip: -1 },
+        roundsPerTon: 2, explosive: false, techRating: "x", book: BEST_OF, page: 20,
+        alphaStrike: { specialAbility: [], heat: 0, rangeShort: 0, rangeMedium: 0, rangeLong: 0, rangeExtreme: 0, tc: false, notes: ["Custom equipment: no Alpha Strike effect"] },
+        catalog: "custom", rulesLevel: 6,
+        notes: "Custom Homebrew: Herb Barents, 'The Penitrator', *The Best of Future Wars, Volume One* (1991), p.20. "
+            + "The author puts the cost at around 250,000 C-bills a ton, almost 10 times a normal missile, and expects it to be the only estimate ever made. "
+            + "Not printed in The Best of Future Wars: whether it explodes (left as not, NGCFells's ruling); Battle Value is left at 0 (unverified); dates and tech rating are unverified.",
+        rules: "Missiles for the Penitrator (custom-penitrator), half a ton each, so 2 a ton. Not explosive.",
+        lore: "Each Penitrator missile weighs half a ton, almost half of it solid fuel. They are built by hand and rank among the costliest munitions "
+            + "in the Inner Sphere, at roughly ten times the price of an ordinary missile."
+    },
+    // Lopunny, QueerTech Discord (2026-11-17): Heat-Seeking Thunderbolt ammunition and Thunderbolt torpedoes.
+    ...THUNDERBOLT_SIZES.map(thunderboltHeatSeekingAmmo),
+    ...THUNDERBOLT_SIZES.map(thunderboltTorpedoAmmo),
+]);

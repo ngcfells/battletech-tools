@@ -7,6 +7,7 @@ import { mechInternalStructureTypes } from "../data/mech-internal-structure-type
 import { DESIGN_CORRECTIONS } from "../data/mtf-design-corrections";
 import { findAllByName } from "../data/tag-match";
 import { findBlkAmmo, findBlkAmmoWeapon, parseBlkAmmoLine } from "../utils/blk-ammo";
+import { getCompatibleAmmo } from "../data/equipment-registry";
 import { IBlkFile } from "../utils/blk-file";
 import { applyBlkQuirks, IBlkImportedItem } from "../utils/blk-quirks";
 import { readBlkTechnicalReadout } from "../utils/blk-technical-readout";
@@ -141,9 +142,9 @@ interface IMtfItem {
     pod: boolean;
     tons: number;
     half: boolean;
-    /** Ammunition: the tag of the weapon the bin feeds, so an LRM 20 ton is not read as an LRM 15 one. */
-    feeds?: string;
     places: { loc: string; index: number; count: number }[];
+    /** Ammunition: the tag of the weapon its line names, where more than one mounted weapon could fire the round. */
+    feeds?: string;
 }
 
 /**
@@ -316,7 +317,7 @@ export function convertMtfToSSW(file: IMtfFile): { xml: string; issues: string[]
                 index += run; continue;
             }
 
-            // One-shot launchers: MegaMek's "(OS)", "(IOS)" and "(I-OS)" are our records' "-os" and "-ios".
+            // One-shot launchers: MegaMek's "(OS)", "(IOS)" and "(I-OS)" are the JBT records' "-os" and "-ios".
             const oneShot = /\s*\((OS|IOS|I-OS)\)$/i.exec(name);
             const baseName = oneShot ? name.replace(oneShot[0], "") : name;
             const itemFaction: ImportFaction = /^(CL|Clan )/.test(baseName) ? "clan" : /^IS/.test(baseName) ? "is" : faction;
@@ -379,8 +380,10 @@ export function convertMtfToSSW(file: IMtfFile): { xml: string; issues: string[]
         const line = parseBlkAmmoLine(/Pods$/i.test(ammo.name) ? ammo.name.replace(/Pods$/i, "Ammo") : ammo.name);
         const weapon = line ? findBlkAmmoWeapon(line, weapons) : undefined;
         const round = line && weapon ? findBlkAmmo(line, weapon) : undefined;
-        if (!line || !weapon || !round) { issues.push(`Cannot find the ammunition '${ammo.name}'`); continue; }
-        items.push({ record: round, name: ammo.name, rear: ammo.rear, pod: ammo.pod, tons: 0, half: line.half, feeds: weapon.tag, places: [{ loc: ammo.loc, index: ammo.index, count: 1 }] });
+        if (!line || !round) { issues.push(`Cannot find the ammunition '${ammo.name}'`); continue; }
+        // An "LRM-20" ton beside an LRM 10 stays the LRM 20's: its Battle Value is the launcher's (TM p.303).
+        const feeds = weapons.some((other) => other.tag !== weapon!.tag && getCompatibleAmmo(other, round)) ? weapon!.tag : undefined;
+        items.push({ record: round, name: ammo.name, rear: ammo.rear, pod: ammo.pod, tons: 0, half: line.half, places: [{ loc: ammo.loc, index: ammo.index, count: 1 }], feeds });
     }
 
     // MegaMek's "heat sinks" line counts the prototype doubles too: they are equipment here.
@@ -391,8 +394,8 @@ export function convertMtfToSSW(file: IMtfFile): { xml: string; issues: string[]
         const where = item.places.length === 1
             ? place(item.places[0].loc, item.places[0].index)
             : item.places.map((part) => `<splitlocation index="${part.index}" number="${part.count}">${part.loc.toUpperCase()}</splitlocation>`).join("");
-        return `<equipment${item.pod ? ' omnipod="TRUE"' : ""}><name manufacturer="">${xml(name)}</name><type>${item.record.isAmmo ? "ammunition" : "equipment"}</type>`
-            + (item.tons > 0 ? `<tons>${item.tons}</tons>` : "") + (item.feeds ? `<feeds>${xml(item.feeds)}</feeds>` : "") + where + "</equipment>";
+        return `<equipment${item.pod ? ' omnipod="TRUE"' : ""}${item.feeds ? ` feeds="${xml(item.feeds)}"` : ""}><name manufacturer="">${xml(name)}</name><type>${item.record.isAmmo ? "ammunition" : "equipment"}</type>`
+            + (item.tons > 0 ? `<tons>${item.tons}</tons>` : "") + where + "</equipment>";
     });
 
     const armorValues = Object.entries(file.values).filter(([key]) => / armor$/.test(key)).map(([key, list]) => {
@@ -411,6 +414,11 @@ export function convertMtfToSSW(file: IMtfFile): { xml: string; issues: string[]
     const fcs = [...FIRE_CONTROL.map(([, flag]) => ` ${flag}="${fireControl.has(flag) ? "TRUE" : "FALSE"}"`)].join("");
     const sswTech = mixed ? "Mixed" : clan ? "Clan" : "Inner Sphere";
 
+    // SSW writes the rating the Walking MP needs. A Primitive 'Mech's MegaMek file gives the engine installed, which
+    // is 1.2 times that, rounded up (IO:AE p.117): its Walking MP is the one the file states.
+    const walkMP = +value(file, "walk mp");
+    const engineRating = /^Primitive/.test(mechType) && walkMP > 0 ? tons * walkMP : engine?.[1] ?? 0;
+
     const out = `<?xml version="1.0" encoding="UTF-8"?>
 <mech name="${xml(name)}" model="${xml(value(file, "model"))}" tons="${tons}" omnimech="${/omnime(k|ch)/i.test(config) ? "TRUE" : "FALSE"}">
 <mech_type>${mechType}</mech_type>
@@ -418,7 +426,7 @@ export function convertMtfToSSW(file: IMtfFile): { xml: string; issues: string[]
 <year>${xml(value(file, "era"))}</year>
 <motive_type>${quadVee ? `QuadVee ${wheeled ? "Wheels" : "Tracks"}` : lam ? `${lamType ?? "Standard"} LAM` : quad ? "Quad" : tripod ? "Tripod" : "Biped"}</motive_type>
 <structure techbase="${structureTech}"><type>${xml(structureName)}</type>${structureSlots.join("")}</structure>
-<engine rating="${engine?.[1] ?? 0}" techbase="${tb(engineTech)}">${xml(engineName ?? "")}</engine>
+<engine rating="${engineRating}" techbase="${tb(engineTech)}">${xml(engineName ?? "")}</engine>
 <gyro techbase="2">${xml(gyro)}</gyro>
 <cockpit><type${ejection}${value(file, "cockpit") === "Command Console" ? ` commandconsole="TRUE"` : ""}${enhancedImaging ? ` enhancedimaging="TRUE"` : ""}>${xml(sswCockpit)}</type></cockpit>
 ${myomer && !/^standard$/i.test(myomer) ? `<enhancement techbase="${clan ? 1 : 0}"><type>${/super-?cooled/i.test(myomer) ? "Super-Cooled Myomer" : /industrial/i.test(myomer) ? "Industrial TSM" : "TSM"}</type>${myomerSlots.join("")}</enhancement>` : ""}

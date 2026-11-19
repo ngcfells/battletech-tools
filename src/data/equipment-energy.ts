@@ -1,4 +1,6 @@
 import { IEquipmentItem } from "./data-interfaces";
+import { applyLoreAndRules } from "./custom-lore-rules";
+import { applyDerivedAlphaStrike } from "./derived-alpha-strike";
 
 /*
  * DISCLAIMER: This file processes gameplay data derived from the BattleTech universe. 
@@ -81,15 +83,16 @@ export const equipmentEnergy: IEquipmentItem[] = [
         category: "Energy Weapons",
         // BattleTech Gothic, Weapons and Equipment Table p.93: Heat 6, Damage 7, no minimum, 1-3 / 4-6 / 7-9. Gothic
         // has no construction rules, so weight, slots, cost, Battle Value and dates are not printed (2026-10-17).
-        notes: "BattleTech Gothic only (Weapons and Equipment Table p.93; Abomination-Mounted Weapons Table p.92 gives 1K shots per ton for Abominations). Gothic prints no weight, slots, cost, Battle Value or dates. Provisional: 2 tons inferred from the FS9-B Firestarter, which trades its two medium lasers, two machine guns and ammunition for a pair of light blazers (Gothic p.107); 2 slots by analogy with the Binary Laser Cannon, which takes the slots of the two lasers it pairs. Cost and Battle Value unknown (0).",
+        notes: "BattleTech Gothic only (Weapons and Equipment Table p.93; Abomination-Mounted Weapons Table p.92 gives 1K shots per ton for Abominations). Gothic prints no weight, slots, cost, Battle Value or dates. Provisional: 2 tons inferred from the FS9-B Firestarter, which trades its two medium lasers, two machine guns and ammunition for a pair of light blazers (Gothic p.107); 2 slots by analogy with the Binary Laser Cannon, which takes the slots of the two lasers it pairs. Cost and Battle Value are not printed, so derived (derived-values.ts): Battle Value 63 is its 7 damage over the 9 hexes it reaches (the same method gives the canon medium laser 45 against 46 printed); cost 83,000 C-Bills is that Battle Value at the canon energy median of 1,310 C-Bills a point. BV1 reads the same figure. Not given by the source, so NGCFells's: introduced 2300 and tech rating C, because BattleTech Gothic prints neither, and a blazer is a laser, so the canon medium laser's.",
         damage: 7,
         damageAero: 7,
         accuracyModifier: 0,
-        cbills: 0,
-        introduced: null,
+        cbills: 83000,
+        introduced: 2300,
         extinct: null,
         reintroduced: null,
-        battleValue: 0,
+        battleValue: 63,
+        techRating: "c",
         heat: 6,
         weight: 2,
         range: {
@@ -630,6 +633,188 @@ export const equipmentEnergy: IEquipmentItem[] = [
     },
     {
         isAmmo: false,
+        name: "PPC-X",
+        altNames: ["PPC-X (Solaris Arms)", "Ion Separator PPC"],
+        tag: "ppc-x",
+        editions: [],
+        techBase: "is",
+        sort: "ppc, x",
+        category: "Energy Weapons",
+        rulesLevel: 5, // Apocryphal: licensed, outside the main BattleTech setting.
+        notes: "Apocryphal: a weapon of the MechWarrior 5: Mercenaries expansion Solaris Showdown, listed by Sarna as 'effectively an LB-X version of the PPC', a PPC "
+            + "with an ion separator that fires eight ion bolts and leaves brief disruption fields where they land (https://www.sarna.net/wiki/Particle_Projector_Cannon). "
+            + "The game's brand for it is Solaris Arms; its stock version (tier 0) is 7 tons, 19.2 damage, 20 rounds a minute, 8.4 heat and 600 m, against the game's PPC at "
+            + "10 damage, 10 rounds a minute, 9.6 heat and 736 m (https://www.sarna.net/wiki/MechWarrior_5:_Mercenaries/Equipment). "
+            + "Tabletop line from the r/battletech thread https://www.reddit.com/r/battletech/comments/1hqnzwy/ (the question by u/Distinct-Duck-7120, whose account is deleted): "
+            + "u/Severe_Ad_5022's 7 tons, 3 slots, 10 heat, range 5/9/12 with no minimum, -1 to hit, on the cluster table; u/Omega_Chris_8352 had made a Snub-Nose PPC roll "
+            + "on the cluster table for 5 shots of 2. Inspired by: u/Severe_Ad_5022 and u/Omega_Chris_8352. "
+            + "Ours, by NGCFells's ruling 2026-11-16: damage is three groups of 5 for 15, a compromise between u/Severe_Ad_5022's 12 and the game's PPC-X (about 20 at tabletop scale). "
+            + "Also NGCFells's, in step with the game: Inner Sphere (Solaris Arms is a Lyran Commonwealth firm on Solaris VII); introduced 3015, the year the game is set, with no "
+            + "prototype date and no extinction (Solaris Arms stayed in production through the Jihad); tech rating E, as the Snub-Nose PPC. Derived, not given by the author: Battle Value 180 is its 15 damage over the 12 hexes it reaches "
+            + "(derived-values.ts; the same method gives the canon PPC 180 against 176 printed); cost 236,000 C-Bills is that Battle Value at the canon energy median of "
+            + "1,310 C-Bills a point. BV1 reads the same figure. Nothing adjusts for the -1 to hit. The Alpha Strike conversion is none.",
+        lore: "The PPC-X began in the stables of Solaris VII. Solaris Arms, the Lyran firm that builds a few arena 'Mechs a year for the great games, wanted a weapon that gave "
+            + "the crowd more to watch than one blue-white bolt. Its engineers fitted a PPC with an ion separator at the muzzle, a ring of field coils that splits each "
+            + "discharge into a spread of ion bolts. Where a PPC pours all its energy into one hole, the PPC-X scatters it: every bolt strikes in a different place, and each "
+            + "leaves a brief disruption field where it lands. Fewer duels end in one blow and more end in stripped arms, legs and weapons, which is what a stable's sponsors "
+            + "pay to see. Built by a small works for a single market, it never reached the Lyran armies. It is found in the arena stables, and in the hands of mercenaries "
+            + "who buy it on Solaris.",
+        rules: "The ion separator splits the shot into three bolts of 5 damage each. Roll on the Cluster Hits Table, 3 column, for how many strike, and roll a hit location "
+            + "for each group. The weapon is -1 to hit, has no minimum range and reaches 5 / 9 / 12 hexes.",
+        damage: 15,
+        damageAero: 15,
+        damageClusters: 3,
+        damagePerCluster: 5,
+        accuracyModifier: -1,
+        cbills: 236000,
+        introduced: 3015,
+        extinct: null,
+        reintroduced: null,
+        battleValue: 180,
+        heat: 10,
+        weight: 7,
+        range: {
+            min: 0,
+            short: 5,
+            medium: 9,
+            long: 12
+        },
+        space: {
+            battlemech: 3,
+            protomech: -1,
+            combatVehicle: 3,
+            supportVehicle: 3,
+            aerospaceFighter: 3,
+            smallCraft: -1,
+            dropShip: -1
+        },
+        shotsPerTon: 0,
+        minAmmoTons: 0,
+        explosive: false,
+        weaponType: ["DE", "C"],
+        techRating: "e",
+        book: "MechWarrior 5: Mercenaries, Solaris Showdown",
+        page: 0,
+        alphaStrike: { heat: 0, rangeShort: 0, rangeMedium: 0, rangeLong: 0, rangeExtreme: 0, tc: false, notes: ["Apocryphal: no Alpha Strike conversion"] },
+        heatAero: 10,
+        rangeAero: "m"
+    },
+    {
+        isAmmo: false,
+        name: "COIL-S",
+        altNames: ["COIL Small", "Small COIL"],
+        tag: "coil_s",
+        editions: [],
+        techBase: "is",
+        sort: "laser, coil small",
+        category: "Energy Weapons",
+        rulesLevel: 5, // Apocryphal: from a video game, outside the main BattleTech setting.
+        variableFormula: "coil-s",
+        notes: "Apocryphal: a weapon of the BATTLETECH video game (Harebrained Schemes, Heavy Metal expansion), where COIL stands for 'Contained Overflow Inertia Linkage' (https://www.sarna.net/wiki/Coil-M). The video game's own numbers are in meters and at five times the tabletop damage (COIL-L: 35 damage, 450 m); the figures here are the tabletop 'Final Stats' of DevianID in the battletech.com forum thread 'A Hare-Brained Weapon' (https://battletech.com/forums/index.php?topic=71729.0, 7 December 2020): COIL-S heat 2, damage 3, range 1/2/3, 2 tons, 4 slots; COIL-M heat 4, damage 5, range 3/6/9, 3 tons, 6 slots; COIL-L heat 9, damage 7, range 5/10/15, 4 tons, 8 slots. The thread's original post is namar13766's, Speedbump's table of 25 November 2020 matches the weights and slots, and Hopalong posted the game's data. Inspired by: DevianID, with Speedbump and namar13766. Not adopted: Seer's fuller ruleset in the same thread (movement points charge the weapon, up to three shots an activation, ammunition explosions of 15, 10 and 5), which is a different weapon to play. Era (NGCFells's ruling, 2026-11-16): a Clan Wolverine weapon. Sarna's Clan Wolverine page (https://www.sarna.net/wiki/Clan_Wolverine) puts a wolverine insignia on the chassis parts from the wreck of the Dobrev, names Dobrev as one of the Clan's founding bloodnames, and has Natasha Kerensky's Black Widow Company apparently tasked with hunting down every trace of the Clan. The Clan existed from 11 June 2807 to 2824 (the Trial of Annihilation was announced on 25 October 2823; the last ground battle was on 7 July 2824). So the weapon was prototyped about 2810 and made from 2815, and the Annihilation ended it in 2824; it is reintroduced in 3025, when the wreck's cargo reaches the Inner Sphere's markets. The Clans do not use it: the Not-Named Clan was erased and its technology is shunned (desgra). A Clan unit recognises a firing COIL by its firing pattern and hunts the carrier (Zellbrigen broken, destroyed as a priority; NGCFells's ruling). NGCFells's reading, not in the thread: Inner Sphere only, as the recovered LosTech is what is in use; cost is the catalog's earlier figure, the game's own scale; Battle Value is derived (derived-values.ts): base damage over the hexes it reaches, times the movement multiplier of the 'Mech's running speed, so it follows the 'Mech (a running speed of 6, a modifier of +2, doubles it); the figure on this record is for a 'Mech whose running speed gives no bonus. BV1 reads the same figure. The Alpha Strike conversion is none. The ranges were meters in the catalog (30 meters a hex); COIL-L's medium band, 315 meters, is 10 hexes, the last whole hex it covers.",
+        lore: "COIL stands for Contained Overflow Inertia Linkage, and it is a Clan Wolverine weapon. The Wolverines, who never backed down, built it in the years of their Clan (2807 to 2824) for light, fast machines: batteries bank the energy of the 'Mech's own stride and spend it in a single beam, so the faster the machine moves before it fires, the harder the shot, while a jump, which gives the batteries nothing to catch, adds nothing. Standing still, a COIL is a weak, hot weapon; at a run it is among the most punishing beams on the field. The batteries are also its weakness, and a COIL that is damaged can dump everything it holds into the 'Mech that carries it. When the Clans annihilated the Wolverines, Nicholas Kerensky erased their name, and the Clans have shunned everything the Not-Named Clan made ever since: no Clan warrior will carry a COIL, which is desgra. A derelict ship, the Dobrev, named for one of the Wolverine bloodnames, carried the Herakleion pattern and a Bull Shark 'Mech out of the dark. Natasha Kerensky's Black Widow Company, apparently tasked with wiping out every trace of the Wolverines, fought mercenaries over the wreck, and the weapons that reached the Inner Sphere's markets came from it. A Clan warrior cannot know a COIL by sight, but the first shot gives it away: its beam has a firing pattern no Clan warrior mistakes, taught to every Clan as the mark of the Not-Named Clan. The moment one fires, every Clan unit that sees it knows what it is, breaks Zellbrigen, and sets out to destroy the machine that carries it before any other, believing it belonged to Clan Wolverine.",
+        rules: "Damage and heat are multiplied by the movement modifier when it is over +1: a 'Mech that moved 5-6 hexes does twice the base, 7-9 hexes three times, 10-17 hexes four times. A 'Mech that stood still, moved 4 hexes or fewer, or jumped fires at the base figures (the original post says a jump cannot fuel a shot). The COIL is +1 to hit. A critical hit to it deals half its damage to the 'Mech as an explosion. Clan reaction (by NGCFells's ruling): a Clan unit cannot tell a COIL by sight, but the moment a COIL fires, every Clan unit that can see it recognises the firing pattern. From then on the carrier is the Clan units' priority target: they break Zellbrigen against it, attack it before any other target, and keep attacking until it is destroyed, believing it belonged to Clan Wolverine. Do not take a COIL where Clans may be present unless the unit is meant to be hunted.",
+        damage: 3,
+        damageAero: 3,
+        accuracyModifier: 1,
+        cbills: 110000,
+        prototype: 2810,
+        introduced: 2815,
+        extinct: 2824,
+        reintroduced: 3025,
+        battleValue: 9,
+        heat: 2,
+        heatAero: 2,
+        weight: 2,
+        range: { min: 0, short: 1, medium: 2, long: 3 },
+        space: { battlemech: 4, protomech: -1, combatVehicle: -1, supportVehicle: -1, aerospaceFighter: -1, smallCraft: -1, dropShip: -1 },
+        shotsPerTon: 0,
+        minAmmoTons: 0,
+        explosive: true,
+        weaponType: ["DE"],
+        techRating: "f",
+        book: "BATTLETECH (Heavy Metal); tabletop figures: DevianID, battletech.com forums, 'A Hare-Brained Weapon'",
+        page: 0,
+        alphaStrike: { heat: 0, rangeShort: 0, rangeMedium: 0, rangeLong: 0, rangeExtreme: 0, tc: false, notes: ["Apocryphal: no Alpha Strike conversion"] },
+        rangeAero: "s"
+    },
+    {
+        isAmmo: false,
+        name: "COIL-M",
+        altNames: ["COIL Medium", "Medium COIL"],
+        tag: "coil_m",
+        editions: [],
+        techBase: "is",
+        sort: "laser, coil medium",
+        category: "Energy Weapons",
+        rulesLevel: 5, // Apocryphal: from a video game, outside the main BattleTech setting.
+        variableFormula: "coil-m",
+        notes: "Apocryphal: a weapon of the BATTLETECH video game (Harebrained Schemes, Heavy Metal expansion), where COIL stands for 'Contained Overflow Inertia Linkage' (https://www.sarna.net/wiki/Coil-M). The video game's own numbers are in meters and at five times the tabletop damage (COIL-L: 35 damage, 450 m); the figures here are the tabletop 'Final Stats' of DevianID in the battletech.com forum thread 'A Hare-Brained Weapon' (https://battletech.com/forums/index.php?topic=71729.0, 7 December 2020): COIL-S heat 2, damage 3, range 1/2/3, 2 tons, 4 slots; COIL-M heat 4, damage 5, range 3/6/9, 3 tons, 6 slots; COIL-L heat 9, damage 7, range 5/10/15, 4 tons, 8 slots. The thread's original post is namar13766's, Speedbump's table of 25 November 2020 matches the weights and slots, and Hopalong posted the game's data. Inspired by: DevianID, with Speedbump and namar13766. Not adopted: Seer's fuller ruleset in the same thread (movement points charge the weapon, up to three shots an activation, ammunition explosions of 15, 10 and 5), which is a different weapon to play. Era (NGCFells's ruling, 2026-11-16): a Clan Wolverine weapon. Sarna's Clan Wolverine page (https://www.sarna.net/wiki/Clan_Wolverine) puts a wolverine insignia on the chassis parts from the wreck of the Dobrev, names Dobrev as one of the Clan's founding bloodnames, and has Natasha Kerensky's Black Widow Company apparently tasked with hunting down every trace of the Clan. The Clan existed from 11 June 2807 to 2824 (the Trial of Annihilation was announced on 25 October 2823; the last ground battle was on 7 July 2824). So the weapon was prototyped about 2810 and made from 2815, and the Annihilation ended it in 2824; it is reintroduced in 3025, when the wreck's cargo reaches the Inner Sphere's markets. The Clans do not use it: the Not-Named Clan was erased and its technology is shunned (desgra). A Clan unit recognises a firing COIL by its firing pattern and hunts the carrier (Zellbrigen broken, destroyed as a priority; NGCFells's ruling). NGCFells's reading, not in the thread: Inner Sphere only, as the recovered LosTech is what is in use; cost is the catalog's earlier figure, the game's own scale; Battle Value is derived (derived-values.ts): base damage over the hexes it reaches, times the movement multiplier of the 'Mech's running speed, so it follows the 'Mech (a running speed of 6, a modifier of +2, doubles it); the figure on this record is for a 'Mech whose running speed gives no bonus. BV1 reads the same figure. The Alpha Strike conversion is none. The ranges were meters in the catalog (30 meters a hex); COIL-L's medium band, 315 meters, is 10 hexes, the last whole hex it covers.",
+        lore: "COIL stands for Contained Overflow Inertia Linkage, and it is a Clan Wolverine weapon. The Wolverines, who never backed down, built it in the years of their Clan (2807 to 2824) for light, fast machines: batteries bank the energy of the 'Mech's own stride and spend it in a single beam, so the faster the machine moves before it fires, the harder the shot, while a jump, which gives the batteries nothing to catch, adds nothing. Standing still, a COIL is a weak, hot weapon; at a run it is among the most punishing beams on the field. The batteries are also its weakness, and a COIL that is damaged can dump everything it holds into the 'Mech that carries it. When the Clans annihilated the Wolverines, Nicholas Kerensky erased their name, and the Clans have shunned everything the Not-Named Clan made ever since: no Clan warrior will carry a COIL, which is desgra. A derelict ship, the Dobrev, named for one of the Wolverine bloodnames, carried the Herakleion pattern and a Bull Shark 'Mech out of the dark. Natasha Kerensky's Black Widow Company, apparently tasked with wiping out every trace of the Wolverines, fought mercenaries over the wreck, and the weapons that reached the Inner Sphere's markets came from it. A Clan warrior cannot know a COIL by sight, but the first shot gives it away: its beam has a firing pattern no Clan warrior mistakes, taught to every Clan as the mark of the Not-Named Clan. The moment one fires, every Clan unit that sees it knows what it is, breaks Zellbrigen, and sets out to destroy the machine that carries it before any other, believing it belonged to Clan Wolverine.",
+        rules: "Damage and heat are multiplied by the movement modifier when it is over +1: a 'Mech that moved 5-6 hexes does twice the base, 7-9 hexes three times, 10-17 hexes four times. A 'Mech that stood still, moved 4 hexes or fewer, or jumped fires at the base figures (the original post says a jump cannot fuel a shot). The COIL is +1 to hit. A critical hit to it deals half its damage to the 'Mech as an explosion. Clan reaction (by NGCFells's ruling): a Clan unit cannot tell a COIL by sight, but the moment a COIL fires, every Clan unit that can see it recognises the firing pattern. From then on the carrier is the Clan units' priority target: they break Zellbrigen against it, attack it before any other target, and keep attacking until it is destroyed, believing it belonged to Clan Wolverine. Do not take a COIL where Clans may be present unless the unit is meant to be hunted.",
+        damage: 5,
+        damageAero: 5,
+        accuracyModifier: 1,
+        cbills: 220000,
+        prototype: 2810,
+        introduced: 2815,
+        extinct: 2824,
+        reintroduced: 3025,
+        battleValue: 45,
+        heat: 4,
+        heatAero: 4,
+        weight: 3,
+        range: { min: 0, short: 3, medium: 6, long: 9 },
+        space: { battlemech: 6, protomech: -1, combatVehicle: -1, supportVehicle: -1, aerospaceFighter: -1, smallCraft: -1, dropShip: -1 },
+        shotsPerTon: 0,
+        minAmmoTons: 0,
+        explosive: true,
+        weaponType: ["DE"],
+        techRating: "f",
+        book: "BATTLETECH (Heavy Metal); tabletop figures: DevianID, battletech.com forums, 'A Hare-Brained Weapon'",
+        page: 0,
+        alphaStrike: { heat: 0, rangeShort: 0, rangeMedium: 0, rangeLong: 0, rangeExtreme: 0, tc: false, notes: ["Apocryphal: no Alpha Strike conversion"] },
+        rangeAero: "m"
+    },
+    {
+        isAmmo: false,
+        name: "COIL-L",
+        altNames: ["COIL Large", "Large COIL"],
+        tag: "coil_l",
+        editions: [],
+        techBase: "is",
+        sort: "laser, coil large",
+        category: "Energy Weapons",
+        rulesLevel: 5, // Apocryphal: from a video game, outside the main BattleTech setting.
+        variableFormula: "coil-l",
+        notes: "Apocryphal: a weapon of the BATTLETECH video game (Harebrained Schemes, Heavy Metal expansion), where COIL stands for 'Contained Overflow Inertia Linkage' (https://www.sarna.net/wiki/Coil-M). The video game's own numbers are in meters and at five times the tabletop damage (COIL-L: 35 damage, 450 m); the figures here are the tabletop 'Final Stats' of DevianID in the battletech.com forum thread 'A Hare-Brained Weapon' (https://battletech.com/forums/index.php?topic=71729.0, 7 December 2020): COIL-S heat 2, damage 3, range 1/2/3, 2 tons, 4 slots; COIL-M heat 4, damage 5, range 3/6/9, 3 tons, 6 slots; COIL-L heat 9, damage 7, range 5/10/15, 4 tons, 8 slots. The thread's original post is namar13766's, Speedbump's table of 25 November 2020 matches the weights and slots, and Hopalong posted the game's data. Inspired by: DevianID, with Speedbump and namar13766. Not adopted: Seer's fuller ruleset in the same thread (movement points charge the weapon, up to three shots an activation, ammunition explosions of 15, 10 and 5), which is a different weapon to play. Era (NGCFells's ruling, 2026-11-16): a Clan Wolverine weapon. Sarna's Clan Wolverine page (https://www.sarna.net/wiki/Clan_Wolverine) puts a wolverine insignia on the chassis parts from the wreck of the Dobrev, names Dobrev as one of the Clan's founding bloodnames, and has Natasha Kerensky's Black Widow Company apparently tasked with hunting down every trace of the Clan. The Clan existed from 11 June 2807 to 2824 (the Trial of Annihilation was announced on 25 October 2823; the last ground battle was on 7 July 2824). So the weapon was prototyped about 2810 and made from 2815, and the Annihilation ended it in 2824; it is reintroduced in 3025, when the wreck's cargo reaches the Inner Sphere's markets. The Clans do not use it: the Not-Named Clan was erased and its technology is shunned (desgra). A Clan unit recognises a firing COIL by its firing pattern and hunts the carrier (Zellbrigen broken, destroyed as a priority; NGCFells's ruling). NGCFells's reading, not in the thread: Inner Sphere only, as the recovered LosTech is what is in use; cost is the catalog's earlier figure, the game's own scale; Battle Value is derived (derived-values.ts): base damage over the hexes it reaches, times the movement multiplier of the 'Mech's running speed, so it follows the 'Mech (a running speed of 6, a modifier of +2, doubles it); the figure on this record is for a 'Mech whose running speed gives no bonus. BV1 reads the same figure. The Alpha Strike conversion is none. The ranges were meters in the catalog (30 meters a hex); COIL-L's medium band, 315 meters, is 10 hexes, the last whole hex it covers.",
+        lore: "COIL stands for Contained Overflow Inertia Linkage, and it is a Clan Wolverine weapon. The Wolverines, who never backed down, built it in the years of their Clan (2807 to 2824) for light, fast machines: batteries bank the energy of the 'Mech's own stride and spend it in a single beam, so the faster the machine moves before it fires, the harder the shot, while a jump, which gives the batteries nothing to catch, adds nothing. Standing still, a COIL is a weak, hot weapon; at a run it is among the most punishing beams on the field. The batteries are also its weakness, and a COIL that is damaged can dump everything it holds into the 'Mech that carries it. When the Clans annihilated the Wolverines, Nicholas Kerensky erased their name, and the Clans have shunned everything the Not-Named Clan made ever since: no Clan warrior will carry a COIL, which is desgra. A derelict ship, the Dobrev, named for one of the Wolverine bloodnames, carried the Herakleion pattern and a Bull Shark 'Mech out of the dark. Natasha Kerensky's Black Widow Company, apparently tasked with wiping out every trace of the Wolverines, fought mercenaries over the wreck, and the weapons that reached the Inner Sphere's markets came from it. A Clan warrior cannot know a COIL by sight, but the first shot gives it away: its beam has a firing pattern no Clan warrior mistakes, taught to every Clan as the mark of the Not-Named Clan. The moment one fires, every Clan unit that sees it knows what it is, breaks Zellbrigen, and sets out to destroy the machine that carries it before any other, believing it belonged to Clan Wolverine.",
+        rules: "Damage and heat are multiplied by the movement modifier when it is over +1: a 'Mech that moved 5-6 hexes does twice the base, 7-9 hexes three times, 10-17 hexes four times. A 'Mech that stood still, moved 4 hexes or fewer, or jumped fires at the base figures (the original post says a jump cannot fuel a shot). The COIL is +1 to hit. A critical hit to it deals half its damage to the 'Mech as an explosion. Clan reaction (by NGCFells's ruling): a Clan unit cannot tell a COIL by sight, but the moment a COIL fires, every Clan unit that can see it recognises the firing pattern. From then on the carrier is the Clan units' priority target: they break Zellbrigen against it, attack it before any other target, and keep attacking until it is destroyed, believing it belonged to Clan Wolverine. Do not take a COIL where Clans may be present unless the unit is meant to be hunted.",
+        damage: 7,
+        damageAero: 7,
+        accuracyModifier: 1,
+        cbills: 360000,
+        prototype: 2810,
+        introduced: 2815,
+        extinct: 2824,
+        reintroduced: 3025,
+        battleValue: 105,
+        heat: 9,
+        heatAero: 9,
+        weight: 4,
+        range: { min: 0, short: 5, medium: 10, long: 15 },
+        space: { battlemech: 8, protomech: -1, combatVehicle: -1, supportVehicle: -1, aerospaceFighter: -1, smallCraft: -1, dropShip: -1 },
+        shotsPerTon: 0,
+        minAmmoTons: 0,
+        explosive: true,
+        weaponType: ["DE"],
+        techRating: "f",
+        book: "BATTLETECH (Heavy Metal); tabletop figures: DevianID, battletech.com forums, 'A Hare-Brained Weapon'",
+        page: 0,
+        alphaStrike: { heat: 0, rangeShort: 0, rangeMedium: 0, rangeLong: 0, rangeExtreme: 0, tc: false, notes: ["Apocryphal: no Alpha Strike conversion"] },
+        rangeAero: "l"
+    },
+    {
+        isAmmo: false,
         name: "Large Laser",
         tag: "large-laser",
         rulesLevel: 1,
@@ -958,7 +1143,7 @@ export const equipmentEnergy: IEquipmentItem[] = [
         book: "TO:AUE",
         page: 134,
         alphaStrike: {
-            heat: 5,
+            heat: 7, // Converting Heat errata v1.3: +7 for an Inner Sphere Laser AMS
             rangeShort: 0,
             rangeMedium: 0,
             rangeLong: 0,
@@ -2784,7 +2969,7 @@ export const equipmentEnergy: IEquipmentItem[] = [
         book: "TO:AUE",
         page: 134,
         alphaStrike: {
-            heat: 7,
+            heat: 5, // Converting Heat errata v1.3: +5 for a Clan Laser AMS
             rangeShort: 0,
             rangeMedium: 0,
             rangeLong: 0,
@@ -3358,3 +3543,7 @@ export const equipmentEnergy: IEquipmentItem[] = [
         rangeAero: "s"
     },
 ];
+
+// The Gothic and video game weapons in this list carry lore and rules like the custom ones (custom-lore-rules.ts).
+applyLoreAndRules(equipmentEnergy);
+applyDerivedAlphaStrike(equipmentEnergy.filter((item) => (item.rulesLevel ?? 0) >= 5));
