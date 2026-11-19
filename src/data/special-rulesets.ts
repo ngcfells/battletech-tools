@@ -55,6 +55,8 @@ export const CHANGE_LABELS: Record<string, string> = {
     tandemChargeSrm: "Tandem-Charge SRM ammunition",
     dropshipConstruction: "DropShip construction",
     techBases: "the tech bases",
+    planetEconomics: "planet economics",
+    planetDamage: "economic damage",
 };
 
 export interface ISpecialRuleset {
@@ -252,6 +254,48 @@ export const btSpecialRulesets: ISpecialRuleset[] = [
         },
         minRulesLevel: CUSTOM_HOMEBREW_RULES_LEVEL,
         changes: ["futureWarsEquipment"],
+    },
+    // Campaign play (campaign plan, 2026-11-19). Campaign rulesets are ticked on a campaign only, never on a unit
+    // (NGCFells's builder's call 6); the figures are in future-wars-economics.ts and future-wars-economic-damage.ts.
+    {
+        id: "fw-economics",
+        summary: "Planets earn money: resource dots pay their holder a million C-bills a quarter, more when worked together.",
+        category: "campaign",
+        name: "Future Wars: Economics",
+        description: "Each area of the campaign planet holds resource dots (light and heavy manufacturing, mining, radioactive "
+            + "materials, oil, food, refining, processing, or the GM's own). Each dot pays the side holding its area "
+            + "1,000,000 C-bills every three months. Dots in the same area worked together pay more: mining, refining and "
+            + "heavy manufacturing 7 million; two food and processing 6 million; oil, refining and processing 12 million; "
+            + "any other combination the GM sets pays double, or triple, its dots. A dot counts in one combination only; the "
+            + "grouping that pays most is used unless the GM picks one. "
+            + "Both printings merged into one ruleset by NGCFells's decision.",
+        source: {
+            title: "Herb Barents, 'Economics', Future Wars #5 (1987), pp.5-6; reprinted in The Best of Future Wars, Volume One (1991), pp.33-34",
+            publication: "Future Wars", tag: "FW #5", author: "Herb Barents",
+        },
+        minRulesLevel: CUSTOM_HOMEBREW_RULES_LEVEL,
+        changes: ["planetEconomics"],
+    },
+    {
+        id: "fw-economic-damage",
+        summary: "Battles wreck the planet's economy: roll 2D6 for each resource dot in the fought-over area.",
+        category: "campaign",
+        name: "Future Wars: Economic Damage (derived)",
+        description: "Derived by NGCFells. Inspired by Herb Barents, Future Wars #5 (\"make up a table for each of the things on "
+            + "your planet\"). After a battle in an area, roll 2D6 for each live dot there; the number or more destroys it: "
+            + "food 6+, oil 7+, mining and radioactive materials 8+, refining and processing 9+, light manufacturing 10+, "
+            + "heavy manufacturing 11+ (a GM's own type, 8+ unless set). Size of the fight (the largest force): lance -2, "
+            + "company +0, battalion +1, regiment +2. Defender's restraint: -1 while the defender holds the area in the "
+            + "campaign's first quarter. Scorched earth, declared by the side leaving: +3. Partisans: each quarter, one dot "
+            + "the GM chooses in each area the invader holds, at -2. A natural 2 never destroys.",
+        source: {
+            title: "Table derived by NGCFells (2026-11-19), inspired by Herb Barents, 'Economics', Future Wars #5 (1987), p.6, and "
+                + "The Best of Future Wars, Volume One (1991), pp.33-34",
+            publication: "Future Wars", tag: "FW #5", author: "Herb Barents",
+        },
+        requires: ["fw-economics"],
+        minRulesLevel: CUSTOM_HOMEBREW_RULES_LEVEL,
+        changes: ["planetDamage"],
     },
     // The four Future Wars DropShip construction methods (#172, DropShips plan). Each replaces the TechManual's DropShip
     // construction, so they refuse each other; the tables and weights are in future-wars-dropships.ts.

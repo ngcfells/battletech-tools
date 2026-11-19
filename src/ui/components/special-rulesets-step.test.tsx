@@ -70,7 +70,9 @@ describe("SpecialRulesetsStep list", () => {
 
     it("filters by search, source and the two toggles, and offers Clear filters", () => {
         openFromNo();
-        expect(rows().length).toBe(btSpecialRulesets.length);
+        // A unit's window leaves the campaign rulesets out (NGCFells's builder's call 6).
+        const unitRulesets = btSpecialRulesets.filter((ruleset) => ruleset.category !== "campaign").length;
+        expect(rows().length).toBe(unitRulesets);
         fireEvent.change(screen.getByLabelText("Search rulesets"), { target: { value: "Bruanning" } });
         expect(rows().length).toBe(2); // Weapon Malfunctions in both printings
         fireEvent.change(screen.getByLabelText("Search rulesets"), { target: { value: "" } });
@@ -81,7 +83,7 @@ describe("SpecialRulesetsStep list", () => {
         expect(rows().length).toBe(0);
         expect(screen.getByText("No rulesets match.")).toBeTruthy();
         fireEvent.click(screen.getByRole("button", { name: "Clear filters" }));
-        expect(rows().length).toBe(btSpecialRulesets.length);
+        expect(rows().length).toBe(unitRulesets);
     });
 
     it("opens a folded group while a search is on", () => {

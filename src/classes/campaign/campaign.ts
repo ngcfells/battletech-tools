@@ -1,5 +1,6 @@
 import { findCampaignEdition } from "../../data/campaign-editions";
 import { generateUUID } from "../../utils/generateUUID";
+import { CAMPAIGN_RULE_HOOKS } from "./campaign-rules";
 import {
     CAMPAIGN_EXPORT_VERSION,
     CampaignSideRole,
@@ -212,11 +213,13 @@ export class Campaign {
         return this.timeStep === "month" ? addMonths( this.startDate, this.step ) : this.startDate;
     }
 
-    /** Moves the campaign on; the ruleset and edition hooks are added by the Economics task. */
+    /** Moves the campaign on one step at a time, running the edition's step hook and each ticked ruleset's. */
     advance( steps: number = 1 ): void {
         for( let i = 0; i < steps; i++ ) {
             this.step++;
             this.addLog( `${STEP_LABELS[this.timeStep]} ${this.step}` );
+            this.edition?.onStep?.( this );
+            for( const id of this.rulesetIds ) CAMPAIGN_RULE_HOOKS[id]?.onStep?.( this );
         }
     }
 }

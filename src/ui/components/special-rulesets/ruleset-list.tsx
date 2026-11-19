@@ -8,6 +8,9 @@ import {
 /** Up to this many rulesets in all, every group starts open; past it only groups with something ticked do. */
 const OPEN_ALL_UP_TO = 12;
 
+/** What a unit's Special Rulesets window lists (NGCFells's builder's call 6, 2026-11-19). */
+const UNIT_RULESET_CATEGORIES: RulesetCategory[] = ["construction", "play", "setting"];
+
 /**
  * The Special Rulesets window's list (#324): a filter bar, then one folding group a category, then a row a ruleset with
  * its checkbox, source tag, one-line summary, More info button and, when it cannot be ticked, why.
@@ -21,8 +24,11 @@ export default function RulesetList(props: {
     onGroupToggle: (category: RulesetCategory, open: boolean) => void;
     onToggle: (ids: string[]) => void;
     onMoreInfo: (id: string, button: HTMLButtonElement) => void;
+    /** The categories listed; unset, every one but "campaign" (campaign rulesets are ticked on a campaign only). */
+    categories?: RulesetCategory[];
 }): JSX.Element {
-    const all = getSpecialRulesets();
+    const categories = props.categories ?? UNIT_RULESET_CATEGORIES;
+    const all = getSpecialRulesets().filter((ruleset) => categories.includes(ruleset.category));
     const { filter } = props;
     const shown = filterRulesets(all, filter, props.tickedIds, props.unitType);
     const groups = groupRulesets(all, shown, props.tickedIds);

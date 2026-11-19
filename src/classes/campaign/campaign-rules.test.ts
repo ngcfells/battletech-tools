@@ -1,0 +1,92 @@
+import { afterEach, describe, expect, it } from "vitest";
+import { CAMPAIGN_EDITIONS } from "../../data/campaign-editions";
+import { getRulesetBlock, findSpecialRuleset } from "../../data/special-rulesets";
+import { Campaign } from "./campaign";
+import { CAMPAIGN_RULE_HOOKS } from "./campaign-rules";
+
+const economyCampaign = ( rulesetIds: string[] = ["fw-economics"] ): Campaign => {
+    const c = new Campaign();
+    c.rulesetIds = rulesetIds;
+    const held = c.addSide( "Defenders", "defender" );
+    c.addSide( "Raiders", "attacker" );
+    c.planet = {
+        systemId: null, name: "Testworld", customDotTypes: [],
+        areas: [ { id: "a1", name: "Farms", terrain: "plains", controllerSideId: held.id, comboOverride: null,
+            dots: [ { id: "d1", type: "food", destroyed: false }, { id: "d2", type: "food", destroyed: false }, { id: "d3", type: "processing", destroyed: false } ] } ],
+    };
+    return c;
+};
+
+describe( "Campaign rule hooks", () => {
+    afterEach( () => { CAMPAIGN_EDITIONS.length = 0; } );
+
+    it( "has a step hook for Economics only", () => {
+        expect( typeof CAMPAIGN_RULE_HOOKS["fw-economics"].onStep ).toBe( "function" );
+        expect( CAMPAIGN_RULE_HOOKS["fw-economic-damage"]?.onStep ).toBeUndefined();
+    } );
+
+    it( "pays on months 3, 6 and 9 only", () => {
+        const c = economyCampaign();
+        c.advance( 9 );
+        const paydays = c.ledger.filter( ( e ) => e.rule === "fw-economics" );
+        expect( paydays.map( ( e ) => e.step ) ).toEqual( [3, 6, 9] );
+        expect( paydays.every( ( e ) => e.amount === 6000000 ) ).toBe( true );
+        expect( c.balance( c.sides[0].id ) ).toBe( 18000000 );
+        expect( c.log.filter( ( l ) => l.text.startsWith( "Payday" ) ) ).toHaveLength( 3 );
+    } );
+
+    it( "pays each step once when advanced one month at a time", () => {
+        const c = economyCampaign();
+        for( let i = 0; i < 6; i++ ) c.advance();
+        expect( c.ledger.map( ( e ) => e.step ) ).toEqual( [3, 6] );
+    } );
+
+    it( "no payday without the ruleset ticked", () => {
+        const c = economyCampaign( [] );
+        c.advance( 6 );
+        expect( c.ledger ).toEqual( [] );
+    } );
+
+    it( "no payday on a sortie edition", () => {
+        CAMPAIGN_EDITIONS.push( { id: "test-sortie", name: "Test", source: { title: "", publication: "", pages: "" }, kind: "unit", currency: "SP", timeStep: "sortie" } );
+        const c = economyCampaign();
+        c.editionId = "test-sortie";
+        c.advance( 6 );
+        expect( c.ledger ).toEqual( [] );
+    } );
+
+    it( "a side with no paying areas gets no entry", () => {
+        const c = economyCampaign();
+        c.advance( 3 );
+        expect( c.ledger.map( ( e ) => e.sideId ) ).toEqual( [c.sides[0].id] );
+    } );
+
+    it( "runs the edition's own step hook", () => {
+        const seen: number[] = [];
+        CAMPAIGN_EDITIONS.push( { id: "test-month", name: "Test", source: { title: "", publication: "", pages: "" }, kind: "unit", currency: "C", timeStep: "month", onStep: ( c ) => { seen.push( c.step ); } } );
+        const c = economyCampaign( [] );
+        c.editionId = "test-month";
+        c.advance( 2 );
+        expect( seen ).toEqual( [1, 2] );
+    } );
+} );
+
+describe( "The Economics rulesets", () => {
+    it( "economics says the merge was NGCFells's decision", () => {
+        const r = findSpecialRuleset( "fw-economics" )!;
+        expect( r.category ).toBe( "campaign" );
+        expect( r.changes ).toEqual( ["planetEconomics"] );
+        expect( r.source.author ).toBe( "Herb Barents" );
+        expect( r.description ).toContain( "Both printings merged into one ruleset by NGCFells's decision." );
+        expect( r.summary.length ).toBeLessThanOrEqual( 120 );
+    } );
+
+    it( "economic damage needs economics and credits NGCFells", () => {
+        const r = findSpecialRuleset( "fw-economic-damage" )!;
+        expect( r.requires ).toEqual( ["fw-economics"] );
+        expect( r.description ).toContain( "Inspired by Herb Barents, Future Wars #5" );
+        expect( r.description ).toContain( "NGCFells" );
+        expect( getRulesetBlock( [], "fw-economic-damage" ) ).toMatchObject( { kind: "needs" } );
+        expect( getRulesetBlock( ["fw-economics"], "fw-economic-damage" ) ).toBeUndefined();
+    } );
+} );

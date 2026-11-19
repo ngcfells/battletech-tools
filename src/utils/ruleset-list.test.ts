@@ -39,7 +39,7 @@ describe("ruleset list", () => {
         const shown = filterRulesets(btSpecialRulesets, { ...EMPTY_RULESET_FILTER, query: "Flint" }, ticked);
         expect(groupRulesets(btSpecialRulesets, shown, ticked).map((group) => group.category)).toEqual(["construction"]);
         const all = groupRulesets(btSpecialRulesets, btSpecialRulesets, ticked);
-        expect(all.map((group) => group.category)).toEqual(["construction", "play", "setting"]);
+        expect(all.map((group) => group.category)).toEqual(["construction", "play", "campaign", "setting"]);
         expect(all.find((group) => group.category === "play")).toMatchObject({ label: "Play", ticked: 1, total: 10 });
         expect(all[0]).toMatchObject({ label: "Construction", ticked: 0, total: 7 });
     });
