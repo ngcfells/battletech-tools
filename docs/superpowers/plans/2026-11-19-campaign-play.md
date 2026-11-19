@@ -80,7 +80,8 @@ edition; this plan snapshots 'Mechs and Alpha Strike units only.
 
 **Interfaces:**
 - Produces (in `campaign-types.ts`):
-  - `type CampaignTimeStep = "month" | "sortie" | "track"`
+  - `type CampaignTimeStep = "month" | "turn" | "track" | "sortie"` (approved by NGCFells 2026-11-19 at the Task 1
+    check-in; travel is a duration in days logged against the step, never a step)
   - `type CampaignSideRole = "attacker" | "defender" | "other"`
   - `interface ICampaignSide { id: string; name: string; role: CampaignSideRole }`
   - `interface ICampaignLedgerEntry { id: string; sideId: string; step: number; amount: number; currency: string; reason: string; rule: string }`
@@ -92,7 +93,23 @@ edition; this plan snapshots 'Mechs and Alpha Strike units only.
   - `interface ICustomDotType { id: string; name: string; value: number; target: number }` (GM-added type; value
     default 1,000,000; destruction target default 8, builder's call: the middle of the table)
   - `interface ICampaignForceUnit` (Task 4 fills it; Task 2 stores it as given)
-  - `interface ICampaignEdition { id: string; name: string; source: { title: string; publication: string; pages: string }; kind: "unit" | "planet" | "both"; currency: string; timeStep: CampaignTimeStep }` plus the hooks Task 1 settles
+  - `interface ICampaignEdition { id: string; name: string; source: { title: string; publication: string; pages: string }; kind: "unit" | "planet" | "both"; currency: string; timeStep: CampaignTimeStep }` plus these optional hooks
+    (approved by NGCFells 2026-11-19; an edition implements only what its book prints, screens show only its steps):
+    `onStep?(c: Campaign): void`; `afterBattle?(c: Campaign, result: ICampaignBattleResult): void`;
+    `repairCost?(c: Campaign, unit: ICampaignForceUnit, damage: unknown): ICampaignCost & { days?: number }`;
+    `purchaseCost?(c: Campaign, unit: ICampaignForceUnit): ICampaignCost`;
+    `contractOffer?(c: Campaign, terms: Record<string, unknown>): ICampaignContract`;
+    `contractPay?(c: Campaign, contract: ICampaignContract): Omit<ICampaignLedgerEntry, "id">[]`;
+    `rating?(c: Campaign): { value: number | string; label: string }`; `supply?(c: Campaign): void`;
+    `control?(c: Campaign, area: ICampaignArea, result: ICampaignBattleResult): void`;
+    `travelTime?(c: Campaign, fromSystemId: string, toSystemId: string): { days: number; jumps: number }`
+  - `interface ICampaignCost { amount: number; currency: string }`
+  - `type FightSize = "lance" | "company" | "battalion" | "regiment"`
+  - `interface ICampaignBattleResult { areaId?: string; sides: { sideId: string; size: FightSize; losses: string[] }[]; heldBySideId: string | null }`
+  - `interface ICampaignContract { id: string; name: string; terms: Record<string, unknown> }` (the unit editions
+    plan fills it out)
+  - `ICampaignArea` also carries `seized?: boolean` (BattleForce 2's seized vs default control) and `siteId?: string`
+    (the Objectives site it was seeded from)
   - `interface ICampaignExport { version: 1; id: string; name: string; editionId: string | null; rulesetIds: string[]; startDate: string; step: number; sides: ICampaignSide[]; targets: ICampaignTarget[]; force: ICampaignForceUnit[]; ledger: ICampaignLedgerEntry[]; log: ICampaignLogEntry[]; planet: ICampaignPlanet | null; editionState: unknown }`
   - `CAMPAIGN_EXPORT_VERSION = 1`
 - Produces (in `campaign.ts`): `class Campaign` with `constructor(data: ICampaignExport | null = null)`,
@@ -183,6 +200,13 @@ edition; this plan snapshots 'Mechs and Alpha Strike units only.
   string; population?: number; socioIndustrial?: string; factions?: string[] }[] }`;
   `interface IStarSystemCorrection { systemId: string; path: string; value: unknown; source: string; note: string }`
   and `STAR_SYSTEM_CORRECTIONS: IStarSystemCorrection[]` (empty until Task 6).
+- Objectives (approved by NGCFells 2026-11-19): `interface IStarSystemSite { id: string; systemId: string; planet:
+  string; name: string; products: string[]; heavy: boolean; position?: string; date: string; source: string }`
+  (`heavy` = makes 'Mechs, vehicles, fighters or ships: NGCFells's call); `interface IStarSystemGarrison { systemId:
+  string; date: string; faction: string; units: string[]; source: string }` (unit deployments by date: which
+  regiments are where; NGCFells asked for it 2026-11-19); both in `src/data/bundled/star-systems-sites.json`
+  (`{ sites: [], garrisons: [] }`, hand-collected from our books in Task 6, so no MekHQ licence on it), loaded with
+  the detail.
 - The script reads the zip, keeps only these fields, applies `STAR_SYSTEM_CORRECTIONS` (exported to a JSON sidecar
   the script reads: `src/data/star-systems/star-system-corrections.json`; the `.ts` file re-exports it typed), and
   writes the two JSON files sorted by id. Index holds every system; detail is loaded only on campaign pages.
@@ -213,6 +237,13 @@ edition; this plan snapshots 'Mechs and Alpha Strike units only.
   cite it; for fields cited only "canon", search the extracts for the system and check what is found. Each mismatch:
   a correction (book wins, `source` = book and page) and a ledger row. Fields from "SUCS" or "assumption" are not
   changed; ledger counts them. Order: systems used by tests and the ISCS disagreements first, then by book.
+- [ ] **Step 2b: Objectives sites and garrisons (agent, same batches).** From the eight Objectives books (2011-13)
+  read each world's industrial sites (name, products, position, page) into `star-systems-sites.json`; deployments
+  (which units are on which world, by date) from Objective Raids (1992, 3054), the House books and Handbooks
+  (House Davion... 1980s; Handbook: House... 2010s), the Field Manuals and the Combat Manuals, each entry dated by
+  its own book (era-honest). Text extracts lead, page images decide. This plan ships the first batch (Objective Raids
+  and one Field Manual); the ledger lists the rest by book for later sessions. The ledger says
+  which books are done; later sessions continue.
 - [ ] **Step 3:** Re-run the import (Task 5 Step 3) and its tests. Expected: PASS.
 - [ ] **Step 4:** Commit `Star systems: verified against the books (n corrections)`; the ledger says how much is
   verified, so later sessions continue the batches.
@@ -365,10 +396,13 @@ Screens (follow the Aces campaign page's look and its save-on-change pattern):
   Refresh, Remove) with "Add from current Classic BattleTech force" / "Add from current Alpha Strike force".
 - Systems (always shown): the campaign's system with its planets (each field with its source), the owner on the
   campaign's date, and a targets table per side (system search, intent travel / assault / defend, distance in
-  light-years and fewest jumps from the campaign's system). Footer credits MegaMek Data (CC BY-NC-SA 4.0) and ISCS.
+  light-years and fewest jumps from the campaign's system). Each system also lists its Objectives sites and the
+  garrisons on or nearest before the campaign's date (with book and page). Footer credits MegaMek Data (CC BY-NC-SA
+  4.0) and ISCS.
 - Planet (shown when `fw-economics` is ticked): areas (name, terrain, controller, dots by type with add/remove and a
   destroyed mark), custom dot types, GM combinations (needs + double/triple), payday preview per area with the grouping
-  used. When `fw-economic-damage` is ticked: an after-battle damage roller per area (fight size, scorched earth;
+  used; a "Seed dots from Objectives" button adds an area per site of the campaign planet (heavy manufacturing dot if
+  `heavy`, else light), editable afterwards. When `fw-economic-damage` is ticked: an after-battle damage roller per area (fight size, scorched earth;
   restraint shown automatically) and a quarterly partisans roll; results logged and marked on the dots. Both rulesets
   show NOT OFFICIAL and their credits.
 
@@ -376,7 +410,9 @@ Screens (follow the Aces campaign page's look and its save-on-change pattern):
   Tharkad, a planet of it is offered); `"a target shows distance and jumps"`; `"creates a campaign with a side and saves it"`; `"advancing three months
   shows a payday in the controller's ledger"`; `"payday preview shows the grouping that pays most"` (the 14,000,000
   area); `"the damage roller marks destroyed dots and logs them"` (inject the roll); `"the planet page is hidden
-  without Economics"`; `"shows NOT OFFICIAL and NGCFells's merge note"`.
+  without Economics"`; `"shows NOT OFFICIAL and NGCFells's merge note"`; `"seeds dots from Objectives sites"`
+  (fixture site with heavy: true becomes an area with one heavy manufacturing dot); `"lists a system's garrisons for
+  the campaign's date"`.
 - [ ] **Step 2:** Run. Expected: FAIL.
 - [ ] **Step 3:** Implement.
 - [ ] **Step 4:** Run. Expected: PASS.
