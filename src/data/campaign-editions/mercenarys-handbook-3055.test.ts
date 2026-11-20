@@ -260,6 +260,12 @@ describe( "Mercenary's Handbook (3055) edition hooks", () => {
         expect( MH3055_EDITION.rating?.( campaign( undefined, A_RATED ) ) ).toEqual( { value: 135, label: "Dragoons Rating A" } );
     } );
 
+    it( "holds a contract to its mission's length: an objective raid at most 2 months, others at least their minimum (pp.104-105)", () => {
+        expect( sign( campaign(), { mission: "objective-raid", months: 12 } ).months ).toBe( 2 );
+        expect( sign( campaign(), { mission: "garrison", months: 3 } ).months ).toBe( 12 );
+        expect( sign( campaign(), { mission: "recon", months: 5 } ).months ).toBe( 5 );
+    } );
+
     it( "signs a 4-month contract: up to 25% before the mission less 5%, upkeep monthly, the rest at the end (p.106)", () => {
         const c = campaign();
         const contract = sign( c, { advancePct: 40 } );

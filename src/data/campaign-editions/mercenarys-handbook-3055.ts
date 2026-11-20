@@ -525,11 +525,18 @@ export interface IMh3055Signing {
     upFront: boolean;
 }
 
+/** A contract's length held to its mission (pp.104-105): an objective raid runs at most 2 months, the rest at least their minimum. */
+export const mh3055ContractMonths = ( mission: Mh3055Mission, months: number ): number => {
+    const asked = Math.max( 1, Math.round( Number.isFinite( months ) ? months : 1 ) );
+    const limit = MH3055_MISSIONS[mission].minMonths;
+    return mission === "objective-raid" ? Math.min( limit, asked ) : Math.max( limit, asked );
+}
+
 /** Records the contract and books what is drawn before the mission (Disbursing Payment, p.106). */
 export const mh3055SignContract = ( c: Campaign, state: IMh3055State, signing: IMh3055Signing ): IMh3055Contract => {
     const sideId = unitSideId( c, state.sideId );
     const rating = mh3055DragoonsRating( state.rating ).rating;
-    const months = Math.max( 1, Math.round( signing.months ) );
+    const months = mh3055ContractMonths( signing.mission, signing.months );
     const { total } = mh3055ContractPay( { biweeklyPayroll: mh3055Payroll( state.personnel ), rating,
         employerMultiplier: signing.employerMultiplier, mission: signing.mission, vsClans: signing.vsClans, months,
         bonuses: signing.bonuses } );

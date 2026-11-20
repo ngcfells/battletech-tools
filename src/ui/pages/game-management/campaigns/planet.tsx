@@ -166,11 +166,20 @@ function GmTables( props: { campaign: Campaign; update: Update } ): JSX.Element 
     const addType = () => {
         const name = newTypeName.trim();
         if( !name ) return;
-        const value = Math.max( 0, Number( typeValue ) || FW_DOT_VALUE );
+        const typed = Number( typeValue );
+        const value = typeValue.trim() !== "" && Number.isFinite( typed ) ? Math.max( 0, typed ) : FW_DOT_VALUE;
         const target = Math.min( 12, Math.max( 2, Math.round( Number( typeTarget ) || 8 ) ) );
         setPlanet( ( p ) => ( { ...p, customDotTypes: p.customDotTypes.concat( { id: "gm-" + generateUUID(), name, value, target } ) } ) );
         setNewTypeName( "" );
     };
+
+    /** Removes a GM dot type with its dots in every area and the GM combinations that need it. */
+    const removeType = ( typeId: string ) => setPlanet( ( p ) => ( {
+        ...p,
+        customDotTypes: p.customDotTypes.filter( ( x ) => x.id !== typeId ),
+        customCombinations: p.customCombinations.filter( ( combo ) => !( typeId in combo.needs ) ),
+        areas: p.areas.map( ( a ) => ( a.dots.some( ( d ) => d.type === typeId ) ? { ...a, dots: a.dots.filter( ( d ) => d.type !== typeId ) } : a ) ),
+    } ) );
 
     const addCombination = () => {
         const name = comboName.trim();
@@ -188,7 +197,7 @@ function GmTables( props: { campaign: Campaign; update: Update } ): JSX.Element 
             {planet.customDotTypes.length > 0 ? (
                 <ul>{planet.customDotTypes.map( ( t ) => (
                     <li key={t.id}>{t.name}: {formatMoney( t.value )} C-bills, destroyed on {t.target}+{" "}
-                        <button type="button" className="btn btn-link btn-sm" onClick={() => setPlanet( ( p ) => ( { ...p, customDotTypes: p.customDotTypes.filter( ( x ) => x.id !== t.id ) } ) )}>Remove</button>
+                        <button type="button" className="btn btn-link btn-sm" title="Also removes its dots and the combinations that need it" onClick={() => removeType( t.id )}>Remove</button>
                     </li>
                 ) )}</ul>
             ) : null}

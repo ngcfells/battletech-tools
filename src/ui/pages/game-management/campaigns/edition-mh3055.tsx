@@ -4,7 +4,7 @@ import { QUALITIES, QUALITY_LABELS, Quality, rangeLookup } from '../../../../cla
 import {
     IMh3055Person, IMh3055RatingInputs, IMh3055State, IMh3055Unit, Mh3055Employer, Mh3055Mission, Mh3055Position,
     MH3055_CORPORATIONS, MH3055_EMPLOYER_NAMES, MH3055_MERCENARY_EMPLOYERS, MH3055_MINOR_PERIPHERY, MH3055_MISSIONS,
-    MH3055_MISSION_NAMES, MH3055_RATING_PAY, MH3055_SALARIES, MH3055_TEMPLATES, mh3055BattleLoss, mh3055ContractOffers,
+    MH3055_MISSION_NAMES, MH3055_RATING_PAY, MH3055_SALARIES, MH3055_TEMPLATES, mh3055BattleLoss, mh3055ContractMonths, mh3055ContractOffers,
     mh3055ContractPay, mh3055DragoonsRating, mh3055EmployerMultiplier, mh3055EmployerRoll, mh3055JobRoll,
     mh3055Maintenance, mh3055MinorPowerRoll, mh3055Payroll, mh3055ReadState, mh3055Salvage, mh3055SignContract,
     mh3055StraightSupport, mh3055SupportPoints, mh3055Transport, mh3055WeeklyOverhead,
@@ -74,7 +74,7 @@ export default function EditionMh3055( props: { campaign: Campaign; update: ( ch
     const dragoons = mh3055DragoonsRating( state.rating );
     const employerMultiplier = mh3055EmployerMultiplier( employer, corporationRoll );
     const pay = mh3055ContractPay( { biweeklyPayroll: payroll, rating: dragoons.rating, employerMultiplier, mission, vsClans,
-        months: Math.max( 1, months ), bonuses } );
+        months: mh3055ContractMonths( mission, months ), bonuses } );
     const contract = state.contract && !state.contract.completed ? state.contract : null;
 
     const rollEmployer = () => {
@@ -121,7 +121,7 @@ export default function EditionMh3055( props: { campaign: Campaign; update: ( ch
         salvage: mh3055Salvage( campaignRoll.twoD6(), employer, vsClans ),
     } );
     const sign = () => props.update( ( c ) => {
-        mh3055SignContract( c, mh3055ReadState( c.editionState ), { employer, mission, vsClans, months: Math.max( 1, months ),
+        mh3055SignContract( c, mh3055ReadState( c.editionState ), { employer, mission, vsClans, months,
             employerMultiplier, bonuses, advancePct, upFront } );
     } );
 

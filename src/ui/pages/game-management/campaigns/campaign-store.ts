@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Campaign } from "../../../../classes/campaign/campaign";
 import { ICampaignExport } from "../../../../classes/campaign/campaign-types";
 import { getCampaigns, saveCampaigns } from "../../../../dataSaves";
@@ -15,31 +15,42 @@ export const campaignDice = {
 /** The campaign dice as a unit edition takes them; read at roll time so a test's replacement is used. */
 export const campaignRoll = { d6: () => campaignDice.roll1d6(), twoD6: () => campaignDice.roll2d6() };
 
-/** Every saved campaign, and a save that writes the whole list (as the Aces campaign page does). */
+/**
+ * Every saved campaign, and a save that writes the whole list (as the Aces campaign page does). `latest` always
+ * holds the newest list, so a save made after an await builds on what is there now, not on an older render.
+ */
 export function useCampaigns( appGlobals: IAppGlobals ) {
     const [campaigns, setCampaigns] = useState<ICampaignExport[] | null>( null );
+    const latest = useRef<ICampaignExport[] | null>( null );
     useEffect( () => {
         let live = true;
-        getCampaigns( appGlobals.appSettings ).then( ( list ) => { if( live ) setCampaigns( list ); } );
+        getCampaigns( appGlobals.appSettings ).then( ( list ) => {
+            if( !live ) return;
+            latest.current = list;
+            setCampaigns( list );
+        } );
         return () => { live = false; };
     }, [appGlobals.appSettings] );
     const saveAll = useCallback( ( next: ICampaignExport[] ) => {
+        latest.current = next;
         setCampaigns( next );
         saveCampaigns( appGlobals.appSettings, next );
     }, [appGlobals.appSettings] );
-    return { campaigns, saveAll };
+    return { campaigns, saveAll, latest };
 }
 
-/** One campaign by id; update() changes a copy through the class and saves it at once. */
+/** One campaign by id; update() changes the newest copy through the class and saves it at once. */
 export function useCampaign( appGlobals: IAppGlobals, id: string | undefined ) {
-    const { campaigns, saveAll } = useCampaigns( appGlobals );
+    const { campaigns, saveAll, latest } = useCampaigns( appGlobals );
     const data = campaigns?.find( ( c ) => c.id === id ) ?? null;
     const campaign = data ? new Campaign( data ) : null;
     const update = ( change: ( c: Campaign ) => void ) => {
-        if( !campaigns || !data ) return;
-        const next = new Campaign( data );
+        const list = latest.current;
+        const current = list?.find( ( c ) => c.id === id );
+        if( !list || !current ) return;
+        const next = new Campaign( current );
         change( next );
-        saveAll( campaigns.map( ( c ) => ( c.id === next.id ? next.export() : c ) ) );
+        saveAll( list.map( ( c ) => ( c.id === next.id ? next.export() : c ) ) );
     };
     return { loaded: campaigns !== null, campaign, update };
 }

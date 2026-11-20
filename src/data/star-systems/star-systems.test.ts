@@ -3,6 +3,7 @@ import { join } from "path";
 import { describe, expect, it } from "vitest";
 import { IStarSystemIndexEntry } from "./star-system-types";
 import {
+    cacheUntilRejected,
     DEFAULT_JUMP_RANGE_LY,
     getDistanceLY,
     getFewestJumps,
@@ -19,6 +20,16 @@ const raw = JSON.parse( readFileSync( join( __dirname, "data", "index.json" ), "
 const byId = ( id: string ) => raw.find( ( s ) => s.id === id )!;
 
 describe( "Star system lookups", () => {
+    it( "caches a load, but forgets a failed one so the next call tries again", async () => {
+        const cached = cacheUntilRejected<string>();
+        let calls = 0;
+        const failOnce = () => { calls++; return calls === 1 ? Promise.reject( new Error( "chunk failed" ) ) : Promise.resolve( "data" ); };
+        await expect( cached( "index", failOnce ) ).rejects.toThrow( "chunk failed" );
+        expect( await cached( "index", failOnce ) ).toBe( "data" );
+        expect( await cached( "index", failOnce ) ).toBe( "data" );
+        expect( calls ).toBe( 2 );
+    } );
+
     it( "finds Tharkad by a partial name", async () => {
         await loadStarSystemIndex();
         expect( getStarSystemIndex() ).toHaveLength( 3186 );

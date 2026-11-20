@@ -155,6 +155,24 @@ describe( "Campaign screens", () => {
         expect( store.campaigns[0].log.some( ( l ) => l.text.includes( "Bremen" ) && l.text.includes( "destroyed" ) ) ).toBe( true );
     } );
 
+    it( "a GM dot type may be worth 0, and removing one removes its dots and combinations", async () => {
+        const c = saved();
+        c.planet!.customDotTypes = [ { id: "gm-port", name: "Spaceport", value: 2000000, target: 8 } ];
+        c.planet!.customCombinations = [ { id: "gm-hub", name: "Port hub", needs: { "gm-port": 1, oil: 1 }, multiplier: 2 } ];
+        c.planet!.areas[0].dots.push( { id: "dp", type: "gm-port", destroyed: false } );
+        store.campaigns = [ c.export() ];
+        open( "/c1/planet" );
+        fireEvent.change( await screen.findByLabelText( "Type name" ), { target: { value: "Shrine" } } );
+        fireEvent.change( screen.getByLabelText( "Value" ), { target: { value: "0" } } );
+        fireEvent.click( screen.getByRole( "button", { name: "Add dot type" } ) );
+        await waitFor( () => expect( store.campaigns[0].planet!.customDotTypes.find( ( t ) => t.name === "Shrine" )?.value ).toBe( 0 ) );
+        const port = screen.getByText( /^Spaceport:/ ).closest( "li" )!;
+        fireEvent.click( within( port ).getByRole( "button", { name: "Remove" } ) );
+        await waitFor( () => expect( store.campaigns[0].planet!.customDotTypes.map( ( t ) => t.name ) ).toEqual( ["Shrine"] ) );
+        expect( store.campaigns[0].planet!.areas[0].dots.some( ( d ) => d.type === "gm-port" ) ).toBe( false );
+        expect( store.campaigns[0].planet!.customCombinations ).toEqual( [] );
+    } );
+
     it( "the planet page is hidden without Economics", async () => {
         saved( [] );
         open( "/c1" );

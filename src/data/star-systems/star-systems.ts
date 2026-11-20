@@ -12,20 +12,34 @@ type Loaders = Record<string, () => Promise<unknown>>;
 const indexLoader = import.meta.glob( "./data/index.json", { import: "default" } ) as Loaders;
 const detailLoaders = import.meta.glob( "./data/detail-*.json", { import: "default" } ) as Loaders;
 
-let indexPromise: Promise<IStarSystemIndexEntry[]> | null = null;
+/**
+ * A promise cache by key that forgets a load that fails, so a failed chunk fetch is tried again on the next call
+ * instead of needing a page reload.
+ */
+export const cacheUntilRejected = <T>() => {
+    const cache = new Map<string, Promise<T>>();
+    return ( key: string, load: () => Promise<T> ): Promise<T> => {
+        let pending = cache.get( key );
+        if( !pending ) {
+            const started = load();
+            pending = started;
+            cache.set( key, started );
+            started.catch( () => { if( cache.get( key ) === started ) cache.delete( key ); } );
+        }
+        return pending;
+    };
+}
+
 let index: IStarSystemIndexEntry[] = [];
-const shards = new Map<string, Promise<Record<string, IStarSystemDetail>>>();
+const indexCache = cacheUntilRejected<IStarSystemIndexEntry[]>();
+const shards = cacheUntilRejected<Record<string, IStarSystemDetail>>();
 
 /** Fetches the index of every system (once). */
-export const loadStarSystemIndex = (): Promise<IStarSystemIndexEntry[]> => {
-    if( !indexPromise ) {
-        indexPromise = indexLoader["./data/index.json"]().then( ( data ) => {
-            index = data as IStarSystemIndexEntry[];
-            return index;
-        } );
-    }
-    return indexPromise;
-}
+export const loadStarSystemIndex = (): Promise<IStarSystemIndexEntry[]> =>
+    indexCache( "index", () => indexLoader["./data/index.json"]().then( ( data ) => {
+        index = data as IStarSystemIndexEntry[];
+        return index;
+    } ) );
 
 /** The index if it has been fetched (loadStarSystemIndex), else empty. */
 export const getStarSystemIndex = (): IStarSystemIndexEntry[] => index;
@@ -39,8 +53,7 @@ export const loadStarSystemDetail = async ( id: string ): Promise<IStarSystemDet
     const file = `./data/detail-${shardOf( id )}.json`;
     const loader = detailLoaders[file];
     if( !loader ) return undefined;
-    if( !shards.has( file ) ) shards.set( file, loader().then( ( data ) => data as Record<string, IStarSystemDetail> ) );
-    const shard = await shards.get( file )!;
+    const shard = await shards( file, () => loader().then( ( data ) => data as Record<string, IStarSystemDetail> ) );
     return Object.prototype.hasOwnProperty.call( shard, id ) ? shard[id] : undefined;
 }
 
@@ -49,18 +62,14 @@ export interface IStarSystemSites {
     garrisons: IStarSystemGarrison[];
 }
 
-let sitesPromise: Promise<IStarSystemSites> | null = null;
+const sitesCache = cacheUntilRejected<IStarSystemSites>();
 
 /** Industrial sites and garrisons read from our own books (not MegaMek Data), fetched once. */
-export const loadStarSystemSites = (): Promise<IStarSystemSites> => {
-    if( !sitesPromise ) {
-        sitesPromise = import( "./star-systems-sites.json" ).then( ( module ) => {
-            const data = ( module.default ?? module ) as Partial<IStarSystemSites>;
-            return { sites: data.sites ?? [], garrisons: data.garrisons ?? [] };
-        } );
-    }
-    return sitesPromise;
-}
+export const loadStarSystemSites = (): Promise<IStarSystemSites> =>
+    sitesCache( "sites", () => import( "./star-systems-sites.json" ).then( ( module ) => {
+        const data = ( module.default ?? module ) as Partial<IStarSystemSites>;
+        return { sites: data.sites ?? [], garrisons: data.garrisons ?? [] };
+    } ) );
 
 /** The garrison entries of the latest date on or before `date` (several books may list one date). */
 export const getSystemGarrisons = ( garrisons: IStarSystemGarrison[], systemId: string, date: string ): IStarSystemGarrison[] => {
