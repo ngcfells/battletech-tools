@@ -49,11 +49,11 @@ function cleanArray<T>( raw: unknown, pick: ( item: Record<string, any> ) => T |
     return out;
 }
 
-const ROLES: CampaignSideRole[] = ["attacker", "defender", "other"];
+export const CAMPAIGN_SIDE_ROLES: CampaignSideRole[] = ["attacker", "defender", "other"];
 const INTENTS: ICampaignTarget["intent"][] = ["travel", "assault", "defend"];
 
 const pickSide = ( s: Record<string, any> ): ICampaignSide | null =>
-    isString( s.id ) && isString( s.name ) && ROLES.includes( s.role ) ? { id: s.id, name: s.name, role: s.role } : null;
+    isString( s.id ) && isString( s.name ) && CAMPAIGN_SIDE_ROLES.includes( s.role ) ? { id: s.id, name: s.name, role: s.role } : null;
 
 const pickLedger = ( e: Record<string, any> ): ICampaignLedgerEntry | null =>
     isString( e.id ) && isString( e.sideId ) && isNumber( e.step ) && isNumber( e.amount ) && isString( e.currency )

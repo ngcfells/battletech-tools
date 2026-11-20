@@ -266,7 +266,7 @@ export default function CampaignPlanet( props: { appGlobals: IAppGlobals; id: st
         return page( <TextSection label="Planet economy">{back}<p>Tick Future Wars: Economics in the campaign's rulesets (Change, on the campaign page) to play the planet's economy.</p></TextSection> );
     }
     const planet = campaign.planet;
-    if( !planet ) return page( <TextSection label="Planet economy">{back}<p>This campaign has no planet.</p></TextSection> );
+    if( !planet ) return page( <TextSection label="Planet economy">{back}<p>This campaign has no planet yet: set one in Setup on the campaign page.</p></TextSection> );
     const damage = campaign.rulesetIds.includes( "fw-economic-damage" );
 
     const addArea = () => {

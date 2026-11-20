@@ -332,6 +332,61 @@ describe( "Campaign screens", () => {
         await waitFor( () => expect( store.campaigns[0].ledger ).toEqual( [] ) );
     } );
 
+    // Review M4: a campaign's setup can change after it is made.
+    it( "the Setup section renames the campaign and a side, adds a side and changes the start date", async () => {
+        saved();
+        open( "/c1" );
+        const setup = await screen.findByTestId( "campaign-setup" );
+        fireEvent.change( within( setup ).getByLabelText( "Campaign name" ), { target: { value: "Tharkad Holdout" } } );
+        await waitFor( () => expect( store.campaigns[0].name ).toBe( "Tharkad Holdout" ) );
+        fireEvent.change( within( setup ).getByLabelText( "Name of Raiders" ), { target: { value: "Jade Falcons" } } );
+        await waitFor( () => expect( store.campaigns[0].sides.map( ( s ) => s.name ) ).toEqual( ["Lyrans", "Jade Falcons"] ) );
+        fireEvent.change( within( setup ).getByLabelText( "Role of Lyrans" ), { target: { value: "other" } } );
+        await waitFor( () => expect( store.campaigns[0].sides[0].role ).toBe( "other" ) );
+        fireEvent.change( within( setup ).getByLabelText( "New side name" ), { target: { value: "ComStar" } } );
+        fireEvent.click( within( setup ).getByRole( "button", { name: "Add side" } ) );
+        await waitFor( () => expect( store.campaigns[0].sides.map( ( s ) => s.name ) ).toEqual( ["Lyrans", "Jade Falcons", "ComStar"] ) );
+        // A date is taken only once it is a whole date.
+        fireEvent.change( within( setup ).getByLabelText( "Start date" ), { target: { value: "3050-0" } } );
+        fireEvent.change( within( setup ).getByLabelText( "Start date" ), { target: { value: "3050-06-01" } } );
+        await waitFor( () => expect( store.campaigns[0].startDate ).toBe( "3050-06-01" ) );
+        expect( screen.getByTestId( "campaign-step" ).textContent ).toContain( "3050-06-01" );
+    } );
+
+    it( "a campaign made with no planet gets one in Setup, and its planet page opens", async () => {
+        const c = saved();
+        c.planet = null;
+        store.campaigns = [ c.export() ];
+        open( "/c1" );
+        const setup = await screen.findByTestId( "campaign-setup" );
+        fireEvent.change( within( setup ).getByLabelText( "Planet name" ), { target: { value: "Freeworld" } } );
+        await waitFor( () => expect( store.campaigns[0].planet ).toEqual( { systemId: null, name: "Freeworld", areas: [], customDotTypes: [], customCombinations: [] } ) );
+        cleanup();
+        open( "/c1/planet" );
+        expect( await screen.findByText( "Freeworld", { exact: false } ) ).toBeTruthy();
+        expect( screen.queryByText( "This campaign has no planet", { exact: false } ) ).toBeNull();
+    } );
+
+    it( "the planet page without a planet says where to set one", async () => {
+        const c = saved();
+        c.planet = null;
+        store.campaigns = [ c.export() ];
+        open( "/c1/planet" );
+        expect( await screen.findByText( "This campaign has no planet yet: set one in Setup on the campaign page.", { exact: false } ) ).toBeTruthy();
+    } );
+
+    it( "Setup picks the planet from a star system", async () => {
+        const c = saved();
+        c.planet = null;
+        store.campaigns = [ c.export() ];
+        open( "/c1" );
+        const setup = await screen.findByTestId( "campaign-setup" );
+        fireEvent.change( within( setup ).getByLabelText( "Star system" ), { target: { value: "Thark" } } );
+        fireEvent.click( await within( setup ).findByRole( "button", { name: "Tharkad" }, { timeout: 10000 } ) );
+        await waitFor( () => expect( store.campaigns[0].planet?.systemId ).toBe( "Tharkad" ), { timeout: 10000 } );
+        expect( store.campaigns[0].planet?.name ).toBe( "Tharkad" );
+    } );
+
     // The spec's after-battle form (review M12): who fought and at what size, what each side lost, where, who holds it.
     it( "the after-battle form records a battle: losses, the area's new holder and a log line", async () => {
         const c = saved();

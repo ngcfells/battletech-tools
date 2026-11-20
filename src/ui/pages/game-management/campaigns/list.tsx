@@ -1,10 +1,8 @@
-import React, { useEffect, useState, type JSX } from 'react';
+import React, { useState, type JSX } from 'react';
 import { Link, useNavigate } from 'react-router';
-import { Campaign } from '../../../../classes/campaign/campaign';
+import { Campaign, CAMPAIGN_SIDE_ROLES } from '../../../../classes/campaign/campaign';
 import { CampaignSideRole, ICampaignSide } from '../../../../classes/campaign/campaign-types';
 import { CAMPAIGN_EDITIONS, findCampaignEdition } from '../../../../data/campaign-editions';
-import { IStarPlanet, IStarSystemIndexEntry, readSourced } from '../../../../data/star-systems/star-system-types';
-import { loadStarSystemDetail } from '../../../../data/star-systems/star-systems';
 import { findSpecialRuleset, RulesetCategory } from '../../../../data/special-rulesets';
 import { generateUUID } from '../../../../utils/generateUUID';
 import { EMPTY_RULESET_FILTER, IRulesetListFilter } from '../../../../utils/ruleset-list';
@@ -13,18 +11,13 @@ import RulesetList from '../../../components/special-rulesets/ruleset-list';
 import TextSection from '../../../components/text-section';
 import UIPage from '../../../components/ui-page';
 import { useCampaigns } from './campaign-store';
-import SystemSearch from './system-search';
-
-const ROLES: CampaignSideRole[] = ["attacker", "defender", "other"];
-
-const planetName = (planet: IStarPlanet): string => String(readSourced(planet.name)?.value ?? "");
+import PlanetPicker from './planet-picker';
 
 /** The new-campaign form: name, start date, planet (from a star system or free text), campaign rulesets, sides. */
 function NewCampaign(props: { onCreate: (campaign: Campaign) => void; onCancel: () => void }): JSX.Element {
     const [name, setName] = useState("New Campaign");
     const [startDate, setStartDate] = useState("3025-01-01");
-    const [system, setSystem] = useState<IStarSystemIndexEntry | null>(null);
-    const [planets, setPlanets] = useState<IStarPlanet[]>([]);
+    const [systemId, setSystemId] = useState<string | null>(null);
     const [planet, setPlanet] = useState("");
     const [rulesetIds, setRulesetIds] = useState<string[]>([]);
     const [filter, setFilter] = useState<IRulesetListFilter>(EMPTY_RULESET_FILTER);
@@ -34,18 +27,6 @@ function NewCampaign(props: { onCreate: (campaign: Campaign) => void; onCancel: 
     const [sideName, setSideName] = useState("");
     const [sideRole, setSideRole] = useState<CampaignSideRole>("attacker");
     const [editionId, setEditionId] = useState("");
-
-    useEffect(() => {
-        let live = true;
-        if (!system) return;
-        loadStarSystemDetail(system.id).then((detail) => {
-            if (!live || !detail) return;
-            setPlanets(detail.planets);
-            const main = detail.planets.find((p) => p.sysPos === detail.primarySlot) ?? detail.planets[0];
-            setPlanet(main ? planetName(main) : "");
-        });
-        return () => { live = false; };
-    }, [system]);
 
     const toggle = (ids: string[]) => setRulesetIds((ticked) => {
         let next = [...ticked];
@@ -67,7 +48,7 @@ function NewCampaign(props: { onCreate: (campaign: Campaign) => void; onCancel: 
         campaign.rulesetIds = rulesetIds;
         campaign.sides = sides;
         campaign.planet = planet.trim()
-            ? { systemId: system?.id ?? null, name: planet.trim(), areas: [], customDotTypes: [], customCombinations: [] }
+            ? { systemId, name: planet.trim(), areas: [], customDotTypes: [], customCombinations: [] }
             : null;
         campaign.addLog("Campaign started");
         props.onCreate(campaign);
@@ -86,21 +67,7 @@ function NewCampaign(props: { onCreate: (campaign: Campaign) => void; onCancel: 
                     </select>
                 </label>
             </p>
-            <SystemSearch label="Star system" onPick={setSystem} />
-            {system ? (
-                <p>
-                    System: <strong>{system.name}</strong>{" "}
-                    <button type="button" className="btn btn-link btn-sm" onClick={() => { setSystem(null); setPlanets([]); setPlanet(""); }}>Clear</button>{" "}
-                    <label>
-                        Planet{" "}
-                        <select value={planet} onChange={(e) => setPlanet(e.currentTarget.value)}>
-                            {planets.map((p) => <option key={planetName(p) + p.sysPos} value={planetName(p)}>{planetName(p)}</option>)}
-                        </select>
-                    </label>
-                </p>
-            ) : (
-                <p><label>Planet name <input type="text" value={planet} placeholder="or pick a star system" onChange={(e) => setPlanet(e.currentTarget.value)} /></label></p>
-            )}
+            <PlanetPicker systemId={systemId} name={planet} onChange={(id, name) => { setSystemId(id); setPlanet(name); }} />
             <h4>Campaign rulesets</h4>
             <RulesetList tickedIds={rulesetIds} filter={filter} onFilter={setFilter} openGroups={openGroups}
                 onGroupToggle={(category, isOpen) => setOpenGroups({ ...openGroups, [category]: isOpen })}
@@ -113,7 +80,7 @@ function NewCampaign(props: { onCreate: (campaign: Campaign) => void; onCancel: 
                 <label>
                     Role{" "}
                     <select value={sideRole} onChange={(e) => setSideRole(e.currentTarget.value as CampaignSideRole)}>
-                        {ROLES.map((role) => <option key={role} value={role}>{role}</option>)}
+                        {CAMPAIGN_SIDE_ROLES.map((role) => <option key={role} value={role}>{role}</option>)}
                     </select>
                 </label>
                 <button type="button" className="btn btn-secondary btn-sm" onClick={addSide}>Add side</button>

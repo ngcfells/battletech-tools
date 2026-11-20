@@ -21,6 +21,7 @@ import RulesetList from '../../../components/special-rulesets/ruleset-list';
 import TextSection from '../../../components/text-section';
 import UIPage from '../../../components/ui-page';
 import { MH1987_ID } from '../../../../data/campaign-editions/mercenarys-handbook-1987';
+import CampaignSetup from './campaign-setup';
 import { formatMoney, useCampaign } from './campaign-store';
 import EditionMh1987 from './edition-mh1987';
 import { MH3055_ID } from '../../../../data/campaign-editions/mercenarys-handbook-3055';
@@ -328,6 +329,10 @@ export default function CampaignHome( props: { appGlobals: IAppGlobals; id: stri
                             onGroupToggle={( category, isOpen ) => setOpenGroups( { ...openGroups, [category]: isOpen } )}
                             onToggle={toggleRulesets} onMoreInfo={() => undefined} categories={["campaign"]} />
                     ) : null}
+                </TextSection>
+
+                <TextSection label="Setup">
+                    <CampaignSetup campaign={campaign} update={update} />
                 </TextSection>
 
                 {campaign.editionId === MH1987_ID ? (
