@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { Campaign, CAMPAIGN_MAX_EDITION_STATE } from "./campaign";
 import { CAMPAIGN_EXPORT_VERSION, ICampaignExport } from "./campaign-types";
+import { CAMPAIGN_EDITIONS } from "../../data/campaign-editions";
 
 const fixture = (): ICampaignExport => ( {
     version: CAMPAIGN_EXPORT_VERSION,
@@ -85,6 +86,31 @@ describe( "Campaign", () => {
         expect( () => new Campaign().import( data ) ).toThrow( /edition data is too large/ );
         data.editionState = { roster: [ { notes: "x".repeat( 1000 ) } ] };
         expect( new Campaign( data ).editionState ).toEqual( data.editionState );
+    } );
+
+    it( "records a battle: logs it, marks losses, sets who holds the area and runs the edition's hook", () => {
+        const c = new Campaign( fixture() );
+        c.force = [ { id: "u1", sideId: "b", kind: "battlemech", savedId: null, name: "Wolverine WVR-6R", cost: null, bv: null, pv: null, snapshot: null, status: "" } ];
+        const seen: unknown[] = [];
+        c.editionId = "test-battle";
+        const registered = [ ...CAMPAIGN_EDITIONS ];
+        CAMPAIGN_EDITIONS.push( { id: "test-battle", name: "Test", source: { title: "", publication: "", pages: "" }, kind: "unit",
+            currency: "C-bills", timeStep: "month", afterBattle: ( _c, r ) => { seen.push( r ); } } );
+        try {
+            c.recordBattle( {
+                areaId: "ar1",
+                sides: [ { sideId: "a", size: "company", losses: [] }, { sideId: "b", size: "lance", losses: ["u1"] } ],
+                heldBySideId: "b",
+            } );
+        } finally {
+            CAMPAIGN_EDITIONS.splice( 0, CAMPAIGN_EDITIONS.length, ...registered );
+        }
+        expect( c.planet!.areas[0].controllerSideId ).toBe( "b" );
+        expect( c.planet!.areas[0].seized ).toBe( true );
+        expect( c.force[0].status ).toBe( "Lost in battle, month 2" );
+        expect( c.log[c.log.length - 1].text ).toBe(
+            "Battle at Tharkad City: Lyran Commonwealth (company) vs Raiders (lance, lost Wolverine WVR-6R); Raiders hold the ground" );
+        expect( seen ).toHaveLength( 1 );
     } );
 
     it( "advances months and logs each", () => {

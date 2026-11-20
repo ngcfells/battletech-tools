@@ -5,8 +5,8 @@ import AlphaStrikeForce from '../../../../classes/alpha-strike-force';
 import { BattleMech } from '../../../../classes/battlemech';
 import { BattleMechForce } from '../../../../classes/battlemech-force';
 import { refreshForceUnit, snapshotAlphaStrikeUnit, snapshotBattleMech } from '../../../../classes/campaign/campaign-force';
-import { STEP_LABELS } from '../../../../classes/campaign/campaign';
-import { ICampaignTarget } from '../../../../classes/campaign/campaign-types';
+import { Campaign, STEP_LABELS } from '../../../../classes/campaign/campaign';
+import { FightSize, ICampaignBattleResult, ICampaignTarget } from '../../../../classes/campaign/campaign-types';
 import { findSpecialRuleset, RulesetCategory } from '../../../../data/special-rulesets';
 import { IStarPlanet, IStarSystemDetail, IStarSystemIndexEntry, MEGAMEK_DATA_SOURCE, readSourced, StoredSourced } from '../../../../data/star-systems/star-system-types';
 import {
@@ -124,6 +124,94 @@ function AddLedgerEntry( props: { onAdd: ( reason: string, amount: number ) => v
                 setAmount( "" );
             }}>Add entry</button>
         </p>
+    );
+}
+
+const FIGHT_SIZES: FightSize[] = ["lance", "company", "battalion", "regiment"];
+
+/**
+ * The spec's after-battle form (review M12): per side, whether it fought, at what size and which of its force units it
+ * lost; where the battle was (optional) and who holds the ground. Campaign.recordBattle logs it and runs the hooks.
+ */
+function AfterBattle( props: { campaign: Campaign; onRecord: ( result: ICampaignBattleResult ) => void } ): JSX.Element {
+    const { campaign } = props;
+    const [fought, setFought] = useState<Record<string, FightSize>>( {} );
+    const [losses, setLosses] = useState<string[]>( [] );
+    const [areaId, setAreaId] = useState( "" );
+    const [heldBy, setHeldBy] = useState( "" );
+    const areas = campaign.planet?.areas ?? [];
+    const sides = campaign.sides.filter( ( s ) => fought[s.id] );
+    const toggle = <T,>( list: T[], item: T ): T[] => ( list.includes( item ) ? list.filter( ( i ) => i !== item ) : list.concat( item ) );
+    const record = () => {
+        props.onRecord( {
+            areaId: areaId || undefined,
+            sides: sides.map( ( s ) => ( {
+                sideId: s.id, size: fought[s.id],
+                losses: losses.filter( ( id ) => campaign.force.some( ( u ) => u.id === id && u.sideId === s.id ) ),
+            } ) ),
+            heldBySideId: heldBy || null,
+        } );
+        setFought( {} );
+        setLosses( [] );
+        setAreaId( "" );
+        setHeldBy( "" );
+    };
+    return (
+        <div data-testid="campaign-battle">
+            {campaign.sides.map( ( side ) => {
+                const units = campaign.force.filter( ( u ) => u.sideId === side.id );
+                return (
+                    <p key={side.id}>
+                        <label>
+                            <input type="checkbox" aria-label={side.name + " fought"} checked={!!fought[side.id]} onChange={() => {
+                                const next = { ...fought };
+                                if( next[side.id] ) delete next[side.id];
+                                else next[side.id] = "lance";
+                                setFought( next );
+                            }} /> {side.name} fought
+                        </label>{" "}
+                        {fought[side.id] ? (
+                            <>
+                                <label>
+                                    Size{" "}
+                                    <select aria-label={side.name + " size"} value={fought[side.id]}
+                                        onChange={( e ) => setFought( { ...fought, [side.id]: e.currentTarget.value as FightSize } )}>
+                                        {FIGHT_SIZES.map( ( size ) => <option key={size} value={size}>{size}</option> )}
+                                    </select>
+                                </label>{" "}
+                                {units.length > 0 ? <>Lost:{" "}</> : null}
+                                {units.map( ( unit ) => (
+                                    <label key={unit.id}>
+                                        <input type="checkbox" aria-label={"Lost " + unit.name} checked={losses.includes( unit.id )}
+                                            onChange={() => setLosses( toggle( losses, unit.id ) )} /> {unit.name}{" "}
+                                    </label>
+                                ) )}
+                            </>
+                        ) : null}
+                    </p>
+                );
+            } )}
+            <p>
+                {areas.length > 0 ? (
+                    <label>
+                        Area{" "}
+                        <select aria-label="Area" value={areaId} onChange={( e ) => setAreaId( e.currentTarget.value )}>
+                            <option value="">(none)</option>
+                            {areas.map( ( a ) => <option key={a.id} value={a.id}>{a.name}</option> )}
+                        </select>
+                    </label>
+                ) : null}{" "}
+                <label>
+                    Held by{" "}
+                    <select aria-label="Held by" value={heldBy} onChange={( e ) => setHeldBy( e.currentTarget.value )}>
+                        <option value="">No one</option>
+                        {campaign.sides.map( ( s ) => <option key={s.id} value={s.id}>{s.name}</option> )}
+                    </select>
+                </label>{" "}
+                <button type="button" className="btn btn-primary btn-sm" disabled={sides.length === 0} onClick={record}>Record battle</button>
+            </p>
+            <p className="smaller-text">Lost units are marked on the Force list; the area passes to the side that holds the ground.</p>
+        </div>
     );
 }
 
@@ -315,6 +403,10 @@ export default function CampaignHome( props: { appGlobals: IAppGlobals; id: stri
                         <button type="button" className="btn btn-secondary btn-sm" onClick={() => addForce( "alpha-strike" )}>Add from current Alpha Strike force</button>
                     </p>
                     {message ? <p className="smaller-text">{message}</p> : null}
+                </TextSection>
+
+                <TextSection label="After a battle">
+                    <AfterBattle campaign={campaign} onRecord={( result ) => update( ( c ) => c.recordBattle( result ) )} />
                 </TextSection>
 
                 <TextSection label="Systems">

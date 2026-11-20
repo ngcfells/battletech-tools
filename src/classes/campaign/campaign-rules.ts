@@ -1,6 +1,6 @@
 import { FW_PAYDAY_MONTHS, FW_PRINTED_COMBINATIONS, getPayday, IFwCombination } from "../../data/future-wars-economics";
 import type { Campaign } from "./campaign";
-import { ICampaignPlanet } from "./campaign-types";
+import { ICampaignBattleResult, ICampaignPlanet } from "./campaign-types";
 
 /** The printed combinations plus the GM's own on this planet. */
 export const getPlanetCombinations = ( planet: ICampaignPlanet ): IFwCombination[] =>
@@ -15,6 +15,7 @@ export const getPlanetCombinations = ( planet: ICampaignPlanet ): IFwCombination
 
 export interface ICampaignRuleHooks {
     onStep?: ( campaign: Campaign ) => void;
+    afterBattle?: ( campaign: Campaign, result: ICampaignBattleResult ) => void;
 }
 
 export const CAMPAIGN_RULE_HOOKS: Record<string, ICampaignRuleHooks> = {

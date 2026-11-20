@@ -6,6 +6,7 @@ import {
     CampaignSideRole,
     CampaignTimeStep,
     ICampaignArea,
+    ICampaignBattleResult,
     ICampaignCombination,
     ICampaignDot,
     ICampaignEdition,
@@ -223,6 +224,32 @@ export class Campaign {
         const side: ICampaignSide = { id: generateUUID(), name, role };
         this.sides.push( side );
         return side;
+    }
+
+    /**
+     * A battle's result as the players type it in (the spec's after-battle form): logs it, marks each lost unit,
+     * gives the area to the side that holds the ground (seized, when it changes hands), then runs the edition's
+     * control and afterBattle hooks and each ticked ruleset's afterBattle.
+     */
+    recordBattle( result: ICampaignBattleResult ): void {
+        const sideName = ( id: string | null ) => this.sides.find( ( s ) => s.id === id )?.name ?? "an unknown side";
+        const stepLabel = `${STEP_LABELS[this.timeStep].toLowerCase()} ${this.step}`;
+        const area = result.areaId ? this.planet?.areas.find( ( a ) => a.id === result.areaId ) : undefined;
+        const parts = result.sides.map( ( s ) => {
+            const lost = s.losses.map( ( id ) => this.force.find( ( u ) => u.id === id )?.name ).filter( ( n ): n is string => !!n );
+            return `${sideName( s.sideId )} (${s.size}${lost.length ? ", lost " + lost.join( ", " ) : ""})`;
+        } );
+        const lostIds = new Set( result.sides.flatMap( ( s ) => s.losses ) );
+        this.force = this.force.map( ( u ) => ( lostIds.has( u.id ) ? { ...u, status: `Lost in battle, ${stepLabel}` } : u ) );
+        if( area && result.heldBySideId && area.controllerSideId !== result.heldBySideId ) {
+            area.controllerSideId = result.heldBySideId;
+            area.seized = true;
+        }
+        this.addLog( `Battle${area ? " at " + area.name : ""}: ${parts.join( " vs " )}; `
+            + ( result.heldBySideId ? `${sideName( result.heldBySideId )} hold the ground` : "no one holds the ground" ) );
+        if( area ) this.edition?.control?.( this, area, result );
+        this.edition?.afterBattle?.( this, result );
+        for( const id of this.rulesetIds ) CAMPAIGN_RULE_HOOKS[id]?.afterBattle?.( this, result );
     }
 
     /** ISO date: the start date plus `step` months on a month time step; the start date otherwise. */

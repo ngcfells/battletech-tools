@@ -332,6 +332,31 @@ describe( "Campaign screens", () => {
         await waitFor( () => expect( store.campaigns[0].ledger ).toEqual( [] ) );
     } );
 
+    // The spec's after-battle form (review M12): who fought and at what size, what each side lost, where, who holds it.
+    it( "the after-battle form records a battle: losses, the area's new holder and a log line", async () => {
+        const c = saved();
+        const raiders = c.sides[1];
+        c.force = [ { id: "u1", sideId: raiders.id, kind: "battlemech", savedId: null, name: "Wolverine WVR-6R", cost: null, bv: null, pv: null, snapshot: null, status: "" } ];
+        store.campaigns = [ c.export() ];
+        open( "/c1" );
+        const form = await screen.findByTestId( "campaign-battle" );
+        const record = within( form ).getByRole( "button", { name: "Record battle" } );
+        expect( record ).toHaveProperty( "disabled", true );
+        fireEvent.click( within( form ).getByLabelText( "Lyrans fought" ) );
+        fireEvent.change( within( form ).getByLabelText( "Lyrans size" ), { target: { value: "company" } } );
+        fireEvent.click( within( form ).getByLabelText( "Raiders fought" ) );
+        fireEvent.click( within( form ).getByLabelText( "Lost Wolverine WVR-6R" ) );
+        fireEvent.change( within( form ).getByLabelText( "Area" ), { target: { value: "a1" } } );
+        fireEvent.change( within( form ).getByLabelText( "Held by" ), { target: { value: raiders.id } } );
+        fireEvent.click( record );
+        await waitFor( () => expect( store.campaigns[0].force[0].status ).toBe( "Lost in battle, month 0" ) );
+        expect( store.campaigns[0].planet?.areas[0].controllerSideId ).toBe( raiders.id );
+        expect( store.campaigns[0].log.map( ( l ) => l.text ) ).toContain(
+            "Battle at Bremen: Lyrans (company) vs Raiders (lance, lost Wolverine WVR-6R); Raiders hold the ground" );
+        // The form clears for the next battle.
+        await waitFor( () => expect( within( form ).getByLabelText( "Lyrans fought" ) ).toHaveProperty( "checked", false ) );
+    } );
+
     it( "the 3055 panel previews payroll and maintenance and books paydays on advance", async () => {
         const c = saved( [] );
         c.editionId = "mh-3055";
