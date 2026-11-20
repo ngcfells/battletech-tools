@@ -21,8 +21,10 @@ import {
 
 /** No imported array grows past this, so a hostile or corrupt file cannot balloon the saved data. */
 export const CAMPAIGN_MAX_ARRAY = 5000;
+/** Characters of JSON an edition's state may hold (about 5,000 roster lines of 400 characters). */
+export const CAMPAIGN_MAX_EDITION_STATE = 2000000;
 
-const STEP_LABELS: Record<CampaignTimeStep, string> = {
+export const STEP_LABELS: Record<CampaignTimeStep, string> = {
     month: "Month",
     turn: "Turn",
     track: "Track",
@@ -198,7 +200,9 @@ export class Campaign {
         this.ledger = cleanArray( data.ledger, pickLedger );
         this.log = cleanArray( data.log, pickLog );
         this.planet = pickPlanet( data.planet );
-        this.editionState = data.editionState === undefined ? null : JSON.parse( JSON.stringify( data.editionState ) );
+        const editionJson = data.editionState === undefined ? "null" : JSON.stringify( data.editionState ) ?? "null";
+        if( editionJson.length > CAMPAIGN_MAX_EDITION_STATE ) throw new Error( "This campaign's edition data is too large" );
+        this.editionState = JSON.parse( editionJson );
     }
 
     balance( sideId: string, currency: string = this.currency ): number {

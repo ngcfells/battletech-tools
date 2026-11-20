@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { Campaign } from "./campaign";
+import { Campaign, CAMPAIGN_MAX_EDITION_STATE } from "./campaign";
 import { CAMPAIGN_EXPORT_VERSION, ICampaignExport } from "./campaign-types";
 
 const fixture = (): ICampaignExport => ( {
@@ -77,6 +77,14 @@ describe( "Campaign", () => {
         expect( c.rulesetIds ).toEqual( [ "fw-economics", "fw-economic-damage" ] );
         data.version = CAMPAIGN_EXPORT_VERSION + 1;
         expect( () => new Campaign().import( data ) ).toThrow( /newer/ );
+    } );
+
+    it( "refuses an edition state over the size cap", () => {
+        const data: any = fixture();
+        data.editionState = { roster: [ { notes: "x".repeat( CAMPAIGN_MAX_EDITION_STATE ) } ] };
+        expect( () => new Campaign().import( data ) ).toThrow( /edition data is too large/ );
+        data.editionState = { roster: [ { notes: "x".repeat( 1000 ) } ] };
+        expect( new Campaign( data ).editionState ).toEqual( data.editionState );
     } );
 
     it( "advances months and logs each", () => {

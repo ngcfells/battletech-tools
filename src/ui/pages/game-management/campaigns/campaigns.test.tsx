@@ -7,6 +7,7 @@ import { ICampaignExport } from "../../../../classes/campaign/campaign-types";
 import { IAppGlobals } from "../../../app-router";
 import { AppSettings } from "../../../classes/app_settings";
 import { saveCampaigns } from "../../../../dataSaves";
+import { getFewestJumps } from "../../../../data/star-systems/star-systems";
 import { campaignDice } from "./campaign-store";
 import CampaignsRouter from "./_router";
 
@@ -20,13 +21,17 @@ vi.mock( "../../../../dataSaves", async ( original ) => ( {
     getCurrentASForce: vi.fn( async () => null ),
 } ) );
 
-vi.mock( "../../../../data/star-systems/star-systems", async ( original ) => ( {
-    ...( await original<typeof import( "../../../../data/star-systems/star-systems" )>() ),
+vi.mock( "../../../../data/star-systems/star-systems", async ( original ) => {
+    const actual = await original<typeof import( "../../../../data/star-systems/star-systems" )>();
+    return {
+    ...actual,
+    getFewestJumps: vi.fn( actual.getFewestJumps ),
     loadStarSystemSites: vi.fn( async () => ( {
         sites: [ { id: "Tharkad-tharhes", systemId: "Tharkad", planet: "Tharkad", name: "Tharhes Industries", products: ["BattleMechs"], heavy: true, date: "3067-01-01", source: "Objectives: Lyran Alliance p.10" } ],
         garrisons: [ { systemId: "Tharkad", date: "3054-01-01", faction: "LA", units: ["Royal Guard"], source: "Objective Raids p.40" } ],
     } ) ),
-} ) );
+    };
+} );
 
 afterEach( cleanup );
 
@@ -117,6 +122,20 @@ describe( "Campaign screens", () => {
         expect( row.textContent ).toContain( "assault" );
     } );
 
+    it( "typing a unit's status does not search the jumps again", async () => {
+        const c = saved( ["fw-economics"], "Terra" );
+        c.targets = [ { id: "t1", sideId: c.sides[1].id, systemId: "Tharkad", intent: "assault" } ];
+        c.force = [ { id: "u1", sideId: c.sides[0].id, kind: "battlemech", savedId: null, name: "Atlas AS7-D", cost: null, bv: null, pv: null, snapshot: null, status: "" } ];
+        store.campaigns = [ c.export() ];
+        open( "/c1" );
+        const row = await screen.findByTestId( "target-row-Tharkad", {}, { timeout: 10000 } );
+        await waitFor( () => expect( row.textContent ).toMatch( /\d+ jumps?/ ) );
+        vi.mocked( getFewestJumps ).mockClear();
+        fireEvent.change( screen.getByLabelText( "Status of Atlas AS7-D" ), { target: { value: "damaged" } } );
+        await waitFor( () => expect( ( screen.getByLabelText( "Status of Atlas AS7-D" ) as HTMLInputElement ).value ).toBe( "damaged" ) );
+        expect( vi.mocked( getFewestJumps ) ).not.toHaveBeenCalled();
+    } );
+
     it( "lists a system's garrisons for the campaign's date", async () => {
         saved();
         open( "/c1" );
@@ -131,6 +150,23 @@ describe( "Campaign screens", () => {
         const credit = await screen.findByText( /MegaMek Data/ );
         expect( credit.closest( "section, .text-section, div" )!.parentElement!.textContent ).not.toMatch( /\bour\b/i );
         expect( screen.getAllByText( /None in the books checked so far/ ).length ).toBeGreaterThan( 0 );
+    } );
+
+    it( "names owners and garrison factions, says no date for sites, and logs each step once", async () => {
+        saved();
+        open( "/c1" );
+        await screen.findByText( /Royal Guard/, {}, { timeout: 10000 } );
+        // MegaMek Data: Tharkad is the Federated Commonwealth's in 3055; the 3054 garrison is named for its own date.
+        await waitFor( () => expect( document.body.textContent ).toContain( "Owner on 3055-01-01: Federated Commonwealth." ), { timeout: 10000 } );
+        expect( document.body.textContent ).toContain( "3054, Lyran Commonwealth: Royal Guard" );
+        fireEvent.click( screen.getByRole( "button", { name: "Advance a month" } ) );
+        await waitFor( () => expect( screen.getByTestId( "campaign-step" ).textContent ).toContain( "1" ) );
+        expect( screen.queryByText( /month 1: Month 1/i ) ).toBeNull();
+        expect( screen.getByText( "Month 1" ) ).toBeTruthy();
+        store.campaigns[0].planet!.systemId = "Terra";
+        cleanup();
+        open( "/c1" );
+        expect( await screen.findByText( "None in the books checked so far.", {}, { timeout: 10000 } ) ).toBeTruthy();
     } );
 
     it( "payday preview shows the grouping that pays most", async () => {
@@ -270,6 +306,7 @@ describe( "Campaign screens", () => {
         expect( old ).toContain( "Inspired by" );
         expect( old ).toContain( "a squad a week" );
         expect( old ).toContain( "5 SP" );
+        expect( old ).toContain( "a destroyed squad keeps its people" );
         cleanup();
         c.editionId = "mh-3055";
         store.campaigns = [ c.export() ];

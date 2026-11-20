@@ -229,7 +229,8 @@ export default function EditionMh1987( props: { campaign: Campaign; update: ( ch
                 there: remuneration is paid a squad a week, four weeks to the month; DropShips and JumpShips are crews, so they
                 pay no supplies and count for no reputation, morale or contract squads; airmobile infantry maintenance
                 (&quot;Airmobile +4&quot;) is 5 SP a squad; a force with no row on a mission&apos;s outcome table reads the nearest
-                printed row; morale enters those tables as its band, Green 1 to Elite 4.
+                printed row; morale enters those tables as its band, Green 1 to Elite 4; a destroyed squad keeps its people
+                (salary, supplies and morale) but makes no support points, counts for no reputation and is not hired.
             </p>
         </div>
     );

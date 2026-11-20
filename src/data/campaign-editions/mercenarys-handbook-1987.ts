@@ -125,19 +125,25 @@ export interface IMh1987MonthlyCosts {
     supportSP: number;
     maintenanceCost: number;
     total: number;
+    /** Squads with working equipment: the ones an employer hires (a destroyed squad's people stay, p.50). */
+    fieldSquads: number;
 }
 
 const qualityIndex = ( q: Quality ): number => QUALITIES.indexOf( q );
 
 /** Salaries, supplies, overhead (on salaries + supplies, p.39) and maintenance beyond the support squads' points. */
 export const mh1987MonthlyCosts = ( state: { roster: IMh1987Line[]; overheadPct: Mh1987Overhead } ): IMh1987MonthlyCosts => {
-    let salaries = 0, squads = 0, maintenanceSP = 0, supportSP = 0;
+    let salaries = 0, squads = 0, fieldSquads = 0, maintenanceSP = 0, supportSP = 0;
     for( const line of state.roster ) {
         const type: IMh1987Type = MH1987_TYPES[line.type];
         const q = qualityIndex( line.quality );
+        // A destroyed line's people stay on the books (a MechWarrior becomes Dispossessed, p.50): salary and supplies.
         salaries += line.count * MH1987_SALARIES[type.salary][q];
         if( !type.ship ) squads += line.count;
-        if( line.condition !== "destroyed" ) maintenanceSP += line.count * type.maintenance[line.condition === "new" ? 0 : 1];
+        // Its equipment is "useless" and needs no maintenance (p.38): no upkeep, no repair work, not hired.
+        if( line.condition === "destroyed" ) continue;
+        if( !type.ship ) fieldSquads += line.count;
+        maintenanceSP += line.count * type.maintenance[line.condition === "new" ? 0 : 1];
         if( line.type === "support" ) supportSP += line.count * SUPPORT_POINTS[q];
         if( type.elitePilot && line.quality === "elite" ) supportSP += line.count;
     }
@@ -145,7 +151,7 @@ export const mh1987MonthlyCosts = ( state: { roster: IMh1987Line[]; overheadPct:
     const overhead = Math.round( ( state.overheadPct / 100 ) * ( salaries + supplies ) );
     const maintenanceCost = Math.max( 0, maintenanceSP - supportSP ) * MH1987_CBILLS_PER_SP;
     return { salaries, squads, supplies, overhead, maintenanceSP, supportSP, maintenanceCost,
-        total: salaries + supplies + overhead + maintenanceCost };
+        total: salaries + supplies + overhead + maintenanceCost, fieldSquads };
 }
 
 /** Reputation (p.36): each company's points (type + Veteran 1 / Elite 2) over 12, rounded up, summed. */
@@ -153,7 +159,8 @@ export const mh1987Reputation = ( roster: IMh1987Line[] ): number => {
     const byCompany = new Map<string, number>();
     for( const line of roster ) {
         const type: IMh1987Type = MH1987_TYPES[line.type];
-        if( type.ship ) continue;
+        // The Reputation Table counts 'Mechs and fighters; a destroyed squad has none left (Ruling, NGCFells's reading).
+        if( type.ship || line.condition === "destroyed" ) continue;
         const points = type.reputation + ( line.quality === "veteran" ? 1 : line.quality === "elite" ? 2 : 0 );
         byCompany.set( line.company, ( byCompany.get( line.company ) ?? 0 ) + points * line.count );
     }
@@ -504,7 +511,7 @@ export interface IMh1987Signing {
 /** Records the contract on the edition state and books what is paid on signing (Guarantee Table, p.42-43). */
 export const mh1987SignContract = ( c: Campaign, state: IMh1987State, signing: IMh1987Signing ): IMh1987Contract => {
     const sideId = unitSideId( c, state.sideId );
-    const squads = mh1987MonthlyCosts( state ).squads;
+    const squads = mh1987MonthlyCosts( state ).fieldSquads;
     const total = signing.terms.ratePerSquadWeek * 4 * squads * signing.terms.months;
     let advancePct = 0;
     switch( signing.terms.guarantee ) {

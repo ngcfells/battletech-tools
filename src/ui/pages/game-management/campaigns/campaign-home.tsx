@@ -1,15 +1,16 @@
-import React, { useEffect, useState, type JSX } from 'react';
+import React, { useEffect, useMemo, useState, type JSX } from 'react';
 import { Link } from 'react-router';
 import { AlphaStrikeUnit } from '../../../../classes/alpha-strike-unit';
 import AlphaStrikeForce from '../../../../classes/alpha-strike-force';
 import { BattleMech } from '../../../../classes/battlemech';
 import { BattleMechForce } from '../../../../classes/battlemech-force';
 import { refreshForceUnit, snapshotAlphaStrikeUnit, snapshotBattleMech } from '../../../../classes/campaign/campaign-force';
+import { STEP_LABELS } from '../../../../classes/campaign/campaign';
 import { ICampaignTarget } from '../../../../classes/campaign/campaign-types';
 import { findSpecialRuleset, RulesetCategory } from '../../../../data/special-rulesets';
 import { IStarPlanet, IStarSystemDetail, IStarSystemIndexEntry, MEGAMEK_DATA_SOURCE, readSourced, StoredSourced } from '../../../../data/star-systems/star-system-types';
 import {
-    DEFAULT_JUMP_RANGE_LY, getDistanceLY, getFewestJumps, getStarSystemIndex, getSystemGarrisons, getSystemOwners,
+    DEFAULT_JUMP_RANGE_LY, getDistanceLY, getFactionName, getFewestJumps, getStarSystemIndex, getSystemGarrisons, getSystemOwners,
     IStarSystemSites, loadStarSystemDetail, loadStarSystemIndex, loadStarSystemSites,
 } from '../../../../data/star-systems/star-systems';
 import { getCurrentASForce, getCurrentCBTForce } from '../../../../dataSaves';
@@ -68,7 +69,7 @@ function SystemPanel( props: { system: IStarSystemIndexEntry; date: string; site
             <p>
                 <strong>{props.system.name}</strong> ({props.system.x.toFixed( 2 )}, {props.system.y.toFixed( 2 )})
                 {detail?.spectralType ? <> star <SourcedValue field={detail.spectralType} /></> : null}.
-                Owner on {props.date}: {owners.length > 0 ? owners.join( ", " ) : "none recorded"}.
+                Owner on {props.date}: {owners.length > 0 ? owners.map( ( code ) => getFactionName( code, props.date ) ).join( ", " ) : "none recorded"}.
             </p>
             {detail ? (
                 <table className="campaign-table">
@@ -93,12 +94,12 @@ function SystemPanel( props: { system: IStarSystemIndexEntry; date: string; site
                 </table>
             ) : <p className="smaller-text">Loading planets...</p>}
             <h4>Objectives sites</h4>
-            {sites.length === 0 ? <p className="smaller-text">None in the books checked so far for this date.</p> : (
+            {sites.length === 0 ? <p className="smaller-text">None in the books checked so far.</p> : (
                 <ul>{sites.map( ( site ) => <li key={site.id}>{site.planet}: {site.name} ({site.products.join( ", " )}{site.heavy ? ", heavy" : ""}) - as of {site.date.slice( 0, 4 )}, {site.source}</li> )}</ul>
             )}
             <h4>Garrisons</h4>
             {garrisons.length === 0 ? <p className="smaller-text">None in the books checked so far on or before this date.</p> : (
-                <ul>{garrisons.map( ( g, i ) => <li key={i}>{g.date.slice( 0, 4 )}, {g.faction}: {g.units.join( ", " )} ({g.source})</li> )}</ul>
+                <ul>{garrisons.map( ( g, i ) => <li key={i}>{g.date.slice( 0, 4 )}, {getFactionName( g.faction, g.date )}: {g.units.join( ", " )} ({g.source})</li> )}</ul>
             )}
         </div>
     );
@@ -146,6 +147,21 @@ export default function CampaignHome( props: { appGlobals: IAppGlobals; id: stri
         loadStarSystemSites().then( ( data ) => { if( live ) setSites( data ); } );
         return () => { live = false; };
     }, [] );
+
+    // The fewest-jumps search is a BFS over the whole index: run it once per (home, target), not on every render.
+    const homeId = campaign?.planet?.systemId ?? null;
+    const targetIds = ( campaign?.targets ?? [] ).map( ( t ) => t.systemId ).join( "|" );
+    const jumpsTo = useMemo( () => {
+        const rv = new Map<string, number | null>();
+        const all = indexReady ? getStarSystemIndex() : [];
+        const from = homeId ? all.find( ( s ) => s.id === homeId ) : undefined;
+        if( !from ) return rv;
+        for( const id of targetIds ? targetIds.split( "|" ) : [] ) {
+            const to = all.find( ( s ) => s.id === id );
+            if( to && !rv.has( id ) ) rv.set( id, getFewestJumps( from, to, DEFAULT_JUMP_RANGE_LY ) );
+        }
+        return rv;
+    }, [indexReady, homeId, targetIds] );
 
     if( !loaded ) return <UIPage current="game-management-campaigns" appGlobals={props.appGlobals}><p>Loading...</p></UIPage>;
     if( !campaign ) {
@@ -312,7 +328,7 @@ export default function CampaignHome( props: { appGlobals: IAppGlobals; id: stri
                                 <tbody>
                                     {campaign.targets.map( ( target ) => {
                                         const system = index.find( ( s ) => s.id === target.systemId );
-                                        const jumps = home && system ? getFewestJumps( home, system, DEFAULT_JUMP_RANGE_LY ) : null;
+                                        const jumps = jumpsTo.get( target.systemId ) ?? null;
                                         return (
                                             <tr key={target.id} data-testid={"target-row-" + target.systemId}>
                                                 <td>{campaign.sides.find( ( s ) => s.id === target.sideId )?.name ?? ""}</td>
@@ -353,7 +369,11 @@ export default function CampaignHome( props: { appGlobals: IAppGlobals; id: stri
                 </TextSection>
 
                 <TextSection label="Log">
-                    <ul>{campaign.log.slice().reverse().slice( 0, 100 ).map( ( l ) => <li key={l.id}>{campaign.timeStep} {l.step}: {l.text}</li> )}</ul>
+                    <ul>{campaign.log.slice().reverse().slice( 0, 100 ).map( ( l ) => {
+                        // The step's own line ("Month 3") is its heading; other lines say which step they belong to.
+                        const step = `${STEP_LABELS[campaign.timeStep]} ${l.step}`;
+                        return <li key={l.id}>{l.text === step ? step : `${step}: ${l.text}`}</li>;
+                    } )}</ul>
                 </TextSection>
             </div>
         </UIPage>

@@ -77,6 +77,33 @@ describe( "Mercenary's Handbook (1987): Cost of Living, pp.36-40", () => {
         expect( costs.maintenanceSP ).toBe( 2 * 5 );
     } );
 
+    it( "a destroyed line keeps its people (salary, supplies, morale) but makes no SP, earns no reputation and is not hired (p.38, p.50)", () => {
+        const roster = [
+            line( "heavy-mech", "elite", 2, { condition: "destroyed" } ),
+            line( "support", "veteran", 1, { condition: "destroyed" } ),
+            line( "medium-mech", "regular", 3 ),
+        ];
+        const costs = mh1987MonthlyCosts( { overheadPct: 15, roster } );
+        expect( costs.salaries ).toBe( 2 * 2000 + 750 + 3 * 600 );
+        expect( costs.squads ).toBe( 6 );
+        expect( costs.supplies ).toBe( 6 * 500 );
+        expect( costs.supportSP ).toBe( 0 );
+        expect( costs.fieldSquads ).toBe( 3 );
+        expect( mh1987Reputation( roster ) ).toBe( 1 ); // 3 medium x 2 = 6 -> 1; the destroyed heavies add nothing
+        expect( mh1987Morale( { roster, overheadPct: 15, moraleMod: 0 } ).level ).toBe( Math.round( ( 2 * 4 + 3 + 3 * 2 ) / 6 * 100 ) / 100 );
+        const c = new Campaign();
+        c.editionId = "mh-1987";
+        c.addSide( "Gray Wolves", "attacker" );
+        const contract = mh1987SignContract( c, { ...mh1987ReadState( null ), roster }, {
+            mission: "garrison",
+            terms: { months: 1, ratePerSquadWeek: 1000, guarantee: "completion", command: "liaison", transportModifier: 0,
+                supplyModifier: 0, salvage: "merc-claims" },
+            advancePct: 0, transportFee: 0, roll: fixedRolls( [] ),
+        } );
+        expect( contract.squads ).toBe( 3 );
+        expect( contract.total ).toBe( 1000 * 4 * 3 );
+    } );
+
     it( "reputation: each company's points over 12, rounded up, summed (p.36)", () => {
         const roster = [
             line( "heavy-mech", "veteran", 4 ), // (3 + 1) x 4 = 16

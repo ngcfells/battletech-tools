@@ -1,3 +1,4 @@
+import factionData from "./data/factions.json";
 import { IStarSystemDetail, IStarSystemGarrison, IStarSystemIndexEntry, IStarSystemSite } from "./star-system-types";
 
 /*
@@ -7,6 +8,23 @@ import { IStarSystemDetail, IStarSystemGarrison, IStarSystemIndexEntry, IStarSys
 
 /** Strategic Operations: a JumpShip jumps "approximately 30 light years" (jump diagrams, 2011 printing). */
 export const DEFAULT_JUMP_RANGE_LY = 30;
+
+type IFactionName = { name: string; changes: [number, string][] };
+const FACTION_NAMES = ( factionData as unknown as { factions: Record<string, IFactionName> } ).factions;
+
+/**
+ * An owner code's name on the date, from MegaMek Data's faction files (name changes by year, so "LA" is the Lyran
+ * Commonwealth in 3025 and the Lyran Alliance in 3060). A code MegaMek Data does not name is shown as it is.
+ */
+export const getFactionName = ( code: string, date: string ): string => {
+    const faction = Object.prototype.hasOwnProperty.call( FACTION_NAMES, code ) ? FACTION_NAMES[code] : undefined;
+    if( !faction ) return code;
+    const year = parseInt( date.slice( 0, 4 ), 10 );
+    // MegaMek's base name is the one used before the first change (ComStar is "SLCOMNET" until 2788).
+    let name = faction.name;
+    for( const [from, changed] of faction.changes ) if( year >= from ) name = changed;
+    return name;
+};
 
 type Loaders = Record<string, () => Promise<unknown>>;
 const indexLoader = import.meta.glob( "./data/index.json", { import: "default" } ) as Loaders;

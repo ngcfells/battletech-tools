@@ -24,6 +24,11 @@ temperature, water, owners, socio-industrial ratings, and population (a figure t
 rating, and one every 50 years; MegaMek estimates one every ten). A field MegaMek cites keeps its citation; one it
 does not is shown as "MegaMek Data".
 
+`data/factions.json` is built by `scripts/star-systems/import_mekhq_factions.py` from MekHQ's `data/universe/factions`
+and `data/universe/commands` (same licence, notice in the file): each owner code's name and its name changes by year,
+so a campaign shows the name the faction went by on its date. A code MegaMek Data does not name (CEI, SE) is shown as
+the code.
+
 ## Verified against our books (NGCFells's rule, 2026-11-19)
 
 MegaMek's data is the base; our own books verify it. Each disagreement found in a book becomes an entry in

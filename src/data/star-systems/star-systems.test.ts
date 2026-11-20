@@ -6,6 +6,7 @@ import {
     cacheUntilRejected,
     DEFAULT_JUMP_RANGE_LY,
     getDistanceLY,
+    getFactionName,
     getFewestJumps,
     getStarSystemIndex,
     getSystemGarrisons,
@@ -18,6 +19,25 @@ import {
 
 const raw = JSON.parse( readFileSync( join( __dirname, "data", "index.json" ), "utf-8" ) ) as IStarSystemIndexEntry[];
 const byId = ( id: string ) => raw.find( ( s ) => s.id === id )!;
+
+describe( "Faction names", () => {
+    it( "names an owner code as it was called on the date (MegaMek Data name changes)", () => {
+        expect( getFactionName( "LA", "3025-01-01" ) ).toBe( "Lyran Commonwealth" );
+        expect( getFactionName( "LA", "3060-06-01" ) ).toBe( "Lyran Alliance" );
+        expect( getFactionName( "LA", "3090-01-01" ) ).toBe( "Lyran Commonwealth" );
+        expect( getFactionName( "PP.AbM", "2810-01-01" ) ).toBe( "Abaddon Mining Settlements" );
+    } );
+
+    it( "falls back to the code when MegaMek Data has no name for it", () => {
+        expect( getFactionName( "CEI", "3025-01-01" ) ).toBe( "CEI" );
+    } );
+
+    it( "has a name for nearly every owner code in the index", () => {
+        const codes = new Set( raw.flatMap( ( s ) => s.owners.flatMap( ( o ) => o.factions ) ) );
+        const unnamed = [ ...codes ].filter( ( code ) => getFactionName( code, "3025-01-01" ) === code );
+        expect( unnamed.sort() ).toEqual( ["CEI", "SE"] );
+    } );
+} );
 
 describe( "Star system lookups", () => {
     it( "caches a load, but forgets a failed one so the next call tries again", async () => {
