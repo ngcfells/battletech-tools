@@ -1,4 +1,5 @@
 import type { Campaign } from "./campaign";
+import type { IContractSheet } from "./contract-sheet";
 
 /*
  * The shared campaign record (campaign play design, 2026-11-19). Editions are data that plug into the hooks below;
@@ -156,4 +157,6 @@ export interface ICampaignExport {
     log: ICampaignLogEntry[];
     planet: ICampaignPlanet | null;
     editionState: unknown;
+    /** Mercenary Contract Record Sheets (#639); absent in saves made before them. */
+    contractSheets?: IContractSheet[];
 }

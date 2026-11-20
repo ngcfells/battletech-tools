@@ -36,6 +36,7 @@ const fixture = (): ICampaignExport => ( {
         } ],
     },
     editionState: null,
+    contractSheets: [],
 } );
 
 describe( "Campaign", () => {

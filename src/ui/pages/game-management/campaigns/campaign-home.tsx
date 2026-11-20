@@ -314,6 +314,7 @@ export default function CampaignHome( props: { appGlobals: IAppGlobals; id: stri
                     <p>
                         <Link to="..">All campaigns</Link>
                         {hasEconomics ? <> | <Link to="planet">Planet economy</Link></> : null}
+                        {" | "}<Link to="contract-sheet">Contract record sheets</Link>{campaign.contractSheets.length > 0 ? ` (${campaign.contractSheets.length})` : null}
                     </p>
                     <p data-testid="campaign-step">
                         {campaign.edition?.name ?? "No edition rules"}. {campaign.timeStep[0].toUpperCase() + campaign.timeStep.slice( 1 )} {campaign.step} ({date})

@@ -1,0 +1,170 @@
+// The Mercenary Contract Record Sheet (#639), drawn after Hot Spots: Draconis Reach p.203: heavy rounded boxes,
+// bold condensed labels, ruled blanks. Every blank is an input with only its rule showing.
+$cs-ink: #000;
+$cs-font: "Arial Narrow", "Roboto Condensed", "Helvetica Neue", Arial, sans-serif;
+
+.campaign-contract-sheets {
+    padding: 0.5rem 16px 2rem;
+
+    .cs-controls {
+        background: transparent;
+        border: none;
+        text-align: left;
+        max-width: 8.5in;
+        margin: 0 auto 0.5rem;
+        label { margin-right: 0.5rem; }
+    }
+}
+
+.contract-sheet {
+    background: #fff;
+    color: $cs-ink;
+    font-family: $cs-font;
+    font-size: 11pt;
+    max-width: 8.5in;
+    margin: 0 auto;
+    padding: 0.35in 0.4in 0.25in;
+    box-shadow: 0 0 0.5rem #0006;
+
+    input.cs-line {
+        flex: 1 1 auto;
+        min-width: 0;
+        width: 100%;
+        border: none;
+        border-bottom: 1.5px solid $cs-ink;
+        border-radius: 0;
+        background: transparent;
+        color: $cs-ink;
+        font: inherit;
+        font-weight: normal;
+        padding: 0 0.15rem;
+        line-height: 1.3;
+        &:focus { outline: none; background: #fff6c8; }
+    }
+
+    .cs-header {
+        display: flex;
+        align-items: center;
+        gap: 0.25in;
+        margin-bottom: 0.15in;
+    }
+    .cs-brand {
+        flex: 1 1 auto;
+        font-family: "Arial Black", $cs-font;
+        font-weight: 900;
+        font-size: 30pt;
+        letter-spacing: 0.02em;
+        line-height: 1;
+    }
+    .cs-title-box {
+        flex: 0 0 auto;
+        border: 3px solid $cs-ink;
+        border-radius: 0.6rem;
+        padding: 0.3rem 1.2rem;
+        text-align: center;
+        font-weight: bold;
+        font-size: 12pt;
+        line-height: 1.2;
+    }
+
+    .cs-box {
+        border: 3px solid $cs-ink;
+        border-radius: 0.6rem;
+        box-shadow: 4px 4px 0 #aaa;
+    }
+
+    .cs-terms {
+        padding: 0.4rem 0.6rem 0.5rem;
+        margin-bottom: 0.18in;
+    }
+    .cs-line-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.2rem 0.9rem;
+        margin: 0.35rem 0;
+    }
+    .cs-field {
+        display: inline-flex;
+        align-items: baseline;
+        gap: 0.2rem;
+        min-width: 0;
+        &.cs-grow { flex: 1 1 0; min-width: 10rem; }
+        &.cs-mid { flex: 0 1 11rem; }
+        &.cs-third { flex: 0 1 15rem; }
+    }
+    .cs-label, .cs-suffix {
+        font-weight: bold;
+        white-space: nowrap;
+    }
+    .cs-term-main {
+        display: inline-flex;
+        align-items: baseline;
+        gap: 0.2rem;
+        flex: 1 1 auto;
+        min-width: 0;
+        margin: 0;
+    }
+    input.cs-roll { flex: 0 0 2.2rem; width: 2.2rem; text-align: center; }
+
+    .cs-body {
+        display: flex;
+        gap: 0.12in;
+        align-items: flex-start;
+    }
+    .cs-ledger {
+        flex: 1 1 auto;
+        min-width: 0;
+        padding: 0.3rem 0.5rem 0.5rem;
+        table { width: 100%; border-collapse: separate; border-spacing: 0.3rem 0; table-layout: fixed; }
+        th { font-size: 9pt; font-weight: bold; text-align: left; padding: 0 0 0.1rem; }
+        td { padding: 0.18rem 0 0; }
+        input.cs-line { font-size: 10pt; }
+        .cs-col-month { width: 9%; }
+        .cs-col-event { width: 35%; }
+        .cs-col-cost, .cs-col-cover, .cs-col-rep { width: 9%; }
+        .cs-col-paid, .cs-col-balance { width: 11%; }
+    }
+    .cs-common {
+        flex: 0 0 2.6in;
+        font-size: 10pt;
+        line-height: 1.45;
+    }
+    .cs-common-title { font-weight: bold; text-align: center; letter-spacing: 0.03em; margin-bottom: 0.2rem; }
+    .cs-common-heading { font-weight: bold; }
+    .cs-common-line { padding-left: 0.6rem; strong { font-weight: bold; } }
+
+    .cs-footer {
+        margin-top: 0.15in;
+        text-align: center;
+        font-family: Arial, sans-serif;
+        font-size: 6.5pt;
+    }
+
+    // Phone width: the terms stack, the panel goes under the ledger, and the ledger scrolls on its own.
+    @media (max-width: 767.98px) {
+        padding: 0.75rem 0.5rem;
+        .cs-brand { font-size: 18pt; }
+        .cs-title-box { font-size: 9pt; padding: 0.25rem 0.5rem; }
+        .cs-body { flex-direction: column; }
+        .cs-ledger { width: 100%; overflow-x: auto; table { min-width: 38rem; } }
+        .cs-common { flex: 0 0 auto; }
+    }
+}
+
+@media print {
+    @page { size: letter portrait; margin: 0.3in; }
+    // The app's dark page must not show under the sheet.
+    html:has(.contract-sheet), body:has(.contract-sheet) { background: #fff !important; }
+    .campaign-contract-sheets { padding: 0; }
+    .contract-sheet {
+        // Taller ledger lines so the sheet fills the page, as the book's does.
+        .cs-ledger td { padding-top: 0.5rem; }
+        max-width: none;
+        box-shadow: none;
+        padding: 0;
+        font-size: 11pt;
+        input.cs-line:focus { background: transparent; }
+        .cs-box { box-shadow: 3px 3px 0 #aaa; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        .cs-ledger tr { break-inside: avoid; }
+    }
+}

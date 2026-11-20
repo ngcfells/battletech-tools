@@ -1,6 +1,7 @@
 import { findCampaignEdition } from "../../data/campaign-editions";
 import { generateUUID } from "../../utils/generateUUID";
 import { CAMPAIGN_RULE_HOOKS } from "./campaign-rules";
+import { IContractSheet, pickContractSheet } from "./contract-sheet";
 import {
     CAMPAIGN_EXPORT_VERSION,
     CampaignSideRole,
@@ -147,6 +148,7 @@ export class Campaign {
     log: ICampaignLogEntry[] = [];
     planet: ICampaignPlanet | null = null;
     editionState: unknown = null;
+    contractSheets: IContractSheet[] = [];
 
     constructor( data: ICampaignExport | null = null ) {
         if( data ) this.import( data );
@@ -180,6 +182,7 @@ export class Campaign {
             log: this.log,
             planet: this.planet,
             editionState: this.editionState ?? null,
+            contractSheets: this.contractSheets,
         } ) );
     }
 
@@ -201,6 +204,7 @@ export class Campaign {
         this.ledger = cleanArray( data.ledger, pickLedger );
         this.log = cleanArray( data.log, pickLog );
         this.planet = pickPlanet( data.planet );
+        this.contractSheets = cleanArray( data.contractSheets, pickContractSheet );
         const editionJson = data.editionState === undefined ? "null" : JSON.stringify( data.editionState ) ?? "null";
         if( editionJson.length > CAMPAIGN_MAX_EDITION_STATE ) throw new Error( "This campaign's edition data is too large" );
         this.editionState = JSON.parse( editionJson );
