@@ -1190,6 +1190,7 @@ export default class Vehicle implements IGameSettingsUnit {
             if (!item.isAmmo && !this._isEquipmentAllowedForVehicle(item)) issues.push(`${item.name} cannot be mounted on this Support Vehicle`);
         }
         if (this.getUsedItemSlots() > this.getTotalItemSlots()) issues.push(`${this.getUsedItemSlots()} item slots used of ${this.getTotalItemSlots()} (TM p.120)`);
+        if (this.getCurrentTonnage() > this.getTonnage()) issues.push(`${this.getCurrentTonnage()} tons used of ${this.getTonnage()}`);
         return issues;
     }
 
@@ -2852,7 +2853,8 @@ export default class Vehicle implements IGameSettingsUnit {
         const tag = item.tag.toLowerCase();
         const name = item.name.toLowerCase();
         return !(
-            item.isMelee ||
+            // Industrial equipment is vehicle equipment (1 slot on a vehicle, TM pp.241-247); 'Mech melee weapons are not.
+            (item.isMelee && item.onePerLocationGroup !== "industrial-tool") ||
             tag.includes("hatchet") || tag.includes("sword") || tag.includes("claw") || tag.includes("mace") ||
             name.includes("hatchet") || name.includes("sword") || name.includes("claw") || name.includes("mace")
         );

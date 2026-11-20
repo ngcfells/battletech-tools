@@ -8,12 +8,40 @@ const block = (tag: string, ...lines: string[]): string[] => [`<${tag}>`, ...lin
 describe("MegaMek Support Vehicle import", () => {
     const tank = [
         ...block("UnitType", "SupportTank"), ...block("Name", "Test Hauler"), ...block("Model", "TH-1"), ...block("year", "3050"),
-        ...block("type", "IS Level 2"), ...block("motion_type", "Wheeled"), ...block("cruiseMP", "4"), ...block("engine_type", "0"),
+        ...block("type", "IS Level 2"), ...block("motion_type", "Wheeled"), ...block("cruiseMP", "4"), ...block("engine_type", "1"),
         ...block("structural_tech_rating", "3"), ...block("engine_tech_rating", "3"), ...block("armor_tech_rating", "3"), ...block("barrating", "7"),
         ...block("armor_type", "43"), ...block("armor", "10", "8", "8", "6"),
         ...block("Front Equipment", "Machine Gun", "No Such Gun"), ...block("Body Equipment", "IS Ammo MG - Half"),
         ...block("transporters", "cargobay:4.0:1:1::-1:0"), ...block("fuel", "1.0"), ...block("tonnage", "20.0"),
     ].join("\n");
+
+    // BLKFile's codes, as for Combat Vehicles: 0 fusion, 1 ICE, 6 fuel cell (the Boreas burns hydrogen), 8 none (a trailer).
+    it("reads MegaMek's engine codes for a Support Vehicle", () => {
+        const engineOf = (code: string) => importSupportVehicleBlk(tank.replace("<engine_type>\n1\n", `<engine_type>\n${code}\n`)).vehicle!.getSupportVehicleEngine()?.tag;
+        expect(["0", "1", "6", "7", "10", "11", "12"].map(engineOf)).toEqual(["fusion", "ice", "fuel-cell", "fission", "steam", "battery", "solar"]);
+    });
+
+    // A trailer's engine "none" (code 8) needs the Trailer chassis modification, which the file lists in its body.
+    it("reads a trailer with no engine", () => {
+        const trailer = tank.replace("<engine_type>\n1\n", "<engine_type>\n8\n").replace("<cruiseMP>\n4\n", "<cruiseMP>\n0\n")
+            .replace("<fuel>\n1.0\n", "<fuel>\n0.0\n").replace("IS Ammo MG - Half", "IS Ammo MG - Half\nSV Chassis Mod [Trailer]").replace("\nNo Such Gun\n", "\n");
+        const { vehicle, issues } = importSupportVehicleBlk(trailer);
+        expect(issues).toEqual([]);
+        expect(vehicle!.getSupportVehicleEngine()?.tag).toBe("none");
+        expect(vehicle!.getSupportVehicleIssues()).toEqual([]);
+    });
+
+    // Industrial equipment is vehicle equipment (TM pp.241-247: 1 item slot on a vehicle); cargo listed as equipment
+    // ("Cargo:SIZE:20.0", the Lesseps Dump Truck) is a cargo bay on a vehicle (TM p.239).
+    it("mounts industrial equipment and reads cargo listed as equipment as a cargo bay", () => {
+        const dumper = tank.replace("\nNo Such Gun\n", "\nBackhoe\n").replace("IS Ammo MG - Half", "IS Ammo MG - Half\nCargo:SIZE:3.0")
+            .replace("<transporters>\ncargobay:4.0:1:1::-1:0\n</transporters>\n", "");
+        const { vehicle, issues } = importSupportVehicleBlk(dumper);
+        expect(issues).toEqual([]);
+        expect(vehicle!.getEquipmentList().some((item) => item.tag === "backhoe")).toBe(true);
+        expect(vehicle!.getBays().map((bay) => [bay.tag, bay.amount])).toEqual([["cargo", 3]]);
+        expect(vehicle!.getSupportVehicleIssues()).toEqual([]);
+    });
 
     it("reads a ground Support Vehicle: motive, engine, BAR, armor, equipment, half-ton ammunition, cargo and fuel", () => {
         const { vehicle, issues } = importSupportVehicleBlk(tank);
@@ -116,6 +144,13 @@ describe("MegaMek Combat Vehicle import", () => {
         ...block("Body Equipment", "ISSRM6 Ammo", "ISCASE", "ISLimitedAmphibiousChassis", "IS Ammo MG - Half"), ...block("tonnage", "50.0"),
     ].join("\n");
 
+    // MegaMek files carry BLKFile's engine codes (0 fusion, 1 ICE, 2 XL, 3 XXL, 4 light, 5 compact, 6 fuel cell, 7 fission),
+    // which BLKFile.translateEngineCode reads, not Engine's own constants: the Manticore (fusion) is 0, the Scorpion (ICE) 1.
+    it("reads MegaMek's engine codes for a Combat Vehicle", () => {
+        const engineOf = (code: string) => importVehicleBlk(tank.replace("<engine_type>\n2\n", `<engine_type>\n${code}\n`)).vehicle!.getEngineType().tag;
+        expect(["0", "1", "2", "3", "4", "5", "6", "7"].map(engineOf)).toEqual(["standard", "ice", "xl", "xxl", "light", "compact", "cell", "fission"]);
+    });
+
     it("reads a tracked tank: engine, armor type and points, turret, equipment, ammunition, CASE and chassis modification", () => {
         const { vehicle, issues } = importVehicleBlk(tank);
         expect(issues).toEqual([]);
@@ -215,7 +250,7 @@ describe("MegaMek Combat Vehicle import", () => {
 describe("MegaMek Fixed-Wing Support Vehicle import", () => {
     const plane = [
         ...block("UnitType", "FixedWingSupport"), ...block("Name", "Test Spotter"), ...block("year", "3050"), ...block("type", "IS Level 2"),
-        ...block("motion_type", "Aerodyne"), ...block("SafeThrust", "4"), ...block("heatsinks", "0"), ...block("engine_type", "0"),
+        ...block("motion_type", "Aerodyne"), ...block("SafeThrust", "4"), ...block("heatsinks", "0"), ...block("engine_type", "1"),
         ...block("structural_tech_rating", "3"), ...block("engine_tech_rating", "3"), ...block("armor_tech_rating", "3"), ...block("barrating", "5"),
         ...block("armor_type", "43"), ...block("armor", "4", "3", "3", "2"),
         ...block("Nose Equipment", "Machine Gun"), ...block("Body Equipment", "IS Ammo MG - Full", "STOLChassisMod"),

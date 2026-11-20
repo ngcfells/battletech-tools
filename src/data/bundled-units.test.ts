@@ -144,8 +144,8 @@ describe("bundled units other than 'Mechs", () => {
         vi.spyOn(console, "warn").mockImplementation(() => {});
         const headers = await loadBundledIndex("support-vehicles");
         const brunel = (model: string) => headers.find((header) => header.name === "Brunel Dump Truck" && header.model === model)?.illegal;
-        expect(brunel("(AC)")).toEqual(["34 item slots used of 20 (TM p.120)"]);
-        expect(brunel("(LRM)")).toEqual(["24 item slots used of 20 (TM p.120)"]);
+        expect(brunel("(AC)")).toEqual(["34 item slots used of 20 (TM p.120)", "168.5 tons used of 150"]);
+        expect(brunel("(LRM)")).toEqual(["24 item slots used of 20 (TM p.120)", "168.5 tons used of 150"]);
         // Only designs checked against their book are flagged, so a fault in our own checks brands nothing.
         expect(headers.filter((header) => header.illegal).map((header) => `${header.name} ${header.model}`.trim()).sort()).toEqual([...BLK_ILLEGAL_AS_PRINTED].sort());
         vi.restoreAllMocks();

@@ -16,8 +16,9 @@ import AerospaceFighter, { FighterArc, FighterLocation } from "./aerospace-fight
 
 /** MegaMek's Engine type codes (reference: MegaMek Engine.java), as this builder's Support Vehicle engines. */
 const ENGINES: Record<string, string> = {
-    // Support Vehicle files save a fuel cell as 6: the Boreas (code 6) burns hydrogen, fuel type H (AToW Companion p.194).
-    "0": "ice", "1": "fusion", "4": "fuel-cell", "6": "fuel-cell", "7": "fission", "8": "none", "9": "maglev", "10": "steam",
+    // BLKFile's codes (read by BLKFile.translateEngineCode), not Engine's constants: 0 fusion, 1 ICE, 6 fuel cell (the
+    // Boreas burns hydrogen, fuel type H, AToW Companion p.194), 7 fission, 8 none.
+    "0": "fusion", "1": "ice", "6": "fuel-cell", "7": "fission", "8": "none", "9": "maglev", "10": "steam",
     "11": "battery", "12": "solar", "13": "external",
 };
 
@@ -103,6 +104,12 @@ const readVehicleEquipment = (file: IBlkFile, vehicle: Vehicle, layout: string[]
             const ammoLine = parseBlkAmmoLine(name.replace(/\bprimitive\b/ig, ""));
             if (ammoLine) {
                 pendingAmmo.push({ line, ammo: ammoLine });
+                continue;
+            }
+            // Cargo listed as equipment ("Cargo:SIZE:20.0") is a vehicle's cargo bay, its size in tons (TM p.239).
+            const cargoTons = lineKey === "cargo" ? Number(/:SIZE:([\d.]+)/i.exec(line)?.[1]) : NaN;
+            if (cargoTons > 0 && vehicle.addBay("cargo")) {
+                vehicle.setBay(vehicle.getBays().length - 1, cargoTons, 0);
                 continue;
             }
             const match = findImportedEquipment(name, faction, mixed);
@@ -226,13 +233,17 @@ export const importSupportVehicleBlk = (text: string): ISupportVehicleBlkResult 
     }
     const engine = ENGINES[blkValue(file, "engine_type")];
     if (engine) vehicle.setSupportVehicleEngine(engine);
-    else issues.push(`Engine type ${blkValue(file, "engine_type") || "(none given)"} is not one this builder has; the default used.`);
 
     // Chassis modifications come from the body, fire control from any block; set them before movement and equipment.
     const bodyLines = blkLines(file, "body equipment");
     for (const line of bodyLines) {
         const mod = CHASSIS_MODS[key(line.replace(/:.*$/, ""))];
         if (mod) vehicle.setSupportVehicleChassisModification(mod, true);
+    }
+    // Again once the chassis is known: a trailer's engine "none" needs the Trailer modification (TM p.126).
+    if (engine) vehicle.setSupportVehicleEngine(engine);
+    if (!engine || vehicle.getSupportVehicleEngine()?.tag !== engine) {
+        issues.push(`Engine type ${blkValue(file, "engine_type") || "(none given)"} is not one this builder has; the default used.`);
     }
     const fireControl = allEquipmentLines(file).map((line) => FIRE_CONTROL[key(line)]).find(Boolean);
     if (fireControl) vehicle.setSupportVehicleFireControl(fireControl);
@@ -272,8 +283,9 @@ export const importSupportVehicleBlk = (text: string): ISupportVehicleBlkResult 
 
 /** MegaMek's Combat Vehicle engine codes (Engine.java), as this builder's engine types; Clan versions where they differ. */
 const COMBAT_ENGINES: Record<string, { is: string; clan?: string }> = {
-    "0": { is: "ice" }, "1": { is: "standard" }, "2": { is: "xl", clan: "clan_xl" }, "3": { is: "xxl", clan: "clan_xxl" },
-    "4": { is: "cell" }, "5": { is: "light" }, "6": { is: "compact" }, "7": { is: "fission" },
+    // BLKFile's codes (BLKFile.translateEngineCode), not Engine's constants: the Manticore (fusion) is 0, the Scorpion (ICE) 1.
+    "0": { is: "standard" }, "1": { is: "ice" }, "2": { is: "xl", clan: "clan_xl" }, "3": { is: "xxl", clan: "clan_xxl" },
+    "4": { is: "light" }, "5": { is: "compact" }, "6": { is: "cell" }, "7": { is: "fission" },
 };
 
 /** MegaMek's armor codes (EquipmentType.T_ARMOR_*), as this builder's armor types. */
@@ -333,7 +345,7 @@ export const importVehicleBlk = (text: string): IVehicleBlkResult => {
 
     // A Mixed Tech file says which engine it has; otherwise the chassis's tech base decides (BLKTankFile).
     const clanEngine = blkValue(file, "clan_engine") ? blkValue(file, "clan_engine").toLowerCase() === "true" : clan;
-    const engine = COMBAT_ENGINES[blkValue(file, "engine_type") || "1"];
+    const engine = COMBAT_ENGINES[blkValue(file, "engine_type") || "0"]; // no code: fusion, as BLKTankFile
     if (engine) vehicle.setEngineType(clanEngine ? engine.clan ?? engine.is : engine.is);
     if (!engine || vehicle.getEngineType().tag !== (clanEngine ? engine.clan ?? engine.is : engine.is)) {
         issues.push(`Engine type ${blkValue(file, "engine_type")} is not one this builder has.`);
