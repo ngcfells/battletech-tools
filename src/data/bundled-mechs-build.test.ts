@@ -5,7 +5,7 @@ import { expect, it } from "vitest";
 import type { IASMULUnit } from "../classes/alpha-strike-unit";
 import { untabulate } from "../utils/packed-json";
 import {
-    buildBundledAccuracy, buildBundledMechs, findLooseMULMatch, getBundledStanding, getMordelUnitUrl, getRenumberedModel, isMULMech, isOfficialMULRecord, loadCanonMechs, loadMULIndex,
+    buildBundledAccuracy, buildBundledMechs, getBundledUnitFacts, findLooseMULMatch, getBundledStanding, getMordelUnitUrl, getRenumberedModel, isMULMech, isOfficialMULRecord, loadCanonMechs, loadMULIndex,
     writeBundledMechs, writeMegaMekCustomRecords,
 } from "./bundled-mechs-build";
 
@@ -204,7 +204,10 @@ it("records a kept design as matched and a file whose BV differs from the MUL as
         const { accuracy } = buildBundledMechs(ssw, path.resolve(__dirname, "mul"), path.join(root, "megamek"));
         expect(accuracy.unitType).toBe("mechs");
         expect(accuracy.matched).toBe(1);
-        expect(accuracy.differs).toEqual([{ mulId: expect.any(Number), name: expect.stringContaining("Ryoken III-XP"), ours: expect.any(Number), mul: 3613, file: "megamek/RG/Ryoken III-XP B.mtf" }]);
+        expect(accuracy.differs).toEqual([expect.objectContaining({ mulId: expect.any(Number), name: expect.stringContaining("Ryoken III-XP"), ours: expect.any(Number), mul: 3613, file: "megamek/RG/Ryoken III-XP B.mtf" })]);
+        // Each row carries the list's facts to find it by, and the matched entry is listed under the list's name.
+        expect(accuracy.differs[0]).toEqual(expect.objectContaining({ tons: expect.any(Number), tech: expect.any(String), rules: expect.any(String), year: expect.any(Number) }));
+        expect(accuracy.matches).toEqual([expect.objectContaining({ mulId: expect.any(Number), name: expect.any(String), bv: expect.any(Number), tons: expect.any(Number) })]);
         expect(accuracy.differs[0].ours).not.toBe(3613);
         expect(accuracy.notChecked).toEqual({ importFailed: 0, noMulEntry: 0 });
     } finally {
@@ -222,7 +225,7 @@ it("counts a file that fails to import and a design the MUL does not list as not
     fs.writeFileSync(path.join(ssw, "broken.ssw"), "<notamech />");
     try {
         const { accuracy } = buildBundledMechs(ssw, mul, megamek);
-        expect(accuracy).toEqual({ unitType: "mechs", matched: 0, differs: [], notChecked: { importFailed: 1, noMulEntry: 1 } });
+        expect(accuracy).toEqual({ unitType: "mechs", matched: 0, matches: [], differs: [], notChecked: { importFailed: 1, noMulEntry: 1 } });
     } finally {
         fs.rmSync(root, { recursive: true, force: true });
     }
@@ -243,7 +246,8 @@ it("gives an OmniMech's wrong configuration a row of its own, with the configura
         const { accuracy, headers } = buildBundledMechs(ssw, mul);
         expect(headers[0].configs!.map((config) => config.name)).not.toContain(wrong.name);
         expect(accuracy.matched).toBe(configs.length - 1);
-        expect(accuracy.differs).toEqual([{ mulId: 500 + configs.length - 1, name: "Dire Wolf (Daishi)", config: wrong.name, ours: wrong.bv, mul: wrong.bv + 7, file: "dire-wolf-omni.ssw" }]);
+        expect(accuracy.differs).toEqual([expect.objectContaining({ mulId: 500 + configs.length - 1, name: "Dire Wolf (Daishi)", config: wrong.name, ours: wrong.bv, mul: wrong.bv + 7, file: "dire-wolf-omni.ssw" })]);
+        expect(accuracy.matches!.map((row) => row.mulId)).toEqual(configs.slice(0, -1).map((_config, index) => 500 + index).sort((a, b) => a - b));
     } finally {
         fs.rmSync(root, { recursive: true, force: true });
     }
@@ -270,6 +274,40 @@ it("writes the accuracy data beside the report, one differing unit a line", () =
         expect(text.split("\n").filter((line) => line.includes("\"mulId\""))).toHaveLength(2);
         expect(text.indexOf("Atlas")).toBeLessThan(text.indexOf("Zeus"));
         expect(fs.existsSync(path.join(dir, "mechs-report.md"))).toBe(true);
+    } finally {
+        fs.rmSync(dir, { recursive: true, force: true });
+    }
+});
+
+// The accuracy page finds units by the list's own facts (#599): weight, tech base, rules level, era, role and book.
+const listed = (Id: number, Name: string, BattleValue: number, more: Partial<Record<string, unknown>> = {}) => ({
+    Id, Name, BattleValue, Tonnage: 100, DateIntroduced: "3050", Rules: "Standard", TRO: "TRO 3050",
+    Technology: { Id: 2, Name: "Clan" }, Role: { Id: 1, Name: "Juggernaut" }, ...more,
+}) as unknown as IASMULUnit;
+
+it("takes a unit's facts from its list record, leaving out what the record leaves blank", () => {
+    expect(getBundledUnitFacts(listed(1, "Dire Wolf Prime", 2500))).toEqual({ tons: 100, tech: "Clan", rules: "Standard", year: 3050, role: "Juggernaut", book: "TRO 3050" });
+    expect(getBundledUnitFacts(listed(1, "X", 1, { Tonnage: 0, DateIntroduced: "", Rules: "", TRO: "", Technology: undefined, Role: { Id: 0, Name: "None" } }))).toEqual({});
+});
+
+it("lists the matched entries under the list's names, and gives every row the list's facts", () => {
+    const units = new Map([[1, listed(1, "Dire Wolf Prime", 2500)], [2, listed(2, "Atlas AS7-D", 1897, { Tonnage: 100, Technology: { Id: 1, Name: "Inner Sphere" } })],
+        [3, listed(3, "Zeus ZEU-6S", 1348, { Tonnage: 80 })]]);
+    const accuracy = buildBundledAccuracy([1, 2], [{ mulId: 3, name: "Zeus ZEU-6S", ours: 1340, mul: 1348, file: "z.ssw" }, { mulId: null, name: "Homemade", ours: 1, mul: 2, file: "h.ssw" }],
+        { importFailed: 0, noMulEntry: 0 }, units);
+    expect(accuracy.matches!.map((row) => [row.name, row.bv, row.tech])).toEqual([["Atlas AS7-D", 1897, "Inner Sphere"], ["Dire Wolf Prime", 2500, "Clan"]]);
+    expect(accuracy.differs.find((row) => row.mulId === 3)).toEqual(expect.objectContaining({ tons: 80, year: 3050, book: "TRO 3050" }));
+    expect(accuracy.differs.find((row) => row.mulId === null)).toEqual({ mulId: null, name: "Homemade", ours: 1, mul: 2, file: "h.ssw" });
+});
+
+it("writes the matched entries as a table that reads back whole", () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "bundled-mechs-write-"));
+    try {
+        const units = new Map([[1, listed(1, "Dire Wolf Prime", 2500)], [2, listed(2, "Atlas AS7-D", 1897, { TRO: "" })], [3, listed(3, "Zeus ZEU-6S", 1348)]]);
+        const accuracy = buildBundledAccuracy([1, 2], [{ mulId: 3, name: "Zeus ZEU-6S", ours: 1340, mul: 1348, file: "z.ssw" }], { importFailed: 0, noMulEntry: 0 }, units);
+        writeBundledMechs({ headers: [], designs: [], leftOut: [], accuracy }, dir);
+        const read = JSON.parse(fs.readFileSync(path.join(dir, "mechs-accuracy.json"), "utf8"));
+        expect({ ...read, matches: untabulate(read.matches) }).toEqual(accuracy);
     } finally {
         fs.rmSync(dir, { recursive: true, force: true });
     }

@@ -1,5 +1,6 @@
 // Reads the block layout of a MegaMek ".blk" unit file: "<tag>", its lines, "</tag>". Lines starting with "#" are
 // comments. Only the layout is read here; what the blocks mean is up to the unit type's own importer.
+import { BLK_DESIGN_CORRECTIONS } from "../data/blk-design-corrections";
 
 /** Largest file read, in characters; unit files run to a few tens of kilobytes. */
 export const MAX_BLK_FILE_LENGTH = 400000;
@@ -36,7 +37,11 @@ export const parseBlkFile = (text: string): IBlkFile | null => {
         }
         if (current !== null && blocks[current].length < MAX_BLOCK_LINES) blocks[current].push(line);
     }
-    return Object.keys(blocks).length > 0 ? { blocks } : null;
+    if (Object.keys(blocks).length === 0) return null;
+    // A file that differs from the book takes the book's blocks (blk-design-corrections).
+    const correction = BLK_DESIGN_CORRECTIONS[`${blocks.name?.[0] ?? ""} ${blocks.model?.[0] ?? ""}`.trim()];
+    if (correction) Object.assign(blocks, structuredClone(correction.blocks));
+    return { blocks };
 };
 
 /** The first line of a block, or an empty string. */

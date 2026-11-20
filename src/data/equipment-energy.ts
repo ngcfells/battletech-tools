@@ -513,7 +513,7 @@ export const equipmentEnergy: IEquipmentItem[] = [
         book: "TM",
         page: 226,
         alphaStrike: {
-            heat: 3,
+            heat: 2,
             rangeShort: 0.3,
             rangeMedium: 0.3,
             rangeLong: 0,

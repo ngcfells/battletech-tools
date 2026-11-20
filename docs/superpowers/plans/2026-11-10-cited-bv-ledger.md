@@ -395,3 +395,8 @@ mordel.net files are local only): the three design corrections below take effect
   Schwerer Gustav 1,643 (1,796), Valkyrie VLK-QW5 689 (701), Trebuchet TBT-K7R 1,415 (1,408), Bandersnatch Horus
   1,584 (1,587), Lumberjack LM4/C 316 (291, sheet 291), Patron PTN LoaderMech 73 (97; mordel file, not in the
   cloud), and from earlier rounds 'Gestalt' D2X-G and Skinwalker (Ryoken III-XP) A.
+- **Rebuilt on the PC 2026-11-19** (`npm run build:bundled`, mordel.net files present): the three corrections took
+  effect as read. BattleMaster BLR-3M (Rogers) 1,819 -> 1,818 and Celerity CLR-03OMM 'Rajah' 272 -> 278 now match the
+  MUL and join the bundle; The Lich 1,785 -> 1,806 (MUL 1,807). Matched 3,942 -> 3,944, `MECH_MATCHED_FLOOR` raised
+  to 3,944. Every other bundled design is unchanged, all six unit types compared design by design (keyed by name,
+  model and layout): 3,703 'Mechs kept, 2 added, 0 changed, 0 removed.

@@ -1,7 +1,9 @@
-import React, { useEffect, useId, useState, type JSX } from 'react';
-import type { IBundledAccuracy, IBundledMiss } from '../../../data/bundled-mechs-build';
-import { BV_VERDICTS, getBvVerdict, getBvVerdictEntry, type BvVerdict, type IBvVerdict } from '../../../data/bv-verdicts';
+import React, { useEffect, useId, useMemo, useState, type JSX } from 'react';
+import type { IBundledAccuracy, IBundledMatch, IBundledMiss } from '../../../data/bundled-mechs-build';
+import { BV_VERDICTS, getBvVerdictEntry, type BvVerdict, type IBvVerdict } from '../../../data/bv-verdicts';
 import { formatCitations } from '../../../data/calc-steps';
+import { btEraOptions } from '../../../data/era-options';
+import { untabulate } from '../../../utils/packed-json';
 import { IAppGlobals } from '../../app-router';
 import TextSection from '../../components/text-section';
 import UIPage from '../../components/ui-page';
@@ -25,11 +27,122 @@ const VERDICT_MEANINGS: Record<BvVerdict, string> = {
     "mul-suspect": "the rules, read on the page cited, give the JBT number and not the list's.",
 };
 
+/** 'Mech weight classes by tonnage (TW p.16; superheavy from IO). */
+const WEIGHT_CLASSES: { name: string, below: number }[] = [
+    { name: "Ultralight", below: 20 },
+    { name: "Light", below: 40 },
+    { name: "Medium", below: 60 },
+    { name: "Heavy", below: 80 },
+    { name: "Assault", below: 101 },
+    { name: "Superheavy", below: Infinity },
+];
+const weightClassOf = (tons?: number): string => tons === undefined ? "" : WEIGHT_CLASSES.find(({ below }) => tons < below)!.name;
+
+/** The general timeline's eras (the Clan homeworld eras overlap them, so are left out of the filter). */
+const ERAS = btEraOptions.filter((era) => !era.tag.startsWith("clan-"));
+const eraOf = (year?: number): string => year === undefined ? "" : ERAS.find((era) => year >= era.yearStart && (!era.yearEnd || year <= era.yearEnd))?.name ?? "";
+
+const RULES_ORDER = ["Introductory", "Standard", "Advanced", "Experimental", "Unofficial"];
+
+const PAGE_SIZE = 100;
+
 const formatNumber = (value: number): string => value.toLocaleString("en-US");
 
-/** The record files, fetched when the page opens. */
+/** The record files, fetched when the page opens. The matched units are stored as a table. */
 const loadAccuracy = (): Promise<IBundledAccuracy[]> =>
-    import("../../../data/bundled/mechs-accuracy.json").then((module) => [module.default as IBundledAccuracy]);
+    import("../../../data/bundled/mechs-accuracy.json").then((module) => {
+        const record = module.default as unknown as IBundledAccuracy;
+        return [{ ...record, ...(record.matches ? { matches: untabulate(record.matches) as IBundledMatch[] } : {}) }];
+    });
+
+/** One unit compared: a match, or a difference with its verdict. */
+interface IRow {
+    key: string;
+    name: string;
+    config: string;
+    tons?: number;
+    weightClass: string;
+    tech: string;
+    rules: string;
+    year?: number;
+    era: string;
+    role: string;
+    book: string;
+    ours: number;
+    mul: number;
+    match: boolean;
+    verdict?: BvVerdict;
+    entry?: IBvVerdict;
+}
+
+const toRows = (records: IBundledAccuracy[], verdicts: Record<string, IBvVerdict>): IRow[] => records.flatMap((record) => [
+    ...(record.matches ?? []).map((match): IRow => ({
+        key: `${record.unitType}:match:${match.mulId}`, name: match.name, config: "", tons: match.tons, weightClass: weightClassOf(match.tons),
+        tech: match.tech ?? "", rules: match.rules ?? "", year: match.year, era: eraOf(match.year), role: match.role ?? "", book: match.book ?? "",
+        ours: match.bv, mul: match.bv, match: true,
+    })),
+    ...record.differs.map((miss: IBundledMiss): IRow => {
+        const entry = getBvVerdictEntry(miss, verdicts);
+        return {
+            key: `${record.unitType}:${miss.mulId ?? miss.file}:${miss.config ?? ""}`, name: miss.name, config: miss.config ?? "", tons: miss.tons,
+            weightClass: weightClassOf(miss.tons), tech: miss.tech ?? "", rules: miss.rules ?? "", year: miss.year, era: eraOf(miss.year),
+            role: miss.role ?? "", book: miss.book ?? "", ours: miss.ours, mul: miss.mul, match: false, verdict: entry?.verdict ?? "open", entry,
+        };
+    }),
+]);
+
+type SortKey = "name" | "tons" | "year" | "ours" | "mul" | "difference";
+const SORTS: { key: SortKey, label: string, value: (row: IRow) => number | string }[] = [
+    { key: "name", label: "Unit", value: (row) => `${row.name} ${row.config}` },
+    { key: "tons", label: "Tons", value: (row) => row.tons ?? -1 },
+    { key: "year", label: "Year", value: (row) => row.year ?? -1 },
+    { key: "ours", label: "JBT BV", value: (row) => row.ours },
+    { key: "mul", label: "List BV", value: (row) => row.mul },
+    { key: "difference", label: "Difference", value: (row) => Math.abs(row.ours - row.mul) },
+];
+
+/** Each sort's two ways in words, descending first. */
+const SORT_WORDS: Record<SortKey, [string, string]> = {
+    name: ["Z to A", "A to Z"],
+    tons: ["heaviest first", "lightest first"],
+    year: ["newest first", "oldest first"],
+    ours: ["highest first", "lowest first"],
+    mul: ["highest first", "lowest first"],
+    difference: ["largest first", "smallest first"],
+};
+
+interface IFilters {
+    search: string;
+    result: "differs" | "matches" | "";
+    verdict: BvVerdict | "";
+    weightClass: string;
+    tech: string;
+    rules: string;
+    era: string;
+    role: string;
+    book: string;
+    direction: "higher" | "lower" | "";
+}
+const NO_FILTERS: IFilters = { search: "", result: "differs", verdict: "", weightClass: "", tech: "", rules: "", era: "", role: "", book: "", direction: "" };
+
+const passes = (row: IRow, filters: IFilters, needle: string): boolean =>
+    (filters.result !== "differs" || !row.match) && (filters.result !== "matches" || row.match)
+    && (!filters.verdict || row.verdict === filters.verdict)
+    && (!filters.weightClass || row.weightClass === filters.weightClass)
+    && (!filters.tech || row.tech === filters.tech)
+    && (!filters.rules || row.rules === filters.rules)
+    && (!filters.era || row.era === filters.era)
+    && (!filters.role || row.role === filters.role)
+    && (!filters.book || row.book === filters.book)
+    && (filters.direction !== "higher" || row.ours > row.mul) && (filters.direction !== "lower" || row.ours < row.mul)
+    && (!needle || `${row.name} ${row.config} ${row.book} ${row.entry?.note ?? ""}`.toLowerCase().includes(needle));
+
+/** The distinct values of a field, in the given order first, then alphabetically. */
+const choices = (rows: IRow[], field: (row: IRow) => string, order: string[] = []): string[] =>
+    [...new Set(rows.map(field).filter(Boolean))].sort((a, b) => {
+        const at = (value: string) => order.indexOf(value) < 0 ? order.length : order.indexOf(value);
+        return at(a) - at(b) || a.localeCompare(b);
+    });
 
 interface IBvAccuracyProps {
     appGlobals: IAppGlobals;
@@ -40,13 +153,15 @@ interface IBvAccuracyProps {
 
 /**
  * The public Battle Value accuracy record (#599): how many units' Battle Value agrees with the Master Unit List's, and
- * every unit where it does not, with the verdict reached so far. A verdict whose key matches no unit is not shown.
+ * every unit compared, found by name, book, weight, tech base, rules level, era and role. A unit that differs shows
+ * the verdict reached so far. A verdict whose key matches no unit is not shown.
  */
 export default function BvAccuracy(props: IBvAccuracyProps): JSX.Element {
     const [loaded, setLoaded] = useState<IBundledAccuracy[] | null>(props.data ?? null);
     const [failed, setFailed] = useState(false);
-    const [verdictFilter, setVerdictFilter] = useState<BvVerdict | "">("");
-    const [search, setSearch] = useState("");
+    const [filters, setFilters] = useState<IFilters>(NO_FILTERS);
+    const [sort, setSort] = useState<{ key: SortKey, descending: boolean }>({ key: "name", descending: false });
+    const [shown, setShown] = useState(PAGE_SIZE);
     const id = useId();
     const verdicts = props.verdicts ?? BV_VERDICTS;
     const { appGlobals, data } = props;
@@ -63,10 +178,41 @@ export default function BvAccuracy(props: IBvAccuracyProps): JSX.Element {
     }, [data]);
 
     const records = data ?? loaded;
-    const needle = search.trim().toLowerCase();
-    const shows = (miss: IBundledMiss): boolean =>
-        (!verdictFilter || getBvVerdict(miss, verdicts) === verdictFilter)
-        && (!needle || `${miss.name} ${miss.config ?? ""}`.toLowerCase().includes(needle));
+    const rows = useMemo(() => records ? toRows(records, verdicts) : [], [records, verdicts]);
+    const hasMatches = !!records?.some((record) => record.matches);
+    const needle = filters.search.trim().toLowerCase();
+    const sorted = useMemo(() => {
+        const value = SORTS.find(({ key }) => key === sort.key)!.value;
+        const name = SORTS[0].value;
+        const compare = (a: IRow, b: IRow) => {
+            const left = value(a), right = value(b);
+            const order = typeof left === "number" && typeof right === "number" ? left - right : String(left).localeCompare(String(right));
+            return order || String(name(a)).localeCompare(String(name(b)));
+        };
+        return rows.filter((row) => passes(row, filters, needle)).sort((a, b) => sort.descending ? compare(b, a) : compare(a, b));
+    }, [rows, filters, needle, sort]);
+
+    const change = (field: keyof IFilters) => (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+        const value = event.currentTarget.value;
+        setFilters((before) => ({ ...before, [field]: value, ...(field === "result" && value === "matches" ? { verdict: "", direction: "" } : {}) }));
+        setShown(PAGE_SIZE);
+    };
+    const sortBy = (key: SortKey) => {
+        setSort((before) => ({ key, descending: before.key === key ? !before.descending : key !== "name" }));
+    };
+    const select = (field: keyof IFilters, label: string, options: [string, string][], disabled = false) => (
+        <div className="bv-accuracy-filter">
+            <label htmlFor={`${id}-${field}`}>{label}</label>
+            <select id={`${id}-${field}`} value={filters[field]} disabled={disabled} onChange={change(field)}>
+                {options.map(([value, text]) => <option key={value} value={value}>{text}</option>)}
+            </select>
+        </div>
+    );
+    const all = (values: string[]): [string, string][] => [["", "All"], ...values.map((value): [string, string] => [value, value])];
+    // Most units have no configuration, so the column shows only when one listed does.
+    const hasConfig = sorted.slice(0, shown).some((row) => row.config);
+    const filtered = Object.entries(filters).some(([field, value]) => value !== NO_FILTERS[field as keyof IFilters]);
+    const total = filters.result === "differs" ? rows.filter((row) => !row.match).length : filters.result === "matches" ? rows.filter((row) => row.match).length : rows.length;
 
     return (
         <UIPage current="classic-battletech" appGlobals={props.appGlobals}>
@@ -117,74 +263,113 @@ export default function BvAccuracy(props: IBvAccuracyProps): JSX.Element {
                             </table>
                             <p className="small-text">Match: the JBT Battle Value equals the list&apos;s. Match rate: the share of the units compared that match, rounded down. Other unit types join this record as their calculations are cited.</p>
 
-                            <h3>Units whose Battle Value differs</h3>
+                            <h3>Find a unit</h3>
+                            <p>
+                                Search by name, configuration, book or note, and narrow the list by any of the Master Unit
+                                List&apos;s facts about the unit. {hasMatches ? "Show matching units too to look up any unit compared." : null}
+                            </p>
                             <dl className="bv-accuracy-verdicts">
                                 {(Object.keys(VERDICT_NAMES) as BvVerdict[]).map((verdict) => (
                                     <div key={verdict}><dt>{VERDICT_NAMES[verdict]}</dt><dd>{VERDICT_MEANINGS[verdict]}</dd></div>
                                 ))}
                             </dl>
-                            <div className="bv-accuracy-filters">
-                                <label htmlFor={`${id}-verdict`}>Verdict</label>
-                                <select id={`${id}-verdict`} value={verdictFilter} onChange={(event) => setVerdictFilter(event.currentTarget.value as BvVerdict | "")}>
-                                    <option value="">All</option>
-                                    {(Object.keys(VERDICT_NAMES) as BvVerdict[]).map((verdict) => <option key={verdict} value={verdict}>{VERDICT_NAMES[verdict]}</option>)}
-                                </select>
-                                <label htmlFor={`${id}-search`}>Search by name</label>
-                                <input id={`${id}-search`} type="search" value={search} onChange={(event) => setSearch(event.currentTarget.value)} />
+                            <div className="bv-accuracy-filters" role="search">
+                                <div className="bv-accuracy-filter bv-accuracy-search">
+                                    <label htmlFor={`${id}-search`}>Search</label>
+                                    <input id={`${id}-search`} type="search" value={filters.search} onChange={change("search")} placeholder="Name, book or note" />
+                                </div>
+                                {hasMatches ? select("result", "Result", [["differs", "Differs"], ["matches", "Matches"], ["", "All"]]) : null}
+                                {select("verdict", "Verdict", all(Object.keys(VERDICT_NAMES)).map(([value, text]) => [value, value ? VERDICT_NAMES[value as BvVerdict] : text]), filters.result === "matches")}
+                                {select("direction", "JBT is", [["", "Higher or lower"], ["higher", "Higher"], ["lower", "Lower"]], filters.result === "matches")}
+                                {select("weightClass", "Weight", all(choices(rows, (row) => row.weightClass, WEIGHT_CLASSES.map(({ name }) => name))))}
+                                {select("tech", "Tech base", all(choices(rows, (row) => row.tech)))}
+                                {select("rules", "Rules level", all(choices(rows, (row) => row.rules, RULES_ORDER)))}
+                                {select("era", "Era", all(choices(rows, (row) => row.era, ERAS.map(({ name }) => name))))}
+                                {select("role", "Role", all(choices(rows, (row) => row.role)))}
+                                {select("book", "Book", all(choices(rows, (row) => row.book)))}
+                                <div className="bv-accuracy-filter">
+                                    {/* The column headings sort too, but a phone shows each unit as a card, without them. */}
+                                    <label htmlFor={`${id}-sort`}>Sort by</label>
+                                    <select id={`${id}-sort`} value={`${sort.key}:${sort.descending ? "down" : "up"}`} onChange={(event) => {
+                                        const [key, way] = event.currentTarget.value.split(":");
+                                        setSort({ key: key as SortKey, descending: way === "down" });
+                                    }}>
+                                        {SORTS.flatMap(({ key, label }) => {
+                                            const [down, up] = SORT_WORDS[key];
+                                            const both: [string, string][] = [[`${key}:down`, `${label}, ${down}`], [`${key}:up`, `${label}, ${up}`]];
+                                            return key === "name" ? both.reverse() : both;
+                                        }).map(([value, text]) => <option key={value} value={value}>{text}</option>)}
+                                    </select>
+                                </div>
+                                {filtered ? <button type="button" className="btn btn-sm btn-secondary" onClick={() => { setFilters(NO_FILTERS); setShown(PAGE_SIZE); }}>Clear</button> : null}
                             </div>
 
-                            {records.map((record) => {
-                                const rows = record.differs.filter(shows);
-                                return (
-                                    <div key={record.unitType}>
-                                        <p aria-live="polite">{rows.length === 0 ? "No unit matches." : `${formatNumber(rows.length)} of ${formatNumber(record.differs.length)} ${UNIT_TYPE_NAMES[record.unitType] ?? record.unitType} shown.`}</p>
-                                        {rows.length ? (
-                                            <table className="table bv-accuracy-units" aria-label="Units whose Battle Value differs">
-                                                <thead>
-                                                    <tr>
-                                                        <th scope="col">Unit</th>
-                                                        <th scope="col">Configuration</th>
-                                                        <th scope="col">JBT BV</th>
-                                                        <th scope="col">List BV</th>
-                                                        <th scope="col">Difference</th>
-                                                        <th scope="col">Verdict</th>
-                                                        <th scope="col">Note</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    {rows.map((miss) => {
-                                                        const entry = getBvVerdictEntry(miss, verdicts);
-                                                        const difference = miss.ours - miss.mul;
-                                                        return (
-                                                            <tr key={`${miss.mulId ?? miss.file}:${miss.config ?? ""}`}>
-                                                                <th scope="row">{miss.name}</th>
-                                                                <td data-label="Configuration">{miss.config ?? ""}</td>
-                                                                <td data-label="JBT BV" className="bv-accuracy-number">{formatNumber(miss.ours)}</td>
-                                                                <td data-label="List BV" className="bv-accuracy-number">{formatNumber(miss.mul)}</td>
-                                                                <td data-label="Difference" className="bv-accuracy-number">{difference > 0 ? "+" : "-"}{formatNumber(Math.abs(difference))}</td>
-                                                                <td data-label="Verdict">{VERDICT_NAMES[entry?.verdict ?? "open"]}</td>
-                                                                <td data-label="Note">
-                                                                    {entry ? (
-                                                                        <>
-                                                                            {entry.note}
-                                                                            {entry.cites?.length ? <> ({formatCitations(entry.cites)})</> : null}
-                                                                            {typeof entry.issue === "number" ? <> <a href={`${ISSUES_URL}${entry.issue}`} target="_blank" rel="noopener noreferrer">#{entry.issue}</a></> : null}
-                                                                        </>
-                                                                    ) : null}
-                                                                </td>
-                                                            </tr>
-                                                        );
-                                                    })}
-                                                </tbody>
-                                            </table>
-                                        ) : null}
-                                    </div>
-                                );
-                            })}
+                            <p aria-live="polite">{sorted.length === 0 ? "No unit matches." : `${formatNumber(sorted.length)} of ${formatNumber(total)} units shown.`}</p>
+                            {sorted.length ? (
+                                <table className="table bv-accuracy-units" aria-label="Units compared">
+                                    <thead>
+                                        <tr>
+                                            {SORTS.slice(0, 3).map(({ key, label }) => <SortHeader key={key} label={label} numeric={key !== "name"} active={sort.key === key} descending={sort.descending} onSort={() => sortBy(key)} />)}
+                                            {hasConfig ? <th scope="col">Configuration</th> : null}
+                                            <th scope="col">Tech</th>
+                                            <th scope="col">Book</th>
+                                            {SORTS.slice(3).map(({ key, label }) => <SortHeader key={key} label={label} numeric={key !== "name"} active={sort.key === key} descending={sort.descending} onSort={() => sortBy(key)} />)}
+                                            <th scope="col">Verdict</th>
+                                            <th scope="col">Note</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {sorted.slice(0, shown).map((row) => {
+                                            const difference = row.ours - row.mul;
+                                            const entry = row.entry;
+                                            return (
+                                                <tr key={row.key} className={row.match ? "bv-accuracy-match" : undefined}>
+                                                    <th scope="row">{row.name}</th>
+                                                    <td data-label="Tons" className="bv-accuracy-number">{row.tons ?? ""}</td>
+                                                    <td data-label="Year" className="bv-accuracy-number">{row.year ?? ""}</td>
+                                                    {hasConfig ? <td data-label="Configuration">{row.config}</td> : null}
+                                                    <td data-label="Tech">{row.tech}</td>
+                                                    <td data-label="Book">{row.book}</td>
+                                                    <td data-label="JBT BV" className="bv-accuracy-number">{formatNumber(row.ours)}</td>
+                                                    <td data-label="List BV" className="bv-accuracy-number">{formatNumber(row.mul)}</td>
+                                                    <td data-label="Difference" className="bv-accuracy-number">{difference === 0 ? "0" : `${difference > 0 ? "+" : "-"}${formatNumber(Math.abs(difference))}`}</td>
+                                                    <td data-label="Verdict">{row.match ? "Match" : VERDICT_NAMES[row.verdict ?? "open"]}</td>
+                                                    <td data-label="Note">
+                                                        {entry ? (
+                                                            <>
+                                                                {entry.note}
+                                                                {entry.cites?.length ? <> ({formatCitations(entry.cites)})</> : null}
+                                                                {typeof entry.issue === "number" ? <> <a href={`${ISSUES_URL}${entry.issue}`} target="_blank" rel="noopener noreferrer">#{entry.issue}</a></> : null}
+                                                            </>
+                                                        ) : null}
+                                                    </td>
+                                                </tr>
+                                            );
+                                        })}
+                                    </tbody>
+                                </table>
+                            ) : null}
+                            {sorted.length > shown ? (
+                                <p>
+                                    <button type="button" className="btn btn-secondary" onClick={() => setShown(shown + PAGE_SIZE)}>Show {formatNumber(Math.min(PAGE_SIZE, sorted.length - shown))} more</button>{" "}
+                                    <button type="button" className="btn btn-secondary" onClick={() => setShown(sorted.length)}>Show all {formatNumber(sorted.length)}</button>
+                                </p>
+                            ) : null}
                         </>
                     ) : null}
                 </div>
             </TextSection>
         </UIPage>
+    );
+}
+
+/** A column heading that sorts the list; pressed again, the other way. */
+function SortHeader(props: { label: string, numeric: boolean, active: boolean, descending: boolean, onSort: () => void }): JSX.Element {
+    return (
+        <th scope="col" className={props.numeric ? "bv-accuracy-number" : undefined} aria-sort={props.active ? (props.descending ? "descending" : "ascending") : undefined}>
+            <button type="button" className="bv-accuracy-sort" onClick={props.onSort}>
+                {props.label}{props.active ? (props.descending ? " ▼" : " ▲") : null}
+            </button>
+        </th>
     );
 }

@@ -1,12 +1,12 @@
 # Bundled Support Vehicles: build report
 
-91 designs kept, 134 files left out.
+93 designs kept, 132 files left out.
 
 | Reason | Files |
 |---|---|
-| the import could not carry all of it over | 51 |
+| the import could not carry all of it over | 50 |
 | no Master Unit List entry to check its BV against | 46 |
-| BV differs from the MUL | 37 |
+| BV differs from the MUL | 36 |
 
 ## Left out
 
@@ -31,10 +31,9 @@
 - `vehicles/3085u/Cutting Edge/Augustus MBT A3.blk`: BV differs from the MUL: BV 551, MUL 676
 - `vehicles/3085u/Cutting Edge/J-37 Ordnance Transport (Original).blk`: BV differs from the MUL: BV 206, MUL 503
 - `vehicles/3085u/Cutting Edge/J-37 Ordnance Transport.blk`: BV differs from the MUL: BV 351, MUL 535
-- `vehicles/3085u/Cutting Edge/Tonbo Superheavy Transport.blk`: BV differs from the MUL: BV 155, MUL 233
-- `vehicles/3085u/Cutting Edge/Trireme Infantry Transport (CS).blk`: BV differs from the MUL: BV 351, MUL 417
+- `vehicles/3085u/Cutting Edge/Tonbo Superheavy Transport.blk`: BV differs from the MUL: BV 189, MUL 233
 - `vehicles/3085u/Cutting Edge/Trireme Infantry Transport.blk`: the import could not carry all of it over: Transport "battlearmorbay" is not one this builder has and was left off.
-- `vehicles/3145/Merc/Bishop Transport VTOL.blk`: BV differs from the MUL: BV 145, MUL 199
+- `vehicles/3145/Merc/Bishop Transport VTOL.blk`: BV differs from the MUL: BV 171, MUL 199
 - `vehicles/3145/Merc/Savior Repair Vehicle.blk`: the import could not carry all of it over: "ISMobileFieldBase" has no match in this catalog and was left off.
 - `vehicles/AToW Companion/Hover/Boreas Cavalry Hovercraft B.blk`: the import could not carry all of it over: "Autocannon (Bearhunter Superheavy):SIZE:1.0" has no match in this catalog and was left off.
 - `vehicles/AToW Companion/Hover/Boreas Cavalry Hovercraft Prime.blk`: the import could not carry all of it over: "Laser Rifle (Mauser IIC IAS):SIZE:1.0" has no match in this catalog and was left off.; "Laser Rifle (Mauser IIC IAS):SIZE:1.0" has no match in this catalog and was left off.
@@ -107,7 +106,6 @@
 - `vehicles/TRO Vehicle Annex/Tracked/Rumbler-HT.blk`: the import could not carry all of it over: "HHSearchlight" has no match in this catalog and was left off.; "InfantryHRR:SIZE:1.0" has no match in this catalog and was left off.
 - `vehicles/TRO Vehicle Annex/VTOL/Blackstone Baronet Passenger VTOL.blk`: no Master Unit List entry to check its BV against
 - `vehicles/TRO Vehicle Annex/VTOL/Blackstone Pegasus Passenger VTOL.blk`: no Master Unit List entry to check its BV against
-- `vehicles/TRO Vehicle Annex/VTOL/Peacekeeper SWAT Carrier.blk`: the import could not carry all of it over: "Searchlight" cannot go in the right and was mounted unplaced.; "Searchlight" cannot go in the left and was mounted unplaced.
 - `vehicles/TRO Vehicle Annex/Wheeled/Aston-Martin Fiver Roadster.blk`: no Master Unit List entry to check its BV against
 - `vehicles/TRO Vehicle Annex/Wheeled/Aston-Martin Fiver Traveler.blk`: no Master Unit List entry to check its BV against
 - `vehicles/TRO Vehicle Annex/Wheeled/Bombduster.blk`: no Master Unit List entry to check its BV against

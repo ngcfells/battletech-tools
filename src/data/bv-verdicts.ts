@@ -21,7 +21,7 @@ export interface IBvVerdict {
 }
 
 /** The count of Master Unit List 'Mech entries with a matching design that the last build wrote. A round that raises the count raises this. */
-export const MECH_MATCHED_FLOOR = 3942;
+export const MECH_MATCHED_FLOOR = 3944;
 
 /** Keyed by bvVerdictKey. */
 export const BV_VERDICTS: Record<string, IBvVerdict> = {

@@ -352,6 +352,84 @@ export const cardScanResize = ( data: ArrayLike<number>, width: number, height: 
     return { data: out, width: outWidth, height: outHeight };
 }
 
+/*
+ * Pillow's LANCZOS resize (its Resample.c, 8 bits a channel), which made the photos the readers were tuned on from
+ * the phone's JPEGs: the same weights, the same fixed-point rounding, rows then columns. Every browser scales a
+ * canvas its own way, so the photo is brought to the card width here instead.
+ */
+const lanczosPrecisionBits = 32 - 8 - 2;
+const lanczosSupport = 3;
+
+const sinc = ( x: number ): number => {
+    if( x === 0 ) return 1;
+    const scaled = x * Math.PI;
+    return Math.sin( scaled ) / scaled;
+}
+
+const lanczos = ( x: number ): number => -lanczosSupport <= x && x < lanczosSupport ? sinc( x ) * sinc( x / lanczosSupport ) : 0;
+
+/** For each output pixel along one axis: the first source pixel it reads and its fixed-point weights. */
+const lanczosWeights = ( inSize: number, outSize: number ): { first: number[], weights: number[][] } => {
+    const scale = inSize / outSize;
+    const filterScale = Math.max( scale, 1 );
+    const support = lanczosSupport * filterScale;
+    const first: number[] = [];
+    const weights: number[][] = [];
+    for( let out = 0; out < outSize; out++ ) {
+        const center = ( out + 0.5 ) * scale;
+        const xmin = Math.max( 0, Math.trunc( center - support + 0.5 ) );
+        const xmax = Math.min( inSize, Math.trunc( center + support + 0.5 ) ) - xmin;
+        const raw: number[] = [];
+        let total = 0;
+        for( let x = 0; x < xmax; x++ ) {
+            const weight = lanczos( ( x + xmin - center + 0.5 ) / filterScale );
+            raw.push( weight );
+            total += weight;
+        }
+        first.push( xmin );
+        weights.push( raw.map( ( weight ) => {
+            const normal = total !== 0 ? weight / total : weight;
+            return Math.trunc( normal < 0 ? -0.5 + normal * ( 1 << lanczosPrecisionBits ) : 0.5 + normal * ( 1 << lanczosPrecisionBits ) );
+        } ) );
+    }
+    return { first, weights };
+}
+
+const lanczosClip = ( sum: number ): number => Math.min( 255, Math.max( 0, Math.floor( sum / ( 1 << lanczosPrecisionBits ) ) ) );
+
+/** The image resized to outWidth x outHeight as Pillow's Image.resize( ..., Image.LANCZOS ) does it; opaque. */
+export const cardScanLanczos = ( data: ArrayLike<number>, width: number, height: number, outWidth: number, outHeight: number ): { data: Uint8ClampedArray<ArrayBuffer>, width: number, height: number } => {
+    const half = 1 << ( lanczosPrecisionBits - 1 );
+    // Rows first, into an 8-bit image as wide as the result.
+    const across = lanczosWeights( width, outWidth );
+    const wide = new Uint8ClampedArray( outWidth * height * 4 );
+    for( let y = 0; y < height; y++ ) for( let x = 0; x < outWidth; x++ ) {
+        const first = across.first[x], weights = across.weights[x], to = ( y * outWidth + x ) * 4;
+        for( let c = 0; c < 3; c++ ) {
+            let sum = half;
+            for( let k = 0; k < weights.length; k++ ) sum += data[( y * width + first + k ) * 4 + c] * weights[k];
+            wide[to + c] = lanczosClip( sum );
+        }
+        wide[to + 3] = 255;
+    }
+    // Then columns.
+    const down = lanczosWeights( height, outHeight );
+    const out = new Uint8ClampedArray( outWidth * outHeight * 4 );
+    for( let y = 0; y < outHeight; y++ ) {
+        const first = down.first[y], weights = down.weights[y];
+        for( let x = 0; x < outWidth; x++ ) {
+            const to = ( y * outWidth + x ) * 4;
+            for( let c = 0; c < 3; c++ ) {
+                let sum = half;
+                for( let k = 0; k < weights.length; k++ ) sum += wide[( ( first + k ) * outWidth + x ) * 4 + c] * weights[k];
+                out[to + c] = lanczosClip( sum );
+            }
+            out[to + 3] = 255;
+        }
+    }
+    return { data: out, width: outWidth, height: outHeight };
+}
+
 /** How a card type is held: its printed shape, and whether a scan's result found the card at all. */
 export interface ICardScanOptions<T> {
     shape: "landscape" | "portrait";

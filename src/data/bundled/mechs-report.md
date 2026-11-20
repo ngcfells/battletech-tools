@@ -1,11 +1,11 @@
 # Bundled 'Mechs: build report
 
-3703 designs kept (38 renamed), 4018 files left out.
+3705 designs kept (38 renamed), 4016 files left out.
 
 | Reason | Files |
 |---|---|
 | duplicate of a design already kept | 3232 |
-| BV differs from the MUL | 188 |
+| BV differs from the MUL | 186 |
 | different submodel, same name and model: equipment | 142 |
 | different submodel, same name and model: ammo type | 110 |
 | different submodel, same name and model: actuators | 87 |
@@ -3800,7 +3800,6 @@
 - `megamek/Turning Points/OTP Capellan Crusades/Centurion CN9-YLW3 'Yen Lo Wang'.mtf`: different submodel, same name and model: ammo type: Centurion CN9-YLW3 "Yen Lo Wang"
 - `megamek/Turning Points/OTP Capellan Crusades/Orion IIC 'Burton'.mtf`: duplicate of a design already kept: Orion IIC (Burton)
 - `megamek/Turning Points/OTP Capellan Crusades/Tian-Zong TNZ-N3 'Jasminda'.mtf`: duplicate of a design already kept: Tian-Zong TNZ-N3 (Jasminda)
-- `megamek/Turning Points/OTP Falcon Incursion/BattleMaster BLR-3M (Rogers).mtf`: BV differs from the MUL: BLR-3M (Rogers): BV 1819, MUL 1818
 - `megamek/Turning Points/OTP Falcon Incursion/Nightstar NSR-9J Brubaker.mtf`: different submodel, same name and model: ammo type: Nightstar NSR-9J (Brubaker)
 - `megamek/Turning Points/OTP Hanseatic Crusade/Cazador.mtf`: different submodel, same name and model: ammo type: Cazador 
 - `megamek/Turning Points/OTP Hanseatic Crusade/Snow Fox (Omni) A.mtf`: duplicate of a design already kept: Snow Fox (Omni) A
@@ -3892,7 +3891,7 @@
 - `megamek/XTRs/Gladiators/Juggernaut JG-R9TX1 Leapin' Lil.mtf`: BV differs from the MUL: JG-R9TX1 'Leapin' Lil': BV 1946, MUL 1951
 - `megamek/XTRs/Gladiators/Spatha SP2-X Warlord.mtf`: duplicate of a design already kept: Spatha SP2-X "Warlord"
 - `megamek/XTRs/Gladiators/Valiant VAL-NT-JX Hot Knife.mtf`: duplicate of a design already kept: Valiant VAL-NT-JX "Hot Knife"
-- `megamek/XTRs/Gladiators/Warhammer WHM-X7 The Lich.mtf`: BV differs from the MUL: WHM-X7 'The Lich': BV 1785, MUL 1807
+- `megamek/XTRs/Gladiators/Warhammer WHM-X7 The Lich.mtf`: BV differs from the MUL: WHM-X7 'The Lich': BV 1806, MUL 1807
 - `megamek/XTRs/Gladiators/Wraith TR2-X Alexander.mtf`: duplicate of a design already kept: Wraith TR2-X "Alexander"
 - `megamek/XTRs/Gunslingers/Exterminator EXT-4DX Caine.mtf`: duplicate of a design already kept: Exterminator Caine EXT-4DX
 - `megamek/XTRs/Gunslingers/Mongoose MON-66GX Gunslinger.mtf`: duplicate of a design already kept: Mongoose Gunslinger MON-66GX
@@ -4004,7 +4003,6 @@
 - `megamek/XTRs/RetroTech/Patron PTN-2 MilitiaMech.mtf`: duplicate of a design already kept: Patron MilitiaMech PTN-2
 - `megamek/XTRs/Royal Fantasy/Agrotera AGT-UA _Ariel_.mtf`: the import could not carry all of it over: Cannot find any equipment named 'HarJel Repair Systems (HarJel III)'; Cannot find any equipment named 'HarJel Repair Systems (HarJel III)'; Cannot find any equipment named 'HarJel Repair Systems (HarJel III)'
 - `megamek/XTRs/Royal Fantasy/Buccaneer BCN-6PX _Pan_.mtf`: BV differs from the MUL: BCN-6PX 'Pan': BV 1384, MUL 1490
-- `megamek/XTRs/Royal Fantasy/Celerity CLR-03OMM _Rajah_.mtf`: BV differs from the MUL: CLR-03OMM 'Rajah': BV 272, MUL 278
 - `megamek/XTRs/Royal Fantasy/Tessen TSN-X4R _Rapunzel_.mtf`: the import could not carry all of it over: Cannot find any equipment named 'ISC3Sensors'; Cannot find any equipment named 'ISRISCLaserPulseModule'
 - `megamek/XTRs/Royal Fantasy/Trebuchet TBT-7MM _Merida_.mtf`: BV differs from the MUL: TBT-7MM 'Merida': BV 2024, MUL 2028
 - `megamek/XTRs/Steiner/Axman AXM-6X.mtf`: duplicate of a design already kept: Axman AXM-6X
