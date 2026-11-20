@@ -296,6 +296,43 @@ describe( "Campaign screens", () => {
         expect( store.campaigns[0].log.filter( ( l ) => l.text.includes( "outcome I" ) ) ).toHaveLength( 1 );
     } );
 
+    // Review M8: a running contract can end early in either edition.
+    it( "the 1987 panel ends a ComStar contract early, repaying the advance when ComStar judges it failed", async () => {
+        const c = saved( [] );
+        c.editionId = "mh-1987";
+        c.editionState = {
+            roster: [ { id: "l1", type: "heavy-mech", quality: "regular", condition: "new", count: 12, company: "Company 1" } ],
+            contract: { id: "k1", mission: "objective-raid", squads: 3, startStep: 0, total: 400000, paid: 100000, completed: false,
+                terms: { months: 2, ratePerSquadWeek: 10000, guarantee: "comstar", command: "liaison", transportModifier: 1, supplyModifier: 0.5, salvage: "merc-claims" } },
+        };
+        store.campaigns = [ c.export() ];
+        open( "/c1" );
+        const panel = await screen.findByTestId( "edition-mh1987" );
+        fireEvent.click( within( panel ).getByLabelText( "ComStar judged it unfulfilled" ) );
+        fireEvent.click( within( panel ).getByRole( "button", { name: "End contract early" } ) );
+        await waitFor( () => expect( store.campaigns[0].ledger.map( ( e ) => [e.reason, e.amount] ) ).toEqual( [["Advance repaid: ComStar judged the contract unfulfilled", -100000]] ) );
+        expect( await within( panel ).findByRole( "button", { name: "Negotiate" } ) ).toBeTruthy();
+    } );
+
+    it( "the 3055 panel ends a contract by a breach hearing, with the gamemaster's modifier", async () => {
+        const c = saved( [] );
+        c.editionId = "mh-3055";
+        c.editionState = { roster: [], personnel: [],
+            contract: { id: "k1", employer: "mercenary", mission: "pirate-hunting", vsClans: false, months: 4, startStep: 0, total: 100000, drawn: 0, completed: false } };
+        store.campaigns = [ c.export() ];
+        vi.spyOn( campaignDice, "roll2d6" ).mockReturnValue( 7 );
+        open( "/c1" );
+        const panel = await screen.findByTestId( "edition-mh3055" );
+        fireEvent.change( within( panel ).getByLabelText( "How the contract ends" ), { target: { value: "guilty" } } );
+        fireEvent.change( within( panel ).getByLabelText( "Hearing modifier" ), { target: { value: "3" } } );
+        fireEvent.click( within( panel ).getByRole( "button", { name: "End contract" } ) );
+        // 2D6 7 + 3 = 10: 75,000 C-bills and a 6-month ban (p.110).
+        await waitFor( () => expect( store.campaigns[0].ledger.map( ( e ) => [e.reason, e.amount] ) ).toEqual( [["Breach of contract fine", -75000]] ) );
+        expect( within( panel ).getByLabelText( "Contract breaches" ) ).toHaveProperty( "value", "1" );
+        expect( store.campaigns[0].log.map( ( l ) => l.text ) ).toContain(
+            "Breach of contract hearing (roll 10): guilty, 75,000 C-bill fine and a 6-month hiring ban (Dragoons Rating -25)" );
+    } );
+
     it( "each Mercenary's Handbook panel lists NGCFells's readings of the book", async () => {
         const c = saved( [] );
         c.editionId = "mh-1987";

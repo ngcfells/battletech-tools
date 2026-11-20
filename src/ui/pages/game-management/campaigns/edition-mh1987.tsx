@@ -7,7 +7,7 @@ import {
     MH1987_COMMAND_LABELS, MH1987_EMPLOYER_POSITION, MH1987_GUARANTEE_LABELS, MH1987_MISSION_LABELS,
     MH1987_SALVAGE_LABELS, MH1987_TYPES, MH1987_TYPE_IDS, mh1987ContractTerms, mh1987MissionCategory,
     mh1987MonthlyCosts, mh1987Morale, mh1987Negotiate, mh1987NegotiationPool, mh1987ReadState, mh1987Reputation,
-    mh1987ResolveMonth, mh1987SignContract, IMh1987NegotiationStep,
+    mh1987EndContract, mh1987ResolveMonth, mh1987SignContract, IMh1987NegotiationStep,
 } from '../../../../data/campaign-editions/mercenarys-handbook-1987';
 import { generateUUID } from '../../../../utils/generateUUID';
 import { campaignRoll, formatMoney } from './campaign-store';
@@ -26,6 +26,7 @@ const numberOr = ( value: string, fallback: number ): number => {
 export default function EditionMh1987( props: { campaign: Campaign; update: ( change: ( c: Campaign ) => void ) => void } ): JSX.Element {
     const state = mh1987ReadState( props.campaign.editionState );
     const [mission, setMission] = useState<Mh1987Mission>( "garrison" );
+    const [judgedFailed, setJudgedFailed] = useState( false );
     const [employer, setEmployer] = useState<Record<Mh1987Area, number>>( () => Object.fromEntries( MH1987_AREAS.map( ( a ) => [a, 50] ) ) as Record<Mh1987Area, number> );
     const [player, setPlayer] = useState<Record<Mh1987Area, number>>( () => Object.fromEntries( MH1987_AREAS.map( ( a ) => [a, 50] ) ) as Record<Mh1987Area, number> );
     const [order, setOrder] = useState<Mh1987Area[]>( MH1987_AREAS );
@@ -167,6 +168,17 @@ export default function EditionMh1987( props: { campaign: Campaign; update: ( ch
                     {contract.mission !== "retainer" ? <p><button type="button" className="btn btn-primary btn-sm" onClick={resolve} disabled={contract.resolvedStep === props.campaign.step}>Resolve month</button>
                         {contract.resolvedStep === props.campaign.step ? <span className="smaller-text"> This month is resolved; advance a month to resolve the next.</span> : null}</p> : null}
                     {result ? <p className="smaller-text">{result}</p> : null}
+                    <p>
+                        {contract.terms.guarantee === "comstar" ? (
+                            <label><input type="checkbox" aria-label="ComStar judged it unfulfilled" checked={judgedFailed}
+                                onChange={( e ) => setJudgedFailed( e.currentTarget.checked )} /> ComStar judged it unfulfilled (the advance is repaid)</label>
+                        ) : null}{" "}
+                        <button type="button" className="btn btn-danger btn-sm" onClick={() => {
+                            props.update( ( c ) => mh1987EndContract( c, { judgedFailed } ) );
+                            setJudgedFailed( false );
+                        }}>End contract early</button>
+                        <span className="smaller-text"> What was paid is kept; the rest is not paid.</span>
+                    </p>
                 </div>
             ) : (
                 <div>

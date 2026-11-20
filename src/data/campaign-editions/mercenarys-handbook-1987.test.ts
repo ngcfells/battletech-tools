@@ -16,6 +16,7 @@ import {
     mh1987ReadState,
     mh1987Reputation,
     mh1987ResolveMonth,
+    mh1987EndContract,
     mh1987SignContract,
     MH1987_OUTCOMES,
     MH1987_SALARIES,
@@ -280,6 +281,43 @@ describe( "Mercenary's Handbook (1987) edition hooks", () => {
             [2, "Contract completed: balance less ComStar's 5% fee", total * 0.75 - total * 0.05],
         ] );
         expect( mh1987ReadState( c.editionState ).contract?.completed ).toBe( true );
+    } );
+
+    // Review M8: a contract ended early keeps what was paid; ComStar makes a unit it judges failed repay its advance
+    // (p.43 ComStar Intermediary). The other guarantees leave the money where it is (NGCFells's reading).
+    it( "ends a contract early: the rest is not paid; a ComStar advance is repaid when ComStar judges it failed", () => {
+        const signed = ( guarantee: "comstar" | "advance-completion" ) => {
+            const c = campaign();
+            mh1987SignContract( c, mh1987ReadState( c.editionState ), {
+                mission: "objective-raid",
+                terms: { months: 2, ratePerSquadWeek: 10000, guarantee, command: "liaison", transportModifier: 1,
+                    supplyModifier: 0.5, salvage: "merc-claims" },
+                advancePct: 25, transportFee: 0, roll: fixedRolls( [] ),
+            } );
+            c.ledger = [];
+            return c;
+        };
+        const advance = 10000 * 4 * 5 * 2 * 0.25;
+
+        const failed = signed( "comstar" );
+        mh1987EndContract( failed, { judgedFailed: true } );
+        expect( mh1987ReadState( failed.editionState ).contract ).toBeNull();
+        expect( failed.ledger.map( ( e ) => [e.reason, e.amount, e.rule] ) ).toEqual( [
+            ["Advance repaid: ComStar judged the contract unfulfilled", -advance, "Mercenary's Handbook (1987) p.43"],
+        ] );
+        expect( failed.log[failed.log.length - 1].text ).toBe( "Contract ended early: Objective Raid; ComStar judged it unfulfilled and the advance is repaid" );
+
+        const ended = signed( "comstar" );
+        mh1987EndContract( ended, { judgedFailed: false } );
+        expect( ended.ledger ).toEqual( [] );
+        expect( ended.log[ended.log.length - 1].text ).toBe( "Contract ended early: Objective Raid; what was paid is kept, the rest is not paid" );
+
+        // Only ComStar can make a unit repay (p.18: the smaller intermediaries cannot).
+        const privately = signed( "advance-completion" );
+        mh1987EndContract( privately, { judgedFailed: true } );
+        expect( privately.ledger ).toEqual( [] );
+        privately.advance();
+        expect( privately.ledger.some( ( e ) => e.reason.startsWith( "Contract completed" ) || e.reason === "Supply fee" ) ).toBe( false );
     } );
 
     it( "posts no 0 C-bill line when an amount rounds to nothing", () => {

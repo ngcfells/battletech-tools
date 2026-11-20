@@ -416,7 +416,7 @@ export interface IMh3055Hearing {
     disbanded: boolean;
 }
 
-/** Contract Hearing (p.108): 2D6 plus the gamemaster's modifiers. 24+ disbands the unit (ban months 0). */
+/** Contract Hearing (p.110): 2D6 plus the gamemaster's modifiers. 24+ disbands the unit (ban months 0). */
 export function mh3055ContractHearing( roll: number ): IMh3055Hearing {
     return { ...rangeLookup<IMh3055Hearing>( [
         [5, { fine: 20000, banMonths: 1, disbanded: false }],
@@ -557,6 +557,44 @@ export const mh3055SignContract = ( c: Campaign, state: IMh3055State, signing: I
     return contract;
 }
 
+/** How a contract ends before its time (review M8). */
+export type Mh3055ContractEnd = { kind: "lost" } | { kind: "uncompleted" } | { kind: "hearing"; guilty: boolean; roll: number };
+
+/**
+ * Ends the running contract early. The unit keeps what it has drawn and is paid nothing more (NGCFells's reading):
+ * - lost: "a unit failing to complete a mission has lost", -10 rating points, and losing "suspends payment of the
+ *   remainder" (pp.110-111);
+ * - uncompleted: -25 rating points per uncompleted mission (p.100 step 7);
+ * - a breach hearing terminates the contract (p.109); a guilty verdict rolls the Contract Hearing Table (2D6 plus the
+ *   gamemaster's modifiers) for the fine and ban and costs 25 rating points (p.110).
+ */
+export const mh3055EndContract = ( c: Campaign, end: Mh3055ContractEnd ): void => {
+    const state = mh3055ReadState( c.editionState );
+    const contract = state.contract;
+    if( !contract || contract.completed ) return;
+    const mission = MH3055_MISSION_NAMES[contract.mission];
+    state.contract = null;
+    if( end.kind === "lost" ) {
+        state.rating = { ...state.rating, losses: state.rating.losses + 1 };
+        c.addLog( `Contract lost: ${mission}; the rest of the pay is suspended (Dragoons Rating -10)` );
+    } else if( end.kind === "uncompleted" ) {
+        state.rating = { ...state.rating, uncompleted: state.rating.uncompleted + 1 };
+        c.addLog( `Contract not completed: ${mission} (Dragoons Rating -25)` );
+    } else if( !end.guilty ) {
+        c.addLog( "Breach of contract hearing: cleared; the Commission terminated the contract" );
+    } else {
+        const hearing = mh3055ContractHearing( end.roll );
+        const sideId = unitSideId( c, state.sideId );
+        if( sideId ) post( c, sideId, -hearing.fine, "Breach of contract fine", `${BOOK} p.110` );
+        state.rating = { ...state.rating, breaches: state.rating.breaches + 1 };
+        const fine = `${hearing.fine.toLocaleString( "en-US" )} C-bill fine`;
+        const penalty = hearing.disbanded ? `${fine}; the unit is disbanded, each member under a 5-year hiring ban`
+            : `${fine} and a ${hearing.banMonths}-month hiring ban`;
+        c.addLog( `Breach of contract hearing (roll ${end.roll}): guilty, ${penalty} (Dragoons Rating -25)` );
+    }
+    c.editionState = state;
+};
+
 /**
  * A month (Ruling 7): two paydays, four weeks of maintenance against the support staff's Support Points, and while a
  * contract runs, four weeks of overhead (p.88) and the month's draw by contract length (p.106): over six months the
@@ -588,6 +626,8 @@ const onStep = ( c: Campaign ): void => {
         post( c, sideId, remaining, "Contract completed: balance paid", `${BOOK} p.106` );
         contract.drawn = contract.total;
         contract.completed = true;
+        // 5 Dragoons Rating points per completed mission (p.100 step 1).
+        state.rating = { ...state.rating, completed: state.rating.completed + 1 };
         c.addLog( `Contract completed: ${MH3055_MISSION_NAMES[contract.mission]}` );
     } else {
         const monthsLeft = contract.months - month + 1;

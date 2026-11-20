@@ -535,6 +535,29 @@ export const mh1987SignContract = ( c: Campaign, state: IMh1987State, signing: I
     return contract;
 }
 
+/**
+ * Ends the running contract early (review M8). What was paid is kept and the rest is not paid. Under the ComStar
+ * Intermediary guarantee the unit's leader "pledges to repay the advance if ComStar judges that the unit failed to
+ * fulfill contract conditions" (p.43); the smaller intermediaries "lack ComStar's ability to coerce anyone to pay back
+ * stolen advances" and a private deal "depends upon the employer's integrity" (pp.18, 43), so only ComStar takes it
+ * back (NGCFells's reading). Reputation is left to the gamemaster (ComStar "broadcasts its findings", p.18).
+ */
+export const mh1987EndContract = ( c: Campaign, end: { judgedFailed: boolean } ): void => {
+    const state = mh1987ReadState( c.editionState );
+    const contract = state.contract;
+    if( !contract || contract.completed ) return;
+    state.contract = null;
+    c.editionState = state;
+    const mission = MH1987_MISSION_LABELS[contract.mission];
+    const sideId = unitSideId( c, state.sideId );
+    if( end.judgedFailed && contract.terms.guarantee === "comstar" ) {
+        if( sideId ) post( c, sideId, -contract.paid, "Advance repaid: ComStar judged the contract unfulfilled", `${BOOK} p.43` );
+        c.addLog( `Contract ended early: ${mission}; ComStar judged it unfulfilled and the advance is repaid` );
+    } else {
+        c.addLog( `Contract ended early: ${mission}; what was paid is kept, the rest is not paid` );
+    }
+};
+
 /** The month's costs; while a contract runs, its supply fee; when it ends, the balance by its guarantee. */
 const onStep = ( c: Campaign ): void => {
     const state = mh1987ReadState( c.editionState );

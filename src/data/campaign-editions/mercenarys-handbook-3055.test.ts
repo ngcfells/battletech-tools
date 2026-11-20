@@ -8,6 +8,7 @@ import {
     IMh3055Unit,
     MH3055_EDITION,
     mh3055ReadState,
+    mh3055EndContract,
     mh3055SignContract,
     MH3055_EXPERIENCE,
     MH3055_MISSIONS,
@@ -204,7 +205,7 @@ describe( "Mercenary's Handbook (3055): Contracts, pp.102-108", () => {
         expect( mh3055Salvage( 12, "rasalhague", false ) ).toBe( "full" );
     } );
 
-    it( "Contract Hearing: 2D6 + the gamemaster's modifiers (p.108)", () => {
+    it( "Contract Hearing: 2D6 + the gamemaster's modifiers (p.110)", () => {
         expect( mh3055ContractHearing( 2 ) ).toEqual( { fine: 20000, banMonths: 1, disbanded: false } );
         expect( mh3055ContractHearing( 9 ) ).toEqual( { fine: 25000, banMonths: 3, disbanded: false } );
         expect( mh3055ContractHearing( 23 ) ).toEqual( { fine: 1500000, banMonths: 60, disbanded: false } );
@@ -289,6 +290,66 @@ describe( "Mercenary's Handbook (3055) edition hooks", () => {
         c.ledger = [];
         c.advance();
         expect( c.ledger.map( ( e ) => e.reason ) ).toEqual( ["Payday 1 of 2", "Payday 2 of 2"] );
+    } );
+
+    // Review M8: a completed contract counts toward the Dragoons Rating (p.100 step 1: 5 points per completed mission).
+    it( "a completed contract adds one to Contracts completed", () => {
+        const c = campaign();
+        sign( c, { months: 4 } );
+        c.advance( 4 );
+        expect( mh3055ReadState( c.editionState ).rating.completed ).toBe( 1 );
+        c.advance();
+        expect( mh3055ReadState( c.editionState ).rating.completed ).toBe( 1 );
+    } );
+
+    // Review M8: a contract can end before its time: lost (p.110), not completed (p.100 step 7) or by a breach hearing
+    // (pp.109-110). The unit keeps what it has drawn; the rest is not paid.
+    it( "ends a contract lost: a loss on the rating, the rest unpaid (p.110)", () => {
+        const c = campaign();
+        sign( c, { months: 4, advancePct: 25 } );
+        c.ledger = [];
+        mh3055EndContract( c, { kind: "lost" } );
+        const state = mh3055ReadState( c.editionState );
+        expect( state.contract ).toBeNull();
+        expect( state.rating.losses ).toBe( 1 );
+        expect( c.ledger ).toEqual( [] );
+        expect( c.log[c.log.length - 1].text ).toBe( "Contract lost: Pirate Hunting; the rest of the pay is suspended (Dragoons Rating -10)" );
+        c.advance();
+        expect( c.ledger.map( ( e ) => e.reason ) ).toEqual( ["Payday 1 of 2", "Payday 2 of 2"] );
+    } );
+
+    it( "ends a contract not completed: an uncompleted mission on the rating (p.100)", () => {
+        const c = campaign();
+        sign( c, { months: 4 } );
+        mh3055EndContract( c, { kind: "uncompleted" } );
+        expect( mh3055ReadState( c.editionState ).rating.uncompleted ).toBe( 1 );
+        expect( c.log[c.log.length - 1].text ).toBe( "Contract not completed: Pirate Hunting (Dragoons Rating -25)" );
+    } );
+
+    it( "a breach hearing ends the contract; guilty books the Contract Hearing fine and a breach (pp.109-110)", () => {
+        const c = campaign();
+        sign( c, { months: 4 } );
+        c.ledger = [];
+        mh3055EndContract( c, { kind: "hearing", guilty: true, roll: 7 } );
+        const state = mh3055ReadState( c.editionState );
+        expect( state.contract ).toBeNull();
+        expect( state.rating.breaches ).toBe( 1 );
+        expect( c.ledger.map( ( e ) => [e.reason, e.amount, e.rule] ) ).toEqual( [["Breach of contract fine", -25000, "Mercenary's Handbook 3055 p.110"]] );
+        expect( c.log[c.log.length - 1].text ).toBe( "Breach of contract hearing (roll 7): guilty, 25,000 C-bill fine and a 3-month hiring ban (Dragoons Rating -25)" );
+
+        const cleared = campaign();
+        sign( cleared, { months: 4 } );
+        cleared.ledger = [];
+        mh3055EndContract( cleared, { kind: "hearing", guilty: false, roll: 0 } );
+        expect( mh3055ReadState( cleared.editionState ).rating.breaches ).toBe( 0 );
+        expect( cleared.ledger ).toEqual( [] );
+        expect( cleared.log[cleared.log.length - 1].text ).toBe( "Breach of contract hearing: cleared; the Commission terminated the contract" );
+
+        const disbanded = campaign();
+        sign( disbanded, { months: 4 } );
+        mh3055EndContract( disbanded, { kind: "hearing", guilty: true, roll: 24 } );
+        expect( disbanded.log[disbanded.log.length - 1].text ).toBe(
+            "Breach of contract hearing (roll 24): guilty, 4,000,000 C-bill fine; the unit is disbanded, each member under a 5-year hiring ban (Dragoons Rating -25)" );
     } );
 
     it( "a contract over six months draws the balance over the months left (p.106)", () => {

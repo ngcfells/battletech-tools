@@ -5,7 +5,7 @@ import {
     IMh3055Person, IMh3055RatingInputs, IMh3055State, IMh3055Unit, Mh3055Employer, Mh3055Mission, Mh3055Position,
     MH3055_CORPORATIONS, MH3055_EMPLOYER_NAMES, MH3055_MERCENARY_EMPLOYERS, MH3055_MINOR_PERIPHERY, MH3055_MISSIONS,
     MH3055_MISSION_NAMES, MH3055_RATING_PAY, MH3055_SALARIES, MH3055_TEMPLATES, mh3055BattleLoss, mh3055ContractMonths, mh3055ContractOffers,
-    mh3055ContractPay, mh3055DragoonsRating, mh3055EmployerMultiplier, mh3055EmployerRoll, mh3055JobRoll,
+    Mh3055ContractEnd, mh3055ContractPay, mh3055DragoonsRating, mh3055EndContract, mh3055EmployerMultiplier, mh3055EmployerRoll, mh3055JobRoll,
     mh3055Maintenance, mh3055MinorPowerRoll, mh3055Payroll, mh3055ReadState, mh3055Salvage, mh3055SignContract,
     mh3055StraightSupport, mh3055SupportPoints, mh3055Transport, mh3055WeeklyOverhead,
 } from '../../../../data/campaign-editions/mercenarys-handbook-3055';
@@ -32,6 +32,7 @@ const numberOr = ( value: string, fallback: number ): number => {
 };
 const whole = ( value: string ): number => Math.max( 0, Math.round( numberOr( value, 0 ) ) );
 
+type EndKind = "lost" | "uncompleted" | "guilty" | "cleared";
 interface ITerms { support: number; battleLoss: number; transport: number; commercial: number; salvage: keyof typeof SALVAGE_LABELS }
 
 /** The Mercenary's Handbook 3055 edition: combatants and personnel, the Dragoons Rating, and contracts. */
@@ -48,6 +49,8 @@ export default function EditionMh3055( props: { campaign: Campaign; update: ( ch
     const [advancePct, setAdvancePct] = useState( 25 );
     const [upFront, setUpFront] = useState( false );
     const [offers, setOffers] = useState<number | null>( null );
+    const [endKind, setEndKind] = useState<EndKind>( "lost" );
+    const [hearingModifier, setHearingModifier] = useState( 0 );
     const [terms, setTerms] = useState<ITerms | null>( null );
 
     const change = ( edit: ( s: IMh3055State, c: Campaign ) => void ) => props.update( ( c ) => {
@@ -231,6 +234,30 @@ export default function EditionMh3055( props: { campaign: Campaign; update: ( ch
                         {" "}{contract.months} months from month {contract.startStep}: {formatMoney( Math.round( contract.total ) )} C-bills,
                         {" "}{formatMoney( Math.round( contract.drawn ) )} drawn. Each month books the paydays, overhead and the draw.
                     </p>
+                    <p>
+                        <label>
+                            How the contract ends{" "}
+                            <select aria-label="How the contract ends" value={endKind} onChange={( e ) => setEndKind( e.currentTarget.value as EndKind )}>
+                                <option value="lost">Lost</option>
+                                <option value="uncompleted">Not completed</option>
+                                <option value="guilty">Breach hearing: guilty</option>
+                                <option value="cleared">Breach hearing: cleared</option>
+                            </select>
+                        </label>{" "}
+                        {endKind === "guilty" ? (
+                            <><label>Hearing modifier <input type="number" aria-label="Hearing modifier" value={hearingModifier} onChange={( e ) => setHearingModifier( Number( e.currentTarget.value ) || 0 )} style={{ width: "4em" }} /></label>{" "}</>
+                        ) : null}
+                        <button type="button" className="btn btn-secondary btn-sm" onClick={() => {
+                            const end: Mh3055ContractEnd = endKind === "lost" || endKind === "uncompleted"
+                                ? { kind: endKind }
+                                : { kind: "hearing", guilty: endKind === "guilty", roll: endKind === "guilty" ? campaignRoll.twoD6() + hearingModifier : 0 };
+                            props.update( ( c ) => mh3055EndContract( c, end ) );
+                        }}>End contract</button>
+                    </p>
+                    <p className="smaller-text">
+                        Lost (p.111) suspends the rest of the pay; a guilty breach hearing (p.110) rolls 2D6 plus the gamemaster's modifier
+                        for the fine and hiring ban. What was drawn is kept.
+                    </p>
                 </div>
             ) : (
                 <div>
@@ -292,7 +319,7 @@ export default function EditionMh3055( props: { campaign: Campaign; update: ( ch
             )}
             <p className="smaller-text">
                 {SOURCE}: pay and maintenance (pp.86-89), the Dragoons Rating (p.100), contracts (pp.102-108) and the Combatant
-                Templates (pp.112-114). Contract Hearings and per-design Combat Values are not built yet.
+                Templates (pp.112-114), lost contracts (p.111) and breach hearings (pp.109-110). Per-design Combat Values are not built yet.
             </p>
             <p className="smaller-text" data-testid="mh3055-readings">
                 Readings: where the book leaves a rule open, NGCFells decided how to read it. Inspired by {SOURCE}, not printed
