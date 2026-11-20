@@ -16,7 +16,7 @@ const fixture = (): ICampaignExport => ( {
     ],
     targets: [ { id: "t1", sideId: "b", systemId: "Tharkad", intent: "assault" } ],
     force: [],
-    ledger: [ { id: "l1", sideId: "a", step: 1, amount: 5000000, currency: "C", reason: "Payday", rule: "fw-economics" } ],
+    ledger: [ { id: "l1", sideId: "a", step: 1, amount: 5000000, currency: "C-bills", reason: "Payday", rule: "fw-economics" } ],
     log: [ { id: "g1", step: 1, text: "Month 1" } ],
     planet: {
         systemId: "Tharkad",
@@ -49,8 +49,8 @@ describe( "Campaign", () => {
         const c = new Campaign();
         const a = c.addSide( "A", "attacker" );
         const b = c.addSide( "B", "defender" );
-        c.addLedger( { sideId: a.id, step: 0, amount: 5000000, currency: "C", reason: "Pay", rule: "" } );
-        c.addLedger( { sideId: a.id, step: 0, amount: -1200000, currency: "C", reason: "Repairs", rule: "" } );
+        c.addLedger( { sideId: a.id, step: 0, amount: 5000000, currency: "C-bills", reason: "Pay", rule: "" } );
+        c.addLedger( { sideId: a.id, step: 0, amount: -1200000, currency: "C-bills", reason: "Repairs", rule: "" } );
         c.addLedger( { sideId: b.id, step: 0, amount: 3, currency: "SP", reason: "Sortie", rule: "" } );
         expect( c.balance( a.id ) ).toBe( 3800000 );
         expect( c.balance( b.id, "SP" ) ).toBe( 3 );
@@ -62,7 +62,7 @@ describe( "Campaign", () => {
         expect( () => c.import( "x" ) ).toThrow();
         expect( () => c.import( { name: "no id" } ) ).toThrow();
         const data: any = fixture();
-        data.ledger.push( { id: "bad", step: 1, amount: 1, currency: "C", reason: "", rule: "" } );
+        data.ledger.push( { id: "bad", step: 1, amount: 1, currency: "C-bills", reason: "", rule: "" } );
         data.sides.push( "nonsense" );
         c.import( data );
         expect( c.export().ledger.map( ( e ) => e.id ) ).toEqual( ["l1"] );
@@ -78,7 +78,7 @@ describe( "Campaign", () => {
 
     it( "uses C-bills and months with no edition", () => {
         const c = new Campaign();
-        expect( c.currency ).toBe( "C" );
+        expect( c.currency ).toBe( "C-bills" );
         expect( c.timeStep ).toBe( "month" );
     } );
 

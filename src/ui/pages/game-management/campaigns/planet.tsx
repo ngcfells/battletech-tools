@@ -248,11 +248,11 @@ export default function CampaignPlanet( props: { appGlobals: IAppGlobals; id: st
     useEffect( () => { props.appGlobals.makeDocumentTitle( "Campaign planet" ); }, [props.appGlobals] );
 
     const page = ( body: JSX.Element ) => (
-        <UIPage current="game-management-home" appGlobals={props.appGlobals}><div className="campaign-page">{body}</div></UIPage>
+        <UIPage current="game-management-campaigns" appGlobals={props.appGlobals}><div className="campaign-page">{body}</div></UIPage>
     );
     if( !loaded ) return page( <p>Loading...</p> );
-    if( !campaign ) return page( <TextSection label="Planet economy"><p>No campaign with this id. <Link to="../..">Back to campaigns</Link></p></TextSection> );
-    const back = <p><Link to="..">Back to {campaign.name}</Link></p>;
+    if( !campaign ) return page( <TextSection label="Planet economy"><p>No campaign with this id. <Link to="../.." relative="path">Back to campaigns</Link></p></TextSection> );
+    const back = <p><Link to=".." relative="path">Back to {campaign.name}</Link></p>;
     if( !campaign.rulesetIds.includes( "fw-economics" ) ) {
         return page( <TextSection label="Planet economy">{back}<p>Tick Future Wars: Economics in the campaign's rulesets (Change, on the campaign page) to play the planet's economy.</p></TextSection> );
     }

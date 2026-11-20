@@ -143,7 +143,7 @@ export default function CampaignList(props: { appGlobals: IAppGlobals }): JSX.El
     };
 
     return (
-        <UIPage current="game-management-home" appGlobals={props.appGlobals}>
+        <UIPage current="game-management-campaigns" appGlobals={props.appGlobals}>
             <div className="campaign-page">
                 <TextSection label="Campaigns">
                     {campaigns === null ? <p>Loading...</p> : campaigns.length === 0 ? <p>No campaigns yet.</p> : (

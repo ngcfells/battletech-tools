@@ -92,7 +92,7 @@ describe( "Future Wars Economics (merged printings)", () => {
         ];
         const entries = getPayday( areas, sides, FW_PRINTED_COMBINATIONS, [], 3 );
         expect( entries.map( ( e ) => [e.sideId, e.amount] ) ).toEqual( [["a", 13000000], ["b", 1000000]] );
-        expect( entries[0] ).toMatchObject( { step: 3, currency: "C", rule: "fw-economics" } );
+        expect( entries[0] ).toMatchObject( { step: 3, currency: "C-bills", rule: "fw-economics" } );
         expect( entries[0].reason ).toContain( "Farms" );
         expect( entries[0].reason ).toContain( "Oilfield" );
     } );

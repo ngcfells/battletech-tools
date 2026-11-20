@@ -154,7 +154,7 @@ export class Campaign {
     }
 
     get currency(): string {
-        return this.edition?.currency ?? "C";
+        return this.edition?.currency ?? "C-bills";
     }
 
     get timeStep(): CampaignTimeStep {

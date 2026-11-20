@@ -93,11 +93,11 @@ function SystemPanel( props: { system: IStarSystemIndexEntry; date: string; site
                 </table>
             ) : <p className="smaller-text">Loading planets...</p>}
             <h4>Objectives sites</h4>
-            {sites.length === 0 ? <p className="smaller-text">None in our books for this date.</p> : (
+            {sites.length === 0 ? <p className="smaller-text">None in the books checked so far for this date.</p> : (
                 <ul>{sites.map( ( site ) => <li key={site.id}>{site.planet}: {site.name} ({site.products.join( ", " )}{site.heavy ? ", heavy" : ""}) - as of {site.date.slice( 0, 4 )}, {site.source}</li> )}</ul>
             )}
             <h4>Garrisons</h4>
-            {garrisons.length === 0 ? <p className="smaller-text">None in our books on or before this date.</p> : (
+            {garrisons.length === 0 ? <p className="smaller-text">None in the books checked so far on or before this date.</p> : (
                 <ul>{garrisons.map( ( g, i ) => <li key={i}>{g.date.slice( 0, 4 )}, {g.faction}: {g.units.join( ", " )} ({g.source})</li> )}</ul>
             )}
         </div>
@@ -125,10 +125,10 @@ export default function CampaignHome( props: { appGlobals: IAppGlobals; id: stri
         return () => { live = false; };
     }, [] );
 
-    if( !loaded ) return <UIPage current="game-management-home" appGlobals={props.appGlobals}><p>Loading...</p></UIPage>;
+    if( !loaded ) return <UIPage current="game-management-campaigns" appGlobals={props.appGlobals}><p>Loading...</p></UIPage>;
     if( !campaign ) {
         return (
-            <UIPage current="game-management-home" appGlobals={props.appGlobals}>
+            <UIPage current="game-management-campaigns" appGlobals={props.appGlobals}>
                 <TextSection label="Campaign"><p>No campaign with this id. <Link to="..">Back to campaigns</Link></p></TextSection>
             </UIPage>
         );
@@ -181,7 +181,7 @@ export default function CampaignHome( props: { appGlobals: IAppGlobals; id: stri
     } );
 
     return (
-        <UIPage current="game-management-home" appGlobals={props.appGlobals}>
+        <UIPage current="game-management-campaigns" appGlobals={props.appGlobals}>
             <div className="campaign-page">
                 <TextSection label={campaign.name}>
                     <p>
@@ -316,8 +316,8 @@ export default function CampaignHome( props: { appGlobals: IAppGlobals; id: stri
                         <p className="smaller-text">Jumps count {DEFAULT_JUMP_RANGE_LY} light-years at most each.</p>
                     </div>
                     <p className="smaller-text">
-                        Star systems: MegaMek Data (CC BY-NC-SA 4.0), checked against the Inner Sphere Cartography Society maps and our
-                        own books; a field from a book shows its source in brackets.
+                        Star systems: MegaMek Data (CC BY-NC-SA 4.0), checked against the Inner Sphere Cartography Society maps and the
+                        BattleTech sourcebooks; a field from a book shows its source in brackets.
                     </p>
                 </TextSection>
 

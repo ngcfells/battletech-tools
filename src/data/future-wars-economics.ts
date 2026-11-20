@@ -158,7 +158,7 @@ export const getPayday = (
             sideId: side.id,
             step,
             amount: paying.reduce( ( sum, a ) => sum + a.total, 0 ),
-            currency: "C",
+            currency: "C-bills",
             reason: "Payday: " + paying.map( ( a ) => `${a.area.name} ${a.total.toLocaleString( "en-US" )}` ).join( "; " ),
             rule: "fw-economics",
         } );

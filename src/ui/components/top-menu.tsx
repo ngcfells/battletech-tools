@@ -242,6 +242,11 @@ export default class TopMenu extends React.Component<ITopMenuProps, ITopMenuStat
                 label: "Alpha Strike Match Play Generator",
                 url: "/game-management/match-play",
                 tag: "game-management-match-play",
+            },
+            {
+                label: "Campaigns",
+                url: "/game-management/campaigns",
+                tag: "game-management-campaigns",
             }
         ]
 

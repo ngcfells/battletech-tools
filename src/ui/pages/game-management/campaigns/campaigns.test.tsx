@@ -125,6 +125,14 @@ describe( "Campaign screens", () => {
         expect( screen.getByText( /MegaMek Data/ ) ).toBeTruthy();
     } );
 
+    it( "the Systems section names no 'our' books", async () => {
+        saved( ["fw-economics"], "Terra" );
+        open( "/c1" );
+        const credit = await screen.findByText( /MegaMek Data/ );
+        expect( credit.closest( "section, .text-section, div" )!.parentElement!.textContent ).not.toMatch( /\bour\b/i );
+        expect( screen.getAllByText( /None in the books checked so far/ ).length ).toBeGreaterThan( 0 );
+    } );
+
     it( "payday preview shows the grouping that pays most", async () => {
         saved();
         open( "/c1/planet" );
@@ -152,6 +160,25 @@ describe( "Campaign screens", () => {
         cleanup();
         open( "/c1/planet" );
         expect( await screen.findByText( /Tick Future Wars: Economics/ ) ).toBeTruthy();
+    } );
+
+    it( "the Game Management section menu lists Campaigns", async () => {
+        open( "" );
+        const menu = await screen.findByRole( "navigation", { name: "Section menu" } );
+        const link = within( menu ).getByRole( "link", { name: "Campaigns" } );
+        expect( link.getAttribute( "href" ) ).toMatch( /\/game-management\/campaigns$/ );
+        expect( link.className ).toContain( "current" );
+    } );
+
+    it( "the planet page links back to its own campaign", async () => {
+        saved();
+        open( "/c1/planet" );
+        const back = await screen.findByRole( "link", { name: "Back to Tharkad Defence" } );
+        expect( back.getAttribute( "href" ) ).toBe( "/game-management/campaigns/c1" );
+        cleanup();
+        open( "/nope/planet" );
+        const list = await screen.findByRole( "link", { name: "Back to campaigns" } );
+        expect( list.getAttribute( "href" ) ).toBe( "/game-management/campaigns" );
     } );
 
     it( "shows NOT OFFICIAL and NGCFells's merge note", async () => {

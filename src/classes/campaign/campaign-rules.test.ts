@@ -1,5 +1,7 @@
 import { afterEach, describe, expect, it } from "vitest";
 import { CAMPAIGN_EDITIONS } from "../../data/campaign-editions";
+import { MH1987_EDITION } from "../../data/campaign-editions/mercenarys-handbook-1987";
+import { MH3055_EDITION } from "../../data/campaign-editions/mercenarys-handbook-3055";
 import { getRulesetBlock, findSpecialRuleset } from "../../data/special-rulesets";
 import { Campaign } from "./campaign";
 import { CAMPAIGN_RULE_HOOKS } from "./campaign-rules";
@@ -69,9 +71,25 @@ describe( "Campaign rule hooks", () => {
         expect( c.ledger.map( ( e ) => e.sideId ) ).toEqual( [c.sides[0].id] );
     } );
 
+    it.each( [MH1987_EDITION, MH3055_EDITION] )( "the payday counts in the $id edition's balance", ( edition ) => {
+        CAMPAIGN_EDITIONS.push( { ...edition, onStep: undefined } );
+        const c = economyCampaign();
+        c.editionId = edition.id;
+        c.advance( 3 );
+        expect( c.ledger.map( ( e ) => e.currency ) ).toEqual( [c.currency] );
+        expect( c.balance( c.sides[0].id ) ).toBe( 6000000 );
+    } );
+
+    it( "C-bills without an edition", () => {
+        const c = economyCampaign();
+        c.advance( 3 );
+        expect( c.currency ).toBe( "C-bills" );
+        expect( c.ledger[0].currency ).toBe( "C-bills" );
+    } );
+
     it( "runs the edition's own step hook", () => {
         const seen: number[] = [];
-        CAMPAIGN_EDITIONS.push( { id: "test-month", name: "Test", source: { title: "", publication: "", pages: "" }, kind: "unit", currency: "C", timeStep: "month", onStep: ( c ) => { seen.push( c.step ); } } );
+        CAMPAIGN_EDITIONS.push( { id: "test-month", name: "Test", source: { title: "", publication: "", pages: "" }, kind: "unit", currency: "C-bills", timeStep: "month", onStep: ( c ) => { seen.push( c.step ); } } );
         const c = economyCampaign( [] );
         c.editionId = "test-month";
         c.advance( 2 );
