@@ -116,7 +116,7 @@ function AreaPanel( props: { campaign: Campaign; area: ICampaignArea; update: Up
                         <select value={area.comboOverride ? area.comboOverride.join( "," ) : ""}
                             onChange={( e ) => { const v = e.currentTarget.value; changeArea( update, area.id, ( a ) => ( { ...a, comboOverride: v ? v.split( "," ) : null } ) ); }}>
                             <option value="">The one that pays most</option>
-                            {combos.map( ( c ) => <option key={c.id} value={c.id}>{c.name} first</option> )}
+                            {combos.map( ( c ) => <option key={c.id} value={c.id}>Only {c.name}</option> )}
                         </select>
                     </label>
                 </p>

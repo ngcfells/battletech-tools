@@ -139,6 +139,9 @@ describe( "Campaign screens", () => {
         const area = await screen.findByTestId( "area-a1" );
         expect( area.textContent ).toContain( "14,000,000" );
         expect( area.textContent ).toContain( "Oil, refining and processing" );
+        // A GM grouping keeps only that combination; the rest are paid loose, so the option says "Only".
+        const options = within( within( area ).getByLabelText( /Grouping/ ) ).getAllByRole( "option" ).map( ( o ) => o.textContent || "" );
+        expect( options.slice( 1 ).every( ( t ) => t.startsWith( "Only " ) ) ).toBe( true );
     } );
 
     it( "the damage roller marks destroyed dots and logs them", async () => {
@@ -237,6 +240,29 @@ describe( "Campaign screens", () => {
         fireEvent.click( within( panel ).getByRole( "button", { name: "Resolve month" } ) );
         await new Promise( ( r ) => setTimeout( r, 50 ) );
         expect( store.campaigns[0].log.filter( ( l ) => l.text.includes( "outcome I" ) ) ).toHaveLength( 1 );
+    } );
+
+    it( "each Mercenary's Handbook panel lists NGCFells's readings of the book", async () => {
+        const c = saved( [] );
+        c.editionId = "mh-1987";
+        store.campaigns = [ c.export() ];
+        open( "/c1" );
+        const old = ( await screen.findByTestId( "mh1987-readings" ) ).textContent || "";
+        expect( old ).toContain( "NGCFells" );
+        expect( old ).toContain( "Inspired by" );
+        expect( old ).toContain( "a squad a week" );
+        expect( old ).toContain( "5 SP" );
+        cleanup();
+        c.editionId = "mh-3055";
+        store.campaigns = [ c.export() ];
+        open( "/c1" );
+        const text = ( await screen.findByTestId( "mh3055-readings" ) ).textContent || "";
+        expect( text ).toContain( "NGCFells" );
+        expect( text ).toContain( "Inspired by" );
+        expect( text ).toContain( "two paydays" );
+        expect( text ).toContain( "7%" );
+        expect( text ).toContain( "first draw" );
+        expect( text ).toContain( "Upkeep draw" );
     } );
 
     it( "the GM adds a ledger entry by hand and removes it again", async () => {

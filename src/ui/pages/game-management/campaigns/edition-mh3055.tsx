@@ -294,6 +294,13 @@ export default function EditionMh3055( props: { campaign: Campaign; update: ( ch
                 {SOURCE}: pay and maintenance (pp.86-89), the Dragoons Rating (p.100), contracts (pp.102-108) and the Combatant
                 Templates (pp.112-114). Contract Hearings and per-design Combat Values are not built yet.
             </p>
+            <p className="smaller-text" data-testid="mh3055-readings">
+                Readings: where the book leaves a rule open, NGCFells decided how to read it. Inspired by {SOURCE}, not printed
+                there: a month is two paydays and four weeks of maintenance and overhead; the Bonding Commission&apos;s 5% fee is
+                taken on the first draw only; an A-rated unit paid in full up front pays 7% (5% plus the extra 2%); on a 2-6
+                month contract the upkeep portion is paid each month as an &quot;Upkeep draw&quot;; overhead is charged only while
+                a contract runs.
+            </p>
         </div>
     );
 }

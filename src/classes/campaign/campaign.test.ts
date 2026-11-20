@@ -69,6 +69,16 @@ describe( "Campaign", () => {
         expect( c.export().sides ).toHaveLength( 2 );
     } );
 
+    it( "lists each ruleset once and refuses a newer save version", () => {
+        const c = new Campaign();
+        const data: any = fixture();
+        data.rulesetIds = [ "fw-economics", "fw-economics", "fw-economic-damage" ];
+        c.import( data );
+        expect( c.rulesetIds ).toEqual( [ "fw-economics", "fw-economic-damage" ] );
+        data.version = CAMPAIGN_EXPORT_VERSION + 1;
+        expect( () => new Campaign().import( data ) ).toThrow( /newer/ );
+    } );
+
     it( "advances months and logs each", () => {
         const c = new Campaign();
         c.advance( 3 );

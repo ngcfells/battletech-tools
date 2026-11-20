@@ -184,10 +184,12 @@ export class Campaign {
     import( data: unknown ): void {
         if( !isObject( data ) ) throw new Error( "A campaign must be an object" );
         if( !isString( data.id ) || !data.id ) throw new Error( "A campaign needs an id" );
+        if( isNumber( data.version ) && data.version > CAMPAIGN_EXPORT_VERSION ) throw new Error( "This campaign was saved by a newer version of the app" );
         this.id = data.id;
         this.name = isString( data.name ) ? data.name : "Campaign";
         this.editionId = isString( data.editionId ) ? data.editionId : null;
-        this.rulesetIds = Array.isArray( data.rulesetIds ) ? data.rulesetIds.filter( isString ).slice( 0, CAMPAIGN_MAX_ARRAY ) : [];
+        // A ruleset listed twice would run its step hook twice (two paydays, for example).
+        this.rulesetIds = Array.isArray( data.rulesetIds ) ? [ ...new Set( data.rulesetIds.filter( isString ) ) ].slice( 0, CAMPAIGN_MAX_ARRAY ) : [];
         this.startDate = isString( data.startDate ) ? data.startDate : "3025-01-01";
         this.step = isNumber( data.step ) && data.step >= 0 ? Math.floor( data.step ) : 0;
         this.sides = cleanArray( data.sides, pickSide );

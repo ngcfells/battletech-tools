@@ -224,6 +224,13 @@ export default function EditionMh1987( props: { campaign: Campaign; update: ( ch
             <p className="smaller-text">
                 {SOURCE}: Cost of Living, Creating Contracts and the Basic Campaign System. The Advanced Campaign System is not built yet.
             </p>
+            <p className="smaller-text" data-testid="mh1987-readings">
+                Readings: where the book leaves a rule open, NGCFells decided how to read it. Inspired by {SOURCE}, not printed
+                there: remuneration is paid a squad a week, four weeks to the month; DropShips and JumpShips are crews, so they
+                pay no supplies and count for no reputation, morale or contract squads; airmobile infantry maintenance
+                (&quot;Airmobile +4&quot;) is 5 SP a squad; a force with no row on a mission&apos;s outcome table reads the nearest
+                printed row; morale enters those tables as its band, Green 1 to Elite 4.
+            </p>
         </div>
     );
 }

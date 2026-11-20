@@ -20,7 +20,9 @@ const economyCampaign = ( rulesetIds: string[] = ["fw-economics"] ): Campaign =>
 };
 
 describe( "Campaign rule hooks", () => {
-    afterEach( () => { CAMPAIGN_EDITIONS.length = 0; } );
+    // Put the real registry back after each test that adds a test edition.
+    const registered = [ ...CAMPAIGN_EDITIONS ];
+    afterEach( () => { CAMPAIGN_EDITIONS.splice( 0, CAMPAIGN_EDITIONS.length, ...registered ); } );
 
     it( "has a step hook for Economics only", () => {
         expect( typeof CAMPAIGN_RULE_HOOKS["fw-economics"].onStep ).toBe( "function" );

@@ -255,6 +255,18 @@ describe( "Mercenary's Handbook (1987) edition hooks", () => {
         expect( mh1987ReadState( c.editionState ).contract?.completed ).toBe( true );
     } );
 
+    it( "posts no 0 C-bill line when an amount rounds to nothing", () => {
+        const c = campaign();
+        const state = mh1987ReadState( c.editionState );
+        mh1987SignContract( c, state, {
+            mission: "objective-raid",
+            terms: { months: 2, ratePerSquadWeek: 10000, guarantee: "comstar", command: "liaison", transportModifier: 0.5,
+                supplyModifier: 0.5, salvage: "merc-claims" },
+            advancePct: 25, transportFee: 0.6, roll: fixedRolls( [] ),
+        } );
+        expect( c.ledger.some( ( e ) => e.amount === 0 ) ).toBe( false );
+    } );
+
     it( "a Minor Intermediary advance is 2D6 - 2 percent", () => {
         const c = campaign();
         mh1987SignContract( c, mh1987ReadState( c.editionState ), {

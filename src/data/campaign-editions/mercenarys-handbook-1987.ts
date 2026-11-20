@@ -486,8 +486,9 @@ export const mh1987ReadState = ( raw: unknown ): IMh1987State => {
 }
 
 const post = ( c: Campaign, sideId: string, amount: number, reason: string, rule: string ): void => {
-    if( amount === 0 ) return;
-    c.addLedger( { sideId, step: c.step, amount: Math.round( amount ), currency: CURRENCY, reason, rule } );
+    const rounded = Math.round( amount );
+    if( rounded === 0 ) return;
+    c.addLedger( { sideId, step: c.step, amount: rounded, currency: CURRENCY, reason, rule } );
 }
 
 export interface IMh1987Signing {
