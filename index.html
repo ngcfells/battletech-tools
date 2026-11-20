@@ -18,7 +18,7 @@
       %PUBLIC_URL%). It is replaced with the configured base path at build time.
       Only files inside the `public` folder can be referenced this way.
     -->
-    <title>Jeff's BattleTech Tools ilClan Edition - BETA</title>
+    <title>Jeff's BattleTech Tools IIC</title>
     <link rel="apple-touch-icon" href="/battletech-tools/favicons/apple-touch-icon.png">
 
     <link rel="icon" type="image/png" sizes="512x512"  href="/battletech-tools/favicons/android-chrome-512x512.png">
@@ -58,85 +58,20 @@
 
 
     </script>
-    <script type="module" crossorigin src="/battletech-tools/assets/index-B88_BWsx.js"></script>
+    <script type="module" crossorigin src="/battletech-tools/assets/index-ByzYqM1e.js"></script>
     <link rel="modulepreload" crossorigin href="/battletech-tools/assets/rolldown-runtime-BCiCTKAo.js">
     <link rel="modulepreload" crossorigin href="/battletech-tools/assets/sanitized-html-duSqaeDS.js">
     <link rel="modulepreload" crossorigin href="/battletech-tools/assets/generateUUID-CXkTd280.js">
+    <link rel="modulepreload" crossorigin href="/battletech-tools/assets/packed-json-D5Z7YQc9.js">
     <link rel="modulepreload" crossorigin href="/battletech-tools/assets/preload-helper-Bw2dUPCv.js">
     <link rel="modulepreload" crossorigin href="/battletech-tools/assets/tag-match-DOLtLUPg.js">
     <link rel="modulepreload" crossorigin href="/battletech-tools/assets/era-options-B9bw8t8y.js">
-    <link rel="modulepreload" crossorigin href="/battletech-tools/assets/mulUtilities-ErVqBsTc.js">
+    <link rel="modulepreload" crossorigin href="/battletech-tools/assets/mulUtilities-g-KCYGpj.js">
     <link rel="modulepreload" crossorigin href="/battletech-tools/assets/small-craft-construction-CRJzONPk.js">
     <link rel="stylesheet" crossorigin href="/battletech-tools/assets/index-8-YiP9nC.css">
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
-  <!-- beta-issues-button -->
-<style>
-li.beta-issues{margin-left:auto!important;align-self:center;list-style:none}
-li.beta-issues + li.logo{margin-left:0!important}
-li.beta-issues a.beta-issues-button{display:block;background:#c0392b!important;color:#fff!important;font-weight:700;font-size:.8rem;
-padding:.4rem .75rem;border-radius:.5rem!important;margin:0 .5rem!important;min-height:0!important;white-space:nowrap;text-decoration:none}
-li.beta-issues a.beta-issues-button:hover{background:#e74c3c!important}
-li.beta-ideas{align-self:center;list-style:none}
-li.beta-ideas + li.logo{margin-left:0!important}
-li.beta-ideas a.beta-ideas-button{display:block;background:#2471a3!important;color:#fff!important;font-weight:700;font-size:.8rem;
-padding:.4rem .75rem;border-radius:.5rem!important;margin:0 .5rem 0 0!important;min-height:0!important;white-space:nowrap;text-decoration:none}
-li.beta-ideas a.beta-ideas-button:hover{background:#2e86c1!important}
-@media(max-width:1599.98px){
-header.topmenu ul.main-menu::after{content:"";order:1;flex-basis:100%;height:0}
-header.topmenu ul.main-menu>li.beta-issues{order:2;margin-left:0!important}
-header.topmenu ul.main-menu>li.beta-ideas{order:2}
-header.topmenu ul.main-menu>li.logo{order:3;margin-left:auto!important}
-}
-@media(max-width:767.98px){
-.mobile-menu{padding-top:7.5rem!important}
-header.topmenu ul.main-menu>li.logo{order:0}
-header.topmenu ul.main-menu>li.beta-issues,header.topmenu ul.main-menu>li.beta-ideas{flex:1 1 40%;min-width:0;padding-bottom:.25rem}
-header.topmenu ul.main-menu>li a.beta-issues-button,header.topmenu ul.main-menu>li a.beta-ideas-button{white-space:normal;text-align:center}
-}
-</style>
-<script>
-(function(){
-  function button(cls,href,title,text){
-    var li=document.createElement("li");li.className=cls;
-    var a=document.createElement("a");a.className=cls+"-button";a.href=href;
-    a.target="_blank";a.rel="noopener noreferrer";a.title=title;
-    a.textContent=text;li.appendChild(a);return li;
-  }
-  function add(){
-    var logo=document.querySelector("header.topmenu ul.main-menu > li.logo");
-    if(!logo||logo.parentNode.querySelector("li.beta-issues"))return;
-    var ideas=button("beta-ideas","https://github.com/ngcfells/battletech-tools/issues/new?labels=enhancement","We are the beta test: see the ideas and suggest one on GitHub","Beta: Ideas/Suggestions");
-    var issues=button("beta-issues","https://github.com/ngcfells/battletech-tools/issues/new?labels=bug","We are the beta test: report a problem on GitHub","Beta: Report an Issue");
-    logo.parentNode.insertBefore(ideas,logo);logo.parentNode.insertBefore(issues,ideas);
-  }
-  new MutationObserver(add).observe(document.documentElement,{childList:true,subtree:true});
-  add();
-})();
-</script>
-<style>
-a.kofi-tip{display:inline-block;margin-left:.5rem;padding:.05rem .4rem;background:#72a4f2;color:#fff!important;font-size:.7rem;font-weight:700;
-line-height:1.4;border-radius:.25rem;text-decoration:none;vertical-align:middle}
-</style>
-<script>
-// A small Ko-fi tip link beside the NGCFells name in About > Current Maintainers.
-(function(){
-  function isAbout(){return /^\/battletech-tools\/about\/?$/.test(location.pathname);}
-  function place(){
-    if(!isAbout()||document.querySelector(".kofi-tip"))return;
-    var name=Array.prototype.find.call(document.querySelectorAll("main.content h3"),function(heading){return heading.textContent.trim()==="NGCFells";});
-    if(!name)return;
-    var tip=document.createElement("a");tip.className="kofi-tip";tip.href="https://ko-fi.com/M5K429C47U";
-    tip.target="_blank";tip.rel="noopener noreferrer";tip.title="If you would like to help cover costs of development please click here.";
-    tip.textContent="Assist with development costs";name.appendChild(tip);
-  }
-  new MutationObserver(place).observe(document.documentElement,{childList:true,subtree:true});
-  window.addEventListener("popstate",place);
-  window.addEventListener("load",place);
-  place();
-})();
-</script>
-</body>
+  </body>
 </html>
