@@ -31,6 +31,27 @@ export const BLK_ILLEGAL_AS_PRINTED: ReadonlySet<string> = new Set([
     // at 3.5 tons (TRO 3067 p.27; TM p.108), but the C's targeting computer, MRM 40, four Streak SRM 6s, Guardian ECM,
     // PPC and four tons of ammunition come to 44.5 tons: 92.5 tons on a 90-ton tank.
     "Ajax Assault Tank C",
+    // Air Car (MechWarrior, 1st edition, 1986, p.60): a 40-ton hovercraft from the role-playing game's vehicle list, a
+    // 265-rated ICE with no fuel and 32 points of plain armor. Under the TechManual's Support Vehicle rules the ICE needs
+    // fuel (TM p.128), BAR 10 needs the Armored chassis (TM p.134) and the whole comes to 42.5 tons.
+    "Air Car",
+    // Both Estevez tanks (Era Digest: Age of War pp.25-26 and the record sheets pp.30-31) print 164 points of BAR 8 at
+    // Equipment Rating C, 10.5 tons (64 kg a point, the Advanced Support Vehicle column, TO:AUE p.69); BAR 8 starts at
+    // Tech Rating D on a Support Vehicle (TM p.134, errata v8.0).
+    "Estevez MBT",
+    "Estevez MBT (Anti-Aircraft)",
+    // Debbie (Touring the Stars: Tortuga Prime p.10): nine flamers, nine machine guns, an SRM 2 and a combine on an
+    // 80-ton chassis's 13 item slots (TM p.120), and BAR 5 armor at Tech Rating B without the Armored chassis it needs
+    // there (TM p.134).
+    "Debbie 'The Warcrime Wagon'",
+    // Both racers (TRO: Vehicle Annex pp.11, 56) print the Ultra-Light chassis with BAR 6 and BAR 8 armor; an
+    // Ultra-Light chassis "may not mount armor better than a BAR of 5" (TM p.123).
+    "Saturnus V Grande Circuit Racer",
+    "Champion Hoversports Crimson Streak Hover Racer",
+    // Jonah (TRO: Vehicle Annex p.170): 5 armor points on a 2-ton Naval chassis, whose maximum is 4 + 0.334 x 2 = 4.67,
+    // rounded down to 4 (TM p.134). The builder keeps the 4 that fit, which leaves the rear of its Submersible chassis
+    // bare.
+    "Jonah Submarine JN-002",
 ]);
 
 export const BLK_DESIGN_CORRECTIONS: Record<string, IBlkDesignCorrection> = {
@@ -46,4 +67,27 @@ export const BLK_DESIGN_CORRECTIONS: Record<string, IBlkDesignCorrection> = {
         },
         source: BRUNEL_SOURCE,
     },
+    // The NapFind (TRO 3039 p.71, page image): Tech Rating D throughout ("D/X-F-D/C"; the 250 kg chassis and 1,432 kg
+    // fuel cell are D's weights), no armor ("Armor Factor (BAR 2): 0") and "Crew: 0", so no seat (TO:AUE p.117). The
+    // file gives the structure A, the engine F, a front armor point and a seat.
+    "Hi-Scout Drone (NapFind)": {
+        blocks: {
+            structural_tech_rating: ["3"], engine_tech_rating: ["3"], armor_tech_rating: ["3"], armor: ["0", "0", "0", "0"],
+            transporters: ["cargobay:0.015:1:2::-1:0"],
+        },
+        source: "TRO 3039 p.71",
+    },
+    // The PathTrack (TRO 3039 p.71): "Crew: 0", no seat; its masses come to the 3,000 kg without one.
+    "Hi-Scout Drone (PathTrak)": { blocks: { transporters: [] }, source: "TRO 3039 p.71" },
+    // Debbie (Touring the Stars: Tortuga Prime p.10, page image): "Armor Factor (BAR 5, B)" and "Fuel: 1,000km 0.5";
+    // the file gives BAR 4 and 2.5 tons of fuel.
+    "Debbie 'The Warcrime Wagon'": { blocks: { barrating: ["5"], fuel: ["0.5"] }, source: "Touring the Stars: Tortuga Prime p.10" },
+    // Both Estevez tanks: "Armor Factor (BAR 8)" (Era Digest: Age of War p.25) and "BAR: 8" on both record sheets
+    // (pp.30-31); the files give standard armor, which reads as BAR 10.
+    "Estevez MBT": { blocks: { barrating: ["8"] }, source: "Era Digest: Age of War pp.25, 31" },
+    "Estevez MBT (Anti-Aircraft)": { blocks: { barrating: ["8"] }, source: "Era Digest: Age of War p.30" },
+    // Trireme (CS) (Record Sheets: 3085 Unabridged, Cutting Edge): "BAR: 10" and the Armored chassis, with no armor Tech
+    // Rating printed. The file's C has no BAR 10 armor (TM p.134); the chassis is E ("E/X-X-D/E", TRO 3085 Supplemental
+    // p.23), and armor "usually does not exceed" the chassis's Tech Rating (TM p.134, errata v8.0), so E.
+    "Trireme Infantry Transport (CS)": { blocks: { armor_tech_rating: ["4"] }, source: "Record Sheets: 3085 Unabridged; TRO 3085 Supplemental p.23" },
 };

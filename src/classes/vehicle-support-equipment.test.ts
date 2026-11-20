@@ -151,8 +151,9 @@ describe("Light and Medium weapons and pintles on Small Support Vehicles (TM pp.
         expect(laser.pintle).toBe(true);
         // 150 kg x 5% = 7.5 kg, rounded up to 8.
         expect(vehicle.getPintleWeight()).toBe(0.008);
-        // No fire control: the weapon's own crew of 2, plus the driver.
-        expect(vehicle.getSupportVehicleMinimumCrew()).toBe(3);
+        // No fire control: 1 gunner per weapon (TM p.131's table and MegaMek; not the weapon's Crew value of 2), plus
+        // the driver.
+        expect(vehicle.getSupportVehicleMinimumCrew()).toBe(2);
         vehicle.setSupportVehicleFireControl("basic");
         expect(vehicle.getSupportVehicleMinimumCrew()).toBe(2);
         vehicle.setSupportVehicleFireControl("advanced");

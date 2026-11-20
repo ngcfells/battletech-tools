@@ -1,15 +1,16 @@
 # Bundled Support Vehicles: build report
 
-93 designs kept, 132 files left out.
+94 designs kept, 131 files left out.
 
 | Reason | Files |
 |---|---|
 | the import could not carry all of it over | 50 |
 | no Master Unit List entry to check its BV against | 46 |
-| BV differs from the MUL | 36 |
+| BV differs from the MUL | 35 |
 
 ## Left out
 
+- `vehicles/3039u/Hi-Scout Drone (NapFind).blk`: BV differs from the MUL: BV 10, MUL 11
 - `vehicles/3039u/Hi-Scout Drone (PathTrak).blk`: BV differs from the MUL: BV 15, MUL 36
 - `vehicles/3075 Support tanks/Buffel VII Engineering Support Vehicle (Cargo).blk`: the import could not carry all of it over: "ISMineSweeper" has no match in this catalog and was left off.
 - `vehicles/3075 Support tanks/Buffel VII Engineering Support Vehicle Reverse.blk`: the import could not carry all of it over: "ISMineSweeper" has no match in this catalog and was left off.
@@ -47,8 +48,6 @@
 - `vehicles/AToW Companion/Wheeled/Eagre Firefighting ATV.blk`: the import could not carry all of it over: "HHSearchlight" has no match in this catalog and was left off.; "HHSearchlight" has no match in this catalog and was left off.
 - `vehicles/AToW Companion/Wheeled/Tracked Quad.blk`: the import could not carry all of it over: "HHSearchlight" has no match in this catalog and was left off.; "HHSearchlight" has no match in this catalog and was left off.; "HHSearchlight" has no match in this catalog and was left off.
 - `vehicles/DarkAge/Shackleton AESV.blk`: the import could not carry all of it over: "ISArmoredMotiveSystem" has no match in this catalog and was left off.; "VehicleJumpJet" has no match in this catalog and was left off.; "VehicleJumpJet" has no match in this catalog and was left off.; "VehicleJumpJet" has no match in this catalog and was left off.; "VehicleJumpJet" has no match in this catalog and was left off.
-- `vehicles/Era Digests/Age of War/Estevez AA.blk`: BV differs from the MUL: BV 660, MUL 571
-- `vehicles/Era Digests/Age of War/Estevez MBT.blk`: BV differs from the MUL: BV 736, MUL 647
 - `vehicles/Era Digests/Age of War/Marsden I.blk`: BV differs from the MUL: BV 498, MUL 500
 - `vehicles/HB HD/Generic Expandable Services Vehicle Trailer (Bunk).blk`: the import could not carry all of it over: Transport "infantrybay" is not one this builder has and was left off.
 - `vehicles/HB HD/Heavy Combat ATV.blk`: no Master Unit List entry to check its BV against
@@ -62,7 +61,7 @@
 - `vehicles/ProtoTypes/Lexan Surveillance VTOL.blk`: the import could not carry all of it over: "Small Laser" cannot go in the turret and was mounted unplaced.; "Small Laser" cannot go in the turret and was mounted unplaced.; "ISReconCamera" cannot go in the turret and was mounted unplaced.
 - `vehicles/ProtoTypes/Nishikigoi Support Aircraft Koi.blk`: BV differs from the MUL: BV 1953, MUL 2017
 - `vehicles/TOS/Granada/Auxiliary Defense Tank ADT-1.blk`: the import could not carry all of it over: "Rifle (Cannon, Medium)" has no match in this catalog and was left off.; Ammunition "IS Ammo Medium Rifle" has no weapon or no match in this catalog and was left off.; Ammunition "IS Ammo Medium Rifle" has no weapon or no match in this catalog and was left off.
-- `vehicles/TOS/Tortuga/Debbie 'The Warcrime Wagon'.blk`: BV differs from the MUL: BV 232, MUL 43
+- `vehicles/TOS/Tortuga/Debbie 'The Warcrime Wagon'.blk`: BV differs from the MUL: BV 247, MUL 43
 - `vehicles/TOS/Tortuga/Outrider.blk`: BV differs from the MUL: BV 17, MUL 5
 - `vehicles/TRO Irregulars/Smalls/Hoverbike (Laser).blk`: BV differs from the MUL: BV 50, MUL 45
 - `vehicles/TRO Irregulars/Smalls/Hoverbike (MG).blk`: BV differs from the MUL: BV 43, MUL 38

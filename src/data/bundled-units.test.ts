@@ -16,7 +16,7 @@ import { BundledUnitType, loadBundledIndex, loadBundledUnitDesign } from "./bund
 const dataDir = path.resolve(__dirname, "bundled");
 
 // Pinned so a growing data set is a deliberate change.
-const DESIGNS: Record<BundledUnitType, number> = { "battle-armor": 921, "protomechs": 64, "small-craft": 101, "support-vehicles": 93, "vehicles": 1064 };
+const DESIGNS: Record<BundledUnitType, number> = { "battle-armor": 921, "protomechs": 64, "small-craft": 101, "support-vehicles": 94, "vehicles": 1064 };
 // Each type's index and chunks together, in bytes, with a little room.
 const MAX_BYTES: Record<BundledUnitType, number> = { "battle-armor": 1_360_000, "protomechs": 180_000, "small-craft": 500_000, "support-vehicles": 460_000, "vehicles": 3_380_000 };
 
@@ -149,9 +149,14 @@ describe("bundled units other than 'Mechs", () => {
         // A Combat Vehicle by its weight and, on an OmniVehicle, its base chassis turret (TM p.108).
         const vehicles = await loadBundledIndex("vehicles");
         expect(vehicles.find((header) => header.name === "Ajax Assault Tank" && header.model === "C")?.illegal).toEqual(["92.5 tons used of 90"]);
-        // Only designs checked against their book are flagged, so a fault in our own checks brands nothing.
-        expect([...headers, ...vehicles].filter((header) => header.illegal).map((header) => `${header.name} ${header.model}`.trim()).sort())
-            .toEqual([...BLK_ILLEGAL_AS_PRINTED].sort());
+        // Only designs checked against their book are flagged, so a fault in our own checks brands nothing; every listed
+        // design the bundle keeps is flagged (some listed ones are left out of the bundle, e.g. by BV).
+        const all = [...headers, ...vehicles];
+        const label = (header: { name: string; model: string }) => `${header.name} ${header.model}`.trim();
+        const bundled = new Set(all.map(label));
+        expect(all.filter((header) => header.illegal).map(label).sort())
+            .toEqual([...BLK_ILLEGAL_AS_PRINTED].filter((name) => bundled.has(name)).sort());
+        expect(all.find((header) => header.name === "Estevez MBT" && header.model === "")?.illegal).toEqual(["BAR 8 armor does not exist at Tech Rating C (TM p.134)"]);
         vi.restoreAllMocks();
     }, 300_000);
 });

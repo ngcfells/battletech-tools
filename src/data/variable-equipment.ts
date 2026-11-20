@@ -79,6 +79,8 @@ export interface IVariableEquipmentContext {
     runMP?: number;
     /** Torso locations (left, center, right) that carry Spikes: each adds to a Ram Plate's charge. */
     torsoSpikes?: number;
+    /** A Small Support Vehicle, which weighs its items in kilograms rather than rounding to the half ton (TM p.137). */
+    kilograms?: boolean;
 }
 
 /** Weight class index: 1 light (<= 35 t), 2 medium (<= 55), 3 heavy (<= 75), 4 assault and heavier. */
@@ -290,9 +292,10 @@ export function sizeVariableEquipment(
         }
         // TO:AUE p.117: 10% of the drone's weight (half ton) plus the required half-ton sensor system, one item and one
         // slot; 5,000 + 10,000 x item tons C-bills (p.219), the 5,000 being the sensors (table note). Item tons read as
-        // the 10% share, without the sensors (flagged).
+        // the 10% share, without the sensors (flagged). A Small Support Vehicle weighs the 10% in kilograms (the
+        // PathTrack's 800 kg and the NapFind's 750 kg, TRO 3039 p.71).
         case "drone-operating-system": {
-            const system = roundUpHalfTon(t * 0.1);
+            const system = ctx.kilograms ? Math.ceil(t * 100 - 1e-9) / 1000 : roundUpHalfTon(t * 0.1);
             return { weight: system + 0.5, slots: 1, cbills: 5000 + 10000 * system, battleValue: 0 };
         }
         // TO:AUE p.117: 2 tons plus 0.5 per controlled drone, one slot; 10,000 x item tons C-bills (p.219).

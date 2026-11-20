@@ -50,7 +50,7 @@ import {
     MAX_VEHICLE_BAY_COUNT, MAX_VEHICLE_BAYS, MAX_VEHICLE_CARGO_TONS, normalizeVehicleBays, VEHICLE_BAY_TYPES,
 } from "../data/vehicle-transport-bays";
 import { ARTVEE_CONVERSION_EQUIPMENT } from "../data/combat-vehicle-chassis-modifications-custom";
-import { CUSTOM_HOMEBREW_RULES_LEVEL, EXPERIMENTAL_RULES_LEVEL, getItemBattleValue, getLauncherBattleValueWithoutFireControl, equipmentMatchesIdentifier, getAmmoBattleValuePerTon, getBattleArmorScaleListByTech, getCompatibleAmmo, getDatesAvailability, getEquipmentListByTech, getEquipmentRulesLevel, mustUseStarLeagueVersion, starLeagueVersionInEra, getWeaponShotsPerTon, isEquipmentOffered, isUnderUnitLimit, getTechDatesAvailability } from "../data/equipment-registry";
+import { CUSTOM_HOMEBREW_RULES_LEVEL, EXPERIMENTAL_RULES_LEVEL, getItemBattleValue, getLauncherBattleValueWithoutFireControl, equipmentMatchesIdentifier, getAmmoBattleValuePerTon, getBattleArmorScaleListByTech, getAmmoFamily, getCompatibleAmmo, getDatesAvailability, getEquipmentListByTech, getEquipmentRulesLevel, mustUseStarLeagueVersion, starLeagueVersionInEra, getWeaponShotsPerTon, isEquipmentOffered, isUnderUnitLimit, getTechDatesAvailability } from "../data/equipment-registry";
 import { isTargetingComputerWeapon, roundUpHalfTon, sizeTargetingComputers, sizeVariableEquipment } from "../data/variable-equipment";
 import { getFractionalArmorTonsPerPoint, getFractionalEngineWeight, roundUpToKilogram } from "../data/fractional-accounting";
 import { getWeaponExplosionDamage } from "../data/weapon-explosions";
@@ -1082,16 +1082,21 @@ export default class Vehicle implements IGameSettingsUnit {
         return crew + getSupportVehicleOfficers(crew);
     }
 
+    /** True with a Drone (Remote) Operating System installed (TO:AUE p.117). */
+    public hasDroneOperatingSystem(): boolean {
+        return this._equipmentList.some((item) => item.variableFormula === "drone-operating-system");
+    }
+
     /**
-     * Gunners on a Small Support Vehicle (TM p.131): without fire control, each weapon's own crew (a Light or
-     * Medium weapon's Crew value, TM p.137); with fire control, 1 per facing that has weapons, each pintle and the
-     * turret counting as a facing of its own; advanced fire control's count includes the driver.
+     * Gunners on a Small Support Vehicle (TM p.131): without fire control, 1 per weapon; with fire control, 1 per
+     * facing that has weapons, each pintle and the turret counting as a facing of its own; advanced fire control's
+     * count includes the driver. TM p.136's text would count a Light or Medium weapon's Crew value instead; the table,
+     * the printed designs (the Outrider, Touring the Stars: Tortuga Prime p.11) and MegaMek use 1 per weapon.
      */
     private _smallSupportVehicleGunners(): number {
         const weapons = this._equipmentList.filter((item) => this._isWeapon(item));
         if (!this._support || weapons.length === 0) return 0;
-        const crewOf = (item: IEquipmentItem) => findSupportVehicleLightWeapon(item.tag)?.crew ?? 1;
-        if (this._support.fireControl === "none") return weapons.reduce((sum, item) => sum + crewOf(item), 0);
+        if (this._support.fireControl === "none") return weapons.length;
         const facings = new Set(weapons.map((item) => `${item.location ?? ""}${item.pintle ? "-pintle" : ""}`)).size;
         return this._support.fireControl === "advanced" ? Math.max(0, facings - 1) : facings;
     }
@@ -1750,6 +1755,9 @@ export default class Vehicle implements IGameSettingsUnit {
      * minimum crew plus any extra crew (TM p.131).
      */
     public getCrew(): number {
+        // "A vehicle using a remote drone operating system is always considered to have a Crew of 0 for construction
+        // purposes" (TO:AUE p.117).
+        if (this.hasDroneOperatingSystem()) return 0;
         if (this._support) return this._supportVehicleCrew(this._support.extraCrew ?? 0);
         return Math.ceil(this._tonnage / 15);
     }
@@ -2098,7 +2106,8 @@ export default class Vehicle implements IGameSettingsUnit {
         let used = 0;
         for (const item of this._equipmentList) {
             if (item.isAmmo) {
-                ammoTypes.add(item.tag);
+                // One bin per weapon type, whatever its munitions (TM p.136; MegaMek counts the same way).
+                ammoTypes.add(this._support ? getAmmoFamily(item) : item.tag);
             } else if (item.tag === "communications-equipment") {
                 // One slot for the whole set of communications equipment, whatever its tonnage (TM p.212).
                 continue;
@@ -2110,10 +2119,10 @@ export default class Vehicle implements IGameSettingsUnit {
         if (this.getCommunicationsTons() > 0) used += 1;
         used += getVehicleBaySlots(this._bays);
         if (this._support) {
-            // Support Vehicle engines, heat sinks, fuel and fire control take no slots; BAR 10 armor at Tech
-            // Rating E or F takes Ferro-Fibrous space, 2 slots Inner Sphere and 1 Clan (TM p.134, errata v8.0).
+            // Support Vehicle engines, heat sinks, fuel and fire control take no slots; BAR 10 armor takes Inner Sphere
+            // Ferro-Fibrous space (2 slots) at Tech Rating E and Clan (1) at F, "respectively" (TM p.134, errata v8.0).
             const ferroFibrous = supportVehicleArmor.find((armor) => armor.bar === this._support?.bar)?.ferroFibrousSlotRatings ?? [];
-            if (this._armorPoints() > 0 && ferroFibrous.includes(this._support.armorTechRating)) used += this._tech.tag === "clan" ? 1 : 2;
+            if (this._armorPoints() > 0 && ferroFibrous.includes(this._support.armorTechRating)) used += this._support.armorTechRating === "f" ? 1 : 2;
             if (this._troopSpace > 0) used += 1;
             return used;
         }
@@ -3568,7 +3577,7 @@ export default class Vehicle implements IGameSettingsUnit {
     private _sizeVariableEquipment(): void {
         for (const item of this._equipmentList) {
             if (item.variableFormula !== "extended-fuel-tank" && item.variableFormula !== "drone-operating-system" && item.variableFormula !== "drone-carrier-control") continue;
-            const size = sizeVariableEquipment(item.variableFormula, { tonnage: this._tonnage, engineRating: this.getEngineRating(), engineWeight: this.getEngineWeight(), directFireWeaponWeight: 0, drones: item.controlledDrones });
+            const size = sizeVariableEquipment(item.variableFormula, { tonnage: this._tonnage, engineRating: this.getEngineRating(), engineWeight: this.getEngineWeight(), directFireWeaponWeight: 0, drones: item.controlledDrones, kilograms: !!this._support && this._isSmallSupportVehicle() });
             if (size) {
                 item.weight = size.weight;
                 item.cbills = size.cbills;

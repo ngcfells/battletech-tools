@@ -16,7 +16,7 @@ import { mechEngineTypes } from "../data/mech-engine-types";
 import { mechHeatSinkTypes } from "../data/mech-heat-sink-types";
 import { btTechOptions } from "../data/tech-options";
 import { btEraOptions, findEraByTag, getClosestEraForTech, getErasForTech } from "../data/era-options";
-import { CUSTOM_HOMEBREW_RULES_LEVEL, getArtemisLauncherBattleValue, getLauncherBattleValueWithoutFireControl, EXPERIMENTAL_RULES_LEVEL, getAmmoBattleValuePerTon, getBattleArmorScaleListByTech, getCompatibleAmmo, getDatesAvailability, getEquipmentListByTech, getEquipmentRulesLevel, getEquipmentOfferIssue, getWeaponShotsPerTon, isEquipmentOffered, isUnderUnitLimit, getTechDatesAvailability } from "../data/equipment-registry";
+import { CUSTOM_HOMEBREW_RULES_LEVEL, getArtemisLauncherBattleValue, getLauncherBattleValueWithoutFireControl, EXPERIMENTAL_RULES_LEVEL, getAmmoBattleValuePerTon, getAmmoFamily, getBattleArmorScaleListByTech, getCompatibleAmmo, getDatesAvailability, getEquipmentListByTech, getEquipmentRulesLevel, getEquipmentOfferIssue, getWeaponShotsPerTon, isEquipmentOffered, isUnderUnitLimit, getTechDatesAvailability } from "../data/equipment-registry";
 import { getFractionalAerospaceArmorTonsPerPoint, getFractionalEngineWeight, roundUpToKilogram } from "../data/fractional-accounting";
 import { AlphaStrikeUnit, IASMULUnit } from "./alpha-strike-unit";
 import Pilot, { IPilot } from "./pilot";
@@ -706,19 +706,20 @@ export default class AerospaceFighter implements IGameSettingsUnit {
     public getTotalItemSlots(): number { return this._support ? getSupportVehicleItemSlots(this._tonnage) : 0; }
 
     /**
-     * Item slots used: each item's Support Vehicle slots, one per kind of ammunition, one for all communications
-     * equipment, the bays, and BAR 10 armor at Tech E or F (Ferro-Fibrous space, errata v8.0).
+     * Item slots used: each item's Support Vehicle slots, one bin per weapon type's ammunition (TM p.136), one for all
+     * communications equipment, the bays, and BAR 10 armor at Tech E (Inner Sphere Ferro-Fibrous space) or F (Clan;
+     * errata v8.0).
      */
     public getUsedItemSlots(): number {
         const ammoTypes = new Set<string>();
         let used = 0;
         for (const item of this._equipmentList) {
-            if (item.isAmmo) ammoTypes.add(item.tag);
+            if (item.isAmmo) ammoTypes.add(getAmmoFamily(item));
             else if (item.tag !== "communications-equipment") used += Math.max(0, item.space?.supportVehicle ?? 0);
         }
         used += ammoTypes.size + (this.getCommunicationsTons() > 0 ? 1 : 0) + getVehicleBaySlots(this._bays);
         const ferroFibrous = supportVehicleArmor.find((armor) => armor.bar === this._support?.bar)?.ferroFibrousSlotRatings ?? [];
-        if (this._support && this.getTotalArmorPoints() > 0 && ferroFibrous.includes(this._support.armorTechRating)) used += this.getChassisTechBase() === "clan" ? 1 : 2;
+        if (this._support && this.getTotalArmorPoints() > 0 && ferroFibrous.includes(this._support.armorTechRating)) used += this._support.armorTechRating === "f" ? 1 : 2;
         return used;
     }
 

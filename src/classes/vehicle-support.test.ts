@@ -251,6 +251,30 @@ describe("Support Vehicle rules", () => {
         expect(vehicle.getCrew()).toBe(3);
     });
 
+    it("gives a Small Support Vehicle without fire control 1 gunner per weapon, whatever its Crew value (TM p.131)", () => {
+        // The Outrider (Touring the Stars: Tortuga Prime p.11): a 1.5-ton truck with a pintle-mounted support machine
+        // gun (Crew 2) prints "Crew: 2 (1 driver/gunner's assistant, 1 gunner)". The table's "1 per weapon" and
+        // MegaMek agree; TM p.136's text would count the gun's Crew value instead.
+        const vehicle = supportVehicle("wheeled", 1.5);
+        vehicle.setSupportVehicleFireControl("none");
+        expect(vehicle.addLightWeapon("inf-machine-gun-support", "front", 0, true)).not.toBeNull();
+        expect(vehicle.getCrew()).toBe(2);
+    });
+
+    it("weighs a Small drone's operating system in kilograms and gives a drone no crew (TO:AUE p.117; TRO 3039 p.71)", () => {
+        // The PathTrack, a 3,000 kg tracked drone: 10% (300 kg) plus the 500 kg sensor system = "Control Systems:
+        // Drone 800 kg", and "Crew: 0".
+        const vehicle = supportVehicle("tracked", 3);
+        add(vehicle, "drone-operating-system");
+        expect(vehicle.getEquipmentList()[0].weight).toBe(0.8);
+        expect(vehicle.getCrew()).toBe(0);
+        expect(vehicle.getSupportVehicleIssues().join(" ")).not.toContain("seat");
+        // Medium and Large Support Vehicles still round the 10% up to the half ton.
+        const truck = supportVehicle("tracked", 12);
+        add(truck, "drone-operating-system");
+        expect(truck.getEquipmentList()[0].weight).toBe(2);
+    });
+
     it("keeps a Small Support Vehicle to light equipment and a seat per crewman (TM pp.132, 136)", () => {
         const vehicle = supportVehicle("wheeled", 3);
         expect(vehicle.getAvailableEquipment().find((item) => item.tag === "machine-gun")?.available).toBe(false);
@@ -305,5 +329,44 @@ describe("Support Vehicle rules", () => {
         expect(loaded.getImportIssues().length).toBeGreaterThan(0);
         // A Combat Vehicle save loads as one.
         expect(new Vehicle(new Vehicle().exportJSON()).isSupportVehicle()).toBe(false);
+    });
+});
+
+describe("Support Vehicles: item slots (TM pp.120, 134, 136, 344)", () => {
+    const armoredVtol = (armorRating: "d" | "e" | "f"): Vehicle => {
+        const vehicle = supportVehicle("vtol", 25);
+        vehicle.setSupportVehicleTechRating("structural", "f");
+        vehicle.setSupportVehicleChassisModification("armored", true);
+        vehicle.setSupportVehicleTechRating("engine", "f");
+        vehicle.setBAR(10);
+        vehicle.setSupportVehicleTechRating("armor", armorRating);
+        vehicle.setArmorAllocation("front", 5);
+        return vehicle;
+    };
+
+    it("gives BAR 10 armor Inner Sphere Ferro-Fibrous space at Tech Rating E and Clan space at F (errata v8.0)", () => {
+        // "At Tech Ratings E and F, BAR 10 Armor occupies slot space equal to that of Inner Sphere and Clan
+        // Ferro-Fibrous Armor types (respectively)": the armor's Tech Rating decides, not the unit's tech base.
+        expect(armoredVtol("d").getUsedItemSlots()).toBe(0);
+        expect(armoredVtol("e").getUsedItemSlots()).toBe(2);
+        expect(armoredVtol("f").getUsedItemSlots()).toBe(1);
+    });
+
+    it("puts all the ammunition for weapons of one type in one bin, whatever the munitions (TM p.136)", () => {
+        const vehicle = supportVehicle("tracked", 50);
+        add(vehicle, "autocannon-lbx-10", 1, "front");
+        add(vehicle, "ammo-is-lb-10x-standard", 2);
+        add(vehicle, "ammo-is-lb-10x-cluster", 2);
+        // LB 10-X: 6 Support Vehicle slots; its slug and cluster ammunition share one bin.
+        expect(vehicle.getUsedItemSlots()).toBe(7);
+    });
+
+    it("takes 1 slot for a bridgelayer on a Support Vehicle (Industrial Equipment Table, TM p.344)", () => {
+        const vehicle = supportVehicle("tracked", 75);
+        add(vehicle, "bridge-layer-heavy", 1, "left");
+        add(vehicle, "bridge-layer-heavy", 1, "right");
+        add(vehicle, "bridge-layer-medium", 1, "front");
+        add(vehicle, "bridge-layer-light", 1, "rear");
+        expect(vehicle.getUsedItemSlots()).toBe(4);
     });
 });
