@@ -4,7 +4,7 @@
  * tesseract's English data.
  */
 import {
-    cardScanBinarize, cardScanColoursFromPixels, cardScanCrop, cardScanMargin, cardScanResize, cardScanRotate, cardScanSkew, ICardScanImage, ICardScanIO, ICardScanLine,
+    cardScanBinarize, cardScanColoursFromPixels, cardScanCrop, cardScanLanczos, cardScanMargin, cardScanResize, cardScanRotate, cardScanSkew, ICardScanImage, ICardScanIO, ICardScanLine,
     ICardScanOptions, ICardScanRect, scanWithTurns, TCardScanMode,
 } from "./card-scan-io";
 
@@ -32,20 +32,31 @@ const decodePhoto = async ( file: Blob ): Promise<CanvasImageSource & { width: n
     }
 }
 
-/** The photo's pixels, scaled smoothly to the card width (as the readers' test photos were). */
-const loadPhoto = async ( file: Blob ): Promise<ImageData> => {
+/** Python's round(), halves to even, as the readers' test photos were sized. */
+const roundHalfEven = ( value: number ): number => {
+    const floor = Math.floor( value );
+    const rest = value - floor;
+    return rest > 0.5 || ( rest === 0.5 && floor % 2 === 1 ) ? floor + 1 : floor;
+}
+
+/**
+ * The photo's pixels at the card width. It is decoded at its own size (a canvas copies pixels 1:1 untouched) and
+ * scaled by cardScanLanczos, exactly as the readers' test photos were made from the phone's JPEGs.
+ */
+const loadPhoto = async ( file: Blob ): Promise<ICardScanImage> => {
     const image = await decodePhoto( file );
+    let pixels: ImageData;
     try {
         const canvas = document.createElement( "canvas" );
-        canvas.width = cardWidth;
-        canvas.height = Math.round( image.height * cardWidth / image.width );
+        canvas.width = image.width;
+        canvas.height = image.height;
         const context = canvas.getContext( "2d", { willReadFrequently: true } )!;
-        context.imageSmoothingQuality = "high";
-        context.drawImage( image, 0, 0, canvas.width, canvas.height );
-        return context.getImageData( 0, 0, canvas.width, canvas.height );
+        context.drawImage( image, 0, 0 );
+        pixels = context.getImageData( 0, 0, canvas.width, canvas.height );
     } finally {
         if( image.close ) image.close();
     }
+    return cardScanLanczos( pixels.data, pixels.width, pixels.height, cardWidth, roundHalfEven( pixels.height * cardWidth / pixels.width ) );
 }
 
 const toCanvas = ( data: ArrayLike<number>, width: number, height: number ): HTMLCanvasElement => {
