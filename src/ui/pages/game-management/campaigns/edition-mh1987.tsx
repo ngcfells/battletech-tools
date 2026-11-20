@@ -76,7 +76,7 @@ export default function EditionMh1987( props: { campaign: Campaign; update: ( ch
         setDeal( null );
     };
     const resolve = () => {
-        if( !contract || contract.mission === "retainer" ) return;
+        if( !contract || contract.mission === "retainer" || contract.resolvedStep === props.campaign.step ) return;
         // The tables add the Morale Level as a whole number: Green 1, Regular 2, Veteran 3, Elite 4.
         const level = QUALITIES.indexOf( morale.label.toLowerCase() as Quality ) + 1;
         const month = mh1987ResolveMonth( contract.mission as Mh1987CampaignMission, level, companies.length ? companies : ["Company 1"], campaignRoll );
@@ -86,6 +86,8 @@ export default function EditionMh1987( props: { campaign: Campaign; update: ( ch
             + `reputation ${month.reputationChange >= 0 ? "+" : ""}${month.reputationChange}, morale ${month.moraleChange >= 0 ? "+" : ""}${month.moraleChange}`
             + `${losses ? `; ${losses}` : "; no squads lost"}${month.plunder ? `; plunder ${formatMoney( month.plunder )}` : ""}`;
         change( ( s, c ) => {
+            if( !s.contract || s.contract.resolvedStep === c.step ) return;
+            s.contract.resolvedStep = c.step;
             s.reputationMod += month.reputationChange;
             s.moraleMod += month.moraleChange;
             const sideId = c.sides.some( ( side ) => side.id === s.sideId ) ? s.sideId! : c.sides[0]?.id;
@@ -162,7 +164,8 @@ export default function EditionMh1987( props: { campaign: Campaign; update: ( ch
                         {" "}{formatMoney( contract.paid )} paid. {MH1987_GUARANTEE_LABELS[contract.terms.guarantee]}, {MH1987_COMMAND_LABELS[contract.terms.command]},
                         {" "}supply fee x{contract.terms.supplyModifier}, {MH1987_SALVAGE_LABELS[contract.terms.salvage]}.
                     </p>
-                    {contract.mission !== "retainer" ? <p><button type="button" className="btn btn-primary btn-sm" onClick={resolve}>Resolve month</button></p> : null}
+                    {contract.mission !== "retainer" ? <p><button type="button" className="btn btn-primary btn-sm" onClick={resolve} disabled={contract.resolvedStep === props.campaign.step}>Resolve month</button>
+                        {contract.resolvedStep === props.campaign.step ? <span className="smaller-text"> This month is resolved; advance a month to resolve the next.</span> : null}</p> : null}
                     {result ? <p className="smaller-text">{result}</p> : null}
                 </div>
             ) : (

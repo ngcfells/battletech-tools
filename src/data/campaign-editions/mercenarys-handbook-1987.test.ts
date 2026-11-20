@@ -241,6 +241,7 @@ describe( "Mercenary's Handbook (1987) edition hooks", () => {
         const total = 10000 * 4 * 5 * 2; // rate x 4 weeks x 5 squads x 2 months
         expect( c.ledger.map( ( e ) => [e.reason, e.amount] ) ).toEqual( [
             ["Contract advance (25%)", total * 0.25],
+            ["Transport hired", -100000],
             ["Transport reimbursement (x1)", 100000],
         ] );
         c.ledger = [];

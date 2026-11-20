@@ -432,6 +432,8 @@ export interface IMh1987Contract {
     total: number;
     paid: number;
     completed: boolean;
+    /** The month last resolved with the Basic Campaign System; a month resolves once. */
+    resolvedStep?: number;
 }
 
 export interface IMh1987State {
@@ -471,6 +473,7 @@ export const mh1987ReadState = ( raw: unknown ): IMh1987State => {
         contract = { id: c.id, mission: c.mission, terms, squads: clampInt( c.squads, 0, 100000, 0 ),
             startStep: clampInt( c.startStep, 0, 1e6, 0 ), total: Math.max( 0, Number( c.total ) || 0 ),
             paid: Math.max( 0, Number( c.paid ) || 0 ), completed: c.completed === true };
+        if( Number.isInteger( c.resolvedStep ) ) contract.resolvedStep = c.resolvedStep;
     }
     return {
         sideId: typeof s.sideId === "string" ? s.sideId : null,
@@ -517,6 +520,7 @@ export const mh1987SignContract = ( c: Campaign, state: IMh1987State, signing: I
     c.editionState = state;
     if( sideId ) {
         post( c, sideId, advance, advancePct === 100 ? "Contract paid in full on signing" : `Contract advance (${advancePct}%)`, `${BOOK} pp.42-43` );
+        post( c, sideId, -signing.transportFee, "Transport hired", `${BOOK} p.43` );
         post( c, sideId, signing.transportFee * signing.terms.transportModifier, `Transport reimbursement (x${signing.terms.transportModifier})`, `${BOOK} p.43` );
     }
     c.addLog( `Contract signed: ${MH1987_MISSION_LABELS[signing.mission]}, ${signing.terms.months} months, ${squads} squads, ${MH1987_GUARANTEE_LABELS[signing.terms.guarantee]}` );

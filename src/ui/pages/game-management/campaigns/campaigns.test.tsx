@@ -233,6 +233,22 @@ describe( "Campaign screens", () => {
         fireEvent.click( await within( panel ).findByRole( "button", { name: "Resolve month" } ) );
         // Garrison: resistance 7 reads N; the N row at 7 reads I (uncompleted).
         await waitFor( () => expect( store.campaigns[0].log.some( ( l ) => l.text.includes( "outcome I" ) ) ).toBe( true ) );
+        // A month resolves once: a second click books nothing more.
+        fireEvent.click( within( panel ).getByRole( "button", { name: "Resolve month" } ) );
+        await new Promise( ( r ) => setTimeout( r, 50 ) );
+        expect( store.campaigns[0].log.filter( ( l ) => l.text.includes( "outcome I" ) ) ).toHaveLength( 1 );
+    } );
+
+    it( "the GM adds a ledger entry by hand and removes it again", async () => {
+        saved();
+        open( "/c1" );
+        const ledger = await screen.findByTestId( "campaign-ledger-Lyrans" );
+        fireEvent.change( within( ledger ).getByLabelText( "Reason" ), { target: { value: "Repair bill" } } );
+        fireEvent.change( within( ledger ).getByLabelText( "Amount" ), { target: { value: "-25000" } } );
+        fireEvent.click( within( ledger ).getByRole( "button", { name: "Add entry" } ) );
+        await waitFor( () => expect( store.campaigns[0].ledger.map( ( e ) => [e.reason, e.amount] ) ).toEqual( [["Repair bill", -25000]] ) );
+        fireEvent.click( await within( ledger ).findByRole( "button", { name: "Remove Repair bill" } ) );
+        await waitFor( () => expect( store.campaigns[0].ledger ).toEqual( [] ) );
     } );
 
     it( "the 3055 panel previews payroll and maintenance and books paydays on advance", async () => {

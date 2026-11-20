@@ -104,6 +104,28 @@ function SystemPanel( props: { system: IStarSystemIndexEntry; date: string; site
     );
 }
 
+/** The rule on a ledger entry the GM typed in; only these can be removed. */
+const BY_HAND = "Entered by hand";
+
+/** A row for the GM to book an entry the rules leave to them (repair bills, hand-entered rulings). */
+function AddLedgerEntry( props: { onAdd: ( reason: string, amount: number ) => void } ): JSX.Element {
+    const [reason, setReason] = useState( "" );
+    const [amount, setAmount] = useState( "" );
+    const value = Number( amount );
+    const ready = reason.trim() !== "" && amount.trim() !== "" && isFinite( value ) && value !== 0;
+    return (
+        <p>
+            <label>Reason <input type="text" aria-label="Reason" value={reason} onChange={( e ) => setReason( e.currentTarget.value )} /></label>{" "}
+            <label>Amount <input type="number" aria-label="Amount" value={amount} onChange={( e ) => setAmount( e.currentTarget.value )} /></label>{" "}
+            <button type="button" className="btn btn-secondary btn-sm" disabled={!ready} onClick={() => {
+                props.onAdd( reason.trim(), Math.round( value ) );
+                setReason( "" );
+                setAmount( "" );
+            }}>Add entry</button>
+        </p>
+    );
+}
+
 export default function CampaignHome( props: { appGlobals: IAppGlobals; id: string | undefined } ): JSX.Element {
     const { loaded, campaign, update } = useCampaign( props.appGlobals, props.id );
     const [indexReady, setIndexReady] = useState( false );
@@ -223,12 +245,21 @@ export default function CampaignHome( props: { appGlobals: IAppGlobals; id: stri
                                 <h4>{side.name} ({side.role}): {formatMoney( campaign.balance( side.id ) )} {campaign.currency}</h4>
                                 {entries.length === 0 ? <p className="smaller-text">No entries yet.</p> : (
                                     <table className="campaign-table">
-                                        <thead><tr><th>Step</th><th>Reason</th><th>Amount</th></tr></thead>
+                                        <thead><tr><th>Step</th><th>Reason</th><th>Amount</th><th></th></tr></thead>
                                         <tbody>
-                                            {entries.map( ( e ) => <tr key={e.id}><td>{e.step}</td><td>{e.reason}</td><td className="number">{formatMoney( e.amount )} {e.currency}</td></tr> )}
+                                            {entries.map( ( e ) => (
+                                                <tr key={e.id}>
+                                                    <td>{e.step}</td><td>{e.reason}</td><td className="number">{formatMoney( e.amount )} {e.currency}</td>
+                                                    <td>{e.rule === BY_HAND ? <button type="button" className="btn btn-danger btn-sm" aria-label={"Remove " + e.reason}
+                                                        onClick={() => update( ( c ) => { c.ledger = c.ledger.filter( ( l ) => l.id !== e.id ); } )}>Remove</button> : null}</td>
+                                                </tr>
+                                            ) )}
                                         </tbody>
                                     </table>
                                 )}
+                                <AddLedgerEntry onAdd={( reason, amount ) => update( ( c ) => {
+                                    c.addLedger( { sideId: side.id, step: c.step, amount, currency: c.currency, reason, rule: BY_HAND } );
+                                } )} />
                             </div>
                         );
                     } )}
