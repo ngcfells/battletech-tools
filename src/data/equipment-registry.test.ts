@@ -557,19 +557,23 @@ describe("equipment catalog provenance", () => {
             expect(hasClanMrmOrMrt).toBe(false);
     });
 
-        it("uses the supplied Alpha Strike ATM and iATM cards", () => {
+        it("uses the Alpha Strike Weapon Conversion Table for ATM and iATM (ASC pp.109-110, errata v1.6)", () => {
             const clanItems = getEquipmentListByTech("clan");
             const profile = (tag: string) => clanItems.find(item => item.tag === tag)!.alphaStrike;
+            const values = (tag: string) => [profile(tag).rangeShort, profile(tag).rangeMedium, profile(tag).rangeLong, profile(tag).rangeExtreme];
 
-            expect([profile("atm-3").rangeShort, profile("atm-3").rangeMedium, profile("atm-3").rangeLong]).toEqual([1, 1, 1]);
-            expect([profile("atm-6").rangeShort, profile("atm-6").rangeMedium, profile("atm-6").rangeLong]).toEqual([2, 1, 1]);
-            expect([profile("atm-9").rangeShort, profile("atm-9").rangeMedium, profile("atm-9").rangeLong]).toEqual([3, 2, 1]);
-            expect([profile("atm-12").rangeShort, profile("atm-12").rangeMedium, profile("atm-12").rangeLong]).toEqual([4, 2, 1]);
+            // Unrounded table values: the conversion sums them and rounds the unit total.
+            expect(values("atm-3")).toEqual([0.6, 0.4, 0.2, 0.2]);
+            expect(values("atm-6")).toEqual([1.5, 1, 0.5, 0.5]);
+            expect(values("atm-9")).toEqual([2.1, 1.4, 0.7, 0.7]);
+            expect(values("atm-12")).toEqual([3, 2, 1, 1]);
             expect(profile("atm-3").notes).toContain("Direct Fire");
             expect(profile("iatm-3").notes).toContain("IF 1");
-            expect([profile("iatm-6").rangeShort, profile("iatm-6").rangeMedium, profile("iatm-6").rangeLong]).toEqual([3, 2, 1]);
-            expect([profile("iatm-9").rangeShort, profile("iatm-9").rangeMedium, profile("iatm-9").rangeLong]).toEqual([4, 3, 2]);
-            expect([profile("iatm-12").rangeShort, profile("iatm-12").rangeMedium, profile("iatm-12").rangeLong]).toEqual([5, 4, 2]);
+            expect(values("iatm-3")).toEqual([0.9, 0.6, 0.3, 0.3]);
+            // Errata v1.6: Improved ATM 6 Long is 0.6, not the printed 1.
+            expect(values("iatm-6")).toEqual([1.8, 1.2, 0.6, 0.6]);
+            expect(values("iatm-9")).toEqual([2.7, 1.8, 0.9, 0.9]);
+            expect(values("iatm-12")).toEqual([3.6, 2.4, 1.2, 1.2]);
             expect(profile("iatm-12").notes).toContain("0 heat on miss");
         });
 
