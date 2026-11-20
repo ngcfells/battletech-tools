@@ -63,7 +63,7 @@ import {
     IMoraleResult, isMoralePass, MoraleStatus,
 } from "../utils/future-wars-ruleset-tools";
 import { calculateAlphaStrikeValue, IAlphaStrikeExport, isAlphaStrikeConversionKeyword } from "../utils/calculateAlphaStrikeValue";
-import { addsNoAlphaStrikeWeaponHeat, alphaStrikeExtraHeat, alphaStrikeMovementHeat, applyAlphaStrikeHeat } from "../utils/alphaStrikeHeat";
+import { addsNoAlphaStrikeWeaponHeat, alphaStrikeAmmoFactor, alphaStrikeMmlBinShots,alphaStrikeExtraHeat, alphaStrikeMovementHeat, applyAlphaStrikeHeat } from "../utils/alphaStrikeHeat";
 import { isAlphaStrikeAbilityCode } from "../data/alpha-strike-special-abilities";
 import { generateUUID } from "../utils/generateUUID";
 import { ISSWBasicInfo, parseSSWXML } from "../utils/getSSWXMLBasicInfo";
@@ -3395,6 +3395,7 @@ export class BattleMech {
         let longTotalDamageRear = 0;
         let extremeTotalDamageRear = 0;
 
+        const ammoFactors = this._alphaStrikeAmmoFactors();
         const selectedSpecialAmmoTag = this.getAlphaStrikeSpecialAmmoTag();
         for (let weapon_counter = 0; weapon_counter < this._equipmentList.length; weapon_counter++) {
             if (this._equipmentList[weapon_counter].explosive) {
@@ -3413,6 +3414,15 @@ export class BattleMech {
             }
             if (this._equipmentList[weapon_counter].alphaStrike && !this._equipmentList[weapon_counter].isAmmo ) {
                 const strike = equipment.alphaStrike;
+                // Damage after the ammunition rule (ASC p.101, Ammunition); the heat stays the weapon's own.
+                const ammoFactor = ammoFactors.get(equipment) ?? 1;
+                const scaledRange = {
+                    rangeShort: +strike.rangeShort * ammoFactor, rangeMedium: +strike.rangeMedium * ammoFactor,
+                    rangeLong: +strike.rangeLong * ammoFactor, rangeExtreme: +strike.rangeExtreme * ammoFactor,
+                };
+                if (ammoFactor !== 1) {
+                    this._calcLogAS += equipment.tag + (equipment.isOneShot ? " is one-shot" : ", under its ammunition minimum") + ": damage x " + ammoFactor + " (ASC p.101)<br />\n";
+                }
                 const firesForDamage = +strike.rangeShort > 0 || +strike.rangeMedium > 0 || +strike.rangeLong > 0 || +strike.rangeExtreme > 0;
                 const weaponHeat = firesForDamage && !addsNoAlphaStrikeWeaponHeat(equipment) ? getMountedHeat(equipment, +strike.heat || 0) : 0;
                 if (equipment.rear) {
@@ -3427,26 +3437,26 @@ export class BattleMech {
 
                 if (this._equipmentList[weapon_counter].rear) {
                     this._calcLogAS += "Adding <strong>rear</strong> Weapon " + this._equipmentList[weapon_counter].tag + " - ";
-                    this._calcLogAS += " ( " + this._equipmentList[weapon_counter].alphaStrike.rangeShort + ", ";
-                    this._calcLogAS += this._equipmentList[weapon_counter].alphaStrike.rangeMedium + ", ";
-                    this._calcLogAS += this._equipmentList[weapon_counter].alphaStrike.rangeLong + ", ";
-                    this._calcLogAS += this._equipmentList[weapon_counter].alphaStrike.rangeExtreme + " )<br />\n";
-                    shortTotalDamageRear += this._equipmentList[weapon_counter].alphaStrike.rangeShort;
-                    mediumTotalDamageRear += this._equipmentList[weapon_counter].alphaStrike.rangeMedium;
-                    longTotalDamageRear += this._equipmentList[weapon_counter].alphaStrike.rangeLong;
-                    extremeTotalDamageRear += this._equipmentList[weapon_counter].alphaStrike.rangeExtreme;
+                    this._calcLogAS += " ( " + scaledRange.rangeShort + ", ";
+                    this._calcLogAS += scaledRange.rangeMedium + ", ";
+                    this._calcLogAS += scaledRange.rangeLong + ", ";
+                    this._calcLogAS += scaledRange.rangeExtreme + " )<br />\n";
+                    shortTotalDamageRear += scaledRange.rangeShort;
+                    mediumTotalDamageRear += scaledRange.rangeMedium;
+                    longTotalDamageRear += scaledRange.rangeLong;
+                    extremeTotalDamageRear += scaledRange.rangeExtreme;
                 } else {
 
-                    shortTotalDamage += this._equipmentList[weapon_counter].alphaStrike.rangeShort;
-                    mediumTotalDamage += this._equipmentList[weapon_counter].alphaStrike.rangeMedium;
-                    longTotalDamage += this._equipmentList[weapon_counter].alphaStrike.rangeLong;
-                    extremeTotalDamage += this._equipmentList[weapon_counter].alphaStrike.rangeExtreme;
+                    shortTotalDamage += scaledRange.rangeShort;
+                    mediumTotalDamage += scaledRange.rangeMedium;
+                    longTotalDamage += scaledRange.rangeLong;
+                    extremeTotalDamage += scaledRange.rangeExtreme;
 
                     this._calcLogAS += "Adding Weapon " + this._equipmentList[weapon_counter].tag + " - ";
-                    this._calcLogAS += " ( " + this._equipmentList[weapon_counter].alphaStrike.rangeShort + ", ";
-                    this._calcLogAS += this._equipmentList[weapon_counter].alphaStrike.rangeMedium + ", ";
-                    this._calcLogAS += this._equipmentList[weapon_counter].alphaStrike.rangeLong + ", ";
-                    this._calcLogAS += this._equipmentList[weapon_counter].alphaStrike.rangeExtreme + " )<br />\n";
+                    this._calcLogAS += " ( " + scaledRange.rangeShort + ", ";
+                    this._calcLogAS += scaledRange.rangeMedium + ", ";
+                    this._calcLogAS += scaledRange.rangeLong + ", ";
+                    this._calcLogAS += scaledRange.rangeExtreme + " )<br />\n";
 
                 }
 
@@ -3476,31 +3486,31 @@ export class BattleMech {
                         }
 
                         if (this._equipmentList[weapon_counter].alphaStrike.notes[nC].toLowerCase() === "heat" ) {
-                            heatDamage.short += this._equipmentList[weapon_counter].alphaStrike.rangeShort;
-                            heatDamage.medium += this._equipmentList[weapon_counter].alphaStrike.rangeMedium;
-                            heatDamage.long += this._equipmentList[weapon_counter].alphaStrike.rangeLong;
-                            heatDamage.extreme += this._equipmentList[weapon_counter].alphaStrike.rangeExtreme;
+                            heatDamage.short += scaledRange.rangeShort;
+                            heatDamage.medium += scaledRange.rangeMedium;
+                            heatDamage.long += scaledRange.rangeLong;
+                            heatDamage.extreme += scaledRange.rangeExtreme;
                         }
 
                         if (this._equipmentList[weapon_counter].alphaStrike.notes[nC].toLowerCase() === "lrm" ) {
-                            lrmDamage.short += +this._equipmentList[weapon_counter].alphaStrike.rangeShort;
-                            lrmDamage.medium += +this._equipmentList[weapon_counter].alphaStrike.rangeMedium;
-                            lrmDamage.long += +this._equipmentList[weapon_counter].alphaStrike.rangeLong;
-                            lrmDamage.extreme += +this._equipmentList[weapon_counter].alphaStrike.rangeExtreme;
+                            lrmDamage.short += +scaledRange.rangeShort;
+                            lrmDamage.medium += +scaledRange.rangeMedium;
+                            lrmDamage.long += +scaledRange.rangeLong;
+                            lrmDamage.extreme += +scaledRange.rangeExtreme;
                         }
 
                         if (this._equipmentList[weapon_counter].alphaStrike.notes[nC].toLowerCase() === "ac" ) {
-                            acDamage.short += +this._equipmentList[weapon_counter].alphaStrike.rangeShort;
-                            acDamage.medium += +this._equipmentList[weapon_counter].alphaStrike.rangeMedium;
-                            acDamage.long += +this._equipmentList[weapon_counter].alphaStrike.rangeLong;
-                            acDamage.extreme += +this._equipmentList[weapon_counter].alphaStrike.rangeExtreme;
+                            acDamage.short += +scaledRange.rangeShort;
+                            acDamage.medium += +scaledRange.rangeMedium;
+                            acDamage.long += +scaledRange.rangeLong;
+                            acDamage.extreme += +scaledRange.rangeExtreme;
                         }
 
                         if (this._equipmentList[weapon_counter].alphaStrike.notes[nC].toLowerCase() === "flak" ) {
-                            flakDamage.short += +this._equipmentList[weapon_counter].alphaStrike.rangeShort;
-                            flakDamage.medium += +this._equipmentList[weapon_counter].alphaStrike.rangeMedium;
-                            flakDamage.long += +this._equipmentList[weapon_counter].alphaStrike.rangeLong;
-                            flakDamage.extreme += +this._equipmentList[weapon_counter].alphaStrike.rangeExtreme;
+                            flakDamage.short += +scaledRange.rangeShort;
+                            flakDamage.medium += +scaledRange.rangeMedium;
+                            flakDamage.long += +scaledRange.rangeLong;
+                            flakDamage.extreme += +scaledRange.rangeExtreme;
                         }
 
                         if (
@@ -3510,22 +3520,22 @@ export class BattleMech {
                             ||
                             this._equipmentList[weapon_counter].alphaStrike.notes[nC].toLowerCase().startsWith( "if " )
                         ) {
-                            indirectFireRating += +this._equipmentList[weapon_counter].alphaStrike.rangeLong;
+                            indirectFireRating += +scaledRange.rangeLong;
 
                         }
 
                         if (this._equipmentList[weapon_counter].alphaStrike.notes[nC].toLowerCase() === "indirect fire" || this._equipmentList[weapon_counter].alphaStrike.notes[nC].toLowerCase() === "srm" ) {
-                            srmDamage.short += this._equipmentList[weapon_counter].alphaStrike.rangeShort;
-                            srmDamage.medium += this._equipmentList[weapon_counter].alphaStrike.rangeMedium;
-                            srmDamage.long += this._equipmentList[weapon_counter].alphaStrike.rangeLong;
-                            srmDamage.extreme += this._equipmentList[weapon_counter].alphaStrike.rangeExtreme;
+                            srmDamage.short += scaledRange.rangeShort;
+                            srmDamage.medium += scaledRange.rangeMedium;
+                            srmDamage.long += scaledRange.rangeLong;
+                            srmDamage.extreme += scaledRange.rangeExtreme;
                         }
 
                         if (this._equipmentList[weapon_counter].alphaStrike.notes[nC].toLowerCase() === "missile" || this._equipmentList[weapon_counter].alphaStrike.notes[nC].toLowerCase() === "msl" ) {
-                            mslDamage.short += this._equipmentList[weapon_counter].alphaStrike.rangeShort;
-                            mslDamage.medium += this._equipmentList[weapon_counter].alphaStrike.rangeMedium;
-                            mslDamage.long += this._equipmentList[weapon_counter].alphaStrike.rangeLong;
-                            mslDamage.extreme += this._equipmentList[weapon_counter].alphaStrike.rangeExtreme;
+                            mslDamage.short += scaledRange.rangeShort;
+                            mslDamage.medium += scaledRange.rangeMedium;
+                            mslDamage.long += scaledRange.rangeLong;
+                            mslDamage.extreme += scaledRange.rangeExtreme;
                         }
 
                     }
@@ -7841,6 +7851,40 @@ export class BattleMech {
 
     public getMechType() {
         return this._mechType;
+    }
+
+    /**
+     * The ammunition multiplier of each weapon for the Alpha Strike damage (ASC p.101, Ammunition): a rocket launcher
+     * x 1; another one-shot launcher x 0.1; a ballistic or missile weapon with under 10 shots x 0.75 (Ultra 20, Rotary
+     * 60; a Multi-Missile Launcher bin counts the average of its LRM and SRM counts); one with no ammunition at all
+     * none, as MegaMek has it. The shots are those of the bins that feed the weapon, shared by the launchers of its
+     * kind (errata v1.6).
+     */
+    private _alphaStrikeAmmoFactors(): Map<IEquipmentItem, number> {
+        const factors = new Map<IEquipmentItem, number>();
+        const weapons = this._equipmentList.filter(item => !item.isAmmo && !item.isEquipment && !!item.alphaStrike);
+        const shotsByTag = new Map<string, number>();
+        for (const bin of this._equipmentList.filter(item => item.isAmmo)) {
+            const fed = this.getAmmoBinWeapon(bin);
+            if (!fed) continue;
+            const lrm = fed.shotsPerTonByAmmo?.["ammo-lrm-standard"];
+            const srm = fed.shotsPerTonByAmmo?.["ammo-srm-standard"];
+            const tons = bin.weight || 1;
+            const shots = /(^|-)mml(-|$)/.test(fed.tag) && lrm && srm
+                ? alphaStrikeMmlBinShots(Math.floor(lrm * tons + 1e-6), Math.floor(srm * tons + 1e-6))
+                : this.getAmmoBinCapacity(bin);
+            shotsByTag.set(fed.tag, (shotsByTag.get(fed.tag) ?? 0) + shots);
+        }
+        for (const weapon of weapons) {
+            if (weapon.isOneShot) {
+                factors.set(weapon, alphaStrikeAmmoFactor(weapon, 0));
+            } else if (getWeaponAmmoFamilies(weapon).length > 0) {
+                const sameKind = weapons.filter(other => other.tag === weapon.tag).length;
+                const shots = shotsByTag.get(weapon.tag) ?? 0;
+                factors.set(weapon, shots <= 0 ? 0 : alphaStrikeAmmoFactor(weapon, Math.floor(shots / sameKind)));
+            }
+        }
+        return factors;
     }
 
     public getAlphaStrikeForceStats() {

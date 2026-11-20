@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
-    addsNoAlphaStrikeWeaponHeat, alphaStrikeExtraHeat, alphaStrikeMovementHeat, applyAlphaStrikeHeat, finalAlphaStrikeDamage, roundAlphaStrikeAbilityDamage,
+    addsNoAlphaStrikeWeaponHeat, alphaStrikeAmmoFactor, alphaStrikeMmlBinShots,alphaStrikeExtraHeat, alphaStrikeMovementHeat, applyAlphaStrikeHeat, finalAlphaStrikeDamage, roundAlphaStrikeAbilityDamage,
     roundUpToTenth,
 } from "./alphaStrikeHeat";
 
@@ -153,5 +153,38 @@ describe("applyAlphaStrikeHeat (errata v1.3, Heat-Modified Damage and Overheat)"
         const result = applyAlphaStrikeHeat({ subtotals: [4, 4, 4, 4], heatOutput: 44, longHeatOutput: 44, dissipation: 10 });
         expect(result.ovl).toBe(true);
         expect(result.modified[3]).toBe(1);
+    });
+});
+
+// ASC p.101, Ammunition: a ballistic or missile weapon without at least 10 shots is x 0.75; an Ultra autocannon needs 20, a
+// Rotary autocannon 60; a Multi-Missile Launcher counts the average of its two ammunition counts, rounded down; a one-shot
+// launcher is x 0.1.
+describe("the low-ammunition multiplier (ASC p.101)", () => {
+    it("is x 0.75 under 10 shots and x 1 from 10", () => {
+        expect(alphaStrikeAmmoFactor({ tag: "clan-lrm-20" }, 9)).toBe(0.75);
+        expect(alphaStrikeAmmoFactor({ tag: "clan-lrm-20" }, 10)).toBe(1);
+    });
+
+    it("needs 20 shots for an Ultra autocannon and 60 for a Rotary autocannon", () => {
+        expect(alphaStrikeAmmoFactor({ tag: "clan-autocannon-uac-20", isUltra: true }, 19)).toBe(0.75);
+        expect(alphaStrikeAmmoFactor({ tag: "clan-autocannon-uac-20", isUltra: true }, 20)).toBe(1);
+        expect(alphaStrikeAmmoFactor({ tag: "autocannon-ultra-a" }, 19)).toBe(0.75);
+        expect(alphaStrikeAmmoFactor({ tag: "rotary-ac-5" }, 59)).toBe(0.75);
+        expect(alphaStrikeAmmoFactor({ tag: "rotary-ac-5" }, 60)).toBe(1);
+    });
+
+    it("gives a one-shot launcher x 0.1 whatever its ammunition", () => {
+        expect(alphaStrikeAmmoFactor({ tag: "clan-lrm-20-os", isOneShot: true }, 0)).toBe(0.1);
+    });
+
+    it("counts a Multi-Missile Launcher bin as the average of its LRM and SRM counts, rounded down", () => {
+        // An MML-9 ton: 13 shots as LRM, 11 as SRM, 12 counted; an MML-5 ton: 24 and 20, 22.
+        expect(alphaStrikeMmlBinShots(13, 11)).toBe(12);
+        expect(alphaStrikeMmlBinShots(24, 20)).toBe(22);
+    });
+
+    it("leaves a rocket launcher unmodified though it is one-shot", () => {
+        expect(alphaStrikeAmmoFactor({ tag: "rocket-launcher-10", isOneShot: true }, 0)).toBe(1);
+        expect(alphaStrikeAmmoFactor({ tag: "prototype-rocket-launcher-15", isOneShot: true }, 0)).toBe(1);
     });
 });

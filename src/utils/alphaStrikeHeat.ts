@@ -29,6 +29,38 @@ export const roundAlphaStrikeAbilityDamage = (heatModified: number): IAlphaStrik
     return { damage: Math.round(tenth + 1e-9), minimal: false };
 };
 
+/** The fields of a weapon record the low-ammunition rule reads. */
+export interface IAlphaStrikeAmmoWeapon {
+    tag: string;
+    isUltra?: boolean;
+    isRotary?: boolean;
+    isOneShot?: boolean;
+}
+
+const isUltraAutocannon = (weapon: IAlphaStrikeAmmoWeapon): boolean => !!weapon.isUltra || /(^|-)(uac|ultra)(-|$)|ultra-ac/.test(weapon.tag);
+const isRotaryAutocannon = (weapon: IAlphaStrikeAmmoWeapon): boolean => !!weapon.isRotary || /(^|-)(rac|rotary)(-|$)/.test(weapon.tag);
+/** A rocket launcher: its damage is not modified, its one-shot nature is in the conversion tables (ASC p.101). */
+export const isAlphaStrikeRocketLauncher = (weapon: IAlphaStrikeAmmoWeapon): boolean => /(^|-)rocket-launcher(-|$)/.test(weapon.tag);
+
+/**
+ * The shots of one Multi-Missile Launcher ammunition bin under the low-ammunition rule (ASC p.101, Ammunition): the
+ * average of the bin's two counts, as LRM and as SRM ammunition, added, divided by 2 and rounded down.
+ */
+export const alphaStrikeMmlBinShots = (lrmShots: number, srmShots: number): number => Math.floor((lrmShots + srmShots) / 2);
+
+/**
+ * The damage multiplier of a ballistic or missile weapon from its ammunition (ASC p.101, Ammunition): a rocket launcher
+ * x 1; another one-shot launcher x 0.1; otherwise x 0.75 when it has fewer than 10 shots assigned, 20 for an Ultra
+ * autocannon, 60 for a Rotary autocannon. `shots` is the weapon's own count (a Multi-Missile Launcher's from
+ * {@link alphaStrikeMmlBinShots}).
+ */
+export const alphaStrikeAmmoFactor = (weapon: IAlphaStrikeAmmoWeapon, shots: number): number => {
+    if (isAlphaStrikeRocketLauncher(weapon)) return 1;
+    if (weapon.isOneShot) return 0.1;
+    const needed = isRotaryAutocannon(weapon) ? 60 : isUltraAutocannon(weapon) ? 20 : 10;
+    return shots >= needed ? 1 : 0.75;
+};
+
 export interface IAlphaStrikeMovementHeatInput {
     jumpMP: number;
     xxl?: boolean;

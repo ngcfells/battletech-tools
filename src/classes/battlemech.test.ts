@@ -310,7 +310,8 @@ describe("BattleMech armor technology availability", () => {
         // A large laser's weapon type is "DE" (direct-fire energy, TM): not an Alpha Strike special ability.
         const mech = new BattleMech();
         // An LRM 20 (1.2 at medium): an LRM 10's 0.6 is under the LRM special's 10 points at medium (#378).
-        for (const tag of ["large-laser", "medium-laser", "lrm-20", "is-ams"]) {
+        // Two tons of LRM ammunition: 12 shots, full damage (ASC p.101); a launcher with none has no damage.
+        for (const tag of ["large-laser", "medium-laser", "lrm-20", "is-ams", "ammo-lrm-standard", "ammo-lrm-standard"]) {
             mech.addEquipmentFromTag(tag, "is", "", false, undefined, "", false, [], undefined, undefined);
         }
         const abilities = mech.getAlphaStrikeForceStats().abilities;
