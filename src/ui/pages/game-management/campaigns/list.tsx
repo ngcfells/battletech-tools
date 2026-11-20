@@ -10,7 +10,7 @@ import { IAppGlobals } from '../../../app-router';
 import RulesetList from '../../../components/special-rulesets/ruleset-list';
 import TextSection from '../../../components/text-section';
 import UIPage from '../../../components/ui-page';
-import { useCampaigns } from './campaign-store';
+import { readCampaign, useCampaigns } from './campaign-store';
 import PlanetPicker from './planet-picker';
 
 /** The new-campaign form: name, start date, planet (from a star system or free text), campaign rulesets, sides. */
@@ -118,14 +118,14 @@ export default function CampaignList(props: { appGlobals: IAppGlobals }): JSX.El
                             <thead><tr><th>Name</th><th>Edition</th><th>Step</th><th></th></tr></thead>
                             <tbody>
                                 {campaigns.map((data) => {
-                                    const campaign = new Campaign(data);
+                                    const { campaign, error } = readCampaign(data);
                                     return (
                                         <tr key={data.id}>
                                             <td>{data.name}</td>
                                             <td>{findCampaignEdition(data.editionId)?.name ?? "No edition rules"}</td>
-                                            <td>{campaign.timeStep} {data.step} ({campaign.currentDate()})</td>
+                                            <td>{campaign ? <>{campaign.timeStep} {data.step} ({campaign.currentDate()})</> : <span className="smaller-text">Cannot be opened: {error}</span>}</td>
                                             <td>
-                                                <Link className="btn btn-primary btn-sm" to={data.id}>Open</Link>{" "}
+                                                {campaign ? <><Link className="btn btn-primary btn-sm" to={data.id}>Open</Link>{" "}</> : null}
                                                 <button type="button" className="btn btn-danger btn-sm" onClick={() => remove(data.id, data.name)}>Delete</button>
                                             </td>
                                         </tr>

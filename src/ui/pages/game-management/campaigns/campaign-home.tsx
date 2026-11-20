@@ -217,7 +217,7 @@ function AfterBattle( props: { campaign: Campaign; onRecord: ( result: ICampaign
 }
 
 export default function CampaignHome( props: { appGlobals: IAppGlobals; id: string | undefined } ): JSX.Element {
-    const { loaded, campaign, update } = useCampaign( props.appGlobals, props.id );
+    const { loaded, campaign, error, update } = useCampaign( props.appGlobals, props.id );
     const [indexReady, setIndexReady] = useState( false );
     const [sites, setSites] = useState<IStarSystemSites | null>( null );
     const [targetSystem, setTargetSystem] = useState<IStarSystemIndexEntry | null>( null );
@@ -256,7 +256,7 @@ export default function CampaignHome( props: { appGlobals: IAppGlobals; id: stri
     if( !campaign ) {
         return (
             <UIPage current="game-management-campaigns" appGlobals={props.appGlobals}>
-                <TextSection label="Campaign"><p>No campaign with this id. <Link to="..">Back to campaigns</Link></p></TextSection>
+                <TextSection label="Campaign"><p>{error ? `This campaign cannot be opened: ${error}.` : "No campaign with this id."} <Link to="..">Back to campaigns</Link></p></TextSection>
             </UIPage>
         );
     }
@@ -356,10 +356,10 @@ export default function CampaignHome( props: { appGlobals: IAppGlobals; id: stri
                                     <table className="campaign-table">
                                         <thead><tr><th>Step</th><th>Reason</th><th>Amount</th><th></th></tr></thead>
                                         <tbody>
-                                            {entries.map( ( e ) => (
+                                            {entries.map( ( e, index ) => (
                                                 <tr key={e.id}>
                                                     <td>{e.step}</td><td>{e.reason}</td><td className="number">{formatMoney( e.amount )} {e.currency}</td>
-                                                    <td>{e.rule === BY_HAND ? <button type="button" className="btn btn-danger btn-sm" aria-label={"Remove " + e.reason}
+                                                    <td>{e.rule === BY_HAND ? <button type="button" className="btn btn-danger btn-sm" aria-label={`Remove entry ${index + 1}: ${e.reason}`}
                                                         onClick={() => update( ( c ) => { c.ledger = c.ledger.filter( ( l ) => l.id !== e.id ); } )}>Remove</button> : null}</td>
                                                 </tr>
                                             ) )}

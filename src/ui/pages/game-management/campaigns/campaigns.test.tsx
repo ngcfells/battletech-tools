@@ -196,6 +196,7 @@ describe( "Campaign screens", () => {
         c.planet!.customDotTypes = [ { id: "gm-port", name: "Spaceport", value: 2000000, target: 8 } ];
         c.planet!.customCombinations = [ { id: "gm-hub", name: "Port hub", needs: { "gm-port": 1, oil: 1 }, multiplier: 2 } ];
         c.planet!.areas[0].dots.push( { id: "dp", type: "gm-port", destroyed: false } );
+        c.planet!.areas[0].comboOverride = [ "gm-hub" ];
         store.campaigns = [ c.export() ];
         open( "/c1/planet" );
         fireEvent.change( await screen.findByLabelText( "Type name" ), { target: { value: "Shrine" } } );
@@ -207,6 +208,7 @@ describe( "Campaign screens", () => {
         await waitFor( () => expect( store.campaigns[0].planet!.customDotTypes.map( ( t ) => t.name ) ).toEqual( ["Shrine"] ) );
         expect( store.campaigns[0].planet!.areas[0].dots.some( ( d ) => d.type === "gm-port" ) ).toBe( false );
         expect( store.campaigns[0].planet!.customCombinations ).toEqual( [] );
+        expect( store.campaigns[0].planet!.areas[0].comboOverride ).toBeNull();
     } );
 
     it( "the planet page is hidden without Economics", async () => {
@@ -365,8 +367,54 @@ describe( "Campaign screens", () => {
         fireEvent.change( within( ledger ).getByLabelText( "Amount" ), { target: { value: "-25000" } } );
         fireEvent.click( within( ledger ).getByRole( "button", { name: "Add entry" } ) );
         await waitFor( () => expect( store.campaigns[0].ledger.map( ( e ) => [e.reason, e.amount] ) ).toEqual( [["Repair bill", -25000]] ) );
-        fireEvent.click( await within( ledger ).findByRole( "button", { name: "Remove Repair bill" } ) );
+        // A second entry with the same reason gets a Remove button of its own (re-review minor).
+        fireEvent.change( within( ledger ).getByLabelText( "Reason" ), { target: { value: "Repair bill" } } );
+        fireEvent.change( within( ledger ).getByLabelText( "Amount" ), { target: { value: "-5000" } } );
+        fireEvent.click( within( ledger ).getByRole( "button", { name: "Add entry" } ) );
+        await waitFor( () => expect( store.campaigns[0].ledger ).toHaveLength( 2 ) );
+        fireEvent.click( await within( ledger ).findByRole( "button", { name: "Remove entry 2: Repair bill" } ) );
+        await waitFor( () => expect( store.campaigns[0].ledger.map( ( e ) => [e.reason, e.amount] ) ).toEqual( [["Repair bill", -25000]] ) );
+        fireEvent.click( await within( ledger ).findByRole( "button", { name: "Remove entry 1: Repair bill" } ) );
         await waitFor( () => expect( store.campaigns[0].ledger ).toEqual( [] ) );
+    } );
+
+    // Re-review minor: a stale second click on Resolve month books nothing and says so.
+    it( "the 1987 panel does not claim a resolution it refused", async () => {
+        const c = saved( [] );
+        c.editionId = "mh-1987";
+        c.editionState = {
+            roster: [ { id: "l1", type: "heavy-mech", quality: "regular", condition: "new", count: 12, company: "Company 1" } ],
+            contract: { id: "k1", mission: "garrison", squads: 3, startStep: 0, total: 400000, paid: 0, completed: false,
+                terms: { months: 2, ratePerSquadWeek: 10000, guarantee: "prior", command: "liaison", transportModifier: 1, supplyModifier: 0.5, salvage: "merc-claims" } },
+        };
+        store.campaigns = [ c.export() ];
+        vi.spyOn( campaignDice, "roll2d6" ).mockReturnValue( 7 );
+        vi.spyOn( campaignDice, "roll1d6" ).mockReturnValue( 3 );
+        open( "/c1" );
+        const panel = await screen.findByTestId( "edition-mh1987" );
+        // Another tab resolved this month after this page drew it.
+        ( store.campaigns[0].editionState as { contract: { resolvedStep?: number } } ).contract.resolvedStep = 0;
+        fireEvent.click( within( panel ).getByRole( "button", { name: "Resolve month" } ) );
+        expect( await within( panel ).findByText( "This month was already resolved." ) ).toBeTruthy();
+        expect( within( panel ).queryByText( /resistance/ ) ).toBeNull();
+        expect( store.campaigns[0].log.some( ( l ) => l.text.includes( "resistance" ) ) ).toBe( false );
+    } );
+
+    // Re-review minor: a stored campaign the app cannot read is listed and explained, not a crash.
+    it( "a stored campaign from a newer version is listed and explained instead of crashing the page", async () => {
+        const c = saved( [] );
+        store.campaigns = [ { ...c.export(), version: 99 } as unknown as ICampaignExport ];
+        open( "" );
+        expect( await screen.findByText( "Tharkad Defence" ) ).toBeTruthy();
+        expect( screen.getByText( /Cannot be opened: This campaign was saved by a newer version of the app/ ) ).toBeTruthy();
+        expect( screen.getByRole( "button", { name: "Delete" } ) ).toBeTruthy();
+    } );
+
+    it( "a stored campaign from a newer version shows why on its own page", async () => {
+        const c = saved( [] );
+        store.campaigns = [ { ...c.export(), version: 99 } as unknown as ICampaignExport ];
+        open( "/c1" );
+        expect( await screen.findByText( /This campaign cannot be opened: This campaign was saved by a newer version of the app/ ) ).toBeTruthy();
     } );
 
     // Review M4: a campaign's setup can change after it is made.

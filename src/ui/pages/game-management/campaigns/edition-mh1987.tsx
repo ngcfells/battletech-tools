@@ -86,8 +86,11 @@ export default function EditionMh1987( props: { campaign: Campaign; update: ( ch
         const text = `${MH1987_MISSION_LABELS[contract.mission]}: resistance ${month.resistance}, outcome ${month.code} (${month.outcome.result}); `
             + `reputation ${month.reputationChange >= 0 ? "+" : ""}${month.reputationChange}, morale ${month.moraleChange >= 0 ? "+" : ""}${month.moraleChange}`
             + `${losses ? `; ${losses}` : "; no squads lost"}${month.plunder ? `; plunder ${formatMoney( month.plunder )}` : ""}`;
+        // update() runs the change at once, so `booked` says whether the newest copy took it.
+        let booked = false;
         change( ( s, c ) => {
             if( !s.contract || s.contract.resolvedStep === c.step ) return;
+            booked = true;
             s.contract.resolvedStep = c.step;
             s.reputationMod += month.reputationChange;
             s.moraleMod += month.moraleChange;
@@ -95,7 +98,7 @@ export default function EditionMh1987( props: { campaign: Campaign; update: ( ch
             if( sideId && month.plunder ) c.addLedger( { sideId, step: c.step, amount: month.plunder, currency: c.currency, reason: "Plunder", rule: `${SOURCE} p.50` } );
             c.addLog( text );
         } );
-        setResult( text + ( losses ? ". Mark the lost squads on the roster." : "." ) );
+        setResult( booked ? text + ( losses ? ". Mark the lost squads on the roster." : "." ) : "This month was already resolved." );
     };
 
     return (

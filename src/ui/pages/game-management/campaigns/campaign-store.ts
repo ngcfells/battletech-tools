@@ -39,18 +39,32 @@ export function useCampaigns( appGlobals: IAppGlobals ) {
     return { campaigns, saveAll, latest };
 }
 
+/**
+ * A stored campaign as the class, or why it cannot be read (a newer version's save, oversized edition data, a
+ * hand-edited file). Restore already refuses these; one already in storage must not crash the page.
+ */
+export function readCampaign( data: ICampaignExport ): { campaign: Campaign | null; error: string | null } {
+    try {
+        return { campaign: new Campaign( data ), error: null };
+    }
+    catch( e ) {
+        return { campaign: null, error: e instanceof Error ? e.message : String( e ) };
+    }
+}
+
 /** One campaign by id; update() changes the newest copy through the class and saves it at once. */
 export function useCampaign( appGlobals: IAppGlobals, id: string | undefined ) {
     const { campaigns, saveAll, latest } = useCampaigns( appGlobals );
     const data = campaigns?.find( ( c ) => c.id === id ) ?? null;
-    const campaign = data ? new Campaign( data ) : null;
+    const { campaign, error } = data ? readCampaign( data ) : { campaign: null, error: null };
     const update = ( change: ( c: Campaign ) => void ) => {
         const list = latest.current;
         const current = list?.find( ( c ) => c.id === id );
         if( !list || !current ) return;
-        const next = new Campaign( current );
+        const next = readCampaign( current ).campaign;
+        if( !next ) return;
         change( next );
         saveAll( list.map( ( c ) => ( c.id === next.id ? next.export() : c ) ) );
     };
-    return { loaded: campaigns !== null, campaign, update };
+    return { loaded: campaigns !== null, campaign, error, update };
 }

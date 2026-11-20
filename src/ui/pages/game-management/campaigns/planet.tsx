@@ -174,12 +174,21 @@ function GmTables( props: { campaign: Campaign; update: Update } ): JSX.Element 
     };
 
     /** Removes a GM dot type with its dots in every area and the GM combinations that need it. */
-    const removeType = ( typeId: string ) => setPlanet( ( p ) => ( {
-        ...p,
-        customDotTypes: p.customDotTypes.filter( ( x ) => x.id !== typeId ),
-        customCombinations: p.customCombinations.filter( ( combo ) => !( typeId in combo.needs ) ),
-        areas: p.areas.map( ( a ) => ( a.dots.some( ( d ) => d.type === typeId ) ? { ...a, dots: a.dots.filter( ( d ) => d.type !== typeId ) } : a ) ),
-    } ) );
+    const removeType = ( typeId: string ) => setPlanet( ( p ) => {
+        const gone = new Set( p.customCombinations.filter( ( combo ) => typeId in combo.needs ).map( ( combo ) => combo.id ) );
+        return {
+            ...p,
+            customDotTypes: p.customDotTypes.filter( ( x ) => x.id !== typeId ),
+            customCombinations: p.customCombinations.filter( ( combo ) => !gone.has( combo.id ) ),
+            areas: p.areas.map( ( a ) => {
+                const dots = a.dots.filter( ( d ) => d.type !== typeId );
+                // A GM grouping that named a removed combination drops it; an empty grouping goes back to the default.
+                const kept = a.comboOverride?.filter( ( id ) => !gone.has( id ) ) ?? null;
+                const comboOverride = kept && kept.length ? kept : null;
+                return dots.length === a.dots.length && comboOverride?.length === a.comboOverride?.length ? a : { ...a, dots, comboOverride };
+            } ),
+        };
+    } );
 
     const addCombination = () => {
         const name = comboName.trim();
@@ -251,7 +260,7 @@ function RulesetCredit( props: { id: string } ): JSX.Element | null {
 }
 
 export default function CampaignPlanet( props: { appGlobals: IAppGlobals; id: string | undefined } ): JSX.Element {
-    const { loaded, campaign, update } = useCampaign( props.appGlobals, props.id );
+    const { loaded, campaign, error, update } = useCampaign( props.appGlobals, props.id );
     const [areaName, setAreaName] = useState( "" );
     const [message, setMessage] = useState( "" );
     useEffect( () => { props.appGlobals.makeDocumentTitle( "Campaign planet" ); }, [props.appGlobals] );
@@ -260,7 +269,7 @@ export default function CampaignPlanet( props: { appGlobals: IAppGlobals; id: st
         <UIPage current="game-management-campaigns" appGlobals={props.appGlobals}><div className="campaign-page">{body}</div></UIPage>
     );
     if( !loaded ) return page( <p>Loading...</p> );
-    if( !campaign ) return page( <TextSection label="Planet economy"><p>No campaign with this id. <Link to="../.." relative="path">Back to campaigns</Link></p></TextSection> );
+    if( !campaign ) return page( <TextSection label="Planet economy"><p>{error ? `This campaign cannot be opened: ${error}.` : "No campaign with this id."} <Link to="../.." relative="path">Back to campaigns</Link></p></TextSection> );
     const back = <p><Link to=".." relative="path">Back to {campaign.name}</Link></p>;
     if( !campaign.rulesetIds.includes( "fw-economics" ) ) {
         return page( <TextSection label="Planet economy">{back}<p>Tick Future Wars: Economics in the campaign's rulesets (Change, on the campaign page) to play the planet's economy.</p></TextSection> );
