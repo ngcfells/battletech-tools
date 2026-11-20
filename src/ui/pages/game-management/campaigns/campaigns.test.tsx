@@ -208,6 +208,47 @@ describe( "Campaign screens", () => {
         await waitFor( () => expect( store.campaigns[0].log.some( ( l ) => l.text.includes( "outcome I" ) ) ).toBe( true ) );
     } );
 
+    it( "the 3055 panel previews payroll and maintenance and books paydays on advance", async () => {
+        const c = saved( [] );
+        c.editionId = "mh-3055";
+        store.campaigns = [ c.export() ];
+        open( "/c1" );
+        const panel = await screen.findByTestId( "edition-mh3055" );
+        fireEvent.click( within( panel ).getByRole( "button", { name: "Add combatants" } ) );
+        const unit = await within( panel ).findByTestId( "mh3055-unit-0" );
+        fireEvent.change( within( unit ).getByLabelText( "Template" ), { target: { value: "heavy-mech" } } );
+        fireEvent.change( within( unit ).getByLabelText( "Count" ), { target: { value: "4" } } );
+        fireEvent.click( within( panel ).getByRole( "button", { name: "Add personnel" } ) );
+        const person = await within( panel ).findByTestId( "mh3055-person-0" );
+        fireEvent.change( within( person ).getByLabelText( "Count" ), { target: { value: "4" } } );
+        // 4 Regular MechWarriors: 500 x 1.5 x 4 = 3,000 a payday; 4 heavy 'Mechs need 375 SP a week each.
+        await waitFor( () => expect( within( panel ).getByTestId( "mh3055-costs" ).textContent ).toContain( "3,000" ) );
+        expect( within( panel ).getByTestId( "mh3055-costs" ).textContent ).toContain( "1,500 SP" );
+        // Regular experience alone is 10 points: Dragoons Rating D.
+        expect( within( panel ).getByTestId( "mh3055-rating" ).textContent ).toContain( "D" );
+        fireEvent.click( screen.getByRole( "button", { name: "Advance a month" } ) );
+        await waitFor( () => expect( screen.getByTestId( "campaign-ledger-Lyrans" ).textContent ).toContain( "Payday 2 of 2" ) );
+    } );
+
+    it( "the 3055 panel rolls an employer and job and signs the contract", async () => {
+        const c = saved( [] );
+        c.editionId = "mh-3055";
+        c.editionState = { personnel: [ { id: "p1", position: "mechwarrior", quality: "regular", count: 4, antiMech: false } ] };
+        store.campaigns = [ c.export() ];
+        vi.spyOn( campaignDice, "roll2d6" ).mockReturnValue( 7 );
+        open( "/c1" );
+        const panel = await screen.findByTestId( "edition-mh3055" );
+        fireEvent.click( within( panel ).getByRole( "button", { name: "Roll employer" } ) );
+        fireEvent.click( within( panel ).getByRole( "button", { name: "Roll job" } ) );
+        // Employer 7 = Federated Commonwealth; its Job Table at 7 = Objective Raid against the Clans (2 months).
+        // 3,000 x 2 paydays x 2.1 (D) x 1.3 (FedCom) x 1.6 (raid) x 2 (Clans) = 52,416 a month.
+        await waitFor( () => expect( within( panel ).getByTestId( "mh3055-pay" ).textContent ).toContain( "104,832" ) );
+        fireEvent.click( within( panel ).getByRole( "button", { name: "Sign contract" } ) );
+        await waitFor( () => expect( store.campaigns[0].log.some( ( l ) =>
+            l.text === "Contract signed: Objective Raid for Federated Commonwealth against the Clans, 2 months, 104,832 C-bills" ) ).toBe( true ) );
+        expect( screen.getByTestId( "campaign-ledger-Lyrans" ).textContent ).toContain( "Contract advance (25%)" );
+    } );
+
     it( "seeds dots from Objectives sites", async () => {
         saved();
         open( "/c1/planet" );

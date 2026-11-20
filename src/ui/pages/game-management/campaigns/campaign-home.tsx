@@ -22,6 +22,8 @@ import UIPage from '../../../components/ui-page';
 import { MH1987_ID } from '../../../../data/campaign-editions/mercenarys-handbook-1987';
 import { formatMoney, useCampaign } from './campaign-store';
 import EditionMh1987 from './edition-mh1987';
+import { MH3055_ID } from '../../../../data/campaign-editions/mercenarys-handbook-3055';
+import EditionMh3055 from './edition-mh3055';
 import SystemSearch from './system-search';
 
 const INTENTS: ICampaignTarget["intent"][] = ["travel", "assault", "defend"];
@@ -205,6 +207,11 @@ export default function CampaignHome( props: { appGlobals: IAppGlobals; id: stri
                 {campaign.editionId === MH1987_ID ? (
                     <TextSection label="Mercenary's Handbook (1987)">
                         <EditionMh1987 campaign={campaign} update={update} />
+                    </TextSection>
+                ) : null}
+                {campaign.editionId === MH3055_ID ? (
+                    <TextSection label="Mercenary's Handbook 3055">
+                        <EditionMh3055 campaign={campaign} update={update} />
                     </TextSection>
                 ) : null}
 
