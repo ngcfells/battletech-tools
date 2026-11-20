@@ -1,16 +1,22 @@
 import { generateUUID } from "../../utils/generateUUID";
+import { CONTRACT_FORMS, DEFAULT_CONTRACT_FORM_ID } from "./contract-sheet-versions";
 
 /**
- * The Mercenary Contract Record Sheet (Hot Spots: Draconis Reach, CGL 2026, unnumbered p.203; the same sheet is in
- * Hot Spots: Hinterlands). A paper form: every field is the player's own text, saved with the campaign (#639).
+ * Contract sheets (#639): the books' mercenary contract forms, filled in on screen and saved with the campaign. Each
+ * sheet names its form (contract-sheet-versions.ts). Record sheets use the named fields and the ledger; contracts and
+ * worksheets keep their blanks in `fields` and their boxes in `checks`. Every value is the player's own text.
  */
 
-/** Ledger lines printed on the sheet. More can be added on screen; print adds a page as needed. */
+/** Ledger lines printed on the record sheets. More can be added on screen; print adds a page as needed. */
 export const CONTRACT_SHEET_ROWS = 23;
 /** Most ledger lines one sheet keeps. */
 export const CONTRACT_SHEET_MAX_ROWS = 200;
 /** Most characters in one field. */
 export const CONTRACT_SHEET_MAX_TEXT = 500;
+/** Most characters in a multi-line box. */
+export const CONTRACT_SHEET_MAX_AREA = 2000;
+/** Most blanks or boxes one sheet keeps. */
+export const CONTRACT_SHEET_MAX_KEYS = 400;
 
 /** A "percent (roll)" pair: Base Pay, Transportation, Support and Salvage print "____ % ( __ )". */
 export interface IContractSheetTerm {
@@ -30,6 +36,8 @@ export interface IContractSheetRow {
 
 export interface IContractSheet {
     id: string;
+    /** The form this sheet follows (contract-sheet-versions.ts). */
+    versionId: string;
     name: string;
     contract: string;
     typeOfAction: string;
@@ -42,43 +50,22 @@ export interface IContractSheet {
     command: IContractSheetTerm;
     startingWarchest: string;
     rows: IContractSheetRow[];
+    /** The other forms' blanks, by field id. */
+    fields: Record<string, string>;
+    /** Ticked boxes, by box id (only ticked ones are kept). */
+    checks: Record<string, boolean>;
 }
 
 export const CONTRACT_SHEET_ROW_FIELDS: ( keyof IContractSheetRow )[] = ["month", "event", "cost", "cover", "paid", "balance", "rep"];
-
-/** The sheet's COMMON COSTS/PAY panel, as printed. */
-export const CONTRACT_SHEET_COMMON_COSTS: { heading: string; lines: { label: string; value: string }[] }[] = [
-    { heading: "Contract Terms:", lines: [
-        { label: "Travel:", value: "300 SP × Scale" },
-        { label: "Mon. Maintenance:", value: "500 SP × Scale" },
-    ] },
-    { heading: "Combat Bonus:", lines: [
-        { label: "Broke Contract:", value: "0" },
-        { label: "Unsuccessful:", value: "250 SP × Scale" },
-        { label: "Success:", value: "500 SP × Scale" },
-        { label: "All Obj:", value: "750 SP × Scale" },
-    ] },
-    { heading: "Support:", lines: [
-        { label: "Repair (Armor only):", value: "Ton/2" },
-        { label: "Repair (Structure/Critical):", value: "Ton × 2" },
-        { label: "Repair (Crippled):", value: "Ton × 3" },
-        { label: "Repair (Destroyed):", value: "Ton × 5" },
-        { label: "Rearm:", value: "10 SP/Ton" },
-        { label: "Purchase ’Mech:", value: "BV or PV × 40" },
-        { label: "Sell (Repaired) ’Mech:", value: "BV/2 or PV × 20" },
-    ] },
-    { heading: "Salvage:", lines: [
-        { label: "Salvage Value:", value: "BV/2 or PV × 20" },
-    ] },
-];
 
 export const blankContractSheetRow = (): IContractSheetRow => ( { month: "", event: "", cost: "", cover: "", paid: "", balance: "", rep: "" } );
 
 const blankTerm = (): IContractSheetTerm => ( { percent: "", roll: "" } );
 
-export function newContractSheet( name: string = "" ): IContractSheet {
+export function newContractSheet( name: string = "", versionId: string = DEFAULT_CONTRACT_FORM_ID ): IContractSheet {
     return {
         id: generateUUID(),
+        versionId: CONTRACT_FORMS.some( ( f ) => f.id === versionId ) ? versionId : DEFAULT_CONTRACT_FORM_ID,
         name,
         contract: "",
         typeOfAction: "",
@@ -91,17 +78,39 @@ export function newContractSheet( name: string = "" ): IContractSheet {
         command: blankTerm(),
         startingWarchest: "",
         rows: Array.from( { length: CONTRACT_SHEET_ROWS }, blankContractSheetRow ),
+        fields: {},
+        checks: {},
     };
 }
 
 /** A filled-in ledger line (any field typed). */
 export const contractSheetRowUsed = ( row: IContractSheetRow ): boolean => CONTRACT_SHEET_ROW_FIELDS.some( ( f ) => row[f].trim() !== "" );
 
-const text = ( v: unknown ): string => ( typeof v === "string" ? v.slice( 0, CONTRACT_SHEET_MAX_TEXT ) : "" );
+const text = ( v: unknown, max: number = CONTRACT_SHEET_MAX_TEXT ): string => ( typeof v === "string" ? v.slice( 0, max ) : "" );
 
 const term = ( v: unknown ): IContractSheetTerm => {
     const o = v && typeof v === "object" ? v as Record<string, unknown> : {};
     return { percent: text( o.percent ), roll: text( o.roll ) };
+};
+
+const KEY = /^[A-Za-z0-9]{1,64}$/;
+
+const pickFields = ( v: unknown ): Record<string, string> => {
+    const out: Record<string, string> = {};
+    if( !v || typeof v !== "object" || Array.isArray( v ) ) return out;
+    for( const [k, value] of Object.entries( v as Record<string, unknown> ).slice( 0, CONTRACT_SHEET_MAX_KEYS ) ) {
+        if( KEY.test( k ) && typeof value === "string" && value !== "" ) out[k] = text( value, CONTRACT_SHEET_MAX_AREA );
+    }
+    return out;
+};
+
+const pickChecks = ( v: unknown ): Record<string, boolean> => {
+    const out: Record<string, boolean> = {};
+    if( !v || typeof v !== "object" || Array.isArray( v ) ) return out;
+    for( const [k, value] of Object.entries( v as Record<string, unknown> ).slice( 0, CONTRACT_SHEET_MAX_KEYS ) ) {
+        if( KEY.test( k ) && value === true ) out[k] = true;
+    }
+    return out;
 };
 
 /** A stored sheet, cleaned: non-strings become empty, text is capped, and the ledger keeps at least the printed lines. */
@@ -118,6 +127,8 @@ export function pickContractSheet( s: Record<string, any> ): IContractSheet | nu
     while( rows.length < CONTRACT_SHEET_ROWS ) rows.push( blankContractSheetRow() );
     return {
         id: s.id,
+        // Sheets saved before versions, or naming a form this build does not know, are the Draconis Reach sheet.
+        versionId: CONTRACT_FORMS.some( ( f ) => f.id === s.versionId ) ? s.versionId : DEFAULT_CONTRACT_FORM_ID,
         name: text( s.name ),
         contract: text( s.contract ),
         typeOfAction: text( s.typeOfAction ),
@@ -130,5 +141,7 @@ export function pickContractSheet( s: Record<string, any> ): IContractSheet | nu
         command: term( s.command ),
         startingWarchest: text( s.startingWarchest ),
         rows,
+        fields: pickFields( s.fields ),
+        checks: pickChecks( s.checks ),
     };
 }
