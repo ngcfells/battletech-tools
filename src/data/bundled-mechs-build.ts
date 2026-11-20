@@ -59,8 +59,12 @@ export const BUNDLED_MECHS_NOTICE = COPYRIGHT_NOTICE + "Converted from " + SSW_C
 const MECH_CLASSES = ["BattleMech", "IndustrialMech"];
 const MECH_TYPE_IDS = [18, 20];
 export const isMULMech = (unit: IASMULUnit): boolean => MECH_CLASSES.includes(unit.Class) || MECH_TYPE_IDS.includes(unit.Type?.Id);
+/** What the Master Unit List says of a unit, for finding it on the accuracy page: its tonnage, tech base, rules level, year, role and book. */
+export interface IBundledUnitFacts { tons?: number; tech?: string; rules?: string; year?: number; role?: string; book?: string }
 /** A unit whose BV we work out differently from the Master Unit List (#599). `file` is the design file it was read from. */
-export interface IBundledMiss { mulId: number | null; name: string; config?: string; ours: number; mul: number; file: string }
+export interface IBundledMiss extends IBundledUnitFacts { mulId: number | null; name: string; config?: string; ours: number; mul: number; file: string }
+/** A MUL entry whose BV we work out the same, under the list's own name. */
+export interface IBundledMatch extends IBundledUnitFacts { mulId: number; name: string; bv: number }
 /** A miss before the build knows which file it came from. */
 type Miss = Omit<IBundledMiss, "file">;
 
@@ -69,6 +73,8 @@ export interface IBundledAccuracy {
     unitType: "mechs";
     /** MUL entries with a kept design. */
     matched: number;
+    /** Those entries, one row each, so a player can look a unit up (when the build had the list's records). */
+    matches?: IBundledMatch[];
     /** MUL entries with files, none matching: one row per MUL entry (and configuration). */
     differs: IBundledMiss[];
     /** Files that could not be compared: the import failed, or the MUL has no entry with a BV for them. */
@@ -77,20 +83,41 @@ export interface IBundledAccuracy {
 
 type Leave = (reason: string, detail?: string, misses?: Miss[]) => void;
 
+/** The facts the accuracy page filters by, from a MUL record; a field the record leaves blank is left out. */
+export function getBundledUnitFacts(unit: IASMULUnit): IBundledUnitFacts {
+    const year = parseInt(unit.DateIntroduced, 10);
+    const role = unit.Role?.Name;
+    return {
+        ...(unit.Tonnage > 0 ? { tons: unit.Tonnage } : {}),
+        ...(unit.Technology?.Name ? { tech: unit.Technology.Name } : {}),
+        ...(unit.Rules ? { rules: unit.Rules } : {}),
+        ...(Number.isFinite(year) && year > 0 ? { year } : {}),
+        ...(role && role !== "None" ? { role } : {}),
+        ...(unit.TRO ? { book: unit.TRO } : {}),
+    };
+}
+
 /**
  * The accuracy record from a build's tallies. A MUL entry with a kept design is matched only, whatever other files
  * differ; a differing entry is listed once (its first file by name); rows are sorted by name, then configuration.
+ * With the list's records by id, each row gains the record's facts and the matched entries are listed too.
  */
-export function buildBundledAccuracy(matchedIds: Iterable<number>, misses: IBundledMiss[], notChecked: IBundledAccuracy["notChecked"]): IBundledAccuracy {
+export function buildBundledAccuracy(matchedIds: Iterable<number>, misses: IBundledMiss[], notChecked: IBundledAccuracy["notChecked"],
+    units?: Map<number, IASMULUnit>): IBundledAccuracy {
     const matched = new Set(matchedIds);
+    const facts = (mulId: number | null) => mulId !== null && units?.has(mulId) ? getBundledUnitFacts(units.get(mulId)!) : {};
     const rows = new Map<string, IBundledMiss>();
     for (const miss of [...misses].sort((a, b) => a.file.localeCompare(b.file))) {
         if (miss.mulId !== null && matched.has(miss.mulId)) continue;
         const key = miss.mulId !== null ? `mul:${miss.mulId}` : `file:${miss.file}:${miss.config ?? ""}`;
-        if (!rows.has(key)) rows.set(key, miss);
+        if (!rows.has(key)) rows.set(key, { ...miss, ...facts(miss.mulId) });
     }
     const differs = [...rows.values()].sort((a, b) => a.name.localeCompare(b.name) || (a.config ?? "").localeCompare(b.config ?? ""));
-    return { unitType: "mechs", matched: matched.size, differs, notChecked };
+    if (!units) return { unitType: "mechs", matched: matched.size, differs, notChecked };
+    const matches = [...matched].flatMap((mulId) => units.has(mulId)
+        ? [{ mulId, name: units.get(mulId)!.Name, bv: units.get(mulId)!.BattleValue, ...facts(mulId) }] : [])
+        .sort((a, b) => a.name.localeCompare(b.name) || a.mulId - b.mulId);
+    return { unitType: "mechs", matched: matched.size, matches, differs, notChecked };
 }
 
 /**
@@ -419,6 +446,13 @@ export interface IMechMUL {
 }
 
 // A MegaMek entry is NGCFells's, written from the file, not a BV to check the file against.
+/** Every MUL record a 'Mech can be matched to, by id: the live list's, then MUL 1.0's for ids the live list lacks. */
+const unitsById = ({ mul, mul1ById }: IMechMUL): Map<number, IASMULUnit> => {
+    const units = new Map<number, IASMULUnit>([...mul.values()].map((unit) => [unit.Id, unit]));
+    mul1ById.forEach((unit, id) => { if (!units.has(id)) units.set(id, unit); });
+    return units;
+};
+
 export const loadMechMUL = (mulDir: string): IMechMUL => ({ mul: loadMULIndex(mulDir, (unit) => isMULMech(unit) && !isMegaMekCustom(unit)), mul1ById: loadMUL1ById(mulDir, isMULMech) });
 
 const hashText = (text: string): string => {
@@ -642,7 +676,7 @@ export function buildBundledMechs(sswDir: string, mulDir: string, megamekDir?: s
     kept.sort((a, b) => (a.header.name + " " + a.header.model).localeCompare(b.header.name + " " + b.header.model));
     return {
         headers: kept.map(({ header }, id) => ({ id, ...header })), designs: kept.map(({ design }) => design), leftOut, renamed, customRecords,
-        accuracy: buildBundledAccuracy(matchedIds, missed, notChecked),
+        accuracy: buildBundledAccuracy(matchedIds, missed, notChecked, unitsById(indexes)),
     };
 }
 
@@ -675,12 +709,16 @@ export function writeBundledDesigns(type: string, title: string, notice: string,
         ...(build.renamed?.length ? ["## Renamed", "", "Different submodels of a kept design, kept under a new model (#241).", "",
             ...build.renamed.map(({ file, from, to }) => `- \`${file}\`: ${from} -> ${to}`), ""] : []),
     ].join("\n"));
-    // The accuracy data (#599): stable key order and one differing unit a line, so a rebuild's diff reads well.
+    // The accuracy data (#599): stable key order and one unit a line, so a rebuild's diff reads well. The matched
+    // entries, thousands of them, are a table (keys once).
     if (build.accuracy) {
-        const { unitType, matched, differs, notChecked } = build.accuracy;
+        const { unitType, matched, matches, differs, notChecked } = build.accuracy;
+        const factsOf = ({ tons, tech, rules, year, role, book }: IBundledUnitFacts) => ({ tons, tech, rules, year, role, book });
         fs.writeFileSync(path.join(dataDir, `${type}-accuracy.json`), `{"unitType":${JSON.stringify(unitType)},"matched":${matched},`
             + `"notChecked":${JSON.stringify({ importFailed: notChecked.importFailed, noMulEntry: notChecked.noMulEntry })},\n`
-            + lines(differs.map(({ mulId, name, config, ours, mul, file }) => ["", { mulId, name, ...(config ? { config } : {}), ours, mul, file }]), `"differs":[`, "]}\n"));
+            + lines(differs.map(({ mulId, name, config, ours, mul, file, ...facts }) => ["", { mulId, name, ...(config ? { config } : {}), ours, mul, file, ...factsOf(facts) }]), `"differs":[`, "]")
+            + (matches ? `,\n"matches":${stringifyTable(matches.map(({ mulId, name, bv, ...facts }) => ({ mulId, name, bv, ...factsOf(facts) }))).trimEnd()}` : "")
+            + "}\n");
     }
 }
 
