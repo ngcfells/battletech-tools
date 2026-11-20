@@ -460,8 +460,9 @@ export default function CampaignHome( props: { appGlobals: IAppGlobals; id: stri
                         <p className="smaller-text">Jumps count {DEFAULT_JUMP_RANGE_LY} light-years at most each.</p>
                     </div>
                     <p className="smaller-text">
-                        Star systems: MegaMek Data (CC BY-NC-SA 4.0), checked against the Inner Sphere Cartography Society maps and the
-                        BattleTech sourcebooks; a field from a book shows its source in brackets.
+                        Star systems: the JBT star system catalog, built by NGCFells on MegaMek Data (CC BY-NC-SA 4.0) and checked against
+                        the BattleTech sourcebooks and the Inner Sphere Cartography Society maps; a field from a book shows its source in
+                        brackets.
                     </p>
                 </TextSection>
 

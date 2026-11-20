@@ -140,8 +140,8 @@ describe( "Campaign screens", () => {
         saved();
         open( "/c1" );
         expect( await screen.findByText( /Royal Guard/ ) ).toBeTruthy();
-        expect( screen.getByText( /Objective Raids p\.40/ ) ).toBeTruthy();
-        expect( screen.getByText( /MegaMek Data/ ) ).toBeTruthy();
+        // NGCFells 2026-11-20: the catalog is JBT's (vetted against the books); MegaMek Data stays credited as its base (CC BY-NC-SA).
+        expect( screen.getByText( /JBT star system catalog, built by NGCFells on MegaMek Data \(CC BY-NC-SA 4\.0\)/ ) ).toBeTruthy();
     } );
 
     it( "the Systems section names no 'our' books", async () => {
