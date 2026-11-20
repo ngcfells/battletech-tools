@@ -169,6 +169,13 @@ export default class Home extends React.Component<IHomeProps, IHomeState> {
                       <br />
                     </li>
                     <li>
+                      <h3><Link to="game-management/campaigns">Campaigns</Link></h3>
+                      <ul>
+                        <li>Keeps a campaign's sides, ledgers, log, force snapshots and campaign planet, with Future Wars Economics and two mercenary editions inspired by the Mercenary's Handbooks.</li>
+                      </ul>
+                      <br />
+                    </li>
+                    <li>
                         <h3><Link to="other-tools">Other Tools</Link></h3>
                         <ul>
                           <li>Links to other fan-made BattleTech tools, such as MegaMek and Solaris Skunk Werks.</li>
@@ -191,6 +198,19 @@ export default class Home extends React.Component<IHomeProps, IHomeState> {
                   {/* The news scrolls in its own box (discussion #13); it takes focus so a keyboard can scroll it. */}
                   <div className="home-scroll" role="region" aria-label="News" tabIndex={0}>
                   <ul className="news">
+                  <li>
+                  <h3>
+                      <strong>November 20th, 2026</strong> - Campaigns: planets, star systems and mercenary contracts
+                    </h3>
+                    <h4>Author - NGCFells</h4>
+                      <ul>
+                        <li><strong>Campaigns (issue #172).</strong> Game Management has a new Campaigns page. A campaign keeps its sides, each side's ledger of C-bills, a log, snapshots of each force and an optional campaign planet split into areas. Advance it a step at a time. Record a battle after you play one: who fought, what was lost and who holds the ground. Change the name, sides, start date and planet later in Setup. Campaigns are saved on your device and go into the full backup.</li>
+                        <li><strong>Star systems.</strong> Pick the campaign planet from a star system catalog built on MegaMek Data (CC BY-NC-SA 4.0) and checked against the BattleTech sourcebooks and the Inner Sphere Cartography Society maps, with each system's owner and garrisons named for the campaign's date, the fewest jumps to each target and the sites the books place there.</li>
+                        <li><strong>Future Wars: Economics.</strong> Herb Barents's resource dots (Future Wars #5 and The Best of Future Wars), as a Special Ruleset: each area's dots pay the side that holds it every quarter, with the printed combinations. Both printings merged into one ruleset by NGCFells's decision. With it comes an economic damage table derived by NGCFells, inspired by Herb Barents: after a battle in an area, its dots can be destroyed. Fan-made, NOT OFFICIAL.</li>
+                        <li><strong>Mercenary units.</strong> Two campaign editions for mercenary commands, inspired by Mercenary's Handbook (1987) and Mercenary's Handbook 3055: roster, pay and upkeep each month, contract negotiation and signing, contracts that end early, are lost or go to a breach hearing, and in 3055 the Dragoons Rating. Where a book leaves a rule open, NGCFells decided how to read it, and each panel lists those readings.</li>
+                        <li><strong>Support Vehicle Battle Value (issue #600).</strong> Infantry light machine guns on pintle mounts count as the infantry weapon, a bulldozer counts BV 10 as defensive equipment (TechManual p.317), and a Large Support VTOL has one location per side (TechManual p.124). The armed Brunel Dump Trucks carry 10 tons of standard armor, NGCFells's correction, as their record text describes.</li>
+                      </ul>
+                  </li>
                   <li>
                   <h3>
                       <strong>November 19th, 2026</strong> - Future Wars DropShips: four ways to build a DropShip

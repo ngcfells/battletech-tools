@@ -70,7 +70,7 @@ refactor's eligibility model (`changes`, `excludes`, `requires`).
 | R2 | Original-printing alternates (`2026-11-17-future-wars-printing-alternates.md`) | Opus 5.5 | done 2026-11-17 |
 | F | Power Armor: read, design, write its plan | Fable 5.2 or Opus 5.5 | done 2026-11-17 |
 | G | DropShips: all four methods (Stock; Stock + Eid; Reese; Houseman), each its own ruleset | Fable 5.2 | Q1 answered, UI |
-| H | Game Management "Future Wars" section. Economics: moved to `2026-11-19-campaign-play.md` (campaign play; both printings merged into one ruleset by NGCFells's decision, 2026-11-19). Planetary Assault, MechWarrior in a Box and City Raid stay here | Opus 5.5 | Economics: campaign plan |
+| H | Game Management "Future Wars" section. Economics: moved to `2026-11-19-campaign-play.md` (campaign play; both printings merged into one ruleset by NGCFells's decision, 2026-11-19). Planetary Assault, MechWarrior in a Box and City Raid stay here | Opus 5.5 | Economics: DONE (shipped 2026-11-20, campaign plan) |
 | I | Build H | Sonnet 5.5 | H |
 | J | *Future Wars* #33 designs (nine) | Sonnet 5.5 | nothing |
 | K | Pulsar: Kin weapons it needs, then the two designs | Opus 5.5 | Q2 answered, UI |
