@@ -35,6 +35,8 @@ export interface IBundledDesignHeader {
     layout?: string;
     /** Canon unless set: an apocryphal source, or gear at the Custom Homebrew or Munchkin rules level. */
     standing?: UnitStanding;
+    /** What the design breaks in the construction rules, when it is illegal as printed (kept, flagged; NGCFells 2026-11-20). */
+    illegal?: string[];
 }
 
 /** A crit table as text, without the UUIDs and object links a reload changes. */

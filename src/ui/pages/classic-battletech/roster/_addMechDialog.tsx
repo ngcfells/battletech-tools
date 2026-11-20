@@ -40,6 +40,7 @@ import type { BundledDesignSource } from '../../../../utils/bundled-designs';
 import { IAppGlobals } from '../../../app-router';
 import MULSearchFilters from '../../../components/mul-search-filters';
 import UnitStandingBadge, { UnitStandingLegend } from '../../../components/unit-standing-badge';
+import IllegalDesignBadge from '../../../components/illegal-design-badge';
 import SearchResultsPager from '../../../components/search-results-pager';
 import MechViewPanel from '../../../components/mech-view-panel';
 import StandardModal from '../../../components/standard-modal';
@@ -521,7 +522,7 @@ export default class BattleMechAddMechDialog extends React.Component<IBattleMech
         }
         return (
             <tr key={( unit.MulUnitKey ?? unit.Id ) + ":" + index}>
-                <td><UnitStandingBadge standing={row.standing} />{name}</td>
+                <td><UnitStandingBadge standing={row.standing} />{name}{design && "header" in design ? <IllegalDesignBadge issues={design.header.illegal} /> : null}</td>
                 <td className="min-width no-wrap text-left">{this.renderSource( design )}</td>
                 <td className="min-width no-wrap text-left">{unit.Technology?.Name}</td>
                 <td className="min-width no-wrap text-left">{unit.EraId ? getMULEraLabel( unit.EraId ) : ""}</td>

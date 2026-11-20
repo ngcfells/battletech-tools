@@ -7,6 +7,7 @@ import path from "node:path";
 import type { IASMULUnit } from "../classes/alpha-strike-unit";
 import { getBlkUnitKind, importBlkUnit } from "../classes/blk-unit-import";
 import { blkValue, parseBlkFile } from "../utils/blk-file";
+import { BLK_ILLEGAL_AS_PRINTED } from "./blk-design-corrections";
 import { compactUnit, IBundledDesignHeader, loadBundledUnit } from "../utils/bundled-designs";
 import { getClassicUnitEntries, getMULMatchKeys, isMULCapitalShip, isMULLargeAerospaceCraft } from "../utils/classicMULMatch";
 import type Vehicle from "../classes/vehicle";
@@ -74,7 +75,7 @@ export interface IPreparedUnit {
     /** The tech base the file's type gives, for a MUL entry that names none. */
     tech?: string;
     survives?: boolean;
-    header?: Pick<IBundledDesignHeader, "name" | "model" | "cost" | "rulesLevel" | "year" | "standing">;
+    header?: Pick<IBundledDesignHeader, "name" | "model" | "cost" | "rulesLevel" | "year" | "standing" | "illegal">;
     design?: Record<string, unknown>;
     /** A Combat Vehicle's custom unit list entry, for when the MUL has none. */
     customForm?: ICustomMULForm;
@@ -117,6 +118,17 @@ function megaMekCustomForm(unit: Vehicle, job: IUnitJob, blk: NonNullable<Return
     };
 }
 
+/**
+ * A design checked and found illegal as printed (BLK_ILLEGAL_AS_PRINTED) is kept and flagged with what it breaks
+ * (NGCFells 2026-11-20): a Support Vehicle by the TechManual's Support Vehicle rules.
+ */
+export function getBundledIllegal(unit: unknown): { illegal?: string[] } {
+    const vehicle = unit as Partial<Vehicle>;
+    if (!vehicle.getName || !BLK_ILLEGAL_AS_PRINTED.has(`${vehicle.getName()} ${vehicle.getModel?.() ?? ""}`.trim())) return {};
+    const issues = vehicle.isSupportVehicle?.() ? vehicle.getSupportVehicleIssues!() : [];
+    return issues.length ? { illegal: issues } : {};
+}
+
 export function prepareUnitFile(job: IUnitJob): IPreparedUnit {
     const text = fs.readFileSync(job.file, "utf8");
     const blk = parseBlkFile(text);
@@ -154,6 +166,7 @@ export function prepareUnitFile(job: IUnitJob): IPreparedUnit {
             header: {
                 name: unit.getName(), model: "getModel" in unit ? unit.getModel() : "", cost: getCost(unit),
                 rulesLevel: getBlkRulesLevel(blkType), year: +blkValue(blk, "year") || 0, ...getBundledStanding(job.name, unit),
+                ...getBundledIllegal(unit),
             },
             design,
             ...(MEGAMEK_CUSTOM_TYPES.includes(type) ? { customForm: megaMekCustomForm(unit as Vehicle, job, blk) } : {}),
@@ -224,11 +237,11 @@ export function buildBundledUnits(megamekDir: string, mulDir: string, prepare: (
         if (!(unit.bv! > 0)) { leave("has no BV of its own, and the MUL gives none"); continue; }
         if (!unit.survives) { leave("does not survive the compact format"); continue; }
         job.taken.add(keys[0]);
-        const { name, model, cost, rulesLevel, year, standing } = unit.header!;
+        const { name, model, cost, rulesLevel, year, standing, illegal } = unit.header!;
         job.kept.push({
             header: {
                 name, model, tons: unit.tons ?? +match.Tonnage, bv: unit.bv!, cost, rulesLevel, year, tech: match.Technology?.Name ?? unit.tech!,
-                mulId: match.Id, source: "megamek", ...(standing ? { standing } : {}),
+                mulId: match.Id, source: "megamek", ...(standing ? { standing } : {}), ...(illegal ? { illegal } : {}),
             },
             design: unit.design!,
         });

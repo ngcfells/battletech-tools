@@ -4,6 +4,7 @@ import path from "node:path";
 import { describe, expect, it, vi } from "vitest";
 import { BUNDLED_CHUNK_SIZE } from "../utils/bundled-designs";
 import { buildBundledUnits, getBlkRulesLevel, writeMegaMekCustomRecords } from "./bundled-units-build";
+import { BLK_ILLEGAL_AS_PRINTED } from "./blk-design-corrections";
 import { BundledUnitType, loadBundledIndex, loadBundledUnitDesign } from "./bundled-units";
 
 // The bundled battle armor, ProtoMechs, Small Craft and DropShips, Support Vehicles (#241 round 2) and Combat
@@ -136,4 +137,17 @@ describe("bundled units other than 'Mechs", () => {
             expect(wrong).toEqual([]);
         }, 300_000);
     }
+
+    // NGCFells 2026-11-20: designs that break the construction rules as printed stay, flagged illegal.
+    it("flags a bundled Support Vehicle that breaks the construction rules, with what it breaks", async () => {
+        vi.spyOn(console, "log").mockImplementation(() => {});
+        vi.spyOn(console, "warn").mockImplementation(() => {});
+        const headers = await loadBundledIndex("support-vehicles");
+        const brunel = (model: string) => headers.find((header) => header.name === "Brunel Dump Truck" && header.model === model)?.illegal;
+        expect(brunel("(AC)")).toEqual(["34 item slots used of 20 (TM p.120)"]);
+        expect(brunel("(LRM)")).toEqual(["24 item slots used of 20 (TM p.120)"]);
+        // Only designs checked against their book are flagged, so a fault in our own checks brands nothing.
+        expect(headers.filter((header) => header.illegal).map((header) => `${header.name} ${header.model}`.trim()).sort()).toEqual([...BLK_ILLEGAL_AS_PRINTED].sort());
+        vi.restoreAllMocks();
+    }, 300_000);
 });

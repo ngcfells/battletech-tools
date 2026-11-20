@@ -15,6 +15,20 @@ export interface IBlkDesignCorrection {
 const BRUNEL_SOURCE = "Historical: Operation Klondike, the armed Brunel Dump Trucks (no record sheet printed)";
 const BRUNEL_ARMOR = { armor_type: ["0"], barrating: ["10"], armor_tech_rating: ["3"] };
 
+/**
+ * Designs checked and found illegal as printed, by "Name Model" as above: kept, and flagged in the lists with what
+ * their construction checks report (NGCFells 2026-11-20: "Leave them, but add an illegal flag"). Only a design
+ * checked against its book goes here, so a fault in our own checks never brands a legal design.
+ */
+export const BLK_ILLEGAL_AS_PRINTED: ReadonlySet<string> = new Set([
+    // Both armed Brunels mount their weapons in a 150-ton Large Support Vehicle's 20 item slots (5 + tonnage / 10,
+    // TM p.120): three AC/20s take 10 slots each and four LRM 20s 5 each (Support Vehicle column, TM p.136), so 34
+    // and 24 slots. Built as Superheavy Combat Vehicles they would fit (one slot a weapon, 35 slots), but the
+    // Operation Klondike text describes Support Vehicles.
+    "Brunel Dump Truck (AC)",
+    "Brunel Dump Truck (LRM)",
+]);
+
 export const BLK_DESIGN_CORRECTIONS: Record<string, IBlkDesignCorrection> = {
     "Brunel Dump Truck (AC)": {
         blocks: { ...BRUNEL_ARMOR, "body equipment": ["IS Ammo MG - Full", "IS Ammo AC/20", "IS Ammo AC/20", "IS Ammo AC/20", "ISOffRoadChassis", "ArmoredChassis"] },
