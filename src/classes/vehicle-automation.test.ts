@@ -109,8 +109,10 @@ describe("VTOL chin turret (TO p. 348)", () => {
     });
 });
 
-describe("Sponson turrets (TO pp. 348, 411)", () => {
-    it("weigh 10% of the weapons in both sponsons, 5% a side rounded up to the half ton, Advanced (TO:AUE)", () => {
+describe("Sponson turrets (TO pp. 348, 411; TO:AUE p.158)", () => {
+    // TO:AUE p.158 (corrected 7th printing): 10% of all sponson-mounted weapons together, rounded up to the half ton
+    // once, and the two sponsons need not carry the same tonnage (TO 2008 p.411 had 5% a side and equal tonnage).
+    it("weigh 10% of the weapons in both sponsons together, rounded up to the half ton, Advanced", () => {
         const tank = build("tracked", 60);
         mount(tank, "large-laser", "left");
         mount(tank, "large-laser", "right");
@@ -119,9 +121,17 @@ describe("Sponson turrets (TO pp. 348, 411)", () => {
         expect(tank.getRequiredRulesLevel()).toBe(3);
         expect(tank.getSponsonIssue()).toBeNull();
         const extra = mount(tank, "medium-laser", "left");
-        expect(tank.getSponsonIssue()).toBeNull();
         tank.setEquipmentSponson(extra.uuid!, true);
-        expect(tank.getSponsonIssue()).toContain("same tonnage");
+        expect(tank.getSponsonIssue()).toBeNull();
+        expect(tank.getSponsonWeight()).toBe(1.5);
+    });
+
+    it("round the pair's weight once: two Medium Lasers make half a ton, not a half ton a side", () => {
+        const tank = build("tracked", 30);
+        mount(tank, "medium-laser", "left");
+        mount(tank, "medium-laser", "right");
+        tank.setSponsonTurrets(true);
+        expect(tank.getSponsonWeight()).toBe(0.5);
     });
 
     it("fire over 180 degrees, cannot jam, and cannot be combined with jump jets", () => {
@@ -160,7 +170,7 @@ describe("Sponsons as placement locations (beta feedback 2026-10-21; TO p. 348)"
         expect(tank.getWeaponFiringArc(side)).toEqual({ arc: "right", turretRotation: null });
     });
 
-    it("weigh 5% of each sponson's weapons, rounded up to the half ton, counting only the weapons in the sponsons", () => {
+    it("weigh 10% of the sponsons' weapons, rounded up to the half ton, counting only the weapons in the sponsons", () => {
         const tank = build("tracked", 60);
         tank.setSponsonTurrets(true);
         const left = mount(tank, "large-laser", "left");

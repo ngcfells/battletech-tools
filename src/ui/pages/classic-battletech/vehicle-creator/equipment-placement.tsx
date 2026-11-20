@@ -97,7 +97,7 @@ export default class VehicleCreatorEquipmentPlacement extends React.Component<IE
                             {vehicle.hasSponsonTurrets() ? (
                                 <p className={vehicle.getSponsonIssue() ? "color-red" : ""}>
                                     <strong>Sponson Turrets</strong>: place weapons in the Left and Right Sponson locations
-                                    ({vehicle.getSponsonWeight()} t, 5% of each sponson's weapons rounded up to the half ton); a sponson weapon is a side weapon for critical hits. {vehicle.getSponsonIssue() ?? "Both sponsons carry the same tonnage."} (TO pp. 348, 411)
+                                    ({vehicle.getSponsonWeight()} t, 10% of the weapons in both sponsons rounded up to the half ton; the two need not carry the same tonnage); a sponson weapon is a side weapon for critical hits. (TO p. 348; TO:AUE p. 158)
                                 </p>
                             ) : null}
                             <table className="table">

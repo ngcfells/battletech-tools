@@ -1252,19 +1252,21 @@ export default class Vehicle implements IGameSettingsUnit {
             .reduce((sum, item) => sum + item.weight, 0);
     }
 
-    /** Sponson weight: 10% of the weapons in both sponsons, 5% a side, each rounded up to the half ton (TO p. 411). */
+    /**
+     * Sponson weight: 10% of all sponson-mounted weapons and equipment together, rounded up to the half ton once
+     * (TO:AUE p.158, corrected 7th printing; TO 2008 p.411 had 5% a side, each rounded).
+     */
     public getSponsonWeight(): number {
         if (!this._sponsonTurrets) return 0;
-        const side = (tons: number) => this._roundWeight(tons * 0.05);
-        return side(this._sideWeaponTons("left")) + side(this._sideWeaponTons("right"));
+        return this._roundWeight((this._sideWeaponTons("left") + this._sideWeaponTons("right")) * 0.1);
     }
 
-    /** Both sponsons must carry the same tonnage of weapons, not necessarily the same weapons (TO p. 411). */
+    /**
+     * What is wrong with the sponsons; nothing now: the two "do not have to assign the same tonnage" (TO:AUE p.158,
+     * corrected 7th printing, dropping TO 2008 p.411's equal-tonnage rule).
+     */
     public getSponsonIssue(): string | null {
-        if (!this._sponsonTurrets) return null;
-        const left = this._sideWeaponTons("left");
-        const right = this._sideWeaponTons("right");
-        return left === right ? null : `Sponsons must carry the same tonnage of weapons (left ${left} t, right ${right} t)`;
+        return null;
     }
 
     /**
