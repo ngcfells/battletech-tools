@@ -920,7 +920,9 @@ describe("Batch 54 industrial equipment for vehicles and the combat vehicle slot
         for (const [tag, name, weight, cbills, [battlemech, combatVehicle, supportVehicle, aerospaceFighter, smallCraft, dropShip], techRating, prototype, introduced, page] of items) {
             const item = universalEquipment.find(entry => entry.tag === tag);
             expect(item, tag).toMatchObject({
-                name, weight, cbills, techRating, introduced, extinct: null, reintroduced: null, book: "TM", page, battleValue: 0,
+                name, weight, cbills, techRating, introduced, extinct: null, reintroduced: null, book: "TM", page,
+                // The Bulldozer is the one with a BV: 10, defensive (TM p.317 table).
+                battleValue: tag === "bulldozer" ? 10 : 0,
                 space: { battlemech, protomech: -1, combatVehicle, supportVehicle, aerospaceFighter, smallCraft, dropShip },
             });
             expect(item?.prototype ?? null, tag).toBe(prototype);

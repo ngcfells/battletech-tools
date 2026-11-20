@@ -53,6 +53,53 @@ describe("MegaMek Support Vehicle import", () => {
         expect(vehicle!.tro.getText("overview")).toBe("A farm hauler.");
     });
 
+    // "Machine Gun (Light)" is the infantry support weapon's name (BV 1.5); the vehicle gun is "Light Machine Gun".
+    // The two-ton Ibex RV (Militarized MG) carries a pair on pintles (Handbook: House Marik p.154).
+    it("reads an infantry weapon's name as that light weapon, not the vehicle weapon the matcher also finds", () => {
+        const car = [
+            ...block("UnitType", "SupportTank"), ...block("Name", "Test Car"), ...block("Model", "MG"), ...block("year", "3050"),
+            ...block("type", "IS Level 2"), ...block("motion_type", "Wheeled"), ...block("cruiseMP", "5"), ...block("engine_type", "1"),
+            ...block("structural_tech_rating", "3"), ...block("engine_tech_rating", "3"), ...block("armor_tech_rating", "3"), ...block("barrating", "7"),
+            ...block("armor_type", "48"), ...block("armor", "2", "2", "2", "2"), ...block("Body Equipment", "ISOffRoadChassis"),
+            ...block("Right Equipment", "Machine Gun (Light)(PT):SIZE:1.0", "PintleTurret"), ...block("Left Equipment", "PintleTurret", "Machine Gun (Light)(PT):SIZE:1.0"),
+            ...block("tonnage", "2.0"),
+        ].join("\n");
+        const { vehicle, issues } = importSupportVehicleBlk(car);
+        const guns = vehicle!.getEquipmentList().filter((item) => !item.isAmmo);
+        expect(guns.map((item) => [item.name, item.location, item.pintle, item.battleValue])).toEqual([
+            [expect.stringContaining("Machine Gun (Light)"), "right", true, 1.5], [expect.stringContaining("Machine Gun (Light)"), "left", true, 1.5],
+        ]);
+        expect(issues).toEqual([]);
+    });
+
+    // TM p.317 table: Bulldozer 10, on the Defensive Battle Rating (Kallon UL-14 'Dual Bulldozer', TRO Vehicle Annex).
+    it("counts a bulldozer's 10 BV as defensive equipment", () => {
+        const dozer = tank.replace("Wheeled", "Tracked").replace("<Front Equipment>\nMachine Gun\nNo Such Gun\n</Front Equipment>", "<Front Equipment>\nBulldozer\n</Front Equipment>")
+            .replace("IS Ammo MG - Half", "");
+        const { vehicle } = importSupportVehicleBlk(dozer);
+        expect(vehicle!.getEquipmentList().map((item) => item.tag)).toEqual(["bulldozer"]);
+        expect(vehicle!.getBattleValueLog()).toContain("Defensive Equipment: Bulldozer = 10");
+    });
+
+    // TM p.124: a VTOL Support Vehicle of any size has Front, Left, Right, Rear and Rotor; only Large ground ones split
+    // their sides. The Large Cascatelle prints 6 structure in each of the five and armor 21/15/15/11/2.
+    it("gives a Large VTOL Support Vehicle the five VTOL locations", () => {
+        const vtol = [
+            ...block("UnitType", "SupportVTOL"), ...block("Name", "Test Lifter"), ...block("Model", "L"), ...block("year", "3063"),
+            ...block("type", "IS Level 2"), ...block("motion_type", "VTOL"), ...block("cruiseMP", "6"), ...block("engine_type", "1"),
+            ...block("structural_tech_rating", "3"), ...block("engine_tech_rating", "3"), ...block("armor_tech_rating", "3"), ...block("barrating", "6"),
+            ...block("armor_type", "47"), ...block("armor", "21", "15", "15", "11", "2"), ...block("tonnage", "60.0"),
+        ].join("\n");
+        const { vehicle, issues } = importSupportVehicleBlk(vtol);
+        expect(vehicle!.isSuperheavy()).toBe(true);
+        expect(vehicle!.hasSplitSides()).toBe(false);
+        expect(vehicle!.getLocations().map((location) => location.tag)).toEqual(["front", "left", "right", "rear", "rotor"]);
+        expect(vehicle!.getTotalArmorPoints()).toBe(64);
+        expect(vehicle!.getTotalStructurePoints()).toBe(30);
+        expect(vehicle!.resolveHitArea("side", "frontLeft")).toBe("left");
+        expect(issues).toEqual([]);
+    });
+
     it("refuses files that are not ground or VTOL Support Vehicles", () => {
         expect(importSupportVehicleBlk(tank.replace("SupportTank", "Tank")).vehicle).toBeNull();
         expect(importSupportVehicleBlk("not a unit file").vehicle).toBeNull();

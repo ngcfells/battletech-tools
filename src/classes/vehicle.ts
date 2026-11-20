@@ -773,6 +773,15 @@ export default class Vehicle implements IGameSettingsUnit {
         return this._tonnage > this._motiveType.standardMaxTonnage;
     }
 
+    /**
+     * Six facings, the sides split front and rear: Super-Heavy Combat Vehicles, VTOLs included (TO p.378), and Large
+     * Support Vehicles, except VTOLs, which keep Front, Left, Right, Rear and Rotor at every size (Support Vehicle
+     * Internal Locations Table, TM p.124; the Large Cascatelle, TRO Vehicle Annex).
+     */
+    public hasSplitSides(): boolean {
+        return this.isSuperheavy() && !(this._support && this._motiveType.hasRotor);
+    }
+
     // --- Support Vehicles (TM pp.116-139) ---
 
     public isSupportVehicle(): boolean {
@@ -2131,8 +2140,9 @@ export default class Vehicle implements IGameSettingsUnit {
     /** The vehicle's locations in record-sheet order: front, sides, rear, rotor (VTOL), turret. */
     public getLocations(): { tag: VehicleLocation; name: string }[] {
         // Super-Heavy Combat Vehicles, VTOLs included, have six facings (Front, Front-Left, Front-Right,
-        // Rear-Left, Rear-Right, Rear) plus any rotor and turrets (Tactical Operations p. 378).
-        const locations: VehicleLocation[] = this.isSuperheavy()
+        // Rear-Left, Rear-Right, Rear) plus any rotor and turrets (Tactical Operations p. 378); so do Large Support
+        // Vehicles other than VTOLs (TM p.124).
+        const locations: VehicleLocation[] = this.hasSplitSides()
             ? ["front", "frontLeft", "frontRight", "rearLeft", "rearRight", "rear"]
             : ["front", "left", "right", "rear"];
         if (this._motiveType.hasRotor) locations.push("rotor");
@@ -4357,9 +4367,10 @@ export default class Vehicle implements IGameSettingsUnit {
      */
     public resolveHitArea(area: VehicleHitArea, direction: VehicleAttackDirection): VehicleLocation {
         let attackedSide: VehicleLocation = direction;
-        if (this.isSuperheavy() && (direction === "left" || direction === "right")) {
+        const split = this.hasSplitSides();
+        if (split && (direction === "left" || direction === "right")) {
             attackedSide = direction === "left" ? "frontLeft" : "frontRight";
-        } else if (!this.isSuperheavy() && direction !== "front" && direction !== "rear") {
+        } else if (!split && direction !== "front" && direction !== "rear") {
             attackedSide = direction.endsWith("Left") || direction === "left" ? "left" : "right";
         }
         let location: VehicleLocation;
@@ -4368,7 +4379,7 @@ export default class Vehicle implements IGameSettingsUnit {
         else location = area;
         // Superheavy: a Right/Left Side result strikes the half nearest the attack (the VTOL table has no split
         // sides, so Super-Heavy VTOLs use the same reading).
-        if (this.isSuperheavy() && (location === "left" || location === "right")) {
+        if (split && (location === "left" || location === "right")) {
             const half = isRearwardAttack(direction) ? "rear" : "front";
             location = `${half}${location === "left" ? "Left" : "Right"}` as VehicleLocation;
         }

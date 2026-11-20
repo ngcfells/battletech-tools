@@ -105,7 +105,7 @@
 - `vehicles/3150/Bardiche Heavy Strike Tank C.blk`: the import could not carry all of it over: "ISMineSweeper" has no match in this catalog and was left off.
 - `vehicles/3150/Galleon Light Tank GAL-105.blk`: the import could not carry all of it over: "ISERMediumLaser(ST)" could not go in a sponson turret.; "ISERMediumLaser(ST)" could not go in a sponson turret.
 - `vehicles/3150/Shun Transport VTOL (Support).blk`: the import could not carry all of it over: The file's armor does not fit this vehicle's locations.
-- `vehicles/Golden Century/Rhino Fire Support Tank EC.blk`: BV differs from the MUL: BV 1674, MUL 1679
+- `vehicles/Golden Century/Rhino Fire Support Tank EC.blk`: BV differs from the MUL: BV 1685, MUL 1679
 - `vehicles/Golden Century/Zephyr Hovertank EC.blk`: the import could not carry all of it over: Ammunition "CLImpAmmoSRM6" has no weapon or no match in this catalog and was left off.; Ammunition "CLImpAmmoSRM6" has no weapon or no match in this catalog and was left off.
 - `vehicles/ProtoTypes/Bandit Mk II.blk`: BV differs from the MUL: BV 738, MUL 770
 - `vehicles/ProtoTypes/Garuda Heavy VTOL.blk`: the import could not carry all of it over: The file's armor does not fit this vehicle's locations.

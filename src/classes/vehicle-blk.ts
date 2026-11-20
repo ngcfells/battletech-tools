@@ -107,12 +107,15 @@ const readVehicleEquipment = (file: IBlkFile, vehicle: Vehicle, layout: string[]
             }
             const match = findImportedEquipment(name, faction, mixed);
             // Light weapons on small Support Vehicles are infantry weapons, named as the infantry weapon list names them.
-            const lightWeapon = match ? undefined : infantryWeapons.find((weapon) => weapon.name.toLowerCase() === name.toLowerCase());
+            // That name wins over a vehicle weapon the matcher also reads into it: "Machine Gun (Light)" is the
+            // infantry support weapon (BV 1.5), the vehicle gun being "Light Machine Gun" (Ibex RV Militarized MG).
+            const lightWeapon = infantryWeapons.find((weapon) => weapon.name.toLowerCase() === name.toLowerCase());
             if (lightWeapon && location) {
-                if (!vehicle.addLightWeapon(lightWeapon.tag, location, 0, /\((ST|PT)\)/i.test(line))) {
+                if (vehicle.addLightWeapon(lightWeapon.tag, location, 0, /\((ST|PT)\)/i.test(line))) continue;
+                if (!match) {
                     issues.push(`"${line}" could not be mounted as a light weapon and was left off.`);
+                    continue;
                 }
-                continue;
             }
             if (!match) {
                 issues.push(`"${line}" has no match in this catalog and was left off.`);
