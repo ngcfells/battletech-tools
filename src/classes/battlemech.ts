@@ -333,6 +333,7 @@ export interface IBattleMechExport {
 
     selectedMech?: boolean;
     currentMovementMode?: string;
+    airMechElevation?: number;
     targetingRangeSetting?: "long" | "short";
     enhancedImagingOff?: boolean;
     currentToHitMovementModifier?: number;
@@ -545,6 +546,10 @@ export class BattleMech {
 
     public lastUpdated = new Date();
     public currentMovementMode: string = "n";
+    private _airMechElevation = 0;
+    /** Elevation above the underlying terrain while airborne in AirMech mode, at most 25 (IO:AE p.102). */
+    public get airMechElevation(): number { return this._airMechElevation; }
+    public set airMechElevation(value: number) { this._airMechElevation = Math.max(0, Math.min(25, Math.floor(+value || 0))); }
     /** A variable-range targeting system's End Phase setting (Maximum Tech p.59). */
     public targetingRangeSetting: "normal" | "long" | "short" = "normal";
     /** The Enhanced Imaging interface switched off in the End Phase (Maximum Tech p.61; IO:AE p.69). */
@@ -950,7 +955,8 @@ export class BattleMech {
     }
 
     public getMovementToHitModifier(): number {
-        if( this.currentMovementMode === "j" ) {
+        // A jump, or an AirMech spending AirMech MP: airborne, +1 (TW; IO:AE p.106).
+        if( this.currentMovementMode === "j" || this.isAirMechAirborne() ) {
             return this.currentToHitMovementModifier + 1;
         }
         return this.currentToHitMovementModifier;
@@ -6651,6 +6657,8 @@ export class BattleMech {
     }
 
     public getActiveMoveHeat(): number {
+        // AirMech Cruise and Flank: MP expended / 3, rounded normally (IO:AE p.102); AirMech walking and running heat as a 'Mech's.
+        if( this.isAirMechAirborne() ) return Math.round(Math.max(0, this.currentTargetJumpingMP) / 3);
         // A jump pack generates no heat (Maximum Tech p.81; TO:AUE p.105).
         if( this._isJumpPackJump() ) return 0;
         // Strategic Movement's heat takes the place of the table's (The Best of Future Wars pp.18-19).
@@ -9661,12 +9669,39 @@ export class BattleMech {
             if (this.isQuadVee()) {
                 return this._transformationMode === "mech";
             }
-            // Bipeds, Quads, Tripods and LAMs (in every LAM mode) may use their jump jets.
-            return true;
+            // An AirMech moves by Walking, Running, AirMech Cruise or AirMech Flank, no jump (IO:AE p.102). Bipeds, Quads,
+            // Tripods and LAMs in their other modes may use their jump jets.
+            return !(this.isLAM() && this._transformationMode === "airmech");
         }
 
         public canUsePhysicalAttacksInCurrentMode(): boolean {
-            return !this.isLAM() || this._transformationMode === "mech";
+            // An AirMech may make physical attacks, on the ground or airborne (IO:AE p.106); a Fighter may not.
+            return !this.isLAM() || this._transformationMode === "mech" || this._transformationMode === "airmech";
+        }
+
+        /** The AirMech's physical attack rules this turn (IO:AE p.106), or "" when the standard rules apply. */
+        public getPhysicalAttackNote(): string {
+            if (!this.isAirMechAirborne()) return "";
+            return "Airborne AirMech (IO:AE p.106): kick, punch and melee weapon attacks use Aerospace Piloting for the base "
+                + "to-hit and count the elevation; they do half damage (rounded up), and any that fails needs a Control Roll "
+                + "against a crash. No charge: an AirMech Ram instead (needs 11+ on 2D6 first, base to-hit 5 + Aerospace "
+                + "Piloting - target Piloting; 1 point per 5 tons x hexes moved).";
+        }
+
+        /** In AirMech mode and spending AirMech Cruise or Flank MP this turn: airborne (IO:AE pp.102, 106). */
+        public isAirMechAirborne(): boolean {
+            return this.hasAirMechMode() && this._transformationMode === "airmech"
+                && (this.currentMovementMode === "c" || this.currentMovementMode === "f");
+        }
+
+        /** AirMech Walking MP: 'Mech Walking MP x 0.33, rounded up (IO:AE p.102). */
+        public getAirMechWalkMP(): number {
+            return this.hasAirMechMode() ? Math.ceil(Math.round(this.getWalkSpeed() * 33) / 100) : 0;
+        }
+
+        /** AirMech Running MP: AirMech Walking MP x 1.5, rounded up (IO:AE p.102). */
+        public getAirMechRunMP(): number {
+            return Math.ceil(this.getAirMechWalkMP() * 1.5);
         }
 
         public hasFullTorsoTwist(): boolean {
@@ -9691,8 +9726,17 @@ export class BattleMech {
             return this.isTripod();
         }
 
+        /**
+         * The attacker movement modifier of this turn's movement: walked +1, ran +2, jumped +3 (TW); in AirMech mode the
+         * AirMech Attacker Modifiers Table, Walking +1, Running +2, AirMech Cruise +3, AirMech Flank +4 (IO:AE p.106).
+         */
         public getAttackerMovementModifier(): number {
-            return this.isLAM() && this._transformationMode === "airmech" ? 3 : 0;
+            const byMode: Record<string, number> = { w: 1, r: 2, j: 3 };
+            if (this.isLAM() && this._transformationMode === "airmech") {
+                byMode.c = 3;
+                byMode.f = 4;
+            }
+            return byMode[this.currentMovementMode] ?? 0;
         }
 
         public canUseHullDownRules(): boolean {
@@ -9943,6 +9987,7 @@ export class BattleMech {
             exportObject.criticalDamage = this.criticalDamage;
             exportObject.currentHeat = _currentHeat;
             exportObject.currentMovementMode =_currentMovementMode;
+            if( this._airMechElevation ) exportObject.airMechElevation = this._airMechElevation;
             if( this.targetingRangeSetting !== "normal" ) exportObject.targetingRangeSetting = this.targetingRangeSetting;
             if( this.enhancedImagingOff ) exportObject.enhancedImagingOff = true;
             exportObject.currentTargetJumpingMP =_currentTargetJumpingMP;
@@ -10235,6 +10280,7 @@ export class BattleMech {
         if( importObject && importObject.currentMovementMode ) {
             this.currentMovementMode = importObject.currentMovementMode;
         }
+        this.airMechElevation = importObject?.airMechElevation ?? 0;
         this.targetingRangeSetting = importObject?.targetingRangeSetting ?? "normal";
         this.enhancedImagingOff = importObject?.enhancedImagingOff === true;
         this.jumpPackFuelUsed = importObject?.jumpPackFuelUsed ?? 0;
@@ -14003,6 +14049,9 @@ export class BattleMech {
                 return "Walked " + getHexDistanceFromModifier(this.currentToHitMovementModifier) + "⬣";
             } else if( this.currentMovementMode === "r" ) {
                 return "Ran " + getHexDistanceFromModifier(this.currentToHitMovementModifier) + "⬣";
+            } else if( this.currentMovementMode === "c" || this.currentMovementMode === "f" ) {
+                return (this.currentMovementMode === "c" ? "AirMech Cruise " : "AirMech Flank ")
+                    + getHexDistanceFromModifier(this.currentToHitMovementModifier) + "⬣, Elevation " + this._airMechElevation;
             } else {
                 return "Jumped " + getHexDistanceFromModifier(this.currentToHitMovementModifier) + "⬣";
             }
@@ -14017,10 +14066,8 @@ export class BattleMech {
                 return "Click here to set move for the turn";
             } else if( this.currentMovementMode === "w" ) {
                 return "+1 to attack, -" + this.getMovementToHitModifier() + " to be hit";
-            } else if( this.currentMovementMode === "r" ) {
-                return "+2 to attack, -" + this.getMovementToHitModifier() + " to be hit";
             } else {
-                return "+3 to attack, -" + this.getMovementToHitModifier() + " to be hit";
+                return "+" + this.getAttackerMovementModifier() + " to attack, -" + this.getMovementToHitModifier() + " to be hit";
             }
         } else {
             return "-" + this.getMovementToHitModifier() + " to be hit";

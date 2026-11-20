@@ -89,6 +89,7 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
             setMovementNumber: 0,
             setMovementCanJump: false,
             setMovementJumpingMP: 0,
+            setMovementElevation: 0,
 
             resolveFireDialog: false,
             spaceResolutionDialog: false,
@@ -1254,6 +1255,7 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
         setMovementNumber: currentBM ? currentBM.currentToHitMovementModifier : 0,
         setMovementCanJump: currentBM && Math.max(currentBM.getJumpSpeed(), currentBM.getJumpPackSpeed()) > 0 && currentBM.canUseJumpJetsInCurrentMode() ? true : false,
         setMovementJumpingMP: currentBM ? currentBM.currentTargetJumpingMP : 0,
+        setMovementElevation: currentBM ? currentBM.airMechElevation : 0,
         setTargetDialog: null,
         takeDamageDialog: null,
       })
@@ -1274,6 +1276,23 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
         });
       }
     }
+    /** Changes a LAM's or QuadVee's mode in the movement dialog; a movement the new mode lacks is cleared. */
+    setDialogTransformationMode = (
+      mode: string
+    ) => {
+      const currentBM = this.state.setMovementDialog;
+      if( !currentBM ) return;
+      currentBM.setTransformationMode(mode);
+      const airMech = currentBM.getTransformationMode() === "airmech";
+      const canJump = Math.max(currentBM.getJumpSpeed(), currentBM.getJumpPackSpeed()) > 0 && currentBM.canUseJumpJetsInCurrentMode();
+      const movementMode = this.state.setMovementMode;
+      const keep = ( movementMode !== "j" || canJump ) && ( airMech || ( movementMode !== "c" && movementMode !== "f" ) );
+      this.setState({
+        setMovementCanJump: canJump,
+        setMovementMode: keep ? movementMode : "",
+      });
+    }
+
     closeSetMovement  = (
       e: React.FormEvent<HTMLButtonElement>
     ) => {
@@ -1300,8 +1319,13 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
           currentBM.currentToHitMovementModifier = this.state.setMovementNumber;
           if( currentBM.currentMovementMode === "j")
             currentBM.currentTargetJumpingMP = currentBM.getJumpPackSpeed() > 0 ? Math.min(this.state.setMovementJumpingMP, currentBM.getJumpPackSpeed()) : this.state.setMovementJumpingMP;
+          else if( currentBM.currentMovementMode === "c" || currentBM.currentMovementMode === "f" )
+            // AirMech MP expended, for the heat (IO:AE p.102).
+            currentBM.currentTargetJumpingMP = Math.min(this.state.setMovementJumpingMP, currentBM.currentMovementMode === "c" ? currentBM.getAirMechCruiseMP() : currentBM.getAirMechFlankMP());
           else
             currentBM.currentTargetJumpingMP = 0
+          // An AirMech spending AirMech MP is airborne at 1 elevation or more; any other movement ends on the ground.
+          currentBM.airMechElevation = currentBM.isAirMechAirborne() ? Math.max(1, this.state.setMovementElevation) : 0;
           this.props.appGlobals.saveCurrentCBTForce( this.props.appGlobals.currentCBTForce );
         } else {
           console.error("setMovement Can't find UUID ", this.state.setMovementDialog)
@@ -2021,20 +2045,20 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
           <div className="small-text">Transformation Mode</div>
           {this.state.setMovementDialog.isLAM() ? (
             <>
-              <button className={this.state.setMovementDialog.getTransformationMode() === "mech" ? "btn btn-primary" : "btn"} onClick={() => this.state.setMovementDialog?.setTransformationMode("mech")}>Mech</button>
+              <button className={this.state.setMovementDialog.getTransformationMode() === "mech" ? "btn btn-primary" : "btn"} onClick={() => this.setDialogTransformationMode("mech")}>Mech</button>
               {this.state.setMovementDialog.hasAirMechMode() ? (
-                <button className={this.state.setMovementDialog.getTransformationMode() === "airmech" ? "btn btn-primary" : "btn"} onClick={() => this.state.setMovementDialog?.setTransformationMode("airmech")}>AirMech</button>
+                <button className={this.state.setMovementDialog.getTransformationMode() === "airmech" ? "btn btn-primary" : "btn"} onClick={() => this.setDialogTransformationMode("airmech")}>AirMech</button>
               ) : null}
               {this.state.setMovementDialog.isVTOLAM() ? (
-                <button className={this.state.setMovementDialog.getTransformationMode() === "vehicle" ? "btn btn-primary" : "btn"} onClick={() => this.state.setMovementDialog?.setTransformationMode("vehicle")}>VTOL</button>
+                <button className={this.state.setMovementDialog.getTransformationMode() === "vehicle" ? "btn btn-primary" : "btn"} onClick={() => this.setDialogTransformationMode("vehicle")}>VTOL</button>
               ) : (
-                <button className={this.state.setMovementDialog.getTransformationMode() === "aerospace" ? "btn btn-primary" : "btn"} onClick={() => this.state.setMovementDialog?.setTransformationMode("aerospace")}>Aerospace</button>
+                <button className={this.state.setMovementDialog.getTransformationMode() === "aerospace" ? "btn btn-primary" : "btn"} onClick={() => this.setDialogTransformationMode("aerospace")}>Aerospace</button>
               )}
             </>
           ) : (
             <>
-              <button className={this.state.setMovementDialog.getTransformationMode() === "mech" ? "btn btn-primary" : "btn"} onClick={() => this.state.setMovementDialog?.setTransformationMode("mech")}>Mech</button>
-              <button className={this.state.setMovementDialog.getTransformationMode() === "vehicle" ? "btn btn-primary" : "btn"} onClick={() => this.state.setMovementDialog?.setTransformationMode("vehicle")}>Vehicle</button>
+              <button className={this.state.setMovementDialog.getTransformationMode() === "mech" ? "btn btn-primary" : "btn"} onClick={() => this.setDialogTransformationMode("mech")}>Mech</button>
+              <button className={this.state.setMovementDialog.getTransformationMode() === "vehicle" ? "btn btn-primary" : "btn"} onClick={() => this.setDialogTransformationMode("vehicle")}>Vehicle</button>
             </>
           )}
           {this.state.setMovementDialog.isVTOLAM() ? <div className="small-text">VTOL Cruise / Flank MP: {this.state.setMovementDialog.getVTOLAMCruiseMP()} / {this.state.setMovementDialog.getVTOLAMFlankMP()}. {this.state.setMovementDialog.getLAMTypeNotes()}</div> : null}
@@ -2078,7 +2102,7 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
         numberPips={1}
       />
       </svg><br />
-      Walk: {this.state.setMovementDialog.getWalkSpeed()}
+      Walk: {this.state.setMovementDialog.getTransformationMode() === "airmech" ? this.state.setMovementDialog.getAirMechWalkMP() : this.state.setMovementDialog.getWalkSpeed()}
       </button>
       <br />
     <button
@@ -2100,7 +2124,7 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
         numberPips={2}
       />
       </svg><br />
-      Run:  {this.state.setMovementDialog.getRunSpeed()}{getBoostedMoveNote(this.state.setMovementDialog, "r")}
+      Run:  {this.state.setMovementDialog.getTransformationMode() === "airmech" ? this.state.setMovementDialog.getAirMechRunMP() : this.state.setMovementDialog.getRunSpeed()}{getBoostedMoveNote(this.state.setMovementDialog, "r")}
       </button>
       <br />
     {this.state.setMovementCanJump ? (
@@ -2125,6 +2149,25 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
       />
       </svg><br />
       Jump:  {this.state.setMovementDialog.getJumpingText()}{getBoostedMoveNote(this.state.setMovementDialog, "j")}
+      </button>
+      </>
+    ) : null}
+    {this.state.setMovementDialog.hasAirMechMode() && this.state.setMovementDialog.getTransformationMode() === "airmech" ? (
+      <>
+      <button
+        className={this.state.setMovementMode === "c" ? "btn btn-primary" : "btn"}
+        onClick={(e) => this.setMovementMode(e, "c")}
+        data-testid="airmech-cruise"
+      >
+        AirMech Cruise: {this.state.setMovementDialog.getAirMechCruiseMP()}
+      </button>
+      <br />
+      <button
+        className={this.state.setMovementMode === "f" ? "btn btn-primary" : "btn"}
+        onClick={(e) => this.setMovementMode(e, "f")}
+        data-testid="airmech-flank"
+      >
+        AirMech Flank: {this.state.setMovementDialog.getAirMechFlankMP()}
       </button>
       </>
     ) : null}
@@ -2189,11 +2232,11 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
             </tr>
           </tbody>
             </>) : null}
-          {this.state.setMovementMode === "j" ? (
+          {this.state.setMovementMode === "j" || this.state.setMovementMode === "c" || this.state.setMovementMode === "f" ? (
             <tfoot>
               <tr>
                 <th colSpan={2} className="small-text">
-                  Jump bonus will be be included on in-play sheet
+                  The +1 to be hit for a jump or an airborne AirMech is on the in-play sheet
                 </th>
               </tr>
             </tfoot>
@@ -2222,6 +2265,34 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
           max={30}
           step={1}
         />
+        </div>
+  ) : null}
+  {this.state.setMovementMode === "c" || this.state.setMovementMode === "f" ? (
+        <div className="text-center" data-testid="airmech-movement">
+        <InputNumeric
+          label="AirMech MP Used (for heat: MP / 3)"
+          value={this.state.setMovementJumpingMP}
+          onChange={(e: React.FormEvent<HTMLInputElement>) => this.setState({ setMovementJumpingMP: Math.max(0, Math.floor(+e.currentTarget.value || 0)) })}
+          inline={true}
+          min={0}
+          max={this.state.setMovementMode === "c" ? this.state.setMovementDialog.getAirMechCruiseMP() : this.state.setMovementDialog.getAirMechFlankMP()}
+          step={1}
+        />
+        <InputNumeric
+          label="Elevation at the end of movement"
+          value={this.state.setMovementElevation}
+          onChange={(e: React.FormEvent<HTMLInputElement>) => this.setState({ setMovementElevation: Math.max(1, Math.min(25, Math.floor(+e.currentTarget.value || 1))) })}
+          inline={true}
+          min={1}
+          max={25}
+          step={1}
+        />
+        <div className="small-text">
+          AirMech Cruise / Flank (IO:AE pp.102-103): moves as a WiGE at 1 elevation or more. 5 MP to take off; at least
+          5 hexes a turn to stay up, or 5 MP to hover (0-4 hexes moved first). 1 MP an elevation to climb, up to 25; 2 MP
+          a hex while more than 1 elevation up; descending is free. A landing needs a Control Roll only if the gyro or hip
+          actuator is hit (2021 printing). Turn mode rules apply; no evasive action or overdrive. Airborne: +1 to be hit; heat MP / 3.
+        </div>
         </div>
   ) : null}
 </StandardModal>
@@ -3127,6 +3198,9 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
       {this.props.appGlobals.currentCBTForce.phase === 3 ? (
         <div>
           Make physical attacks as per the rule book.
+          {selectedMech && selectedMech.getPhysicalAttackNote() ? (
+            <div className="small-text" data-testid="airmech-physical-note">{selectedMech.getPhysicalAttackNote()}</div>
+          ) : null}
         </div>
       ) : null}
       {this.props.appGlobals.currentCBTForce.phase === 4 ? (
@@ -3325,6 +3399,10 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
                     }
                     if( unit.currentMovementMode === "j" ) {
                       dieBG = "red";
+                      dieFG = "white";
+                    }
+                    if( unit.currentMovementMode === "c" || unit.currentMovementMode === "f" ) {
+                      dieBG = unit.currentMovementMode === "c" ? "#38c" : "#036";
                       dieFG = "white";
                     }
 
@@ -3820,6 +3898,8 @@ interface IPlayState {
   setMovementNumber: number;
   setMovementCanJump: boolean;
   setMovementJumpingMP: number;
+  /** An AirMech's elevation after its AirMech Cruise or Flank movement (IO:AE p.102). */
+  setMovementElevation: number;
 
   resolveFireDialog: boolean;
   /** The space turn tracker's resolution dialog (design 2026-10-22). */

@@ -869,21 +869,13 @@ export function getTargetToHitFromWeapon(
 
             gator.finalToHit = gator.gunnerySkill;
 
-            if( mech.currentMovementMode === "w") {
-                gator.finalToHit += 1;
-                gator.attackerMovementModifier = 1;
-                gator.rangeExplanation = "Walked";
-            } else if( mech.currentMovementMode === "r") {
-                gator.finalToHit += 2;
-                gator.attackerMovementModifier = 2;
-                gator.rangeExplanation = "Ran";
-            } else if( mech.currentMovementMode === "j") {
-                gator.finalToHit += 3;
-                gator.attackerMovementModifier = 3;
-                gator.rangeExplanation = "Jumped";
-            } else {
-                gator.rangeExplanation = "Stationary";
-            }
+            // Walked +1, ran +2, jumped +3; an AirMech's Cruise +3 and Flank +4 (IO:AE p.106).
+            const attackerMovementModifier = mech.getAttackerMovementModifier();
+            gator.finalToHit += attackerMovementModifier;
+            gator.attackerMovementModifier = attackerMovementModifier;
+            gator.rangeExplanation = ( {
+                w: "Walked", r: "Ran", j: "Jumped", c: "AirMech Cruise", f: "AirMech Flank",
+            } as Record<string, string> )[mech.currentMovementMode] ?? "Stationary";
 
             gator.finalToHit += target.movement;
             gator.targetMovementModifier = target.movement;
@@ -1065,7 +1057,7 @@ export function getTargetToHitFromWeapon(
                     weaponUuid: weapon.uuid,
                     rangeBand,
                     vsAirborne: !!target.airborne,
-                    attackerRanOrFlanked: mech.currentMovementMode === "r",
+                    attackerRanOrFlanked: mech.currentMovementMode === "r" || mech.currentMovementMode === "f",
                 });
                 if( quirkToHit.labels.length > 0 ) {
                     gator.finalToHit += quirkToHit.modifier;

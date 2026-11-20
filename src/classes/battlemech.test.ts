@@ -890,6 +890,7 @@ describe("LAM and QuadVee chassis rules", () => {
         const lam = new BattleMech();
         lam.setType("lam");
         lam.setTransformationMode("airmech");
+        lam.currentMovementMode = "c";
         expect(lam.getAttackerMovementModifier()).toBe(3);
 
         const quadvee = new BattleMech();

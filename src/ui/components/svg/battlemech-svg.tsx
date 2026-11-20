@@ -235,6 +235,12 @@ export default class BattleMechSVG extends React.Component<IBattleMechSVGProps, 
             currentMoveBackground = "red";
         }
 
+        // AirMech Cruise and Flank (IO:AE p.102).
+        if( this.props.mechData.currentMovementMode === "c" || this.props.mechData.currentMovementMode === "f" ) {
+            currentMoveColor = "white";
+            currentMoveBackground = this.props.mechData.currentMovementMode === "c" ? "#38c" : "#036";
+        }
+
         return (
         <>
         <svg
