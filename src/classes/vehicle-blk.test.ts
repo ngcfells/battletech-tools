@@ -236,6 +236,33 @@ describe("MegaMek Combat Vehicle import", () => {
         expect(reload.getBattleValue()).toBe(vehicle!.getBattleValue());
     });
 
+    // Skulker Wheeled Scout Tank C (Recognition Guide: ilClan Vol. 28): Mixed Tech on an Inner Sphere chassis, with Clan
+    // CASE, at 20 tons. Clan CASE weighs nothing (TM p.210; "CASE (0 tons for Clan designs)", TM p.196).
+    it("reads Clan CASE on an Inner Sphere-chassis Mixed Tech vehicle as weightless, and keeps it through a save", () => {
+        const mixed = tank.replace("IS Level 2", "Mixed (IS Chassis)").replace("ISCASE", "CLCASE");
+        const { vehicle, issues } = importVehicleBlk(mixed);
+        expect(issues).toEqual([]);
+        expect(vehicle!.getTech().tag).toBe("mis");
+        expect(vehicle!.hasClanCASE()).toBe(true);
+        expect(vehicle!.hasCASE()).toBe(true);
+        expect(vehicle!.getEquipmentList().some((item) => /case/.test(item.tag))).toBe(false);
+        expect(vehicle!.getWeights().some((entry) => /CASE/.test(entry.name))).toBe(false);
+        const reload = new Vehicle(vehicle!.exportJSON());
+        expect(reload.hasClanCASE()).toBe(true);
+        expect(reload.getCurrentTonnage()).toBe(vehicle!.getCurrentTonnage());
+    });
+
+    // Ajax Assault Tank (TRO 3067 p.27): the base chassis turret is 3.5 tons, in every configuration (TM p.108).
+    it("reads an OmniVehicle's base chassis turret weight", () => {
+        const omni = tank.replace("<tonnage>", "<omni>\n1\n</omni>\n<baseChassisTurretWeight>\n3.5\n</baseChassisTurretWeight>\n<tonnage>")
+            .replace("Medium Laser", "Medium Laser:OMNI");
+        const { vehicle, issues } = importVehicleBlk(omni);
+        expect(issues).toEqual([]);
+        expect(vehicle!.isOmni()).toBe(true);
+        expect(vehicle!.getOmniTurretWeight()).toBe(3.5);
+        expect(vehicle!.getTurretWeight("turret")).toBe(3.5);
+    });
+
     // AC/2 Carrier: four armor values, so no turret, and 4 x 6 internal structure (MUL BV 403, not 413).
     it("gives a vehicle with four armor values no turret", () => {
         const carrier = tank.replace(/<armor>[\s\S]*?<\/armor>/, block("armor", "30", "20", "20", "15").join("\n"))

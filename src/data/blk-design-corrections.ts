@@ -27,6 +27,10 @@ export const BLK_ILLEGAL_AS_PRINTED: ReadonlySet<string> = new Set([
     // Operation Klondike text describes Support Vehicles.
     "Brunel Dump Truck (AC)",
     "Brunel Dump Truck (LRM)",
+    // Ajax Assault Tank C (Record Sheets: 3067 Unabridged): the chassis leaves 42 tons of pod space and fixes the turret
+    // at 3.5 tons (TRO 3067 p.27; TM p.108), but the C's targeting computer, MRM 40, four Streak SRM 6s, Guardian ECM,
+    // PPC and four tons of ammunition come to 44.5 tons: 92.5 tons on a 90-ton tank.
+    "Ajax Assault Tank C",
 ]);
 
 export const BLK_DESIGN_CORRECTIONS: Record<string, IBlkDesignCorrection> = {

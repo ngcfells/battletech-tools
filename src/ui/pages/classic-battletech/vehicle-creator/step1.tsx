@@ -270,6 +270,15 @@ export default class VehicleCreatorStep1 extends React.Component<IStep1Props, IS
         this.changeVehicle((vehicle) => vehicle.setTurretCount(count));
     }
 
+    updateOmniTurretWeight = (tons: number): void => {
+        this.changeVehicle((vehicle) => vehicle.setOmniTurretWeight(tons));
+    }
+
+    updateClanCASE = (e: React.FormEvent<HTMLInputElement>): void => {
+        const clanCASE = e.currentTarget.checked;
+        this.changeVehicle((vehicle) => vehicle.setClanCASE(clanCASE));
+    }
+
     // Keeps tonnage within the Standard/Superheavy bounds for the selected motive type and rules level,
     // and Cruise MP within what an engine can deliver at that tonnage. A Support Vehicle keeps its own bounds.
     clampTonnage = (vehicle: NonNullable<IAppGlobals["currentVehicle"]>, rulesLevel: number): void => {
@@ -549,6 +558,35 @@ export default class VehicleCreatorStep1 extends React.Component<IStep1Props, IS
                                     />
                                 ) : null}
                                 {vehicle.getSponsonIssue() ? <p className="color-red smaller-text">{vehicle.getSponsonIssue()} (TO p. 411).</p> : null}
+                                {vehicle.isOmni() && vehicle.hasTurret() ? (
+                                    <div data-testid="omni-turret-weight">
+                                        <InputNumeric
+                                            label="Base chassis turret weight (tons; 0 sizes it by what it holds)"
+                                            value={vehicle.getOmniTurretWeight()}
+                                            min={0}
+                                            max={vehicle.getTonnage()}
+                                            step={0.5}
+                                            setValue={this.updateOmniTurretWeight}
+                                        />
+                                        <p className="smaller-text">
+                                            An OmniVehicle&apos;s turret weighs the same in every configuration, and holds up to 10 times its
+                                            weight in equipment, ammunition aside (TM p.108).
+                                        </p>
+                                        {vehicle.getOmniTurretIssue() ? <p className="color-red smaller-text">{vehicle.getOmniTurretIssue()}</p> : null}
+                                    </div>
+                                ) : null}
+                                {vehicle.canChooseClanCASE() ? (
+                                    <div data-testid="vehicle-clan-case-option">
+                                        <InputCheckbox
+                                            label="Clan CASE"
+                                            checked={vehicle.hasClanCASE()}
+                                            onChange={this.updateClanCASE}
+                                        />
+                                        <p className="smaller-text">
+                                            Clan CASE is weightless and takes no item slot, and protects the ammunition (TM p.210).
+                                        </p>
+                                    </div>
+                                ) : null}
                                 {vehicle.canUseFractionalAccounting(rulesLevel) || vehicle.usesFractionalAccounting() ? (
                                     <div data-testid="fractional-accounting-option">
                                         <InputCheckbox

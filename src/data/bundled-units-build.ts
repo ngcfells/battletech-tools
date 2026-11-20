@@ -120,12 +120,17 @@ function megaMekCustomForm(unit: Vehicle, job: IUnitJob, blk: NonNullable<Return
 
 /**
  * A design checked and found illegal as printed (BLK_ILLEGAL_AS_PRINTED) is kept and flagged with what it breaks
- * (NGCFells 2026-11-20): a Support Vehicle by the TechManual's Support Vehicle rules.
+ * (NGCFells 2026-11-20): a Support Vehicle by the TechManual's Support Vehicle rules, a Combat Vehicle by its weight
+ * and its OmniVehicle turret (TM p.108).
  */
 export function getBundledIllegal(unit: unknown): { illegal?: string[] } {
     const vehicle = unit as Partial<Vehicle>;
     if (!vehicle.getName || !BLK_ILLEGAL_AS_PRINTED.has(`${vehicle.getName()} ${vehicle.getModel?.() ?? ""}`.trim())) return {};
-    const issues = vehicle.isSupportVehicle?.() ? vehicle.getSupportVehicleIssues!() : [];
+    const combatIssues = (tank: Vehicle): string[] => [
+        ...(tank.getCurrentTonnage() > tank.getTonnage() ? [`${tank.getCurrentTonnage()} tons used of ${tank.getTonnage()}`] : []),
+        ...(tank.getOmniTurretIssue() ? [tank.getOmniTurretIssue()!] : []),
+    ];
+    const issues = vehicle.isSupportVehicle?.() ? vehicle.getSupportVehicleIssues!() : vehicle.getOmniTurretIssue ? combatIssues(vehicle as Vehicle) : [];
     return issues.length ? { illegal: issues } : {};
 }
 

@@ -404,6 +404,30 @@ describe("Vehicle construction details", () => {
         expect(tank.getWeights().some((entry) => entry.name === "Power Amplifiers")).toBe(true);
     });
 
+    it("needs no power amplifiers for heavy flamers, which are fed by ammunition: Sokar Urban Combat Unit (TRO: Prototypes p.73)", () => {
+        // The Sokar's printed weight table has no Power Amplifier line for its two heavy flamers on a 180 ICE.
+        const tank = build("wheeled", 50);
+        tank.setEngineType("ice");
+        place(tank, "heavy-flamer", "front");
+        place(tank, "heavy-flamer", "front");
+        expect(tank.getPowerAmplifierWeight()).toBe(0);
+        place(tank, "large-laser", "front");
+        expect(tank.getPowerAmplifierWeight()).toBe(0.5);
+    });
+
+    it("takes 1 heat off each insulated laser when counting heat sinks (TO:AUE p.134): Pandion Combat WiGE (3140 Upgrade)", () => {
+        // RS: TRO 3150's Pandion (3140 Upgrade) has two medium re-engineered lasers and two laser insulators in the turret
+        // and weighs 20 tons with no heat sink tonnage: 2 x (6 - 1) = 10, all covered by the engine's free heat sinks.
+        const tank = build("tracked", 20);
+        place(tank, "medium-re-engineered-laser", "turret");
+        place(tank, "medium-re-engineered-laser", "turret");
+        expect(tank.getRequiredHeatSinks()).toBe(12);
+        place(tank, "laser-insulator", "turret");
+        place(tank, "laser-insulator", "turret");
+        expect(tank.getRequiredHeatSinks()).toBe(10);
+        expect(tank.getWeightedHeatSinks()).toBe(0);
+    });
+
     it("offers dual turrets except on VTOL and WiGE vehicles, weighing each turret separately", () => {
         const tank = build("tracked", 60);
         tank.setDualTurret(true);

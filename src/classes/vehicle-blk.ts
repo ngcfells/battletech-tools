@@ -393,6 +393,12 @@ export const importVehicleBlk = (text: string): IVehicleBlkResult => {
     }
     if (equipmentKeys.includes(SPONSON_TURRET)) vehicle.setSponsonTurrets(true);
 
+    // Clan CASE on an Inner Sphere chassis is the chassis's Clan CASE, weightless (TM p.210), not a half-ton item.
+    if (equipmentKeys.includes("clcase") && vehicle.canChooseClanCASE()) vehicle.setClanCASE(true);
+    // An OmniVehicle's turret weighs what the base chassis set, in every configuration (TM p.108).
+    const baseTurret = Number(blkValue(file, "basechassisturretweight"));
+    if (vehicle.isOmni() && baseTurret > 0) vehicle.setOmniTurretWeight(baseTurret);
+
     const layout = unitType === "vtol" ? VTOL : superheavy ? LARGE : TANK;
     const placed = readVehicleEquipment(file, vehicle, layout, faction, mixed, issues,
         // Read above, or no item of their own: Clan CASE is built into a Clan chassis (TM p.210), and the stealth line

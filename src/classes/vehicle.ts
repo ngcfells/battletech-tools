@@ -54,6 +54,7 @@ import { CUSTOM_HOMEBREW_RULES_LEVEL, EXPERIMENTAL_RULES_LEVEL, getItemBattleVal
 import { isTargetingComputerWeapon, roundUpHalfTon, sizeTargetingComputers, sizeVariableEquipment } from "../data/variable-equipment";
 import { getFractionalArmorTonsPerPoint, getFractionalEngineWeight, roundUpToKilogram } from "../data/fractional-accounting";
 import { getWeaponExplosionDamage } from "../data/weapon-explosions";
+import { getMountedHeat, mateLaserInsulators } from "../data/laser-insulator";
 import { findByTag, matchesTag } from "../data/tag-match";
 import { getMovementModifier } from "../utils";
 import {
@@ -510,6 +511,10 @@ export interface IVehicleExport {
     artVee?: boolean;
     /** An OmniVehicle: one base chassis whose pod-mounted equipment changes between configurations (TM pp.95-97). */
     omni?: boolean;
+    /** An OmniVehicle's base chassis turret weight, fixed for every configuration (TM p.108). */
+    omniTurretWeight?: number;
+    /** Inner Sphere-chassis Mixed Tech with Clan CASE (TM p.210). */
+    clanCASE?: boolean;
     jumpMP?: number;
     troopSpace?: number;
     /** Transport bays other than the troop space (TM p.239). */
@@ -637,6 +642,10 @@ export default class Vehicle implements IGameSettingsUnit {
     private _artVee: boolean = false;
     private _sponsonTurrets: boolean = false;
     private _omni: boolean = false;
+    /** An OmniVehicle's base chassis turret weight, fixed for every configuration (TM p.108); 0 when not set. */
+    private _omniTurretWeight: number = 0;
+    /** Inner Sphere-chassis Mixed Tech: Clan CASE, weightless, protecting the ammunition (TM p.210). */
+    private _clanCASE: boolean = false;
     private _podUUIDs: Set<string> = new Set();
     private _jumpMP: number = 0;
     private _troopSpace: number = 0;
@@ -1616,9 +1625,16 @@ export default class Vehicle implements IGameSettingsUnit {
      * nearest half-ton (the kilogram under Fractional Accounting), minimum half a ton.
      */
     public getTurretWeight(location: "turret" | "turret2"): number {
-        return Math.max(0.5, this._roundWeight(this._equipmentList
+        // An OmniVehicle's turret keeps its base chassis weight in every configuration (TM p.108).
+        if (location === "turret" && this.getOmniTurretWeight() > 0) return this.getOmniTurretWeight();
+        return Math.max(0.5, this._roundWeight(this._turretEquipmentTons(location) * 0.1));
+    }
+
+    /** What a turret holds, ammunition aside. */
+    private _turretEquipmentTons(location: "turret" | "turret2"): number {
+        return Math.round(this._equipmentList
             .filter((item) => item.location === location && !item.isAmmo)
-            .reduce((sum, item) => sum + item.weight, 0) * 0.1));
+            .reduce((sum, item) => sum + item.weight, 0) * 1000) / 1000;
     }
 
     /** +1 to Driving Skill Rolls when the turret is heavier than the one the chassis was built for. */
@@ -2018,6 +2034,8 @@ export default class Vehicle implements IGameSettingsUnit {
      * TestEntity.calcHeatNeutralHSRequirement).
      */
     public getRequiredHeatSinks(): number {
+        // A Laser Insulator takes 1 heat off the laser it is mated to, in its own location (TO:AUE p.134).
+        mateLaserInsulators(this._equipmentList);
         let heat = 0;
         for (const item of this._equipmentList) {
             if (item.isAmmo) continue;
@@ -2025,7 +2043,7 @@ export default class Vehicle implements IGameSettingsUnit {
             // requirements" (Ghosts of Obeedah p.54).
             const usesAmmo = !!item.ammoTypes?.length || (item.shotsPerTon ?? 0) > 0 || this._hasPowerCells(item);
             if (Vehicle._isEnergyWeapon(item)) {
-                if (!usesAmmo) heat += item.heat || 0;
+                if (!usesAmmo) heat += getMountedHeat(item);
             } else if (item.isEquipment) {
                 heat += item.heat || 0;
             }
@@ -2049,14 +2067,15 @@ export default class Vehicle implements IGameSettingsUnit {
 
     /**
      * Power amplifiers: vehicles without a fusion or fission engine need 10% of their energy weapons'
-     * weight, rounded up to the half ton (vehicle flamers and chemical lasers excepted; as
-     * implemented by MegaMek TestTank). Battle armor weapons need none: the amplifier "is integral to
-     * the weapon itself as part of its mounting system" (Ghosts of Obeedah p.54).
+     * weight, rounded up to the half ton (vehicle flamers, heavy flamers and chemical lasers, all fed by
+     * ammunition, excepted; as implemented by MegaMek TestTank, and the Sokar's printed weight table in TRO:
+     * Prototypes p.73 has no amplifier for its heavy flamers on an ICE). Battle armor weapons need none: the
+     * amplifier "is integral to the weapon itself as part of its mounting system" (Ghosts of Obeedah p.54).
      */
     public getPowerAmplifierWeight(): number {
         if (this.isFusionEngine() || this._rulesEngineTag() === "fission") return 0;
         const weight = this._equipmentList
-            .filter((item) => Vehicle._isEnergyWeapon(item) && !item.battleArmorScale && !/vehicle-flamer|chemical-laser/.test(item.tag))
+            .filter((item) => Vehicle._isEnergyWeapon(item) && !item.battleArmorScale && !/vehicle-flamer|heavy-flamer|chemical-laser/.test(item.tag))
             .reduce((sum, item) => sum + (item.weight || 0), 0);
         return this._roundWeight(weight / 10);
     }
@@ -2759,6 +2778,48 @@ export default class Vehicle implements IGameSettingsUnit {
         return this._omni;
     }
 
+    /** An OmniVehicle's base chassis turret weight (TM p.108), or 0 when none is set and the turret is sized by what it holds. */
+    public getOmniTurretWeight(): number {
+        return this._omni && this._hasTurret ? this._omniTurretWeight : 0;
+    }
+
+    /** Fixes the base chassis turret weight, rounded up to the half ton; 0 sizes the turret by what it holds again. */
+    public setOmniTurretWeight(weight: number): number {
+        const tons = Number.isFinite(weight) ? Math.min(Math.max(0, weight), this._tonnage) : 0;
+        this._omniTurretWeight = this._omni ? Math.ceil(tons * 2) / 2 : 0;
+        this._calc();
+        return this.getOmniTurretWeight();
+    }
+
+    /**
+     * TM p.108: the equipment in an OmniVehicle's turret, ammunition aside, may weigh no more than 10 times the base
+     * chassis turret.
+     */
+    public getOmniTurretIssue(): string | null {
+        const turret = this.getOmniTurretWeight();
+        if (!turret) return null;
+        const load = this._turretEquipmentTons("turret");
+        return load > turret * 10
+            ? `${load} tons of turret equipment; the ${turret}-ton base chassis turret holds ${turret * 10} (TM p.108).`
+            : null;
+    }
+
+    /** Inner Sphere-chassis Mixed Tech may take Clan CASE (TM p.210); a Clan chassis always has it. */
+    public canChooseClanCASE(): boolean {
+        return this._tech.tag === "mis";
+    }
+
+    /** Is the ammunition behind Clan CASE: always on a Clan chassis, by choice on an Inner Sphere-chassis Mixed Tech one. */
+    public hasClanCASE(): boolean {
+        return this._tech.tag === "clan" || this._tech.tag === "mclan" || (this._clanCASE && this._tech.tag === "mis");
+    }
+
+    public setClanCASE(clanCASE: boolean): boolean {
+        this._clanCASE = clanCASE === true && this.canChooseClanCASE();
+        this._calc();
+        return this.hasClanCASE();
+    }
+
     /** On an OmniVehicle: is the item pod-mounted, and not fixed to the base chassis? */
     public isPodMounted(uuid: string | undefined): boolean { return this._omni && !!uuid && this._podUUIDs.has(uuid); }
 
@@ -3387,10 +3448,12 @@ export default class Vehicle implements IGameSettingsUnit {
         }
         if (this.getPowerAmplifierWeight() > 0) rows.push(["Power Amplifiers", this.getPowerAmplifierWeight() * 20000]);
         if (this.getWeightedHeatSinks() > 0) rows.push([`Heat Sinks (${this.getWeightedHeatSinks()})`, this.getWeightedHeatSinks() * 2000]);
+        // An OmniVehicle's base chassis turret is priced at its fixed weight (TM p.108).
+        const fixedTurret = this.getOmniTurretWeight();
         const turretWeaponWeight = this._equipmentList
-            .filter((item) => (item.location === "turret" || item.location === "turret2") && !item.isAmmo)
+            .filter((item) => (item.location === "turret2" || (!fixedTurret && item.location === "turret")) && !item.isAmmo)
             .reduce((sum, item) => sum + item.weight, 0) / 10;
-        if (turretWeaponWeight > 0) rows.push(["Turret", Math.ceil(turretWeaponWeight * 2) / 2 * 5000]);
+        if (turretWeaponWeight > 0 || fixedTurret > 0) rows.push(["Turret", (fixedTurret + Math.ceil(turretWeaponWeight * 2) / 2) * 5000]);
         const equipmentCost = this._equipmentList.reduce((sum, item) => sum + (item.isAmmo ? (item.cbills || 0) * item.weight : item.cbills || 0), 0);
         rows.push(["Weapons, Equipment and Ammunition", equipmentCost]);
         const bayCost = this._bays.reduce((sum, bay) => sum + getVehicleBayCost(bay), 0);
@@ -4137,7 +4200,7 @@ export default class Vehicle implements IGameSettingsUnit {
      * it built in wherever ammunition is stored (TM p.210).
      */
     public hasCASE(): boolean {
-        if (this._tech.tag === "clan" || this._tech.tag === "mclan") return true;
+        if (this.hasClanCASE()) return true;
         return this._equipmentList.some((item) => ["case", "case-ii", "clan-case-ii"].some((tag) => matchesTag(item, tag)));
     }
 
@@ -5139,6 +5202,8 @@ export default class Vehicle implements IGameSettingsUnit {
             frankenVehicle: this.getFrankenVehicle() ?? undefined,
             artVee: this._artVee || undefined,
             omni: this._omni || undefined,
+            omniTurretWeight: this.getOmniTurretWeight() || undefined,
+            clanCASE: this.hasClanCASE() && this._tech.tag === "mis" ? true : undefined,
             jumpMP: this._jumpMP,
             troopSpace: this._troopSpace || undefined,
             bays: this._bays.length > 0 ? this._bays.map((bay) => ({ ...bay })) : undefined,
@@ -5282,6 +5347,10 @@ export default class Vehicle implements IGameSettingsUnit {
                 : [];
             // Vehicles saved before Omnis were recorded load as standard vehicles.
             this._omni = importObject.omni === true;
+            const turretWeight = Number(importObject.omniTurretWeight);
+            this._omniTurretWeight = this._omni && Number.isFinite(turretWeight) && turretWeight > 0 && turretWeight <= this._tonnage
+                ? Math.ceil(turretWeight * 2) / 2 : 0;
+            this._clanCASE = importObject.clanCASE === true;
             this._podUUIDs = new Set();
             // A saved design keeps its accounting whatever the rules level set now.
             this._weightAccounting = importObject.weightAccounting === "fractional" ? "fractional" : "standard";
