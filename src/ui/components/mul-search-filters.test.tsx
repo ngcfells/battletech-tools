@@ -67,3 +67,15 @@ describe("MULSearchFilters Search Rules (#614)", () => {
         expect(optionValues(/Search Rules/)).toEqual(["", "introductory", "standard", "advanced", "experimental"]);
     });
 });
+
+describe("MULSearchFilters Search Terms warnings (#625)", () => {
+    it("names a term the search left out, under the search box", () => {
+        render(<Harness start={newMULSearchFilters({ term: "wolf colour:red" })} />);
+        expect(screen.getByTestId("test-search-warnings").textContent).toContain("\"colour:red\" is not a search term");
+    });
+
+    it("shows nothing when every term is known", () => {
+        render(<Harness start={newMULSearchFilters({ term: "wolf role:striker tech:clan short:2-3" })} />);
+        expect(screen.queryByTestId("test-search-warnings")).toBeNull();
+    });
+});

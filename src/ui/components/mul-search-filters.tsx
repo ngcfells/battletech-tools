@@ -5,6 +5,7 @@ import { MULSource } from '../../classes/alpha-strike-unit';
 import { IAbilityCodeCount } from '../../utils/mulAbilities';
 import { changeMULSearchFilters, IMULSearchFilters, isMULEraOffered, isMULTechOffered, isMULTypeOffered } from '../../utils/mulSearchFilters';
 import { getMULAerospaceRoles, getMULEraAliases, getMULEraIDs, getMULEraLabel, getMULFactionIDs, getMULFactionLabels, getMULGroundRoles, getMULTypeIDs, getMULTypeLabel } from '../../utils/mulUtilities';
+import { getMULSearchWarnings } from '../../utils';
 import InputField from './form_elements/input_field';
 import { STALE_WARNING } from './game-settings-block';
 import SpecialRulesetsStep from './special-rulesets-step';
@@ -90,6 +91,7 @@ export default class MULSearchFilters extends React.Component<IMULSearchFiltersP
         const notice = this.state.notice.made === JSON.stringify( filters ) ? this.state.notice.text : "";
         const factionSuggestions = this.getFactionSuggestions();
         const abilitySuggestions = this.getAbilitySuggestions();
+        const searchWarnings = getMULSearchWarnings( filters.term );
 
         return (
 <fieldset className="fieldset">
@@ -107,6 +109,9 @@ export default class MULSearchFilters extends React.Component<IMULSearchFiltersP
                 value={filters.term}
                 label="Search Terms"
             />
+            {searchWarnings.length > 0 ? (
+                <p className="smaller-text" data-testid={this.props.idPrefix + "-search-warnings"}>{searchWarnings.join( " " )}</p>
+            ) : null}
         </div>
         <div className="col-md-6 text-center">
             <label>

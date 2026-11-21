@@ -11,7 +11,7 @@ import { getQuirkToHit } from "./utils/quirk-effects";
 import { getFutureWarsPlayKind, getLRFlamerRangeModifier } from "./utils/future-wars-play";
 import { getLongRangeWarsBand, getLongRangeWarsFirerModifier, getLongRangeWarsTargetModifier } from "./utils/future-wars-ruleset-tools";
 import { unitHasAbility } from "./utils/mulAbilities";
-import { resolveMULEraFilter } from "./utils/mulUtilities";
+import { getMULAerospaceRoles, getMULGroundRoles, resolveMULEraFilter } from "./utils/mulUtilities";
 import { filterMULByRulesets, IMULSearchFilters } from "./utils/mulSearchFilters";
 
 export function getISEquipmentList(): IEquipmentItem[] {
@@ -44,7 +44,19 @@ interface IMULSearchTokens {
     minJump: number;
     minDefense: number;
     exactDamageProfile: { short: number; medium: number; long: number } | null;
+    // role: and tech: terms, each a name squashed to letters and digits ("fire-support" -> "firesupport").
+    roles: string[];
+    techs: string[];
+    // word:value terms the search does not know: left out of the search, and named by getMULSearchWarnings.
+    warnings: string[];
 }
+
+// The MUL's role and tech base names, squashed as the role: and tech: terms are, so "role:firesupport" finds
+// Fire Support. "is" stands for Inner Sphere.
+const squashMULName = (name: string): string => name.toLowerCase().replace(/[^a-z0-9]/g, "");
+const MUL_TECH_ALIASES: Record<string, string> = { is: "innersphere" };
+const MUL_TECH_NAMES = ["Inner Sphere", "Clan", "Mixed", "Primitive", "Unknown"].map(squashMULName);
+const mulRoleNames = (): string[] => [...getMULGroundRoles(), ...getMULAerospaceRoles(), "None"].map(squashMULName);
 
 // Maps the "Rules" dropdown value to the set of MUL Rules-level labels it should match.
 const MUL_RULES_LEVEL_MAP: Record<string, string[]> = {
@@ -76,6 +88,9 @@ function parseMULSearchTokens(searchTerm: string): IMULSearchTokens {
         minJump: -1,
         minDefense: -1,
         exactDamageProfile: null,
+        roles: [],
+        techs: [],
+        warnings: [],
     };
 
     const searchTerms = searchTerm.trim().split(" ").filter((term) => term.length > 0);
@@ -115,6 +130,41 @@ function parseMULSearchTokens(searchTerm: string): IMULSearchTokens {
                     tokens.minMove = min;
                     tokens.maxMove = max;
                     break;
+                case "short":
+                case "s":
+                    tokens.minDamage[0] = min;
+                    tokens.maxDamage[0] = max;
+                    break;
+                case "medium":
+                case "m":
+                    tokens.minDamage[1] = min;
+                    tokens.maxDamage[1] = max;
+                    break;
+                case "long":
+                case "l":
+                    tokens.minDamage[2] = min;
+                    tokens.maxDamage[2] = max;
+                    break;
+                default:
+                    tokens.warnings.push(`"${term}" is not a search term, so it was left out.`);
+            }
+            continue;
+        }
+
+        if ((match = term.match(/^(role|tech):(.+)$/i))) {
+            const [, field, valueStr] = match;
+            let name = squashMULName(valueStr);
+            if (field.toLowerCase() === "role") {
+                tokens.roles.push(name);
+                if (!mulRoleNames().includes(name)) {
+                    tokens.warnings.push(`"${term}" is not a MUL role, so no unit matches it.`);
+                }
+            } else {
+                name = MUL_TECH_ALIASES[name] ?? name;
+                tokens.techs.push(name);
+                if (!MUL_TECH_NAMES.includes(name)) {
+                    tokens.warnings.push(`"${term}" is not a MUL tech base, so no unit matches it.`);
+                }
             }
             continue;
         }
@@ -261,6 +311,12 @@ function parseMULSearchTokens(searchTerm: string): IMULSearchTokens {
             continue;
         }
 
+        // A word:value term the search does not know is left out, not searched as a name (#625).
+        if (/^[a-z]+:.+$/i.test(term)) {
+            tokens.warnings.push(`"${term}" is not a search term, so it was left out.`);
+            continue;
+        }
+
         tokens.nameTerms.push(term);
     }
 
@@ -331,6 +387,13 @@ function matchesMULSearchTokens(unit: IASMULUnit, tokens: IMULSearchTokens): boo
                 return false;
             }
         }
+    }
+
+    if (tokens.roles.some((role) => squashMULName(unit.Role?.Name ?? "") !== role)) {
+        return false;
+    }
+    if (tokens.techs.some((tech) => squashMULName(unit.Technology?.Name ?? "") !== tech)) {
+        return false;
     }
 
     const pv = +unit.BFPointValue;
@@ -427,6 +490,11 @@ function getMULSearchTokens(searchTerm: string, abilityFilters: string[]): IMULS
         }
     }
     return tokens;
+}
+
+/** One line for each search term the MUL search left out or that no unit can match (#625). */
+export function getMULSearchWarnings(searchTerm: string): string[] {
+    return parseMULSearchTokens(searchTerm ?? "").warnings;
 }
 
 /** Searches the MUL copy bundled with the app; the Classic roster uses it, and the Alpha Strike offline path matches the same way. */

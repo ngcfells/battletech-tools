@@ -47,7 +47,8 @@ export default class Home extends React.Component<IHomeProps, IHomeState> {
                       <ul>
                         <li><b>a:&lt;ability&gt;</b> - Search for abilities. Use <b>,</b> for AND (a:ECM,TAG), <b>!</b> for NOT (a:!CASE)</li>
                         <li><b>pv:30-50</b> - Point value ranges, or the &gt;, &lt;, &gt;=, &lt;= and = operators (pv&gt;=40)</li>
-                        <li><b>short&gt;=x, medium&gt;=x, long&gt;=x</b> - Damage at each range, with the same operators</li>
+                        <li><b>short&gt;=x, medium&gt;=x, long&gt;=x</b> - Damage at each range, with the same operators, or as ranges (short:2-3)</li>
+                        <li><b>role:striker, tech:clan</b> - Role and tech base, as the Role and Tech filters do (role:firesupport, tech:is)</li>
                         <li><b>armor&gt;=x, structure&gt;=x</b> - Defensive stats, also as ranges (armor:4-6)</li>
                         <li><b>year:3050-3067</b> - Introduction year ranges</li>
                         <li><b>mv&gt;=10, jump&gt;0</b> - Movement and jump, mv also as ranges (mv:8-12)</li>
@@ -59,11 +60,12 @@ export default class Home extends React.Component<IHomeProps, IHomeState> {
                         <li><i>timber wolf a:IF,ECM long&gt;=3</i> - Timber Wolves with both IF and ECM, long damage 3+</li>
                         <li><i>pv:20-40 a:ECM,TAG</i> - Units 20-40 PV with both ECM and TAG</li>
                         <li><i>mv&gt;=10 jump&gt;0</i> - Fast jumping units</li>
+                        <li><i>role:sniper tech:clan long:3-9</i> - Clan snipers with long damage 3 to 9</li>
                         <li><i>defense&gt;12 short&gt;=3 mv&lt;8</i> - Slow durable brawlers</li>
                         <li><i>year:3050-3067 a:!CASE</i> - Units introduced 3050-3067 without CASE</li>
                         <li><i>dmg:3/3/* armor:4-6</i> - Units with 3/3/any damage and 4-6 armor</li>
                       </ul>
-                      Tech and Role are filters beside the search box, not search terms.
+                      A word:value term the search does not know is left out, and the search box says so.
                       <br />
                     </li>
                     <li>
