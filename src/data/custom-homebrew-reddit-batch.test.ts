@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { BattleMech } from "../classes/battlemech";
+import { ammoCatalog } from "./ammo";
+import { ammoCustom } from "./ammo-custom";
+import { ballisticCustom } from "./ballistic-custom";
 import { getEquipmentCatalogById, getEquipmentCatalogDefinitions, getEquipmentCatalogs } from "./equipment-registry";
 import { energyCustom } from "./energy-custom";
 import { CUSTOM_HOMEBREW_RULES_LEVEL } from "./rules-level-options";
@@ -134,5 +137,55 @@ describe("Tandem Charge SRM house rule (Special Ruleset)", () => {
 
     it("does not clash with the Future Wars play rulesets", () => {
         expect(getRulesetConflict(["fw-morale", "fw-weapon-malfunctions"], "tandem-charge-srm-house-rule")).toBeUndefined();
+    });
+});
+
+// Pleiades Mechworks (u/PleiadesMechworks, #641): Autocannon/12 and its munitions.
+describe("Pleiades Mechworks Autocannon/12 (Custom Homebrew)", () => {
+    const ac12 = () => {
+        const found = ballisticCustom.find((item) => item.tag === "custom-ac-12");
+        if (!found) throw new Error("no record custom-ac-12");
+        return found;
+    };
+    const ammo12 = (name: string) => {
+        const found = ammoCustom.find((item) => item.tag === `ammo-custom-ac-12-${name}`);
+        if (!found) throw new Error(`no record ammo-custom-ac-12-${name}`);
+        return found;
+    };
+    const canonAmmo = (tag: string) => {
+        const found = ammoCatalog.find((item) => item.tag === tag);
+        if (!found) throw new Error(`no canon ${tag}`);
+        return found;
+    };
+
+    it("carries the post numbers and is in no canon catalog", () => {
+        const weapon = ac12();
+        expect(weapon).toMatchObject({ damage: 12, heat: 4, weight: 13, cbills: 300000, battleValue: 142, prototype: 3020, introduced: 3020, shotsPerTon: 8, techBase: "is", catalog: "custom", rulesLevel: CUSTOM_HOMEBREW_RULES_LEVEL });
+        expect(weapon.range).toEqual({ min: 0, short: 4, medium: 8, long: 12 });
+        expect(weapon.space.battlemech).toBe(7);
+        expect(weapon.notes).toContain("PleiadesMechworks");
+        const canonLists = Object.values(getEquipmentCatalogs());
+        expect(canonLists.some((list) => list.some((item) => item.tag === "custom-ac-12"))).toBe(false);
+    });
+
+    it("has standard ammunition: BV 18 and 10,000 C-bills a ton, 8 shots", () => {
+        expect(ammo12("standard")).toMatchObject({ battleValue: 18, cbills: 10000, roundsPerTon: 8, introduced: 3020 });
+    });
+
+    it("has all seven AC/10 munitions, scaled from its standard round by the AC/10 ratios", () => {
+        const standard10 = canonAmmo("ammo-ac-10-standard");
+        const standard12 = ammo12("standard");
+        const munitions: Array<[string, string]> = [
+            ["armor-piercing", "ammo-is-ac-10-armor-piercing"], ["precision", "ammo-is-ac-10-precision"], ["flechette", "ammo-is-ac-10-flechette"],
+            ["flak", "ammo-ac-10-flak"], ["tracer", "ammo-ac-10-tracer"], ["caseless", "ammo-is-ac-10-caseless"],
+        ];
+        for (const [name, canonTag] of munitions) {
+            const canon = canonAmmo(canonTag);
+            const mine = ammo12(name);
+            expect(mine.cbills, name).toBe(Math.round(standard12.cbills * canon.cbills / standard10.cbills));
+            expect(mine.roundsPerTon, name).toBe(Math.round(standard12.roundsPerTon! * canon.roundsPerTon! / standard10.roundsPerTon!));
+            expect(mine.battleValue, name).toBe(standard12.battleValue);
+            expect(mine.techRating, name).toBe(canon.techRating);
+        }
     });
 });

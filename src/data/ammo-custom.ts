@@ -251,7 +251,107 @@ const thunderboltTorpedoAmmo = (size: number): IEquipmentItem => {
     };
 };
 
+/**
+ * Pleiades Mechworks Autocannon/12 ammunition (u/PleiadesMechworks, #641). The post gives the standard round (BV 18, 10,000 C-bills a ton,
+ * 8 shots) and says the full range of specialist ammunition was developed for it; each munition here is that round with the shots, cost
+ * ratio and tech rating of the canon AC/10 munition of the same name (the ratio to the AC/10 standard round), dated no earlier than the
+ * AC/12 (3020). The figures are ours.
+ */
+const AC12_STANDARD_TAG = "ammo-custom-ac-12-standard";
+const AC12_MUNITIONS: Array<{ key: string; label: string; canon: string }> = [
+    { key: "armor-piercing", label: "Armor-Piercing", canon: "ammo-is-ac-10-armor-piercing" },
+    { key: "precision", label: "Precision", canon: "ammo-is-ac-10-precision" },
+    { key: "flechette", label: "Flechette", canon: "ammo-is-ac-10-flechette" },
+    { key: "flak", label: "Flak", canon: "ammo-ac-10-flak" },
+    { key: "tracer", label: "Tracer", canon: "ammo-ac-10-tracer" },
+    { key: "caseless", label: "Caseless", canon: "ammo-is-ac-10-caseless" },
+];
+const AC12_STANDARD_CBILLS = 10000;
+const AC12_STANDARD_ROUNDS = 8;
+
+const ac12Standard = (): IEquipmentItem => {
+    const canon = isAmmoList.find((item) => item.tag === "ammo-ac-10-standard");
+    if (!canon) throw new Error("AC/12 ammo: canon record ammo-ac-10-standard not found");
+    return {
+        isAmmo: true,
+        isSpecialAmmo: false,
+        name: "AC/12 - Standard Ammo (Pleiades Mechworks)",
+        altNames: ["AC/12 - Standard Ammo", "AC/12 Ammo"],
+        tag: AC12_STANDARD_TAG,
+        techBase: "is",
+        altTags: [],
+        sort: "ammo, ac/012, standard",
+        category: "Ammunition",
+        cbills: AC12_STANDARD_CBILLS,
+        prototype: 3020,
+        introduced: 3020,
+        extinct: null,
+        reintroduced: null,
+        battleValue: 18,
+        heat: 0,
+        heatAero: 0,
+        weight: 1,
+        range: { min: 0, short: 4, medium: 8, long: 12 },
+        space: { ...canon.space },
+        roundsPerTon: AC12_STANDARD_ROUNDS,
+        explosive: true,
+        techRating: "x",
+        book: "https://www.reddit.com/r/NormalBattletech/",
+        page: 0,
+        alphaStrike: JSON.parse(JSON.stringify(canon.alphaStrike)),
+        catalog: "custom",
+        rulesLevel: 6,
+        notes: "Custom Homebrew by u/PleiadesMechworks (r/NormalBattletech, Pleiades Mechworks equipment post): 10,000 C-bills a ton, 18 Battle Value a ton, 8 shots a ton, for the Autocannon/12 (custom-ac-12).",
+        rules: "Standard rounds for the Autocannon/12 (custom-ac-12): 8 shots a ton.",
+        lore: "The ordinary round of the Federated Suns' Autocannon/12, packed at eight to the ton."
+    };
+};
+
+const ac12Munition = (munition: typeof AC12_MUNITIONS[number]): IEquipmentItem => {
+    const canon = isAmmoList.find((item) => item.tag === munition.canon);
+    const canonStandard = isAmmoList.find((item) => item.tag === "ammo-ac-10-standard");
+    if (!canon || !canonStandard) throw new Error(`AC/12 ammo: canon record ${munition.canon} not found`);
+    const cbills = Math.round(AC12_STANDARD_CBILLS * canon.cbills / canonStandard.cbills);
+    const rounds = Math.round(AC12_STANDARD_ROUNDS * (canon.roundsPerTon ?? 0) / (canonStandard.roundsPerTon ?? 1));
+    return {
+        isAmmo: true,
+        isSpecialAmmo: true,
+        name: `AC/12 - ${munition.label} Ammo (Pleiades Mechworks)`,
+        altNames: [`AC/12 - ${munition.label} Ammo`],
+        tag: `ammo-custom-ac-12-${munition.key}`,
+        techBase: "is",
+        altTags: [],
+        sort: `ammo, ac/012, ${munition.key}`,
+        category: "Ammunition",
+        cbills,
+        prototype: Math.max(3020, canon.prototype ?? 3020),
+        introduced: Math.max(3020, canon.introduced ?? 3020),
+        extinct: null,
+        reintroduced: null,
+        battleValue: 18,
+        heat: 0,
+        heatAero: 0,
+        weight: 1,
+        range: { min: 0, short: 4, medium: 8, long: 12 },
+        space: { ...canon.space },
+        roundsPerTon: rounds,
+        explosive: true,
+        techRating: canon.techRating,
+        book: "https://www.reddit.com/r/NormalBattletech/",
+        page: 0,
+        alphaStrike: JSON.parse(JSON.stringify(canon.alphaStrike)),
+        catalog: "custom",
+        rulesLevel: 6,
+        notes: `Custom Homebrew, ours. The post says the full range of specialist ammunition was developed for the Autocannon/12 (u/PleiadesMechworks) and gives no figures, so this is the AC/12 standard round with the canon AC/10 ${munition.label} round's `
+            + `cost ratio (${canon.cbills / canonStandard.cbills}x, ${cbills.toLocaleString("en-US")} C-bills a ton), shots a ton (${rounds}) and tech rating, dated no earlier than the AC/12 (3020) or that round. Battle Value is the standard round's 18.`,
+        rules: `${munition.label} rounds for the Autocannon/12: the effects of the canon AC/10 ${munition.label} round, ${rounds} shots a ton.`,
+        lore: `The ${munition.label.toLowerCase()} round, built for the Autocannon/12 as it was for the AC/10.`
+    };
+};
+
 export const ammoCustom: IEquipmentItem[] = applyDerivedValues([
+    ac12Standard(),
+    ...AC12_MUNITIONS.map(ac12Munition),
     {
         isAmmo: true,
         isSpecialAmmo: false,

@@ -54,6 +54,24 @@ const improvedMechTaser = (): IEquipmentItem => {
 
 export const ballisticCustom: IEquipmentItem[] = applyDerivedValues([
     improvedMechTaser(),
+    // Pleiades Mechworks (u/PleiadesMechworks, r/NormalBattletech, #641): the Autocannon/12. Every number is the post's.
+    {
+        isAmmo: false,
+        name: "Autocannon/12 (Pleiades Mechworks)", altNames: ["AC/12", "Autocannon/12"], tag: "custom-ac-12", techBase: "is", catalog: "custom",
+        sort: "ac, 12", category: "Ballistic Weapons",
+        notes: "Custom Homebrew by u/PleiadesMechworks (r/NormalBattletech, Pleiades Mechworks equipment post). Inner Sphere ballistic direct fire, introduced 3020 by the Federated Suns: "
+            + "12 damage, 4 heat, no minimum range, 4/8/12, 13 tons, 7 slots, 8 shots a ton, 300,000 C-bills unloaded, ammunition 10,000 C-bills a ton, Battle Value 142 and 18 an ammunition ton. "
+            + "It headcaps: 12 damage to the head is allowed, with no reduction (the author's reply). "
+            + "Not given by the post: tech rating. Specialist ammunition for it (the seven AC/10 munitions) is derived from its standard round and is ours.",
+        damage: 12, damageAero: 12, accuracyModifier: 0, cbills: 300000, prototype: 3020, introduced: 3020, extinct: null, reintroduced: null, battleValue: 142, ammoBattleValue: 18, heat: 4, heatAero: 4, weight: 13,
+        range: { min: 0, short: 4, medium: 8, long: 12 }, space: { battlemech: 7, protomech: -1, combatVehicle: 1, supportVehicle: 7, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 },
+        shotsPerTon: 8, ammoTypes: ["ammo-custom-ac-12-standard"], minAmmoTons: 1, explosive: false, weaponType: ["DB", "S"], techRating: "x",
+        book: "https://www.reddit.com/r/NormalBattletech/", page: 0, rulesLevel: 6, rangeAero: "m",
+        alphaStrike: { heat: 0, rangeShort: 0, rangeMedium: 0, rangeLong: 0, rangeExtreme: 0, tc: false, notes: [] },
+        rules: "A standard autocannon: 12 damage a hit, 4 heat, range 4/8/12 with no minimum, 8 shots a ton. 12 damage to the head is allowed, with no reduction.",
+        lore: "The Federated Suns' answer to the gap between the AC/10 and the AC/20, first fielded in 3020 by the Flying Foxes, a mercenary company that built its name "
+            + "as clanbusters. Pleiades Mechworks built it for them, and the full range of specialist ammunition was developed for it. The AC/15 later superseded it."
+    },
     {
         name: "AC/15 (Solaris7)", tag: "custom-ac-15", techBase: "universal", sort: "ac, 15", category: "Custom Equipment", notes: "Unverified placeholder based on the Kronos Battle Systems 'Class 15 autocannons' homebrew rules (Solaris7 forum thread, archived).",
         damage: 15, damageAero: 15, accuracyModifier: 0, cbills: 0, introduced: 2500, prototype: 2488, extinct: null, reintroduced: null, battleValue: 0, heat: 5, heatAero: 5, weight: 13, // Dates of the heavier-bore Standard AC/20 (IO p.38).

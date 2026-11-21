@@ -212,6 +212,9 @@ export const DATING_RULES: Record<string, IDating> = {
     ...Object.fromEntries([2, 5, 10, 20].map((size) => [`ammo-ac-${size}-sabot`, { introduced: FANZINE_YEAR, rating: { like: `ammo-ac-${size}-standard` }, why: `${FANZINE_WHY}; the round rates as the standard round it replaces` } as IDating])),
     "ammo-is-gauss-rifle-vhe": { rating: { like: "ammo-is-gauss-rifle-standard" }, why: "the article gives a date but no rating; the round rates as the standard Gauss round" },
     "ammo-is-gauss-rifle-inferno": { introduced: { local: "ammo-is-gauss-rifle-vhe" }, rating: { like: "ammo-is-gauss-rifle-standard" }, why: "the article gives the VHE shell a date and neither a date nor a rating for the Inferno shell, so the VHE's date and the standard Gauss round's rating" },
+    // Pleiades Mechworks (u/PleiadesMechworks, #641).
+    "custom-ac-12": { rating: { like: "autocannon-standard-c" }, why: "the post gives none, and it is a standard autocannon of the AC/10's age and class, so the canon AC/10's" },
+    "ammo-custom-ac-12-standard": { rating: { like: "ammo-ac-10-standard" }, why: "the post gives none, and it follows the standard AC/10 round" },
     // Kronos Battle Systems 15-class autocannon ammunition and the older caseless rounds.
     ...Object.fromEntries(["ammo-ac-15-standard", "ammo-lb-15x-standard", "ammo-lb-15x-cluster", "ammo-ultra-ac-15-standard"].map((tag) =>
         [tag, { rating: { value: "f" }, why: "the Class 15 autocannons it feeds are rated F" } as IDating])),
