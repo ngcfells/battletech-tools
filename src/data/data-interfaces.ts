@@ -665,6 +665,9 @@ export interface ICockpitType extends ICatalogStanding {
     bvMultiplier?: number;
     /** Lowest rules level that mounts it, when above Standard (Torso-Mounted: Experimental, TO:AUE p.112). */
     rulesLevel?: number;
+    /** Custom Homebrew cockpits: what it does in play, and its background. */
+    rules?: string;
+    lore?: string;
     /** Only this technology base builds it; "universal" for both. */
     techBase?: CatalogTechBase;
     /** Mounted alongside another cockpit instead of replacing it. */

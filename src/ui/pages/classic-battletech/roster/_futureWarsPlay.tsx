@@ -297,6 +297,13 @@ const FutureWarsPlayPanel = (props: IFutureWarsPlayPanelProps) => {
                 </button>
             </div>
             {mech.hasBlueSaviour() ? blueSaviour() : null}
+            {mech.hasPilotSuit() ? (
+                <div className="small-text" data-testid="fw-pilot-suit">
+                    <strong>Pilot Suit cockpit</strong>
+                    <div>Piloting and Gunnery 1 better with a MechWarrior in the suit (in the to-hit and the Piloting modifier); it cannot be piloted without the suit.</div>
+                    {mech.getPilotSuitLines().map((line) => <div key={line}>{line}</div>)}
+                </div>
+            ) : null}
         </fieldset>
     );
 };

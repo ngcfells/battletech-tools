@@ -192,3 +192,20 @@ describe("Blue Saviour in the play panel (#641)", () => {
         expect((screen.getByTestId("fw-blue-saviour-toggle") as HTMLButtonElement).disabled).toBe(true);
     });
 });
+
+describe("Pilot Suit cockpit in the play panel (#640)", () => {
+    it("shows the suit, its built-in ejection system and the no-gyro line only on a 'Mech with the cockpit", () => {
+        render(<FutureWarsPlayPanel mech={build([])} onChange={vi.fn()} />);
+        expect(screen.queryByTestId("fw-pilot-suit")).toBeNull();
+        cleanup();
+        const mech = build([]);
+        mech.setEra("ilClan");
+        mech.setCockpitType("pilot-suit");
+        mech.setGyroType("none");
+        render(<FutureWarsPlayPanel mech={mech} onChange={vi.fn()} />);
+        const text = screen.getByTestId("fw-pilot-suit").textContent ?? "";
+        expect(text).toMatch(/Piloting and Gunnery 1 better/);
+        expect(text).toMatch(/Full-head ejection system built in/);
+        expect(text).toMatch(/falls if the MechWarrior is knocked out/);
+    });
+});

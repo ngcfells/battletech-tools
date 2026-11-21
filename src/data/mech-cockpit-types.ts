@@ -385,8 +385,37 @@ export const mechCockpitTypes: ICockpitType[] = [
 	}
 ];
 
+
+/** Custom Homebrew cockpits (fan content): kept apart so the guards on the official catalog above stay as they are. */
+export const customCockpitTypes: ICockpitType[] = [
+	{
+		name: "Pilot Suit Cockpit (Pleiades Mechworks)",
+		tag: "pilot-suit",
+		techBase: "is",
+		weight: 5,
+		cost: 1500000,
+		rulesLevel: 6,
+		altNames: ["Pilot Suit", "Pilot Suit Cockpit"],
+		constructionStatus: "implemented",
+		book: "https://www.reddit.com/r/NormalBattletech/",
+		page: 0,
+		notes: "Custom Homebrew by u/PleiadesMechworks (r/NormalBattletech, Pleiades Mechworks equipment post). A 5-ton cockpit that includes the Pilot Suit and always a full-head ejection system. "
+			+ "With a MechWarrior in the suit, -1 to all Piloting and Gunnery rolls. It cannot be piloted without the suit (it has no ordinary controls). A 'Mech with it need not mount a gyro, but without one it cannot stay standing if the pilot is knocked out. "
+			+ "A prototype in alpha testing in 3151, stored after the Pleiades War; built by reverse-engineering a Word of Blake Gestalt cockpit. All the post's. "
+			+ "Ours: its two head slots and its placement limits are the Interface Cockpit's (BattleMechs only, not in a torso, the 'Mech may go without a gyro; IO:AE p.110), 1,500,000 C-bills as the Interface Cockpit, "
+			+ "and no Battle Value multiplier: the -1/-1 counts through the pilot skills used for Battle Value instead. The full-head ejection system is part of the 5 tons (no separate item, weight or cost).",
+		rules: "Piloting and Gunnery are 1 better with a MechWarrior in the suit. Full-head ejection system built in. No gyro needed, but a 'Mech without one falls if the MechWarrior is knocked out. Two head slots.",
+		lore: "Pleiades Mechworks reverse-engineered a Word of Blake Gestalt cockpit into a suit the MechWarrior wears: the 'Mech has no ordinary controls and cannot be piloted without it. "
+			+ "It was in alpha testing in 3151, the same year as the Blue Saviour, and was stored away after the Pleiades War. The Hardsuit battle armor is built on the same suit technology.",
+		prototype: 3151,
+		introduced: null,
+		extinct: null,
+		reintroduced: null
+	}
+];
+
 export function getCockpitType(tag: string): ICockpitType {
-	const cockpit = mechCockpitTypes.find(item => item.tag === tag);
+	const cockpit = mechCockpitTypes.find(item => item.tag === tag) ?? customCockpitTypes.find(item => item.tag === tag);
 	if (!cockpit) throw new Error(`Unknown cockpit type: ${tag}`);
 	return cockpit;
 }

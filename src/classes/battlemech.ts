@@ -692,6 +692,8 @@ export class BattleMech {
     private _torsoMountedCockpit: boolean = false;
     /** BattleMech Interface Cockpit (IO:AE p.110). */
     private _interfaceCockpit: boolean = false;
+    /** With `_interfaceCockpit`: the Pleiades Mechworks Pilot Suit cockpit (#640), built as the Interface Cockpit but its own record. */
+    private _pilotSuitCockpit: boolean = false;
     /** Clell Flint's construction rules (#172): a heavy 'Mech's 4-ton cockpit ("a few heavy mechs", Best-of p.35). */
     private _futureWarsLargeCockpit: boolean = false;
     /** Clell Flint's construction rules: extra sensors, +1 head slot and +0.5 t (Best-of p.35). */
@@ -876,6 +878,7 @@ export class BattleMech {
         this._smallCockpit = false;
         this._torsoMountedCockpit = false;
         this._interfaceCockpit = false;
+        this._pilotSuitCockpit = false;
         this._futureWarsLargeCockpit = false;
         this._extraSensors = false;
         this._extraLifeSupport = false;
@@ -990,7 +993,8 @@ export class BattleMech {
             finalToHit: 0,
         };
         if( this._pilot ) {
-            rv.gunnerySkill = this._pilot.gunnery;
+            // The Pilot Suit cockpit (#640): Gunnery 1 better with a MechWarrior in the suit.
+            rv.gunnerySkill = this._pilot.gunnery - (this.hasPilotSuit() ? 1 : 0);
         }
         return rv;
     }
@@ -2439,8 +2443,10 @@ export class BattleMech {
      * implants read both 1 better, only with the EI interface (IO:AE p.184; lowest 0).
      */
     private _getBattleValueSkills(edition: string): [gunnery: number, piloting: number] {
-        const gunnery = this._pilot?.gunnery ?? 4;
-        const piloting = this._pilot?.piloting ?? 5;
+        // The Pilot Suit cockpit (#640): Gunnery and Piloting 1 better, counted through the skills the table reads (lowest 0).
+        const suit = this.hasPilotSuit() ? 1 : 0;
+        const gunnery = Math.max(0, (this._pilot?.gunnery ?? 4) - suit);
+        const piloting = Math.max(0, (this._pilot?.piloting ?? 5) - suit);
         if (!getBattleValueRules(edition, "mech").levelThree) {
             const implants = this._pilot?.eiImplants && this.hasEnhancedImaging() ? 1 : 0;
             return [Math.max(0, gunnery - implants), Math.max(0, piloting - implants)];
@@ -2690,7 +2696,24 @@ export class BattleMech {
         // Flint's cockpit rule replaces the cockpit choice: a small, torso-mounted or interface cockpit chosen before the
         // ruleset was ticked is built as his (NGCFells's ruling 4, 2026-11-13).
         if (this.usesFutureWarsConstruction()) return getCockpitType("standard");
-        return getCockpitType(this._torsoMountedCockpit ? "torso-mounted" : this._smallCockpit ? "small" : this._interfaceCockpit ? "interface" : "standard");
+        return getCockpitType(this._torsoMountedCockpit ? "torso-mounted" : this._smallCockpit ? "small" : this._interfaceCockpit ? (this._pilotSuitCockpit ? "pilot-suit" : "interface") : "standard");
+    }
+
+    /** The Interface Cockpit or the Pleiades Mechworks Pilot Suit, which is built as it is (head slots, no gyro, placement limits). */
+    private _isInterfaceFamilyCockpit(): boolean {
+        return this._interfaceCockpit;
+    }
+
+    /** True with the Pilot Suit cockpit (#640): Piloting and Gunnery 1 better. */
+    public hasPilotSuit(): boolean {
+        return this._interfaceCockpit && this._pilotSuitCockpit;
+    }
+
+    /** Lines the play view shows for the Pilot Suit cockpit: its built-in ejection system, and what no gyro means. */
+    public getPilotSuitLines(): string[] {
+        if( !this.hasPilotSuit() ) return [];
+        return ["Full-head ejection system built in (no extra weight or cost).",
+            ...(this._gyro.tag === "none" ? ["No gyro: the 'Mech falls if the MechWarrior is knocked out."] : [])];
     }
 
     private _roboticUnitType(): RoboticUnitType { return this.isIndustrialMech() ? "industrialmech" : "battlemech"; }
@@ -2760,7 +2783,7 @@ export class BattleMech {
             : superheavyIndustrial ? ["superheavy-industrial", "superheavy"]
             : this.isIndustrialMech() ? ["industrial", "industrial-advanced-fire-control"]
             : this.usesFutureWarsConstruction() ? ["standard"]
-            : ["standard", "small", "torso-mounted", "interface"];
+            : ["standard", "small", "torso-mounted", "interface", ...(rulesLevel >= CUSTOM_HOMEBREW_RULES_LEVEL ? ["pilot-suit"] : [])];
         return tags.map(tag => {
             // Copies: the availability marks are this 'Mech's, not the shared table's (issue 35).
             const cockpit = { ...getCockpitType(tag) };
@@ -2775,11 +2798,12 @@ export class BattleMech {
 
     /** Choose one of the cockpits offered by getAvailableCockpits(); anything else is ignored. */
     public setCockpitType(tag: string): ICockpitType {
-        if (this.getAvailableCockpits().some(cockpit => cockpit.tag === tag)) {
-            if (tag === "standard" || tag === "small" || tag === "torso-mounted" || tag === "interface") {
+        if (this.getAvailableCockpits(this.getRulesLevel(2)).some(cockpit => cockpit.tag === tag)) {
+            if (tag === "standard" || tag === "small" || tag === "torso-mounted" || tag === "interface" || tag === "pilot-suit") {
                 this._smallCockpit = tag === "small";
                 this._torsoMountedCockpit = tag === "torso-mounted";
-                this._interfaceCockpit = tag === "interface";
+                this._interfaceCockpit = tag === "interface" || tag === "pilot-suit";
+                this._pilotSuitCockpit = tag === "pilot-suit";
             }
             if (tag === "industrial" || tag === "industrial-advanced-fire-control") this._advancedFireControl = tag !== "industrial";
             if (tag === "primitive-industrial" || tag === "primitive-industrial-advanced-fire-control") this._advancedFireControl = tag !== "primitive-industrial";
@@ -2797,7 +2821,7 @@ export class BattleMech {
     public canMountCommandConsole(): boolean {
         const typeTag = this._mechType.tag;
         if (typeTag === "tripod" || typeTag === "quadvee" || typeTag === "lam") return false;
-        return !["torso-mounted", "interface"].includes(this.getCockpitType().tag);
+        return !["torso-mounted", "interface", "pilot-suit"].includes(this.getCockpitType().tag);
     }
 
     /** The Command Console as the cockpit picker offers it: availability judged as getAvailableCockpits() does. */
@@ -8975,7 +8999,7 @@ export class BattleMech {
      */
     private _canArmorRecord(record: ICriticalSlot): boolean {
         if (this.isSuperheavy()) return false;
-        if (BattleMech._isCockpitRecord(record.tag) && this.getCockpitType().tag === "interface") return false;
+        if (BattleMech._isCockpitRecord(record.tag) && this._isInterfaceFamilyCockpit()) return false;
         return this._isArmorableRecord(record);
     }
 
@@ -9160,10 +9184,10 @@ export class BattleMech {
             violations.push("Superheavy 'Mechs may not use armored components.");
         }
         // "The interface cockpit cannot be protected with component armor" (IO:AE p.110).
-        if (this.getCockpitType().tag === "interface" && this.getArmoredComponentRecords().some(armored => BattleMech._isCockpitRecord(armored.record.tag))) {
+        if (this._isInterfaceFamilyCockpit() && this.getArmoredComponentRecords().some(armored => BattleMech._isCockpitRecord(armored.record.tag))) {
             violations.push("The interface cockpit cannot be protected with component armor.");
         }
-        if (this._gyro.tag === "none" && this.getCockpitType().tag !== "interface") {
+        if (this._gyro.tag === "none" && !this._isInterfaceFamilyCockpit()) {
             violations.push("Only a 'Mech with an interface cockpit may be built without a gyro.");
         }
         if (!this._isArmorLegalForChassis(this._armorType)) {
@@ -9810,6 +9834,8 @@ export class BattleMech {
             // Enhanced Imaging: every Piloting Skill Roll -1 (Maximum Tech p.61; IO:AE p.69).
             return (this.isTripod() ? -1 : 0) + (this.hasActiveModularArmor() ? 1 : 0) + this.getFrankenMechLegPilotingModifier()
                 + (this.isEnhancedImagingActive() ? -1 : 0)
+                // The Pilot Suit cockpit (#640): every Piloting roll -1.
+                + (this.hasPilotSuit() ? -1 : 0)
                 // Torso-Mounted Cockpit, blinded: three sensor hits, or two both in the head (TO:AUE p.113).
                 + (this.getCockpitType().tag === "torso-mounted" && (this.sensorHits() >= 3 || this.sensorHits(["hd"]) >= 2) ? 4 : 0)
                 + this.getPowerArmorPilotingModifier();
@@ -10128,6 +10154,8 @@ export class BattleMech {
             exportObject.features.push( "torso_cockpit" );
         if( this._interfaceCockpit)
             exportObject.features.push( "interface_cockpit" );
+        if( this._interfaceCockpit && this._pilotSuitCockpit )
+            exportObject.features.push( "pilot_suit_cockpit" );
         // Smart Robotic Control System (IO:AE p.134): its tag, "srcs" or "srcs-improved".
         if( this._roboticControl !== "none" )
             exportObject.features.push( this._roboticControl );
@@ -10590,6 +10618,7 @@ export class BattleMech {
                     this._torsoMountedCockpit = true;
                 if( importObject.features.indexOf( "interface_cockpit" ) > -1)
                     this._interfaceCockpit = true;
+                this._pilotSuitCockpit = this._interfaceCockpit && importObject.features.indexOf( "pilot_suit_cockpit" ) > -1;
                 this._roboticControl = importObject.features.indexOf( "srcs-improved" ) > -1 ? "srcs-improved"
                     : importObject.features.indexOf( "srcs" ) > -1 ? "srcs" : "none";
 
@@ -12252,7 +12281,7 @@ export class BattleMech {
             gyro.available = availability.available && this.isOfferedInEdition(gyro, rulesLevel) && !(gyro.innerSphereOnly && this.getTech().tag === "clan")
                 && (!this.isLAM() || this._isLAMLegalGyro(gyro.tag))
                 // Only an interface cockpit lets a 'Mech go without a gyro (IO:AE p.110).
-                && (gyro.tag !== "none" || this.getCockpitType().tag === "interface")
+                && (gyro.tag !== "none" || this._isInterfaceFamilyCockpit())
                 // IndustrialMechs and Primitive 'Mechs take the standard gyro only (TM p.69; IO:AE p.116).
                 && (!this._hasBasicChassis() || gyro.tag === "standard");
 
@@ -12861,6 +12890,7 @@ export class BattleMech {
             this._smallCockpit = false;
             this._torsoMountedCockpit = false;
             this._interfaceCockpit = false;
+            this._pilotSuitCockpit = false;
             // The structure setter sizes the internal structure for the tonnage.
             this.setInternalStructureType(this._selectedInternalStructure.tag);
         }

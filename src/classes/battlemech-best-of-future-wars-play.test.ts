@@ -655,3 +655,93 @@ describe("Blue Saviour in play", () => {
         expect(plain.getBlueSaviourReminders()).toEqual([]);
     });
 });
+
+// Pleiades Mechworks Pilot Suit and its cockpit (u/PleiadesMechworks, #640).
+/** The Pilot Suit is a 3151 prototype: the ilClan era is the first that has it. */
+const buildIlClan = (): BattleMech => {
+    const mech = build();
+    mech.setEra("ilClan");
+    return mech;
+};
+
+describe("Pilot Suit cockpit in play and construction", () => {
+    const suit = (): BattleMech => {
+        const mech = buildIlClan();
+        mech.setCockpitType("pilot-suit");
+        return mech;
+    };
+
+    it("is a 5 ton Custom Homebrew cockpit offered where the Interface Cockpit is, and takes its two head slots", () => {
+        const mech = buildIlClan();
+        const offered = mech.getAvailableCockpits(CUSTOM_HOMEBREW_RULES_LEVEL).find((cockpit) => cockpit.tag === "pilot-suit");
+        expect(offered, "offered").toBeTruthy();
+        expect(offered!.available).toBe(true);
+        expect(mech.setCockpitType("pilot-suit")).toMatchObject({ tag: "pilot-suit", weight: 5, techBase: "is", prototype: 3151, rulesLevel: CUSTOM_HOMEBREW_RULES_LEVEL });
+        expect(mech.getCockpitWeight()).toBe(5);
+        const head = mech.getCriticals().head as Array<{ tag?: string } | null>;
+        const interfaceMech = buildIlClan();
+        interfaceMech.setCockpitType("interface");
+        expect(head.filter(Boolean).length).toBe((interfaceMech.getCriticals().head as unknown[]).filter(Boolean).length);
+        expect(head.filter(Boolean).length).toBe(buildIlClan().getCriticals().head.filter(Boolean).length + 1);
+        // Not on an IndustrialMech, as the Interface Cockpit is not.
+        const industrial = new BattleMech();
+        industrial.setTech("is");
+        industrial.setEra("ilClan");
+        industrial.setInternalStructureType("industrial");
+        industrial.applyGameSettings({ ...industrial.getGameSettings(CUSTOM_HOMEBREW_RULES_LEVEL), rulesLevel: CUSTOM_HOMEBREW_RULES_LEVEL });
+        expect(industrial.getAvailableCockpits(CUSTOM_HOMEBREW_RULES_LEVEL).some((cockpit) => cockpit.tag === "pilot-suit" && cockpit.available)).toBe(false);
+    });
+
+    it("may go without a gyro, as the Interface Cockpit may, and a standard cockpit still may not", () => {
+        const mech = suit();
+        expect(mech.getAvailableGyros(4).find((gyro) => gyro.tag === "none")?.available).toBe(true);
+        mech.setGyroType("none");
+        expect(mech.getGyroWeight()).toBe(0);
+        expect(mech.getChassisEquipmentViolations()).toEqual([]);
+        expect(mech.canMountCommandConsole()).toBe(false);
+        mech.setCockpitType("standard");
+        expect(mech.getChassisEquipmentViolations()).toContain("Only a 'Mech with an interface cockpit may be built without a gyro.");
+    });
+
+    it("saves and loads", () => {
+        const mech = suit();
+        mech.setGyroType("none");
+        const copy = new BattleMech();
+        copy.importJSON(mech.exportJSON());
+        expect([copy.getCockpitType().tag, copy.getGyro().tag]).toEqual(["pilot-suit", "none"]);
+        const interfaceMech = buildIlClan();
+        interfaceMech.setCockpitType("interface");
+        const interfaceCopy = new BattleMech();
+        interfaceCopy.importJSON(interfaceMech.exportJSON());
+        expect(interfaceCopy.getCockpitType().tag).toBe("interface");
+    });
+
+    it("plays one better at Gunnery and Piloting", () => {
+        const mech = buildIlClan();
+        mech.setPilotGunnery(4);
+        mech.setPilotPiloting(5);
+        const gunnery = mech.getGATOR().gunnerySkill;
+        const piloting = mech.getPilotingSkillModifier();
+        mech.setCockpitType("pilot-suit");
+        expect(mech.getGATOR().gunnerySkill).toBe(gunnery - 1);
+        expect(mech.getPilotingSkillModifier()).toBe(piloting - 1);
+    });
+
+    it("counts through the pilot skills for Battle Value: Gunnery 4 / Piloting 5 prices as 3 / 4", () => {
+        const standard = buildIlClan();
+        standard.setPilotGunnery(3);
+        standard.setPilotPiloting(4);
+        const mech = suit();
+        mech.setPilotGunnery(4);
+        mech.setPilotPiloting(5);
+        expect(mech.getPilotAdjustedBattleValue()).toBe(standard.getPilotAdjustedBattleValue());
+    });
+
+    it("tells the player the suit is a full-head ejection cockpit and, with no gyro, that the 'Mech falls if the MechWarrior is knocked out", () => {
+        const mech = suit();
+        expect(mech.getPilotSuitLines()).toEqual(["Full-head ejection system built in (no extra weight or cost)."]);
+        mech.setGyroType("none");
+        expect(mech.getPilotSuitLines()).toContain("No gyro: the 'Mech falls if the MechWarrior is knocked out.");
+        expect(buildIlClan().getPilotSuitLines()).toEqual([]);
+    });
+});
