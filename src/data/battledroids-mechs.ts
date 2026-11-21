@@ -43,6 +43,11 @@ export interface IPrintedDroid {
     printedArmorFactor: number;
     /** One entry per item; each ammunition line is one ton per critical box printed. */
     equipment: { tag: string; location: PrintedDroidLocation; rear?: boolean }[];
+    /**
+     * Heat sinks by location as the sheet's Critical Hit Chart prints them. Only the Merlin's chart is printed (BD
+     * p.25); every other listing gives no places, so its heat sinks are spread one to each location in turn.
+     */
+    heatSinkPlaces?: Partial<Record<PrintedDroidLocation, number>>;
     /** The figurine carries a turret here: items listed in it that do not fit its slots are mounted in the turret. */
     turret?: PrintedDroidLocation;
     notes: string[];
@@ -192,6 +197,7 @@ export const battledroidsPrintedDroids: IPrintedDroid[] = [
         tonnage: 60, engineRating: 240, walk: 4, jump: 4, heatSinks: 18,
         armor: { head: 9, centerTorso: 26, centerTorsoRear: 13, sideTorso: 19, sideTorsoRear: 9, arm: 20, leg: 24 },
         printedArmorFactor: 192,
+        heatSinkPlaces: { ra: 3, hd: 1, la: 2, rt: 2, ct: 2, lt: 4, rl: 2, ll: 2 },
         equipment: [
             ...items(1, "standard-ppc", "rt"), ...items(1, "lrm-5", "rt"), ...items(1, "ammo-lrm-standard", "rt"),
             ...items(1, "medium-laser", "ra"), ...items(1, "medium-laser", "la"), ...items(1, "machine-gun", "lt"),

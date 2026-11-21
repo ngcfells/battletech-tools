@@ -212,8 +212,8 @@ describe("Printed Battledroids droids: the apocryphal sources", () => {
         // The figurine carries them in a turret on the center torso: mounted there as printed, nothing left over.
         expect(getPrintedTurretCriticals(mech).map(critical => critical.tag).sort()).toEqual(
             ["ammo-machine-gun-standard", "machine-gun", "machine-gun", "standard-ppc"]);
-        // The extra heat sinks wait for slots on every droid (discussion #73); no weapon or ammunition does.
-        expect(getUnallocatedCriticals(mech).filter(critical => critical.tag !== "heat-sink")).toEqual([]);
+        // Nothing waits for a slot, the heat sinks included (#206).
+        expect(getUnallocatedCriticals(mech)).toEqual([]);
         expect(mech.getInstalledEquipment().filter(item => item.location === "ct").map(item => item.tag).sort()).toEqual([
             "ammo-lrm-standard", "ammo-lrm-standard", "ammo-machine-gun-standard", "machine-gun", "machine-gun", "standard-ppc",
         ]);
@@ -405,4 +405,48 @@ describe("Printed Battledroids droids: building and saving", () => {
             expect(built(entry.id).model, entry.id).toBe(entry.model);
         }
     }, 30000);
+});
+
+// Heat sinks on the Critical Hit Chart, by location code, in the chart's order.
+const heatSinkPlaces = (mech: BattleMech): Record<string, number> => {
+    const places: Record<string, number> = {};
+    const criticals = mech.getCriticals() as unknown as Record<string, ({ tag: string } | null)[]>;
+    for (const key of ["rightArm", "head", "leftArm", "rightTorso", "centerTorso", "leftTorso", "rightLeg", "leftLeg"]) {
+        const count = (criticals[key] ?? []).filter(slot => slot?.tag === "heat-sink").length;
+        if (count) {
+            places[codes[key]] = count;
+        }
+    }
+    return places;
+};
+
+// BD p.25: "Heat sinks occupy [one] space on the table each", the engine's ten included.
+describe("Printed Battledroids droids: heat sinks on the Critical Hit Chart", () => {
+    it("places the Merlin's 18 as its chart prints them (BD p.25)", () => {
+        expect(heatSinkPlaces(built("merlin"))).toEqual({ ra: 3, hd: 1, la: 2, rt: 2, ct: 2, lt: 4, rl: 2, ll: 2 });
+        expect(getUnallocatedCriticals(built("merlin"))).toEqual([]);
+    });
+
+    it("spreads the rest over the chart, one to each location in turn, as the Merlin's are", () => {
+        // 10: one in each of the 8 locations, then the arms.
+        expect(heatSinkPlaces(built("stg-3r"))).toEqual({ ra: 2, hd: 1, la: 2, rt: 1, ct: 1, lt: 1, rl: 1, ll: 1 });
+        // 18: the head, center torso and legs fill (1 free; 1 beside the machine gun ammunition; 2), the arms and
+        // torsos take the rest in turn.
+        expect(heatSinkPlaces(built("whm-6r"))).toEqual({ ra: 3, hd: 1, la: 3, rt: 3, ct: 1, lt: 3, rl: 2, ll: 2 });
+    });
+
+    it("leaves no droid with a heat sink waiting for a slot", () => {
+        for (const entry of battledroidsPrintedDroids) {
+            const mech = built(entry.id);
+            expect(getUnallocatedCriticals(mech), entry.id).toEqual([]);
+            const places = Object.values(heatSinkPlaces(mech)).reduce((sum, count) => sum + count, 0);
+            expect(places, entry.id).toBe(entry.heatSinks);
+        }
+    }, 30000);
+
+    it("keeps the places through a save and load", () => {
+        const loaded = new BattleMech();
+        loaded.import(built("merlin").export());
+        expect(heatSinkPlaces(loaded)).toEqual({ ra: 3, hd: 1, la: 2, rt: 2, ct: 2, lt: 4, rl: 2, ll: 2 });
+    });
 });
