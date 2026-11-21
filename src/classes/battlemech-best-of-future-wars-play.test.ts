@@ -3,6 +3,8 @@ import { BattleMech } from "./battlemech";
 import { findSpecialRuleset } from "../data/special-rulesets";
 import { CUSTOM_HOMEBREW_RULES_LEVEL } from "../data/rules-level-options";
 import { getTargetToHitFromWeapon } from "../utils";
+import { blueSaviourFails, getBlueSaviourFailureTarget, getBlueSaviourReminders, getIncomingEnergyDamage, halveEnergyDamage, isEnergyWeapon } from "../utils/future-wars-play";
+import { getEquipmentCatalogs } from "../data/equipment-registry";
 import { ITargetToHit } from "./battlemech";
 
 /**
@@ -453,5 +455,203 @@ describe("Boosted Autocannon Rounds in play", () => {
         const { mech, gun, standard } = withAC10();
         mech.selectAmmoBin(gun.uuid!, standard.uuid!);
         expect(mech.getActiveWeaponHeat()).toBe(gun.heat);
+    });
+});
+
+// Pleiades Mechworks Blue Saviour Dispersion Field (#641): the pure rules, then the 'Mech's play state.
+describe("Blue Saviour rules (future-wars-play.ts)", () => {
+    it("halves energy damage rounded down, at least 1", () => {
+        expect(halveEnergyDamage(1)).toBe(1);
+        expect(halveEnergyDamage(2)).toBe(1);
+        expect(halveEnergyDamage(15)).toBe(7);
+        expect(halveEnergyDamage(0)).toBe(0);
+    });
+
+    it("halves once for each field the shot crosses: Heavy PPC 15 to 7 to 3 with both", () => {
+        expect(getIncomingEnergyDamage(15, { blueSaviourActive: true, reflective: true })).toBe(3);
+        expect(getIncomingEnergyDamage(15, { blueSaviourActive: true, reflective: false })).toBe(7);
+        expect(getIncomingEnergyDamage(15, { blueSaviourActive: false, reflective: true })).toBe(7);
+        expect(getIncomingEnergyDamage(15, { blueSaviourActive: false, reflective: false })).toBe(15);
+        expect(getIncomingEnergyDamage(1, { blueSaviourActive: true, reflective: true })).toBe(1);
+    });
+
+    it("is safe for six active turns, then fails on a 2D6 roll below 2 plus 1 for each turn after the sixth", () => {
+        expect(getBlueSaviourFailureTarget(1)).toBeUndefined();
+        expect(getBlueSaviourFailureTarget(6)).toBeUndefined();
+        expect(getBlueSaviourFailureTarget(7)).toBe(3);
+        expect(getBlueSaviourFailureTarget(12)).toBe(8);
+        expect(blueSaviourFails(7, 2)).toBe(true);
+        expect(blueSaviourFails(7, 3)).toBe(false);
+        expect(blueSaviourFails(12, 7)).toBe(true);
+        expect(blueSaviourFails(12, 8)).toBe(false);
+    });
+
+    it("reminds of the missile and ECM clauses, the stealth loss and that it cannot hide", () => {
+        expect(getBlueSaviourReminders({ hasStealth: false })).toEqual(["missiles: treat as AMS", "inside a hostile ECM field, no ECCM", "cannot be hidden"]);
+        expect(getBlueSaviourReminders({ hasStealth: true })).toContain("stealth off");
+    });
+
+    it("counts catalog energy weapons, not ballistics, missiles or ammunition", () => {
+        const catalog = (tag: string) => getEquipmentCatalogs().is.find((item) => item.tag === tag)!;
+        expect(isEnergyWeapon(catalog("standard-ppc"))).toBe(true);
+        expect(isEnergyWeapon(catalog("er-flamer"))).toBe(true);
+        expect(isEnergyWeapon(catalog("plasma-rifle"))).toBe(true);
+        expect(isEnergyWeapon(catalog("autocannon-standard-c"))).toBe(false);
+    });
+});
+
+describe("Blue Saviour in play", () => {
+    const placeSpread = (mech: BattleMech, tag: string, location: string, key: string) => {
+        const from = mech.unallocatedCriticals.findIndex((critical) => critical?.tag === tag);
+        const slot = mech.getCriticals()[key].findIndex((critical) => !critical);
+        expect(mech.moveCritical("un", from, location, slot)).toBe(true);
+        return slot;
+    };
+    const crit = (mech: BattleMech, location: string, slot: number) => mech.rollCriticalHit(location, { chance: 8, lines: location === "hd" ? [slot + 1] : [slot < 6 ? 1 : 4, slot % 6 + 1] });
+    const saviour = () => {
+        const mech = build();
+        mount(mech, "custom-blue-saviour");
+        return mech;
+    };
+
+    it("is switched on and off only on a 'Mech that mounts it", () => {
+        const plain = build();
+        expect(plain.setBlueSaviour(true)).toBe(false);
+        expect(plain.isBlueSaviourOn()).toBe(false);
+        const mech = saviour();
+        expect(mech.setBlueSaviour(true)).toBe(true);
+        expect(mech.isBlueSaviourOn()).toBe(true);
+        expect(mech.setBlueSaviour(false)).toBe(true);
+        expect(mech.isBlueSaviourOn()).toBe(false);
+    });
+
+    it("adds 7 heat in the heat phase of a turn it is on, and nothing when off", () => {
+        const mech = saviour();
+        expect(mech.getFutureWarsIncomingHeat()).toBe(0);
+        mech.setBlueSaviour(true);
+        expect(mech.getFutureWarsIncomingHeat()).toBe(7);
+        mech.setBlueSaviour(false);
+        expect(mech.getFutureWarsIncomingHeat()).toBe(0);
+    });
+
+    it("counts active turns and asks for no roll before the seventh", () => {
+        const mech = saviour();
+        mech.setBlueSaviour(true);
+        for (let turn = 1; turn <= 6; turn++) {
+            expect(mech.getBlueSaviourCheckTarget(), `turn ${turn}`).toBeUndefined();
+            endTurn(mech);
+        }
+        expect(mech.getBlueSaviourState().activeTurns).toBe(6);
+        expect(mech.getBlueSaviourCheckTarget()).toBe(3);
+    });
+
+    it("fails on a roll below the target and stays off for the scenario; a roll equal to the target survives", () => {
+        const mech = saviour();
+        mech.setBlueSaviour(true);
+        for (let turn = 1; turn <= 6; turn++) endTurn(mech);
+        expect(mech.rollBlueSaviourCheck(3)).toBe("safe");
+        expect(mech.getBlueSaviourCheckTarget()).toBeUndefined();
+        expect(mech.isBlueSaviourOn()).toBe(true);
+        endTurn(mech);
+        expect(mech.getBlueSaviourCheckTarget()).toBe(4);
+        expect(mech.rollBlueSaviourCheck(3)).toBe("failed");
+        expect(mech.isBlueSaviourOn()).toBe(false);
+        expect(mech.setBlueSaviour(true)).toBe(false);
+        endTurn(mech);
+        expect(mech.isBlueSaviourOn()).toBe(false);
+    });
+
+    it("halves an outgoing energy weapon's damage only while on", () => {
+        const mech = saviour();
+        mount(mech, "standard-ppc");
+        const ppc = inPlay(mech, "standard-ppc");
+        expect(mech.getBlueSaviourOutgoingDamage(ppc, 10)).toBe(10);
+        mech.setBlueSaviour(true);
+        expect(mech.getBlueSaviourOutgoingDamage(ppc, 10)).toBe(5);
+        expect(mech.getBlueSaviourOutgoingDamage(ppc, 1)).toBe(1);
+        mount(mech, "autocannon-standard-c");
+        expect(mech.getBlueSaviourOutgoingDamage(inPlay(mech, "autocannon-standard-c"), 10)).toBe(10);
+    });
+
+    it("halves incoming energy damage for an active field and Laser Reflective armor, and leaves other damage alone", () => {
+        const mech = saviour();
+        expect(mech.getIncomingDamageApplied(15, true)).toBe(15);
+        mech.setBlueSaviour(true);
+        expect(mech.getIncomingDamageApplied(15, true)).toBe(7);
+        expect(mech.getIncomingDamageApplied(15, false)).toBe(15);
+        mech.setArmorType("laser-reflective");
+        expect(mech.getIncomingDamageApplied(15, true)).toBe(3);
+        const reflectiveOnly = build();
+        reflectiveOnly.setArmorType("laser-reflective");
+        expect(reflectiveOnly.getIncomingDamageApplied(15, true)).toBe(7);
+    });
+
+    it("a critical hit on a slot while on explodes for 5 in that location, once, and kills it", () => {
+        const mech = saviour();
+        mech.setBlueSaviour(true);
+        const slot = placeSpread(mech, "custom-blue-saviour", "lt", "leftTorso");
+        const structure = mech.getCurrentStructure();
+        const log = crit(mech, "lt", slot);
+        expect(log.join(" ")).toContain("5");
+        expect(mech.getCurrentStructure()).toBeLessThan(structure);
+        expect(mech.getBlueSaviourState()).toMatchObject({ exploded: true });
+        expect(mech.isBlueSaviourOn()).toBe(false);
+        const second = placeSpread(mech, "custom-blue-saviour", "rt", "rightTorso");
+        const after = mech.getCurrentStructure();
+        crit(mech, "rt", second);
+        expect(mech.getCurrentStructure()).toBe(after);
+    });
+
+    it("explodes in the head too, and CASE contains it in a torso", () => {
+        const head = saviour();
+        head.setBlueSaviour(true);
+        const slot = placeSpread(head, "custom-blue-saviour", "hd", "head");
+        const before = head.getCurrentStructure();
+        crit(head, "hd", slot);
+        expect(head.getCurrentStructure()).toBeLessThan(before);
+
+        const open = saviour();
+        open.setBlueSaviour(true);
+        const openSlot = placeSpread(open, "custom-blue-saviour", "lt", "leftTorso");
+        const openBefore = open.getCurrentStructure();
+        crit(open, "lt", openSlot);
+        const openLoss = openBefore - open.getCurrentStructure();
+
+        const cased = saviour();
+        placeIn(cased, "case", "lt", "leftTorso");
+        cased.setBlueSaviour(true);
+        const casedSlot = placeSpread(cased, "custom-blue-saviour", "lt", "leftTorso");
+        const casedBefore = cased.getCurrentStructure();
+        crit(cased, "lt", casedSlot);
+        expect(casedBefore - cased.getCurrentStructure()).toBeLessThanOrEqual(openLoss);
+    });
+
+    it("no explosion when it is off or has failed", () => {
+        const off = saviour();
+        const slot = placeSpread(off, "custom-blue-saviour", "lt", "leftTorso");
+        const structure = off.getCurrentStructure();
+        crit(off, "lt", slot);
+        expect(off.getCurrentStructure()).toBe(structure);
+        expect(off.getBlueSaviourState().exploded).toBeFalsy();
+    });
+
+    it("saves and loads with the force, and clears with the game", () => {
+        const mech = saviour();
+        mech.setBlueSaviour(true);
+        endTurn(mech);
+        const copy = new BattleMech();
+        copy.importJSON(mech.exportJSON());
+        expect(copy.getBlueSaviourState()).toEqual(mech.getBlueSaviourState());
+        expect(copy.getBlueSaviourState().activeTurns).toBe(1);
+        mech.resetDamage();
+        expect(mech.isBlueSaviourOn()).toBe(false);
+        expect(mech.getBlueSaviourState().activeTurns).toBe(0);
+    });
+
+    it("a 'Mech without it is unchanged", () => {
+        const plain = build();
+        expect(plain.getIncomingDamageApplied(15, true)).toBe(15);
+        expect(plain.getFutureWarsIncomingHeat()).toBe(0);
+        expect(plain.getBlueSaviourReminders()).toEqual([]);
     });
 });

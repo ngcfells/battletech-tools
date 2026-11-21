@@ -5,12 +5,12 @@ import { getPowerBoostedWeapon } from "../../../../data/best-of-future-wars-conv
 import { CUSTOM_HOMEBREW_RULES_LEVEL } from "../../../../data/rules-level-options";
 import {
     getFutureWarsPlayKind, getLRFlamerScatter, getPDSInterception, getPenitratorDie, getPenitratorHit, getSabotDamage, getVHESplashLocations,
-    INFERNO_GAUSS_HEAT_PER_TURN, MAX_EXTERNAL_HEAT_PER_TURN, VHE_AMMO_EXPLOSION_PER_SHELL, VHE_DAMAGE,
+    BLUE_SAVIOUR_HEAT, INFERNO_GAUSS_HEAT_PER_TURN, MAX_EXTERNAL_HEAT_PER_TURN, VHE_AMMO_EXPLOSION_PER_SHELL, VHE_DAMAGE,
 } from "../../../../utils/future-wars-play";
 import { getLocationName } from "../../../../utils";
 
 /**
- * Best of Future Wars (#172), Chunk C: counters, rollers and reminders for the fanzine equipment in roster play.
+ * Fan equipment in roster play: Best of Future Wars (#172), Chunk C counters, rollers and reminders for the fanzine equipment, and the Pleiades Mechworks Blue Saviour (#641).
  * Rules from *The Best of Future Wars, Volume One* (1991); the numbers live in `src/utils/future-wars-play.ts`.
  */
 
@@ -217,6 +217,37 @@ const FutureWarsPlayPanel = (props: IFutureWarsPlayPanelProps) => {
         }
     };
 
+    // Pleiades Mechworks Blue Saviour Dispersion Field (#641): switch it in the End Phase, roll its failure check, read the reminders.
+    const blueSaviour = () => {
+        const state = mech.getBlueSaviourState();
+        const target = mech.getBlueSaviourCheckTarget();
+        const status = state.exploded ? "Exploded: dead for the scenario"
+            : state.failed ? "Failed: off for the scenario"
+            : state.on ? `On: ${BLUE_SAVIOUR_HEAT} heat a turn, energy damage in and out halved (round down, at least 1)` : "Off";
+        const reminders = mech.getBlueSaviourReminders();
+        return (
+            <div className="small-text" data-testid="fw-blue-saviour">
+                <strong>Blue Saviour Dispersion Field</strong>
+                <div data-testid="fw-blue-saviour-status" className={state.failed || state.exploded ? "color-red" : ""}>{status} ({state.activeTurns} turns on)</div>
+                <button className="btn btn-sm btn-secondary" data-testid="fw-blue-saviour-toggle" disabled={state.failed || state.exploded}
+                    onClick={() => { mech.setBlueSaviour(!state.on); changed(); }}>
+                    {state.on ? "Switch off (End Phase)" : "Switch on (End Phase)"}
+                </button>
+                {target !== undefined ? (
+                    <div data-testid="fw-blue-saviour-check">
+                        Start of turn: roll 2D6; less than {target} fails it for the scenario.{" "}
+                        <NumberBox testId="fw-blue-saviour-roll" label="2D6" min={2} max={12} value={roll("blue-saviour", 7)} onChange={(value) => setRoll("blue-saviour", value)} />{" "}
+                        <button className="btn btn-sm btn-primary" data-testid="fw-blue-saviour-roll-button"
+                            onClick={() => { mech.rollBlueSaviourCheck(roll("blue-saviour", 7)); changed(); }}>
+                            Roll
+                        </button>
+                    </div>
+                ) : null}
+                {reminders.length ? <div data-testid="fw-blue-saviour-reminders">{reminders.join("; ")}</div> : null}
+            </div>
+        );
+    };
+
     const burn = mech.getLRFlamerBurnThisTurn();
     const infernoTurns = mech.futureWarsPlay.infernoGaussTurns ?? 0;
     const fireHeat = burn.heat + (infernoTurns ? INFERNO_GAUSS_HEAT_PER_TURN : 0);
@@ -265,6 +296,7 @@ const FutureWarsPlayPanel = (props: IFutureWarsPlayPanelProps) => {
                     Hit by an Inferno Gauss shell
                 </button>
             </div>
+            {mech.hasBlueSaviour() ? blueSaviour() : null}
         </fieldset>
     );
 };

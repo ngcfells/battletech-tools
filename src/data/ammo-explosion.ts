@@ -175,12 +175,22 @@ export function getAmmoExplosion(
         if (shots > 0) shot = Math.max(shot, perShot);
         baseDamage += bin.battleArmorScale ? getBattleArmorScaleExplosionDamage(shots * (bin.kgPerShot ?? 0) / 1000) : shots * perShot;
     }
+    return resolveExplosion(rules, unitType, baseDamage, shot, protection);
+}
+
+function resolveExplosion(rules: IAmmoExplosionRules, unitType: RulesEditionUnitType, baseDamage: number, shot: number, protection: AmmoExplosionProtection): IAmmoExplosion {
     let damage = rules.oneShot?.includes(protection) ? Math.min(shot, baseDamage) : baseDamage;
     const divisor = rules.damageDivisor?.[protection] ?? rules.damageDivisor?.none;
     if (divisor && damage > 0) damage = Math.max(rules.minDamage ?? 0, Math.floor(damage / divisor));
     damage = Math.min(damage, rules.cap?.[protection] ?? Infinity);
     const log = rules.pilotDamage > 0 ? [`The ${unitType === "mech" ? "MechWarrior" : "pilot"} takes ${rules.pilotDamage} damage (${rules.cite})`] : [];
     return { rules, baseDamage, damage, log };
+}
+
+/** An explosion of a fixed `baseDamage` (not from ammunition: the Blue Saviour's 5 points), by the edition's ammunition explosion rules. */
+export function getFixedExplosion(editionTag: string | undefined, unitType: RulesEditionUnitType, baseDamage: number, protection: AmmoExplosionProtection = "none"): IAmmoExplosion | undefined {
+    const rules = getAmmoExplosionRules(editionTag, unitType);
+    return rules ? resolveExplosion(rules, unitType, baseDamage, baseDamage, protection) : undefined;
 }
 
 /**

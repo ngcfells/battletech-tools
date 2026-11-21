@@ -60,6 +60,7 @@ import SpaceTrackerBar from './_spaceTrackerBar';
 import { AntiOrbitalGunControls, SpaceResolutionDialog } from './_antiOrbitalControls';
 import QuirksInPlay from '../../../components/quirks-in-play';
 import FutureWarsPlayPanel, { getBoostedMoveNote, showFutureWarsPlay } from './_futureWarsPlay';
+import { isEnergyWeapon } from '../../../../utils/future-wars-play';
 import FutureWarsRulesetTools, { showFutureWarsRulesetTools, showPowerArmorTargetFlag } from './_futureWarsRulesetTools';
 import { getCarrierQuirkEffects, IQuirkCarrier } from '../../../../utils/quirk-effects';
 const ArrowCircleDown = FaArrowCircleDown as any;
@@ -120,6 +121,7 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
             takeDamageLocationRear: false,
             takeDamageLocation: "",
             takeDamageCritical: false,
+            takeDamageEnergy: false,
 
             zoomSheet: false,
             selectedVehicleUUID: "",
@@ -1159,6 +1161,7 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
         takeDamageLocation: "",
         takeDamageLocationRear: false,
         takeDamageCritical: false,
+        takeDamageEnergy: false,
         takeDamageLocationRoll: 0,
         takeDamageLocationSide: "",
       })
@@ -1181,6 +1184,7 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
           takeDamageLocation: "",
           takeDamageLocationRear: false,
           takeDamageCritical: false,
+          takeDamageEnergy: false,
           takeDamageLocationRoll: 0,
           takeDamageLocationSide: "",
         })
@@ -1200,21 +1204,25 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
         if( currentBM ) {
           const damageLog = currentBM.damageLog;
 
+          // An energy hit is halved by an active Blue Saviour and by Laser Reflective armor (#641); the log keeps both amounts.
+          const applied = currentBM.getIncomingDamageApplied(this.state.takeDamageAmount, this.state.takeDamageEnergy);
           const takeDamageResult = currentBM.takeDamage(
-            this.state.takeDamageAmount,
+            applied,
             this.state.takeDamageLocation,
             this.state.takeDamageLocationRear,
           );
 
           damageLog.push( {
             turn: this.props.appGlobals.currentCBTForce.turn,
-            amount: this.state.takeDamageAmount,
+            amount: applied,
+            ...(applied !== this.state.takeDamageAmount ? { entered: this.state.takeDamageAmount } : {}),
             rear: this.state.takeDamageLocationRear,
             location: this.state.takeDamageLocation,
             damageResults: takeDamageResult,
           })
 
           this.setState({
+            takeDamageEnergy: false,
             takeDamageLocation: "",
             takeDamageLocationRoll: 0,
             takeDamageLocationSide: "",
@@ -1796,6 +1804,10 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
                         const damagePerCluster = selectedAmmo?.ammoProfile?.damagePerMissile ?? attack.damagePerCluster;
 
                         let attackDamage = attack.damage ? attack.damage.toString() : "";
+                        // An energy weapon's hit is halved while this unit's Blue Saviour is on (#641).
+                        if( typeof attack.damage === "number" && attack.damage > 0 && unit.isBlueSaviourOn() && isEnergyWeapon(attack) ) {
+                          attackDamage = `${unit.getBlueSaviourOutgoingDamage(attack, attack.damage)} (half of ${attack.damage}, Blue Saviour)`;
+                        }
                         let attackDamageSecondLine = "";
                         if( attack.damagePerShot ) {
                           attackDamage += "/shot";
@@ -2899,6 +2911,18 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
       <div className="col-md-3 smaller-padding">
     <fieldset className="fieldset ">
         <legend>How Much Damage?</legend>
+        {this.state.takeDamageDialog.getEnergyDamageHalvings() > 0 ? (
+          <label className="small-text" data-testid="take-damage-energy">
+            <input
+              type="checkbox"
+              checked={this.state.takeDamageEnergy}
+              onChange={(e) => this.setState({ takeDamageEnergy: e.currentTarget.checked })}
+            />{" "}
+            Energy weapon (halved{this.state.takeDamageDialog.getEnergyDamageHalvings() > 1 ? " twice" : ""}, rounded down
+            {this.state.takeDamageEnergy && this.state.takeDamageAmount > 0
+              ? `: ${this.state.takeDamageDialog.getIncomingDamageApplied(this.state.takeDamageAmount, true)} applied` : ""})
+          </label>
+        ) : null}
         <br />
         {chunkRange( makeRange(1, 50) , 5).map( (section, sectionIndex) => {
 
@@ -3003,7 +3027,7 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
         {this.state.takeDamageDialog.damageLog.map( (line, lineIndex) => {
           return (
             <li key={lineIndex}>
-              {line.amount} on {getLocationName( line.location, this.state.takeDamageDialog ? this.state.takeDamageDialog.isQuad() : false) }
+              {line.amount}{line.entered !== undefined ? ` (${line.entered} entered, energy halved)` : ""} on {getLocationName( line.location, this.state.takeDamageDialog ? this.state.takeDamageDialog.isQuad() : false) }
               {line.damageResults?.flatMap( result => result.criticalEffects ).map( (effect, effectIndex) => <div key={effectIndex} className="small-text">{effect}</div> )}
             </li>
           )
@@ -3912,6 +3936,8 @@ interface IPlayState {
   takeDamageLocationRear: boolean;
   takeDamageLocation: string;
   takeDamageCritical: boolean;
+  /** The hit was from an energy weapon: halved by an active Blue Saviour and by Laser Reflective armor (#641). */
+  takeDamageEnergy: boolean;
 
   criticalHitDialog: BattleMech | null;
 

@@ -2,8 +2,9 @@ import { IEquipmentItem } from "../data/data-interfaces";
 import type { FutureWarsPrinting } from "./future-wars-ruleset-tools";
 
 /**
- * Best of Future Wars (#172), Chunk C: the play rules of the fanzine equipment, as plain functions the 'Mech play panel
- * and `BattleMech` read. Pages are the printed pages of *The Best of Future Wars, Volume One* (1991).
+ * Fan equipment play rules, as plain functions the 'Mech play panel and `BattleMech` read. Best of Future Wars (#172),
+ * Chunk C: pages are the printed pages of *The Best of Future Wars, Volume One* (1991). Pleiades Mechworks (#641): the
+ * Blue Saviour Dispersion Field, at the end.
  */
 
 export type FutureWarsPlayKind =
@@ -182,4 +183,46 @@ export function getBoostedJumpMP(jumpMP: number): number {
 /** Jumping heat with a jump-jet booster on: twice the normal 1 a hex, at least 3 (TW p.68), so at least 6. */
 export function getBoostedJumpHeat(hexesJumped: number): number {
     return 2 * Math.max(3, hexesJumped);
+}
+
+// --- Pleiades Mechworks Blue Saviour Dispersion Field (u/PleiadesMechworks, #641).
+/** Heat a Blue Saviour makes each turn it is on. */
+export const BLUE_SAVIOUR_HEAT = 7;
+/** Turns on in a scenario that are safe from failure. */
+export const BLUE_SAVIOUR_SAFE_TURNS = 6;
+/** Damage a Blue Saviour slot explodes for when hit while on. */
+export const BLUE_SAVIOUR_EXPLOSION = 5;
+
+/** Energy damage halved, rounded down, at least 1 (0 stays 0): the Blue Saviour's field and Laser Reflective armor. */
+export function halveEnergyDamage(damage: number): number {
+    return damage <= 0 ? 0 : Math.max(1, Math.floor(damage / 2));
+}
+
+/** Damage one energy hit does to a unit: halved once for an active Blue Saviour, then once more for Laser Reflective armor. */
+export function getIncomingEnergyDamage(damage: number, fields: { blueSaviourActive: boolean; reflective: boolean }): number {
+    let result = damage;
+    if (fields.blueSaviourActive) result = halveEnergyDamage(result);
+    if (fields.reflective) result = halveEnergyDamage(result);
+    return result;
+}
+
+/** The 2D6 target a Blue Saviour must meet on its `activeTurn`th turn on in the scenario: none up to the sixth, then 2 plus 1 for each turn after it. */
+export function getBlueSaviourFailureTarget(activeTurn: number): number | undefined {
+    return activeTurn <= BLUE_SAVIOUR_SAFE_TURNS ? undefined : 2 + (activeTurn - BLUE_SAVIOUR_SAFE_TURNS);
+}
+
+/** Whether the roll fails the field: less than the target (equal survives). */
+export function blueSaviourFails(activeTurn: number, roll2d6: number): boolean {
+    const target = getBlueSaviourFailureTarget(activeTurn);
+    return target !== undefined && roll2d6 < target;
+}
+
+/** Reminder lines while a Blue Saviour is on, until the electronic warfare rules in play take over the missile and ECM clauses. */
+export function getBlueSaviourReminders(unit: { hasStealth: boolean }): string[] {
+    return ["missiles: treat as AMS", "inside a hostile ECM field, no ECCM", ...(unit.hasStealth ? ["stealth off"] : []), "cannot be hidden"];
+}
+
+/** A non-capital energy weapon: lasers, PPCs, flamers, plasma and the like. Ammunition and equipment are not weapons. */
+export function isEnergyWeapon(item: Pick<IEquipmentItem, "category" | "isAmmo" | "isEquipment" | "name" | "tag">): boolean {
+    return !item.isAmmo && !item.isEquipment && item.category === "Energy Weapons" && !/capital/i.test(`${item.name} ${item.tag}`);
 }

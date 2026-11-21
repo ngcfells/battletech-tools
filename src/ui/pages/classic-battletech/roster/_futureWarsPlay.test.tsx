@@ -157,3 +157,38 @@ describe("Best of Future Wars play panel", () => {
         expect(getBoostedMoveNote(mech, "w")).toBe("");
     });
 });
+
+describe("Blue Saviour in the play panel (#641)", () => {
+    it("is not shown on a 'Mech without one", () => {
+        render(<FutureWarsPlayPanel mech={build([])} onChange={vi.fn()} />);
+        expect(screen.queryByTestId("fw-blue-saviour")).toBeNull();
+    });
+
+    it("switches on and off, shows the 7 heat and the reminder lines while on", () => {
+        const mech = build(["custom-blue-saviour"]);
+        const onChange = vi.fn();
+        render(<FutureWarsPlayPanel mech={mech} onChange={onChange} />);
+        expect(screen.getByTestId("fw-blue-saviour-status").textContent).toMatch(/Off/);
+        expect(screen.queryByTestId("fw-blue-saviour-reminders")).toBeNull();
+        fireEvent.click(screen.getByTestId("fw-blue-saviour-toggle"));
+        expect(mech.isBlueSaviourOn()).toBe(true);
+        expect(onChange).toHaveBeenCalledWith(mech);
+        expect(screen.getByTestId("fw-blue-saviour-status").textContent).toMatch(/On: 7 heat/);
+        expect(screen.getByTestId("fw-blue-saviour-reminders").textContent).toMatch(/missiles: treat as AMS.*hostile ECM field.*cannot be hidden/);
+        fireEvent.click(screen.getByTestId("fw-blue-saviour-toggle"));
+        expect(mech.isBlueSaviourOn()).toBe(false);
+    });
+
+    it("asks for the 2D6 after six turns on, and a roll below the target fails it for the scenario", () => {
+        const mech = build(["custom-blue-saviour"]);
+        mech.setBlueSaviour(true);
+        for (let turn = 0; turn < 6; turn++) { mech.applyHeat(); mech.turnReset(); }
+        render(<FutureWarsPlayPanel mech={mech} onChange={vi.fn()} />);
+        expect(screen.getByTestId("fw-blue-saviour-check").textContent).toMatch(/less than 3/);
+        fireEvent.change(screen.getByTestId("fw-blue-saviour-roll"), { target: { value: "2" } });
+        fireEvent.click(screen.getByTestId("fw-blue-saviour-roll-button"));
+        expect(mech.getBlueSaviourState().failed).toBe(true);
+        expect(screen.getByTestId("fw-blue-saviour-status").textContent).toMatch(/Failed/);
+        expect((screen.getByTestId("fw-blue-saviour-toggle") as HTMLButtonElement).disabled).toBe(true);
+    });
+});

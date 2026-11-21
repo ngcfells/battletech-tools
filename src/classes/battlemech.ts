@@ -22,7 +22,7 @@ import { IArmorType, ICockpitType, ICriticalLocations, IEngineOption, IEngineTyp
 import { btEraOptions, findEraByTag, getClosestEraForTech, getEraForYear, getErasForTech } from "../data/era-options";
 import { mechArmorTypes } from "../data/mech-armor-types";
 import { findAllByName, findByTag, matchesTag } from "../data/tag-match";
-import { AmmoExplosionProtection, getAmmoExplosion, getAmmoExplosionRules } from "../data/ammo-explosion";
+import { AmmoExplosionProtection, getAmmoExplosion, getAmmoExplosionRules, getFixedExplosion, IAmmoExplosion } from "../data/ammo-explosion";
 import { ComponentRecord, getComponentRecords, getComponentTiers, isCustomComponent } from "../data/custom-component-registry";
 import type { CustomComponentKind, ISSWUnresolvedItem } from "../data/custom-content-types";
 import { getCockpitType } from "../data/mech-cockpit-types";
@@ -55,6 +55,7 @@ import { addCommas } from "../utils/addCommas";
 import { rollCriticalLine } from "../utils/critical-tables";
 import {
     getBoostedJumpHeat, getBoostedJumpMP, getBoostedRunHeat, getFutureWarsPlayKind, getInfernoGaussAmmoCrit, getLRFlamerAmmoHit, getLRFlamerBurn,
+    BLUE_SAVIOUR_EXPLOSION, BLUE_SAVIOUR_HEAT, blueSaviourFails, getBlueSaviourFailureTarget, getBlueSaviourReminders, getIncomingEnergyDamage, halveEnergyDamage, isEnergyWeapon,
     getPowerBoosterRoll, INFERNO_GAUSS_HEAT_PER_TURN, INFERNO_GAUSS_TURNS_PER_HIT, LR_FLAMER_BURN_TURNS, MAX_EXTERNAL_HEAT_PER_TURN, PDS_INTEGRAL_BURSTS, PowerBoosterResult, getPDSHeat,
 } from "../utils/future-wars-play";
 import {
@@ -298,6 +299,8 @@ export interface IFutureWarsPlayState {
     boostedRunHexes?: number;
     /** Heat from inside the 'Mech waiting for this turn's heat phase (Inferno Gauss shells igniting). */
     pendingHeat?: number;
+    /** The Pleiades Mechworks Blue Saviour (#641): switched on, turns it has been on this game, and whether it has failed or exploded (both for the scenario). */
+    blueSaviour?: { on?: boolean; activeTurns?: number; failed?: boolean; exploded?: boolean; checkedAt?: number };
     // The play-rule rulesets (Chunk E; src/utils/future-wars-ruleset-tools.ts).
     /** Strategic Movement this turn: walking or running, and the MP used (pp.18-19). */
     strategicMovement?: { mode: "w" | "r"; mp: number };
@@ -6343,7 +6346,87 @@ export class BattleMech {
      */
     public getFutureWarsIncomingHeat(): number {
         const external = this.getLRFlamerBurnThisTurn().heat + ((this.futureWarsPlay.infernoGaussTurns ?? 0) > 0 ? INFERNO_GAUSS_HEAT_PER_TURN : 0);
-        return Math.min(MAX_EXTERNAL_HEAT_PER_TURN, external) + (this.futureWarsPlay.pendingHeat ?? 0);
+        return Math.min(MAX_EXTERNAL_HEAT_PER_TURN, external) + (this.futureWarsPlay.pendingHeat ?? 0) + (this.isBlueSaviourOn() ? BLUE_SAVIOUR_HEAT : 0);
+    }
+
+    // --- The Pleiades Mechworks Blue Saviour Dispersion Field (#641; src/utils/future-wars-play.ts).
+
+    /** True when a Blue Saviour is mounted. */
+    public hasBlueSaviour(): boolean {
+        return this._equipmentList.some(item => !!item && item.tag === "custom-blue-saviour");
+    }
+
+    public isBlueSaviourOn(): boolean {
+        return this.hasBlueSaviour() && !!this.futureWarsPlay.blueSaviour?.on;
+    }
+
+    /** Switched on, turns on so far, and whether it has failed or exploded (the rest of the scenario). */
+    public getBlueSaviourState(): { on: boolean; activeTurns: number; failed: boolean; exploded: boolean } {
+        const state = this.futureWarsPlay.blueSaviour;
+        return { on: !!state?.on, activeTurns: state?.activeTurns ?? 0, failed: !!state?.failed, exploded: !!state?.exploded };
+    }
+
+    /** Switches the field on or off (End Phase). False when none is mounted, or it has failed or exploded. Off is always allowed. */
+    public setBlueSaviour(on: boolean): boolean {
+        if( !this.hasBlueSaviour() ) return false;
+        const state = this.getBlueSaviourState();
+        if( on && (state.failed || state.exploded) ) return false;
+        this.futureWarsPlay.blueSaviour = { ...this.futureWarsPlay.blueSaviour, on };
+        return true;
+    }
+
+    /** The 2D6 target to beat at the start of this turn, when the field is on and past its sixth turn and has not yet been rolled this turn. */
+    public getBlueSaviourCheckTarget(): number | undefined {
+        if( !this.isBlueSaviourOn() ) return undefined;
+        const state = this.getBlueSaviourState();
+        if( this.futureWarsPlay.blueSaviour?.checkedAt === state.activeTurns ) return undefined;
+        return getBlueSaviourFailureTarget(state.activeTurns + 1);
+    }
+
+    /** Applies this turn's 2D6 roll: a roll below the target fails the field for the scenario. Undefined when no roll is due. */
+    public rollBlueSaviourCheck(roll: number): "safe" | "failed" | undefined {
+        const target = this.getBlueSaviourCheckTarget();
+        if( target === undefined ) return undefined;
+        const state = this.getBlueSaviourState();
+        if( blueSaviourFails(state.activeTurns + 1, roll) ) {
+            this.futureWarsPlay.blueSaviour = { ...this.futureWarsPlay.blueSaviour, on: false, failed: true };
+            return "failed";
+        }
+        this.futureWarsPlay.blueSaviour = { ...this.futureWarsPlay.blueSaviour, checkedAt: state.activeTurns };
+        return "safe";
+    }
+
+    /** An outgoing hit of `damage` from `weapon`: halved for an energy weapon while the field is on. */
+    public getBlueSaviourOutgoingDamage(weapon: IEquipmentItem, damage: number): number {
+        return this.isBlueSaviourOn() && isEnergyWeapon(weapon) ? halveEnergyDamage(damage) : damage;
+    }
+
+    /** How many times an energy hit is halved on this 'Mech: once for an active Blue Saviour, once for Laser Reflective armor. */
+    public getEnergyDamageHalvings(): number {
+        return (this.isBlueSaviourOn() ? 1 : 0) + (this._armorType.tag === "laser-reflective" ? 1 : 0);
+    }
+
+    /** Damage one incoming hit does: energy damage is halved for an active Blue Saviour, then for Laser Reflective armor. */
+    public getIncomingDamageApplied(amount: number, energy: boolean): number {
+        if( !energy ) return amount;
+        return getIncomingEnergyDamage(amount, { blueSaviourActive: this.isBlueSaviourOn(), reflective: this._armorType.tag === "laser-reflective" });
+    }
+
+    /** Lines the play view shows while the field is on, until the electronic warfare rules take over the missile and ECM clauses. */
+    public getBlueSaviourReminders(): string[] {
+        if( !this.isBlueSaviourOn() ) return [];
+        const hasStealth = this._armorType.tag === "stealth-basic" || this._equipmentList.some(item => !!item && ["null-signature-system", "custom-null-signature-system"].includes(item.tag));
+        return getBlueSaviourReminders({ hasStealth });
+    }
+
+    /** A critical hit on a Blue Saviour slot: while on, a 5-point explosion in that location and the field is dead for the scenario; otherwise nothing. */
+    private _onBlueSaviourHit(location: string): string[] {
+        if( !this.isBlueSaviourOn() ) return [];
+        this.futureWarsPlay.blueSaviour = { ...this.futureWarsPlay.blueSaviour, on: false, exploded: true };
+        const protection = this._ammoExplosionProtection(location);
+        const explosion = getFixedExplosion(this._rulesEdition, "mech", BLUE_SAVIOUR_EXPLOSION, protection);
+        if( !explosion ) return [];
+        return this._applyInternalExplosion(location, explosion, protection, this.usesPowerArmorConstruction(), `The Blue Saviour explodes for ${BLUE_SAVIOUR_EXPLOSION} damage and is dead for the scenario.`);
     }
 
     /** Built-in bursts left in the PDS `uuid` (50 to start). */
@@ -6400,6 +6483,8 @@ export class BattleMech {
         }
         // The pilot who spent the turn unlatching the plate leaves the suit in the End Phase (Best-of p.15, rule 12).
         if( play.powerArmorExit === "unlatching" ) play.powerArmorExit = "out";
+        // A turn ended with the Blue Saviour on counts toward its failure track (#641).
+        if( play.blueSaviour?.on ) play.blueSaviour.activeTurns = (play.blueSaviour.activeTurns ?? 0) + 1;
         delete play.boostedRunHexes;
         delete play.pendingHeat;
         delete play.strategicMovement;
@@ -7484,6 +7569,7 @@ export class BattleMech {
      */
     private _onSlotHit(location: string, slot: ICriticalSlot | null | undefined): string[] {
         const powerArmor = this.usesPowerArmorConstruction();
+        if (slot && matchesTag(slot, "custom-blue-saviour")) return this._onBlueSaviourHit(location);
         // A Power Armor suit's pilot: a critical in the head kills, in the center torso 1D6 hits (Best-of p.15, rules
         // 9-10; #172). Ours: logged for the player to mark, as other pilot hits are.
         if (powerArmor && slot?.name === "Pilot") {
@@ -7533,8 +7619,17 @@ export class BattleMech {
         const explosion = getAmmoExplosion(this._rulesEdition, "mech", bins, item => this.getAmmoBinWeapon(item) ?? undefined, item => this.getAmmoBinRemaining(item), protection);
         if (!explosion?.baseDamage) return [];
         for (const item of bins) item.currentAmmo = 0;
+        return this._applyInternalExplosion(location, explosion, protection, powerArmor,
+            `${bins.map(item => item.name).join(", ")} explode${bins.length > 1 ? "" : "s"} for ${explosion.baseDamage} damage.`);
+    }
+
+    /**
+     * An explosion inside the 'Mech at `location`: `explosion.damage` goes to internal structure and transfers inward until a
+     * location with CASE vents it; damage over the edition's cap may strip armor where it stops. Returns the log lines, `what` first.
+     */
+    private _applyInternalExplosion(location: string, explosion: IAmmoExplosion, protection: AmmoExplosionProtection, powerArmor: boolean, what: string): string[] {
         const vents = (at: string) => this._ammoExplosionProtection(at) !== "none";
-        const centerTorsoLost = () => Array.from({ length: 40 }, (_, index) => this.structureDamaged("ct", index)).filter(Boolean).length;
+        const centerTorsoLost =() => Array.from({ length: 40 }, (_, index) => this.structureDamaged("ct", index)).filter(Boolean).length;
         const centerTorsoBefore = centerTorsoLost();
         this.takeDamage(explosion.damage, location, false, { structureOnly: true, ventAt: vents });
         // A suit's pilot takes 1 hit, or is killed when the blast reaches the center torso: "the blast came from INSIDE
@@ -7555,7 +7650,7 @@ export class BattleMech {
             this._calc();
         }
         const vented = protection === "none" ? [] : [`${protection === "case" ? "CASE" : "CASE II"} vents the rest.`];
-        return [`${bins.map(item => item.name).join(", ")} explode${bins.length > 1 ? "" : "s"} for ${explosion.baseDamage} damage.`, ...vented, ...pilotLog];
+        return [what, ...vented, ...pilotLog];
     }
 
     /** A head or limb blown off: its armor and internal structure are gone. */
@@ -15740,6 +15835,8 @@ export interface IMechDamageLog {
     location: string;
     rear: boolean;
     amount: number;
+    /** The amount entered, when an energy hit was halved by a Blue Saviour or Laser Reflective armor (#641); `amount` is what was applied. */
+    entered?: number;
     damageResults: IDamageResults[];
 }
 
