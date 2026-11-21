@@ -244,6 +244,21 @@ describe("Classic roster Master Unit List search", () => {
         expect(group.vehicles.map((vehicle) => vehicle.getName() + " " + vehicle.getModel())).toEqual(["Falconet ArtVee FLC-1"]);
     }, 30_000);
 
+
+    it("adds the shipped Hardsuit PA(L) battle armor found in the custom units, with nothing saved (#640)", async () => {
+        const appGlobals = makeAppGlobals();
+        appGlobals.appSettings.cbtMULSearch = newMULSearchFilters({ type: 22, term: "Hardsuit", sources: ["custom"] });
+        const onChange = vi.fn();
+        render(
+            <MemoryRouter>
+                <BattleMechAddMechDialog appGlobals={appGlobals} currentForce={appGlobals.currentCBTForce!.groups[0]} currentForceIndex={0} onChange={onChange} />
+            </MemoryRouter>
+        );
+        const add = await screen.findByRole("button", { name: /^Add Hardsuit PA\(L\)$/ }, { timeout: 20_000 });
+        fireEvent.click(add);
+        const group: BattleMechGroup = onChange.mock.calls[0][0];
+        expect(group.battleArmor.map((squad) => [squad.getName(), squad.getSquadSize()])).toEqual([["Hardsuit PA(L)", 5]]);
+    }, 30_000);
     // A MegaMek vehicle the MUL lacks is filed in the custom unit list, and is in the main search with it ticked.
     it("adds the bundled MegaMek design for a vehicle found in the custom units, with nothing saved", async () => {
         const appGlobals = makeAppGlobals();

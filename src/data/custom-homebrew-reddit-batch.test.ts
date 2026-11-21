@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
+import BattleArmor from "../classes/battle-armor";
 import { BattleMech } from "../classes/battlemech";
+import { BATTLE_ARMOR_SAMPLES } from "./battle-armor-samples";
+import { buildBattleArmorMULRecords } from "./sample-mul";
 import { ammoCatalog } from "./ammo";
 import { ammoCustom } from "./ammo-custom";
 import { ballisticCustom } from "./ballistic-custom";
@@ -253,5 +256,68 @@ describe("Pleiades Mechworks Blue Saviour Dispersion Field (Custom Homebrew)", (
         expect(found!.notes).toContain("Taurian");
         expect(found!.cbills).toBe(1000000);
         expect(found!.techRating).toBe("e");
+    });
+});
+
+// Pleiades Mechworks Hardsuit PA(L) and Hardsuit PA(L) VTOL battle armor (u/PleiadesMechworks, #640).
+describe("Pleiades Mechworks Hardsuit battle armor (Custom Homebrew)", () => {
+    const suit = (id: string): BattleArmor => {
+        const sample = BATTLE_ARMOR_SAMPLES.find((entry) => entry.id === id);
+        if (!sample) throw new Error(`no sample ${id}`);
+        return new BattleArmor(JSON.stringify(sample.save));
+    };
+
+    it("loads the Hardsuit PA(L) as the sheet prints it", () => {
+        const hardsuit = suit("hardsuit-pa-l");
+        expect(hardsuit.getName()).toBe("Hardsuit PA(L)");
+        expect(hardsuit.getTechBase()).toBe("is");
+        expect(hardsuit.getWeightClass().tag).toBe("pa-l");
+        expect(hardsuit.getSquadSize()).toBe(5);
+        expect([hardsuit.getGroundMP(), hardsuit.getMotive(), hardsuit.getJumpMP()]).toEqual([3, "jump", 3]);
+        expect(hardsuit.getItems().map((entry) => entry.tag).sort()).toEqual(["is-fuel-tank", "is-mission-equipment"]);
+        expect(hardsuit.getItems().find((entry) => entry.tag === "is-mission-equipment")?.kg).toBe(45);
+        expect(hardsuit.getArmorPoints()).toBe(2);
+        expect(hardsuit.getEra().tag).toBe("star-league");
+        // 400 kg: the PA(L) class full, as the sheet's 45 kg of storage is the room left.
+        expect(hardsuit.getWeight()).toBe(400);
+        expect(hardsuit.getIssues()).toEqual([]);
+    });
+
+    it("loads the Hardsuit PA(L) VTOL as Clan technology with VTOL 7 and 10 kg of storage", () => {
+        const vtol = suit("hardsuit-pa-l-vtol");
+        expect(vtol.getName()).toBe("Hardsuit PA(L) VTOL");
+        expect(vtol.getTechBase()).toBe("clan");
+        expect(vtol.getSquadSize()).toBe(5);
+        expect([vtol.getGroundMP(), vtol.getMotive()]).toEqual([3, "vtol"]);
+        expect(vtol.getMovementText()).toBe("Ground 3 / VTOL 7");
+        expect(vtol.getItems().map((entry) => entry.tag)).toEqual(["clan-mission-equipment"]);
+        expect(vtol.getItems()[0].kg).toBe(10);
+        expect(vtol.getEra().tag).toBe("jihad");
+    });
+
+    it("prices them by our rules: Alpha Strike point values match the sheets' 9 and 12; the Battle Values do not, and are ours", () => {
+        for (const sample of BATTLE_ARMOR_SAMPLES) {
+            const printed = sample.sheet.split("/").map(Number);
+            const built = suit(sample.id);
+            expect(built.getAlphaStrikeStats().pointValue, sample.id).toBe(printed[1]);
+            expect(built.getBattleValue(), sample.id).toBeGreaterThan(0);
+            expect(built.getBattleValue(), sample.id).not.toBe(printed[0]);
+            expect(built.getCBillCost(), sample.id).toBeGreaterThan(0);
+        }
+    });
+
+    it("flags the VTOL as printed: 450 kg against the 400 kg of the PA(L) class", () => {
+        expect(suit("hardsuit-pa-l-vtol").getIssues().join(" ")).toContain("over the 400 kg");
+    });
+
+    it("is offered by the roster's unit search from the custom unit list, credited to u/PleiadesMechworks", () => {
+        const records = buildBattleArmorMULRecords();
+        expect(records.map((record) => record.Name)).toEqual(["Hardsuit PA(L)", "Hardsuit PA(L) VTOL"]);
+        for (const record of records) {
+            expect(record.CustomInfo?.author).toBe("u/PleiadesMechworks");
+            expect(record.Type?.Name).toBe("Battle Armor");
+            expect(record.BFType).toBe("BA");
+        }
+        expect(records.map((record) => record.BFPointValue)).toEqual([9, 12]);
     });
 });

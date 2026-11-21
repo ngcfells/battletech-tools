@@ -7,6 +7,7 @@ import { isAlphaStrikeAbilityCode } from "./alpha-strike-special-abilities";
 import { EMPLACEMENT_CARDS } from "./emplacement-cards";
 import { ARTVEE_SAMPLES } from "./artvee-samples";
 import { VTOLAM_SAMPLES } from "./vtolam-samples";
+import { BATTLE_ARMOR_SAMPLES } from "./battle-armor-samples";
 import { loadMULListItems } from "./mul-list-items";
 import { CUSTOM_MUL_FILE_PATH, mergeCustomMULEntries } from "./custom-mul";
 import { untabulate } from "../utils/packed-json";
@@ -24,7 +25,7 @@ describe("Sample units in the custom unit list", () => {
 
     it("carries every sample with the stats its creator converts to", () => {
         const list = untabulate(JSON.parse(fs.readFileSync(listPath, "utf8"))) as IASMULUnit[];
-        expect(built).toHaveLength(ARTVEE_SAMPLES.length + VTOLAM_SAMPLES.length + EMPLACEMENT_CARDS.length);
+        expect(built).toHaveLength(ARTVEE_SAMPLES.length + VTOLAM_SAMPLES.length + EMPLACEMENT_CARDS.length + BATTLE_ARMOR_SAMPLES.length);
         for (const record of built) {
             expect(list.find((entry) => entry.MulUnitKey === record.MulUnitKey)).toEqual(record);
         }

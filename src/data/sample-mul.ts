@@ -1,6 +1,8 @@
 import type { IASMULUnit } from "../classes/alpha-strike-unit";
 import { BattleMech } from "../classes/battlemech";
+import BattleArmor from "../classes/battle-armor";
 import Vehicle from "../classes/vehicle";
+import { BATTLE_ARMOR_SAMPLES, BATTLE_ARMOR_SAMPLES_CREDIT } from "./battle-armor-samples";
 import { groundTMM } from "../utils/alphaStrikeGroundPointValue";
 import { mulEras } from "../utils/mulUtilities";
 import { ARTVEE_SAMPLES } from "./artvee-samples";
@@ -20,6 +22,8 @@ export const VTOLAM_MUL_ID_START = ARTVEE_MUL_ID_START + 100;
 export const VTOLAM_MUL_DATE = "2026-10-26T00:00:00.000Z";
 export const EMPLACEMENT_MUL_ID_START = VTOLAM_MUL_ID_START + 100;
 export const EMPLACEMENT_MUL_DATE = "2026-11-15T00:00:00.000Z";
+export const BATTLE_ARMOR_MUL_ID_START = EMPLACEMENT_MUL_ID_START + 100;
+export const BATTLE_ARMOR_MUL_DATE = "2026-11-21T00:00:00.000Z";
 
 export function getMULEraIdForYear(year: number): number {
     return mulEras.find((era) => year >= era.yearStart && (era.yearEnd === null || year <= era.yearEnd))?.id ?? 0;
@@ -179,6 +183,46 @@ export function buildEmplacementMULRecords(): IASMULUnit[] {
         sampleRecord(emplacementMULForm(card), EMPLACEMENT_MUL_ID_START + index, card.key, EMPLACEMENT_MUL_DATE));
 }
 
+/** A battle armor squad's custom-list entry, from its own Battle Value and Alpha Strike conversion; credits are the caller's. */
+export function battleArmorMULForm(suit: BattleArmor): ICustomMULForm {
+    const stats = suit.getAlphaStrikeStats();
+    const damage = (value: { damage: number; minimal: boolean }): string => (value.minimal ? "0*" : String(value.damage));
+    return {
+        ...emptyCustomMULForm(),
+        name: suit.getName(),
+        unitType: "Battle Armor",
+        technology: customTechnology(suit.getTechName()),
+        eraId: String(getMULEraIdForYear(suit.getEra().yearStart)),
+        // The squad's weight in tons.
+        tonnage: String(Math.round(suit.getWeight() * suit.getSquadSize()) / 1000),
+        battleValue: String(suit.getBattleValue()),
+        pointValue: String(stats.pointValue),
+        size: String(stats.size),
+        move: stats.move,
+        tmm: String(groundTMM(stats.movement)),
+        armor: String(stats.armor),
+        structure: String(stats.structure),
+        damageShort: damage(stats.damageValues.short),
+        damageMedium: damage(stats.damageValues.medium),
+        damageLong: damage(stats.damageValues.long),
+        abilities: stats.specialAbilities.join(","),
+    };
+}
+
+/** The Hardsuit battle armor (Pleiades Mechworks, #640): each sample, in sample order. */
+export function buildBattleArmorMULRecords(): IASMULUnit[] {
+    return BATTLE_ARMOR_SAMPLES.map((sample, index) => {
+        const form = {
+            ...battleArmorMULForm(new BattleArmor(JSON.stringify(sample.save))),
+            rules: "Experimental",
+            author: "u/PleiadesMechworks",
+            source: "Battle armor samples (Battle Armor Creator, Custom Homebrew)",
+            notes: `${BATTLE_ARMOR_SAMPLES_CREDIT} Built from the record sheet, which prints BV/PV ${sample.sheet}; the point value matches, the Battle Value is ours.`,
+        };
+        return sampleRecord(form, BATTLE_ARMOR_MUL_ID_START + index, `BATTLEARMOR-${sample.id.toUpperCase()}`, BATTLE_ARMOR_MUL_DATE);
+    });
+}
+
 export function buildSampleMULRecords(): IASMULUnit[] {
-    return [...buildArtVeeMULRecords(), ...buildVTOLAMMULRecords(), ...buildEmplacementMULRecords()];
+    return [...buildArtVeeMULRecords(), ...buildVTOLAMMULRecords(), ...buildEmplacementMULRecords(), ...buildBattleArmorMULRecords()];
 }
