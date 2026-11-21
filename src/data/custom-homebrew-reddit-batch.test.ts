@@ -202,6 +202,8 @@ describe("Pleiades Mechworks Boosted Autocannon Rounds (Custom Homebrew)", () =>
         ["AC/5", "ammo-ac-5-standard", "ammo-ac-5-boosted", [3, 8, 16, 24], 2, 10, 12],
         ["AC/10", "ammo-ac-10-standard", "ammo-ac-10-boosted", [1, 7, 14, 21], 3, 5, 21],
         ["AC/12", "ammo-custom-ac-12-standard", "ammo-custom-ac-12-boosted", [1, 5, 10, 15], 4, 4, 22],
+        // Not in the post: the AC/15 is the midway of the AC/10 and AC/20 rows (ours), like its other figures.
+        ["AC/15", "ammo-ac-15-standard", "ammo-ac-15-boosted", [1, 5, 11, 16], 4, 3, 25],
         ["AC/20", "ammo-ac-20-standard", "ammo-ac-20-boosted", [1, 4, 8, 12], 5, 2, 29],
     ];
     const everyAmmo = [...ammoCatalog, ...ammoCustom];
@@ -222,7 +224,7 @@ describe("Pleiades Mechworks Boosted Autocannon Rounds (Custom Homebrew)", () =>
         // 6x the standard round, as the canon Precision round (36,000 against 6,000).
         expect(boosted.cbills).toBe(record(standardTag).cbills * 6);
         expect(boosted.introduced).toBeLessThan(3062);
-        const weapon = [...ballisticCustom, ...getEquipmentCatalogs().is].find((item) => item.tag === (standardTag === "ammo-custom-ac-12-standard" ? "custom-ac-12" : { "ammo-ac-2-standard": "autocannon-standard-a", "ammo-ac-5-standard": "autocannon-standard-b", "ammo-ac-10-standard": "autocannon-standard-c", "ammo-ac-20-standard": "autocannon-standard-d" }[standardTag]));
+        const weapon = [...ballisticCustom, ...getEquipmentCatalogs().is].find((item) => item.tag === (standardTag === "ammo-custom-ac-12-standard" ? "custom-ac-12" : { "ammo-ac-15-standard": "custom-ac-15", "ammo-ac-2-standard": "autocannon-standard-a", "ammo-ac-5-standard": "autocannon-standard-b", "ammo-ac-10-standard": "autocannon-standard-c", "ammo-ac-20-standard": "autocannon-standard-d" }[standardTag]));
         expect(weapon, "weapon").toBeTruthy();
         expect(getAmmoBattleValuePerTon(weapon!, boosted)).toBeCloseTo(bv, 5);
         expect(getCompatibleAmmo(weapon!, boosted)).toBe(true);

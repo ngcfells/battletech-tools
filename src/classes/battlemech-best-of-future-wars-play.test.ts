@@ -832,3 +832,23 @@ describe("Review fixes: Blue Saviour turn counting and the cockpit flags", () =>
         expect(showFutureWarsPlay(suit)).toBe(true);
     });
 });
+
+describe("Boosted Autocannon Rounds on the AC/15 in play", () => {
+    it("adds 4 heat and reads the boosted bands (ours, midway of the AC/10 and AC/20 rows)", () => {
+        const mech = build();
+        mount(mech, "custom-ac-15");
+        const standard = mount(mech, "ammo-ac-15-standard");
+        const boosted = mount(mech, "ammo-ac-15-boosted");
+        const index = mech.equipmentList.findIndex((item) => item.tag === "custom-ac-15");
+        const gun = mech.equipmentList[index];
+        gun.target = "a";
+        const target = (range: number): ITargetToHit => ({ ...mech.getTarget("a"), active: true, range, movement: 0, otherMods: 0, primary: true } as ITargetToHit);
+        mech.selectAmmoBin(gun.uuid!, standard.uuid!);
+        const plain = mech.getActiveWeaponHeat();
+        expect(getTargetToHitFromWeapon(mech, index, target(11)).rangeExplanation).not.toBe("Medium");
+        mech.selectAmmoBin(gun.uuid!, boosted.uuid!);
+        expect(mech.getActiveWeaponHeat()).toBe(plain + 4);
+        expect(getTargetToHitFromWeapon(mech, index, target(11)).rangeExplanation).toBe("Medium");
+        expect(getTargetToHitFromWeapon(mech, index, target(16)).rangeExplanation).toBe("Long");
+    });
+});

@@ -354,21 +354,26 @@ const ac12Munition = (munition: typeof AC12_MUNITIONS[number]): IEquipmentItem =
  * a ton; damage is unchanged. Tags follow the standard round's (ammo-ac-N-boosted) so the round joins that weapon's ammunition family.
  * Cost is ours: 6x the standard round, as the canon Precision round (the nearest canon special munition, which the lore says this inspired).
  */
-const BOOSTED_ROUNDS: Array<{ size: "2" | "5" | "10" | "12" | "20"; bands: [number, number, number, number]; extraHeat: number; shots: number; bv: number; standardBV: number }> = [
+const BOOSTED_ROUNDS: Array<{ size: "2" | "5" | "10" | "12" | "15" | "20"; ours?: boolean; bands: [number, number, number, number]; extraHeat: number; shots: number; bv: number; standardBV: number }> = [
     { size: "2", bands: [4, 10, 20, 30], extraHeat: 2, shots: 22, bv: 6, standardBV: 5 },
     { size: "5", bands: [3, 8, 16, 24], extraHeat: 2, shots: 10, bv: 12, standardBV: 9 },
     { size: "10", bands: [1, 7, 14, 21], extraHeat: 3, shots: 5, bv: 21, standardBV: 15 },
     { size: "12", bands: [1, 5, 10, 15], extraHeat: 4, shots: 4, bv: 22, standardBV: 18 },
+    // Not in the post: the AC/15 (Solaris7, Kronos Class 15) is the midway of the AC/10 and AC/20 rows, as its other figures are the midway of theirs (ours).
+    { size: "15", ours: true, bands: [1, 5, 11, 16], extraHeat: 4, shots: 3, bv: 25, standardBV: 19 },
     { size: "20", bands: [1, 4, 8, 12], extraHeat: 5, shots: 2, bv: 29, standardBV: 22 },
 ];
 const BOOSTED_COST_MULTIPLIER = 6;
+/** The AC/15 standard round's cost a ton (ammo-ac-15-standard, below). */
+const AC15_STANDARD_CBILLS = 8000;
 
 const boostedAmmo = (round: typeof BOOSTED_ROUNDS[number]): IEquipmentItem => {
     const standardTag = round.size === "12" ? AC12_STANDARD_TAG : `ammo-ac-${round.size}-standard`;
-    const standard = round.size === "12" ? ac12Standard() : isAmmoList.find((item) => item.tag === standardTag);
+    // The AC/15's standard round is this file's own record (8,000 C-bills a ton, below), so its slots and sheet follow the AC/10 round's.
+    const standard = round.size === "12" ? ac12Standard() : isAmmoList.find((item) => item.tag === (round.size === "15" ? "ammo-ac-10-standard" : standardTag));
     if (!standard) throw new Error(`Boosted ammo: ${standardTag} not found`);
     const [min, short, medium, long] = round.bands;
-    const cbills = standard.cbills * BOOSTED_COST_MULTIPLIER;
+    const cbills = (round.size === "15" ? AC15_STANDARD_CBILLS : standard.cbills) * BOOSTED_COST_MULTIPLIER;
     return {
         isAmmo: true,
         isSpecialAmmo: true,
@@ -400,7 +405,7 @@ const boostedAmmo = (round: typeof BOOSTED_ROUNDS[number]): IEquipmentItem => {
         catalog: "custom",
         rulesLevel: 6,
         notes: `Custom Homebrew by u/PleiadesMechworks (r/NormalBattletech, Pleiades Mechworks equipment post). Boosted rounds for the AC/${round.size}: damage unchanged, range ${min}/${short}/${medium}/${long} (minimum/short/medium/long), `
-            + `${round.extraHeat} extra heat each shot, ${round.shots} shots a ton, ${round.bv} Battle Value a ton (all the post's). Not for light autocannons, LB-X, Ultra, Rotary or HVAC. `
+            + `${round.extraHeat} extra heat each shot, ${round.shots} shots a ton, ${round.bv} Battle Value a ton (${round.ours ? "ours: the post has no AC/15 row, so these are the midway of its AC/10 and AC/20 rows, rounded down" : "all the post's"}). Not for light autocannons, LB-X, Ultra, Rotary or HVAC. `
             + `Ours: ${cbills.toLocaleString("en-US")} C-bills a ton (${BOOSTED_COST_MULTIPLIER}x the standard round, as the canon Precision round, which the lore says these inspired); dated just before Precision ammunition.`,
         rules: `Fired from this bin, the AC/${round.size} has range ${min}/${short}/${medium}/${long} and makes ${round.extraHeat} more heat each shot. Damage is unchanged. ${round.shots} shots a ton.`,
         lore: "Pleiades Mechworks' hot-loaded autocannon shells push the same slug further, at the price of a hotter breech. The idea is said to have inspired Precision ammunition."
