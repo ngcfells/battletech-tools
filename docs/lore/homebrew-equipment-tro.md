@@ -264,6 +264,24 @@ own torpedoes, and Thunderbolt missile launchers cannot fire them.
 The Federated Suns' water-world navies built the torpedo in 3082. Wet-navy crews call it the heaviest single blow a
 submarine or a wading 'Mech can throw.
 
+## Pleiades Mechworks Equipment
+
+*u/PleiadesMechworks, r/NormalBattletech: the Autocannon/12, Boosted Autocannon Rounds, "Personal" ECM Suite and Blue Saviour Dispersion Field (#641), and the Pilot Suit cockpit with the Hardsuit battle armor it was built on (#640). The two Hardsuit record sheets are in the library. Every figure is the author's unless marked ours.*
+
+| Item | Era | Tech base | Notes |
+| --- | --- | --- | --- |
+| **Autocannon/12** | 3020, Federated Suns | Inner Sphere | 12 damage, heat 4, range 4/8/12, 13 tons, 7 slots, BV 142; headcaps. Its seven munitions (standard, armor-piercing, precision, flechette, flak, tracer, caseless) are ours, scaled from the AC/10's. |
+| **Boosted Autocannon Rounds** | just before Precision ammunition (ours: 3057) | Inner Sphere | For the AC/2, AC/5, AC/10, AC/12 and AC/20: longer range, extra heat (2, 2, 3, 4, 5), fewer shots; cost ours, 6 times the standard round. |
+| **"Personal" ECM Suite** | 2720 (ours, from the Nighthawk's battle armor ECM) | Inner Sphere | A Guardian ECM Suite for its own hex only, no ECCM mode; not an ECM suite for Stealth Armor. 0.5 tons, 1 slot, defensive BV 20. Its play effect arrives with the electronic warfare rules in play. |
+| **Blue Saviour Dispersion Field** | Prototype 3151, Taurian Defense Forces | Inner Sphere | 5 tons, one slot in every location. On: 7 heat, energy damage in and out halved, no stealth, cannot hide; fails after six turns on; a critical hit explodes it for 5. Cost 1,000,000 and BV rule ours, from the Blue Shield. |
+| **Pilot Suit cockpit** | Prototype 3151 | Inner Sphere | 5 tons with a full-head ejection system; Piloting and Gunnery 1 better; no gyro needed. Slots and limits ours, from the Interface Cockpit. |
+| **Hardsuit PA(L)** | 2768 (ours) | Inner Sphere | Squad of 5, ground 3, jump 3, two Armored Gloves, Fuel Tank, 45 kg of mission storage; exactly the PA(L) class's 400 kg. |
+| **Hardsuit PA(L) VTOL** | 3083 | Clan | Squad of 5, ground 3, VTOL 7, two Armored Gloves, 10 kg of storage. As the sheet prints it, our creator weighs it 450 kg against the class's 400 kg and flags it. |
+
+**Battle Value.** The sheets print BV/PV pairs of 63/9 and 84/12. Our Alpha Strike point values match (9 and 12); our Battle Values are 55 and 63, lower than the sheets', and are what the builder computes. The Blue Saviour has no Battle Value of its own, as the canon Blue Shield has none; it adds 0.2 to the armor and structure type modifiers.
+
+**The Blue Saviour's halving.** Energy damage is halved rounded down, at least 1, once for the field and once more for Laser Reflective armor: a Heavy PPC's 15 becomes 7, then 3. Two Blue Saviours halve a shot once each, so a quarter.
+
 ## Other Items Priced the Same Way
 
 The same pass filled in every other Custom Homebrew, Apocryphal and Munchkin item that lacked a Battle Value or cost. A figure the author gave was never changed.
