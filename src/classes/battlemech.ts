@@ -300,7 +300,7 @@ export interface IFutureWarsPlayState {
     /** Heat from inside the 'Mech waiting for this turn's heat phase (Inferno Gauss shells igniting). */
     pendingHeat?: number;
     /** The Pleiades Mechworks Blue Saviour (#641): switched on, turns it has been on this game, and whether it has failed or exploded (both for the scenario). */
-    blueSaviour?: { on?: boolean; activeTurns?: number; failed?: boolean; exploded?: boolean; checkedAt?: number };
+    blueSaviour?: { on?: boolean; next?: boolean; started?: boolean; activeTurns?: number; failed?: boolean; exploded?: boolean; checkedAt?: number };
     // The play-rule rulesets (Chunk E; src/utils/future-wars-ruleset-tools.ts).
     /** Strategic Movement this turn: walking or running, and the MP used (pp.18-19). */
     strategicMovement?: { mode: "w" | "r"; mp: number };
@@ -1039,7 +1039,7 @@ export class BattleMech {
         const armorBVMultiplier = armorTypeMultiplier(this._armorType);
         const isPatchwork = this.isPatchworkArmor();
         if (blueShieldBonus > 0) {
-            trace.add("bv2.def.armor.blue-shield", { label: "Blue Shield: +0.2 to the armor and structure type modifiers" });
+            trace.add("bv2.def.armor.blue-shield", { label: "Blue Shield or Blue Saviour: +0.2 to the armor and structure type modifiers" });
         }
         if (isPatchwork) {
             // Patchwork: "Calculate the modified Defensive Battle Rating on a location-by-location basis, and
@@ -2701,12 +2701,12 @@ export class BattleMech {
 
     /** The Interface Cockpit or the Pleiades Mechworks Pilot Suit, which is built as it is (head slots, no gyro, placement limits). */
     private _isInterfaceFamilyCockpit(): boolean {
-        return this._interfaceCockpit;
+        return ["interface", "pilot-suit"].includes(this.getCockpitType().tag);
     }
 
     /** True with the Pilot Suit cockpit (#640): Piloting and Gunnery 1 better. */
     public hasPilotSuit(): boolean {
-        return this._interfaceCockpit && this._pilotSuitCockpit;
+        return this.getCockpitType().tag === "pilot-suit";
     }
 
     /** Lines the play view shows for the Pilot Suit cockpit: its built-in ejection system, and what no gyro means. */
@@ -2798,7 +2798,7 @@ export class BattleMech {
 
     /** Choose one of the cockpits offered by getAvailableCockpits(); anything else is ignored. */
     public setCockpitType(tag: string): ICockpitType {
-        if (this.getAvailableCockpits(this.getRulesLevel(2)).some(cockpit => cockpit.tag === tag)) {
+        if (this.getAvailableCockpits(CUSTOM_HOMEBREW_RULES_LEVEL).some(cockpit => cockpit.tag === tag)) {
             if (tag === "standard" || tag === "small" || tag === "torso-mounted" || tag === "interface" || tag === "pilot-suit") {
                 this._smallCockpit = tag === "small";
                 this._torsoMountedCockpit = tag === "torso-mounted";
@@ -6384,18 +6384,26 @@ export class BattleMech {
         return this.hasBlueSaviour() && !!this.futureWarsPlay.blueSaviour?.on;
     }
 
-    /** Switched on, turns on so far, and whether it has failed or exploded (the rest of the scenario). */
-    public getBlueSaviourState(): { on: boolean; activeTurns: number; failed: boolean; exploded: boolean } {
+    /**
+     * On this turn, what it will be next turn (`next`, undefined: the same), turns it was on so far, and whether it has failed or
+     * exploded (the rest of the scenario).
+     */
+    public getBlueSaviourState(): { on: boolean; next: boolean; activeTurns: number; failed: boolean; exploded: boolean } {
         const state = this.futureWarsPlay.blueSaviour;
-        return { on: !!state?.on, activeTurns: state?.activeTurns ?? 0, failed: !!state?.failed, exploded: !!state?.exploded };
+        const on = !!state?.on;
+        return { on, next: state?.next ?? on, activeTurns: state?.activeTurns ?? 0, failed: !!state?.failed, exploded: !!state?.exploded };
     }
 
-    /** Switches the field on or off (End Phase). False when none is mounted, or it has failed or exploded. Off is always allowed. */
+    /**
+     * Switches the field on or off in the End Phase: it is so from the next turn. Before the first Next Turn, switching it on also
+     * holds for that first turn (set it at the start of the game). False when none is mounted, or it has failed or exploded. Off is always allowed.
+     */
     public setBlueSaviour(on: boolean): boolean {
         if( !this.hasBlueSaviour() ) return false;
         const state = this.getBlueSaviourState();
         if( on && (state.failed || state.exploded) ) return false;
-        this.futureWarsPlay.blueSaviour = { ...this.futureWarsPlay.blueSaviour, on };
+        const started = !!this.futureWarsPlay.blueSaviour?.started;
+        this.futureWarsPlay.blueSaviour = { ...this.futureWarsPlay.blueSaviour, next: on, ...(started || !on ? {} : { on }) };
         return true;
     }
 
@@ -6413,7 +6421,7 @@ export class BattleMech {
         if( target === undefined ) return undefined;
         const state = this.getBlueSaviourState();
         if( blueSaviourFails(state.activeTurns + 1, roll) ) {
-            this.futureWarsPlay.blueSaviour = { ...this.futureWarsPlay.blueSaviour, on: false, failed: true };
+            this.futureWarsPlay.blueSaviour = { ...this.futureWarsPlay.blueSaviour, on: false, next: false, failed: true };
             return "failed";
         }
         this.futureWarsPlay.blueSaviour = { ...this.futureWarsPlay.blueSaviour, checkedAt: state.activeTurns };
@@ -6439,14 +6447,14 @@ export class BattleMech {
     /** Lines the play view shows while the field is on, until the electronic warfare rules take over the missile and ECM clauses. */
     public getBlueSaviourReminders(): string[] {
         if( !this.isBlueSaviourOn() ) return [];
-        const hasStealth = this._armorType.tag === "stealth-basic" || this._equipmentList.some(item => !!item && ["null-signature-system", "custom-null-signature-system"].includes(item.tag));
+        const hasStealth = ["stealth-basic", "stealth-improved"].includes(this._armorType.tag) || this._equipmentList.some(item => !!item && ["null-signature-system", "custom-null-signature-system"].includes(item.tag));
         return getBlueSaviourReminders({ hasStealth });
     }
 
     /** A critical hit on a Blue Saviour slot: while on, a 5-point explosion in that location and the field is dead for the scenario; otherwise nothing. */
     private _onBlueSaviourHit(location: string): string[] {
         if( !this.isBlueSaviourOn() ) return [];
-        this.futureWarsPlay.blueSaviour = { ...this.futureWarsPlay.blueSaviour, on: false, exploded: true };
+        this.futureWarsPlay.blueSaviour = { ...this.futureWarsPlay.blueSaviour, on: false, next: false, exploded: true };
         const protection = this._ammoExplosionProtection(location);
         const explosion = getFixedExplosion(this._rulesEdition, "mech", BLUE_SAVIOUR_EXPLOSION, protection);
         if( !explosion ) return [];
@@ -6507,8 +6515,15 @@ export class BattleMech {
         }
         // The pilot who spent the turn unlatching the plate leaves the suit in the End Phase (Best-of p.15, rule 12).
         if( play.powerArmorExit === "unlatching" ) play.powerArmorExit = "out";
-        // A turn ended with the Blue Saviour on counts toward its failure track (#641).
-        if( play.blueSaviour?.on ) play.blueSaviour.activeTurns = (play.blueSaviour.activeTurns ?? 0) + 1;
+        // A turn that was played with the Blue Saviour on counts toward its failure track; the End Phase choice holds from the next turn (#641).
+        if( this.hasBlueSaviour() ) {
+            const saviour = play.blueSaviour ?? {};
+            if( saviour.on ) saviour.activeTurns = (saviour.activeTurns ?? 0) + 1;
+            if( saviour.next !== undefined ) saviour.on = saviour.next;
+            delete saviour.next;
+            saviour.started = true;
+            play.blueSaviour = saviour;
+        }
         delete play.boostedRunHexes;
         delete play.pendingHeat;
         delete play.strategicMovement;

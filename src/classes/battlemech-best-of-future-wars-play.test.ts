@@ -521,7 +521,10 @@ describe("Blue Saviour in play", () => {
         const mech = saviour();
         expect(mech.setBlueSaviour(true)).toBe(true);
         expect(mech.isBlueSaviourOn()).toBe(true);
+        // Off holds from the next turn: this turn it is still on.
         expect(mech.setBlueSaviour(false)).toBe(true);
+        expect(mech.isBlueSaviourOn()).toBe(true);
+        endTurn(mech);
         expect(mech.isBlueSaviourOn()).toBe(false);
     });
 
@@ -531,6 +534,8 @@ describe("Blue Saviour in play", () => {
         mech.setBlueSaviour(true);
         expect(mech.getFutureWarsIncomingHeat()).toBe(7);
         mech.setBlueSaviour(false);
+        expect(mech.getFutureWarsIncomingHeat()).toBe(7);
+        endTurn(mech);
         expect(mech.getFutureWarsIncomingHeat()).toBe(0);
     });
 
@@ -743,5 +748,87 @@ describe("Pilot Suit cockpit in play and construction", () => {
         mech.setGyroType("none");
         expect(mech.getPilotSuitLines()).toContain("No gyro: the 'Mech falls if the MechWarrior is knocked out.");
         expect(buildIlClan().getPilotSuitLines()).toEqual([]);
+    });
+});
+
+// Final review fixes (astech, 2026-11-20).
+describe("Review fixes: Blue Saviour turn counting and the cockpit flags", () => {
+    it("counts only turns it was on: switched on in an End Phase, the first active turn is the next one", () => {
+        const mech = build();
+        mount(mech, "custom-blue-saviour");
+        endTurn(mech); // turn 1 ends with it off; the game has started
+        mech.setBlueSaviour(true); // turn 2's End Phase: it is on from turn 3
+        expect(mech.isBlueSaviourOn()).toBe(false);
+        endTurn(mech);
+        expect(mech.isBlueSaviourOn()).toBe(true);
+        expect(mech.getBlueSaviourState().activeTurns).toBe(0);
+        for (let turn = 1; turn <= 5; turn++) endTurn(mech);
+        expect(mech.getBlueSaviourState().activeTurns).toBe(5);
+        expect(mech.getBlueSaviourCheckTarget()).toBeUndefined();
+        endTurn(mech);
+        // Turn 9 is its 7th active turn: the first roll, against 3.
+        expect(mech.getBlueSaviourState().activeTurns).toBe(6);
+        expect(mech.getBlueSaviourCheckTarget()).toBe(3);
+    });
+
+    it("counts the turn it was on when switched off in an End Phase, and makes its heat that turn", () => {
+        const mech = build();
+        mount(mech, "custom-blue-saviour");
+        mech.setBlueSaviour(true); // before turn 1: on for turn 1
+        expect(mech.isBlueSaviourOn()).toBe(true);
+        mech.setBlueSaviour(false); // turn 1's End Phase: off from turn 2
+        expect(mech.isBlueSaviourOn()).toBe(true);
+        expect(mech.getFutureWarsIncomingHeat()).toBe(7);
+        endTurn(mech);
+        expect(mech.isBlueSaviourOn()).toBe(false);
+        expect(mech.getBlueSaviourState().activeTurns).toBe(1);
+    });
+
+    it("an Interface Cockpit does not keep its no-gyro build after the chassis becomes a Tripod", () => {
+        const mech = build();
+        mech.setEra("ilClan");
+        mech.setCockpitType("interface");
+        mech.setGyroType("none");
+        mech.setType("tripod");
+        expect(mech.getCockpitType().tag).toBe("tripod");
+        expect(mech.getChassisEquipmentViolations().join(" ")).toContain("Only a 'Mech with an interface cockpit may be built without a gyro.");
+    });
+
+    it("a Pilot Suit's skill bonus ends when the structure becomes industrial", () => {
+        const mech = buildIlClan();
+        mech.setCockpitType("pilot-suit");
+        expect(mech.hasPilotSuit()).toBe(true);
+        mech.setInternalStructureType("industrial");
+        expect(mech.getCockpitType().tag).not.toBe("pilot-suit");
+        expect(mech.hasPilotSuit()).toBe(false);
+        expect(mech.getPilotSuitLines()).toEqual([]);
+    });
+
+    it("chooses the Pilot Suit on a design that has no rules level of its own yet", () => {
+        const mech = new BattleMech();
+        mech.setTech("is");
+        mech.setEra("ilClan");
+        mech.setTonnage(65);
+        mech.setWalkSpeed(4);
+        expect(mech.setCockpitType("pilot-suit").tag).toBe("pilot-suit");
+    });
+
+    it("shows the Blue Saviour and the Pilot Suit in the fan play panel whatever the rules level", async () => {
+        const { showFutureWarsPlay } = await import("../ui/pages/classic-battletech/roster/_futureWarsPlay");
+        const saviour = new BattleMech();
+        saviour.setTech("is");
+        saviour.setEra("ilClan");
+        saviour.setTonnage(65);
+        saviour.setWalkSpeed(4);
+        saviour.addEquipmentFromTag("custom-blue-saviour", "is", "un", false, null, "", false, [], undefined, undefined, -1, "", true);
+        expect(saviour.getRulesLevel(0)).toBeLessThan(CUSTOM_HOMEBREW_RULES_LEVEL);
+        expect(showFutureWarsPlay(saviour)).toBe(true);
+        const suit = new BattleMech();
+        suit.setTech("is");
+        suit.setEra("ilClan");
+        suit.setTonnage(65);
+        suit.setWalkSpeed(4);
+        suit.setCockpitType("pilot-suit");
+        expect(showFutureWarsPlay(suit)).toBe(true);
     });
 });

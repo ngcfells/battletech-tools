@@ -17,6 +17,7 @@ import { getLocationName } from "../../../../utils";
 /** The panel shows for a 'Mech carrying fanzine equipment, one with fanzine play state, or any 'Mech at Custom Homebrew. */
 export function showFutureWarsPlay(mech: BattleMech): boolean {
     return mech.getFutureWarsPlayItems().length > 0
+        || mech.hasBlueSaviour() || mech.hasPilotSuit()
         || Object.keys(mech.futureWarsPlay).length > 0
         || mech.getRulesLevel(0) >= CUSTOM_HOMEBREW_RULES_LEVEL;
 }
@@ -228,10 +229,10 @@ const FutureWarsPlayPanel = (props: IFutureWarsPlayPanelProps) => {
         return (
             <div className="small-text" data-testid="fw-blue-saviour">
                 <strong>Blue Saviour Dispersion Field</strong>
-                <div data-testid="fw-blue-saviour-status" className={state.failed || state.exploded ? "color-red" : ""}>{status} ({state.activeTurns} turns on)</div>
+                <div data-testid="fw-blue-saviour-status" className={state.failed || state.exploded ? "color-red" : ""}>{status} ({state.activeTurns} turns on){state.next !== state.on ? (state.next ? "; on from next turn" : "; off from next turn") : ""}</div>
                 <button className="btn btn-sm btn-secondary" data-testid="fw-blue-saviour-toggle" disabled={state.failed || state.exploded}
-                    onClick={() => { mech.setBlueSaviour(!state.on); changed(); }}>
-                    {state.on ? "Switch off (End Phase)" : "Switch on (End Phase)"}
+                    onClick={() => { mech.setBlueSaviour(!state.next); changed(); }}>
+                    {state.next ? "Switch off from next turn (End Phase)" : "Switch on (End Phase: from next turn; before the first turn, now)"}
                 </button>
                 {target !== undefined ? (
                     <div data-testid="fw-blue-saviour-check">

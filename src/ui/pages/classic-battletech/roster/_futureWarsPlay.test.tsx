@@ -176,7 +176,8 @@ describe("Blue Saviour in the play panel (#641)", () => {
         expect(screen.getByTestId("fw-blue-saviour-status").textContent).toMatch(/On: 7 heat/);
         expect(screen.getByTestId("fw-blue-saviour-reminders").textContent).toMatch(/missiles: treat as AMS.*hostile ECM field.*cannot be hidden/);
         fireEvent.click(screen.getByTestId("fw-blue-saviour-toggle"));
-        expect(mech.isBlueSaviourOn()).toBe(false);
+        expect(mech.isBlueSaviourOn()).toBe(true);
+        expect(screen.getByTestId("fw-blue-saviour-status").textContent).toMatch(/off from next turn/);
     });
 
     it("asks for the 2D6 after six turns on, and a roll below the target fails it for the scenario", () => {
