@@ -3,7 +3,8 @@ import { BattleMech } from "../classes/battlemech";
 import { ammoCatalog } from "./ammo";
 import { ammoCustom } from "./ammo-custom";
 import { ballisticCustom } from "./ballistic-custom";
-import { getEquipmentCatalogById, getEquipmentCatalogDefinitions, getEquipmentCatalogs } from "./equipment-registry";
+import { miscCustom } from "./misc-custom";
+import { getAmmoBattleValuePerTon, getCompatibleAmmo, getEquipmentCatalogById, getEquipmentCatalogDefinitions, getEquipmentCatalogs, getWeaponShotsPerTon } from "./equipment-registry";
 import { energyCustom } from "./energy-custom";
 import { CUSTOM_HOMEBREW_RULES_LEVEL } from "./rules-level-options";
 import { findSpecialRuleset, getRulesetConflict } from "./special-rulesets";
@@ -187,5 +188,55 @@ describe("Pleiades Mechworks Autocannon/12 (Custom Homebrew)", () => {
             expect(mine.battleValue, name).toBe(standard12.battleValue);
             expect(mine.techRating, name).toBe(canon.techRating);
         }
+    });
+});
+
+// Pleiades Mechworks (#641): Boosted Autocannon Rounds.
+describe("Pleiades Mechworks Boosted Autocannon Rounds (Custom Homebrew)", () => {
+    // weapon, standard ammo tag, boosted tag, [min, short, medium, long], extra heat, shots a ton, BV a ton
+    const TABLE: Array<[string, string, string, [number, number, number, number], number, number, number]> = [
+        ["AC/2", "ammo-ac-2-standard", "ammo-ac-2-boosted", [4, 10, 20, 30], 2, 22, 6],
+        ["AC/5", "ammo-ac-5-standard", "ammo-ac-5-boosted", [3, 8, 16, 24], 2, 10, 12],
+        ["AC/10", "ammo-ac-10-standard", "ammo-ac-10-boosted", [1, 7, 14, 21], 3, 5, 21],
+        ["AC/12", "ammo-custom-ac-12-standard", "ammo-custom-ac-12-boosted", [1, 5, 10, 15], 4, 4, 22],
+        ["AC/20", "ammo-ac-20-standard", "ammo-ac-20-boosted", [1, 4, 8, 12], 5, 2, 29],
+    ];
+    const everyAmmo = [...ammoCatalog, ...ammoCustom];
+    const record = (tag: string) => {
+        const found = everyAmmo.find((item) => item.tag === tag);
+        if (!found) throw new Error(`no record ${tag}`);
+        return found;
+    };
+
+    it.each(TABLE)("%s boosted ammunition carries the post's bands, extra heat, shots and BV", (_name, standardTag, boostedTag, bands, extraHeat, shots, bv) => {
+        const boosted = record(boostedTag);
+        expect(boosted.ammoProfile?.range).toEqual({ min: bands[0], short: bands[1], medium: bands[2], long: bands[3] });
+        expect(boosted.ammoProfile?.extraHeat).toBe(extraHeat);
+        expect(boosted.roundsPerTon).toBe(shots);
+        expect(boosted.isSpecialAmmo).toBe(true);
+        expect(boosted).toMatchObject({ techBase: "is", catalog: "custom", rulesLevel: CUSTOM_HOMEBREW_RULES_LEVEL });
+        expect(boosted.notes).toContain("PleiadesMechworks");
+        // 6x the standard round, as the canon Precision round (36,000 against 6,000).
+        expect(boosted.cbills).toBe(record(standardTag).cbills * 6);
+        expect(boosted.introduced).toBeLessThan(3062);
+        const weapon = [...ballisticCustom, ...getEquipmentCatalogs().is].find((item) => item.tag === (standardTag === "ammo-custom-ac-12-standard" ? "custom-ac-12" : { "ammo-ac-2-standard": "autocannon-standard-a", "ammo-ac-5-standard": "autocannon-standard-b", "ammo-ac-10-standard": "autocannon-standard-c", "ammo-ac-20-standard": "autocannon-standard-d" }[standardTag]));
+        expect(weapon, "weapon").toBeTruthy();
+        expect(getAmmoBattleValuePerTon(weapon!, boosted)).toBeCloseTo(bv, 5);
+        expect(getCompatibleAmmo(weapon!, boosted)).toBe(true);
+        expect(getWeaponShotsPerTon(weapon!, boosted)).toBe(shots);
+    });
+});
+
+// Pleiades Mechworks (#641): the Personal ECM Suite record.
+describe("Pleiades Mechworks Personal ECM Suite (Custom Homebrew)", () => {
+    it("carries the post numbers: 0.5 t, 1 slot, 200,000 C-bills, defensive BV 20, Inner Sphere", () => {
+        const found = miscCustom.find((item) => item.tag === "custom-personal-ecm");
+        expect(found, "record").toBeTruthy();
+        expect(found).toMatchObject({ weight: 0.5, cbills: 200000, battleValue: 20, battleValueDefensive: true, techBase: "is", catalog: "custom", rulesLevel: CUSTOM_HOMEBREW_RULES_LEVEL });
+        expect(found!.space.battlemech).toBe(1);
+        expect(found!.notes).toContain("PleiadesMechworks");
+        // Dated from the Nighthawk battle armor ECM (2720) and rated as the Guardian ECM Suite.
+        expect(found!.introduced).toBe(2720);
+        expect(found!.techRating).toBe("e");
     });
 });

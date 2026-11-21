@@ -415,3 +415,43 @@ describe("Best of Future Wars equipment in play", () => {
         });
     });
 });
+
+// Pleiades Mechworks Boosted Autocannon Rounds (#641) in play: the selected bin sets the range bands and adds heat.
+describe("Boosted Autocannon Rounds in play", () => {
+    const withAC10 = () => {
+        const mech = build();
+        mount(mech, "autocannon-standard-c");
+        const standard = mount(mech, "ammo-ac-10-standard");
+        const boosted = mount(mech, "ammo-ac-10-boosted");
+        const index = mech.equipmentList.findIndex((item) => item.tag === "autocannon-standard-c");
+        const gun = mech.equipmentList[index];
+        gun.target = "a";
+        return { mech, gun, index, standard, boosted };
+    };
+
+    it("adds the boosted round's extra heat only while its bin is the selected one", () => {
+        const { mech, gun, standard, boosted } = withAC10();
+        mech.selectAmmoBin(gun.uuid!, standard.uuid!);
+        const plain = mech.getActiveWeaponHeat();
+        mech.selectAmmoBin(gun.uuid!, boosted.uuid!);
+        expect(mech.getActiveWeaponHeat()).toBe(plain + 3);
+        mech.selectAmmoBin(gun.uuid!, standard.uuid!);
+        expect(mech.getActiveWeaponHeat()).toBe(plain);
+    });
+
+    it("reads the boosted range bands: 14 hexes is medium with the boosted bin and long beyond it", () => {
+        const { mech, gun, index, standard, boosted } = withAC10();
+        const target = (range: number): ITargetToHit => ({ ...mech.getTarget("a"), active: true, range, movement: 0, otherMods: 0, primary: true } as ITargetToHit);
+        mech.selectAmmoBin(gun.uuid!, standard.uuid!);
+        expect(getTargetToHitFromWeapon(mech, index, target(14)).rangeExplanation).not.toBe("Medium");
+        mech.selectAmmoBin(gun.uuid!, boosted.uuid!);
+        expect(getTargetToHitFromWeapon(mech, index, target(14)).rangeExplanation).toBe("Medium");
+        expect(getTargetToHitFromWeapon(mech, index, target(21)).rangeExplanation).toBe("Long");
+    });
+
+    it("a 'Mech with only standard ammunition is unchanged", () => {
+        const { mech, gun, standard } = withAC10();
+        mech.selectAmmoBin(gun.uuid!, standard.uuid!);
+        expect(mech.getActiveWeaponHeat()).toBe(gun.heat);
+    });
+});

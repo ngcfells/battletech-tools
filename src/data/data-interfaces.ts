@@ -265,14 +265,17 @@ export interface ISplitLocation {
 }
 
 export interface IAmmoProfile {
-    damagePerMissile: number;
+    /** Damage of each missile or cluster; absent for a round that changes the weapon's reach, not its damage. */
+    damagePerMissile?: number;
     range: IRangeNumbers;
-    alphaStrikeDamage: {
+    alphaStrikeDamage?: {
         short: number;
         medium: number;
         long: number;
         extreme: number;
     };
+    /** Heat the weapon makes on top of its own when it fires from this bin (Boosted Autocannon Rounds, #641). */
+    extraHeat?: number;
 }
 
 /** An engine an item needs (`IEquipmentItem.requiresEngine`). */

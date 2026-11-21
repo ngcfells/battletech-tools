@@ -283,7 +283,6 @@ const ac12Standard = (): IEquipmentItem => {
         sort: "ammo, ac/012, standard",
         category: "Ammunition",
         cbills: AC12_STANDARD_CBILLS,
-        prototype: 3020,
         introduced: 3020,
         extinct: null,
         reintroduced: null,
@@ -299,6 +298,7 @@ const ac12Standard = (): IEquipmentItem => {
         book: "https://www.reddit.com/r/NormalBattletech/",
         page: 0,
         alphaStrike: JSON.parse(JSON.stringify(canon.alphaStrike)),
+        prototype: 3020,
         catalog: "custom",
         rulesLevel: 6,
         notes: "Custom Homebrew by u/PleiadesMechworks (r/NormalBattletech, Pleiades Mechworks equipment post): 10,000 C-bills a ton, 18 Battle Value a ton, 8 shots a ton, for the Autocannon/12 (custom-ac-12).",
@@ -324,7 +324,6 @@ const ac12Munition = (munition: typeof AC12_MUNITIONS[number]): IEquipmentItem =
         sort: `ammo, ac/012, ${munition.key}`,
         category: "Ammunition",
         cbills,
-        prototype: Math.max(3020, canon.prototype ?? 3020),
         introduced: Math.max(3020, canon.introduced ?? 3020),
         extinct: null,
         reintroduced: null,
@@ -340,6 +339,7 @@ const ac12Munition = (munition: typeof AC12_MUNITIONS[number]): IEquipmentItem =
         book: "https://www.reddit.com/r/NormalBattletech/",
         page: 0,
         alphaStrike: JSON.parse(JSON.stringify(canon.alphaStrike)),
+        prototype: Math.max(3020, canon.prototype ?? 3020),
         catalog: "custom",
         rulesLevel: 6,
         notes: `Custom Homebrew, ours. The post says the full range of specialist ammunition was developed for the Autocannon/12 (u/PleiadesMechworks) and gives no figures, so this is the AC/12 standard round with the canon AC/10 ${munition.label} round's `
@@ -349,9 +349,68 @@ const ac12Munition = (munition: typeof AC12_MUNITIONS[number]): IEquipmentItem =
     };
 };
 
+/**
+ * Boosted Autocannon Rounds (u/PleiadesMechworks, #641). The post's table gives each standard autocannon's bands, extra heat, shots and BV
+ * a ton; damage is unchanged. Tags follow the standard round's (ammo-ac-N-boosted) so the round joins that weapon's ammunition family.
+ * Cost is ours: 6x the standard round, as the canon Precision round (the nearest canon special munition, which the lore says this inspired).
+ */
+const BOOSTED_ROUNDS: Array<{ size: "2" | "5" | "10" | "12" | "20"; bands: [number, number, number, number]; extraHeat: number; shots: number; bv: number; standardBV: number }> = [
+    { size: "2", bands: [4, 10, 20, 30], extraHeat: 2, shots: 22, bv: 6, standardBV: 5 },
+    { size: "5", bands: [3, 8, 16, 24], extraHeat: 2, shots: 10, bv: 12, standardBV: 9 },
+    { size: "10", bands: [1, 7, 14, 21], extraHeat: 3, shots: 5, bv: 21, standardBV: 15 },
+    { size: "12", bands: [1, 5, 10, 15], extraHeat: 4, shots: 4, bv: 22, standardBV: 18 },
+    { size: "20", bands: [1, 4, 8, 12], extraHeat: 5, shots: 2, bv: 29, standardBV: 22 },
+];
+const BOOSTED_COST_MULTIPLIER = 6;
+
+const boostedAmmo = (round: typeof BOOSTED_ROUNDS[number]): IEquipmentItem => {
+    const standardTag = round.size === "12" ? AC12_STANDARD_TAG : `ammo-ac-${round.size}-standard`;
+    const standard = round.size === "12" ? ac12Standard() : isAmmoList.find((item) => item.tag === standardTag);
+    if (!standard) throw new Error(`Boosted ammo: ${standardTag} not found`);
+    const [min, short, medium, long] = round.bands;
+    const cbills = standard.cbills * BOOSTED_COST_MULTIPLIER;
+    return {
+        isAmmo: true,
+        isSpecialAmmo: true,
+        name: `AC/${round.size} - Boosted Ammo (Pleiades Mechworks)`,
+        altNames: [`AC/${round.size} - Boosted Ammo`],
+        tag: round.size === "12" ? "ammo-custom-ac-12-boosted" : `ammo-ac-${round.size}-boosted`,
+        techBase: "is",
+        altTags: [],
+        sort: `ammo, ac/${round.size.padStart(3, "0")}, boosted`,
+        category: "Ammunition",
+        cbills,
+        introduced: null,
+        extinct: null,
+        reintroduced: null,
+        battleValue: round.bv,
+        heat: 0,
+        heatAero: 0,
+        weight: 1,
+        range: { min, short, medium, long },
+        space: { ...standard.space },
+        roundsPerTon: round.shots,
+        explosive: true,
+        techRating: "x",
+        book: "https://www.reddit.com/r/NormalBattletech/",
+        page: 0,
+        alphaStrike: JSON.parse(JSON.stringify(standard.alphaStrike)),
+        battleValueMultiplier: round.bv / round.standardBV,
+        ammoProfile: { range: { min, short, medium, long }, extraHeat: round.extraHeat },
+        catalog: "custom",
+        rulesLevel: 6,
+        notes: `Custom Homebrew by u/PleiadesMechworks (r/NormalBattletech, Pleiades Mechworks equipment post). Boosted rounds for the AC/${round.size}: damage unchanged, range ${min}/${short}/${medium}/${long} (minimum/short/medium/long), `
+            + `${round.extraHeat} extra heat each shot, ${round.shots} shots a ton, ${round.bv} Battle Value a ton (all the post's). Not for light autocannons, LB-X, Ultra, Rotary or HVAC. `
+            + `Ours: ${cbills.toLocaleString("en-US")} C-bills a ton (${BOOSTED_COST_MULTIPLIER}x the standard round, as the canon Precision round, which the lore says these inspired); dated just before Precision ammunition.`,
+        rules: `Fired from this bin, the AC/${round.size} has range ${min}/${short}/${medium}/${long} and makes ${round.extraHeat} more heat each shot. Damage is unchanged. ${round.shots} shots a ton.`,
+        lore: "Pleiades Mechworks' hot-loaded autocannon shells push the same slug further, at the price of a hotter breech. The idea is said to have inspired Precision ammunition."
+    };
+};
+
 export const ammoCustom: IEquipmentItem[] = applyDerivedValues([
     ac12Standard(),
     ...AC12_MUNITIONS.map(ac12Munition),
+    ...BOOSTED_ROUNDS.map(boostedAmmo),
     {
         isAmmo: true,
         isSpecialAmmo: false,

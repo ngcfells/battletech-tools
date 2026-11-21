@@ -26,6 +26,19 @@ import { futureWarsBoosterItems } from "./best-of-future-wars-conversions";
 const derived = (analog: string) => `Not printed in Future Wars #32: cost, Battle Value, dates, tech rating${analog}.`;
 
 export const miscCustom: IEquipmentItem[] = applyDerivedValues([
+    // Pleiades Mechworks (u/PleiadesMechworks, r/NormalBattletech, #641).
+    {
+        name: "\"Personal\" ECM Suite (Pleiades Mechworks)", altNames: ["Personal ECM Suite", "Personal ECM"], tag: "custom-personal-ecm", techBase: "is", catalog: "custom", sort: "equipment, ecm suite, personal", category: "Miscellaneous Equipment",
+        notes: "Custom Homebrew by u/PleiadesMechworks (r/NormalBattletech, Pleiades Mechworks equipment post). The same ECM capabilities as a Guardian ECM Suite, but only in the hex of the unit that mounts it; "
+            + "no ECCM mode (advanced rules). It does not count as an ECM suite for equipment that needs one, such as Stealth Armor. 0.5 tons, 1 slot, 200,000 C-bills, defensive Battle Value 20 (all the post's). "
+            + "Ours: dated 2720, the year of the Nighthawk battle armor ECM it is built from, and rated E as the Guardian ECM Suite. Its play effect arrives with the electronic warfare rules in roster play.",
+        damage: 0, damageAero: 0, accuracyModifier: 0, cbills: 200000, introduced: 2720, prototype: 2718, extinct: null, reintroduced: null, battleValue: 20, battleValueDefensive: true, heat: 0, heatAero: 0, weight: 0.5,
+        range: { min: 0, short: 0, medium: 0, long: 0 }, space: { battlemech: 1, protomech: -1, combatVehicle: 1, supportVehicle: 1, aerospaceFighter: 1, smallCraft: 1, dropShip: 1 },
+        shotsPerTon: 0, minAmmoTons: 0, explosive: false, weaponType: [], techRating: "x", book: "https://www.reddit.com/r/NormalBattletech/", page: 0, rulesLevel: 6, isEquipment: true, isAmmo: false,
+        rules: "Works as a Guardian ECM Suite, but only in the hex of the unit that mounts it, and with no ECCM mode. It is not an ECM suite for Stealth Armor or anything else that requires one.",
+        lore: "Pleiades Mechworks could not yet build battle armor, so it took the ECM suite of the Nighthawk battle armor (2720) and fitted it to a 'Mech to cover its own hex alone.",
+        alphaStrike: { heat: 0, rangeShort: 0, rangeMedium: 0, rangeLong: 0, rangeExtreme: 0, tc: false, notes: ["Custom equipment: no Alpha Strike conversion"] }
+    },
     {
         name: "Smoker", tag: "custom-smoker", techBase: "universal", catalog: "custom", sort: "equipment, smoker", category: "Custom Equipment",
         notes: "Smoke generator. While it runs, the 'Mech leaves a trail of smoke behind and around its movement path, reducing visibility. "

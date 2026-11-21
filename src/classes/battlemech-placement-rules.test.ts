@@ -246,4 +246,13 @@ describe("systems that exclude or need each other (TO:AUE pp.91, 112, 148, 161; 
         add(stealth, "chameleon-lps");
         expect(violations(stealth).join(" ")).toMatch(/Chameleon Light Polarization Shield cannot be combined with Stealth Armor \(TO:AUE p\.112\)/);
     });
+
+    it("does not count the Pleiades Mechworks Personal ECM Suite as an ECM suite for Stealth Armor (#641)", () => {
+        const stealth = build();
+        stealth.setArmorType("stealth-basic");
+        add(stealth, "custom-personal-ecm");
+        expect(violations(stealth).join(" ")).toMatch(/Stealth Armor needs an ECM suite \(TM p\.213\)/);
+        add(stealth, "ecm-suite");
+        expect(violations(stealth).join(" ")).not.toMatch(/needs an ECM suite/);
+    });
 });

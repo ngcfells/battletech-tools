@@ -6230,6 +6230,8 @@ export class BattleMech {
                     : this.getFutureWarsItemHeat(eq);
                 // A boosted shot's extra heat (p.28).
                 if( eq.uuid && this.isPowerBoosterOn(eq.uuid) ) rv += eq.conversion?.booster?.extraHeat ?? 0;
+                // Fired from a bin with its own extra heat (Boosted Autocannon Rounds, #641).
+                if( eq.selectedAmmoBinUUID ) rv += equipmentList.find(bin => bin.uuid === eq.selectedAmmoBinUUID)?.ammoProfile?.extraHeat ?? 0;
             }
         }
         return rv;
