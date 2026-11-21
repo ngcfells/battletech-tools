@@ -210,3 +210,56 @@ describe("Pilot Suit cockpit in the play panel (#640)", () => {
         expect(text).toMatch(/falls if the MechWarrior is knocked out/);
     });
 });
+
+describe("Blue Saviour and Pilot Suit panel minors", () => {
+    const sixTurnsOn = (): BattleMech => {
+        const mech = build(["custom-blue-saviour"]);
+        mech.setBlueSaviour(true);
+        for (let turn = 0; turn < 6; turn++) { mech.applyHeat(); mech.turnReset(); }
+        return mech;
+    };
+
+    it("will not roll the check until the dice are entered", () => {
+        const mech = sixTurnsOn();
+        render(<FutureWarsPlayPanel mech={mech} onChange={vi.fn()} />);
+        expect((screen.getByTestId("fw-blue-saviour-roll-button") as HTMLButtonElement).disabled).toBe(true);
+        fireEvent.change(screen.getByTestId("fw-blue-saviour-roll"), { target: { value: "5" } });
+        expect((screen.getByTestId("fw-blue-saviour-roll-button") as HTMLButtonElement).disabled).toBe(false);
+        fireEvent.click(screen.getByTestId("fw-blue-saviour-roll-button"));
+        expect(mech.getBlueSaviourState().failed).toBe(false);
+        expect(mech.getBlueSaviourCheckTarget()).toBeUndefined();
+    });
+
+    it("rolls the check for the player on request", () => {
+        const mech = sixTurnsOn();
+        render(<FutureWarsPlayPanel mech={mech} onChange={vi.fn()} />);
+        const random = vi.spyOn(Math, "random").mockReturnValue(0);
+        try {
+            fireEvent.click(screen.getByTestId("fw-blue-saviour-roll-for-me"));
+        } finally {
+            random.mockRestore();
+        }
+        expect(mech.getBlueSaviourState().failed).toBe(true);
+    });
+
+    it("tells the player when a skipped check was rolled for them", () => {
+        const mech = sixTurnsOn();
+        const random = vi.spyOn(Math, "random").mockReturnValue(0.99);
+        try {
+            mech.applyHeat();
+            mech.turnReset();
+        } finally {
+            random.mockRestore();
+        }
+        render(<FutureWarsPlayPanel mech={mech} onChange={vi.fn()} />);
+        expect(screen.getByTestId("fw-blue-saviour-auto-roll").textContent).toMatch(/rolled for you: 12 against 3, safe/i);
+    });
+
+    it("shows the Pilot Suit's Piloting roll modifier", () => {
+        const mech = build([]);
+        mech.setEra("ilClan");
+        mech.setCockpitType("pilot-suit");
+        render(<FutureWarsPlayPanel mech={mech} onChange={vi.fn()} />);
+        expect(screen.getByTestId("fw-pilot-suit").textContent).toMatch(/Piloting roll modifier: -1/);
+    });
+});

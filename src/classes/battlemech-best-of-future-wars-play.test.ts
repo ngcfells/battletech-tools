@@ -1,9 +1,9 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { BattleMech } from "./battlemech";
 import { findSpecialRuleset } from "../data/special-rulesets";
 import { CUSTOM_HOMEBREW_RULES_LEVEL } from "../data/rules-level-options";
 import { getTargetToHitFromWeapon } from "../utils";
-import { blueSaviourFails, getBlueSaviourFailureTarget, getBlueSaviourReminders, getIncomingEnergyDamage, halveEnergyDamage, isEnergyWeapon } from "../utils/future-wars-play";
+import { blueSaviourFails, getBlueSaviourDamageText, getBlueSaviourFailureTarget, getBlueSaviourReminders, getIncomingEnergyDamage, halveEnergyDamage, isEnergyWeapon } from "../utils/future-wars-play";
 import { getEquipmentCatalogs } from "../data/equipment-registry";
 import { ITargetToHit } from "./battlemech";
 
@@ -850,5 +850,102 @@ describe("Boosted Autocannon Rounds on the AC/15 in play", () => {
         expect(mech.getActiveWeaponHeat()).toBe(plain + 4);
         expect(getTargetToHitFromWeapon(mech, index, target(11)).rangeExplanation).toBe("Medium");
         expect(getTargetToHitFromWeapon(mech, index, target(16)).rangeExplanation).toBe("Long");
+    });
+});
+
+// Deferred minors from the Pleiades final review.
+describe("Blue Saviour minors", () => {
+    const saviour = (): BattleMech => {
+        const mech = build();
+        mount(mech, "custom-blue-saviour");
+        return mech;
+    };
+    const placeSpread = (mech: BattleMech, tag: string, location: string, key: string) => {
+        const from = mech.unallocatedCriticals.findIndex((critical) => critical?.tag === tag);
+        const slot = mech.getCriticals()[key].findIndex((critical) => !critical);
+        expect(mech.moveCritical("un", from, location, slot)).toBe(true);
+        return slot;
+    };
+    const crit = (mech: BattleMech, location: string, slot: number) => mech.rollCriticalHit(location, { chance: 8, lines: location === "hd" ? [slot + 1] : [slot < 6 ? 1 : 4, slot % 6 + 1] });
+
+    it("writes an outgoing energy hit halved: one number, or short / medium / long, with the note after the per-shot mark", () => {
+        const half = (n: number) => halveEnergyDamage(n);
+        expect(getBlueSaviourDamageText(10, false, half)).toBe("5 (half of 10, Blue Saviour)");
+        expect(getBlueSaviourDamageText(10, true, half)).toBe("5/shot (half of 10, Blue Saviour)");
+        expect(getBlueSaviourDamageText({ short: 10, medium: 8, long: 5 }, false, half)).toBe("5/4/2 (half of 10/8/5, Blue Saviour)");
+        expect(getBlueSaviourDamageText(1, false, half)).toBe("1 (half of 1, Blue Saviour)");
+    });
+
+    it("reads Laser Reflective locations of a Patchwork 'Mech, by where the hit lands", () => {
+        const mech = saviour();
+        mech.setArmorType("patchwork");
+        mech.setPatchworkArmorType("leftTorso", "laser-reflective");
+        expect(mech.getIncomingDamageApplied(15, true, "lt")).toBe(7);
+        expect(mech.getIncomingDamageApplied(15, true, "ct")).toBe(15);
+        expect(mech.getEnergyDamageHalvings("lt")).toBe(1);
+        expect(mech.getEnergyDamageHalvings("ct")).toBe(0);
+        // The dialog asks before a location is picked: some location is Reflective, so the choice is offered.
+        expect(mech.getEnergyDamageHalvings()).toBe(1);
+        mech.setBlueSaviour(true);
+        expect(mech.getIncomingDamageApplied(15, true, "lt")).toBe(3);
+        expect(mech.getIncomingDamageApplied(15, true, "ct")).toBe(7);
+    });
+
+    it("rolls for the player a check they skipped when the turn ends, and says so", () => {
+        const mech = saviour();
+        mech.setBlueSaviour(true);
+        for (let turn = 1; turn <= 6; turn++) endTurn(mech);
+        expect(mech.getBlueSaviourCheckTarget()).toBe(3);
+        const random = vi.spyOn(Math, "random").mockReturnValue(0);
+        try {
+            endTurn(mech);
+        } finally {
+            random.mockRestore();
+        }
+        expect(mech.getBlueSaviourState().failed).toBe(true);
+        expect(mech.isBlueSaviourOn()).toBe(false);
+        expect(mech.getBlueSaviourAutoRoll()).toEqual({ roll: 2, target: 3, result: "failed" });
+    });
+
+    it("rolls no check for the player that they rolled themselves", () => {
+        const mech = saviour();
+        mech.setBlueSaviour(true);
+        for (let turn = 1; turn <= 6; turn++) endTurn(mech);
+        expect(mech.rollBlueSaviourCheck(9)).toBe("safe");
+        endTurn(mech);
+        expect(mech.getBlueSaviourAutoRoll()).toBeUndefined();
+        expect(mech.getBlueSaviourState().failed).toBe(false);
+    });
+
+    it("does no damage where the edition makes ammunition explosions heat only (Battledroids), but the field is still dead", () => {
+        const mech = build();
+        mech.setRulesEdition("battledroids");
+        mount(mech, "custom-blue-saviour");
+        mech.setBlueSaviour(true);
+        const slot = placeSpread(mech, "custom-blue-saviour", "lt", "leftTorso");
+        const structure = mech.getCurrentStructure();
+        crit(mech, "lt", slot);
+        expect(mech.getCurrentStructure()).toBe(structure);
+        expect(mech.getBlueSaviourState().exploded).toBe(true);
+        expect(mech.isBlueSaviourOn()).toBe(false);
+    });
+
+    it("CASE keeps the blast in the torso: 5 points through a nearly dead side torso reach the center torso only without CASE", () => {
+        const loss = (withCase: boolean): number => {
+            const mech = build();
+            mount(mech, "custom-blue-saviour");
+            if (withCase) placeIn(mech, "case", "lt", "leftTorso");
+            mech.setBlueSaviour(true);
+            const slot = placeSpread(mech, "custom-blue-saviour", "lt", "leftTorso");
+            const damaged = (location: string) => Array.from({ length: 40 }, (_, index) => mech.structureDamaged(location, index)).filter(Boolean).length;
+            // Leave the left torso 2 points of structure, so 3 of the 5 would transfer inward.
+            mech.takeDamage(mech.getInternalStructure().leftTorso - 2, "lt", false, { structureOnly: true });
+            const centerBefore = damaged("ct");
+            crit(mech, "lt", slot);
+            const centerAfter = damaged("ct");
+            return centerAfter - centerBefore;
+        };
+        expect(loss(false)).toBe(3);
+        expect(loss(true)).toBe(0);
     });
 });

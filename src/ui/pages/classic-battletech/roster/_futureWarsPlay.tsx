@@ -236,12 +236,21 @@ const FutureWarsPlayPanel = (props: IFutureWarsPlayPanelProps) => {
                 </button>
                 {target !== undefined ? (
                     <div data-testid="fw-blue-saviour-check">
-                        Start of turn: roll 2D6; less than {target} fails it for the scenario.{" "}
+                        Start of turn: roll 2D6; less than {target} fails it for the scenario. A check left undone is rolled for you when the turn ends.{" "}
                         <NumberBox testId="fw-blue-saviour-roll" label="2D6" min={2} max={12} value={roll("blue-saviour", 7)} onChange={(value) => setRoll("blue-saviour", value)} />{" "}
-                        <button className="btn btn-sm btn-primary" data-testid="fw-blue-saviour-roll-button"
-                            onClick={() => { mech.rollBlueSaviourCheck(roll("blue-saviour", 7)); changed(); }}>
+                        <button className="btn btn-sm btn-primary" data-testid="fw-blue-saviour-roll-button" disabled={rolls["blue-saviour"] === undefined}
+                            onClick={() => { mech.rollBlueSaviourCheck(roll("blue-saviour", 7)); setRolls((previous) => { const rest = { ...previous }; delete rest["blue-saviour"]; return rest; }); changed(); }}>
                             Roll
+                        </button>{" "}
+                        <button className="btn btn-sm btn-secondary" data-testid="fw-blue-saviour-roll-for-me"
+                            onClick={() => { mech.rollBlueSaviourCheck(2 + Math.floor(Math.random() * 6) + Math.floor(Math.random() * 6)); changed(); }}>
+                            Roll for me
                         </button>
+                    </div>
+                ) : null}
+                {mech.getBlueSaviourAutoRoll() ? (
+                    <div data-testid="fw-blue-saviour-auto-roll" className="color-red">
+                        Skipped check rolled for you: {mech.getBlueSaviourAutoRoll()!.roll} against {mech.getBlueSaviourAutoRoll()!.target}, {mech.getBlueSaviourAutoRoll()!.result}.
                     </div>
                 ) : null}
                 {reminders.length ? <div data-testid="fw-blue-saviour-reminders">{reminders.join("; ")}</div> : null}
@@ -301,7 +310,8 @@ const FutureWarsPlayPanel = (props: IFutureWarsPlayPanelProps) => {
             {mech.hasPilotSuit() ? (
                 <div className="small-text" data-testid="fw-pilot-suit">
                     <strong>Pilot Suit cockpit</strong>
-                    <div>Piloting and Gunnery 1 better with a MechWarrior in the suit (in the to-hit and the Piloting modifier); it cannot be piloted without the suit.</div>
+                    <div>Piloting and Gunnery 1 better with a MechWarrior in the suit (in the to-hit); it cannot be piloted without the suit.</div>
+                    <div>Piloting roll modifier: {mech.getPilotingSkillModifier() > 0 ? "+" : ""}{mech.getPilotingSkillModifier()} on every Piloting Skill Roll (the suit, and anything else on this 'Mech that changes them).</div>
                     {mech.getPilotSuitLines().map((line) => <div key={line}>{line}</div>)}
                 </div>
             ) : null}

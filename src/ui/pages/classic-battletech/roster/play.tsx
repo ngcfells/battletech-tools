@@ -60,7 +60,7 @@ import SpaceTrackerBar from './_spaceTrackerBar';
 import { AntiOrbitalGunControls, SpaceResolutionDialog } from './_antiOrbitalControls';
 import QuirksInPlay from '../../../components/quirks-in-play';
 import FutureWarsPlayPanel, { getBoostedMoveNote, showFutureWarsPlay } from './_futureWarsPlay';
-import { isEnergyWeapon } from '../../../../utils/future-wars-play';
+import { getBlueSaviourDamageText, isEnergyWeapon } from '../../../../utils/future-wars-play';
 import FutureWarsRulesetTools, { showFutureWarsRulesetTools, showPowerArmorTargetFlag } from './_futureWarsRulesetTools';
 import { getCarrierQuirkEffects, IQuirkCarrier } from '../../../../utils/quirk-effects';
 const ArrowCircleDown = FaArrowCircleDown as any;
@@ -1205,7 +1205,7 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
           const damageLog = currentBM.damageLog;
 
           // An energy hit is halved by an active Blue Saviour and by Laser Reflective armor (#641); the log keeps both amounts.
-          const applied = currentBM.getIncomingDamageApplied(this.state.takeDamageAmount, this.state.takeDamageEnergy);
+          const applied = currentBM.getIncomingDamageApplied(this.state.takeDamageAmount, this.state.takeDamageEnergy, this.state.takeDamageLocation);
           const takeDamageResult = currentBM.takeDamage(
             applied,
             this.state.takeDamageLocation,
@@ -1804,12 +1804,16 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
                         const damagePerCluster = selectedAmmo?.ammoProfile?.damagePerMissile ?? attack.damagePerCluster;
 
                         let attackDamage = attack.damage ? attack.damage.toString() : "";
-                        // An energy weapon's hit is halved while this unit's Blue Saviour is on (#641).
-                        if( typeof attack.damage === "number" && attack.damage > 0 && unit.isBlueSaviourOn() && isEnergyWeapon(attack) ) {
-                          attackDamage = `${unit.getBlueSaviourOutgoingDamage(attack, attack.damage)} (half of ${attack.damage}, Blue Saviour)`;
-                        }
+                        // An energy weapon's hit is halved while this unit's Blue Saviour is on (#641): one number or short / medium / long.
+                        const blueSaviourHalves = unit.isBlueSaviourOn() && isEnergyWeapon(attack);
+                        const halve = (damage: number) => unit.getBlueSaviourOutgoingDamage(attack, damage);
+                        const halvedBands = blueSaviourHalves && attack.damage && typeof attack.damage === "object" ? attack.damage : undefined;
                         let attackDamageSecondLine = "";
-                        if( attack.damagePerShot ) {
+                        if( blueSaviourHalves && typeof attack.damage === "number" && attack.damage > 0 ) {
+                          attackDamage = getBlueSaviourDamageText( attack.damage, !!attack.damagePerShot, halve );
+                        } else if( halvedBands ) {
+                          attackDamage = getBlueSaviourDamageText( halvedBands, !!attack.damagePerShot, halve );
+                        } else if( attack.damagePerShot ) {
                           attackDamage += "/shot";
                         }
 
@@ -1818,7 +1822,9 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
                           clusterChartButton = true;
                           attackDamage += attack.damageClusters.toString() + " clusters";
                           if( damagePerCluster )
-                            attackDamageSecondLine = damagePerCluster.toString() + " damage/hit";
+                            attackDamageSecondLine = blueSaviourHalves
+                              ? `${halve( damagePerCluster )} damage/hit (half of ${damagePerCluster}, Blue Saviour)`
+                              : damagePerCluster.toString() + " damage/hit";
                         }
 
                         let attackUUID = "";
@@ -1891,7 +1897,7 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
                                     <button
                                       className="btn btn-primary btn-sm"
                                       title="Click here to open the Cluster Damage Chart"
-                                      onClick={(e) => this.openClusterDamageChart(e, attackGATOR, attack.damageClusters, damagePerCluster, unit, attackIndex)}
+                                      onClick={(e) => this.openClusterDamageChart(e, attackGATOR, attack.damageClusters, blueSaviourHalves && damagePerCluster ? halve( damagePerCluster ) : damagePerCluster, unit, attackIndex)}
                                     >
                                       <MissileSwarmIcon />
                                     </button>
@@ -2911,16 +2917,16 @@ export default class ClassicBattleTechRosterPlay extends React.Component<IPlayPr
       <div className="col-md-3 smaller-padding">
     <fieldset className="fieldset ">
         <legend>How Much Damage?</legend>
-        {this.state.takeDamageDialog.getEnergyDamageHalvings() > 0 ? (
+        {this.state.takeDamageDialog.getEnergyDamageHalvings(this.state.takeDamageLocation || undefined) > 0 ? (
           <label className="small-text" data-testid="take-damage-energy">
             <input
               type="checkbox"
               checked={this.state.takeDamageEnergy}
               onChange={(e) => this.setState({ takeDamageEnergy: e.currentTarget.checked })}
             />{" "}
-            Energy weapon (halved{this.state.takeDamageDialog.getEnergyDamageHalvings() > 1 ? " twice" : ""}, rounded down
+            Energy weapon (halved{this.state.takeDamageDialog.getEnergyDamageHalvings(this.state.takeDamageLocation || undefined) > 1 ? " twice" : ""}, rounded down
             {this.state.takeDamageEnergy && this.state.takeDamageAmount > 0
-              ? `: ${this.state.takeDamageDialog.getIncomingDamageApplied(this.state.takeDamageAmount, true)} applied` : ""})
+              ? `: ${this.state.takeDamageDialog.getIncomingDamageApplied(this.state.takeDamageAmount, true, this.state.takeDamageLocation)} applied` : ""})
           </label>
         ) : null}
         <br />

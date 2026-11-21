@@ -36,7 +36,8 @@ export const miscCustom: IEquipmentItem[] = applyDerivedValues([
             + "Failure: the first 6 turns it is on in a scenario (not necessarily in a row) are safe; after that, roll 2D6 at the start of each turn it is on against a target of 2 plus 1 for each turn on after the sixth; a roll less than the target fails it for the rest of the scenario. "
             + "A critical hit on one of its slots while it is on explodes for 5 points in that location (CASE contains it as for ammunition) and kills it for the scenario; later hits do nothing. All the post's. "
             + "Ours: 1,000,000 C-bills and tech rating E, as the canon Blue Shield Particle Field Damper (TO:AUE p.108), and its Battle Value rule (0 of its own; +0.2 to the armor and structure type modifiers, TO:AUE pp.192-194); "
-            + "no production date, since it never left prototype. The play effect of its missile and ECM clauses arrives with the electronic warfare rules in roster play.",
+            + "Marked explosive, as the canon Blue Shield is: it counts as explosive equipment for Battle Value outside CASE (as ammunition does) and for Alpha Strike's ENE. "
+            + "No production date, since it never left prototype. The play effect of its missile and ECM clauses arrives with the electronic warfare rules in roster play.",
         damage: 0, damageAero: 0, accuracyModifier: 0, cbills: 1000000, prototype: 3151, introduced: null, extinct: null, reintroduced: null, battleValue: 0, heat: 0, heatAero: 0, weight: 5,
         range: { min: 0, short: 0, medium: 0, long: 0 }, space: { battlemech: 8, protomech: -1, combatVehicle: -1, supportVehicle: -1, aerospaceFighter: -1, smallCraft: -1, dropShip: -1 },
         shotsPerTon: 0, minAmmoTons: 0, explosive: true, weaponType: [], techRating: "e", book: "https://www.reddit.com/r/NormalBattletech/", page: 0, rulesLevel: 6, isEquipment: true, isAmmo: false,

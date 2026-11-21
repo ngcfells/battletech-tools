@@ -217,6 +217,20 @@ export function blueSaviourFails(activeTurn: number, roll2d6: number): boolean {
     return target !== undefined && roll2d6 < target;
 }
 
+/**
+ * An outgoing energy weapon's damage as the attack row writes it while a Blue Saviour is on: the halved figure (a number, or
+ * short / medium / long), then what it was. `perShot` puts the "/shot" mark before the note.
+ */
+export function getBlueSaviourDamageText(
+    damage: number | { short: number; medium: number; long: number },
+    perShot: boolean,
+    half: (damage: number) => number,
+): string {
+    const mark = perShot ? "/shot" : "";
+    if (typeof damage === "number") return `${half(damage)}${mark} (half of ${damage}, Blue Saviour)`;
+    return `${half(damage.short)}/${half(damage.medium)}/${half(damage.long)}${mark} (half of ${damage.short}/${damage.medium}/${damage.long}, Blue Saviour)`;
+}
+
 /** Reminder lines while a Blue Saviour is on, until the electronic warfare rules in play take over the missile and ECM clauses. */
 export function getBlueSaviourReminders(unit: { hasStealth: boolean }): string[] {
     return ["missiles: treat as AMS", "inside a hostile ECM field, no ECCM", ...(unit.hasStealth ? ["stealth off"] : []), "cannot be hidden"];

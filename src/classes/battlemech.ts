@@ -300,7 +300,7 @@ export interface IFutureWarsPlayState {
     /** Heat from inside the 'Mech waiting for this turn's heat phase (Inferno Gauss shells igniting). */
     pendingHeat?: number;
     /** The Pleiades Mechworks Blue Saviour (#641): switched on, turns it has been on this game, and whether it has failed or exploded (both for the scenario). */
-    blueSaviour?: { on?: boolean; next?: boolean; started?: boolean; activeTurns?: number; failed?: boolean; exploded?: boolean; checkedAt?: number };
+    blueSaviour?: { on?: boolean; next?: boolean; started?: boolean; activeTurns?: number; failed?: boolean; exploded?: boolean; checkedAt?: number; autoRoll?: { roll: number; target: number; result: "safe" | "failed" } };
     // The play-rule rulesets (Chunk E; src/utils/future-wars-ruleset-tools.ts).
     /** Strategic Movement this turn: walking or running, and the MP used (pp.18-19). */
     strategicMovement?: { mode: "w" | "r"; mp: number };
@@ -6433,15 +6433,31 @@ export class BattleMech {
         return this.isBlueSaviourOn() && isEnergyWeapon(weapon) ? halveEnergyDamage(damage) : damage;
     }
 
-    /** How many times an energy hit is halved on this 'Mech: once for an active Blue Saviour, once for Laser Reflective armor. */
-    public getEnergyDamageHalvings(): number {
-        return (this.isBlueSaviourOn() ? 1 : 0) + (this._armorType.tag === "laser-reflective" ? 1 : 0);
+    /**
+     * Whether Laser Reflective armor takes an energy hit at `location` (any location when none is given: is there any to halve?). Patchwork
+     * Armor is Reflective only where its own location is.
+     */
+    private _isReflectiveAt(location?: string): boolean {
+        if( this._armorType.tag === "laser-reflective" ) return true;
+        if( !this.isPatchworkArmor() ) return false;
+        const normalized = location ? this._normalizeLocation(location) : undefined;
+        return this.getPatchworkLocations().some(entry => (!normalized || entry.abbr === normalized) && this.getPatchworkArmorType(entry.key).tag === "laser-reflective");
     }
 
-    /** Damage one incoming hit does: energy damage is halved for an active Blue Saviour, then for Laser Reflective armor. */
-    public getIncomingDamageApplied(amount: number, energy: boolean): number {
+    /** How many times an energy hit is halved on this 'Mech (at `location`, if known): once for an active Blue Saviour, once for Laser Reflective armor. */
+    public getEnergyDamageHalvings(location?: string): number {
+        return (this.isBlueSaviourOn() ? 1 : 0) + (this._isReflectiveAt(location) ? 1 : 0);
+    }
+
+    /** Damage one incoming hit at `location` does: energy damage is halved for an active Blue Saviour, then for Laser Reflective armor. */
+    public getIncomingDamageApplied(amount: number, energy: boolean, location?: string): number {
         if( !energy ) return amount;
-        return getIncomingEnergyDamage(amount, { blueSaviourActive: this.isBlueSaviourOn(), reflective: this._armorType.tag === "laser-reflective" });
+        return getIncomingEnergyDamage(amount, { blueSaviourActive: this.isBlueSaviourOn(), reflective: this._isReflectiveAt(location) });
+    }
+
+    /** The check this 'Mech rolled for the player when a turn ended with it still owed (the player had skipped it), until the next one. */
+    public getBlueSaviourAutoRoll(): { roll: number; target: number; result: "safe" | "failed" } | undefined {
+        return this.futureWarsPlay.blueSaviour?.autoRoll;
     }
 
     /** Lines the play view shows while the field is on, until the electronic warfare rules take over the missile and ECM clauses. */
@@ -6455,6 +6471,8 @@ export class BattleMech {
     private _onBlueSaviourHit(location: string): string[] {
         if( !this.isBlueSaviourOn() ) return [];
         this.futureWarsPlay.blueSaviour = { ...this.futureWarsPlay.blueSaviour, on: false, next: false, exploded: true };
+        // Where the edition's ammunition explosions are heat only (Battledroids), the field is dead but nothing is damaged.
+        if( getAmmoExplosionRules(this._rulesEdition, "mech")?.heatOnly ) return ["The Blue Saviour is destroyed and dead for the scenario; this edition's ammunition explosions are heat only, so there is no damage."];
         const protection = this._ammoExplosionProtection(location);
         const explosion = getFixedExplosion(this._rulesEdition, "mech", BLUE_SAVIOUR_EXPLOSION, protection);
         if( !explosion ) return [];
@@ -6517,11 +6535,20 @@ export class BattleMech {
         if( play.powerArmorExit === "unlatching" ) play.powerArmorExit = "out";
         // A turn that was played with the Blue Saviour on counts toward its failure track; the End Phase choice holds from the next turn (#641).
         if( this.hasBlueSaviour() ) {
+            const wasOn = !!play.blueSaviour?.on;
+            // A check the player skipped is rolled for them now, and the panel says so.
+            const owed = this.getBlueSaviourCheckTarget();
+            let autoRoll: { roll: number; target: number; result: "safe" | "failed" } | undefined;
+            if( owed !== undefined ) {
+                const roll = 2 + Math.floor(Math.random() * 6) + Math.floor(Math.random() * 6);
+                autoRoll = { roll, target: owed, result: this.rollBlueSaviourCheck(roll) ?? "safe" };
+            }
             const saviour = play.blueSaviour ?? {};
-            if( saviour.on ) saviour.activeTurns = (saviour.activeTurns ?? 0) + 1;
+            if( wasOn ) saviour.activeTurns = (saviour.activeTurns ?? 0) + 1;
             if( saviour.next !== undefined ) saviour.on = saviour.next;
             delete saviour.next;
             saviour.started = true;
+            if( autoRoll ) saviour.autoRoll = autoRoll; else delete saviour.autoRoll;
             play.blueSaviour = saviour;
         }
         delete play.boostedRunHexes;
