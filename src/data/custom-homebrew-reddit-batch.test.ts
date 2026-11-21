@@ -240,3 +240,18 @@ describe("Pleiades Mechworks Personal ECM Suite (Custom Homebrew)", () => {
         expect(found!.techRating).toBe("e");
     });
 });
+
+// Pleiades Mechworks (#641): the Blue Saviour Dispersion Field record.
+describe("Pleiades Mechworks Blue Saviour Dispersion Field (Custom Homebrew)", () => {
+    it("is a 5 ton Inner Sphere prototype of 3151 spread over every location, explosive, 'Mechs only", () => {
+        const found = miscCustom.find((item) => item.tag === "custom-blue-saviour");
+        expect(found, "record").toBeTruthy();
+        expect(found).toMatchObject({ weight: 5, techBase: "is", prototype: 3151, introduced: null, spreadLocations: "all", explosive: true, catalog: "custom", rulesLevel: CUSTOM_HOMEBREW_RULES_LEVEL });
+        expect(found!.space.battlemech).toBe(8);
+        for (const other of ["combatVehicle", "supportVehicle", "aerospaceFighter", "smallCraft", "dropShip", "protomech"] as const) expect(found!.space[other], other).toBe(-1);
+        expect(found!.notes).toContain("PleiadesMechworks");
+        expect(found!.notes).toContain("Taurian");
+        expect(found!.cbills).toBe(1000000);
+        expect(found!.techRating).toBe("e");
+    });
+});

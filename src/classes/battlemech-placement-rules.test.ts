@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { BattleMech } from "./battlemech";
+import { CUSTOM_HOMEBREW_RULES_LEVEL } from "../data/rules-level-options";
 
 // Placement rules for physical weapons (TM pp.220, 237; TO:AUE p.100), Actuator Enhancement Systems (TO:AUE p.91)
 // and equipment spread over several locations (TO:AUE pp.108, 112, 137, 148, 161; TM pp.70, 249; IO:AE p.159).
@@ -15,6 +16,13 @@ const build = (type?: string, tech: string = "is", tons: number = 75) => {
 };
 const add = (mech: BattleMech, tag: string, tech: string = "is") =>
     mech.addEquipmentFromTag(tag, tech, "", false, undefined, "", false, [], undefined, undefined)!;
+/** A build at the Custom Homebrew rules level, where fan equipment can be added. */
+const buildCustom = (): BattleMech => {
+    const mech = build();
+    mech.applyGameSettings({ ...mech.getGameSettings(CUSTOM_HOMEBREW_RULES_LEVEL), rulesLevel: CUSTOM_HOMEBREW_RULES_LEVEL });
+    return mech;
+};
+const addCustom = (mech: BattleMech, tag: string) => mech.addEquipmentFromTag(tag, "is", "un", false, null, "", false, [], undefined, undefined, -1, "", true)!;
 const KEY: Record<string, string> = {
     hd: "head", ct: "centerTorso", lt: "leftTorso", rt: "rightTorso", la: "leftArm", ra: "rightArm",
     ll: "leftLeg", rl: "rightLeg", cl: "centerLeg", fll: "frontLeftLeg", frl: "frontRightLeg",
@@ -135,6 +143,24 @@ describe("spread equipment placement", () => {
         expect(violations(mech).filter(v => v.includes("Null Signature"))).toEqual([]);
     });
 
+    it("puts a Pleiades Mechworks Blue Saviour slot in every location, head included, one to a location (#641)", () => {
+        const mech = buildCustom();
+        addCustom(mech, "custom-blue-saviour");
+        expect(unplaced(mech, "custom-blue-saviour")).toBe(8);
+        expect(place(mech, "custom-blue-saviour", "hd")).toBe(true);
+        expect(place(mech, "custom-blue-saviour", "hd")).toBe(false);
+        for (const loc of ["ct", "lt", "rt", "la", "ra", "ll", "rl"]) expect(place(mech, "custom-blue-saviour", loc), loc).toBe(true);
+        expect(unplaced(mech, "custom-blue-saviour")).toBe(0);
+        expect(violations(mech).filter(v => v.includes("Blue Saviour"))).toEqual([]);
+    });
+
+    it("gives a Blue Saviour the Blue Shield's +0.2 armor and structure modifiers for BV (#641)", () => {
+        const mech = buildCustom();
+        expect(JSON.stringify(mech.getBattleValueBreakdown())).not.toContain("bv2.def.armor.blue-shield");
+        addCustom(mech, "custom-blue-saviour");
+        expect(JSON.stringify(mech.getBattleValueBreakdown())).toContain("bv2.def.armor.blue-shield");
+    });
+
     it("keeps the Chameleon shield out of the head and center torso (TO:AUE p.112)", () => {
         const mech = build();
         add(mech, "chameleon-lps");
@@ -248,9 +274,9 @@ describe("systems that exclude or need each other (TO:AUE pp.91, 112, 148, 161; 
     });
 
     it("does not count the Pleiades Mechworks Personal ECM Suite as an ECM suite for Stealth Armor (#641)", () => {
-        const stealth = build();
+        const stealth = buildCustom();
         stealth.setArmorType("stealth-basic");
-        add(stealth, "custom-personal-ecm");
+        addCustom(stealth, "custom-personal-ecm");
         expect(violations(stealth).join(" ")).toMatch(/Stealth Armor needs an ECM suite \(TM p\.213\)/);
         add(stealth, "ecm-suite");
         expect(violations(stealth).join(" ")).not.toMatch(/needs an ECM suite/);

@@ -28,6 +28,25 @@ const derived = (analog: string) => `Not printed in Future Wars #32: cost, Battl
 export const miscCustom: IEquipmentItem[] = applyDerivedValues([
     // Pleiades Mechworks (u/PleiadesMechworks, r/NormalBattletech, #641).
     {
+        name: "Blue Saviour Dispersion Field (Pleiades Mechworks)", altNames: ["Blue Saviour", "Blue Saviour Dispersion Field"], tag: "custom-blue-saviour", techBase: "is", catalog: "custom", sort: "equipment, blue saviour", category: "Miscellaneous Equipment",
+        notes: "Custom Homebrew by u/PleiadesMechworks (r/NormalBattletech, Pleiades Mechworks equipment post). 5 tons; one slot in every location, the head included, 'Mechs only. A prototype of 3151 whose development the Pleiades War halted; "
+            + "only the Taurian Defense Forces ever held one. Switched on or off in the End Phase of any turn. While it is on: 7 heat a turn; damage from every non-capital energy weapon, incoming and outgoing, is halved (rounded down, at least 1), infantry particle weapons included; "
+            + "missiles are treated as if the unit had an anti-missile system (TW p.129); the unit counts as inside a hostile ECM field (TW p.134) that ECCM cannot negate; a Null-Signature System or Stealth Armor gives no stealth benefit; the unit cannot be hidden (TW p.259). "
+            + "Autocannon and Gauss are not affected. With Laser Reflective Armor, halve for the Blue Saviour and round down, then halve again for the armor and round down (Heavy PPC 15 to 7 to 3). "
+            + "Failure: the first 6 turns it is on in a scenario (not necessarily in a row) are safe; after that, roll 2D6 at the start of each turn it is on against a target of 2 plus 1 for each turn on after the sixth; a roll less than the target fails it for the rest of the scenario. "
+            + "A critical hit on one of its slots while it is on explodes for 5 points in that location (CASE contains it as for ammunition) and kills it for the scenario; later hits do nothing. All the post's. "
+            + "Ours: 1,000,000 C-bills and tech rating E, as the canon Blue Shield Particle Field Damper (TO:AUE p.108), and its Battle Value rule (0 of its own; +0.2 to the armor and structure type modifiers, TO:AUE pp.192-194); "
+            + "no production date, since it never left prototype. The play effect of its missile and ECM clauses arrives with the electronic warfare rules in roster play.",
+        damage: 0, damageAero: 0, accuracyModifier: 0, cbills: 1000000, prototype: 3151, introduced: null, extinct: null, reintroduced: null, battleValue: 0, heat: 0, heatAero: 0, weight: 5,
+        range: { min: 0, short: 0, medium: 0, long: 0 }, space: { battlemech: 8, protomech: -1, combatVehicle: -1, supportVehicle: -1, aerospaceFighter: -1, smallCraft: -1, dropShip: -1 },
+        shotsPerTon: 0, minAmmoTons: 0, explosive: true, weaponType: [], techRating: "e", book: "https://www.reddit.com/r/NormalBattletech/", page: 0, rulesLevel: 6, isEquipment: true, isAmmo: false,
+        spreadLocations: "all", spreadSlots: true,
+        rules: "Switch it on or off in the End Phase. On: 7 heat a turn; non-capital energy damage in or out is halved (round down, minimum 1); missiles are treated as met by an anti-missile system; the unit is in a hostile ECM field it cannot negate; no stealth benefit; it cannot be hidden. "
+            + "After 6 turns on, roll 2D6 at the start of each turn on: a roll below 2 plus 1 per turn after the sixth fails it for the scenario. A critical hit on one of its slots while on: 5 points of explosion in that location, and it is dead for the scenario.",
+        lore: "Pleiades Mechworks' answer to the energy weapon: a field that bleeds the power out of every beam crossing it, friend or foe. The Taurian Defense Forces fielded the prototype in 3151 before the Pleiades War ended the program.",
+        alphaStrike: { heat: 0, rangeShort: 0, rangeMedium: 0, rangeLong: 0, rangeExtreme: 0, tc: false, notes: ["Custom equipment: no Alpha Strike conversion"] }
+    },
+    {
         name: "\"Personal\" ECM Suite (Pleiades Mechworks)", altNames: ["Personal ECM Suite", "Personal ECM"], tag: "custom-personal-ecm", techBase: "is", catalog: "custom", sort: "equipment, ecm suite, personal", category: "Miscellaneous Equipment",
         notes: "Custom Homebrew by u/PleiadesMechworks (r/NormalBattletech, Pleiades Mechworks equipment post). The same ECM capabilities as a Guardian ECM Suite, but only in the hex of the unit that mounts it; "
             + "no ECCM mode (advanced rules). It does not count as an ECM suite for equipment that needs one, such as Stealth Armor. 0.5 tons, 1 slot, 200,000 C-bills, defensive Battle Value 20 (all the post's). "

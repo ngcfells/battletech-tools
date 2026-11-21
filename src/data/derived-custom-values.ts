@@ -93,6 +93,7 @@ export const DERIVATION_RULES: Record<string, DerivationRule> = {
     // Battle Value 0 as the canon items of the kind carry it.
     "custom-small-laser-array": { kind: "no-battle-value", like: ["is-machine-gun-array"], why: "an array's damage is carried by the lasers linked to it." },
     "custom-medium-laser-array": { kind: "no-battle-value", like: ["is-machine-gun-array"], why: "an array's damage is carried by the lasers linked to it." },
+    "custom-blue-saviour": { kind: "no-battle-value", like: ["blue-shield"], why: "the canon Blue Shield has no Battle Value of its own either: it adds 0.2 to the armor and structure type modifiers (TO:AUE pp.192-194), which the Blue Saviour takes too." },
     "custom-modular-c3": { kind: "no-battle-value", like: ["c3-computer-slave"], why: "a C3 computer adds no firepower of its own." },
     "custom-power-booster-running": { kind: "no-battle-value", like: ["masc"], why: "a movement booster adds no firepower; speed counts through the 'Mech's movement." },
     "custom-power-booster-jumping": { kind: "no-battle-value", like: ["masc"], why: "a movement booster adds no firepower; speed counts through the 'Mech's movement." },

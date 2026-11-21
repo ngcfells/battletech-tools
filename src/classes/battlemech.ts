@@ -1026,7 +1026,8 @@ export class BattleMech {
         let totalArmorFactor = 2.5 * (this.getTotalArmor() + doubledCenterTorsoArmor);
         // Armor type BV modifier (Commercial 0.5, Hardened 2, Reactive/Reflective/Ballistic-Reinforced 1.5, ...).
         // A Blue Shield PFD adds 0.2 to the Armor Type and Internal Structure Type Modifiers (TO:AUE p.194).
-        const blueShieldBonus = this._equipmentList.some(item => matchesTag(item, "blue-shield")) ? 0.2 : 0;
+        // The Pleiades Mechworks Blue Saviour takes the same rule (#641).
+        const blueShieldBonus = this._equipmentList.some(item => matchesTag(item, "blue-shield") || matchesTag(item, "custom-blue-saviour")) ? 0.2 : 0;
         const armorTypeMultiplier = (armor: IArmorType): number => BattleMech._armorBVMultiplier(armor) + blueShieldBonus;
         const armorBVMultiplier = armorTypeMultiplier(this._armorType);
         const isPatchwork = this.isPatchworkArmor();
