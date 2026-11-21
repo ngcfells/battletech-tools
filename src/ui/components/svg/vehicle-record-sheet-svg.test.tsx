@@ -102,6 +102,19 @@ describe("vehicle record sheet (full page)", () => {
         expect(markup).toMatch(/>ICE \d+</);
     });
 
+    it("prints what CASE does to an Ammunition critical, only on a vehicle that has it (#135)", () => {
+        const without = render(tank());
+        expect(without).not.toContain("With CASE");
+        const cased = tank();
+        cased.addEquipmentFromTag("case");
+        // TW p.194: the damage goes to the rear armor instead, excess ignored, and the crew is stunned.
+        expect(render(cased)).toContain("With CASE, the ammunition's damage goes to the rear armor instead (excess ignored) and the crew is stunned (TW p. 194).");
+        // A Clan chassis has CASE built in (TM p.210).
+        const clan = tank();
+        clan.setTech("clan");
+        expect(render(clan)).toContain("With CASE");
+    });
+
     it("fills in crew skills only when asked", () => {
         expect(render(tank())).not.toContain("data-testid=\"crew-gunnery\"");
         expect(render(tank(), { showCrew: true })).toContain("data-testid=\"crew-gunnery\"");

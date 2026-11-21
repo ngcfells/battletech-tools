@@ -540,6 +540,8 @@ export default class VehicleRecordSheetSVG extends React.Component<IVehicleRecor
                 {this.renderRollTable(getVehicleCriticalHitsSheet(kind === "vtol"), x + 100, y + 72, w - 200, "LOCATION HIT", 28, 160)}
                 {text(x + 40, y + h - 18, `* Only with an ICE engine; with a fusion engine treat this result as Engine Hit.`, { size: 20 })}
                 {text(x + w - 40, y + h - 18, `** If the vehicle carries no ammunition, treat this result as Weapon Destroyed.`, { size: 20, anchor: "end" })}
+                {/* What CASE does to an Ammunition result, printed only where the vehicle has it (TW p. 194). */}
+                {this.vehicle.hasCASE() ? text(x + w - 40, y + h - 44, "With CASE, the ammunition's damage goes to the rear armor instead (excess ignored) and the crew is stunned (TW p. 194).", { size: 20, anchor: "end" }) : null}
             </>
         ));
     }
