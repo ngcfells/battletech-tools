@@ -19,6 +19,10 @@ describe("the apology pop-up", () => {
         expect(screen.getByRole("link", { name: "the project's Discussions on GitHub" }).getAttribute("href")).toBe(APOLOGY_DISCUSSION_URL);
     });
 
+    it("points at the posted Discussion itself, not only its category", () => {
+        expect(APOLOGY_DISCUSSION_URL).toBe("https://github.com/ngcfells/battletech-tools/discussions/655");
+    });
+
     it("closes, and stays closed in this browser from then on", async () => {
         render(<ApologyNotice />);
         fireEvent.click(screen.getByRole("button", { name: "Close the apology" }));

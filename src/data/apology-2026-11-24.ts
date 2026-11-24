@@ -14,8 +14,8 @@ export const APOLOGY_TITLE = "An Apology and Clarification Regarding Community H
 export const APOLOGY_DATE = "November 24th, 2026";
 export const APOLOGY_SIGNATURE = "— NGCFells";
 
-/** Where the apology is posted on GitHub: the Announcements category until the Discussion's own link is known. */
-export const APOLOGY_DISCUSSION_URL = "https://github.com/ngcfells/battletech-tools/discussions/categories/announcements";
+/** Where the apology is posted on GitHub: Discussion #655, in Announcements. */
+export const APOLOGY_DISCUSSION_URL = "https://github.com/ngcfells/battletech-tools/discussions/655";
 
 /** localStorage key, set once the pop-up is closed, so that it shows once per browser. */
 export const APOLOGY_SEEN_KEY = "jbt-apology-2026-11-24-seen";
