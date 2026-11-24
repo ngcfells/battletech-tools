@@ -1,7 +1,9 @@
 // @vitest-environment happy-dom
+import { screen } from "@testing-library/react";
 import { act } from "react";
 import { createRoot } from "react-dom/client";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { APOLOGY_SEEN_KEY, APOLOGY_TITLE } from "../data/apology-2026-11-24";
 import AppRouter from "./app-router";
 import { loadUnitClasses } from "./app-unit-classes";
 
@@ -39,5 +41,23 @@ describe("AppRouter cleanup on unmount", () => {
             expect(listeners).toHaveLength(1);
             expect(removed.mock.calls.some((call) => call[0] === type && call[1] === listeners[0])).toBe(true);
         }
+    });
+});
+
+describe("the apology at the app's root", () => {
+    afterEach(() => window.localStorage.clear());
+
+    it("opens on a first visit", async () => {
+        window.localStorage.clear();
+        const root = await mount();
+        expect(screen.getByRole("dialog", { name: APOLOGY_TITLE })).toBeTruthy();
+        await act(async () => root.unmount());
+    });
+
+    it("stays shut in a browser that has closed it", async () => {
+        window.localStorage.setItem(APOLOGY_SEEN_KEY, "seen");
+        const root = await mount();
+        expect(screen.queryByRole("dialog")).toBeNull();
+        await act(async () => root.unmount());
     });
 });

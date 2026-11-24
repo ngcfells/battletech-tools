@@ -3,6 +3,7 @@ import { IAppGlobals } from '../app-router';
 import './about.scss';
 import UIPage from '../components/ui-page';
 import TextSection from '../components/text-section';
+import { ApologyLink } from '../components/apology-notice';
 import TrademarkNoticeParagraphs from '../components/trademark-notice';
 import { getSpecialRulesets } from '../../data/special-rulesets';
 
@@ -32,6 +33,8 @@ export default class About extends React.Component<IAboutProps, IAboutState> {
               Gaming Grognard - <a href="https://github.com/ngcfells">GitHub</a>
               <br />
               Started playing BattleTech when it was known as BattleDroids on 12/25/1984... Been doing it ever since. An archivist and web archeologist, he is always looking for that next old crusty thing someone left stashed in an old pizza box covered in Crown Royal bags.
+              <br />
+              NGCFells builds with agentic engineering, designing and directing the work while AI coding agents write and test much of the code under that direction. <ApologyLink label="Read NGCFells's apology of November 24th, 2026" />
               <br /><br />
               <h3 className="h4"><strong>Phasertech</strong></h3>
               QA/User Experience<br /><br />

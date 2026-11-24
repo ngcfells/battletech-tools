@@ -1,4 +1,5 @@
 import { defineConfig, devices } from "@playwright/test";
+import { APOLOGY_SEEN_KEY } from "./src/data/apology-2026-11-24";
 
 // End-to-end smoke tests against the production build served by `vite preview` (same base path as GitHub Pages).
 //
@@ -31,6 +32,12 @@ export default defineConfig({
     use: {
         baseURL: `http://localhost:${PORT}/battletech-tools/`,
         trace: "on-first-retry",
+        // The apology pop-up shows once per browser (src/ui/components/apology-notice.tsx). Every spec starts as a
+        // browser that has closed it, so it does not cover the page; e2e/apology.spec.ts starts without this.
+        storageState: {
+            cookies: [],
+            origins: [{ origin: `http://localhost:${PORT}`, localStorage: [{ name: APOLOGY_SEEN_KEY, value: "seen" }] }],
+        },
     },
     projects: [
         // e2e main (npm run test:e2e)

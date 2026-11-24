@@ -1,6 +1,7 @@
 import React, { type JSX } from 'react';
 import { Link } from 'react-router';
 import { IAppGlobals } from '../app-router';
+import { ApologyLink } from '../components/apology-notice';
 import TextSection from '../components/text-section';
 import UIPage from '../components/ui-page';
 import './home.scss';
@@ -223,6 +224,15 @@ export default class Home extends React.Component<IHomeProps, IHomeState> {
                   {/* The news scrolls in its own box (discussion #13); it takes focus so a keyboard can scroll it. */}
                   <div className="home-scroll" role="region" aria-label="News" tabIndex={0}>
                   <ul className="news">
+                  <li>
+                  <h3>
+                      <strong>November 24th, 2026</strong> - An apology and clarification
+                    </h3>
+                    <h4>Author - NGCFells</h4>
+                      <ul>
+                        <li><strong>An apology and clarification regarding community homebrew content.</strong> NGCFells has posted an apology about community homebrew that went into the app without its creators&apos; permission: <ApologyLink />. It is also posted in the project&apos;s Discussions on GitHub. That content is now out of the app and its code history, and a saved design that carried a removed item loads without it.</li>
+                      </ul>
+                  </li>
                   <li>
                   <h3>
                       <strong>November 23rd, 2026</strong> - Community content update, conventional infantry and Maximum Tech

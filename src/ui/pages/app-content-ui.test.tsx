@@ -1,12 +1,14 @@
 // @vitest-environment happy-dom
-import { cleanup, render, screen, waitFor } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { BattleMech } from "../../classes/battlemech";
 import { BattleMechForce } from "../../classes/battlemech-force";
+import { APOLOGY_TITLE } from "../../data/apology-2026-11-24";
 import { sswTestFixtures } from "../../data/ssw/sswTestFixtures";
 import { newMULSearchFilters } from "../../utils/mulSearchFilters";
 import type { IAppGlobals } from "../app-router";
+import About from "./about";
 import BattleMechAddMechDialog from "./classic-battletech/roster/_addMechDialog";
 import { getTroDocuments, troIndex } from "./classic-battletech/tro-jbt";
 import Home from "./home";
@@ -37,6 +39,25 @@ describe("home page news", () => {
             "Community content update",
             "removed from selection, pending verification from its creators",
         ]) expect(text, phrase).toContain(phrase);
+    });
+
+    it("carries the apology of November 24th, 2026, and its link opens it", () => {
+        render(<MemoryRouter><Home appGlobals={appGlobals} /></MemoryRouter>);
+        const news = screen.getByRole("region", { name: "News" });
+        expect(news.textContent).toContain("November 24th, 2026");
+        fireEvent.click(within(news).getByRole("button", { name: "Read the apology" }));
+        expect(screen.getByRole("dialog", { name: APOLOGY_TITLE })).toBeTruthy();
+    });
+});
+
+describe("About", () => {
+    it("says how NGCFells builds the app, and links to the apology", () => {
+        const { container } = render(<MemoryRouter><About appGlobals={appGlobals} /></MemoryRouter>);
+        expect(container.textContent).toContain(
+            "NGCFells builds with agentic engineering, designing and directing the work while AI coding agents write and test much of the code under that direction.",
+        );
+        fireEvent.click(screen.getByRole("button", { name: "Read NGCFells's apology of November 24th, 2026" }));
+        expect(screen.getByRole("dialog", { name: APOLOGY_TITLE })).toBeTruthy();
     });
 });
 

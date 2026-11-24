@@ -1,6 +1,7 @@
 import React, { type JSX } from "react";
 import { Modal } from 'react-bootstrap';
 import { BrowserRouter as Router, Navigate, Route, Routes } from "react-router";
+import ApologyNotice from "./components/apology-notice";
 import { RouteErrorBoundary } from "./components/error-boundary";
 import type AlphaStrikeForce from "../classes/alpha-strike-force";
 import type { IASForceExport } from "../classes/alpha-strike-force";
@@ -889,6 +890,8 @@ export default class AppRouter extends React.Component<IAppRouterProps, IAppRout
     render = (): JSX.Element => {
         return (
             <>
+                {/* NGCFells's apology of 24 November 2026: once per browser, on whichever page is opened first. */}
+                <ApologyNotice />
 
                 <Modal show={this.state.appGlobals.showConfirmDialog} onHide={this.closeConfirmDialog}>
                 <Modal.Header closeButton>
