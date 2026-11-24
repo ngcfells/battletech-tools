@@ -1,0 +1,1 @@
+function e(e,t){return!!e.available||t}function t(e){return e.available?e.name+(e.availableAsPrototype?` (Prototype)`:``):e.name+` (unavailable)`}export{e as n,t};
