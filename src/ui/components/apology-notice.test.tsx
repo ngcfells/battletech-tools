@@ -41,6 +41,22 @@ describe("the apology pop-up", () => {
         expect(screen.getByRole("dialog", { name: APOLOGY_TITLE })).toBeTruthy();
     });
 
+    it("shows again in a browser that closed it before the update of November 25th, 2026", () => {
+        window.localStorage.setItem("jbt-apology-2026-11-24-seen", "seen");
+        render(<ApologyNotice />);
+        expect(screen.getByRole("dialog", { name: APOLOGY_TITLE })).toBeTruthy();
+    });
+
+    it("opens with that update: the offline copy is deleted, and the fork shuts down on December 2nd, 2026", () => {
+        render(<ApologyNotice />);
+        const text = screen.getByRole("dialog", { name: APOLOGY_TITLE }).textContent ?? "";
+        const update = text.indexOf("Update, November 25th, 2026");
+        expect(update).toBeGreaterThan(-1);
+        expect(update).toBeLessThan(text.indexOf("Hey everyone,"));
+        expect(text).toContain("December 2nd, 2026");
+        expect(text).not.toContain("I've kept one private, offline copy");
+    });
+
     it("still shows when the browser will not store that it was seen", () => {
         const getItem = window.localStorage.getItem;
         window.localStorage.getItem = () => { throw new Error("storage blocked"); };

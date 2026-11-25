@@ -48,6 +48,16 @@ describe("home page news", () => {
         fireEvent.click(within(news).getByRole("button", { name: "Read the apology" }));
         expect(screen.getByRole("dialog", { name: APOLOGY_TITLE })).toBeTruthy();
     });
+
+    it("says the fork shuts down on December 2nd, 2026, with links to the updated apology and to Backup and Restore", () => {
+        render(<MemoryRouter><Home appGlobals={appGlobals} /></MemoryRouter>);
+        const news = screen.getByRole("region", { name: "News" });
+        expect(news.textContent).toContain("November 25th, 2026");
+        expect(news.textContent).toContain("December 2nd, 2026");
+        expect(within(news).getByRole("link", { name: "Backup and Restore" }).getAttribute("href")).toMatch(/\/settings\/backup-and-restore$/);
+        fireEvent.click(within(news).getByRole("button", { name: "Read the updated apology" }));
+        expect(screen.getByRole("dialog", { name: APOLOGY_TITLE })).toBeTruthy();
+    });
 });
 
 describe("About", () => {

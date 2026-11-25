@@ -1,5 +1,7 @@
 # BattleTech Tools
 
+> **This fork shuts down entirely on December 2nd, 2026.** See the [apology and its November 25th update](https://github.com/ngcfells/battletech-tools/discussions/655).
+
 ## Purpose
 
 This is a development fork of Jeff's Battletech Tools. This will be used to explore keeping the project going as a community maintained codebase.

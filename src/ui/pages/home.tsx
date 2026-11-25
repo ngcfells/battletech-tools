@@ -226,6 +226,15 @@ export default class Home extends React.Component<IHomeProps, IHomeState> {
                   <ul className="news">
                   <li>
                   <h3>
+                      <strong>November 25th, 2026</strong> - This fork shuts down on December 2nd, 2026
+                    </h3>
+                    <h4>Author - NGCFells</h4>
+                      <ul>
+                        <li><strong>This fork shuts down entirely on December 2nd, 2026.</strong> NGCFells is closing this fork of Jeff&apos;s BattleTech Tools in 7 days: its GitHub repository and this site both come down. To keep your saved designs and forces, back them up from <Link to={`${process.env.PUBLIC_URL}/settings/backup-and-restore`}>Backup and Restore</Link> before then. The apology is updated too: everything that was removed is gone, the private, offline copy included. <ApologyLink label="Read the updated apology" /></li>
+                      </ul>
+                  </li>
+                  <li>
+                  <h3>
                       <strong>November 24th, 2026</strong> - An apology and clarification
                     </h3>
                     <h4>Author - NGCFells</h4>

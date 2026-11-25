@@ -2,6 +2,9 @@
  * NGCFells's apology of 24 November 2026 about community homebrew content. The app shows it once per browser
  * (src/ui/components/apology-notice.tsx), Home and About link to it, and the same text is posted in the project's
  * Discussions on GitHub. The words are NGCFells's own, as approved: change them only on NGCFells's say.
+ *
+ * Updated 25 November 2026 at NGCFells's word: the update at the top (the offline copy and every other backup deleted,
+ * the fork shutting down on 2 December 2026), and the offline-copy sentence in "Restoring Content Only by Permission".
  */
 
 /** A bold lead-in and the text after it, as the apology's bullet lists have them. */
@@ -11,16 +14,26 @@ export interface IApologyItem { lead: string; text: string }
 export interface IApologySection { heading?: string; paragraphs?: string[]; items?: IApologyItem[] }
 
 export const APOLOGY_TITLE = "An Apology and Clarification Regarding Community Homebrew Content";
-export const APOLOGY_DATE = "November 24th, 2026";
+export const APOLOGY_DATE = "November 24th, 2026, updated November 25th, 2026";
 export const APOLOGY_SIGNATURE = "— NGCFells";
 
 /** Where the apology is posted on GitHub: Discussion #655, in Announcements. */
 export const APOLOGY_DISCUSSION_URL = "https://github.com/ngcfells/battletech-tools/discussions/655";
 
-/** localStorage key, set once the pop-up is closed, so that it shows once per browser. */
-export const APOLOGY_SEEN_KEY = "jbt-apology-2026-11-24-seen";
+/**
+ * localStorage key, set once the pop-up is closed, so that it shows once per browser. It carries the date of the last
+ * update, so a browser that closed an earlier version sees the update once.
+ */
+export const APOLOGY_SEEN_KEY = "jbt-apology-2026-11-25-seen";
 
 export const APOLOGY_SECTIONS: IApologySection[] = [
+    {
+        heading: "Update, November 25th, 2026",
+        paragraphs: [
+            "Everything has been removed. That includes the private, offline copy I mentioned below. It's deleted, along with the other backups I had.",
+            "I'm shutting this fork down entirely in 7 days, on December 2nd, 2026. The repository and the app's site both come down. After that I'm putting everything aside and going back to being a Grognard in my cave.",
+        ],
+    },
     {
         paragraphs: [
             "Hey everyone,",
@@ -48,7 +61,7 @@ export const APOLOGY_SECTIONS: IApologySection[] = [
             },
             {
                 lead: "Restoring Content Only by Permission",
-                text: "Anything I removed will only ever be added back into the app if the person it came from reaches out and gives explicit permission to include it. I've kept one private, offline copy for that reason alone, so that anything a creator asks to have back can be restored exactly as it was. It is not shared or published anywhere.",
+                text: "Anything I removed will only ever be added back into the app if the person it came from reaches out and gives explicit permission to include it. I had kept one private, offline copy so that anything a creator asked to have back could be restored exactly as it was. That copy is deleted now (see the update above).",
             },
             {
                 lead: "Double-Checking Anything Missed",
