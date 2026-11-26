@@ -44,6 +44,22 @@ export function readLocalStorage( keyName: string ): string | null {
     }
 }
 
+/** Every entry this browser holds in localStorage for the app's site, word for word (empty when storage is blocked). */
+export function readAllLocalStorage(): Record<string, string> {
+    const rv: Record<string, string> = {};
+    try {
+        for( let index = 0; index < localStorage.length; index++ ) {
+            const keyName = localStorage.key( index );
+            const value = keyName === null ? null : localStorage.getItem( keyName );
+            if( keyName !== null && value !== null )
+                rv[keyName] = value;
+        }
+    } catch( error ) {
+        console.error("Unable to read localStorage", error);
+    }
+    return rv;
+}
+
 // localStorage.setItem throws when the origin's quota (about 5 MB) is used up, or when storage is disabled.
 export function writeLocalStorage( keyName: string, data: string ): void {
     try {

@@ -20,7 +20,7 @@ import CapitalShip, { ICapitalShipExport, normalizeCapitalShipExport } from "./c
 import Building, { IBuildingExport, normalizeBuildingExport } from "./classes/building";
 import { IAppGlobals } from "./ui/app-router";
 import { AppSettings } from "./ui/classes/app_settings";
-import { ESaveDataMode, getStorageWriteFailures, readLocalStorage, writeLocalStorage } from "./dataSavesStorage";
+import { ESaveDataMode, getStorageWriteFailures, readAllLocalStorage, readLocalStorage, writeLocalStorage } from "./dataSavesStorage";
 export { ESaveDataMode, getAppSettings, getSaveDataModeName, getSaveDataModes, onStorageSaveError, saveAppSettings } from "./dataSavesStorage";
 export type { StorageSaveErrorHandler } from "./dataSavesStorage";
 // import {Storage} from 'session-storage-sync';
@@ -157,6 +157,29 @@ export async function getFullBackup(
         campaigns: await getCampaigns(appSettings),
     }
 
+    return JSON.stringify( rv );
+}
+
+/** The file the Aces export button downloads. */
+export const ACES_EXPORT_FILE_NAME = "AcesExport.json";
+
+/** A full backup, so Backup and Restore reads it back, plus every localStorage entry word for word. */
+export interface IAcesExport extends IFullBackup {
+    exportedAt: string;
+    localStorage: Record<string, string>;
+}
+
+/**
+ * Everything stored locally, in one file: the cards, games, campaigns, saved units and settings. sessionStorage, which
+ * holds the editors' GitHub tokens for one tab, is left out.
+ */
+export async function getAcesExport(
+    appSettings: AppSettings,
+    now: Date = new Date(),
+): Promise<string> {
+    const stored = readAllLocalStorage();
+    const backup: IFullBackup = JSON.parse( await getFullBackup( appSettings ) );
+    const rv: IAcesExport = { ...backup, exportedAt: now.toISOString(), localStorage: stored };
     return JSON.stringify( rv );
 }
 

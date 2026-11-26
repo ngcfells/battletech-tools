@@ -51,6 +51,7 @@ import AcesPlayerForceCards, { applyAcesPlayerForceRound } from './_player-force
 import { AcesCommandCardView } from './_aces-card-view';
 import AcesText from './_aces-text';
 import AcesSupportCards from './_support-cards';
+import { AcesExportButton } from './home';
 import './aces.scss';
 
 const phaseLabels: { [phase in TAcesPhase]: string } = {
@@ -1101,6 +1102,7 @@ export default class AcesGamePage extends React.Component<IAcesGamePageProps, IA
         return (
         <UIPage current="alpha-strike-aces" appGlobals={this.props.appGlobals}>
           <div className="aces-page">
+            <AcesExportButton appGlobals={this.props.appGlobals} />
             {!game ? (
                 <TextSection label="Aces Game Tracker"><p>Loading...</p></TextSection>
             ) : (

@@ -1,16 +1,57 @@
 import React, { type JSX } from 'react';
 import { Link } from 'react-router';
-import { FaBook, FaChessKnight, FaLayerGroup, FaMedal } from "react-icons/fa";
+import { FaBook, FaChessKnight, FaDownload, FaLayerGroup, FaMedal } from "react-icons/fa";
 import { IAppGlobals } from '../../../app-router';
 import TextSection from '../../../components/text-section';
 import UIPage from '../../../components/ui-page';
-import { getAcesCampaigns, getAcesGame } from '../../../../dataSaves';
+import { ACES_EXPORT_FILE_NAME, getAcesCampaigns, getAcesExport, getAcesGame } from '../../../../dataSaves';
 import { ACES_BOOK, ACES_SS_BOOK } from '../../../../data/aces-rules';
 import './aces.scss';
 const Book = FaBook as any;
 const Cards = FaLayerGroup as any;
 const ChessKnight = FaChessKnight as any;
+const Download = FaDownload as any;
 const Medal = FaMedal as any;
+
+/** The export at the top of every Aces page: one file with everything this browser stores for the app. */
+export const AcesExportButton = ( props: { appGlobals: IAppGlobals } ): JSX.Element => {
+    const [ busy, setBusy ] = React.useState( false );
+    const exportEverything = async () => {
+        setBusy( true );
+        try {
+            const blob = new Blob( [ await getAcesExport( props.appGlobals.appSettings ) ], { type: "application/json" } );
+            const url = URL.createObjectURL( blob );
+            const link = document.createElement( "a" );
+            link.href = url;
+            link.download = ACES_EXPORT_FILE_NAME;
+            document.body.appendChild( link );
+            link.click();
+            document.body.removeChild( link );
+            URL.revokeObjectURL( url );
+        } catch( error ) {
+            console.error( "Unable to export", error );
+            props.appGlobals.siteAlerts.addAlert(
+                "danger",
+                "Export Failed",
+                "The export could not be made: " + String( error ),
+                "", true, null, 0,
+            );
+        } finally {
+            setBusy( false );
+        }
+    };
+    return (
+        <div className="alert alert-primary d-print-none aces-export">
+            <button type="button" className="btn btn-lg btn-primary" onClick={exportEverything} disabled={busy}>
+                <Download /> Export everything ({ACES_EXPORT_FILE_NAME})
+            </button>
+            <p className="mb-0 mt-2">
+                Downloads one file with everything this browser stores for the app: your Aces games, campaigns and card
+                library, saved units, forces and settings. Backup and Restore can read the saves and cards back from it.
+            </p>
+        </div>
+    );
+};
 
 export default class AcesHome extends React.Component<IAcesHomeProps, IAcesHomeState> {
     constructor(props: IAcesHomeProps) {
@@ -40,6 +81,7 @@ export default class AcesHome extends React.Component<IAcesHomeProps, IAcesHomeS
       return (
         <UIPage current="alpha-strike-aces" appGlobals={this.props.appGlobals}>
           <div className="aces-page">
+          <AcesExportButton appGlobals={this.props.appGlobals} />
           <TextSection
             label="BattleTech: Aces"
           >

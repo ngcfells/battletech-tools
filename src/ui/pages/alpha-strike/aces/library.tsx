@@ -64,6 +64,7 @@ import { acesEdgeCardScanOptions, applyAcesEdgeScan, scanAcesEdgeCard } from '..
 import { acesCommandCardScanOptions, applyAcesCommandScan, scanAcesCommandCard, TAcesCommandScanSide } from '../../../../classes/aces-command-card-scan';
 import { generateUUID } from '../../../../utils/generateUUID';
 import { AcesCardView, AcesCommandCardView, AcesScenarioView, AcesSpecialOrderView } from './_aces-card-view';
+import { AcesExportButton } from './home';
 import './aces.scss';
 
 /*
@@ -857,6 +858,7 @@ export default class AcesLibraryPage extends React.Component<IAcesLibraryPagePro
         return (
             <UIPage current="alpha-strike-aces" appGlobals={this.props.appGlobals}>
                 <div className="aces-page">
+                    <AcesExportButton appGlobals={this.props.appGlobals} />
                     {!this.state.library ? (
                         <TextSection label="Aces Card Library"><p>Loading...</p></TextSection>
                     ) : this.state.draft ? this._renderEditor() : this._renderList()}

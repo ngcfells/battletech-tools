@@ -44,6 +44,7 @@ import {
     ACES_SS_BOOK,
 } from '../../../../data/aces-rules';
 import AcesToHitCalculator from './_to-hit-calculator';
+import { AcesExportButton } from './home';
 import './aces.scss';
 
 const rollRange = ( row: IAcesTableRow<unknown> ): string => {
@@ -70,6 +71,7 @@ export default class AcesRulesPage extends React.Component<IAcesRulesPageProps, 
         return (
         <UIPage current="alpha-strike-aces" appGlobals={this.props.appGlobals}>
           <div className="aces-page">
+            <AcesExportButton appGlobals={this.props.appGlobals} />
             <TextSection label="Aces Rules Reference">
                 <p className="aces-muted">
                     Summaries only, with page numbers from the BattleTech: Aces rulebook (and Scouring Sands, marked SS).

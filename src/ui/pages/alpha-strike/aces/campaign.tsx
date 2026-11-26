@@ -34,6 +34,7 @@ import {
 import { generateUUID } from '../../../../utils/generateUUID';
 import { acesEdgeCardForName, IAcesEdgeCard, normalizeAcesEdgeName } from '../../../../data/aces-cards';
 import { getAcesCampaigns, getAcesCardLibrary, saveAcesCampaigns } from '../../../../dataSaves';
+import { AcesExportButton } from './home';
 import './aces.scss';
 
 const emptyLedgerInput = (): IAcesSortieLedgerInput => {
@@ -748,6 +749,7 @@ export default class AcesCampaignPage extends React.Component<IAcesCampaignPageP
         return (
         <UIPage current="alpha-strike-aces" appGlobals={this.props.appGlobals}>
           <div className="aces-page">
+            <AcesExportButton appGlobals={this.props.appGlobals} />
             <TextSection label="Aces Campaigns">
                 {!this.state.loaded ? <p>Loading...</p> : (
                     <div className="aces-inline">
